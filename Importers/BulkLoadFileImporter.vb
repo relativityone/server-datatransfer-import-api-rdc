@@ -7,6 +7,8 @@ Imports Relativity
 Imports Relativity.MassImport
 Imports Microsoft.VisualBasic
 Imports System.Collections.Generic
+Imports kCura.EDDS.WebAPI.DocumentManagerBase
+Imports kCura.WinEDDS.Service
 
 Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
@@ -18,6 +20,8 @@ Namespace kCura.WinEDDS
 		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
 		Private _parentFolderDTO As kCura.EDDS.WebAPI.FolderManagerBase.Folder
 		Protected _auditManager As kCura.WinEDDS.Service.AuditManager
+		Protected _documentManager As kCura.WinEDDS.Service.DocumentManager
+		Protected _relativityManager As kCura.WinEDDS.Service.RelativityManager
 
 		Private _recordCount As Int64 = -1
 		Private _allFields As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
@@ -417,6 +421,7 @@ Namespace kCura.WinEDDS
 				RaiseEvent StartFileImport()
 				_timekeeper.MarkStart("ReadFile_InitializeMembers")
 				Dim validateBcp As FileUploadReturnArgs = _bcpuploader.ValidateBcpPath(_caseInfo.ArtifactID, _outputFileWriter.OutputNativeFilePath)
+				'TODO: your check here
 				If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError And Not Config.EnableSingleModeImport Then
 					Throw New BcpPathAccessException(validateBcp.Value)
 				Else
@@ -427,6 +432,22 @@ Namespace kCura.WinEDDS
 				End If
 				_processedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
 				_timekeeper.MarkEnd("ReadFile_InitializeMembers")
+
+				If (_relativityManager.IsCoffeeInstance()) Then
+					If (_overwrite.ToLower() = "none") Then
+						Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
+						Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
+						Dim fileLineStart As Long = _startLineNumber
+						If _startLineNumber = 0 Then fileLineStart = 1
+						Dim countAfterJob As Long = currentDocCount + (_recordCount - (fileLineStart - 1))
+						If (docLimit <> 0 And countAfterJob > docLimit) Then
+							Dim errorMessage As String = String.Format("Running this job will put you {0} documents over the document limit of {1}. Please reduce the size of this job.", countAfterJob - docLimit, docLimit)
+							Throw New Exception(errorMessage)
+							Return False
+						End If
+					End If
+				End If
+
 				_timekeeper.MarkStart("ReadFile_ProcessDocuments")
 				_columnHeaders = _artifactReader.GetColumnNames(_settings)
 				If _firstLineContainsColumnNames Then _offset = -1
@@ -514,6 +535,8 @@ Namespace kCura.WinEDDS
 		Protected Overrides Sub InitializeManagers(ByVal args As LoadFile)
 			MyBase.InitializeManagers(args)
 			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credentials, args.CookieContainer)
+			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credentials, args.CookieContainer)
+			_relativityManager = New kCura.WinEDDS.Service.RelativityManager(args.Credentials, args.CookieContainer)
 		End Sub
 
 		Private Sub DeleteFiles()
@@ -1048,10 +1071,10 @@ Namespace kCura.WinEDDS
 				If Not item.DocumentField Is Nothing Then
 					Dim i As Integer = retval.Add(item.DocumentField.ToFieldInfo)
 					If Not ObjectFieldIdListContainsArtifactId Is Nothing Then
-						If (CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).Type = FieldType.Object _
-						 Or CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).Type = FieldType.Objects) _
+						If (CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).Type = kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType.Object _
+						 Or CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).Type = kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType.Objects) _
 						AndAlso ObjectFieldIdListContainsArtifactId.Contains(CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).ArtifactID) Then
-							CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).ImportBehavior = ImportBehaviorChoice.ObjectFieldContainsArtifactId
+							CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).ImportBehavior = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportBehaviorChoice.ObjectFieldContainsArtifactId
 						End If
 					End If
 				End If
@@ -1221,7 +1244,7 @@ Namespace kCura.WinEDDS
 							Dim fileStream As Stream
 
 							Dim fileInfo As System.IO.FileInfo = New System.IO.FileInfo(field.ValueAsString)
-							Dim fileSize As Long = FileInfo.Length
+							Dim fileSize As Long = fileInfo.Length
 							If fileSize > GetMaxExtractedTextLength(chosenEncoding) Then
 								Throw New ExtractedTextTooLargeException
 							End If

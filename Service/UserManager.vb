@@ -38,13 +38,13 @@ Namespace kCura.WinEDDS.Service
 			Return RetryOnReLoginException(Function() MyBase.GenerateAuthenticationToken())
 		End Function
 
-		Public Shadows Function GenerateDistributedAuthenticationToken() As String
-			Return RetryOnReLoginException(Function() MyBase.GenerateDistributedAuthenticationToken())
+		Public Shadows Function GenerateDistributedAuthenticationToken(Optional ByVal retryOnFailure As Boolean = True) As String
+			Return RetryOnReLoginException(Function() MyBase.GenerateDistributedAuthenticationToken(), retryOnFailure)
 		End Function
 
 #End Region
 
-		Public Function AttemptReLogin() As Boolean
+		Public Function AttemptReLogin(Optional ByVal retryOnFailure As Boolean = True) As Boolean
 			Try
 				System.Threading.Thread.CurrentThread.Join(Config.WaitBeforeReconnect)
 				Dim cred As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
@@ -57,7 +57,7 @@ Namespace kCura.WinEDDS.Service
 						Me.Login(cred.UserName, cred.Password)
 					End If
 				End If
-				kCura.WinEDDS.Service.Settings.AuthenticationToken = Me.GenerateDistributedAuthenticationToken()
+				kCura.WinEDDS.Service.Settings.AuthenticationToken = Me.GenerateDistributedAuthenticationToken(retryOnFailure)
 				Return True
 			Catch ex As System.Exception
 				Return False

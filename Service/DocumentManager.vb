@@ -83,6 +83,40 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Function GetPrintImageGuids(ByVal caseContextArtifactID As Int32, ByVal artifactID As Int32, ByVal orderedProductionIDList As Int32()) As Guid()
 			Return RetryOnReLoginException(Function() MyBase.GetPrintImageGuids(caseContextArtifactID, artifactID, orderedProductionIDList))
 		End Function
+
+		Public Shadows Function RetrieveDocumentCount(ByVal caseContextArtifactID As Int32) As Int32
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				Try
+					tries += 1
+					Return MyBase.RetrieveDocumentCount(caseContextArtifactID)
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+			Return Nothing
+		End Function
+
+		Public Shadows Function RetrieveDocumentLimit(ByVal caseContextArtifactID As Int32) As Int32
+			Dim tries As Int32 = 0
+			While tries < Config.MaxReloginTries
+				Try
+					tries += 1
+					Return MyBase.RetrieveDocumentLimit(caseContextArtifactID)
+				Catch ex As System.Exception
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					Else
+						Throw
+					End If
+				End Try
+			End While
+			Return Nothing
+		End Function
 #End Region
 
 	End Class

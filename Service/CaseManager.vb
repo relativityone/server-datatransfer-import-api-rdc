@@ -41,6 +41,10 @@ Namespace kCura.WinEDDS.Service
 
 		Public Shadows Function Read(ByVal caseArtifactID As Int32) As Relativity.CaseInfo
 			Return RetryOnReLoginException(Function() ConvertToCaseInfo(MyBase.Read(caseArtifactID)))
+							Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, False)
+						Else
+							Throw ex
+						End If
 		End Function
 #End Region
 
