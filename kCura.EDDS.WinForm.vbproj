@@ -316,6 +316,7 @@
     <Reference Include="System.Runtime.Serialization.Formatters.Soap">
       <Name>system.runtime.serialization.formatters.soap</Name>
     </Reference>
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services">
       <Name>System.Web.Services</Name>
     </Reference>
