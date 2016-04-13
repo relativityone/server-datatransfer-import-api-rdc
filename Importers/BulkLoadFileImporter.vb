@@ -433,7 +433,7 @@ Namespace kCura.WinEDDS
 				_processedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
 				_timekeeper.MarkEnd("ReadFile_InitializeMembers")
 
-				If (_relativityManager.IsCloudInstance()) Then
+				If (kCura.WinEDDS.Config.IsCloudInstance) Then
 					If (_overwrite.ToLower() = "none") Then
 						Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
 						Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)

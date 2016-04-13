@@ -537,7 +537,7 @@ Namespace kCura.WinEDDS
 				_fileLineCount = _imageReader.CountRecords
 
 
-				If (_relativityManager.IsCloudInstance() AndAlso _overwrite.ToLower() = "none") Then
+				If (kCura.WinEDDS.Config.IsCloudInstance AndAlso _overwrite.ToLower() = "none") Then
 
 					Dim tempImageReader As OpticonFileReader = New OpticonFileReader(_folderID, _settings, Nothing, Nothing, _doRetryLogic)
 					tempImageReader.Initialize()
