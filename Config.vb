@@ -3,6 +3,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Shared _configDictionary As System.Collections.IDictionary
 		Private Shared _dataConfigDictionary As System.Collections.IDictionary
+		Private Shared _eddsConfigDictionary As System.Collections.IDictionary
 
 		Public Shared ReadOnly Property ConfigSettings() As System.Collections.IDictionary
 			Get
@@ -23,6 +24,19 @@ Namespace kCura.EDDS.WinForm
 					_dataConfigDictionary = kCura.Config.Manager.GetConfig("Relativity.Data", New ConfigDictionaryFactory)
 				End If
 				Return _dataConfigDictionary
+			End Get
+		End Property
+
+		''' <summary>
+		''' Gets the collection of configuration settings for data transfer with a server. These settings are
+		''' necessary for the WinEDDS client to correctly communicate with the server.
+		''' </summary>
+		Public Shared ReadOnly Property EddsConfigSettings() As System.Collections.IDictionary
+			Get
+				If _eddsConfigDictionary Is Nothing Then
+					_eddsConfigDictionary = kCura.Config.Manager.GetConfig("Relativity.Core", New ConfigDictionaryFactory)
+				End If
+				Return _eddsConfigDictionary
 			End Get
 		End Property
 
@@ -59,6 +73,12 @@ Namespace kCura.EDDS.WinForm
 		Public Shared ReadOnly Property ExportVolumeDigitPadding() As Int32
 			Get
 				Return CType(ConfigSettings("ExportVolumeDigitPadding"), Int32)
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property CloudInstance() As Boolean
+			Get
+				Return CType(EddsConfigSettings("CloudInstance"), Boolean)
 			End Get
 		End Property
 

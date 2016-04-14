@@ -577,7 +577,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function GetColumnHeadersFromLoadFile(ByVal loadfile As kCura.WinEDDS.LoadFile, ByVal firstLineContainsColumnHeaders As Boolean) As String()
 			loadfile.CookieContainer = Me.CookieContainer
-			Dim parser As New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, _timeZoneOffset, False, Nothing, False, Config.BulkLoadFileFieldDelimiter)
+			Dim parser As New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, _timeZoneOffset, False, Nothing, False, Config.BulkLoadFileFieldDelimiter, Config.CloudInstance)
 			Return parser.GetColumnNames(loadfile)
 		End Function
 
@@ -1165,6 +1165,7 @@ Namespace kCura.EDDS.WinForm
 					importer.LoadFile = loadFile
 					importer.TimeZoneOffset = _timeZoneOffset
 					importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
+					importer.CloudInstance = Config.CloudInstance
 					SetWorkingDirectory(loadFile.FilePath)
 					frm.ProcessObserver = importer.ProcessObserver
 					frm.ProcessController = importer.ProcessController
@@ -1214,6 +1215,7 @@ Namespace kCura.EDDS.WinForm
 			Dim importer As New kCura.WinEDDS.ImportImageFileProcess
 			ImageLoadFile.CookieContainer = Me.CookieContainer
 			importer.ImageLoadFile = ImageLoadFile
+			importer.CloudInstance = Config.CloudInstance
 			SetWorkingDirectory(ImageLoadFile.FileName)
 			frm.ProcessObserver = importer.ProcessObserver
 			frm.ProcessController = importer.ProcessController
