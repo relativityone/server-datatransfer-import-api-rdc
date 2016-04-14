@@ -190,16 +190,6 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Shared ReadOnly Property IsCloudInstance() As Boolean
-			Get
-				Try
-					Return CType(ConfigSettings("CloudInstance"), Boolean)
-				Catch ex As Exception
-					Return False
-				End Try
-			End Get
-		End Property
-
 		''' <summary>
 		''' If True, Folders which are created in Append mode are created in the WebAPI.
 		''' If False, Folders which are created in Append mode are created in RDC/ImportAPI.

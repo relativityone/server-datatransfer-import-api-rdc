@@ -43,6 +43,8 @@ Namespace kCura.WinEDDS
 
 		Public Property SkipExtractedTextEncodingCheck As Boolean?
 
+		Public Property CloudInstance As Boolean
+
 		Protected Overrides Sub Execute()
 			_startTime = DateTime.Now
 			_warningCount = 0
@@ -73,7 +75,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Function GetImageFileImporter() As kCura.WinEDDS.BulkImageFileImporter
-			Dim returnImporter As BulkImageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController, Me.ProcessID, True)
+			Dim returnImporter As BulkImageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController, Me.ProcessID, True, CloudInstance)
 			Return returnImporter
 		End Function
 
