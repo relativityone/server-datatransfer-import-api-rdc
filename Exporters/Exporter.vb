@@ -542,6 +542,7 @@ Namespace kCura.WinEDDS
 					Return Me.PrepareOriginalImages(imagesView, documentArtifactID, batesBase, artifact)
 				Else
 					productionImagesView.RowFilter = String.Format("DocumentArtifactID = {0} AND ProductionArtifactID = {1}", documentArtifactID, item.Value)
+					Dim firstImageFileName As String = Nothing
 					If productionImagesView.Count > 0 Then
 						Dim drv As System.Data.DataRowView
 						Dim i As Int32 = 0
@@ -558,7 +559,10 @@ Namespace kCura.WinEDDS
 									filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
 								End If
 								Dim filename As String = image.BatesNumber
-								If IsDocNumberOnlyProduction(Me.GetProduction(item.Value)) AndAlso i > 0 Then filename &= "_" & (i + 1).ToString
+								If i = 0 Then
+									firstImageFileName = filename
+								End If
+								If (IsDocNumberOnlyProduction(Me.GetProduction(item.Value)) OrElse filename.Equals(firstImageFileName, StringComparison.OrdinalIgnoreCase)) AndAlso i > 0 Then filename &= "_" & (i + 1).ToString
 								image.FileName = filename & filenameExtension
 								image.SourceLocation = drv("Location").ToString
 								retval.Add(image)
