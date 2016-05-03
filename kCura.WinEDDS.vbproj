@@ -300,6 +300,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
+      <Project>{b092d1b2-909b-4ef0-9369-a81675c3fc18}</Project>
+      <Name>kCura.Windows.Process</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Relativity.Applications.Serialization\Relativity.Applications.Serialization.vbproj">
       <Project>{E621897E-45AF-4FBD-ADA4-EEE787E5233F}</Project>
       <Name>Relativity.Applications.Serialization</Name>
@@ -356,10 +360,6 @@
     <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
       <Project>{E3450350-56E3-4FE9-A47A-4D24960BCBDB}</Project>
       <Name>kCura.Utility</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
-      <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
-      <Name>kCura.Windows.Process</Name>
     </ProjectReference>
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
@@ -425,6 +425,8 @@
     <Compile Include="Exceptions\WebDownloadCorruptException.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Exporters\IUserNotification.vb" />
+    <Compile Include="Exporters\NullUserNotification.vb" />
     <Compile Include="Exporters\TempTextFileDeletor.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\DelimitedCellFormatter.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\HtmlCellFormatter.vb" />
