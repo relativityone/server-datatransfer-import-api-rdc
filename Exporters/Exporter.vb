@@ -9,21 +9,19 @@ Namespace kCura.WinEDDS
 
 #Region "Members"
 
-		Private _searchManager As kCura.WinEDDS.Service.SearchManager
-		Public ExportManager As kCura.WinEDDS.Service.ExportManager
-		Private _folderManager As kCura.WinEDDS.Service.FolderManager
-		Private _fieldManager As kCura.WinEDDS.Service.FieldManager
-		Private _auditManager As kCura.WinEDDS.Service.AuditManager
+		Private _searchManager As Service.Export.ISearchManager
+		Private _productionManager As Service.Export.IProductionManager
+		Private _auditManager As Service.Export.IAuditManager
+		Private _fieldManager As Service.Export.IFieldManager
+		Public Property ExportManager As Service.Export.IExportManager
 		Private _exportFile As kCura.WinEDDS.ExportFile
 		Private _columns As System.Collections.ArrayList
-		Private _documentManager As kCura.WinEDDS.Service.DocumentManager
 		Public DocumentsExported As Int32
 		Public TotalExportArtifactCount As Int32
 		Private WithEvents _processController As kCura.Windows.Process.Controller
-		Private WithEvents _downloadHandler As FileDownloader
+		Private WithEvents _downloadHandler As Service.Export.IFileDownloader
 		Private _halt As Boolean
 		Private _volumeManager As VolumeManager
-		Private _productionManager As kCura.WinEDDS.Service.ProductionManager
 		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom
 		Private _beginBatesColumn As String = ""
 		Private _timekeeper As New kCura.Utility.Timekeeper
@@ -103,22 +101,20 @@ Namespace kCura.WinEDDS
 
 		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller)
 			_searchManager = New kCura.WinEDDS.Service.SearchManager(exportFile.Credential, exportFile.CookieContainer)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(exportFile.Credential, exportFile.CookieContainer)
-			_documentManager = New kCura.WinEDDS.Service.DocumentManager(exportFile.Credential, exportFile.CookieContainer)
 			_downloadHandler = New FileDownloader(exportFile.Credential, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL, exportFile.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 			FileDownloader.TotalWebTime = 0
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(exportFile.Credential, exportFile.CookieContainer)
 			_auditManager = New kCura.WinEDDS.Service.AuditManager(exportFile.Credential, exportFile.CookieContainer)
 			_fieldManager = New kCura.WinEDDS.Service.FieldManager(exportFile.Credential, exportFile.CookieContainer)
-			Me.ExportManager = New kCura.WinEDDS.Service.ExportManager(exportFile.Credential, exportFile.CookieContainer)
+			ExportManager = New kCura.WinEDDS.Service.ExportManager(exportFile.Credential, exportFile.CookieContainer)
 
 			_halt = False
 			_processController = processController
-			Me.DocumentsExported = 0
-			Me.TotalExportArtifactCount = 1
-			Me.Settings = exportFile
-			Me.Settings.FolderPath = Me.Settings.FolderPath + "\"
-			Me.ExportNativesToFileNamedFrom = exportFile.ExportNativesToFileNamedFrom
+			DocumentsExported = 0
+			TotalExportArtifactCount = 1
+			Settings = exportFile
+			Settings.FolderPath = Me.Settings.FolderPath + "\"
+			ExportNativesToFileNamedFrom = exportFile.ExportNativesToFileNamedFrom
 		End Sub
 
 #End Region
@@ -163,7 +159,7 @@ Namespace kCura.WinEDDS
 			Dim startTicks As Int64 = System.DateTime.Now.Ticks
 			Dim exportInitializationArgs As kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults = Nothing
 			Dim columnHeaderString As String = Me.LoadColumns
-			Dim allAvfIds As New System.Collections.Generic.List(Of Int32)
+			Dim allAvfIds As New List(Of Int32)
 			For i As Int32 = 0 To _columns.Count - 1
 				If Not TypeOf _columns(i) Is CoalescedTextViewField Then
 					allAvfIds.Add(Me.Settings.SelectedViewFields(i).AvfId)

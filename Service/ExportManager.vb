@@ -1,7 +1,7 @@
 ﻿Namespace kCura.WinEDDS.Service
 	Public Class ExportManager
 		Inherits kCura.EDDS.WebAPI.ExportManagerBase.ExportManager
-
+		Implements Export.IExportManager
 		Protected Overrides Function GetWebRequest(ByVal uri As System.Uri) As System.Net.WebRequest
 			Dim wr As System.Net.HttpWebRequest = DirectCast(MyBase.GetWebRequest(uri), System.Net.HttpWebRequest)
 			wr.UnsafeAuthenticatedConnectionSharing = True
@@ -36,37 +36,33 @@
 			Return Nothing
 		End Function
 
-		Public Shadows Function InitializeFolderExport(ByVal appID As Int32, ByVal viewArtifactID As Int32, ByVal parentArtifactID As Int32, ByVal includeSubFolders As Boolean, ByVal avfIds As Int32(), ByVal startAtRecord As Int32, ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults
+		Public Shadows Function InitializeFolderExport(ByVal appID As Int32, ByVal viewArtifactID As Int32, ByVal parentArtifactID As Int32, ByVal includeSubFolders As Boolean, ByVal avfIds As Int32(), ByVal startAtRecord As Int32, ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults Implements Export.IExportManager.InitializeFolderExport
 			Return MakeCallAttemptReLogin(Function() MyBase.InitializeFolderExport(appID, viewArtifactID, parentArtifactID, includeSubFolders, avfIds, startAtRecord, artifactTypeID))
 		End Function
 
-		Public Shadows Function InitializeProductionExport(ByVal appID As Int32, ByVal productionArtifactID As Int32, ByVal avfIds As Int32(), ByVal startAtRecord As Int32) As kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults
+		Public Shadows Function InitializeProductionExport(ByVal appID As Int32, ByVal productionArtifactID As Int32, ByVal avfIds As Int32(), ByVal startAtRecord As Int32) As kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults Implements Export.IExportManager.InitializeProductionExport
 			Return MakeCallAttemptReLogin(Function() MyBase.InitializeProductionExport(appID, productionArtifactID, avfIds, startAtRecord))
 		End Function
 
-		Public Shadows Function InitializeSearchExport(ByVal appID As Int32, ByVal searchArtifactID As Int32, ByVal avfIds As Int32(), ByVal startAtRecord As Int32) As kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults
+		Public Shadows Function InitializeSearchExport(ByVal appID As Int32, ByVal searchArtifactID As Int32, ByVal avfIds As Int32(), ByVal startAtRecord As Int32) As kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults Implements Export.IExportManager.InitializeSearchExport
 			Return MakeCallAttemptReLogin(Function() MyBase.InitializeSearchExport(appID, searchArtifactID, avfIds, startAtRecord))
 		End Function
 
-		Public Shadows Function RetrieveResultsBlock(ByVal appID As Int32, ByVal runId As Guid, ByVal artifactTypeID As Int32, ByVal avfIds As Int32(), ByVal chunkSize As Int32, ByVal displayMulticodesAsNested As Boolean, ByVal multiValueDelimiter As Char, ByVal nestedValueDelimiter As Char, ByVal textPrecedenceAvfIds As Int32()) As Object()
+		Public Shadows Function RetrieveResultsBlock(ByVal appID As Int32, ByVal runId As Guid, ByVal artifactTypeID As Int32, ByVal avfIds As Int32(), ByVal chunkSize As Int32, ByVal displayMulticodesAsNested As Boolean, ByVal multiValueDelimiter As Char, ByVal nestedValueDelimiter As Char, ByVal textPrecedenceAvfIds As Int32()) As Object() Implements Export.IExportManager.RetrieveResultsBlock
 			Dim retval As Object() = MakeCallAttemptReLogin(Function() MyBase.RetrieveResultsBlock(appID, runId, artifactTypeID, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter, nestedValueDelimiter, textPrecedenceAvfIds))
-			If Not retval Is Nothing Then
-				For Each row As Object() In retval
-					If row Is Nothing Then
-						Throw New System.Exception("Invalid (null) row retrieved from server")
-					End If
-					For i As Int32 = 0 To row.Length - 1
-						If TypeOf row(i) Is Byte() Then row(i) = System.Text.Encoding.Unicode.GetString(DirectCast(row(i), Byte()))
-					Next
-				Next
-			End If
+			RehydrateStrings(retval)
 			Return retval
 		End Function
 
-		Public Shadows Function RetrieveResultsBlockForProduction(ByVal appID As Int32, ByVal runId As Guid, ByVal artifactTypeID As Int32, ByVal avfIds As Int32(), ByVal chunkSize As Int32, ByVal displayMulticodesAsNested As Boolean, ByVal multiValueDelimiter As Char, ByVal nestedValueDelimiter As Char, ByVal textPrecedenceAvfIds As Int32(), ByVal productionId As Int32) As Object()
+		Public Shadows Function RetrieveResultsBlockForProduction(ByVal appID As Int32, ByVal runId As Guid, ByVal artifactTypeID As Int32, ByVal avfIds As Int32(), ByVal chunkSize As Int32, ByVal displayMulticodesAsNested As Boolean, ByVal multiValueDelimiter As Char, ByVal nestedValueDelimiter As Char, ByVal textPrecedenceAvfIds As Int32(), ByVal productionId As Int32) As Object() Implements Export.IExportManager.RetrieveResultsBlockForProduction
 			Dim retval As Object() = MakeCallAttemptReLogin(Function() MyBase.RetrieveResultsBlockForProduction(appID, runId, artifactTypeID, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter, nestedValueDelimiter, textPrecedenceAvfIds, productionId))
-			If Not retval Is Nothing Then
-				For Each row As Object() In retval
+			RehydrateStrings(retval)
+			Return retval
+		End Function
+
+		Private Sub RehydrateStrings(toScrub As Object())
+			If Not toScrub Is Nothing Then
+				For Each row As Object() In toScrub
 					If row Is Nothing Then
 						Throw New System.Exception("Invalid (null) row retrieved from server")
 					End If
@@ -75,10 +71,10 @@
 					Next
 				Next
 			End If
-			Return retval
-		End Function
 
-		Public Shadows Function HasExportPermissions(appID As Int32) As Boolean
+		End Sub
+
+		Public Shadows Function HasExportPermissions(appID As Int32) As Boolean Implements Export.IExportManager.HasExportPermissions
 			Return MakeCallAttemptReLogin(Function() MyBase.HasExportPermissions(appID))
 		End Function
 

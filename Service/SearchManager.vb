@@ -1,6 +1,9 @@
+Imports kCura.WinEDDS.Service.Export
+
 Namespace kCura.WinEDDS.Service
 	Public Class SearchManager
 		Inherits kCura.EDDS.WebAPI.SearchManagerBase.SearchManager
+		Implements ISearchManager
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
@@ -19,7 +22,7 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 #Region " Shadow Functions "
-	Public Shadows Function RetrieveNativesForProduction(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32, ByVal documentArtifactIDs As String) As System.Data.DataSet
+		Public Shadows Function RetrieveNativesForProduction(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32, ByVal documentArtifactIDs As String) As System.Data.DataSet Implements ISearchManager.RetrieveNativesForProduction
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
@@ -36,7 +39,7 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
-		Public Shadows Function RetrieveNativesForSearch(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As String) As System.Data.DataSet
+		Public Shadows Function RetrieveNativesForSearch(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As String) As System.Data.DataSet Implements ISearchManager.RetrieveNativesForSearch
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
@@ -53,7 +56,7 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
-		Public Shadows Function RetrieveFilesForDynamicObjects(ByVal caseContextArtifactID As Int32, ByVal fileFieldArtifactID As Int32, ByVal objectIds As Int32()) As System.Data.DataSet
+		Public Shadows Function RetrieveFilesForDynamicObjects(ByVal caseContextArtifactID As Int32, ByVal fileFieldArtifactID As Int32, ByVal objectIds As Int32()) As System.Data.DataSet Implements ISearchManager.RetrieveFilesForDynamicObjects
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
@@ -70,7 +73,7 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
-		Public Function RetrieveImagesForDocuments(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As Int32()) As System.Data.DataSet
+		Public Function RetrieveImagesForDocuments(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As Int32()) As System.Data.DataSet Implements ISearchManager.RetrieveImagesForDocuments
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
@@ -87,7 +90,7 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
-		Public Function RetrieveImagesForProductionDocuments(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As Int32(), ByVal productionArtifactID As Int32) As System.Data.DataSet
+		Public Function RetrieveImagesForProductionDocuments(ByVal caseContextArtifactID As Int32, ByVal documentArtifactIDs As Int32(), ByVal productionArtifactID As Int32) As System.Data.DataSet Implements ISearchManager.RetrieveImagesForProductionDocuments
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
@@ -121,7 +124,7 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
-		Public Shadows Function RetrieveImagesByProductionIDsAndDocumentIDsForExport(ByVal caseContextArtifactID As Int32, ByVal productionArtifactIDs As Int32(), ByVal documentArtifactIDs As Int32()) As System.Data.DataSet
+		Public Shadows Function RetrieveImagesByProductionIDsAndDocumentIDsForExport(ByVal caseContextArtifactID As Int32, ByVal productionArtifactIDs As Int32(), ByVal documentArtifactIDs As Int32()) As System.Data.DataSet Implements ISearchManager.RetrieveImagesByProductionIDsAndDocumentIDsForExport
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1

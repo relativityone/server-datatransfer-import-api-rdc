@@ -1,6 +1,6 @@
 Namespace kCura.WinEDDS
 	Public Class FileDownloader
-
+		Implements Service.Export.IFileDownloader
 		Public Enum FileAccessType
 			Web
 			Direct
@@ -85,10 +85,6 @@ Namespace kCura.WinEDDS
 				End Get
 			End Property
 		End Class
-
-		'Public Function DownloadFile(ByVal filePath As String, ByVal fileGuid As String) As String
-		'	Return UploadFile(filePath, contextArtifactID, System.Guid.NewGuid.ToString)
-		'End Function
 
 		Public Function DownloadFullTextFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean
 			Return WebDownloadFile(localFilePath, artifactID, "", appID, Nothing, True, -1, -1, -1)

@@ -1,7 +1,7 @@
 Namespace kCura.WinEDDS.Service
 	Public Class AuditManager
 		Inherits kCura.EDDS.WebAPI.AuditManagerBase.AuditManager
-
+		Implements Export.IAuditManager
 #Region "Constructors"
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
@@ -67,7 +67,7 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
-		Public Shadows Function AuditExport(ByVal appID As Int32, ByVal isFatalError As Boolean, ByVal exportStats As kCura.EDDS.WebAPI.AuditManagerBase.ExportStatistics) As Boolean
+		Public Shadows Function AuditExport(ByVal appID As Int32, ByVal isFatalError As Boolean, ByVal exportStats As kCura.EDDS.WebAPI.AuditManagerBase.ExportStatistics) As Boolean Implements Export.IAuditManager.AuditExport
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
