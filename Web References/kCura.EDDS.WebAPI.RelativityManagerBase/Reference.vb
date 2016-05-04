@@ -44,8 +44,6 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
         
         Private IsImportEmailNotificationEnabledOperationCompleted As System.Threading.SendOrPostCallback
         
-        Private IsCloudInstanceOperationCompleted As System.Threading.SendOrPostCallback
-        
         Private RetrieveRdcConfigurationOperationCompleted As System.Threading.SendOrPostCallback
         
         Private PingOperationCompleted As System.Threading.SendOrPostCallback
@@ -111,9 +109,6 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
         
         '''<remarks/>
         Public Event IsImportEmailNotificationEnabledCompleted As IsImportEmailNotificationEnabledCompletedEventHandler
-        
-        '''<remarks/>
-        Public Event IsCloudInstanceCompleted As IsCloudInstanceCompletedEventHandler
         
         '''<remarks/>
         Public Event RetrieveRdcConfigurationCompleted As RetrieveRdcConfigurationCompletedEventHandler
@@ -355,44 +350,6 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
             If (Not (Me.IsImportEmailNotificationEnabledCompletedEvent) Is Nothing) Then
                 Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
                 RaiseEvent IsImportEmailNotificationEnabledCompleted(Me, New IsImportEmailNotificationEnabledCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
-            End If
-        End Sub
-        
-        '''<remarks/>
-        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/RelativityManager/IsCloudInstance", RequestNamespace:="http://www.kCura.com/EDDS/RelativityManager", ResponseNamespace:="http://www.kCura.com/EDDS/RelativityManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
-        Public Function IsCloudInstance() As Boolean
-            Dim results() As Object = Me.Invoke("IsCloudInstance", New Object(-1) {})
-            Return CType(results(0),Boolean)
-        End Function
-        
-        '''<remarks/>
-        Public Function BeginIsCloudInstance(ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
-            Return Me.BeginInvoke("IsCloudInstance", New Object(-1) {}, callback, asyncState)
-        End Function
-        
-        '''<remarks/>
-        Public Function EndIsCloudInstance(ByVal asyncResult As System.IAsyncResult) As Boolean
-            Dim results() As Object = Me.EndInvoke(asyncResult)
-            Return CType(results(0),Boolean)
-        End Function
-        
-        '''<remarks/>
-        Public Overloads Sub IsCloudInstanceAsync()
-            Me.IsCloudInstanceAsync(Nothing)
-        End Sub
-        
-        '''<remarks/>
-        Public Overloads Sub IsCloudInstanceAsync(ByVal userState As Object)
-            If (Me.IsCloudInstanceOperationCompleted Is Nothing) Then
-                Me.IsCloudInstanceOperationCompleted = AddressOf Me.OnIsCloudInstanceOperationCompleted
-            End If
-            Me.InvokeAsync("IsCloudInstance", New Object(-1) {}, Me.IsCloudInstanceOperationCompleted, userState)
-        End Sub
-        
-        Private Sub OnIsCloudInstanceOperationCompleted(ByVal arg As Object)
-            If (Not (Me.IsCloudInstanceCompletedEvent) Is Nothing) Then
-                Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
-                RaiseEvent IsCloudInstanceCompleted(Me, New IsCloudInstanceCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
             End If
         End Sub
         
@@ -749,33 +706,6 @@ Namespace kCura.EDDS.WebAPI.RelativityManagerBase
      System.Diagnostics.DebuggerStepThroughAttribute(),  _
      System.ComponentModel.DesignerCategoryAttribute("code")>  _
     Partial Public Class IsImportEmailNotificationEnabledCompletedEventArgs
-        Inherits System.ComponentModel.AsyncCompletedEventArgs
-        
-        Private results() As Object
-        
-        Friend Sub New(ByVal results() As Object, ByVal exception As System.Exception, ByVal cancelled As Boolean, ByVal userState As Object)
-            MyBase.New(exception, cancelled, userState)
-            Me.results = results
-        End Sub
-        
-        '''<remarks/>
-        Public ReadOnly Property Result() As Boolean
-            Get
-                Me.RaiseExceptionIfNecessary
-                Return CType(Me.results(0),Boolean)
-            End Get
-        End Property
-    End Class
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0")>  _
-    Public Delegate Sub IsCloudInstanceCompletedEventHandler(ByVal sender As Object, ByVal e As IsCloudInstanceCompletedEventArgs)
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.81.0"),  _
-     System.Diagnostics.DebuggerStepThroughAttribute(),  _
-     System.ComponentModel.DesignerCategoryAttribute("code")>  _
-    Partial Public Class IsCloudInstanceCompletedEventArgs
         Inherits System.ComponentModel.AsyncCompletedEventArgs
         
         Private results() As Object

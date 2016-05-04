@@ -135,13 +135,17 @@ Namespace kCura.WinEDDS
 #End Region
 
 #Region "Constructors"
+		Private ReadOnly Property InteractionManager As Exporters.IUserNotification
+			Get
+				Return _parent.InteractionManager
+			End Get
+		End Property
 
 		Public Sub New(ByVal settings As ExportFile, ByVal rootDirectory As String, ByVal overWriteFiles As Boolean, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As FileDownloader, ByVal t As kCura.Utility.Timekeeper, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics)
 			_settings = settings
 			_statistics = statistics
+			_parent = parent
 
-			If Me.Settings.ExportImages Then
-			End If
 			_timekeeper = t
 			_currentVolumeNumber = _settings.VolumeInfo.VolumeStartNumber
 			_currentSubdirectoryNumber = _settings.VolumeInfo.SubdirectoryStartNumber
@@ -156,13 +160,11 @@ Namespace kCura.WinEDDS
 				If _volumeLabelPaddingWidth > settings.VolumeDigitPadding Then message.AppendFormat("The selected volume padding of {0} is less than the recommended volume padding {1} for this export" & vbNewLine, settings.VolumeDigitPadding, _volumeLabelPaddingWidth)
 				If _subdirectoryLabelPaddingWidth > settings.SubdirectoryDigitPadding Then message.AppendFormat("The selected subdirectory padding of {0} is less than the recommended subdirectory padding {1} for this export" & vbNewLine, settings.SubdirectoryDigitPadding, _subdirectoryLabelPaddingWidth)
 				message.Append("Continue with this selection?")
-				Select Case MsgBox(message.ToString, MsgBoxStyle.OkCancel, "Relativity Desktop Client")
-					Case MsgBoxResult.Cancel
-						parent.Shutdown()
-						Exit Sub
-					Case Else
-						If Not parent.ExportManager.HasExportPermissions(_settings.CaseArtifactID) Then Throw New Service.ExportManager.InsufficientPermissionsForExportException("Export permissions revoked!  Please contact your system administrator to re-instate export permissions.")
-				End Select
+				If Not InteractionManager.AlertWarningSkippable(message.ToString()) Then
+					parent.Shutdown()
+					Return
+				End If
+				If Not parent.ExportManager.HasExportPermissions(_settings.CaseArtifactID) Then Throw New Service.ExportManager.InsufficientPermissionsForExportException("Export permissions revoked!  Please contact your system administrator to re-instate export permissions.")
 			End If
 			_subdirectoryLabelPaddingWidth = settings.SubdirectoryDigitPadding
 			_volumeLabelPaddingWidth = settings.VolumeDigitPadding
@@ -171,17 +173,17 @@ Namespace kCura.WinEDDS
 			_currentTextSubdirectorySize = 0
 			_currentNativeSubdirectorySize = 0
 			_downloadManager = downloadHandler
-			_parent = parent
+
 			Dim loadFilePath As String = Me.LoadFileDestinationPath
 			If Not Me.Settings.Overwrite AndAlso System.IO.File.Exists(loadFilePath) Then
-				MsgBox(String.Format("Overwrite not selected and file '{0}' exists.", loadFilePath))
+				InteractionManager.Alert(String.Format("Overwrite not selected and file '{0}' exists.", loadFilePath))
 				_parent.Shutdown()
-				Exit Sub
+				Return
 			End If
 			If Me.Settings.ExportImages AndAlso Not Me.Settings.Overwrite AndAlso System.IO.File.Exists(Me.ImageFileDestinationPath) Then
-				MsgBox(String.Format("Overwrite not selected and file '{0}' exists.", Me.ImageFileDestinationPath))
+				InteractionManager.Alert(String.Format("Overwrite not selected and file '{0}' exists.", Me.ImageFileDestinationPath))
 				_parent.Shutdown()
-				Exit Sub
+				Return
 			End If
 			_encoding = Me.Settings.LoadFileEncoding
 

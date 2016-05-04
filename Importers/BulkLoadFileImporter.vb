@@ -67,6 +67,8 @@ Namespace kCura.WinEDDS
 		Private _statisticsLastUpdated As System.DateTime = System.DateTime.Now
 		Private _unmappedRelationalFields As System.Collections.ArrayList
 
+		
+		Private _cloudInstance As Boolean
 		Private _bulkLoadFileFieldDelimiter As String
 
 		Protected Property LinkDataGridRecords As Boolean
@@ -270,8 +272,8 @@ Namespace kCura.WinEDDS
 		''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String)
-			Me.New(args, processController, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, initializeArtifactReader:=True)
+		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal cloudInstance As Boolean)
+			Me.New(args, processController, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, cloudInstance, initializeArtifactReader:=True)
 		End Sub
 
 		''' <summary>
@@ -287,8 +289,8 @@ Namespace kCura.WinEDDS
 		''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String)
-			Me.New(args, processController, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, initializeArtifactReader:=True)
+		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String,  ByVal cloudInstance As Boolean)
+			Me.New(args, processController, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, cloudInstance, initializeArtifactReader:=True)
 		End Sub
 
 		''' <summary>
@@ -304,11 +306,12 @@ Namespace kCura.WinEDDS
 		''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(args As LoadFile, processController As kCura.Windows.Process.Controller, timeZoneOffset As Int32, autoDetect As Boolean, initializeUploaders As Boolean, processID As Guid, doRetryLogic As Boolean, bulkLoadFileFieldDelimiter As String, initializeArtifactReader As Boolean)
+		Public Sub New(args As LoadFile, processController As kCura.Windows.Process.Controller, timeZoneOffset As Int32, autoDetect As Boolean, initializeUploaders As Boolean, processID As Guid, doRetryLogic As Boolean, bulkLoadFileFieldDelimiter As String,  ByVal cloudInstance As Boolean, initializeArtifactReader As Boolean)
 			MyBase.New(args, timeZoneOffset, doRetryLogic, autoDetect, initializeArtifactReader)
 
 			' get an instance of the specific type of artifact reader so we can get the fieldmapped event
 
+			_cloudInstance = cloudInstance
 			_overwrite = args.OverwriteDestination
 			If args.CopyFilesToDocumentRepository Then
 				'DEFECT: SF#226211, repositories without trailing \ caused import to fail. Changed to use Path.Combine. -tmh
@@ -433,7 +436,7 @@ Namespace kCura.WinEDDS
 				_processedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
 				_timekeeper.MarkEnd("ReadFile_InitializeMembers")
 
-				If (_relativityManager.IsCloudInstance()) Then
+				If (_cloudInstance) Then
 					If (_overwrite.ToLower() = "none") Then
 						Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
 						Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
@@ -441,7 +444,7 @@ Namespace kCura.WinEDDS
 						If _startLineNumber <= 0 Then fileLineStart = 1
 						Dim countAfterJob As Long = currentDocCount + (_recordCount - (fileLineStart - 1))
 						If (docLimit <> 0 And countAfterJob > docLimit) Then
-							Dim errorMessage As String = String.Format("Running this job will put you {0} documents over the document limit of {1}. Please reduce the size of this job.", countAfterJob - docLimit, docLimit)
+							Dim errorMessage As String = String.Format("The document import was cancelled.  It would have exceeded the workspace's document limit of {1} by {0} documents.", countAfterJob - docLimit, docLimit)
 							Throw New Exception(errorMessage)
 							Return False
 						End If

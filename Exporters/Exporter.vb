@@ -123,6 +123,8 @@ Namespace kCura.WinEDDS
 
 #End Region
 
+		Public Property InteractionManager As Exporters.IUserNotification = New Exporters.NullUserNotification
+
 		Public Function ExportSearch() As Boolean
 			Try
 				_start = System.DateTime.Now
@@ -221,7 +223,7 @@ Namespace kCura.WinEDDS
 			Me.TotalExportArtifactCount = CType(exportInitializationArgs.RowCount, Int32)
 			If Me.TotalExportArtifactCount - 1 < Me.Settings.StartAtDocumentNumber Then
 				Dim msg As String = String.Format("The chosen start item number ({0}) exceeds the number of {2} items in the export ({1}).  Export halted.", Me.Settings.StartAtDocumentNumber + 1, Me.TotalExportArtifactCount, vbNewLine)
-				MsgBox(msg, MsgBoxStyle.Critical, "Error")
+				InteractionManager.AlertCriticalError(msg)
 				Me.Shutdown()
 				Return False
 			Else
