@@ -23,7 +23,7 @@ Namespace kCura.WinEDDS
 
 		Private _volumeLabelPaddingWidth As Int32
 		Private _subdirectoryLabelPaddingWidth As Int32
-		Private _downloadManager As Service.Export.IFileDownloader
+		Private _downloadManager As FileDownloader
 
 		Private _parent As WinEDDS.Exporter
 		Private _columnHeaderString As String

@@ -19,7 +19,7 @@ Namespace kCura.WinEDDS
 		Public DocumentsExported As Int32
 		Public TotalExportArtifactCount As Int32
 		Private WithEvents _processController As kCura.Windows.Process.Controller
-		Private WithEvents _downloadHandler As Service.Export.IFileDownloader
+		Private WithEvents _downloadHandler As FileDownloader
 		Private _halt As Boolean
 		Private _volumeManager As VolumeManager
 		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom
