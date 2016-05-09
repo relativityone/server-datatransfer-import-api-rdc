@@ -1,4 +1,5 @@
 Imports System.Net
+Imports Relativity
 
 Namespace kCura.Relativity.DataReaderClient
 
@@ -26,6 +27,8 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _credentials As ICredentials
 		Private _cookieMonster As Net.CookieContainer
 
+		Private _executionSource As ExecutionSource
+
 		Private Const _DOCUMENT_ARTIFACT_TYPE_ID As Int32 = 10 'TODO: make a reference to Relativity so we don't have to do this
 
 #End Region
@@ -49,8 +52,9 @@ Namespace kCura.Relativity.DataReaderClient
 		'	Settings.RelativityPassword = password
 		'End Sub
 
-		Friend Sub New(ByVal credentials As ICredentials, ByVal cookieMonster As Net.CookieContainer, ByVal relativityUserName As String, ByVal password As String)
+		Friend Sub New(ByVal credentials As ICredentials, ByVal cookieMonster As Net.CookieContainer, ByVal relativityUserName As String, ByVal password As String, ByVal Optional executionSource As Integer = 0)
 			Me.New()
+			_executionSource = CType(executionSource, ExecutionSource)
 			_credentials = credentials
 			_cookieMonster = cookieMonster
 			Settings.RelativityUsername = relativityUserName
@@ -114,6 +118,7 @@ Namespace kCura.Relativity.DataReaderClient
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
 				Dim process As WinEDDS.ImportExtension.DataReaderImporterProcess = New WinEDDS.ImportExtension.DataReaderImporterProcess(SourceData.SourceData) With {.OnBehalfOfUserToken = Settings.OnBehalfOfUserToken}
+				process.ExecutionSource = _executionSource
 				_observer = process.ProcessObserver
 				_controller = process.ProcessController
 
