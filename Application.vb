@@ -1166,6 +1166,7 @@ Namespace kCura.EDDS.WinForm
 					importer.TimeZoneOffset = _timeZoneOffset
 					importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
 					importer.CloudInstance = Config.CloudInstance
+					importer.ExecutionSource = Relativity.ExecutionSource.Rdc
 					SetWorkingDirectory(loadFile.FilePath)
 					frm.ProcessObserver = importer.ProcessObserver
 					frm.ProcessController = importer.ProcessController
@@ -1216,6 +1217,7 @@ Namespace kCura.EDDS.WinForm
 			ImageLoadFile.CookieContainer = Me.CookieContainer
 			importer.ImageLoadFile = ImageLoadFile
 			importer.CloudInstance = Config.CloudInstance
+			importer.ExecutionSource = Relativity.ExecutionSource.Rdc
 			SetWorkingDirectory(ImageLoadFile.FileName)
 			frm.ProcessObserver = importer.ProcessObserver
 			frm.ProcessController = importer.ProcessController
@@ -1234,7 +1236,7 @@ Namespace kCura.EDDS.WinForm
 			End If
 			Dim frm As New kCura.Windows.Process.ProgressForm
 			Dim exporter As New kCura.WinEDDS.ExportSearchProcess
-
+			exporter.UserNotification = New FormsUserNotification()
 			exporter.ExportFile = exportFile
 			frm.ProcessObserver = exporter.ProcessObserver
 			frm.ProcessController = exporter.ProcessController
