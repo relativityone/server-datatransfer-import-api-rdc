@@ -216,7 +216,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </remarks>
 		public ImageImportBulkArtifactJob NewImageImportJob()
 		{
-			return new ImageImportBulkArtifactJob(_credentials, _cookieMonster, _userName, _password);
+			return new ImageImportBulkArtifactJob(_credentials, _cookieMonster, _userName, _password, (int)ExecutionSourceEnum.ImportAPI);
 		}
 
 		/// <summary>
@@ -261,7 +261,7 @@ namespace kCura.Relativity.ImportAPI
 		/// Returns a new instance of an ImportBulkArtifactJob with the Settings.ArtifactTypeId property set to <paramref name="artifactTypeId"/>.
 		/// </returns>
 		public ImportBulkArtifactJob NewObjectImportJob(int artifactTypeId) {
-			var returnJob = new ImportBulkArtifactJob(_credentials, _cookieMonster, _userName, _password);
+			var returnJob = new ImportBulkArtifactJob(_credentials, _cookieMonster, _userName, _password, (int)ExecutionSourceEnum.ImportAPI);
 
 			returnJob.Settings.ArtifactTypeId = artifactTypeId;
 
