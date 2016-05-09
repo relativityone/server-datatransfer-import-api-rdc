@@ -209,6 +209,7 @@ Namespace kCura.EDDS.WinForm
 			importer.LoadFile = SelectedNativeLoadFile
 			importer.TimeZoneOffset = _application.TimeZoneOffset
 			importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
+			importer.CloudInstance = Config.CloudInstance
 			_application.SetWorkingDirectory(SelectedNativeLoadFile.FilePath)
 			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
 			_application.StartProcess(importer)
@@ -229,6 +230,7 @@ Namespace kCura.EDDS.WinForm
 					importer.LoadFile = SelectedNativeLoadFile
 					importer.TimeZoneOffset = _application.TimeZoneOffset
 					importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
+					importer.CloudInstance = Config.CloudInstance
 					SelectedNativeLoadFile.ArtifactTypeID = Relativity.ArtifactType.Document
 					_application.SetWorkingDirectory(SelectedNativeLoadFile.FilePath)
 					Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
@@ -250,6 +252,7 @@ Namespace kCura.EDDS.WinForm
 				SelectedImageLoadFile.FullTextEncoding = ExtractedTextFileEncoding
 				SelectedImageLoadFile.StartLineNumber = StartLineNumber
 				importer.ImageLoadFile = SelectedImageLoadFile
+				importer.CloudInstance = Config.CloudInstance
 				_application.SetWorkingDirectory(SelectedImageLoadFile.FileName)
 				Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
 				_application.StartProcess(importer)
