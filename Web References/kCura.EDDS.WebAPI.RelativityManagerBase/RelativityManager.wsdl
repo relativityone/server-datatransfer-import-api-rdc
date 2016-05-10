@@ -62,16 +62,6 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="IsCoffeeInstance">
-        <s:complexType />
-      </s:element>
-      <s:element name="IsCoffeeInstanceResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="IsCoffeeInstanceResult" type="s:boolean" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
       <s:element name="RetrieveRdcConfiguration">
         <s:complexType />
       </s:element>
@@ -171,12 +161,6 @@
   <wsdl:message name="IsImportEmailNotificationEnabledSoapOut">
     <wsdl:part name="parameters" element="tns:IsImportEmailNotificationEnabledResponse" />
   </wsdl:message>
-  <wsdl:message name="IsCoffeeInstanceSoapIn">
-    <wsdl:part name="parameters" element="tns:IsCoffeeInstance" />
-  </wsdl:message>
-  <wsdl:message name="IsCoffeeInstanceSoapOut">
-    <wsdl:part name="parameters" element="tns:IsCoffeeInstanceResponse" />
-  </wsdl:message>
   <wsdl:message name="RetrieveRdcConfigurationSoapIn">
     <wsdl:part name="parameters" element="tns:RetrieveRdcConfiguration" />
   </wsdl:message>
@@ -231,10 +215,6 @@
     <wsdl:operation name="IsImportEmailNotificationEnabled">
       <wsdl:input message="tns:IsImportEmailNotificationEnabledSoapIn" />
       <wsdl:output message="tns:IsImportEmailNotificationEnabledSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="IsCoffeeInstance">
-      <wsdl:input message="tns:IsCoffeeInstanceSoapIn" />
-      <wsdl:output message="tns:IsCoffeeInstanceSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="RetrieveRdcConfiguration">
       <wsdl:input message="tns:RetrieveRdcConfigurationSoapIn" />
@@ -306,15 +286,6 @@
     </wsdl:operation>
     <wsdl:operation name="IsImportEmailNotificationEnabled">
       <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/IsImportEmailNotificationEnabled" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="IsCoffeeInstance">
-      <soap:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/IsCoffeeInstance" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -417,15 +388,6 @@
     </wsdl:operation>
     <wsdl:operation name="IsImportEmailNotificationEnabled">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/IsImportEmailNotificationEnabled" style="document" />
-      <wsdl:input>
-        <soap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="IsCoffeeInstance">
-      <soap12:operation soapAction="http://www.kCura.com/EDDS/RelativityManager/IsCoffeeInstance" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

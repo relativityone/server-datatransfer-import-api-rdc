@@ -37,6 +37,7 @@ Namespace kCura.WinEDDS
 		Public OIFileTypeColumnName As String
 		Public FileSizeMapped As Boolean
 		Public FileSizeColumn As String
+		Public FileNameColumn As String
 		Public OverlayBehavior As FieldOverlayBehavior?
 
 		<NonSerialized()> Public ObjectFieldIdListContainsArtifactId As IList(Of Int32)
@@ -48,7 +49,7 @@ Namespace kCura.WinEDDS
 		<NonSerialized()> Public SelectedCasePath As String = ""
 		<NonSerialized()> Public CopyFilesToDocumentRepository As Boolean = True
 		'<NonSerialized()> Public Identity As Relativity.Core.EDDSIdentity
-		
+
 		Public Enum FieldOverlayBehavior
 			UseRelativityDefaults = 0
 			MergeAll = 1

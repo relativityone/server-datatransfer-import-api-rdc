@@ -56,6 +56,7 @@ Namespace kCura.WinEDDS
 		Private _totalValidated As Long
 		Private _totalProcessed As Long
 		Private _startLineNumber As Int64
+		Private _cloudInstance As Boolean
 
 		Private _statistics As New kCura.WinEDDS.Statistics
 		Private _currentStatisticsSnapshot As IDictionary
@@ -67,6 +68,7 @@ Namespace kCura.WinEDDS
 		Public Property OIFileIdMapped As Boolean
 		Public Property OIFileIdColumnName As String
 		Public Property OIFileTypeColumnName As String
+		Public Property FileNameColumn As String
 #End Region
 
 #Region "Accessors"
@@ -175,9 +177,10 @@ Namespace kCura.WinEDDS
 #End Region
 
 #Region "Constructors"
-		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As Guid, ByVal doRetryLogic As Boolean)
+		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As Guid, ByVal doRetryLogic As Boolean,  ByVal cloudInstance As Boolean)
 			MyBase.New()
 
+			_cloudInstance = cloudInstance
 			_doRetryLogic = doRetryLogic
 			InitializeManagers(args)
 			Dim suffix As String = "\EDDS" & args.CaseInfo.ArtifactID & "\"
@@ -439,7 +442,7 @@ Namespace kCura.WinEDDS
 				Next
 			End If
 		End Sub
-		
+
 		Public Sub PushImageBatch(ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String)
 			If _batchCount = 0 Then Return
 			PublishUploadModeEvent()
@@ -449,8 +452,8 @@ Namespace kCura.WinEDDS
 
 			Dim validateBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, bulkLoadFilePath)
 			If validateBcp Is Nothing Then Exit Sub
-			
-			Dim validateDataGridBcp As FileUploadReturnArgs =  _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, dataGridFilePath)
+
+			Dim validateDataGridBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, dataGridFilePath)
 			If validateDataGridBcp Is Nothing Then Exit Sub
 
 			_statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
@@ -536,7 +539,7 @@ Namespace kCura.WinEDDS
 				_fileLineCount = _imageReader.CountRecords
 
 
-				If (_relativityManager.IsCoffeeInstance()) Then
+				If (_cloudInstance) Then
 					If (_overwrite.ToLower() = "none") Then
 						Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
 						Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
