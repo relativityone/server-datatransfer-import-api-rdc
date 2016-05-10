@@ -1166,7 +1166,6 @@ Namespace kCura.EDDS.WinForm
 					importer.TimeZoneOffset = _timeZoneOffset
 					importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
 					importer.CloudInstance = Config.CloudInstance
-					importer.ExecutionSource = Relativity.ExecutionSource.Rdc
 					SetWorkingDirectory(loadFile.FilePath)
 					frm.ProcessObserver = importer.ProcessObserver
 					frm.ProcessController = importer.ProcessController
@@ -1217,7 +1216,6 @@ Namespace kCura.EDDS.WinForm
 			ImageLoadFile.CookieContainer = Me.CookieContainer
 			importer.ImageLoadFile = ImageLoadFile
 			importer.CloudInstance = Config.CloudInstance
-			importer.ExecutionSource = Relativity.ExecutionSource.Rdc
 			SetWorkingDirectory(ImageLoadFile.FileName)
 			frm.ProcessObserver = importer.ProcessObserver
 			frm.ProcessController = importer.ProcessController
