@@ -1,5 +1,5 @@
 Imports System.Net
-Imports Relativity
+
 
 Namespace kCura.Relativity.DataReaderClient
 
@@ -85,7 +85,6 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _credentials As ICredentials
 		Private _cookieMonster As Net.CookieContainer
 		Private _jobReport As JobReport
-		Private _executionSource As ExecutionSource
 #End Region
 
 #Region " Public Methods "
@@ -106,9 +105,8 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <param name="cookieMonster">The cookie monster.</param>
 		''' <param name="relativityUserName">Name of the relativity user.</param>
 		''' <param name="password">The password.</param>
-		Friend Sub New(ByVal credentials As ICredentials, ByVal cookieMonster As Net.CookieContainer, ByVal relativityUserName As String, ByVal password As String, ByVal Optional executionSource As Integer = 0)
+		Friend Sub New(ByVal credentials As ICredentials, ByVal cookieMonster As Net.CookieContainer, ByVal relativityUserName As String, ByVal password As String)
 			Me.New()
-			_executionSource = CType(executionSource, ExecutionSource)
 			_credentials = credentials
 			_cookieMonster = cookieMonster
 			Settings.RelativityUsername = relativityUserName
@@ -137,7 +135,6 @@ Namespace kCura.Relativity.DataReaderClient
 				MapSuppliedFieldNamesToActual(Settings, SourceData.SourceData)
 
 				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData)
-				process.ExecutionSource = _executionSource
 				_observer = process.ProcessObserver
 				_controller = process.ProcessController
 
