@@ -37,7 +37,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			LoadFile.OIFileTypeColumnName = OIFileTypeColumnName
 			LoadFile.FileSizeColumn = FileSizeColumn
 			LoadFile.FileSizeMapped = FileSizeMapped
-
+			LoadFile.FileNameColumn = FileNameColumn
 			'Avoid initializing the Artifact Reader in the constructor because it calls back to a virtual method (GetArtifactReader).  
 			Dim importer As DataReaderImporter = New DataReaderImporter(DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile), ProcessController, BulkLoadFileFieldDelimiter, _temporaryLocalDirectory, initializeArtifactReader:=False) With {.OnBehalfOfUserToken = Me.OnBehalfOfUserToken}
 			importer.Initialize()
