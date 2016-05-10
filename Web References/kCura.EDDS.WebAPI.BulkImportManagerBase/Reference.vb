@@ -551,8 +551,6 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private overlayArtifactIDField As Integer
         
-        Private executionSourceField As ExecutionSource
-        
         '''<remarks/>
         Public Property DisableUserSecurityCheck() As Boolean
             Get
@@ -672,16 +670,6 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
                 Me.overlayArtifactIDField = value
             End Set
         End Property
-        
-        '''<remarks/>
-        Public Property ExecutionSource() As ExecutionSource
-            Get
-                Return Me.executionSourceField
-            End Get
-            Set
-                Me.executionSourceField = value
-            End Set
-        End Property
     End Class
     
     '''<remarks/>
@@ -714,22 +702,6 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         '''<remarks/>
         NoAudit
-    End Enum
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.34234"),  _
-     System.SerializableAttribute(),  _
-     System.Xml.Serialization.XmlTypeAttribute([Namespace]:="http://www.kCura.com/EDDS/BulkImportManager")>  _
-    Public Enum ExecutionSource
-        
-        '''<remarks/>
-        Unknown
-        
-        '''<remarks/>
-        Rdc
-        
-        '''<remarks/>
-        ImportAPI
     End Enum
     
     '''<remarks/>
@@ -1083,8 +1055,6 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private rootFolderIDField As Integer
         
-        Private executionSourceField As ExecutionSource
-        
         '''<remarks/>
         Public Property Range() As LoadRange
             Get
@@ -1292,16 +1262,6 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             End Get
             Set
                 Me.rootFolderIDField = value
-            End Set
-        End Property
-        
-        '''<remarks/>
-        Public Property ExecutionSource() As ExecutionSource
-            Get
-                Return Me.executionSourceField
-            End Get
-            Set
-                Me.executionSourceField = value
             End Set
         End Property
     End Class

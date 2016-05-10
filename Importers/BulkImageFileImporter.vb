@@ -35,7 +35,6 @@ Namespace kCura.WinEDDS
 		Private _repositoryPath As String
 		Private _caseInfo As Relativity.CaseInfo
 		Private _overlayArtifactID As Int32
-		Private _executionSource As Relativity.ExecutionSource
 
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 		Protected _keyFieldDto As kCura.EDDS.WebAPI.FieldManagerBase.Field
@@ -178,11 +177,9 @@ Namespace kCura.WinEDDS
 #End Region
 
 #Region "Constructors"
-		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As Guid, ByVal doRetryLogic As Boolean,  ByVal cloudInstance As Boolean,
-					   Optional ByVal executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
+		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As Guid, ByVal doRetryLogic As Boolean,  ByVal cloudInstance As Boolean)
 			MyBase.New()
 
-			_executionSource = executionSource
 			_cloudInstance = cloudInstance
 			_doRetryLogic = doRetryLogic
 			InitializeManagers(args)
@@ -326,8 +323,7 @@ Namespace kCura.WinEDDS
 			.UploadFullText = _replaceFullText,
 			.DisableUserSecurityCheck = Me.DisableUserSecurityCheck,
 			.AuditLevel = Me.AuditLevel,
-			.OverlayArtifactID = _overlayArtifactID,
-			.ExecutionSource = CType(_executionSource, kCura.EDDS.WebAPI.BulkImportManagerBase.ExecutionSource)
+			.OverlayArtifactID = _overlayArtifactID
 			}
 			Return settings
 		End Function

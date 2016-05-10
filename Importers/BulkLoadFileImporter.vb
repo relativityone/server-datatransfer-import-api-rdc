@@ -46,7 +46,6 @@ Namespace kCura.WinEDDS
 		Private _outputObjectFileWriter As System.IO.StreamWriter
 		Private _caseInfo As Relativity.CaseInfo
 		Private _overlayArtifactID As Int32
-		Private _executionSource As Relativity.ExecutionSource
 
 		Private _runID As String = System.Guid.NewGuid.ToString.Replace("-", "_")
 
@@ -271,13 +270,10 @@ Namespace kCura.WinEDDS
 		''' <param name="processID">The identifier of the process running</param>
 		''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
 		''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
-		''' <param name="executionSource">Optional parameter that states where the import
-		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal cloudInstance As Boolean,
-					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			Me.New(args, processController, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, cloudInstance, initializeArtifactReader:=True, executionSource := executionSource)
+		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal cloudInstance As Boolean)
+			Me.New(args, processController, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, cloudInstance, initializeArtifactReader:=True)
 		End Sub
 
 		''' <summary>
@@ -291,13 +287,10 @@ Namespace kCura.WinEDDS
 		''' <param name="processID">The identifier of the process running</param>
 		''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
 		''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
-		''' <param name="executionSource">Optional parameter that states where the import
-		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String,  ByVal cloudInstance As Boolean,
-					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			Me.New(args, processController, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, cloudInstance, initializeArtifactReader:=True, executionSource := executionSource)
+		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String,  ByVal cloudInstance As Boolean)
+			Me.New(args, processController, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, cloudInstance, initializeArtifactReader:=True)
 		End Sub
 
 		''' <summary>
@@ -311,16 +304,13 @@ Namespace kCura.WinEDDS
 		''' <param name="processID">The identifier of the process running</param>
 		''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
 		''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
-		''' <param name="executionSource">Optional parameter that states where the import
-		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(args As LoadFile, processController As kCura.Windows.Process.Controller, timeZoneOffset As Int32, autoDetect As Boolean, initializeUploaders As Boolean, processID As Guid, doRetryLogic As Boolean, bulkLoadFileFieldDelimiter As String,  ByVal cloudInstance As Boolean, initializeArtifactReader As Boolean,
-					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
+		Public Sub New(args As LoadFile, processController As kCura.Windows.Process.Controller, timeZoneOffset As Int32, autoDetect As Boolean, initializeUploaders As Boolean, processID As Guid, doRetryLogic As Boolean, bulkLoadFileFieldDelimiter As String,  ByVal cloudInstance As Boolean, initializeArtifactReader As Boolean)
 			MyBase.New(args, timeZoneOffset, doRetryLogic, autoDetect, initializeArtifactReader)
 
 			' get an instance of the specific type of artifact reader so we can get the fieldmapped event
-			_executionSource = executionSource
+
 			_cloudInstance = cloudInstance
 			_overwrite = args.OverwriteDestination
 			If args.CopyFilesToDocumentRepository Then
@@ -1053,7 +1043,6 @@ Namespace kCura.WinEDDS
 			End Select
 			settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
 			settings.LoadImportedFullTextFromServer = Me.LoadImportedFullTextFromServer
-			settings.ExecutionSource = CType(_executionSource, kCura.EDDS.WebAPI.BulkImportManagerBase.ExecutionSource)
 
 			_statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
 			_statistics.MetadataBytes += (Me.GetFileLength(_outputCodeFilePath) + Me.GetFileLength(outputNativePath) + Me.GetFileLength(_outputObjectFilePath) + Me.GetFileLength(_outputFileWriter.OutputDataGridFilePath))
