@@ -12,7 +12,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Sub
 
 		Protected Overrides Function GetImageFileImporter() As kCura.WinEDDS.BulkImageFileImporter
-			Return New DataReaderImageImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, Me.ProcessController, System.Guid.NewGuid, _sourceData, CloudInstance, ExecutionSource)
+			Return New DataReaderImageImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, Me.ProcessController, System.Guid.NewGuid, _sourceData, CloudInstance)
 
 		End Function
 

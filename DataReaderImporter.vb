@@ -28,11 +28,8 @@ Namespace kCura.WinEDDS.ImportExtension
 		''' <param name="bulkLoadFileFieldDelimiter">The field delimiter that
 		''' was used to create the bulk load file. Line delimiters are a field
 		''' delimiter followed by a new line.</param>
-		''' <param name="executionSource">Optional parameter that states where the import
-		''' is coming from.</param>
-		Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal bulkLoadFileFieldDelimiter As String,
-					   Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			Me.New(loadFile, controller, bulkLoadFileFieldDelimiter, Nothing, initializeArtifactReader:=True, executionSource:= executionSource)
+		Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal bulkLoadFileFieldDelimiter As String)
+			Me.New(loadFile, controller, bulkLoadFileFieldDelimiter, Nothing, initializeArtifactReader:=True)
 		End Sub
 
 		''' <summary>
@@ -50,11 +47,8 @@ Namespace kCura.WinEDDS.ImportExtension
 		''' Files are copied to this location and their names are changed before being imported to Relativity</param>
 		''' <param name="initializeArtifactReader">If True, the ArtifactReader is created and initialized within the constructor.
 		''' If False, you should initialize the artifact reader later by calling Initialize().</param>
-		''' <param name="executionSource">Optional parameter that states where the import
-		''' is coming from.</param>
-		Public Sub New(loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, controller As kCura.Windows.Process.Controller, bulkLoadFileFieldDelimiter As String, temporaryLocalDirectory As String, initializeArtifactReader As Boolean,
-					   Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			MyBase.New(loadFile, controller, 0, True, True, System.Guid.NewGuid, True, bulkLoadFileFieldDelimiter, initializeArtifactReader, executionSource)
+		Public Sub New(loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, controller As kCura.Windows.Process.Controller, bulkLoadFileFieldDelimiter As String, temporaryLocalDirectory As String, initializeArtifactReader As Boolean)
+			MyBase.New(loadFile, controller, 0, True, True, System.Guid.NewGuid, True, bulkLoadFileFieldDelimiter, initializeArtifactReader)
 
 			Me.OIFileIdColumnName = loadFile.OIFileIdColumnName
 			Me.OIFileIdMapped = loadFile.OIFileIdMapped

@@ -1,8 +1,6 @@
 Imports System.Collections.Generic
 Imports System.Data
-Imports System.Runtime.InteropServices
 Imports kCura.Windows.Process
-Imports Relativity
 
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderImageImporter
@@ -10,9 +8,8 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Private _sourceTable As System.Data.DataTable
 
-		Public Sub New(ByVal folderId As Int32, ByVal imageLoadFile As kCura.WinEDDS.ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As System.Guid, ByVal sourceDataReader As System.Data.DataTable, ByVal cloudInstance As Boolean,
-					   Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			MyBase.New(folderId, imageLoadFile, controller, processID, False, cloudInstance, executionSource)
+		Public Sub New(ByVal folderId As Int32, ByVal imageLoadFile As kCura.WinEDDS.ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As System.Guid, ByVal sourceDataReader As System.Data.DataTable, ByVal cloudInstance As Boolean)
+			MyBase.New(folderId, imageLoadFile, controller, processID, False, cloudInstance)
 			_sourceTable = sourceDataReader
 		End Sub
 
