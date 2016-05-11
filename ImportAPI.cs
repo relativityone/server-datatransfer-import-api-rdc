@@ -35,6 +35,7 @@ namespace kCura.Relativity.ImportAPI
 		protected ICredentials _credentials;
 		private ObjectTypeManager _objectTypeManager;
 		private ProductionManager _productionManager;
+		private readonly ExecutionSourceEnum _executionSource;
 
 		/// <summary>
 		/// Creates an instance of ImportAPI.
@@ -45,8 +46,10 @@ namespace kCura.Relativity.ImportAPI
 		/// </remarks>
 		/// <param name="UserName">User name with which you're logging in.</param>
 		/// <param name="Password">Password associated with the user name.</param>
-		public ImportAPI(String UserName, String Password)
+		/// <param name="executionSource">Optional parameter used for specifying what major system is importing the documents.</param>
+		public ImportAPI(String UserName, String Password, ExecutionSourceEnum executionSource = ExecutionSourceEnum.ImportAPI)
 		{
+			_executionSource = executionSource;
 			PerformLogin(UserName, Password, string.Empty );
 		}
 
@@ -86,8 +89,10 @@ namespace kCura.Relativity.ImportAPI
 		/// <param name="UserName">User name with which you're logging in.</param>
 		/// <param name="Password">Password for the user name.</param>
 		/// <param name="WebServiceURL">Location of the Relativity WebAPI instance.</param>
-		public ImportAPI(String UserName, String Password, String WebServiceURL)
+		/// <param name="executionSource">Optional parameter used for specifying what major system is importing the documents.</param>
+		public ImportAPI(String UserName, String Password, String WebServiceURL, ExecutionSourceEnum executionSource = ExecutionSourceEnum.ImportAPI)
 		{
+			_executionSource = executionSource;
 			PerformLogin(UserName, Password, WebServiceURL );
 		}
 
@@ -98,8 +103,10 @@ namespace kCura.Relativity.ImportAPI
 		/// The user will be validated against the Relativity WebAPI instance located at <paramref name="WebServiceURL"/>.
 		/// </remarks>
 		/// <param name="WebServiceURL">Location of the Relativity WebAPI instance.</param>
-		public ImportAPI(String WebServiceURL)
+		/// <param name="executionSource">Optional parameter used for specifying what major system is importing the documents.</param>
+		public ImportAPI(String WebServiceURL, ExecutionSourceEnum executionSource = ExecutionSourceEnum.ImportAPI)
 		{
+			_executionSource = executionSource;
 			this.PerformLogin(null, null, WebServiceURL );
 		}
 
@@ -216,7 +223,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </remarks>
 		public ImageImportBulkArtifactJob NewImageImportJob()
 		{
-			return new ImageImportBulkArtifactJob(_credentials, _cookieMonster, _userName, _password, (int)ExecutionSourceEnum.ImportAPI);
+			return new ImageImportBulkArtifactJob(_credentials, _cookieMonster, _userName, _password, (int)_executionSource);
 		}
 
 		/// <summary>
@@ -257,11 +264,12 @@ namespace kCura.Relativity.ImportAPI
 		/// Creates an ImportBulkArtifactJob with which to import a set of artifacts of the given type.
 		/// </summary>
 		/// <param name="artifactTypeId">The artifact type ID of the objects to be imported.</param>
+		/// <param name="executionSource">States where the import is being called from.</param>
 		/// <returns>
 		/// Returns a new instance of an ImportBulkArtifactJob with the Settings.ArtifactTypeId property set to <paramref name="artifactTypeId"/>.
 		/// </returns>
 		public ImportBulkArtifactJob NewObjectImportJob(int artifactTypeId) {
-			var returnJob = new ImportBulkArtifactJob(_credentials, _cookieMonster, _userName, _password, (int)ExecutionSourceEnum.ImportAPI);
+			var returnJob = new ImportBulkArtifactJob(_credentials, _cookieMonster, _userName, _password, (int)_executionSource);
 
 			returnJob.Settings.ArtifactTypeId = artifactTypeId;
 
