@@ -1,20 +1,21 @@
 ﻿using System;
 using kCura.Relativity.DataReaderClient;
+using kCura.Relativity.ImportAPI.Enumeration;
 using kCura.WinEDDS.Service;
 
 namespace kCura.Relativity.ImportAPI {
 	public class ExtendedImportAPI : ImportAPI, IExtendedImportAPI
 	{
-		public ExtendedImportAPI(string UserName, string Password)
-			: base(UserName, Password) {
+		public ExtendedImportAPI(string userName, string password, ExecutionSource executionSource = ExecutionSource.ImportAPI)
+			: base(userName, password, executionSource) {
 		}
 
-		public ExtendedImportAPI(string UserName, string Password, string WebServiceURL)
-			: base(UserName, Password, WebServiceURL) {
+		public ExtendedImportAPI(string userName, string password, string webServiceUrl, ExecutionSource executionSource = ExecutionSource.ImportAPI)
+			: base(userName, password, webServiceUrl, executionSource) {
 		}
 
-		public ExtendedImportAPI(string WebServiceURL)
-			: base(WebServiceURL) {
+		public ExtendedImportAPI(string webServiceUrl, ExecutionSource executionSource = ExecutionSource.ImportAPI)
+			: base(webServiceUrl, executionSource) {
 		}
 
 		public void CleanUpAfterJobWithSpoofing(string onBehalfOfUserToken) {
