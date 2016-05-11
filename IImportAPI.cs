@@ -60,7 +60,7 @@ namespace kCura.Relativity.ImportAPI
 		/// Returns the mode in which the files will be uploaded.
 		/// </summary>
 		/// <param name="caseArtifactID">The ArtifactID of the case that will hold the files.</param>
-		UploadTypeEnum GetFileUploadMode(int caseArtifactID);
+		UploadType GetFileUploadMode(int caseArtifactID);
 
 		/// <summary>
 		/// Returns a collection of the ArtifactTypes it is possible to upload.

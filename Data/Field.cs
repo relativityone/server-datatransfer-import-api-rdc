@@ -24,7 +24,7 @@ namespace kCura.Relativity.ImportAPI.Data
 		/// <summary>
 		/// Represents the ID of a FieldType used to determine the functionality and presentation of the field.
 		/// </summary>
-		public FieldTypeEnum FieldTypeID { get; internal set; }
+		public FieldType FieldTypeID { get; internal set; }
 
 		/// <summary>
 		/// Indicates the length of a fixed-length text field.
@@ -34,7 +34,7 @@ namespace kCura.Relativity.ImportAPI.Data
 		/// <summary>
 		/// Provides the FieldCategory of the field definition.
 		/// </summary>
-		public FieldCategoryEnum FieldCategory { get; internal set; }
+		public FieldCategory FieldCategory { get; internal set; }
 
 		/// <summary>
 		/// Provides a list of GUIDs used to identify an Artifact.

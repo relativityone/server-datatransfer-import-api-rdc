@@ -5,10 +5,10 @@ namespace kCura.Relativity.ImportAPI.Enumeration
 	/// <summary>
 	/// Specifies where the document is being imported from.
 	/// </summary>
-	public enum ExecutionSourceEnum
+	public enum ExecutionSource
 	{
 		/// <summary>
-		/// Used when we dont know the import origin or it has not been specified
+		/// Used when we don't know the import origin or it has not been specified
 		/// </summary>
 		Unknown,
 		/// <summary>
@@ -18,6 +18,14 @@ namespace kCura.Relativity.ImportAPI.Enumeration
 		/// <summary>
 		///We are importing through the Import API 
 		/// </summary>
-		ImportAPI
+		ImportAPI,
+		/// <summary>
+		///We are importing through Relativity Integration Points (RIP)
+		/// </summary>
+		RIP,
+		/// <summary>
+		///We are importing through Processing
+		/// </summary>
+		Processing
 	}
 }

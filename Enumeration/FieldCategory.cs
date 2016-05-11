@@ -8,7 +8,7 @@ namespace kCura.Relativity.ImportAPI.Enumeration
 	/// <summary>
 	/// Specifies the category of a field.
 	/// </summary>
-	public enum FieldCategoryEnum
+	public enum FieldCategory
 	{
 		/// <summary>
 		/// The field does not fit in a more specific category.

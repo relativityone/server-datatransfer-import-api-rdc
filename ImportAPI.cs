@@ -35,7 +35,7 @@ namespace kCura.Relativity.ImportAPI
 		protected ICredentials _credentials;
 		private ObjectTypeManager _objectTypeManager;
 		private ProductionManager _productionManager;
-		private readonly ExecutionSourceEnum _executionSource;
+		private readonly ExecutionSource _executionSource;
 
 		/// <summary>
 		/// Creates an instance of ImportAPI.
@@ -47,7 +47,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <param name="UserName">User name with which you're logging in.</param>
 		/// <param name="Password">Password associated with the user name.</param>
 		/// <param name="executionSource">Optional parameter used for specifying what major system is importing the documents.</param>
-		public ImportAPI(String UserName, String Password, ExecutionSourceEnum executionSource = ExecutionSourceEnum.ImportAPI)
+		public ImportAPI(String UserName, String Password, ExecutionSource executionSource = ExecutionSource.ImportAPI)
 		{
 			_executionSource = executionSource;
 			PerformLogin(UserName, Password, string.Empty );
@@ -90,7 +90,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <param name="Password">Password for the user name.</param>
 		/// <param name="WebServiceURL">Location of the Relativity WebAPI instance.</param>
 		/// <param name="executionSource">Optional parameter used for specifying what major system is importing the documents.</param>
-		public ImportAPI(String UserName, String Password, String WebServiceURL, ExecutionSourceEnum executionSource = ExecutionSourceEnum.ImportAPI)
+		public ImportAPI(String UserName, String Password, String WebServiceURL, ExecutionSource executionSource = ExecutionSource.ImportAPI)
 		{
 			_executionSource = executionSource;
 			PerformLogin(UserName, Password, WebServiceURL );
@@ -104,7 +104,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </remarks>
 		/// <param name="WebServiceURL">Location of the Relativity WebAPI instance.</param>
 		/// <param name="executionSource">Optional parameter used for specifying what major system is importing the documents.</param>
-		public ImportAPI(String WebServiceURL, ExecutionSourceEnum executionSource = ExecutionSourceEnum.ImportAPI)
+		public ImportAPI(String WebServiceURL, ExecutionSource executionSource = ExecutionSource.ImportAPI)
 		{
 			_executionSource = executionSource;
 			this.PerformLogin(null, null, WebServiceURL );
@@ -203,10 +203,10 @@ namespace kCura.Relativity.ImportAPI
 								ArtifactTypeId = docfield.FieldTypeID, 
 								Name = docfield.FieldName,
 								FieldLength = docfield.FieldLength, 
-								FieldTypeID = (FieldTypeEnum)Enum.ToObject(typeof(FieldTypeEnum),docfield.FieldTypeID), 
+								FieldTypeID = (FieldType)Enum.ToObject(typeof(FieldType),docfield.FieldTypeID), 
 								AssociatedObjectTypeID = docfield.AssociatedObjectTypeID, 
 								UseUnicode = docfield.UseUnicode, 
-								FieldCategory = (FieldCategoryEnum)Enum.ToObject(typeof(FieldCategoryEnum), docfield.FieldCategoryID),
+								FieldCategory = (FieldCategory)Enum.ToObject(typeof(FieldCategory), docfield.FieldCategoryID),
 								Guids = docfield.Guids,
 								EnableDataGrid = docfield.EnableDataGrid
 							}).ToList();
@@ -281,7 +281,7 @@ namespace kCura.Relativity.ImportAPI
 		/// the workspace specified by <paramref name="caseArtifactID"/>.
 		/// </summary>
 		/// <param name="caseArtifactID">The artifact ID of the destination workspace.</param>
-		public UploadTypeEnum GetFileUploadMode(int caseArtifactID)
+		public UploadType GetFileUploadMode(int caseArtifactID)
 		{
 			var cm = GetCaseManager();
 			var caseInfo = cm.Read(caseArtifactID);
@@ -378,9 +378,9 @@ namespace kCura.Relativity.ImportAPI
 		/// <param name="caseArtifactID"></param>
 		/// <param name="defaultCasePath"></param>
 		/// <returns></returns>
-		private UploadTypeEnum GetFileUploadMode(int caseArtifactID, string defaultCasePath)
+		private UploadType GetFileUploadMode(int caseArtifactID, string defaultCasePath)
 		{
-			UploadTypeEnum returnUploadType;
+			UploadType returnUploadType;
 			var destFolderPath = CreateRepositoryPath(caseArtifactID, defaultCasePath);
 
 			try
@@ -397,11 +397,11 @@ namespace kCura.Relativity.ImportAPI
 
 				System.IO.File.Create(destFolderPath + dummyText).Close();
 				System.IO.File.Delete(destFolderPath + dummyText);
-				returnUploadType = UploadTypeEnum.Direct;
+				returnUploadType = UploadType.Direct;
 			}
 			catch (Exception)
 			{
-				returnUploadType = UploadTypeEnum.Web;
+				returnUploadType = UploadType.Web;
 			}
 
 			return returnUploadType;
