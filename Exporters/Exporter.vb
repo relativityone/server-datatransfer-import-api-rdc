@@ -19,7 +19,7 @@ Namespace kCura.WinEDDS
 		Public DocumentsExported As Int32
 		Public TotalExportArtifactCount As Int32
 		Private WithEvents _processController As kCura.Windows.Process.Controller
-		Private WithEvents _downloadHandler As FileDownloader
+		Private WithEvents _downloadHandler As Service.Export.IExportFileDownloader
 		Private _halt As Boolean
 		Private _volumeManager As VolumeManager
 		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom
@@ -99,7 +99,8 @@ Namespace kCura.WinEDDS
 
 #Region "Constructors"
 
-		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller)
+
+		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller, serviceFactory As Service.Export.IServiceFactory)
 			_searchManager = New kCura.WinEDDS.Service.SearchManager(exportFile.Credential, exportFile.CookieContainer)
 			_downloadHandler = New FileDownloader(exportFile.Credential, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL, exportFile.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
 			FileDownloader.TotalWebTime = 0

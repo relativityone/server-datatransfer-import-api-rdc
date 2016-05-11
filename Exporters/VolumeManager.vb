@@ -23,7 +23,7 @@ Namespace kCura.WinEDDS
 
 		Private _volumeLabelPaddingWidth As Int32
 		Private _subdirectoryLabelPaddingWidth As Int32
-		Private _downloadManager As FileDownloader
+		Private _downloadManager As Service.Export.IExportFileDownloader
 
 		Private _parent As WinEDDS.Exporter
 		Private _columnHeaderString As String
@@ -141,7 +141,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Sub New(ByVal settings As ExportFile, ByVal rootDirectory As String, ByVal overWriteFiles As Boolean, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As FileDownloader, ByVal t As kCura.Utility.Timekeeper, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics)
+		Public Sub New(ByVal settings As ExportFile, ByVal rootDirectory As String, ByVal overWriteFiles As Boolean, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As Service.Export.IExportFileDownloader, ByVal t As kCura.Utility.Timekeeper, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics)
 			_settings = settings
 			_statistics = statistics
 			_parent = parent

@@ -15,7 +15,7 @@ Namespace kCura.WinEDDS
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
-			_searchExporter = New Exporter(Me.ExportFile, Me.ProcessController) With {.InteractionManager = UserNotification}
+			_searchExporter = New Exporter(Me.ExportFile, Me.ProcessController, New Service.Export.WebApiServiceFactory(Me.ExportFile)) With {.InteractionManager = UserNotification}
 
 			If Not _searchExporter.ExportSearch() Then
 				Me.ProcessObserver.RaiseProcessCompleteEvent(False, _searchExporter.ErrorLogFileName)
