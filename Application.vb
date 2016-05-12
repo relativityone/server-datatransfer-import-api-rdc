@@ -1234,7 +1234,7 @@ Namespace kCura.EDDS.WinForm
 			End If
 			Dim frm As New kCura.Windows.Process.ProgressForm
 			Dim exporter As New kCura.WinEDDS.ExportSearchProcess
-
+			exporter.UserNotification = New FormsUserNotification()
 			exporter.ExportFile = exportFile
 			frm.ProcessObserver = exporter.ProcessObserver
 			frm.ProcessController = exporter.ProcessController
