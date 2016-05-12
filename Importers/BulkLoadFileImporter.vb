@@ -437,7 +437,7 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("ReadFile_InitializeMembers")
 
 				If (_cloudInstance) Then
-					If (_overwrite.ToLower() = "none") Then
+					If (_overwrite.ToLower() = "none" And _artifactTypeID = Relativity.ArtifactType.Document) Then
 						Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
 						Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
 						Dim fileLineStart As Long = _startLineNumber
