@@ -539,17 +539,34 @@ Namespace kCura.WinEDDS
 				_fileLineCount = _imageReader.CountRecords
 
 
-				If (_cloudInstance) Then
-					If (_overwrite.ToLower() = "none") Then
-						Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
-						Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
-						Dim fileLineStart As Long = _startLineNumber
-						If _startLineNumber = 0 Then fileLineStart = 1
-						Dim countAfterJob As Long = currentDocCount + (_fileLineCount - (fileLineStart - 1))
-						If (docLimit <> 0 And countAfterJob > docLimit) Then
-							Dim errorMessage As String = String.Format("Running this job will put you {0} documents over the document limit of {1}. Please reduce the size of this job.", countAfterJob - docLimit, docLimit)
-							Throw New Exception(errorMessage)
+				If (_cloudInstance AndAlso _overwrite.ToLower() = "none") Then
+
+					Dim tempImageReader As OpticonFileReader = New OpticonFileReader(_folderID, _settings, Nothing, Nothing, _doRetryLogic)
+					tempImageReader.Initialize()
+					Dim newDocCount As Int32 = 0
+
+					While tempImageReader.HasMoreRecords AndAlso tempImageReader.CurrentRecordNumber < _startLineNumber
+						tempImageReader.AdvanceRecord()
+					End While
+
+					While tempImageReader.HasMoreRecords
+
+						Dim record As Api.ImageRecord = tempImageReader.GetImageRecord
+						If record.IsNewDoc Then
+							newDocCount += 1
 						End If
+
+					End While
+					tempImageReader.Close()
+
+					Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
+					Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
+
+
+					Dim countAfterJob As Long = currentDocCount + newDocCount
+					If (docLimit <> 0 And countAfterJob > docLimit) Then
+						Dim errorMessage As String = String.Format("The document import was cancelled.  It would have exceeded the workspace's document limit of {1} by {0} documents.", countAfterJob - docLimit, docLimit)
+						Throw New Exception(errorMessage)
 					End If
 				End If
 
