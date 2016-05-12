@@ -99,15 +99,17 @@ Namespace kCura.WinEDDS
 
 #Region "Constructors"
 
+		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller)
+			Me.New(exportFile, processController, New Service.Export.WebApiServiceFactory(exportFile))
+		End Sub
 
 		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller, serviceFactory As Service.Export.IServiceFactory)
-			_searchManager = New kCura.WinEDDS.Service.SearchManager(exportFile.Credential, exportFile.CookieContainer)
-			_downloadHandler = New FileDownloader(exportFile.Credential, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL, exportFile.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
-			FileDownloader.TotalWebTime = 0
-			_productionManager = New kCura.WinEDDS.Service.ProductionManager(exportFile.Credential, exportFile.CookieContainer)
-			_auditManager = New kCura.WinEDDS.Service.AuditManager(exportFile.Credential, exportFile.CookieContainer)
-			_fieldManager = New kCura.WinEDDS.Service.FieldManager(exportFile.Credential, exportFile.CookieContainer)
-			ExportManager = New kCura.WinEDDS.Service.ExportManager(exportFile.Credential, exportFile.CookieContainer)
+			_searchManager = serviceFactory.CreateSearchManager()
+			_downloadHandler = serviceFactory.CreateExportFileDownloader()
+			_productionManager = serviceFactory.CreateProductionManager()
+			_auditManager = serviceFactory.CreateAuditManager()
+			_fieldManager = serviceFactory.CreateFieldManager()
+			ExportManager = serviceFactory.CreateExportManager()
 
 			_halt = False
 			_processController = processController
