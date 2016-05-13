@@ -6,16 +6,16 @@ using kCura.WinEDDS.Service;
 namespace kCura.Relativity.ImportAPI {
 	public class ExtendedImportAPI : ImportAPI, IExtendedImportAPI
 	{
-		public ExtendedImportAPI(string userName, string password, ExecutionSource executionSource = ExecutionSource.ImportAPI)
-			: base(userName, password, executionSource) {
+		public ExtendedImportAPI(string userName, string password)
+			: base(userName, password) {
 		}
 
-		public ExtendedImportAPI(string userName, string password, string webServiceUrl, ExecutionSource executionSource = ExecutionSource.ImportAPI)
-			: base(userName, password, webServiceUrl, executionSource) {
+		public ExtendedImportAPI(string userName, string password, string webServiceUrl)
+			: base(userName, password, webServiceUrl) {
 		}
 
-		public ExtendedImportAPI(string webServiceUrl, ExecutionSource executionSource = ExecutionSource.ImportAPI)
-			: base(webServiceUrl, executionSource) {
+		public ExtendedImportAPI(string webServiceUrl)
+			: base(webServiceUrl) {
 		}
 
 		public void CleanUpAfterJobWithSpoofing(string onBehalfOfUserToken) {
