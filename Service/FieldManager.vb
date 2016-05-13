@@ -1,6 +1,7 @@
 Namespace kCura.WinEDDS.Service
 	Public Class FieldManager
 		Inherits kCura.EDDS.WebAPI.FieldManagerBase.FieldManager
+		Implements Export.IFieldManager
 
 		Private _query As kCura.WinEDDS.Service.FieldQuery
 		Public ReadOnly Property Query() As kCura.WinEDDS.Service.FieldQuery
@@ -56,7 +57,7 @@ Namespace kCura.WinEDDS.Service
 			Return RetryOnReLoginException(Function() MyBase.Create(caseContextArtifactID, field))
 		End Function
 
-		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal fieldArtifactID As Int32) As kCura.EDDS.WebAPI.FieldManagerBase.Field
+		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal fieldArtifactID As Int32) As kCura.EDDS.WebAPI.FieldManagerBase.Field Implements Export.IFieldManager.Read
 			Return RetryOnReLoginException(Function() MyBase.Read(caseContextArtifactID, fieldArtifactID))
 		End Function
 #End Region
