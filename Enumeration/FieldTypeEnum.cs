@@ -8,7 +8,7 @@ namespace kCura.Relativity.ImportAPI.Enumeration
 	/// <summary>
 	/// Specifies the type of data that a field can hold.
 	/// </summary>
-	public enum FieldType
+	public enum FieldTypeEnum
 	{
 		/// <summary>
 		/// The field can hold nothing.

@@ -8,7 +8,7 @@ namespace kCura.Relativity.ImportAPI.Enumeration
 	/// <summary>
 	/// Specifies the file upload mode used by the Import API.
 	/// </summary>
-	public enum UploadType
+	public enum UploadTypeEnum
 	{
 		/// <summary>
 		/// Uploads files through the web server. This is the standard mode.

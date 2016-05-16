@@ -39,7 +39,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <summary>
 		/// For internal use only. Specifies where the document is being imported from.
 		/// </summary>
-		public ExecutionSource ExecutionSource { get; set; }
+		public ExecutionSourceEnum ExecutionSource { get; set; }
 
 		/// <summary>
 		/// Creates an instance of ImportAPI.
@@ -53,7 +53,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <param name="executionSource">Optional parameter used for specifying what major system is importing the documents.</param>
 		public ImportAPI(String UserName, String Password)
 		{
-			ExecutionSource = ExecutionSource.ImportAPI;
+			ExecutionSource = ExecutionSourceEnum.ImportAPI;
 			PerformLogin(UserName, Password, string.Empty );
 		}
 
@@ -96,7 +96,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <param name="executionSource">Optional parameter used for specifying what major system is importing the documents.</param>
 		public ImportAPI(String UserName, String Password, String WebServiceURL)
 		{
-			ExecutionSource = ExecutionSource.ImportAPI;
+			ExecutionSource = ExecutionSourceEnum.ImportAPI;
 			PerformLogin(UserName, Password, WebServiceURL );
 		}
 
@@ -110,7 +110,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <param name="executionSource">Optional parameter used for specifying what major system is importing the documents.</param>
 		public ImportAPI(String WebServiceURL)
 		{
-			ExecutionSource = ExecutionSource.ImportAPI;
+			ExecutionSource = ExecutionSourceEnum.ImportAPI;
 			this.PerformLogin(null, null, WebServiceURL );
 		}
 
@@ -207,10 +207,10 @@ namespace kCura.Relativity.ImportAPI
 								ArtifactTypeId = docfield.FieldTypeID, 
 								Name = docfield.FieldName,
 								FieldLength = docfield.FieldLength, 
-								FieldTypeID = (FieldType)Enum.ToObject(typeof(FieldType),docfield.FieldTypeID), 
+								FieldTypeID = (FieldTypeEnum)Enum.ToObject(typeof(FieldTypeEnum),docfield.FieldTypeID), 
 								AssociatedObjectTypeID = docfield.AssociatedObjectTypeID, 
 								UseUnicode = docfield.UseUnicode, 
-								FieldCategory = (FieldCategory)Enum.ToObject(typeof(FieldCategory), docfield.FieldCategoryID),
+								FieldCategory = (FieldCategoryEnum)Enum.ToObject(typeof(FieldCategoryEnum), docfield.FieldCategoryID),
 								Guids = docfield.Guids,
 								EnableDataGrid = docfield.EnableDataGrid
 							}).ToList();
@@ -285,7 +285,7 @@ namespace kCura.Relativity.ImportAPI
 		/// the workspace specified by <paramref name="caseArtifactID"/>.
 		/// </summary>
 		/// <param name="caseArtifactID">The artifact ID of the destination workspace.</param>
-		public UploadType GetFileUploadMode(int caseArtifactID)
+		public UploadTypeEnum GetFileUploadMode(int caseArtifactID)
 		{
 			var cm = GetCaseManager();
 			var caseInfo = cm.Read(caseArtifactID);
@@ -382,9 +382,9 @@ namespace kCura.Relativity.ImportAPI
 		/// <param name="caseArtifactID"></param>
 		/// <param name="defaultCasePath"></param>
 		/// <returns></returns>
-		private UploadType GetFileUploadMode(int caseArtifactID, string defaultCasePath)
+		private UploadTypeEnum GetFileUploadMode(int caseArtifactID, string defaultCasePath)
 		{
-			UploadType returnUploadType;
+			UploadTypeEnum returnUploadType;
 			var destFolderPath = CreateRepositoryPath(caseArtifactID, defaultCasePath);
 
 			try
@@ -401,11 +401,11 @@ namespace kCura.Relativity.ImportAPI
 
 				System.IO.File.Create(destFolderPath + dummyText).Close();
 				System.IO.File.Delete(destFolderPath + dummyText);
-				returnUploadType = UploadType.Direct;
+				returnUploadType = UploadTypeEnum.Direct;
 			}
 			catch (Exception)
 			{
-				returnUploadType = UploadType.Web;
+				returnUploadType = UploadTypeEnum.Web;
 			}
 
 			return returnUploadType;

@@ -5,7 +5,7 @@ namespace kCura.Relativity.ImportAPI.Enumeration
 	/// <summary>
 	/// Specifies where the document is being imported from.
 	/// </summary>
-	public enum ExecutionSource
+	public enum ExecutionSourceEnum
 	{
 		/// <summary>
 		/// Used when we don't know the import origin or it has not been specified
