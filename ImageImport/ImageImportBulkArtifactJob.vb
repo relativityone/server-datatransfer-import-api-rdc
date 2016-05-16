@@ -106,6 +106,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <param name="cookieMonster">The cookie monster.</param>
 		''' <param name="relativityUserName">Name of the relativity user.</param>
 		''' <param name="password">The password.</param>
+		''' <param name="executionSource">Optional parameter that states what process the import is coming from.</param>
 		Friend Sub New(ByVal credentials As ICredentials, ByVal cookieMonster As Net.CookieContainer, ByVal relativityUserName As String, ByVal password As String, ByVal Optional executionSource As Integer = 0)
 			Me.New()
 			_executionSource = CType(executionSource, ExecutionSource)
