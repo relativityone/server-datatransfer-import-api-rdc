@@ -47,6 +47,8 @@
           <s:enumeration value="Unknown" />
           <s:enumeration value="Rdc" />
           <s:enumeration value="ImportAPI" />
+          <s:enumeration value="RIP" />
+          <s:enumeration value="Processing" />
         </s:restriction>
       </s:simpleType>
       <s:element name="BulkImportImageResponse">

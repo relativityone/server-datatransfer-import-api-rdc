@@ -730,6 +730,12 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         '''<remarks/>
         ImportAPI
+        
+        '''<remarks/>
+        RIP
+        
+        '''<remarks/>
+        Processing
     End Enum
     
     '''<remarks/>
