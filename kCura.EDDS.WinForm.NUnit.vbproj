@@ -219,7 +219,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\TextFieldPrecedencePicker.vb" />
-    <Compile Include="ExportFilterSelectForm.vb" />
+    <Compile Include="ExportFilterSelectForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="ExportFormTest.vb" />
   </ItemGroup>
   <ItemGroup>
