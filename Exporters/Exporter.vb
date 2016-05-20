@@ -6,6 +6,7 @@ Imports System.Web.Services.Protocols
 
 Namespace kCura.WinEDDS
 	Public Class Exporter
+	    Implements IExporterStatusNotification
 
 #Region "Members"
 
@@ -940,9 +941,9 @@ Namespace kCura.WinEDDS
 
 #Region "Public Events"
 
-		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception)
-		Public Event StatusMessage(ByVal exportArgs As ExportEventArgs)
-		Public Event FileTransferModeChangeEvent(ByVal mode As String)
+		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Implements IExporterStatusNotification.FatalErrorEvent
+		Public Event StatusMessage(ByVal exportArgs As ExportEventArgs) Implements IExporterStatusNotification.StatusMessage
+		Public Event FileTransferModeChangeEvent(ByVal mode As String) Implements IExporterStatusNotification.FileTransferModeChangeEvent
 		Public Event DisableCloseButton()
 		Public Event EnableCloseButton()
 
