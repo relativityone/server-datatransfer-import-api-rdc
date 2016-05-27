@@ -29,6 +29,7 @@ Namespace kCura.EDDS.WinForm
 		Public WithEvents MenuItem4 As System.Windows.Forms.MenuItem
 		Public WithEvents _fileRefreshMenuItem As System.Windows.Forms.MenuItem
 		Public WithEvents ViewFieldMapButton As System.Windows.Forms.Button
+		Public WithEvents AutoFieldMapButton As System.Windows.Forms.Button
 		Private ReadOnly Property IsChildObject() As Boolean
 			Get
 				Return ParentArtifactTypeID <> 8
@@ -226,6 +227,7 @@ Namespace kCura.EDDS.WinForm
 			Me.Label5 = New System.Windows.Forms.Label()
 			Me.HelpProvider1 = New System.Windows.Forms.HelpProvider()
 			Me.ViewFieldMapButton = New System.Windows.Forms.Button()
+			Me.AutoFieldMapButton = New System.Windows.Forms.Button()
 			Me._loadFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker()
 			Me._fullTextFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker()
 			Me.GroupBoxImportDestination.SuspendLayout()
@@ -597,6 +599,7 @@ Namespace kCura.EDDS.WinForm
 			'_fieldMapTab
 			'
 			Me._fieldMapTab.Controls.Add(Me.ViewFieldMapButton)
+			Me._fieldMapTab.Controls.Add(Me.AutoFieldMapButton)
 			Me._fieldMapTab.Controls.Add(Me.GroupBoxOverlayIdentifier)
 			Me._fieldMapTab.Controls.Add(Me.GroupBoxOverlayBehavior)
 			Me._fieldMapTab.Controls.Add(Me._fieldMap)
@@ -787,6 +790,15 @@ Namespace kCura.EDDS.WinForm
 			Me.ViewFieldMapButton.Size = New System.Drawing.Size(118, 21)
 			Me.ViewFieldMapButton.TabIndex = 24
 			Me.ViewFieldMapButton.Text = "View/Save Field Map"
+			'
+			'Button2
+			'
+			Me.AutoFieldMapButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+			Me.AutoFieldMapButton.Location = New System.Drawing.Point(130, 287)
+			Me.AutoFieldMapButton.Name = "Button2"
+			Me.AutoFieldMapButton.Size = New System.Drawing.Size(118, 21)
+			Me.AutoFieldMapButton.TabIndex = 25
+			Me.AutoFieldMapButton.Text = "Auto Map Fields"
 			'
 			'_loadFileEncodingPicker
 			'
@@ -1400,7 +1412,7 @@ Namespace kCura.EDDS.WinForm
 				_fieldMap.LoadFileColumns.ClearAll()
 				PopulateLoadFileDelimiters()
 				System.Array.Sort(columnHeaders)
-				MatchAndAddLoadFileColumns(columnHeaders)
+				_fieldMap.LoadFileColumns.RightListBoxItems.AddRange(columnHeaders)
 				_fileColumnHeaders.Items.AddRange(columnHeaders)
 				_nativeFilePathField.Items.AddRange(columnHeaders)
 				_destinationFolderPath.Items.AddRange(columnHeaders)
@@ -1417,31 +1429,32 @@ Namespace kCura.EDDS.WinForm
 			Return columnHeaders
 		End Function
 
+		Private Sub AutoFieldMap_Click(sender As Object, e As EventArgs) Handles AutoFieldMapButton.Click
+			Dim columnHeaders As String() = ((_fieldMap.LoadFileColumns.RightListBoxItems.Cast(Of String).ToArray()).Concat(_fieldMap.LoadFileColumns.LeftListBoxItems.Cast(Of String).ToArray())).ToArray()
+			System.Array.Sort(columnHeaders)
+			MatchAndAddLoadFileColumns(columnHeaders)
+		End Sub
+
 		Private Sub MatchAndAddLoadFileColumns(ByVal columnHeaders As IEnumerable(Of String))
-			Dim unMatchedColumnHeaders = New ArrayList
 			Dim matchedColumnHeaders = New ArrayList
 			Dim matchedFields = New ArrayList
 			Dim currentFields As String() = _application.GetCaseFields(_application.SelectedCaseFolderID, _application.ArtifactTypeID, False)
 			For Each header in columnHeaders
-				Dim matched As Boolean = False
 				Dim parsedHeader = ParseHeader(header)
 				For Each field in currentFields
 					If field.ToLower().Equals(parsedHeader.ToLower()) Then
 						matchedColumnHeaders.Add(header)
 						matchedFields.Add(field)
-						matched = True
 						Exit For
 					End If
 				Next
-				If Not matched Then
-					unMatchedColumnHeaders.Add(header)
-				End If
 			Next
 			Dim updatedMatchedFields = AddIdentifierToStrings(_application.GetCaseIdentifierFields(_application.ArtifactTypeID), CType(matchedFields.ToArray(GetType(String)), String()))
-			CheckAndAddStringRange(_fieldMap.FieldColumns.RightListBoxItems, updatedMatchedFields)
+			Dim updatedMatchedHeaders = CType(matchedColumnHeaders.ToArray(GetType(String)), String())
 			CheckAndRemoveStringRange(_fieldMap.FieldColumns.LeftListBoxItems, updatedMatchedFields)
-			CheckAndAddStringRange(_fieldMap.LoadFileColumns.LeftListBoxItems, CType(matchedColumnHeaders.ToArray(GetType(String)), String()))
-			CheckAndAddStringRange(_fieldMap.LoadFileColumns.RightListBoxItems, CType(unMatchedColumnHeaders.ToArray(GetType(String)), String()))
+			CheckAndAddStringRange(_fieldMap.FieldColumns.RightListBoxItems, updatedMatchedFields)
+			CheckAndRemoveStringRange(_fieldMap.LoadFileColumns.RightListBoxItems, updatedMatchedHeaders)
+			CheckAndAddStringRange(_fieldMap.LoadFileColumns.LeftListBoxItems, updatedMatchedHeaders)
 		End Sub
 
 		Private Sub CheckAndRemoveStringRange(ByRef listBoxItems As System.Windows.Forms.ListBox.ObjectCollection, ByVal rangeToRemove As String())
