@@ -1,6 +1,7 @@
+Imports kCura.WinEDDS.Service.Export
 Namespace kCura.WinEDDS
 	Public Class FileDownloader
-
+		Implements Service.Export.IExportFileDownloader
 		Public Enum FileAccessType
 			Web
 			Direct
@@ -60,7 +61,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property UploaderType() As FileAccessType
+		Public Property UploaderType() As FileAccessType Implements IExportFileDownloader.UploaderType
 			Get
 				Return _type
 			End Get
@@ -86,15 +87,11 @@ Namespace kCura.WinEDDS
 			End Property
 		End Class
 
-		'Public Function DownloadFile(ByVal filePath As String, ByVal fileGuid As String) As String
-		'	Return UploadFile(filePath, contextArtifactID, System.Guid.NewGuid.ToString)
-		'End Function
-
-		Public Function DownloadFullTextFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean
+		Public Function DownloadFullTextFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean Implements IExportFileDownloader.DownloadFullTextFile
 			Return WebDownloadFile(localFilePath, artifactID, "", appID, Nothing, True, -1, -1, -1)
 		End Function
 
-		Public Function DownloadLongTextFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal field As ViewFieldInfo, ByVal appId As String) As Boolean
+		Public Function DownloadLongTextFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal field As ViewFieldInfo, ByVal appId As String) As Boolean Implements IExportFileDownloader.DownloadLongTextFile
 			Return WebDownloadFile(localFilePath, artifactID, "", appId, Nothing, False, field.FieldArtifactId, -1, -1)
 		End Function
 
@@ -128,11 +125,11 @@ Namespace kCura.WinEDDS
 			Return Nothing
 		End Function
 
-		Public Function DownloadFileForDocument(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal remoteLocation As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean
+		Public Function DownloadFileForDocument(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal remoteLocation As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean Implements IExportFileDownloader.DownloadFileForDocument
 			Return Me.DownloadFile(localFilePath, remoteFileGuid, remoteLocation, artifactID, appID, -1, -1)
 		End Function
 
-		Public Function DownloadFileForDynamicObject(ByVal localFilePath As String, ByVal remoteLocation As String, ByVal artifactID As Int32, ByVal appID As String, ByVal fileID As Int32, ByVal fileFieldArtifactID As Int32) As Boolean
+		Public Function DownloadFileForDynamicObject(ByVal localFilePath As String, ByVal remoteLocation As String, ByVal artifactID As Int32, ByVal appID As String, ByVal fileID As Int32, ByVal fileFieldArtifactID As Int32) As Boolean Implements IExportFileDownloader.DownloadFileForDynamicObject
 			Return Me.DownloadFile(localFilePath, Nothing, remoteLocation, artifactID, appID, fileFieldArtifactID, fileID)
 		End Function
 
@@ -227,7 +224,7 @@ Namespace kCura.WinEDDS
 					Throw New kCura.WinEDDS.Exceptions.WebDownloadCorruptException("Error retrieving data from distributed server; expecting " & length & " bytes and received " & actualLength)
 				End If
 				If Not remotelocationkey Is Nothing Then _locationAccessMatrix.Add(remotelocationkey, FileAccessType.Web)
-				TotalWebTime += System.DateTime.Now.Ticks - Now
+				TotalWebTime += System.DateTime.Now.Ticks - now
 				Return True
 			Catch ex As DistributedReLoginException
 				Me.CloseStream(localStream)
@@ -241,15 +238,15 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 				If ex.Message.IndexOf("409") <> -1 Then
-					RaiseEvent UploadStatusEvent("Error Downloading File")					'TODO: Change this to a separate error-type event'
+					RaiseEvent UploadStatusEvent("Error Downloading File")                  'TODO: Change this to a separate error-type event'
 					Throw New ApplicationException("Error Downloading File: the file associated with the guid " & remoteFileGuid & " cannot be found" & vbNewLine, ex)
 				Else
-					RaiseEvent UploadStatusEvent("Error Downloading File")					'TODO: Change this to a separate error-type event'
+					RaiseEvent UploadStatusEvent("Error Downloading File")                  'TODO: Change this to a separate error-type event'
 					Throw New ApplicationException("Error Downloading File:", ex)
 				End If
 			Catch ex As System.Exception
 				Me.CloseStream(localStream)
-				RaiseEvent UploadStatusEvent("Error Downloading File")				 'TODO: Change this to a separate error-type event'
+				RaiseEvent UploadStatusEvent("Error Downloading File")               'TODO: Change this to a separate error-type event'
 				Throw New ApplicationException("Error Downloading File", ex)
 			End Try
 		End Function
@@ -267,7 +264,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Event UploadStatusEvent(ByVal message As String)
-		Public Event UploadModeChangeEvent(ByVal mode As String)
+		Public Event UploadModeChangeEvent(ByVal mode As String) Implements IExportFileDownloader.UploadModeChangeEvent
 
 	End Class
 End Namespace

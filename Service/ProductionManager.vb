@@ -1,7 +1,7 @@
 Namespace kCura.WinEDDS.Service
 	Public Class ProductionManager
 		Inherits kCura.EDDS.WebAPI.ProductionManagerBase.ProductionManager
-
+		Implements Export.IProductionManager
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
 
@@ -61,7 +61,7 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
-		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32) As kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo
+		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32) As kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo Implements Export.IProductionManager.Read
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1

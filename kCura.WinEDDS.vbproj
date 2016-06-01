@@ -425,6 +425,7 @@
     <Compile Include="Exceptions\WebDownloadCorruptException.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Exporters\IExporterStatusNotification.vb" />
     <Compile Include="Exporters\IUserNotification.vb" />
     <Compile Include="Exporters\NullUserNotification.vb" />
     <Compile Include="Exporters\TempTextFileDeletor.vb" />
@@ -576,6 +577,14 @@
       <SubType>code</SubType>
     </Compile>
     <Compile Include="Service\ExportManager.vb" />
+    <Compile Include="Service\Export\IExportManager.vb" />
+    <Compile Include="Service\Export\IFieldManager.vb" />
+    <Compile Include="Service\Export\IAuditManager.vb" />
+    <Compile Include="Service\Export\IExportFileDownloader.vb" />
+    <Compile Include="Service\Export\IProductionManager.vb" />
+    <Compile Include="Service\Export\ISearchManager.vb" />
+    <Compile Include="Service\Export\IServiceFactory.vb" />
+    <Compile Include="Service\Export\WebApiServiceFactory.vb" />
     <Compile Include="Service\FieldManager.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -600,6 +609,7 @@
     <Compile Include="Service\Helper.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Service\Export\ICaseManager.vb" />
     <Compile Include="Service\IHierarchicArtifactManager.vb">
       <SubType>Code</SubType>
     </Compile>

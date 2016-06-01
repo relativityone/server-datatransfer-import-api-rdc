@@ -1,8 +1,11 @@
+Imports kCura.WinEDDS.Service.Export
+
 Namespace kCura.WinEDDS.Service
 	Public Class CaseManager
 		Inherits kCura.EDDS.WebAPI.CaseManagerBase.CaseManager
+        Implements ICaseManager
 
-		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
+        Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
 
 			Me.Credentials = credentials
@@ -56,8 +59,8 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
-		Public Shadows Function Read(ByVal caseArtifactID As Int32) As Relativity.CaseInfo
-			Dim tries As Int32 = 0
+		Public Shadows Function Read(ByVal caseArtifactID As Int32) As Relativity.CaseInfo Implements ICaseManager.Read
+            Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
