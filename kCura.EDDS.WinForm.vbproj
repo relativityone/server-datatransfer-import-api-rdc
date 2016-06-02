@@ -617,10 +617,11 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-		<PostBuildEvent>
+   <PostBuildEvent>
 			if "$(ConfigurationName)" == "Release" goto :eof
 			copy /Y "$(ProjectDir)..\..\Vendor\FreeImage\dist\FreeImage.dll" "$(TargetDir)"
-			copy /Y "$(ProjectDir)..\..\Vendor\Oracle\OutsideIn\8.5.0\$(PlatformName)\FileID\redist\*" "$(TargetDir)"
+			copy /Y "$(ProjectDir)..\..\Vendor\Oracle\OutsideIn\8.5.3\$(PlatformName)\FileID\redist\*" "$(TargetDir)"
 		</PostBuildEvent>
+
   </PropertyGroup>
 </Project>
