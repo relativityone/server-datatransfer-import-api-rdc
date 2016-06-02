@@ -273,7 +273,7 @@ REM  ****  ****  ****  ****  ****  ****  ****  ****  ****  ****  ****  ****  ***
 REM
 if "$(ConfigurationName)" == "Release" goto :eof
 
-xcopy /Y "$(ProjectDir)..\..\Vendor\FreeImage\dist\FreeImage.dll" "$(TargetDir)"</PostBuildEvent>
+xcopy /Y "$(ProjectDir)..\..\Vendor\FreeImage\3.151\FreeImage\Release\x64\FreeImage.dll" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
