@@ -609,6 +609,7 @@
     <Compile Include="Service\Helper.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Service\Export\ICaseManager.vb" />
     <Compile Include="Service\IHierarchicArtifactManager.vb">
       <SubType>Code</SubType>
     </Compile>

@@ -77,7 +77,7 @@ Namespace kCura.WinEDDS.Service
 				End Function)
 		End Function
 
-		Public Shadows Function RetrieveAllExportableViewFields(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32) As WinEDDS.ViewFieldInfo()
+		Public Shadows Function RetrieveAllExportableViewFields(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32) As WinEDDS.ViewFieldInfo() Implements ISearchManager.RetrieveAllExportableViewFields
 			Return RetryOnReLoginException(
 				Function()
 					Dim dt As System.Data.DataTable = MyBase.RetrieveAllExportableViewFields(caseContextArtifactID, artifactTypeID).Tables(0)
