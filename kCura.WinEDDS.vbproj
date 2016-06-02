@@ -1239,5 +1239,11 @@
   <ItemGroup>
     <None Include="Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\BulkImportManager.disco" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\Vendor\FreeImage\dist\FreeImage.dll">
+      <Link>FreeImage.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
 </Project>
