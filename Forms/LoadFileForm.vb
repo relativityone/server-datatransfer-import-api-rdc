@@ -1285,7 +1285,12 @@ Namespace kCura.EDDS.WinForm
                 _extractedTextValueContainsFileLocation.Enabled = Me.AnyLongTextIsMapped
             End If
 
-            Me._FieldColumns_ItemsShifted()
+            'Loading from KWE
+            If Me.LoadFile.LongTextColumnThatContainsPathToFullText IsNot Nothing Then
+                _overlayExtractedText.Items.Clear()
+                _overlayExtractedText.Items.AddRange(Me.GetMappedLongTextFields)
+                _overlayExtractedText.SelectedItem = Me.GetExtractedTextFieldAsDocField(Me.LoadFile.LongTextColumnThatContainsPathToFullText)
+            End If
 
             _fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
 
@@ -1733,44 +1738,37 @@ Namespace kCura.EDDS.WinForm
         Private Sub _FieldColumns_ItemsShifted() Handles _fieldMap.FieldColumnsItemsShifted
             ActionMenuEnabled = ReadyToRun
 
-            'Loading from KWE
-            If Me.LoadFile.LongTextColumnThatContainsPathToFullText IsNot Nothing Then
-                _overlayExtractedText.Items.Clear()
-                _overlayExtractedText.Items.AddRange(Me.GetMappedLongTextFields)
-                _overlayExtractedText.SelectedItem = Me.GetExtractedTextFieldAsDocField(Me.LoadFile.LongTextColumnThatContainsPathToFullText)
-            Else
-                'Cell contains file location is enabled if any long text field is mapped
-                _extractedTextValueContainsFileLocation.Enabled = Me.AnyLongTextIsMapped()
+            'Cell contains file location is enabled if any long text field is mapped
+            _extractedTextValueContainsFileLocation.Enabled = Me.AnyLongTextIsMapped()
 
-                'Extracted Text dropdown is enabled if Cell contains file location is checked and enabled
-                _overlayExtractedText.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
+            'Extracted Text dropdown is enabled if Cell contains file location is checked and enabled
+            _overlayExtractedText.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
 
-                'Get selected item before clearing Extracted Text dropdown items
-                Dim selectedItem = Nothing
-                If _overlayExtractedText.SelectedItem IsNot Nothing Then
-                    selectedItem = _overlayExtractedText.SelectedItem
-                End If
-
-                'Clear Extracted Text dropdown and then add mapped fields to it
-                _overlayExtractedText.Items.Clear()
-                _overlayExtractedText.Items.AddRange(Me.GetMappedLongTextFields)
-
-                'Check if previously selected item in mapped fields
-                For Each field As DocumentField In Me.GetMappedLongTextFields
-                    If field.Equals(selectedItem) Then
-                        _overlayExtractedText.SelectedItem = field
-                    Else _overlayExtractedText.SelectedItem = Nothing
-                    End If
-                Next
-
-                'Set Extracted Text to default if it is mapped and dropdown does not have any selected item
-                If _overlayExtractedText.Enabled AndAlso _overlayExtractedText.SelectedItem Is Nothing AndAlso _extractedTextValueContainsFileLocation.Enabled AndAlso _extractedTextValueContainsFileLocation.Checked Then
-                    Me.SetExtractedTextAsDefault()
-                End If
-
-                _fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
-                _overlayBehavior.Enabled = IsOverlayBehaviorEnabled()
+            'Get selected item before clearing Extracted Text dropdown items
+            Dim selectedItem = Nothing
+            If _overlayExtractedText.SelectedItem IsNot Nothing Then
+                selectedItem = _overlayExtractedText.SelectedItem
             End If
+
+            'Clear Extracted Text dropdown and then add mapped fields to it
+            _overlayExtractedText.Items.Clear()
+            _overlayExtractedText.Items.AddRange(Me.GetMappedLongTextFields)
+
+            'Check if previously selected item in mapped fields
+            For Each field As DocumentField In Me.GetMappedLongTextFields
+                If field.Equals(selectedItem) Then
+                    _overlayExtractedText.SelectedItem = field
+                Else _overlayExtractedText.SelectedItem = Nothing
+                End If
+            Next
+
+            'Set Extracted Text to default if it is mapped and dropdown does not have any selected item
+            If _overlayExtractedText.Enabled AndAlso _overlayExtractedText.SelectedItem Is Nothing AndAlso _extractedTextValueContainsFileLocation.Enabled AndAlso _extractedTextValueContainsFileLocation.Checked Then
+                Me.SetExtractedTextAsDefault()
+            End If
+
+            _fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
+            _overlayBehavior.Enabled = IsOverlayBehaviorEnabled()
         End Sub
 
         Private Function GetExtractedTextFieldAsDocField(fieldName As String) As DocumentField
