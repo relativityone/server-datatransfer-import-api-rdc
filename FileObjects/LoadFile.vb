@@ -26,8 +26,9 @@ Namespace kCura.WinEDDS
 		Public ArtifactTypeID As Integer
 		Public HierarchicalValueDelimiter As Char
 		Public PreviewCodeCount As New System.Collections.Specialized.HybridDictionary
-		Public SourceFileEncoding As System.Text.Encoding
-		Public ExtractedTextFileEncoding As System.Text.Encoding
+        Public SourceFileEncoding As System.Text.Encoding
+        Public ExtractedTextContainedInColumn As String
+        Public ExtractedTextFileEncoding As System.Text.Encoding
 		Public StartLineNumber As Int64
 		Public IdentityFieldId As Int32 = -1
 		Public SendEmailOnLoadCompletion As Boolean
@@ -99,8 +100,9 @@ Namespace kCura.WinEDDS
 			info.AddValue("SelectedIdentifierField", Me.SelectedIdentifierField, GetType(kCura.WinEDDS.DocumentField))
 			info.AddValue("FolderStructureContainedInColumn", Me.FolderStructureContainedInColumn, GetType(String))
 			info.AddValue("CreateFolderStructure", Me.CreateFolderStructure, GetType(Boolean))
-			info.AddValue("FullTextColumnContainsFileLocation", Me.FullTextColumnContainsFileLocation, GetType(Boolean))
-			info.AddValue("GroupIdentifierColumn", Me.GroupIdentifierColumn, GetType(String))
+            info.AddValue("FullTextColumnContainsFileLocation", Me.FullTextColumnContainsFileLocation, GetType(Boolean))
+            info.AddValue("ExtractedTextContainedInColumn", Me.ExtractedTextContainedInColumn, GetType(String))
+            info.AddValue("GroupIdentifierColumn", Me.GroupIdentifierColumn, GetType(String))
 			info.AddValue("DataGridIDColumn", Me.DataGridIDColumn, GetType(String))
 			info.AddValue("HierarchicalValueDelimiter", AscW(Me.HierarchicalValueDelimiter), GetType(Integer))
 			If Me.SourceFileEncoding Is Nothing Then
@@ -157,8 +159,9 @@ Namespace kCura.WinEDDS
 
 				Me.FieldMap = DirectCast(info.GetValue("FieldMap", GetType(kCura.WinEDDS.LoadFileFieldMap)), LoadFileFieldMap)
 
-				Me.FolderStructureContainedInColumn = info.GetString("FolderStructureContainedInColumn")
-				Me.CreateFolderStructure = info.GetBoolean("CreateFolderStructure")
+                Me.FolderStructureContainedInColumn = info.GetString("FolderStructureContainedInColumn")
+                Me.ExtractedTextContainedInColumn = info.GetString("ExtractedTextContainedInColumn")
+                Me.CreateFolderStructure = info.GetBoolean("CreateFolderStructure")
 				Try
 					Me.FullTextColumnContainsFileLocation = info.GetBoolean("FullTextColumnContainsFileLocation")
 				Catch ex As System.Exception
