@@ -1467,8 +1467,6 @@ Namespace kCura.EDDS.WinForm
                 _fileColumnHeaders.Items.AddRange(columnHeaders)
                 _nativeFilePathField.Items.AddRange(columnHeaders)
                 _destinationFolderPath.Items.AddRange(columnHeaders)
-                '_overlayExtractedText.Items.Clear()
-                '_overlayExtractedText.Items.AddRange(Me.GetMappedLongTextFields)
                 If LoadFile.LoadNativeFiles AndAlso System.IO.File.Exists(LoadFile.FilePath) Then
                     _nativeFilePathField.SelectedItem = LoadFile.NativeFilePathColumn
                 End If
@@ -1487,6 +1485,7 @@ Namespace kCura.EDDS.WinForm
             Dim columnHeaders As String() = (_fieldMap.LoadFileColumns.RightListBoxItems.Cast(Of String).ToArray())
             System.Array.Sort(columnHeaders)
             MatchAndAddLoadFileColumns(columnHeaders)
+            Me._FieldColumns_ItemsShifted()
         End Sub
 
         Private Sub ClearFieldMapping()
