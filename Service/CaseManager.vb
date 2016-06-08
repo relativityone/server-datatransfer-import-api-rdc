@@ -1,8 +1,11 @@
+Imports kCura.WinEDDS.Service.Export
+
 Namespace kCura.WinEDDS.Service
 	Public Class CaseManager
 		Inherits kCura.EDDS.WebAPI.CaseManagerBase.CaseManager
+        Implements ICaseManager
 
-		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
+        Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
 
 			Me.Credentials = credentials
@@ -39,7 +42,7 @@ Namespace kCura.WinEDDS.Service
 			Return RetryOnReLoginException(Function() MyBase.RetrieveAllEnabled())
 		End Function
 
-		Public Shadows Function Read(ByVal caseArtifactID As Int32) As Relativity.CaseInfo
+		Public Shadows Function Read(ByVal caseArtifactID As Int32) As Relativity.CaseInfo Implements ICaseManager.Read
 			Return RetryOnReLoginException(Function() ConvertToCaseInfo(MyBase.Read(caseArtifactID)))
 		End Function
 #End Region

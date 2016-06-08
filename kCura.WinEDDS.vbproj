@@ -314,7 +314,7 @@
     </ProjectReference>
     <Reference Include="FreeImageNET, Version=3.15.1.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Vendor\FreeImage\dist\FreeImageNET.dll</HintPath>
+      <HintPath>..\..\Vendor\FreeImage\3.151\FreeImage\Wrapper\FreeImage.NET\cs\Deploy\x64\FreeImageNET.dll</HintPath>
     </Reference>
     <Reference Include="Ionic.Zip">
       <HintPath>..\..\Vendor\DotNetZipLib-DevKit-v1.8\DotNetZip-v1.8\Release\Ionic.Zip.dll</HintPath>
@@ -609,6 +609,7 @@
     <Compile Include="Service\Helper.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Service\Export\ICaseManager.vb" />
     <Compile Include="Service\IHierarchicArtifactManager.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -1238,12 +1239,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\BulkImportManager.disco" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\..\Vendor\FreeImage\dist\FreeImage.dll">
-      <Link>FreeImage.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
 </Project>
