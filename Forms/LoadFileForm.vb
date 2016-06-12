@@ -1,6 +1,7 @@
 Imports System.Collections.Generic
 Imports kCura.Windows.Forms
 Imports System.Linq
+Imports System.Text.RegularExpressions
 
 Namespace kCura.EDDS.WinForm
 	Public Class LoadFileForm
