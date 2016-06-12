@@ -1067,7 +1067,7 @@ Namespace kCura.EDDS.WinForm
 
             If _extractedTextValueContainsFileLocation.Checked Then
                 If _overlayExtractedText.SelectedItem IsNot Nothing Then
-                    LoadFile.LongTextColumnThatContainsPathToFullText = _overlayExtractedText.SelectedItem.ToString
+                    LoadFile.ExtractedTextContainedInColumn = _overlayExtractedText.SelectedItem.ToString
                 End If
             End If
 
@@ -1732,10 +1732,10 @@ Namespace kCura.EDDS.WinForm
             ActionMenuEnabled = ReadyToRun
 
             'Loading from KWE
-            If Me.LoadFile.LongTextColumnThatContainsPathToFullText IsNot Nothing Then
+            If Me.LoadFile.ExtractedTextContainedInColumn IsNot Nothing Then
                 _overlayExtractedText.Items.Clear()
                 _overlayExtractedText.Items.AddRange(Me.GetMappedLongTextFields)
-                _overlayExtractedText.SelectedItem = Me.GetExtractedTextFieldAsDocField(Me.LoadFile.LongTextColumnThatContainsPathToFullText)
+                _overlayExtractedText.SelectedItem = Me.GetExtractedTextFieldAsDocField(Me.LoadFile.ExtractedTextContainedInColumn)
             Else
                 'Cell contains file location is enabled if any long text field is mapped
                 _extractedTextValueContainsFileLocation.Enabled = Me.AnyLongTextIsMapped()
