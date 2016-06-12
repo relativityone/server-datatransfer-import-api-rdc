@@ -1399,10 +1399,11 @@ Namespace kCura.EDDS.WinForm
 				_fieldMap.LoadFileColumns.ClearAll()
 				PopulateLoadFileDelimiters()
 				System.Array.Sort(columnHeaders)
-				MatchAndAddLoadFileColumns(columnHeaders)
+				_fieldMap.LoadFileColumns.RightListBoxItems.AddRange(columnHeaders)
 				_fileColumnHeaders.Items.AddRange(columnHeaders)
 				_nativeFilePathField.Items.AddRange(columnHeaders)
 				_destinationFolderPath.Items.AddRange(columnHeaders)
+				Dim identifiersDropdownRange As New System.Collections.ArrayList
 				If LoadFile.LoadNativeFiles AndAlso System.IO.File.Exists(LoadFile.FilePath) Then
 					_nativeFilePathField.SelectedItem = LoadFile.NativeFilePathColumn
 				End If
@@ -1416,62 +1417,7 @@ Namespace kCura.EDDS.WinForm
 			Return columnHeaders
 		End Function
 
-		Private Sub MatchAndAddLoadFileColumns(ByVal columnHeaders As IEnumerable(Of String))
-			Dim unMatchedColumnHeaders = New ArrayList
-			Dim matchedColumnHeaders = New ArrayList
-			Dim matchedFields = New ArrayList
-			Dim currentFields As String() = _application.GetCaseFields(_application.SelectedCaseFolderID, _application.ArtifactTypeID, False)
-			For Each header in columnHeaders
-				Dim matched As Boolean = False
-				Dim parsedHeader = ParseHeader(header)
-				For Each field in currentFields
-					If field.ToLower().Equals(parsedHeader.ToLower()) Then
-						matchedColumnHeaders.Add(header)
-						matchedFields.Add(field)
-						matched = True
-						Exit For
-					End If
-				Next
-				If Not matched Then
-					unMatchedColumnHeaders.Add(header)
-				End If
-			Next
-			Dim updatedMatchedFields = AddIdentifierToStrings(_application.GetCaseIdentifierFields(_application.ArtifactTypeID), CType(matchedFields.ToArray(GetType(String)), String()))
-			CheckAndAddStringRange(_fieldMap.FieldColumns.RightListBoxItems, updatedMatchedFields)
-			CheckAndRemoveStringRange(_fieldMap.FieldColumns.LeftListBoxItems, updatedMatchedFields)
-			CheckAndAddStringRange(_fieldMap.LoadFileColumns.LeftListBoxItems, CType(matchedColumnHeaders.ToArray(GetType(String)), String()))
-			CheckAndAddStringRange(_fieldMap.LoadFileColumns.RightListBoxItems, CType(unMatchedColumnHeaders.ToArray(GetType(String)), String()))
-		End Sub
 
-		Private Sub CheckAndRemoveStringRange(ByRef listBoxItems As System.Windows.Forms.ListBox.ObjectCollection, ByVal rangeToRemove As String())
-			For Each item in rangeToRemove
-				If listBoxItems.Contains(item) Then
-					listBoxItems.Remove(item)
-				End If
-			Next
-		End Sub
-
-		Private Sub CheckAndAddStringRange(ByRef listBoxItems As System.Windows.Forms.ListBox.ObjectCollection, ByVal rangeToAdd As String())
-			For Each item in rangeToAdd
-				If Not listBoxItems.Contains(item) Then
-					listBoxItems.Add(item)
-				End If
-			Next
-		End Sub
-
-		Private Function AddIdentifierToStrings(ByVal identifiers As String(), ByVal range As String()) As String()
-			For Each item in range
-				If identifiers.Contains(item) Then
-					range(Array.IndexOf(range, item)) = item & " [Identifier]"
-				End If
-			Next
-			return range
-		End Function
-
-		Private Function ParseHeader(ByVal header As String) As String
-			Dim parsedheader = header.Replace("(", "").Replace(")", "")
-			return Regex.Replace(parsedheader, "\d", "").Trim()
-		End Function
 
 		Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
 			Dim oldfilepath As String = Nothing
