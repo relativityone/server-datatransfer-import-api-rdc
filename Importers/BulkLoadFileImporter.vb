@@ -1237,6 +1237,10 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
+        Private Function FieldValueContainsTextFileLocation(field As Api.ArtifactField) As Boolean
+            'OLD LOGIC: field.Category = Relativity.FieldCategory.FullText AndAlso fileBasedfullTextColumn 
+            Return field.DisplayName.Equals(_settings.LongTextColumnThatContainsPathToFullText, StringComparison.InvariantCultureIgnoreCase)
+        End Function
 
         Private Sub WriteDocumentField(ByRef chosenEncoding As System.Text.Encoding, field As Api.ArtifactField, ByVal outputWriter As System.IO.StreamWriter, ByVal fileBasedfullTextColumn As Boolean, ByVal delimiter As String, ByVal artifactTypeID As Int32, ByVal extractedTextEncoding As System.Text.Encoding)
             If field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse field.Type = Relativity.FieldTypeHelper.FieldType.Code Then
