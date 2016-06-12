@@ -1,6 +1,7 @@
 Imports System.Collections.Generic
 Imports kCura.Windows.Forms
 Imports System.Linq
+Imports System.Text.RegularExpressions
 
 Namespace kCura.EDDS.WinForm
     Public Class LoadFileForm
@@ -1544,11 +1545,8 @@ Namespace kCura.EDDS.WinForm
         End Function
 
         Private Function ParseHeader(ByVal header As String) As String
-            Dim parsedheader = header
-            If (header.EndsWith(")")) Then
-                parsedheader = header.Substring(0, header.LastIndexOf("(")).Trim()
-            End If
-            Return parsedheader
+            Dim parsedheader = header.Replace("(", "").Replace(")", "")
+            Return Regex.Replace(parsedheader, "\d", "").Trim()
         End Function
 
         Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
