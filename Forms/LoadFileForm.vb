@@ -1430,22 +1430,9 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Private Sub AutoFieldMap_Click(sender As Object, e As EventArgs) Handles AutoFieldMapButton.Click
-			ClearFieldMapping()
-			Dim columnHeaders As String() = (_fieldMap.LoadFileColumns.RightListBoxItems.Cast(Of String).ToArray())
+			Dim columnHeaders As String() = ((_fieldMap.LoadFileColumns.RightListBoxItems.Cast(Of String).ToArray()).Concat(_fieldMap.LoadFileColumns.LeftListBoxItems.Cast(Of String).ToArray())).ToArray()
 			System.Array.Sort(columnHeaders)
 			MatchAndAddLoadFileColumns(columnHeaders)
-		End Sub
-
-		Private Sub ClearFieldMapping()
-			MoveListBoxFields(_fieldMap.FieldColumns.RightListBoxItems, _fieldMap.FieldColumns.LeftListBoxItems)
-			MoveListBoxFields(_fieldMap.LoadFileColumns.LeftListBoxItems, _fieldMap.LoadFileColumns.RightListBoxItems)
-		End Sub
-
-		Private Sub MoveListBoxFields(ByRef toRemovelistBoxItems As System.Windows.Forms.ListBox.ObjectCollection, ByRef toAddlistBoxItems As System.Windows.Forms.ListBox.ObjectCollection)
-			For Each item in toRemovelistBoxItems
-				toAddlistBoxItems.Add(item)
-			Next
-			toRemovelistBoxItems.Clear()
 		End Sub
 
 		Private Sub MatchAndAddLoadFileColumns(ByVal columnHeaders As IEnumerable(Of String))
@@ -1455,7 +1442,7 @@ Namespace kCura.EDDS.WinForm
 			For Each header in columnHeaders
 				Dim parsedHeader = ParseHeader(header)
 				For Each field in currentFields
-					If field.Equals(parsedHeader, StringComparison.InvariantCultureIgnoreCase) Then
+					If field.ToLower().Equals(parsedHeader.ToLower()) Then
 						matchedColumnHeaders.Add(header)
 						matchedFields.Add(field)
 						Exit For
