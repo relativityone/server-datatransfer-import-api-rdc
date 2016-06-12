@@ -1237,128 +1237,122 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-        Private Function FieldValueContainsTextFileLocation(field As Api.ArtifactField) As Boolean
-            'OLD LOGIC: field.Category = Relativity.FieldCategory.FullText AndAlso fileBasedfullTextColumn 
-            Return field.DisplayName.Equals(_settings.LongTextColumnThatContainsPathToFullText, StringComparison.InvariantCultureIgnoreCase)
-        End Function
+		Private Sub WriteDocumentField(ByRef chosenEncoding As System.Text.Encoding, field As Api.ArtifactField, ByVal outputWriter As System.IO.StreamWriter, ByVal fileBasedfullTextColumn As Boolean, ByVal delimiter As String, ByVal artifactTypeID As Int32, ByVal extractedTextEncoding As System.Text.Encoding)
+			If field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse field.Type = Relativity.FieldTypeHelper.FieldType.Code Then
+				outputWriter.Write(field.Value)
+				outputWriter.Write(delimiter)
+			ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso artifactTypeID <> Relativity.ArtifactType.Document Then
+				Dim fileFieldValues() As String = System.Web.HttpUtility.UrlDecode(field.ValueAsString).Split(Chr(11))
+				If fileFieldValues.Length > 1 Then
+					outputWriter.Write(fileFieldValues(0))
+					outputWriter.Write(delimiter)
+					outputWriter.Write(fileFieldValues(1))
+					outputWriter.Write(delimiter)
+					outputWriter.Write(fileFieldValues(2))
+					outputWriter.Write(delimiter)
+				Else
+					outputWriter.Write("")
+					outputWriter.Write(delimiter)
+					outputWriter.Write("")
+					outputWriter.Write(delimiter)
+					outputWriter.Write("")
+					outputWriter.Write(delimiter)
+				End If
+			ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso artifactTypeID = Relativity.ArtifactType.Document Then
+				'do nothing
+			ElseIf field.Category = Relativity.FieldCategory.ParentArtifact Then
+				'do nothing
+			ElseIf field.ArtifactID <= 0 Then
+				' do nothing, this is a catch-all for all "virtual fields" that are added to pass information
+				' from the load file to the file writers that shouldn't be imported as actual object field values
+			Else
+				If field.Category = Relativity.FieldCategory.FullText AndAlso fileBasedfullTextColumn Then
+					Try
+						If Not field.ValueAsString = String.Empty Then
+							chosenEncoding = extractedTextEncoding
+							Dim fileStream As Stream
 
-        Private Sub WriteDocumentField(ByRef chosenEncoding As System.Text.Encoding, field As Api.ArtifactField, ByVal outputWriter As System.IO.StreamWriter, ByVal fileBasedfullTextColumn As Boolean, ByVal delimiter As String, ByVal artifactTypeID As Int32, ByVal extractedTextEncoding As System.Text.Encoding)
-            If field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse field.Type = Relativity.FieldTypeHelper.FieldType.Code Then
-                outputWriter.Write(field.Value)
-                outputWriter.Write(delimiter)
-            ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso artifactTypeID <> Relativity.ArtifactType.Document Then
-                Dim fileFieldValues() As String = System.Web.HttpUtility.UrlDecode(field.ValueAsString).Split(Chr(11))
-                If fileFieldValues.Length > 1 Then
-                    outputWriter.Write(fileFieldValues(0))
-                    outputWriter.Write(delimiter)
-                    outputWriter.Write(fileFieldValues(1))
-                    outputWriter.Write(delimiter)
-                    outputWriter.Write(fileFieldValues(2))
-                    outputWriter.Write(delimiter)
-                Else
-                    outputWriter.Write("")
-                    outputWriter.Write(delimiter)
-                    outputWriter.Write("")
-                    outputWriter.Write(delimiter)
-                    outputWriter.Write("")
-                    outputWriter.Write(delimiter)
-                End If
-            ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso artifactTypeID = Relativity.ArtifactType.Document Then
-                'do nothing
-            ElseIf field.Category = Relativity.FieldCategory.ParentArtifact Then
-                'do nothing
-            ElseIf field.ArtifactID <= 0 Then
-                ' do nothing, this is a catch-all for all "virtual fields" that are added to pass information
-                ' from the load file to the file writers that shouldn't be imported as actual object field values
-            Else
-                Dim fieldShouldReadFromTextFile As Boolean = FieldValueContainsTextFileLocation(field)
-                If fieldShouldReadFromTextFile Then
-                    Try
-                        If Not field.ValueAsString = String.Empty Then
-                            chosenEncoding = extractedTextEncoding
-                            Dim fileStream As Stream
+							Dim fileInfo As System.IO.FileInfo = New System.IO.FileInfo(field.ValueAsString)
+							Dim fileSize As Long = fileInfo.Length
+							If fileSize > GetMaxExtractedTextLength(chosenEncoding) Then
+								Throw New ExtractedTextTooLargeException
+							End If
 
-                            Dim fileInfo As System.IO.FileInfo = New System.IO.FileInfo(field.ValueAsString)
-                            Dim fileSize As Long = fileInfo.Length
-                            If fileSize > GetMaxExtractedTextLength(chosenEncoding) Then
-                                Throw New ExtractedTextTooLargeException
-                            End If
+							If Me.LoadImportedFullTextFromServer Then
+								If Not SkipExtractedTextEncodingCheck Then
+									Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
+									fileStream = determinedEncodingStream.UnderlyingStream
 
-                            If Me.LoadImportedFullTextFromServer Then
-                                If Not SkipExtractedTextEncodingCheck Then
-                                    Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
-                                    fileStream = determinedEncodingStream.UnderlyingStream
+									Dim textField As kCura.EDDS.WebAPI.DocumentManagerBase.Field = Me.FullTextField(_settings.ArtifactTypeID)
+									Dim expectedEncoding As System.Text.Encoding = If(textField IsNot Nothing AndAlso textField.UseUnicodeEncoding, System.Text.Encoding.Unicode, Nothing)
+									Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+									If Not System.Text.Encoding.Equals(expectedEncoding, detectedEncoding) Then
+										WriteWarning("The extracted text file's encoding was not detected to be the same as the extracted text field. The imported data may be incorrectly encoded.")
+									End If
+									If detectedEncoding IsNot Nothing Then
+										chosenEncoding = detectedEncoding
+									End If
+									Try
+										fileStream.Close()
+									Catch
+									End Try
+								End If
+								outputWriter.Write(field.Value)
+							Else
+								'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
+								' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
+								' across the network for the file, so this override allows that check to be skipped.
+								' -Phil S. 07/27/2012
+								If Not SkipExtractedTextEncodingCheck Then
+									Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
+									fileStream = determinedEncodingStream.UnderlyingStream
 
-                                    Dim textField As kCura.EDDS.WebAPI.DocumentManagerBase.Field = Me.FullTextField(_settings.ArtifactTypeID)
-                                    Dim expectedEncoding As System.Text.Encoding = If(textField IsNot Nothing AndAlso textField.UseUnicodeEncoding, System.Text.Encoding.Unicode, Nothing)
-                                    Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
-                                    If Not System.Text.Encoding.Equals(expectedEncoding, detectedEncoding) Then
-                                        WriteWarning("The extracted text file's encoding was not detected to be the same as the extracted text field. The imported data may be incorrectly encoded.")
-                                    End If
-                                    If detectedEncoding IsNot Nothing Then
-                                        chosenEncoding = detectedEncoding
-                                    End If
-                                    Try
-                                        fileStream.Close()
-                                    Catch
-                                    End Try
-                                End If
-                                outputWriter.Write(field.Value)
-                            Else
-                                'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
-                                ' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
-                                ' across the network for the file, so this override allows that check to be skipped.
-                                ' -Phil S. 07/27/2012
-                                If Not SkipExtractedTextEncodingCheck Then
-                                    Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
-                                    fileStream = determinedEncodingStream.UnderlyingStream
+									Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+									If detectedEncoding IsNot Nothing Then
+										chosenEncoding = detectedEncoding
+									End If
+								Else
+									fileStream = New FileStream(field.ValueAsString, FileMode.Open, FileAccess.Read)
+								End If
 
-                                    Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
-                                    If detectedEncoding IsNot Nothing Then
-                                        chosenEncoding = detectedEncoding
-                                    End If
-                                Else
-                                    fileStream = New FileStream(field.ValueAsString, FileMode.Open, FileAccess.Read)
-                                End If
+								Dim sr As New System.IO.StreamReader(fileStream, chosenEncoding)
+								Dim count As Int32 = 1
+								Dim buff(_COPY_TEXT_FILE_BUFFER_SIZE) As Char
+								Do
+									count = sr.ReadBlock(buff, 0, _COPY_TEXT_FILE_BUFFER_SIZE)
+									If count > 0 Then
+										outputWriter.Write(buff, 0, count)
+										outputWriter.Flush()
+									End If
+								Loop Until count = 0
 
-                                Dim sr As New System.IO.StreamReader(fileStream, chosenEncoding)
-                                Dim count As Int32 = 1
-                                Dim buff(_COPY_TEXT_FILE_BUFFER_SIZE) As Char
-                                Do
-                                    count = sr.ReadBlock(buff, 0, _COPY_TEXT_FILE_BUFFER_SIZE)
-                                    If count > 0 Then
-                                        outputWriter.Write(buff, 0, count)
-                                        outputWriter.Flush()
-                                    End If
-                                Loop Until count = 0
+								sr.Close()
 
-                                sr.Close()
-
-                                Try
-                                    fileStream.Close()
-                                Catch
-                                End Try
-                            End If
-                        End If
-                    Catch ex As System.IO.FileNotFoundException
-                        Throw New ExtractedTextFileNotFoundException()
-                    End Try
-                ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Boolean Then
-                    If field.ValueAsString <> String.Empty Then
-                        If Boolean.Parse(field.ValueAsString) Then
-                            outputWriter.Write("1")
-                        Else
-                            outputWriter.Write("0")
-                        End If
-                    End If
-                ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Decimal OrElse
-                 field.Type = Relativity.FieldTypeHelper.FieldType.Currency Then
-                    If field.ValueAsString <> String.Empty Then
-                        Dim d As String = CDec(field.Value).ToString(System.Globalization.CultureInfo.InvariantCulture)
-                        outputWriter.Write(d)
-                    End If
-                Else
-                    outputWriter.Write(field.Value)
+								Try
+									fileStream.Close()
+								Catch
+								End Try
+							End If
+						End If
+					Catch ex As System.IO.FileNotFoundException
+						Throw New ExtractedTextFileNotFoundException()
+					End Try
+				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Boolean Then
+					If field.ValueAsString <> String.Empty Then
+						If Boolean.Parse(field.ValueAsString) Then
+							outputWriter.Write("1")
+						Else
+							outputWriter.Write("0")
+						End If
+					End If
+				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Decimal OrElse
+				 field.Type = Relativity.FieldTypeHelper.FieldType.Currency Then
+					If field.ValueAsString <> String.Empty Then
+						Dim d As String = CDec(field.Value).ToString(System.Globalization.CultureInfo.InvariantCulture)
+						outputWriter.Write(d)
+					End If
+				Else
+					outputWriter.Write(field.Value)
 				End If
 				outputWriter.Write(delimiter)
 			End If
