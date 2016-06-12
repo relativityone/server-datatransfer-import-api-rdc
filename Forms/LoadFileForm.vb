@@ -140,7 +140,6 @@ Namespace kCura.EDDS.WinForm
 		Public WithEvents _overwriteDropdown As System.Windows.Forms.ComboBox
 		Public WithEvents GroupBoxOverwrite As System.Windows.Forms.GroupBox
 		Public WithEvents GroupBoxExtractedText As System.Windows.Forms.GroupBox
-		Public WithEvents _overlayExtractedText As System.Windows.Forms.ComboBox
 		Public WithEvents _extractedTextValueContainsFileLocation As System.Windows.Forms.CheckBox
 		Public WithEvents LabelFileEncoding As System.Windows.Forms.Label
 		Public WithEvents _advancedButton As System.Windows.Forms.Button
@@ -214,7 +213,6 @@ Namespace kCura.EDDS.WinForm
 			Me._overlayBehavior = New System.Windows.Forms.ComboBox()
 			Me._fieldMap = New kCura.WinEDDS.UIControls.FieldMap()
 			Me.GroupBoxExtractedText = New System.Windows.Forms.GroupBox()
-			Me._overlayExtractedText = New System.Windows.Forms.ComboBox()
 			Me.Label9 = New System.Windows.Forms.Label()
 			Me._extractedTextValueContainsFileLocation = New System.Windows.Forms.CheckBox()
 			Me.GroupBoxOverwrite = New System.Windows.Forms.GroupBox()
@@ -666,7 +664,6 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.GroupBoxExtractedText.Controls.Add(Me._fullTextFileEncodingPicker)
 			Me.GroupBoxExtractedText.Controls.Add(Me.Label9)
-			Me.GroupBoxExtractedText.Controls.Add(Me._overlayExtractedText)
 			Me.GroupBoxExtractedText.Controls.Add(Me._extractedTextValueContainsFileLocation)
 			Me.GroupBoxExtractedText.Location = New System.Drawing.Point(484, 321)
 			Me.GroupBoxExtractedText.Name = "GroupBoxExtractedText"
@@ -674,15 +671,6 @@ Namespace kCura.EDDS.WinForm
 			Me.GroupBoxExtractedText.TabIndex = 14
 			Me.GroupBoxExtractedText.TabStop = False
 			Me.GroupBoxExtractedText.Text = "Extracted Text"
-			'
-			'_overlayIdentifier
-			'
-			Me._overlayExtractedText.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me._overlayExtractedText.Enabled = False
-			Me._overlayExtractedText.Location = New System.Drawing.Point(12, 62)
-			Me._overlayExtractedText.Name = "_overlayExtractedText"
-			Me._overlayExtractedText.Size = New System.Drawing.Size(220, 21)
-			Me._overlayExtractedText.TabIndex = 28
 			'
 			'Label9
 			'
