@@ -1028,12 +1028,6 @@ Namespace kCura.EDDS.WinForm
                     Me.AppendErrorMessage(msg, "No text file encoding selected for extracted text")
                 End If
 
-                If _extractedTextValueContainsFileLocation.Checked Then
-                    If _overlayExtractedText.SelectedItem Is Nothing Then
-                        Me.AppendErrorMessage(msg, "No field selected for extracted text")
-                    End If
-                End If
-
                 If _overlayBehavior.Enabled AndAlso Not GetOverlayBehavior.HasValue Then
                     Me.AppendErrorMessage(msg, "No multi-select field overlay behavior has been selected")
                 End If
