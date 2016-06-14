@@ -1,4 +1,5 @@
 Imports kCura.EDDS.WebAPI.RelativityManagerBase
+Imports Relativity
 Imports RelativityManager = kCura.WinEDDS.Service.RelativityManager
 
 Namespace kCura.EDDS.WinForm
@@ -210,6 +211,7 @@ Namespace kCura.EDDS.WinForm
 			importer.TimeZoneOffset = _application.TimeZoneOffset
 			importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
 			importer.CloudInstance = Config.CloudInstance
+			importer.ExecutionSource = Relativity.ExecutionSource.Rdc
 			_application.SetWorkingDirectory(SelectedNativeLoadFile.FilePath)
 			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
 			_application.StartProcess(importer)
@@ -231,6 +233,7 @@ Namespace kCura.EDDS.WinForm
 					importer.TimeZoneOffset = _application.TimeZoneOffset
 					importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
 					importer.CloudInstance = Config.CloudInstance
+					importer.ExecutionSource = Relativity.ExecutionSource.Rdc
 					SelectedNativeLoadFile.ArtifactTypeID = Relativity.ArtifactType.Document
 					_application.SetWorkingDirectory(SelectedNativeLoadFile.FilePath)
 					Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
@@ -253,6 +256,7 @@ Namespace kCura.EDDS.WinForm
 				SelectedImageLoadFile.StartLineNumber = StartLineNumber
 				importer.ImageLoadFile = SelectedImageLoadFile
 				importer.CloudInstance = Config.CloudInstance
+				importer.ExecutionSource = ExecutionSource.Rdc
 				_application.SetWorkingDirectory(SelectedImageLoadFile.FileName)
 				Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
 				_application.StartProcess(importer)
