@@ -1753,13 +1753,8 @@ Namespace kCura.EDDS.WinForm
             _overlayExtractedText.Items.Clear()
             _overlayExtractedText.Items.AddRange(Me.GetMappedLongTextFields)
 
-            'Check if previously selected item in mapped fields
-            For Each field As DocumentField In Me.GetMappedLongTextFields
-                If field.Equals(selectedItem) Then
-                    _overlayExtractedText.SelectedItem = field
-                Else _overlayExtractedText.SelectedItem = Nothing
-                End If
-            Next
+            'Set Extracted Text dropdown to previously selected item
+            _overlayExtractedText.SelectedItem = selectedItem
 
             'Set Extracted Text to default if it is mapped and dropdown does not have any selected item
             If _overlayExtractedText.Enabled AndAlso _overlayExtractedText.SelectedItem Is Nothing AndAlso _extractedTextValueContainsFileLocation.Enabled AndAlso _extractedTextValueContainsFileLocation.Checked Then
