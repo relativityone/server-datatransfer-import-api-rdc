@@ -51,22 +51,6 @@ Namespace kCura.EDDS.WinForm
         End Property
 
         Private _multiObjectMultiChoiceCache As DocumentFieldCollection = Nothing
-        Private ReadOnly Property LongTextFields As DocumentFieldCollection
-            Get
-                If _longTextFields Is Nothing Then
-                    Dim container As DocumentFieldCollection = _application.CurrentNonFileFields(_application.ArtifactTypeID, False)
-                    _longTextFields = New DocumentFieldCollection()
-                    For Each docInfo As DocumentField In container
-                        If docInfo.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Text Then
-                            _longTextFields.Add(docInfo)
-                        End If
-                    Next
-                End If
-                Return _longTextFields
-            End Get
-        End Property
-
-        Private _longTextFields As DocumentFieldCollection = Nothing
 
         Private Sub InitializeDocumentSpecificComponents()
             If Me.LoadFile.ArtifactTypeID = 0 Then Me.LoadFile.ArtifactTypeID = _application.ArtifactTypeID
@@ -953,9 +937,21 @@ Namespace kCura.EDDS.WinForm
             Return DirectCast(retval.ToArray(GetType(DocumentField)), DocumentField())
         End Function
 
+        Private Function GetLongTextFields() As DocumentFieldCollection
+            Dim container As DocumentFieldCollection = _application.CurrentNonFileFields(_application.ArtifactTypeID, False)
+            Dim longTextFields = New DocumentFieldCollection()
+            For Each docInfo As DocumentField In container
+                If docInfo.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Text Then
+                    longTextFields.Add(docInfo)
+                End If
+            Next
+            Return longTextFields
+
+        End Function
+
         Private Function GetMappedLongTextFields() As DocumentField()
             Dim mappedLongTextFields As New System.Collections.ArrayList
-            For Each field As DocumentField In LongTextFields
+            For Each field As DocumentField In Me.GetLongTextFields()
                 If Me._fieldMap.FieldColumns.RightListBoxItems.Contains(field.FieldName) Then
                     mappedLongTextFields.Add(field)
                 End If
@@ -1978,15 +1974,16 @@ Namespace kCura.EDDS.WinForm
 					Exit For
 				End If
 			Next
-			If _overlayIdentifier.SelectedItem Is Nothing Then
-				For Each field As DocumentField In _overlayIdentifier.Items
-					If field.FieldCategory = Relativity.FieldCategory.Identifier Then
-						_overlayIdentifier.SelectedItem = field
-						Exit For
-					End If
-				Next
-			End If
-			InitializeDocumentSpecificComponents()
+            If _overlayIdentifier.SelectedItem Is Nothing Then
+                For Each field As DocumentField In _overlayIdentifier.Items
+                    If field.FieldCategory = Relativity.FieldCategory.Identifier Then
+                        _overlayIdentifier.SelectedItem = field
+                        Exit For
+                    End If
+                Next
+            End If
+
+            InitializeDocumentSpecificComponents()
 		End Sub
 
 		Private Function EnsureConnection() As Boolean
