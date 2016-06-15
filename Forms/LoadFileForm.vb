@@ -1470,7 +1470,7 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Private Function ParseHeader(ByVal header As String) As String
-			Dim parsedheader = header.Replace("()", "")
+			Dim parsedheader = header.Replace("(", "").Replace(")", "")
 			return Regex.Replace(parsedheader, "\d", "").Trim()
 		End Function
 
