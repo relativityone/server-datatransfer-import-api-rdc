@@ -2,6 +2,8 @@ Imports System.Web.Services.Protocols
 Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
 Imports System.Net.Security
+Imports System.Linq
+
 Imports kCura.EDDS.WinForm.Forms
 Imports kCura.Windows.Forms
 
@@ -442,7 +444,6 @@ Namespace kCura.EDDS.WinForm
 #End If
 
 				Return dataset
-				Return csMgr.RetrieveAll()
 			Catch ex As System.Exception
 				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
 					NewLogin(False)
@@ -1166,6 +1167,7 @@ Namespace kCura.EDDS.WinForm
 					importer.TimeZoneOffset = _timeZoneOffset
 					importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
 					importer.CloudInstance = Config.CloudInstance
+					importer.ExecutionSource = Relativity.ExecutionSource.Rdc
 					SetWorkingDirectory(loadFile.FilePath)
 					frm.ProcessObserver = importer.ProcessObserver
 					frm.ProcessController = importer.ProcessController
@@ -1216,6 +1218,7 @@ Namespace kCura.EDDS.WinForm
 			ImageLoadFile.CookieContainer = Me.CookieContainer
 			importer.ImageLoadFile = ImageLoadFile
 			importer.CloudInstance = Config.CloudInstance
+			importer.ExecutionSource = Relativity.ExecutionSource.Rdc
 			SetWorkingDirectory(ImageLoadFile.FileName)
 			frm.ProcessObserver = importer.ProcessObserver
 			frm.ProcessController = importer.ProcessController
