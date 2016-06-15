@@ -99,7 +99,6 @@ Namespace kCura.EDDS.WinForm
 				Return CType(ConfigSettings("SendNotificationOnImportCompletionByDefault"), Boolean)
 			End Get
 		End Property
-
 #If EnableInjections Then
 
 		Private Shared _config As IDictionary
@@ -122,9 +121,7 @@ Namespace kCura.EDDS.WinForm
 				Return retval
 			End Get
 		End Property
-
 #End If
-
 
 	End Class
 End Namespace
