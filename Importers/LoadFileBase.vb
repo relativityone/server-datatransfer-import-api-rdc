@@ -353,7 +353,7 @@ Namespace kCura.WinEDDS
 
         Protected Function FieldValueContainsTextFileLocation(field As Api.ArtifactField) As Boolean
 			Dim containsFileLocation As Boolean = (_fullTextColumnMapsToFileLocation AndAlso field.Category = Relativity.FieldCategory.FullText)
-            If Not containsFileLocation Then
+			If Not containsFileLocation Then
 				containsFileLocation = field.DisplayName.Equals(_settings.LongTextColumnThatContainsPathToFullText, StringComparison.InvariantCultureIgnoreCase)
 			End If
 			Return containsFileLocation
