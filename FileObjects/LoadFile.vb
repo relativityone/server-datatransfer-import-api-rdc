@@ -157,16 +157,27 @@ Namespace kCura.WinEDDS
                     Me.DataGridIDColumn = ""
                 End Try
 
-                Me.FieldMap = DirectCast(info.GetValue("FieldMap", GetType(kCura.WinEDDS.LoadFileFieldMap)), LoadFileFieldMap)
+				Me.FieldMap = DirectCast(info.GetValue("FieldMap", GetType(kCura.WinEDDS.LoadFileFieldMap)), LoadFileFieldMap)
 
-                Me.FolderStructureContainedInColumn = info.GetString("FolderStructureContainedInColumn")
-                Me.LongTextColumnThatContainsPathToFullText = info.GetString("LongTextColumnThatContainsPathToFullText")
-                Me.CreateFolderStructure = info.GetBoolean("CreateFolderStructure")
+				Me.FolderStructureContainedInColumn = info.GetString("FolderStructureContainedInColumn")
+				Me.CreateFolderStructure = info.GetBoolean("CreateFolderStructure")
+
 				Try
 					Me.FullTextColumnContainsFileLocation = info.GetBoolean("FullTextColumnContainsFileLocation")
 				Catch ex As System.Exception
 					Me.FullTextColumnContainsFileLocation = False
 				End Try
+
+				Try
+					Me.LongTextColumnThatContainsPathToFullText = info.GetString("LongTextColumnThatContainsPathToFullText")
+				Catch
+					If Me.FullTextColumnContainsFileLocation Then
+						Me.LongTextColumnThatContainsPathToFullText = "Extracted Text"
+					Else
+						Me.LongTextColumnThatContainsPathToFullText = ""
+					End If
+				End Try
+
 				Dim hval As Int32 = 0
 				Try
 					hval = info.GetInt32("HierarchicalValueDelimiter")
