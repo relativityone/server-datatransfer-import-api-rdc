@@ -351,16 +351,16 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-        Protected Function FieldValueContainsTextFileLocation(field As Api.ArtifactField) As Boolean
+		Protected Function FieldValueContainsTextFileLocation(field As Api.ArtifactField) As Boolean
 			Dim containsFileLocation As Boolean = (_fullTextColumnMapsToFileLocation AndAlso field.Category = Relativity.FieldCategory.FullText)
-	        If Not containsFileLocation Then
-		        containsFileLocation = field.DisplayName.Equals(_settings.LongTextColumnThatContainsPathToFullText, StringComparison.InvariantCultureIgnoreCase)
-	        End If 
-            Return containsFileLocation
-        End Function
+			If Not containsFileLocation Then
+				containsFileLocation = field.DisplayName.Equals(_settings.LongTextColumnThatContainsPathToFullText, StringComparison.InvariantCultureIgnoreCase)
+			End If
+			Return containsFileLocation
+		End Function
 
 
-        Public Sub SetFieldValue(ByVal field As Api.ArtifactField, ByVal columnIndex As Int32, ByVal forPreview As Boolean, ByVal identityValue As String, ByRef extractedTextFileCodePageId As Int32, ByVal importBehavior As EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?)
+		Public Sub SetFieldValue(ByVal field As Api.ArtifactField, ByVal columnIndex As Int32, ByVal forPreview As Boolean, ByVal identityValue As String, ByRef extractedTextFileCodePageId As Int32, ByVal importBehavior As EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?)
 			If TypeOf field.Value Is System.Exception Then
 				Throw DirectCast(field.Value, System.Exception)
 			End If
