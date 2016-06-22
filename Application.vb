@@ -872,7 +872,7 @@ Namespace kCura.EDDS.WinForm
 			loadFile.CaseInfo = caseInfo
 			loadFile.Credentials = Me.Credential
 			loadFile.CookieContainer = Me.CookieContainer
-			loadFile.OverwriteDestination = "None"
+			loadFile.OverwriteDestination = kCura.WinEDDS.OverwriteModeEnum.Append.ToString()
 			loadFile.ArtifactTypeID = Me.ArtifactTypeID
 			frm.LoadFile = loadFile
 			frm.Show()

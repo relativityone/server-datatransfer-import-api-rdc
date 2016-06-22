@@ -466,7 +466,7 @@ Namespace kCura.EDDS.WinForm
 				Me.ImageLoadFile.ReplaceFullText = False
 				Me.ImageLoadFile.BeginBatesFieldArtifactID = CType(_beginBatesDropdown.SelectedValue, Int32)
 			Else
-				If Me.GetOverwrite = "Strict" Then
+				If Me.GetOverwrite = WinEDDS.OverwriteModeEnum.Overlay.ToString() Then
 					Me.ImageLoadFile.IdentityFieldId = CType(_beginBatesDropdown.SelectedValue, Int32)
 				Else
 					Me.ImageLoadFile.IdentityFieldId = -1
@@ -484,23 +484,23 @@ Namespace kCura.EDDS.WinForm
 		Private Function GetOverwrite() As String
 			Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
 				Case "append only"
-					Return "None"
+					Return WinEDDS.OverwriteModeEnum.Append.ToString()
 				Case "overlay only"
-					Return "Strict"
+					Return WinEDDS.OverwriteModeEnum.Overlay.ToString()
 				Case "append/overlay"
-					Return "Append"
+					Return WinEDDS.OverwriteModeEnum.AppendOverlay.ToString()
 				Case Else
 					Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
 			End Select
 		End Function
 
 		Private Function GetOverwriteDropdownItem(ByVal input As String) As String
-			Select Case input.ToLower
-				Case "none"
+			Select Case input
+				Case WinEDDS.OverwriteModeEnum.Append.ToString()
 					Return "Append Only"
-				Case "strict"
+				Case WinEDDS.OverwriteModeEnum.Overlay.ToString()
 					Return "Overlay Only"
-				Case "append"
+				Case WinEDDS.OverwriteModeEnum.AppendOverlay.ToString()
 					Return "Append/Overlay"
 				Case Else
 					Throw New IndexOutOfRangeException("'" & input.ToLower & "' isn't a valid option.")

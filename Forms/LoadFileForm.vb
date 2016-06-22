@@ -869,14 +869,14 @@ Namespace kCura.EDDS.WinForm
         End Property
 
         Private Function GetOverwrite() As String
-            If _overwriteDropdown.SelectedItem Is Nothing Then Return "None"
+            If _overwriteDropdown.SelectedItem Is Nothing Then Return WinEDDS.OverwriteModeEnum.Append.ToString()
             Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
                 Case "append only"
-                    Return "None"
+                    Return WinEDDS.OverwriteModeEnum.Append.ToString()
                 Case "overlay only"
-                    Return "Strict"
+                    Return WinEDDS.OverwriteModeEnum.Overlay.ToString()
                 Case "append/overlay"
-                    Return "Append"
+                    Return WinEDDS.OverwriteModeEnum.AppendOverlay.ToString()
                 Case Else
                     Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
             End Select
@@ -884,11 +884,11 @@ Namespace kCura.EDDS.WinForm
 
         Private Function GetOverwriteDropdownItem(ByVal input As String) As String
             Select Case input.ToLower
-                Case "none"
+                Case WinEDDS.OverwriteModeEnum.Append.ToString()
                     Return "Append Only"
-                Case "strict"
+                Case WinEDDS.OverwriteModeEnum.Overlay.ToString()
                     Return "Overlay Only"
-                Case "append"
+                Case WinEDDS.OverwriteModeEnum.AppendOverlay.ToString()
                     Return "Append/Overlay"
                 Case Else
                     Throw New IndexOutOfRangeException("'" & input.ToLower & "' isn't a valid option.")
@@ -972,7 +972,7 @@ Namespace kCura.EDDS.WinForm
         End Sub
 
         Private Function IsOverlayBehaviorEnabled() As Boolean
-            If GetOverwrite.ToLower = "none" Then
+            If GetOverwrite.ToLower = WinEDDS.OverwriteModeEnum.Append.ToString() Then
                 Return False
             End If
             For Each fieldName As String In Me._fieldMap.FieldColumns.RightListBoxItems
@@ -1078,11 +1078,11 @@ Namespace kCura.EDDS.WinForm
             End If
             LoadFile.LoadNativeFiles = _loadNativeFiles.Checked
             If _overwriteDropdown.SelectedItem Is Nothing Then
-                LoadFile.OverwriteDestination = "None"
+                LoadFile.OverwriteDestination = WinEDDS.OverwriteModeEnum.Append.ToString()
             Else
                 LoadFile.OverwriteDestination = Me.GetOverwrite
             End If
-            If LoadFile.OverwriteDestination = "Strict" Then
+            If LoadFile.OverwriteDestination = WinEDDS.OverwriteModeEnum.Overlay.ToString() Then
                 LoadFile.IdentityFieldId = DirectCast(_overlayIdentifier.SelectedItem, DocumentField).FieldID
             Else
                 LoadFile.IdentityFieldId = -1
@@ -1118,7 +1118,7 @@ Namespace kCura.EDDS.WinForm
                 End If
             End If
             LoadFile.CreateFolderStructure = _buildFolderStructure.Checked
-            If LoadFile.OverwriteDestination.ToLower <> "strict" AndAlso LoadFile.OverwriteDestination.ToLower <> "append" Then
+            If LoadFile.OverwriteDestination <> WinEDDS.OverwriteModeEnum.Overlay.ToString() AndAlso LoadFile.OverwriteDestination <> WinEDDS.OverwriteModeEnum.AppendOverlay.ToString() Then
                 If LoadFile.CreateFolderStructure Then
                     If Not _destinationFolderPath.SelectedItem Is Nothing Then
                         LoadFile.FolderStructureContainedInColumn = _destinationFolderPath.SelectedItem.ToString
@@ -1632,7 +1632,7 @@ Namespace kCura.EDDS.WinForm
 
         Private Sub _overwriteDestination_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overwriteDropdown.SelectedIndexChanged
             LoadFile.OverwriteDestination = Me.GetOverwrite
-            If LoadFile.OverwriteDestination.ToLower <> "strict" Then
+            If LoadFile.OverwriteDestination <> WinEDDS.OverwriteModeEnum.Overlay.ToString() Then
                 For Each field As DocumentField In _overlayIdentifier.Items
                     If field.FieldCategory = Relativity.FieldCategory.Identifier Then
                         _overlayIdentifier.SelectedItem = field
@@ -1641,12 +1641,12 @@ Namespace kCura.EDDS.WinForm
                 Next
             End If
             If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
-                Select Case LoadFile.OverwriteDestination.ToLower
-                    Case "none"
+                Select Case LoadFile.OverwriteDestination
+                    Case WinEDDS.OverwriteModeEnum.Append.ToString()
                         _buildFolderStructure.Enabled = True
                         _destinationFolderPath.Enabled = _buildFolderStructure.Checked
                         _overlayIdentifier.Enabled = False
-                    Case "strict"
+                    Case WinEDDS.OverwriteModeEnum.Overlay.ToString()
                         _destinationFolderPath.Enabled = False
                         _buildFolderStructure.Checked = False
                         _buildFolderStructure.Enabled = False
@@ -1662,13 +1662,13 @@ Namespace kCura.EDDS.WinForm
                         _overlayIdentifier.Enabled = False
                 End Select
             ElseIf Me.IsChildObject Then
-                Select Case LoadFile.OverwriteDestination.ToLower
-                    Case "none"
+                Select Case LoadFile.OverwriteDestination
+                    Case WinEDDS.OverwriteModeEnum.Append.ToString()
                         _destinationFolderPath.Enabled = True
                         _buildFolderStructure.Checked = True
                         _buildFolderStructure.Enabled = False
                         _overlayIdentifier.Enabled = False
-                    Case "strict"
+                    Case WinEDDS.OverwriteModeEnum.Overlay.ToString()
                         _destinationFolderPath.Enabled = False
                         _buildFolderStructure.Checked = False
                         _buildFolderStructure.Enabled = True
@@ -1685,8 +1685,8 @@ Namespace kCura.EDDS.WinForm
                 _buildFolderStructure.Checked = False
                 _destinationFolderPath.SelectedItem = Nothing
                 _destinationFolderPath.Text = "Select ..."
-                Select Case LoadFile.OverwriteDestination.ToLower
-                    Case "strict"
+                Select Case LoadFile.OverwriteDestination
+                    Case WinEDDS.OverwriteModeEnum.Overlay.ToString()
                         _overlayIdentifier.Enabled = True
                     Case Else
                         _overlayIdentifier.Enabled = False
@@ -1892,11 +1892,11 @@ Namespace kCura.EDDS.WinForm
                 End If
             ElseIf Me.IsChildObject Then
                 Select Case Me.GetOverwrite.ToLower
-                    Case "none", "append"
+                    Case WinEDDS.OverwriteModeEnum.Append.ToString(), WinEDDS.OverwriteModeEnum.AppendOverlay.ToString()
                         _destinationFolderPath.Enabled = True
                         _destinationFolderPath.SelectedItem = Nothing
                         _destinationFolderPath.Text = "Select ..."
-                    Case "strict"
+                    Case WinEDDS.OverwriteModeEnum.Overlay.ToString()
                         If _buildFolderStructure.Checked Then
                             _destinationFolderPath.Enabled = True
                         Else
