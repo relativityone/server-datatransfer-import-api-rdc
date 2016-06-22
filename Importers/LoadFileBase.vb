@@ -174,7 +174,8 @@ Namespace kCura.WinEDDS
 			_codeValidator = Me.GetSingleCodeValidator()
 
 			MulticodeMatrix = New System.Collections.Hashtable
-			If _keyFieldID > 0 AndAlso args.OverwriteDestination <> WinEDDS.OverwriteModeEnum.Overlay.ToString() AndAlso args.ArtifactTypeID = Relativity.ArtifactType.Document Then
+			'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
+			If _keyFieldID > 0 AndAlso args.OverwriteDestination.ToLower <> "overlay" AndAlso args.ArtifactTypeID = Relativity.ArtifactType.Document Then
 				_keyFieldID = -1
 			End If
 			If _keyFieldID = -1 Then

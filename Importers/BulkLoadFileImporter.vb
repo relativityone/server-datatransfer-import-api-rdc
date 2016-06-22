@@ -447,7 +447,8 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("ReadFile_InitializeMembers")
 
 				If (_cloudInstance) Then
-					If (_overwrite = WinEDDS.OverwriteModeEnum.Append.ToString() And _artifactTypeID = Relativity.ArtifactType.Document) Then
+					'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
+					If (_overwrite.ToLower = "append" And _artifactTypeID = Relativity.ArtifactType.Document) Then
 						Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
 						Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
 						Dim fileLineStart As Long = _startLineNumber
@@ -702,7 +703,8 @@ Namespace kCura.WinEDDS
 					'TODO: If we are going to do this for more than documents, fix this as well...
 					Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value.ToString))
 					If textIdentifier = "" Then
-						If _overwrite = WinEDDS.OverwriteModeEnum.Overlay.ToString() OrElse _overwrite = WinEDDS.OverwriteModeEnum.AppendOverlay.ToString() Then
+						'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
+						If _overwrite.ToLower = "overlay" OrElse _overwrite.ToLower = "appendoverlay" Then
 							parentFolderID = -1
 						End If
 						Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, _destinationFolderColumnIndex)
@@ -1043,10 +1045,10 @@ Namespace kCura.WinEDDS
 			settings.KeyFieldArtifactID = _keyFieldID
 			settings.BulkLoadFileFieldDelimiter = _bulkLoadFileFieldDelimiter
 			settings.OverlayBehavior = Me.GetMassImportOverlayBehavior(_settings.OverlayBehavior)
-			Select Case _overwrite
-				Case WinEDDS.OverwriteModeEnum.Overlay.ToString()
+			Select Case _overwrite.ToLower
+				Case "overlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
-				Case WinEDDS.OverwriteModeEnum.AppendOverlay.ToString()
+				Case "appendoverlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
 				Case Else
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Append

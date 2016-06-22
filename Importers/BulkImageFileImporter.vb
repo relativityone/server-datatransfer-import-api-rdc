@@ -466,10 +466,10 @@ Namespace kCura.WinEDDS
 			_uploadDataGridKey = validateDataGridBcp.Value
 
 			Dim overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType
-			Select Case _overwrite
-				Case OverwriteModeEnum.AppendOverlay.ToString()
+			Select Case _overwrite.ToLower
+				Case "appendoverlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
 					overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
-				Case OverwriteModeEnum.Overlay.ToString()
+				Case "overlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
 					overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
 				Case Else
 					overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Append
@@ -542,8 +542,8 @@ Namespace kCura.WinEDDS
 				_imageReader.Initialize()
 				_fileLineCount = _imageReader.CountRecords
 
-
-				If (_cloudInstance AndAlso _overwrite = OverwriteModeEnum.Append.ToString()) Then
+				'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
+				If (_cloudInstance AndAlso _overwrite.ToLower = "append") Then
 
 					Dim tempImageReader As OpticonFileReader = New OpticonFileReader(_folderID, _settings, Nothing, Nothing, _doRetryLogic)
 					tempImageReader.Initialize()

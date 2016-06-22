@@ -104,7 +104,8 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Function NeedToCheckFolders() As Boolean
-			Return (_settings.ForceFolderPreview AndAlso _settings.CreateFolderStructure AndAlso Not _settings.FolderStructureContainedInColumn Is Nothing AndAlso _artifactTypeID = Relativity.ArtifactType.Document AndAlso _settings.OverwriteDestination = WinEDDS.OverwriteModeEnum.Append.ToString())
+			'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
+			Return (_settings.ForceFolderPreview AndAlso _settings.CreateFolderStructure AndAlso Not _settings.FolderStructureContainedInColumn Is Nothing AndAlso _artifactTypeID = Relativity.ArtifactType.Document AndAlso _settings.OverwriteDestination.ToLower = "append")
 		End Function
 
 		Private Function NeedToCheckChoices() As Boolean

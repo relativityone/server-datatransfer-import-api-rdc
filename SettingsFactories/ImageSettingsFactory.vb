@@ -23,7 +23,7 @@ Namespace kCura.WinEDDS
 			_loadFile.Credential = Me.Credential
 			_loadFile.ForProduction = False
 			_loadFile.FullTextEncoding = System.Text.Encoding.Default
-			_loadFile.Overwrite = WinEDDS.OverwriteModeEnum.Append.ToString()
+			_loadFile.Overwrite = "Append" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
 			_loadFile.ProductionArtifactID = 0
 			_loadFile.ProductionTable = Nothing
 			_loadFile.ReplaceFullText = False
@@ -109,11 +109,11 @@ Namespace kCura.WinEDDS
 			Set(ByVal value As OverwriteType)
 				Select Case value
 					Case SettingsFactoryBase.OverwriteType.Append
-						_loadFile.Overwrite = WinEDDS.OverwriteModeEnum.Append.ToString()
+						_loadFile.Overwrite = "Append" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
 					Case SettingsFactoryBase.OverwriteType.AppendOverlay
-						_loadFile.Overwrite = WinEDDS.OverwriteModeEnum.AppendOverlay.ToString()
+						_loadFile.Overwrite = "AppendOverlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
 					Case SettingsFactoryBase.OverwriteType.Overlay
-						_loadFile.Overwrite = WinEDDS.OverwriteModeEnum.Overlay.ToString()
+						_loadFile.Overwrite = "Overlay"	'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
 				End Select
 			End Set
 		End Property

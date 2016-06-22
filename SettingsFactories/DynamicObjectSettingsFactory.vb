@@ -46,7 +46,7 @@ Namespace kCura.WinEDDS
 			_loadFile.MultiRecordDelimiter = ";"c
 			_loadFile.NativeFilePathColumn = Nothing
 			_loadFile.NewlineDelimiter = ChrW(174)
-			_loadFile.OverwriteDestination = WinEDDS.OverwriteModeEnum.Append.ToString()
+			_loadFile.OverwriteDestination = "Append" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
 			_loadFile.QuoteDelimiter = ChrW(254)
 			_loadFile.RecordDelimiter = ChrW(20)
 			_loadFile.SourceFileEncoding = System.Text.Encoding.Default
@@ -176,11 +176,11 @@ Namespace kCura.WinEDDS
 			Set(ByVal value As OverwriteType)
 				Select Case value
 					Case SettingsFactoryBase.OverwriteType.Append
-						_loadFile.OverwriteDestination = WinEDDS.OverwriteModeEnum.Append.ToString()
+						_loadFile.OverwriteDestination = "Append" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
 					Case SettingsFactoryBase.OverwriteType.AppendOverlay
-						_loadFile.OverwriteDestination = WinEDDS.OverwriteModeEnum.AppendOverlay.ToString()
+						_loadFile.OverwriteDestination = "AppendOverlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
 					Case SettingsFactoryBase.OverwriteType.Overlay
-						_loadFile.OverwriteDestination = WinEDDS.OverwriteModeEnum.Overlay.ToString()
+						_loadFile.OverwriteDestination = "Overlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
 				End Select
 			End Set
 		End Property
