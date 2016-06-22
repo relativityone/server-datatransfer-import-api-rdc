@@ -1,4 +1,5 @@
 ﻿Imports System.Collections.Generic
+Imports kCura.WinEDDS
 
 Namespace kCura.Relativity.DataReaderClient
 
@@ -135,7 +136,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <summary>
 		''' Indicates whether records should be appended or overlayed. The default mode is Append.
 		''' </summary>
-		''' <remarks>To set this property, see <see cref="kCura.Relativity.DataReaderClient.OverwriteModeEnum">OverwriteModeEnum</see> for a list of values.</remarks>
+		''' <remarks>To set this property, see <see cref="kCura.WinEDDS.OverwriteModeEnum">OverwriteModeEnum</see> for a list of values.</remarks>
 		Public Property OverwriteMode() As OverwriteModeEnum
 
 		''' <summary>

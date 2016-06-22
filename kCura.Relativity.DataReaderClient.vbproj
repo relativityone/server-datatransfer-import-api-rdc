@@ -249,9 +249,6 @@
     <Compile Include="..\..\Version\ComVisibleFalse.vb" />
     <Compile Include="AssemblyInfoLocal.vb" />
     <Compile Include="ImportCredentialManager.vb" />
-    <Compile Include="Enum.vb">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="IImportNotifier.vb" />
     <Compile Include="ImageImport\ImageImportBulkArtifactJob.vb" />
     <Compile Include="ImageImport\ImageSettings.vb" />

@@ -1,4 +1,5 @@
 Imports System.Net
+Imports kCura.WinEDDS
 Imports Relativity
 
 Namespace kCura.Relativity.DataReaderClient
