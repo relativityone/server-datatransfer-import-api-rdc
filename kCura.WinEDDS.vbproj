@@ -652,6 +652,7 @@
     </Compile>
     <Compile Include="Types\ClientSideErrorCollection.vb" />
     <Compile Include="Types\CoalescedTextViewField.vb" />
+    <Compile Include="Types\Enum.vb" />
     <Compile Include="Types\LoadFilePreviewColumnItem.vb" />
     <Compile Include="Types\DocumentField.vb">
       <SubType>Code</SubType>

@@ -179,13 +179,13 @@ Namespace kCura.WinEDDS
 				If Not LoadFile.ExtractedTextFileEncoding Is Nothing Then
 					retval.ExtractedTextFileEncodingCodePageID = LoadFile.ExtractedTextFileEncoding.CodePage
 				End If
-				Select Case LoadFile.OverwriteDestination.ToLower
-					Case "strict"
+				Select Case LoadFile.OverwriteDestination
+					Case WinEDDS.OverwriteModeEnum.Overlay.ToString()
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Overlay
-					Case "none"
-						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Append
-					Case Else
+					Case WinEDDS.OverwriteModeEnum.AppendOverlay.ToString()
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Both
+					Case Else
+						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Append
 				End Select
 
 				If LoadFile.OverlayBehavior.HasValue Then

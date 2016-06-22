@@ -447,7 +447,7 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("ReadFile_InitializeMembers")
 
 				If (_cloudInstance) Then
-					If (_overwrite.ToLower() = "none" And _artifactTypeID = Relativity.ArtifactType.Document) Then
+					If (_overwrite = WinEDDS.OverwriteModeEnum.Append.ToString() And _artifactTypeID = Relativity.ArtifactType.Document) Then
 						Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
 						Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
 						Dim fileLineStart As Long = _startLineNumber
@@ -702,7 +702,7 @@ Namespace kCura.WinEDDS
 					'TODO: If we are going to do this for more than documents, fix this as well...
 					Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value.ToString))
 					If textIdentifier = "" Then
-						If _overwrite.ToLower = "strict" OrElse _overwrite.ToLower = "append" Then
+						If _overwrite = WinEDDS.OverwriteModeEnum.Overlay.ToString() OrElse _overwrite = WinEDDS.OverwriteModeEnum.AppendOverlay.ToString() Then
 							parentFolderID = -1
 						End If
 						Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, _destinationFolderColumnIndex)
@@ -1043,13 +1043,13 @@ Namespace kCura.WinEDDS
 			settings.KeyFieldArtifactID = _keyFieldID
 			settings.BulkLoadFileFieldDelimiter = _bulkLoadFileFieldDelimiter
 			settings.OverlayBehavior = Me.GetMassImportOverlayBehavior(_settings.OverlayBehavior)
-			Select Case _overwrite.ToLower
-				Case "strict"
+			Select Case _overwrite
+				Case WinEDDS.OverwriteModeEnum.Overlay.ToString()
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
-				Case "none"
-					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Append
-				Case Else
+				Case WinEDDS.OverwriteModeEnum.AppendOverlay.ToString()
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
+				Case Else
+					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Append
 			End Select
 			settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
 			settings.LoadImportedFullTextFromServer = Me.LoadImportedFullTextFromServer
