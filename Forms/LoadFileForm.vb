@@ -869,14 +869,15 @@ Namespace kCura.EDDS.WinForm
         End Property
 
         Private Function GetOverwrite() As String
-            If _overwriteDropdown.SelectedItem Is Nothing Then Return WinEDDS.OverwriteModeEnum.Append.ToString()
+            'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
+            If _overwriteDropdown.SelectedItem Is Nothing Then Return "Append"
             Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
                 Case "append only"
-                    Return WinEDDS.OverwriteModeEnum.Append.ToString()
+                    Return "Append" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
                 Case "overlay only"
-                    Return WinEDDS.OverwriteModeEnum.Overlay.ToString()
+                    Return "Overlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
                 Case "append/overlay"
-                    Return WinEDDS.OverwriteModeEnum.AppendOverlay.ToString()
+                    Return "AppendOverlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
                 Case Else
                     Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
             End Select
@@ -884,11 +885,11 @@ Namespace kCura.EDDS.WinForm
 
         Private Function GetOverwriteDropdownItem(ByVal input As String) As String
             Select Case input.ToLower
-                Case WinEDDS.OverwriteModeEnum.Append.ToString()
+                Case "append"   'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
                     Return "Append Only"
-                Case WinEDDS.OverwriteModeEnum.Overlay.ToString()
+                Case "overlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
                     Return "Overlay Only"
-                Case WinEDDS.OverwriteModeEnum.AppendOverlay.ToString()
+                Case "appendoverlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
                     Return "Append/Overlay"
                 Case Else
                     Throw New IndexOutOfRangeException("'" & input.ToLower & "' isn't a valid option.")
@@ -972,7 +973,8 @@ Namespace kCura.EDDS.WinForm
         End Sub
 
         Private Function IsOverlayBehaviorEnabled() As Boolean
-            If GetOverwrite.ToLower = WinEDDS.OverwriteModeEnum.Append.ToString() Then
+            'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
+            If GetOverwrite.ToLower = "append" Then
                 Return False
             End If
             For Each fieldName As String In Me._fieldMap.FieldColumns.RightListBoxItems
@@ -1078,11 +1080,12 @@ Namespace kCura.EDDS.WinForm
             End If
             LoadFile.LoadNativeFiles = _loadNativeFiles.Checked
             If _overwriteDropdown.SelectedItem Is Nothing Then
-                LoadFile.OverwriteDestination = WinEDDS.OverwriteModeEnum.Append.ToString()
+                LoadFile.OverwriteDestination = "Append" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
             Else
                 LoadFile.OverwriteDestination = Me.GetOverwrite
             End If
-            If LoadFile.OverwriteDestination = WinEDDS.OverwriteModeEnum.Overlay.ToString() Then
+            'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
+            If LoadFile.OverwriteDestination.ToLower = "overlay" Then
                 LoadFile.IdentityFieldId = DirectCast(_overlayIdentifier.SelectedItem, DocumentField).FieldID
             Else
                 LoadFile.IdentityFieldId = -1
@@ -1118,7 +1121,8 @@ Namespace kCura.EDDS.WinForm
                 End If
             End If
             LoadFile.CreateFolderStructure = _buildFolderStructure.Checked
-            If LoadFile.OverwriteDestination <> WinEDDS.OverwriteModeEnum.Overlay.ToString() AndAlso LoadFile.OverwriteDestination <> WinEDDS.OverwriteModeEnum.AppendOverlay.ToString() Then
+            'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
+            If LoadFile.OverwriteDestination.ToLower <> "overlay" AndAlso LoadFile.OverwriteDestination.ToLower <> "appendoverlay" Then
                 If LoadFile.CreateFolderStructure Then
                     If Not _destinationFolderPath.SelectedItem Is Nothing Then
                         LoadFile.FolderStructureContainedInColumn = _destinationFolderPath.SelectedItem.ToString
@@ -1632,7 +1636,8 @@ Namespace kCura.EDDS.WinForm
 
         Private Sub _overwriteDestination_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overwriteDropdown.SelectedIndexChanged
             LoadFile.OverwriteDestination = Me.GetOverwrite
-            If LoadFile.OverwriteDestination <> WinEDDS.OverwriteModeEnum.Overlay.ToString() Then
+            'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
+            If LoadFile.OverwriteDestination.ToLower <> "overlay" Then
                 For Each field As DocumentField In _overlayIdentifier.Items
                     If field.FieldCategory = Relativity.FieldCategory.Identifier Then
                         _overlayIdentifier.SelectedItem = field
@@ -1641,12 +1646,12 @@ Namespace kCura.EDDS.WinForm
                 Next
             End If
             If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
-                Select Case LoadFile.OverwriteDestination
-                    Case WinEDDS.OverwriteModeEnum.Append.ToString()
+                Select Case LoadFile.OverwriteDestination.ToLower
+                    Case "append" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
                         _buildFolderStructure.Enabled = True
                         _destinationFolderPath.Enabled = _buildFolderStructure.Checked
                         _overlayIdentifier.Enabled = False
-                    Case WinEDDS.OverwriteModeEnum.Overlay.ToString()
+                    Case "overlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
                         _destinationFolderPath.Enabled = False
                         _buildFolderStructure.Checked = False
                         _buildFolderStructure.Enabled = False
@@ -1662,13 +1667,13 @@ Namespace kCura.EDDS.WinForm
                         _overlayIdentifier.Enabled = False
                 End Select
             ElseIf Me.IsChildObject Then
-                Select Case LoadFile.OverwriteDestination
-                    Case WinEDDS.OverwriteModeEnum.Append.ToString()
+                Select Case LoadFile.OverwriteDestination.ToLower
+                    Case "append" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
                         _destinationFolderPath.Enabled = True
                         _buildFolderStructure.Checked = True
                         _buildFolderStructure.Enabled = False
                         _overlayIdentifier.Enabled = False
-                    Case WinEDDS.OverwriteModeEnum.Overlay.ToString()
+                    Case "overlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
                         _destinationFolderPath.Enabled = False
                         _buildFolderStructure.Checked = False
                         _buildFolderStructure.Enabled = True
@@ -1685,8 +1690,8 @@ Namespace kCura.EDDS.WinForm
                 _buildFolderStructure.Checked = False
                 _destinationFolderPath.SelectedItem = Nothing
                 _destinationFolderPath.Text = "Select ..."
-                Select Case LoadFile.OverwriteDestination
-                    Case WinEDDS.OverwriteModeEnum.Overlay.ToString()
+                Select Case LoadFile.OverwriteDestination.ToLower
+                    Case "overlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
                         _overlayIdentifier.Enabled = True
                     Case Else
                         _overlayIdentifier.Enabled = False
@@ -1892,11 +1897,11 @@ Namespace kCura.EDDS.WinForm
                 End If
             ElseIf Me.IsChildObject Then
                 Select Case Me.GetOverwrite.ToLower
-                    Case WinEDDS.OverwriteModeEnum.Append.ToString(), WinEDDS.OverwriteModeEnum.AppendOverlay.ToString()
+                    Case "append", "appendoverlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
                         _destinationFolderPath.Enabled = True
                         _destinationFolderPath.SelectedItem = Nothing
                         _destinationFolderPath.Text = "Select ..."
-                    Case WinEDDS.OverwriteModeEnum.Overlay.ToString()
+                    Case "overlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
                         If _buildFolderStructure.Checked Then
                             _destinationFolderPath.Enabled = True
                         Else

@@ -466,7 +466,8 @@ Namespace kCura.EDDS.WinForm
 				Me.ImageLoadFile.ReplaceFullText = False
 				Me.ImageLoadFile.BeginBatesFieldArtifactID = CType(_beginBatesDropdown.SelectedValue, Int32)
 			Else
-				If Me.GetOverwrite = WinEDDS.OverwriteModeEnum.Overlay.ToString() Then
+				'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
+				If Me.GetOverwrite.ToLower = "overlay" Then
 					Me.ImageLoadFile.IdentityFieldId = CType(_beginBatesDropdown.SelectedValue, Int32)
 				Else
 					Me.ImageLoadFile.IdentityFieldId = -1
@@ -484,23 +485,23 @@ Namespace kCura.EDDS.WinForm
 		Private Function GetOverwrite() As String
 			Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
 				Case "append only"
-					Return WinEDDS.OverwriteModeEnum.Append.ToString()
+					Return "Append"	'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
 				Case "overlay only"
-					Return WinEDDS.OverwriteModeEnum.Overlay.ToString()
+					Return "Overlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
 				Case "append/overlay"
-					Return WinEDDS.OverwriteModeEnum.AppendOverlay.ToString()
+					Return "AppendOverlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
 				Case Else
 					Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
 			End Select
 		End Function
 
 		Private Function GetOverwriteDropdownItem(ByVal input As String) As String
-			Select Case input
-				Case WinEDDS.OverwriteModeEnum.Append.ToString()
+			Select Case input.ToLower
+				Case "append"	'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
 					Return "Append Only"
-				Case WinEDDS.OverwriteModeEnum.Overlay.ToString()
+				Case "overlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
 					Return "Overlay Only"
-				Case WinEDDS.OverwriteModeEnum.AppendOverlay.ToString()
+				Case "appendoverlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
 					Return "Append/Overlay"
 				Case Else
 					Throw New IndexOutOfRangeException("'" & input.ToLower & "' isn't a valid option.")
