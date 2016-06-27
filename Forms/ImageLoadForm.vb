@@ -467,7 +467,7 @@ Namespace kCura.EDDS.WinForm
 				Me.ImageLoadFile.BeginBatesFieldArtifactID = CType(_beginBatesDropdown.SelectedValue, Int32)
 			Else
 				'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
-				If Me.GetOverwrite.ToLower = "overlay" Then
+				If CType([Enum].Parse(GetType(ImportOverwriteModeEnum), Me.GetOverwrite, True), ImportOverwriteModeEnum) = ImportOverwriteModeEnum.Overlay
 					Me.ImageLoadFile.IdentityFieldId = CType(_beginBatesDropdown.SelectedValue, Int32)
 				Else
 					Me.ImageLoadFile.IdentityFieldId = -1
@@ -485,23 +485,23 @@ Namespace kCura.EDDS.WinForm
 		Private Function GetOverwrite() As String
 			Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
 				Case "append only"
-					Return "Append"	'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
+					Return ImportOverwriteModeEnum.Append.ToString
 				Case "overlay only"
-					Return "Overlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
+					Return ImportOverwriteModeEnum.Overlay.ToString
 				Case "append/overlay"
-					Return "AppendOverlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
+					Return ImportOverwriteModeEnum.AppendOverlay.ToString
 				Case Else
 					Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
 			End Select
 		End Function
 
 		Private Function GetOverwriteDropdownItem(ByVal input As String) As String
-			Select Case input.ToLower
-				Case "append"	'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
+			Select Case CType([Enum].Parse(GetType(ImportOverwriteModeEnum), input, True), ImportOverwriteModeEnum)
+				Case ImportOverwriteModeEnum.Append
 					Return "Append Only"
-				Case "overlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
+				Case ImportOverwriteModeEnum.Overlay
 					Return "Overlay Only"
-				Case "appendoverlay" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
+				Case ImportOverwriteModeEnum.AppendOverlay
 					Return "Append/Overlay"
 				Case Else
 					Throw New IndexOutOfRangeException("'" & input.ToLower & "' isn't a valid option.")
@@ -547,7 +547,7 @@ Namespace kCura.EDDS.WinForm
 			Else
 				_importMenuSendEmailNotificationItem.Checked = ImageLoadFile.SendEmailOnLoadCompletion
 			End If
-			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite)
+			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite.ToString)
 			Me.Cursor = Cursors.Default
 		End Sub
 
@@ -624,7 +624,7 @@ Namespace kCura.EDDS.WinForm
 				Me.ImageLoadFile = _application.ReadImageLoadFile(_loadImageLoadFileDialog.FileName)
 				Me.ImageLoadFile.CopyFilesToDocumentRepository = copyFilesToRepository
 				_encodingPicker.SelectedEncoding = Me.ImageLoadFile.FullTextEncoding
-				_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite)
+				_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite.ToString)
 				_filePath.Text = ImageLoadFile.FileName
 				_replaceFullText.Checked = ImageLoadFile.ReplaceFullText
 				_autoNumberingOn.Checked = ImageLoadFile.AutoNumberImages
