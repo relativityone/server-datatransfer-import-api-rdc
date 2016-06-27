@@ -27,7 +27,7 @@ Namespace kCura.WinEDDS
 		Public Sub New()
 			'Public Sub New(ByVal identity As Relativity.Core.EDDSIdentity)
 			MyBase.New()
-            Overwrite = "Append" 'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
+			Overwrite = ImportOverwriteModeEnum.Append.ToString
 			ProductionArtifactID = 0
 			'Me.Identity = identity
 		End Sub

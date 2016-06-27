@@ -210,8 +210,7 @@ Namespace kCura.WinEDDS
 			End If
 
 			' only do this if we are NOT in Overlay mode
-			'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
-			If _settings.OverwriteDestination.ToLower <> "overlay" Then
+			If _settings.OverwriteDestination.ToLower <> ImportOverwriteModeEnum.Overlay.ToString.ToLower Then
 				If Not identifierField Is Nothing And _artifactTypeID = Relativity.ArtifactType.Document Then
 					For Each field As Api.ArtifactField In unmappedRelationalNoBlankFields.Values
 						If record.IdentifierField IsNot Nothing Then

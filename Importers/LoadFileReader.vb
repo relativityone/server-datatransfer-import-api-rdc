@@ -79,8 +79,7 @@ Namespace kCura.WinEDDS
 			_previewCodeCount = args.PreviewCodeCount
 			_startLineNumber = args.StartLineNumber
 			MulticodeMatrix = New System.Collections.Hashtable
-			'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
-			If _keyFieldID > 0 AndAlso args.OverwriteDestination.ToLower <> "overlay" Then
+			If _keyFieldID > 0 AndAlso args.OverwriteDestination.ToLower <> ImportOverwriteModeEnum.Overlay.ToString.ToLower Then
 				_keyFieldID = -1
 			End If
 			If _keyFieldID = -1 Then

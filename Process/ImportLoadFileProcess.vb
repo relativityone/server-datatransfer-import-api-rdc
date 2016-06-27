@@ -179,12 +179,10 @@ Namespace kCura.WinEDDS
 				If Not LoadFile.ExtractedTextFileEncoding Is Nothing Then
 					retval.ExtractedTextFileEncodingCodePageID = LoadFile.ExtractedTextFileEncoding.CodePage
 				End If
-				Select Case LoadFile.OverwriteDestination.ToLower
-					'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
-					Case "overlay"
+				Select Case CType([Enum].Parse(GetType(ImportOverwriteModeEnum), LoadFile.OverwriteDestination, True), ImportOverwriteModeEnum)
+					Case ImportOverwriteModeEnum.Overlay
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Overlay
-					'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
-					Case "appendoverlay"
+					Case ImportOverwriteModeEnum.AppendOverlay
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Both
 					Case Else
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Append
