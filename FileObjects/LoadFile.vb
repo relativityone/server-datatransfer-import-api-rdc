@@ -26,8 +26,9 @@ Namespace kCura.WinEDDS
 		Public ArtifactTypeID As Integer
 		Public HierarchicalValueDelimiter As Char
 		Public PreviewCodeCount As New System.Collections.Specialized.HybridDictionary
-		Public SourceFileEncoding As System.Text.Encoding
-		Public ExtractedTextFileEncoding As System.Text.Encoding
+        Public SourceFileEncoding As System.Text.Encoding
+        Public LongTextColumnThatContainsPathToFullText As String
+        Public ExtractedTextFileEncoding As System.Text.Encoding
 		Public StartLineNumber As Int64
 		Public IdentityFieldId As Int32 = -1
 		Public SendEmailOnLoadCompletion As Boolean
@@ -37,6 +38,7 @@ Namespace kCura.WinEDDS
 		Public OIFileTypeColumnName As String
 		Public FileSizeMapped As Boolean
 		Public FileSizeColumn As String
+		Public FileNameColumn As String
 		Public OverlayBehavior As FieldOverlayBehavior?
 
 		<NonSerialized()> Public ObjectFieldIdListContainsArtifactId As IList(Of Int32)
@@ -48,7 +50,7 @@ Namespace kCura.WinEDDS
 		<NonSerialized()> Public SelectedCasePath As String = ""
 		<NonSerialized()> Public CopyFilesToDocumentRepository As Boolean = True
 		'<NonSerialized()> Public Identity As Relativity.Core.EDDSIdentity
-		
+
 		Public Enum FieldOverlayBehavior
 			UseRelativityDefaults = 0
 			MergeAll = 1
@@ -98,71 +100,84 @@ Namespace kCura.WinEDDS
 			info.AddValue("SelectedIdentifierField", Me.SelectedIdentifierField, GetType(kCura.WinEDDS.DocumentField))
 			info.AddValue("FolderStructureContainedInColumn", Me.FolderStructureContainedInColumn, GetType(String))
 			info.AddValue("CreateFolderStructure", Me.CreateFolderStructure, GetType(Boolean))
-			info.AddValue("FullTextColumnContainsFileLocation", Me.FullTextColumnContainsFileLocation, GetType(Boolean))
-			info.AddValue("GroupIdentifierColumn", Me.GroupIdentifierColumn, GetType(String))
-			info.AddValue("DataGridIDColumn", Me.DataGridIDColumn, GetType(String))
-			info.AddValue("HierarchicalValueDelimiter", AscW(Me.HierarchicalValueDelimiter), GetType(Integer))
-			If Me.SourceFileEncoding Is Nothing Then
-				info.AddValue("SourceFileEncoding", -1, GetType(Int32))
-			Else
-				info.AddValue("SourceFileEncoding", Me.SourceFileEncoding.CodePage, GetType(Int32))
-			End If
-			info.AddValue("ArtifactTypeID", Me.ArtifactTypeID, GetType(Int32))
-			info.AddValue("StartLineNumber", Me.StartLineNumber, GetType(Int64))
-			info.AddValue("IdentityFieldId", Me.IdentityFieldId, GetType(Int32))
-			info.AddValue("SendEmailOnLoadCompletion", Me.SendEmailOnLoadCompletion, GetType(Boolean))
-			info.AddValue("ForceFolderPreview", Me.ForceFolderPreview, GetType(Boolean))
-			If Me.FullTextColumnContainsFileLocation Then
-				If Me.ExtractedTextFileEncoding Is Nothing Then
-					info.AddValue("ExtractedTextFileEncoding", -1, GetType(Int32))
-				Else
-					info.AddValue("ExtractedTextFileEncoding", Me.ExtractedTextFileEncoding.CodePage, GetType(Int32))
-				End If
-			End If
-		End Sub
+            info.AddValue("FullTextColumnContainsFileLocation", Me.FullTextColumnContainsFileLocation, GetType(Boolean))
+            info.AddValue("LongTextColumnThatContainsPathToFullText", Me.LongTextColumnThatContainsPathToFullText, GetType(String))
+            info.AddValue("GroupIdentifierColumn", Me.GroupIdentifierColumn, GetType(String))
+            info.AddValue("DataGridIDColumn", Me.DataGridIDColumn, GetType(String))
+            info.AddValue("HierarchicalValueDelimiter", AscW(Me.HierarchicalValueDelimiter), GetType(Integer))
+            If Me.SourceFileEncoding Is Nothing Then
+                info.AddValue("SourceFileEncoding", -1, GetType(Int32))
+            Else
+                info.AddValue("SourceFileEncoding", Me.SourceFileEncoding.CodePage, GetType(Int32))
+            End If
+            info.AddValue("ArtifactTypeID", Me.ArtifactTypeID, GetType(Int32))
+            info.AddValue("StartLineNumber", Me.StartLineNumber, GetType(Int64))
+            info.AddValue("IdentityFieldId", Me.IdentityFieldId, GetType(Int32))
+            info.AddValue("SendEmailOnLoadCompletion", Me.SendEmailOnLoadCompletion, GetType(Boolean))
+            info.AddValue("ForceFolderPreview", Me.ForceFolderPreview, GetType(Boolean))
+            If Me.FullTextColumnContainsFileLocation Then
+                If Me.ExtractedTextFileEncoding Is Nothing Then
+                    info.AddValue("ExtractedTextFileEncoding", -1, GetType(Int32))
+                Else
+                    info.AddValue("ExtractedTextFileEncoding", Me.ExtractedTextFileEncoding.CodePage, GetType(Int32))
+                End If
+            End If
+        End Sub
 
-		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
-			With info
-				Me.FilePath = info.GetString("FilePath")
-				Try
-					If Not System.IO.File.Exists(Me.FilePath) Then
-						Me.FilePath = ""
-					End If
-				Catch ex As System.Exception
-					Me.FilePath = ""
-				End Try
-				Me.NativeFilePathColumn = info.GetString("NativeFilePathColumn")
-				Me.FirstLineContainsHeaders = info.GetBoolean("FirstLineContainsHeaders")
-				Me.LoadNativeFiles = info.GetBoolean("LoadNativeFiles")
-				Me.OverwriteDestination = info.GetString("OverwriteDestination")
+        Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
+            With info
+                Me.FilePath = info.GetString("FilePath")
+                Try
+                    If Not System.IO.File.Exists(Me.FilePath) Then
+                        Me.FilePath = ""
+                    End If
+                Catch ex As System.Exception
+                    Me.FilePath = ""
+                End Try
+                Me.NativeFilePathColumn = info.GetString("NativeFilePathColumn")
+                Me.FirstLineContainsHeaders = info.GetBoolean("FirstLineContainsHeaders")
+                Me.LoadNativeFiles = info.GetBoolean("LoadNativeFiles")
+                Me.OverwriteDestination = info.GetString("OverwriteDestination")
 
-				Me.RecordDelimiter = ChrW(info.GetInt32("RecordDelimiter"))
-				Me.QuoteDelimiter = ChrW(info.GetInt32("QuoteDelimiter"))
-				Me.NewlineDelimiter = ChrW(info.GetInt32("NewlineDelimiter"))
-				Me.MultiRecordDelimiter = ChrW(info.GetInt32("MultiRecordDelimiter"))
+                Me.RecordDelimiter = ChrW(info.GetInt32("RecordDelimiter"))
+                Me.QuoteDelimiter = ChrW(info.GetInt32("QuoteDelimiter"))
+                Me.NewlineDelimiter = ChrW(info.GetInt32("NewlineDelimiter"))
+                Me.MultiRecordDelimiter = ChrW(info.GetInt32("MultiRecordDelimiter"))
 
-				Me.SelectedIdentifierField = DirectCast(info.GetValue("SelectedIdentifierField", GetType(kCura.WinEDDS.DocumentField)), kCura.WinEDDS.DocumentField)
-				Try
-					Me.GroupIdentifierColumn = DirectCast(info.GetValue("GroupIdentifierColumn", GetType(String)), String)
-				Catch
-					Me.GroupIdentifierColumn = ""
-				End Try
+                Me.SelectedIdentifierField = DirectCast(info.GetValue("SelectedIdentifierField", GetType(kCura.WinEDDS.DocumentField)), kCura.WinEDDS.DocumentField)
+                Try
+                    Me.GroupIdentifierColumn = DirectCast(info.GetValue("GroupIdentifierColumn", GetType(String)), String)
+                Catch
+                    Me.GroupIdentifierColumn = ""
+                End Try
 
-				Try
-					Me.DataGridIDColumn = DirectCast(info.GetValue("DataGridIDColumn", GetType(String)), String)
-				Catch
-					Me.DataGridIDColumn = ""
-				End Try
+                Try
+                    Me.DataGridIDColumn = DirectCast(info.GetValue("DataGridIDColumn", GetType(String)), String)
+                Catch
+                    Me.DataGridIDColumn = ""
+                End Try
 
 				Me.FieldMap = DirectCast(info.GetValue("FieldMap", GetType(kCura.WinEDDS.LoadFileFieldMap)), LoadFileFieldMap)
 
 				Me.FolderStructureContainedInColumn = info.GetString("FolderStructureContainedInColumn")
 				Me.CreateFolderStructure = info.GetBoolean("CreateFolderStructure")
+
 				Try
 					Me.FullTextColumnContainsFileLocation = info.GetBoolean("FullTextColumnContainsFileLocation")
 				Catch ex As System.Exception
 					Me.FullTextColumnContainsFileLocation = False
 				End Try
+
+				Try
+					Me.LongTextColumnThatContainsPathToFullText = info.GetString("LongTextColumnThatContainsPathToFullText")
+				Catch
+					If Me.FullTextColumnContainsFileLocation Then
+						Me.LongTextColumnThatContainsPathToFullText = "Extracted Text"
+					Else
+						Me.LongTextColumnThatContainsPathToFullText = ""
+					End If
+				End Try
+
 				Dim hval As Int32 = 0
 				Try
 					hval = info.GetInt32("HierarchicalValueDelimiter")

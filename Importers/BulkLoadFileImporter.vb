@@ -7,6 +7,8 @@ Imports Relativity
 Imports Relativity.MassImport
 Imports Microsoft.VisualBasic
 Imports System.Collections.Generic
+Imports kCura.EDDS.WebAPI.DocumentManagerBase
+Imports kCura.WinEDDS.Service
 
 Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
@@ -18,6 +20,8 @@ Namespace kCura.WinEDDS
 		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
 		Private _parentFolderDTO As kCura.EDDS.WebAPI.FolderManagerBase.Folder
 		Protected _auditManager As kCura.WinEDDS.Service.AuditManager
+		Protected _documentManager As kCura.WinEDDS.Service.DocumentManager
+		Protected _relativityManager As kCura.WinEDDS.Service.RelativityManager
 
 		Private _recordCount As Int64 = -1
 		Private _allFields As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
@@ -42,6 +46,7 @@ Namespace kCura.WinEDDS
 		Private _outputObjectFileWriter As System.IO.StreamWriter
 		Private _caseInfo As Relativity.CaseInfo
 		Private _overlayArtifactID As Int32
+		Private _executionSource As Relativity.ExecutionSource
 
 		Private _runID As String = System.Guid.NewGuid.ToString.Replace("-", "_")
 
@@ -63,6 +68,8 @@ Namespace kCura.WinEDDS
 		Private _statisticsLastUpdated As System.DateTime = System.DateTime.Now
 		Private _unmappedRelationalFields As System.Collections.ArrayList
 
+		
+		Private _cloudInstance As Boolean
 		Private _bulkLoadFileFieldDelimiter As String
 
 		Protected Property LinkDataGridRecords As Boolean
@@ -264,10 +271,13 @@ Namespace kCura.WinEDDS
 		''' <param name="processID">The identifier of the process running</param>
 		''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
 		''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
+		''' <param name="executionSource">Optional parameter that states where the import
+		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String)
-			Me.New(args, processController, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, InitializeArtifactReader:=True)
+		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal cloudInstance As Boolean,
+					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
+			Me.New(args, processController, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, cloudInstance, initializeArtifactReader:=True, executionSource := executionSource)
 		End Sub
 
 		''' <summary>
@@ -281,10 +291,13 @@ Namespace kCura.WinEDDS
 		''' <param name="processID">The identifier of the process running</param>
 		''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
 		''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
+		''' <param name="executionSource">Optional parameter that states where the import
+		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String)
-			Me.New(args, processController, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, InitializeArtifactReader:=True)
+		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String,  ByVal cloudInstance As Boolean,
+					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
+			Me.New(args, processController, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, cloudInstance, initializeArtifactReader:=True, executionSource := executionSource)
 		End Sub
 
 		''' <summary>
@@ -298,13 +311,17 @@ Namespace kCura.WinEDDS
 		''' <param name="processID">The identifier of the process running</param>
 		''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
 		''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
+		''' <param name="executionSource">Optional parameter that states where the import
+		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(args As LoadFile, processController As kCura.Windows.Process.Controller, timeZoneOffset As Int32, autoDetect As Boolean, initializeUploaders As Boolean, processID As Guid, doRetryLogic As Boolean, bulkLoadFileFieldDelimiter As String, initializeArtifactReader As Boolean)
+		Public Sub New(args As LoadFile, processController As kCura.Windows.Process.Controller, timeZoneOffset As Int32, autoDetect As Boolean, initializeUploaders As Boolean, processID As Guid, doRetryLogic As Boolean, bulkLoadFileFieldDelimiter As String,  ByVal cloudInstance As Boolean, initializeArtifactReader As Boolean,
+					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
 			MyBase.New(args, timeZoneOffset, doRetryLogic, autoDetect, initializeArtifactReader)
 
 			' get an instance of the specific type of artifact reader so we can get the fieldmapped event
-
+			_executionSource = executionSource
+			_cloudInstance = cloudInstance
 			_overwrite = args.OverwriteDestination
 			If args.CopyFilesToDocumentRepository Then
 				'DEFECT: SF#226211, repositories without trailing \ caused import to fail. Changed to use Path.Combine. -tmh
@@ -417,6 +434,7 @@ Namespace kCura.WinEDDS
 				RaiseEvent StartFileImport()
 				_timekeeper.MarkStart("ReadFile_InitializeMembers")
 				Dim validateBcp As FileUploadReturnArgs = _bcpuploader.ValidateBcpPath(_caseInfo.ArtifactID, _outputFileWriter.OutputNativeFilePath)
+				'TODO: your check here
 				If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError And Not Config.EnableSingleModeImport Then
 					Throw New BcpPathAccessException(validateBcp.Value)
 				Else
@@ -427,6 +445,22 @@ Namespace kCura.WinEDDS
 				End If
 				_processedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
 				_timekeeper.MarkEnd("ReadFile_InitializeMembers")
+
+				If (_cloudInstance) Then
+					If (_overwrite.ToLower() = "none" And _artifactTypeID = Relativity.ArtifactType.Document) Then
+						Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
+						Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
+						Dim fileLineStart As Long = _startLineNumber
+						If _startLineNumber <= 0 Then fileLineStart = 1
+						Dim countAfterJob As Long = currentDocCount + (_recordCount - (fileLineStart - 1))
+						If (docLimit <> 0 And countAfterJob > docLimit) Then
+							Dim errorMessage As String = String.Format("The document import was cancelled.  It would have exceeded the workspace's document limit of {1} by {0} documents.", countAfterJob - docLimit, docLimit)
+							Throw New Exception(errorMessage)
+							Return False
+						End If
+					End If
+				End If
+
 				_timekeeper.MarkStart("ReadFile_ProcessDocuments")
 				_columnHeaders = _artifactReader.GetColumnNames(_settings)
 				If _firstLineContainsColumnNames Then _offset = -1
@@ -514,6 +548,8 @@ Namespace kCura.WinEDDS
 		Protected Overrides Sub InitializeManagers(ByVal args As LoadFile)
 			MyBase.InitializeManagers(args)
 			_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credentials, args.CookieContainer)
+			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credentials, args.CookieContainer)
+			_relativityManager = New kCura.WinEDDS.Service.RelativityManager(args.Credentials, args.CookieContainer)
 		End Sub
 
 		Private Sub DeleteFiles()
@@ -548,15 +584,19 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Function ManageDocument(ByVal record As Api.ArtifactFieldCollection, ByVal lineStatus As Int64) As String
-			Dim filename As String = Nothing
+			Dim filename As String = String.Empty
 			Dim fileGuid As String = String.Empty
 			Dim uploadFile As Boolean = record.FieldList(Relativity.FieldTypeHelper.FieldType.File).Length > 0 AndAlso Not record.FieldList(Relativity.FieldTypeHelper.FieldType.File)(0).Value Is Nothing
 			Dim fileExists As Boolean
 			Dim identityValue As String = String.Empty
 			Dim parentFolderID As Int32
-			Dim fullFilePath As String = ""
+			Dim fullFilePath As String = String.Empty
 			Dim oixFileIdData As OI.FileID.FileIDData = Nothing
 			Dim destinationVolume As String = Nothing
+			Dim injectableContainer As Api.IInjectableFieldCollection = TryCast(record, kCura.WinEDDS.Api.IInjectableFieldCollection)
+
+			Dim injectableContainerIsNothing As Boolean = injectableContainer Is Nothing
+
 			_timekeeper.MarkStart("ManageDocument_Filesystem")
 			If uploadFile AndAlso _artifactTypeID = Relativity.ArtifactType.Document Then
 				filename = record.FieldList(Relativity.FieldTypeHelper.FieldType.File)(0).Value.ToString
@@ -593,8 +633,11 @@ Namespace kCura.WinEDDS
 						If Me.DisableNativeValidation Then
 							oixFileIdData = Nothing
 						Else
-							Dim idDataExtractor As kCura.WinEDDS.Api.IHasOixFileType = TryCast(record, kCura.WinEDDS.Api.IHasOixFileType)
-							If idDataExtractor Is Nothing Then
+							Dim idDataExtractor As kCura.WinEDDS.Api.IHasOixFileType = Nothing
+							If (Not injectableContainerIsNothing) Then
+								idDataExtractor = injectableContainer.FileIdData
+							End If
+							If (idDataExtractor Is Nothing) Then
 								oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
 							Else
 								oixFileIdData = idDataExtractor.GetFileIDData()
@@ -616,7 +659,12 @@ Namespace kCura.WinEDDS
 							fileGuid = System.Guid.NewGuid.ToString
 						End If
 						fullFilePath = filename
-						filename = filename.Substring(filename.LastIndexOf("\") + 1)
+                        If (injectableContainerIsNothing) Then
+                            filename = Path.GetFileName(filename)
+                        ElseIf (injectableContainer.HasFileName()) Then
+                            filename = injectableContainer.FileName.GetFileName()
+						End If
+
 						WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
 					Catch ex As System.IO.FileNotFoundException
 						If Me.DisableNativeLocationValidation Then
@@ -659,7 +707,7 @@ Namespace kCura.WinEDDS
 						End If
 						Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, _destinationFolderColumnIndex)
 					Else
-						Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID, _
+						Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID,
 						textIdentifier, _artifactTypeID).Tables(0)
 						If parentObjectTable.Rows.Count > 1 Then
 							Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
@@ -696,7 +744,10 @@ Namespace kCura.WinEDDS
 			End If
 
 			Dim doc As MetaDocument
-			Dim fileSizeExtractor As kCura.WinEDDS.Api.IHasFileSize = TryCast(record, kCura.WinEDDS.Api.IHasFileSize)
+			Dim fileSizeExtractor As kCura.WinEDDS.Api.IHasFileSize = Nothing
+			If (Not injectableContainerIsNothing) Then
+				fileSizeExtractor = injectableContainer.FileSize
+			End If
 			If fileSizeExtractor Is Nothing Then
 				doc = New MetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileIdData, lineStatus, destinationVolume, folderPath, dataGridID)
 			Else
@@ -1002,6 +1053,7 @@ Namespace kCura.WinEDDS
 			End Select
 			settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
 			settings.LoadImportedFullTextFromServer = Me.LoadImportedFullTextFromServer
+			settings.ExecutionSource = CType(_executionSource, kCura.EDDS.WebAPI.BulkImportManagerBase.ExecutionSource)
 
 			_statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
 			_statistics.MetadataBytes += (Me.GetFileLength(_outputCodeFilePath) + Me.GetFileLength(outputNativePath) + Me.GetFileLength(_outputObjectFilePath) + Me.GetFileLength(_outputFileWriter.OutputDataGridFilePath))
@@ -1048,10 +1100,10 @@ Namespace kCura.WinEDDS
 				If Not item.DocumentField Is Nothing Then
 					Dim i As Integer = retval.Add(item.DocumentField.ToFieldInfo)
 					If Not ObjectFieldIdListContainsArtifactId Is Nothing Then
-						If (CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).Type = FieldType.Object _
-						 Or CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).Type = FieldType.Objects) _
+						If (CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).Type = kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType.Object _
+						 Or CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).Type = kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType.Objects) _
 						AndAlso ObjectFieldIdListContainsArtifactId.Contains(CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).ArtifactID) Then
-							CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).ImportBehavior = ImportBehaviorChoice.ObjectFieldContainsArtifactId
+							CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).ImportBehavior = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportBehaviorChoice.ObjectFieldContainsArtifactId
 						End If
 					End If
 				End If
@@ -1075,20 +1127,20 @@ Namespace kCura.WinEDDS
 			_outputFileWriter.MarkRollbackPosition()
 
 			_outputFileWriter.OutputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'kCura_Import_ID
-			_outputFileWriter.OutputNativeFileWriter.Write(mdoc.LineStatus.ToString & _bulkLoadFileFieldDelimiter)	'kCura_Import_Status
+			_outputFileWriter.OutputNativeFileWriter.Write(mdoc.LineStatus.ToString & _bulkLoadFileFieldDelimiter)   'kCura_Import_Status
 			_outputFileWriter.OutputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'kCura_Import_IsNew
 			_outputFileWriter.OutputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'ArtifactID
 			_outputFileWriter.OutputNativeFileWriter.Write(mdoc.LineNumber & _bulkLoadFileFieldDelimiter) 'kCura_Import_OriginalLineNumber
 
 			If mdoc.UploadFile And mdoc.IndexFileInDB Then
-				_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FileGuid & _bulkLoadFileFieldDelimiter)	'kCura_Import_FileGuid
-				_outputFileWriter.OutputNativeFileWriter.Write(mdoc.Filename & _bulkLoadFileFieldDelimiter)	'kCura_Import_FileName
+				_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FileGuid & _bulkLoadFileFieldDelimiter)  'kCura_Import_FileGuid
+				_outputFileWriter.OutputNativeFileWriter.Write(mdoc.Filename & _bulkLoadFileFieldDelimiter)  'kCura_Import_FileName
 				If _settings.CopyFilesToDocumentRepository Then
-					_outputFileWriter.OutputNativeFileWriter.Write(_defaultDestinationFolderPath & mdoc.DestinationVolume & "\" & mdoc.FileGuid & _bulkLoadFileFieldDelimiter)	'kCura_Import_Location
-					_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter)	'kCura_Import_OriginalFileLocation
+					_outputFileWriter.OutputNativeFileWriter.Write(_defaultDestinationFolderPath & mdoc.DestinationVolume & "\" & mdoc.FileGuid & _bulkLoadFileFieldDelimiter)  'kCura_Import_Location
+					_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter) 'kCura_Import_OriginalFileLocation
 				Else
-					_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter)	'kCura_Import_Location
-					_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter)	'kCura_Import_OriginalFileLocation
+					_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter) 'kCura_Import_Location
+					_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FullFilePath & _bulkLoadFileFieldDelimiter) 'kCura_Import_OriginalFileLocation
 				End If
 				Dim fileSizeExtractor As kCura.WinEDDS.Api.IHasFileSize = TryCast(mdoc, kCura.WinEDDS.Api.IHasFileSize)
 				If (fileSizeExtractor Is Nothing) Then
@@ -1098,10 +1150,10 @@ Namespace kCura.WinEDDS
 				End If
 
 			Else
-				_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)	'kCura_Import_FileGuid
-				_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)	'kCura_Import_FileName
-				_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)	'kCura_Import_Location
-				_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)	'kCura_Import_OriginalFileLocation
+				_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)   'kCura_Import_FileGuid
+				_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)   'kCura_Import_FileName
+				_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)   'kCura_Import_Location
+				_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)   'kCura_Import_OriginalFileLocation
 				_outputFileWriter.OutputNativeFileWriter.Write("0" & _bulkLoadFileFieldDelimiter) 'kCura_Import_FileSize
 			End If
 			_outputFileWriter.OutputNativeFileWriter.Write(mdoc.ParentFolderID & _bulkLoadFileFieldDelimiter) 'kCura_Import_ParentFolderID
@@ -1178,129 +1230,131 @@ Namespace kCura.WinEDDS
 					_outputFileWriter.OutputNativeFileWriter.Write(mdoc.FolderPath & _bulkLoadFileFieldDelimiter)
 				End If
 			End If
-			_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)	'kCura_DataGrid_Exception
+			_outputFileWriter.OutputNativeFileWriter.Write(_bulkLoadFileFieldDelimiter)   'kCura_DataGrid_Exception
 			_outputFileWriter.OutputNativeFileWriter.Write(vbCrLf)
 			If foundDataGridField Then
 				_outputFileWriter.OutputDataGridFileWriter.Write(vbCrLf)
 			End If
 		End Sub
 
-		Private Sub WriteDocumentField(ByRef chosenEncoding As System.Text.Encoding, field As Api.ArtifactField, ByVal outputWriter As System.IO.StreamWriter, ByVal fileBasedfullTextColumn As Boolean, ByVal delimiter As String, ByVal artifactTypeID As Int32, ByVal extractedTextEncoding As System.Text.Encoding)
-			If field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse field.Type = Relativity.FieldTypeHelper.FieldType.Code Then
-				outputWriter.Write(field.Value)
-				outputWriter.Write(delimiter)
-			ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso artifactTypeID <> Relativity.ArtifactType.Document Then
-				Dim fileFieldValues() As String = System.Web.HttpUtility.UrlDecode(field.ValueAsString).Split(Chr(11))
-				If fileFieldValues.Length > 1 Then
-					outputWriter.Write(fileFieldValues(0))
-					outputWriter.Write(delimiter)
-					outputWriter.Write(fileFieldValues(1))
-					outputWriter.Write(delimiter)
-					outputWriter.Write(fileFieldValues(2))
-					outputWriter.Write(delimiter)
-				Else
-					outputWriter.Write("")
-					outputWriter.Write(delimiter)
-					outputWriter.Write("")
-					outputWriter.Write(delimiter)
-					outputWriter.Write("")
-					outputWriter.Write(delimiter)
-				End If
-			ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso artifactTypeID = Relativity.ArtifactType.Document Then
-				'do nothing
-			ElseIf field.Category = Relativity.FieldCategory.ParentArtifact Then
-				'do nothing
-			ElseIf field.ArtifactID <= 0 Then
-				' do nothing, this is a catch-all for all "virtual fields" that are added to pass information
-				' from the load file to the file writers that shouldn't be imported as actual object field values
-			Else
-				If field.Category = Relativity.FieldCategory.FullText AndAlso fileBasedfullTextColumn Then
-					Try
-						If Not field.ValueAsString = String.Empty Then
-							chosenEncoding = extractedTextEncoding
-							Dim fileStream As Stream
 
-							Dim fileInfo As System.IO.FileInfo = New System.IO.FileInfo(field.ValueAsString)
-							Dim fileSize As Long = FileInfo.Length
-							If fileSize > GetMaxExtractedTextLength(chosenEncoding) Then
-								Throw New ExtractedTextTooLargeException
-							End If
+        Private Sub WriteDocumentField(ByRef chosenEncoding As System.Text.Encoding, field As Api.ArtifactField, ByVal outputWriter As System.IO.StreamWriter, ByVal fileBasedfullTextColumn As Boolean, ByVal delimiter As String, ByVal artifactTypeID As Int32, ByVal extractedTextEncoding As System.Text.Encoding)
+            If field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse field.Type = Relativity.FieldTypeHelper.FieldType.Code Then
+                outputWriter.Write(field.Value)
+                outputWriter.Write(delimiter)
+            ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso artifactTypeID <> Relativity.ArtifactType.Document Then
+                Dim fileFieldValues() As String = System.Web.HttpUtility.UrlDecode(field.ValueAsString).Split(Chr(11))
+                If fileFieldValues.Length > 1 Then
+                    outputWriter.Write(fileFieldValues(0))
+                    outputWriter.Write(delimiter)
+                    outputWriter.Write(fileFieldValues(1))
+                    outputWriter.Write(delimiter)
+                    outputWriter.Write(fileFieldValues(2))
+                    outputWriter.Write(delimiter)
+                Else
+                    outputWriter.Write("")
+                    outputWriter.Write(delimiter)
+                    outputWriter.Write("")
+                    outputWriter.Write(delimiter)
+                    outputWriter.Write("")
+                    outputWriter.Write(delimiter)
+                End If
+            ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso artifactTypeID = Relativity.ArtifactType.Document Then
+                'do nothing
+            ElseIf field.Category = Relativity.FieldCategory.ParentArtifact Then
+                'do nothing
+            ElseIf field.ArtifactID <= 0 Then
+                ' do nothing, this is a catch-all for all "virtual fields" that are added to pass information
+                ' from the load file to the file writers that shouldn't be imported as actual object field values
+            Else
+                Dim fieldShouldReadFromTextFile As Boolean = FieldValueContainsTextFileLocation(field)
+                If fieldShouldReadFromTextFile Then
+                    Try
+                        If Not field.ValueAsString = String.Empty Then
+                            chosenEncoding = extractedTextEncoding
+                            Dim fileStream As Stream
 
-							If Me.LoadImportedFullTextFromServer Then
-								If Not SkipExtractedTextEncodingCheck Then
-									Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
-									fileStream = determinedEncodingStream.UnderlyingStream
+                            Dim fileInfo As System.IO.FileInfo = New System.IO.FileInfo(field.ValueAsString)
+                            Dim fileSize As Long = fileInfo.Length
+                            If fileSize > GetMaxExtractedTextLength(chosenEncoding) Then
+                                Throw New ExtractedTextTooLargeException
+                            End If
 
-									Dim textField As kCura.EDDS.WebAPI.DocumentManagerBase.Field = Me.FullTextField(_settings.ArtifactTypeID)
-									Dim expectedEncoding As System.Text.Encoding = If(textField IsNot Nothing AndAlso textField.UseUnicodeEncoding, System.Text.Encoding.Unicode, Nothing)
-									Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
-									If Not System.Text.Encoding.Equals(expectedEncoding, detectedEncoding) Then
-										WriteWarning("The extracted text file's encoding was not detected to be the same as the extracted text field. The imported data may be incorrectly encoded.")
-									End If
-									If detectedEncoding IsNot Nothing Then
-										chosenEncoding = detectedEncoding
-									End If
-									Try
-										fileStream.Close()
-									Catch
-									End Try
-								End If
-								outputWriter.Write(field.Value)
-							Else
-								'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
-								' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
-								' across the network for the file, so this override allows that check to be skipped.
-								' -Phil S. 07/27/2012
-								If Not SkipExtractedTextEncodingCheck Then
-									Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
-									fileStream = determinedEncodingStream.UnderlyingStream
+                            If Me.LoadImportedFullTextFromServer Then
+                                If Not SkipExtractedTextEncodingCheck Then
+                                    Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
+                                    fileStream = determinedEncodingStream.UnderlyingStream
 
-									Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
-									If detectedEncoding IsNot Nothing Then
-										chosenEncoding = detectedEncoding
-									End If
-								Else
-									fileStream = New FileStream(field.ValueAsString, FileMode.Open, FileAccess.Read)
-								End If
+                                    Dim textField As kCura.EDDS.WebAPI.DocumentManagerBase.Field = Me.FullTextField(_settings.ArtifactTypeID)
+                                    Dim expectedEncoding As System.Text.Encoding = If(textField IsNot Nothing AndAlso textField.UseUnicodeEncoding, System.Text.Encoding.Unicode, Nothing)
+                                    Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+                                    If Not System.Text.Encoding.Equals(expectedEncoding, detectedEncoding) Then
+                                        WriteWarning("The extracted text file's encoding was not detected to be the same as the extracted text field. The imported data may be incorrectly encoded.")
+                                    End If
+                                    If detectedEncoding IsNot Nothing Then
+                                        chosenEncoding = detectedEncoding
+                                    End If
+                                    Try
+                                        fileStream.Close()
+                                    Catch
+                                    End Try
+                                End If
+                                outputWriter.Write(field.Value)
+                            Else
+                                'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
+                                ' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
+                                ' across the network for the file, so this override allows that check to be skipped.
+                                ' -Phil S. 07/27/2012
+                                If Not SkipExtractedTextEncodingCheck Then
+                                    Dim determinedEncodingStream As DeterminedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(field.ValueAsString, False)
+                                    fileStream = determinedEncodingStream.UnderlyingStream
 
-								Dim sr As New System.IO.StreamReader(fileStream, chosenEncoding)
-								Dim count As Int32 = 1
-								Dim buff(_COPY_TEXT_FILE_BUFFER_SIZE) As Char
-								Do
-									count = sr.ReadBlock(buff, 0, _COPY_TEXT_FILE_BUFFER_SIZE)
-									If count > 0 Then
-										outputWriter.Write(buff, 0, count)
-										outputWriter.Flush()
-									End If
-								Loop Until count = 0
+                                    Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+                                    If detectedEncoding IsNot Nothing Then
+                                        chosenEncoding = detectedEncoding
+                                    End If
+                                Else
+                                    fileStream = New FileStream(field.ValueAsString, FileMode.Open, FileAccess.Read)
+                                End If
 
-								sr.Close()
+                                Dim sr As New System.IO.StreamReader(fileStream, chosenEncoding)
+                                Dim count As Int32 = 1
+                                Dim buff(_COPY_TEXT_FILE_BUFFER_SIZE) As Char
+                                Do
+                                    count = sr.ReadBlock(buff, 0, _COPY_TEXT_FILE_BUFFER_SIZE)
+                                    If count > 0 Then
+                                        outputWriter.Write(buff, 0, count)
+                                        outputWriter.Flush()
+                                    End If
+                                Loop Until count = 0
 
-								Try
-									fileStream.Close()
-								Catch
-								End Try
-							End If
-						End If
-					Catch ex As System.IO.FileNotFoundException
-						Throw New ExtractedTextFileNotFoundException()
-					End Try
-				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Boolean Then
-					If field.ValueAsString <> String.Empty Then
-						If Boolean.Parse(field.ValueAsString) Then
-							outputWriter.Write("1")
-						Else
-							outputWriter.Write("0")
-						End If
-					End If
-				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Decimal OrElse
-				 field.Type = Relativity.FieldTypeHelper.FieldType.Currency Then
-					If field.ValueAsString <> String.Empty Then
-						Dim d As String = CDec(field.Value).ToString(System.Globalization.CultureInfo.InvariantCulture)
-						outputWriter.Write(d)
-					End If
-				Else
-					outputWriter.Write(field.Value)
+                                sr.Close()
+
+                                Try
+                                    fileStream.Close()
+                                Catch
+                                End Try
+                            End If
+                        End If
+                    Catch ex As System.IO.FileNotFoundException
+                        Throw New ExtractedTextFileNotFoundException()
+                    End Try
+                ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Boolean Then
+                    If field.ValueAsString <> String.Empty Then
+                        If Boolean.Parse(field.ValueAsString) Then
+                            outputWriter.Write("1")
+                        Else
+                            outputWriter.Write("0")
+                        End If
+                    End If
+                ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Decimal OrElse
+                 field.Type = Relativity.FieldTypeHelper.FieldType.Currency Then
+                    If field.ValueAsString <> String.Empty Then
+                        Dim d As String = CDec(field.Value).ToString(System.Globalization.CultureInfo.InvariantCulture)
+                        outputWriter.Write(d)
+                    End If
+                Else
+                    outputWriter.Write(field.Value)
 				End If
 				outputWriter.Write(delimiter)
 			End If

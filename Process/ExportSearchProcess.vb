@@ -9,11 +9,13 @@ Namespace kCura.WinEDDS
 		Private _warningCount As Int32
 		Private _uploadModeText As String = Nothing
 
+		Public Property UserNotification As Exporters.IUserNotification
+
 		Protected Overrides Sub Execute()
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
-			_searchExporter = New Exporter(Me.ExportFile, Me.ProcessController)
+			_searchExporter = New Exporter(Me.ExportFile, Me.ProcessController, New Service.Export.WebApiServiceFactory(Me.ExportFile)) With {.InteractionManager = UserNotification}
 
 			If Not _searchExporter.ExportSearch() Then
 				Me.ProcessObserver.RaiseProcessCompleteEvent(False, _searchExporter.ErrorLogFileName)

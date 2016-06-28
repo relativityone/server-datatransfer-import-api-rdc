@@ -6,24 +6,23 @@ Imports System.Web.Services.Protocols
 
 Namespace kCura.WinEDDS
 	Public Class Exporter
+	    Implements IExporterStatusNotification
 
 #Region "Members"
 
-		Private _searchManager As kCura.WinEDDS.Service.SearchManager
-		Public ExportManager As kCura.WinEDDS.Service.ExportManager
-		Private _folderManager As kCura.WinEDDS.Service.FolderManager
-		Private _fieldManager As kCura.WinEDDS.Service.FieldManager
-		Private _auditManager As kCura.WinEDDS.Service.AuditManager
+		Private _searchManager As Service.Export.ISearchManager
+		Private _productionManager As Service.Export.IProductionManager
+		Private _auditManager As Service.Export.IAuditManager
+		Private _fieldManager As Service.Export.IFieldManager
+		Public Property ExportManager As Service.Export.IExportManager
 		Private _exportFile As kCura.WinEDDS.ExportFile
 		Private _columns As System.Collections.ArrayList
-		Private _documentManager As kCura.WinEDDS.Service.DocumentManager
 		Public DocumentsExported As Int32
 		Public TotalExportArtifactCount As Int32
 		Private WithEvents _processController As kCura.Windows.Process.Controller
-		Private WithEvents _downloadHandler As FileDownloader
+		Private WithEvents _downloadHandler As Service.Export.IExportFileDownloader
 		Private _halt As Boolean
 		Private _volumeManager As VolumeManager
-		Private _productionManager As kCura.WinEDDS.Service.ProductionManager
 		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom
 		Private _beginBatesColumn As String = ""
 		Private _timekeeper As New kCura.Utility.Timekeeper
@@ -102,26 +101,29 @@ Namespace kCura.WinEDDS
 #Region "Constructors"
 
 		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller)
-			_searchManager = New kCura.WinEDDS.Service.SearchManager(exportFile.Credential, exportFile.CookieContainer)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(exportFile.Credential, exportFile.CookieContainer)
-			_documentManager = New kCura.WinEDDS.Service.DocumentManager(exportFile.Credential, exportFile.CookieContainer)
-			_downloadHandler = New FileDownloader(exportFile.Credential, exportFile.CaseInfo.DocumentPath & "\EDDS" & exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL, exportFile.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
-			FileDownloader.TotalWebTime = 0
-			_productionManager = New kCura.WinEDDS.Service.ProductionManager(exportFile.Credential, exportFile.CookieContainer)
-			_auditManager = New kCura.WinEDDS.Service.AuditManager(exportFile.Credential, exportFile.CookieContainer)
-			_fieldManager = New kCura.WinEDDS.Service.FieldManager(exportFile.Credential, exportFile.CookieContainer)
-			Me.ExportManager = New kCura.WinEDDS.Service.ExportManager(exportFile.Credential, exportFile.CookieContainer)
+			Me.New(exportFile, processController, New Service.Export.WebApiServiceFactory(exportFile))
+		End Sub
+
+		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller, serviceFactory As Service.Export.IServiceFactory)
+			_searchManager = serviceFactory.CreateSearchManager()
+			_downloadHandler = serviceFactory.CreateExportFileDownloader()
+			_productionManager = serviceFactory.CreateProductionManager()
+			_auditManager = serviceFactory.CreateAuditManager()
+			_fieldManager = serviceFactory.CreateFieldManager()
+			ExportManager = serviceFactory.CreateExportManager()
 
 			_halt = False
 			_processController = processController
-			Me.DocumentsExported = 0
-			Me.TotalExportArtifactCount = 1
-			Me.Settings = exportFile
-			Me.Settings.FolderPath = Me.Settings.FolderPath + "\"
-			Me.ExportNativesToFileNamedFrom = exportFile.ExportNativesToFileNamedFrom
+			DocumentsExported = 0
+			TotalExportArtifactCount = 1
+			Settings = exportFile
+			Settings.FolderPath = Me.Settings.FolderPath + "\"
+			ExportNativesToFileNamedFrom = exportFile.ExportNativesToFileNamedFrom
 		End Sub
 
 #End Region
+
+		Public Property InteractionManager As Exporters.IUserNotification = New Exporters.NullUserNotification
 
 		Public Function ExportSearch() As Boolean
 			Try
@@ -161,7 +163,7 @@ Namespace kCura.WinEDDS
 			Dim startTicks As Int64 = System.DateTime.Now.Ticks
 			Dim exportInitializationArgs As kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults = Nothing
 			Dim columnHeaderString As String = Me.LoadColumns
-			Dim allAvfIds As New System.Collections.Generic.List(Of Int32)
+			Dim allAvfIds As New List(Of Int32)
 			For i As Int32 = 0 To _columns.Count - 1
 				If Not TypeOf _columns(i) Is CoalescedTextViewField Then
 					allAvfIds.Add(Me.Settings.SelectedViewFields(i).AvfId)
@@ -221,7 +223,7 @@ Namespace kCura.WinEDDS
 			Me.TotalExportArtifactCount = CType(exportInitializationArgs.RowCount, Int32)
 			If Me.TotalExportArtifactCount - 1 < Me.Settings.StartAtDocumentNumber Then
 				Dim msg As String = String.Format("The chosen start item number ({0}) exceeds the number of {2} items in the export ({1}).  Export halted.", Me.Settings.StartAtDocumentNumber + 1, Me.TotalExportArtifactCount, vbNewLine)
-				MsgBox(msg, MsgBoxStyle.Critical, "Error")
+				InteractionManager.AlertCriticalError(msg)
 				Me.Shutdown()
 				Return False
 			Else
@@ -323,7 +325,7 @@ Namespace kCura.WinEDDS
 					While tries < maxTries
 						tries += 1
 						Try
-							natives.Table = _searchManager.RetrieveNativesForProduction(Me.Settings.CaseArtifactID, productionArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
+							natives.Table = _searchManager.RetrieveNativesForProduction(Me.Settings.CaseArtifactID, productionArtifactID, kCura.Utility.Array.ToCsv(documentArtifactIDs)).Tables(0)
 							Exit While
 						Catch ex As System.Exception
 							If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
@@ -339,7 +341,7 @@ Namespace kCura.WinEDDS
 					While tries < maxTries
 						tries += 1
 						Try
-							natives.Table = _searchManager.RetrieveNativesForSearch(Me.Settings.CaseArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables(0)
+							natives.Table = _searchManager.RetrieveNativesForSearch(Me.Settings.CaseArtifactID, kCura.Utility.Array.ToCsv(documentArtifactIDs)).Tables(0)
 							Exit While
 						Catch ex As System.Exception
 							If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
@@ -542,6 +544,7 @@ Namespace kCura.WinEDDS
 					Return Me.PrepareOriginalImages(imagesView, documentArtifactID, batesBase, artifact)
 				Else
 					productionImagesView.RowFilter = String.Format("DocumentArtifactID = {0} AND ProductionArtifactID = {1}", documentArtifactID, item.Value)
+					Dim firstImageFileName As String = Nothing
 					If productionImagesView.Count > 0 Then
 						Dim drv As System.Data.DataRowView
 						Dim i As Int32 = 0
@@ -558,7 +561,10 @@ Namespace kCura.WinEDDS
 									filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
 								End If
 								Dim filename As String = image.BatesNumber
-								If IsDocNumberOnlyProduction(Me.GetProduction(item.Value)) AndAlso i > 0 Then filename &= "_" & (i + 1).ToString
+								If i = 0 Then
+									firstImageFileName = filename
+								End If
+								If (IsDocNumberOnlyProduction(Me.GetProduction(item.Value)) OrElse filename.Equals(firstImageFileName, StringComparison.OrdinalIgnoreCase)) AndAlso i > 0 Then filename &= "_" & (i + 1).ToString
 								image.FileName = filename & filenameExtension
 								image.SourceLocation = drv("Location").ToString
 								retval.Add(image)
@@ -935,9 +941,9 @@ Namespace kCura.WinEDDS
 
 #Region "Public Events"
 
-		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception)
-		Public Event StatusMessage(ByVal exportArgs As ExportEventArgs)
-		Public Event FileTransferModeChangeEvent(ByVal mode As String)
+		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Implements IExporterStatusNotification.FatalErrorEvent
+		Public Event StatusMessage(ByVal exportArgs As ExportEventArgs) Implements IExporterStatusNotification.StatusMessage
+		Public Event FileTransferModeChangeEvent(ByVal mode As String) Implements IExporterStatusNotification.FileTransferModeChangeEvent
 		Public Event DisableCloseButton()
 		Public Event EnableCloseButton()
 

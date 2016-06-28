@@ -1,7 +1,7 @@
 Imports System.IO
 Imports System.Collections.Generic
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
-Imports kCura.Utility.Extensions.CollectionExtension
+Imports kCura.Utility.Extensions.Enumerable
 Imports kCura.WinEDDS.Service
 Imports kCura.Utility
 Imports Relativity
@@ -17,6 +17,8 @@ Namespace kCura.WinEDDS
 		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
 		Protected _productionManager As kCura.WinEDDS.Service.ProductionManager
 		Protected _bulkImportManager As kCura.WinEDDS.Service.BulkImportManager
+		Protected _documentManager As kCura.WinEDDS.Service.DocumentManager
+		Protected _relativityManager As kCura.WinEDDS.Service.RelativityManager
 		Private _folderID As Int32
 		Private _productionArtifactID As Int32
 		Private _overwrite As String
@@ -33,6 +35,7 @@ Namespace kCura.WinEDDS
 		Private _repositoryPath As String
 		Private _caseInfo As Relativity.CaseInfo
 		Private _overlayArtifactID As Int32
+		Private _executionSource As Relativity.ExecutionSource
 
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 		Protected _keyFieldDto As kCura.EDDS.WebAPI.FieldManagerBase.Field
@@ -54,6 +57,7 @@ Namespace kCura.WinEDDS
 		Private _totalValidated As Long
 		Private _totalProcessed As Long
 		Private _startLineNumber As Int64
+		Private _cloudInstance As Boolean
 
 		Private _statistics As New kCura.WinEDDS.Statistics
 		Private _currentStatisticsSnapshot As IDictionary
@@ -65,6 +69,7 @@ Namespace kCura.WinEDDS
 		Public Property OIFileIdMapped As Boolean
 		Public Property OIFileIdColumnName As String
 		Public Property OIFileTypeColumnName As String
+		Public Property FileNameColumn As String
 #End Region
 
 #Region "Accessors"
@@ -173,9 +178,12 @@ Namespace kCura.WinEDDS
 #End Region
 
 #Region "Constructors"
-		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As Guid, ByVal doRetryLogic As Boolean)
+		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As Guid, ByVal doRetryLogic As Boolean,  ByVal cloudInstance As Boolean,
+					   Optional ByVal executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
 			MyBase.New()
 
+			_executionSource = executionSource
+			_cloudInstance = cloudInstance
 			_doRetryLogic = doRetryLogic
 			InitializeManagers(args)
 			Dim suffix As String = "\EDDS" & args.CaseInfo.ArtifactID & "\"
@@ -233,6 +241,8 @@ Namespace kCura.WinEDDS
 			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
 			_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer)
 			_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credential, args.CookieContainer)
+			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
+			_relativityManager = New kCura.WinEDDS.Service.RelativityManager(args.Credential, args.CookieContainer)
 		End Sub
 
 #End Region
@@ -316,7 +326,8 @@ Namespace kCura.WinEDDS
 			.UploadFullText = _replaceFullText,
 			.DisableUserSecurityCheck = Me.DisableUserSecurityCheck,
 			.AuditLevel = Me.AuditLevel,
-			.OverlayArtifactID = _overlayArtifactID
+			.OverlayArtifactID = _overlayArtifactID,
+			.ExecutionSource = CType(_executionSource, kCura.EDDS.WebAPI.BulkImportManagerBase.ExecutionSource)
 			}
 			Return settings
 		End Function
@@ -435,7 +446,7 @@ Namespace kCura.WinEDDS
 				Next
 			End If
 		End Sub
-		
+
 		Public Sub PushImageBatch(ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String)
 			If _batchCount = 0 Then Return
 			PublishUploadModeEvent()
@@ -445,8 +456,8 @@ Namespace kCura.WinEDDS
 
 			Dim validateBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, bulkLoadFilePath)
 			If validateBcp Is Nothing Then Exit Sub
-			
-			Dim validateDataGridBcp As FileUploadReturnArgs =  _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, dataGridFilePath)
+
+			Dim validateDataGridBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, dataGridFilePath)
 			If validateDataGridBcp Is Nothing Then Exit Sub
 
 			_statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
@@ -521,7 +532,6 @@ Namespace kCura.WinEDDS
 			_fileIdentifierLookup = New System.Collections.Hashtable
 			_totalProcessed = 0
 			_totalValidated = 0
-
 			DeleteFiles(bulkLoadFilePath, dataGridFilePath)
 			_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
 			_dataGridFileWriter = New System.IO.StreamWriter(dataGridFilePath, False, System.Text.Encoding.Unicode)
@@ -531,6 +541,39 @@ Namespace kCura.WinEDDS
 				_imageReader = Me.GetImageReader
 				_imageReader.Initialize()
 				_fileLineCount = _imageReader.CountRecords
+
+
+				If (_cloudInstance AndAlso _overwrite.ToLower() = "none") Then
+
+					Dim tempImageReader As OpticonFileReader = New OpticonFileReader(_folderID, _settings, Nothing, Nothing, _doRetryLogic)
+					tempImageReader.Initialize()
+					Dim newDocCount As Int32 = 0
+
+					While tempImageReader.HasMoreRecords AndAlso tempImageReader.CurrentRecordNumber < _startLineNumber
+						tempImageReader.AdvanceRecord()
+					End While
+
+					While tempImageReader.HasMoreRecords
+
+						Dim record As Api.ImageRecord = tempImageReader.GetImageRecord
+						If record.IsNewDoc Then
+							newDocCount += 1
+						End If
+
+					End While
+					tempImageReader.Close()
+
+					Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
+					Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
+
+
+					Dim countAfterJob As Long = currentDocCount + newDocCount
+					If (docLimit <> 0 And countAfterJob > docLimit) Then
+						Dim errorMessage As String = String.Format("The document import was cancelled.  It would have exceeded the workspace's document limit of {1} by {0} documents.", countAfterJob - docLimit, docLimit)
+						Throw New Exception(errorMessage)
+					End If
+				End If
+
 				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "Begin Image Upload", 0, 0)
 				Dim al As New System.Collections.Generic.List(Of Api.ImageRecord)
 				Dim status As Int64 = 0
@@ -725,7 +768,7 @@ Namespace kCura.WinEDDS
 						'no extracted text encodings, write "-1"
 						_bulkLoadFileWriter.Write(String.Format("{0}{1}", -1, lastDivider))
 					ElseIf textFileList.Count > 0 Then
-						_bulkLoadFileWriter.Write("{0}{1}", kCura.Utility.List.ToDelimitedString(Me.GetextractedTextEncodings(textFileList), "|"), lastDivider)
+						_bulkLoadFileWriter.Write("{0}{1}", Me.GetextractedTextEncodings(textFileList).ToDelimitedString("|"), lastDivider)
 					End If
 
 

@@ -1,6 +1,7 @@
 Namespace kCura.WinEDDS.Service
 	Public Class FieldManager
 		Inherits kCura.EDDS.WebAPI.FieldManagerBase.FieldManager
+		Implements Export.IFieldManager
 
 		Private _query As kCura.WinEDDS.Service.FieldQuery
 		Public ReadOnly Property Query() As kCura.WinEDDS.Service.FieldQuery
@@ -33,7 +34,7 @@ Namespace kCura.WinEDDS.Service
 			If retval.FieldCategoryID = Relativity.FieldCategory.FullText Then
 				retval.Value = System.Text.ASCIIEncoding.ASCII.GetString(DirectCast(dto.Value, Byte()))
 			ElseIf retval.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Code OrElse retval.FieldTypeID = Relativity.FieldTypeHelper.FieldType.MultiCode Then
-				retval.Value = kCura.Utility.Array.IntArrayToCSV(DirectCast(dto.Value, Int32())).Replace(",", ";")
+				retval.Value = kCura.Utility.Array.ToCsv(DirectCast(dto.Value, Int32())).Replace(",", ";")
 			Else
 				retval.Value = dto.Value.ToString
 			End If
@@ -73,7 +74,7 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
-		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal fieldArtifactID As Int32) As kCura.EDDS.WebAPI.FieldManagerBase.Field
+		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal fieldArtifactID As Int32) As kCura.EDDS.WebAPI.FieldManagerBase.Field Implements Export.IFieldManager.Read
 			Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1

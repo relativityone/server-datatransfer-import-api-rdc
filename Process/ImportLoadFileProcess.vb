@@ -36,6 +36,7 @@ Namespace kCura.WinEDDS
 		Public Property OIFileTypeColumnName As String
 		Public Property FileSizeMapped As Boolean
 		Public Property FileSizeColumn As String
+		Public Property FileNameColumn As String
 		Public WriteOnly Property DisableUserSecurityCheck As Boolean
 			Set(ByVal value As Boolean)
 				_disableUserSecutityCheck = value
@@ -62,6 +63,10 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		Public Property BulkLoadFileFieldDelimiter As String
 
+		Public Property CloudInstance() As Boolean
+
+		Public Property ExecutionSource() As Relativity.ExecutionSource
+
 		Public Property TimeZoneOffset() As Int32
 			Get
 				Return _timeZoneOffset
@@ -72,7 +77,7 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Overridable Function GetImporter() As kCura.WinEDDS.BulkLoadFileImporter
-			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter)
+			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter, CloudInstance, ExecutionSource)
 
 			Return returnImporter
 		End Function
@@ -105,6 +110,7 @@ Namespace kCura.WinEDDS
 			_loadFileImporter.OIFileTypeColumnName = OIFileTypeColumnName
 			_loadFileImporter.FileSizeColumn = FileSizeColumn
 			_loadFileImporter.FileSizeMapped = FileSizeMapped
+			_loadFileImporter.FileNameColumn = FileNameColumn
 			_loadFileImporter.LoadImportedFullTextFromServer = Me.LoadImportedFullTextFromServer
 			'_newlineCounter = New kCura.Utility.File.Instance.LineCounter
 			'_newlineCounter.Path = LoadFile.FilePath

@@ -1,8 +1,11 @@
+Imports kCura.WinEDDS.Service.Export
+
 Namespace kCura.WinEDDS.Service
 	Public Class CaseManager
 		Inherits kCura.EDDS.WebAPI.CaseManagerBase.CaseManager
+        Implements ICaseManager
 
-		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
+        Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
 
 			Me.Credentials = credentials
@@ -47,7 +50,7 @@ Namespace kCura.WinEDDS.Service
 					End If
 				Catch ex As System.Exception
 					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, False)
 					Else
 						Throw
 					End If
@@ -56,15 +59,19 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
-		Public Shadows Function Read(ByVal caseArtifactID As Int32) As Relativity.CaseInfo
-			Dim tries As Int32 = 0
+		Public Shadows Function Read(ByVal caseArtifactID As Int32) As Relativity.CaseInfo Implements ICaseManager.Read
+            Dim tries As Int32 = 0
 			While tries < Config.MaxReloginTries
 				tries += 1
 				Try
 					Return ConvertToCaseInfo(MyBase.Read(caseArtifactID))
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 Then
+						If tries < Config.MaxReloginTries Then
+							Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries, False)
+						Else
+							Throw ex
+						End If
 					Else
 						Throw
 					End If
