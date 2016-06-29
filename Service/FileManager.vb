@@ -123,129 +123,27 @@ Namespace kCura.WinEDDS.Service
 
 #Region " Shadow Functions "
 		Public Shadows Function RetrieveByProductionArtifactIDForProduction(ByVal caseContextArtifactID As Int32, ByVal productionArtifactID As Int32) As System.Data.DataSet
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.RetrieveByProductionArtifactIDForProduction(caseContextArtifactID, productionArtifactID)
-					Else
-						'Return Relativity.Core.Service.FileQuery.RetrieveByProductionArtifactIDForProduction(productionArtifactID, _identity).ToDataSet()
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.RetrieveByProductionArtifactIDForProduction(caseContextArtifactID, productionArtifactID))
 		End Function
 
 		Public Shadows Function RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactID(ByVal caseContextArtifactID As Int32, ByVal documentArtifactID As Int32, ByVal productionArtifactID As Int32) As String()
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactID(caseContextArtifactID, documentArtifactID, productionArtifactID)
-					Else
-						'Return Relativity.Core.Service.FileQuery.RetrieveFileGuidsByProductionArtifactID(productionArtifactID, documentArtifactID, _identity)
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.RetrieveFileGuidsByDocumentArtifactIDAndProductionArtifactID(caseContextArtifactID, documentArtifactID, productionArtifactID))
 		End Function
 
 		Public Shadows Function ReturnFileGuidsForOriginalImages(ByVal caseContextArtifactID As Int32, ByVal documentArtifactID As Int32) As String()
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.ReturnFileGuidsForOriginalImages(caseContextArtifactID, documentArtifactID)
-					Else
-						'Return Relativity.Core.Service.FileQuery.ReturnFileGuidsForOriginalImages(_identity, documentArtifactID)
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.ReturnFileGuidsForOriginalImages(caseContextArtifactID, documentArtifactID))
 		End Function
 
 		Public Shadows Function Create(ByVal caseContextArtifactID As Int32, ByVal file As kCura.EDDS.WebAPI.FileManagerBase.File) As String
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.Create(caseContextArtifactID, file)
-					Else
-						'Return _fileManager.Create(Me.FileWebAPIFiletoDTO(file), _identity)
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.Create(caseContextArtifactID, file))
 		End Function
 
 		Public Shadows Sub CreateImages(ByVal caseContextArtifactID As Int32, ByVal files As kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase(), ByVal documentArtifactID As Int32)
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						MyBase.CreateImages(caseContextArtifactID, files, documentArtifactID)
-						Exit Sub
-					Else
-						'_fileManager.ExternalCreateImages(WebAPIFileInfostoFileInfos(files), documentArtifactID, contextArtifactID, _identity)
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
+			RetryOnReLoginException(Sub() MyBase.CreateImages(caseContextArtifactID, files, documentArtifactID))
 		End Sub
 
 		Public Shadows Sub CreateProductionImages(ByVal caseContextArtifactID As Int32, ByVal files As kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase(), ByVal documentArtifactID As Int32)
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						MyBase.CreateProductionImages(caseContextArtifactID, files, documentArtifactID)
-						Exit Sub
-					Else
-						'_fileManager.ExternalCreateImages(WebAPIFileInfostoFileInfos(files), documentArtifactID, contextArtifactID, _identity)
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
+			RetryOnReLoginException(Sub() MyBase.CreateProductionImages(caseContextArtifactID, files, documentArtifactID))
 		End Sub
 
 		Public Overloads Sub CreateNatives(ByVal caseContextArtifactID As Int32, ByVal fileDTOs As kCura.EDDS.WebAPI.FileManagerBase.File())
@@ -259,107 +157,24 @@ Namespace kCura.WinEDDS.Service
 				documentArtifactIDs(i) = fileDTOs(i).DocumentArtifactID
 				files(i) = file
 			Next
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						MyBase.CreateNatives(caseContextArtifactID, files, documentArtifactIDs)
-					Else
-						'_fileManager.ExternalCreateNatives(WebAPIFileInfostoFileInfos(files), documentArtifactIDs, _identity)
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
+
+			RetryOnReLoginException(Sub() MyBase.CreateNatives(caseContextArtifactID, files, documentArtifactIDs))
 		End Sub
 
 		Public Shadows Function GetRotation(ByVal caseContextArtifactID As Int32, ByVal guid As String) As Int32
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				Try
-					tries += 1
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.GetRotation(caseContextArtifactID, guid)
-					Else
-						'Return New Relativity.Core.Service.FileManager().Read(guid, artifactID, _identity).Rotation
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.GetRotation(caseContextArtifactID, guid))
 		End Function
 
 		Public Shadows Sub SetRotation(ByVal caseContextArtifactID As Int32, ByVal guid As String, ByVal rotation As Int32)
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						MyBase.SetRotation(caseContextArtifactID, guid, rotation)
-						Exit Sub
-					Else
-						'_fileManager.ExternalSetRotation(artifactID, guid, rotation, _identity)
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
+			RetryOnReLoginException(Sub() MyBase.SetRotation(caseContextArtifactID, guid, rotation))
 		End Sub
 
 		Public Shadows Function GetFullTextGuidsByDocumentArtifactIdAndType(ByVal caseContextArtifactID As Int32, ByVal documentArtifactID As Int32, ByVal TypeId As Int32) As String
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.GetFullTextGuidsByDocumentArtifactIdAndType(caseContextArtifactID, documentArtifactID, TypeId)
-					Else
-						'Return _fileManager.ExternalGetFullTextGuidsByDocumentArtifactIdAndType(documentArtifactID, TypeId, _identity)
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.GetFullTextGuidsByDocumentArtifactIdAndType(caseContextArtifactID, documentArtifactID, TypeId))
 		End Function
 
 		Public Shadows Function RetrieveNativeFileSize(ByVal caseContextArtifactID As Int32, ByVal guid As String) As Long
-			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
-				tries += 1
-				Try
-					If kCura.WinEDDS.Config.UsesWebAPI Then
-						Return MyBase.RetrieveNativesFileSize(caseContextArtifactID, guid)
-					Else
-						'Return _fileManager.ExternalRetrieveNativeFileSize(sourceDirectory, guid, _identity)
-					End If
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			Return RetryOnReLoginException(Function() MyBase.RetrieveNativesFileSize(caseContextArtifactID, guid))
 		End Function
 #End Region
 

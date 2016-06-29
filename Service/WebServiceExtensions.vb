@@ -26,6 +26,7 @@ Namespace kCura.WinEDDS.Service
 				tries += 1
 				Try
 					serviceCall()
+					Exit Sub
 				Catch ex As System.Exception
 					If retryOnFailure AndAlso TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
 						Helper.AttemptReLogin(input.Credentials, input.CookieContainer, tries, False)
