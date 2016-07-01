@@ -1280,6 +1280,16 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Sub SaveLoadFile(ByVal loadFile As LoadFile, ByVal path As String)
+			''Convert enumerated values to old file format strings
+			Dim overwriteDestination = loadFile.OverwriteDestination
+			Select Case overwriteDestination.ToLower()
+				Case ImportOverwriteModeEnum.Overlay.ToString.ToLower
+					loadFile.OverwriteDestination = "Strict"
+				Case ImportOverwriteModeEnum.AppendOverlay.ToString.ToLower
+					loadFile.OverwriteDestination = "Append"
+				Case ImportOverwriteModeEnum.Append.ToString.ToLower
+					loadFile.OverwriteDestination = "None"
+			End Select
 			SaveFileObject(loadFile, path)
 		End Sub
 
@@ -1336,6 +1346,16 @@ Namespace kCura.EDDS.WinForm
 				'TODO: Log Exception
 				Return Nothing
 			End Try
+			'' Convert import settings file format Overwrite strings to enum values
+			Dim overwriteDestination = tempLoadFile.OverwriteDestination
+			Select Case overwriteDestination.ToLower
+				Case "strict"
+					tempLoadFile.OverwriteDestination = ImportOverwriteModeEnum.Overlay.ToString
+				Case "append"
+					tempLoadFile.OverwriteDestination = ImportOverwriteModeEnum.AppendOverlay.ToString
+				Case "none"
+					tempLoadFile.OverwriteDestination = ImportOverwriteModeEnum.Append.ToString
+			End Select
 			tempLoadFile.CaseInfo = Me.SelectedCaseInfo
 			tempLoadFile.CopyFilesToDocumentRepository = loadFile.CopyFilesToDocumentRepository
 			tempLoadFile.SelectedCasePath = Me.SelectedCaseInfo.DocumentPath
