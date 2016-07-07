@@ -457,7 +457,7 @@ Namespace kCura.EDDS.WinForm
 				End If
 			End If
 			ImageLoadFile.FullTextEncoding = _encodingPicker.SelectedEncoding
-			ImageLoadFile.Overwrite = Me.GetOverwrite
+			ImageLoadFile.Overwrite = Me.GetOverwrite.ToString
 			ImageLoadFile.DestinationFolderID = _imageLoadFile.DestinationFolderID
 			ImageLoadFile.ControlKeyField = _application.GetCaseIdentifierFields(Relativity.ArtifactType.Document)(0)
 			ImageLoadFile.AutoNumberImages = _autoNumberingOn.Checked
@@ -467,7 +467,7 @@ Namespace kCura.EDDS.WinForm
 				Me.ImageLoadFile.BeginBatesFieldArtifactID = CType(_beginBatesDropdown.SelectedValue, Int32)
 			Else
 				'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
-				If CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), Me.GetOverwrite, True), Relativity.ImportOverwriteType) = Relativity.ImportOverwriteType.Overlay
+				If Me.GetOverwrite = Relativity.ImportOverwriteType.Overlay
 					Me.ImageLoadFile.IdentityFieldId = CType(_beginBatesDropdown.SelectedValue, Int32)
 				Else
 					Me.ImageLoadFile.IdentityFieldId = -1
@@ -482,14 +482,14 @@ Namespace kCura.EDDS.WinForm
 			Return True
 		End Function
 
-		Private Function GetOverwrite() As String
+		Private Function GetOverwrite() As Relativity.ImportOverwriteType
 			Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
 				Case "append only"
-					Return Relativity.ImportOverwriteType.Append.ToString
+					Return Relativity.ImportOverwriteType.Append
 				Case "overlay only"
-					Return Relativity.ImportOverwriteType.Overlay.ToString
+					Return Relativity.ImportOverwriteType.Overlay
 				Case "append/overlay"
-					Return Relativity.ImportOverwriteType.AppendOverlay.ToString
+					Return Relativity.ImportOverwriteType.AppendOverlay
 				Case Else
 					Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
 			End Select
@@ -547,7 +547,7 @@ Namespace kCura.EDDS.WinForm
 			Else
 				_importMenuSendEmailNotificationItem.Checked = ImageLoadFile.SendEmailOnLoadCompletion
 			End If
-			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite.ToString)
+			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite)
 			Me.Cursor = Cursors.Default
 		End Sub
 
@@ -577,7 +577,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub _overWrite_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overwriteDropdown.SelectedIndexChanged
-			_imageLoadFile.Overwrite = Me.GetOverwrite
+			_imageLoadFile.Overwrite = Me.GetOverwrite.ToString
 			If _overwriteDropdown.SelectedIndex = 1 Then
 				_beginBatesDropdown.Enabled = True
 			Else

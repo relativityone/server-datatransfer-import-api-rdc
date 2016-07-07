@@ -868,15 +868,15 @@ Namespace kCura.EDDS.WinForm
             End Get
         End Property
 
-        Private Function GetOverwrite() As String
-            If _overwriteDropdown.SelectedItem Is Nothing Then Return Relativity.ImportOverwriteType.Append.ToString()
+        Private Function GetOverwrite() As Relativity.ImportOverwriteType
+            If _overwriteDropdown.SelectedItem Is Nothing Then Return Relativity.ImportOverwriteType.Append
             Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
                 Case "append only"
-                    Return Relativity.ImportOverwriteType.Append.ToString()
+                    Return Relativity.ImportOverwriteType.Append
                 Case "overlay only"
-                    Return Relativity.ImportOverwriteType.Overlay.ToString()
+                    Return Relativity.ImportOverwriteType.Overlay
                 Case "append/overlay"
-                    Return Relativity.ImportOverwriteType.AppendOverlay.ToString()
+                    Return Relativity.ImportOverwriteType.AppendOverlay
                 Case Else
                     Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
             End Select
@@ -972,7 +972,7 @@ Namespace kCura.EDDS.WinForm
         End Sub
 
         Private Function IsOverlayBehaviorEnabled() As Boolean
-            If CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), GetOverwrite, True), Relativity.ImportOverwriteType) = Relativity.ImportOverwriteType.Append Then
+            If GetOverwrite = Relativity.ImportOverwriteType.Append Then
                 Return False
             End If
             For Each fieldName As String In Me._fieldMap.FieldColumns.RightListBoxItems
@@ -1080,7 +1080,7 @@ Namespace kCura.EDDS.WinForm
             If _overwriteDropdown.SelectedItem Is Nothing Then
                 LoadFile.OverwriteDestination = Relativity.ImportOverwriteType.Append.ToString
             Else
-                LoadFile.OverwriteDestination = Me.GetOverwrite
+                LoadFile.OverwriteDestination = Me.GetOverwrite.ToString
             End If
             'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
             If LoadFile.OverwriteDestination = Relativity.ImportOverwriteType.Overlay.ToString
@@ -1633,7 +1633,7 @@ Namespace kCura.EDDS.WinForm
         End Sub
 
         Private Sub _overwriteDestination_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overwriteDropdown.SelectedIndexChanged
-            LoadFile.OverwriteDestination = Me.GetOverwrite
+            LoadFile.OverwriteDestination = Me.GetOverwrite.ToString
             If LoadFile.OverwriteDestination.ToLower <> Relativity.ImportOverwriteType.Overlay.ToString.ToLower Then
                 For Each field As DocumentField In _overlayIdentifier.Items
                     If field.FieldCategory = Relativity.FieldCategory.Identifier Then
@@ -1894,7 +1894,7 @@ Namespace kCura.EDDS.WinForm
                     _destinationFolderPath.Text = "Select ..."
                 End If
             ElseIf Me.IsChildObject Then
-                Select Case CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), Me.GetOverwrite, True), Relativity.ImportOverwriteType) 
+                Select Me.GetOverwrite
                     Case Relativity.ImportOverwriteType.Append, Relativity.ImportOverwriteType.AppendOverlay
                         _destinationFolderPath.Enabled = True
                         _destinationFolderPath.SelectedItem = Nothing
