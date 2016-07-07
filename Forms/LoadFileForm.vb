@@ -869,26 +869,26 @@ Namespace kCura.EDDS.WinForm
         End Property
 
         Private Function GetOverwrite() As String
-            If _overwriteDropdown.SelectedItem Is Nothing Then Return ImportOverwriteModeEnum.Append.ToString()
+            If _overwriteDropdown.SelectedItem Is Nothing Then Return Relativity.ImportOverwriteType.Append.ToString()
             Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
                 Case "append only"
-                    Return ImportOverwriteModeEnum.Append.ToString()
+                    Return Relativity.ImportOverwriteType.Append.ToString()
                 Case "overlay only"
-                    Return ImportOverwriteModeEnum.Overlay.ToString()
+                    Return Relativity.ImportOverwriteType.Overlay.ToString()
                 Case "append/overlay"
-                    Return ImportOverwriteModeEnum.AppendOverlay.ToString()
+                    Return Relativity.ImportOverwriteType.AppendOverlay.ToString()
                 Case Else
                     Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
             End Select
         End Function
 
         Private Function GetOverwriteDropdownItem(ByVal input As String) As String
-            Select Case CType([Enum].Parse(GetType(ImportOverwriteModeEnum), input, True), ImportOverwriteModeEnum)
-                Case ImportOverwriteModeEnum.Append
+            Select Case CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), input, True), Relativity.ImportOverwriteType)
+                Case Relativity.ImportOverwriteType.Append
                     Return "Append Only"
-                Case ImportOverwriteModeEnum.Overlay
+                Case Relativity.ImportOverwriteType.Overlay
                     Return "Overlay Only"
-                Case ImportOverwriteModeEnum.AppendOverlay
+                Case Relativity.ImportOverwriteType.AppendOverlay
                     Return "Append/Overlay"
                 Case Else
                     Throw New IndexOutOfRangeException("'" & input.ToLower & "' isn't a valid option.")
@@ -972,7 +972,7 @@ Namespace kCura.EDDS.WinForm
         End Sub
 
         Private Function IsOverlayBehaviorEnabled() As Boolean
-            If CType([Enum].Parse(GetType(ImportOverwriteModeEnum), GetOverwrite, True), ImportOverwriteModeEnum) = ImportOverwriteModeEnum.Append Then
+            If CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), GetOverwrite, True), Relativity.ImportOverwriteType) = Relativity.ImportOverwriteType.Append Then
                 Return False
             End If
             For Each fieldName As String In Me._fieldMap.FieldColumns.RightListBoxItems
@@ -1078,12 +1078,12 @@ Namespace kCura.EDDS.WinForm
             End If
             LoadFile.LoadNativeFiles = _loadNativeFiles.Checked
             If _overwriteDropdown.SelectedItem Is Nothing Then
-                LoadFile.OverwriteDestination = ImportOverwriteModeEnum.Append.ToString
+                LoadFile.OverwriteDestination = Relativity.ImportOverwriteType.Append.ToString
             Else
                 LoadFile.OverwriteDestination = Me.GetOverwrite
             End If
             'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
-            If LoadFile.OverwriteDestination = ImportOverwriteModeEnum.Overlay.ToString
+            If LoadFile.OverwriteDestination = Relativity.ImportOverwriteType.Overlay.ToString
                 LoadFile.IdentityFieldId = DirectCast(_overlayIdentifier.SelectedItem, DocumentField).FieldID
             Else
                 LoadFile.IdentityFieldId = -1
@@ -1120,7 +1120,7 @@ Namespace kCura.EDDS.WinForm
             End If
             LoadFile.CreateFolderStructure = _buildFolderStructure.Checked
             'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
-            If LoadFile.OverwriteDestination.ToLower <> ImportOverwriteModeEnum.Overlay.ToString.ToLower AndAlso LoadFile.OverwriteDestination.ToLower <> ImportOverwriteModeEnum.AppendOverlay.ToString.ToLower Then
+            If LoadFile.OverwriteDestination.ToLower <> Relativity.ImportOverwriteType.Overlay.ToString.ToLower AndAlso LoadFile.OverwriteDestination.ToLower <> Relativity.ImportOverwriteType.AppendOverlay.ToString.ToLower Then
                 If LoadFile.CreateFolderStructure Then
                     If Not _destinationFolderPath.SelectedItem Is Nothing Then
                         LoadFile.FolderStructureContainedInColumn = _destinationFolderPath.SelectedItem.ToString
@@ -1634,7 +1634,7 @@ Namespace kCura.EDDS.WinForm
 
         Private Sub _overwriteDestination_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overwriteDropdown.SelectedIndexChanged
             LoadFile.OverwriteDestination = Me.GetOverwrite
-            If LoadFile.OverwriteDestination.ToLower <> ImportOverwriteModeEnum.Overlay.ToString.ToLower Then
+            If LoadFile.OverwriteDestination.ToLower <> Relativity.ImportOverwriteType.Overlay.ToString.ToLower Then
                 For Each field As DocumentField In _overlayIdentifier.Items
                     If field.FieldCategory = Relativity.FieldCategory.Identifier Then
                         _overlayIdentifier.SelectedItem = field
@@ -1642,14 +1642,14 @@ Namespace kCura.EDDS.WinForm
                     End If
                 Next
             End If
-            Dim overwriteDestination As ImportOverwriteModeEnum = CType([Enum].Parse(GetType(ImportOverwriteModeEnum), LoadFile.OverwriteDestination, True), ImportOverwriteModeEnum)
+            Dim overwriteDestination As Relativity.ImportOverwriteType = CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), LoadFile.OverwriteDestination, True), Relativity.ImportOverwriteType)
             If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
                 Select Case overwriteDestination
-                    Case ImportOverwriteModeEnum.Append
+                    Case Relativity.ImportOverwriteType.Append
                         _buildFolderStructure.Enabled = True
                         _destinationFolderPath.Enabled = _buildFolderStructure.Checked
                         _overlayIdentifier.Enabled = False
-                    Case ImportOverwriteModeEnum.Overlay
+                    Case Relativity.ImportOverwriteType.Overlay
                         _destinationFolderPath.Enabled = False
                         _buildFolderStructure.Checked = False
                         _buildFolderStructure.Enabled = False
@@ -1666,12 +1666,12 @@ Namespace kCura.EDDS.WinForm
                 End Select
             ElseIf Me.IsChildObject Then
                 Select Case overwriteDestination
-                    Case ImportOverwriteModeEnum.Append
+                    Case Relativity.ImportOverwriteType.Append
                         _destinationFolderPath.Enabled = True
                         _buildFolderStructure.Checked = True
                         _buildFolderStructure.Enabled = False
                         _overlayIdentifier.Enabled = False
-                    Case ImportOverwriteModeEnum.Overlay
+                    Case Relativity.ImportOverwriteType.Overlay
                         _destinationFolderPath.Enabled = False
                         _buildFolderStructure.Checked = False
                         _buildFolderStructure.Enabled = True
@@ -1689,7 +1689,7 @@ Namespace kCura.EDDS.WinForm
                 _destinationFolderPath.SelectedItem = Nothing
                 _destinationFolderPath.Text = "Select ..."
                 Select Case overwriteDestination
-                    Case ImportOverwriteModeEnum.Overlay
+                    Case Relativity.ImportOverwriteType.Overlay
                         _overlayIdentifier.Enabled = True
                     Case Else
                         _overlayIdentifier.Enabled = False
@@ -1894,12 +1894,12 @@ Namespace kCura.EDDS.WinForm
                     _destinationFolderPath.Text = "Select ..."
                 End If
             ElseIf Me.IsChildObject Then
-                Select Case CType([Enum].Parse(GetType(ImportOverwriteModeEnum), Me.GetOverwrite, True), ImportOverwriteModeEnum) 
-                    Case ImportOverwriteModeEnum.Append, ImportOverwriteModeEnum.AppendOverlay
+                Select Case CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), Me.GetOverwrite, True), Relativity.ImportOverwriteType) 
+                    Case Relativity.ImportOverwriteType.Append, Relativity.ImportOverwriteType.AppendOverlay
                         _destinationFolderPath.Enabled = True
                         _destinationFolderPath.SelectedItem = Nothing
                         _destinationFolderPath.Text = "Select ..."
-                    Case ImportOverwriteModeEnum.Overlay
+                    Case Relativity.ImportOverwriteType.Overlay
                         If _buildFolderStructure.Checked Then
                             _destinationFolderPath.Enabled = True
                         Else

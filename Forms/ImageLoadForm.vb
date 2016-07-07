@@ -467,7 +467,7 @@ Namespace kCura.EDDS.WinForm
 				Me.ImageLoadFile.BeginBatesFieldArtifactID = CType(_beginBatesDropdown.SelectedValue, Int32)
 			Else
 				'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
-				If CType([Enum].Parse(GetType(ImportOverwriteModeEnum), Me.GetOverwrite, True), ImportOverwriteModeEnum) = ImportOverwriteModeEnum.Overlay
+				If CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), Me.GetOverwrite, True), Relativity.ImportOverwriteType) = Relativity.ImportOverwriteType.Overlay
 					Me.ImageLoadFile.IdentityFieldId = CType(_beginBatesDropdown.SelectedValue, Int32)
 				Else
 					Me.ImageLoadFile.IdentityFieldId = -1
@@ -485,23 +485,23 @@ Namespace kCura.EDDS.WinForm
 		Private Function GetOverwrite() As String
 			Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
 				Case "append only"
-					Return ImportOverwriteModeEnum.Append.ToString
+					Return Relativity.ImportOverwriteType.Append.ToString
 				Case "overlay only"
-					Return ImportOverwriteModeEnum.Overlay.ToString
+					Return Relativity.ImportOverwriteType.Overlay.ToString
 				Case "append/overlay"
-					Return ImportOverwriteModeEnum.AppendOverlay.ToString
+					Return Relativity.ImportOverwriteType.AppendOverlay.ToString
 				Case Else
 					Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
 			End Select
 		End Function
 
 		Private Function GetOverwriteDropdownItem(ByVal input As String) As String
-			Select Case CType([Enum].Parse(GetType(ImportOverwriteModeEnum), input, True), ImportOverwriteModeEnum)
-				Case ImportOverwriteModeEnum.Append
+			Select Case CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), input, True), Relativity.ImportOverwriteType)
+				Case Relativity.ImportOverwriteType.Append
 					Return "Append Only"
-				Case ImportOverwriteModeEnum.Overlay
+				Case Relativity.ImportOverwriteType.Overlay
 					Return "Overlay Only"
-				Case ImportOverwriteModeEnum.AppendOverlay
+				Case Relativity.ImportOverwriteType.AppendOverlay
 					Return "Append/Overlay"
 				Case Else
 					Throw New IndexOutOfRangeException("'" & input.ToLower & "' isn't a valid option.")

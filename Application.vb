@@ -872,7 +872,7 @@ Namespace kCura.EDDS.WinForm
 			loadFile.CaseInfo = caseInfo
 			loadFile.Credentials = Me.Credential
 			loadFile.CookieContainer = Me.CookieContainer
-			loadFile.OverwriteDestination = ImportOverwriteModeEnum.Append.ToString
+			loadFile.OverwriteDestination = Relativity.ImportOverwriteType.Append.ToString
 			loadFile.ArtifactTypeID = Me.ArtifactTypeID
 			frm.LoadFile = loadFile
 			frm.Show()
@@ -1286,11 +1286,11 @@ Namespace kCura.EDDS.WinForm
 		Private Function ConvertOverwriteDestinationToLegacyValues(ByVal loadfile As LoadFile) As LoadFile
 			Dim overwriteDestination = loadFile.OverwriteDestination
 			Select Case overwriteDestination.ToLower()
-				Case ImportOverwriteModeEnum.Overlay.ToString.ToLower
+				Case Relativity.ImportOverwriteType.Overlay.ToString.ToLower
 					loadFile.OverwriteDestination = "Strict"
-				Case ImportOverwriteModeEnum.AppendOverlay.ToString.ToLower
+				Case Relativity.ImportOverwriteType.AppendOverlay.ToString.ToLower
 					loadFile.OverwriteDestination = "Append"
-				Case ImportOverwriteModeEnum.Append.ToString.ToLower
+				Case Relativity.ImportOverwriteType.Append.ToString.ToLower
 					loadFile.OverwriteDestination = "None"
 			End Select
 			Return loadfile
@@ -1401,11 +1401,11 @@ Namespace kCura.EDDS.WinForm
 			Dim overwriteDestination = loadFile.OverwriteDestination
 			Select Case overwriteDestination.ToLower
 				Case "strict"
-					loadFile.OverwriteDestination = ImportOverwriteModeEnum.Overlay.ToString
+					loadFile.OverwriteDestination = Relativity.ImportOverwriteType.Overlay.ToString
 				Case "append"
-					loadFile.OverwriteDestination = ImportOverwriteModeEnum.AppendOverlay.ToString
+					loadFile.OverwriteDestination = Relativity.ImportOverwriteType.AppendOverlay.ToString
 				Case "none"
-					loadFile.OverwriteDestination = ImportOverwriteModeEnum.Append.ToString
+					loadFile.OverwriteDestination = Relativity.ImportOverwriteType.Append.ToString
 			End Select
 		End Sub
 
