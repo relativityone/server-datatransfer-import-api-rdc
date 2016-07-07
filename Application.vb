@@ -1280,7 +1280,10 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Sub SaveLoadFile(ByVal loadFile As LoadFile, ByVal path As String)
-			''Convert enumerated values to old file format strings
+			SaveFileObject(ConvertOverwriteDestinationToLegacyValues(loadFile), path)
+		End Sub
+
+		Private Function ConvertOverwriteDestinationToLegacyValues(ByVal loadfile As LoadFile) As LoadFile
 			Dim overwriteDestination = loadFile.OverwriteDestination
 			Select Case overwriteDestination.ToLower()
 				Case ImportOverwriteModeEnum.Overlay.ToString.ToLower
@@ -1290,8 +1293,8 @@ Namespace kCura.EDDS.WinForm
 				Case ImportOverwriteModeEnum.Append.ToString.ToLower
 					loadFile.OverwriteDestination = "None"
 			End Select
-			SaveFileObject(loadFile, path)
-		End Sub
+			Return loadfile
+		End Function
 
 		Private Sub SaveFileObject(ByVal fileObject As Object, ByVal path As String)
 			Dim sw As New System.IO.StreamWriter(path)
@@ -1346,16 +1349,7 @@ Namespace kCura.EDDS.WinForm
 				'TODO: Log Exception
 				Return Nothing
 			End Try
-			'' Convert import settings file format Overwrite strings to enum values
-			Dim overwriteDestination = tempLoadFile.OverwriteDestination
-			Select Case overwriteDestination.ToLower
-				Case "strict"
-					tempLoadFile.OverwriteDestination = ImportOverwriteModeEnum.Overlay.ToString
-				Case "append"
-					tempLoadFile.OverwriteDestination = ImportOverwriteModeEnum.AppendOverlay.ToString
-				Case "none"
-					tempLoadFile.OverwriteDestination = ImportOverwriteModeEnum.Append.ToString
-			End Select
+			ConvertLegacyOverwriteDestinationValueToEnum(tempLoadFile)
 			tempLoadFile.CaseInfo = Me.SelectedCaseInfo
 			tempLoadFile.CopyFilesToDocumentRepository = loadFile.CopyFilesToDocumentRepository
 			tempLoadFile.SelectedCasePath = Me.SelectedCaseInfo.DocumentPath
@@ -1402,6 +1396,18 @@ Namespace kCura.EDDS.WinForm
 			If Not mapItemToRemove Is Nothing Then tempLoadFile.FieldMap.Remove(mapItemToRemove)
 			Return tempLoadFile
 		End Function
+
+		Private Sub ConvertLegacyOverwriteDestinationValueToEnum(ByRef loadfile As Loadfile)
+			Dim overwriteDestination = loadFile.OverwriteDestination
+			Select Case overwriteDestination.ToLower
+				Case "strict"
+					loadFile.OverwriteDestination = ImportOverwriteModeEnum.Overlay.ToString
+				Case "append"
+					loadFile.OverwriteDestination = ImportOverwriteModeEnum.AppendOverlay.ToString
+				Case "none"
+					loadFile.OverwriteDestination = ImportOverwriteModeEnum.Append.ToString
+			End Select
+		End Sub
 
 		Public Function ReadImageLoadFile(ByVal path As String) As ImageLoadFile
 			kCura.WinEDDS.Service.Settings.SendEmailOnLoadCompletion = Config.SendNotificationOnImportCompletionByDefault
