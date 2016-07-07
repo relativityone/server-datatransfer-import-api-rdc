@@ -447,7 +447,7 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("ReadFile_InitializeMembers")
 
 				If (_cloudInstance) Then
-					If (CType([Enum].Parse(GetType(ImportOverwriteModeEnum), _overwrite, True), ImportOverwriteModeEnum) = ImportOverwriteModeEnum.Append And _artifactTypeID = Relativity.ArtifactType.Document) Then
+					If (CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), _overwrite, True), Relativity.ImportOverwriteType) = Relativity.ImportOverwriteType.Append And _artifactTypeID = Relativity.ArtifactType.Document) Then
 						Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
 						Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
 						Dim fileLineStart As Long = _startLineNumber
@@ -1044,10 +1044,10 @@ Namespace kCura.WinEDDS
 			settings.KeyFieldArtifactID = _keyFieldID
 			settings.BulkLoadFileFieldDelimiter = _bulkLoadFileFieldDelimiter
 			settings.OverlayBehavior = Me.GetMassImportOverlayBehavior(_settings.OverlayBehavior)
-			Select Case CType([Enum].Parse(GetType(ImportOverwriteModeEnum), _overwrite, True), ImportOverwriteModeEnum)
-				Case ImportOverwriteModeEnum.Overlay
+			Select Case CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), _overwrite, True), Relativity.ImportOverwriteType)
+				Case Relativity.ImportOverwriteType.Overlay
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
-				Case ImportOverwriteModeEnum.AppendOverlay
+				Case Relativity.ImportOverwriteType.AppendOverlay
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
 				Case Else
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Append

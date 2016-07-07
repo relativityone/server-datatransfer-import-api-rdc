@@ -103,10 +103,10 @@ Namespace kCura.WinEDDS
 				retval.NumberOfWarnings = _warningCount
 				retval.OverlayIdentifierFieldArtifactID = ImageLoadFile.IdentityFieldId
 				If ImageLoadFile.ProductionArtifactID > 0 Then retval.OverlayIdentifierFieldArtifactID = ImageLoadFile.BeginBatesFieldArtifactID
-				Select Case CType([Enum].Parse(GetType(ImportOverwriteModeEnum), ImageLoadFile.Overwrite, True), ImportOverwriteModeEnum)
-					Case ImportOverwriteModeEnum.AppendOverlay
+				Select Case CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), ImageLoadFile.Overwrite, True), Relativity.ImportOverwriteType)
+					Case Relativity.ImportOverwriteType.AppendOverlay
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Both
-					Case ImportOverwriteModeEnum.Overlay
+					Case Relativity.ImportOverwriteType.Overlay
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Overlay
 					Case Else
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Append

@@ -27,7 +27,7 @@ Namespace kCura.WinEDDS
 		Public Sub New()
 			'Public Sub New(ByVal identity As Relativity.Core.EDDSIdentity)
 			MyBase.New()
-			Overwrite = ImportOverwriteModeEnum.Append.ToString
+			Overwrite = Relativity.ImportOverwriteType.Append.ToString
 			ProductionArtifactID = 0
 			'Me.Identity = identity
 		End Sub
