@@ -21,7 +21,7 @@ Namespace kCura.WinEDDS
 		Protected _relativityManager As kCura.WinEDDS.Service.RelativityManager
 		Private _folderID As Int32
 		Private _productionArtifactID As Int32
-		Private _overwrite As String
+		Private _overwrite As Relativity.ImportOverwriteType
 		Private _filePath As String
 		Private _fileLineCount As Int64
 		Private _continue As Boolean
@@ -198,7 +198,7 @@ Namespace kCura.WinEDDS
 			_folderID = folderID
 			_productionArtifactID = args.ProductionArtifactID
 			InitializeDTOs(args)
-			_overwrite = args.Overwrite
+			_overwrite = CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), args.Overwrite, True), Relativity.ImportOverwriteType)
 			_replaceFullText = args.ReplaceFullText
 			_processController = controller
 			_copyFilesToRepository = args.CopyFilesToDocumentRepository
@@ -466,7 +466,7 @@ Namespace kCura.WinEDDS
 			_uploadDataGridKey = validateDataGridBcp.Value
 
 			Dim overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType
-			Select Case CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), _overwrite, True), Relativity.ImportOverwriteType)
+			Select Case _overwrite
 				Case Relativity.ImportOverwriteType.AppendOverlay
 					overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
 				Case Relativity.ImportOverwriteType.Overlay
@@ -542,7 +542,7 @@ Namespace kCura.WinEDDS
 				_imageReader.Initialize()
 				_fileLineCount = _imageReader.CountRecords
 
-				If (_cloudInstance AndAlso CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), _overwrite, True), Relativity.ImportOverwriteType) = Relativity.ImportOverwriteType.Append) Then
+				If (_cloudInstance AndAlso _overwrite = Relativity.ImportOverwriteType.Append) Then
 
 					Dim tempImageReader As OpticonFileReader = New OpticonFileReader(_folderID, _settings, Nothing, Nothing, _doRetryLogic)
 					tempImageReader.Initialize()

@@ -15,7 +15,7 @@ Namespace kCura.WinEDDS
 		Inherits kCura.WinEDDS.LoadFileBase
 
 #Region "Members"
-		Private _overwrite As String
+		Private _overwrite As Relativity.ImportOverwriteType
 		Private WithEvents _uploader As kCura.WinEDDS.FileUploader
 		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
 		Private _parentFolderDTO As kCura.EDDS.WebAPI.FolderManagerBase.Folder
@@ -322,7 +322,7 @@ Namespace kCura.WinEDDS
 			' get an instance of the specific type of artifact reader so we can get the fieldmapped event
 			_executionSource = executionSource
 			_cloudInstance = cloudInstance
-			_overwrite = args.OverwriteDestination
+			_overwrite = CType([Enum].Parse(GetType(Relativity.ImportOverwriteType),args.OverwriteDestination, True), Relativity.ImportOverwriteType)
 			If args.CopyFilesToDocumentRepository Then
 				'DEFECT: SF#226211, repositories without trailing \ caused import to fail. Changed to use Path.Combine. -tmh
 				Dim lastHalfPath As String = "EDDS" & args.CaseInfo.ArtifactID & "\"
@@ -447,7 +447,7 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("ReadFile_InitializeMembers")
 
 				If (_cloudInstance) Then
-					If (CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), _overwrite, True), Relativity.ImportOverwriteType) = Relativity.ImportOverwriteType.Append And _artifactTypeID = Relativity.ArtifactType.Document) Then
+					If (_overwrite = Relativity.ImportOverwriteType.Append And _artifactTypeID = Relativity.ArtifactType.Document) Then
 						Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
 						Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
 						Dim fileLineStart As Long = _startLineNumber
@@ -702,8 +702,7 @@ Namespace kCura.WinEDDS
 					'TODO: If we are going to do this for more than documents, fix this as well...
 					Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value.ToString))
 					If textIdentifier = "" Then
-						'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
-						If _overwrite.ToLower = "overlay" OrElse _overwrite.ToLower = "appendoverlay" Then
+						If _overwrite = Relativity.ImportOverwriteType.Overlay OrElse _overwrite = Relativity.ImportOverwriteType.AppendOverlay Then
 							parentFolderID = -1
 						End If
 						Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, _destinationFolderColumnIndex)
@@ -1044,7 +1043,7 @@ Namespace kCura.WinEDDS
 			settings.KeyFieldArtifactID = _keyFieldID
 			settings.BulkLoadFileFieldDelimiter = _bulkLoadFileFieldDelimiter
 			settings.OverlayBehavior = Me.GetMassImportOverlayBehavior(_settings.OverlayBehavior)
-			Select Case CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), _overwrite, True), Relativity.ImportOverwriteType)
+			Select _overwrite
 				Case Relativity.ImportOverwriteType.Overlay
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
 				Case Relativity.ImportOverwriteType.AppendOverlay
