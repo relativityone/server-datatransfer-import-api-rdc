@@ -198,7 +198,11 @@ Namespace kCura.WinEDDS
 			_folderID = folderID
 			_productionArtifactID = args.ProductionArtifactID
 			InitializeDTOs(args)
-			_overwrite = CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), args.Overwrite, True), Relativity.ImportOverwriteType)
+			If(args.Overwrite.IsNullOrEmpty)
+				_overwrite = Relativity.ImportOverwriteType.Append
+			Else 
+				_overwrite = CType([Enum].Parse(GetType(Relativity.ImportOverwriteType),args.Overwrite, True), Relativity.ImportOverwriteType)
+			End If
 			_replaceFullText = args.ReplaceFullText
 			_processController = controller
 			_copyFilesToRepository = args.CopyFilesToDocumentRepository

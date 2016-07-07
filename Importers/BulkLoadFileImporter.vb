@@ -322,7 +322,11 @@ Namespace kCura.WinEDDS
 			' get an instance of the specific type of artifact reader so we can get the fieldmapped event
 			_executionSource = executionSource
 			_cloudInstance = cloudInstance
-			_overwrite = CType([Enum].Parse(GetType(Relativity.ImportOverwriteType),args.OverwriteDestination, True), Relativity.ImportOverwriteType)
+			If(String.IsNullOrEmpty(args.OverwriteDestination))
+				_overwrite = Relativity.ImportOverwriteType.Append
+			Else 
+				_overwrite = CType([Enum].Parse(GetType(Relativity.ImportOverwriteType),args.OverwriteDestination, True), Relativity.ImportOverwriteType)
+			End If
 			If args.CopyFilesToDocumentRepository Then
 				'DEFECT: SF#226211, repositories without trailing \ caused import to fail. Changed to use Path.Combine. -tmh
 				Dim lastHalfPath As String = "EDDS" & args.CaseInfo.ArtifactID & "\"
