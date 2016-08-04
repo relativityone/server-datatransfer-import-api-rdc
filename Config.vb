@@ -43,6 +43,7 @@ Namespace kCura.WinEDDS
 							If Not tempDict.Contains("ForceWebUpload") Then tempDict.Add("ForceWebUpload", "False")
 							If Not tempDict.Contains("UsePipeliningForNativeAndObjectImports") Then tempDict.Add("UsePipeliningForNativeAndObjectImports", "False")
 							If Not tempDict.Contains("DisableTextFileEncodingCheck") Then tempDict.Add("DisableTextFileEncodingCheck", "False")
+							If Not tempDict.Contains("ProcessFormRefreshRate") Then tempDict.Add("ProcessFormRefreshRate", "0")
 							_configDictionary = tempDict
 						End If
 					End SyncLock
@@ -172,6 +173,16 @@ Namespace kCura.WinEDDS
 					Return CType(ConfigSettings("UsePipeliningForNativeAndObjectImports"), Boolean)
 				Catch
 					Return False
+				End Try
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property ProcessFormRefreshRate As Long
+			Get
+				Try
+					Return CType(ConfigSettings("ProcessFormRefreshRate"), Long)
+				Catch
+					Return 0
 				End Try
 			End Get
 		End Property
