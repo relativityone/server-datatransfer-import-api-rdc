@@ -342,28 +342,6 @@ Namespace kCura.EDDS.WinForm
 			If Not ExportErrorLoadFile Then ErrorLoadFileLocation = ""
 		End Sub
 
-		Private Function GetArtifactTypeID(ByVal commandLine As kCura.CommandLine.CommandList) As Int32
-			For Each command As kCura.CommandLine.Command In commandLine
-				If command.Directive.ToLower.Replace("-", "").Replace("/", "") = "ot" Then
-					If command.Value Is Nothing Then command.Value = ""
-					If command.Value = "" Then Throw New InvalidArtifactTypeException(command.Value)
-					For Each row As System.Data.DataRow In _application.AllUploadableArtifactTypes.Rows
-						If Relativity.SqlNameHelper.GetSqlFriendlyName(row("Name").ToString).ToLower = Relativity.SqlNameHelper.GetSqlFriendlyName(command.Value).ToLower Then
-							Return CType(row("DescriptorArtifactTypeID"), Int32)
-						End If
-					Next
-					For Each row As System.Data.DataRow In _application.AllUploadableArtifactTypes.Rows
-						If row("DescriptorArtifactTypeID").ToString.ToLower = command.Value.ToLower Then
-							Return CType(row("DescriptorArtifactTypeID"), Int32)
-						End If
-					Next
-					Throw New InvalidArtifactTypeException(command.Value)
-				End If
-			Next
-			Return Nothing
-		End Function
-
-
 		Private Sub SetSavedMapLocation(ByVal path As String)
 			Try
 				Select Case CurrentLoadMode
