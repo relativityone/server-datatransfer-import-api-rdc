@@ -199,7 +199,6 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub RunDynamicObjectImport(ByVal commandList As kCura.CommandLine.CommandList)
-			Dim frm As New kCura.Windows.Process.ProgressForm
 			Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
 			SelectedNativeLoadFile.SourceFileEncoding = SourceFileEncoding
 			SelectedNativeLoadFile.ExtractedTextFileEncoding = ExtractedTextFileEncoding
@@ -221,7 +220,6 @@ Namespace kCura.EDDS.WinForm
 			If EnsureEncoding() Then
 				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(_application.Credential, _application.CookieContainer)
 				If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
-					Dim frm As New kCura.Windows.Process.ProgressForm
 					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
 					SelectedNativeLoadFile.SourceFileEncoding = SourceFileEncoding
 					SelectedNativeLoadFile.ExtractedTextFileEncoding = ExtractedTextFileEncoding
