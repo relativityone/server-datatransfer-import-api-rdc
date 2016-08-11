@@ -1753,14 +1753,36 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Sub DoHelp()
-			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
-				_loginForm.TopMost = False
-			End If
-			Dim v As System.Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
-			Dim majMin As String = String.Format("{0}.{1}", v.Major, v.Minor)
-			Process.Start("https://help.kcura.com/" & majMin & "/#Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
+            If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
+                _loginForm.TopMost = False
+            End If
 
-			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
+            'Default cloud setting
+            Dim cloudIsEnabled As Boolean = False
+
+            'Get configuration information
+            Dim configTable As System.Data.DataTable = GetSystemConfiguration()
+
+            'Get cloud instance setting
+            Dim foundRows() As Data.DataRow = configTable.Select("Name = 'CloudInstance'")
+
+            If foundRows.Length > 0 Then
+                Dim foundRow As Data.DataRow = foundRows.ElementAt(0)
+                cloudIsEnabled = CType(foundRow.ItemArray.ElementAt(2), Boolean)
+            End If
+
+            Dim urlPrefix As String = "https://help.kcura.com/"
+
+            'Go to appropriate documentation site
+            If cloudIsEnabled Then
+                Process.Start(urlPrefix & "relativityone/Content/Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
+            Else
+                Dim v As System.Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
+                Dim majMin As String = String.Format("{0}.{1}", v.Major, v.Minor)
+                Process.Start(urlPrefix & majMin & "/#Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
+            End If
+
+            If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
 				_loginForm.TopMost = True
 			End If
 		End Sub
