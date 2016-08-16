@@ -195,11 +195,15 @@ Namespace kCura.EDDS.WinForm
 
 
 #Region "Event Throwers"
-		Public Sub LogOn()
-			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOn))
-		End Sub
+        Public Sub LogOn()
+            RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOn))
+        End Sub
 
-		Public Sub ExitApplication()
+        Public Sub LogOnForm()
+            RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOnForm))
+        End Sub
+
+        Public Sub ExitApplication()
 			UpdateWebServiceURL(False)
 			UpdateForceFolderPreview()
 			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.ExitApplication))
@@ -1555,24 +1559,26 @@ Namespace kCura.EDDS.WinForm
 				Return
 			End Try
 
-			Try
-				If userManager.Login(cred.UserName, cred.Password) Then
+            Try
+                If userManager.Login(cred.UserName, cred.Password) Then
 
-					Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
-					locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol
-					System.Threading.Thread.CurrentThread.CurrentCulture = locale
+                    Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
+                    locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol
+                    System.Threading.Thread.CurrentThread.CurrentCulture = locale
 
-					_credential = cred
-					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-					If openCaseSelector Then OpenCase()
-					_timeZoneOffset = 0															'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
-					_lastCredentialCheckResult = CredentialCheckResult.Success
-				Else
-					Me.ReLogin("Invalid login. Try again?")
-					_lastCredentialCheckResult = CredentialCheckResult.Fail
-				End If
-			Catch ex As System.Exception
-				Dim x As New ErrorDialog
+                    _credential = cred
+                    kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
+                    If openCaseSelector Then OpenCase()
+                    _timeZoneOffset = 0                                                         'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+                    _lastCredentialCheckResult = CredentialCheckResult.Success
+                    'This was created specifically for raising an event after login success for RDC forms authentication 
+                    LogOnForm()
+                Else
+                    Me.ReLogin("Invalid login. Try again?")
+                    _lastCredentialCheckResult = CredentialCheckResult.Fail
+                End If
+            Catch ex As System.Exception
+                Dim x As New ErrorDialog
 				If IsAccessDisabledException(ex) Then
 					x.Text = "Account Disabled"
 					x.InitializeSoapExceptionWithCustomMessage(DirectCast(ex, System.Web.Services.Protocols.SoapException), _
