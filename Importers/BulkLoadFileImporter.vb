@@ -1088,9 +1088,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private _task As System.Threading.Tasks.Task = Nothing
-
-		End Sub
-		Private _task As System.Threading.Tasks.Task = Nothing
 		Private _isRunOccurring As Boolean = False
 		Protected Function GetMassImportOverlayBehavior(ByVal inputOverlayType As LoadFile.FieldOverlayBehavior?) As kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior
 			Select Case inputOverlayType
