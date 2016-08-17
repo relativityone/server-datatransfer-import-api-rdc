@@ -504,7 +504,6 @@ Namespace kCura.Windows.Process
 			End If
 			Return retval
 		End Function
-
 		Private _lastEvent As kCura.Windows.Process.ProcessProgressEvent
 		Public Property StatusRefreshRate As Long
 		Protected ReadOnly Property DeJitter As Boolean
