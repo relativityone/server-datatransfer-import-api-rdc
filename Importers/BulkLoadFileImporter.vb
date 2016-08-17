@@ -1,14 +1,9 @@
-Imports System.IO
-Imports System.Diagnostics
-Imports kCura.OI.FileID
-Imports kCura.EDDS.WebAPI.BulkImportManagerBase
-Imports Relativity
-Imports Relativity.MassImport
-Imports Microsoft.VisualBasic
 Imports System.Collections.Generic
+Imports System.IO
+Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.EDDS.WebAPI.DocumentManagerBase
-Imports kCura.WinEDDS.Service
 Imports kCura.Utility.Extensions
+Imports Relativity
 
 Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
@@ -1069,9 +1064,6 @@ Namespace kCura.WinEDDS
 			_statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
 			_statistics.MetadataBytes += (Me.GetFileLength(_outputCodeFilePath) + Me.GetFileLength(outputNativePath) + Me.GetFileLength(_outputObjectFilePath) + Me.GetFileLength(_outputFileWriter.OutputDataGridFilePath))
 			start = System.DateTime.Now.Ticks
-			'While _isRunOccurring
-			'	System.Threading.Thread.CurrentThread.Join(100)
-			'End While
 			If Config.UsePipeliningForNativeAndObjectImports AndAlso Not _task Is Nothing Then
 				Threading.Tasks.Task.WaitAll(_task)
 				_task = Nothing
@@ -1079,7 +1071,6 @@ Namespace kCura.WinEDDS
 			Dim makeServiceCalls As Action =
 			Sub()
 				Dim runResults As MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
-
 				_statistics.ProcessRunResults(runResults)
 				_statistics.SqlTime += (System.DateTime.Now.Ticks - start)
 
@@ -1093,6 +1084,10 @@ Namespace kCura.WinEDDS
 			Else
 				makeServiceCalls()
 			End If
+
+		End Sub
+
+		Private _task As System.Threading.Tasks.Task = Nothing
 
 		End Sub
 		Private _task As System.Threading.Tasks.Task = Nothing

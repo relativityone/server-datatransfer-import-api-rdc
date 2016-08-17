@@ -42,6 +42,7 @@ Namespace kCura.WinEDDS
 							If Not tempDict.Contains("CreateFoldersInWebAPI") Then tempDict.Add("CreateFoldersInWebAPI", "True")
 							If Not tempDict.Contains("ForceWebUpload") Then tempDict.Add("ForceWebUpload", "False")
 							If Not tempDict.Contains("UsePipeliningForNativeAndObjectImports") Then tempDict.Add("UsePipeliningForNativeAndObjectImports", "False")
+							If Not tempDict.Contains("DisableTextFileEncodingCheck") Then tempDict.Add("DisableTextFileEncodingCheck", "False")
 							If Not tempDict.Contains("ProcessFormRefreshRate") Then tempDict.Add("ProcessFormRefreshRate", "0")
 							_configDictionary = tempDict
 						End If
@@ -151,6 +152,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 #End Region
+
 		''' <summary>
 		''' Please do not use or document - this is an internal toggle
 		''' </summary>
@@ -175,6 +177,10 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		''' <summary>
+		''' Please do not use or document - this is an internal toggle
+		''' </summary>
+		''' <returns></returns>
 		Friend Shared ReadOnly Property DisableTextFileEncodingCheck As Boolean
 			Get
 				Try
