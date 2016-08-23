@@ -267,11 +267,13 @@ Namespace kCura.EDDS.WinForm
 			Me.EnhancedMenuProvider.SetImageIndex(Me._helpMenuItem, -1)
 			Me._helpMenuItem.Index = 1
 			Me._helpMenuItem.OwnerDraw = True
-			Me._helpMenuItem.Text = "Help"
-			'
-			'StatusBar
-			'
-			Me.StatusBar.Location = New System.Drawing.Point(0, 515)
+            Me._helpMenuItem.Text = "Help"
+            'Disable help by default so correct help (Relativity or RelativityOne) can be displayed upon login
+            Me._helpMenuItem.Enabled = False
+            '
+            'StatusBar
+            '
+            Me.StatusBar.Location = New System.Drawing.Point(0, 515)
 			Me.StatusBar.Name = "StatusBar"
 			Me.StatusBar.Panels.AddRange(New System.Windows.Forms.StatusBarPanel() {Me.AppStatusPanel, Me.LoggedInUserPanel})
 			Me.StatusBar.ShowPanels = True
@@ -345,13 +347,13 @@ Namespace kCura.EDDS.WinForm
 				ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
 					_application.NewLogin()
 				Else
-					_application.LogOn()
-					_application.OpenCase()
-					kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
-				End If
+                    _application.LogOn()
+                    _application.OpenCase()
+                    kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
+                End If
 			Else
-				_application.OpenCase()
-			End If
+                _application.OpenCase()
+            End If
 		End Sub
 
 		Private Sub ExitMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ExitMenu.Click
@@ -368,10 +370,15 @@ Namespace kCura.EDDS.WinForm
 					ImportMenu.Enabled = _application.UserHasImportPermission
 					ExportMenu.Enabled = _application.UserHasExportPermission
 					ImportMenu.Visible = _application.UserHasImportPermission
-					ExportMenu.Visible = _application.UserHasExportPermission
-				Case appEvent.AppEventType.LogOn
-					UpdateUserName(_application.LoggedInUser)
-				Case appEvent.AppEventType.ExitApplication
+                    ExportMenu.Visible = _application.UserHasExportPermission
+                Case AppEvent.AppEventType.LogOnForm
+                    'Enable help once logged into Relativity via RDC login form
+                    Me._helpMenuItem.Enabled = True
+                Case appEvent.AppEventType.LogOn
+                    UpdateUserName(_application.LoggedInUser)
+                    'Enable help once logged into Relativity via Windows Authentication
+                    Me._helpMenuItem.Enabled = True
+                Case appEvent.AppEventType.ExitApplication
 					Me.Close()
 				Case appEvent.AppEventType.WorkspaceFolderSelected
 					'disable import and export menus if no permission
@@ -379,8 +386,8 @@ Namespace kCura.EDDS.WinForm
 					ExportMenu.Enabled = _application.UserHasExportPermission
 					ImportMenu.Visible = _application.UserHasImportPermission
 					ExportMenu.Visible = _application.UserHasExportPermission
-					'UpdateStatus("Case Folder Load: " + _application.SelectedCaseInfo.RootFolderID.ToString)
-			End Select
+                    'UpdateStatus("Case Folder Load: " + _application.SelectedCaseInfo.RootFolderID.ToString)
+            End Select
 		End Sub
 
 		Private Sub UpdateStatus(ByVal text As String)
@@ -401,29 +408,31 @@ Namespace kCura.EDDS.WinForm
 		Private Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			_application.TemporaryForceFolderPreview = kCura.WinEDDS.Config.ForceFolderPreview
-			If kCura.WinEDDS.Config.WebServiceURL = String.Empty Then
-				_application.SetWebServiceURL()
-			End If
+            If kCura.WinEDDS.Config.WebServiceURL = String.Empty Then
+                _application.SetWebServiceURL()
+            End If
 
-			'' Can't do this in Application.vb without refactoring AttemptLogin (which needs this form as a parameter)
-			CheckCertificate()
+            '' Can't do this in Application.vb without refactoring AttemptLogin (which needs this form as a parameter)
+            CheckCertificate()
 
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
 		Public Sub CheckCertificate()
 			If (_application.CertificateTrusted()) Then
-				_loginForm = _application.AttemptLogin(Me)
-			Else
-				_application.CertificateCheckPrompt()
-			End If
+                _loginForm = _application.AttemptLogin(Me)
+            Else
+                _application.CertificateCheckPrompt()
+            End If
 		End Sub
 
-		Private Sub WebServiceURLChanged() Handles _application.ReCheckCertificate
-			CheckCertificate()
-		End Sub
+        Private Sub WebServiceURLChanged() Handles _application.ReCheckCertificate
+            'Disable help since user will be asked to login again
+            Me._helpMenuItem.Enabled = False
+            CheckCertificate()
+        End Sub
 
-		Private Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
+        Private Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
 			_application.UpdateForceFolderPreview()
 			_application.UpdateWebServiceURL(False)
 			_application.Logout()
