@@ -366,6 +366,7 @@ Namespace kCura.EDDS.WinForm
 						Else
 							_loadFilePath = tempLoadFile.FilePath
 						End If
+						tempLoadFile.OverwriteDestination = Utility.ConvertLegacyOverwriteDestinationValueToEnum(tempLoadFile.OverwriteDestination)
 						tempLoadFile.ForceFolderPreview = False
 						tempLoadFile.CaseInfo = SelectedCaseInfo
 						tempLoadFile.CopyFilesToDocumentRepository = True						'LoadFile.CopyFilesToDocumentRepository

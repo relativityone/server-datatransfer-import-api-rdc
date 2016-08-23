@@ -1285,21 +1285,10 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Sub SaveLoadFile(ByVal loadFile As LoadFile, ByVal path As String)
-			SaveFileObject(ConvertOverwriteDestinationToLegacyValues(loadFile), path)
+			SaveFileObject(Utility.ConvertOverwriteDestinationToLegacyValues(loadFile), path)
 		End Sub
 
-		Private Function ConvertOverwriteDestinationToLegacyValues(ByVal loadfile As LoadFile) As LoadFile
-			Dim overwriteDestination = loadFile.OverwriteDestination
-			Select Case overwriteDestination.ToLower()
-				Case Relativity.ImportOverwriteType.Overlay.ToString.ToLower
-					loadFile.OverwriteDestination = "Strict"
-				Case Relativity.ImportOverwriteType.AppendOverlay.ToString.ToLower
-					loadFile.OverwriteDestination = "Append"
-				Case Relativity.ImportOverwriteType.Append.ToString.ToLower
-					loadFile.OverwriteDestination = "None"
-			End Select
-			Return loadfile
-		End Function
+
 
 		Private Sub SaveFileObject(ByVal fileObject As Object, ByVal path As String)
 			Dim sw As New System.IO.StreamWriter(path)
@@ -1354,7 +1343,7 @@ Namespace kCura.EDDS.WinForm
 				'TODO: Log Exception
 				Return Nothing
 			End Try
-			ConvertLegacyOverwriteDestinationValueToEnum(tempLoadFile)
+			tempLoadFile.OverwriteDestination = Utility.ConvertLegacyOverwriteDestinationValueToEnum(tempLoadFile.OverwriteDestination)
 			tempLoadFile.CaseInfo = Me.SelectedCaseInfo
 			tempLoadFile.CopyFilesToDocumentRepository = loadFile.CopyFilesToDocumentRepository
 			tempLoadFile.SelectedCasePath = Me.SelectedCaseInfo.DocumentPath
@@ -1401,18 +1390,6 @@ Namespace kCura.EDDS.WinForm
 			If Not mapItemToRemove Is Nothing Then tempLoadFile.FieldMap.Remove(mapItemToRemove)
 			Return tempLoadFile
 		End Function
-
-		Private Sub ConvertLegacyOverwriteDestinationValueToEnum(ByRef loadfile As Loadfile)
-			Dim overwriteDestination = loadFile.OverwriteDestination
-			Select Case overwriteDestination.ToLower
-				Case "strict"
-					loadFile.OverwriteDestination = Relativity.ImportOverwriteType.Overlay.ToString
-				Case "append"
-					loadFile.OverwriteDestination = Relativity.ImportOverwriteType.AppendOverlay.ToString
-				Case "none"
-					loadFile.OverwriteDestination = Relativity.ImportOverwriteType.Append.ToString
-			End Select
-		End Sub
 
 		Public Function ReadImageLoadFile(ByVal path As String) As ImageLoadFile
 			kCura.WinEDDS.Service.Settings.SendEmailOnLoadCompletion = Config.SendNotificationOnImportCompletionByDefault
