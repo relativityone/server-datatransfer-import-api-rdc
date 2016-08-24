@@ -457,7 +457,7 @@ Namespace kCura.EDDS.WinForm
 				End If
 			End If
 			ImageLoadFile.FullTextEncoding = _encodingPicker.SelectedEncoding
-			ImageLoadFile.Overwrite = Me.GetOverwrite
+			ImageLoadFile.Overwrite = Me.GetOverwrite.ToString
 			ImageLoadFile.DestinationFolderID = _imageLoadFile.DestinationFolderID
 			ImageLoadFile.ControlKeyField = _application.GetCaseIdentifierFields(Relativity.ArtifactType.Document)(0)
 			ImageLoadFile.AutoNumberImages = _autoNumberingOn.Checked
@@ -466,7 +466,8 @@ Namespace kCura.EDDS.WinForm
 				Me.ImageLoadFile.ReplaceFullText = False
 				Me.ImageLoadFile.BeginBatesFieldArtifactID = CType(_beginBatesDropdown.SelectedValue, Int32)
 			Else
-				If Me.GetOverwrite = "Strict" Then
+				'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
+				If Me.GetOverwrite = Relativity.ImportOverwriteType.Overlay
 					Me.ImageLoadFile.IdentityFieldId = CType(_beginBatesDropdown.SelectedValue, Int32)
 				Else
 					Me.ImageLoadFile.IdentityFieldId = -1
@@ -481,26 +482,26 @@ Namespace kCura.EDDS.WinForm
 			Return True
 		End Function
 
-		Private Function GetOverwrite() As String
+		Private Function GetOverwrite() As Relativity.ImportOverwriteType
 			Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
 				Case "append only"
-					Return "None"
+					Return Relativity.ImportOverwriteType.Append
 				Case "overlay only"
-					Return "Strict"
+					Return Relativity.ImportOverwriteType.Overlay
 				Case "append/overlay"
-					Return "Append"
+					Return Relativity.ImportOverwriteType.AppendOverlay
 				Case Else
 					Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
 			End Select
 		End Function
 
 		Private Function GetOverwriteDropdownItem(ByVal input As String) As String
-			Select Case input.ToLower
-				Case "none"
+			Select Case CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), input, True), Relativity.ImportOverwriteType)
+				Case Relativity.ImportOverwriteType.Append
 					Return "Append Only"
-				Case "strict"
+				Case Relativity.ImportOverwriteType.Overlay
 					Return "Overlay Only"
-				Case "append"
+				Case Relativity.ImportOverwriteType.AppendOverlay
 					Return "Append/Overlay"
 				Case Else
 					Throw New IndexOutOfRangeException("'" & input.ToLower & "' isn't a valid option.")
@@ -576,7 +577,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub _overWrite_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overwriteDropdown.SelectedIndexChanged
-			_imageLoadFile.Overwrite = Me.GetOverwrite
+			_imageLoadFile.Overwrite = Me.GetOverwrite.ToString
 			If _overwriteDropdown.SelectedIndex = 1 Then
 				_beginBatesDropdown.Enabled = True
 			Else
@@ -623,7 +624,7 @@ Namespace kCura.EDDS.WinForm
 				Me.ImageLoadFile = _application.ReadImageLoadFile(_loadImageLoadFileDialog.FileName)
 				Me.ImageLoadFile.CopyFilesToDocumentRepository = copyFilesToRepository
 				_encodingPicker.SelectedEncoding = Me.ImageLoadFile.FullTextEncoding
-				_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite)
+				_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite.ToString)
 				_filePath.Text = ImageLoadFile.FileName
 				_replaceFullText.Checked = ImageLoadFile.ReplaceFullText
 				_autoNumberingOn.Checked = ImageLoadFile.AutoNumberImages

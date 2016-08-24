@@ -87,5 +87,33 @@ Namespace kCura.EDDS.WinForm
 			ddown.SelectedIndex = 0
 		End Sub
 
+		Public Shared Function ConvertOverwriteDestinationToLegacyValues(ByVal loadfile As LoadFile) As LoadFile
+			Dim overwriteDestination = loadFile.OverwriteDestination
+			Select Case overwriteDestination.ToLower()
+				Case Relativity.ImportOverwriteType.Overlay.ToString.ToLower
+					loadFile.OverwriteDestination = "Strict"
+				Case Relativity.ImportOverwriteType.AppendOverlay.ToString.ToLower
+					loadFile.OverwriteDestination = "Append"
+				Case Relativity.ImportOverwriteType.Append.ToString.ToLower
+					loadFile.OverwriteDestination = "None"
+			End Select
+			Return loadfile
+		End Function
+
+		Public Shared Function ConvertLegacyOverwriteDestinationValueToEnum(ByVal overWriteDestination As String) As String
+			Dim retval As String = overWriteDestination
+			If Not String.IsNullOrEmpty(overWriteDestination)
+				Select Case overwriteDestination.ToLower
+					Case "strict"
+						retval = Relativity.ImportOverwriteType.Overlay.ToString
+					Case "append"
+						retval = Relativity.ImportOverwriteType.AppendOverlay.ToString
+					Case "none"
+						retval = Relativity.ImportOverwriteType.Append.ToString
+				End Select
+			End if
+			return retval
+		End Function
+
 	End Class
 End Namespace

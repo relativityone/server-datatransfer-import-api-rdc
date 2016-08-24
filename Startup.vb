@@ -199,7 +199,6 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub RunDynamicObjectImport(ByVal commandList As kCura.CommandLine.CommandList)
-			Dim frm As New kCura.Windows.Process.ProgressForm
 			Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
 			SelectedNativeLoadFile.SourceFileEncoding = SourceFileEncoding
 			SelectedNativeLoadFile.ExtractedTextFileEncoding = ExtractedTextFileEncoding
@@ -221,7 +220,6 @@ Namespace kCura.EDDS.WinForm
 			If EnsureEncoding() Then
 				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(_application.Credential, _application.CookieContainer)
 				If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
-					Dim frm As New kCura.Windows.Process.ProgressForm
 					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
 					SelectedNativeLoadFile.SourceFileEncoding = SourceFileEncoding
 					SelectedNativeLoadFile.ExtractedTextFileEncoding = ExtractedTextFileEncoding
@@ -342,28 +340,6 @@ Namespace kCura.EDDS.WinForm
 			If Not ExportErrorLoadFile Then ErrorLoadFileLocation = ""
 		End Sub
 
-		Private Function GetArtifactTypeID(ByVal commandLine As kCura.CommandLine.CommandList) As Int32
-			For Each command As kCura.CommandLine.Command In commandLine
-				If command.Directive.ToLower.Replace("-", "").Replace("/", "") = "ot" Then
-					If command.Value Is Nothing Then command.Value = ""
-					If command.Value = "" Then Throw New InvalidArtifactTypeException(command.Value)
-					For Each row As System.Data.DataRow In _application.AllUploadableArtifactTypes.Rows
-						If Relativity.SqlNameHelper.GetSqlFriendlyName(row("Name").ToString).ToLower = Relativity.SqlNameHelper.GetSqlFriendlyName(command.Value).ToLower Then
-							Return CType(row("DescriptorArtifactTypeID"), Int32)
-						End If
-					Next
-					For Each row As System.Data.DataRow In _application.AllUploadableArtifactTypes.Rows
-						If row("DescriptorArtifactTypeID").ToString.ToLower = command.Value.ToLower Then
-							Return CType(row("DescriptorArtifactTypeID"), Int32)
-						End If
-					Next
-					Throw New InvalidArtifactTypeException(command.Value)
-				End If
-			Next
-			Return Nothing
-		End Function
-
-
 		Private Sub SetSavedMapLocation(ByVal path As String)
 			Try
 				Select Case CurrentLoadMode
@@ -390,6 +366,7 @@ Namespace kCura.EDDS.WinForm
 						Else
 							_loadFilePath = tempLoadFile.FilePath
 						End If
+						tempLoadFile.OverwriteDestination = Utility.ConvertLegacyOverwriteDestinationValueToEnum(tempLoadFile.OverwriteDestination)
 						tempLoadFile.ForceFolderPreview = False
 						tempLoadFile.CaseInfo = SelectedCaseInfo
 						tempLoadFile.CopyFilesToDocumentRepository = True						'LoadFile.CopyFilesToDocumentRepository

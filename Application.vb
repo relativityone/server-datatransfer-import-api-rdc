@@ -195,11 +195,15 @@ Namespace kCura.EDDS.WinForm
 
 
 #Region "Event Throwers"
-		Public Sub LogOn()
-			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOn))
-		End Sub
+        Public Sub LogOn()
+            RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOn))
+        End Sub
 
-		Public Sub ExitApplication()
+        Public Sub LogOnForm()
+            RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOnForm))
+        End Sub
+
+        Public Sub ExitApplication()
 			UpdateWebServiceURL(False)
 			UpdateForceFolderPreview()
 			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.ExitApplication))
@@ -872,7 +876,7 @@ Namespace kCura.EDDS.WinForm
 			loadFile.CaseInfo = caseInfo
 			loadFile.Credentials = Me.Credential
 			loadFile.CookieContainer = Me.CookieContainer
-			loadFile.OverwriteDestination = "None"
+			loadFile.OverwriteDestination = Relativity.ImportOverwriteType.Append.ToString
 			loadFile.ArtifactTypeID = Me.ArtifactTypeID
 			frm.LoadFile = loadFile
 			frm.Show()
@@ -1098,6 +1102,10 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Process Management"
+		Private Function CreateProgressForm() As kCura.Windows.Process.ProgressForm
+			Return New kCura.Windows.Process.ProgressForm() With {.StatusRefreshRate = WinEDDS.Config.ProcessFormRefreshRate}
+		End Function
+
 		Public Function QueryConnectivity() As Guid
 			CursorWait()
 			If Not Me.IsConnected() Then
@@ -1123,7 +1131,7 @@ Namespace kCura.EDDS.WinForm
 				CursorDefault()
 				Exit Function
 			End If
-			Dim frm As New kCura.Windows.Process.ProgressForm
+			Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
 			Dim previewer As New kCura.WinEDDS.PreviewLoadFileProcess(formType)
 			loadFileToPreview.PreviewCodeCount.Clear()
 			Dim previewform As New LoadFilePreviewForm(formType, loadFileToPreview.MultiRecordDelimiter, loadFileToPreview.PreviewCodeCount)
@@ -1161,7 +1169,7 @@ Namespace kCura.EDDS.WinForm
 			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _CookieContainer)
 			If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
 				If CheckFieldMap(loadFile) Then
-					Dim frm As New kCura.Windows.Process.ProgressForm
+					Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
 					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
 					importer.LoadFile = loadFile
 					importer.TimeZoneOffset = _timeZoneOffset
@@ -1194,7 +1202,7 @@ Namespace kCura.EDDS.WinForm
 				CursorDefault()
 				Exit Sub
 			End If
-			Dim frm As New kCura.Windows.Process.ProgressForm
+			Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
 			Dim previewer As New kCura.WinEDDS.PreviewImageFileProcess
 			previewer.TimeZoneOffset = _timeZoneOffset
 			previewer.LoadFile = loadfile
@@ -1213,7 +1221,7 @@ Namespace kCura.EDDS.WinForm
 				CursorDefault()
 				Exit Sub
 			End If
-			Dim frm As New kCura.Windows.Process.ProgressForm
+			Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
 			Dim importer As New kCura.WinEDDS.ImportImageFileProcess
 			ImageLoadFile.CookieContainer = Me.CookieContainer
 			importer.ImageLoadFile = ImageLoadFile
@@ -1235,7 +1243,8 @@ Namespace kCura.EDDS.WinForm
 				CursorDefault()
 				Exit Function
 			End If
-			Dim frm As New kCura.Windows.Process.ProgressForm
+			Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
+			frm.StatusRefreshRate = 0
 			Dim exporter As New kCura.WinEDDS.ExportSearchProcess
 			exporter.UserNotification = New FormsUserNotification()
 			exporter.ExportFile = exportFile
@@ -1280,8 +1289,10 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Sub SaveLoadFile(ByVal loadFile As LoadFile, ByVal path As String)
-			SaveFileObject(loadFile, path)
+			SaveFileObject(Utility.ConvertOverwriteDestinationToLegacyValues(loadFile), path)
 		End Sub
+
+
 
 		Private Sub SaveFileObject(ByVal fileObject As Object, ByVal path As String)
 			Dim sw As New System.IO.StreamWriter(path)
@@ -1336,6 +1347,7 @@ Namespace kCura.EDDS.WinForm
 				'TODO: Log Exception
 				Return Nothing
 			End Try
+			tempLoadFile.OverwriteDestination = Utility.ConvertLegacyOverwriteDestinationValueToEnum(tempLoadFile.OverwriteDestination)
 			tempLoadFile.CaseInfo = Me.SelectedCaseInfo
 			tempLoadFile.CopyFilesToDocumentRepository = loadFile.CopyFilesToDocumentRepository
 			tempLoadFile.SelectedCasePath = Me.SelectedCaseInfo.DocumentPath
@@ -1524,24 +1536,26 @@ Namespace kCura.EDDS.WinForm
 				Return
 			End Try
 
-			Try
-				If userManager.Login(cred.UserName, cred.Password) Then
+            Try
+                If userManager.Login(cred.UserName, cred.Password) Then
 
-					Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
-					locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol
-					System.Threading.Thread.CurrentThread.CurrentCulture = locale
+                    Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
+                    locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol
+                    System.Threading.Thread.CurrentThread.CurrentCulture = locale
 
-					_credential = cred
-					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-					If openCaseSelector Then OpenCase()
-					_timeZoneOffset = 0															'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
-					_lastCredentialCheckResult = CredentialCheckResult.Success
-				Else
-					Me.ReLogin("Invalid login. Try again?")
-					_lastCredentialCheckResult = CredentialCheckResult.Fail
-				End If
-			Catch ex As System.Exception
-				Dim x As New ErrorDialog
+                    _credential = cred
+                    kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
+                    If openCaseSelector Then OpenCase()
+                    _timeZoneOffset = 0                                                         'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+                    _lastCredentialCheckResult = CredentialCheckResult.Success
+                    'This was created specifically for raising an event after login success for RDC forms authentication 
+                    LogOnForm()
+                Else
+                    Me.ReLogin("Invalid login. Try again?")
+                    _lastCredentialCheckResult = CredentialCheckResult.Fail
+                End If
+            Catch ex As System.Exception
+                Dim x As New ErrorDialog
 				If IsAccessDisabledException(ex) Then
 					x.Text = "Account Disabled"
 					x.InitializeSoapExceptionWithCustomMessage(DirectCast(ex, System.Web.Services.Protocols.SoapException), _
@@ -1722,14 +1736,36 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Sub DoHelp()
-			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
-				_loginForm.TopMost = False
-			End If
-			Dim v As System.Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
-			Dim majMin As String = String.Format("{0}.{1}", v.Major, v.Minor)
-			Process.Start("https://help.kcura.com/" & majMin & "/#Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
+            If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
+                _loginForm.TopMost = False
+            End If
 
-			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
+            'Default cloud setting
+            Dim cloudIsEnabled As Boolean = False
+
+            'Get configuration information
+            Dim configTable As System.Data.DataTable = GetSystemConfiguration()
+
+            'Get cloud instance setting
+            Dim foundRows() As Data.DataRow = configTable.Select("Name = 'CloudInstance'")
+
+            If foundRows.Length > 0 Then
+                Dim foundRow As Data.DataRow = foundRows.ElementAt(0)
+                cloudIsEnabled = CType(foundRow.ItemArray.ElementAt(2), Boolean)
+            End If
+
+            Dim urlPrefix As String = "https://help.kcura.com/"
+
+            'Go to appropriate documentation site
+            If cloudIsEnabled Then
+                Process.Start(urlPrefix & "relativityone/Content/Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
+            Else
+                Dim v As System.Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
+                Dim majMin As String = String.Format("{0}.{1}", v.Major, v.Minor)
+                Process.Start(urlPrefix & majMin & "/#Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
+            End If
+
+            If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
 				_loginForm.TopMost = True
 			End If
 		End Sub
