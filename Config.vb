@@ -153,7 +153,6 @@ Namespace kCura.WinEDDS
 		End Function
 
 #End Region
-
 		''' <summary>
 		''' Please do not use or document - this is an internal toggle
 		''' </summary>
@@ -178,16 +177,6 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Shared ReadOnly Property ProcessFormRefreshRate As Long
-			Get
-				Try
-					Return CType(ConfigSettings("ProcessFormRefreshRate"), Long)
-				Catch
-					Return 0
-				End Try
-			End Get
-		End Property
-
 		''' <summary>
 		''' Please do not use or document - this is an internal toggle
 		''' </summary>
@@ -198,6 +187,16 @@ Namespace kCura.WinEDDS
 					Return CType(ConfigSettings("DisableTextFileEncodingCheck"), Boolean)
 				Catch
 					Return False
+				End Try
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property ProcessFormRefreshRate As Long
+			Get
+				Try
+					Return CType(ConfigSettings("ProcessFormRefreshRate"), Long)
+				Catch
+					Return 0
 				End Try
 			End Get
 		End Property
