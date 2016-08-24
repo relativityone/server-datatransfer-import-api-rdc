@@ -5,6 +5,7 @@ Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.EDDS.WebAPI.DocumentManagerBase
 Imports kCura.Utility.Extensions
 Imports Relativity
+Imports System.Threading.Tasks
 
 Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
@@ -631,51 +632,78 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 				If fileExists Then
-					Try
-						Dim now As DateTime = DateTime.Now
-						If Me.DisableNativeValidation Then
-							oixFileIdData = Nothing
-						Else
-							Dim idDataExtractor As kCura.WinEDDS.Api.IHasOixFileType = Nothing
-							If (Not injectableContainerIsNothing) Then
-								idDataExtractor = injectableContainer.FileIdData
-							End If
-							If (idDataExtractor Is Nothing) Then
-								oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
+					Dim now As Date = Date.Now
+					Dim getFileID As Action =
+							Sub()
+
+								If Me.DisableNativeValidation Then
+									oixFileIdData = Nothing
+								Else
+									Dim idDataExtractor As kCura.WinEDDS.Api.IHasOixFileType = Nothing
+									If (Not injectableContainerIsNothing) Then
+										idDataExtractor = injectableContainer.FileIdData
+									End If
+									If (idDataExtractor Is Nothing) Then
+										oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
+									Else
+										oixFileIdData = idDataExtractor.GetFileIDData()
+									End If
+								End If
+							End Sub
+					Dim copyFileToRepository As Action =
+							Sub()
+								If _copyFileToRepository Then
+									Dim start As Int64 = System.DateTime.Now.Ticks
+									Dim updateCurrentStats As Boolean = (start - _statisticsLastUpdated.Ticks) > 10000000
+									_statistics.FileBytes += Me.GetFileLength(filename)
+									fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
+									_statistics.FileTime += System.DateTime.Now.Ticks - start
+									destinationVolume = _uploader.CurrentDestinationDirectory
+									If updateCurrentStats Then
+										_currentStatisticsSnapshot = _statistics.ToDictionary
+										_statisticsLastUpdated = New System.DateTime(start)
+									End If
+								Else
+									fileGuid = System.Guid.NewGuid.ToString
+								End If
+								fullFilePath = filename
+								If (injectableContainerIsNothing) Then
+									filename = Path.GetFileName(filename)
+								ElseIf (injectableContainer.HasFileName()) Then
+									filename = injectableContainer.FileName.GetFileName()
+								End If
+							End Sub
+
+					If Config.UsePipeliningForFileIdAndCopy Then
+						Try
+							Dim fileId As Task = Task.Factory.StartNew(getFileID)
+							Dim copyFile As Task = Task.Factory.StartNew(copyFileToRepository)
+							Task.WaitAll(fileId, copyFile)
+						Catch ae As AggregateException
+							For Each x As Exception In ae.Flatten().InnerExceptions
+								If TypeOf x Is FileNotFoundException Then
+									If Me.DisableNativeLocationValidation Then
+										'TODO: raise a warning or something?  I'm just copying this from the old logic rn.
+										'Don't do anything. This exception can only happen if DisableNativeLocationValidation is turned on
+									Else
+										Throw
+									End If
+								End If
+							Next
+						End Try
+					Else
+						Try
+							getFileID()
+							copyFileToRepository()
+						Catch ex As System.IO.FileNotFoundException
+							If Me.DisableNativeLocationValidation Then
+								'Don't do anything. This exception can only happen if DisableNativeLocationValidation is turned on
 							Else
-								oixFileIdData = idDataExtractor.GetFileIDData()
+								Throw
 							End If
-						End If
-
-						If _copyFileToRepository Then
-							Dim start As Int64 = System.DateTime.Now.Ticks
-							Dim updateCurrentStats As Boolean = (start - _statisticsLastUpdated.Ticks) > 10000000
-							_statistics.FileBytes += Me.GetFileLength(filename)
-							fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
-							_statistics.FileTime += System.DateTime.Now.Ticks - start
-							destinationVolume = _uploader.CurrentDestinationDirectory
-							If updateCurrentStats Then
-								_currentStatisticsSnapshot = _statistics.ToDictionary
-								_statisticsLastUpdated = New System.DateTime(start)
-							End If
-						Else
-							fileGuid = System.Guid.NewGuid.ToString
-						End If
-						fullFilePath = filename
-						If (injectableContainerIsNothing) Then
-							filename = Path.GetFileName(filename)
-						ElseIf (injectableContainer.HasFileName()) Then
-							filename = injectableContainer.FileName.GetFileName()
-						End If
-
-						WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
-					Catch ex As System.IO.FileNotFoundException
-						If Me.DisableNativeLocationValidation Then
-							'Don't do anything. This exception can only happen if DisableNativeLocationValidation is turned on
-						Else
-							Throw
-						End If
-					End Try
+						End Try
+					End If
+					WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
 				End If
 			End If
 			_timekeeper.MarkEnd("ManageDocument_Filesystem")

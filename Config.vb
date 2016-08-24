@@ -43,6 +43,7 @@ Namespace kCura.WinEDDS
 							If Not tempDict.Contains("ForceWebUpload") Then tempDict.Add("ForceWebUpload", "False")
 							If Not tempDict.Contains("UsePipeliningForNativeAndObjectImports") Then tempDict.Add("UsePipeliningForNativeAndObjectImports", "False")
 							If Not tempDict.Contains("DisableTextFileEncodingCheck") Then tempDict.Add("DisableTextFileEncodingCheck", "False")
+							If Not tempDict.Contains(NameOf(UsePipeliningForFileIdAndCopy)) Then tempDict.Add(NameOf(UsePipeliningForFileIdAndCopy), "False")
 							If Not tempDict.Contains("ProcessFormRefreshRate") Then tempDict.Add("ProcessFormRefreshRate", "0")
 							_configDictionary = tempDict
 						End If
@@ -167,6 +168,16 @@ Namespace kCura.WinEDDS
 		''' Please do not use or document - this is an internal toggle
 		''' </summary>
 		''' <returns></returns>
+		Friend Shared ReadOnly Property UsePipeliningForFileIdAndCopy As Boolean
+			Get
+				Try
+					Return CType(ConfigSettings(NameOf(UsePipeliningForFileIdAndCopy)), Boolean)
+				Catch
+					Return False
+				End Try
+			End Get
+		End Property
+
 		Friend Shared ReadOnly Property UsePipeliningForNativeAndObjectImports As Boolean
 			Get
 				Try
