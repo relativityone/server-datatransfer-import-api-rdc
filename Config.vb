@@ -41,6 +41,7 @@ Namespace kCura.WinEDDS
 							If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")
 							If Not tempDict.Contains("CreateFoldersInWebAPI") Then tempDict.Add("CreateFoldersInWebAPI", "True")
 							If Not tempDict.Contains("ForceWebUpload") Then tempDict.Add("ForceWebUpload", "False")
+							If Not tempDict.Contains("UsePipeliningForNativeAndObjectImports") Then tempDict.Add("UsePipeliningForNativeAndObjectImports", "False")
 							_configDictionary = tempDict
 						End If
 					End SyncLock
@@ -149,8 +150,31 @@ Namespace kCura.WinEDDS
 		End Function
 
 #End Region
+		''' <summary>
+		''' Please do not use or document - this is an internal toggle
+		''' </summary>
+		''' <returns></returns>
+		Friend Shared ReadOnly Property UsePipeliningForNativeAndObjectImports As Boolean
+			Get
+				Try
+					Return CType(ConfigSettings("UsePipeliningForNativeAndObjectImports"), Boolean)
+				Catch
+					Return False
+				End Try
+			End Get
+		End Property
 
-		Public Shared ReadOnly Property ImportBatchMaxVolume() As Int32		'Volume in bytes
+		Friend Shared ReadOnly Property DisableTextFileEncodingCheck As Boolean
+			Get
+				Try
+					Return CType(ConfigSettings("DisableTextFileEncodingCheck"), Boolean)
+				Catch
+					Return False
+				End Try
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property ImportBatchMaxVolume() As Int32     'Volume in bytes
 			Get
 				Try
 					Return CType(ConfigSettings("ImportBatchMaxVolume"), Int32)
