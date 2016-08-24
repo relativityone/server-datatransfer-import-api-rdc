@@ -166,24 +166,14 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Friend Shared ReadOnly Property DisableTextFileEncodingCheck As Boolean
-			Get
-				Try
-					Return CType(ConfigSettings("DisableTextFileEncodingCheck"), Boolean)
-				Catch
-					Return False
-				End Try
-			End Get
-		End Property
-
 		''' <summary>
 		''' Please do not use or document - this is an internal toggle
 		''' </summary>
 		''' <returns></returns>
-		Friend Shared ReadOnly Property UsePipeliningForNativeAndObjectImports As Boolean
+		Friend Shared ReadOnly Property DisableTextFileEncodingCheck As Boolean
 			Get
 				Try
-					Return CType(ConfigSettings("UsePipeliningForNativeAndObjectImports"), Boolean)
+					Return CType(ConfigSettings("DisableTextFileEncodingCheck"), Boolean)
 				Catch
 					Return False
 				End Try
@@ -196,20 +186,6 @@ Namespace kCura.WinEDDS
 					Return CType(ConfigSettings("ProcessFormRefreshRate"), Long)
 				Catch
 					Return 0
-				End Try
-			End Get
-		End Property
-
-		''' <summary>
-		''' Please do not use or document - this is an internal toggle
-		''' </summary>
-		''' <returns></returns>
-		Friend Shared ReadOnly Property DisableTextFileEncodingCheck As Boolean
-			Get
-				Try
-					Return CType(ConfigSettings("DisableTextFileEncodingCheck"), Boolean)
-				Catch
-					Return False
 				End Try
 			End Get
 		End Property
