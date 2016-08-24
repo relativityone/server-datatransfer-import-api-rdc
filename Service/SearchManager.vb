@@ -89,6 +89,17 @@ Namespace kCura.WinEDDS.Service
 				End Function)
 		End Function
 
+		Public Shadows Function RetrieveDefaultViewFieldIds(ByVal caseContextArtifactID As Int32, ByVal viewArtifactID As Int32, ByVal artifactTypeID As Int32, ByVal isProduction As Boolean) As Int32() Implements ISearchManager.RetrieveDefaultViewFieldIds
+			Return RetryOnReLoginException(
+				Function()
+					Dim retval As New System.Collections.Generic.List(Of Int32)
+					For Each id As Object In CType(RetrieveDefaultViewFieldsForIdList(caseContextArtifactID, artifactTypeID, {viewArtifactID}, isProduction)(CType(viewArtifactID, Object)), ArrayList)
+						retval.Add(Int32.Parse(id.ToString()))
+					Next
+					Return retval.ToArray()
+				End Function)
+		End Function
+
 		Public Shadows Function IsAssociatedSearchProviderAccessible(ByVal caseContextArtifactID As Int32, ByVal searchArtifactID As Int32) As Boolean()
 			Return RetryOnReLoginException(Function() MyBase.IsAssociatedSearchProviderAccessible(caseContextArtifactID, searchArtifactID))
 		End Function

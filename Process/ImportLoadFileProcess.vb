@@ -101,6 +101,7 @@ Namespace kCura.WinEDDS
 			If SkipExtractedTextEncodingCheck.HasValue AndAlso SkipExtractedTextEncodingCheck Then
 				_loadFileImporter.SkipExtractedTextEncodingCheck = True
 			End If
+			_loadFileImporter.SkipExtractedTextEncodingCheck = (_loadFileImporter.SkipExtractedTextEncodingCheck OrElse Config.DisableTextFileEncodingCheck)
 
 			_loadFileImporter.DisableExtractedTextFileLocationValidation = DisableExtractedTextFileLocationValidation
 			_loadFileImporter.AuditLevel = _auditLevel
@@ -179,13 +180,13 @@ Namespace kCura.WinEDDS
 				If Not LoadFile.ExtractedTextFileEncoding Is Nothing Then
 					retval.ExtractedTextFileEncodingCodePageID = LoadFile.ExtractedTextFileEncoding.CodePage
 				End If
-				Select Case LoadFile.OverwriteDestination.ToLower
-					Case "strict"
+				Select Case CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), LoadFile.OverwriteDestination, True), Relativity.ImportOverwriteType)
+					Case Relativity.ImportOverwriteType.Overlay
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Overlay
-					Case "none"
-						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Append
-					Case Else
+					Case Relativity.ImportOverwriteType.AppendOverlay
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Both
+					Case Else
+						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Append
 				End Select
 
 				If LoadFile.OverlayBehavior.HasValue Then

@@ -8,8 +8,9 @@ Namespace kCura.WinEDDS
 			ExitApplication = 1
 			LogOn = 2
             WorkspaceFolderSelected = 3
-			NewFolder = 4
-		End Enum
+            NewFolder = 4
+            LogOnForm = 5
+        End Enum
 
 		Public ReadOnly Property EventType() As AppEventType
 			Get
