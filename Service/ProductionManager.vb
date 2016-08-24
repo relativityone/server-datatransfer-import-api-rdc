@@ -19,7 +19,7 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 #Region " Shadow Functions "
-		Public Shadows Function RetrieveProducedByContextArtifactID(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
+		Public Shadows Function RetrieveProducedByContextArtifactID(ByVal caseContextArtifactID As Int32) As System.Data.DataSet Implements Export.IProductionManager.RetrieveProducedByContextArtifactID
 			Return RetryOnReLoginException(Function() MyBase.RetrieveProducedByContextArtifactID(caseContextArtifactID))
 		End Function
 
