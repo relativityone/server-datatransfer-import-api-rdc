@@ -504,8 +504,40 @@ Namespace kCura.Windows.Process
 			End If
 			Return retval
 		End Function
-		Private Sub _processObserver_OnProcessProgressEvent(ByVal evt As kCura.Windows.Process.ProcessProgressEvent) Handles _processObserver.OnProcessProgressEvent
+		Private _lastEvent As kCura.Windows.Process.ProcessProgressEvent
+		Public Property StatusRefreshRate As Long
+		Protected ReadOnly Property DeJitter As Boolean
+			Get
+				Return StatusRefreshRate > 0
+			End Get
+		End Property
+		Private _lastStatusMessageTs As Long = 0
+		Private _timer As System.Windows.Forms.Timer
 
+		Sub _processObserver_OnProcessProgressEvent(ByVal evt As kCura.Windows.Process.ProcessProgressEvent) Handles _processObserver.OnProcessProgressEvent
+			_lastEvent = evt
+			Dim redrawSummary As Boolean = True
+
+			If DeJitter Then
+				If _timer Is Nothing Then
+					_timer = New Timer() With {.Interval = CInt(StatusRefreshRate / 10000)}
+					AddHandler _timer.Tick, Sub() BuildOutSummary(Nothing)
+				End If
+				Dim now As Long = System.DateTime.Now.Ticks
+				Dim hasIntervalElapsed As Boolean = (now - _lastStatusMessageTs > StatusRefreshRate)
+				If hasIntervalElapsed Then
+					_lastStatusMessageTs = now
+				Else
+					_timer.Stop()
+					_timer.Start()
+				End If
+				redrawSummary = hasIntervalElapsed
+			End If
+			If redrawSummary Then BuildOutSummary(evt)
+		End Sub
+
+		Private Sub BuildOutSummary(evt As kCura.Windows.Process.ProcessProgressEvent)
+			If evt Is Nothing Then evt = _lastEvent
 			Dim stubDate As DateTime
 			Dim totalRecords, totalRecordsProcessed As Int32
 			If evt.TotalRecords > Int32.MaxValue Then
@@ -551,11 +583,10 @@ Namespace kCura.Windows.Process
 				Next
 			End If
 			UpdateSummaryText()
-            '_summaryOutput.Refresh()
-
-        End Sub
+		End Sub
 
 		Private Sub _processObserver_OnProcessComplete(ByVal closeForm As Boolean, ByVal exportFilePath As String, ByVal exportLog As Boolean) Handles _processObserver.OnProcessComplete
+			If _lastEvent IsNot Nothing Then BuildOutSummary(_lastEvent)
 			If closeForm Then
 				Me.Close()
 			Else
@@ -602,7 +633,7 @@ Namespace kCura.Windows.Process
 		End Sub
 
 		Private Sub _processObserver_OnProcessFatalException(ByVal ex As System.Exception) Handles _processObserver.OnProcessFatalException
-
+			If _lastEvent IsNot Nothing Then BuildOutSummary(_lastEvent)
 			Dim errorFriendlyMessage As String = ex.Message
 			Dim errorFullMessage As String = ex.ToString
 			Me.FatalException = ex
