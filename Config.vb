@@ -152,6 +152,29 @@ Namespace kCura.WinEDDS
 		End Function
 
 #End Region
+		''' <summary>
+		''' Please do not use or document - this is an internal toggle
+		''' </summary>
+		''' <returns></returns>
+		Friend Shared ReadOnly Property UsePipeliningForNativeAndObjectImports As Boolean
+			Get
+				Try
+					Return CType(ConfigSettings("UsePipeliningForNativeAndObjectImports"), Boolean)
+				Catch
+					Return False
+				End Try
+			End Get
+		End Property
+
+		Friend Shared ReadOnly Property DisableTextFileEncodingCheck As Boolean
+			Get
+				Try
+					Return CType(ConfigSettings("DisableTextFileEncodingCheck"), Boolean)
+				Catch
+					Return False
+				End Try
+			End Get
+		End Property
 
 		''' <summary>
 		''' Please do not use or document - this is an internal toggle

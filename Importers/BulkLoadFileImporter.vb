@@ -1071,6 +1071,7 @@ Namespace kCura.WinEDDS
 			Dim makeServiceCalls As Action =
 			Sub()
 				Dim runResults As MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
+
 				_statistics.ProcessRunResults(runResults)
 				_statistics.SqlTime += (System.DateTime.Now.Ticks - start)
 
