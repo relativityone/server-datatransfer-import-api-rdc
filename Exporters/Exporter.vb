@@ -7,6 +7,7 @@ Imports System.Web.Services.Protocols
 Namespace kCura.WinEDDS
 	Public Class Exporter
 	    Implements IExporterStatusNotification
+	    Implements IExporter
 
 #Region "Members"
 
@@ -125,7 +126,7 @@ Namespace kCura.WinEDDS
 
 		Public Property InteractionManager As Exporters.IUserNotification = New Exporters.NullUserNotification
 
-		Public Function ExportSearch() As Boolean
+		Public Function ExportSearch() As Boolean Implements IExporter.ExportSearch
 			Try
 				_start = System.DateTime.Now
 				Me.Search()
