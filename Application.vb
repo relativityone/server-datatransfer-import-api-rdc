@@ -1098,6 +1098,9 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Process Management"
+		Private Function CreateProgressForm() As kCura.Windows.Process.ProgressForm
+			Return New kCura.Windows.Process.ProgressForm() With {.StatusRefreshRate = WinEDDS.Config.ProcessFormRefreshRate}
+		End Function
 		Public Function QueryConnectivity() As Guid
 			CursorWait()
 			If Not Me.IsConnected() Then
@@ -1123,7 +1126,7 @@ Namespace kCura.EDDS.WinForm
 				CursorDefault()
 				Exit Function
 			End If
-			Dim frm As New kCura.Windows.Process.ProgressForm
+			Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
 			Dim previewer As New kCura.WinEDDS.PreviewLoadFileProcess(formType)
 			loadFileToPreview.PreviewCodeCount.Clear()
 			Dim previewform As New LoadFilePreviewForm(formType, loadFileToPreview.MultiRecordDelimiter, loadFileToPreview.PreviewCodeCount)
@@ -1161,7 +1164,7 @@ Namespace kCura.EDDS.WinForm
 			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _CookieContainer)
 			If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
 				If CheckFieldMap(loadFile) Then
-					Dim frm As New kCura.Windows.Process.ProgressForm
+					Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
 					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
 					importer.LoadFile = loadFile
 					importer.TimeZoneOffset = _timeZoneOffset
@@ -1194,7 +1197,7 @@ Namespace kCura.EDDS.WinForm
 				CursorDefault()
 				Exit Sub
 			End If
-			Dim frm As New kCura.Windows.Process.ProgressForm
+			Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
 			Dim previewer As New kCura.WinEDDS.PreviewImageFileProcess
 			previewer.TimeZoneOffset = _timeZoneOffset
 			previewer.LoadFile = loadfile
@@ -1213,7 +1216,7 @@ Namespace kCura.EDDS.WinForm
 				CursorDefault()
 				Exit Sub
 			End If
-			Dim frm As New kCura.Windows.Process.ProgressForm
+			Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
 			Dim importer As New kCura.WinEDDS.ImportImageFileProcess
 			ImageLoadFile.CookieContainer = Me.CookieContainer
 			importer.ImageLoadFile = ImageLoadFile
@@ -1235,7 +1238,8 @@ Namespace kCura.EDDS.WinForm
 				CursorDefault()
 				Exit Function
 			End If
-			Dim frm As New kCura.Windows.Process.ProgressForm
+			Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
+			frm.StatusRefreshRate = 0
 			Dim exporter As New kCura.WinEDDS.ExportSearchProcess
 			exporter.UserNotification = New FormsUserNotification()
 			exporter.ExportFile = exportFile
