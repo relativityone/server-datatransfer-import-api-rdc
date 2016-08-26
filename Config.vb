@@ -165,15 +165,6 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Shared ReadOnly Property ProcessFormRefreshRate As Long
-			Get
-				Try
-					Return CLng(ConfigSettings(NameOf(ProcessFormRefreshRate)))
-				Catch
-					Return 0
-				End Try
-			End Get
-		End Property
 		Friend Shared ReadOnly Property UsePipeliningForNativeAndObjectImports As Boolean
 			Get
 				Try
