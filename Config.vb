@@ -41,10 +41,12 @@ Namespace kCura.WinEDDS
 							If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")
 							If Not tempDict.Contains("CreateFoldersInWebAPI") Then tempDict.Add("CreateFoldersInWebAPI", "True")
 							If Not tempDict.Contains("ForceWebUpload") Then tempDict.Add("ForceWebUpload", "False")
-							If Not tempDict.Contains("UsePipeliningForNativeAndObjectImports") Then tempDict.Add("UsePipeliningForNativeAndObjectImports", "False")
-							_configDictionary = tempDict
-						End If
-					End SyncLock
+							If Not tempDict.Contains(NameOf(UsePipeliningForNativeAndObjectImports)) Then tempDict.Add(NameOf(UsePipeliningForNativeAndObjectImports), "False")
+							If Not tempDict.Contains(NameOf(UsePipeliningForFileIdAndCopy)) Then tempDict.Add(NameOf(UsePipeliningForFileIdAndCopy), "False")
+								If Not tempDict.Contains(NameOf(ProcessFormRefreshRate)) Then tempDict.Add(NameOf(ProcessFormRefreshRate), "0")
+								_configDictionary = tempDict
+							End If
+                    End SyncLock
 				End If
 				Return _configDictionary
 			End Get
@@ -150,14 +152,32 @@ Namespace kCura.WinEDDS
 		End Function
 
 #End Region
-		''' <summary>
-		''' Please do not use or document - this is an internal toggle
-		''' </summary>
-		''' <returns></returns>
+
+
+#Region " Feature Toggles " 'TODO: either promote these to client-facing toggles with documentation or remove them
+		Friend Shared ReadOnly Property UsePipeliningForFileIdAndCopy As Boolean
+			Get
+				Try
+					Return CType(ConfigSettings(NameOf(UsePipeliningForFileIdAndCopy)), Boolean)
+				Catch
+					Return False
+				End Try
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property ProcessFormRefreshRate As Long
+			Get
+				Try
+					Return CLng(ConfigSettings(NameOf(ProcessFormRefreshRate)))
+				Catch
+					Return 0
+				End Try
+			End Get
+		End Property
 		Friend Shared ReadOnly Property UsePipeliningForNativeAndObjectImports As Boolean
 			Get
 				Try
-					Return CType(ConfigSettings("UsePipeliningForNativeAndObjectImports"), Boolean)
+					Return CType(ConfigSettings(NameOf(UsePipeliningForNativeAndObjectImports)), Boolean)
 				Catch
 					Return False
 				End Try
@@ -173,6 +193,8 @@ Namespace kCura.WinEDDS
 				End Try
 			End Get
 		End Property
+
+#End Region
 
 		Public Shared ReadOnly Property ImportBatchMaxVolume() As Int32     'Volume in bytes
 			Get
