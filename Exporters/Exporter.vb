@@ -3,6 +3,7 @@ Imports System.Collections.Generic
 Imports System.Configuration
 Imports kCura.EDDS.WebAPI.ExportManagerBase
 Imports System.Web.Services.Protocols
+Imports kCura.WinEDDS.Exporters
 
 Namespace kCura.WinEDDS
 	Public Class Exporter
@@ -124,8 +125,8 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-		Public Property InteractionManager As Exporters.IUserNotification = New Exporters.NullUserNotification
-
+		Public Property InteractionManager As Exporters.IUserNotification = New Exporters.NullUserNotification Implements IExporter.InteractionManager
+        
 		Public Function ExportSearch() As Boolean Implements IExporter.ExportSearch
 			Try
 				_start = System.DateTime.Now
