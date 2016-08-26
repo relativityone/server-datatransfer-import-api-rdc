@@ -425,6 +425,7 @@
     <Compile Include="Exceptions\WebDownloadCorruptException.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Exporters\IExporter.vb" />
     <Compile Include="Exporters\IExporterStatusNotification.vb" />
     <Compile Include="Exporters\IUserNotification.vb" />
     <Compile Include="Exporters\NullUserNotification.vb" />
