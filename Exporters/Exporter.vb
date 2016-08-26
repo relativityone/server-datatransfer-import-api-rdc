@@ -19,7 +19,6 @@ Namespace kCura.WinEDDS
 		Public Property ExportManager As Service.Export.IExportManager
 		Private _exportFile As kCura.WinEDDS.ExportFile
 		Private _columns As System.Collections.ArrayList
-		Public DocumentsExported As Int32
 		Public TotalExportArtifactCount As Int32
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 		Private WithEvents _downloadHandler As Service.Export.IExportFileDownloader
@@ -125,6 +124,7 @@ Namespace kCura.WinEDDS
 
 #End Region
 
+		Public Property DocumentsExported As Integer Implements IExporter.DocumentsExported
 		Public Property InteractionManager As Exporters.IUserNotification = New Exporters.NullUserNotification Implements IExporter.InteractionManager
         
 		Public Function ExportSearch() As Boolean Implements IExporter.ExportSearch
