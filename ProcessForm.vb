@@ -504,9 +504,40 @@ Namespace kCura.Windows.Process
 			End If
 			Return retval
 		End Function
-		Private Sub _processObserver_OnProcessProgressEvent(ByVal evt As kCura.Windows.Process.ProcessProgressEvent) Handles _processObserver.OnProcessProgressEvent
+		Private _lastEvent As kCura.Windows.Process.ProcessProgressEvent
+		Public Property StatusRefreshRate As Long
+		Protected ReadOnly Property DeJitter As Boolean
+			Get
+				Return StatusRefreshRate > 0
+			End Get
+		End Property
+		Private _lastStatusMessageTs As Long = 0
+		Private _timer As System.Windows.Forms.Timer
 
-			Dim stubDate As DateTime
+		Sub _processObserver_OnProcessProgressEvent(ByVal evt As kCura.Windows.Process.ProcessProgressEvent) Handles _processObserver.OnProcessProgressEvent
+			_lastEvent = evt
+			Dim redrawSummary As Boolean = True
+
+			If DeJitter Then
+				If _timer Is Nothing Then
+					_timer = New Timer() With {.Interval = CInt(StatusRefreshRate / 10000)}
+					AddHandler _timer.Tick, Sub() BuildOutSummary(Nothing)
+				End If
+				Dim now As Long = System.DateTime.Now.Ticks
+				Dim hasIntervalElapsed As Boolean = (now - _lastStatusMessageTs > StatusRefreshRate)
+				If hasIntervalElapsed Then
+					_lastStatusMessageTs = now
+				Else
+					_timer.Stop()
+					_timer.Start()
+				End If
+				redrawSummary = hasIntervalElapsed
+			End If
+			If redrawSummary Then BuildOutSummary(evt)
+		End Sub
+
+		Private Sub BuildOutSummary(evt As kCura.Windows.Process.ProcessProgressEvent)
+			If evt Is Nothing Then evt = _lastEvent Dim stubDate As DateTime
 			Dim totalRecords, totalRecordsProcessed As Int32
 			If evt.TotalRecords > Int32.MaxValue Then
 				totalRecordsProcessed = CType((evt.TotalRecordsProcessed / evt.TotalRecords) * Int32.MaxValue, Int32)
