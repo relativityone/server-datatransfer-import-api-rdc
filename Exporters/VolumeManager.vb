@@ -155,7 +155,13 @@ Namespace kCura.WinEDDS
 			_volumeLabelPaddingWidth = System.Math.Max(totalFilesNumberPaddingWidth, volumeNumberPaddingWidth)
 			totalFilesNumberPaddingWidth = CType(System.Math.Floor(System.Math.Log10(CType(totalFiles + _currentSubdirectoryNumber, Double)) + 1), Int32)
 			_subdirectoryLabelPaddingWidth = System.Math.Max(totalFilesNumberPaddingWidth, subdirectoryNumberPaddingWidth)
-			If Not (_volumeLabelPaddingWidth <= settings.VolumeDigitPadding AndAlso _subdirectoryLabelPaddingWidth <= settings.SubdirectoryDigitPadding) Then
+			Dim couldExportExceedLabelPadding As Boolean = Not (_volumeLabelPaddingWidth <= settings.VolumeDigitPadding AndAlso _subdirectoryLabelPaddingWidth <= settings.SubdirectoryDigitPadding)
+			Dim arePhysicalFilesBeingExported As Boolean =
+				(_settings.ExportFullText AndAlso _settings.ExportFullTextAsFile) OrElse
+				_settings.ExportImages OrElse
+				_settings.ExportNative
+
+			If couldExportExceedLabelPadding AndAlso arePhysicalFilesBeingExported Then
 				Dim message As New System.Text.StringBuilder
 				If _volumeLabelPaddingWidth > settings.VolumeDigitPadding Then message.AppendFormat("The selected volume padding of {0} is less than the recommended volume padding {1} for this export" & vbNewLine, settings.VolumeDigitPadding, _volumeLabelPaddingWidth)
 				If _subdirectoryLabelPaddingWidth > settings.SubdirectoryDigitPadding Then message.AppendFormat("The selected subdirectory padding of {0} is less than the recommended subdirectory padding {1} for this export" & vbNewLine, settings.SubdirectoryDigitPadding, _subdirectoryLabelPaddingWidth)
