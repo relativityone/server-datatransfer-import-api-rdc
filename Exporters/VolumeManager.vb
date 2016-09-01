@@ -433,7 +433,7 @@ Namespace kCura.WinEDDS
 				For Each image In artifact.Images
 					_timekeeper.MarkStart("VolumeManager_DownloadImage")
 					Try
-						If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
+						If Me.Settings.VolumeInfo.CopyImageFilesFromRepository Then
 							totalFileSize += Me.DownloadImage(image)
 						End If
 						image.HasBeenCounted = True
@@ -454,7 +454,7 @@ Namespace kCura.WinEDDS
 			If Me.Settings.ExportNative Then
 				_timekeeper.MarkStart("VolumeManager_DownloadNative")
 				Try
-					If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
+					If Me.Settings.VolumeInfo.CopyNativeFilesFromRepository Then
 						Dim downloadSize As Int64 = Me.DownloadNative(artifact)
 						If Not artifact.HasCountedNative Then totalFileSize += downloadSize
 					End If
@@ -548,7 +548,7 @@ Namespace kCura.WinEDDS
 			End If
 			Dim nativeCount As Int32 = 0
 			Dim nativeLocation As String = ""
-			If Me.Settings.ExportNative AndAlso Me.Settings.VolumeInfo.CopyFilesFromRepository Then
+			If Me.Settings.ExportNative AndAlso Me.Settings.VolumeInfo.CopyNativeFilesFromRepository Then
 				Dim nativeFileName As String = Me.GetNativeFileName(artifact)
 				Dim localFilePath As String = Me.GetLocalNativeFilePath(artifact, nativeFileName)
 				_timekeeper.MarkStart("VolumeManager_ExportNative")
@@ -580,7 +580,7 @@ Namespace kCura.WinEDDS
 
 			_parent.DocumentsExported += artifact.DocCount
 			_currentVolumeSize += totalFileSize
-			If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
+			If Me.Settings.VolumeInfo.CopyNativeFilesFromRepository Then
 				_currentNativeSubdirectorySize += artifact.NativeCount
 				If Me.Settings.ExportFullTextAsFile AndAlso artifact.HasFullText Then _currentTextSubdirectorySize += 1
 				_currentImageSubdirectorySize += imageCount
@@ -619,11 +619,14 @@ Namespace kCura.WinEDDS
 			Dim deletor As New TempTextFileDeletor(New String() {tempLocalIproFullTextFilePath, tempLocalFullTextFilePath})
 			Dim t As New System.Threading.Thread(AddressOf deletor.DeleteFiles)
 			t.Start()
-			If Not Me.Settings.VolumeInfo.CopyFilesFromRepository Then
-				Return 0
-			Else
-				Return imageCount + nativeCount
+			Dim retval As Int64 = 0
+			If Me.Settings.VolumeInfo.CopyImageFilesFromRepository Then
+				retval += imageCount
 			End If
+			If Not Me.Settings.VolumeInfo.CopyNativeFilesFromRepository Then
+				retval += nativeCount
+			End If
+			Return retval
 		End Function
 
 		Private Function GetFieldForLongTextPrecedenceDownload(ByVal input As ViewFieldInfo, ByVal artifact As WinEDDS.Exporters.ObjectExportInfo) As ViewFieldInfo
@@ -724,7 +727,7 @@ Namespace kCura.WinEDDS
 			Dim pageOffset As Long
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
 			localFilePath &= subfolderPath
-			If Not System.IO.Directory.Exists(localFilePath) AndAlso Me.Settings.VolumeInfo.CopyFilesFromRepository Then System.IO.Directory.CreateDirectory(localFilePath)
+			If Not System.IO.Directory.Exists(localFilePath) AndAlso Me.Settings.VolumeInfo.CopyImageFilesFromRepository Then System.IO.Directory.CreateDirectory(localFilePath)
 			Try
 				If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
 					If System.IO.File.Exists(localFullTextPath) Then
@@ -774,7 +777,7 @@ Namespace kCura.WinEDDS
 								pageOffset = nextImage.PageOffset.Value
 							End If
 						End If
-						If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
+						If Me.Settings.VolumeInfo.CopyImageFilesFromRepository Then
 							Me.ExportDocumentImage(localFilePath & image.FileName, image.FileGuid, image.ArtifactID, image.BatesNumber, image.TempLocation)
 							Dim copyfile As String = Nothing
 							Select Case Me.Settings.TypeOfExportedFilePath
@@ -941,7 +944,7 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Private Function ExportNative(ByVal exportFileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal systemFileName As String, ByVal tempLocation As String) As String
-			If Not tempLocation = "" AndAlso Not tempLocation.ToLower = exportFileName.ToLower AndAlso Me.Settings.VolumeInfo.CopyFilesFromRepository Then
+			If Not tempLocation = "" AndAlso Not tempLocation.ToLower = exportFileName.ToLower AndAlso Me.Settings.VolumeInfo.CopyNativeFilesFromRepository Then
 				If System.IO.File.Exists(exportFileName) Then
 					If _settings.Overwrite Then
 						kCura.Utility.File.Instance.Delete(exportFileName)
@@ -1174,7 +1177,7 @@ Namespace kCura.WinEDDS
 			Dim imagesCell As String = _loadFileFormatter.CreateImageCell(doc)
 			If Not String.IsNullOrEmpty(imagesCell) Then _nativeFileWriter.Write(imagesCell)
 			If _settings.ExportNative Then
-				If Me.Settings.VolumeInfo.CopyFilesFromRepository Then
+				If Me.Settings.VolumeInfo.CopyNativeFilesFromRepository Then
 					_nativeFileWriter.Write(_loadFileFormatter.CreateNativeCell(location, doc))
 				Else
 					_nativeFileWriter.Write(_loadFileFormatter.CreateNativeCell(doc.NativeSourceLocation, doc))
