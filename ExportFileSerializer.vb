@@ -46,7 +46,7 @@ Namespace kCura.WinEDDS.NUnit
 			x.VolumeDigitPadding = 656
 			x.SubdirectoryDigitPadding = 657
 			x.StartAtDocumentNumber = 658
-			x.VolumeInfo = New Exporters.VolumeInfo With {.CopyFilesFromRepository = True, .SubdirectoryFullTextPrefix = "TXT", .SubdirectoryImagePrefix = "IMG", .SubdirectoryNativePrefix = "NAT", .SubdirectoryMaxSize = 10, .SubdirectoryStartNumber = 1, .VolumeMaxSize = 100, .VolumeStartNumber = 1000}
+			x.VolumeInfo = New Exporters.VolumeInfo With {.CopyNativeFilesFromRepository = True, .CopyImageFilesFromRepository = True, .SubdirectoryFullTextPrefix = "TXT", .SubdirectoryImagePrefix = "IMG", .SubdirectoryNativePrefix = "NAT", .SubdirectoryMaxSize = 10, .SubdirectoryStartNumber = 1, .VolumeMaxSize = 100, .VolumeStartNumber = 1000}
 			x.SelectedTextFields = {QueryFieldFactory.GetExtractedTextField}
 			x.ImagePrecedence = New Pair() {New Pair("1", "A1"), New Pair("2", "B2")}
 			x.SelectedViewFields = New kCura.WinEDDS.ViewFieldInfo() {}
@@ -169,7 +169,8 @@ Namespace kCura.WinEDDS.NUnit
 			Compare(test)
 			Assert.IsNotNull(test.VolumeInfo)
 			Dim info As Exporters.VolumeInfo = test.VolumeInfo
-			Assert.AreEqual(True, test.VolumeInfo.CopyFilesFromRepository)
+			Assert.AreEqual(True, test.VolumeInfo.CopyImageFilesFromRepository)
+			Assert.AreEqual(True, test.VolumeInfo.CopyNativeFilesFromRepository)
 			Assert.AreEqual(10, test.VolumeInfo.SubdirectoryMaxSize)
 			Assert.AreEqual(1, test.VolumeInfo.SubdirectoryStartNumber)
 			Assert.AreEqual("TXT", test.VolumeInfo.SubdirectoryFullTextPrefix(False))
@@ -200,7 +201,8 @@ Namespace kCura.WinEDDS.NUnit
 			Compare(test)
 			Assert.IsNotNull(test.VolumeInfo)
 			Dim info As Exporters.VolumeInfo = test.VolumeInfo
-			Assert.AreEqual(True, test.VolumeInfo.CopyFilesFromRepository)
+			Assert.AreEqual(True, test.VolumeInfo.CopyImageFilesFromRepository)
+			Assert.AreEqual(True, test.VolumeInfo.CopyNativeFilesFromRepository)
 			Assert.AreEqual(10, test.VolumeInfo.SubdirectoryMaxSize)
 			Assert.AreEqual(1, test.VolumeInfo.SubdirectoryStartNumber)
 			Assert.AreEqual("TXT", test.VolumeInfo.SubdirectoryFullTextPrefix(False))
