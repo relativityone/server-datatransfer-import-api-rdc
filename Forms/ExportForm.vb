@@ -1480,7 +1480,8 @@ Public Class ExportForm
 			If _volumeDigitPadding.Value <> ef.VolumeDigitPadding Then _volumeDigitPadding.Value = ef.VolumeDigitPadding
 		End If
 		If ef.VolumeInfo IsNot Nothing Then
-			If _copyFilesFromRepository.Checked <> ef.VolumeInfo.CopyFilesFromRepository Then _copyFilesFromRepository.Checked = ef.VolumeInfo.CopyFilesFromRepository
+			Dim copyFilesFromRepo As Boolean = ef.VolumeInfo.CopyNativeFilesFromRepository OrElse ef.VolumeInfo.CopyImageFilesFromRepository
+			If _copyFilesFromRepository.Checked <> copyFilesFromRepo Then _copyFilesFromRepository.Checked = copyFilesFromRepo
 			If Not _volumePrefix.Text.Equals(ef.VolumeInfo.VolumePrefix, StringComparison.InvariantCultureIgnoreCase) Then _volumePrefix.Text = ef.VolumeInfo.VolumePrefix
 			If _volumeStartNumber.Value <> ef.VolumeInfo.VolumeStartNumber Then _volumeStartNumber.Value = ef.VolumeInfo.VolumeStartNumber
 			If _volumeMaxSize.Value <> ef.VolumeInfo.VolumeMaxSize Then _volumeMaxSize.Value = ef.VolumeInfo.VolumeMaxSize
@@ -1738,7 +1739,8 @@ Public Class ExportForm
 		retval.VolumeMaxSize = Int32.Parse(_volumeMaxSize.Text)
 		retval.VolumePrefix = _volumePrefix.Text
 		retval.VolumeStartNumber = Int32.Parse(_volumeStartNumber.Text)
-		retval.CopyFilesFromRepository = _copyFilesFromRepository.Checked
+		retval.CopyNativeFilesFromRepository = _copyFilesFromRepository.Checked
+		retval.CopyImageFilesFromRepository = _copyFilesFromRepository.Checked
 		Return retval
 	End Function
 
