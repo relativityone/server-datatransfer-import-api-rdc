@@ -635,7 +635,6 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 				If fileExists Then
-
 					Dim now As Date = Date.Now
 					Dim getFileID As Action =
 							Sub()
@@ -678,7 +677,6 @@ Namespace kCura.WinEDDS
 								End If
 							End Sub
 
-					WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
 					If Config.UsePipeliningForFileIdAndCopy Then
 						Try
 							Dim fileId As Task = Task.Factory.StartNew(getFileID)
@@ -707,8 +705,8 @@ Namespace kCura.WinEDDS
 								Throw
 							End If
 						End Try
-
 					End If
+					WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
 				End If
 			End If
 			_timekeeper.MarkEnd("ManageDocument_Filesystem")

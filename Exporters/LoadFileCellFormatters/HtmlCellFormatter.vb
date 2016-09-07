@@ -39,7 +39,7 @@
 			Dim retval As New System.Text.StringBuilder
 			For Each image As Exporters.ImageExportInfo In artifact.Images
 				Dim loc As String = image.TempLocation
-				If Not _settings.VolumeInfo.CopyFilesFromRepository Then
+				If Not _settings.VolumeInfo.CopyImageFilesFromRepository Then
 					loc = image.SourceLocation
 				End If
 				retval.AppendFormat("<a style='display:block' href='{0}'>{1}</a>", loc, image.FileName)

@@ -8,9 +8,9 @@ Namespace kCura.WinEDDS.Exporters
 		Private _subdirectoryNativePrefix As String
 		Private _subdirectoryTextPrefix As String
 
-		Public Property VolumePrefix() As String
+		Public Property VolumePrefix As String
 
-		Public Property VolumeStartNumber() As Int32
+		Public Property VolumeStartNumber As Int32
 
 		Public Property VolumeMaxSize() As Int64
 
@@ -18,7 +18,9 @@ Namespace kCura.WinEDDS.Exporters
 
 		Public Property SubdirectoryMaxSize() As Int64
 
-		Public Property CopyFilesFromRepository() As Boolean = True
+		Public Property CopyNativeFilesFromRepository() As Boolean = True
+
+		Public Property CopyImageFilesFromRepository As Boolean = True
 
 		Public Property SubdirectoryImagePrefix(Optional ByVal includeTopFolder As Boolean = True) As String
 			Get
@@ -64,14 +66,16 @@ Namespace kCura.WinEDDS.Exporters
 #Region " Constructors "
 		Public Sub New()
 			MyBase.New()
-			Me.CopyFilesFromRepository = True
+			Me.CopyImageFilesFromRepository = True
+			Me.CopyNativeFilesFromRepository = True
 		End Sub
 #End Region
 
 #Region " Serialization "
 
 		Public Sub GetObjectData(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext) Implements System.Runtime.Serialization.ISerializable.GetObjectData
-			info.AddValue("CopyFilesFromRepository", Me.CopyFilesFromRepository, GetType(Boolean))
+			info.AddValue("CopyNativeFilesFromRepository", Me.CopyNativeFilesFromRepository, GetType(Boolean))
+			info.AddValue("CopyImageFilesFromRepository", Me.CopyImageFilesFromRepository, GetType(Boolean))
 			info.AddValue("SubdirectoryMaxSize", Me.SubdirectoryMaxSize, GetType(Int64))
 			info.AddValue("SubdirectoryStartNumber", Me.SubdirectoryStartNumber, GetType(Int32))
 			info.AddValue("SubdirectoryFullTextPrefix", Me.SubdirectoryFullTextPrefix(False), GetType(String))
@@ -83,7 +87,23 @@ Namespace kCura.WinEDDS.Exporters
 		End Sub
 		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal Context As System.Runtime.Serialization.StreamingContext)
 			With info
-				Me.CopyFilesFromRepository = .GetBoolean("CopyFilesFromRepository")
+				Dim readCopyImageFilesSettingFrom As Boolean = False
+				Dim readCopyNativeFilesSettingFrom As Boolean = False
+				Try
+					Me.CopyImageFilesFromRepository = .GetBoolean("CopyImageFilesFromRepository")
+				Catch
+					readCopyImageFilesSettingFrom = True
+				End Try
+				Try
+					Me.CopyNativeFilesFromRepository = .GetBoolean("CopyNativeFilesFromRepository")
+				Catch
+					readCopyNativeFilesSettingFrom = True
+				End Try
+				If readCopyImageFilesSettingFrom Or readCopyNativeFilesSettingFrom Then
+					Dim aggregateSetting As Boolean = .GetBoolean("CopyFilesFromRepository")
+					If readCopyImageFilesSettingFrom Then Me.CopyImageFilesFromRepository = aggregateSetting
+					If readCopyImageFilesSettingFrom Then Me.CopyNativeFilesFromRepository = aggregateSetting
+				End If
 				Me.SubdirectoryMaxSize = .GetInt64("SubdirectoryMaxSize")
 				Me.SubdirectoryStartNumber = .GetInt32("SubdirectoryStartNumber")
 				Me.SubdirectoryFullTextPrefix = .GetString("SubdirectoryFullTextPrefix")
