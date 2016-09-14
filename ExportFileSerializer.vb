@@ -1,6 +1,5 @@
 ﻿Imports NUnit.Framework
 Imports kCura.WinEDDS.NUnit.TestObjectFactories
-
 Namespace kCura.WinEDDS.NUnit
 
 	<TestFixture()> Public Class ExportFileSerializer
@@ -46,7 +45,7 @@ Namespace kCura.WinEDDS.NUnit
 			x.VolumeDigitPadding = 656
 			x.SubdirectoryDigitPadding = 657
 			x.StartAtDocumentNumber = 658
-			x.VolumeInfo = New Exporters.VolumeInfo With {.CopyNativeFilesFromRepository = True, .CopyImageFilesFromRepository = True, .SubdirectoryFullTextPrefix = "TXT", .SubdirectoryImagePrefix = "IMG", .SubdirectoryNativePrefix = "NAT", .SubdirectoryMaxSize = 10, .SubdirectoryStartNumber = 1, .VolumeMaxSize = 100, .VolumeStartNumber = 1000}
+			x.VolumeInfo = New WinEDDS.Exporters.VolumeInfo With {.CopyNativeFilesFromRepository = True, .CopyImageFilesFromRepository = True, .SubdirectoryFullTextPrefix = "TXT", .SubdirectoryImagePrefix = "IMG", .SubdirectoryNativePrefix = "NAT", .SubdirectoryMaxSize = 10, .SubdirectoryStartNumber = 1, .VolumeMaxSize = 100, .VolumeStartNumber = 1000}
 			x.SelectedTextFields = {QueryFieldFactory.GetExtractedTextField}
 			x.ImagePrecedence = New Pair() {New Pair("1", "A1"), New Pair("2", "B2")}
 			x.SelectedViewFields = New kCura.WinEDDS.ViewFieldInfo() {}
@@ -158,7 +157,7 @@ Namespace kCura.WinEDDS.NUnit
 		End Sub
 
 		<Category("SeparateDomain")>
-<Test()> Public Sub DeserializeExportFile_Pre_9_0_NoStorageLocation()
+		<Test()> Public Sub DeserializeExportFile_Pre_9_0_NoStorageLocation()
 			Dim test As kCura.WinEDDS.ExportFile = _serializer.DeserializeExportFile(XDocument.Parse(Pre_9_0_NoStorageLocation))
 			Assert.Pass()
 		End Sub
@@ -168,7 +167,7 @@ Namespace kCura.WinEDDS.NUnit
 			Dim test As kCura.WinEDDS.ExportFile = _serializer.DeserializeExportFile(XDocument.Parse(EverythingSet_7_2))
 			Compare(test)
 			Assert.IsNotNull(test.VolumeInfo)
-			Dim info As Exporters.VolumeInfo = test.VolumeInfo
+			Dim info As WinEDDS.Exporters.VolumeInfo = test.VolumeInfo
 			Assert.AreEqual(True, test.VolumeInfo.CopyImageFilesFromRepository)
 			Assert.AreEqual(True, test.VolumeInfo.CopyNativeFilesFromRepository)
 			Assert.AreEqual(10, test.VolumeInfo.SubdirectoryMaxSize)
@@ -200,7 +199,7 @@ Namespace kCura.WinEDDS.NUnit
 			Dim test As kCura.WinEDDS.ExportFile = _serializer.DeserializeExportFile(XDocument.Parse(EverythingSet_7_4))
 			Compare(test)
 			Assert.IsNotNull(test.VolumeInfo)
-			Dim info As Exporters.VolumeInfo = test.VolumeInfo
+			Dim info As WinEDDS.Exporters.VolumeInfo = test.VolumeInfo
 			Assert.AreEqual(True, test.VolumeInfo.CopyImageFilesFromRepository)
 			Assert.AreEqual(True, test.VolumeInfo.CopyNativeFilesFromRepository)
 			Assert.AreEqual(10, test.VolumeInfo.SubdirectoryMaxSize)
