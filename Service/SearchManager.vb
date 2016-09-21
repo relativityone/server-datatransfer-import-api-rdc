@@ -50,7 +50,7 @@ Namespace kCura.WinEDDS.Service
 			Return RetryOnReLoginException(Function() MyBase.RetrieveImagesByProductionIDsAndDocumentIDsForExport(caseContextArtifactID, productionArtifactIDs, documentArtifactIDs))
 		End Function
 
-		Public Shadows Function RetrieveViewsByContextArtifactID(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32, ByVal isSearch As Boolean) As System.Data.DataSet
+		Public Shadows Function RetrieveViewsByContextArtifactID(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32, ByVal isSearch As Boolean) As System.Data.DataSet Implements  ISearchManager.RetrieveViewsByContextArtifactID
 			Return RetryOnReLoginException(Function() MyBase.RetrieveViewsByContextArtifactID(caseContextArtifactID, artifactTypeID, isSearch))
 		End Function
 
