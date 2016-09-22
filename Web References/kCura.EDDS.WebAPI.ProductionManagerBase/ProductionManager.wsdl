@@ -2,6 +2,37 @@
 <wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/ProductionManager" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.kCura.com/EDDS/ProductionManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/ProductionManager">
+      <s:element name="RetrieveBatesByProductionAndDocument">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="productionIds" type="tns:ArrayOfInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="documentIds" type="tns:ArrayOfInt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfInt">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="int" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="RetrieveBatesByProductionAndDocumentResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveBatesByProductionAndDocumentResult" type="tns:ArrayOfArrayOfAnyType" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfArrayOfAnyType">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ArrayOfAnyType" nillable="true" type="tns:ArrayOfAnyType" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfAnyType">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="anyType" nillable="true" />
+        </s:sequence>
+      </s:complexType>
       <s:element name="RetrieveProducedByContextArtifactID">
         <s:complexType>
           <s:sequence>
@@ -74,13 +105,6 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="ReadResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="ReadResult" type="tns:ProductionInfo" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
       <s:complexType name="ProductionInfo">
         <s:sequence>
           <s:element minOccurs="1" maxOccurs="1" name="BatesNumbering" type="s:boolean" />
@@ -91,6 +115,13 @@
           <s:element minOccurs="1" maxOccurs="1" name="UseDocumentLevelNumbering" type="s:boolean" />
         </s:sequence>
       </s:complexType>
+      <s:element name="ReadResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReadResult" type="tns:ProductionInfo" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="RetrieveProducedWithSecurity">
         <s:complexType>
           <s:sequence>
@@ -129,6 +160,12 @@
       </s:element>
     </s:schema>
   </wsdl:types>
+  <wsdl:message name="RetrieveBatesByProductionAndDocumentSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveBatesByProductionAndDocument" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveBatesByProductionAndDocumentSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveBatesByProductionAndDocumentResponse" />
+  </wsdl:message>
   <wsdl:message name="RetrieveProducedByContextArtifactIDSoapIn">
     <wsdl:part name="parameters" element="tns:RetrieveProducedByContextArtifactID" />
   </wsdl:message>
@@ -172,6 +209,10 @@
     <wsdl:part name="parameters" element="tns:MigrationJobExistsResponse" />
   </wsdl:message>
   <wsdl:portType name="ProductionManagerSoap">
+    <wsdl:operation name="RetrieveBatesByProductionAndDocument">
+      <wsdl:input message="tns:RetrieveBatesByProductionAndDocumentSoapIn" />
+      <wsdl:output message="tns:RetrieveBatesByProductionAndDocumentSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="RetrieveProducedByContextArtifactID">
       <wsdl:input message="tns:RetrieveProducedByContextArtifactIDSoapIn" />
       <wsdl:output message="tns:RetrieveProducedByContextArtifactIDSoapOut" />
@@ -203,6 +244,15 @@
   </wsdl:portType>
   <wsdl:binding name="ProductionManagerSoap" type="tns:ProductionManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="RetrieveBatesByProductionAndDocument">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/RetrieveBatesByProductionAndDocument" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="RetrieveProducedByContextArtifactID">
       <soap:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/RetrieveProducedByContextArtifactID" style="document" />
       <wsdl:input>
@@ -269,6 +319,15 @@
   </wsdl:binding>
   <wsdl:binding name="ProductionManagerSoap12" type="tns:ProductionManagerSoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="RetrieveBatesByProductionAndDocument">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/RetrieveBatesByProductionAndDocument" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="RetrieveProducedByContextArtifactID">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/ProductionManager/RetrieveProducedByContextArtifactID" style="document" />
       <wsdl:input>

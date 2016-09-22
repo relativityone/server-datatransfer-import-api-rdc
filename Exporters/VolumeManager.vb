@@ -674,7 +674,7 @@ Namespace kCura.WinEDDS
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
 			localFilePath &= Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\"
 			If Not System.IO.Directory.Exists(localFilePath) Then System.IO.Directory.CreateDirectory(localFilePath)
-			Return localFilePath & doc.FullTextFileName(Me.NameTextFilesAfterIdentifier)
+			Return localFilePath & doc.FullTextFileName(Me.NameTextFilesAfterIdentifier, _parent.NameTextAndNativesAfterBegBates)
 		End Function
 
 		Private Function GetNativeFileName(ByVal doc As Exporters.ObjectExportInfo) As String
@@ -682,7 +682,7 @@ Namespace kCura.WinEDDS
 				Case ExportNativeWithFilenameFrom.Identifier
 					Return doc.NativeFileName(Me.Settings.AppendOriginalFileName)
 				Case ExportNativeWithFilenameFrom.Production
-					Return doc.ProductionBeginBatesFileName(Me.Settings.AppendOriginalFileName)
+					Return doc.ProductionBeginBatesFileName(Me.Settings.AppendOriginalFileName, _parent.NameTextAndNativesAfterBegBates)
 			End Select
 			Return Nothing
 		End Function
@@ -1086,9 +1086,9 @@ Namespace kCura.WinEDDS
 					Case ExportFile.ExportedFilePathType.Absolute
 						textLocation = destinationFilePath
 					Case ExportFile.ExportedFilePathType.Relative
-						textLocation = ".\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & artifact.FullTextFileName(Me.NameTextFilesAfterIdentifier)
+						textLocation = ".\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & artifact.FullTextFileName(Me.NameTextFilesAfterIdentifier, _parent.NameTextAndNativesAfterBegBates)
 					Case ExportFile.ExportedFilePathType.Prefix
-						textLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & artifact.FullTextFileName(Me.NameTextFilesAfterIdentifier)
+						textLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & artifact.FullTextFileName(Me.NameTextFilesAfterIdentifier, _parent.NameTextAndNativesAfterBegBates)
 				End Select
 				If Settings.LoadFileIsHtml Then
 					_nativeFileWriter.Write("<a href='" & textLocation & "' target='_textwindow'>" & textLocation & "</a>")
