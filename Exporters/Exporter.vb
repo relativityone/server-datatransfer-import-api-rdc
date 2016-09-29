@@ -38,10 +38,17 @@ Namespace kCura.WinEDDS
 		Private _fileCount As Int64 = 0
 		Private _productionExportProduction As kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo
 		Private _productionLookup As New System.Collections.Generic.Dictionary(Of Int32, kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo)
+		Private _productionPrecedenceIds As Int32()
+		Private _tryToNameNativesAndTextFilesAfterPrecedenceBegBates As Boolean = False
 
 #End Region
 
 #Region "Accessors"
+		''' <summary>
+		''' This is not moved over to the Settings object yet
+		''' </summary>
+		''' <returns></returns>
+		Public Property NameTextAndNativesAfterBegBates() As Boolean = False
 
 		Public Property Settings() As kCura.WinEDDS.ExportFile
 			Get
@@ -126,7 +133,7 @@ Namespace kCura.WinEDDS
 
 		Public Property DocumentsExported As Integer Implements IExporter.DocumentsExported
 		Public Property InteractionManager As Exporters.IUserNotification = New Exporters.NullUserNotification Implements IExporter.InteractionManager
-        
+
 		Public Function ExportSearch() As Boolean Implements IExporter.ExportSearch
 			Try
 				_start = System.DateTime.Now
@@ -155,6 +162,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function Search() As Boolean
+			_productionPrecedenceIds = (From p In If(Settings.ImagePrecedence, New Pair() {}) Where Not String.IsNullOrEmpty(p.Value) Select CInt(p.Value)).ToArray()
+			_tryToNameNativesAndTextFilesAfterPrecedenceBegBates = ShouldTextAndNativesBeNamedAfterPrecedenceBegBates()
 			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
 
@@ -309,6 +318,29 @@ Namespace kCura.WinEDDS
 
 #Region "Private Helper Functions"
 
+		Friend Class BatesEntry
+			Friend Property ProductionArtifactID As Int32
+			Friend Property BegBates As String
+		End Class
+
+		Private Function GenerateBatesLookup(source As Object()()) As Dictionary(Of Int32, List(Of BatesEntry))
+			Dim lookup As New Dictionary(Of Int32, List(Of BatesEntry))()
+			For Each entry As Object() In source
+				Dim documentId As Int32 = CInt(entry(0))
+				Dim documentEntries As List(Of BatesEntry)
+				If Not lookup.ContainsKey(documentId) Then
+					documentEntries = New List(Of BatesEntry)
+					lookup.Add(documentId, documentEntries)
+				Else
+					documentEntries = lookup(documentId)
+				End If
+				documentEntries.Add(New BatesEntry() With {.BegBates = entry(1).ToString(), .ProductionArtifactID = CInt(entry(2))})
+			Next
+			Return lookup
+		End Function
+
+
+
 		Private Sub ExportChunk(ByVal documentArtifactIDs As Int32(), ByVal records As Object())
 			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
@@ -352,6 +384,9 @@ Namespace kCura.WinEDDS
 			End If
 			Dim identifierColumnName As String = Relativity.SqlNameHelper.GetSqlFriendlyName(Me.Settings.IdentifierColumnName)
 			Dim identifierColumnIndex As Int32 = _volumeManager.OrdinalLookup(identifierColumnName)
+			'TODO: come back to this
+			Dim productionPrecedenceArtifactIds As Int32() = Settings.ImagePrecedence.Select(Function(pair) CInt(pair.Value)).ToArray()
+			Dim lookup As New Lazy(Of Dictionary(Of Int32, List(Of BatesEntry)))(Function() GenerateBatesLookup(_productionManager.RetrieveBatesByProductionAndDocument(Me.Settings.CaseArtifactID, productionPrecedenceArtifactIds, documentArtifactIDs)))
 			For i = 0 To documentArtifactIDs.Length - 1
 				Dim artifact As New Exporters.ObjectExportInfo
 				Dim record As Object() = DirectCast(records(i), Object())
@@ -374,6 +409,7 @@ Namespace kCura.WinEDDS
 						artifact.FileID = CType(nativeRow("FileID"), Int32)
 					End If
 				End If
+
 				If nativeRow Is Nothing Then
 					artifact.NativeExtension = ""
 				ElseIf nativeRow("Filename").ToString.IndexOf(".") <> -1 Then
@@ -383,13 +419,40 @@ Namespace kCura.WinEDDS
 				End If
 				artifact.ArtifactID = documentArtifactIDs(i)
 				artifact.Metadata = DirectCast(records(i), Object())
-
+				SetProductionBegBatesFileName(artifact, lookup)
 				_fileCount += CallServerWithRetry(Function() _volumeManager.ExportArtifact(artifact), maxTries)
 
 				_lastStatisticsSnapshot = _statistics.ToDictionary
 				Me.WriteUpdate("Exported document " & i + 1, i = documentArtifactIDs.Length - 1)
 				If _halt Then Exit Sub
 			Next
+		End Sub
+
+		Private Function ShouldTextAndNativesBeNamedAfterPrecedenceBegBates() As Boolean
+			Return Me.NameTextAndNativesAfterBegBates AndAlso
+					Settings.TypeOfExport <> ExportFile.ExportType.Production AndAlso
+					ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production AndAlso
+					_productionPrecedenceIds.Any(Function(prodID) prodID > 0)
+		End Function
+
+		Private Sub SetProductionBegBatesFileName(artifact As ObjectExportInfo, bateslookup As Lazy(Of Dictionary(Of Int32, List(Of BatesEntry))))
+			If Not _tryToNameNativesAndTextFilesAfterPrecedenceBegBates Then Return
+
+			Dim lookup As Dictionary(Of Int32, List(Of BatesEntry)) = bateslookup.Value
+			If Not lookup.ContainsKey(artifact.ArtifactID) Then Return 'Nothing to set up
+			Dim documentProductions As List(Of BatesEntry) = lookup(artifact.ArtifactID)
+			If artifact.CoalescedProductionID.HasValue Then
+				artifact.ProductionBeginBates = (From r In documentProductions Where r.ProductionArtifactID = artifact.CoalescedProductionID.Value).First().BegBates
+			Else
+				For Each prodId As Int32 In _productionPrecedenceIds
+					For Each entry As BatesEntry In documentProductions
+						If entry.ProductionArtifactID = prodId Then
+							artifact.ProductionBeginBates = entry.BegBates
+							Return
+						End If
+					Next
+				Next
+			End If
 		End Sub
 
 		Private Function PrepareImagesForProduction(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo) As System.Collections.ArrayList
@@ -487,6 +550,7 @@ Namespace kCura.WinEDDS
 								i += 1
 							End If
 						Next
+						artifact.CoalescedProductionID = CInt(item.Value)
 						Return retval
 					End If
 				End If
