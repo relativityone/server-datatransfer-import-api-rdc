@@ -650,6 +650,7 @@ Namespace kCura.WinEDDS
 		Private Sub CompleteError(ByVal ex As System.Exception)
 			Try
 				_bulkLoadFileWriter.Close()
+				_dataGridFileWriter.Close()
 			Catch x As System.Exception
 			End Try
 			Try
