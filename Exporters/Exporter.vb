@@ -3,6 +3,7 @@ Imports System.Collections.Generic
 Imports System.Configuration
 Imports kCura.EDDS.WebAPI.ExportManagerBase
 Imports System.Web.Services.Protocols
+Imports kCura.Utility.Extensions
 Imports kCura.WinEDDS.Exporters
 
 Namespace kCura.WinEDDS
@@ -12,6 +13,7 @@ Namespace kCura.WinEDDS
 
 #Region "Members"
 
+		Private _fieldProviderCache As IFieldProviderCache
 		Private _searchManager As Service.Export.ISearchManager
 		Private _productionManager As Service.Export.IProductionManager
 		Private _auditManager As Service.Export.IAuditManager
@@ -120,6 +122,7 @@ Namespace kCura.WinEDDS
 			_fieldManager = serviceFactory.CreateFieldManager()
 			ExportManager = serviceFactory.CreateExportManager()
 
+			_fieldProviderCache = New FieldProviderCache()
 			_halt = False
 			_processController = processController
 			DocumentsExported = 0
@@ -161,9 +164,14 @@ Namespace kCura.WinEDDS
 			Throw New System.Exception("Full text field somehow not in all fields")
 		End Function
 
-		Private Function Search() As Boolean
+		Private Sub InitializeExportProcess()
 			_productionPrecedenceIds = (From p In If(Settings.ImagePrecedence, New Pair() {}) Where Not String.IsNullOrEmpty(p.Value) Select CInt(p.Value)).ToArray()
 			_tryToNameNativesAndTextFilesAfterPrecedenceBegBates = ShouldTextAndNativesBeNamedAfterPrecedenceBegBates()
+			InitializeFieldIndentifier()
+		End Sub
+
+		Private Function Search() As Boolean
+			InitializeExportProcess()
 			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
 
@@ -339,7 +347,24 @@ Namespace kCura.WinEDDS
 			Return lookup
 		End Function
 
+		Private Sub InitializeFieldIndentifier()
+			
+			If String.IsNullOrEmpty(Settings.IdentifierColumnName) Then
+				'This case is for Exporter class usage outside of RDC (WinForms project)
 
+				Dim docFieldCollection As DocumentFieldCollection = _fieldProviderCache.CurrentFields(Settings.ArtifactTypeID,
+																									  Settings.CaseArtifactID,
+																									  Settings.Credential,
+																									  Settings.CookieContainer,
+																									  True)
+				Dim identifierList As String() = docFieldCollection.IdentifierFieldNames()
+				If identifierList.IsNullOrEmpty() Then
+					Dim errMsg As String = String.Format("Export process failed. Cannot find identifier field for workspace: {0}!", Settings.CaseInfo.Name)
+					WriteError(errMsg)
+				End If
+				Settings.IdentifierColumnName = identifierList(0)
+			End If
+		End Sub
 
 		Private Sub ExportChunk(ByVal documentArtifactIDs As Int32(), ByVal records As Object())
 			Dim tries As Int32 = 0
