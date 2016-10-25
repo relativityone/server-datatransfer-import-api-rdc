@@ -20,6 +20,8 @@ Namespace kCura.EDDS.WinForm
 			''ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) True
 			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 Or SecurityProtocolType.Tls11 Or SecurityProtocolType.Tls Or SecurityProtocolType.Ssl3
 			_CookieContainer = New System.Net.CookieContainer
+
+			_fieldProviderCache = New FieldProviderCache
 		End Sub
 
 		Public Shared ReadOnly Property Instance() As Application
@@ -45,7 +47,8 @@ Namespace kCura.EDDS.WinForm
 		Private _selectedCaseInfo As Relativity.CaseInfo
 		Private _selectedCaseFolderID As Int32
 		Private _credential As System.Net.NetworkCredential
-		Private _fields As kCura.WinEDDS.DocumentFieldCollection
+		Private ReadOnly _fieldProviderCache As IFieldProviderCache
+
 		Private _selectedCaseFolderPath As String
 		Private _timeZoneOffset As Int32
 		Private WithEvents _loginForm As LoginForm
@@ -111,19 +114,7 @@ Namespace kCura.EDDS.WinForm
 		Public ReadOnly Property CurrentFields(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As DocumentFieldCollection
 			Get
 				Try
-					If _fields Is Nothing OrElse refresh Then
-						_fields = New DocumentFieldCollection
-						Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _CookieContainer)
-						Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
-						fields = fieldManager.RetrieveAllAsArray(SelectedCaseInfo.ArtifactID, artifactTypeID)
-						Dim i As Int32
-						For i = 0 To fields.Length - 1
-							With fields(i)
-								_fields.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .AssociativeArtifactTypeID, .UseUnicodeEncoding, .ImportBehavior, .EnableDataGrid))
-							End With
-						Next
-					End If
-					Return _fields
+					return _fieldProviderCache.CurrentFields(artifactTypeID, SelectedCaseInfo.ArtifactID, Credential, _CookieContainer, refresh)
 				Catch ex As System.Exception
 					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
 						NewLogin(False)
@@ -138,21 +129,7 @@ Namespace kCura.EDDS.WinForm
 		Public ReadOnly Property CurrentNonFileFields(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As DocumentFieldCollection
 			Get
 				Try
-					If _fields Is Nothing OrElse refresh Then
-						_fields = New DocumentFieldCollection
-						Dim fieldManager As New kCura.WinEDDS.Service.FieldQuery(Credential, _CookieContainer)
-						Dim fields() As kCura.EDDS.WebAPI.DocumentManagerBase.Field
-						fields = fieldManager.RetrieveAllAsArray(SelectedCaseInfo.ArtifactID, artifactTypeID)
-						Dim i As Int32
-						For i = 0 To fields.Length - 1
-							With fields(i)
-								If fields(i).FieldTypeID <> 9 Then
-									_fields.Add(New DocumentField(.DisplayName, .ArtifactID, .FieldTypeID, .FieldCategoryID, .CodeTypeID, .MaxLength, .AssociativeArtifactTypeID, .UseUnicodeEncoding, .ImportBehavior, .EnableDataGrid))
-								End If
-							End With
-						Next
-					End If
-					Return _fields
+					return _fieldProviderCache.CurrentFields(artifactTypeID, SelectedCaseInfo.ArtifactID, Credential, _CookieContainer, refresh)
 				Catch ex As System.Exception
 					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
 						NewLogin(False)
@@ -420,7 +397,7 @@ Namespace kCura.EDDS.WinForm
 
 #Region "Case Management"
 		Public Function GetCases() As System.Data.DataSet
-			_fields = Nothing
+			_fieldProviderCache.ResetCache()
 			Try
 				Dim csMgr As New kCura.WinEDDS.Service.CaseManager(Credential, _CookieContainer)
 				_documentRepositoryList = csMgr.GetAllDocumentFolderPaths()
