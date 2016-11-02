@@ -21,7 +21,6 @@ Namespace kCura.EDDS.WinForm
 			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 Or SecurityProtocolType.Tls11 Or SecurityProtocolType.Tls Or SecurityProtocolType.Ssl3
 			_CookieContainer = New System.Net.CookieContainer
 
-			_fieldProviderCache = New FieldProviderCache
 		End Sub
 
 		Public Shared ReadOnly Property Instance() As Application
@@ -47,7 +46,7 @@ Namespace kCura.EDDS.WinForm
 		Private _selectedCaseInfo As Relativity.CaseInfo
 		Private _selectedCaseFolderID As Int32
 		Private _credential As System.Net.NetworkCredential
-		Private ReadOnly _fieldProviderCache As IFieldProviderCache
+		Private _fieldProviderCache As IFieldProviderCache
 
 		Private _selectedCaseFolderPath As String
 		Private _timeZoneOffset As Int32
@@ -60,6 +59,16 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Properties"
+
+		Private ReadOnly Property FieldProviderCache() As IFieldProviderCache
+			Get
+				If(_fieldProviderCache Is Nothing)
+					_fieldProviderCache = New FieldProviderCache(Credential, _CookieContainer)
+				End If
+				return _fieldProviderCache
+			End Get
+		End Property
+
 		Public Property TimeZoneOffset() As Int32
 			Get
 				Return 0
@@ -114,7 +123,7 @@ Namespace kCura.EDDS.WinForm
 		Public ReadOnly Property CurrentFields(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As DocumentFieldCollection
 			Get
 				Try
-					return _fieldProviderCache.CurrentFields(artifactTypeID, SelectedCaseInfo.ArtifactID, Credential, _CookieContainer, refresh)
+					return FieldProviderCache.CurrentFields(artifactTypeID, SelectedCaseInfo.ArtifactID, refresh)
 				Catch ex As System.Exception
 					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
 						NewLogin(False)
@@ -129,7 +138,7 @@ Namespace kCura.EDDS.WinForm
 		Public ReadOnly Property CurrentNonFileFields(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As DocumentFieldCollection
 			Get
 				Try
-					return _fieldProviderCache.CurrentFields(artifactTypeID, SelectedCaseInfo.ArtifactID, Credential, _CookieContainer, refresh)
+					return FieldProviderCache.CurrentNonFileFields(artifactTypeID, SelectedCaseInfo.ArtifactID, refresh)
 				Catch ex As System.Exception
 					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
 						NewLogin(False)
@@ -397,7 +406,7 @@ Namespace kCura.EDDS.WinForm
 
 #Region "Case Management"
 		Public Function GetCases() As System.Data.DataSet
-			_fieldProviderCache.ResetCache()
+			FieldProviderCache.ResetCache()
 			Try
 				Dim csMgr As New kCura.WinEDDS.Service.CaseManager(Credential, _CookieContainer)
 				_documentRepositoryList = csMgr.GetAllDocumentFolderPaths()
