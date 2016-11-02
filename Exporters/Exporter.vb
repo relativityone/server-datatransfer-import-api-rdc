@@ -122,7 +122,7 @@ Namespace kCura.WinEDDS
 			_fieldManager = serviceFactory.CreateFieldManager()
 			ExportManager = serviceFactory.CreateExportManager()
 
-			_fieldProviderCache = New FieldProviderCache()
+			_fieldProviderCache = New FieldProviderCache(exportFile.Credential, exportFile.CookieContainer)
 			_halt = False
 			_processController = processController
 			DocumentsExported = 0
@@ -354,8 +354,6 @@ Namespace kCura.WinEDDS
 
 				Dim docFieldCollection As DocumentFieldCollection = _fieldProviderCache.CurrentFields(Settings.ArtifactTypeID,
 																									  Settings.CaseArtifactID,
-																									  Settings.Credential,
-																									  Settings.CookieContainer,
 																									  True)
 				Dim identifierList As String() = docFieldCollection.IdentifierFieldNames()
 				If identifierList.IsNullOrEmpty() Then
