@@ -461,6 +461,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="FieldMapping\FieldMappingHelper.vb" />
+    <Compile Include="FieldProviderCache.vb" />
     <Compile Include="FileDownloader.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -478,6 +479,7 @@
     <Compile Include="FileUploader.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="IFieldProviderCache.vb" />
     <Compile Include="Importers\BulkImageFileImporter.vb">
       <SubType>Code</SubType>
     </Compile>
