@@ -38,8 +38,9 @@ Namespace kCura.WinEDDS
 			_loadFile.FieldMap = New kCura.WinEDDS.LoadFileFieldMap
 			_loadFile.FirstLineContainsHeaders = True
 			_loadFile.FolderStructureContainedInColumn = Nothing
-			_loadFile.FullTextColumnContainsFileLocation = False
-			_loadFile.GroupIdentifierColumn = ""
+            _loadFile.FullTextColumnContainsFileLocation = False
+            _loadFile.LongTextColumnThatContainsPathToFullText = ""
+            _loadFile.GroupIdentifierColumn = ""
 			_loadFile.DataGridIDColumn = ""
 			_loadFile.HierarchicalValueDelimiter = "\"c
 			_loadFile.LoadNativeFiles = False
@@ -236,7 +237,13 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public WriteOnly Property NativeFilePathColumn() As String
+        Public WriteOnly Property LongTextColumnThatContainsPathToFullText() As String
+            Set(ByVal Value As String)
+                _loadFile.LongTextColumnThatContainsPathToFullText = Value
+            End Set
+        End Property
+
+        Public WriteOnly Property NativeFilePathColumn() As String
 			Set(ByVal Value As String)
 				_loadFile.NativeFilePathColumn = Value
 			End Set
