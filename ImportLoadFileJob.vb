@@ -215,8 +215,9 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.FilePath = loadFileTemp.FilePath
 			tempLoadFile.FirstLineContainsHeaders = loadFileTemp.FirstLineContainsHeaders
 			tempLoadFile.FolderStructureContainedInColumn = loadFileTemp.FolderStructureContainedInColumn
-			tempLoadFile.FullTextColumnContainsFileLocation = loadFileTemp.FullTextColumnContainsFileLocation
-			tempLoadFile.GroupIdentifierColumn = loadFileTemp.GroupIdentifierColumn
+            tempLoadFile.FullTextColumnContainsFileLocation = loadFileTemp.FullTextColumnContainsFileLocation
+            tempLoadFile.LongTextColumnThatContainsPathToFullText = loadFileTemp.LongTextColumnThatContainsPathToFullText
+            tempLoadFile.GroupIdentifierColumn = loadFileTemp.GroupIdentifierColumn
 			tempLoadFile.DataGridIDColumn = loadFileTemp.DataGridIDColumn
 			tempLoadFile.HierarchicalValueDelimiter = loadFileTemp.HierarchicalValueDelimiter
 			tempLoadFile.IdentityFieldId = loadFileTemp.IdentityFieldId
@@ -398,7 +399,8 @@ Namespace kCura.Relativity.DataReaderClient
 						Throw New Exception("ERROR with NativeFileCopyMode")
 				End Select
 
-				.FullTextColumnContainsFileLocation = clientSettings.ExtractedTextFieldContainsFilePath
+                .LongTextColumnThatContainsPathToFullText = clientSettings.LongTextColumnThatContainsPathToFullText
+                .FullTextColumnContainsFileLocation = clientSettings.ExtractedTextFieldContainsFilePath
 				If Not clientSettings.ExtractedTextEncoding Is Nothing Then
 					.ExtractedTextFileEncoding = clientSettings.ExtractedTextEncoding
 				Else

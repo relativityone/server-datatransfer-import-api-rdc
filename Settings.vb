@@ -70,10 +70,16 @@ Namespace kCura.Relativity.DataReaderClient
 		''' </remarks>
 		Public Property FolderPathSourceFieldName() As String
 
-		''' <summary>
-		''' Represents the delimiter used to separate multiple values, such as different single-choice field values.
-		''' </summary>
-		Public Property MultiValueDelimiter() As Char
+        ''' <summary>
+        ''' Specify a column other than ExtractedText that contains a path to a full text file
+        ''' </summary>
+        ''' <returns></returns>
+        Public Property LongTextColumnThatContainsPathToFullText As String
+
+        ''' <summary>
+        ''' Represents the delimiter used to separate multiple values, such as different single-choice field values.
+        ''' </summary>
+        Public Property MultiValueDelimiter() As Char
 
 		''' <summary>
 		''' Indicates the name of the Field that contains the full path and filename for the native files.
