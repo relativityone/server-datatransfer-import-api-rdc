@@ -1,6 +1,8 @@
+Imports System.Security.AccessControl
 Imports kCura.EDDS.WebAPI.RelativityManagerBase
 Imports kCura.Utility
 Imports Relativity
+Imports Relativity.Authentication.Options
 Imports RelativityManager = kCura.WinEDDS.Service.RelativityManager
 
 Namespace kCura.EDDS.WinForm
@@ -139,10 +141,19 @@ Namespace kCura.EDDS.WinForm
 
 					HandleConsoleAuthErrors(userName, password, clientID, clientSecret)
 					Dim loginResult As Application.CredentialCheckResult = Application.CredentialCheckResult.NotSet
-					'Dim cred As New System.Net.NetworkCredential(userName, password)
 					Try
-						loginResult = _application.DoOAuthLoginAsync("aea8cf48-37d0-40bd-a2ce-c40e8654d0c5", "093fb71b-55c5-436c-b396-2aa8d42800e0", New System.Uri("https://localhost/Identity/connect/token")).Result
-						'loginResult = _application.DoLogin(cred)
+						If Not String.IsNullOrEmpty(userName)
+							Dim cred As New System.Net.NetworkCredential(userName, password)
+							loginResult = _application.DoLogin(cred)
+						Else 
+							
+							Dim webServerHost As string = New System.Uri(kCura.WinEDDS.Config.WebServiceURL).Host
+							Dim openIdEndpoint = new OpenIdConnectEndpoints()
+							Dim identityServerUri = new System.Uri("https://" & webServerHost & openIdEndpoint.TokenResponseEndpoint)
+
+							loginResult = _application.DoOAuthLoginAsync(clientID, clientSecret, identityServerUri).Result
+						End If
+						
 					Catch ex As Exception
 						loginResult = Application.CredentialCheckResult.Fail
 					End Try
