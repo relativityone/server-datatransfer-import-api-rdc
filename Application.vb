@@ -1613,7 +1613,7 @@ Namespace kCura.EDDS.WinForm
 			Dim providerFactory As Relativity.OAuth2Client.Interfaces.IClientTokenProviderFactory = New ClientTokenProviderFactory(stsUrl, clientId, clientSecret)
 			Dim tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider = providerFactory.GetTokenProvider("WebApi", New String() {})
 			Try
-				Dim accessToken As String = Await tokenProvider.GetAccessTokenAsync()
+				Dim accessToken As String = Await tokenProvider.GetAccessTokenAsync().ConfigureAwait(False)
 
 				Dim creds = New System.Net.NetworkCredential(_OAUTH_USERNAME, accessToken)
 				_lastCredentialCheckResult = DoLogin(creds)

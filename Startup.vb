@@ -1,4 +1,5 @@
 Imports kCura.EDDS.WebAPI.RelativityManagerBase
+Imports kCura.Utility
 Imports Relativity
 Imports RelativityManager = kCura.WinEDDS.Service.RelativityManager
 
@@ -138,9 +139,10 @@ Namespace kCura.EDDS.WinForm
 
 					HandleConsoleAuthErrors(userName, password, clientID, clientSecret)
 					Dim loginResult As Application.CredentialCheckResult = Application.CredentialCheckResult.NotSet
-					Dim cred As New System.Net.NetworkCredential(userName, password)
+					'Dim cred As New System.Net.NetworkCredential(userName, password)
 					Try
-						loginResult = _application.DoLogin(cred)
+						loginResult = _application.DoOAuthLoginAsync("aea8cf48-37d0-40bd-a2ce-c40e8654d0c5", "093fb71b-55c5-436c-b396-2aa8d42800e0", New System.Uri("https://localhost/Identity/connect/token")).Result
+						'loginResult = _application.DoLogin(cred)
 					Catch ex As Exception
 						loginResult = Application.CredentialCheckResult.Fail
 					End Try
