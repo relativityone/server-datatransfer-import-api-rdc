@@ -313,6 +313,14 @@
       <Name>Microsoft.VisualBasic</Name>
     </Reference>
     <Reference Include="Microsoft.VisualBasic.PowerPacks.Vs, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Relativity.OAuth2Client, Version=1.0.1.14, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.1.0.1-DEV-14\lib\net45\Relativity.OAuth2Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.1.14, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.1-DEV-14\lib\net45\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -588,6 +596,7 @@
     <Content Include="images\kcura.ICO" />
     <Content Include="images\relativity.ICO" />
     <Content Include="images\relativity1.ICO" />
+    <None Include="packages.config" />
     <None Include="Resources\CopyrightInfo.txt" />
     <Content Include="ToDo.txt" />
   </ItemGroup>
@@ -626,11 +635,10 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-   <PostBuildEvent>
+    <PostBuildEvent>
 			if "$(ConfigurationName)" == "Release" goto :eof
 			copy /Y "$(ProjectDir)..\..\Vendor\FreeImage\3.151\FreeImage\Release\$(PlatformName)\FreeImage.dll" "$(TargetDir)"
 			copy /Y "$(ProjectDir)..\..\Vendor\Oracle\OutsideIn\8.5.3\$(PlatformName)\FileID\redist\*" "$(TargetDir)"
 		</PostBuildEvent>
-
   </PropertyGroup>
 </Project>
