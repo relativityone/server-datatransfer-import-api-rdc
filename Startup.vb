@@ -126,6 +126,15 @@ Namespace kCura.EDDS.WinForm
 					Console.WriteLine(Application.ACCESS_DISABLED_MESSAGE)
 					Exit Sub
 				ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
+					Dim clientID As String = ""
+					Dim clientSecret As String = ""
+					clientID = GetValueFromCommandListByFlag(commandList, "clientID")
+					clientSecret = GetValueFromCommandListByFlag(commandList, "clientSecret")
+
+					Console.WriteLine("ClientID: " + clientID)
+					Console.WriteLine("Client Secret: " + clientSecret)
+					Console.ReadLine()
+
 					Dim userName As String = ""
 					Dim password As String = ""
 					userName = GetValueFromCommandListByFlag(commandList, "u")
