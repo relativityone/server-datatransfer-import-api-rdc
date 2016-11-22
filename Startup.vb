@@ -202,12 +202,12 @@ Namespace kCura.EDDS.WinForm
 				Throw New MultipleCredentialException
 			End If
 
-			If Not usernameExists AndAlso Not passwordExists Then
-				If clientId Is Nothing OrElse clientID = "" Then Throw New ClientIDException
-				If clientSecret Is Nothing OrElse clientSecret = "" Then Throw New ClientSecretException
+			If Not clientIDExists AndAlso Not clientSecretExists Then
+				If Not usernameExists Then Throw New UsernameException
+				If Not passwordExists Then Throw New PasswordException
 			Else
-				If userName Is Nothing OrElse userName = "" Then Throw New UsernameException
-				If password Is Nothing OrElse password = "" Then Throw New PasswordException
+				If Not clientIDExists Then Throw New ClientIDException
+				If Not clientSecretExists Then Throw New ClientSecretException
 			End If
 		End Sub
 
