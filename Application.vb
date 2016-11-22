@@ -3,9 +3,11 @@ Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
 Imports System.Net.Security
 Imports System.Linq
+Imports System.Threading.Tasks
 
 Imports kCura.EDDS.WinForm.Forms
 Imports kCura.Windows.Forms
+Imports Relativity.OAuth2Client.TokenProviders.ProviderFactories
 
 Namespace kCura.EDDS.WinForm
 	Public Class Application
@@ -41,6 +43,8 @@ Namespace kCura.EDDS.WinForm
 		Public Const ACCESS_DISABLED_MESSAGE As String = "Your Relativity account has been disabled.  Please contact your Relativity Administrator to activate your account."
 		Public Const RDC_ERROR_TITLE As String = "Relativity Desktop Client Error"
 
+		Private Const _OAUTH_USERNAME As String = "XxX_BearerTokenCredentials_XxX"
+
 		Private _caseSelected As Boolean = True
 		Private _processPool As kCura.Windows.Process.ProcessPool
 		Private _selectedCaseInfo As Relativity.CaseInfo
@@ -62,10 +66,10 @@ Namespace kCura.EDDS.WinForm
 
 		Private ReadOnly Property FieldProviderCache() As IFieldProviderCache
 			Get
-				If(_fieldProviderCache Is Nothing)
+				If (_fieldProviderCache Is Nothing) Then
 					_fieldProviderCache = New FieldProviderCache(Credential, _CookieContainer)
 				End If
-				return _fieldProviderCache
+				Return _fieldProviderCache
 			End Get
 		End Property
 
@@ -123,7 +127,7 @@ Namespace kCura.EDDS.WinForm
 		Public ReadOnly Property CurrentFields(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As DocumentFieldCollection
 			Get
 				Try
-					return FieldProviderCache.CurrentFields(artifactTypeID, SelectedCaseInfo.ArtifactID, refresh)
+					Return FieldProviderCache.CurrentFields(artifactTypeID, SelectedCaseInfo.ArtifactID, refresh)
 				Catch ex As System.Exception
 					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
 						NewLogin(False)
@@ -138,7 +142,7 @@ Namespace kCura.EDDS.WinForm
 		Public ReadOnly Property CurrentNonFileFields(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As DocumentFieldCollection
 			Get
 				Try
-					return FieldProviderCache.CurrentNonFileFields(artifactTypeID, SelectedCaseInfo.ArtifactID, refresh)
+					Return FieldProviderCache.CurrentNonFileFields(artifactTypeID, SelectedCaseInfo.ArtifactID, refresh)
 				Catch ex As System.Exception
 					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
 						NewLogin(False)
@@ -181,15 +185,15 @@ Namespace kCura.EDDS.WinForm
 
 
 #Region "Event Throwers"
-        Public Sub LogOn()
-            RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOn))
-        End Sub
+		Public Sub LogOn()
+			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOn))
+		End Sub
 
-        Public Sub LogOnForm()
-            RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOnForm))
-        End Sub
+		Public Sub LogOnForm()
+			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOnForm))
+		End Sub
 
-        Public Sub ExitApplication()
+		Public Sub ExitApplication()
 			UpdateWebServiceURL(False)
 			UpdateForceFolderPreview()
 			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.ExitApplication))
@@ -204,7 +208,7 @@ Namespace kCura.EDDS.WinForm
 				kCura.WinEDDS.Config.WebServiceURL = Me.TemporaryWebServiceURL
 				_caseSelected = False
 				'' Turn off our trust of bad certificates! This needs to happen here (references need to be added to add it to MainForm - bad practice).
-				ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) sslPolicyErrors.Equals(sslPolicyErrors.None)
+				ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) sslPolicyErrors.Equals(SslPolicyErrors.None)
 				RaiseEvent ReCheckCertificate()
 			End If
 		End Sub
@@ -286,7 +290,7 @@ Namespace kCura.EDDS.WinForm
 			If unselectedIDFieldNames.Length = 0 Then
 				Return True
 			Else
-				MsgBox("The following identifier fields have not been mapped: " & ChrW(13) & unselectedIDFieldNames.ToString & _
+				MsgBox("The following identifier fields have not been mapped: " & ChrW(13) & unselectedIDFieldNames.ToString &
 				"Do you wish to continue?", MsgBoxStyle.Critical, "Warning")
 				Return False
 			End If
@@ -881,9 +885,9 @@ Namespace kCura.EDDS.WinForm
 					Dim s As New System.Text.StringBuilder
 					s.Append("There are no exportable ")
 					Select Case exportFile.TypeOfExport
-						Case exportFile.ExportType.Production
+						Case ExportFile.ExportType.Production
 							s.Append("productions ")
-						Case exportFile.ExportType.ArtifactSearch
+						Case ExportFile.ExportType.ArtifactSearch
 							s.Append("saved searches ")
 						Case Else
 							s.Append("views ")
@@ -921,10 +925,10 @@ Namespace kCura.EDDS.WinForm
 			exportFile.TypeOfExport = typeOfExport
 			exportFile.ObjectTypeName = Me.GetObjectTypeName(exportFile.ArtifactTypeID)
 			Select Case typeOfExport
-				Case exportFile.ExportType.Production
+				Case ExportFile.ExportType.Production
 					exportFile.DataTable = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
 				Case Else
-					exportFile.DataTable = Me.GetSearchExportDataSource(searchManager, caseInfo.ArtifactID, typeOfExport = exportFile.ExportType.ArtifactSearch, exportFile.ArtifactTypeID)
+					exportFile.DataTable = Me.GetSearchExportDataSource(searchManager, caseInfo.ArtifactID, typeOfExport = ExportFile.ExportType.ArtifactSearch, exportFile.ArtifactTypeID)
 			End Select
 			Dim ids As New System.Collections.ArrayList
 			For Each row As System.Data.DataRow In exportFile.DataTable.Rows
@@ -940,7 +944,7 @@ Namespace kCura.EDDS.WinForm
 				exportFile.ArtifactAvfLookup = New System.Collections.Specialized.HybridDictionary
 				exportFile.AllExportableFields = New WinEDDS.ViewFieldInfo() {}
 			Else
-				exportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(caseInfo.ArtifactID, exportFile.ArtifactTypeID, DirectCast(ids.ToArray(GetType(Int32)), Int32()), typeOfExport = exportFile.ExportType.Production)
+				exportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(caseInfo.ArtifactID, exportFile.ArtifactTypeID, DirectCast(ids.ToArray(GetType(Int32)), Int32()), typeOfExport = ExportFile.ExportType.Production)
 				exportFile.AllExportableFields = searchManager.RetrieveAllExportableViewFields(caseInfo.ArtifactID, exportFile.ArtifactTypeID)
 			End If
 			Return exportFile
@@ -1238,13 +1242,13 @@ Namespace kCura.EDDS.WinForm
 			frm.ProcessController = exporter.ProcessController
 			frm.Text = "Export Progress..."
 			Select Case exportFile.TypeOfExport
-				Case exportFile.ExportType.AncestorSearch
+				Case ExportFile.ExportType.AncestorSearch
 					frm.Text = "Export Folders and Subfolders Progress ..."
-				Case exportFile.ExportType.ArtifactSearch
+				Case ExportFile.ExportType.ArtifactSearch
 					frm.Text = "Export Saved Search Progress ..."
-				Case exportFile.ExportType.ParentSearch
+				Case ExportFile.ExportType.ParentSearch
 					frm.Text = "Export Folder Progress ..."
-				Case exportFile.ExportType.Production
+				Case ExportFile.ExportType.Production
 					frm.Text = "Export Production Set Progress ..."
 			End Select
 			frm.Show()
@@ -1358,8 +1362,8 @@ Namespace kCura.EDDS.WinForm
 			If tempLoadFile.GroupIdentifierColumn = String.Empty AndAlso System.IO.File.Exists(tempLoadFile.FilePath) Then
 				Dim fieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem
 				For Each fieldMapItem In tempLoadFile.FieldMap
-					If Not fieldMapItem.DocumentField Is Nothing AndAlso _
-					fieldMapItem.NativeFileColumnIndex >= 0 AndAlso _
+					If Not fieldMapItem.DocumentField Is Nothing AndAlso
+					fieldMapItem.NativeFileColumnIndex >= 0 AndAlso
 					fieldMapItem.DocumentField.FieldName.ToLower = "group identifier" Then
 						tempLoadFile.GroupIdentifierColumn = Me.GetColumnHeadersFromLoadFile(tempLoadFile, tempLoadFile.FirstLineContainsHeaders)(fieldMapItem.NativeFileColumnIndex)
 						'mapItemToRemove = fieldMapItem
@@ -1506,45 +1510,45 @@ Namespace kCura.EDDS.WinForm
 				CheckVersion(cred)
 			Catch ex As System.Net.WebException
 				If Not ex.Message.IndexOf("The remote name could not be resolved") = -1 AndAlso ex.Source = "System" Then
-					Me.ChangeWebServiceURL("The current Relativity WebAPI URL could not be resolved. Try a new URL?")
+					Me.ChangeWebServiceUrl("The current Relativity WebAPI URL could not be resolved. Try a new URL?")
 				ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 401") = -1 AndAlso ex.Source = "System.Web.Services" Then
-					Me.ChangeWebServiceURL("The current Relativity WebAPI URL was resolved but is not configured correctly. Try a new URL?")
+					Me.ChangeWebServiceUrl("The current Relativity WebAPI URL was resolved but is not configured correctly. Try a new URL?")
 				ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 404") = -1 AndAlso ex.Source = "System.Web.Services" Then
-					Me.ChangeWebServiceURL("The current Relativity WebAPI URL was not found. Try a new URL?")
+					Me.ChangeWebServiceUrl("The current Relativity WebAPI URL was not found. Try a new URL?")
 				Else
-					Me.ChangeWebServiceURL("An error occurred while validating the Relativity WebAPI URL.  Check the URL and try again?")
+					Me.ChangeWebServiceUrl("An error occurred while validating the Relativity WebAPI URL.  Check the URL and try again?")
 				End If
 				_lastCredentialCheckResult = CredentialCheckResult.Fail
 				Return
 			Catch ex As System.Exception
-				Me.ChangeWebServiceURL("An error occurred while validating the Relativity WebAPI URL.  Check the URL and try again?")
+				Me.ChangeWebServiceUrl("An error occurred while validating the Relativity WebAPI URL.  Check the URL and try again?")
 				_lastCredentialCheckResult = CredentialCheckResult.Fail
 				Return
 			End Try
 
-            Try
-                If userManager.Login(cred.UserName, cred.Password) Then
+			Try
+				If userManager.Login(cred.UserName, cred.Password) Then
 
-                    Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
-                    locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol
-                    System.Threading.Thread.CurrentThread.CurrentCulture = locale
+					Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
+					locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol
+					System.Threading.Thread.CurrentThread.CurrentCulture = locale
 
-                    _credential = cred
-                    kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-                    If openCaseSelector Then OpenCase()
-                    _timeZoneOffset = 0                                                         'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
-                    _lastCredentialCheckResult = CredentialCheckResult.Success
-                    'This was created specifically for raising an event after login success for RDC forms authentication 
-                    LogOnForm()
-                Else
-                    Me.ReLogin("Invalid login. Try again?")
-                    _lastCredentialCheckResult = CredentialCheckResult.Fail
-                End If
-            Catch ex As System.Exception
-                Dim x As New ErrorDialog
+					_credential = cred
+					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
+					If openCaseSelector Then OpenCase()
+					_timeZoneOffset = 0                                                         'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+					_lastCredentialCheckResult = CredentialCheckResult.Success
+					'This was created specifically for raising an event after login success for RDC forms authentication 
+					LogOnForm()
+				Else
+					Me.ReLogin("Invalid login. Try again?")
+					_lastCredentialCheckResult = CredentialCheckResult.Fail
+				End If
+			Catch ex As System.Exception
+				Dim x As New ErrorDialog
 				If IsAccessDisabledException(ex) Then
 					x.Text = "Account Disabled"
-					x.InitializeSoapExceptionWithCustomMessage(DirectCast(ex, System.Web.Services.Protocols.SoapException), _
+					x.InitializeSoapExceptionWithCustomMessage(DirectCast(ex, System.Web.Services.Protocols.SoapException),
 					 ACCESS_DISABLED_MESSAGE)
 					_lastCredentialCheckResult = CredentialCheckResult.AccessDisabled
 				Else
@@ -1589,7 +1593,7 @@ Namespace kCura.EDDS.WinForm
 				If userManager.Login(cred.UserName, cred.Password) Then
 					_credential = cred
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-					_timeZoneOffset = 0											 'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+					_timeZoneOffset = 0                                          'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
 					_lastCredentialCheckResult = CredentialCheckResult.Success
 				Else
 					_lastCredentialCheckResult = CredentialCheckResult.Fail
@@ -1601,6 +1605,26 @@ Namespace kCura.EDDS.WinForm
 					_lastCredentialCheckResult = CredentialCheckResult.Fail
 				End If
 			End Try
+			Return _lastCredentialCheckResult
+		End Function
+
+		Public Async Function DoOAuthLoginAsync(ByVal clientId As String, ByVal clientSecret As String, ByVal stsUrl As Uri) As Task(Of CredentialCheckResult)
+
+			Dim providerFactory As Relativity.OAuth2Client.Interfaces.IClientTokenProviderFactory = New ClientTokenProviderFactory(stsUrl, clientId, clientSecret)
+			Dim tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider = providerFactory.GetTokenProvider("WebApi", New String() {})
+			Try
+				Dim accessToken As String = Await tokenProvider.GetAccessTokenAsync()
+
+				Dim creds = New System.Net.NetworkCredential(_OAUTH_USERNAME, accessToken)
+				_lastCredentialCheckResult = DoLogin(creds)
+			Catch ex As Exception
+				If IsAccessDisabledException(ex) Then
+					_lastCredentialCheckResult = CredentialCheckResult.AccessDisabled
+				Else
+					_lastCredentialCheckResult = CredentialCheckResult.Fail
+				End If
+			End Try
+
 			Return _lastCredentialCheckResult
 		End Function
 
