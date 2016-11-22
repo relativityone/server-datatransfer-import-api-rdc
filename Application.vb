@@ -1611,7 +1611,7 @@ Namespace kCura.EDDS.WinForm
 		Public Async Function DoOAuthLoginAsync(ByVal clientId As String, ByVal clientSecret As String, ByVal stsUrl As Uri) As Task(Of CredentialCheckResult)
 
 			Dim providerFactory As Relativity.OAuth2Client.Interfaces.IClientTokenProviderFactory = New ClientTokenProviderFactory(stsUrl, clientId, clientSecret)
-			Dim tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider = providerFactory.GetTokenProvider("WebApi", New String() {})
+			Dim tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider = providerFactory.GetTokenProvider("WebApi", New String() { "SystemUserInfo" })
 			Try
 				Dim accessToken As String = Await tokenProvider.GetAccessTokenAsync().ConfigureAwait(False)
 
