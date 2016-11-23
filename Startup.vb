@@ -147,9 +147,9 @@ Namespace kCura.EDDS.WinForm
 							loginResult = _application.DoLogin(cred)
 						Else 
 							
-							Dim webServerHost As string = New System.Uri(kCura.WinEDDS.Config.WebServiceURL).Host
+							Dim webServerHost As string = New System.Uri(kCura.WinEDDS.Config.WebServiceURL).GetLeftPart(UriPartial.Authority)
 							Dim openIdEndpoint = new OpenIdConnectEndpoints()
-							Dim identityServerUri = new System.Uri("https://" & webServerHost & openIdEndpoint.TokenResponseEndpoint)
+							Dim identityServerUri = new System.Uri(String.Format("{0}/Relativity/{1}", webServerHost, openIdEndpoint.TokenResponseEndpoint))
 
 							loginResult = _application.DoOAuthLoginAsync(clientID, clientSecret, identityServerUri).Result
 						End If
