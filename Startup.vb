@@ -2,7 +2,6 @@ Imports System.Security.AccessControl
 Imports kCura.EDDS.WebAPI.RelativityManagerBase
 Imports kCura.Utility
 Imports Relativity
-Imports Relativity.Authentication.Options
 Imports RelativityManager = kCura.WinEDDS.Service.RelativityManager
 
 Namespace kCura.EDDS.WinForm
@@ -148,8 +147,7 @@ Namespace kCura.EDDS.WinForm
 						Else 
 							
 							Dim webServerHost As string = New System.Uri(kCura.WinEDDS.Config.WebServiceURL).GetLeftPart(UriPartial.Authority)
-							Dim openIdEndpoint = new OpenIdConnectEndpoints()
-							Dim identityServerUri = new System.Uri(String.Format("{0}/Relativity/{1}", webServerHost, openIdEndpoint.TokenResponseEndpoint))
+							Dim identityServerUri = new System.Uri(String.Format("{0}/Relativity/{1}", webServerHost, "Identity/connect/token"))
 
 							loginResult = _application.DoOAuthLoginAsync(clientID, clientSecret, identityServerUri).Result
 						End If
