@@ -3,9 +3,11 @@ Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
 Imports System.Net.Security
 Imports System.Linq
+Imports System.Threading.Tasks
 
 Imports kCura.EDDS.WinForm.Forms
 Imports kCura.Windows.Forms
+Imports Relativity.OAuth2Client.TokenProviders.ProviderFactories
 
 Namespace kCura.EDDS.WinForm
 	Public Class Application
