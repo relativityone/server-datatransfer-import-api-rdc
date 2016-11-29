@@ -319,6 +319,22 @@
     <Reference Include="Ionic.Zip">
       <HintPath>..\..\Vendor\DotNetZipLib-DevKit-v1.8\DotNetZip-v1.8\Release\Ionic.Zip.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client, Version=1.0.1.33, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.1.0.1-DEV-33\lib\net45\Relativity.OAuth2Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel, Version=1.0.1.33, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.1.0.1-DEV-33\lib\net45\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.1.33, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.1-DEV-33\lib\net45\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -398,6 +414,7 @@
     <Compile Include="Config.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CredentialsProvider.vb" />
     <Compile Include="Event\AppEvent.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -814,6 +831,7 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Web References\kCura.EDDS.WebAPI.AuditManagerBase\AuditManager.disco" />
     <None Include="Web References\kCura.EDDS.WebAPI.AuditManagerBase\AuditManager.wsdl">
       <SubType>Designer</SubType>
