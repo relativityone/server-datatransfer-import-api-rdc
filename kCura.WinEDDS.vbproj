@@ -414,7 +414,7 @@
     <Compile Include="Config.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CredentialsProvider.vb" />
+    <Compile Include="Credentials\OAuth2ClientCredentials.vb" />
     <Compile Include="Event\AppEvent.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -1262,5 +1262,6 @@
   <ItemGroup>
     <None Include="Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\BulkImportManager.disco" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
 </Project>
