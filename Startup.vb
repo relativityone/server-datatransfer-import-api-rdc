@@ -145,11 +145,8 @@ Namespace kCura.EDDS.WinForm
 							Dim cred As New System.Net.NetworkCredential(userName, password)
 							loginResult = _application.DoLogin(cred)
 						Else 
-							
-							Dim webServerHost As string = New System.Uri(kCura.WinEDDS.Config.WebServiceURL).GetLeftPart(UriPartial.Authority)
-							Dim identityServerUri = new System.Uri(String.Format("{0}/Relativity/{1}", webServerHost, "Identity/connect/token"))
 
-							loginResult = _application.DoOAuthLoginAsync(clientID, clientSecret, identityServerUri).Result
+							loginResult = _application.DoOAuthLoginAsync(clientID, clientSecret).Result
 						End If
 						
 					Catch ex As Exception

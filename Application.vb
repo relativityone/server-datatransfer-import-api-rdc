@@ -7,6 +7,7 @@ Imports System.Threading.Tasks
 
 Imports kCura.EDDS.WinForm.Forms
 Imports kCura.Windows.Forms
+Imports kCura.WinEDDS.Service
 Imports Relativity.OAuth2Client.TokenProviders.ProviderFactories
 
 Namespace kCura.EDDS.WinForm
@@ -1608,10 +1609,14 @@ Namespace kCura.EDDS.WinForm
 			Return _lastCredentialCheckResult
 		End Function
 
-		Public Async Function DoOAuthLoginAsync(ByVal clientId As String, ByVal clientSecret As String, ByVal stsUrl As Uri) As Task(Of CredentialCheckResult)
+		Public Async Function DoOAuthLoginAsync(ByVal clientId As String, ByVal clientSecret As String) As Task(Of CredentialCheckResult)
+			Dim tempCred As  System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
+			Dim relManager As Service.RelativityManager = New RelativityManager(tempCred, _CookieContainer)
+			Dim stsUrl As Uri = New Uri(relManager.GetRelativityUrl())
 
 			Dim providerFactory As Relativity.OAuth2Client.Interfaces.IClientTokenProviderFactory = New ClientTokenProviderFactory(stsUrl, clientId, clientSecret)
 			Dim tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider = providerFactory.GetTokenProvider("WebApi", New String() { "SystemUserInfo" })
+
 			Try
 				Dim accessToken As String = Await tokenProvider.GetAccessTokenAsync().ConfigureAwait(False)
 
