@@ -160,6 +160,8 @@ Namespace kCura.EDDS.WinForm
 						Exit Sub
 					ElseIf loginResult = Application.CredentialCheckResult.InvalidClientCredentials Then
 						throw new ClientCrendentialsException
+					ElseIf loginResult = Application.CredentialCheckResult.FailToConnectToIdentityServer Then
+						throw new ConnectToIdentityServerException
 					ElseIf Not loginResult = Application.CredentialCheckResult.Success Then
 						Throw New CredentialsException
 					End If
@@ -677,6 +679,14 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub New()
 			MyBase.New("Invalid credentials specified. Please specify a valid ClientID and ClientSecret combination")
+		End Sub
+	End Class
+
+	Public Class ConnectToIdentityServerException
+		Inherits RdcBaseException
+
+		Public Sub New ()
+			Mybase.New("Fail to connect to Identity server. Ensure your Identity server running and accessible for this machine.")
 		End Sub
 	End Class
 
