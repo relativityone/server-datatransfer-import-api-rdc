@@ -157,6 +157,8 @@ Namespace kCura.EDDS.WinForm
 						Exit Sub
 					ElseIf Not loginResult = Application.CredentialCheckResult.Success Then
 						Throw New CredentialsException
+					Else
+
 					End If
 
 				End If

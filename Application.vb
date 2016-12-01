@@ -7,6 +7,7 @@ Imports System.Threading.Tasks
 
 Imports kCura.EDDS.WinForm.Forms
 Imports kCura.Windows.Forms
+Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Service
 Imports Relativity.OAuth2Client.TokenProviders.ProviderFactories
 
@@ -52,6 +53,7 @@ Namespace kCura.EDDS.WinForm
 		Private _selectedCaseFolderID As Int32
 		Private _credential As System.Net.NetworkCredential
 		Private _fieldProviderCache As IFieldProviderCache
+		Private _credentialsProvider As ICredentialsProvider
 
 		Private _selectedCaseFolderPath As String
 		Private _timeZoneOffset As Int32
@@ -1612,7 +1614,8 @@ Namespace kCura.EDDS.WinForm
 		Public Async Function DoOAuthLoginAsync(ByVal clientId As String, ByVal clientSecret As String) As Task(Of CredentialCheckResult)
 			Dim tempCred As  System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
 			Dim relManager As Service.RelativityManager = New RelativityManager(tempCred, _CookieContainer)
-			Dim stsUrl As Uri = New Uri(relManager.GetRelativityUrl())
+			Dim urlString As String = String.Format("{0}/{1}",relManager.GetRelativityUrl(), "Identity/connect/token")
+			Dim stsUrl As Uri = New Uri(urlString)
 
 			Dim providerFactory As Relativity.OAuth2Client.Interfaces.IClientTokenProviderFactory = New ClientTokenProviderFactory(stsUrl, clientId, clientSecret)
 			Dim tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider = providerFactory.GetTokenProvider("WebApi", New String() { "SystemUserInfo" })
