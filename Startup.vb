@@ -1,4 +1,6 @@
+Imports System.Security.AccessControl
 Imports kCura.EDDS.WebAPI.RelativityManagerBase
+Imports kCura.Utility
 Imports Relativity
 Imports RelativityManager = kCura.WinEDDS.Service.RelativityManager
 
@@ -126,16 +128,30 @@ Namespace kCura.EDDS.WinForm
 					Console.WriteLine(Application.ACCESS_DISABLED_MESSAGE)
 					Exit Sub
 				ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
+					Dim clientID As String = ""
+					Dim clientSecret As String = ""
+					clientID = GetValueFromCommandListByFlag(commandList, "clientID")
+					clientSecret = GetValueFromCommandListByFlag(commandList, "clientSecret")
+
 					Dim userName As String = ""
 					Dim password As String = ""
 					userName = GetValueFromCommandListByFlag(commandList, "u")
 					password = GetValueFromCommandListByFlag(commandList, "p")
-					If userName Is Nothing OrElse userName = "" Then Throw New UsernameException
-					If password Is Nothing OrElse password = "" Then Throw New PasswordException
+
+					HandleConsoleAuthErrors(userName, password, clientID, clientSecret)
 					Dim loginResult As Application.CredentialCheckResult = Application.CredentialCheckResult.NotSet
-					Dim cred As New System.Net.NetworkCredential(userName, password)
 					Try
-						loginResult = _application.DoLogin(cred)
+						If Not String.IsNullOrEmpty(userName)
+							Dim cred As New System.Net.NetworkCredential(userName, password)
+							loginResult = _application.DoLogin(cred)
+						Else 
+							
+							Dim webServerHost As string = New System.Uri(kCura.WinEDDS.Config.WebServiceURL).GetLeftPart(UriPartial.Authority)
+							Dim identityServerUri = new System.Uri(String.Format("{0}/Relativity/{1}", webServerHost, "Identity/connect/token"))
+
+							loginResult = _application.DoOAuthLoginAsync(clientID, clientSecret, identityServerUri).Result
+						End If
+						
 					Catch ex As Exception
 						loginResult = Application.CredentialCheckResult.Fail
 					End Try
@@ -185,6 +201,25 @@ Namespace kCura.EDDS.WinForm
 				Console.WriteLine("--------------------------")
 			End Try
 
+		End Sub
+
+		Private Sub HandleConsoleAuthErrors(username As String, password As String, clientID As String, clientSecret As String)
+			Dim usernameExists As Boolean = Not String.IsNullOrEmpty(username)
+			Dim passwordExists As Boolean = Not String.IsNullOrEmpty(password)
+			Dim clientIDExists As Boolean = Not String.IsNullOrEmpty(clientID)
+			Dim clientSecretExists As Boolean = Not String.IsNullOrEmpty(clientSecret)
+
+			If (usernameExists Or passwordExists) AndAlso (clientIDExists Or clientSecretExists)Then
+				Throw New MultipleCredentialException
+			End If
+
+			If Not clientIDExists AndAlso Not clientSecretExists Then
+				If Not usernameExists Then Throw New UsernameException
+				If Not passwordExists Then Throw New PasswordException
+			Else
+				If Not clientIDExists Then Throw New ClientIDException
+				If Not clientSecretExists Then Throw New ClientSecretException
+			End If
 		End Sub
 
 
@@ -610,6 +645,28 @@ Namespace kCura.EDDS.WinForm
 		Inherits RdcBaseException
 		Public Sub New()
 			MyBase.New("Invalid or no password specified")
+		End Sub
+	End Class
+
+	Public Class ClientIDException
+		Inherits RdcBaseException
+		Public Sub New()
+			MyBase.New("Invalid or no Client ID specified")
+		End Sub
+	End Class
+
+	Public Class ClientSecretException
+		Inherits RdcBaseException
+		Public Sub New()
+			MyBase.New("Invalid or no Client Secret specified")
+		End Sub
+	End Class
+
+	Public Class MultipleCredentialException
+		Inherits RdcBaseException
+
+		Public Sub New()
+			MyBase.New("Mutiple credentials specified.  Please only specify Username and Password or Client ID and Secret.")
 		End Sub
 	End Class
 

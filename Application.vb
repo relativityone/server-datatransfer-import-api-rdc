@@ -3,9 +3,11 @@ Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
 Imports System.Net.Security
 Imports System.Linq
+Imports System.Threading.Tasks
 
 Imports kCura.EDDS.WinForm.Forms
 Imports kCura.Windows.Forms
+Imports Relativity.OAuth2Client.TokenProviders.ProviderFactories
 
 Namespace kCura.EDDS.WinForm
 	Public Class Application
@@ -40,6 +42,8 @@ Namespace kCura.EDDS.WinForm
 
 		Public Const ACCESS_DISABLED_MESSAGE As String = "Your Relativity account has been disabled.  Please contact your Relativity Administrator to activate your account."
 		Public Const RDC_ERROR_TITLE As String = "Relativity Desktop Client Error"
+
+		Private Const _OAUTH_USERNAME As String = "XxX_BearerTokenCredentials_XxX"
 
 		Private _caseSelected As Boolean = True
 		Private _processPool As kCura.Windows.Process.ProcessPool
@@ -1601,6 +1605,26 @@ Namespace kCura.EDDS.WinForm
 					_lastCredentialCheckResult = CredentialCheckResult.Fail
 				End If
 			End Try
+			Return _lastCredentialCheckResult
+		End Function
+
+		Public Async Function DoOAuthLoginAsync(ByVal clientId As String, ByVal clientSecret As String, ByVal stsUrl As Uri) As Task(Of CredentialCheckResult)
+
+			Dim providerFactory As Relativity.OAuth2Client.Interfaces.IClientTokenProviderFactory = New ClientTokenProviderFactory(stsUrl, clientId, clientSecret)
+			Dim tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider = providerFactory.GetTokenProvider("WebApi", New String() { "SystemUserInfo" })
+			Try
+				Dim accessToken As String = Await tokenProvider.GetAccessTokenAsync().ConfigureAwait(False)
+
+				Dim creds = New System.Net.NetworkCredential(_OAUTH_USERNAME, accessToken)
+				_lastCredentialCheckResult = DoLogin(creds)
+			Catch ex As Exception
+				If IsAccessDisabledException(ex) Then
+					_lastCredentialCheckResult = CredentialCheckResult.AccessDisabled
+				Else
+					_lastCredentialCheckResult = CredentialCheckResult.Fail
+				End If
+			End Try
+
 			Return _lastCredentialCheckResult
 		End Function
 
