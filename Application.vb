@@ -1506,6 +1506,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub _loginForm_OK_Click(ByVal cred As System.Net.NetworkCredential, ByVal openCaseSelector As Boolean) Handles _loginForm.OK_Click
 			_loginForm.Close()
+			RelativityWebApiCredentialsProvider.Instance().SetProvider(new UserCredentialsProvider(cred))
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _CookieContainer)
 			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(cred, _CookieContainer)
 			Try
