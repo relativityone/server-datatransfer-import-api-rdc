@@ -1,6 +1,7 @@
 ﻿
 Imports System.Net
 Imports System.Threading.Tasks
+Imports Relativity.OAuth2Client.TokenProviders.ProviderFactories
 
 Namespace kCura.WinEDDS.Credentials
 
@@ -9,6 +10,12 @@ Namespace kCura.WinEDDS.Credentials
 
 		Private Const _OAUTH_USERNAME As String = "XxX_BearerTokenCredentials_XxX"
 		Private ReadOnly _tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider 
+
+		Public Sub New(stsUri As Uri, clientID As String, clientSecret As String)
+			Dim providerFactory As Relativity.OAuth2Client.Interfaces.IClientTokenProviderFactory = New ClientTokenProviderFactory(stsUri, clientId, clientSecret)
+			Dim tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider = providerFactory.GetTokenProvider("WebApi", New String() { "SystemUserInfo" })
+			_tokenProvider = tokenProvider
+		End Sub
 
 		Public Sub New(tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider)
 			_tokenProvider = tokenProvider
