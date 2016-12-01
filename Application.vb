@@ -3,6 +3,7 @@ Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
 Imports System.Net.Security
 Imports System.Linq
+Imports System.Security.Authentication
 Imports System.Threading.Tasks
 
 Imports kCura.EDDS.WinForm.Forms
@@ -1414,6 +1415,7 @@ Namespace kCura.EDDS.WinForm
 			Success = 1
 			Fail = 2
 			AccessDisabled = 3
+			InvalidClientCredentials = 4
 		End Enum
 
 		Private _lastCredentialCheckResult As CredentialCheckResult = CredentialCheckResult.NotSet
@@ -1625,6 +1627,8 @@ Namespace kCura.EDDS.WinForm
 
 				Dim creds = New System.Net.NetworkCredential(_OAUTH_USERNAME, accessToken)
 				_lastCredentialCheckResult = DoLogin(creds)
+			Catch ex As AuthenticationException
+				_lastCredentialCheckResult = CredentialCheckResult.InvalidClientCredentials
 			Catch ex As Exception
 				If IsAccessDisabledException(ex) Then
 					_lastCredentialCheckResult = CredentialCheckResult.AccessDisabled
