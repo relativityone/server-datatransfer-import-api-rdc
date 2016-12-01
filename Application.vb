@@ -46,15 +46,12 @@ Namespace kCura.EDDS.WinForm
 		Public Const ACCESS_DISABLED_MESSAGE As String = "Your Relativity account has been disabled.  Please contact your Relativity Administrator to activate your account."
 		Public Const RDC_ERROR_TITLE As String = "Relativity Desktop Client Error"
 
-		Private Const _OAUTH_USERNAME As String = "XxX_BearerTokenCredentials_XxX"
-
 		Private _caseSelected As Boolean = True
 		Private _processPool As kCura.Windows.Process.ProcessPool
 		Private _selectedCaseInfo As Relativity.CaseInfo
 		Private _selectedCaseFolderID As Int32
 		Private _credential As System.Net.NetworkCredential
 		Private _fieldProviderCache As IFieldProviderCache
-		Private _credentialsProvider As ICredentialsProvider
 
 		Private _selectedCaseFolderPath As String
 		Private _timeZoneOffset As Int32
@@ -1591,18 +1588,21 @@ Namespace kCura.EDDS.WinForm
 			End If
 		End Function
 
-		Public Function DoLogin(ByVal cred As System.Net.NetworkCredential) As CredentialCheckResult
-			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _CookieContainer)
-			CheckVersion(cred)
+		Public Function DoLogin() As CredentialCheckResult
+			Dim netCreds As System.Net.NetworkCredential = RelativityWebApiCredentialsProvider.Instance.GetCredentials()
+			Dim userManager As New kCura.WinEDDS.Service.UserManager(netCreds, _CookieContainer)
+			CheckVersion(netCreds)
 			Try
-				If userManager.Login(cred.UserName, cred.Password) Then
-					_credential = cred
+				If userManager.Login(netCreds.UserName, netCreds.Password) Then
+					_credential = netCreds
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
 					_timeZoneOffset = 0											 'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
 					_lastCredentialCheckResult = CredentialCheckResult.Success
 				Else
 					_lastCredentialCheckResult = CredentialCheckResult.Fail
 				End If
+			Catch ex As AuthenticationException
+				_lastCredentialCheckResult = CredentialCheckResult.InvalidClientCredentials
 			Catch ex As Exception
 				If IsAccessDisabledException(ex) Then
 					_lastCredentialCheckResult = CredentialCheckResult.AccessDisabled
@@ -1613,29 +1613,16 @@ Namespace kCura.EDDS.WinForm
 			Return _lastCredentialCheckResult
 		End Function
 
-		Public Async Function DoOAuthLoginAsync(ByVal clientId As String, ByVal clientSecret As String) As Task(Of CredentialCheckResult)
+		Public Function DoOAuthLogin(ByVal clientId As String, ByVal clientSecret As String) As CredentialCheckResult
 			Dim tempCred As  System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
 			Dim relManager As Service.RelativityManager = New RelativityManager(tempCred, _CookieContainer)
 			Dim urlString As String = String.Format("{0}/{1}",relManager.GetRelativityUrl(), "Identity/connect/token")
 			Dim stsUrl As Uri = New Uri(urlString)
 
-			Dim providerFactory As Relativity.OAuth2Client.Interfaces.IClientTokenProviderFactory = New ClientTokenProviderFactory(stsUrl, clientId, clientSecret)
-			Dim tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider = providerFactory.GetTokenProvider("WebApi", New String() { "SystemUserInfo" })
+			Dim credProvider As ICredentialsProvider = new OAuth2ClientCredentials(stsUrl, clientId, clientSecret)
+			RelativityWebApiCredentialsProvider.Instance().SetProvider(credProvider)
 
-			Try
-				Dim accessToken As String = Await tokenProvider.GetAccessTokenAsync().ConfigureAwait(False)
-
-				Dim creds = New System.Net.NetworkCredential(_OAUTH_USERNAME, accessToken)
-				_lastCredentialCheckResult = DoLogin(creds)
-			Catch ex As AuthenticationException
-				_lastCredentialCheckResult = CredentialCheckResult.InvalidClientCredentials
-			Catch ex As Exception
-				If IsAccessDisabledException(ex) Then
-					_lastCredentialCheckResult = CredentialCheckResult.AccessDisabled
-				Else
-					_lastCredentialCheckResult = CredentialCheckResult.Fail
-				End If
-			End Try
+			_lastCredentialCheckResult = DoLogin()
 
 			Return _lastCredentialCheckResult
 		End Function
