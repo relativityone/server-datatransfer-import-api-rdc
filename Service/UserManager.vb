@@ -1,3 +1,5 @@
+Imports kCura.WinEDDS.Credentials
+
 Namespace kCura.WinEDDS.Service
 	Public Class UserManager
 		Inherits kCura.EDDS.WebAPI.UserManagerBase.UserManager
