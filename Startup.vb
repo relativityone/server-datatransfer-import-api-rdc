@@ -115,7 +115,7 @@ Namespace kCura.EDDS.WinForm
 					End If
 				Next
 				If kCura.WinEDDS.Config.WebServiceURL = "" OrElse Not UrlIsValid(kCura.WinEDDS.Config.WebServiceURL) Then
-					Console.WriteLine("Web Service URL not set.  Please enter:")
+					Console.WriteLine("Web Service URL not set or not accessible.  Please enter:")
 					Dim webserviceurl As String = Console.ReadLine
 					While Not UrlIsValid(webserviceurl)
 						Console.WriteLine("Invalid Web Service URL set.  Retry:")
