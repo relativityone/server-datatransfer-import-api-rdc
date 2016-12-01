@@ -1414,7 +1414,7 @@ Namespace kCura.EDDS.WinForm
 			Fail = 2
 			AccessDisabled = 3
 			InvalidClientCredentials = 4
-			FailToAccessToIdentityServer = 5
+			FailToConnectToIdentityServer = 5
 		End Enum
 
 		Private _lastCredentialCheckResult As CredentialCheckResult = CredentialCheckResult.NotSet
@@ -1622,7 +1622,7 @@ Namespace kCura.EDDS.WinForm
 				Dim creds = New System.Net.NetworkCredential(_OAUTH_USERNAME, accessToken)
 				_lastCredentialCheckResult = DoLogin(creds)
 			Catch ex As OAuth2ClientException
-				_lastCredentialCheckResult = CredentialCheckResult.FailToAccessToIdentityServer
+				_lastCredentialCheckResult = CredentialCheckResult.FailToConnectToIdentityServer
 			Catch ex As AuthenticationException
 				_lastCredentialCheckResult = CredentialCheckResult.InvalidClientCredentials
 			Catch ex As Exception
