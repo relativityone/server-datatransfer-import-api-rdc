@@ -686,7 +686,7 @@ Namespace kCura.EDDS.WinForm
 		Inherits RdcBaseException
 
 		Public Sub New()
-			Mybase.New("Fail to connect to Identity server. Ensure your Identity server running and accessible for this machine.")
+			Mybase.New("Failed to connect to Identity server. Ensure your Identity server is running and accessible from this location.")
 		End Sub
 	End Class
 

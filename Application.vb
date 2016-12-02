@@ -1621,7 +1621,7 @@ Namespace kCura.EDDS.WinForm
 
 				Dim creds = New System.Net.NetworkCredential(_OAUTH_USERNAME, accessToken)
 				_lastCredentialCheckResult = DoLogin(creds)
-			Catch ex As OAuth2ClientException
+			Catch ex As IdenityProviderConnectionException
 				_lastCredentialCheckResult = CredentialCheckResult.FailToConnectToIdentityServer
 			Catch ex As AuthenticationException
 				_lastCredentialCheckResult = CredentialCheckResult.InvalidClientCredentials
