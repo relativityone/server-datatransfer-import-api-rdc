@@ -1,6 +1,7 @@
 Imports System.Security.AccessControl
 Imports kCura.EDDS.WebAPI.RelativityManagerBase
 Imports kCura.Utility
+Imports kCura.WinEDDS.Credentials
 Imports Relativity
 Imports RelativityManager = kCura.WinEDDS.Service.RelativityManager
 
@@ -142,14 +143,12 @@ Namespace kCura.EDDS.WinForm
 					Dim loginResult As Application.CredentialCheckResult = Application.CredentialCheckResult.NotSet
 					Try
 						If Not String.IsNullOrEmpty(userName)
-							Dim cred As New System.Net.NetworkCredential(userName, password)
-							loginResult = _application.DoLogin(cred)
+							Dim cred As New UserCredentialsProvider(userName, password)
+							RelativityWebApiCredentialsProvider.Instance().SetProvider(cred)
+							loginResult = _application.DoLogin()
 						Else 
-							
-							Dim webServerHost As string = New System.Uri(kCura.WinEDDS.Config.WebServiceURL).GetLeftPart(UriPartial.Authority)
-							Dim identityServerUri = new System.Uri(String.Format("{0}/Relativity/{1}", webServerHost, "Identity/connect/token"))
 
-							loginResult = _application.DoOAuthLoginAsync(clientID, clientSecret, identityServerUri).Result
+							loginResult = _application.DoOAuthLogin(clientID, clientSecret)
 						End If
 						
 					Catch ex As Exception
@@ -162,6 +161,8 @@ Namespace kCura.EDDS.WinForm
 						throw new ClientCrendentialsException
 					ElseIf Not loginResult = Application.CredentialCheckResult.Success Then
 						Throw New CredentialsException
+					Else
+
 					End If
 
 				End If
