@@ -11,6 +11,7 @@ Imports kCura.Windows.Forms
 Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Service
 Imports Relativity.OAuth2Client.TokenProviders.ProviderFactories
+Imports Relativity.OAuth2Client.Exceptions
 
 Namespace kCura.EDDS.WinForm
 	Public Class Application
@@ -1605,6 +1606,8 @@ Namespace kCura.EDDS.WinForm
 				Else
 					_lastCredentialCheckResult = CredentialCheckResult.Fail
 				End If
+			Catch ex As IdenityProviderConnectionException
+				_lastCredentialCheckResult = CredentialCheckResult.FailToConnectToIdentityServer
 			Catch ex As AuthenticationException
 				_lastCredentialCheckResult = CredentialCheckResult.InvalidClientCredentials
 			Catch ex As Exception
@@ -1627,9 +1630,7 @@ Namespace kCura.EDDS.WinForm
 			RelativityWebApiCredentialsProvider.Instance().SetProvider(credProvider)
 
 			_lastCredentialCheckResult = DoLogin()
-			Catch ex As IdenityProviderConnectionException
-				_lastCredentialCheckResult = CredentialCheckResult.FailToConnectToIdentityServer
-
+			
 			Return _lastCredentialCheckResult
 		End Function
 
