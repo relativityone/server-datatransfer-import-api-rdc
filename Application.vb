@@ -11,6 +11,7 @@ Imports kCura.Windows.Forms
 Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Service
 Imports Relativity.OAuth2Client.TokenProviders.ProviderFactories
+Imports Relativity.OAuth2Client.Exceptions
 
 Namespace kCura.EDDS.WinForm
 	Public Class Application
@@ -45,6 +46,8 @@ Namespace kCura.EDDS.WinForm
 
 		Public Const ACCESS_DISABLED_MESSAGE As String = "Your Relativity account has been disabled.  Please contact your Relativity Administrator to activate your account."
 		Public Const RDC_ERROR_TITLE As String = "Relativity Desktop Client Error"
+
+		Private Const _OAUTH_USERNAME As String = "XxX_BearerTokenCredentials_XxX"
 
 		Private _caseSelected As Boolean = True
 		Private _processPool As kCura.Windows.Process.ProcessPool
@@ -1413,6 +1416,7 @@ Namespace kCura.EDDS.WinForm
 			Fail = 2
 			AccessDisabled = 3
 			InvalidClientCredentials = 4
+			FailToConnectToIdentityServer = 5
 		End Enum
 
 		Private _lastCredentialCheckResult As CredentialCheckResult = CredentialCheckResult.NotSet
@@ -1602,7 +1606,9 @@ Namespace kCura.EDDS.WinForm
 				Else
 					_lastCredentialCheckResult = CredentialCheckResult.Fail
 				End If
-			Catch ex As AuthenticationException
+			Catch ex As IdenityProviderConnectionException
+				_lastCredentialCheckResult = CredentialCheckResult.FailToConnectToIdentityServer
+			Catch ex As OAuth2ClientException
 				_lastCredentialCheckResult = CredentialCheckResult.InvalidClientCredentials
 			Catch ex As Exception
 				If IsAccessDisabledException(ex) Then
@@ -1624,7 +1630,7 @@ Namespace kCura.EDDS.WinForm
 			RelativityWebApiCredentialsProvider.Instance().SetProvider(credProvider)
 
 			_lastCredentialCheckResult = DoLogin()
-
+			
 			Return _lastCredentialCheckResult
 		End Function
 

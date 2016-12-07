@@ -115,8 +115,8 @@ Namespace kCura.EDDS.WinForm
 						Exit Sub
 					End If
 				Next
-				If kCura.WinEDDS.Config.WebServiceURL = "" Then
-					Console.WriteLine("Web Service URL not set.  Please enter:")
+				If kCura.WinEDDS.Config.WebServiceURL = "" OrElse Not UrlIsValid(kCura.WinEDDS.Config.WebServiceURL) Then
+					Console.WriteLine("Web Service URL not set or not accessible.  Please enter:")
 					Dim webserviceurl As String = Console.ReadLine
 					While Not UrlIsValid(webserviceurl)
 						Console.WriteLine("Invalid Web Service URL set.  Retry:")
@@ -159,6 +159,8 @@ Namespace kCura.EDDS.WinForm
 						Exit Sub
 					ElseIf loginResult = Application.CredentialCheckResult.InvalidClientCredentials Then
 						throw new ClientCrendentialsException
+					ElseIf loginResult = Application.CredentialCheckResult.FailToConnectToIdentityServer Then
+						throw new ConnectToIdentityServerException
 					ElseIf Not loginResult = Application.CredentialCheckResult.Success Then
 						Throw New CredentialsException
 					Else
@@ -678,6 +680,14 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub New()
 			MyBase.New("Invalid credentials specified. Please specify a valid ClientID and ClientSecret combination")
+		End Sub
+	End Class
+
+	Public Class ConnectToIdentityServerException
+		Inherits RdcBaseException
+
+		Public Sub New()
+			Mybase.New("Failed to connect to Identity server. Ensure your Identity server is running and accessible from this location.")
 		End Sub
 	End Class
 
