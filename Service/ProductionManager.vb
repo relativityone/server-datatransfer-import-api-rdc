@@ -30,7 +30,7 @@ Namespace kCura.WinEDDS.Service
 			Return RetryOnReLoginException(Function() MyBase.RetrieveProducedByContextArtifactID(caseContextArtifactID))
 		End Function
 
-		Public Shadows Function RetrieveImportEligibleByContextArtifactID(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
+		Public Shadows Function RetrieveImportEligibleByContextArtifactID(ByVal caseContextArtifactID As Int32) As System.Data.DataSet Implements Export.IProductionManager.RetrieveImportEligibleByContextArtifactID
 			Return RetryOnReLoginException(Function() MyBase.RetrieveImportEligibleByContextArtifactID(caseContextArtifactID))
 		End Function
 
