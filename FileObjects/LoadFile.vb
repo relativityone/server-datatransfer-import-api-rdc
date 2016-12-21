@@ -57,6 +57,12 @@ Namespace kCura.WinEDDS
 			ReplaceAll = 2
 		End Enum
 
+		Public ReadOnly Property MoveDocumentsInAppendOverlayMode() As Boolean
+			Get
+				Return String.Equals(OverwriteDestination,Relativity.ImportOverwriteType.AppendOverlay.ToString()) And Not String.IsNullOrEmpty(FolderStructureContainedInColumn)
+			End Get
+		End Property
+
 		Public Property CookieContainer() As System.Net.CookieContainer
 			Get
 				Return _cookieContainer

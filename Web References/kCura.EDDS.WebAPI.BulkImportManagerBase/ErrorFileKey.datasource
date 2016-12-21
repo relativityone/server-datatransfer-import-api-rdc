@@ -6,5 +6,5 @@
     cause the file to be unrecognizable by the program.
 -->
 <GenericObjectDataSource DisplayName="ErrorFileKey" Version="1.0" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
-   <TypeInfo>kCura.EDDS.WebAPI.BulkImportManagerBase.ErrorFileKey, Web References.kCura.EDDS.WebAPI.BulkImportManagerBase.Reference.vb, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</TypeInfo>
+   <TypeInfo>kCura.EDDS.WebAPI.BulkImportManagerBase.ErrorFileKey, Web References.kCura.EDDS.WebAPI.BulkImportManagerBase.Reference.vb.dll, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</TypeInfo>
 </GenericObjectDataSource>
