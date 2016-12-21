@@ -1120,7 +1120,7 @@ Namespace kCura.EDDS.WinForm
             End If
             LoadFile.CreateFolderStructure = _buildFolderStructure.Checked
             'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
-            If LoadFile.OverwriteDestination.ToLower <> Relativity.ImportOverwriteType.Overlay.ToString.ToLower AndAlso LoadFile.OverwriteDestination.ToLower <> Relativity.ImportOverwriteType.AppendOverlay.ToString.ToLower Then
+            If LoadFile.OverwriteDestination.ToLower <> Relativity.ImportOverwriteType.Overlay.ToString.ToLower Then
                 If LoadFile.CreateFolderStructure Then
                     If Not _destinationFolderPath.SelectedItem Is Nothing Then
                         LoadFile.FolderStructureContainedInColumn = _destinationFolderPath.SelectedItem.ToString
@@ -1657,9 +1657,9 @@ Namespace kCura.EDDS.WinForm
                         _destinationFolderPath.Text = "Select ..."
                         _overlayIdentifier.Enabled = True
                     Case Else
-                        _destinationFolderPath.Enabled = False
+                        _destinationFolderPath.Enabled = True
                         _buildFolderStructure.Checked = False
-                        _buildFolderStructure.Enabled = False
+                        _buildFolderStructure.Enabled = True
                         _destinationFolderPath.SelectedItem = Nothing
                         _destinationFolderPath.Text = "Select ..."
                         _overlayIdentifier.Enabled = False
