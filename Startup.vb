@@ -137,8 +137,6 @@ Namespace kCura.EDDS.WinForm
 						throw new ConnectToIdentityServerException
 					ElseIf Not loginResult = Application.CredentialCheckResult.Success Then
 						Throw New CredentialsException
-					Else
-
 					End If
 
 				End If
@@ -180,7 +178,7 @@ Namespace kCura.EDDS.WinForm
 			_application.StartProcess(importer)
 		End Sub
 
-		Private Sub RunDynamicObjectImport(ByVal commandList As kCura.CommandLine.CommandList)
+		Private Sub RunDynamicObjectImport()
 			Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
 			_importOptions.SelectedNativeLoadFile.SourceFileEncoding = _importOptions.SourceFileEncoding
 			_importOptions.SelectedNativeLoadFile.ExtractedTextFileEncoding = _importOptions.ExtractedTextFileEncoding
