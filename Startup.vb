@@ -4,6 +4,7 @@ Imports kCura.Utility
 Imports kCura.WinEDDS.Credentials
 Imports Relativity
 Imports RelativityManager = kCura.WinEDDS.Service.RelativityManager
+Imports kCura.EDDS.WinForm.Import
 
 Namespace kCura.EDDS.WinForm
 
@@ -19,11 +20,11 @@ Namespace kCura.EDDS.WinForm
 
 #Region " Members "
 
-		Private _application As kCura.EDDS.WinForm.Application
-		Private _loadFilePath As String
-		Private SelectedCaseInfo As Relativity.CaseInfo
-		Private SelectedNativeLoadFile As New kCura.WinEDDS.LoadFile
-		Private SelectedImageLoadFile As kCura.WinEDDS.ImageLoadFile
+		Friend _application As kCura.EDDS.WinForm.Application
+		Friend _loadFilePath As String
+		Friend SelectedCaseInfo As Relativity.CaseInfo
+		Friend SelectedNativeLoadFile As New kCura.WinEDDS.LoadFile
+		Friend SelectedImageLoadFile As kCura.WinEDDS.ImageLoadFile
 		Private CurrentLoadMode As LoadMode
 		Private HasSetLoadFileLocation As Boolean = False
 		Private HasSetCaseInfo As Boolean = False
@@ -31,18 +32,19 @@ Namespace kCura.EDDS.WinForm
 		Private HasSetPassword As Boolean = False
 		Private HasSetSavedMapLocation As Boolean = False
 		Private HasSetLoadMode As Boolean = False
-		Private SourceFileEncoding As System.Text.Encoding
-		Private ExtractedTextFileEncoding As System.Text.Encoding
-		Private SelectedCasePath As String = ""
-		Private CopyFilesToDocumentRepository As Boolean = True
-		Private DestinationFolderID As Int32
+		Friend SourceFileEncoding As System.Text.Encoding
+		Friend ExtractedTextFileEncoding As System.Text.Encoding
+		Friend SelectedCasePath As String = ""
+		Friend CopyFilesToDocumentRepository As Boolean = True
+		Friend DestinationFolderID As Int32
 		Private RunningDirectory As String = System.IO.Directory.GetCurrentDirectory
-		Private ExportErrorReportFile As Boolean = False
-		Private ExportErrorLoadFile As Boolean = False
-		Private ErrorReportFileLocation As String = ""
-		Private ErrorLoadFileLocation As String = ""
+		Friend ExportErrorReportFile As Boolean = False
+		Friend ExportErrorLoadFile As Boolean = False
+		Friend ErrorReportFileLocation As String = ""
+		Friend ErrorLoadFileLocation As String = ""
 		Private ArtifactTypeID As Int32 = -1
-		Private StartLineNumber As Int64
+		Friend StartLineNumber As Int64
+		Private Import aS Import
 #End Region
 
 #Region " Enumerations "
@@ -183,13 +185,13 @@ Namespace kCura.EDDS.WinForm
 				SetExportErrorFileLocation(commandList)
 				Select Case CurrentLoadMode
 					Case LoadMode.Image
-						RunImageImport()
+						Import.RunImageImport()
 					Case LoadMode.Native
-						RunNativeImport()
+						Import.RunNativeImport()
 					Case LoadMode.DynamicObject
-						RunDynamicObjectImport(commandList)
+						Import.RunDynamicObjectImport(commandList)
 					Case LoadMode.Application
-						RunApplicationImport()
+						Import.RunApplicationImport()
 				End Select
 
 				_application.Logout()
@@ -227,95 +229,11 @@ Namespace kCura.EDDS.WinForm
 			End If
 		End Sub
 
-
-#Region " Run Import "
-
-		Private Sub RunApplicationImport()
-			Dim packageData As Byte()
-			packageData = System.IO.File.ReadAllBytes(_loadFilePath)
-			Dim importer As New kCura.WinEDDS.ApplicationDeploymentProcess(New Int32() {}, Nothing, packageData, _application.Credential, _application.CookieContainer, New Relativity.CaseInfo() {SelectedCaseInfo})
-			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
-			_application.StartProcess(importer)
-		End Sub
-
-		Private Sub RunDynamicObjectImport(ByVal commandList As kCura.CommandLine.CommandList)
-			Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
-			SelectedNativeLoadFile.SourceFileEncoding = SourceFileEncoding
-			SelectedNativeLoadFile.ExtractedTextFileEncoding = ExtractedTextFileEncoding
-			SelectedNativeLoadFile.SelectedCasePath = SelectedCasePath
-			SelectedNativeLoadFile.CopyFilesToDocumentRepository = CopyFilesToDocumentRepository
-			SelectedNativeLoadFile.DestinationFolderID = DestinationFolderID
-			SelectedNativeLoadFile.StartLineNumber = StartLineNumber
-			importer.LoadFile = SelectedNativeLoadFile
-			importer.TimeZoneOffset = _application.TimeZoneOffset
-			importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
-			importer.CloudInstance = Config.CloudInstance
-			importer.ExecutionSource = Relativity.ExecutionSource.Rdc
-			_application.SetWorkingDirectory(SelectedNativeLoadFile.FilePath)
-			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
-			_application.StartProcess(importer)
-		End Sub
-
-		Private Sub RunNativeImport()
-			If EnsureEncoding() Then
-				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(_application.Credential, _application.CookieContainer)
-				If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
-					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
-					SelectedNativeLoadFile.SourceFileEncoding = SourceFileEncoding
-					SelectedNativeLoadFile.ExtractedTextFileEncoding = ExtractedTextFileEncoding
-					SelectedNativeLoadFile.SelectedCasePath = SelectedCasePath
-					SelectedNativeLoadFile.CopyFilesToDocumentRepository = CopyFilesToDocumentRepository
-					SelectedNativeLoadFile.DestinationFolderID = DestinationFolderID
-					SelectedNativeLoadFile.StartLineNumber = StartLineNumber
-					importer.LoadFile = SelectedNativeLoadFile
-					importer.TimeZoneOffset = _application.TimeZoneOffset
-					importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
-					importer.CloudInstance = Config.CloudInstance
-					importer.ExecutionSource = Relativity.ExecutionSource.Rdc
-					SelectedNativeLoadFile.ArtifactTypeID = Relativity.ArtifactType.Document
-					_application.SetWorkingDirectory(SelectedNativeLoadFile.FilePath)
-					Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
-					_application.StartProcess(importer)
-				End If
-			Else
-				Throw New EncodingMisMatchException(SourceFileEncoding.CodePage, kCura.WinEDDS.Utility.DetectEncoding(_loadFilePath, True).DeterminedEncoding.CodePage)
-			End If
-		End Sub
-
-		Private Sub RunImageImport()
-			If EnsureEncoding() Then
-				Dim importer As New kCura.WinEDDS.ImportImageFileProcess
-				SelectedImageLoadFile.CookieContainer = _application.CookieContainer
-				SelectedImageLoadFile.Credential = _application.Credential
-				SelectedImageLoadFile.SelectedCasePath = SelectedCasePath
-				SelectedImageLoadFile.CaseDefaultPath = SelectedCaseInfo.DocumentPath
-				SelectedImageLoadFile.CopyFilesToDocumentRepository = CopyFilesToDocumentRepository
-				SelectedImageLoadFile.FullTextEncoding = ExtractedTextFileEncoding
-				SelectedImageLoadFile.StartLineNumber = StartLineNumber
-				importer.ImageLoadFile = SelectedImageLoadFile
-				importer.CloudInstance = Config.CloudInstance
-				importer.ExecutionSource = ExecutionSource.Rdc
-				_application.SetWorkingDirectory(SelectedImageLoadFile.FileName)
-				Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, ErrorLoadFileLocation, ErrorReportFileLocation)
-				_application.StartProcess(importer)
-			Else
-				Throw New EncodingMisMatchException(SourceFileEncoding.CodePage, kCura.WinEDDS.Utility.DetectEncoding(_loadFilePath, True).DeterminedEncoding.CodePage)
-			End If
-		End Sub
-
-#End Region
-
 #Region " Input Validation "
 		Private Sub EnsureLoadFileLocation()
 			If String.IsNullOrEmpty(_loadFilePath) Then Throw New LoadFilePathException
 			If Not System.IO.File.Exists(_loadFilePath) Then Throw New LoadFilePathException(_loadFilePath)
 		End Sub
-
-		Private Function EnsureEncoding() As Boolean
-			Dim determinedEncoding As System.Text.Encoding = kCura.WinEDDS.Utility.DetectEncoding(_loadFilePath, True).DeterminedEncoding
-			If determinedEncoding Is Nothing Then Return True
-			Return (determinedEncoding.Equals(SourceFileEncoding))
-		End Function
 
 		Private Sub SetFileLocation(ByVal path As String)
 			_loadFilePath = path
