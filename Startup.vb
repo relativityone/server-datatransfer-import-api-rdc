@@ -19,11 +19,9 @@ Namespace kCura.EDDS.WinForm
 
 #Region " Members "
 		Private _application As kCura.EDDS.WinForm.Application
-		Private CurrentLoadMode As LoadMode
 		Friend HasSetUsername As Boolean = False
 		Friend HasSetPassword As Boolean = False
 		Private _importOptions As ImportOptions = New ImportOptions()
-		Private ArtifactTypeID As Int32 = -1
 #End Region
 
 #Region " Enumerations "
@@ -96,6 +94,9 @@ Namespace kCura.EDDS.WinForm
 						Exit Sub
 					End If
 				Next
+
+				_importOptions.SetOptions(commandList, _application)
+
 				If kCura.WinEDDS.Config.WebServiceURL = "" OrElse Not UrlIsValid(kCura.WinEDDS.Config.WebServiceURL) Then
 					Console.WriteLine("Web Service URL not set or not accessible.  Please enter:")
 					Dim webserviceurl As String = Console.ReadLine
@@ -110,26 +111,18 @@ Namespace kCura.EDDS.WinForm
 					Console.WriteLine(Application.ACCESS_DISABLED_MESSAGE)
 					Exit Sub
 				ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
-					Dim clientID As String = ""
-					Dim clientSecret As String = ""
-					clientID = GetValueFromCommandListByFlag(commandList, "clientID")
-					clientSecret = GetValueFromCommandListByFlag(commandList, "clientSecret")
 
-					Dim userName As String = ""
-					Dim password As String = ""
-					userName = GetValueFromCommandListByFlag(commandList, "u")
-					password = GetValueFromCommandListByFlag(commandList, "p")
+					_importOptions.CredentialsAreSet()
 
-					_importOptions.HandleConsoleAuthErrors(userName, password, clientID, clientSecret)
 					Dim loginResult As Application.CredentialCheckResult = Application.CredentialCheckResult.NotSet
 					Try
-						If Not String.IsNullOrEmpty(userName)
-							Dim cred As New UserCredentialsProvider(userName, password)
+						If Not String.IsNullOrEmpty(_importOptions.UserName)
+							Dim cred As New UserCredentialsProvider(_importOptions.UserName, _importOptions.Password)
 							RelativityWebApiCredentialsProvider.Instance().SetProvider(cred)
 							loginResult = _application.DoLogin()
 						Else 
 
-							loginResult = _application.DoOAuthLogin(clientID, clientSecret)
+							loginResult = _application.DoOAuthLogin(_importOptions.ClientId, _importOptions.ClientSecret)
 						End If
 						
 					Catch ex As Exception
@@ -149,20 +142,8 @@ Namespace kCura.EDDS.WinForm
 					End If
 
 				End If
-				CurrentLoadMode = _importOptions.SetLoadType(GetValueFromCommandListByFlag(commandList, "m"))
-				_importOptions.SetCaseInfo(GetValueFromCommandListByFlag(commandList, "c"), _application)
-				_importOptions.SetFileLocation(GetValueFromCommandListByFlag(commandList, "f"))
-				_importOptions.SetSavedMapLocation(GetValueFromCommandListByFlag(commandList, "k"), CurrentLoadMode, _application)
-				_importOptions.EnsureLoadFileLocation()
-				_importOptions.SetSourceFileEncoding(GetValueFromCommandListByFlag(commandList, "e"))
-				_importOptions.SetFullTextFileEncoding(GetValueFromCommandListByFlag(commandList, "x"))
-				_importOptions.SetSelectedCasePath(GetValueFromCommandListByFlag(commandList, "r"))
-				_importOptions.SetCopyFilesToDocumentRepository(GetValueFromCommandListByFlag(commandList, "l"))
-				_importOptions.SetDestinationFolderID(GetValueFromCommandListByFlag(commandList, "d"), _application)
-				_importOptions.SetStartLineNumber(GetValueFromCommandListByFlag(commandList, "s"))
-				_importOptions.SetExportErrorReportLocation(commandList)
-				_importOptions.SetExportErrorFileLocation(commandList)
-				Select Case CurrentLoadMode
+
+				Select Case _importOptions.LoadMode
 					Case LoadMode.Image
 						RunImageImport()
 					Case LoadMode.Native

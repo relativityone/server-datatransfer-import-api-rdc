@@ -1,15 +1,56 @@
-﻿Imports kCura.EDDS.WinForm
+﻿Imports kCura.CommandLine
+Imports kCura.EDDS.WinForm
+Imports System.Exception
 
 Friend Class ImportOptions
 
 	Private _runningDirectory As String = System.IO.Directory.GetCurrentDirectory
 	Private _exportErrorReportFile As Boolean = False
 	Private _exportErrorLoadFile As Boolean = False
-	Private _hasSetLoadMode As Boolean = False
 	Private _hasSetLoadFileLocation As Boolean = False
-	Private _hasSetCaseInfo As Boolean = False
 
 #Region "Properties"
+
+	Private _userName As String
+	Public Property UserName As String
+		Get
+			return _userName
+		End Get
+	    Private Set(value As String)
+			_userName = value
+	    End Set
+	End Property
+
+	Private _password As String
+	Public Property Password As String
+		Get
+			return _password
+		End Get
+	    Private Set(value As String)
+			_password = value
+	    End Set
+	End Property
+
+	Private _clientId As String
+	Public Property ClientId As String
+		Get
+			return _clientId
+		End Get
+	    Private Set(value As String)
+			_clientId = value
+	    End Set
+	End Property
+
+	Private _clientSecret As String
+	Public Property ClientSecret As String
+		Get
+			return _clientSecret
+		End Get
+	    Private Set(value As String)
+			_clientSecret = value
+	    End Set
+	End Property
+
 	Private _loadFilePath As String
 	Public Property LoadFilePath As String
 		Get
@@ -130,16 +171,42 @@ Friend Class ImportOptions
 	    End Set
 	End Property
 
-	
+	Private _loadMode As LoadMode
+	Public Property LoadMode As LoadMode
+		Get
+			return _loadMode
+		End Get
+	    Private Set(value As LoadMode)
+			_loadMode = value
+	    End Set
+	End Property
 #End Region
+
+	Public Sub SetOptions(ByVal commandLine As kCura.CommandLine.CommandList, ByRef application As kCura.EDDS.WinForm.Application)
+		SetCredentials(commandLine)
+		SetLoadType(GetValueFromCommandListByFlag(commandLine, "m"))
+		SetCaseInfo(GetValueFromCommandListByFlag(commandLine, "c"), application)
+		SetFileLocation(GetValueFromCommandListByFlag(commandLine, "f"))
+		SetSavedMapLocation(GetValueFromCommandListByFlag(commandLine, "k"), LoadMode, application)
+		EnsureLoadFileLocation()
+		SetSourceFileEncoding(GetValueFromCommandListByFlag(commandLine, "e"))
+		SetFullTextFileEncoding(GetValueFromCommandListByFlag(commandLine, "x"))
+		SetSelectedCasePath(GetValueFromCommandListByFlag(commandLine, "r"))
+		SetCopyFilesToDocumentRepository(GetValueFromCommandListByFlag(commandLine, "l"))
+		SetDestinationFolderID(GetValueFromCommandListByFlag(commandLine, "d"), application)
+		SetStartLineNumber(GetValueFromCommandListByFlag(commandLine, "s"))
+		SetExportErrorReportLocation(commandLine)
+		SetExportErrorFileLocation(commandLine)
+	End Sub
 
 #Region " Input Validation "
 
-	Friend Sub HandleConsoleAuthErrors(username As String, password As String, clientID As String, clientSecret As String)
-		Dim usernameExists As Boolean = Not String.IsNullOrEmpty(username)
-		Dim passwordExists As Boolean = Not String.IsNullOrEmpty(password)
-		Dim clientIDExists As Boolean = Not String.IsNullOrEmpty(clientID)
-		Dim clientSecretExists As Boolean = Not String.IsNullOrEmpty(clientSecret)
+	Friend Sub CredentialsAreSet()
+
+		Dim usernameExists As Boolean = Not String.IsNullOrEmpty(Username)
+		Dim passwordExists As Boolean = Not String.IsNullOrEmpty(Password)
+		Dim clientIDExists As Boolean = Not String.IsNullOrEmpty(ClientId)
+		Dim clientSecretExists As Boolean = Not String.IsNullOrEmpty(ClientSecret)
 
 		If (usernameExists Or passwordExists) AndAlso (clientIDExists Or clientSecretExists) Then
 			Throw New MultipleCredentialException
@@ -152,6 +219,15 @@ Friend Class ImportOptions
 			If Not clientIDExists Then Throw New ClientIDException
 			If Not clientSecretExists Then Throw New ClientSecretException
 		End If
+	End Sub
+
+	Private Sub SetCredentials(commandLine As CommandList)
+
+		ClientId = GetValueFromCommandListByFlag(commandLine, "clientID")
+		ClientSecret = GetValueFromCommandListByFlag(commandLine, "clientSecret")
+
+		UserName = GetValueFromCommandListByFlag(commandLine, "u")
+		Password = GetValueFromCommandListByFlag(commandLine, "p")
 	End Sub
 
 	Friend Sub EnsureLoadFileLocation()
@@ -174,12 +250,11 @@ Friend Class ImportOptions
 		Try
 			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(application.Credential, application.CookieContainer)
 			SelectedCaseInfo = caseManager.Read(Int32.Parse(caseID))
-		Catch ex As Exception
+		Catch ex As System.Exception
 			Throw New CaseArtifactIdException(caseID, ex)
 		End Try
 		If SelectedCaseInfo Is Nothing Then Throw New CaseArtifactIdException(caseID)
 		application.RefreshSelectedCaseInfo(SelectedCaseInfo)
-		_hasSetCaseInfo = True
 	End Sub
 
 	Friend Sub SetExportErrorReportLocation(ByVal commandLine As kCura.CommandLine.CommandList)
@@ -195,7 +270,7 @@ Friend Class ImportOptions
 					If Not System.IO.Directory.Exists(System.IO.Path.GetDirectoryName(ErrorReportFileLocation)) Then System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(ErrorReportFileLocation))
 					System.IO.File.Create(ErrorReportFileLocation).Close()
 					System.IO.File.Delete(ErrorReportFileLocation)
-				Catch ex As Exception
+				Catch ex As System.Exception
 					Throw New InvalidPathLocationException(ErrorReportFileLocation, "error report", ex)
 				End Try
 				'Return command.Value
@@ -220,7 +295,7 @@ Friend Class ImportOptions
 					If Not System.IO.Directory.Exists(System.IO.Path.GetDirectoryName(ErrorLoadFileLocation)) Then System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(ErrorLoadFileLocation))
 					System.IO.File.Create(ErrorLoadFileLocation).Close()
 					System.IO.File.Delete(ErrorLoadFileLocation)
-				Catch ex As Exception
+				Catch ex As System.Exception
 					Throw New InvalidPathLocationException(ErrorReportFileLocation, "error file", ex)
 				End Try
 				'Return command.Value
@@ -307,7 +382,7 @@ Friend Class ImportOptions
 				Case LoadMode.Application
 					If System.IO.File.Exists(path) Then Throw New InvalidOperationException("Load file is not supported for application imports")
 			End Select
-		Catch ex As Exception
+		Catch ex As System.Exception
 			Throw New SavedSettingsRehydrationException(path, ex)
 		End Try
 	End Sub
@@ -318,7 +393,7 @@ Friend Class ImportOptions
 		Else
 			Try
 				SourceFileEncoding = System.Text.Encoding.GetEncoding(Int32.Parse(value))
-			Catch ex As Exception
+			Catch ex As System.Exception
 				Throw New EncodingException(value, "source file", ex)
 			End Try
 		End If
@@ -329,7 +404,7 @@ Friend Class ImportOptions
 		Else
 			Try
 				ExtractedTextFileEncoding = System.Text.Encoding.GetEncoding(Int32.Parse(value))
-			Catch ex As Exception
+			Catch ex As System.Exception
 				Throw New EncodingException(value, "extracted text files", ex)
 			End Try
 		End If
@@ -348,7 +423,7 @@ Friend Class ImportOptions
 			CopyFilesToDocumentRepository = True
 			Try
 				CopyFilesToDocumentRepository = Boolean.Parse(value)
-			Catch ex As Exception
+			Catch ex As System.Exception
 				Select Case value.ToLower.Substring(0, 1)
 					Case "t", "y", "1"
 						CopyFilesToDocumentRepository = True
@@ -383,25 +458,20 @@ Friend Class ImportOptions
 
 	End Sub
 
-	Friend Function SetLoadType(ByVal loadTypeString As String) As LoadMode
-		Dim currentLoadMode As LoadMode
+	Friend Sub SetLoadType(ByVal loadTypeString As String)
 		Select Case loadTypeString.ToLower.Trim
 			Case "i", "image"
-				currentLoadMode = LoadMode.Image
-				_hasSetLoadMode = True
+				LoadMode = LoadMode.Image
 			Case "n", "native"
-				currentLoadMode = LoadMode.Native
-				_hasSetLoadMode = True
+				LoadMode = LoadMode.Native
 			Case "o", "object"
-				currentLoadMode = LoadMode.DynamicObject
-				_hasSetLoadMode = True
+				LoadMode = LoadMode.DynamicObject
 			Case "a", "application"
-				currentLoadMode = LoadMode.Application
-				_hasSetLoadMode = True
+				LoadMode = LoadMode.Application
+			Case Else
+				Throw New NoLoadTypeModeSetException
 		End Select
-		If Not _hasSetLoadMode Then Throw New NoLoadTypeModeSetException
-		Return currentLoadMode
-	End Function
+	End Sub
 
 	Friend Sub SetStartLineNumber(ByVal value As String)
 		If value Is Nothing OrElse value = "" Then
@@ -412,11 +482,21 @@ Friend Class ImportOptions
 				If StartLineNumber < 0 Then
 					Throw New StartLineNumberException(value)
 				End If
-			Catch ex As Exception
+			Catch ex As System.Exception
 				Throw New StartLineNumberException(value, ex)
 			End Try
 		End If
 	End Sub
+
+	Private Function GetValueFromCommandListByFlag(ByVal commandList As kCura.CommandLine.CommandList, ByVal flag As String) As String
+			For Each command As kCura.CommandLine.Command In commandList
+				If command.Directive.ToLower.Replace("-", "").Replace("/", "") = flag.ToLower Then
+					If command.Value Is Nothing Then Return ""
+					Return command.Value
+				End If
+			Next
+			Return ""
+	End Function
 
 #End Region
 
