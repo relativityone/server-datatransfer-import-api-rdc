@@ -147,7 +147,7 @@ Namespace kCura.EDDS.WinForm
 					Case LoadMode.Native
 						RunNativeImport()
 					Case LoadMode.DynamicObject
-						RunDynamicObjectImport(commandList)
+						RunDynamicObjectImport()
 					Case LoadMode.Application
 						RunApplicationImport()
 				End Select
