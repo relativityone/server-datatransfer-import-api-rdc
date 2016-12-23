@@ -1,26 +1,137 @@
 ﻿Imports kCura.EDDS.WinForm
 
-Friend Class WinEDDSDTO
+Friend Class ImportOptions
 
-	'Moved from Startup.Vb to here
-	Friend _loadFilePath As String
-	Friend SelectedCaseInfo As Relativity.CaseInfo
-	Friend SelectedNativeLoadFile As New kCura.WinEDDS.LoadFile
-	Friend SelectedImageLoadFile As kCura.WinEDDS.ImageLoadFile
-	Friend HasSetLoadFileLocation As Boolean = False
-	Friend HasSetCaseInfo As Boolean = False
-	Private HasSetLoadMode As Boolean = False
-	Friend SourceFileEncoding As System.Text.Encoding
-	Friend ExtractedTextFileEncoding As System.Text.Encoding
-	Friend SelectedCasePath As String = ""
-	Friend CopyFilesToDocumentRepository As Boolean = True
-	Friend DestinationFolderID As Int32
-	Private RunningDirectory As String = System.IO.Directory.GetCurrentDirectory
-	Private ExportErrorReportFile As Boolean = False
-	Private ExportErrorLoadFile As Boolean = False
-	Friend ErrorReportFileLocation As String = ""
-	Friend ErrorLoadFileLocation As String = ""
-	Friend StartLineNumber As Int64
+	Private _runningDirectory As String = System.IO.Directory.GetCurrentDirectory
+	Private _exportErrorReportFile As Boolean = False
+	Private _exportErrorLoadFile As Boolean = False
+	Private _hasSetLoadMode As Boolean = False
+	Private _hasSetLoadFileLocation As Boolean = False
+	Private _hasSetCaseInfo As Boolean = False
+
+#Region "Properties"
+	Private _loadFilePath As String
+	Public Property LoadFilePath As String
+		Get
+			return _loadFilePath
+		End Get
+	    Private Set(value As String)
+			_loadFilePath = value
+	    End Set
+	End Property
+
+	Private _selectedCaseInfo As Relativity.CaseInfo
+	Public Property SelectedCaseInfo As Relativity.CaseInfo
+		Get
+			return _selectedCaseInfo
+		End Get
+	    Private Set(value As Relativity.CaseInfo)
+			_selectedCaseInfo = value
+	    End Set
+	End Property
+
+	Private _selectedNativeLoadFile As New kCura.WinEDDS.LoadFile
+	Public Property SelectedNativeLoadFile As kCura.WinEDDS.LoadFile
+		Get
+			return _selectedNativeLoadFile
+		End Get
+	    Private Set(value As kCura.WinEDDS.LoadFile)
+			_selectedNativeLoadFile = value
+	    End Set
+	End Property
+
+	Private _selectedImageLoadFile As kCura.WinEDDS.ImageLoadFile
+	Public Property SelectedImageLoadFile As kCura.WinEDDS.ImageLoadFile
+		Get
+			return _selectedImageLoadFile
+		End Get
+	    Private Set(value As kCura.WinEDDS.ImageLoadFile)
+			_selectedImageLoadFile = value
+	    End Set
+	End Property
+
+	Private _sourceFileEncoding As System.Text.Encoding
+	Public Property SourceFileEncoding As System.Text.Encoding
+		Get
+			return _sourceFileEncoding
+		End Get
+	    Private Set(value As System.Text.Encoding)
+			_sourceFileEncoding = value
+	    End Set
+	End Property
+
+	Private _extractedTextFileEncoding As System.Text.Encoding
+	Public Property ExtractedTextFileEncoding As System.Text.Encoding
+		Get
+			return _extractedTextFileEncoding
+		End Get
+	    Private Set(value As System.Text.Encoding)
+			_extractedTextFileEncoding = value
+	    End Set
+	End Property
+
+	Private _selectedCasePath As String = ""
+	Public Property SelectedCasePath As String
+		Get
+			return _selectedCasePath
+		End Get
+	    Private Set(value As String)
+			_selectedCasePath = value
+	    End Set
+	End Property
+
+	Private _copyFilesToDocumentRepository As Boolean = True
+	Public Property CopyFilesToDocumentRepository As Boolean
+		Get
+			return _copyFilesToDocumentRepository
+		End Get
+	    Private Set(value As Boolean)
+			_copyFilesToDocumentRepository = value
+	    End Set
+	End Property
+
+	Private _destinationFolderID As Int32
+	Public Property DestinationFolderID As Int32
+		Get
+			return _destinationFolderID
+		End Get
+	    Private Set(value As Int32)
+			_destinationFolderID = value
+	    End Set
+	End Property
+
+	Private _errorReportFileLocation As String = ""
+	Public Property ErrorReportFileLocation As String
+		Get
+			return _errorReportFileLocation
+		End Get
+	    Private Set(value As String)
+			_errorReportFileLocation = value
+	    End Set
+	End Property
+
+	Private _errorLoadFileLocation As String = ""
+	Public Property ErrorLoadFileLocation As String
+		Get
+			return _errorLoadFileLocation
+		End Get
+	    Private Set(value As String)
+			_errorLoadFileLocation = value
+	    End Set
+	End Property
+
+	Private _startLineNumber As Int64
+	Public Property StartLineNumber As Int64
+		Get
+			return _startLineNumber
+		End Get
+	    Private Set(value As Int64)
+			_startLineNumber = value
+	    End Set
+	End Property
+
+	
+#End Region
 
 #Region " Input Validation "
 
@@ -44,19 +155,19 @@ Friend Class WinEDDSDTO
 	End Sub
 
 	Friend Sub EnsureLoadFileLocation()
-		If String.IsNullOrEmpty(_loadFilePath) Then Throw New LoadFilePathException
-		If Not System.IO.File.Exists(_loadFilePath) Then Throw New LoadFilePathException(_loadFilePath)
+		If String.IsNullOrEmpty(LoadFilePath) Then Throw New LoadFilePathException
+		If Not System.IO.File.Exists(LoadFilePath) Then Throw New LoadFilePathException(LoadFilePath)
 	End Sub
 
 	Friend Function EnsureEncoding() As Boolean
-		Dim determinedEncoding As System.Text.Encoding = kCura.WinEDDS.Utility.DetectEncoding(_loadFilePath, True).DeterminedEncoding
+		Dim determinedEncoding As System.Text.Encoding = kCura.WinEDDS.Utility.DetectEncoding(LoadFilePath, True).DeterminedEncoding
 		If determinedEncoding Is Nothing Then Return True
 		Return (determinedEncoding.Equals(SourceFileEncoding))
 	End Function
 
 	Friend Sub SetFileLocation(ByVal path As String)
-		_loadFilePath = path
-		HasSetLoadFileLocation = Not String.IsNullOrEmpty(_loadFilePath)
+		LoadFilePath = path
+		_hasSetLoadFileLocation = Not String.IsNullOrEmpty(LoadFilePath)
 	End Sub
 
 	Friend Sub SetCaseInfo(ByVal caseID As String, ByRef application As kCura.EDDS.WinForm.Application)
@@ -68,15 +179,15 @@ Friend Class WinEDDSDTO
 		End Try
 		If SelectedCaseInfo Is Nothing Then Throw New CaseArtifactIdException(caseID)
 		application.RefreshSelectedCaseInfo(SelectedCaseInfo)
-		HasSetCaseInfo = True
+		_hasSetCaseInfo = True
 	End Sub
 
 	Friend Sub SetExportErrorReportLocation(ByVal commandLine As kCura.CommandLine.CommandList)
 		For Each command As kCura.CommandLine.Command In commandLine
 			If command.Directive.ToLower.Replace("-", "").Replace("/", "") = "er" Then
-				ExportErrorReportFile = True
+				_exportErrorReportFile = True
 				If command.Value Is Nothing OrElse command.Value = "" Then
-					ErrorReportFileLocation = RunningDirectory.TrimEnd("\".ToCharArray) & "\ErrorReport_" & System.DateTime.Now.Ticks.ToString & ".csv"
+					ErrorReportFileLocation = _runningDirectory.TrimEnd("\".ToCharArray) & "\ErrorReport_" & System.DateTime.Now.Ticks.ToString & ".csv"
 				Else
 					ErrorReportFileLocation = String.Copy(command.Value)
 				End If
@@ -90,18 +201,18 @@ Friend Class WinEDDSDTO
 				'Return command.Value
 			End If
 		Next
-		If Not ExportErrorReportFile Then ErrorReportFileLocation = ""
+		If Not _exportErrorReportFile Then ErrorReportFileLocation = ""
 	End Sub
 
 	Friend Sub SetExportErrorFileLocation(ByVal commandLine As kCura.CommandLine.CommandList)
 		For Each command As kCura.CommandLine.Command In commandLine
 			If command.Directive.ToLower.Replace("-", "").Replace("/", "") = "ef" Then
-				ExportErrorLoadFile = True
+				_exportErrorLoadFile = True
 				If command.Value Is Nothing OrElse command.Value = "" Then
-					Dim extension As String = System.IO.Path.GetExtension(_loadFilePath)
+					Dim extension As String = System.IO.Path.GetExtension(LoadFilePath)
 					If extension Is Nothing Then extension = "txt"
 					extension = extension.TrimStart(".".ToCharArray)
-					ErrorLoadFileLocation = RunningDirectory.TrimEnd("\".ToCharArray) & "\ErrorLines_" & System.DateTime.Now.Ticks.ToString & "." & extension
+					ErrorLoadFileLocation = _runningDirectory.TrimEnd("\".ToCharArray) & "\ErrorLines_" & System.DateTime.Now.Ticks.ToString & "." & extension
 				Else
 					ErrorLoadFileLocation = String.Copy(command.Value)
 				End If
@@ -115,7 +226,7 @@ Friend Class WinEDDSDTO
 				'Return command.Value
 			End If
 		Next
-		If Not ExportErrorLoadFile Then ErrorLoadFileLocation = ""
+		If Not _exportErrorLoadFile Then ErrorLoadFileLocation = ""
 	End Sub
 
 	Friend Sub SetSavedMapLocation(ByVal path As String, ByVal currentLoadMode As LoadMode, ByRef application As kCura.EDDS.WinForm.Application)
@@ -124,7 +235,7 @@ Friend Class WinEDDSDTO
 				Case LoadMode.Image
 					If Not System.IO.File.Exists(path) Then Throw New SavedSettingsFilePathException(path)
 					SelectedImageLoadFile = application.ReadImageLoadFile(path)
-					If HasSetLoadFileLocation Then SelectedImageLoadFile.FileName = _loadFilePath
+					If _hasSetLoadFileLocation Then SelectedImageLoadFile.FileName = LoadFilePath
 				Case LoadMode.Native, LoadMode.DynamicObject
 					If Not System.IO.File.Exists(path) Then Throw New SavedSettingsFilePathException(path)
 					Dim sr As New System.IO.StreamReader(path)
@@ -139,10 +250,10 @@ Friend Class WinEDDSDTO
 					Dim deserializer As New System.Runtime.Serialization.Formatters.Soap.SoapFormatter
 					tempLoadFile = DirectCast(deserializer.Deserialize(stringr), LoadFile)
 					sr.Close()
-					If Not String.IsNullOrEmpty(_loadFilePath) Then
-						tempLoadFile.FilePath = _loadFilePath
+					If Not String.IsNullOrEmpty(LoadFilePath) Then
+						tempLoadFile.FilePath = LoadFilePath
 					Else
-						_loadFilePath = tempLoadFile.FilePath
+						LoadFilePath = tempLoadFile.FilePath
 					End If
 					tempLoadFile.OverwriteDestination = Utility.ConvertLegacyOverwriteDestinationValueToEnum(tempLoadFile.OverwriteDestination)
 					tempLoadFile.ForceFolderPreview = False
@@ -277,18 +388,18 @@ Friend Class WinEDDSDTO
 		Select Case loadTypeString.ToLower.Trim
 			Case "i", "image"
 				currentLoadMode = LoadMode.Image
-				HasSetLoadMode = True
+				_hasSetLoadMode = True
 			Case "n", "native"
 				currentLoadMode = LoadMode.Native
-				HasSetLoadMode = True
+				_hasSetLoadMode = True
 			Case "o", "object"
 				currentLoadMode = LoadMode.DynamicObject
-				HasSetLoadMode = True
+				_hasSetLoadMode = True
 			Case "a", "application"
 				currentLoadMode = LoadMode.Application
-				HasSetLoadMode = True
+				_hasSetLoadMode = True
 		End Select
-		If Not HasSetLoadMode Then Throw New NoLoadTypeModeSetException
+		If Not _hasSetLoadMode Then Throw New NoLoadTypeModeSetException
 		Return currentLoadMode
 	End Function
 

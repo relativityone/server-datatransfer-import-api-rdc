@@ -22,7 +22,7 @@ Namespace kCura.EDDS.WinForm
 		Private CurrentLoadMode As LoadMode
 		Friend HasSetUsername As Boolean = False
 		Friend HasSetPassword As Boolean = False
-		Private DTO As WinEDDSDTO = New WinEDDSDTO()
+		Private _importOptions As ImportOptions = New ImportOptions()
 		Private ArtifactTypeID As Int32 = -1
 #End Region
 
@@ -120,7 +120,7 @@ Namespace kCura.EDDS.WinForm
 					userName = GetValueFromCommandListByFlag(commandList, "u")
 					password = GetValueFromCommandListByFlag(commandList, "p")
 
-					DTO.HandleConsoleAuthErrors(userName, password, clientID, clientSecret)
+					_importOptions.HandleConsoleAuthErrors(userName, password, clientID, clientSecret)
 					Dim loginResult As Application.CredentialCheckResult = Application.CredentialCheckResult.NotSet
 					Try
 						If Not String.IsNullOrEmpty(userName)
@@ -149,19 +149,19 @@ Namespace kCura.EDDS.WinForm
 					End If
 
 				End If
-				CurrentLoadMode = DTO.SetLoadType(GetValueFromCommandListByFlag(commandList, "m"))
-				DTO.SetCaseInfo(GetValueFromCommandListByFlag(commandList, "c"), _application)
-				DTO.SetFileLocation(GetValueFromCommandListByFlag(commandList, "f"))
-				DTO.SetSavedMapLocation(GetValueFromCommandListByFlag(commandList, "k"), CurrentLoadMode, _application)
-				DTO.EnsureLoadFileLocation()
-				DTO.SetSourceFileEncoding(GetValueFromCommandListByFlag(commandList, "e"))
-				DTO.SetFullTextFileEncoding(GetValueFromCommandListByFlag(commandList, "x"))
-				DTO.SetSelectedCasePath(GetValueFromCommandListByFlag(commandList, "r"))
-				DTO.SetCopyFilesToDocumentRepository(GetValueFromCommandListByFlag(commandList, "l"))
-				DTO.SetDestinationFolderID(GetValueFromCommandListByFlag(commandList, "d"), _application)
-				DTO.SetStartLineNumber(GetValueFromCommandListByFlag(commandList, "s"))
-				DTO.SetExportErrorReportLocation(commandList)
-				DTO.SetExportErrorFileLocation(commandList)
+				CurrentLoadMode = _importOptions.SetLoadType(GetValueFromCommandListByFlag(commandList, "m"))
+				_importOptions.SetCaseInfo(GetValueFromCommandListByFlag(commandList, "c"), _application)
+				_importOptions.SetFileLocation(GetValueFromCommandListByFlag(commandList, "f"))
+				_importOptions.SetSavedMapLocation(GetValueFromCommandListByFlag(commandList, "k"), CurrentLoadMode, _application)
+				_importOptions.EnsureLoadFileLocation()
+				_importOptions.SetSourceFileEncoding(GetValueFromCommandListByFlag(commandList, "e"))
+				_importOptions.SetFullTextFileEncoding(GetValueFromCommandListByFlag(commandList, "x"))
+				_importOptions.SetSelectedCasePath(GetValueFromCommandListByFlag(commandList, "r"))
+				_importOptions.SetCopyFilesToDocumentRepository(GetValueFromCommandListByFlag(commandList, "l"))
+				_importOptions.SetDestinationFolderID(GetValueFromCommandListByFlag(commandList, "d"), _application)
+				_importOptions.SetStartLineNumber(GetValueFromCommandListByFlag(commandList, "s"))
+				_importOptions.SetExportErrorReportLocation(commandList)
+				_importOptions.SetExportErrorFileLocation(commandList)
 				Select Case CurrentLoadMode
 					Case LoadMode.Image
 						RunImageImport()
@@ -193,74 +193,74 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub RunApplicationImport()
 			Dim packageData As Byte()
-			packageData = System.IO.File.ReadAllBytes(DTO._loadFilePath)
-			Dim importer As New kCura.WinEDDS.ApplicationDeploymentProcess(New Int32() {}, Nothing, packageData, _application.Credential, _application.CookieContainer, New Relativity.CaseInfo() {DTO.SelectedCaseInfo})
-			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, DTO.ErrorLoadFileLocation, DTO.ErrorReportFileLocation)
+			packageData = System.IO.File.ReadAllBytes(_importOptions.LoadFilePath)
+			Dim importer As New kCura.WinEDDS.ApplicationDeploymentProcess(New Int32() {}, Nothing, packageData, _application.Credential, _application.CookieContainer, New Relativity.CaseInfo() {_importOptions.SelectedCaseInfo})
+			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, _importOptions.ErrorLoadFileLocation, _importOptions.ErrorReportFileLocation)
 			_application.StartProcess(importer)
 		End Sub
 
 		Private Sub RunDynamicObjectImport(ByVal commandList As kCura.CommandLine.CommandList)
 			Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
-			DTO.SelectedNativeLoadFile.SourceFileEncoding = DTO.SourceFileEncoding
-			DTO.SelectedNativeLoadFile.ExtractedTextFileEncoding = DTO.ExtractedTextFileEncoding
-			DTO.SelectedNativeLoadFile.SelectedCasePath = DTO.SelectedCasePath
-			DTO.SelectedNativeLoadFile.CopyFilesToDocumentRepository = DTO.CopyFilesToDocumentRepository
-			DTO.SelectedNativeLoadFile.DestinationFolderID = DTO.DestinationFolderID
-			DTO.SelectedNativeLoadFile.StartLineNumber = DTO.StartLineNumber
-			importer.LoadFile = DTO.SelectedNativeLoadFile
+			_importOptions.SelectedNativeLoadFile.SourceFileEncoding = _importOptions.SourceFileEncoding
+			_importOptions.SelectedNativeLoadFile.ExtractedTextFileEncoding = _importOptions.ExtractedTextFileEncoding
+			_importOptions.SelectedNativeLoadFile.SelectedCasePath = _importOptions.SelectedCasePath
+			_importOptions.SelectedNativeLoadFile.CopyFilesToDocumentRepository = _importOptions.CopyFilesToDocumentRepository
+			_importOptions.SelectedNativeLoadFile.DestinationFolderID = _importOptions.DestinationFolderID
+			_importOptions.SelectedNativeLoadFile.StartLineNumber = _importOptions.StartLineNumber
+			importer.LoadFile = _importOptions.SelectedNativeLoadFile
 			importer.TimeZoneOffset = _application.TimeZoneOffset
 			importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
 			importer.CloudInstance = Config.CloudInstance
 			importer.ExecutionSource = Relativity.ExecutionSource.Rdc
-			_application.SetWorkingDirectory(DTO.SelectedNativeLoadFile.FilePath)
-			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, DTO.ErrorLoadFileLocation, DTO.ErrorReportFileLocation)
+			_application.SetWorkingDirectory(_importOptions.SelectedNativeLoadFile.FilePath)
+			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, _importOptions.ErrorLoadFileLocation, _importOptions.ErrorReportFileLocation)
 			_application.StartProcess(importer)
 		End Sub
 
 		Private Sub RunNativeImport()
-			If DTO.EnsureEncoding() Then
+			If _importOptions.EnsureEncoding() Then
 				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(_application.Credential, _application.CookieContainer)
-				If folderManager.Exists(DTO.SelectedCaseInfo.ArtifactID, DTO.SelectedCaseInfo.RootFolderID) Then
+				If folderManager.Exists(_importOptions.SelectedCaseInfo.ArtifactID, _importOptions.SelectedCaseInfo.RootFolderID) Then
 					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
-					DTO.SelectedNativeLoadFile.SourceFileEncoding = DTO.SourceFileEncoding
-					DTO.SelectedNativeLoadFile.ExtractedTextFileEncoding = DTO.ExtractedTextFileEncoding
-					DTO.SelectedNativeLoadFile.SelectedCasePath = DTO.SelectedCasePath
-					DTO.SelectedNativeLoadFile.CopyFilesToDocumentRepository = DTO.CopyFilesToDocumentRepository
-					DTO.SelectedNativeLoadFile.DestinationFolderID = DTO.DestinationFolderID
-					DTO.SelectedNativeLoadFile.StartLineNumber = DTO.StartLineNumber
-					importer.LoadFile = DTO.SelectedNativeLoadFile
+					_importOptions.SelectedNativeLoadFile.SourceFileEncoding = _importOptions.SourceFileEncoding
+					_importOptions.SelectedNativeLoadFile.ExtractedTextFileEncoding = _importOptions.ExtractedTextFileEncoding
+					_importOptions.SelectedNativeLoadFile.SelectedCasePath = _importOptions.SelectedCasePath
+					_importOptions.SelectedNativeLoadFile.CopyFilesToDocumentRepository = _importOptions.CopyFilesToDocumentRepository
+					_importOptions.SelectedNativeLoadFile.DestinationFolderID = _importOptions.DestinationFolderID
+					_importOptions.SelectedNativeLoadFile.StartLineNumber = _importOptions.StartLineNumber
+					importer.LoadFile = _importOptions.SelectedNativeLoadFile
 					importer.TimeZoneOffset = _application.TimeZoneOffset
 					importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
 					importer.CloudInstance = Config.CloudInstance
 					importer.ExecutionSource = Relativity.ExecutionSource.Rdc
-					DTO.SelectedNativeLoadFile.ArtifactTypeID = Relativity.ArtifactType.Document
-					_application.SetWorkingDirectory(DTO.SelectedNativeLoadFile.FilePath)
-					Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, DTO.ErrorLoadFileLocation, DTO.ErrorReportFileLocation)
+					_importOptions.SelectedNativeLoadFile.ArtifactTypeID = Relativity.ArtifactType.Document
+					_application.SetWorkingDirectory(_importOptions.SelectedNativeLoadFile.FilePath)
+					Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, _importOptions.ErrorLoadFileLocation, _importOptions.ErrorReportFileLocation)
 					_application.StartProcess(importer)
 				End If
 			Else
-				Throw New EncodingMisMatchException(DTO.SourceFileEncoding.CodePage, kCura.WinEDDS.Utility.DetectEncoding(DTO._loadFilePath, True).DeterminedEncoding.CodePage)
+				Throw New EncodingMisMatchException(_importOptions.SourceFileEncoding.CodePage, kCura.WinEDDS.Utility.DetectEncoding(_importOptions.LoadFilePath, True).DeterminedEncoding.CodePage)
 			End If
 		End Sub
 
 		Private Sub RunImageImport()
-			If DTO.EnsureEncoding() Then
+			If _importOptions.EnsureEncoding() Then
 				Dim importer As New kCura.WinEDDS.ImportImageFileProcess
-				DTO.SelectedImageLoadFile.CookieContainer = _application.CookieContainer
-				DTO.SelectedImageLoadFile.Credential = _application.Credential
-				DTO.SelectedImageLoadFile.SelectedCasePath = DTO.SelectedCasePath
-				DTO.SelectedImageLoadFile.CaseDefaultPath = DTO.SelectedCaseInfo.DocumentPath
-				DTO.SelectedImageLoadFile.CopyFilesToDocumentRepository = DTO.CopyFilesToDocumentRepository
-				DTO.SelectedImageLoadFile.FullTextEncoding = DTO.ExtractedTextFileEncoding
-				DTO.SelectedImageLoadFile.StartLineNumber = DTO.StartLineNumber
-				importer.ImageLoadFile = DTO.SelectedImageLoadFile
+				_importOptions.SelectedImageLoadFile.CookieContainer = _application.CookieContainer
+				_importOptions.SelectedImageLoadFile.Credential = _application.Credential
+				_importOptions.SelectedImageLoadFile.SelectedCasePath = _importOptions.SelectedCasePath
+				_importOptions.SelectedImageLoadFile.CaseDefaultPath = _importOptions.SelectedCaseInfo.DocumentPath
+				_importOptions.SelectedImageLoadFile.CopyFilesToDocumentRepository = _importOptions.CopyFilesToDocumentRepository
+				_importOptions.SelectedImageLoadFile.FullTextEncoding = _importOptions.ExtractedTextFileEncoding
+				_importOptions.SelectedImageLoadFile.StartLineNumber = _importOptions.StartLineNumber
+				importer.ImageLoadFile = _importOptions.SelectedImageLoadFile
 				importer.CloudInstance = Config.CloudInstance
 				importer.ExecutionSource = ExecutionSource.Rdc
-				_application.SetWorkingDirectory(DTO.SelectedImageLoadFile.FileName)
-				Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, DTO.ErrorLoadFileLocation, DTO.ErrorReportFileLocation)
+				_application.SetWorkingDirectory(_importOptions.SelectedImageLoadFile.FileName)
+				Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, _importOptions.ErrorLoadFileLocation, _importOptions.ErrorReportFileLocation)
 				_application.StartProcess(importer)
 			Else
-				Throw New EncodingMisMatchException(DTO.SourceFileEncoding.CodePage, kCura.WinEDDS.Utility.DetectEncoding(DTO._loadFilePath, True).DeterminedEncoding.CodePage)
+				Throw New EncodingMisMatchException(_importOptions.SourceFileEncoding.CodePage, kCura.WinEDDS.Utility.DetectEncoding(_importOptions.LoadFilePath, True).DeterminedEncoding.CodePage)
 			End If
 		End Sub
 
