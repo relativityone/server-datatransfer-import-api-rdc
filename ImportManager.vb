@@ -2,7 +2,7 @@
 
 Namespace kCura.EDDS.WinForm
 
-	Public Class Import
+	Public Class ImportManager
 #Region " Input Validation "
 
 		Private Function EnsureEncoding() As Boolean

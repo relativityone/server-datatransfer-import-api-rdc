@@ -4,7 +4,6 @@ Imports kCura.Utility
 Imports kCura.WinEDDS.Credentials
 Imports Relativity
 Imports RelativityManager = kCura.WinEDDS.Service.RelativityManager
-Imports kCura.EDDS.WinForm.Import
 Imports kCura.EDDS.WinForm.Exceptions
 
 Namespace kCura.EDDS.WinForm
@@ -45,7 +44,7 @@ Namespace kCura.EDDS.WinForm
 		Friend ErrorLoadFileLocation As String = ""
 		Private ArtifactTypeID As Int32 = -1
 		Friend StartLineNumber As Int64
-		Private Import aS Import
+		Private Import aS ImportManager = New ImportManager()
 #End Region
 
 #Region " Enumerations "
