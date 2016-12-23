@@ -512,6 +512,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Exceptions.vb" />
     <Compile Include="Startup.vb">
       <SubType>Code</SubType>
     </Compile>
