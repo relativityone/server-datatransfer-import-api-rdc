@@ -39,6 +39,7 @@ Namespace kCura.WinEDDS
 		Public FileSizeMapped As Boolean
 		Public FileSizeColumn As String
 		Public FileNameColumn As String
+		Public MoveDocumentsInAppendOverlayMode As Boolean
 		Public OverlayBehavior As FieldOverlayBehavior?
 
 		<NonSerialized()> Public ObjectFieldIdListContainsArtifactId As IList(Of Int32)
@@ -56,13 +57,7 @@ Namespace kCura.WinEDDS
 			MergeAll = 1
 			ReplaceAll = 2
 		End Enum
-
-		Public ReadOnly Property MoveDocumentsInAppendOverlayMode() As Boolean
-			Get
-				Return String.Equals(OverwriteDestination,Relativity.ImportOverwriteType.AppendOverlay.ToString()) And Not String.IsNullOrEmpty(FolderStructureContainedInColumn)
-			End Get
-		End Property
-
+		
 		Public Property CookieContainer() As System.Net.CookieContainer
 			Get
 				Return _cookieContainer
