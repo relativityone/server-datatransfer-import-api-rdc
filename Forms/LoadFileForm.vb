@@ -1150,6 +1150,9 @@ Namespace kCura.EDDS.WinForm
             If Me.LoadFile.IdentityFieldId = -1 Then Me.LoadFile.IdentityFieldId = _application.CurrentFields(Me.LoadFile.ArtifactTypeID).IdentifierFields(0).FieldID
             Me.LoadFile.SendEmailOnLoadCompletion = _importMenuSendEmailNotificationItem.Checked
             Me.LoadFile.ForceFolderPreview = _importMenuForceFolderPreviewItem.Checked
+
+            Me.LoadFile.MoveDocumentsInAppendOverlayMode = String.Equals( Me.LoadFile.OverwriteDestination,Relativity.ImportOverwriteType.AppendOverlay.ToString()) AndAlso Not String.IsNullOrEmpty(Me.LoadFile.FolderStructureContainedInColumn)
+
             Me.Cursor = System.Windows.Forms.Cursors.Default
             Return True
         End Function
