@@ -1,6 +1,7 @@
 ﻿Imports kCura.CommandLine
 Imports kCura.EDDS.WinForm
 Imports System.Exception
+Imports kCura.EDDS.WinForm.Exceptions
 
 Friend Class ImportOptions
 

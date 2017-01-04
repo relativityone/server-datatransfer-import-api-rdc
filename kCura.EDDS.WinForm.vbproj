@@ -305,10 +305,6 @@
       <Project>{E621897E-45AF-4FBD-ADA4-EEE787E5233F}</Project>
       <Name>Relativity.Applications.Serialization</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Relativity.Authentication\Relativity.Authentication.csproj">
-      <Project>{3bdba06c-8c15-4776-8a72-2d16c0dd4b6e}</Project>
-      <Name>Relativity.Authentication</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Relativity\Relativity.vbproj">
       <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
       <Name>Relativity</Name>
@@ -511,11 +507,13 @@
     </Compile>
     <Compile Include="FormsUserNotification.vb" />
     <Compile Include="ImportOptions.vb" />
+    <Compile Include="ImportManager.vb" />
     <Compile Include="My Project\Resources.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Exceptions.vb" />
     <Compile Include="Startup.vb">
       <SubType>Code</SubType>
     </Compile>
