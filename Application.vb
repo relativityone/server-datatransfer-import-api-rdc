@@ -589,7 +589,7 @@ Namespace kCura.EDDS.WinForm
 			Dim errorRow As System.Data.DataRow = dt.NewRow
 			rowcount += 1
 			For Each column As System.Data.DataColumn In dt.Columns
-				Dim errorMessage As LoadFilePreviewColumnItem = New LoadFilePreviewColumnItem(New Exceptions.ErrorMessage(If((column.ColumnName = "Record Number"), rowcount.ToString, "Row-wide error: " & err.Message)))
+				Dim errorMessage As LoadFilePreviewColumnItem = New LoadFilePreviewColumnItem(New WinEDDS.Exceptions.ErrorMessage(If((column.ColumnName = "Record Number"), rowcount.ToString, "Row-wide error: " & err.Message)))
 				errorRow(column.ColumnName) = errorMessage
 			Next
 			dt.Rows.Add(errorRow)
