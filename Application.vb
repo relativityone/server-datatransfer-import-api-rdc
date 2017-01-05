@@ -1594,10 +1594,10 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Function DoLogin() As CredentialCheckResult
-			Dim netCreds As System.Net.NetworkCredential = RelativityWebApiCredentialsProvider.Instance.GetCredentials()
-			Dim userManager As New kCura.WinEDDS.Service.UserManager(netCreds, _CookieContainer)
-			CheckVersion(netCreds)
 			Try
+				Dim netCreds As System.Net.NetworkCredential = RelativityWebApiCredentialsProvider.Instance.GetCredentials()
+				Dim userManager As New kCura.WinEDDS.Service.UserManager(netCreds, _CookieContainer)
+				CheckVersion(netCreds)
 				If userManager.Login(netCreds.UserName, netCreds.Password) Then
 					_credential = netCreds
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
@@ -1608,7 +1608,6 @@ Namespace kCura.EDDS.WinForm
 				End If
 			Catch ex As IdenityProviderConnectionException
 				_lastCredentialCheckResult = CredentialCheckResult.FailToConnectToIdentityServer
-			Catch ex As OAuth2ClientException
 				_lastCredentialCheckResult = CredentialCheckResult.InvalidClientCredentials
 			Catch ex As Exception
 				If IsAccessDisabledException(ex) Then
