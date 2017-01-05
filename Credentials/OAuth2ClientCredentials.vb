@@ -22,8 +22,13 @@ Namespace kCura.WinEDDS.Credentials
 		End Sub
 
 		Public Function GetCredentials() As System.Net.NetworkCredential Implements ICredentialsProvider.GetCredentials
-
-			dim creds As NetworkCredential = GetCredentialsAsync().Result
+			dim creds As NetworkCredential = New NetworkCredential()
+			Try
+				creds = GetCredentialsAsync().Result
+			Catch ex As AggregateException
+				Throw ex.InnerException
+			End Try
+			
 			return creds
 
 		End Function
