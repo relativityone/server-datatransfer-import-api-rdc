@@ -222,7 +222,7 @@ Friend Class ImportOptions
 		End If
 	End Sub
 
-	Private Sub SetCredentials(commandLine As CommandList)
+	Friend Sub SetCredentials(commandLine As CommandList)
 
 		ClientId = GetValueFromCommandListByFlag(commandLine, "clientID")
 		ClientSecret = GetValueFromCommandListByFlag(commandLine, "clientSecret")
