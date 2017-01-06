@@ -229,13 +229,18 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.Overwrite = Settings.OverwriteMode.ToString
 			tempLoadFile.ReplaceFullText = Settings.ExtractedTextFieldContainsFilePath
 			If tempLoadFile.Overwrite = OverwriteModeEnum.Overlay.ToString Then
-				tempLoadFile.IdentityFieldId = GetDefaultIdentifierFieldID(credential, Settings.CaseArtifactId)
+				tempLoadFile.IdentityFieldId = Settings.IdentityFieldId 'e.x Control Number
 			Else
-				tempLoadFile.IdentityFieldId = Settings.IdentityFieldId	'e.x Control Number
+				tempLoadFile.IdentityFieldId = GetDefaultIdentifierFieldID(credential, Settings.CaseArtifactId)
 			End If
 
 			tempLoadFile.ProductionArtifactID = Settings.ProductionArtifactID
-			tempLoadFile.SelectedCasePath = tempLoadFile.CaseInfo.DocumentPath
+			If (String.IsNullOrEmpty(Settings.SelectedCasePath)) Then
+				tempLoadFile.SelectedCasePath = tempLoadFile.CaseInfo.DocumentPath
+			Else
+				tempLoadFile.SelectedCasePath = Settings.SelectedCasePath
+			End If
+
 			tempLoadFile.SendEmailOnLoadCompletion = False
 			tempLoadFile.StartLineNumber = 0
 			tempLoadFile.BeginBatesFieldArtifactID = GetDefaultIdentifierFieldID(credential, Settings.CaseArtifactId)
