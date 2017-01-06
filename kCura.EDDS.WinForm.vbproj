@@ -34,6 +34,8 @@
     </UpgradeBackupLocation>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+    <Injections>EnableInjections</Injections>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -48,8 +50,6 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
-    <Injections>EnableInjections</Injections>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\</OutputPath>
@@ -342,6 +342,7 @@
       <Name>system.runtime.serialization.formatters.soap</Name>
     </Reference>
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Services">
       <Name>System.Web.Services</Name>
     </Reference>
@@ -408,6 +409,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="..\..\Version\ComVisibleFalse.vb" />
+    <Compile Include="AssemblyInfo1.vb" />
     <Compile Include="CommandLineProcessRunner.vb">
       <SubType>Code</SubType>
     </Compile>
