@@ -186,6 +186,12 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public WriteOnly Property MoveDocumentsInAppendOverlayMode() As Boolean
+			Set(ByVal value As Boolean)
+				_loadFile.MoveDocumentsInAppendOverlayMode = value
+			End Set
+		End Property
+
 		Public WriteOnly Property QuoteProxy() As Char
 			Set(ByVal value As Char)
 				_loadFile.QuoteDelimiter = value
