@@ -23,7 +23,7 @@ Namespace kCura.EDDS.WinForm
 		Friend HasSetUsername As Boolean = False
 		Friend HasSetPassword As Boolean = False
 		Private _importOptions As ImportOptions = New ImportOptions()
-		Private Import aS ImportManager = New ImportManager()
+		Private Import As ImportManager = New ImportManager()
 #End Region
 
 #Region " Enumerations "
