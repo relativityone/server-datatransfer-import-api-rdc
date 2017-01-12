@@ -186,7 +186,7 @@ Public Class ImportOptions
 
 #Region " Input Validation "
 
-	Friend Sub CredentialsAreSet()
+	Public Sub CredentialsAreSet()
 
 		Dim usernameExists As Boolean = Not String.IsNullOrEmpty(Username)
 		Dim passwordExists As Boolean = Not String.IsNullOrEmpty(Password)
@@ -215,23 +215,23 @@ Public Class ImportOptions
 		Password = GetValueFromCommandListByFlag(commandLine, "p")
 	End Sub
 
-	Friend Sub EnsureLoadFileLocation()
+	Private Sub EnsureLoadFileLocation()
 		If String.IsNullOrEmpty(LoadFilePath) Then Throw New LoadFilePathException
 		If Not System.IO.File.Exists(LoadFilePath) Then Throw New LoadFilePathException(LoadFilePath)
 	End Sub
 
-	Friend Function EnsureEncoding() As Boolean
+	Private Function EnsureEncoding() As Boolean
 		Dim determinedEncoding As System.Text.Encoding = kCura.WinEDDS.Utility.DetectEncoding(LoadFilePath, True).DeterminedEncoding
 		If determinedEncoding Is Nothing Then Return True
 		Return (determinedEncoding.Equals(SourceFileEncoding))
 	End Function
 
-	Friend Sub SetFileLocation(ByVal path As String)
+	Private Sub SetFileLocation(ByVal path As String)
 		LoadFilePath = path
 		_hasSetLoadFileLocation = Not String.IsNullOrEmpty(LoadFilePath)
 	End Sub
 
-	Friend Sub SetCaseInfo(ByVal caseID As String, ByRef application As kCura.EDDS.WinForm.Application)
+	Private Sub SetCaseInfo(ByVal caseID As String, ByRef application As kCura.EDDS.WinForm.Application)
 		Try
 			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(application.Credential, application.CookieContainer)
 			SelectedCaseInfo = caseManager.Read(Int32.Parse(caseID))
@@ -242,7 +242,7 @@ Public Class ImportOptions
 		application.RefreshSelectedCaseInfo(SelectedCaseInfo)
 	End Sub
 
-	Friend Sub SetExportErrorReportLocation(ByVal commandLine As kCura.CommandLine.CommandList)
+	Private Sub SetExportErrorReportLocation(ByVal commandLine As kCura.CommandLine.CommandList)
 		For Each command As kCura.CommandLine.Command In commandLine
 			If command.Directive.ToLower.Replace("-", "").Replace("/", "") = "er" Then
 				_exportErrorReportFile = True
@@ -264,7 +264,7 @@ Public Class ImportOptions
 		If Not _exportErrorReportFile Then ErrorReportFileLocation = ""
 	End Sub
 
-	Friend Sub SetExportErrorFileLocation(ByVal commandLine As kCura.CommandLine.CommandList)
+	Private Sub SetExportErrorFileLocation(ByVal commandLine As kCura.CommandLine.CommandList)
 		For Each command As kCura.CommandLine.Command In commandLine
 			If command.Directive.ToLower.Replace("-", "").Replace("/", "") = "ef" Then
 				_exportErrorLoadFile = True
@@ -289,7 +289,7 @@ Public Class ImportOptions
 		If Not _exportErrorLoadFile Then ErrorLoadFileLocation = ""
 	End Sub
 
-	Friend Sub SetSavedMapLocation(ByVal path As String, ByVal currentLoadMode As LoadMode, ByRef application As kCura.EDDS.WinForm.Application)
+	Private Sub SetSavedMapLocation(ByVal path As String, ByVal currentLoadMode As LoadMode, ByRef application As kCura.EDDS.WinForm.Application)
 		Try
 			Select Case currentLoadMode
 				Case LoadMode.Image
@@ -325,7 +325,6 @@ Public Class ImportOptions
 					tempLoadFile.DestinationFolderID = 35
 					tempLoadFile.ExtractedTextFileEncoding = System.Text.Encoding.Unicode
 					tempLoadFile.SourceFileEncoding = System.Text.Encoding.Default
-					'TODO: Have ArtifactTypeID be passed in on command line, currently hardcoding to 10
 					Dim artifactTypeID As Int32
 					If currentLoadMode = LoadMode.Native Then
 						artifactTypeID = Relativity.ArtifactType.Document
@@ -341,7 +340,6 @@ Public Class ImportOptions
 							 fieldMapItem.NativeFileColumnIndex >= 0 AndAlso
 							 fieldMapItem.DocumentField.FieldName.ToLower = "group identifier" Then
 								tempLoadFile.GroupIdentifierColumn = application.GetColumnHeadersFromLoadFile(tempLoadFile, tempLoadFile.FirstLineContainsHeaders)(fieldMapItem.NativeFileColumnIndex)
-								'mapItemToRemove = fieldMapItem
 							End If
 						Next
 					End If
@@ -372,7 +370,7 @@ Public Class ImportOptions
 		End Try
 	End Sub
 
-	Friend Sub SetSourceFileEncoding(ByVal value As String)
+	Private Sub SetSourceFileEncoding(ByVal value As String)
 		If value Is Nothing OrElse value = "" Then
 			SourceFileEncoding = System.Text.Encoding.Default
 		Else
@@ -383,7 +381,7 @@ Public Class ImportOptions
 			End Try
 		End If
 	End Sub
-	Friend Sub SetFullTextFileEncoding(ByVal value As String)
+	Private Sub SetFullTextFileEncoding(ByVal value As String)
 		If value Is Nothing OrElse value = "" Then
 			ExtractedTextFileEncoding = System.Text.Encoding.Default
 		Else
@@ -394,14 +392,14 @@ Public Class ImportOptions
 			End Try
 		End If
 	End Sub
-	Friend Sub SetSelectedCasePath(ByVal value As String)
+	Private Sub SetSelectedCasePath(ByVal value As String)
 		If value Is Nothing OrElse value = "" Then
 			SelectedCasePath = SelectedCaseInfo.DocumentPath
 		Else
 			SelectedCasePath = value.TrimEnd("\"c) & "\"
 		End If
 	End Sub
-	Friend Sub SetCopyFilesToDocumentRepository(ByVal value As String)
+	Private Sub SetCopyFilesToDocumentRepository(ByVal value As String)
 		If value Is Nothing OrElse value = "" Then
 			CopyFilesToDocumentRepository = True
 		Else
@@ -424,7 +422,7 @@ Public Class ImportOptions
 		End If
 	End Sub
 
-	Friend Sub SetDestinationFolderID(ByVal value As String, ByRef application As kCura.EDDS.WinForm.Application)
+	Private Sub SetDestinationFolderID(ByVal value As String, ByRef application As kCura.EDDS.WinForm.Application)
 		If value Is Nothing OrElse value = "" Then
 			DestinationFolderID = SelectedCaseInfo.RootFolderID
 		Else
@@ -443,7 +441,7 @@ Public Class ImportOptions
 
 	End Sub
 
-	Friend Sub SetLoadType(ByVal loadTypeString As String)
+	Private Sub SetLoadType(ByVal loadTypeString As String)
 		Select Case loadTypeString.ToLower.Trim
 			Case "i", "image"
 				LoadMode = LoadMode.Image
@@ -458,7 +456,7 @@ Public Class ImportOptions
 		End Select
 	End Sub
 
-	Friend Sub SetStartLineNumber(ByVal value As String)
+	Private Sub SetStartLineNumber(ByVal value As String)
 		If value Is Nothing OrElse value = "" Then
 			StartLineNumber = 0
 		Else

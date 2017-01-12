@@ -23,7 +23,7 @@ Namespace kCura.EDDS.WinForm
 		Friend HasSetUsername As Boolean = False
 		Friend HasSetPassword As Boolean = False
 		Private _importOptions As ImportOptions = New ImportOptions()
-		Private Import As ImportManager = New ImportManager()
+		Private _import As ImportManager = New ImportManager()
 #End Region
 
 #Region " Enumerations "
@@ -137,13 +137,13 @@ Namespace kCura.EDDS.WinForm
 
 				Select Case _importOptions.LoadMode
 					Case LoadMode.Image
-						Import.RunImageImport(_importOptions)
+						_import.RunImageImport(_importOptions)
 					Case LoadMode.Native
-						Import.RunNativeImport(_importOptions)
+						_import.RunNativeImport(_importOptions)
 					Case LoadMode.DynamicObject
-						Import.RunDynamicObjectImport(_importOptions)
+						_import.RunDynamicObjectImport(_importOptions)
 					Case LoadMode.Application
-						Import.RunApplicationImport(_importOptions)
+						_import.RunApplicationImport(_importOptions)
 				End Select
 
 				_application.Logout()
