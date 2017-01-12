@@ -1077,6 +1077,7 @@ Namespace kCura.WinEDDS
 			settings.KeyFieldArtifactID = _keyFieldID
 			settings.BulkLoadFileFieldDelimiter = _bulkLoadFileFieldDelimiter
 			settings.OverlayBehavior = Me.GetMassImportOverlayBehavior(_settings.OverlayBehavior)
+			settings.MoveDocumentsInAppendOverlayMode = _settings.MoveDocumentsInAppendOverlayMode
 			Select Case _overwrite
 				Case Relativity.ImportOverwriteType.Overlay
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay

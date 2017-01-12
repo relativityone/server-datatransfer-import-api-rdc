@@ -45,6 +45,10 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Function Read(ByVal caseArtifactID As Int32) As Relativity.CaseInfo Implements ICaseManager.Read
 			Return RetryOnReLoginException(Function() ConvertToCaseInfo(MyBase.Read(caseArtifactID)))
 		End Function
+
+		Public Shadows Function GetAllDocumentFolderPathsForCase(ByVal caseArtifactID As Int32) As String() Implements ICaseManager.GetAllDocumentFolderPathsForCase
+			Return RetryOnReLoginException(Function() MyBase.GetAllDocumentFolderPathsForCase(caseArtifactID))
+		End Function
 #End Region
 
 	End Class
