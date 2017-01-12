@@ -1594,10 +1594,10 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Function DoLogin() As CredentialCheckResult
-			Dim netCreds As System.Net.NetworkCredential = RelativityWebApiCredentialsProvider.Instance.GetCredentials()
-			Dim userManager As New kCura.WinEDDS.Service.UserManager(netCreds, _CookieContainer)
-			CheckVersion(netCreds)
 			Try
+				Dim netCreds As System.Net.NetworkCredential = RelativityWebApiCredentialsProvider.Instance.GetCredentials()
+				Dim userManager As New kCura.WinEDDS.Service.UserManager(netCreds, _CookieContainer)
+				CheckVersion(netCreds)
 				If userManager.Login(netCreds.UserName, netCreds.Password) Then
 					_credential = netCreds
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
@@ -1620,16 +1620,22 @@ Namespace kCura.EDDS.WinForm
 			Return _lastCredentialCheckResult
 		End Function
 
+		Public Function DoOAuthLogin(ByVal clientId As String, ByVal clientSecret As String, ByVal stsUrl As Uri) As CredentialCheckResult
+			Dim credProvider As ICredentialsProvider = new OAuth2ClientCredentials(stsUrl, clientId, clientSecret)
+			RelativityWebApiCredentialsProvider.Instance().SetProvider(credProvider)
+
+			_lastCredentialCheckResult = DoLogin()
+			
+			Return _lastCredentialCheckResult
+		End Function
+
 		Public Function DoOAuthLogin(ByVal clientId As String, ByVal clientSecret As String) As CredentialCheckResult
 			Dim tempCred As  System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
 			Dim relManager As Service.RelativityManager = New RelativityManager(tempCred, _CookieContainer)
 			Dim urlString As String = String.Format("{0}/{1}",relManager.GetRelativityUrl(), "Identity/connect/token")
 			Dim stsUrl As Uri = New Uri(urlString)
 
-			Dim credProvider As ICredentialsProvider = new OAuth2ClientCredentials(stsUrl, clientId, clientSecret)
-			RelativityWebApiCredentialsProvider.Instance().SetProvider(credProvider)
-
-			_lastCredentialCheckResult = DoLogin()
+			_lastCredentialCheckResult = DoOAuthLogin(clientId, clientSecret, stsUrl)
 			
 			Return _lastCredentialCheckResult
 		End Function
