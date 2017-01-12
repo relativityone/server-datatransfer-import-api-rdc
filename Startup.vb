@@ -118,15 +118,7 @@ Namespace kCura.EDDS.WinForm
 
 					Dim loginResult As Application.CredentialCheckResult = Application.CredentialCheckResult.NotSet
 					Try
-						If Not String.IsNullOrEmpty(_importOptions.UserName)
-							Dim cred As New UserCredentialsProvider(_importOptions.UserName, _importOptions.Password)
-							RelativityWebApiCredentialsProvider.Instance().SetProvider(cred)
-							loginResult = _application.DoLogin()
-						Else 
-
-							loginResult = _application.DoOAuthLogin(_importOptions.ClientId, _importOptions.ClientSecret)
-						End If
-						
+						loginResult = _application.Login(_importOptions)
 					Catch ex As Exception
 						loginResult = Application.CredentialCheckResult.Fail
 					End Try
@@ -150,7 +142,7 @@ Namespace kCura.EDDS.WinForm
 						Import.RunNativeImport(_importOptions)
 					Case LoadMode.DynamicObject
 						Import.RunDynamicObjectImport(commandList,_importOptions)
-						Case LoadMode.Application
+					Case LoadMode.Application
 						Import.RunApplicationImport(_importOptions)
 				End Select
 

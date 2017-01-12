@@ -3,7 +3,7 @@ Imports kCura.EDDS.WinForm
 Imports System.Exception
 Imports kCura.EDDS.WinForm.Exceptions
 
-Friend Class ImportOptions
+Public Class ImportOptions
 
 	Private _runningDirectory As String = System.IO.Directory.GetCurrentDirectory
 	Private _exportErrorReportFile As Boolean = False
@@ -32,25 +32,9 @@ Friend Class ImportOptions
 	    End Set
 	End Property
 
-	Private _clientId As String
 	Public Property ClientId As String
-		Get
-			return _clientId
-		End Get
-	    Private Set(value As String)
-			_clientId = value
-	    End Set
-	End Property
 
-	Private _clientSecret As String
 	Public Property ClientSecret As String
-		Get
-			return _clientSecret
-		End Get
-	    Private Set(value As String)
-			_clientSecret = value
-	    End Set
-	End Property
 
 	Private _loadFilePath As String
 	Public Property LoadFilePath As String
@@ -222,7 +206,7 @@ Friend Class ImportOptions
 		End If
 	End Sub
 
-	Friend Sub SetCredentials(commandLine As CommandList)
+	Public Sub SetCredentials(commandLine As CommandList)
 
 		ClientId = GetValueFromCommandListByFlag(commandLine, "clientID")
 		ClientSecret = GetValueFromCommandListByFlag(commandLine, "clientSecret")
