@@ -24,7 +24,7 @@ Namespace kCura.EDDS.WinForm
 			_application.StartProcess(importer)
 		End Sub
 
-		Friend Sub RunDynamicObjectImport(ByVal commandList As kCura.CommandLine.CommandList, ByVal importOptions As ImportOptions)
+		Friend Sub RunDynamicObjectImport(ByVal importOptions As ImportOptions)
 			Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
 			importOptions.SelectedNativeLoadFile.SourceFileEncoding = importOptions.SourceFileEncoding
 			importOptions.SelectedNativeLoadFile.ExtractedTextFileEncoding = importOptions.ExtractedTextFileEncoding
