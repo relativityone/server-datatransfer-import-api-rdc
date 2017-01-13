@@ -127,6 +127,12 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <remarks>If you want to load images into a specific production, set this property to the ArtifactID of a production set, and set the ForProduction property to True.
 		''' Use the GetProductionSets method to return a list of ArtifactIDs for available production sets. </remarks>
 		Public Property ProductionArtifactID() As Int32
+
+		''' <summary>
+		''' Indiciates the Case's File Repository where the Images will be saved.
+		''' </summary>
+		''' <returns></returns>
+		Public Property SelectedCasePath() As String
 #End Region
 
 	End Class

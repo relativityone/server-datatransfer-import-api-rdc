@@ -226,6 +226,7 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.NativeFilePathColumn = loadFileTemp.NativeFilePathColumn
 			tempLoadFile.NewlineDelimiter = loadFileTemp.NewlineDelimiter
 			tempLoadFile.OverwriteDestination = loadFileTemp.OverwriteDestination
+			tempLoadFile.MoveDocumentsInAppendOverlayMode = loadFileTemp.MoveDocumentsInAppendOverlayMode
 			tempLoadFile.PreviewCodeCount = loadFileTemp.PreviewCodeCount
 			tempLoadFile.QuoteDelimiter = loadFileTemp.QuoteDelimiter
 			tempLoadFile.RecordDelimiter = loadFileTemp.RecordDelimiter
@@ -364,6 +365,8 @@ Namespace kCura.Relativity.DataReaderClient
 				End Select
 
 				.OverlayBehavior = clientSettings.OverlayBehavior
+
+				.MoveDocumentsInAppendOverlayMode = clientSettings.MoveDocumentsInAppendOverlayMode
 
 				.MultiRecordDelimiter = CType(clientSettings.MultiValueDelimiter, Char)
 				.HierarchicalValueDelimiter = CType(clientSettings.NestedValueDelimiter, Char)
