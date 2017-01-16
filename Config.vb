@@ -40,6 +40,10 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 
+		Public Shared Sub FlushEddsConfigSettings()
+			_eddsConfigDictionary = kCura.Config.Manager.GetConfig("Relativity.Core", New ConfigDictionaryFactory)
+		End Sub
+
 #Region " ConfigDictionaryFactory "
 
 		Public Class ConfigDictionaryFactory
