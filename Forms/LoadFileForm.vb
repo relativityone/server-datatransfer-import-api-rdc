@@ -1249,7 +1249,7 @@ Namespace kCura.EDDS.WinForm
                 If _overwriteDropdown.SelectedItem Is Nothing Then
                     _destinationFolderPath.Enabled = _buildFolderStructure.Checked
                 Else
-                    _destinationFolderPath.Enabled = Not (_overwriteDropdown.SelectedItem.ToString.ToLower = "overlay only" OrElse _overwriteDropdown.SelectedItem.ToString.ToLower = "append/overlay") AndAlso _buildFolderStructure.Checked
+                    _destinationFolderPath.Enabled = Not (_overwriteDropdown.SelectedItem.ToString.ToLower = "overlay only") AndAlso _buildFolderStructure.Checked
                 End If
             Else
                 If _overwriteDropdown.SelectedItem Is Nothing Then
