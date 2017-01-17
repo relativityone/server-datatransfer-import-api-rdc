@@ -20,6 +20,10 @@ Namespace kCura.WinEDDS.Credentials
 			_provider = provider
 		End Sub
 
+		Public Function ProviderType() As System.Type
+			return _provider.GetType()
+		End Function
+
 		Public Function GetCredentials() As System.Net.NetworkCredential Implements ICredentialsProvider.GetCredentials
 			If _provider Is Nothing
 				Throw new CredentialsNotSetException()
