@@ -68,6 +68,12 @@ The following arguments must be set and in the form specified;
 
 [-p or /p]:[relativity password]
 	Validation for the user account
+	
+[-clientID or /clientID]:[Relativity OAuth2 Client ID]
+	Sets the Relativity OAuth2 Client that performs the import
+
+[-clientSecret or /clientSecret]:[Relativity OAuth2 Client Secret]
+	Validation for the OAuth2 Client
 
 [-k or /k]:[saved settings kwe or kwi file path]
 	Saved settings for the run to be performed
