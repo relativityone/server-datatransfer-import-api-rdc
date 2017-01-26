@@ -185,6 +185,22 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Sub ExportErrorReport(ByVal filePathAndName As String)
 			_controller.ExportErrorReport(filePathAndName)
 		End Sub
+
+		''' <summary>
+		''' Exports the error file for an import job. This file is written only when errors occur.
+		''' </summary>
+		''' <param name="filePathAndName">The folder path and file name to export the error file</param>
+		Public Sub ExportErrorFile(ByVal filePathAndName As String)
+			_controller.ExportErrorFile(filePathAndName)
+		End Sub
+
+		''' <summary>
+		''' Unknown; development testing
+		''' </summary>
+		''' <param name="exportLocation">A directory to place error files in</param>
+		Public Sub ExportServerErrors(ByVal exportLocation As String)
+			_controller.ExportServerErrors(exportLocation)
+		End Sub
 #End Region
 
 #Region "Private Functions"
