@@ -151,6 +151,11 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub AdvancedFileLocation_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			If Me.SelectDefaultPath Then Me.SelectPath(_application.SelectedCaseInfo.DocumentPath)
+
+			Config.FlushEddsConfigSettings()
+			If Config.CloudInstance Then
+				_keepNativeFiles.Visible = false
+			End If
 		End Sub
 
 		Public Event FileLocationOK(ByVal copyFiles As Boolean, ByVal selectedRepository As String)
