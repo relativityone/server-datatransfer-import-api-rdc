@@ -153,9 +153,7 @@ Namespace kCura.EDDS.WinForm
 			If Me.SelectDefaultPath Then Me.SelectPath(_application.SelectedCaseInfo.DocumentPath)
 
 			Config.FlushEddsConfigSettings()
-			If Config.CloudInstance Then
-				_keepNativeFiles.Visible = false
-			End If
+			_keepNativeFiles.Visible = Not Config.CloudInstance
 		End Sub
 
 		Public Event FileLocationOK(ByVal copyFiles As Boolean, ByVal selectedRepository As String)
