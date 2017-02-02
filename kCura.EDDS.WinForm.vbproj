@@ -409,6 +409,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="..\..\Version\ComVisibleFalse.vb" />
+    <Compile Include="AuthenticationOptions.vb" />
     <Compile Include="CommandLineProcessRunner.vb">
       <SubType>Code</SubType>
     </Compile>

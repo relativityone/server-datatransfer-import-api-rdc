@@ -1792,16 +1792,16 @@ Namespace kCura.EDDS.WinForm
 			End If
 		End Sub
 
-		Public Function Login(importOptions As ImportOptions) As Application.CredentialCheckResult
+		Public Function Login(authOptions As AuthenticationOptions) As Application.CredentialCheckResult
 			Dim loginResult As Application.CredentialCheckResult
 
-			If Not String.IsNullOrEmpty(importOptions.UserName)
-				Dim cred As New UserCredentialsProvider(importOptions.UserName, importOptions.Password)
+			If Not String.IsNullOrEmpty(authOptions.UserName)
+				Dim cred As New UserCredentialsProvider(authOptions.UserName, authOptions.Password)
 				RelativityWebApiCredentialsProvider.Instance().SetProvider(cred)
 				loginResult = DoLogin()
 			Else 
 
-				loginResult = DoOAuthLogin(importOptions.ClientId, importOptions.ClientSecret)
+				loginResult = DoOAuthLogin(authOptions.ClientId, authOptions.ClientSecret)
 			End If
 			Return loginResult
 		End Function

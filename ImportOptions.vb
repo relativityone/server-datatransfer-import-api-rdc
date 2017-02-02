@@ -12,30 +12,6 @@ Public Class ImportOptions
 
 #Region "Properties"
 
-	Private _userName As String
-	Public Property UserName As String
-		Get
-			return _userName
-		End Get
-	    Private Set(value As String)
-			_userName = value
-	    End Set
-	End Property
-
-	Private _password As String
-	Public Property Password As String
-		Get
-			return _password
-		End Get
-	    Private Set(value As String)
-			_password = value
-	    End Set
-	End Property
-
-	Public Property ClientId As String
-
-	Public Property ClientSecret As String
-
 	Private _loadFilePath As String
 	Public Property LoadFilePath As String
 		Get
@@ -157,6 +133,10 @@ Public Class ImportOptions
 	End Property
 
 	Private _loadMode As LoadMode
+
+	Sub New()
+	End Sub
+
 	Public Property LoadMode As LoadMode
 		Get
 			return _loadMode
@@ -165,10 +145,10 @@ Public Class ImportOptions
 			_loadMode = value
 	    End Set
 	End Property
+
 #End Region
 
 	Public Sub SetOptions(ByVal commandLine As kCura.CommandLine.CommandList, ByRef application As kCura.EDDS.WinForm.Application)
-		SetCredentials(commandLine)
 		SetLoadType(GetValueFromCommandListByFlag(commandLine, "m"))
 		SetCaseInfo(GetValueFromCommandListByFlag(commandLine, "c"), application)
 		SetFileLocation(GetValueFromCommandListByFlag(commandLine, "f"))
@@ -185,35 +165,6 @@ Public Class ImportOptions
 	End Sub
 
 #Region " Input Validation "
-
-	Public Sub CredentialsAreSet()
-
-		Dim usernameExists As Boolean = Not String.IsNullOrEmpty(Username)
-		Dim passwordExists As Boolean = Not String.IsNullOrEmpty(Password)
-		Dim clientIDExists As Boolean = Not String.IsNullOrEmpty(ClientId)
-		Dim clientSecretExists As Boolean = Not String.IsNullOrEmpty(ClientSecret)
-
-		If (usernameExists Or passwordExists) AndAlso (clientIDExists Or clientSecretExists) Then
-			Throw New MultipleCredentialException
-		End If
-
-		If Not clientIDExists AndAlso Not clientSecretExists Then
-			If Not usernameExists Then Throw New UsernameException
-			If Not passwordExists Then Throw New PasswordException
-		Else
-			If Not clientIDExists Then Throw New ClientIDException
-			If Not clientSecretExists Then Throw New ClientSecretException
-		End If
-	End Sub
-
-	Public Sub SetCredentials(commandLine As CommandList)
-
-		ClientId = GetValueFromCommandListByFlag(commandLine, "clientID")
-		ClientSecret = GetValueFromCommandListByFlag(commandLine, "clientSecret")
-
-		UserName = GetValueFromCommandListByFlag(commandLine, "u")
-		Password = GetValueFromCommandListByFlag(commandLine, "p")
-	End Sub
 
 	Private Sub EnsureLoadFileLocation()
 		If String.IsNullOrEmpty(LoadFilePath) Then Throw New LoadFilePathException
@@ -471,7 +422,7 @@ Public Class ImportOptions
 		End If
 	End Sub
 
-	Private Function GetValueFromCommandListByFlag(ByVal commandList As kCura.CommandLine.CommandList, ByVal flag As String) As String
+	Public Shared Function GetValueFromCommandListByFlag(ByVal commandList As kCura.CommandLine.CommandList, ByVal flag As String) As String
 			For Each command As kCura.CommandLine.Command In commandList
 				If command.Directive.ToLower.Replace("-", "").Replace("/", "") = flag.ToLower Then
 					If command.Value Is Nothing Then Return ""

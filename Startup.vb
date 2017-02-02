@@ -24,6 +24,7 @@ Namespace kCura.EDDS.WinForm
 		Friend HasSetPassword As Boolean = False
 		Private _importOptions As ImportOptions = New ImportOptions()
 		Private _import As ImportManager = New ImportManager()
+		Private _authOptions As AuthenticationOptions = new AuthenticationOptions()
 #End Region
 
 #Region " Enumerations "
@@ -97,7 +98,7 @@ Namespace kCura.EDDS.WinForm
 					End If
 				Next
 
-				_importOptions.SetOptions(commandList, _application)
+				_authOptions.SetCredentials(commandList)
 
 				If kCura.WinEDDS.Config.WebServiceURL = "" OrElse Not UrlIsValid(kCura.WinEDDS.Config.WebServiceURL) Then
 					Console.WriteLine("Web Service URL not set or not accessible.  Please enter:")
@@ -114,11 +115,11 @@ Namespace kCura.EDDS.WinForm
 					Exit Sub
 				ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
 
-					_importOptions.CredentialsAreSet()
+					_authOptions.CredentialsAreSet()
 
 					Dim loginResult As Application.CredentialCheckResult = Application.CredentialCheckResult.NotSet
 					Try
-						loginResult = _application.Login(_importOptions)
+						loginResult = _application.Login(_authOptions)
 					Catch ex As Exception
 						loginResult = Application.CredentialCheckResult.Fail
 					End Try
@@ -134,6 +135,8 @@ Namespace kCura.EDDS.WinForm
 					End If
 
 				End If
+
+				_importOptions.SetOptions(commandList, _application)
 
 				Select Case _importOptions.LoadMode
 					Case LoadMode.Image
