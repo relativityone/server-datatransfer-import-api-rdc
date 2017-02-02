@@ -4,9 +4,9 @@ Imports NUnit.Framework
 Namespace kCura.EDDS.WinForm.NUnit
 
 <TestFixture()>
-Public Class ImportOptionsTests
+Public Class AuthenticationOptionsTests
 	Private _commandLine As CommandList	
-	Private _importOptions As ImportOptions = New ImportOptions()
+	Private _authOptions As AuthenticationOptions = New AuthenticationOptions()
 
 		<Test()>
 		<TestCase("testClient", "testSecret", "testUser", "testpassword", True)>
@@ -26,9 +26,9 @@ Public Class ImportOptionsTests
 		_commandLine.Add(New Command() With {.Directive = "u", .Value = userName })
 		_commandLine.Add(New Command() With {.Directive = "p", .Value = password })
 		' Set
-		_importOptions.SetCredentials(_commandLine)
+		_authOptions.SetCredentials(_commandLine)
 		' Assert
-		Assert.Throws (Of Exceptions.MultipleCredentialException)(Sub() _importOptions.CredentialsAreSet())
+		Assert.Throws (Of Exceptions.MultipleCredentialException)(Sub() _authOptions.CredentialsAreSet())
 		
 		End Sub
 
@@ -43,9 +43,9 @@ Public Class ImportOptionsTests
 		_commandLine.Add(New Command() With {.Directive = "u", .Value = userName })
 		_commandLine.Add(New Command() With {.Directive = "p", .Value = password })
 		' Set
-		_importOptions.SetCredentials(_commandLine)
+		_authOptions.SetCredentials(_commandLine)
 		' Assert
-		Assert.Throws (Of Exceptions.UsernameException)(Sub() _importOptions.CredentialsAreSet())
+		Assert.Throws (Of Exceptions.UsernameException)(Sub() _authOptions.CredentialsAreSet())
 		
 		End Sub
 
@@ -59,9 +59,9 @@ Public Class ImportOptionsTests
 		_commandLine.Add(New Command() With {.Directive = "u", .Value = userName })
 		_commandLine.Add(New Command() With {.Directive = "p", .Value = password })
 		' Set
-		_importOptions.SetCredentials(_commandLine)
+		_authOptions.SetCredentials(_commandLine)
 		' Assert
-		Assert.Throws (Of Exceptions.PasswordException)(Sub() _importOptions.CredentialsAreSet())
+		Assert.Throws (Of Exceptions.PasswordException)(Sub() _authOptions.CredentialsAreSet())
 		
 		End Sub
 
@@ -75,9 +75,9 @@ Public Class ImportOptionsTests
 		_commandLine.Add(New Command() With {.Directive = "u", .Value = userName })
 		_commandLine.Add(New Command() With {.Directive = "p", .Value = password })
 		' Set
-		_importOptions.SetCredentials(_commandLine)
+		_authOptions.SetCredentials(_commandLine)
 		' Assert
-		Assert.Throws (Of Exceptions.ClientIDException)(Sub() _importOptions.CredentialsAreSet())
+		Assert.Throws (Of Exceptions.ClientIDException)(Sub() _authOptions.CredentialsAreSet())
 		
 		End Sub
 
@@ -91,9 +91,9 @@ Public Class ImportOptionsTests
 		_commandLine.Add(New Command() With {.Directive = "u", .Value = userName })
 		_commandLine.Add(New Command() With {.Directive = "p", .Value = password })
 		' Set
-		_importOptions.SetCredentials(_commandLine)
+		_authOptions.SetCredentials(_commandLine)
 		' Assert
-		Assert.Throws (Of Exceptions.ClientSecretException)(Sub() _importOptions.CredentialsAreSet())
+		Assert.Throws (Of Exceptions.ClientSecretException)(Sub() _authOptions.CredentialsAreSet())
 		
 		End Sub
 
@@ -108,9 +108,9 @@ Public Class ImportOptionsTests
 		_commandLine.Add(New Command() With {.Directive = "u", .Value = userName })
 		_commandLine.Add(New Command() With {.Directive = "p", .Value = password })
 		' Set
-		_importOptions.SetCredentials(_commandLine)
+		_authOptions.SetCredentials(_commandLine)
 		' Assert
-		Assert.DoesNotThrow((Sub() _importOptions.CredentialsAreSet()))
+		Assert.DoesNotThrow((Sub() _authOptions.CredentialsAreSet()))
 		
 		End Sub
 End Class

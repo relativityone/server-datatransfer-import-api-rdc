@@ -229,7 +229,7 @@
     <Compile Include="Controls\TextFieldPrecedencePicker.vb" />
     <Compile Include="ExportFilterSelectForm.vb" />
     <Compile Include="ExportFormTest.vb" />
-    <Compile Include="ImportOptionsTests.vb" />
+    <Compile Include="AuthenticationOptionsTests.vb" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\kCura\kCura.CommandLine\kCura.CommandLine.vbproj">
