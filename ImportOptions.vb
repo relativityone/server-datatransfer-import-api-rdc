@@ -348,7 +348,7 @@ Public Class ImportOptions
 			SelectedCasePath = SelectedCaseInfo.DocumentPath
 		Else
 			SelectedCasePath = value.TrimEnd("\"c) & "\"
-			If Config.CloudInstance AndAlso Not SelectedCaseInfo.DocumentPath.Equals(SelectedCasePath) Then
+			If Config.CloudInstance AndAlso Not SelectedCasePath.Equals(SelectedCaseInfo?.DocumentPath) Then
 				Throw New MustCopyFilesToRepositoryException()
 			End If
 		End If
