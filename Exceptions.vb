@@ -191,7 +191,7 @@
 			End Sub
 
 			Public Sub New()
-				MyBase.New("Files must be copied to the Repository in RelativityOne.")
+				MyBase.New("Files must be copied to the default repository in RelativityOne. Do not use -r or -l.")
 			End Sub
 		End Class
 
