@@ -184,6 +184,17 @@
 			End Sub
 		End Class
 
+		Public Class MustCopyFilesToRepositoryException
+			Inherits RdcBaseException
+			Public Sub New(ByVal path As String, ByVal type As String)
+				Me.New()
+			End Sub
+
+			Public Sub New()
+				MyBase.New("Files must be copied to the Repository in RelativityOne.")
+			End Sub
+		End Class
+
 #End Region
 	End Class
 End Namespace

@@ -371,6 +371,9 @@ Public Class ImportOptions
 				End If
 			End Try
 		End If
+		If Config.CloudInstance AndAlso Not CopyFilesToDocumentRepository Then
+			Throw New MustCopyFilesToRepositoryException()
+		End If
 	End Sub
 
 	Private Sub SetDestinationFolderID(ByVal value As String, ByRef application As kCura.EDDS.WinForm.Application)
