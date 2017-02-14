@@ -767,7 +767,7 @@ Namespace kCura.WinEDDS
 				'lineStatus += ImportStatus.EmptyIdentifier				'
 				Throw New IdentityValueNotSetException
 			ElseIf Not _processedDocumentIdentifiers(identityValue) Is Nothing Then
-				'lineStatus += ImportStatus.IdentifierOverlap				'	
+				'lineStatus += ImportStatus.IdentifierOverlap				'
 				Throw New IdentifierOverlapException(identityValue, _processedDocumentIdentifiers(identityValue))
 			End If
 
@@ -844,7 +844,7 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("ManageDocumentMetadata_ManageDocumentLine")
 				_batchCounter += 1
 				_timekeeper.MarkStart("ManageDocumentMetadata_WserviceCall")
-				If _outputFileWriter.OutputNativeFileWriter.BaseStream.Length > ImportBatchVolume OrElse _batchCounter > ImportBatchSize - 1 Then
+				If _outputFileWriter.CombinedStreamLength > ImportBatchVolume OrElse _batchCounter > ImportBatchSize - 1 Then
 					Me.TryPushNativeBatch()
 				End If
 				_timekeeper.MarkEnd("ManageDocumentMetadata_WserviceCall")
@@ -1271,9 +1271,9 @@ Namespace kCura.WinEDDS
 				'Server side folder creation
 
 				'For documents only, we need a field to contain the folder path, so that WebAPI can create the folder (if needed)
-				'If we are using client-side folder creation, the folder path will be an empty string, but we still need to 
+				'If we are using client-side folder creation, the folder path will be an empty string, but we still need to
 				'add it so that the number of fields set by the client equals the number of fields that the server expects to find.
-				'If we are using client-side folder creation, this folder path field will not be used by the server because of the 
+				'If we are using client-side folder creation, this folder path field will not be used by the server because of the
 				'settings object -- NativeFileInfo.RootFolderID will be 0.
 				If _artifactTypeID = Relativity.ArtifactType.Document Then
 					'Last column is the folder path (ONLY IF THIS IS A DOCUMENT LOAD... adding this to object imports will break them)
