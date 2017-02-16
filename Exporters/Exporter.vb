@@ -150,6 +150,11 @@ Namespace kCura.WinEDDS
 			Return Me.ErrorLogFileName = ""
 		End Function
 
+		Protected Overridable Function GetHeaderColName(fieldInfo As ViewFieldInfo) As String
+			return fieldInfo.DisplayName
+		End Function
+
+
 		Private Function IsExtractedTextSelected() As Boolean
 			For Each vfi As ViewFieldInfo In Me.Settings.SelectedViewFields
 				If vfi.Category = Relativity.FieldCategory.FullText Then Return True
@@ -675,9 +680,9 @@ Namespace kCura.WinEDDS
 			For i As Int32 = 0 To _columns.Count - 1
 				Dim field As ViewFieldInfo = DirectCast(_columns(i), ViewFieldInfo)
 				If _exportFile.LoadFileIsHtml Then
-					retString.AppendFormat("{0}{1}{2}", "<th>", System.Web.HttpUtility.HtmlEncode(field.DisplayName), "</th>")
+					retString.AppendFormat("{0}{1}{2}", "<th>", System.Web.HttpUtility.HtmlEncode(GetHeaderColName(field)), "</th>")
 				Else
-					retString.AppendFormat("{0}{1}{0}", Me.Settings.QuoteDelimiter, field.DisplayName)
+					retString.AppendFormat("{0}{1}{0}", Me.Settings.QuoteDelimiter, GetHeaderColName(field))
 					If i < _columns.Count - 1 Then retString.Append(Me.Settings.RecordDelimiter)
 				End If
 			Next
