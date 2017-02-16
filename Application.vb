@@ -8,6 +8,7 @@ Imports System.Threading.Tasks
 
 Imports kCura.EDDS.WinForm.Forms
 Imports kCura.Windows.Forms
+Imports kCura.WinEDDS.Core.Export
 Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Service
 Imports Relativity.OAuth2Client.TokenProviders.ProviderFactories
@@ -1239,7 +1240,7 @@ Namespace kCura.EDDS.WinForm
 			End If
 			Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
 			frm.StatusRefreshRate = 0
-			Dim exporter As New kCura.WinEDDS.ExportSearchProcess
+			Dim exporter As New kCura.WinEDDS.ExportSearchProcess(new LoadFileFormatterFactory())
 			exporter.UserNotification = New FormsUserNotification()
 			exporter.ExportFile = exportFile
 			frm.ProcessObserver = exporter.ProcessObserver
