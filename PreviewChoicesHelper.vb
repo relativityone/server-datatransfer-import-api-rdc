@@ -1,6 +1,12 @@
-﻿Namespace kCura.WinEDDS
+﻿Imports System.Collections.Generic
+
+Namespace kCura.WinEDDS
 	Public Class PreviewChoicesHelper
 		Private _totalFolders As New System.Collections.Specialized.HybridDictionary
+
+		Public Function GetFolderCount(ByVal al As List(Of Object)) As Int32
+			Return GetFolderCount(New ArrayList(al))
+		End Function
 
 		Public Function GetFolderCount(ByVal al As ArrayList) As Int32
 			_totalFolders.Clear()
