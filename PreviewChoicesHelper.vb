@@ -1,4 +1,5 @@
 ﻿Imports System.Collections.Generic
+Imports kCura.WinEDDS.Api
 
 Namespace kCura.WinEDDS
 	Public Class PreviewChoicesHelper
@@ -38,6 +39,10 @@ Namespace kCura.WinEDDS
 				currentIndex += 1
 			Next
 			Return folderColumnIndex
+		End Function
+
+		Public Function GetCodeFieldColumnIndexes(ByVal firstRow As List(Of ArtifactField)) As List(Of Int32)
+			Return GetCodeFieldColumnIndexes(firstRow.ToArray()).Cast(Of Int32).ToList()
 		End Function
 
 		Public Function GetCodeFieldColumnIndexes(ByVal firstRow As Array) As ArrayList
