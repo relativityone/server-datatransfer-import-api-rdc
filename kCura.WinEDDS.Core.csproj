@@ -60,12 +60,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Version\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Export\ExportFileFormatter.cs" />
     <Compile Include="Export\ExportFileFormatterBase.cs" />
     <Compile Include="Export\HtmlExportFileFormatter.cs" />
     <Compile Include="Export\FieldNameProvider.cs" />
-    <Compile Include="Export\LoadFileFormatterFactory.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Export\ExportFileFormatterFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.WinEDDS\kCura.WinEDDS.vbproj">

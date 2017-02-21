@@ -11,7 +11,7 @@ namespace kCura.WinEDDS.Core.Export
 		{
 		}
 
-		protected override StringBuilder GetHeaderLine(List<ViewFieldInfo> columns)
+		protected override string GetHeaderLine(List<ViewFieldInfo> columns)
 		{
 			StringBuilder retString = new StringBuilder();
 			
@@ -26,10 +26,8 @@ namespace kCura.WinEDDS.Core.Export
 			
 			foreach (ViewFieldInfo field in columns)
 			{
-				if (ExportSettings.LoadFileIsHtml)
-				{
-					retString.AppendFormat("{0}{1}{2}", "<th>", System.Web.HttpUtility.HtmlEncode(GetHeaderColName(field)), "</th>");
-				}
+				string headerColName = GetHeaderColName(field);
+				retString.AppendFormat("{0}{1}{2}", "<th>", System.Web.HttpUtility.HtmlEncode(headerColName), "</th>");
 			}
 			if (ExportSettings.ExportImages && ExportSettings.ArtifactTypeID == (int)Relativity.ArtifactType.Document)
 			{
@@ -40,7 +38,7 @@ namespace kCura.WinEDDS.Core.Export
 				retString.Append("<th>Native Files</th>");
 			}
 			retString.Append(Environment.NewLine + "</tr>" + Environment.NewLine);
-			return retString;
+			return retString.ToString();
 		}
 	}
 }

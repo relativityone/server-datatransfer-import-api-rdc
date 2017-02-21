@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using kCura.WinEDDS.Exporters;
 
@@ -7,28 +6,27 @@ namespace kCura.WinEDDS.Core.Export
 {
 	public class ExportFileFormatter : ExportFileFormatterBase
 	{
+		private const string _FILE_PATH_COL_NAME = "FILE_PATH";
+
 		public ExportFileFormatter(ExportFile exportSettings, IFieldNameProvider fieldNameProvider) : base(exportSettings, fieldNameProvider)
 		{
 		}
 
-		protected override StringBuilder GetHeaderLine(List<ViewFieldInfo> columns)
+		protected override string GetHeaderLine(List<ViewFieldInfo> columns)
 		{
-			StringBuilder retString = new StringBuilder();
+			StringBuilder stringBuilder = new StringBuilder();
 			foreach (ViewFieldInfo field in columns)
 			{
-				retString.AppendFormat("{0}{1}{0}{2}", ExportSettings.QuoteDelimiter, GetHeaderColName(field),
-					ExportSettings.RecordDelimiter);
+				string headerColName = GetHeaderColName(field);
+				stringBuilder.AppendFormat($"{ExportSettings.QuoteDelimiter}{headerColName}{ExportSettings.QuoteDelimiter}{ExportSettings.RecordDelimiter}");
 			}
-			// Remove last RecordDelimiter from the header line
-			retString.Length--;
-
 			if (ExportSettings.ExportNative)
 			{
-				retString.AppendFormat("{2}{0}{1}{0}", ExportSettings.QuoteDelimiter, "FILE_PATH", ExportSettings.RecordDelimiter);
+				stringBuilder.AppendFormat($"{ExportSettings.QuoteDelimiter}{_FILE_PATH_COL_NAME}{ExportSettings.QuoteDelimiter}");
 			}
-			return retString;
+			return stringBuilder.ToString().TrimEnd(ExportSettings.RecordDelimiter);
 		}
 	}
 
-	
+
 }

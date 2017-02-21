@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using kCura.WinEDDS.Exporters;
+﻿using kCura.WinEDDS.Exporters;
 
 namespace kCura.WinEDDS.Core.Export
 {
-	public class LoadFileFormatterFactory : ILoadFileHeaderFormatterFactory
+	public class ExportFileFormatterFactory : ILoadFileHeaderFormatterFactory
 	{
 		private readonly IFieldNameProvider _fieldNameProvider;
 
-		public LoadFileFormatterFactory(IFieldNameProvider fieldNameProvider)
+		public ExportFileFormatterFactory(IFieldNameProvider fieldNameProvider)
 		{
 			_fieldNameProvider = fieldNameProvider;
 		}
 
-		public LoadFileFormatterFactory() : this(new FieldNameProvider())
+		public ExportFileFormatterFactory() : this(new FieldNameProvider())
 		{
 		}
 

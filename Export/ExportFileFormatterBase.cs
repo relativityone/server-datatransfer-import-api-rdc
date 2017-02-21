@@ -20,16 +20,15 @@ namespace kCura.WinEDDS.Core.Export
 
 		public string GetHeader(List<ViewFieldInfo> columns)
 		{
-			if (columns.Any())
+			if (columns != null && columns.Any())
 			{
-				StringBuilder retString = GetHeaderLine(columns);
-				retString.Append(Environment.NewLine);
-				return retString.ToString();
+				string retString = GetHeaderLine(columns);
+				return $"{retString}{Environment.NewLine}";
 			}
 			return string.Empty;
 		}
 
-		protected abstract StringBuilder GetHeaderLine(List<ViewFieldInfo> columns);
+		protected abstract string GetHeaderLine(List<ViewFieldInfo> columns);
 
 		protected virtual string GetHeaderColName(ViewFieldInfo fieldInfo)
 		{
