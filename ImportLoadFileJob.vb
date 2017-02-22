@@ -194,13 +194,6 @@ Namespace kCura.Relativity.DataReaderClient
 			_controller.ExportErrorFile(filePathAndName)
 		End Sub
 
-		''' <summary>
-		''' Unknown; development testing
-		''' </summary>
-		''' <param name="exportLocation">A directory to place error files in</param>
-		Public Sub ExportServerErrors(ByVal exportLocation As String)
-			_controller.ExportServerErrors(exportLocation)
-		End Sub
 #End Region
 
 #Region "Private Functions"
