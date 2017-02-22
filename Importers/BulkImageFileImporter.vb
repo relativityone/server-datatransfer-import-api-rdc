@@ -295,6 +295,7 @@ Namespace kCura.WinEDDS
 			Dim settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo = Me.GetSettingsObject
 			settings.UseBulkDataImport = useBulk
 			settings.Overlay = overwrite
+			settings.Billable = _settings.Billable
 
 			If _productionArtifactID = 0 Then
 				retval = _bulkImportManager.BulkImportImage(_caseInfo.ArtifactID, settings, _copyFilesToRepository)

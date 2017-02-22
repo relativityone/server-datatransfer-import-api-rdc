@@ -17,13 +17,15 @@ Namespace kCura.WinEDDS
 		Public StartLineNumber As Int64
 		Public IdentityFieldId As Int32 = -1
 		Public SendEmailOnLoadCompletion As Boolean
+		Public Billable As Boolean = True
+
 		<NonSerialized()> Public SelectedCasePath As String = ""
 		<NonSerialized()> Public CaseDefaultPath As String = ""
 		<NonSerialized()> Public CopyFilesToDocumentRepository As Boolean = True
 		<NonSerialized()> Public Credential As Net.NetworkCredential
 		<NonSerialized()> Public CookieContainer As System.Net.CookieContainer
 		'<NonSerialized()> Public Identity As Relativity.Core.EDDSIdentity
-
+		
 		Public Sub New()
 			'Public Sub New(ByVal identity As Relativity.Core.EDDSIdentity)
 			MyBase.New()

@@ -41,6 +41,7 @@ Namespace kCura.WinEDDS
 		Public FileNameColumn As String
 		Public MoveDocumentsInAppendOverlayMode As Boolean
 		Public OverlayBehavior As FieldOverlayBehavior?
+		Public Billable As Boolean = True
 
 		<NonSerialized()> Public ObjectFieldIdListContainsArtifactId As IList(Of Int32)
 		<NonSerialized()> Public ExtractedTextFileEncodingName As String
