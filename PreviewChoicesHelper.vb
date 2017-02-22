@@ -5,10 +5,20 @@ Namespace kCura.WinEDDS
 	Public Class PreviewChoicesHelper
 		Private _totalFolders As New System.Collections.Specialized.HybridDictionary
 
+		''' <summary>
+		''' Get the folder count based on a Generic List instead of an ArrayList
+		''' </summary>
+		''' <param name="al">List of objects containing preview info</param>
+		''' <returns>The folder count</returns>
 		Public Function GetFolderCount(ByVal al As List(Of Object)) As Int32
 			Return GetFolderCount(New ArrayList(al))
 		End Function
 
+		''' <summary>
+		''' Get the folder count based on the ArrayList returned from the LoadFilePreviewer
+		''' </summary>
+		''' <param name="al">ArrayList containing preview info</param>
+		''' <returns>The folder count</returns>
 		Public Function GetFolderCount(ByVal al As ArrayList) As Int32
 			_totalFolders.Clear()
 			Dim fieldValue As String
@@ -41,10 +51,20 @@ Namespace kCura.WinEDDS
 			Return folderColumnIndex
 		End Function
 
+		''' <summary>
+		'''  Get a list of the column indexes that contain a choice or multi choice type provided a generic list
+		''' </summary>
+		''' <param name="firstRow">List of Artifact Fields representing the first row in the ArrayList returned from the LoadFilePreviewer</param>
+		''' <returns>A generic List of integers containing the column indexes</returns>
 		Public Function GetCodeFieldColumnIndexes(ByVal firstRow As List(Of ArtifactField)) As List(Of Int32)
 			Return GetCodeFieldColumnIndexes(firstRow.ToArray()).Cast(Of Int32).ToList()
 		End Function
 
+		''' <summary>
+		''' Get a list of the column indexes that contain a choice or multi choice type
+		''' </summary>
+		''' <param name="firstRow">First row in the ArrayList returned from the LoadFilePreviewer</param>
+		''' <returns>An ArrayList containing the column indexes</returns>
 		Public Function GetCodeFieldColumnIndexes(ByVal firstRow As Array) As ArrayList
 			Dim codeFieldColumnIndexes As New ArrayList
 			Dim currentIndex As Int32 = 0
