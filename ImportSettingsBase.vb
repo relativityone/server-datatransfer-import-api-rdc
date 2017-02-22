@@ -197,11 +197,16 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property OverlayBehavior As kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior = EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior.UseRelativityDefaults
 
 		''' <summary>
-		''' Indicates if existing documents in case of Append/Overlay mode should be moved to new folder based on metadta 
+		''' Indicates if existing documents in case of Append/Overlay mode should be moved to new folder based on metadata 
 		''' </summary>
 		''' <returns></returns>
 		Public Property  MoveDocumentsInAppendOverlayMode() As Boolean = False
 
+		''' <summary>
+		''' Indicates if imported files are subjects to being billable.
+		''' </summary>
+		''' <returns></returns>
+		Public Property Billable() As Boolean = True
 
 	End Class
 End Namespace

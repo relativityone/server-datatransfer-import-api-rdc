@@ -252,6 +252,7 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.StartLineNumber = loadFileTemp.StartLineNumber
 			tempLoadFile.ObjectFieldIdListContainsArtifactId = loadFileTemp.ObjectFieldIdListContainsArtifactId
 			tempLoadFile.OverlayBehavior = loadFileTemp.OverlayBehavior
+			tempLoadFile.Billable = loadFileTemp.Billable
 
 			Return tempLoadFile
 		End Function
