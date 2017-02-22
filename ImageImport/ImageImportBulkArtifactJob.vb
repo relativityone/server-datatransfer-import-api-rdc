@@ -242,7 +242,7 @@ Namespace kCura.Relativity.DataReaderClient
 			End If
 
 			tempLoadFile.SendEmailOnLoadCompletion = False
-			tempLoadFile.StartLineNumber = 0
+			tempLoadFile.StartLineNumber = Settings.StartRecordNumber
 			tempLoadFile.BeginBatesFieldArtifactID = GetDefaultIdentifierFieldID(credential, Settings.CaseArtifactId)
 			Return tempLoadFile
 		End Function
