@@ -673,48 +673,8 @@ Namespace kCura.EDDS.WinForm
 		'Worker function for Previewing choice and folder counts
 		Public Function BuildFoldersAndCodesDataSource(ByVal al As ArrayList, ByVal previewCodeCount As System.Collections.Specialized.HybridDictionary) As DataTable
 			Try
-				Dim dt As New DataTable
 				Dim previewChoices As New PreviewChoicesHelper
-				Dim folderCount As Int32 = previewChoices.GetFolderCount(al)
-
-				Dim codeFieldColumnIndexes As ArrayList = previewChoices.GetCodeFieldColumnIndexes(DirectCast(al(0), System.Array))
-
-				'setup columns
-				dt.Columns.Add("Field Name")
-				dt.Columns.Add("Count")
-
-				'setup folder row
-				Dim folderRow As New System.Collections.ArrayList
-				folderRow.Add("Folders")
-				If folderCount <> -1 Then
-					folderRow.Add(folderCount.ToString)
-				Else
-					folderRow.Add("0")
-				End If
-				dt.Rows.Add(folderRow.ToArray)
-
-				'insert spacer
-				Dim blankRow As New System.Collections.ArrayList
-				blankRow.Add("")
-				blankRow.Add("")
-				dt.Rows.Add(blankRow.ToArray)
-
-				'setup choice rows
-				If codeFieldColumnIndexes.Count = 0 Then
-					dt.Columns.Add("     ")
-					dt.Rows.Add(New String() {"No choice fields have been mapped"})
-				Else
-					For Each key As String In previewCodeCount.Keys
-						Dim row As New System.Collections.ArrayList
-						row.Add(key.Split("_".ToCharArray, 2)(1))
-						Dim currentFieldHashTable As System.Collections.Specialized.HybridDictionary = DirectCast(previewCodeCount(key), System.Collections.Specialized.HybridDictionary)
-						row.Add(currentFieldHashTable.Count)
-						dt.Rows.Add(row.ToArray)
-						currentFieldHashTable.Clear()
-					Next
-				End If
-
-				Return dt
+				Return previewChoices.BuildFoldersAndCodesDataSource(al, previewCodeCount)
 			Catch ex As Exception
 				kCura.EDDS.WinForm.Utility.ThrowExceptionToGUI(ex)
 			End Try
