@@ -252,6 +252,7 @@
     <Compile Include="MockBulkImportManagerWebExceptions.vb" />
     <Compile Include="MockBulkLoadFileImporter.vb" />
     <Compile Include="OutputFileWriterTests.vb" />
+    <Compile Include="PreviewChoicesHelperTests.vb" />
     <Compile Include="RegKeyHelper.vb" />
     <Compile Include="Services\AuditManagerTests.vb" />
     <Compile Include="Services\BulkImportManagerTests.vb" />
