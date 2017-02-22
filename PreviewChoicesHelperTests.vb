@@ -17,7 +17,7 @@ Public Class PreviewChoicesHelperTests
 	End Sub
 
 	<Test()>
-	Public Sub RetrievePreviewFolderCount()
+	Public Sub PreviewHelper_RetrieveFolderCount()
 		PopulateArtifactList()
 
 		Dim folderCount As Int32 = previewHelper.GetFolderCount(al)
@@ -27,7 +27,7 @@ Public Class PreviewChoicesHelperTests
 	End Sub
 
 	<Test()>
-	Public Sub FindCodeFieldColumnIndexes()
+	Public Sub PreviewHelper_FindCodeFieldColumnIndexes()
 		PopulateArtifactList()
 
 		Dim fieldList As ArrayList = previewHelper.GetCodeFieldColumnIndexes(DirectCast(al(0), System.Array))
