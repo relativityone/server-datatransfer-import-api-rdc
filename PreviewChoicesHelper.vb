@@ -6,12 +6,62 @@ Namespace kCura.WinEDDS
 		Private _totalFolders As New System.Collections.Specialized.HybridDictionary
 
 		''' <summary>
-		''' Get the folder count based on a Generic List instead of an ArrayList
+		''' Build out the DataTable to display the folder and choice counts given a generic list
 		''' </summary>
-		''' <param name="al">List of objects containing preview info</param>
-		''' <returns>The folder count</returns>
-		Public Function GetFolderCount(ByVal al As List(Of Object)) As Int32
-			Return GetFolderCount(New ArrayList(al))
+		''' <param name="al"></param>
+		''' <param name="previewCodeCount"></param>
+		''' <returns></returns>
+		Public Function BuildFoldersAndCodesDataSource(ByVal al As List(Of Object), ByVal previewCodeCount As System.Collections.Specialized.HybridDictionary) As DataTable
+			Return BuildFoldersAndCodesDataSource(New ArrayList(al), previewCodeCount)
+		End Function
+
+		''' <summary>
+		''' Build out the DataTable to display the folder and choice counts
+		''' </summary>
+		''' <param name="al"></param>
+		''' <param name="previewCodeCount"></param>
+		''' <returns></returns>
+		Public Function BuildFoldersAndCodesDataSource(ByVal al As ArrayList, ByVal previewCodeCount As System.Collections.Specialized.HybridDictionary) As DataTable
+			Dim folderCount As Int32 = GetFolderCount(al)
+			Dim dt As New DataTable
+			Dim codeFieldColumnIndexes As ArrayList = GetCodeFieldColumnIndexes(DirectCast(al(0), System.Array))
+
+			'setup columns
+			dt.Columns.Add("Field Name")
+			dt.Columns.Add("Count")
+
+			'setup folder row
+			Dim folderRow As New System.Collections.ArrayList
+			folderRow.Add("Folders")
+			If folderCount <> -1 Then
+				folderRow.Add(folderCount.ToString)
+			Else
+				folderRow.Add("0")
+			End If
+			dt.Rows.Add(folderRow.ToArray)
+
+			'insert spacer
+			Dim blankRow As New System.Collections.ArrayList
+			blankRow.Add("")
+			blankRow.Add("")
+			dt.Rows.Add(blankRow.ToArray)
+
+			'setup choice rows
+			If codeFieldColumnIndexes.Count = 0 Then
+				dt.Columns.Add("     ")
+				dt.Rows.Add(New String() {"No choice fields have been mapped"})
+			Else
+				For Each key As String In previewCodeCount.Keys
+					Dim row As New System.Collections.ArrayList
+					row.Add(key.Split("_".ToCharArray, 2)(1))
+					Dim currentFieldHashTable As System.Collections.Specialized.HybridDictionary = DirectCast(previewCodeCount(key), System.Collections.Specialized.HybridDictionary)
+					row.Add(currentFieldHashTable.Count)
+					dt.Rows.Add(row.ToArray)
+					currentFieldHashTable.Clear()
+				Next
+			End If
+
+			Return dt
 		End Function
 
 		''' <summary>
@@ -49,15 +99,6 @@ Namespace kCura.WinEDDS
 				currentIndex += 1
 			Next
 			Return folderColumnIndex
-		End Function
-
-		''' <summary>
-		'''  Get a list of the column indexes that contain a choice or multi choice type provided a generic list
-		''' </summary>
-		''' <param name="firstRow">List of Artifact Fields representing the first row in the ArrayList returned from the LoadFilePreviewer</param>
-		''' <returns>A generic List of integers containing the column indexes</returns>
-		Public Function GetCodeFieldColumnIndexes(ByVal firstRow As List(Of ArtifactField)) As List(Of Int32)
-			Return GetCodeFieldColumnIndexes(firstRow.ToArray()).Cast(Of Int32).ToList()
 		End Function
 
 		''' <summary>
