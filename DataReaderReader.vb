@@ -532,7 +532,13 @@ Namespace kCura.WinEDDS.ImportExtension
 		Public Function ManageErrorRecords(ByVal errorMessageFileLocation As String, ByVal prePushErrorLineNumbersFileName As String) As String Implements kCura.WinEDDS.Api.IArtifactReader.ManageErrorRecords
 			Dim artifactReader As IArtifactReader = TryCast(_reader, IArtifactReader)
 			If Not artifactReader Is Nothing Then
-				Return artifactReader.ManageErrorRecords(errorMessageFileLocation, prePushErrorLineNumbersFileName)
+				Dim errorPath As String
+				errorPath = artifactReader.ManageErrorRecords(errorMessageFileLocation, prePushErrorLineNumbersFileName)
+				If errorPath = String.Empty Then
+					Return errorPath
+				Else
+					Return Nothing
+				End If
 			End If
 			Return Nothing
 		End Function
