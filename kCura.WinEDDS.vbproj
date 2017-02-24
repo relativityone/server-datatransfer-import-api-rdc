@@ -553,6 +553,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="PackageHelper.vb" />
+    <Compile Include="PreviewChoicesHelper.vb" />
     <Compile Include="Process\ApplicationDeploymentProcess.vb">
       <SubType>Code</SubType>
     </Compile>
