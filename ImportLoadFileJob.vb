@@ -422,6 +422,8 @@ Namespace kCura.Relativity.DataReaderClient
 				.ObjectFieldIdListContainsArtifactId = clientSettings.ObjectFieldIdListContainsArtifactId
 
 				.DataGridIDColumn = clientSettings.DataGridIDColumnName
+
+				.Billable = clientSettings.Billable
 			End With
 
 			Return dosf_settings
