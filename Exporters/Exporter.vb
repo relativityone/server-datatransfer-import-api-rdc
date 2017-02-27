@@ -1,3 +1,4 @@
+Imports System.Collections.Concurrent
 Imports System.IO
 Imports System.Collections.Generic
 Imports System.Configuration
@@ -8,8 +9,8 @@ Imports kCura.WinEDDS.Exporters
 
 Namespace kCura.WinEDDS
 	Public Class Exporter
-	    Implements IExporterStatusNotification
-	    Implements IExporter
+		Implements IExporterStatusNotification
+		Implements IExporter
 
 #Region "Members"
 
@@ -356,7 +357,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Sub InitializeFieldIndentifier()
-			
+
 			If String.IsNullOrEmpty(Settings.IdentifierColumnName) Then
 				'This case is for Exporter class usage outside of RDC (WinForms project)
 
@@ -383,7 +384,7 @@ Namespace kCura.WinEDDS
 			Dim productionArtifactID As Int32 = 0
 			Dim start As Int64
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then productionArtifactID = Settings.ArtifactID
-			If Me.Settings.ExportNative Then
+			If Me.Settings.ExportNative Then 'This is something to parallelize
 				start = System.DateTime.Now.Ticks
 				If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
 					natives.Table = CallServerWithRetry(Function() _searchManager.RetrieveNativesForProduction(Me.Settings.CaseArtifactID, productionArtifactID, kCura.Utility.Array.ToCsv(documentArtifactIDs)).Tables(0), maxTries)
@@ -399,7 +400,7 @@ Namespace kCura.WinEDDS
 				End If
 				_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 			End If
-			If Me.Settings.ExportImages Then
+			If Me.Settings.ExportImages Then 'This is something to parallelize
 				_timekeeper.MarkStart("Exporter_GetImagesForDocumentBlock")
 				start = System.DateTime.Now.Ticks
 
@@ -418,7 +419,10 @@ Namespace kCura.WinEDDS
 			'TODO: come back to this
 			Dim productionPrecedenceArtifactIds As Int32() = Settings.ImagePrecedence.Select(Function(pair) CInt(pair.Value)).ToArray()
 			Dim lookup As New Lazy(Of Dictionary(Of Int32, List(Of BatesEntry)))(Function() GenerateBatesLookup(_productionManager.RetrieveBatesByProductionAndDocument(Me.Settings.CaseArtifactID, productionPrecedenceArtifactIds, documentArtifactIDs)))
-			For i = 0 To documentArtifactIDs.Length - 1
+
+			Dim artifacts As New ConcurrentDictionary(Of Int32, Exporters.ObjectExportInfo)
+
+			For i = 0 To documentArtifactIDs.Length - 1 'This is something to parallelize
 				Dim artifact As New Exporters.ObjectExportInfo
 				Dim record As Object() = DirectCast(records(i), Object())
 				Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, documentArtifactIDs(i))
@@ -451,12 +455,21 @@ Namespace kCura.WinEDDS
 				artifact.ArtifactID = documentArtifactIDs(i)
 				artifact.Metadata = DirectCast(records(i), Object())
 				SetProductionBegBatesFileName(artifact, lookup)
-				_fileCount += CallServerWithRetry(Function() _volumeManager.ExportArtifact(artifact), maxTries)
+
+				While (Not artifacts.TryAdd(documentArtifactIDs(i), artifact))
+				End While
 
 				_lastStatisticsSnapshot = _statistics.ToDictionary
 				Me.WriteUpdate("Exported document " & i + 1, i = documentArtifactIDs.Length - 1)
 				If _halt Then Exit Sub
 			Next
+
+			For Each documentArtifactId As Int32 in documentArtifactIDs
+				Dim artifact As New Exporters.ObjectExportInfo
+				artifacts.TryGetValue(documentArtifactId, artifact)
+				_fileCount += CallServerWithRetry(Function() _volumeManager.ExportArtifact(artifact), maxTries)
+			Next
+
 		End Sub
 
 		Private Function ShouldTextAndNativesBeNamedAfterPrecedenceBegBates() As Boolean
