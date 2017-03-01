@@ -428,10 +428,10 @@ Namespace kCura.WinEDDS
 			_linesToWriteOpt = New ConcurrentDictionary(Of String, String)
 			Dim artifacts(documentArtifactIDs.Length - 1) As Exporters.ObjectExportInfo
 
-			Dim threadCount As Integer = 1
-			Dim threads As Task(Of Long)() = New Task(Of Long)(threadCount) {}
+			Dim threadCount As Integer = 7
+			Dim threads As Task() = New Task(threadCount) {}
 			For i = 0 To threadCount
-				threads(i) = Task.FromResult(Of Long)(0)
+				threads(i) = Task.FromResult(0)
 			Next
 
 			For i = 0 To documentArtifactIDs.Length - 1
@@ -439,31 +439,42 @@ Namespace kCura.WinEDDS
 				Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, documentArtifactIDs(i))
 				Dim artifact As ObjectExportInfo = CreateArtifact(record, documentArtifactIDs(i), nativeRow, images, productionImages, beginBatesColumnIndex, identifierColumnIndex, lookup)
 				artifacts(i) = artifact
+			Next
+
+			For i = 0 To documentArtifactIDs.Length - 1
+				If _halt Then 
+					HaltThreads(threads)
+					Exit Sub
+				End If
+
 				Dim openThreadNumber As Integer = Task.WaitAny(threads, TimeSpan.FromDays(1))
-				_fileCount += threads(openThreadNumber).Result
-				If _halt Then Exit Sub
-				_lastStatisticsSnapshot = _statistics.ToDictionary
-				Me.WriteUpdate("Started Export of document " & i + 1, i = documentArtifactIDs.Length - 1)
-				threads(openThreadNumber) = ExportArtifactAsync(artifact, maxTries)
-				
+				threads(openThreadNumber) = ExportArtifactAsync(artifacts(i), maxTries,i,documentArtifactIDs.Length)
 			Next
 
 			Task.WaitAll(threads)
-
-			For Each thread As Task(Of Long) in threads
-				_fileCount += thread.Result
-			Next
-
-			_lastStatisticsSnapshot = _statistics.ToDictionary
 
 			_volumeManager.WriteDatFile(_linesToWriteDat, artifacts)
 			_volumeManager.WriteOptFile(_linesToWriteOpt, artifacts)
 
 		End Sub
 
-		Private Async Function ExportArtifactAsync(byVal artifact As ObjectExportInfo, byVal maxTries As Integer) As Task(Of Long)
-			return Await Task.Run(
-					function() CallServerWithRetry(Function() _volumeManager.ExportArtifact(artifact, _linesToWriteDat, _linesToWriteOpt), maxTries)
+		Private Sub HaltThreads(ByRef threads As Task())
+			For Each thread As Task(Of Long) In Threads
+				
+			Next
+		End Sub
+
+		Private Async Function ExportArtifactAsync(byVal artifact As ObjectExportInfo, byVal maxTries As Integer, ByVal docNum As Integer , ByVal numDocs As Integer) As Task
+			 Await Task.Run(
+					Sub()
+					    _fileCount += CallServerWithRetry(Function()
+							Dim retval As Long
+							retval = _volumeManager.ExportArtifact(artifact, _linesToWriteDat, _linesToWriteOpt)
+							WriteUpdate("Exported document " & docNum + 1, docNum = numDocs - 1)
+							_lastStatisticsSnapshot = _statistics.ToDictionary
+							return retval
+						End Function, maxTries)
+					End Sub
 				)
 		End Function
 
