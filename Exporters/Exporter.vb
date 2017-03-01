@@ -416,7 +416,7 @@ Namespace kCura.WinEDDS
 
 			Dim artifacts(documentArtifactIDs.Length - 1) As Exporters.ObjectExportInfo
 
-			Dim threadCount As Integer = 7
+			Dim threadCount As Integer = Config.ExportThreadCount - 1
 			Dim threads As Task() = New Task(threadCount) {}
 			For i = 0 To threadCount
 				threads(i) = Task.FromResult(0)
