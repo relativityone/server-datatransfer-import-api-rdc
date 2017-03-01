@@ -386,34 +386,21 @@ Namespace kCura.WinEDDS
 			Dim productionImages As New System.Data.DataView
 			Dim i As Int32 = 0
 			Dim productionArtifactID As Int32 = 0
-			Dim start As Int64
+	
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then productionArtifactID = Settings.ArtifactID
-			If Me.Settings.ExportNative Then
-				start = System.DateTime.Now.Ticks
-				If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
-					natives.Table = CallServerWithRetry(Function() _searchManager.RetrieveNativesForProduction(Me.Settings.CaseArtifactID, productionArtifactID, kCura.Utility.Array.ToCsv(documentArtifactIDs)).Tables(0), maxTries)
-				ElseIf Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document Then
-					natives.Table = CallServerWithRetry(Function() _searchManager.RetrieveNativesForSearch(Me.Settings.CaseArtifactID, kCura.Utility.Array.ToCsv(documentArtifactIDs)).Tables(0), maxTries)
-				Else
-					Dim dt As System.Data.DataTable = CallServerWithRetry(Function() _searchManager.RetrieveFilesForDynamicObjects(Me.Settings.CaseArtifactID, Me.Settings.FileField.FieldID, documentArtifactIDs).Tables(0), maxTries)
-					If dt Is Nothing Then
-						natives = Nothing
-					Else
-						natives.Table = dt
-					End If
-				End If
-				_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
-			End If
-			If Me.Settings.ExportImages Then
-				_timekeeper.MarkStart("Exporter_GetImagesForDocumentBlock")
-				start = System.DateTime.Now.Ticks
 
-				images.Table = CallServerWithRetry(Function() Me.RetrieveImagesForDocuments(documentArtifactIDs, Me.Settings.ImagePrecedence), maxTries)
-				productionImages.Table = CallServerWithRetry(Function() Me.RetrieveProductionImagesForDocuments(documentArtifactIDs, Me.Settings.ImagePrecedence), maxTries)
+			Dim retrieveThreads As Task(Of System.Data.DataView)() = New Task(Of System.Data.DataView)(2){}
 
-				_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
-				_timekeeper.MarkEnd("Exporter_GetImagesForDocumentBlock")
-			End If
+			retrieveThreads(0) = RetrieveNatives(natives,productionArtifactID,documentArtifactIDs,maxTries)
+			retrieveThreads(1) = RetrieveImages(images,documentArtifactIDs,maxTries)
+			retrieveThreads(2) = RetrieveProductions(productionImages,documentArtifactIDs,maxTries)
+
+			Task.WaitAll(retrieveThreads)
+
+			natives = retrieveThreads(0).Result()
+			images = retrieveThreads(1).Result()
+			productionImages = retrieveThreads(2).Result()
+
 			Dim beginBatesColumnIndex As Int32 = -1
 			If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production AndAlso _volumeManager.OrdinalLookup.ContainsKey(_beginBatesColumn) Then
 				beginBatesColumnIndex = _volumeManager.OrdinalLookup(_beginBatesColumn)
@@ -426,6 +413,7 @@ Namespace kCura.WinEDDS
 
 			_linesToWriteDat = New ConcurrentDictionary(Of Int32, String)
 			_linesToWriteOpt = New ConcurrentDictionary(Of String, String)
+
 			Dim artifacts(documentArtifactIDs.Length - 1) As Exporters.ObjectExportInfo
 
 			Dim threadCount As Integer = 7
@@ -453,6 +441,69 @@ Namespace kCura.WinEDDS
 			_volumeManager.WriteOptFile(_linesToWriteOpt, artifacts)
 
 		End Sub
+
+		Private Async Function RetrieveNatives(byVal natives As System.Data.DataView, ByVal productionArtifactID As Int32, ByVal documentArtifactIDs As Int32(), byVal maxTries As Integer) As Task(Of System.Data.DataView)
+			return Await Task.Run(
+					Function() As System.Data.DataView
+						If Me.Settings.ExportNative Then
+							_timekeeper.MarkStart("Exporter_GetNativesForDocumentBlock")
+							Dim start As Int64
+							start = System.DateTime.Now.Ticks
+							If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
+								natives.Table = CallServerWithRetry(Function() _searchManager.RetrieveNativesForProduction(Me.Settings.CaseArtifactID, productionArtifactID, kCura.Utility.Array.ToCsv(documentArtifactIDs)).Tables(0), maxTries)
+							ElseIf Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document Then
+								natives.Table = CallServerWithRetry(Function() _searchManager.RetrieveNativesForSearch(Me.Settings.CaseArtifactID, kCura.Utility.Array.ToCsv(documentArtifactIDs)).Tables(0), maxTries)
+							Else
+								Dim dt As System.Data.DataTable = CallServerWithRetry(Function() _searchManager.RetrieveFilesForDynamicObjects(Me.Settings.CaseArtifactID, Me.Settings.FileField.FieldID, documentArtifactIDs).Tables(0), maxTries)
+								If dt Is Nothing Then
+									natives = Nothing
+								Else
+									natives.Table = dt
+								End If
+							End If
+							_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
+							_timekeeper.MarkEnd("Exporter_GetNativesForDocumentBlock")
+						End If
+						return natives
+					End Function
+				)
+		End Function
+
+		Private Async Function RetrieveImages(byVal images As System.Data.DataView, ByVal documentArtifactIDs As Int32(), byVal maxTries As Integer) As Task(Of System.Data.DataView)
+			return Await Task.Run(
+				Function()
+					If Me.Settings.ExportImages Then
+						Dim start As Int64
+						_timekeeper.MarkStart("Exporter_GetImagesForDocumentBlock")
+						start = System.DateTime.Now.Ticks
+
+						images.Table = CallServerWithRetry(Function() Me.RetrieveImagesForDocuments(documentArtifactIDs, Me.Settings.ImagePrecedence), maxTries)
+
+						_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
+						_timekeeper.MarkEnd("Exporter_GetImagesForDocumentBlock")
+					End If
+					return images
+					End Function
+				)
+		End Function
+
+		Private Async Function RetrieveProductions(byVal productionImages As System.Data.DataView, ByVal documentArtifactIDs As Int32(), byVal maxTries As Integer) As Task(Of System.Data.DataView)
+			return Await Task.Run(
+				Function()
+					If Me.Settings.ExportImages Then
+						Dim start As Int64
+						_timekeeper.MarkStart("Exporter_GetProductionsForDocumentBlock")
+						start = System.DateTime.Now.Ticks
+
+						productionImages.Table = CallServerWithRetry(Function() Me.RetrieveProductionImagesForDocuments(documentArtifactIDs, Me.Settings.ImagePrecedence), maxTries)
+
+						_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
+						_timekeeper.MarkEnd("Exporter_GetProductionsForDocumentBlock")
+					End If
+					return productionImages
+					End Function
+				)
+		End Function
 
 		Private Async Function ExportArtifactAsync(byVal artifact As ObjectExportInfo, byVal maxTries As Integer, ByVal docNum As Integer , ByVal numDocs As Integer) As Task
 			 Await Task.Run(
