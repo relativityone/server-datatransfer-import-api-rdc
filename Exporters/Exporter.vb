@@ -380,7 +380,6 @@ Namespace kCura.WinEDDS
 		Private Sub ExportChunk(ByVal documentArtifactIDs As Int32(), ByVal records As Object())
 			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
-
 			Dim natives As New System.Data.DataView
 			Dim images As New System.Data.DataView
 			Dim productionImages As New System.Data.DataView
@@ -433,10 +432,10 @@ Namespace kCura.WinEDDS
 				If _halt Then Exit Sub
 				Dim openThreadNumber As Integer = Task.WaitAny(threads, TimeSpan.FromDays(1))
 				threads(openThreadNumber) = ExportArtifactAsync(artifacts(i), maxTries,i,documentArtifactIDs.Length)
+				DocumentsExported += 1
 			Next
 
 			Task.WaitAll(threads)
-
 			_volumeManager.WriteDatFile(_linesToWriteDat, artifacts)
 			_volumeManager.WriteOptFile(_linesToWriteOpt, artifacts)
 

@@ -575,7 +575,7 @@ Namespace kCura.WinEDDS
 				Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Load, ex)
 			End Try
 
-			_parent.DocumentsExported += artifact.DocCount
+
 			_currentVolumeSize += totalFileSize
 			If Me.Settings.VolumeInfo.CopyNativeFilesFromRepository Then
 				_currentNativeSubdirectorySize += artifact.NativeCount
