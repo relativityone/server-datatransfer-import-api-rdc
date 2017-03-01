@@ -442,11 +442,7 @@ Namespace kCura.WinEDDS
 			Next
 
 			For i = 0 To documentArtifactIDs.Length - 1
-				If _halt Then 
-					HaltThreads(threads)
-					Exit Sub
-				End If
-
+				If _halt Then Exit Sub
 				Dim openThreadNumber As Integer = Task.WaitAny(threads, TimeSpan.FromDays(1))
 				threads(openThreadNumber) = ExportArtifactAsync(artifacts(i), maxTries,i,documentArtifactIDs.Length)
 			Next
@@ -456,12 +452,6 @@ Namespace kCura.WinEDDS
 			_volumeManager.WriteDatFile(_linesToWriteDat, artifacts)
 			_volumeManager.WriteOptFile(_linesToWriteOpt, artifacts)
 
-		End Sub
-
-		Private Sub HaltThreads(ByRef threads As Task())
-			For Each thread As Task(Of Long) In Threads
-				
-			Next
 		End Sub
 
 		Private Async Function ExportArtifactAsync(byVal artifact As ObjectExportInfo, byVal maxTries As Integer, ByVal docNum As Integer , ByVal numDocs As Integer) As Task
