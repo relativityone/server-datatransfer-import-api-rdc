@@ -2,10 +2,12 @@ Imports System.Collections.Concurrent
 Imports System.IO
 Imports System.Collections.Generic
 Imports System.Configuration
+Imports System.Threading
 Imports kCura.EDDS.WebAPI.ExportManagerBase
 Imports System.Web.Services.Protocols
 Imports kCura.Utility.Extensions
 Imports kCura.WinEDDS.Exporters
+Imports System.Threading.Tasks
 
 Namespace kCura.WinEDDS
 	Public Class Exporter
@@ -44,6 +46,8 @@ Namespace kCura.WinEDDS
 		Private _productionLookup As New System.Collections.Generic.Dictionary(Of Int32, kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo)
 		Private _productionPrecedenceIds As Int32()
 		Private _tryToNameNativesAndTextFilesAfterPrecedenceBegBates As Boolean = False
+		Private _linesToWriteDat As ConcurrentDictionary(Of Int32, String)
+		Private _linesToWriteOpt As ConcurrentDictionary(Of String, String)
 
 #End Region
 
@@ -384,7 +388,7 @@ Namespace kCura.WinEDDS
 			Dim productionArtifactID As Int32 = 0
 			Dim start As Int64
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then productionArtifactID = Settings.ArtifactID
-			If Me.Settings.ExportNative Then 'This is something to parallelize
+			If Me.Settings.ExportNative Then
 				start = System.DateTime.Now.Ticks
 				If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
 					natives.Table = CallServerWithRetry(Function() _searchManager.RetrieveNativesForProduction(Me.Settings.CaseArtifactID, productionArtifactID, kCura.Utility.Array.ToCsv(documentArtifactIDs)).Tables(0), maxTries)
@@ -400,7 +404,7 @@ Namespace kCura.WinEDDS
 				End If
 				_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 			End If
-			If Me.Settings.ExportImages Then 'This is something to parallelize
+			If Me.Settings.ExportImages Then
 				_timekeeper.MarkStart("Exporter_GetImagesForDocumentBlock")
 				start = System.DateTime.Now.Ticks
 
@@ -420,57 +424,83 @@ Namespace kCura.WinEDDS
 			Dim productionPrecedenceArtifactIds As Int32() = Settings.ImagePrecedence.Select(Function(pair) CInt(pair.Value)).ToArray()
 			Dim lookup As New Lazy(Of Dictionary(Of Int32, List(Of BatesEntry)))(Function() GenerateBatesLookup(_productionManager.RetrieveBatesByProductionAndDocument(Me.Settings.CaseArtifactID, productionPrecedenceArtifactIds, documentArtifactIDs)))
 
-			Dim artifacts As New ConcurrentDictionary(Of Int32, Exporters.ObjectExportInfo)
+			_linesToWriteDat = New ConcurrentDictionary(Of Int32, String)
+			_linesToWriteOpt = New ConcurrentDictionary(Of String, String)
+			Dim artifacts(documentArtifactIDs.Length - 1) As Exporters.ObjectExportInfo
 
-			For i = 0 To documentArtifactIDs.Length - 1 'This is something to parallelize
-				Dim artifact As New Exporters.ObjectExportInfo
+			Dim threadCount As Integer = 1
+			Dim threads As Task(Of Long)() = New Task(Of Long)(threadCount) {}
+			For i = 0 To threadCount
+				threads(i) = Task.FromResult(Of Long)(0)
+			Next
+
+			For i = 0 To documentArtifactIDs.Length - 1
 				Dim record As Object() = DirectCast(records(i), Object())
 				Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, documentArtifactIDs(i))
-				If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production AndAlso beginBatesColumnIndex <> -1 Then
-					artifact.ProductionBeginBates = record(beginBatesColumnIndex).ToString
-				End If
-				artifact.IdentifierValue = record(identifierColumnIndex).ToString
-				artifact.Images = Me.PrepareImages(images, productionImages, documentArtifactIDs(i), artifact.IdentifierValue, artifact, Me.Settings.ImagePrecedence)
-				If nativeRow Is Nothing Then
-					artifact.NativeFileGuid = ""
-					artifact.OriginalFileName = ""
-					artifact.NativeSourceLocation = ""
-				Else
-					artifact.OriginalFileName = nativeRow("Filename").ToString
-					artifact.NativeSourceLocation = nativeRow("Location").ToString
-					If Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document Then
-						artifact.NativeFileGuid = nativeRow("Guid").ToString
-					Else
-						artifact.FileID = CType(nativeRow("FileID"), Int32)
-					End If
-				End If
-
-				If nativeRow Is Nothing Then
-					artifact.NativeExtension = ""
-				ElseIf nativeRow("Filename").ToString.IndexOf(".") <> -1 Then
-					artifact.NativeExtension = nativeRow("Filename").ToString.Substring(nativeRow("Filename").ToString.LastIndexOf(".") + 1)
-				Else
-					artifact.NativeExtension = ""
-				End If
-				artifact.ArtifactID = documentArtifactIDs(i)
-				artifact.Metadata = DirectCast(records(i), Object())
-				SetProductionBegBatesFileName(artifact, lookup)
-
-				While (Not artifacts.TryAdd(documentArtifactIDs(i), artifact))
-				End While
-
-				_lastStatisticsSnapshot = _statistics.ToDictionary
-				Me.WriteUpdate("Exported document " & i + 1, i = documentArtifactIDs.Length - 1)
+				Dim artifact As ObjectExportInfo = CreateArtifact(record, documentArtifactIDs(i), nativeRow, images, productionImages, beginBatesColumnIndex, identifierColumnIndex, lookup)
+				artifacts(i) = artifact
+				Dim openThreadNumber As Integer = Task.WaitAny(threads, TimeSpan.FromDays(1))
+				_fileCount += threads(openThreadNumber).Result
 				If _halt Then Exit Sub
+				_lastStatisticsSnapshot = _statistics.ToDictionary
+				Me.WriteUpdate("Started Export of document " & i + 1, i = documentArtifactIDs.Length - 1)
+				threads(openThreadNumber) = ExportArtifactAsync(artifact, maxTries)
+				
 			Next
 
-			For Each documentArtifactId As Int32 in documentArtifactIDs
-				Dim artifact As New Exporters.ObjectExportInfo
-				artifacts.TryGetValue(documentArtifactId, artifact)
-				_fileCount += CallServerWithRetry(Function() _volumeManager.ExportArtifact(artifact), maxTries)
+			Task.WaitAll(threads)
+
+			For Each thread As Task(Of Long) in threads
+				_fileCount += thread.Result
 			Next
+
+			_lastStatisticsSnapshot = _statistics.ToDictionary
+
+			_volumeManager.WriteDatFile(_linesToWriteDat, artifacts)
+			_volumeManager.WriteOptFile(_linesToWriteOpt, artifacts)
 
 		End Sub
+
+		Private Async Function ExportArtifactAsync(byVal artifact As ObjectExportInfo, byVal maxTries As Integer) As Task(Of Long)
+			return Await Task.Run(
+					function() CallServerWithRetry(Function() _volumeManager.ExportArtifact(artifact, _linesToWriteDat, _linesToWriteOpt), maxTries)
+				)
+		End Function
+
+		Private Function CreateArtifact(ByVal record As Object(), ByVal documentArtifactID As Int32, ByVal nativeRow As System.Data.DataRowView, ByVal images As System.Data.DataView, ByVal productionImages As System.Data.DataView, ByVal beginBatesColumnIndex As Int32, ByVal identifierColumnIndex As Int32, ByRef lookup As Lazy(Of Dictionary(Of Int32, List(Of BatesEntry)))) As Exporters.ObjectExportInfo
+			Dim artifact As New Exporters.ObjectExportInfo
+			If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production AndAlso beginBatesColumnIndex <> -1 Then
+				artifact.ProductionBeginBates = record(beginBatesColumnIndex).ToString
+			End If
+			artifact.IdentifierValue = record(identifierColumnIndex).ToString
+			artifact.Images = Me.PrepareImages(images, productionImages, documentArtifactID, artifact.IdentifierValue, artifact, Me.Settings.ImagePrecedence)
+			If nativeRow Is Nothing Then
+				artifact.NativeFileGuid = ""
+				artifact.OriginalFileName = ""
+				artifact.NativeSourceLocation = ""
+			Else
+				artifact.OriginalFileName = nativeRow("Filename").ToString
+				artifact.NativeSourceLocation = nativeRow("Location").ToString
+				If Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document Then
+					artifact.NativeFileGuid = nativeRow("Guid").ToString
+				Else
+					artifact.FileID = CType(nativeRow("FileID"), Int32)
+				End If
+			End If
+
+			If nativeRow Is Nothing Then
+				artifact.NativeExtension = ""
+			ElseIf nativeRow("Filename").ToString.IndexOf(".") <> -1 Then
+				artifact.NativeExtension = nativeRow("Filename").ToString.Substring(nativeRow("Filename").ToString.LastIndexOf(".") + 1)
+			Else
+				artifact.NativeExtension = ""
+			End If
+			artifact.ArtifactID = documentArtifactID
+			artifact.Metadata = DirectCast(record, Object())
+			SetProductionBegBatesFileName(artifact, lookup)
+
+			Return artifact
+		End Function
 
 		Private Function ShouldTextAndNativesBeNamedAfterPrecedenceBegBates() As Boolean
 			Return Me.NameTextAndNativesAfterBegBates AndAlso

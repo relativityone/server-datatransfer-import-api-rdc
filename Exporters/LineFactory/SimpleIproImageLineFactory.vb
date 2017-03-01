@@ -1,3 +1,5 @@
+Imports System.Collections.Concurrent
+
 Namespace kCura.WinEDDS.Exporters.LineFactory
 	Public Class SimpleIproImageLineFactory
 		Inherits ImageLineFactoryBase
@@ -84,23 +86,28 @@ Namespace kCura.WinEDDS.Exporters.LineFactory
 
 #Region "Virtual Method Implementation"
 
-		Public Overrides Sub WriteLine(ByVal stream As System.IO.StreamWriter)
-			stream.Write(Me.ImportCodeIdentifier)
-			stream.Write(",")
-			stream.Write(Me.ImageKey)
-			stream.Write(",")
-			stream.Write(Me.DocumentDesignation)
-			stream.Write(",")
-			stream.Write(Me.TiffFileOffset)
-			stream.Write(",")
-			stream.Write(Me.VolumeIdentifier)
-			stream.Write(";")
-			stream.Write(Me.DirectoryPath)
-			stream.Write(";")
-			stream.Write(Me.Filename)
-			stream.Write(";")
-			stream.Write(Me.IproImageFileType)
-			stream.Write(vbNewLine)
+		Public Overrides Sub WriteLine(ByVal stream As System.IO.StreamWriter, ByRef linesToWriteOpt As ConcurrentDictionary(Of String, String))
+			Dim lineToWrite As New System.Text.StringBuilder
+			lineToWrite.Append(Me.ImportCodeIdentifier)
+			lineToWrite.Append(Me.ImportCodeIdentifier)
+			lineToWrite.Append(",")
+			lineToWrite.Append(Me.ImageKey)
+			lineToWrite.Append(",")
+			lineToWrite.Append(Me.DocumentDesignation)
+			lineToWrite.Append(",")
+			lineToWrite.Append(Me.TiffFileOffset)
+			lineToWrite.Append(",")
+			lineToWrite.Append(Me.VolumeIdentifier)
+			lineToWrite.Append(";")
+			lineToWrite.Append(Me.DirectoryPath)
+			lineToWrite.Append(";")
+			lineToWrite.Append(Me.Filename)
+			lineToWrite.Append(";")
+			lineToWrite.Append(Me.IproImageFileType)
+			lineToWrite.Append(vbNewLine)
+
+			While (Not linesToWriteOpt.TryAdd(Me.ImageKey, lineToWrite.ToString))
+			End While
 		End Sub
 
 #End Region

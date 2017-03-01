@@ -1,3 +1,5 @@
+Imports System.Collections.Concurrent
+
 Namespace kCura.WinEDDS
 	Public Class VolumeManager
 
@@ -281,13 +283,13 @@ Namespace kCura.WinEDDS
 		End Sub
 #End Region
 
-		Public Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo) As Int64
+		Public Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByRef linesToWriteDat As ConcurrentDictionary(Of Int32, String), ByRef linesToWriteOpt As ConcurrentDictionary(Of String, String)) As Int64
 			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			While tries < maxTries And Not Me.Halt
 				tries += 1
 				Try
-					Return Me.ExportArtifact(artifact, tries > 1)
+					Return Me.ExportArtifact(artifact, linesToWriteDat, linesToWriteOpt, tries > 1)
 					Exit While
 				Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
 					If tries = maxTries Then Throw
@@ -411,7 +413,7 @@ Namespace kCura.WinEDDS
 			Return (From f In Me.Settings.SelectedTextFields Where f IsNot Nothing).Any
 		End Function
 
-		Private Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal isRetryAttempt As Boolean) As Int64
+		Private Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByRef linesToWrite As ConcurrentDictionary(Of Int32, String), ByRef linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal isRetryAttempt As Boolean) As Int64
 			If isRetryAttempt Then Me.ReInitializeAllStreams()
 			Dim totalFileSize As Int64 = 0
 			Dim loadFileBytes As Int64 = 0
@@ -535,7 +537,7 @@ Namespace kCura.WinEDDS
 			End If
 			If Me.Settings.ExportImages Then
 				_timekeeper.MarkStart("VolumeManager_ExportImages")
-				Me.ExportImages(artifact.Images, tempLocalIproFullTextFilePath, successfulRollup)
+				Me.ExportImages(artifact.Images, tempLocalIproFullTextFilePath, successfulRollup, linesToWriteOpt)
 				_timekeeper.MarkEnd("VolumeManager_ExportImages")
 			End If
 			Dim nativeCount As Int32 = 0
@@ -562,10 +564,13 @@ Namespace kCura.WinEDDS
 			End If
 			Try
 				If Not _hasWrittenColumnHeaderString AndAlso Not _nativeFileWriter Is Nothing Then
-					_nativeFileWriter.Write(_columnHeaderString)
+					While (Not linesToWrite.TryAdd(-1, _columnHeaderString))
+					End While
 					_hasWrittenColumnHeaderString = True
 				End If
-				Me.UpdateLoadFile(artifact.Metadata, artifact.HasFullText, artifact.ArtifactID, nativeLocation, tempLocalFullTextFilePath, artifact, extractedTextFileLength)
+				Dim lineToWrite As String = Me.UpdateLoadFile(artifact.Metadata, artifact.HasFullText, artifact.ArtifactID, nativeLocation, tempLocalFullTextFilePath, artifact, extractedTextFileLength)
+				While (Not linesToWrite.TryAdd(artifact.ArtifactID, lineToWrite))
+				End While
 			Catch ex As System.IO.IOException
 				Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Load, ex)
 			End Try
@@ -710,7 +715,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Public Sub ExportImages(ByVal images As System.Collections.ArrayList, ByVal localFullTextPath As String, ByVal successfulRollup As Boolean)
+		Public Sub ExportImages(ByVal images As System.Collections.ArrayList, ByVal localFullTextPath As String, ByVal successfulRollup As Boolean, ByRef linesToWriteOpt As ConcurrentDictionary(Of String, String))
 			Dim image As WinEDDS.Exporters.ImageExportInfo
 			Dim i As Int32 = 0
 			Dim fullTextReader As System.IO.StreamReader = Nothing
@@ -739,7 +744,7 @@ Namespace kCura.WinEDDS
 							copyfile = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & subfolderPath & marker.FileName
 					End Select
 					If Me.Settings.LogFileFormat = LoadFileType.FileFormat.Opticon Then
-						Me.CreateImageLogEntry(marker.BatesNumber, copyfile, localFilePath, 1, fullTextReader, localFullTextPath <> "", Int64.MinValue, images.Count)
+						Me.CreateImageLogEntry(marker.BatesNumber, copyfile, localFilePath, 1, fullTextReader, localFullTextPath <> "", Int64.MinValue, images.Count, linesToWriteOpt)
 					Else
 						For j As Int32 = 0 To images.Count - 1
 							If (j = 0 AndAlso DirectCast(images(j), Exporters.ImageExportInfo).PageOffset Is Nothing) OrElse j = images.Count - 1 Then
@@ -753,7 +758,7 @@ Namespace kCura.WinEDDS
 								End If
 							End If
 							image = DirectCast(images(j), WinEDDS.Exporters.ImageExportInfo)
-							Me.CreateImageLogEntry(image.BatesNumber, copyfile, localFilePath, j + 1, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
+							Me.CreateImageLogEntry(image.BatesNumber, copyfile, localFilePath, j + 1, fullTextReader, localFullTextPath <> "", pageOffset, images.Count, linesToWriteOpt)
 						Next
 					End If
 					marker.TempLocation = copyfile
@@ -780,10 +785,10 @@ Namespace kCura.WinEDDS
 								Case ExportFile.ExportedFilePathType.Prefix
 									copyfile = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & subfolderPath & image.FileName
 							End Select
-							Me.CreateImageLogEntry(image.BatesNumber, copyfile, localFilePath, i + 1, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
+							Me.CreateImageLogEntry(image.BatesNumber, copyfile, localFilePath, i + 1, fullTextReader, localFullTextPath <> "", pageOffset, images.Count, linesToWriteOpt)
 							image.TempLocation = copyfile
 						Else
-							Me.CreateImageLogEntry(image.BatesNumber, image.SourceLocation, image.SourceLocation, i + 1, fullTextReader, localFullTextPath <> "", pageOffset, images.Count)
+							Me.CreateImageLogEntry(image.BatesNumber, image.SourceLocation, image.SourceLocation, i + 1, fullTextReader, localFullTextPath <> "", pageOffset, images.Count, linesToWriteOpt)
 						End If
 						i += 1
 					Next
@@ -873,65 +878,69 @@ Namespace kCura.WinEDDS
 			End Select
 		End Function
 
-		Private Sub CreateImageLogEntry(ByVal batesNumber As String, ByVal copyFile As String, ByVal pathToImage As String, ByVal pageNumber As Int32, ByVal fullTextReader As System.IO.StreamReader, ByVal expectingTextForPage As Boolean, ByVal pageOffset As Long, ByVal numberOfImages As Int32)
+		Private Sub CreateImageLogEntry(ByVal batesNumber As String, ByVal copyFile As String, ByVal pathToImage As String, ByVal pageNumber As Int32, ByVal fullTextReader As System.IO.StreamReader, ByVal expectingTextForPage As Boolean, ByVal pageOffset As Long, ByVal numberOfImages As Int32, ByRef linesToWriteOpt As ConcurrentDictionary(Of String, String))
+			Dim lineToWrite As New System.Text.StringBuilder
 			Try
 				Select Case _settings.LogFileFormat
 					Case LoadFileType.FileFormat.Opticon
-						Me.WriteOpticonLine(batesNumber, pageNumber = 1, copyFile, numberOfImages)
+						Me.WriteOpticonLine(batesNumber, pageNumber = 1, copyFile, numberOfImages, linesToWriteOpt)
 					Case LoadFileType.FileFormat.IPRO
-						Me.WriteIproImageLine(batesNumber, pageNumber, copyFile)
+						Me.WriteIproImageLine(batesNumber, pageNumber, copyFile, linesToWriteOpt)
 					Case LoadFileType.FileFormat.IPRO_FullText
 						Dim currentPageFirstByteNumber As Long
 						If fullTextReader Is Nothing Then
 							If pageNumber = 1 AndAlso expectingTextForPage Then _parent.WriteWarning(String.Format("Could not retrieve full text for document '{0}'", batesNumber))
 						Else
-							Dim pageText As New System.Text.StringBuilder
 							If pageNumber = 1 Then
 								currentPageFirstByteNumber = 0
 							Else
 								currentPageFirstByteNumber = fullTextReader.BaseStream.Position
 							End If
-							_imageFileWriter.Write("FT,")
-							_imageFileWriter.Write(batesNumber)
-							_imageFileWriter.Write(",1,1,")
+							
+							lineToWrite.Append("FT,")
+							lineToWrite.Append(batesNumber)
+							lineToWrite.Append(",1,1,")
 							Select Case pageOffset
 								Case Int64.MinValue
 									Dim c As Int32 = fullTextReader.Read
 									While c <> -1
-										_imageFileWriter.Write(Me.GetLfpFullTextTransform(ChrW(c)))
+										lineToWrite.Append(Me.GetLfpFullTextTransform(ChrW(c)))
 										c = fullTextReader.Read
 									End While
 								Case Else
 									Dim i As Int32 = 0
 									Dim c As Int32 = fullTextReader.Read
 									While i < pageOffset AndAlso c <> -1
-										_imageFileWriter.Write(Me.GetLfpFullTextTransform(ChrW(c)))
+										lineToWrite.Append(Me.GetLfpFullTextTransform(ChrW(c)))
 										c = fullTextReader.Read
 										i += 1
 									End While
 							End Select
-							_imageFileWriter.Write(vbNewLine)
+							lineToWrite.Append(vbNewLine)
 						End If
-						_imageFileWriter.Flush()
-						Me.WriteIproImageLine(batesNumber, pageNumber, copyFile)
+						While (Not linesToWriteOpt.TryAdd(batesNumber, lineToWrite.ToString))
+						End While
+						Me.WriteIproImageLine(batesNumber, pageNumber, copyFile, linesToWriteOpt)
 				End Select
 			Catch ex As System.IO.IOException
 				Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Image, ex)
 			End Try
 		End Sub
 
-		Private Sub WriteIproImageLine(ByVal batesNumber As String, ByVal pageNumber As Int32, ByVal fullFilePath As String)
+		Private Sub WriteIproImageLine(ByVal batesNumber As String, ByVal pageNumber As Int32, ByVal fullFilePath As String, ByRef linesToWriteOpt As ConcurrentDictionary(Of String, String))
 			Dim linefactory As New Exporters.LineFactory.SimpleIproImageLineFactory(batesNumber, pageNumber, fullFilePath, Me.CurrentVolumeLabel, Me.Settings.TypeOfImage.Value)
-			linefactory.WriteLine(_imageFileWriter)
+			linefactory.WriteLine(_imageFileWriter, linesToWriteOpt)
 		End Sub
 
-		Private Sub WriteOpticonLine(ByVal batesNumber As String, ByVal firstDocument As Boolean, ByVal copyFile As String, ByVal imageCount As Int32)
+		Private Sub WriteOpticonLine(ByVal batesNumber As String, ByVal firstDocument As Boolean, ByVal copyFile As String, ByVal imageCount As Int32, ByRef linesToWriteOpt As ConcurrentDictionary(Of String, String))
 			Dim log As New System.Text.StringBuilder
 			log.AppendFormat("{0},{1},{2},", batesNumber, Me.CurrentVolumeLabel, copyFile)
 			If firstDocument Then log.Append("Y")
 			log.Append(",,,")
 			If firstDocument Then log.Append(imageCount)
-			_imageFileWriter.WriteLine(log.ToString)
+			log.Append(vbNewLine)
+			While (Not linesToWriteOpt.TryAdd(batesNumber, log.ToString))
+			End While
 		End Sub
 #End Region
 
@@ -1027,8 +1036,8 @@ Namespace kCura.WinEDDS
 			End Try
 		End Sub
 
-		Private Function ManageLongText(ByVal sourceValue As Object, ByVal textField As ViewFieldInfo, ByRef downloadedTextFilePath As String, ByVal artifact As Exporters.ObjectExportInfo, ByVal startBound As String, ByVal endBound As String) As Long
-			_nativeFileWriter.Write(startBound)
+		Private Function ManageLongText(ByRef lineToWrite As System.Text.StringBuilder, ByVal sourceValue As Object, ByVal textField As ViewFieldInfo, ByRef downloadedTextFilePath As String, ByVal artifact As Exporters.ObjectExportInfo, ByVal startBound As String, ByVal endBound As String) As Long
+			lineToWrite.Append(startBound)
 			If TypeOf sourceValue Is Byte() Then
 				sourceValue = System.Text.Encoding.Unicode.GetString(DirectCast(sourceValue, Byte()))
 			End If
@@ -1091,12 +1100,12 @@ Namespace kCura.WinEDDS
 						textLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & artifact.FullTextFileName(Me.NameTextFilesAfterIdentifier, _parent.NameTextAndNativesAfterBegBates)
 				End Select
 				If Settings.LoadFileIsHtml Then
-					_nativeFileWriter.Write("<a href='" & textLocation & "' target='_textwindow'>" & textLocation & "</a>")
+					lineToWrite.Append("<a href='" & textLocation & "' target='_textwindow'>" & textLocation & "</a>")
 				Else
-					_nativeFileWriter.Write(textLocation)
+					lineToWrite.Append(textLocation)
 				End If
 			End If
-			_nativeFileWriter.Write(endBound)
+			lineToWrite.Append(endBound)
 			Return retval
 		End Function
 
@@ -1114,23 +1123,24 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Public Sub UpdateLoadFile(ByVal record As Object(), ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByRef fullTextTempFile As String, ByVal doc As Exporters.ObjectExportInfo, ByRef extractedTextByteCount As Int64)
-			If _nativeFileWriter Is Nothing Then Exit Sub
+		Public Function UpdateLoadFile(ByVal record As Object(), ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByRef fullTextTempFile As String, ByVal doc As Exporters.ObjectExportInfo, ByRef extractedTextByteCount As Int64) As String
+			If _nativeFileWriter Is Nothing Then Return ""
+			Dim lineToWrite As New System.Text.StringBuilder
 			Dim count As Int32
 			Dim fieldValue As String
 			Dim columnName As String
 			Dim location As String = nativeLocation
 			Dim rowPrefix As String = _loadFileFormatter.RowPrefix
-			If Not String.IsNullOrEmpty(rowPrefix) Then _nativeFileWriter.Write(rowPrefix)
+			If Not String.IsNullOrEmpty(rowPrefix) Then lineToWrite.Append(rowPrefix)
 			For count = 0 To _parent.Columns.Count - 1
 				Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
 				columnName = field.AvfColumnName
 				Dim val As Object = record(_ordinalLookup(columnName))
 				If field.FieldType = Relativity.FieldTypeHelper.FieldType.Text OrElse field.FieldType = Relativity.FieldTypeHelper.FieldType.OffTableText Then
 					If Me.Settings.LoadFileIsHtml Then
-						extractedTextByteCount += Me.ManageLongText(val, field, fullTextTempFile, doc, "<td>", "</td>")
+						extractedTextByteCount += Me.ManageLongText(lineToWrite, val, field, fullTextTempFile, doc, "<td>", "</td>")
 					Else
-						extractedTextByteCount += Me.ManageLongText(val, field, fullTextTempFile, doc, _settings.QuoteDelimiter, _settings.QuoteDelimiter)
+						extractedTextByteCount += Me.ManageLongText(lineToWrite, val, field, fullTextTempFile, doc, _settings.QuoteDelimiter, _settings.QuoteDelimiter)
 					End If
 				Else
 					If TypeOf val Is Byte() Then val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
@@ -1160,24 +1170,25 @@ Namespace kCura.WinEDDS
 					ElseIf field.IsCodeOrMulticodeField Then
 						fieldValue = Me.GetCodeValueString(fieldValue)
 					End If
-					_nativeFileWriter.Write(_loadFileFormatter.TransformToCell(fieldValue))
+					lineToWrite.Append(_loadFileFormatter.TransformToCell(fieldValue))
 				End If
 				If Not count = _parent.Columns.Count - 1 AndAlso Not Me.Settings.LoadFileIsHtml Then
-					_nativeFileWriter.Write(_settings.RecordDelimiter)
+					lineToWrite.Append(_settings.RecordDelimiter)
 				End If
 			Next
 			Dim imagesCell As String = _loadFileFormatter.CreateImageCell(doc)
-			If Not String.IsNullOrEmpty(imagesCell) Then _nativeFileWriter.Write(imagesCell)
+			If Not String.IsNullOrEmpty(imagesCell) Then lineToWrite.Append(imagesCell)
 			If _settings.ExportNative Then
 				If Me.Settings.VolumeInfo.CopyNativeFilesFromRepository Then
-					_nativeFileWriter.Write(_loadFileFormatter.CreateNativeCell(location, doc))
+					lineToWrite.Append(_loadFileFormatter.CreateNativeCell(location, doc))
 				Else
-					_nativeFileWriter.Write(_loadFileFormatter.CreateNativeCell(doc.NativeSourceLocation, doc))
+					lineToWrite.Append(_loadFileFormatter.CreateNativeCell(doc.NativeSourceLocation, doc))
 				End If
 			End If
-			If Not String.IsNullOrEmpty(_loadFileFormatter.RowSuffix) Then _nativeFileWriter.Write(_loadFileFormatter.RowSuffix)
-			_nativeFileWriter.Write(vbNewLine)
-		End Sub
+			If Not String.IsNullOrEmpty(_loadFileFormatter.RowSuffix) Then lineToWrite.Append(_loadFileFormatter.RowSuffix)
+			lineToWrite.Append(vbNewLine)
+			return lineToWrite.ToString()
+		End Function
 
 		Private Function ToExportableDateString(ByVal val As Object, ByVal formatString As String) As String
 			Dim datetime As String = kCura.Utility.NullableTypesHelper.DBNullString(val)
@@ -1235,6 +1246,41 @@ Namespace kCura.WinEDDS
 			Return retVal
 
 		End Function
+
+		Public Sub WriteDatFile(ByVal linesToWriteDat As ConcurrentDictionary(Of Int32, String), ByRef artifacts As Exporters.ObjectExportInfo())
+			Dim lineToWrite As String = ""
+			linesToWriteDat.TryGetValue(-1, lineToWrite)
+			_nativeFileWriter.Write(lineToWrite)
+
+			For Each artifact As Exporters.ObjectExportInfo in artifacts
+				If linesToWriteDat.TryGetValue(artifact.ArtifactID, lineToWrite)
+					_nativeFileWriter.Write(lineToWrite)
+				End If
+			Next
+
+			Try
+				If Not _nativeFileWriter Is Nothing Then _nativeFileWriter.Flush()
+			Catch ex As Exception
+				Throw New Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Load, ex)
+			End Try
+		End Sub
+
+		Public Sub WriteOptFile(ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByRef artifacts As Exporters.ObjectExportInfo())
+			Dim lineToWrite As String = ""
+			For Each artifact As Exporters.ObjectExportInfo in artifacts
+				For Each image As WinEDDS.Exporters.ImageExportInfo in artifact.Images
+					If linesToWriteOpt.TryGetValue(image.BatesNumber, lineToWrite)
+						_imageFileWriter.Write(lineToWrite)
+					End If
+				Next
+			Next
+			
+			Try
+				If Not _imageFileWriter Is Nothing Then _imageFileWriter.Flush()
+			Catch ex As Exception
+				Throw New Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Image, ex)
+			End Try
+		End Sub
 
 		Public Sub UpdateVolume()
 			_currentVolumeSize = 0
