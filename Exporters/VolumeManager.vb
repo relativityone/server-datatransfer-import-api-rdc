@@ -495,10 +495,10 @@ Namespace kCura.WinEDDS
 								Exit While
 							Catch ex As System.Exception
 								If tries = 1 Then
-									_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & artifact.IdentifierValue, True)
+									_parent.WriteStatusLine(Windows.Process.EventType.Status, "Second attempt to download full text for document " & artifact.IdentifierValue, True)
 								ElseIf tries < maxTries Then
 									Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
-									_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
+									_parent.WriteStatusLine(Windows.Process.EventType.Status, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
 									System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 								Else
 									Throw
@@ -564,13 +564,11 @@ Namespace kCura.WinEDDS
 			End If
 			Try
 				If Not _hasWrittenColumnHeaderString AndAlso Not _nativeFileWriter Is Nothing Then
-					While (Not linesToWrite.TryAdd(-1, _columnHeaderString))
-					End While
+					linesToWrite.TryAdd(-1, _columnHeaderString)
 					_hasWrittenColumnHeaderString = True
 				End If
 				Dim lineToWrite As String = Me.UpdateLoadFile(artifact.Metadata, artifact.HasFullText, artifact.ArtifactID, nativeLocation, tempLocalFullTextFilePath, artifact, extractedTextFileLength)
-				While (Not linesToWrite.TryAdd(artifact.ArtifactID, lineToWrite))
-				End While
+				linesToWrite.TryAdd(artifact.ArtifactID, lineToWrite)
 			Catch ex As System.IO.IOException
 				Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Load, ex)
 			End Try
@@ -652,10 +650,10 @@ Namespace kCura.WinEDDS
 					Exit While
 				Catch ex As System.Exception
 					If tries = 1 Then
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & artifact.IdentifierValue, True)
+						_parent.WriteStatusLine(Windows.Process.EventType.Status, "Second attempt to download full text for document " & artifact.IdentifierValue, True)
 					ElseIf tries < maxTries Then
 						Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
+						_parent.WriteStatusLine(Windows.Process.EventType.Status, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
 						System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 					Else
 						Throw
@@ -828,10 +826,10 @@ Namespace kCura.WinEDDS
 					Exit While
 				Catch ex As System.Exception
 					If tries = 1 Then
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download image " & image.BatesNumber & " - exact error: " & ex.ToString, True)
+						_parent.WriteStatusLine(Windows.Process.EventType.Status, "Second attempt to download image " & image.BatesNumber & " - exact error: " & ex.ToString, True)
 					ElseIf tries < maxTries Then
 						Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download image " & image.BatesNumber & " failed - retrying in " & waitTime.ToString() & " seconds - exact error: " & ex.ToString, True)
+						_parent.WriteStatusLine(Windows.Process.EventType.Status, "Additional attempt to download image " & image.BatesNumber & " failed - retrying in " & waitTime.ToString() & " seconds - exact error: " & ex.ToString, True)
 						System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 					Else
 						Throw
@@ -918,8 +916,7 @@ Namespace kCura.WinEDDS
 							End Select
 							lineToWrite.Append(vbNewLine)
 						End If
-						While (Not linesToWriteOpt.TryAdd(batesNumber, lineToWrite.ToString))
-						End While
+						linesToWriteOpt.TryAdd(batesNumber, lineToWrite.ToString)
 						Me.WriteIproImageLine(batesNumber, pageNumber, copyFile, linesToWriteOpt)
 				End Select
 			Catch ex As System.IO.IOException
@@ -939,8 +936,7 @@ Namespace kCura.WinEDDS
 			log.Append(",,,")
 			If firstDocument Then log.Append(imageCount)
 			log.Append(vbNewLine)
-			While (Not linesToWriteOpt.TryAdd(batesNumber, log.ToString))
-			End While
+			linesToWriteOpt.TryAdd(batesNumber, log.ToString)
 		End Sub
 #End Region
 
@@ -999,10 +995,10 @@ Namespace kCura.WinEDDS
 					Exit While
 				Catch ex As System.Exception
 					If tries = 1 Then
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download native for document " & artifact.IdentifierValue, True)
+						_parent.WriteStatusLine(Windows.Process.EventType.Status, "Second attempt to download native for document " & artifact.IdentifierValue, True)
 					ElseIf tries < maxTries Then
 						Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download native for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
+						_parent.WriteStatusLine(Windows.Process.EventType.Status, "Additional attempt to download native for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
 						System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 					Else
 						Throw

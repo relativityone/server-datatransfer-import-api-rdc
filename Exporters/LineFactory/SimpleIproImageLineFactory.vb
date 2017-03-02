@@ -104,9 +104,7 @@ Namespace kCura.WinEDDS.Exporters.LineFactory
 			lineToWrite.Append(";")
 			lineToWrite.Append(Me.IproImageFileType)
 			lineToWrite.Append(vbNewLine)
-
-			While (Not linesToWriteOpt.TryAdd(Me.ImageKey, lineToWrite.ToString))
-			End While
+			linesToWriteOpt.TryAdd(Me.ImageKey, lineToWrite.ToString)
 		End Sub
 
 #End Region
