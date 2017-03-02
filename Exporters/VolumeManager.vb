@@ -823,8 +823,8 @@ Namespace kCura.WinEDDS
 			While tries < maxTries AndAlso Not Me.Halt
 				tries += 1
 				Try
-					_downloadManager.DownloadFileForDocument(tempFile, image.FileGuid, image.SourceLocation, image.ArtifactID, _settings.CaseArtifactID.ToString)
 					image.TempLocation = tempFile
+					_downloadManager.DownloadFileForDocument(tempFile, image.FileGuid, image.SourceLocation, image.ArtifactID, _settings.CaseArtifactID.ToString)
 					Exit While
 				Catch ex As System.Exception
 					If tries = 1 Then
@@ -973,6 +973,7 @@ Namespace kCura.WinEDDS
 			If Not Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document AndAlso (Not artifact.FileID > 0 OrElse artifact.NativeSourceLocation.Trim = String.Empty) Then Return 0
 			Dim nativeFileName As String = Me.GetNativeFileName(artifact)
 			Dim tempFile As String = Me.GetLocalNativeFilePath(artifact, nativeFileName)
+			
 			Dim start As Int64 = System.DateTime.Now.Ticks
 			If System.IO.File.Exists(tempFile) Then
 				If Settings.Overwrite Then
@@ -989,6 +990,7 @@ Namespace kCura.WinEDDS
 			While tries < maxTries AndAlso Not Me.Halt
 				tries += 1
 				Try
+					artifact.NativeTempLocation = tempFile
 					If Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document Then
 						_downloadManager.DownloadFileForDocument(tempFile, artifact.NativeFileGuid, artifact.NativeSourceLocation, artifact.ArtifactID, _settings.CaseArtifactID.ToString)
 					Else
@@ -1007,7 +1009,7 @@ Namespace kCura.WinEDDS
 					End If
 				End Try
 			End While
-			artifact.NativeTempLocation = tempFile
+			
 			_statistics.FileTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 			Return kCura.Utility.File.Instance.Length(tempFile)
 		End Function
