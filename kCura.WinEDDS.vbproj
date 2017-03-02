@@ -449,6 +449,9 @@
     <Compile Include="Exporters\IExporter.vb" />
     <Compile Include="Exporters\IExporterStatusNotification.vb" />
     <Compile Include="Exporters\IUserNotification.vb" />
+    <Compile Include="Exporters\LoadFileCellFormatters\IFieldNameProvider.vb" />
+    <Compile Include="Exporters\LoadFileCellFormatters\ILoadFileHeaderFormatterFactory.vb" />
+    <Compile Include="Exporters\LoadFileCellFormatters\ILoadFileHeaderFormatter.vb" />
     <Compile Include="Exporters\NullUserNotification.vb" />
     <Compile Include="Exporters\TempTextFileDeletor.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\DelimitedCellFormatter.vb" />
@@ -550,6 +553,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="PackageHelper.vb" />
+    <Compile Include="PreviewChoicesHelper.vb" />
     <Compile Include="Process\ApplicationDeploymentProcess.vb">
       <SubType>Code</SubType>
     </Compile>

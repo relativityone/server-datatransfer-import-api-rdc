@@ -13,6 +13,7 @@ Namespace kCura.WinEDDS
 
 #Region "Members"
 
+		Private _loadFileFormatterFactory As ILoadFileHeaderFormatterFactory
 		Private _fieldProviderCache As IFieldProviderCache
 		Private _searchManager As Service.Export.ISearchManager
 		Private _productionManager As Service.Export.IProductionManager
@@ -110,11 +111,12 @@ Namespace kCura.WinEDDS
 
 #Region "Constructors"
 
-		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller)
-			Me.New(exportFile, processController, New Service.Export.WebApiServiceFactory(exportFile))
+		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory)
+			Me.New(exportFile, processController, New Service.Export.WebApiServiceFactory(exportFile), loadFileFormatterFactory)
 		End Sub
 
-		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller, serviceFactory As Service.Export.IServiceFactory)
+		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller, serviceFactory As Service.Export.IServiceFactory,
+					   loadFileFormatterFactory As ILoadFileHeaderFormatterFactory)
 			_searchManager = serviceFactory.CreateSearchManager()
 			_downloadHandler = serviceFactory.CreateExportFileDownloader()
 			_productionManager = serviceFactory.CreateProductionManager()
@@ -130,6 +132,7 @@ Namespace kCura.WinEDDS
 			Settings = exportFile
 			Settings.FolderPath = Me.Settings.FolderPath + "\"
 			ExportNativesToFileNamedFrom = exportFile.ExportNativesToFileNamedFrom
+			_loadFileFormatterFactory = loadFileFormatterFactory
 		End Sub
 
 #End Region
@@ -149,6 +152,11 @@ Namespace kCura.WinEDDS
 			End Try
 			Return Me.ErrorLogFileName = ""
 		End Function
+
+		Protected Overridable Function GetHeaderColName(fieldInfo As ViewFieldInfo) As String
+			return fieldInfo.DisplayName
+		End Function
+
 
 		Private Function IsExtractedTextSelected() As Boolean
 			For Each vfi As ViewFieldInfo In Me.Settings.SelectedViewFields
@@ -641,17 +649,6 @@ Namespace kCura.WinEDDS
 		''' </returns>
 		''' <remarks></remarks>
 		Private Function LoadColumns() As String
-			Dim retString As New System.Text.StringBuilder
-			If _exportFile.LoadFileIsHtml Then
-				retString.Append("<html><head><title>" & System.Web.HttpUtility.HtmlEncode(_exportFile.CaseInfo.Name) & "</title>")
-				retString.Append("<style type='text/css'>" & vbNewLine)
-				retString.Append("td {vertical-align: top;background-color:#EEEEEE;}" & vbNewLine)
-				retString.Append("th {color:#DDDDDD;text-align:left;}" & vbNewLine)
-				retString.Append("table {background-color:#000000;}" & vbNewLine)
-				retString.Append("</style>" & vbNewLine)
-				retString.Append("</head><body>" & vbNewLine)
-				retString.Append("<table width='100%'><tr>" & vbNewLine)
-			End If
 			For Each field As WinEDDS.ViewFieldInfo In Me.Settings.SelectedViewFields
 				Me.Settings.ExportFullText = Me.Settings.ExportFullText OrElse field.Category = Relativity.FieldCategory.FullText
 			Next
@@ -672,26 +669,9 @@ Namespace kCura.WinEDDS
 					_columns.Add(New CoalescedTextViewField(Me.Settings.SelectedTextFields.First, False))
 				End If
 			End If
-			For i As Int32 = 0 To _columns.Count - 1
-				Dim field As ViewFieldInfo = DirectCast(_columns(i), ViewFieldInfo)
-				If _exportFile.LoadFileIsHtml Then
-					retString.AppendFormat("{0}{1}{2}", "<th>", System.Web.HttpUtility.HtmlEncode(field.DisplayName), "</th>")
-				Else
-					retString.AppendFormat("{0}{1}{0}", Me.Settings.QuoteDelimiter, field.DisplayName)
-					If i < _columns.Count - 1 Then retString.Append(Me.Settings.RecordDelimiter)
-				End If
-			Next
 
-			If Not Me.Settings.LoadFileIsHtml Then retString = New System.Text.StringBuilder(retString.ToString.TrimEnd(Me.Settings.RecordDelimiter))
-			If _exportFile.LoadFileIsHtml Then
-				If Me.Settings.ExportImages AndAlso Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document Then retString.Append("<th>Image Files</th>")
-				If Me.Settings.ExportNative Then retString.Append("<th>Native Files</th>")
-				retString.Append(vbNewLine & "</tr>" & vbNewLine)
-			Else
-				If Me.Settings.ExportNative Then retString.AppendFormat("{2}{0}{1}{0}", Me.Settings.QuoteDelimiter, "FILE_PATH", Me.Settings.RecordDelimiter)
-			End If
-			retString.Append(System.Environment.NewLine)
-			Return retString.ToString
+			Dim header As String = _loadFileFormatterFactory.Create(Settings).GetHeader(_columns.Cast(Of ViewFieldInfo)().ToList())
+			Return header
 		End Function
 
 		Private Function RetrieveImagesForDocuments(ByVal documentArtifactIDs As Int32(), ByVal productionOrderList As Pair()) As System.Data.DataTable

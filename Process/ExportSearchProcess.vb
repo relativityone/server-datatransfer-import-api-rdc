@@ -1,7 +1,10 @@
+Imports kCura.WinEDDS.Exporters
+
 Namespace kCura.WinEDDS
 	Public Class ExportSearchProcess
 		Inherits kCura.Windows.Process.ProcessBase
 
+		Private ReadOnly _loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory
 		Public ExportFile As ExportFile
 		Private WithEvents _searchExporter As kCura.WinEDDS.Exporter
 		Private _startTime As System.DateTime
@@ -11,11 +14,15 @@ Namespace kCura.WinEDDS
 
 		Public Property UserNotification As Exporters.IUserNotification
 
+		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory)
+			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory
+		End Sub
+
 		Protected Overrides Sub Execute()
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
-			_searchExporter = New Exporter(Me.ExportFile, Me.ProcessController, New Service.Export.WebApiServiceFactory(Me.ExportFile)) With {.InteractionManager = UserNotification}
+			_searchExporter = New Exporter(Me.ExportFile, Me.ProcessController, New Service.Export.WebApiServiceFactory(Me.ExportFile), _loadFileHeaderFormatterFactory) With {.InteractionManager = UserNotification}
 
 			If Not _searchExporter.ExportSearch() Then
 				Me.ProcessObserver.RaiseProcessCompleteEvent(False, _searchExporter.ErrorLogFileName)

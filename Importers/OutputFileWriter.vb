@@ -37,6 +37,12 @@
 			_dataGridFileWriterRollbackPos = OutputDataGridFileWriter.BaseStream.Length
 		End Sub
 
+		Public ReadOnly Property CombinedStreamLength As Long
+			Get
+				Return OutputNativeFileWriter.BaseStream.Length + OutputDataGridFileWriter.BaseStream.Length
+			End Get
+		End Property
+
 		Public Sub RollbackDocumentLineWrites()
 			Close()
 
