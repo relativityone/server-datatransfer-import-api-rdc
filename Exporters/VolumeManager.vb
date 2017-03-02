@@ -916,7 +916,7 @@ Namespace kCura.WinEDDS
 							End Select
 							lineToWrite.Append(vbNewLine)
 						End If
-						linesToWriteOpt.TryAdd(batesNumber, lineToWrite.ToString)
+						linesToWriteOpt.TryAdd("FT" + batesNumber, lineToWrite.ToString)
 						Me.WriteIproImageLine(batesNumber, pageNumber, copyFile, linesToWriteOpt)
 				End Select
 			Catch ex As System.IO.IOException
@@ -1267,6 +1267,13 @@ Namespace kCura.WinEDDS
 			Dim lineToWrite As String = ""
 			For Each artifact As Exporters.ObjectExportInfo in artifacts
 				For Each image As WinEDDS.Exporters.ImageExportInfo in artifact.Images
+
+					'If IPRO Full Text append FT Lines
+					If linesToWriteOpt.TryGetValue("FT" + image.BatesNumber, lineToWrite)
+						_imageFileWriter.Write(lineToWrite)
+					End If
+
+					'Otherwise go and grab the Image line
 					If linesToWriteOpt.TryGetValue(image.BatesNumber, lineToWrite)
 						_imageFileWriter.Write(lineToWrite)
 					End If
