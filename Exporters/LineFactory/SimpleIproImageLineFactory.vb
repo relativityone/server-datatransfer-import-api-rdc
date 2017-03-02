@@ -89,7 +89,6 @@ Namespace kCura.WinEDDS.Exporters.LineFactory
 		Public Overrides Sub WriteLine(ByVal stream As System.IO.StreamWriter, ByRef linesToWriteOpt As ConcurrentDictionary(Of String, String))
 			Dim lineToWrite As New System.Text.StringBuilder
 			lineToWrite.Append(Me.ImportCodeIdentifier)
-			lineToWrite.Append(Me.ImportCodeIdentifier)
 			lineToWrite.Append(",")
 			lineToWrite.Append(Me.ImageKey)
 			lineToWrite.Append(",")
