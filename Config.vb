@@ -41,6 +41,7 @@ Namespace kCura.WinEDDS
 							If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")
 							If Not tempDict.Contains("CreateFoldersInWebAPI") Then tempDict.Add("CreateFoldersInWebAPI", "True")
 							If Not tempDict.Contains("ForceWebUpload") Then tempDict.Add("ForceWebUpload", "False")
+							If Not tempDict.Contains(NameOf(LoadImportedFullTextFromServer)) Then tempDict.Add(NameOf(LoadImportedFullTextFromServer), "False")
 							If Not tempDict.Contains(NameOf(UsePipeliningForNativeAndObjectImports)) Then tempDict.Add(NameOf(UsePipeliningForNativeAndObjectImports), "False")
 							If Not tempDict.Contains(NameOf(UsePipeliningForFileIdAndCopy)) Then tempDict.Add(NameOf(UsePipeliningForFileIdAndCopy), "False")
 								If Not tempDict.Contains(NameOf(ProcessFormRefreshRate)) Then tempDict.Add(NameOf(ProcessFormRefreshRate), "0")
@@ -179,6 +180,11 @@ Namespace kCura.WinEDDS
 		''' Please do not use or document - this is an internal toggle
 		''' </summary>
 		''' <returns></returns>
+		Friend Shared ReadOnly Property LoadImportedFullTextFromServer As Boolean
+			Get
+				Return CType(ConfigSettings(NameOf(LoadImportedFullTextFromServer)), Boolean)
+			End Get
+		End Property
 		Friend Shared ReadOnly Property DisableTextFileEncodingCheck As Boolean
 			Get
 				Try
