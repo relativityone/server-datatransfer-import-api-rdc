@@ -1743,6 +1743,7 @@ Namespace kCura.WinEDDS
 			If _errorLinesFileLocation Is Nothing OrElse _errorLinesFileLocation = "" OrElse Not System.IO.File.Exists(_errorLinesFileLocation) Then
 				_errorLinesFileLocation = _artifactReader.ManageErrorRecords(_errorMessageFileLocation, _prePushErrorLineNumbersFileName)
 			End If
+			If _errorLinesFileLocation Is Nothing Then Exit Sub
 			Try
 				System.IO.File.Copy(_errorLinesFileLocation, exportLocation, True)
 			Catch ex As Exception
