@@ -116,7 +116,11 @@ Namespace kCura.WinEDDS
 			Else
 				Try
 					System.IO.File.Copy(remoteLocation, localFilePath, True)
-					_locationAccessMatrix.Add(remoteLocationKey, FileAccessType.Direct)
+					Try
+						_locationAccessMatrix.Add(remoteLocationKey, FileAccessType.Direct)
+					Catch ex As Exception
+						'Noop
+					End Try
 					Return True
 				Catch ex As Exception
 					Return Me.WebDownloadFile(localFilePath, artifactID, remoteFileGuid, appID, remoteLocationKey, False, -1, fileID, fileFieldArtifactID)
@@ -223,7 +227,13 @@ Namespace kCura.WinEDDS
 				If length <> actualLength AndAlso length > 0 Then
 					Throw New kCura.WinEDDS.Exceptions.WebDownloadCorruptException("Error retrieving data from distributed server; expecting " & length & " bytes and received " & actualLength)
 				End If
-				If Not remotelocationkey Is Nothing Then _locationAccessMatrix.Add(remotelocationkey, FileAccessType.Web)
+				If Not remotelocationkey Is Nothing Then
+					Try
+						_locationAccessMatrix.Add(remotelocationkey, FileAccessType.Web)
+					Catch ex As Exception
+						'Noop
+					End Try
+				End If
 				TotalWebTime += System.DateTime.Now.Ticks - now
 				Return True
 			Catch ex As DistributedReLoginException
