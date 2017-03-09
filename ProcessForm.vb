@@ -349,6 +349,7 @@ Namespace kCura.Windows.Process
 		Private _hasClickedStop As Boolean = False
 		Private _summaryString As System.Text.StringBuilder
 		Private _cancelled As Boolean = False
+		Private Shared _summaryLock As Object = New Object()
 
 		Private Property NumberOfWarnings As Long
 		Private Property ShowWarningPopup As Boolean
@@ -537,52 +538,54 @@ Namespace kCura.Windows.Process
 		End Sub
 
 		Private Sub BuildOutSummary(evt As kCura.Windows.Process.ProcessProgressEvent)
-			If evt Is Nothing Then evt = _lastEvent
-			Dim stubDate As DateTime
-			Dim totalRecords, totalRecordsProcessed As Int32
-			If evt.TotalRecords > Int32.MaxValue Then
-				totalRecordsProcessed = CType((evt.TotalRecordsProcessed / evt.TotalRecords) * Int32.MaxValue, Int32)
-				totalRecords = Int32.MaxValue
-			Else
-				totalRecords = CType(evt.TotalRecords, Int32)
-				totalRecordsProcessed = CType(evt.TotalRecordsProcessed, Int32)
-			End If
-			_progressBar.Minimum = 0
-			_progressBar.Maximum = totalRecords
-			_progressBar.Value = totalRecordsProcessed
-			_overalProgressLabel.Text = evt.TotalRecordsProcessedDisplay + " of " + evt.TotalRecordsDisplay + " processed"
-
-			NumberOfWarnings = evt.TotalRecordsProcessedWithWarnings
-
-            '_summaryOutput.Text = ""
-            WriteSummaryLine("Start Time: " + evt.StartTime.ToLongTimeString)
-			If evt.EndTime <> stubDate Then
-				WriteSummaryLine("Finish Time: " + evt.EndTime.ToLongTimeString)
-				WriteSummaryLine("Duration: " + (Me.GetTimeSpanString(evt.EndTime.Subtract(evt.StartTime))))
-			Else
-				Dim duration As TimeSpan = DateTime.Now.Subtract(evt.StartTime)
-				WriteSummaryLine("Duration: " + (Me.GetTimeSpanString(duration)))
-				WriteSummaryLine("")
-				If evt.TotalRecordsProcessed > 0 Then
-					Dim timeToCompletionString As String = Me.GetTimeSpanString(New TimeSpan(CType(duration.Ticks / CType(evt.TotalRecordsProcessed, Double) * CType((evt.TotalRecords - evt.TotalRecordsProcessed), Double), Long)))
-					WriteSummaryLine("Time Left to Completion: " + timeToCompletionString)
+			SyncLock(_summaryLock)
+				If evt Is Nothing Then evt = _lastEvent
+				Dim stubDate As DateTime
+				Dim totalRecords, totalRecordsProcessed As Int32
+				If evt.TotalRecords > Int32.MaxValue Then
+					totalRecordsProcessed = CType((evt.TotalRecordsProcessed / evt.TotalRecords) * Int32.MaxValue, Int32)
+					totalRecords = Int32.MaxValue
+				Else
+					totalRecords = CType(evt.TotalRecords, Int32)
+					totalRecordsProcessed = CType(evt.TotalRecordsProcessed, Int32)
 				End If
-			End If
-			WriteSummaryLine("")
-			WriteSummaryLine("Total Records: " + evt.TotalRecords.ToString)
-			WriteSummaryLine("Total Processed: " + evt.TotalRecordsProcessed.ToString)
-			WriteSummaryLine("Total Processed w/Warnings: " + evt.TotalRecordsProcessedWithWarnings.ToString)
-			If evt.TotalRecordsProcessedWithErrors > 0 Then
-				_summaryOutput.ForeColor = System.Drawing.Color.Red
-			End If
-			WriteSummaryLine("Total Processed w/Errors: " + evt.TotalRecordsProcessedWithErrors.ToString)
-			If Not evt.StatusSuffixEntries Is Nothing Then
+				_progressBar.Minimum = 0
+				_progressBar.Maximum = totalRecords
+				_progressBar.Value = totalRecordsProcessed
+				_overalProgressLabel.Text = evt.TotalRecordsProcessedDisplay + " of " + evt.TotalRecordsDisplay + " processed"
+
+				NumberOfWarnings = evt.TotalRecordsProcessedWithWarnings
+
+							'_summaryOutput.Text = ""
+							WriteSummaryLine("Start Time: " + evt.StartTime.ToLongTimeString)
+				If evt.EndTime <> stubDate Then
+					WriteSummaryLine("Finish Time: " + evt.EndTime.ToLongTimeString)
+					WriteSummaryLine("Duration: " + (Me.GetTimeSpanString(evt.EndTime.Subtract(evt.StartTime))))
+				Else
+					Dim duration As TimeSpan = DateTime.Now.Subtract(evt.StartTime)
+					WriteSummaryLine("Duration: " + (Me.GetTimeSpanString(duration)))
+					WriteSummaryLine("")
+					If evt.TotalRecordsProcessed > 0 Then
+						Dim timeToCompletionString As String = Me.GetTimeSpanString(New TimeSpan(CType(duration.Ticks / CType(evt.TotalRecordsProcessed, Double) * CType((evt.TotalRecords - evt.TotalRecordsProcessed), Double), Long)))
+						WriteSummaryLine("Time Left to Completion: " + timeToCompletionString)
+					End If
+				End If
 				WriteSummaryLine("")
-				For Each title As String In evt.StatusSuffixEntries.Keys
-					WriteSummaryLine(String.Format("{0}: {1}", title, evt.StatusSuffixEntries(title).ToString))
-				Next
-			End If
-			UpdateSummaryText()
+				WriteSummaryLine("Total Records: " + evt.TotalRecords.ToString)
+				WriteSummaryLine("Total Processed: " + evt.TotalRecordsProcessed.ToString)
+				WriteSummaryLine("Total Processed w/Warnings: " + evt.TotalRecordsProcessedWithWarnings.ToString)
+				If evt.TotalRecordsProcessedWithErrors > 0 Then
+					_summaryOutput.ForeColor = System.Drawing.Color.Red
+				End If
+				WriteSummaryLine("Total Processed w/Errors: " + evt.TotalRecordsProcessedWithErrors.ToString)
+				If Not evt.StatusSuffixEntries Is Nothing Then
+					WriteSummaryLine("")
+					For Each title As String In evt.StatusSuffixEntries.Keys
+						WriteSummaryLine(String.Format("{0}: {1}", title, evt.StatusSuffixEntries(title).ToString))
+					Next
+				End If
+				UpdateSummaryText()
+			End SyncLock
 		End Sub
 
 		Private Sub _processObserver_OnProcessComplete(ByVal closeForm As Boolean, ByVal exportFilePath As String, ByVal exportLog As Boolean) Handles _processObserver.OnProcessComplete
