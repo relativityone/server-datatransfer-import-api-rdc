@@ -1,3 +1,4 @@
+Imports System.Collections.Concurrent
 Imports kCura.WinEDDS.Service.Export
 Namespace kCura.WinEDDS
 	Public Class FileDownloader
@@ -16,7 +17,7 @@ Namespace kCura.WinEDDS
 		Private _authenticationToken As String
 		Private _userManager As kCura.WinEDDS.Service.UserManager
 		Private _isBcpEnabled As Boolean = True
-		Private Shared _locationAccessMatrix As New System.Collections.Hashtable
+		Private Shared _locationAccessMatrix As New ConcurrentDictionary(Of String, Object)
 
 		Public Sub SetDesintationFolderName(ByVal value As String)
 			_destinationFolderPath = value
@@ -38,7 +39,7 @@ Namespace kCura.WinEDDS
 			_authenticationToken = authenticationToken
 			_userManager = New kCura.WinEDDS.Service.UserManager(credentials, cookieContainer)
 
-			If _locationAccessMatrix Is Nothing Then _locationAccessMatrix = New System.Collections.Hashtable
+			If _locationAccessMatrix Is Nothing Then _locationAccessMatrix = New ConcurrentDictionary(Of String, Object)
 		End Sub
 
 		Private Sub SetType(ByVal destFolderPath As String)
@@ -103,8 +104,10 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 			Dim remoteLocationKey As String = remoteLocation.Substring(0, remoteLocation.LastIndexOf("\")).TrimEnd("\"c) & "\"
-			If _locationAccessMatrix.Contains(remoteLocationKey) Then
-				Select Case CType(_locationAccessMatrix(remoteLocationKey), FileAccessType)
+			Dim accessType As Object = New Object()
+			Dim keyExists As Boolean = _locationAccessMatrix.TryGetValue(remoteLocationKey, accessType)
+			If keyExists Then
+				Select Case CType(accessType, FileAccessType)
 					Case FileAccessType.Direct
 						Me.UploaderType = FileAccessType.Direct
 						System.IO.File.Copy(remoteLocation, localFilePath, True)
@@ -116,7 +119,7 @@ Namespace kCura.WinEDDS
 			Else
 				Try
 					System.IO.File.Copy(remoteLocation, localFilePath, True)
-					_locationAccessMatrix.Add(remoteLocationKey, FileAccessType.Direct)
+					_locationAccessMatrix.TryAdd(remoteLocationKey, FileAccessType.Direct)
 					Return True
 				Catch ex As Exception
 					Return Me.WebDownloadFile(localFilePath, artifactID, remoteFileGuid, appID, remoteLocationKey, False, -1, fileID, fileFieldArtifactID)
@@ -223,7 +226,7 @@ Namespace kCura.WinEDDS
 				If length <> actualLength AndAlso length > 0 Then
 					Throw New kCura.WinEDDS.Exceptions.WebDownloadCorruptException("Error retrieving data from distributed server; expecting " & length & " bytes and received " & actualLength)
 				End If
-				If Not remotelocationkey Is Nothing Then _locationAccessMatrix.Add(remotelocationkey, FileAccessType.Web)
+				If Not remotelocationkey Is Nothing Then _locationAccessMatrix.TryAdd(remotelocationkey, FileAccessType.Web)
 				TotalWebTime += System.DateTime.Now.Ticks - now
 				Return True
 			Catch ex As DistributedReLoginException
