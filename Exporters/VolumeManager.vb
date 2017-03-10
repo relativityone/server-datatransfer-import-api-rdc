@@ -432,9 +432,13 @@ Namespace kCura.WinEDDS
 						End If
 						image.HasBeenCounted = True
 					Catch ex As System.Exception
-						image.TempLocation = ""
-						Me.LogFileExportError(ExportFileType.Image, artifact.IdentifierValue, image.FileGuid, ex.ToString)
-						imageSuccess = False
+						If TypeOf ex Is System.IO.FileNotFoundException AndAlso Me.Halt Then
+							Return -1 'Halt was set to true during DownloadImage call before file could be downloaded
+						Else 
+							image.TempLocation = ""
+							Me.LogFileExportError(ExportFileType.Image, artifact.IdentifierValue, image.FileGuid, ex.ToString)
+							imageSuccess = False
+						End If
 					End Try
 					_timekeeper.MarkEnd("VolumeManager_DownloadImage")
 				Next
@@ -454,7 +458,11 @@ Namespace kCura.WinEDDS
 					End If
 					artifact.HasCountedNative = True
 				Catch ex As System.Exception
-					Me.LogFileExportError(ExportFileType.Native, artifact.IdentifierValue, artifact.NativeFileGuid, ex.ToString)
+					If TypeOf ex Is System.IO.FileNotFoundException AndAlso Me.Halt Then
+						Return -1 'Halt was set to true during DownloadNative call before file could be downloaded
+					Else 
+						Me.LogFileExportError(ExportFileType.Native, artifact.IdentifierValue, artifact.NativeFileGuid, ex.ToString)
+					End If
 				End Try
 				_timekeeper.MarkEnd("VolumeManager_DownloadNative")
 			End If
@@ -464,7 +472,15 @@ Namespace kCura.WinEDDS
 			Dim extractedTextFileLength As Long = 0
 			If Me.Settings.ExportFullText AndAlso Me.Settings.ExportFullTextAsFile Then
 				Dim len As Int64 = 0
-				tempLocalFullTextFilePath = Me.CopySelectedLongTextToFile(artifact, len)
+				Try
+					tempLocalFullTextFilePath = Me.CopySelectedLongTextToFile(artifact, len)
+				Catch ex As Exception
+					If TypeOf ex Is System.IO.FileNotFoundException AndAlso Me.Halt Then
+						Return -1 'Halt was set to true during DownloadFullTextFile call before file could be downloaded
+					Else
+						Throw
+					End If
+				End Try
 				If Me.Settings.ExportFullTextAsFile Then
 					If Not artifact.HasCountedTextFile Then
 						totalFileSize += len
