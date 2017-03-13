@@ -441,7 +441,7 @@ Namespace kCura.WinEDDS
 
 		End Sub
 
-		Private Async Function RetrieveNatives(byVal natives As System.Data.DataView, ByVal productionArtifactID As Int32, ByVal documentArtifactIDs As Int32(), byVal maxTries As Integer) As Task(Of System.Data.DataView)
+		Private Async Function RetrieveNatives(ByVal natives As System.Data.DataView, ByVal productionArtifactID As Int32, ByVal documentArtifactIDs As Int32(), ByVal maxTries As Integer) As Task(Of System.Data.DataView)
 			return Await Task.Run(
 					Function() As System.Data.DataView
 						If Me.Settings.ExportNative Then
@@ -468,7 +468,7 @@ Namespace kCura.WinEDDS
 				)
 		End Function
 
-		Private Async Function RetrieveImages(byVal images As System.Data.DataView, ByVal documentArtifactIDs As Int32(), byVal maxTries As Integer) As Task(Of System.Data.DataView)
+		Private Async Function RetrieveImages(ByVal images As System.Data.DataView, ByVal documentArtifactIDs As Int32(), ByVal maxTries As Integer) As Task(Of System.Data.DataView)
 			return Await Task.Run(
 				Function()
 					If Me.Settings.ExportImages Then
@@ -486,7 +486,7 @@ Namespace kCura.WinEDDS
 				)
 		End Function
 
-		Private Async Function RetrieveProductions(byVal productionImages As System.Data.DataView, ByVal documentArtifactIDs As Int32(), byVal maxTries As Integer) As Task(Of System.Data.DataView)
+		Private Async Function RetrieveProductions(ByVal productionImages As System.Data.DataView, ByVal documentArtifactIDs As Int32(), ByVal maxTries As Integer) As Task(Of System.Data.DataView)
 			return Await Task.Run(
 				Function()
 					If Me.Settings.ExportImages Then
@@ -504,7 +504,7 @@ Namespace kCura.WinEDDS
 				)
 		End Function
 
-		Private Async Function ExportArtifactAsync(byVal artifact As ObjectExportInfo, byVal maxTries As Integer, ByVal docNum As Integer , ByVal numDocs As Integer) As Task
+		Private Async Function ExportArtifactAsync(ByVal artifact As ObjectExportInfo, ByVal maxTries As Integer, ByVal docNum As Integer , ByVal numDocs As Integer) As Task
 			 Await Task.Run(
 					Sub()
 					    _fileCount += CallServerWithRetry(Function()

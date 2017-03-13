@@ -86,7 +86,7 @@ Namespace kCura.WinEDDS.Exporters.LineFactory
 
 #Region "Virtual Method Implementation"
 
-		Public Overrides Sub WriteLine(ByVal stream As System.IO.StreamWriter, ByRef linesToWriteOpt As ConcurrentDictionary(Of String, String))
+		Public Overrides Sub WriteLine(ByVal stream As System.IO.StreamWriter, ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String))
 			Dim lineToWrite As New System.Text.StringBuilder
 			lineToWrite.Append(Me.ImportCodeIdentifier)
 			lineToWrite.Append(",")
