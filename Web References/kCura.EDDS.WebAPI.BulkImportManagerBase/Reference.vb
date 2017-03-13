@@ -553,6 +553,8 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private executionSourceField As ExecutionSource
         
+        Private billableField As Boolean
+        
         '''<remarks/>
         Public Property DisableUserSecurityCheck() As Boolean
             Get
@@ -680,6 +682,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             End Get
             Set
                 Me.executionSourceField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Billable() As Boolean
+            Get
+                Return Me.billableField
+            End Get
+            Set
+                Me.billableField = value
             End Set
         End Property
     End Class
@@ -1093,6 +1105,8 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
         
         Private executionSourceField As ExecutionSource
         
+        Private billableField As Boolean
+        
         '''<remarks/>
         Public Property Range() As LoadRange
             Get
@@ -1320,6 +1334,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             End Get
             Set
                 Me.executionSourceField = value
+            End Set
+        End Property
+        
+        '''<remarks/>
+        Public Property Billable() As Boolean
+            Get
+                Return Me.billableField
+            End Get
+            Set
+                Me.billableField = value
             End Set
         End Property
     End Class
