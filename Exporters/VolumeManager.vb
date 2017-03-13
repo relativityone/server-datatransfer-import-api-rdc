@@ -414,7 +414,6 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal linesToWrite As ConcurrentDictionary(Of Int32, String), ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal isRetryAttempt As Boolean) As Int64
-			If isRetryAttempt Then Me.ReInitializeAllStreams()
 			Dim totalFileSize As Int64 = 0
 			Dim loadFileBytes As Int64 = 0
 			Dim extractedTextFileSizeForVolume As Int64 = 0
