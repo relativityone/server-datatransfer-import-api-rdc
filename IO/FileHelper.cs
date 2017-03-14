@@ -9,6 +9,12 @@ namespace kCura.WinEDDS.Core.IO
 			return File.Create(filePath);
 		}
 
+		public FileStream Create(string filePath, bool append)
+		{
+			FileMode mode = append ? FileMode.Append : FileMode.Create;
+			return new FileStream(filePath, mode, FileAccess.ReadWrite, FileShare.None);
+		}
+
 		public void Delete(string filePath)
 		{
 			File.Delete(filePath);

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using ZetaLongPaths;
+using ZetaLongPaths.Native;
 
 namespace kCura.WinEDDS.Core.IO
 {
@@ -9,6 +10,22 @@ namespace kCura.WinEDDS.Core.IO
 		{
 			var fileInfo = new ZlpFileInfo(filePath);
 			return fileInfo.OpenCreate();
+		}
+
+		public FileStream Create(string filePath, bool append)
+		{
+			CreationDisposition disposition = append ? CreationDisposition.OpenExisting : CreationDisposition.CreateAlways;
+			ZetaLongPaths.Native.FileAccess fileAccess = ZetaLongPaths.Native.FileAccess.GenericRead | ZetaLongPaths.Native.FileAccess.GenericWrite;
+
+			var fileHandle = ZlpIOHelper.CreateFileHandle(filePath, disposition, fileAccess, ZetaLongPaths.Native.FileShare.None);
+			FileStream fileStream = new FileStream(fileHandle, System.IO.FileAccess.ReadWrite);
+
+			if (append)
+			{
+				fileStream.Seek(0L, SeekOrigin.End);
+			}
+
+			return fileStream;
 		}
 
 		public void Delete(string filePath)

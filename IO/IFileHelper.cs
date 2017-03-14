@@ -9,5 +9,6 @@ namespace kCura.WinEDDS.Core.IO
 		void Copy(string sourceFilePath, string destinationFilePath);
 		void Copy(string sourceFilePath, string destinationFilePath, bool overwrite);
 		bool Exists(string filePath);
+		FileStream Create(string filePath, bool append);
 	}
 }
