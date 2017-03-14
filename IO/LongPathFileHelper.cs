@@ -31,7 +31,10 @@ namespace kCura.WinEDDS.Core.IO
 
 		public void Delete(string filePath)
 		{
-			ZlpIOHelper.DeleteFile(filePath);
+			if (ZlpIOHelper.FileExists(filePath))
+			{
+				ZlpIOHelper.DeleteFile(filePath);
+			}
 		}
 
 		public void Copy(string sourceFilePath, string destinationFilePath)
@@ -47,6 +50,17 @@ namespace kCura.WinEDDS.Core.IO
 		public bool Exists(string filePath)
 		{
 			return ZlpIOHelper.FileExists(filePath);
+		}
+
+		public long GetFileSize(string filePath)
+		{
+			var fileInfo = new ZlpFileInfo(filePath);
+			return fileInfo.Length;
+		}
+
+		public void Move(string sourceFilePath, string destinationFilePath)
+		{
+			ZlpIOHelper.MoveFile(sourceFilePath, destinationFilePath);
 		}
 	}
 }
