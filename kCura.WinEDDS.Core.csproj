@@ -76,6 +76,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="ZetaLongPaths, Version=1.0.0.16, Culture=neutral, PublicKeyToken=b764f59068f31f38, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZetaLongPaths.1.0.0.16\lib\net40-full\ZetaLongPaths.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\Version\AssemblyInfo.cs">
@@ -86,6 +90,9 @@
     <Compile Include="Export\HtmlExportFileFormatter.cs" />
     <Compile Include="Export\FieldNameProvider.cs" />
     <Compile Include="Export\ExportFileFormatterFactory.cs" />
+    <Compile Include="IO\FileHelper.cs" />
+    <Compile Include="IO\IFileHelper.cs" />
+    <Compile Include="IO\LongPathFileHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.WinEDDS\kCura.WinEDDS.vbproj">
@@ -96,6 +103,9 @@
       <Project>{044a6424-bc90-46ce-8805-0053a44afcab}</Project>
       <Name>Relativity</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
