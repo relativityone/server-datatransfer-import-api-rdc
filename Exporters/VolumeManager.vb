@@ -1,4 +1,7 @@
 Imports System.Collections.Concurrent
+Imports kCura.Utility
+Imports kCura.WinEDDS.IO
+Imports kCura.WinEDDS.Service.Export
 
 Namespace kCura.WinEDDS
 	Public Class VolumeManager
@@ -38,6 +41,9 @@ Namespace kCura.WinEDDS
 		Private _halt As Boolean = False
 		Private _ordinalLookup As New System.Collections.Generic.Dictionary(Of String, Int32)
 		Private _loadFileFormatter As Exporters.ILoadFileCellFormatter
+		
+		Private _fileHelper As IFileHelper
+		Private _fileStreamFactory As IFileStreamFactory
 #End Region
 
 		Private Enum ExportFileType
@@ -143,10 +149,13 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Sub New(ByVal settings As ExportFile, ByVal rootDirectory As String, ByVal overWriteFiles As Boolean, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As Service.Export.IExportFileDownloader, ByVal t As kCura.Utility.Timekeeper, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics)
+		Public Sub New(ByVal settings As ExportFile, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As Service.Export.IExportFileDownloader, ByVal t As kCura.Utility.Timekeeper, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics, fileHelper As IFileHelper)
 			_settings = settings
 			_statistics = statistics
 			_parent = parent
+
+			_fileHelper = fileHelper
+			_fileStreamFactory = New FileStreamFactory(_fileHelper)
 
 			_timekeeper = t
 			_currentVolumeNumber = _settings.VolumeInfo.VolumeStartNumber
