@@ -90,10 +90,6 @@
     <Compile Include="Export\HtmlExportFileFormatter.cs" />
     <Compile Include="Export\FieldNameProvider.cs" />
     <Compile Include="Export\ExportFileFormatterFactory.cs" />
-    <Compile Include="IO\FileHelper.cs" />
-    <Compile Include="IO\FileStreamFactory.cs" />
-    <Compile Include="IO\IFileHelper.cs" />
-    <Compile Include="IO\IFileStreamFactory.cs" />
     <Compile Include="IO\LongPathFileHelper.cs" />
   </ItemGroup>
   <ItemGroup>
