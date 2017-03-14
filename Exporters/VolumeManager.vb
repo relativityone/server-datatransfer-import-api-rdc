@@ -1,7 +1,6 @@
 Imports System.Collections.Concurrent
 Imports kCura.Utility
 Imports kCura.WinEDDS.IO
-Imports kCura.WinEDDS.Service.Export
 
 Namespace kCura.WinEDDS
 	Public Class VolumeManager
@@ -184,12 +183,12 @@ Namespace kCura.WinEDDS
 			_downloadManager = downloadHandler
 
 			Dim loadFilePath As String = Me.LoadFileDestinationPath
-			If Not Me.Settings.Overwrite AndAlso System.IO.File.Exists(loadFilePath) Then
+			If Not Me.Settings.Overwrite AndAlso _fileHelper.Exists(loadFilePath) Then
 				InteractionManager.Alert(String.Format("Overwrite not selected and file '{0}' exists.", loadFilePath))
 				_parent.Shutdown()
 				Return
 			End If
-			If Me.Settings.ExportImages AndAlso Not Me.Settings.Overwrite AndAlso System.IO.File.Exists(Me.ImageFileDestinationPath) Then
+			If Me.Settings.ExportImages AndAlso Not Me.Settings.Overwrite AndAlso _fileHelper.Exists(Me.ImageFileDestinationPath) Then
 				InteractionManager.Alert(String.Format("Overwrite not selected and file '{0}' exists.", Me.ImageFileDestinationPath))
 				_parent.Shutdown()
 				Return
@@ -199,7 +198,7 @@ Namespace kCura.WinEDDS
 			If settings.ExportNative OrElse settings.SelectedViewFields.Length > 0 Then _nativeFileWriter = New System.IO.StreamWriter(loadFilePath, False, _encoding)
 			Dim imageFilePath As String = Me.ImageFileDestinationPath
 			If Me.Settings.ExportImages Then
-				If Not Me.Settings.Overwrite AndAlso System.IO.File.Exists(imageFilePath) Then
+				If Not Me.Settings.Overwrite AndAlso _fileHelper.Exists(imageFilePath) Then
 					Throw New System.Exception(String.Format("Overwrite not selected and file '{0}' exists.", imageFilePath))
 				End If
 				_imageFileWriter = New System.IO.StreamWriter(imageFilePath, False, Me.GetImageFileEncoding)
@@ -375,7 +374,7 @@ Namespace kCura.WinEDDS
 				currentTempLocation &= ext
 				DirectCast(artifact.Images(0), Exporters.ImageExportInfo).FileName = currentTempLocation
 				Dim location As String = DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation
-				If System.IO.File.Exists(DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation) Then
+				If _fileHelper.Exists(DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation) Then
 					If Me.Settings.Overwrite Then
 						kCura.Utility.File.Instance.Delete(DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation)
 						kCura.Utility.File.Instance.Move(tempLocation, DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation)
@@ -749,7 +748,7 @@ Namespace kCura.WinEDDS
 			If Not System.IO.Directory.Exists(localFilePath) AndAlso Me.Settings.VolumeInfo.CopyImageFilesFromRepository Then System.IO.Directory.CreateDirectory(localFilePath)
 			Try
 				If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
-					If System.IO.File.Exists(localFullTextPath) Then
+					If _fileHelper.Exists(localFullTextPath) Then
 						fullTextReader = New System.IO.StreamReader(localFullTextPath, _encoding, True)
 					End If
 				End If
@@ -831,7 +830,7 @@ Namespace kCura.WinEDDS
 			'	tempFile = System.IO.Path.GetTempFileName
 			'	kCura.Utility.File.Instance.Delete(tempFile)
 			'End If
-			If System.IO.File.Exists(tempFile) Then
+			If _fileHelper.Exists(tempFile) Then
 				If _settings.Overwrite Then
 					kCura.Utility.File.Instance.Delete(tempFile)
 					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting image for {0}.", image.BatesNumber), False)
@@ -861,7 +860,7 @@ Namespace kCura.WinEDDS
 				End Try
 			End While
 			_statistics.FileTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
-			Return kCura.Utility.File.Instance.Length(tempFile)
+			Return kCura.Utility.File.Instance.GetFileSize(tempFile)
 		End Function
 
 		Private Sub ExportDocumentImage(ByVal fileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal batesNumber As String, ByVal tempFileLocation As String)
@@ -966,7 +965,7 @@ Namespace kCura.WinEDDS
 
 		Private Function ExportNative(ByVal exportFileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal systemFileName As String, ByVal tempLocation As String) As String
 			If Not tempLocation = "" AndAlso Not tempLocation.ToLower = exportFileName.ToLower AndAlso Me.Settings.VolumeInfo.CopyNativeFilesFromRepository Then
-				If System.IO.File.Exists(exportFileName) Then
+				If _fileHelper.Exists(exportFileName) Then
 					If _settings.Overwrite Then
 						kCura.Utility.File.Instance.Delete(exportFileName)
 						_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.", systemFileName), False)
@@ -995,14 +994,14 @@ Namespace kCura.WinEDDS
 			Dim tempFile As String = Me.GetLocalNativeFilePath(artifact, nativeFileName)
 			
 			Dim start As Int64 = System.DateTime.Now.Ticks
-			If System.IO.File.Exists(tempFile) Then
+			If _fileHelper.Exists(tempFile) Then
 				If Settings.Overwrite Then
 					kCura.Utility.File.Instance.Delete(tempFile)
 					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.", nativeFileName), False)
 				Else
 					_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", tempFile))
 					artifact.NativeTempLocation = tempFile
-					Return kCura.Utility.File.Instance.Length(tempFile)
+					Return kCura.Utility.File.Instance.GetFileSize(tempFile)
 				End If
 			End If
 			Dim tries As Int32 = 0
@@ -1031,7 +1030,7 @@ Namespace kCura.WinEDDS
 			End While
 			
 			_statistics.FileTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
-			Return kCura.Utility.File.Instance.Length(tempFile)
+			Return kCura.Utility.File.Instance.GetFileSize(tempFile)
 		End Function
 
 		Private Sub WriteLongText(ByVal source As System.IO.TextReader, ByVal output As System.IO.TextWriter, ByVal formatter As Exporters.ILongTextStreamFormatter)
@@ -1087,7 +1086,7 @@ Namespace kCura.WinEDDS
 			Dim formatter As Exporters.ILongTextStreamFormatter
 			If Me.Settings.ExportFullTextAsFile AndAlso TypeOf textField Is CoalescedTextViewField Then
 				destinationFilePath = Me.GetLocalTextFilePath(artifact)
-				destinationPathExists = System.IO.File.Exists(destinationFilePath)
+				destinationPathExists = _fileHelper.Exists(destinationFilePath)
 				If destinationPathExists AndAlso Not _settings.Overwrite Then
 					_parent.WriteWarning(destinationFilePath & " already exists. Skipping file export.")
 				Else
@@ -1102,7 +1101,7 @@ Namespace kCura.WinEDDS
 					formatter = New kCura.WinEDDS.Exporters.DelimitedFileLongTextStreamFormatter(_settings, source)
 				End If
 				destination = _nativeFileWriter
-			End If
+			End If 
 			If String.IsNullOrEmpty(downloadedTextFilePath) AndAlso Not source Is Nothing AndAlso TypeOf source Is System.IO.StreamReader AndAlso TypeOf DirectCast(source, System.IO.StreamReader).BaseStream Is System.IO.FileStream Then
 				downloadedTextFilePath = DirectCast(DirectCast(source, System.IO.StreamReader).BaseStream, System.IO.FileStream).Name
 			End If

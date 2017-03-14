@@ -547,9 +547,7 @@
     <Compile Include="Importers\OpticonFileReader.vb" />
     <Compile Include="Exceptions\InvalidPackageException.vb" />
     <Compile Include="Importers\OutputFileWriter.vb" />
-    <Compile Include="IO\FileHelper.vb" />
     <Compile Include="IO\FileStreamFactory.vb" />
-    <Compile Include="IO\IFileHelper.vb" />
     <Compile Include="IO\IFileStreamFactory.vb" />
     <Compile Include="My Project\Settings.Designer.vb">
       <AutoGen>True</AutoGen>
