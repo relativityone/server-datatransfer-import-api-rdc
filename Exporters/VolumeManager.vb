@@ -283,13 +283,13 @@ Namespace kCura.WinEDDS
 		End Sub
 #End Region
 
-		Public Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal linesToWriteDat As ConcurrentDictionary(Of Int32, String), ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String)) As Int64
+		Public Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal linesToWriteDat As ConcurrentDictionary(Of Int32, String), ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal threadNumber As Integer) As Int64
 			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			While tries < maxTries And Not Me.Halt
 				tries += 1
 				Try
-					Return Me.ExportArtifact(artifact, linesToWriteDat, linesToWriteOpt, tries > 1)
+					Return Me.ExportArtifact(artifact, linesToWriteDat, linesToWriteOpt, tries > 1, threadNumber)
 					Exit While
 				Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
 					If tries = maxTries Then Throw
@@ -413,7 +413,7 @@ Namespace kCura.WinEDDS
 			Return (From f In Me.Settings.SelectedTextFields Where f IsNot Nothing).Any
 		End Function
 
-		Private Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal linesToWrite As ConcurrentDictionary(Of Int32, String), ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal isRetryAttempt As Boolean) As Int64
+		Private Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal linesToWrite As ConcurrentDictionary(Of Int32, String), ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal isRetryAttempt As Boolean, ByVal threadNumber As Integer) As Int64
 			Dim totalFileSize As Int64 = 0
 			Dim loadFileBytes As Int64 = 0
 			Dim extractedTextFileSizeForVolume As Int64 = 0
@@ -424,7 +424,7 @@ Namespace kCura.WinEDDS
 			Dim updateSubDirectoryAfterExport As Boolean = False
 			If Me.Settings.ExportImages Then
 				For Each image In artifact.Images
-					_timekeeper.MarkStart("VolumeManager_DownloadImage")
+					_timekeeper.MarkStart("VolumeManager_DownloadImage", threadNumber)
 					Try
 						If Me.Settings.VolumeInfo.CopyImageFilesFromRepository Then
 							totalFileSize += Me.DownloadImage(image)
@@ -439,7 +439,7 @@ Namespace kCura.WinEDDS
 							imageSuccess = False
 						End If
 					End Try
-					_timekeeper.MarkEnd("VolumeManager_DownloadImage")
+					_timekeeper.MarkEnd("VolumeManager_DownloadImage", threadNumber)
 				Next
 			End If
 			Dim imageCount As Long = artifact.Images.Count
@@ -449,7 +449,7 @@ Namespace kCura.WinEDDS
 			End If
 
 			If Me.Settings.ExportNative Then
-				_timekeeper.MarkStart("VolumeManager_DownloadNative")
+				_timekeeper.MarkStart("VolumeManager_DownloadNative", threadNumber)
 				Try
 					If Me.Settings.VolumeInfo.CopyNativeFilesFromRepository Then
 						Dim downloadSize As Int64 = Me.DownloadNative(artifact)
@@ -463,7 +463,7 @@ Namespace kCura.WinEDDS
 						Me.LogFileExportError(ExportFileType.Native, artifact.IdentifierValue, artifact.NativeFileGuid, ex.ToString)
 					End If
 				End Try
-				_timekeeper.MarkEnd("VolumeManager_DownloadNative")
+				_timekeeper.MarkEnd("VolumeManager_DownloadNative", threadNumber)
 			End If
 			Dim tempLocalFullTextFilePath As String = ""
 			Dim tempLocalIproFullTextFilePath As String = ""
@@ -551,18 +551,18 @@ Namespace kCura.WinEDDS
 				Me.UpdateSubdirectory()
 			End If
 			If Me.Settings.ExportImages Then
-				_timekeeper.MarkStart("VolumeManager_ExportImages")
-				Me.ExportImages(artifact.Images, tempLocalIproFullTextFilePath, successfulRollup, linesToWriteOpt)
-				_timekeeper.MarkEnd("VolumeManager_ExportImages")
+				_timekeeper.MarkStart("VolumeManager_ExportImages", threadNumber)
+				Me.ExportImages(artifact.Images, tempLocalIproFullTextFilePath, successfulRollup, linesToWriteOpt, threadNumber)
+				_timekeeper.MarkEnd("VolumeManager_ExportImages", threadNumber)
 			End If
 			Dim nativeCount As Int32 = 0
 			Dim nativeLocation As String = ""
 			If Me.Settings.ExportNative AndAlso Me.Settings.VolumeInfo.CopyNativeFilesFromRepository Then
 				Dim nativeFileName As String = Me.GetNativeFileName(artifact)
 				Dim localFilePath As String = Me.GetLocalNativeFilePath(artifact, nativeFileName)
-				_timekeeper.MarkStart("VolumeManager_ExportNative")
-				Me.ExportNative(localFilePath, artifact.NativeFileGuid, artifact.ArtifactID, nativeFileName, artifact.NativeTempLocation)
-				_timekeeper.MarkEnd("VolumeManager_ExportNative")
+				_timekeeper.MarkStart("VolumeManager_ExportNative", threadNumber)
+				Me.ExportNative(localFilePath, artifact.NativeFileGuid, artifact.ArtifactID, nativeFileName, artifact.NativeTempLocation, threadNumber)
+				_timekeeper.MarkEnd("VolumeManager_ExportNative", threadNumber)
 				If artifact.NativeTempLocation = "" Then
 					nativeLocation = ""
 				Else
@@ -728,7 +728,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Public Sub ExportImages(ByVal images As System.Collections.ArrayList, ByVal localFullTextPath As String, ByVal successfulRollup As Boolean, ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String))
+		Public Sub ExportImages(ByVal images As System.Collections.ArrayList, ByVal localFullTextPath As String, ByVal successfulRollup As Boolean, ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal threadNumber As Integer)
 			Dim image As WinEDDS.Exporters.ImageExportInfo
 			Dim i As Int32 = 0
 			Dim fullTextReader As System.IO.StreamReader = Nothing
@@ -746,7 +746,7 @@ Namespace kCura.WinEDDS
 				End If
 				If images.Count > 0 AndAlso (Me.Settings.TypeOfImage = ExportFile.ImageType.MultiPageTiff OrElse Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf) AndAlso successfulRollup Then
 					Dim marker As Exporters.ImageExportInfo = DirectCast(images(0), Exporters.ImageExportInfo)
-					Me.ExportDocumentImage(localFilePath & marker.FileName, marker.FileGuid, marker.ArtifactID, marker.BatesNumber, marker.TempLocation)
+					Me.ExportDocumentImage(localFilePath & marker.FileName, marker.FileGuid, marker.ArtifactID, marker.BatesNumber, marker.TempLocation, threadNumber)
 					Dim copyfile As String = Nothing
 					Select Case Me.Settings.TypeOfExportedFilePath
 						Case ExportFile.ExportedFilePathType.Absolute
@@ -788,7 +788,7 @@ Namespace kCura.WinEDDS
 							End If
 						End If
 						If Me.Settings.VolumeInfo.CopyImageFilesFromRepository Then
-							Me.ExportDocumentImage(localFilePath & image.FileName, image.FileGuid, image.ArtifactID, image.BatesNumber, image.TempLocation)
+							Me.ExportDocumentImage(localFilePath & image.FileName, image.FileGuid, image.ArtifactID, image.BatesNumber, image.TempLocation, threadNumber)
 							Dim copyfile As String = Nothing
 							Select Case Me.Settings.TypeOfExportedFilePath
 								Case ExportFile.ExportedFilePathType.Absolute
@@ -855,7 +855,7 @@ Namespace kCura.WinEDDS
 			Return kCura.Utility.File.Instance.Length(tempFile)
 		End Function
 
-		Private Sub ExportDocumentImage(ByVal fileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal batesNumber As String, ByVal tempFileLocation As String)
+		Private Sub ExportDocumentImage(ByVal fileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal batesNumber As String, ByVal tempFileLocation As String, ByVal threadNumber As Integer)
 			If Not tempFileLocation = "" AndAlso Not tempFileLocation.ToLower = fileName.ToLower Then
 				If System.IO.File.Exists(fileName) Then
 					If _settings.Overwrite Then
@@ -866,16 +866,16 @@ Namespace kCura.WinEDDS
 						_parent.WriteWarning(String.Format("{0}.tif already exists. Skipping file export.", batesNumber))
 					End If
 				Else
-					_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_WriteStatus")
+					_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_WriteStatus", threadNumber)
 					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document image {0}.", batesNumber), False)
-					_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_WriteStatus")
-					_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_MoveFile")
+					_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_WriteStatus", threadNumber)
+					_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_MoveFile", threadNumber)
 					kCura.Utility.File.Instance.Move(tempFileLocation, fileName)
-					_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_MoveFile")
+					_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_MoveFile", threadNumber)
 				End If
-				_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_WriteStatus")
+				_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_WriteStatus", threadNumber)
 				_parent.WriteStatusLine(Windows.Process.EventType.Status, String.Format("Finished exporting document image {0}.", batesNumber), False)
-				_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_WriteStatus")
+				_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_WriteStatus", threadNumber)
 			End If
 			'_parent.DocumentsExported += 1
 		End Sub
@@ -955,7 +955,7 @@ Namespace kCura.WinEDDS
 		End Sub
 #End Region
 
-		Private Function ExportNative(ByVal exportFileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal systemFileName As String, ByVal tempLocation As String) As String
+		Private Function ExportNative(ByVal exportFileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal systemFileName As String, ByVal tempLocation As String, ByVal threadNumber As Integer) As String
 			If Not tempLocation = "" AndAlso Not tempLocation.ToLower = exportFileName.ToLower AndAlso Me.Settings.VolumeInfo.CopyNativeFilesFromRepository Then
 				If System.IO.File.Exists(exportFileName) Then
 					If _settings.Overwrite Then
@@ -966,16 +966,14 @@ Namespace kCura.WinEDDS
 						_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", systemFileName))
 					End If
 				Else
-					_timekeeper.MarkStart("VolumeManager_ExportNative_WriteStatus")
+					_timekeeper.MarkStart("VolumeManager_ExportNative_WriteStatus", threadNumber)
 					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document {0}.", systemFileName), False)
-					_timekeeper.MarkEnd("VolumeManager_ExportNative_WriteStatus")
-					_timekeeper.MarkStart("VolumeManager_ExportNative_MoveFile")
+					_timekeeper.MarkEnd("VolumeManager_ExportNative_WriteStatus", threadNumber)
+					_timekeeper.MarkStart("VolumeManager_ExportNative_MoveFile", threadNumber)
 					kCura.Utility.File.Instance.Move(tempLocation, exportFileName)
-					_timekeeper.MarkEnd("VolumeManager_ExportNative_MoveFile")
+					_timekeeper.MarkEnd("VolumeManager_ExportNative_MoveFile", threadNumber)
 				End If
 			End If
-			_timekeeper.MarkStart("VolumeManager_ExportNative_WriteStatus")
-			_timekeeper.MarkEnd("VolumeManager_ExportNative_WriteStatus")
 			Return Nothing
 		End Function
 
