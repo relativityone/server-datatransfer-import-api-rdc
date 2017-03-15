@@ -356,7 +356,7 @@ Namespace kCura.WinEDDS
 				End Select
 				imageCount = 1
 				For Each imageLocation As String In imageList
-					kCura.Utility.File.Instance.Delete(imageLocation)
+					_fileHelper.Delete(imageLocation)
 				Next
 				Dim ext As String = ""
 				Select Case Me.Settings.TypeOfImage
@@ -376,18 +376,20 @@ Namespace kCura.WinEDDS
 				Dim location As String = DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation
 				If _fileHelper.Exists(DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation) Then
 					If Me.Settings.Overwrite Then
-						kCura.Utility.File.Instance.Delete(DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation)
-						kCura.Utility.File.Instance.Move(tempLocation, DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation)
+						_fileHelper.Delete(DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation)
+						_fileHelper.Move(tempLocation, DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation)
 					Else
 						_parent.WriteWarning("File exists - file copy skipped: " & DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation)
 					End If
 				Else
-					kCura.Utility.File.Instance.Move(tempLocation, DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation)
+					_fileHelper.Move(tempLocation, DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation)
 				End If
 			Catch ex As kCura.Utility.Image.ImageRollupException
 				successfulRollup = False
 				Try
-					If Not tempLocation Is Nothing AndAlso Not tempLocation = "" Then kCura.Utility.File.Instance.Delete(tempLocation)
+					If Not tempLocation Is Nothing AndAlso Not tempLocation = "" Then
+						_fileHelper.Delete(tempLocation)
+					End If
 					_parent.WriteImgProgressError(artifact, ex.ImageIndex, ex, "Document exported in single-page image mode.")
 				Catch ioex As System.IO.IOException
 					Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Errors, ioex)
@@ -624,11 +626,11 @@ Namespace kCura.WinEDDS
 			End Try
 			If Not _nativeFileWriter Is Nothing Then
 				_nativeFileWriterPosition = _nativeFileWriter.BaseStream.Position
-				loadFileBytes += kCura.Utility.File.Instance.GetFileSize(DirectCast(_nativeFileWriter.BaseStream, System.IO.FileStream).Name)
+				loadFileBytes += _fileHelper.GetFileSize(DirectCast(_nativeFileWriter.BaseStream, System.IO.FileStream).Name)
 			End If
 			If Not _imageFileWriter Is Nothing Then
 				_imageFileWriterPosition = _imageFileWriter.BaseStream.Position
-				loadFileBytes += kCura.Utility.File.Instance.GetFileSize(DirectCast(_imageFileWriter.BaseStream, System.IO.FileStream).Name)
+				loadFileBytes += _fileHelper.GetFileSize(DirectCast(_imageFileWriter.BaseStream, System.IO.FileStream).Name)
 			End If
 			_totalExtractedTextFileLength += extractedTextFileLength
 			_statistics.MetadataBytes = loadFileBytes + _totalExtractedTextFileLength
@@ -832,7 +834,7 @@ Namespace kCura.WinEDDS
 			'End If
 			If _fileHelper.Exists(tempFile) Then
 				If _settings.Overwrite Then
-					kCura.Utility.File.Instance.Delete(tempFile)
+					_fileHelper.Delete(tempFile)
 					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting image for {0}.", image.BatesNumber), False)
 				Else
 					_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", tempFile))
@@ -860,16 +862,17 @@ Namespace kCura.WinEDDS
 				End Try
 			End While
 			_statistics.FileTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
-			Return kCura.Utility.File.Instance.GetFileSize(tempFile)
+			Return _fileHelper.GetFileSize(tempFile)
 		End Function
 
 		Private Sub ExportDocumentImage(ByVal fileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal batesNumber As String, ByVal tempFileLocation As String)
 			If Not tempFileLocation = "" AndAlso Not tempFileLocation.ToLower = fileName.ToLower Then
-				If System.IO.File.Exists(fileName) Then
+				''If System.IO.File.Exists(fileName) Then
+				If _fileHelper.Exists(fileName) Then
 					If _settings.Overwrite Then
-						kCura.Utility.File.Instance.Delete(fileName)
+						_fileHelper.Delete(fileName)
 						_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document image {0}.", batesNumber), False)
-						kCura.Utility.File.Instance.Move(tempFileLocation, fileName)
+						_fileHelper.Move(tempFileLocation, fileName)
 					Else
 						_parent.WriteWarning(String.Format("{0}.tif already exists. Skipping file export.", batesNumber))
 					End If
@@ -878,7 +881,7 @@ Namespace kCura.WinEDDS
 					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document image {0}.", batesNumber), False)
 					_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_WriteStatus")
 					_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_MoveFile")
-					kCura.Utility.File.Instance.Move(tempFileLocation, fileName)
+					_fileHelper.Move(tempFileLocation, fileName)
 					_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_MoveFile")
 				End If
 				_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_WriteStatus")
@@ -967,9 +970,9 @@ Namespace kCura.WinEDDS
 			If Not tempLocation = "" AndAlso Not tempLocation.ToLower = exportFileName.ToLower AndAlso Me.Settings.VolumeInfo.CopyNativeFilesFromRepository Then
 				If _fileHelper.Exists(exportFileName) Then
 					If _settings.Overwrite Then
-						kCura.Utility.File.Instance.Delete(exportFileName)
+						_fileHelper.Delete(exportFileName)
 						_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.", systemFileName), False)
-						kCura.Utility.File.Instance.Move(tempLocation, exportFileName)
+						_fileHelper.Move(tempLocation, exportFileName)
 					Else
 						_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", systemFileName))
 					End If
@@ -978,7 +981,7 @@ Namespace kCura.WinEDDS
 					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document {0}.", systemFileName), False)
 					_timekeeper.MarkEnd("VolumeManager_ExportNative_WriteStatus")
 					_timekeeper.MarkStart("VolumeManager_ExportNative_MoveFile")
-					kCura.Utility.File.Instance.Move(tempLocation, exportFileName)
+					_fileHelper.Move(tempLocation, exportFileName)
 					_timekeeper.MarkEnd("VolumeManager_ExportNative_MoveFile")
 				End If
 			End If
@@ -996,12 +999,12 @@ Namespace kCura.WinEDDS
 			Dim start As Int64 = System.DateTime.Now.Ticks
 			If _fileHelper.Exists(tempFile) Then
 				If Settings.Overwrite Then
-					kCura.Utility.File.Instance.Delete(tempFile)
+					_fileHelper.Delete(tempFile)
 					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.", nativeFileName), False)
 				Else
 					_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", tempFile))
 					artifact.NativeTempLocation = tempFile
-					Return kCura.Utility.File.Instance.GetFileSize(tempFile)
+					Return _fileHelper.GetFileSize(tempFile)
 				End If
 			End If
 			Dim tries As Int32 = 0
@@ -1030,7 +1033,7 @@ Namespace kCura.WinEDDS
 			End While
 			
 			_statistics.FileTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
-			Return kCura.Utility.File.Instance.GetFileSize(tempFile)
+			Return _fileHelper.GetFileSize(tempFile)
 		End Function
 
 		Private Sub WriteLongText(ByVal source As System.IO.TextReader, ByVal output As System.IO.TextWriter, ByVal formatter As Exporters.ILongTextStreamFormatter)
@@ -1066,7 +1069,7 @@ Namespace kCura.WinEDDS
 			Dim textValue As String = sourceValue.ToString
 			Dim source As System.IO.TextReader
 			Dim destination As System.IO.TextWriter = Nothing
-			Dim downloadedFileExists As Boolean = Not String.IsNullOrEmpty(downloadedTextFilePath) AndAlso System.IO.File.Exists(downloadedTextFilePath)
+			Dim downloadedFileExists As Boolean = Not String.IsNullOrEmpty(downloadedTextFilePath) AndAlso _fileHelper.Exists(downloadedTextFilePath)
 			If textValue = Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
 				If Me.Settings.SelectedTextFields IsNot Nothing AndAlso TypeOf textField Is CoalescedTextViewField AndAlso downloadedFileExists Then
 					If Settings.SelectedTextFields.Count = 1 Then
@@ -1110,7 +1113,7 @@ Namespace kCura.WinEDDS
 			End If
 			Dim retval As Long = 0
 			If destinationFilePath <> String.Empty Then
-				retval = kCura.Utility.File.Instance.GetFileSize(destinationFilePath)
+				retval = _fileHelper.GetFileSize(destinationFilePath)
 				Dim textLocation As String = String.Empty
 				Select Case Me.Settings.TypeOfExportedFilePath
 					Case ExportFile.ExportedFilePathType.Absolute
