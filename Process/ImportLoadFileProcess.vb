@@ -112,7 +112,7 @@ Namespace kCura.WinEDDS
 			_loadFileImporter.FileSizeColumn = FileSizeColumn
 			_loadFileImporter.FileSizeMapped = FileSizeMapped
 			_loadFileImporter.FileNameColumn = FileNameColumn
-			_loadFileImporter.LoadImportedFullTextFromServer = Me.LoadImportedFullTextFromServer
+			_loadFileImporter.LoadImportedFullTextFromServer = (Me.LoadImportedFullTextFromServer OrElse Config.LoadImportedFullTextFromServer)
 			'_newlineCounter = New kCura.Utility.File.Instance.LineCounter
 			'_newlineCounter.Path = LoadFile.FilePath
 			Me.ProcessObserver.InputArgs = LoadFile.FilePath
