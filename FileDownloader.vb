@@ -61,8 +61,8 @@ Namespace kCura.WinEDDS
 		Private Sub SetType(ByVal destFolderPath As String)
 			Try
 				Dim dummyText As String = System.Guid.NewGuid().ToString().Replace("-", String.Empty).Substring(0, 5)
-				_fileHelper.Create(destFolderPath & dummyText).Close()
-				_fileHelper.Delete(destFolderPath & dummyText)
+				FileHelper.Create(destFolderPath & dummyText).Close()
+				FileHelper.Delete(destFolderPath & dummyText)
 				Me.UploaderType = FileAccessType.Direct
 			Catch ex As System.Exception
 				Me.UploaderType = FileAccessType.Web
@@ -126,7 +126,7 @@ Namespace kCura.WinEDDS
 				Select Case CType(accessType, FileAccessType)
 					Case FileAccessType.Direct
 						Me.UploaderType = FileAccessType.Direct
-						_fileHelper.Copy(remoteLocation, localFilePath, True)
+						FileHelper.Copy(remoteLocation, localFilePath, True)
 						Return True
 					Case FileAccessType.Web
 						Me.UploaderType = FileAccessType.Web
@@ -134,7 +134,7 @@ Namespace kCura.WinEDDS
 				End Select
 			Else
 				Try
-					_fileHelper.Copy(remoteLocation, localFilePath, True)
+					FileHelper.Copy(remoteLocation, localFilePath, True)
 					_locationAccessMatrix.TryAdd(remoteLocationKey, FileAccessType.Direct)
 					Return True
 				Catch ex As Exception
@@ -223,9 +223,9 @@ Namespace kCura.WinEDDS
 					length = System.Math.Max(webResponse.ContentLength, 0)
 					Dim responseStream As System.IO.Stream = webResponse.GetResponseStream()
 					Try
-						localStream =_fileHelper.Create(localFilePath)
+						localStream =FileHelper.Create(localFilePath)
 					Catch ex As Exception
-						localStream = _fileHelper.Create(localFilePath)
+						localStream = FileHelper.Create(localFilePath)
 					End Try
 					Dim buffer(Config.WebBasedFileDownloadChunkSize - 1) As Byte
 					Dim bytesRead As Int32
@@ -238,7 +238,7 @@ Namespace kCura.WinEDDS
 					End While
 				End If
 				localStream.Close()
-				Dim actualLength As Int64 = _fileHelper.GetFileSize(localFilePath)
+				Dim actualLength As Int64 = FileHelper.GetFileSize(localFilePath)
 				If length <> actualLength AndAlso length > 0 Then
 					Throw New kCura.WinEDDS.Exceptions.WebDownloadCorruptException("Error retrieving data from distributed server; expecting " & length & " bytes and received " & actualLength)
 				End If

@@ -1,10 +1,5 @@
 Imports System.Collections.Concurrent
-Imports System.IO
 Imports System.Collections.Generic
-Imports System.Configuration
-Imports System.Threading
-Imports kCura.EDDS.WebAPI.ExportManagerBase
-Imports System.Web.Services.Protocols
 Imports kCura.Utility.Extensions
 Imports kCura.WinEDDS.Exporters
 Imports System.Threading.Tasks
@@ -263,7 +258,7 @@ Namespace kCura.WinEDDS
 			End If
 			_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 			RaiseEvent FileTransferModeChangeEvent(_downloadHandler.UploaderType.ToString)
-			_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, _statistics)
+			_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, _statistics, kCura.Utility.File.Instance)
 			Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
 			_volumeManager.ColumnHeaderString = columnHeaderString
 			Me.WriteUpdate("Data retrieved. Beginning " & typeOfExportDisplayString & " export...")
