@@ -1,5 +1,6 @@
 Imports System.Collections.Concurrent
 Imports kCura.Utility
+Imports System.IO
 Imports kCura.WinEDDS.IO
 
 Namespace kCura.WinEDDS
@@ -181,6 +182,7 @@ Namespace kCura.WinEDDS
 			_currentTextSubdirectorySize = 0
 			_currentNativeSubdirectorySize = 0
 			_downloadManager = downloadHandler
+			_downloadManager.FileHelper = _fileHelper
 
 			Dim loadFilePath As String = Me.LoadFileDestinationPath
 			If Not Me.Settings.Overwrite AndAlso _fileHelper.Exists(loadFilePath) Then
@@ -195,13 +197,17 @@ Namespace kCura.WinEDDS
 			End If
 			_encoding = Me.Settings.LoadFileEncoding
 
-			If settings.ExportNative OrElse settings.SelectedViewFields.Length > 0 Then _nativeFileWriter = New System.IO.StreamWriter(loadFilePath, False, _encoding)
+			If settings.ExportNative OrElse settings.SelectedViewFields.Length > 0 Then
+				Dim nativeFileStream As FileStream = _fileStreamFactory.Create(loadFilePath, False)
+				_nativeFileWriter = New System.IO.StreamWriter(nativeFileStream, _encoding)
+			End If
 			Dim imageFilePath As String = Me.ImageFileDestinationPath
 			If Me.Settings.ExportImages Then
 				If Not Me.Settings.Overwrite AndAlso _fileHelper.Exists(imageFilePath) Then
 					Throw New System.Exception(String.Format("Overwrite not selected and file '{0}' exists.", imageFilePath))
 				End If
-				_imageFileWriter = New System.IO.StreamWriter(imageFilePath, False, Me.GetImageFileEncoding)
+				Dim imageFileStream As FileStream = _fileStreamFactory.Create(imageFilePath, False)
+				_imageFileWriter = New System.IO.StreamWriter(imageFileStream, Me.GetImageFileEncoding)
 			End If
 			If Me.Settings.LoadFileIsHtml Then
 				_loadFileFormatter = New Exporters.HtmlCellFormatter(Me.Settings)
@@ -265,7 +271,8 @@ Namespace kCura.WinEDDS
 		Private Sub LogFileExportError(ByVal type As ExportFileType, ByVal recordIdentifier As String, ByVal fileLocation As String, ByVal errorText As String)
 			Try
 				If _errorWriter Is Nothing Then
-					_errorWriter = New System.IO.StreamWriter(Me.ErrorDestinationPath, False, _encoding)
+					Dim errorFileStream As FileStream = _fileStreamFactory.Create(Me.ErrorDestinationPath, False)
+					_errorWriter = New System.IO.StreamWriter(errorFileStream, _encoding)
 					_errorWriter.WriteLine("""File Type"",""Document Identifier"",""File Guid"",""Error Description""")
 				End If
 				_errorWriter.WriteLine(String.Format("""{0}"",""{1}"",""{2}"",""{3}""", type.ToString, recordIdentifier, fileLocation, kCura.Utility.Strings.ToCsvCellContents(errorText)))
@@ -330,7 +337,8 @@ Namespace kCura.WinEDDS
 			Catch ex As Exception
 			End Try
 			Try
-				Dim retval As New System.IO.StreamWriter(filepath, True, encoding)
+				Dim newFileStream As FileStream = _fileStreamFactory.Create(filepath, True)
+				Dim retval As New System.IO.StreamWriter(newFileStream, encoding)
 				retval.BaseStream.Position = position
 				Return retval
 			Catch ex As System.IO.IOException
@@ -509,7 +517,8 @@ Namespace kCura.WinEDDS
 					'BigData_ET_1037768
 					Dim val As String = artifact.Metadata(Me.OrdinalLookup("ExtractedText")).ToString
 					If val <> Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
-						Dim sw As New System.IO.StreamWriter(tempLocalIproFullTextFilePath, False, System.Text.Encoding.Unicode)
+						Dim tempLocalIproFileStream As FileStream = _fileStreamFactory.Create(tempLocalIproFullTextFilePath, False)
+						Dim sw As New System.IO.StreamWriter(tempLocalIproFileStream, System.Text.Encoding.Unicode)
 						sw.Write(val)
 						sw.Close()
 					Else
@@ -537,7 +546,8 @@ Namespace kCura.WinEDDS
 						tempLocalIproFullTextFilePath = String.Copy(tempLocalFullTextFilePath)
 					Else
 						tempLocalIproFullTextFilePath = System.IO.Path.GetTempFileName
-						Dim sw As New System.IO.StreamWriter(tempLocalIproFullTextFilePath, False, System.Text.Encoding.Unicode)
+						Dim tempLocalIproFileStream As FileStream = _fileStreamFactory.Create(tempLocalIproFullTextFilePath, False)
+						Dim sw As New System.IO.StreamWriter(tempLocalIproFileStream, System.Text.Encoding.Unicode)
 						Dim val As String = artifact.Metadata(Me.OrdinalLookup(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).ToString
 						sw.Write(val)
 						sw.Close()
@@ -1094,7 +1104,8 @@ Namespace kCura.WinEDDS
 					_parent.WriteWarning(destinationFilePath & " already exists. Skipping file export.")
 				Else
 					If destinationPathExists Then _parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Overwriting: " & destinationFilePath, False)
-					destination = New System.IO.StreamWriter(destinationFilePath, False, Me.Settings.TextFileEncoding)
+					Dim destinationFileStream As FileStream = _fileStreamFactory.Create(destinationFilePath, False)
+					destination = New System.IO.StreamWriter(destinationFileStream, Me.Settings.TextFileEncoding)
 				End If
 				formatter = New kCura.WinEDDS.Exporters.NonTransformFormatter
 			Else

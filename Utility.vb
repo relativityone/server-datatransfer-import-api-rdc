@@ -56,7 +56,7 @@ Namespace kCura.WinEDDS
 			Dim enc As System.Text.Encoding = Nothing
 			Dim filein As System.IO.FileStream = Nothing
 			If Not performFileExistsCheck OrElse (performFileExistsCheck AndAlso System.IO.File.Exists(filename)) Then
-				filein = New System.IO.FileStream(filename, IO.FileMode.Open, IO.FileAccess.Read)
+				filein = New System.IO.FileStream(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read)
 				If (filein.CanSeek) Then
 					Dim bom(4) As Byte
 					filein.Read(bom, 0, 4)

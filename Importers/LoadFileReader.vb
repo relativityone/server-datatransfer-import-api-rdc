@@ -239,7 +239,7 @@ Namespace kCura.WinEDDS
 				Dim path As String = DirectCast(args, kCura.WinEDDS.LoadFile).FilePath
 				Me.EnsureReader()
 				Dim columnNames As String() = GetLine(MAXIMUM_COLUMN_NAME_LENGTH)
-				Me.Reader.BaseStream.Seek(0, IO.SeekOrigin.Begin)
+				Me.Reader.BaseStream.Seek(0, System.IO.SeekOrigin.Begin)
 				Me.ResetLineCounter()
 				Me.Reader.Close()
 				Me.Reader = Nothing

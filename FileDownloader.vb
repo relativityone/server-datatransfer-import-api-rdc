@@ -1,5 +1,6 @@
 Imports System.Collections.Concurrent
 Imports kCura.WinEDDS.Service.Export
+
 Namespace kCura.WinEDDS
 	Public Class FileDownloader
 		Implements Service.Export.IExportFileDownloader
@@ -18,6 +19,21 @@ Namespace kCura.WinEDDS
 		Private _userManager As kCura.WinEDDS.Service.UserManager
 		Private _isBcpEnabled As Boolean = True
 		Private Shared _locationAccessMatrix As New ConcurrentDictionary(Of String, Object)
+
+		Private _fileHelper As IFileHelper
+		Public Property FileHelper() As IFileHelper Implements IExportFileDownloader.FileHelper
+			Get
+				If(_fileHelper Is Nothing) Then
+					_fileHelper = kCura.Utility.File.Instance
+				End If
+				
+				Return _fileHelper
+			End Get
+		    Set
+				_fileHelper = value
+		    End Set
+		End Property
+		
 
 		Public Sub SetDesintationFolderName(ByVal value As String)
 			_destinationFolderPath = value
@@ -45,8 +61,8 @@ Namespace kCura.WinEDDS
 		Private Sub SetType(ByVal destFolderPath As String)
 			Try
 				Dim dummyText As String = System.Guid.NewGuid().ToString().Replace("-", String.Empty).Substring(0, 5)
-				System.IO.File.Create(destFolderPath & dummyText).Close()
-				System.IO.File.Delete(destFolderPath & dummyText)
+				_fileHelper.Create(destFolderPath & dummyText).Close()
+				_fileHelper.Delete(destFolderPath & dummyText)
 				Me.UploaderType = FileAccessType.Direct
 			Catch ex As System.Exception
 				Me.UploaderType = FileAccessType.Web
@@ -110,7 +126,7 @@ Namespace kCura.WinEDDS
 				Select Case CType(accessType, FileAccessType)
 					Case FileAccessType.Direct
 						Me.UploaderType = FileAccessType.Direct
-						System.IO.File.Copy(remoteLocation, localFilePath, True)
+						_fileHelper.Copy(remoteLocation, localFilePath, True)
 						Return True
 					Case FileAccessType.Web
 						Me.UploaderType = FileAccessType.Web
@@ -118,7 +134,7 @@ Namespace kCura.WinEDDS
 				End Select
 			Else
 				Try
-					System.IO.File.Copy(remoteLocation, localFilePath, True)
+					_fileHelper.Copy(remoteLocation, localFilePath, True)
 					_locationAccessMatrix.TryAdd(remoteLocationKey, FileAccessType.Direct)
 					Return True
 				Catch ex As Exception
@@ -207,9 +223,9 @@ Namespace kCura.WinEDDS
 					length = System.Math.Max(webResponse.ContentLength, 0)
 					Dim responseStream As System.IO.Stream = webResponse.GetResponseStream()
 					Try
-						localStream = System.IO.File.Create(localFilePath)
+						localStream =_fileHelper.Create(localFilePath)
 					Catch ex As Exception
-						localStream = System.IO.File.Create(localFilePath)
+						localStream = _fileHelper.Create(localFilePath)
 					End Try
 					Dim buffer(Config.WebBasedFileDownloadChunkSize - 1) As Byte
 					Dim bytesRead As Int32
@@ -222,7 +238,7 @@ Namespace kCura.WinEDDS
 					End While
 				End If
 				localStream.Close()
-				Dim actualLength As Int64 = New System.IO.FileInfo(localFilePath).Length
+				Dim actualLength As Int64 = _fileHelper.GetFileSize(localFilePath)
 				If length <> actualLength AndAlso length > 0 Then
 					Throw New kCura.WinEDDS.Exceptions.WebDownloadCorruptException("Error retrieving data from distributed server; expecting " & length & " bytes and received " & actualLength)
 				End If

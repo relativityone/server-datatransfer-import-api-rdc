@@ -780,7 +780,7 @@ Namespace kCura.WinEDDS
 					Dim fullTextWriter As System.IO.StreamWriter = If(_fullTextStorageIsInSql, _bulkLoadFileWriter, _dataGridFileWriter)
 					For Each filename As String In textFileList
 						Dim chosenEncoding As System.Text.Encoding = _settings.FullTextEncoding
-						Dim fileStream As IO.Stream
+						Dim fileStream As System.IO.Stream
 
 						If Not SkipExtractedTextEncodingCheck Then
 							'We pass in 'False' as the final parameter to DetectEncoding to have it skip the File.Exists check. This

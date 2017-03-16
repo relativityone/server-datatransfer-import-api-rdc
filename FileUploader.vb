@@ -201,7 +201,7 @@ Namespace kCura.WinEDDS
 							Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.Warning, "Invalid BCP Path Specified.")
 						End If
 						Dim r As String = ""
-						If upload Then r = Me.WebUploadFile(New System.IO.FileStream(localFilePath, IO.FileMode.Open, IO.FileAccess.Read), appID, System.Guid.NewGuid.ToString)
+						If upload Then r = Me.WebUploadFile(New System.IO.FileStream(localFilePath, System.IO.FileMode.Open, System.IO.FileAccess.Read), appID, System.Guid.NewGuid.ToString)
 						_destinationFolderPath = oldDestinationFolderPath
 						Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.ValidUploadKey, r)
 					Catch e As Exception
@@ -225,7 +225,7 @@ Namespace kCura.WinEDDS
 				Try
 					If Me.UploaderType = Type.Web Then
 						Me.UploaderType = Type.Web
-						Return Me.WebUploadFile(New System.IO.FileStream(filePath, IO.FileMode.Open, IO.FileAccess.Read), contextArtifactID, newFileName)
+						Return Me.WebUploadFile(New System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read), contextArtifactID, newFileName)
 					Else
 						Return Me.DirectUploadFile(filePath, contextArtifactID, newFileName, internalUse, tries < NumberOfRetries)
 					End If
