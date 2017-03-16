@@ -8,6 +8,7 @@ Imports System.Web.Services.Protocols
 Imports kCura.Utility.Extensions
 Imports kCura.WinEDDS.Exporters
 Imports System.Threading.Tasks
+Imports kCura.WinEDDS.LoadFileEntry
 
 Namespace kCura.WinEDDS
 	Public Class Exporter
@@ -46,7 +47,7 @@ Namespace kCura.WinEDDS
 		Private _productionLookup As New System.Collections.Generic.Dictionary(Of Int32, kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo)
 		Private _productionPrecedenceIds As Int32()
 		Private _tryToNameNativesAndTextFilesAfterPrecedenceBegBates As Boolean = False
-		Private _linesToWriteDat As ConcurrentDictionary(Of Int32, String)
+		Private _linesToWriteDat As ConcurrentDictionary(Of Int32, ILoadFileEntry)
 		Private _linesToWriteOpt As ConcurrentDictionary(Of String, String)
 
 #End Region
@@ -410,7 +411,7 @@ Namespace kCura.WinEDDS
 			Dim productionPrecedenceArtifactIds As Int32() = Settings.ImagePrecedence.Select(Function(pair) CInt(pair.Value)).ToArray()
 			Dim lookup As New Lazy(Of Dictionary(Of Int32, List(Of BatesEntry)))(Function() GenerateBatesLookup(_productionManager.RetrieveBatesByProductionAndDocument(Me.Settings.CaseArtifactID, productionPrecedenceArtifactIds, documentArtifactIDs)))
 
-			_linesToWriteDat = New ConcurrentDictionary(Of Int32, String)
+			_linesToWriteDat = New ConcurrentDictionary(Of Int32, ILoadFileEntry)
 			_linesToWriteOpt = New ConcurrentDictionary(Of String, String)
 
 			Dim artifacts(documentArtifactIDs.Length - 1) As Exporters.ObjectExportInfo
