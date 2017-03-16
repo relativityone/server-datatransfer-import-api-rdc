@@ -185,7 +185,7 @@ Namespace kCura.WinEDDS
 
 			Dim typeOfExportDisplayString As String = ""
 			Dim errorOutputFilePath As String = _exportFile.FolderPath & "\" & _exportFile.LoadFilesPrefix & "_img_errors.txt"
-			If System.IO.File.Exists(errorOutputFilePath) AndAlso _exportFile.Overwrite Then kCura.Utility.File.Instance.Delete(errorOutputFilePath)
+			If kCura.Utility.File.Instance.Exists(errorOutputFilePath) AndAlso _exportFile.Overwrite Then kCura.Utility.File.Instance.Delete(errorOutputFilePath)
 			Me.WriteUpdate("Retrieving export data from the server...")
 			Dim startTicks As Int64 = System.DateTime.Now.Ticks
 			Dim exportInitializationArgs As kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults = Nothing
@@ -258,7 +258,7 @@ Namespace kCura.WinEDDS
 			End If
 			_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 			RaiseEvent FileTransferModeChangeEvent(_downloadHandler.UploaderType.ToString)
-			_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, _statistics, kCura.Utility.File.Instance)
+			_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, _statistics, kCura.Utility.File.Instance, kCura.Utility.Directory.Instance)
 			Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
 			_volumeManager.ColumnHeaderString = columnHeaderString
 			Me.WriteUpdate("Data retrieved. Beginning " & typeOfExportDisplayString & " export...")

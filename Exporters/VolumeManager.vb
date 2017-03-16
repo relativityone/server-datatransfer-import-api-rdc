@@ -43,6 +43,7 @@ Namespace kCura.WinEDDS
 		
 		Private _fileHelper As IFileHelper
 		Private _fileStreamFactory As IFileStreamFactory
+		Private _directoryHelper As IDirectoryHelper
 #End Region
 
 		Private Enum ExportFileType
@@ -148,13 +149,14 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Sub New(ByVal settings As ExportFile, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As Service.Export.IExportFileDownloader, ByVal t As kCura.Utility.Timekeeper, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics, fileHelper As IFileHelper)
+		Public Sub New(ByVal settings As ExportFile, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As Service.Export.IExportFileDownloader, ByVal t As kCura.Utility.Timekeeper, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics, fileHelper As IFileHelper, directoryHelper As IDirectoryHelper)
 			_settings = settings
 			_statistics = statistics
 			_parent = parent
 
 			_fileHelper = fileHelper
 			_fileStreamFactory = New FileStreamFactory(_fileHelper)
+			_directoryHelper = directoryHelper
 
 			_timekeeper = t
 			_currentVolumeNumber = _settings.VolumeInfo.VolumeStartNumber
@@ -702,7 +704,7 @@ Namespace kCura.WinEDDS
 			Dim localFilePath As String = Me.Settings.FolderPath
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
 			localFilePath &= Me.CurrentVolumeLabel & "\" & Me.CurrentNativeSubdirectoryLabel & "\"
-			If Not System.IO.Directory.Exists(localFilePath) Then System.IO.Directory.CreateDirectory(localFilePath)
+			If Not _directoryHelper.Exists(localFilePath) Then _directoryHelper.CreateDirectory(localFilePath)
 			Return localFilePath & nativeFileName
 		End Function
 
@@ -710,7 +712,7 @@ Namespace kCura.WinEDDS
 			Dim localFilePath As String = Me.Settings.FolderPath
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
 			localFilePath &= Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\"
-			If Not System.IO.Directory.Exists(localFilePath) Then System.IO.Directory.CreateDirectory(localFilePath)
+			If Not _directoryHelper.Exists(localFilePath) Then _directoryHelper.CreateDirectory(localFilePath)
 			Return localFilePath & doc.FullTextFileName(Me.NameTextFilesAfterIdentifier, _parent.NameTextAndNativesAfterBegBates)
 		End Function
 
@@ -742,7 +744,7 @@ Namespace kCura.WinEDDS
 			Dim subfolderPath As String = Me.CurrentVolumeLabel & "\" & Me.CurrentImageSubdirectoryLabel & "\"
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
 			localFilePath &= subfolderPath
-			If Not System.IO.Directory.Exists(localFilePath) Then System.IO.Directory.CreateDirectory(localFilePath)
+			If Not _directoryHelper.Exists(localFilePath) Then _directoryHelper.CreateDirectory(localFilePath)
 			Return localFilePath & image.FileName
 		End Function
 
@@ -756,7 +758,7 @@ Namespace kCura.WinEDDS
 			Dim pageOffset As Long
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
 			localFilePath &= subfolderPath
-			If Not System.IO.Directory.Exists(localFilePath) AndAlso Me.Settings.VolumeInfo.CopyImageFilesFromRepository Then System.IO.Directory.CreateDirectory(localFilePath)
+			If Not _directoryHelper.Exists(localFilePath) AndAlso Me.Settings.VolumeInfo.CopyImageFilesFromRepository Then _directoryHelper.CreateDirectory(localFilePath)
 			Try
 				If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
 					If _fileHelper.Exists(localFullTextPath) Then
