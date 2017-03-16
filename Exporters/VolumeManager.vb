@@ -581,11 +581,12 @@ Namespace kCura.WinEDDS
 			End If
 			Try
 				If Not _hasWrittenColumnHeaderString AndAlso Not _nativeFileWriter Is Nothing Then
-					linesToWrite.TryAdd(-1, New CompletedLoadFileEntry(_columnHeaderString))
+					Dim columnHeaderEntry As ILoadFileEntry = New CompletedLoadFileEntry(_columnHeaderString)
+					linesToWrite.AddOrUpdate(-1, columnHeaderEntry, Function() columnHeaderEntry)
 					_hasWrittenColumnHeaderString = True
 				End If
 				Dim loadFileEntry As ILoadFileEntry = Me.UpdateLoadFile(artifact.Metadata, artifact.HasFullText, artifact.ArtifactID, nativeLocation, tempLocalFullTextFilePath, artifact, extractedTextFileLength)
-				linesToWrite.TryAdd(artifact.ArtifactID, loadFileEntry)
+				linesToWrite.AddOrUpdate(artifact.ArtifactID, loadFileEntry, Function() loadFileEntry)
 			Catch ex As System.IO.IOException
 				Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Load, ex)
 			End Try
@@ -933,7 +934,7 @@ Namespace kCura.WinEDDS
 							End Select
 							lineToWrite.Append(vbNewLine)
 						End If
-						linesToWriteOpt.TryAdd("FT" + batesNumber, lineToWrite.ToString)
+						linesToWriteOpt.AddOrUpdate("FT" + batesNumber, lineToWrite.ToString, Function() lineToWrite.ToString)
 						Me.WriteIproImageLine(batesNumber, pageNumber, copyFile, linesToWriteOpt)
 				End Select
 			Catch ex As System.IO.IOException
@@ -953,7 +954,7 @@ Namespace kCura.WinEDDS
 			log.Append(",,,")
 			If firstDocument Then log.Append(imageCount)
 			log.Append(vbNewLine)  
-			linesToWriteOpt.TryAdd(batesNumber, log.ToString)
+			linesToWriteOpt.AddOrUpdate(batesNumber, log.ToString, Function() log.ToString)
 		End Sub
 #End Region
 
@@ -1287,11 +1288,11 @@ Namespace kCura.WinEDDS
 		Public Sub WriteDatFile(ByVal linesToWriteDat As ConcurrentDictionary(Of Int32, ILoadFileEntry), ByVal artifacts As Exporters.ObjectExportInfo())
 			Dim loadFileEntry As ILoadFileEntry = Nothing
 			linesToWriteDat.TryGetValue(-1, loadFileEntry)
-			loadFileEntry.Write(_nativeFileWriter)
+			If Not loadFileEntry Is Nothing Then loadFileEntry.Write(_nativeFileWriter)
 
 			For Each artifact As Exporters.ObjectExportInfo in artifacts
 				If linesToWriteDat.TryGetValue(artifact.ArtifactID, loadFileEntry)
-					loadFileEntry.Write(_nativeFileWriter)
+					If Not loadFileEntry Is Nothing Then loadFileEntry.Write(_nativeFileWriter)
 				End If
 			Next
 
