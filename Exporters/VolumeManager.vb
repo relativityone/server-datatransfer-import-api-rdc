@@ -1,4 +1,6 @@
 Imports System.Collections.Concurrent
+Imports System.Text
+Imports kCura.WinEDDS.LoadFileEntry
 
 Namespace kCura.WinEDDS
 	Public Class VolumeManager
@@ -283,7 +285,7 @@ Namespace kCura.WinEDDS
 		End Sub
 #End Region
 
-		Public Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal linesToWriteDat As ConcurrentDictionary(Of Int32, String), ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal threadNumber As Integer) As Int64
+		Public Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal linesToWriteDat As ConcurrentDictionary(Of Int32, ILoadFileEntry), ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal threadNumber As Integer) As Int64
 			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			While tries < maxTries And Not Me.Halt
@@ -413,7 +415,7 @@ Namespace kCura.WinEDDS
 			Return (From f In Me.Settings.SelectedTextFields Where f IsNot Nothing).Any
 		End Function
 
-		Private Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal linesToWrite As ConcurrentDictionary(Of Int32, String), ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal isRetryAttempt As Boolean, ByVal threadNumber As Integer) As Int64
+		Private Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal linesToWrite As ConcurrentDictionary(Of Int32, ILoadFileEntry), ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal isRetryAttempt As Boolean, ByVal threadNumber As Integer) As Int64
 			Dim totalFileSize As Int64 = 0
 			Dim loadFileBytes As Int64 = 0
 			Dim extractedTextFileSizeForVolume As Int64 = 0
@@ -579,11 +581,11 @@ Namespace kCura.WinEDDS
 			End If
 			Try
 				If Not _hasWrittenColumnHeaderString AndAlso Not _nativeFileWriter Is Nothing Then
-					linesToWrite.TryAdd(-1, _columnHeaderString)
+					linesToWrite.TryAdd(-1, New CompletedLoadFileEntry(_columnHeaderString))
 					_hasWrittenColumnHeaderString = True
 				End If
-				Dim lineToWrite As String = Me.UpdateLoadFile(artifact.Metadata, artifact.HasFullText, artifact.ArtifactID, nativeLocation, tempLocalFullTextFilePath, artifact, extractedTextFileLength)
-				linesToWrite.TryAdd(artifact.ArtifactID, lineToWrite)
+				Dim loadFileEntry As ILoadFileEntry = Me.UpdateLoadFile(artifact.Metadata, artifact.HasFullText, artifact.ArtifactID, nativeLocation, tempLocalFullTextFilePath, artifact, extractedTextFileLength)
+				linesToWrite.TryAdd(artifact.ArtifactID, loadFileEntry)
 			Catch ex As System.IO.IOException
 				Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Load, ex)
 			End Try
@@ -1047,8 +1049,17 @@ Namespace kCura.WinEDDS
 			End Try
 		End Sub
 
-		Private Function ManageLongText(ByRef lineToWrite As System.Text.StringBuilder, ByVal sourceValue As Object, ByVal textField As ViewFieldInfo, ByRef downloadedTextFilePath As String, ByVal artifact As Exporters.ObjectExportInfo, ByVal startBound As String, ByVal endBound As String) As Long
-			lineToWrite.Append(startBound)
+		Private Function GetLongTextStreamFormatter(ByRef source As System.IO.TextReader) As Exporters.ILongTextStreamFormatter
+			If Me.Settings.LoadFileIsHtml Then
+					Return New kCura.WinEDDS.Exporters.HtmlFileLongTextStreamFormatter(_settings, source)
+				Else
+					Return New kCura.WinEDDS.Exporters.DelimitedFileLongTextStreamFormatter(_settings, source)
+				End If
+		End Function
+
+		Private Function ManageLongText(ByRef loadFileEntry As DeferredEntry, ByVal sourceValue As Object, ByVal textField As ViewFieldInfo, ByRef downloadedTextFilePath As String, ByVal artifact As Exporters.ObjectExportInfo, ByVal startBound As String, ByVal endBound As String) As Long
+			loadFileEntry.AddStringEntry(startBound)
+
 			If TypeOf sourceValue Is Byte() Then
 				sourceValue = System.Text.Encoding.Unicode.GetString(DirectCast(sourceValue, Byte()))
 			End If
@@ -1057,7 +1068,7 @@ Namespace kCura.WinEDDS
 			Dim source As System.IO.TextReader
 			Dim destination As System.IO.TextWriter = Nothing
 			Dim downloadedFileExists As Boolean = Not String.IsNullOrEmpty(downloadedTextFilePath) AndAlso System.IO.File.Exists(downloadedTextFilePath)
-			If textValue = Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
+			If textValue = Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then 'Text was too long and needs to be downloaded to a file instead
 				If Me.Settings.SelectedTextFields IsNot Nothing AndAlso TypeOf textField Is CoalescedTextViewField AndAlso downloadedFileExists Then
 					If Settings.SelectedTextFields.Count = 1 Then
 						source = Me.GetLongTextStream(downloadedTextFilePath, textField)
@@ -1066,31 +1077,32 @@ Namespace kCura.WinEDDS
 						source = Me.GetLongTextStream(downloadedTextFilePath, precedenceField)
 					End If
 				Else
-					source = Me.GetLongTextStream(artifact, textField)
+					downloadedTextFilePath = Me.DownloadTextFieldAsFile(artifact, textField) 'Download long text to temp file
+					source = Me.GetLongTextStream(downloadedTextFilePath, textField)
 				End If
-			Else
+			Else 'Text was not too long
 				source = New System.IO.StringReader(textValue)
 			End If
 			Dim destinationPathExists As Boolean
 			Dim destinationFilePath As String = String.Empty
 			Dim formatter As Exporters.ILongTextStreamFormatter
-			If Me.Settings.ExportFullTextAsFile AndAlso TypeOf textField Is CoalescedTextViewField Then
+			If Me.Settings.ExportFullTextAsFile AndAlso TypeOf textField Is CoalescedTextViewField Then 'Exporting text to separate file
 				destinationFilePath = Me.GetLocalTextFilePath(artifact)
 				destinationPathExists = System.IO.File.Exists(destinationFilePath)
-				If destinationPathExists AndAlso Not _settings.Overwrite Then
+				If destinationPathExists AndAlso Not _settings.Overwrite Then 'Skip export instead of overwriting file
 					_parent.WriteWarning(destinationFilePath & " already exists. Skipping file export.")
-				Else
+				Else 'Overwrite existing text file
 					If destinationPathExists Then _parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Overwriting: " & destinationFilePath, False)
 					destination = New System.IO.StreamWriter(destinationFilePath, False, Me.Settings.TextFileEncoding)
 				End If
 				formatter = New kCura.WinEDDS.Exporters.NonTransformFormatter
-			Else
-				If Me.Settings.LoadFileIsHtml Then
-					formatter = New kCura.WinEDDS.Exporters.HtmlFileLongTextStreamFormatter(_settings, source)
-				Else
-					formatter = New kCura.WinEDDS.Exporters.DelimitedFileLongTextStreamFormatter(_settings, source)
-				End If
-				destination = _nativeFileWriter
+			Else 'Defer writing text to .dat file
+				Dim encoding As System.Text.Encoding = Me.GetLongTextFieldFileEncoding(textField)
+				loadFileEntry.AddPartialEntry(New LongTextWriteDeferredEntry(downloadedTextFilePath, encoding, Me)) 'Defer writing text to .dat file
+				source.Close()
+				loadFileEntry.AddStringEntry(endBound)
+				downloadedTextFilePath = "" 'This prevents the tmp text file from being deleted before we can write it to the .dat file. The deferred logic will delete the tmp file
+				Return 0
 			End If
 			If String.IsNullOrEmpty(downloadedTextFilePath) AndAlso Not source Is Nothing AndAlso TypeOf source Is System.IO.StreamReader AndAlso TypeOf DirectCast(source, System.IO.StreamReader).BaseStream Is System.IO.FileStream Then
 				downloadedTextFilePath = DirectCast(DirectCast(source, System.IO.StreamReader).BaseStream, System.IO.FileStream).Name
@@ -1099,6 +1111,7 @@ Namespace kCura.WinEDDS
 				Me.WriteLongText(source, destination, formatter)
 			End If
 			Dim retval As Long = 0
+			'Write text file location to .dat file
 			If destinationFilePath <> String.Empty Then
 				retval = kCura.Utility.File.Instance.GetFileSize(destinationFilePath)
 				Dim textLocation As String = String.Empty
@@ -1111,12 +1124,13 @@ Namespace kCura.WinEDDS
 						textLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & artifact.FullTextFileName(Me.NameTextFilesAfterIdentifier, _parent.NameTextAndNativesAfterBegBates)
 				End Select
 				If Settings.LoadFileIsHtml Then
-					lineToWrite.Append("<a href='" & textLocation & "' target='_textwindow'>" & textLocation & "</a>")
+					loadFileEntry.AddStringEntry("<a href='" & textLocation & "' target='_textwindow'>" & textLocation & "</a>")
 				Else
-					lineToWrite.Append(textLocation)
+					loadFileEntry.AddStringEntry(textLocation)
 				End If
 			End If
-			lineToWrite.Append(endBound)
+
+			loadFileEntry.AddStringEntry(endBound)
 			Return retval
 		End Function
 
@@ -1134,24 +1148,24 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Public Function UpdateLoadFile(ByVal record As Object(), ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByRef fullTextTempFile As String, ByVal doc As Exporters.ObjectExportInfo, ByRef extractedTextByteCount As Int64) As String
-			If _nativeFileWriter Is Nothing Then Return ""
-			Dim lineToWrite As New System.Text.StringBuilder
+		Public Function UpdateLoadFile(ByVal record As Object(), ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByRef fullTextTempFile As String, ByVal doc As Exporters.ObjectExportInfo, ByRef extractedTextByteCount As Int64) As ILoadFileEntry
+			If _nativeFileWriter Is Nothing Then Return New CompletedLoadFileEntry("")
+			Dim loadFileEntry As DeferredEntry = New DeferredEntry()
 			Dim count As Int32
 			Dim fieldValue As String
 			Dim columnName As String
 			Dim location As String = nativeLocation
 			Dim rowPrefix As String = _loadFileFormatter.RowPrefix
-			If Not String.IsNullOrEmpty(rowPrefix) Then lineToWrite.Append(rowPrefix)
+			If Not String.IsNullOrEmpty(rowPrefix) Then loadFileEntry.AddStringEntry(rowPrefix)
 			For count = 0 To _parent.Columns.Count - 1
 				Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
 				columnName = field.AvfColumnName
 				Dim val As Object = record(_ordinalLookup(columnName))
 				If field.FieldType = Relativity.FieldTypeHelper.FieldType.Text OrElse field.FieldType = Relativity.FieldTypeHelper.FieldType.OffTableText Then
 					If Me.Settings.LoadFileIsHtml Then
-						extractedTextByteCount += Me.ManageLongText(lineToWrite, val, field, fullTextTempFile, doc, "<td>", "</td>")
+						extractedTextByteCount += Me.ManageLongText(loadFileEntry, val, field, fullTextTempFile, doc, "<td>", "</td>")
 					Else
-						extractedTextByteCount += Me.ManageLongText(lineToWrite, val, field, fullTextTempFile, doc, _settings.QuoteDelimiter, _settings.QuoteDelimiter)
+						extractedTextByteCount += Me.ManageLongText(loadFileEntry, val, field, fullTextTempFile, doc, _settings.QuoteDelimiter, _settings.QuoteDelimiter)
 					End If
 				Else
 					If TypeOf val Is Byte() Then val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
@@ -1181,24 +1195,26 @@ Namespace kCura.WinEDDS
 					ElseIf field.IsCodeOrMulticodeField Then
 						fieldValue = Me.GetCodeValueString(fieldValue)
 					End If
-					lineToWrite.Append(_loadFileFormatter.TransformToCell(fieldValue))
+					loadFileEntry.AddStringEntry(_loadFileFormatter.TransformToCell(fieldValue))
 				End If
+
 				If Not count = _parent.Columns.Count - 1 AndAlso Not Me.Settings.LoadFileIsHtml Then
-					lineToWrite.Append(_settings.RecordDelimiter)
+					loadFileEntry.AddStringEntry(_settings.RecordDelimiter)
 				End If
 			Next
+
 			Dim imagesCell As String = _loadFileFormatter.CreateImageCell(doc)
-			If Not String.IsNullOrEmpty(imagesCell) Then lineToWrite.Append(imagesCell)
+			If Not String.IsNullOrEmpty(imagesCell) Then loadFileEntry.AddStringEntry(imagesCell)
 			If _settings.ExportNative Then
 				If Me.Settings.VolumeInfo.CopyNativeFilesFromRepository Then
-					lineToWrite.Append(_loadFileFormatter.CreateNativeCell(location, doc))
+					loadFileEntry.AddStringEntry(_loadFileFormatter.CreateNativeCell(location, doc))
 				Else
-					lineToWrite.Append(_loadFileFormatter.CreateNativeCell(doc.NativeSourceLocation, doc))
+					loadFileEntry.AddStringEntry(_loadFileFormatter.CreateNativeCell(doc.NativeSourceLocation, doc))
 				End If
 			End If
-			If Not String.IsNullOrEmpty(_loadFileFormatter.RowSuffix) Then lineToWrite.Append(_loadFileFormatter.RowSuffix)
-			lineToWrite.Append(vbNewLine)
-			return lineToWrite.ToString()
+			If Not String.IsNullOrEmpty(_loadFileFormatter.RowSuffix) Then loadFileEntry.AddStringEntry(_loadFileFormatter.RowSuffix)
+			loadFileEntry.AddStringEntry(vbNewLine)
+			Return loadFileEntry
 		End Function
 
 		Private Function ToExportableDateString(ByVal val As Object, ByVal formatString As String) As String
@@ -1225,6 +1241,16 @@ Namespace kCura.WinEDDS
 				Return True
 			End If
 		End Function
+
+		Public Sub WriteLongTextFileToDatFile(ByRef fileWriter As System.IO.StreamWriter, ByVal longTextPath As String, ByVal encoding As System.Text.Encoding)
+			Dim source As System.IO.TextReader = New System.IO.StreamReader(longTextPath, encoding)
+			If String.IsNullOrEmpty(longTextPath) AndAlso Not source Is Nothing AndAlso TypeOf source Is System.IO.StreamReader AndAlso TypeOf DirectCast(source, System.IO.StreamReader).BaseStream Is System.IO.FileStream Then
+				longTextPath = DirectCast(DirectCast(source, System.IO.StreamReader).BaseStream, System.IO.FileStream).Name
+			End If
+			Dim formatter As Exporters.ILongTextStreamFormatter = GetLongTextStreamFormatter(source)
+			If Not fileWriter Is Nothing Then Me.WriteLongText(source, fileWriter, formatter)
+			If Not String.IsNullOrEmpty(longTextPath) Then kCura.Utility.File.Instance.Delete(longTextPath)
+		End Sub
 
 		Private Function GetMultivalueString(ByVal input As String, ByVal field As ViewFieldInfo) As String
 			Dim retVal As String = input
@@ -1258,14 +1284,14 @@ Namespace kCura.WinEDDS
 
 		End Function
 
-		Public Sub WriteDatFile(ByVal linesToWriteDat As ConcurrentDictionary(Of Int32, String), ByVal artifacts As Exporters.ObjectExportInfo())
-			Dim lineToWrite As String = ""
-			linesToWriteDat.TryGetValue(-1, lineToWrite)
-			_nativeFileWriter.Write(lineToWrite)
+		Public Sub WriteDatFile(ByVal linesToWriteDat As ConcurrentDictionary(Of Int32, ILoadFileEntry), ByVal artifacts As Exporters.ObjectExportInfo())
+			Dim loadFileEntry As ILoadFileEntry = Nothing
+			linesToWriteDat.TryGetValue(-1, loadFileEntry)
+			loadFileEntry.Write(_nativeFileWriter)
 
 			For Each artifact As Exporters.ObjectExportInfo in artifacts
-				If linesToWriteDat.TryGetValue(artifact.ArtifactID, lineToWrite)
-					_nativeFileWriter.Write(lineToWrite)
+				If linesToWriteDat.TryGetValue(artifact.ArtifactID, loadFileEntry)
+					loadFileEntry.Write(_nativeFileWriter)
 				End If
 			Next
 
