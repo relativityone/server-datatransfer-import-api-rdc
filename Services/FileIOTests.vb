@@ -105,7 +105,7 @@ Namespace kCura.WinEDDS.NUnit.Services
 			'Empty namespace so there are no additional atributes on the root element
 			Dim ns As New System.Xml.Serialization.XmlSerializerNamespaces()
 			ns.Add("", "")
-			Using stringWriter As New IO.StringWriter()
+			Using stringWriter As New System.IO.StringWriter()
 				' Make the serialization, writing it into the StringWriter.
 				xmlSerializer.Serialize(stringWriter, soapExDetail, ns)
 				tempdoc.LoadXml(stringWriter.ToString)
