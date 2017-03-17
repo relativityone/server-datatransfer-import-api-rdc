@@ -1260,7 +1260,7 @@ Namespace kCura.WinEDDS
 
 		End Function
 
-		Public Function WriteDatFile(ByVal linesToWriteDat As ConcurrentDictionary(Of Int32, ILoadFileEntry), ByVal artifacts As Exporters.ObjectExportInfo()) As Int64
+		Public Sub WriteDatFile(ByVal linesToWriteDat As ConcurrentDictionary(Of Int32, ILoadFileEntry), ByVal artifacts As Exporters.ObjectExportInfo())
 			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			Dim lastArtifactId As Int32 = -1
@@ -1301,7 +1301,7 @@ Namespace kCura.WinEDDS
 					End If
 
 					'Store statistics
-					'_statistics.MetadataBytes = loadFileBytes + _totalExtractedTextFileLength
+					_statistics.MetadataBytes = loadFileBytes + _totalExtractedTextFileLength
 					
 					Exit While
 				Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
@@ -1316,10 +1316,9 @@ Namespace kCura.WinEDDS
 					End If
 				End Try
 			End While
-			Return loadFileBytes
-		End Function
+		End Sub
 
-		Public Function WriteOptFile(ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal artifacts As Exporters.ObjectExportInfo()) As Int64
+		Public Sub WriteOptFile(ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal artifacts As Exporters.ObjectExportInfo())
 			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			Dim lastArtifactId As Int32 = -1
@@ -1365,7 +1364,7 @@ Namespace kCura.WinEDDS
 					End If
 
 					'Store statistics
-					'_statistics.MetadataBytes = loadFileBytes + _totalExtractedTextFileLength
+					_statistics.MetadataBytes = loadFileBytes + _totalExtractedTextFileLength
 					
 					Exit While
 				Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
@@ -1380,8 +1379,7 @@ Namespace kCura.WinEDDS
 					End If
 				End Try
 			End While
-			Return loadFileBytes
-		End Function
+		End Sub
 
 		Public Sub UpdateVolume()
 			_currentVolumeSize = 0
