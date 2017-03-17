@@ -437,9 +437,10 @@ Namespace kCura.WinEDDS
 			Next
 
 			Task.WaitAll(threads)
-			_volumeManager.WriteDatFile(_linesToWriteDat, artifacts)
-			_volumeManager.WriteOptFile(_linesToWriteOpt, artifacts)
+			Dim datFileSize As Int64 = _volumeManager.WriteDatFile(_linesToWriteDat, artifacts)
+			Dim optFileSize As Int64 = _volumeManager.WriteOptFile(_linesToWriteOpt, artifacts)
 
+			'TODO: MAP - update volume manager statistics here
 		End Sub
 
 		Private Async Function RetrieveNatives(ByVal natives As System.Data.DataView, ByVal productionArtifactID As Int32, ByVal documentArtifactIDs As Int32(), ByVal maxTries As Integer) As Task(Of System.Data.DataView)
