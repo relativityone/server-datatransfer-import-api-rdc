@@ -432,7 +432,7 @@ Namespace kCura.WinEDDS
 			For i = 0 To documentArtifactIDs.Length - 1
 				If _halt Then Exit For
 				Dim openThreadNumber As Integer = Task.WaitAny(threads, TimeSpan.FromDays(1))
-				threads(openThreadNumber) = ExportArtifactAsync(artifacts(i), maxTries,i,documentArtifactIDs.Length)
+				threads(openThreadNumber) = ExportArtifactAsync(artifacts(i), maxTries,i,documentArtifactIDs.Length, openThreadNumber)
 				DocumentsExported += 1
 			Next
 
@@ -505,12 +505,12 @@ Namespace kCura.WinEDDS
 				)
 		End Function
 
-		Private Async Function ExportArtifactAsync(ByVal artifact As ObjectExportInfo, ByVal maxTries As Integer, ByVal docNum As Integer , ByVal numDocs As Integer) As Task
+		Private Async Function ExportArtifactAsync(ByVal artifact As ObjectExportInfo, ByVal maxTries As Integer, ByVal docNum As Integer , ByVal numDocs As Integer, ByVal threadNumber As Integer) As Task
 			 Await Task.Run(
 					Sub()
 					    _fileCount += CallServerWithRetry(Function()
 							Dim retval As Long
-							retval = _volumeManager.ExportArtifact(artifact, _linesToWriteDat, _linesToWriteOpt)
+							retval = _volumeManager.ExportArtifact(artifact, _linesToWriteDat, _linesToWriteOpt, threadNumber)
 							If retval >= 0 Then
 								WriteUpdate("Exported document " & docNum + 1, docNum = numDocs - 1)
 								_lastStatisticsSnapshot = _statistics.ToDictionary

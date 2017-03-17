@@ -273,6 +273,12 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public WriteOnly Property Billable() As Boolean
+			Set
+				_loadFile.Billable = Value
+			End Set
+		End Property
+
 		Public Overrides Sub Save(ByVal location As String)
 			MyBase.SaveObject(location, _loadFile)
 		End Sub
