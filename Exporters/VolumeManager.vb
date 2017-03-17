@@ -1,4 +1,5 @@
 Imports System.Collections.Concurrent
+Imports System.IO
 Imports System.Text
 Imports kCura.WinEDDS.LoadFileEntry
 
@@ -1074,11 +1075,32 @@ Namespace kCura.WinEDDS
 				formatter = New kCura.WinEDDS.Exporters.NonTransformFormatter
 			Else 'Defer writing text to .dat file
 				Dim encoding As System.Text.Encoding = Me.GetLongTextFieldFileEncoding(textField)
-				loadFileEntry.AddPartialEntry(New LongTextWriteDeferredEntry(downloadedTextFilePath, encoding, Me)) 'Defer writing text to .dat file
-				source.Close()
-				loadFileEntry.AddStringEntry(endBound)
-				downloadedTextFilePath = "" 'This prevents the tmp text file from being deleted before we can write it to the .dat file. The deferred logic will delete the tmp file
-				Return 0
+				If String.IsNullOrEmpty(downloadedTextFilePath) Then				
+					Dim textToWrite As String = textValue
+					If Not Encoding.Unicode.Equals(Me.Settings.TextFileEncoding) Then
+						Dim bytesToEncode AS Byte()
+						If TypeOf sourceValue Is Byte() Then
+							bytesToEncode = DirectCast(sourceValue, Byte())
+						Else If Encoding.Unicode.Equals(encoding)
+							bytesToEncode = Encoding.Unicode.GetBytes(textValue)
+						Else
+							bytesToEncode = Encoding.Default.GetBytes(textValue)
+						End If
+						Dim bytesToWrite AS Byte() = Encoding.Convert(Encoding.Unicode, Me.Settings.TextFileEncoding, bytesToEncode)
+						If Not bytesToWrite Is Nothing Then
+							textToWrite = Me.Settings.TextFileEncoding.GetString(bytesToWrite)
+						End If
+					End If		
+					loadFileEntry.AddStringEntry(textToWrite)
+					Return 0
+				Else		
+							
+					loadFileEntry.AddPartialEntry(New LongTextWriteDeferredEntry(downloadedTextFilePath, encoding, Me)) 'Defer writing text to .dat file
+					source.Close()
+					loadFileEntry.AddStringEntry(endBound)
+					downloadedTextFilePath = "" 'This prevents the tmp text file from being deleted before we can write it to the .dat file. The deferred logic will delete the tmp file
+					Return 0
+				end if
 			End If
 			If String.IsNullOrEmpty(downloadedTextFilePath) AndAlso Not source Is Nothing AndAlso TypeOf source Is System.IO.StreamReader AndAlso TypeOf DirectCast(source, System.IO.StreamReader).BaseStream Is System.IO.FileStream Then
 				downloadedTextFilePath = DirectCast(DirectCast(source, System.IO.StreamReader).BaseStream, System.IO.FileStream).Name
