@@ -487,6 +487,7 @@
     <Compile Include="Exporters\VolumeManager.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Exporters\VolumePredictions.vb" />
     <Compile Include="FieldMapping\FieldMappingHelper.vb" />
     <Compile Include="FieldProviderCache.vb" />
     <Compile Include="FileDownloader.vb">

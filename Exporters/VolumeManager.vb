@@ -1,5 +1,6 @@
 Imports System.Collections.Concurrent
 Imports System.Text
+Imports kCura.WinEDDS.Exporters
 Imports kCura.WinEDDS.LoadFileEntry
 
 Namespace kCura.WinEDDS
@@ -70,30 +71,6 @@ Namespace kCura.WinEDDS
 		Public ReadOnly Property Settings() As ExportFile
 			Get
 				Return _settings
-			End Get
-		End Property
-
-		Private ReadOnly Property CurrentVolumeLabel() As String
-			Get
-				Return _settings.VolumeInfo.VolumePrefix & _currentVolumeNumber.ToString.PadLeft(_volumeLabelPaddingWidth, "0"c)
-			End Get
-		End Property
-
-		Private ReadOnly Property CurrentImageSubdirectoryLabel() As String
-			Get
-				Return _settings.VolumeInfo.SubdirectoryImagePrefix & _currentSubdirectoryNumber.ToString.PadLeft(_subdirectoryLabelPaddingWidth, "0"c)
-			End Get
-		End Property
-
-		Private ReadOnly Property CurrentNativeSubdirectoryLabel() As String
-			Get
-				Return _settings.VolumeInfo.SubdirectoryNativePrefix & _currentSubdirectoryNumber.ToString.PadLeft(_subdirectoryLabelPaddingWidth, "0"c)
-			End Get
-		End Property
-
-		Private ReadOnly Property CurrentFullTextSubdirectoryLabel() As String
-			Get
-				Return _settings.VolumeInfo.SubdirectoryFullTextPrefix & _currentSubdirectoryNumber.ToString.PadLeft(_subdirectoryLabelPaddingWidth, "0"c)
 			End Get
 		End Property
 
@@ -213,6 +190,88 @@ Namespace kCura.WinEDDS
 
 		End Sub
 
+		Private Function CurrentVolumeLabel(ByVal currentVolumeNumber As Integer) As String
+			Return _settings.VolumeInfo.VolumePrefix & currentVolumeNumber.ToString.PadLeft(_volumeLabelPaddingWidth, "0"c)
+		End Function
+
+		Private Function CurrentImageSubdirectoryLabel(ByVal currentSubDirectoryNumber As Integer) As String
+			Return _settings.VolumeInfo.SubdirectoryImagePrefix & currentSubDirectoryNumber.ToString.PadLeft(_subdirectoryLabelPaddingWidth, "0"c)
+		End Function
+
+		Private Function CurrentNativeSubdirectoryLabel(ByVal currentSubDirectoryNumber As Integer) As String
+			Return _settings.VolumeInfo.SubdirectoryNativePrefix & currentSubDirectoryNumber.ToString.PadLeft(_subdirectoryLabelPaddingWidth, "0"c)
+		End Function
+
+		Private Function CurrentFullTextSubdirectoryLabel(ByVal currentSubDirectoryNumber As Integer) As String
+			Return _settings.VolumeInfo.SubdirectoryFullTextPrefix & currentSubDirectoryNumber.ToString.PadLeft(_subdirectoryLabelPaddingWidth, "0"c)
+		End Function
+
+		Public Sub FinalizeVolumeAndSubDirPredictions(ByRef prediction As VolumePredictions, ByVal artifact As Exporters.ObjectExportInfo)
+
+			'Reset native file count and size if not exporting natives or not copying native files from repo
+			If Not Me.Settings.ExportNative OrElse Not Me.Settings.VolumeInfo.CopyNativeFilesFromRepository Then
+				prediction.NativeFileCount = 0
+				prediction.NativeFilesSize = 0
+			End If
+
+			'Predict images
+			If Me.Settings.ExportImages AndAlso Me.Settings.VolumeInfo.CopyImageFilesFromRepository Then
+				If prediction.ImageFileCount > 0 AndAlso (Me.Settings.TypeOfImage = ExportFile.ImageType.MultiPageTiff OrElse Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf) Then
+					prediction.ImageFileCount = 1
+				End If
+			Else
+				prediction.ImageFileCount = 0
+				prediction.ImageFilesSize = 0
+			End If
+
+			'Predict text
+			If Me.Settings.ExportFullText AndAlso Me.Settings.ExportFullTextAsFile Then
+				Dim count As Int32
+				Dim columnName As String
+				For count = 0 To _parent.Columns.Count - 1
+					Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
+					columnName = field.AvfColumnName
+					Dim fieldValue As Object = artifact.Metadata(_ordinalLookup(columnName))
+					If field.FieldType = Relativity.FieldTypeHelper.FieldType.Text OrElse field.FieldType = Relativity.FieldTypeHelper.FieldType.OffTableText Then
+						prediction.TextFileCount += 1
+						If TypeOf fieldValue Is Byte() Then
+							fieldValue = System.Text.Encoding.Unicode.GetString(DirectCast(fieldValue, Byte()))
+						End If
+						If fieldValue Is Nothing Then fieldValue = String.Empty
+						Dim textValue As String = fieldValue.ToString
+						If textValue = Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
+							prediction.TextFilesSize += 2 * 1048576 'This is the naive approach - assume the final text will be twice as long as the max length limit
+						Else
+							prediction.TextFilesSize += Me.Settings.TextFileEncoding.GetByteCount(textValue)
+						End If
+					End If
+				Next
+			Else
+				prediction.TextFileCount = 0
+				prediction.TextFilesSize = 0
+			End If
+		End Sub
+
+		Public Function GetCurrentVolumeNumber(ByVal predictions As VolumePredictions) As Integer
+			If _currentVolumeSize + predictions.TotalFileSize > Me.VolumeMaxSize AndAlso _currentVolumeSize > 0 Then
+				Me.UpdateVolume()
+			End If
+			_currentVolumeSize += predictions.TotalFileSize
+			Return _currentVolumeNumber
+		End Function
+
+		Public Function GetCurrentSubDirectoryNumber(ByVal predictions As VolumePredictions) As Integer
+			If (_currentNativeSubdirectorySize + predictions.NativeFileCount > Me.SubDirectoryMaxSize AndAlso _currentNativeSubdirectorySize > 0) OrElse
+				 (_currentImageSubdirectorySize + predictions.ImageFileCount > Me.SubDirectoryMaxSize AndAlso _currentImageSubdirectorySize > 0) OrElse 
+				 (_currentTextSubdirectorySize + predictions.TextFileCount > Me.SubDirectoryMaxSize AndAlso _currentTextSubdirectorySize > 0) Then
+				Me.UpdateSubdirectory()
+			End If
+			_currentNativeSubdirectorySize += predictions.NativeFileCount
+			_currentImageSubdirectorySize += predictions.ImageFileCount
+			_currentTextSubdirectorySize += predictions.TextFileCount
+			Return _currentSubdirectoryNumber
+		End Function
+
 		Private Function GetImageFileEncoding() As System.Text.Encoding
 			Dim retval As System.Text.Encoding
 			If Me.Settings.ExportImages Then
@@ -285,13 +344,14 @@ Namespace kCura.WinEDDS
 		End Sub
 #End Region
 
-		Public Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal linesToWriteDat As ConcurrentDictionary(Of Int32, ILoadFileEntry), ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal threadNumber As Integer) As Int64
+		Public Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal linesToWriteDat As ConcurrentDictionary(Of Int32, ILoadFileEntry),
+																	 ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal threadNumber As Integer, ByVal volumeNumber As Integer,ByVal subDirectoryNumber As Integer) As Int64
 			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			While tries < maxTries And Not Me.Halt
 				tries += 1
 				Try
-					Return Me.ExportArtifact(artifact, linesToWriteDat, linesToWriteOpt, tries > 1, threadNumber)
+					Return Me.ExportArtifact(artifact, linesToWriteDat, linesToWriteOpt, tries > 1, threadNumber, volumeNumber, subDirectoryNumber)
 					Exit While
 				Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
 					If tries = maxTries Then Throw
@@ -329,7 +389,8 @@ Namespace kCura.WinEDDS
 
 #Region " Rollup Images "
 
-		Private Sub RollupImages(ByRef imageCount As Long, ByRef successfulRollup As Boolean, ByVal artifact As kCura.WinEDDS.Exporters.ObjectExportInfo, ByVal image As kCura.WinEDDS.Exporters.ImageExportInfo)
+		Private Sub RollupImages(ByRef imageCount As Long, ByRef successfulRollup As Boolean, ByVal artifact As kCura.WinEDDS.Exporters.ObjectExportInfo,
+														 ByVal image As kCura.WinEDDS.Exporters.ImageExportInfo, ByVal currentVolumeNumber As Integer, ByVal currentSubDirectoryNumber As Integer)
 			Dim imageList(artifact.Images.Count - 1) As String
 			For i As Int32 = 0 To imageList.Length - 1
 				imageList(i) = DirectCast(artifact.Images(i), Exporters.ImageExportInfo).TempLocation
@@ -354,7 +415,7 @@ Namespace kCura.WinEDDS
 					Case ExportFile.ImageType.MultiPageTiff
 						ext = ".tif"
 				End Select
-				Dim currentTempLocation As String = Me.GetImageExportLocation(image)
+				Dim currentTempLocation As String = Me.GetImageExportLocation(image, currentVolumeNumber, currentSubDirectoryNumber)
 				If currentTempLocation.IndexOf("."c) <> -1 Then currentTempLocation = currentTempLocation.Substring(0, currentTempLocation.LastIndexOf("."))
 				currentTempLocation &= ext
 				DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation = currentTempLocation
@@ -410,20 +471,19 @@ Namespace kCura.WinEDDS
 			Return (From f In Me.Settings.SelectedTextFields Where f IsNot Nothing).Any
 		End Function
 
-		Private Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal linesToWrite As ConcurrentDictionary(Of Int32, ILoadFileEntry), ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal isRetryAttempt As Boolean, ByVal threadNumber As Integer) As Int64
+		Private Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal linesToWrite As ConcurrentDictionary(Of Int32, ILoadFileEntry),
+																		ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal isRetryAttempt As Boolean, ByVal threadNumber As Integer, 
+																		ByVal volumeNumber As Integer, ByVal subDirectoryNumber As Integer) As Int64
 			Dim totalFileSize As Int64 = 0
 			Dim extractedTextFileSizeForVolume As Int64 = 0
 			Dim image As Exporters.ImageExportInfo = Nothing
 			Dim imageSuccess As Boolean = True
-			Dim nativeSuccess As Boolean = True
-			Dim updateVolumeAfterExport As Boolean = False
-			Dim updateSubDirectoryAfterExport As Boolean = False
 			If Me.Settings.ExportImages Then
 				For Each image In artifact.Images
 					_timekeeper.MarkStart("VolumeManager_DownloadImage", threadNumber)
 					Try
 						If Me.Settings.VolumeInfo.CopyImageFilesFromRepository Then
-							totalFileSize += Me.DownloadImage(image)
+							totalFileSize += Me.DownloadImage(image, volumeNumber, subDirectoryNumber)
 						End If
 						image.HasBeenCounted = True
 					Catch ex As System.Exception
@@ -441,14 +501,14 @@ Namespace kCura.WinEDDS
 			Dim imageCount As Long = artifact.Images.Count
 			Dim successfulRollup As Boolean = True
 			If artifact.Images.Count > 0 AndAlso (Me.Settings.TypeOfImage = ExportFile.ImageType.MultiPageTiff OrElse Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf) Then
-				Me.RollupImages(imageCount, successfulRollup, artifact, image)
+				Me.RollupImages(imageCount, successfulRollup, artifact, image, volumeNumber, subDirectoryNumber)
 			End If
 
 			If Me.Settings.ExportNative Then
 				_timekeeper.MarkStart("VolumeManager_DownloadNative", threadNumber)
 				Try
 					If Me.Settings.VolumeInfo.CopyNativeFilesFromRepository Then
-						Dim downloadSize As Int64 = Me.DownloadNative(artifact)
+						Dim downloadSize As Int64 = Me.DownloadNative(artifact, volumeNumber, subDirectoryNumber)
 						If Not artifact.HasCountedNative Then totalFileSize += downloadSize
 					End If
 					artifact.HasCountedNative = True
@@ -477,10 +537,6 @@ Namespace kCura.WinEDDS
 					End If
 				End Try
 				If Me.Settings.ExportFullTextAsFile Then
-					If Not artifact.HasCountedTextFile Then
-						totalFileSize += len
-						extractedTextFileSizeForVolume += len
-					End If
 					artifact.HasCountedTextFile = True
 				End If
 				artifact.HasFullText = True
@@ -530,32 +586,16 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 			End If
-
-			Dim textCount As Int32 = 0
-			If Me.Settings.ExportFullTextAsFile AndAlso artifact.HasFullText Then textCount += 1
-			If totalFileSize + _currentVolumeSize > Me.VolumeMaxSize Then
-				If _currentVolumeSize = 0 Then
-					updateVolumeAfterExport = True
-				Else
-					Me.UpdateVolume()
-				End If
-			ElseIf imageCount + _currentImageSubdirectorySize > Me.SubDirectoryMaxSize Then
-				Me.UpdateSubdirectory()
-			ElseIf artifact.NativeCount + _currentNativeSubdirectorySize > Me.SubDirectoryMaxSize Then
-				Me.UpdateSubdirectory()
-			ElseIf textCount + _currentTextSubdirectorySize > Me.SubDirectoryMaxSize Then
-				Me.UpdateSubdirectory()
-			End If
 			If Me.Settings.ExportImages Then
 				_timekeeper.MarkStart("VolumeManager_ExportImages", threadNumber)
-				Me.ExportImages(artifact.Images, tempLocalIproFullTextFilePath, successfulRollup, linesToWriteOpt, threadNumber)
+				Me.ExportImages(artifact.Images, tempLocalIproFullTextFilePath, successfulRollup, linesToWriteOpt, threadNumber, volumeNumber, subDirectoryNumber)
 				_timekeeper.MarkEnd("VolumeManager_ExportImages", threadNumber)
 			End If
 			Dim nativeCount As Int32 = 0
 			Dim nativeLocation As String = ""
 			If Me.Settings.ExportNative AndAlso Me.Settings.VolumeInfo.CopyNativeFilesFromRepository Then
 				Dim nativeFileName As String = Me.GetNativeFileName(artifact)
-				Dim localFilePath As String = Me.GetLocalNativeFilePath(artifact, nativeFileName)
+				Dim localFilePath As String = Me.GetLocalNativeFilePath(artifact, nativeFileName, volumeNumber, subDirectoryNumber)
 				_timekeeper.MarkStart("VolumeManager_ExportNative", threadNumber)
 				Me.ExportNative(localFilePath, artifact.NativeFileGuid, artifact.ArtifactID, nativeFileName, artifact.NativeTempLocation, threadNumber)
 				_timekeeper.MarkEnd("VolumeManager_ExportNative", threadNumber)
@@ -567,9 +607,9 @@ Namespace kCura.WinEDDS
 						Case ExportFile.ExportedFilePathType.Absolute
 							nativeLocation = localFilePath
 						Case ExportFile.ExportedFilePathType.Relative
-							nativeLocation = ".\" & Me.CurrentVolumeLabel & "\" & Me.CurrentNativeSubdirectoryLabel & "\" & nativeFileName
+							nativeLocation = ".\" & Me.CurrentVolumeLabel(volumeNumber) & "\" & Me.CurrentNativeSubdirectoryLabel(subDirectoryNumber) & "\" & nativeFileName
 						Case ExportFile.ExportedFilePathType.Prefix
-							nativeLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel & "\" & Me.CurrentNativeSubdirectoryLabel & "\" & nativeFileName
+							nativeLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel(volumeNumber) & "\" & Me.CurrentNativeSubdirectoryLabel(subDirectoryNumber) & "\" & nativeFileName
 					End Select
 				End If
 			End If
@@ -579,21 +619,11 @@ Namespace kCura.WinEDDS
 					linesToWrite.AddOrUpdate(-1, columnHeaderEntry, Function() columnHeaderEntry)
 					_hasWrittenColumnHeaderString = True
 				End If
-				Dim loadFileEntry As ILoadFileEntry = Me.UpdateLoadFile(artifact.Metadata, artifact.HasFullText, artifact.ArtifactID, nativeLocation, tempLocalFullTextFilePath, artifact, extractedTextFileLength)
+				Dim loadFileEntry As ILoadFileEntry = Me.UpdateLoadFile(artifact.Metadata, artifact.HasFullText, artifact.ArtifactID, nativeLocation, tempLocalFullTextFilePath, artifact, extractedTextFileLength, volumeNumber, subDirectoryNumber)
 				linesToWrite.AddOrUpdate(artifact.ArtifactID, loadFileEntry, Function() loadFileEntry)
 			Catch ex As System.IO.IOException
 				Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Load, ex)
 			End Try
-
-
-			_currentVolumeSize += totalFileSize
-			If Me.Settings.VolumeInfo.CopyNativeFilesFromRepository Then
-				_currentNativeSubdirectorySize += artifact.NativeCount
-				If Me.Settings.ExportFullTextAsFile AndAlso artifact.HasFullText Then _currentTextSubdirectorySize += 1
-				_currentImageSubdirectorySize += imageCount
-			End If
-			If updateSubDirectoryAfterExport Then Me.UpdateSubdirectory()
-			If updateVolumeAfterExport Then Me.UpdateVolume()
 			_parent.WriteUpdate("Document " & artifact.IdentifierValue & " exported.", False)
 			Try
 				If Not _errorWriter Is Nothing Then _errorWriter.Flush()
@@ -657,18 +687,18 @@ Namespace kCura.WinEDDS
 			Return tempLocalFullTextFilePath
 		End Function
 
-		Private Function GetLocalNativeFilePath(ByVal doc As Exporters.ObjectExportInfo, ByVal nativeFileName As String) As String
+		Private Function GetLocalNativeFilePath(ByVal doc As Exporters.ObjectExportInfo, ByVal nativeFileName As String, ByVal currentVolumeNumber As Integer, ByVal currentSubDirectoryNumber As Integer) As String
 			Dim localFilePath As String = Me.Settings.FolderPath
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
-			localFilePath &= Me.CurrentVolumeLabel & "\" & Me.CurrentNativeSubdirectoryLabel & "\"
+			localFilePath &= Me.CurrentVolumeLabel(currentVolumeNumber) & "\" & Me.CurrentNativeSubdirectoryLabel(currentSubDirectoryNumber) & "\"
 			If Not System.IO.Directory.Exists(localFilePath) Then System.IO.Directory.CreateDirectory(localFilePath)
 			Return localFilePath & nativeFileName
 		End Function
 
-		Private Function GetLocalTextFilePath(ByVal doc As Exporters.ObjectExportInfo) As String
+		Private Function GetLocalTextFilePath(ByVal doc As Exporters.ObjectExportInfo, ByVal currentVolumeNumber As Integer, ByVal currentSubDirectoryNumber As Integer) As String
 			Dim localFilePath As String = Me.Settings.FolderPath
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
-			localFilePath &= Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\"
+			localFilePath &= Me.CurrentVolumeLabel(currentVolumeNumber) & "\" & Me.CurrentFullTextSubdirectoryLabel(currentSubDirectoryNumber) & "\"
 			If Not System.IO.Directory.Exists(localFilePath) Then System.IO.Directory.CreateDirectory(localFilePath)
 			Return localFilePath & doc.FullTextFileName(Me.NameTextFilesAfterIdentifier, _parent.NameTextAndNativesAfterBegBates)
 		End Function
@@ -696,9 +726,9 @@ Namespace kCura.WinEDDS
 
 #Region "Image Export"
 
-		Private Function GetImageExportLocation(ByVal image As Exporters.ImageExportInfo) As String
+		Private Function GetImageExportLocation(ByVal image As Exporters.ImageExportInfo, ByVal currentVolumeNumber As Integer, ByVal currentSubDirectoryNumber As Integer) As String
 			Dim localFilePath As String = Me.Settings.FolderPath
-			Dim subfolderPath As String = Me.CurrentVolumeLabel & "\" & Me.CurrentImageSubdirectoryLabel & "\"
+			Dim subfolderPath As String = Me.CurrentVolumeLabel(currentVolumeNumber) & "\" & Me.CurrentImageSubdirectoryLabel(currentSubDirectoryNumber) & "\"
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
 			localFilePath &= subfolderPath
 			If Not System.IO.Directory.Exists(localFilePath) Then System.IO.Directory.CreateDirectory(localFilePath)
@@ -706,12 +736,13 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Public Sub ExportImages(ByVal images As System.Collections.ArrayList, ByVal localFullTextPath As String, ByVal successfulRollup As Boolean, ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal threadNumber As Integer)
+		Public Sub ExportImages(ByVal images As System.Collections.ArrayList, ByVal localFullTextPath As String, ByVal successfulRollup As Boolean, ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String),
+														ByVal threadNumber As Integer, ByVal currentVolumeNumber As Integer, ByVal currentSubDirectoryNumber As Integer)
 			Dim image As WinEDDS.Exporters.ImageExportInfo
 			Dim i As Int32 = 0
 			Dim fullTextReader As System.IO.StreamReader = Nothing
 			Dim localFilePath As String = Me.Settings.FolderPath
-			Dim subfolderPath As String = Me.CurrentVolumeLabel & "\" & Me.CurrentImageSubdirectoryLabel & "\"
+			Dim subfolderPath As String = Me.CurrentVolumeLabel(currentVolumeNumber) & "\" & Me.CurrentImageSubdirectoryLabel(currentSubDirectoryNumber) & "\"
 			Dim pageOffset As Long
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
 			localFilePath &= subfolderPath
@@ -735,7 +766,7 @@ Namespace kCura.WinEDDS
 							copyfile = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & subfolderPath & marker.FileName
 					End Select
 					If Me.Settings.LogFileFormat = LoadFileType.FileFormat.Opticon Then
-						Me.CreateImageLogEntry(marker.BatesNumber, copyfile, localFilePath, 1, fullTextReader, localFullTextPath <> "", Int64.MinValue, images.Count, linesToWriteOpt)
+						Me.CreateImageLogEntry(marker.BatesNumber, copyfile, localFilePath, 1, fullTextReader, localFullTextPath <> "", Int64.MinValue, images.Count, linesToWriteOpt, currentVolumeNumber)
 					Else
 						For j As Int32 = 0 To images.Count - 1
 							If (j = 0 AndAlso DirectCast(images(j), Exporters.ImageExportInfo).PageOffset Is Nothing) OrElse j = images.Count - 1 Then
@@ -749,7 +780,7 @@ Namespace kCura.WinEDDS
 								End If
 							End If
 							image = DirectCast(images(j), WinEDDS.Exporters.ImageExportInfo)
-							Me.CreateImageLogEntry(image.BatesNumber, copyfile, localFilePath, j + 1, fullTextReader, localFullTextPath <> "", pageOffset, images.Count, linesToWriteOpt)
+							Me.CreateImageLogEntry(image.BatesNumber, copyfile, localFilePath, j + 1, fullTextReader, localFullTextPath <> "", pageOffset, images.Count, linesToWriteOpt, currentVolumeNumber)
 						Next
 					End If
 					marker.TempLocation = copyfile
@@ -776,10 +807,10 @@ Namespace kCura.WinEDDS
 								Case ExportFile.ExportedFilePathType.Prefix
 									copyfile = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & subfolderPath & image.FileName
 							End Select
-							Me.CreateImageLogEntry(image.BatesNumber, copyfile, localFilePath, i + 1, fullTextReader, localFullTextPath <> "", pageOffset, images.Count, linesToWriteOpt)
+							Me.CreateImageLogEntry(image.BatesNumber, copyfile, localFilePath, i + 1, fullTextReader, localFullTextPath <> "", pageOffset, images.Count, linesToWriteOpt, currentVolumeNumber)
 							image.TempLocation = copyfile
 						Else
-							Me.CreateImageLogEntry(image.BatesNumber, image.SourceLocation, image.SourceLocation, i + 1, fullTextReader, localFullTextPath <> "", pageOffset, images.Count, linesToWriteOpt)
+							Me.CreateImageLogEntry(image.BatesNumber, image.SourceLocation, image.SourceLocation, i + 1, fullTextReader, localFullTextPath <> "", pageOffset, images.Count, linesToWriteOpt, currentVolumeNumber)
 						End If
 						i += 1
 					Next
@@ -792,10 +823,10 @@ Namespace kCura.WinEDDS
 			If Not fullTextReader Is Nothing Then fullTextReader.Close()
 		End Sub
 
-		Private Function DownloadImage(ByVal image As Exporters.ImageExportInfo) As Int64
+		Private Function DownloadImage(ByVal image As Exporters.ImageExportInfo, ByVal currentVolumeNumber As Integer, ByVal currentSubDirectoryNumber As Integer) As Int64
 			If image.FileGuid = "" Then Return 0
 			Dim start As Int64 = System.DateTime.Now.Ticks
-			Dim tempFile As String = Me.GetImageExportLocation(image)
+			Dim tempFile As String = Me.GetImageExportLocation(image, currentVolumeNumber, currentSubDirectoryNumber)
 			'If Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf Then
 			'	tempFile = System.IO.Path.GetTempFileName
 			'	kCura.Utility.File.Instance.Delete(tempFile)
@@ -869,14 +900,16 @@ Namespace kCura.WinEDDS
 			End Select
 		End Function
 
-		Private Sub CreateImageLogEntry(ByVal batesNumber As String, ByVal copyFile As String, ByVal pathToImage As String, ByVal pageNumber As Int32, ByVal fullTextReader As System.IO.StreamReader, ByVal expectingTextForPage As Boolean, ByVal pageOffset As Long, ByVal numberOfImages As Int32, ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String))
+		Private Sub CreateImageLogEntry(ByVal batesNumber As String, ByVal copyFile As String, ByVal pathToImage As String, ByVal pageNumber As Int32, ByVal fullTextReader As System.IO.StreamReader,
+																		ByVal expectingTextForPage As Boolean, ByVal pageOffset As Long, ByVal numberOfImages As Int32, ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String),
+																		ByVal currentVolumeNumber As Integer)
 			Dim lineToWrite As New System.Text.StringBuilder
 			Try
 				Select Case _settings.LogFileFormat
 					Case LoadFileType.FileFormat.Opticon
-						Me.WriteOpticonLine(batesNumber, pageNumber = 1, copyFile, numberOfImages, linesToWriteOpt)
+						Me.WriteOpticonLine(batesNumber, pageNumber = 1, copyFile, numberOfImages, linesToWriteOpt, currentVolumeNumber)
 					Case LoadFileType.FileFormat.IPRO
-						Me.WriteIproImageLine(batesNumber, pageNumber, copyFile, linesToWriteOpt)
+						Me.WriteIproImageLine(batesNumber, pageNumber, copyFile, linesToWriteOpt, currentVolumeNumber)
 					Case LoadFileType.FileFormat.IPRO_FullText
 						Dim currentPageFirstByteNumber As Long
 						If fullTextReader Is Nothing Then
@@ -910,21 +943,22 @@ Namespace kCura.WinEDDS
 							lineToWrite.Append(vbNewLine)
 						End If
 						linesToWriteOpt.AddOrUpdate("FT" + batesNumber, lineToWrite.ToString, Function() lineToWrite.ToString)
-						Me.WriteIproImageLine(batesNumber, pageNumber, copyFile, linesToWriteOpt)
+						Me.WriteIproImageLine(batesNumber, pageNumber, copyFile, linesToWriteOpt, currentVolumeNumber)
 				End Select
 			Catch ex As System.IO.IOException
 				Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Image, ex)
 			End Try
 		End Sub
 
-		Private Sub WriteIproImageLine(ByVal batesNumber As String, ByVal pageNumber As Int32, ByVal fullFilePath As String, ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String))
-			Dim linefactory As New Exporters.LineFactory.SimpleIproImageLineFactory(batesNumber, pageNumber, fullFilePath, Me.CurrentVolumeLabel, Me.Settings.TypeOfImage.Value)
+		Private Sub WriteIproImageLine(ByVal batesNumber As String, ByVal pageNumber As Int32, ByVal fullFilePath As String, ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal currentVolumeNumber As Integer)
+			Dim linefactory As New Exporters.LineFactory.SimpleIproImageLineFactory(batesNumber, pageNumber, fullFilePath, Me.CurrentVolumeLabel(currentVolumeNumber), Me.Settings.TypeOfImage.Value)
 			linefactory.WriteLine(_imageFileWriter, linesToWriteOpt)
 		End Sub
 
-		Private Sub WriteOpticonLine(ByVal batesNumber As String, ByVal firstDocument As Boolean, ByVal copyFile As String, ByVal imageCount As Int32, ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String))
+		Private Sub WriteOpticonLine(ByVal batesNumber As String, ByVal firstDocument As Boolean, ByVal copyFile As String, ByVal imageCount As Int32, ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String),
+																 ByVal currentVolumeNumber As Integer)
 			Dim log As New System.Text.StringBuilder
-			log.AppendFormat("{0},{1},{2},", batesNumber, Me.CurrentVolumeLabel, copyFile)
+			log.AppendFormat("{0},{1},{2},", batesNumber, Me.CurrentVolumeLabel(currentVolumeNumber), copyFile)
 			If firstDocument Then log.Append("Y")
 			log.Append(",,,")
 			If firstDocument Then log.Append(imageCount)
@@ -955,11 +989,11 @@ Namespace kCura.WinEDDS
 			Return Nothing
 		End Function
 
-		Private Function DownloadNative(ByVal artifact As Exporters.ObjectExportInfo) As Int64
+		Private Function DownloadNative(ByVal artifact As Exporters.ObjectExportInfo, ByVal currentVolumeNumber As Integer, ByVal currentSubDirectoryNumber As Integer) As Int64
 			If Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document AndAlso artifact.NativeFileGuid = "" Then Return 0
 			If Not Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document AndAlso (Not artifact.FileID > 0 OrElse artifact.NativeSourceLocation.Trim = String.Empty) Then Return 0
 			Dim nativeFileName As String = Me.GetNativeFileName(artifact)
-			Dim tempFile As String = Me.GetLocalNativeFilePath(artifact, nativeFileName)
+			Dim tempFile As String = Me.GetLocalNativeFilePath(artifact, nativeFileName, currentVolumeNumber, currentSubDirectoryNumber)
 			
 			Dim start As Int64 = System.DateTime.Now.Ticks
 			If System.IO.File.Exists(tempFile) Then
@@ -1033,7 +1067,9 @@ Namespace kCura.WinEDDS
 				End If
 		End Function
 
-		Private Function ManageLongText(ByRef loadFileEntry As DeferredEntry, ByVal sourceValue As Object, ByVal textField As ViewFieldInfo, ByRef downloadedTextFilePath As String, ByVal artifact As Exporters.ObjectExportInfo, ByVal startBound As String, ByVal endBound As String) As Long
+		Private Function ManageLongText(ByRef loadFileEntry As DeferredEntry, ByVal sourceValue As Object, ByVal textField As ViewFieldInfo, ByRef downloadedTextFilePath As String,
+																		ByVal artifact As Exporters.ObjectExportInfo, ByVal startBound As String, ByVal endBound As String,
+																		ByVal currentVolumeNumber As Integer, ByVal currentSubDirectoryNumber As Integer) As Long
 			loadFileEntry.AddStringEntry(startBound)
 
 			If TypeOf sourceValue Is Byte() Then
@@ -1063,7 +1099,7 @@ Namespace kCura.WinEDDS
 			Dim destinationFilePath As String = String.Empty
 			Dim formatter As Exporters.ILongTextStreamFormatter
 			If Me.Settings.ExportFullTextAsFile AndAlso TypeOf textField Is CoalescedTextViewField Then 'Exporting text to separate file
-				destinationFilePath = Me.GetLocalTextFilePath(artifact)
+				destinationFilePath = Me.GetLocalTextFilePath(artifact, currentVolumeNumber, currentSubDirectoryNumber)
 				destinationPathExists = System.IO.File.Exists(destinationFilePath)
 				If destinationPathExists AndAlso Not _settings.Overwrite Then 'Skip export instead of overwriting file
 					_parent.WriteWarning(destinationFilePath & " already exists. Skipping file export.")
@@ -1095,9 +1131,9 @@ Namespace kCura.WinEDDS
 					Case ExportFile.ExportedFilePathType.Absolute
 						textLocation = destinationFilePath
 					Case ExportFile.ExportedFilePathType.Relative
-						textLocation = ".\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & artifact.FullTextFileName(Me.NameTextFilesAfterIdentifier, _parent.NameTextAndNativesAfterBegBates)
+						textLocation = ".\" & Me.CurrentVolumeLabel(currentVolumeNumber) & "\" & Me.CurrentFullTextSubdirectoryLabel(currentSubDirectoryNumber) & "\" & artifact.FullTextFileName(Me.NameTextFilesAfterIdentifier, _parent.NameTextAndNativesAfterBegBates)
 					Case ExportFile.ExportedFilePathType.Prefix
-						textLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel & "\" & Me.CurrentFullTextSubdirectoryLabel & "\" & artifact.FullTextFileName(Me.NameTextFilesAfterIdentifier, _parent.NameTextAndNativesAfterBegBates)
+						textLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel(currentVolumeNumber) & "\" & Me.CurrentFullTextSubdirectoryLabel(currentSubDirectoryNumber) & "\" & artifact.FullTextFileName(Me.NameTextFilesAfterIdentifier, _parent.NameTextAndNativesAfterBegBates)
 				End Select
 				If Settings.LoadFileIsHtml Then
 					loadFileEntry.AddStringEntry("<a href='" & textLocation & "' target='_textwindow'>" & textLocation & "</a>")
@@ -1124,7 +1160,9 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Public Function UpdateLoadFile(ByVal record As Object(), ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String, ByRef fullTextTempFile As String, ByVal doc As Exporters.ObjectExportInfo, ByRef extractedTextByteCount As Int64) As ILoadFileEntry
+		Public Function UpdateLoadFile(ByVal record As Object(), ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String,
+																	 ByRef fullTextTempFile As String, ByVal doc As Exporters.ObjectExportInfo, ByRef extractedTextByteCount As Int64,
+																	 ByVal currentVolumeNumber As Integer, ByVal currentSubDirectoryNumber As Integer) As ILoadFileEntry
 			If _nativeFileWriter Is Nothing Then Return New CompletedLoadFileEntry("")
 			Dim loadFileEntry As DeferredEntry = New DeferredEntry()
 			Dim count As Int32
@@ -1139,9 +1177,9 @@ Namespace kCura.WinEDDS
 				Dim val As Object = record(_ordinalLookup(columnName))
 				If field.FieldType = Relativity.FieldTypeHelper.FieldType.Text OrElse field.FieldType = Relativity.FieldTypeHelper.FieldType.OffTableText Then
 					If Me.Settings.LoadFileIsHtml Then
-						extractedTextByteCount += Me.ManageLongText(loadFileEntry, val, field, fullTextTempFile, doc, "<td>", "</td>")
+						extractedTextByteCount += Me.ManageLongText(loadFileEntry, val, field, fullTextTempFile, doc, "<td>", "</td>", currentVolumeNumber, currentSubDirectoryNumber)
 					Else
-						extractedTextByteCount += Me.ManageLongText(loadFileEntry, val, field, fullTextTempFile, doc, _settings.QuoteDelimiter, _settings.QuoteDelimiter)
+						extractedTextByteCount += Me.ManageLongText(loadFileEntry, val, field, fullTextTempFile, doc, _settings.QuoteDelimiter, _settings.QuoteDelimiter, currentVolumeNumber, currentSubDirectoryNumber)
 					End If
 				Else
 					If TypeOf val Is Byte() Then val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
