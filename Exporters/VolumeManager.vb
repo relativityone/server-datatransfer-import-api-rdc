@@ -1091,11 +1091,16 @@ Namespace kCura.WinEDDS
 							textToWrite = Me.Settings.TextFileEncoding.GetString(bytesToWrite)
 						End If
 					End If		
-					loadFileEntry.AddStringEntry(textToWrite)
+					Dim stringBuilder As StringBuilder = new StringBuilder()
+					Dim formatterWriter As System.IO.StringWriter = new StringWriter(stringBuilder)
+					Dim longTextFormatter As Exporters.ILongTextStreamFormatter = GetLongTextStreamFormatter(source)
+					Me.WriteLongText(source, formatterWriter, longTextFormatter)
+					loadFileEntry.AddStringEntry(formatterWriter.ToString())
+					loadFileEntry.AddStringEntry(endBound)
 					Return 0
 				Else		
 							
-					loadFileEntry.AddPartialEntry(New LongTextWriteDeferredEntry(downloadedTextFilePath, encoding, Me)) 'Defer writing text to .dat file
+					loadFileEntry.AddPartialEntry(New LongTextWriteDeferredEntry(downloadedTextFilePath, Me.Settings.TextFileEncoding, Me)) 'Defer writing text to .dat file
 					source.Close()
 					loadFileEntry.AddStringEntry(endBound)
 					downloadedTextFilePath = "" 'This prevents the tmp text file from being deleted before we can write it to the .dat file. The deferred logic will delete the tmp file
