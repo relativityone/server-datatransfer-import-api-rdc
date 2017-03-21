@@ -633,7 +633,7 @@ Namespace kCura.WinEDDS
 					image.FileName = filename & filenameExtension
 					If Not image.FileGuid = "" Then
 						retval.Add(image)
-						prediction.ImageFilesSize += CType(dr("Size"), Long)
+						prediction.ImageFilesSize += CType(dr("ImageSize"), Long)
 					End If
 					i += 1
 				Next
@@ -691,7 +691,7 @@ Namespace kCura.WinEDDS
 								image.FileName = filename & filenameExtension
 								image.SourceLocation = drv("Location").ToString
 								retval.Add(image)
-								prediction.ImageFilesSize += CType(drv("Size"), Long)
+								prediction.ImageFilesSize += CType(drv("ImageSize"), Long)
 								i += 1
 							End If
 						Next
