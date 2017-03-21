@@ -235,11 +235,6 @@ Namespace kCura.WinEDDS
 					Dim fieldValue As Object = artifact.Metadata(_ordinalLookup(columnName))
 					If field.FieldType = Relativity.FieldTypeHelper.FieldType.Text OrElse field.FieldType = Relativity.FieldTypeHelper.FieldType.OffTableText Then
 						If Me.Settings.SelectedTextFields IsNot Nothing AndAlso TypeOf field Is CoalescedTextViewField Then
-							If Settings.SelectedTextFields.Count <> 1 Then
-								Dim precedenceField As ViewFieldInfo = GetFieldForLongTextPrecedenceDownload(field, artifact)
-								columnName = precedenceField.AvfColumnName
-								fieldValue = artifact.Metadata(_ordinalLookup(columnName))
-							End If
 							prediction.TextFileCount += 1
 							If TypeOf fieldValue Is Byte() Then
 								fieldValue = System.Text.Encoding.Unicode.GetString(DirectCast(fieldValue, Byte()))
