@@ -1117,23 +1117,7 @@ Namespace kCura.WinEDDS
 				End If
 				formatter = New kCura.WinEDDS.Exporters.NonTransformFormatter
 			Else 'Defer writing text to .dat file
-				Dim encoding As System.Text.Encoding = Me.GetLongTextFieldFileEncoding(textField)
 				If String.IsNullOrEmpty(downloadedTextFilePath) Then				
-					Dim textToWrite As String = textValue
-					If Not Encoding.Unicode.Equals(Me.Settings.TextFileEncoding) Then
-						Dim bytesToEncode AS Byte()
-						If TypeOf sourceValue Is Byte() Then
-							bytesToEncode = DirectCast(sourceValue, Byte())
-						Else If Encoding.Unicode.Equals(encoding)
-							bytesToEncode = Encoding.Unicode.GetBytes(textValue)
-						Else
-							bytesToEncode = Encoding.Default.GetBytes(textValue)
-						End If
-						Dim bytesToWrite AS Byte() = Encoding.Convert(Encoding.Unicode, Me.Settings.TextFileEncoding, bytesToEncode)
-						If Not bytesToWrite Is Nothing Then
-							textToWrite = Me.Settings.TextFileEncoding.GetString(bytesToWrite)
-						End If
-					End If		
 					Dim stringBuilder As StringBuilder = new StringBuilder()
 					Dim formatterWriter As System.IO.StringWriter = new StringWriter(stringBuilder)
 					Dim longTextFormatter As Exporters.ILongTextStreamFormatter = GetLongTextStreamFormatter(source)
@@ -1141,8 +1125,7 @@ Namespace kCura.WinEDDS
 					loadFileEntry.AddStringEntry(formatterWriter.ToString())
 					loadFileEntry.AddStringEntry(endBound)
 					Return 0
-				Else		
-							
+				Else					
 					loadFileEntry.AddPartialEntry(New LongTextWriteDeferredEntry(downloadedTextFilePath, Me.Settings.TextFileEncoding, Me)) 'Defer writing text to .dat file
 					source.Close()
 					loadFileEntry.AddStringEntry(endBound)
