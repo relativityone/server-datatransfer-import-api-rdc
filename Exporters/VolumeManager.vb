@@ -234,16 +234,23 @@ Namespace kCura.WinEDDS
 					columnName = field.AvfColumnName
 					Dim fieldValue As Object = artifact.Metadata(_ordinalLookup(columnName))
 					If field.FieldType = Relativity.FieldTypeHelper.FieldType.Text OrElse field.FieldType = Relativity.FieldTypeHelper.FieldType.OffTableText Then
-						prediction.TextFileCount += 1
-						If TypeOf fieldValue Is Byte() Then
-							fieldValue = System.Text.Encoding.Unicode.GetString(DirectCast(fieldValue, Byte()))
-						End If
-						If fieldValue Is Nothing Then fieldValue = String.Empty
-						Dim textValue As String = fieldValue.ToString
-						If textValue = Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
-							prediction.TextFilesSize += 2 * 1048576 'This is the naive approach - assume the final text will be twice as long as the max length limit
-						Else
-							prediction.TextFilesSize += Me.Settings.TextFileEncoding.GetByteCount(textValue)
+						If Me.Settings.SelectedTextFields IsNot Nothing AndAlso TypeOf field Is CoalescedTextViewField Then
+							If Settings.SelectedTextFields.Count <> 1 Then
+								Dim precedenceField As ViewFieldInfo = GetFieldForLongTextPrecedenceDownload(field, artifact)
+								columnName = precedenceField.AvfColumnName
+								fieldValue = artifact.Metadata(_ordinalLookup(columnName))
+							End If
+							prediction.TextFileCount += 1
+							If TypeOf fieldValue Is Byte() Then
+								fieldValue = System.Text.Encoding.Unicode.GetString(DirectCast(fieldValue, Byte()))
+							End If
+							If fieldValue Is Nothing Then fieldValue = String.Empty
+							Dim textValue As String = fieldValue.ToString
+							If textValue = Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
+								prediction.TextFilesSize += 2 * 1048576 'This is the naive approach - assume the final text will be twice as long as the max length limit
+							Else
+								prediction.TextFilesSize += Me.Settings.TextFileEncoding.GetByteCount(textValue)
+							End If
 						End If
 					End If
 				Next
