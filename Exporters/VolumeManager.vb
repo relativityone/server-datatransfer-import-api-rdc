@@ -478,7 +478,7 @@ Namespace kCura.WinEDDS
 			Dim longText As String = text.ToString
 			If longText = Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
 				Dim filePath As String = Me.DownloadTextFieldAsFile(artifact, field)
-				len += New System.IO.FileInfo(filePath).Length
+				len += _fileHelper.GetFileSize(filePath)
 				Return filePath
 			Else
 				len += longText.Length
@@ -889,7 +889,6 @@ Namespace kCura.WinEDDS
 
 		Private Sub ExportDocumentImage(ByVal fileName As String, ByVal fileGuid As String, ByVal artifactID As Int32, ByVal batesNumber As String, ByVal tempFileLocation As String, ByVal threadNumber As Integer)
 			If Not tempFileLocation = "" AndAlso Not tempFileLocation.ToLower = fileName.ToLower Then
-				''If System.IO.File.Exists(fileName) Then
 				If _fileHelper.Exists(fileName) Then
 					If _settings.Overwrite Then
 						_fileHelper.Delete(fileName)
