@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Reflection;
 using ZetaLongPaths;
 using ZetaLongPaths.Native;
 
@@ -19,7 +20,8 @@ namespace kCura.WinEDDS.Core.IO
 
 			var fileHandle = ZlpIOHelper.CreateFileHandle(filePath, disposition, fileAccess, ZetaLongPaths.Native.FileShare.None);
 			FileStream fileStream = new FileStream(fileHandle, System.IO.FileAccess.ReadWrite);
-
+			SetFileName(fileStream, filePath);
+			
 			if (append)
 			{
 				fileStream.Seek(0L, SeekOrigin.End);
@@ -60,6 +62,12 @@ namespace kCura.WinEDDS.Core.IO
 		public void Move(string sourceFilePath, string destinationFilePath)
 		{
 			ZlpIOHelper.MoveFile(sourceFilePath, destinationFilePath);
+		}
+
+		private void SetFileName(FileStream stream, string filePath)
+		{
+			FieldInfo nameField = stream.GetType().GetField("_fileName", BindingFlags.NonPublic | BindingFlags.Instance);
+			nameField.SetValue(stream, filePath);
 		}
 	}
 }
