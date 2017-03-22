@@ -3,6 +3,7 @@ Imports System.Collections.Generic
 Imports kCura.Utility.Extensions
 Imports kCura.WinEDDS.Exporters
 Imports System.Threading.Tasks
+Imports kCura.WinEDDS.LoadFileEntry
 
 Namespace kCura.WinEDDS
 	Public Class Exporter
@@ -41,7 +42,7 @@ Namespace kCura.WinEDDS
 		Private _productionLookup As New System.Collections.Generic.Dictionary(Of Int32, kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo)
 		Private _productionPrecedenceIds As Int32()
 		Private _tryToNameNativesAndTextFilesAfterPrecedenceBegBates As Boolean = False
-		Private _linesToWriteDat As ConcurrentDictionary(Of Int32, String)
+		Private _linesToWriteDat As ConcurrentDictionary(Of Int32, ILoadFileEntry)
 		Private _linesToWriteOpt As ConcurrentDictionary(Of String, String)
 
 #End Region
@@ -408,10 +409,11 @@ Namespace kCura.WinEDDS
 			Dim productionPrecedenceArtifactIds As Int32() = Settings.ImagePrecedence.Select(Function(pair) CInt(pair.Value)).ToArray()
 			Dim lookup As New Lazy(Of Dictionary(Of Int32, List(Of BatesEntry)))(Function() GenerateBatesLookup(_productionManager.RetrieveBatesByProductionAndDocument(Me.Settings.CaseArtifactID, productionPrecedenceArtifactIds, documentArtifactIDs)))
 
-			_linesToWriteDat = New ConcurrentDictionary(Of Int32, String)
+			_linesToWriteDat = New ConcurrentDictionary(Of Int32, ILoadFileEntry)
 			_linesToWriteOpt = New ConcurrentDictionary(Of String, String)
 
 			Dim artifacts(documentArtifactIDs.Length - 1) As Exporters.ObjectExportInfo
+			Dim volumePredictions(documentArtifactIDs.Length - 1) As VolumePredictions
 
 			Dim threadCount As Integer = Config.ExportThreadCount - 1
 			Dim threads As Task() = New Task(threadCount) {}
@@ -422,21 +424,27 @@ Namespace kCura.WinEDDS
 			For i = 0 To documentArtifactIDs.Length - 1
 				Dim record As Object() = DirectCast(records(i), Object())
 				Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, documentArtifactIDs(i))
-				Dim artifact As ObjectExportInfo = CreateArtifact(record, documentArtifactIDs(i), nativeRow, images, productionImages, beginBatesColumnIndex, identifierColumnIndex, lookup)
+				Dim prediction As VolumePredictions = New VolumePredictions()
+				Dim artifact As ObjectExportInfo = CreateArtifact(record, documentArtifactIDs(i), nativeRow, images, productionImages, beginBatesColumnIndex, identifierColumnIndex, lookup, prediction)
+
+				 _volumeManager.FinalizeVolumeAndSubDirPredictions(prediction, artifact)
+				volumePredictions(i) = prediction
+
 				artifacts(i) = artifact
 			Next
 
 			For i = 0 To documentArtifactIDs.Length - 1
 				If _halt Then Exit For
 				Dim openThreadNumber As Integer = Task.WaitAny(threads, TimeSpan.FromDays(1))
-				threads(openThreadNumber) = ExportArtifactAsync(artifacts(i), maxTries,i,documentArtifactIDs.Length)
+				Dim volumeNum As Integer = _volumeManager.GetCurrentVolumeNumber(volumePredictions(i))
+				Dim subDirNum As Integer = _volumeManager.GetCurrentSubDirectoryNumber(volumePredictions(i))
+				threads(openThreadNumber) = ExportArtifactAsync(artifacts(i), maxTries,i,documentArtifactIDs.Length, openThreadNumber, volumeNum, subDirNum)
 				DocumentsExported += 1
 			Next
 
 			Task.WaitAll(threads)
 			_volumeManager.WriteDatFile(_linesToWriteDat, artifacts)
 			_volumeManager.WriteOptFile(_linesToWriteOpt, artifacts)
-
 		End Sub
 
 		Private Async Function RetrieveNatives(ByVal natives As System.Data.DataView, ByVal productionArtifactID As Int32, ByVal documentArtifactIDs As Int32(), ByVal maxTries As Integer) As Task(Of System.Data.DataView)
@@ -502,12 +510,12 @@ Namespace kCura.WinEDDS
 				)
 		End Function
 
-		Private Async Function ExportArtifactAsync(ByVal artifact As ObjectExportInfo, ByVal maxTries As Integer, ByVal docNum As Integer , ByVal numDocs As Integer) As Task
+		Private Async Function ExportArtifactAsync(ByVal artifact As ObjectExportInfo, ByVal maxTries As Integer, ByVal docNum As Integer , ByVal numDocs As Integer, ByVal threadNumber As Integer, ByVal volumeNumber As Integer, ByVal subDirectoryNumber As Integer) As Task
 			 Await Task.Run(
 					Sub()
 					    _fileCount += CallServerWithRetry(Function()
 							Dim retval As Long
-							retval = _volumeManager.ExportArtifact(artifact, _linesToWriteDat, _linesToWriteOpt)
+							retval = _volumeManager.ExportArtifact(artifact, _linesToWriteDat, _linesToWriteOpt, threadNumber, volumeNumber, subDirectoryNumber)
 							If retval >= 0 Then
 								WriteUpdate("Exported document " & docNum + 1, docNum = numDocs - 1)
 								_lastStatisticsSnapshot = _statistics.ToDictionary
@@ -520,13 +528,14 @@ Namespace kCura.WinEDDS
 				)
 		End Function
 
-		Private Function CreateArtifact(ByVal record As Object(), ByVal documentArtifactID As Int32, ByVal nativeRow As System.Data.DataRowView, ByVal images As System.Data.DataView, ByVal productionImages As System.Data.DataView, ByVal beginBatesColumnIndex As Int32, ByVal identifierColumnIndex As Int32, ByRef lookup As Lazy(Of Dictionary(Of Int32, List(Of BatesEntry)))) As Exporters.ObjectExportInfo
+		Private Function CreateArtifact(ByVal record As Object(), ByVal documentArtifactID As Int32, ByVal nativeRow As System.Data.DataRowView, ByVal images As System.Data.DataView, ByVal productionImages As System.Data.DataView, ByVal beginBatesColumnIndex As Int32,
+																		ByVal identifierColumnIndex As Int32, ByRef lookup As Lazy(Of Dictionary(Of Int32, List(Of BatesEntry))), ByRef prediction As VolumePredictions) As Exporters.ObjectExportInfo
 			Dim artifact As New Exporters.ObjectExportInfo
 			If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production AndAlso beginBatesColumnIndex <> -1 Then
 				artifact.ProductionBeginBates = record(beginBatesColumnIndex).ToString
 			End If
 			artifact.IdentifierValue = record(identifierColumnIndex).ToString
-			artifact.Images = Me.PrepareImages(images, productionImages, documentArtifactID, artifact.IdentifierValue, artifact, Me.Settings.ImagePrecedence)
+			artifact.Images = Me.PrepareImages(images, productionImages, documentArtifactID, artifact.IdentifierValue, artifact, Me.Settings.ImagePrecedence, prediction)
 			If nativeRow Is Nothing Then
 				artifact.NativeFileGuid = ""
 				artifact.OriginalFileName = ""
@@ -551,6 +560,10 @@ Namespace kCura.WinEDDS
 			artifact.ArtifactID = documentArtifactID
 			artifact.Metadata = DirectCast(record, Object())
 			SetProductionBegBatesFileName(artifact, lookup)
+
+			prediction.NativeFileCount = artifact.NativeCount
+			If(prediction.NativeFileCount > 0) Then prediction.NativeFilesSize = CType(nativeRow("Size"), Long)
+			prediction.ImageFileCount = artifact.ImageCount
 
 			Return artifact
 		End Function
@@ -582,7 +595,7 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Private Function PrepareImagesForProduction(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo) As System.Collections.ArrayList
+		Private Function PrepareImagesForProduction(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo, ByRef prediction As VolumePredictions) As System.Collections.ArrayList
 			Dim retval As New System.Collections.ArrayList
 			If Not Me.Settings.ExportImages Then Return retval
 			Dim matchingRows As DataRow() = imagesView.Table.Select("DocumentArtifactID = " & documentArtifactID.ToString)
@@ -618,6 +631,7 @@ Namespace kCura.WinEDDS
 					image.FileName = filename & filenameExtension
 					If Not image.FileGuid = "" Then
 						retval.Add(image)
+						prediction.ImageFilesSize += CType(dr("ImageSize"), Long)
 					End If
 					i += 1
 				Next
@@ -637,17 +651,18 @@ Namespace kCura.WinEDDS
 			Return Not production Is Nothing AndAlso production.BatesNumbering = False AndAlso production.UseDocumentLevelNumbering AndAlso Not production.IncludeImageLevelNumberingForDocumentLevelNumbering
 		End Function
 
-		Private Function PrepareImages(ByVal imagesView As System.Data.DataView, ByVal productionImagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo, ByVal productionOrderList As Pair()) As System.Collections.ArrayList
+		Private Function PrepareImages(ByVal imagesView As System.Data.DataView, ByVal productionImagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo,
+																	 ByVal productionOrderList As Pair(), ByRef prediction As VolumePredictions) As System.Collections.ArrayList
 			Dim retval As New System.Collections.ArrayList
 			If Not Me.Settings.ExportImages Then Return retval
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
 				productionImagesView.Sort = "DocumentArtifactID ASC"
-				Return Me.PrepareImagesForProduction(productionImagesView, documentArtifactID, batesBase, artifact)
+				Return Me.PrepareImagesForProduction(productionImagesView, documentArtifactID, batesBase, artifact, prediction)
 			End If
 			Dim item As Pair
 			For Each item In productionOrderList
 				If item.Value = "-1" Then
-					Return Me.PrepareOriginalImages(imagesView, documentArtifactID, batesBase, artifact)
+					Return Me.PrepareOriginalImages(imagesView, documentArtifactID, batesBase, artifact, prediction)
 				Else
 					productionImagesView.RowFilter = String.Format("DocumentArtifactID = {0} AND ProductionArtifactID = {1}", documentArtifactID, item.Value)
 					Dim firstImageFileName As String = Nothing
@@ -674,6 +689,7 @@ Namespace kCura.WinEDDS
 								image.FileName = filename & filenameExtension
 								image.SourceLocation = drv("Location").ToString
 								retval.Add(image)
+								prediction.ImageFilesSize += CType(drv("ImageSize"), Long)
 								i += 1
 							End If
 						Next
@@ -685,7 +701,7 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Private Function PrepareOriginalImages(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo) As System.Collections.ArrayList
+		Private Function PrepareOriginalImages(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo, ByRef prediction As VolumePredictions) As System.Collections.ArrayList
 			Dim retval As New System.Collections.ArrayList
 			If Not Me.Settings.ExportImages Then Return retval
 			imagesView.RowFilter = "DocumentArtifactID = " & documentArtifactID.ToString
@@ -714,6 +730,7 @@ Namespace kCura.WinEDDS
 					image.FileName = kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(image.BatesNumber.ToString & filenameExtension)
 					image.SourceLocation = drv("Location").ToString
 					retval.Add(image)
+					prediction.ImageFilesSize += CType(drv("Size"), Long)
 					i += 1
 				Next
 			End If

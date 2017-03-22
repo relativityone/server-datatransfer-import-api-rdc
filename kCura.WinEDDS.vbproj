@@ -452,6 +452,9 @@
     <Compile Include="Exporters\LoadFileCellFormatters\IFieldNameProvider.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\ILoadFileHeaderFormatterFactory.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\ILoadFileHeaderFormatter.vb" />
+    <Compile Include="Exporters\LoadFileEntry\CompletedEntry.vb" />
+    <Compile Include="Exporters\LoadFileEntry\DeferredEntry.vb" />
+    <Compile Include="Exporters\LoadFileEntry\ILoadFileEntry.vb" />
     <Compile Include="Exporters\NullUserNotification.vb" />
     <Compile Include="Exporters\TempTextFileDeletor.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\DelimitedCellFormatter.vb" />
@@ -484,6 +487,7 @@
     <Compile Include="Exporters\VolumeManager.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Exporters\VolumePredictions.vb" />
     <Compile Include="FieldMapping\FieldMappingHelper.vb" />
     <Compile Include="FieldProviderCache.vb" />
     <Compile Include="FileDownloader.vb">
@@ -1272,6 +1276,5 @@
   <ItemGroup>
     <None Include="Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\BulkImportManager.disco" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
 </Project>
