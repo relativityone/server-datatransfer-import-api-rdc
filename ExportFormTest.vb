@@ -1245,8 +1245,8 @@ Namespace kCura.EDDS.WinForm.Tests
 		<Test()> Public Sub LoadExportFile_ExportNatives_False_RightListBoxItemsIs1()
 			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document)
 			ef.ExportNative = False
-            ef.SelectedViewFields = {_queryFieldFactory.GetExtractedTextField()}
-            _form.LoadExportFile(ef)
+			ef.SelectedViewFields = {_queryFieldFactory.GetExtractedTextField()}
+			_form.LoadExportFile(ef)
 			Assert.IsFalse(_form._exportNativeFiles.Checked)
 			Assert.IsTrue(_form._useAbsolutePaths.Enabled)
 			Assert.IsFalse(_form._nativeFileFormat.Enabled)
