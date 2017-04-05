@@ -1676,11 +1676,11 @@ Namespace kCura.EDDS.WinForm
             Dim configTable As System.Data.DataTable = GetSystemConfiguration()
 
             'Get cloud instance setting
-            Dim foundRows() As Data.DataRow = configTable.Select("Name = 'CloudInstance'")
+            Dim foundRows() As System.Data.DataRow = configTable.Select("Name = 'CloudInstance'")
 
-            If foundRows.Length > 0 Then
-                Dim foundRow As Data.DataRow = foundRows.ElementAt(0)
-                cloudIsEnabled = CType(foundRow.ItemArray.ElementAt(2), Boolean)
+			If foundRows.Length > 0 Then
+				Dim foundRow As System.Data.DataRow = foundRows.ElementAt(0)
+				cloudIsEnabled = CType(foundRow.ItemArray.ElementAt(2), Boolean)
             End If
 
             Dim urlPrefix As String = "https://help.kcura.com/"
