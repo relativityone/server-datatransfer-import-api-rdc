@@ -129,13 +129,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
-      <Project>{E3450350-56E3-4FE9-A47A-4D24960BCBDB}</Project>
-      <Name>kCura.Utility</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
       <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
       <Name>kCura.Windows.Process</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura\kCura.vbproj">
+      <Project>{535d782a-2388-416f-ab46-10347e44eec9}</Project>
+      <Name>kCura</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.WinEDDS.ImportExtension\kCura.WinEDDS.ImportExtension.vbproj">
       <Project>{86550F4B-BEF4-4458-9536-7B5C6F68B0E2}</Project>
