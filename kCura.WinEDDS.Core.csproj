@@ -94,9 +94,9 @@
     <Compile Include="IO\LongPathFileHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
-      <Project>{e3450350-56e3-4fe9-a47a-4d24960bcbdb}</Project>
-      <Name>kCura.Utility</Name>
+    <ProjectReference Include="..\..\kCura\kCura\kCura.vbproj">
+      <Project>{535d782a-2388-416f-ab46-10347e44eec9}</Project>
+      <Name>kCura</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.WinEDDS\kCura.WinEDDS.vbproj">
       <Project>{f16a2219-5dac-4f2b-89b0-6bd1243cbf8f}</Project>
