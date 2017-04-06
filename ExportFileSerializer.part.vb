@@ -301,7 +301,6 @@ Namespace kCura.WinEDDS.NUnit
 						<_fieldIsArtifactBaseField>false</_fieldIsArtifactBaseField>
 						<_formatString href="#ref-17"/>
 						<_isUnicodeEnabled>true</_isUnicodeEnabled>
-						<_allowHtml>false</_allowHtml>
 						<_parentFileFieldArtifactID>-1</_parentFileFieldArtifactID>
 						<_parentFileFieldDisplayName href="#ref-17"/>
 						<_associativeArtifactTypeID>-1</_associativeArtifactTypeID>
@@ -333,7 +332,6 @@ Namespace kCura.WinEDDS.NUnit
 						<ViewFieldInfo_x002B__fieldIsArtifactBaseField>false</ViewFieldInfo_x002B__fieldIsArtifactBaseField>
 						<ViewFieldInfo_x002B__formatString href="#ref-17"/>
 						<ViewFieldInfo_x002B__isUnicodeEnabled>true</ViewFieldInfo_x002B__isUnicodeEnabled>
-						<ViewFieldInfo_x002B__allowHtml>false</ViewFieldInfo_x002B__allowHtml>
 						<ViewFieldInfo_x002B__parentFileFieldArtifactID>-1</ViewFieldInfo_x002B__parentFileFieldArtifactID>
 						<ViewFieldInfo_x002B__parentFileFieldDisplayName href="#ref-17"/>
 						<ViewFieldInfo_x002B__associativeArtifactTypeID>-1</ViewFieldInfo_x002B__associativeArtifactTypeID>
@@ -445,7 +443,6 @@ Namespace kCura.WinEDDS.NUnit
 					 <_fieldIsArtifactBaseField>false</_fieldIsArtifactBaseField>
 					 <_formatString href="#ref-22"/>
 					 <_isUnicodeEnabled>true</_isUnicodeEnabled>
-					 <_allowHtml>false</_allowHtml>
 					 <_parentFileFieldArtifactID>-1</_parentFileFieldArtifactID>
 					 <_parentFileFieldDisplayName href="#ref-22"/>
 					 <_associativeArtifactTypeID>-1</_associativeArtifactTypeID>
@@ -477,7 +474,6 @@ Namespace kCura.WinEDDS.NUnit
 					 <ViewFieldInfo_x002B__fieldIsArtifactBaseField>false</ViewFieldInfo_x002B__fieldIsArtifactBaseField>
 					 <ViewFieldInfo_x002B__formatString href="#ref-22"/>
 					 <ViewFieldInfo_x002B__isUnicodeEnabled>true</ViewFieldInfo_x002B__isUnicodeEnabled>
-					 <ViewFieldInfo_x002B__allowHtml>false</ViewFieldInfo_x002B__allowHtml>
 					 <ViewFieldInfo_x002B__parentFileFieldArtifactID>-1</ViewFieldInfo_x002B__parentFileFieldArtifactID>
 					 <ViewFieldInfo_x002B__parentFileFieldDisplayName href="#ref-22"/>
 					 <ViewFieldInfo_x002B__associativeArtifactTypeID>-1</ViewFieldInfo_x002B__associativeArtifactTypeID>
@@ -586,7 +582,6 @@ Namespace kCura.WinEDDS.NUnit
 						<_fieldIsArtifactBaseField>false</_fieldIsArtifactBaseField>
 						<_formatString href="#ref-7"/>
 						<_isUnicodeEnabled>false</_isUnicodeEnabled>
-						<_allowHtml>false</_allowHtml>
 						<_parentFileFieldArtifactID>-1</_parentFileFieldArtifactID>
 						<_parentFileFieldDisplayName href="#ref-7"/>
 						<_associativeArtifactTypeID>-1</_associativeArtifactTypeID>
@@ -617,7 +612,6 @@ Namespace kCura.WinEDDS.NUnit
 						<ViewFieldInfo_x002B__fieldIsArtifactBaseField>false</ViewFieldInfo_x002B__fieldIsArtifactBaseField>
 						<ViewFieldInfo_x002B__formatString href="#ref-7"/>
 						<ViewFieldInfo_x002B__isUnicodeEnabled>false</ViewFieldInfo_x002B__isUnicodeEnabled>
-						<ViewFieldInfo_x002B__allowHtml>false</ViewFieldInfo_x002B__allowHtml>
 						<ViewFieldInfo_x002B__parentFileFieldArtifactID>-1</ViewFieldInfo_x002B__parentFileFieldArtifactID>
 						<ViewFieldInfo_x002B__parentFileFieldDisplayName href="#ref-7"/>
 						<ViewFieldInfo_x002B__associativeArtifactTypeID>-1</ViewFieldInfo_x002B__associativeArtifactTypeID>
@@ -650,7 +644,6 @@ Namespace kCura.WinEDDS.NUnit
 						<_fieldIsArtifactBaseField>false</_fieldIsArtifactBaseField>
 						<_formatString href="#ref-7"/>
 						<_isUnicodeEnabled>false</_isUnicodeEnabled>
-						<_allowHtml>false</_allowHtml>
 						<_parentFileFieldArtifactID>-1</_parentFileFieldArtifactID>
 						<_parentFileFieldDisplayName href="#ref-7"/>
 						<_associativeArtifactTypeID>-1</_associativeArtifactTypeID>
@@ -681,7 +674,6 @@ Namespace kCura.WinEDDS.NUnit
 						<ViewFieldInfo_x002B__fieldIsArtifactBaseField>false</ViewFieldInfo_x002B__fieldIsArtifactBaseField>
 						<ViewFieldInfo_x002B__formatString href="#ref-7"/>
 						<ViewFieldInfo_x002B__isUnicodeEnabled>false</ViewFieldInfo_x002B__isUnicodeEnabled>
-						<ViewFieldInfo_x002B__allowHtml>false</ViewFieldInfo_x002B__allowHtml>
 						<ViewFieldInfo_x002B__parentFileFieldArtifactID>-1</ViewFieldInfo_x002B__parentFileFieldArtifactID>
 						<ViewFieldInfo_x002B__parentFileFieldDisplayName href="#ref-7"/>
 						<ViewFieldInfo_x002B__associativeArtifactTypeID>-1</ViewFieldInfo_x002B__associativeArtifactTypeID>
@@ -714,7 +706,6 @@ Namespace kCura.WinEDDS.NUnit
 						<_fieldIsArtifactBaseField>false</_fieldIsArtifactBaseField>
 						<_formatString href="#ref-7"/>
 						<_isUnicodeEnabled>false</_isUnicodeEnabled>
-						<_allowHtml>false</_allowHtml>
 						<_parentFileFieldArtifactID>-1</_parentFileFieldArtifactID>
 						<_parentFileFieldDisplayName href="#ref-7"/>
 						<_associativeArtifactTypeID>-1</_associativeArtifactTypeID>
@@ -745,7 +736,6 @@ Namespace kCura.WinEDDS.NUnit
 						<ViewFieldInfo_x002B__fieldIsArtifactBaseField>false</ViewFieldInfo_x002B__fieldIsArtifactBaseField>
 						<ViewFieldInfo_x002B__formatString href="#ref-7"/>
 						<ViewFieldInfo_x002B__isUnicodeEnabled>false</ViewFieldInfo_x002B__isUnicodeEnabled>
-						<ViewFieldInfo_x002B__allowHtml>false</ViewFieldInfo_x002B__allowHtml>
 						<ViewFieldInfo_x002B__parentFileFieldArtifactID>-1</ViewFieldInfo_x002B__parentFileFieldArtifactID>
 						<ViewFieldInfo_x002B__parentFileFieldDisplayName href="#ref-7"/>
 						<ViewFieldInfo_x002B__associativeArtifactTypeID>-1</ViewFieldInfo_x002B__associativeArtifactTypeID>
