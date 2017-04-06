@@ -17,6 +17,10 @@ Namespace kCura.WinEDDS.Credentials
 			_creds = new NetworkCredential(userName, password)
 		End Sub
 
+		Public Sub Cancel() Implements ICredentialsProvider.Cancel
+			
+		End Sub
+
 		Public Function GetCredentials() As NetworkCredential Implements ICredentialsProvider.GetCredentials
 			return _creds
 		End Function

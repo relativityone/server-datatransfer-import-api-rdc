@@ -1,4 +1,5 @@
-﻿Imports System.Threading.Tasks
+﻿Imports System.Threading
+Imports System.Threading.Tasks
 
 Namespace kCura.WinEDDS.Credentials
 
@@ -9,7 +10,6 @@ Namespace kCura.WinEDDS.Credentials
 		Private _provider As ICredentialsProvider
 
 		Private Sub New ()
-
 		End Sub
 
 		Public Shared Function Instance As RelativityWebApiCredentialsProvider
@@ -22,6 +22,10 @@ Namespace kCura.WinEDDS.Credentials
 
 		Public Function ProviderType() As System.Type
 			return _provider.GetType()
+		End Function
+
+		Public Function CredentialsSet As Boolean
+			return (_provider IsNot Nothing)
 		End Function
 
 		Public Function GetCredentials() As System.Net.NetworkCredential Implements ICredentialsProvider.GetCredentials
@@ -40,6 +44,9 @@ Namespace kCura.WinEDDS.Credentials
 			return _provider.GetCredentialsAsync()
 		End Function
 
+		Public Sub Cancel() Implements ICredentialsProvider.Cancel
+			_provider.Cancel()
+		End Sub
 	End Class
 
 End Namespace

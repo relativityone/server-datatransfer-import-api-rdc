@@ -323,16 +323,24 @@
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client, Version=1.0.4.14, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.OAuth2Client.1.0.4\lib\net45\Relativity.OAuth2Client.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client, Version=1.0.5.99, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.1.0.5-DEV-99\lib\net45\Relativity.OAuth2Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.IdentityModel, Version=1.0.4.14, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.OAuth2Client.1.0.4\lib\net45\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel, Version=1.0.5.99, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.1.0.5-DEV-99\lib\net45\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.4.14, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.4\lib\net45\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces, Version=1.0.5.99, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.5-DEV-99\lib\net45\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.Implicit, Version=1.0.5.99, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.Implicit.1.0.5-DEV-99\lib\net45\Relativity.OAuth2Client.Implicit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.5.99, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.5-DEV-99\lib\net45\Relativity.OAuth2Client.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System">
@@ -417,6 +425,7 @@
     <Compile Include="Credentials\CredentialsNotSetException.vb" />
     <Compile Include="Credentials\ICredentialsProvider.vb" />
     <Compile Include="Credentials\OAuth2ClientCredentials.vb" />
+    <Compile Include="Credentials\OAuth2ImplicitCredentials.vb" />
     <Compile Include="Credentials\RelativityWebApiCredentialsProvider.vb" />
     <Compile Include="Credentials\UserCredentialsProvider.vb" />
     <Compile Include="Event\AppEvent.vb">
