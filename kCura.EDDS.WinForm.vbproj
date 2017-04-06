@@ -411,6 +411,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="App.Prod.config" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="Controls\CaseFolderExplorer.xsx">
       <DependentUpon>CaseFolderExplorer.resx</DependentUpon>
     </None>

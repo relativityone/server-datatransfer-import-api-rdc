@@ -33,8 +33,8 @@ Namespace kCura.EDDS.WinForm
 		'It can be modified using the Windows Form Designer.  
 		'Do not modify it using the code editor.
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-			'Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(LoginForm))
-			'Me.SuspendLayout()
+			Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(LoginForm))
+			Me.SuspendLayout()
 			
 			Me._browser = New RelativityWebBrowser()
 			Me._browser.AllowNavigation = True
@@ -44,6 +44,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'LoginForm
 			'
+			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
 			Me.Size = new System.Drawing.Size(600, 600)
 			Me.Name = "LoginForm"
 			Me.ShowInTaskbar = False
@@ -52,7 +53,6 @@ Namespace kCura.EDDS.WinForm
 			Me.TopMost = True
 			Me.ResumeLayout(False)
 			Me.PerformLayout()
-
 		End Sub
 
 #End Region
