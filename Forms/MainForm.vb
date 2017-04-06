@@ -332,7 +332,7 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
-		Private _loginForm As Form = Nothing
+		Private _loginForm As LoginForm = Nothing
 		'' Private WithEvents _optionsForm As OptionsForm = Nothing
 		Private firstTime As Boolean = True
 		Friend WithEvents _application As kCura.EDDS.WinForm.Application
@@ -414,6 +414,7 @@ Namespace kCura.EDDS.WinForm
 
             '' Can't do this in Application.vb without refactoring AttemptLogin (which needs this form as a parameter)
             CheckCertificate()
+			AddHandler _loginForm.Shown, AddressOf _application.On_LoginShown
 
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub

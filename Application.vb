@@ -11,8 +11,9 @@ Imports kCura.Windows.Forms
 Imports kCura.WinEDDS.Core.Export
 Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Service
-Imports Relativity.OAuth2Client.TokenProviders.ProviderFactories
 Imports Relativity.OAuth2Client.Exceptions
+Imports Relativity.OAuth2Client.Interfaces
+Imports Relativity.OAuth2Client.Interfaces.Events
 
 Namespace kCura.EDDS.WinForm
 	Public Class Application
@@ -54,7 +55,6 @@ Namespace kCura.EDDS.WinForm
 		Private _processPool As kCura.Windows.Process.ProcessPool
 		Private _selectedCaseInfo As Relativity.CaseInfo
 		Private _selectedCaseFolderID As Int32
-		Private _credential As System.Net.NetworkCredential
 		Private _fieldProviderCache As IFieldProviderCache
 
 		Private _selectedCaseFolderPath As String
@@ -162,10 +162,10 @@ Namespace kCura.EDDS.WinForm
 
 		Friend ReadOnly Property Credential() As System.Net.NetworkCredential
 			Get
-				If _credential Is Nothing Then
+				If Not RelativityWebApiCredentialsProvider.Instance().CredentialsSet() Then
 					NewLogin()
 				End If
-				Return _credential
+				Return RelativityWebApiCredentialsProvider.Instance().GetCredentials()
 			End Get
 		End Property
 
@@ -987,14 +987,19 @@ Namespace kCura.EDDS.WinForm
 			CursorDefault()
 		End Sub
 
-		Public Function NewLogin(Optional ByVal openCaseSelector As Boolean = True) As Form
+		Public Async Sub On_LoginShown(sender As Object, e As EventArgs)
+			await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
+		End Sub
+
+		Public Function NewLogin(Optional ByVal openCaseSelector As Boolean = True) As LoginForm
 			CursorWait()
-			If Not _loginForm Is Nothing Then
-				If Not _loginForm.IsDisposed Then
-					_loginForm.Close()
-				End If
+			If _loginForm Is Nothing Then
+				_loginForm = New LoginForm
+				Dim authEndpoint As string = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/authorize")
+				Dim implicitProvider = new OAuth2ImplicitCredentials(New Uri(authEndpoint), "b8771c06968d499c684a10f03f", _loginForm.Browser)
+				RelativityWebApiCredentialsProvider.Instance().SetProvider(implicitProvider)
+				AddHandler implicitProvider.Events.TokenRetrieved, AddressOf On_TokenRetrieved
 			End If
-			_loginForm = New LoginForm
 			_loginForm.OpenCaseSelector = openCaseSelector
 			_loginForm.Show()
 			CursorDefault()
@@ -1340,9 +1345,9 @@ Namespace kCura.EDDS.WinForm
 		''' <param name="callingForm">The calling form to be Hooked (what is hooked?) by the Enhance Menu Provider</param>
 		''' <returns>A fresh LoginForm</returns>
 		''' <remarks></remarks>
-		Friend Function AttemptLogin(ByVal callingForm As Form) As Form
+		Friend Function AttemptLogin(ByVal callingForm As Form) As LoginForm
 			Dim defaultCredentialResult As Application.CredentialCheckResult = AttemptWindowsAuthentication()
-			Dim newLoginForm As Form = New LoginForm()
+			Dim newLoginForm As LoginForm = New LoginForm()
 
 			Select Case (defaultCredentialResult)
 				Case Application.CredentialCheckResult.AccessDisabled
@@ -1379,7 +1384,7 @@ Namespace kCura.EDDS.WinForm
 				relativityManager = New kCura.WinEDDS.Service.RelativityManager(cred, _CookieContainer)
 				If relativityManager.ValidateSuccessfulLogin Then
 					CheckVersion(System.Net.CredentialCache.DefaultCredentials)
-					_credential = cred
+					RelativityWebApiCredentialsProvider.Instance().SetProvider(new UserCredentialsProvider(cred))
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = New kCura.WinEDDS.Service.UserManager(cred, _CookieContainer).GenerateDistributedAuthenticationToken()
 					_lastCredentialCheckResult = CredentialCheckResult.Success
 				Else
@@ -1415,13 +1420,13 @@ Namespace kCura.EDDS.WinForm
 			AttemptLogin(_certificatePromptForm)
 		End Sub
 
-		Private Sub _loginForm_OK_Click(ByVal cred As System.Net.NetworkCredential, ByVal openCaseSelector As Boolean) Handles _loginForm.OK_Click
+		Private Async Sub On_TokenRetrieved(source As ITokenProvider, args As ITokenResponseEventArgs)
 			_loginForm.Close()
-			RelativityWebApiCredentialsProvider.Instance().SetProvider(new UserCredentialsProvider(cred))
-			Dim userManager As New kCura.WinEDDS.Service.UserManager(cred, _CookieContainer)
-			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(cred, _CookieContainer)
+			Dim credential = await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
+			Dim userManager As New kCura.WinEDDS.Service.UserManager(credential, _CookieContainer)
+			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(credential, _CookieContainer)
 			Try
-				CheckVersion(cred)
+				CheckVersion(credential)
 			Catch ex As System.Net.WebException
 				If Not ex.Message.IndexOf("The remote name could not be resolved") = -1 AndAlso ex.Source = "System" Then
 					Me.ChangeWebServiceURL("The current Relativity WebAPI URL could not be resolved. Try a new URL?")
@@ -1441,15 +1446,14 @@ Namespace kCura.EDDS.WinForm
 			End Try
 
             Try
-                If userManager.Login(cred.UserName, cred.Password) Then
+                If userManager.Login(credential.UserName, credential.Password) Then
 
                     Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
                     locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol
                     System.Threading.Thread.CurrentThread.CurrentCulture = locale
 
-                    _credential = cred
                     kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-                    If openCaseSelector Then OpenCase()
+                    If _loginForm.openCaseSelector Then OpenCase()
                     _timeZoneOffset = 0                                                         'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
                     _lastCredentialCheckResult = CredentialCheckResult.Success
                     'This was created specifically for raising an event after login success for RDC forms authentication 
@@ -1459,24 +1463,24 @@ Namespace kCura.EDDS.WinForm
                     _lastCredentialCheckResult = CredentialCheckResult.Fail
                 End If
             Catch ex As System.Exception
-                Dim x As New ErrorDialog
+                Dim errorDialog As New ErrorDialog
 				If IsAccessDisabledException(ex) Then
-					x.Text = "Account Disabled"
-					x.InitializeSoapExceptionWithCustomMessage(DirectCast(ex, System.Web.Services.Protocols.SoapException), _
+					errorDialog.Text = "Account Disabled"
+					errorDialog.InitializeSoapExceptionWithCustomMessage(DirectCast(ex, System.Web.Services.Protocols.SoapException), _
 					 ACCESS_DISABLED_MESSAGE)
 					_lastCredentialCheckResult = CredentialCheckResult.AccessDisabled
 				Else
 					If Not ex.Message.IndexOf("Invalid License.") = -1 Then
-						x.Text = "Invalid License."
+						errorDialog.Text = "Invalid License."
 					ElseIf (Not ex.Message.IndexOf("A library (dll)") = -1) OrElse (Not ex.Message.IndexOf("Relativity is temporarily unavailable.") = -1) Then
-						x.Text = "Invalid Assembly."
+						errorDialog.Text = "Invalid Assembly."
 					Else
-						x.Text = "Unrecognized login error."
+						errorDialog.Text = "Unrecognized login error."
 					End If
 					_lastCredentialCheckResult = CredentialCheckResult.Fail
-					x.Initialize(ex, x.Text)
+					errorDialog.Initialize(ex, errorDialog.Text)
 				End If
-				If x.ShowDialog = DialogResult.OK Then
+				If errorDialog.ShowDialog = DialogResult.OK Then
 					NewLogin()
 				Else
 					ExitApplication()
@@ -1506,7 +1510,6 @@ Namespace kCura.EDDS.WinForm
 				Dim userManager As New kCura.WinEDDS.Service.UserManager(netCreds, _CookieContainer)
 				CheckVersion(netCreds)
 				If userManager.Login(netCreds.UserName, netCreds.Password) Then
-					_credential = netCreds
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
 					_timeZoneOffset = 0											 'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
 					_lastCredentialCheckResult = CredentialCheckResult.Success
@@ -1537,14 +1540,19 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Function DoOAuthLogin(ByVal clientId As String, ByVal clientSecret As String) As CredentialCheckResult
-			Dim tempCred As  System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
-			Dim relManager As Service.RelativityManager = New RelativityManager(tempCred, _CookieContainer)
-			Dim urlString As String = String.Format("{0}/{1}",relManager.GetRelativityUrl(), "Identity/connect/token")
+			Dim urlString As String = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/token")
 			Dim stsUrl As Uri = New Uri(urlString)
 
 			_lastCredentialCheckResult = DoOAuthLogin(clientId, clientSecret, stsUrl)
 			
 			Return _lastCredentialCheckResult
+		End Function
+
+		Public Function GetIdentityServerLocation() As string
+			Dim tempCred As  System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
+			Dim relManager As Service.RelativityManager = New RelativityManager(tempCred, _CookieContainer)
+			Dim urlString As String = String.Format("{0}/{1}",relManager.GetRelativityUrl(), "Identity")
+			return urlString
 		End Function
 
 		Public Sub ReLogin(ByVal message As String)
@@ -1556,9 +1564,8 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub Reconnect()
-			Dim userManager As New kCura.WinEDDS.Service.UserManager(_credential, _CookieContainer)
-			If userManager.Login(_credential.UserName, _credential.Password) Then
-				_credential = _credential
+			Dim userManager As New kCura.WinEDDS.Service.UserManager(Credential, _CookieContainer)
+			If userManager.Login(Credential.UserName, Credential.Password) Then
 				kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
 			End If
 
@@ -1608,7 +1615,8 @@ Namespace kCura.EDDS.WinForm
 #Region "Logout"
 		Public Sub Logout()
 			Try
-				Dim userManager As New kCura.WinEDDS.Service.UserManager(_credential, _CookieContainer)
+				RelativityWebApiCredentialsProvider.Instance().Cancel()
+				Dim userManager As New kCura.WinEDDS.Service.UserManager(Credential, _CookieContainer)
 				userManager.Logout()
 			Catch ex As Exception
 
