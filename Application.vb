@@ -511,17 +511,11 @@ Namespace kCura.EDDS.WinForm
 		''' <remarks></remarks>
 		Public Function CertificateTrusted() As Boolean
 			Dim isCertificateTrusted As Boolean = True
+			Dim cred As NetworkCredential = DirectCast(CredentialCache.DefaultCredentials, NetworkCredential)
+			Dim relativityManager As New Service.RelativityManager(cred, _CookieContainer)
 
-			Dim myHttpWebRequest As HttpWebRequest
-			Dim cred As NetworkCredential
-			Dim relativityManager As Service.RelativityManager
-
-			cred = DirectCast(CredentialCache.DefaultCredentials, NetworkCredential)
-			myHttpWebRequest = DirectCast(WebRequest.Create(kCura.WinEDDS.Config.WebServiceURL & "\RelativityManager.asmx"), HttpWebRequest)
-			myHttpWebRequest.Credentials = CredentialCache.DefaultCredentials
 			Try
-				relativityManager = New Service.RelativityManager(cred, _CookieContainer)
-				'' Only if this line bombs do we say the cert is untrusted
+				' Only if this line bombs do we say the cert is untrusted
 				relativityManager.ValidateSuccessfulLogin()
 			Catch ex As WebException
 				If (ex.Status = WebExceptionStatus.TrustFailure) Then
