@@ -1507,7 +1507,7 @@ Namespace kCura.EDDS.WinForm
 				Else
 					_lastCredentialCheckResult = CredentialCheckResult.Fail
 				End If
-			Catch ex As IdenityProviderConnectionException
+			Catch ex As IdentityProviderConnectionException
 				_lastCredentialCheckResult = CredentialCheckResult.FailToConnectToIdentityServer
 			Catch ex As OAuth2ClientException
 				_lastCredentialCheckResult = CredentialCheckResult.InvalidClientCredentials
