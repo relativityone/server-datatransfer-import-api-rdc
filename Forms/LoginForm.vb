@@ -1,4 +1,5 @@
 Imports System.Security.AccessControl
+Imports System.Threading.Tasks
 Imports kCura.WinEDDS.Credentials
 Imports Relativity.OAuth2Client.Implicit.RelativityWebBrowser
 
@@ -57,31 +58,6 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
-#If DEBUG Then
-		Private _timer As System.Threading.Timer
-		Private Delegate Sub AutoLoginDelegateSub()
-		Private _autoLoginDelegate As AutoLoginDelegateSub
-#End If
-
-		Friend WithEvents _application As kCura.EDDS.WinForm.Application
-
-		Private _openCaseSelector As Boolean = True
-
-		Public Readonly Property Credential() As System.Net.NetworkCredential
-			Get
-				Return RelativityWebApiCredentialsProvider.Instance().GetCredentials()
-			End Get
-		End Property
-
-		Public Property OpenCaseSelector() As Boolean
-			Get
-				Return _openCaseSelector
-			End Get
-			Set(ByVal value As Boolean)
-				_openCaseSelector = value
-			End Set
-		End Property
-
 		Public ReadOnly Property Browser() As RelativityWebBrowser
 			Get
 				return _browser
@@ -94,6 +70,18 @@ Namespace kCura.EDDS.WinForm
 			_browser.AllowNavigation = True
 		End Sub
 
+		Private Async Sub LoginForm_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Shown
+			Try
+				await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
+			Catch ex As TaskCanceledException
+				'Login form was closed, ignore
+			End Try
+			
+		End Sub
+
+		 Private Sub LoginForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
+			RelativityWebApiCredentialsProvider.Instance().Cancel()
+		 End Sub
 
 	End Class
 End Namespace

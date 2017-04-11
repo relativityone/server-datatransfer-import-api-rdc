@@ -23,9 +23,6 @@ Namespace kCura.EDDS.WinForm
 
 		Protected Sub New()
 			_processPool = New kCura.Windows.Process.ProcessPool
-			Dim currentZone As System.TimeZone = System.TimeZone.CurrentTimeZone
-
-			''ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) True
 			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 Or SecurityProtocolType.Tls11 Or SecurityProtocolType.Tls Or SecurityProtocolType.Ssl3
 			_CookieContainer = New System.Net.CookieContainer
 
@@ -49,24 +46,30 @@ Namespace kCura.EDDS.WinForm
 		Public Const ACCESS_DISABLED_MESSAGE As String = "Your Relativity account has been disabled.  Please contact your Relativity Administrator to activate your account."
 		Public Const RDC_ERROR_TITLE As String = "Relativity Desktop Client Error"
 
-		Private Const _OAUTH_USERNAME As String = "XxX_BearerTokenCredentials_XxX"
-
 		Private _caseSelected As Boolean = True
 		Private _processPool As kCura.Windows.Process.ProcessPool
 		Private _selectedCaseInfo As Relativity.CaseInfo
 		Private _selectedCaseFolderID As Int32
 		Private _fieldProviderCache As IFieldProviderCache
-
+		Private _openCaseSelector As Boolean = True
 		Private _selectedCaseFolderPath As String
 		Private _timeZoneOffset As Int32
 		Private WithEvents _loginForm As LoginForm
 		Private WithEvents _certificatePromptForm As CertificatePromptForm
 		Private WithEvents _optionsForm As OptionsForm
-		Private Shared _cache As New Hashtable
 		Private _documentRepositoryList As String()
 #End Region
 
 #Region "Properties"
+
+		Friend ReadOnly Property Credential() As System.Net.NetworkCredential
+			Get
+				If Not RelativityWebApiCredentialsProvider.Instance().CredentialsSet() Then
+					NewLogin()
+				End If
+				Return RelativityWebApiCredentialsProvider.Instance().GetCredentials()
+			End Get
+		End Property
 
 		Private ReadOnly Property FieldProviderCache() As IFieldProviderCache
 			Get
@@ -155,17 +158,6 @@ Namespace kCura.EDDS.WinForm
 					End If
 				End Try
 				Return Nothing
-			End Get
-		End Property
-
-
-
-		Friend ReadOnly Property Credential() As System.Net.NetworkCredential
-			Get
-				If Not RelativityWebApiCredentialsProvider.Instance().CredentialsSet() Then
-					NewLogin()
-				End If
-				Return RelativityWebApiCredentialsProvider.Instance().GetCredentials()
 			End Get
 		End Property
 
@@ -987,20 +979,16 @@ Namespace kCura.EDDS.WinForm
 			CursorDefault()
 		End Sub
 
-		Public Async Sub On_LoginShown(sender As Object, e As EventArgs)
-			await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
-		End Sub
-
 		Public Function NewLogin(Optional ByVal openCaseSelector As Boolean = True) As LoginForm
 			CursorWait()
-			If _loginForm Is Nothing Then
+			If _loginForm Is Nothing OrElse _loginForm.IsDisposed Then
 				_loginForm = New LoginForm
 				Dim authEndpoint As string = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/authorize")
 				Dim implicitProvider = new OAuth2ImplicitCredentials(New Uri(authEndpoint), "b8771c06968d499c684a10f03f", _loginForm.Browser)
 				RelativityWebApiCredentialsProvider.Instance().SetProvider(implicitProvider)
 				AddHandler implicitProvider.Events.TokenRetrieved, AddressOf On_TokenRetrieved
 			End If
-			_loginForm.OpenCaseSelector = openCaseSelector
+			_openCaseSelector = openCaseSelector
 			_loginForm.Show()
 			CursorDefault()
 			Return _loginForm
@@ -1453,7 +1441,7 @@ Namespace kCura.EDDS.WinForm
                     System.Threading.Thread.CurrentThread.CurrentCulture = locale
 
                     kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-                    If _loginForm.openCaseSelector Then OpenCase()
+                    If _openCaseSelector Then OpenCase()
                     _timeZoneOffset = 0                                                         'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
                     _lastCredentialCheckResult = CredentialCheckResult.Success
                     'This was created specifically for raising an event after login success for RDC forms authentication 
