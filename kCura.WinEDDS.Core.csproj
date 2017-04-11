@@ -90,8 +90,16 @@
     <Compile Include="Export\HtmlExportFileFormatter.cs" />
     <Compile Include="Export\FieldNameProvider.cs" />
     <Compile Include="Export\ExportFileFormatterFactory.cs" />
+    <Compile Include="Export\Natives\Name\CustomFileNameProvider.cs" />
+    <Compile Include="Export\Natives\Name\FieldFileNamePartProvider.cs" />
+    <Compile Include="Export\Natives\Name\FileNamePartProvider.cs" />
+    <Compile Include="Export\Natives\Name\IFileNamePartProvider.cs" />
+    <Compile Include="Export\Natives\Name\SeparatorFileNamePartProvider.cs" />
     <Compile Include="IO\LongPathDirectoryHelper.cs" />
     <Compile Include="IO\LongPathFileHelper.cs" />
+    <Compile Include="Model\Export\Natives\Name\DescriptorPart.cs" />
+    <Compile Include="Model\Export\Natives\Name\FieldDescriptorPart.cs" />
+    <Compile Include="Model\Export\Natives\Name\SeparatorDescriptorPart.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
