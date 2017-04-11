@@ -562,7 +562,13 @@ Namespace kCura.WinEDDS
 			SetProductionBegBatesFileName(artifact, lookup)
 
 			prediction.NativeFileCount = artifact.NativeCount
-			If(prediction.NativeFileCount > 0) Then prediction.NativeFilesSize = CType(nativeRow("Size"), Long)
+
+		    If(prediction.NativeFileCount > 0 AndAlso nativeRow?.Row?.Table?.Columns?.Contains("Size")) Then 
+		        prediction.NativeFilesSize = CType(nativeRow("Size"), Long)
+		    Else
+                prediction.NativeFilesSize = 0
+            End If
+
 			prediction.ImageFileCount = artifact.ImageCount
 
 			Return artifact
