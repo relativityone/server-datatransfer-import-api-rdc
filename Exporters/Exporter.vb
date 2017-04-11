@@ -106,6 +106,20 @@ Namespace kCura.WinEDDS
 		Public Property FileHelper() As IFileHelper = kCura.Utility.File.Instance
 		Public Property DirectoryHelper() As IDirectoryHelper = kCura.Utility.Directory.Instance
 
+		private _fileNameProvider As IFileNameProvider
+		Public Property FileNameProvider() As IFileNameProvider
+			Get
+				If _fileNameProvider Is Nothing
+					_fileNameProvider = BuildFileNameProvider()
+				End If
+
+				Return _fileNameProvider
+			End Get
+		    Set
+				_fileNameProvider = value
+		    End Set
+		End Property
+
 #End Region
 
 		Public Event ShutdownEvent()
@@ -262,7 +276,7 @@ Namespace kCura.WinEDDS
 			End If
 			_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 			RaiseEvent FileTransferModeChangeEvent(_downloadHandler.UploaderType.ToString)
-			_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, _statistics, FileHelper, DirectoryHelper)
+			_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, _statistics, FileHelper, DirectoryHelper, FileNameProvider)
 			Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
 			_volumeManager.ColumnHeaderString = columnHeaderString
 			Me.WriteUpdate("Data retrieved. Beginning " & typeOfExportDisplayString & " export...")
@@ -1055,5 +1069,17 @@ Namespace kCura.WinEDDS
 		Private Sub _downloadHandler_UploadModeChangeEvent(ByVal mode As String) Handles _downloadHandler.UploadModeChangeEvent
 			RaiseEvent FileTransferModeChangeEvent(_downloadHandler.UploaderType.ToString)
 		End Sub
+
+		Private Function BuildFileNameProvider() As IFileNameProvider
+			Dim identifierExportFileNameProvider As IFileNameProvider = New IdentifierExportFileNameProvider(Settings)
+			Dim productionExportFileNameProvider As IFileNameProvider = New ProductionExportFileNameProvider(Settings, NameTextAndNativesAfterBegBates)
+			Dim fileNameProvidersDictionary As New Dictionary(Of ExportNativeWithFilenameFrom, IFileNameProvider) From 
+				{
+					{ExportNativeWithFilenameFrom.Identifier, identifierExportFileNameProvider},
+					{ExportNativeWithFilenameFrom.Production, productionExportFileNameProvider}
+				}
+
+			Return New WinEDDSFileNamingProvider(Settings, fileNameProvidersDictionary)
+		End Function
 	End Class
 End Namespace

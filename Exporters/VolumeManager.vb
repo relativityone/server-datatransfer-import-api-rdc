@@ -47,6 +47,7 @@ Namespace kCura.WinEDDS
 		Private _fileHelper As IFileHelper
 		Private _fileStreamFactory As IFileStreamFactory
 		Private _directoryHelper As IDirectoryHelper
+		Private _fileNameProvider As IFileNameProvider
 #End Region
 
 		Private Enum ExportFileType
@@ -128,7 +129,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Sub New(ByVal settings As ExportFile, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As Service.Export.IExportFileDownloader, ByVal t As kCura.Utility.Timekeeper, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics, fileHelper As IFileHelper, directoryHelper As IDirectoryHelper)
+		Public Sub New(ByVal settings As ExportFile, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As Service.Export.IExportFileDownloader, ByVal t As kCura.Utility.Timekeeper, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics, fileHelper As IFileHelper, directoryHelper As IDirectoryHelper, fileNameProvider As IFileNameProvider)
 			_settings = settings
 			_statistics = statistics
 			_parent = parent
@@ -136,6 +137,7 @@ Namespace kCura.WinEDDS
 			_fileHelper = fileHelper
 			_fileStreamFactory = New FileStreamFactory(_fileHelper)
 			_directoryHelper = directoryHelper
+			_fileNameProvider = fileNameProvider
 
 			_timekeeper = t
 			_currentVolumeNumber = _settings.VolumeInfo.VolumeStartNumber
@@ -727,13 +729,15 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function GetNativeFileName(ByVal doc As Exporters.ObjectExportInfo) As String
-			Select Case _parent.ExportNativesToFileNamedFrom
-				Case ExportNativeWithFilenameFrom.Identifier
-					Return doc.NativeFileName(Me.Settings.AppendOriginalFileName)
-				Case ExportNativeWithFilenameFrom.Production
-					Return doc.ProductionBeginBatesFileName(Me.Settings.AppendOriginalFileName, _parent.NameTextAndNativesAfterBegBates)
-			End Select
-			Return Nothing
+			'Select Case _parent.ExportNativesToFileNamedFrom
+			'	Case ExportNativeWithFilenameFrom.Identifier
+			'		Return doc.NativeFileName(Me.Settings.AppendOriginalFileName)
+			'	Case ExportNativeWithFilenameFrom.Production
+			'		Return doc.ProductionBeginBatesFileName(Me.Settings.AppendOriginalFileName, _parent.NameTextAndNativesAfterBegBates)
+			'End Select
+			'Return Nothing
+
+			Return _fileNameProvider.GetName(doc)
 		End Function
 
 		Public Sub Close()
