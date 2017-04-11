@@ -4,16 +4,14 @@ Namespace kCura.WinEDDS
 	Public Class IdentifierExportFileNameProvider
 		Implements IFileNameProvider
 
-		Private ReadOnly _exportedObjectInfo As ObjectExportInfo
 		Private ReadOnly _exportSettings As ExportFile
 
-		Public Sub New(exportedObjectInfo As ObjectExportInfo, exportSettings As ExportFile)
-			_exportedObjectInfo = exportedObjectInfo
+		Public Sub New(exportSettings As ExportFile)
 			_exportSettings = exportSettings
 		End Sub
 
-		Public Function GetName() As String Implements IFileNameProvider.GetName
-			Return _exportedObjectInfo.NativeFileName(_exportSettings.AppendOriginalFileName)
+		Public Function GetName(exportedObjectInfo As ObjectExportInfo) As String Implements IFileNameProvider.GetName
+			Return exportedObjectInfo.NativeFileName(_exportSettings.AppendOriginalFileName)
 		End Function
 	End Class
 End Namespace

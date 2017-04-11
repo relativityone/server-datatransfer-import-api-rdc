@@ -1,9 +1,9 @@
-﻿
+﻿Imports kCura.WinEDDS.Exporters
 
 Namespace kCura.WinEDDS
 
 	Public Interface IFileNameProvider
-		Function GetName() As String
+		Function GetName(exportedObjectInfo As ObjectExportInfo) As String
 	End Interface
 
 End Namespace

@@ -496,6 +496,7 @@
     <Compile Include="FileNaming\IdentifierExportFileNameProvider.vb" />
     <Compile Include="FileNaming\IFileNameProvider.vb" />
     <Compile Include="FileNaming\ProductionExportFileNameProvider.vb" />
+    <Compile Include="FileNaming\WinEDDSFileNamingProvider.vb" />
     <Compile Include="FileObjects\ErrorExportFile.vb" />
     <Compile Include="FileObjects\ExportFile.vb">
       <SubType>Code</SubType>
