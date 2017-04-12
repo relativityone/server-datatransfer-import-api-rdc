@@ -2,7 +2,7 @@
 Imports kCura.WinEDDS.Exporters
 
 Namespace kCura.WinEDDS
-	Public Class WinEDDSFileNamingProvider
+	Public Class FileNameProviderContainer
 		Implements IFileNameProvider
 
 		Private ReadOnly _exportSettings As ExportFile

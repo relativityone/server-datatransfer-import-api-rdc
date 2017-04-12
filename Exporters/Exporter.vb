@@ -1079,7 +1079,7 @@ Namespace kCura.WinEDDS
 					{ExportNativeWithFilenameFrom.Production, productionExportFileNameProvider}
 				}
 
-			Return New WinEDDSFileNamingProvider(Settings, fileNameProvidersDictionary)
+			Return New FileNameProviderContainer(Settings, fileNameProvidersDictionary)
 		End Function
 	End Class
 End Namespace
