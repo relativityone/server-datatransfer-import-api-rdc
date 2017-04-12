@@ -11,6 +11,7 @@ Imports kCura.EDDS.WinForm.Forms
 Imports kCura.Windows.Forms
 Imports kCura.WinEDDS.Core.Export
 Imports kCura.WinEDDS.Credentials
+Imports kCura.WinEDDS.Exceptions
 Imports kCura.WinEDDS.Service
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
@@ -74,13 +75,13 @@ Namespace kCura.EDDS.WinForm
 		End Property
 
 		Friend Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential)
-				If Not RelativityWebApiCredentialsProvider.Instance().CredentialsSet() Then
-					Dim authEndpoint As string = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/authorize")
-					Dim implicitProvider = new OAuth2ImplicitCredentials(New Uri(authEndpoint), "b8771c06968d499c684a10f03f", Function() LoginForm)
-					RelativityWebApiCredentialsProvider.Instance().SetProvider(implicitProvider)
-					AddHandler implicitProvider.Events.TokenRetrieved, AddressOf On_TokenRetrieved
-				End If
-				Return Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
+			If Not RelativityWebApiCredentialsProvider.Instance().CredentialsSet() Then
+				Dim authEndpoint As string = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/authorize")
+				Dim implicitProvider = new OAuth2ImplicitCredentials(New Uri(authEndpoint), "b8771c06968d499c684a10f03f", Function() LoginForm)
+				RelativityWebApiCredentialsProvider.Instance().SetProvider(implicitProvider)
+				AddHandler implicitProvider.Events.TokenRetrieved, AddressOf On_TokenRetrieved
+			End If
+			Return Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
 		End Function
 
 		Friend Function GetCredentials() As System.Net.NetworkCredential
@@ -1000,10 +1001,15 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Async Function NewLoginAsync(Optional ByVal openCaseSelector As Boolean = True) As Task
-			Await Me.GetCredentialsAsync()
-			CursorWait()
-			_openCaseSelector = openCaseSelector
-			CursorDefault()
+
+			Try
+				Await Me.GetCredentialsAsync()
+				CursorWait()
+				_openCaseSelector = openCaseSelector
+				CursorDefault()
+			Catch ex As LoginCanceledException
+				'Login form was closed, ignore
+			End Try
 		End Function
 #End Region
 
@@ -1419,7 +1425,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Async Sub On_TokenRetrieved(source As ITokenProvider, args As ITokenResponseEventArgs)
-			Dim credential = await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
+			Dim credential = await GetCredentialsAsync()
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(credential, _CookieContainer)
 			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(credential, _CookieContainer)
 			Try
@@ -1612,7 +1618,7 @@ Namespace kCura.EDDS.WinForm
 #Region "Logout"
 		Public Sub Logout()
 			Try
-				RelativityWebApiCredentialsProvider.Instance().Cancel()
+				LoginForm.Close()
 				Dim userManager As New kCura.WinEDDS.Service.UserManager(GetCredentials, _CookieContainer)
 				userManager.Logout()
 			Catch ex As Exception

@@ -508,13 +508,13 @@ Namespace kCura.EDDS.WinForm
 			End Select
 		End Function
 
-		Private Sub ImageLoad_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+		Private Async Sub ImageLoad_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			Me.Cursor = Cursors.WaitCursor
 			If Not Me.EnsureConnection() Then
 				Me.Cursor = Cursors.Default
 				Exit Sub
 			End If
-			Dim dt As System.Data.DataTable = New kCura.WinEDDS.Service.FieldQuery(_application.GetCredentials, _application.CookieContainer).RetrievePotentialBeginBatesFields(ImageLoadFile.CaseInfo.ArtifactID).Tables(0)
+			Dim dt As System.Data.DataTable = New kCura.WinEDDS.Service.FieldQuery(Await _application.GetCredentialsAsync(), _application.CookieContainer).RetrievePotentialBeginBatesFields(ImageLoadFile.CaseInfo.ArtifactID).Tables(0)
 			For Each identifierRow As System.Data.DataRow In dt.Rows
 				If CType(identifierRow("FieldCategoryID"), Relativity.FieldCategory) = Relativity.FieldCategory.Identifier Then
 					_identifierFieldArtifactID = CType(identifierRow("ArtifactID"), Int32)
