@@ -61,7 +61,7 @@ Namespace kCura.EDDS.WinForm
                 Me._buildFolderStructure.Text = "Folder Information Column"
                 ParentArtifactTypeID = 8
             Else
-                Dim parentQuery As New kCura.WinEDDS.Service.ObjectTypeManager(_application.Credential, _application.CookieContainer)
+                Dim parentQuery As New kCura.WinEDDS.Service.ObjectTypeManager(_application.GetCredentials, _application.CookieContainer)
                 ParentArtifactTypeID = CType(parentQuery.RetrieveParentArtifactTypeID(_application.SelectedCaseInfo.ArtifactID,
                 Me.LoadFile.ArtifactTypeID).Tables(0).Rows(0)("ParentArtifactTypeID"), Int32)
                 Me.GroupBoxFolderInfo.Enabled = False

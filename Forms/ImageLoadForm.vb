@@ -514,7 +514,7 @@ Namespace kCura.EDDS.WinForm
 				Me.Cursor = Cursors.Default
 				Exit Sub
 			End If
-			Dim dt As System.Data.DataTable = New kCura.WinEDDS.Service.FieldQuery(_application.Credential, _application.CookieContainer).RetrievePotentialBeginBatesFields(ImageLoadFile.CaseInfo.ArtifactID).Tables(0)
+			Dim dt As System.Data.DataTable = New kCura.WinEDDS.Service.FieldQuery(_application.GetCredentials, _application.CookieContainer).RetrievePotentialBeginBatesFields(ImageLoadFile.CaseInfo.ArtifactID).Tables(0)
 			For Each identifierRow As System.Data.DataRow In dt.Rows
 				If CType(identifierRow("FieldCategoryID"), Relativity.FieldCategory) = Relativity.FieldCategory.Identifier Then
 					_identifierFieldArtifactID = CType(identifierRow("ArtifactID"), Int32)

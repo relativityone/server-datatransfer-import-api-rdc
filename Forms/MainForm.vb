@@ -1,4 +1,7 @@
 
+Imports System.Threading.Tasks
+Imports Credentials
+
 Namespace kCura.EDDS.WinForm
 	Public Class MainForm
 		Inherits System.Windows.Forms.Form
@@ -398,14 +401,7 @@ Namespace kCura.EDDS.WinForm
 			LoggedInUserPanel.Text = text
 		End Sub
 
-		Private Sub MainForm_Activated(sender As Object, e As EventArgs) Handles Me.Activated
-			If Not _loginForm Is Nothing AndAlso firstTime Then
-				_loginForm.Focus()
-			End If
-			firstTime = False
-		End Sub
-
-		Private Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
+		Private Async Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			_application.TemporaryForceFolderPreview = kCura.WinEDDS.Config.ForceFolderPreview
             If kCura.WinEDDS.Config.WebServiceURL = String.Empty Then
@@ -413,24 +409,23 @@ Namespace kCura.EDDS.WinForm
             End If
 
             '' Can't do this in Application.vb without refactoring AttemptLogin (which needs this form as a parameter)
-            CheckCertificate()
-			AddHandler _loginForm.Shown, AddressOf _application.On_LoginShown
+            Await CheckCertificate()
 
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
-		Public Sub CheckCertificate()
+		Public Async Function CheckCertificate() As Task
 			If (_application.CertificateTrusted()) Then
-                _loginForm = _application.AttemptLogin(Me)
+                Await _application.AttemptLogin(Me)
             Else
                 _application.CertificateCheckPrompt()
             End If
-		End Sub
+		End Function
 
-        Private Sub WebServiceURLChanged() Handles _application.ReCheckCertificate
+        Private Async Sub WebServiceURLChanged() Handles _application.ReCheckCertificate
             'Disable help since user will be asked to login again
             Me._helpMenuItem.Enabled = False
-            CheckCertificate()
+            Await CheckCertificate()
         End Sub
 
         Private Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
@@ -511,7 +506,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub PopulateObjectTypeDropDown()
-			Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(_application.Credential, _application.CookieContainer)
+			Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(_application.GetCredentials, _application.CookieContainer)
 			Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
 			Dim selectedObjectTypeID As Int32 = Relativity.ArtifactType.Document
 			If _objectTypeDropDown.Items.Count > 0 Then

@@ -184,7 +184,7 @@ Public Class ImportOptions
 
 	Private Sub SetCaseInfo(ByVal caseID As String, ByRef application As kCura.EDDS.WinForm.Application)
 		Try
-			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(application.Credential, application.CookieContainer)
+			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(application.GetCredentials, application.CookieContainer)
 			SelectedCaseInfo = caseManager.Read(Int32.Parse(caseID))
 		Catch ex As System.Exception
 			Throw New CaseArtifactIdException(caseID, ex)
@@ -272,7 +272,7 @@ Public Class ImportOptions
 					tempLoadFile.CopyFilesToDocumentRepository = True           'LoadFile.CopyFilesToDocumentRepository
 					tempLoadFile.SelectedCasePath = SelectedCaseInfo.DocumentPath           ''''''''''
 					tempLoadFile.CaseDefaultPath = SelectedCaseInfo.DocumentPath
-					tempLoadFile.Credentials = application.Credential
+					tempLoadFile.Credentials = application.GetCredentials
 					tempLoadFile.DestinationFolderID = 35
 					tempLoadFile.ExtractedTextFileEncoding = System.Text.Encoding.Unicode
 					tempLoadFile.SourceFileEncoding = System.Text.Encoding.Default
@@ -311,7 +311,7 @@ Public Class ImportOptions
 					Next
 					SelectedNativeLoadFile = tempLoadFile
 					SelectedNativeLoadFile.SelectedCasePath = SelectedCaseInfo.DocumentPath
-					SelectedNativeLoadFile.Credentials = application.Credential
+					SelectedNativeLoadFile.Credentials = application.GetCredentials
 					SelectedNativeLoadFile.CookieContainer = application.CookieContainer
 				Case LoadMode.Application
 					If System.IO.File.Exists(path) Then Throw New InvalidOperationException("Load file is not supported for application imports")
@@ -384,7 +384,7 @@ Public Class ImportOptions
 		If value Is Nothing OrElse value = "" Then
 			DestinationFolderID = SelectedCaseInfo.RootFolderID
 		Else
-			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(application.Credential, application.CookieContainer)
+			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(application.GetCredentials, application.CookieContainer)
 			Dim folderExists As Boolean = False
 			Try
 				folderExists = folderManager.Exists(SelectedCaseInfo.ArtifactID, Int32.Parse(value))

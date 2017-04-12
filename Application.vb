@@ -5,6 +5,7 @@ Imports System.Net.Security
 Imports System.Linq
 Imports System.Security.Authentication
 Imports System.Threading.Tasks
+Imports Credentials
 
 Imports kCura.EDDS.WinForm.Forms
 Imports kCura.Windows.Forms
@@ -54,7 +55,7 @@ Namespace kCura.EDDS.WinForm
 		Private _openCaseSelector As Boolean = True
 		Private _selectedCaseFolderPath As String
 		Private _timeZoneOffset As Int32
-		Private WithEvents _loginForm As LoginForm
+		Private _loginForm As LoginForm
 		Private WithEvents _certificatePromptForm As CertificatePromptForm
 		Private WithEvents _optionsForm As OptionsForm
 		Private _documentRepositoryList As String()
@@ -62,19 +63,34 @@ Namespace kCura.EDDS.WinForm
 
 #Region "Properties"
 
-		Friend ReadOnly Property Credential() As System.Net.NetworkCredential
+		Public Readonly Property LoginForm() As LoginForm
 			Get
-				If Not RelativityWebApiCredentialsProvider.Instance().CredentialsSet() Then
-					NewLogin()
+				If _loginForm Is Nothing OrElse _loginForm.IsDisposed Then
+					_loginForm = New LoginForm
 				End If
-				Return RelativityWebApiCredentialsProvider.Instance().GetCredentials()
+
+				return _loginForm
 			End Get
 		End Property
+
+		Friend Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential)
+				If Not RelativityWebApiCredentialsProvider.Instance().CredentialsSet() Then
+					Dim authEndpoint As string = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/authorize")
+					Dim implicitProvider = new OAuth2ImplicitCredentials(New Uri(authEndpoint), "b8771c06968d499c684a10f03f", Function() LoginForm)
+					RelativityWebApiCredentialsProvider.Instance().SetProvider(implicitProvider)
+					AddHandler implicitProvider.Events.TokenRetrieved, AddressOf On_TokenRetrieved
+				End If
+				Return Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
+		End Function
+
+		Friend Function GetCredentials() As System.Net.NetworkCredential
+				return GetCredentialsAsync.Result
+		End Function
 
 		Private ReadOnly Property FieldProviderCache() As IFieldProviderCache
 			Get
 				If(_fieldProviderCache Is Nothing)
-					_fieldProviderCache = New FieldProviderCache(Credential, _CookieContainer)
+					_fieldProviderCache = New FieldProviderCache(GetCredentials, _CookieContainer)
 				End If
 				return _fieldProviderCache
 			End Get
@@ -97,7 +113,7 @@ Namespace kCura.EDDS.WinForm
 		End Property
 
 		Public Sub RefreshSelectedCaseInfo(Optional ByVal caseInfo As Relativity.CaseInfo = Nothing)
-			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(Me.Credential, _CookieContainer)
+			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(Me.GetCredentials, _CookieContainer)
 			If caseInfo Is Nothing Then
 				_selectedCaseInfo = caseManager.Read(_selectedCaseInfo.ArtifactID)
 			Else
@@ -127,7 +143,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public ReadOnly Property SendLoadNotificationEmailEnabled() As Boolean
 			Get
-				Return New kCura.WinEDDS.Service.RelativityManager(Me.Credential, Me.CookieContainer).IsImportEmailNotificationEnabled
+				Return New kCura.WinEDDS.Service.RelativityManager(Me.GetCredentials, Me.CookieContainer).IsImportEmailNotificationEnabled
 			End Get
 		End Property
 
@@ -252,7 +268,7 @@ Namespace kCura.EDDS.WinForm
 		Friend Function IsConnected() As Boolean
 			Dim retval = False
 			Try
-				Dim userManager As New kCura.WinEDDS.Service.UserManager(Credential, _CookieContainer)
+				Dim userManager As New kCura.WinEDDS.Service.UserManager(GetCredentials, _CookieContainer)
 				retval = userManager.LoggedIn()
 			Catch ex As System.Exception
 				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
@@ -308,7 +324,7 @@ Namespace kCura.EDDS.WinForm
 				MsgBox("The key field [" & fieldName & "] is unmapped.  Please map it to continue", MsgBoxStyle.Critical, "Relativity Desktop Client")
 				Return isIdentifierMapped
 			End If
-			If Not forPreview AndAlso Not New kCura.WinEDDS.Service.FieldQuery(Credential, _CookieContainer).IsFieldIndexed(Me.SelectedCaseInfo.ArtifactID, loadFile.IdentityFieldId) Then
+			If Not forPreview AndAlso Not New kCura.WinEDDS.Service.FieldQuery(GetCredentials, _CookieContainer).IsFieldIndexed(Me.SelectedCaseInfo.ArtifactID, loadFile.IdentityFieldId) Then
 				Return MsgBox("There is no SQL index on the selected Overlay Identifier field.  " & vbNewLine & "Performing a load on an un-indexed SQL field will be drastically slower, " & vbNewLine & "and may negatively impact Relativity performance for all users." & vbNewLine & "Contact your SQL Administrator to have an index applied to the selected Overlay Identifier field.", MsgBoxStyle.OkCancel, "Relativity Desktop Client") = MsgBoxResult.Ok
 			Else
 				Return True
@@ -337,7 +353,7 @@ Namespace kCura.EDDS.WinForm
 			Else
 				id = imageArgs.IdentityFieldId
 			End If
-			If Not forPreview AndAlso Not New kCura.WinEDDS.Service.FieldQuery(Credential, _CookieContainer).IsFieldIndexed(Me.SelectedCaseInfo.ArtifactID, id) Then
+			If Not forPreview AndAlso Not New kCura.WinEDDS.Service.FieldQuery(GetCredentials, _CookieContainer).IsFieldIndexed(Me.SelectedCaseInfo.ArtifactID, id) Then
 				Return MsgBox("There is no SQL index on the selected Overlay Identifier field.  " & vbNewLine & "Performing a load on an un-indexed SQL field will be drastically slower, " & vbNewLine & "and may negatively impact Relativity performance for all users." & vbNewLine & "Contact your SQL Administrator to have an index applied to the selected Overlay Identifier field.", MsgBoxStyle.OkCancel) = MsgBoxResult.Ok
 			Else
 				Return True
@@ -350,7 +366,7 @@ Namespace kCura.EDDS.WinForm
 			Dim name As String = InputBox("Enter Folder Name", "Relativity Review")
 			If name <> String.Empty Then
 				Try
-					Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Me.Credential, _CookieContainer)
+					Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Me.GetCredentials, _CookieContainer)
 					Dim folderID As Int32 = folderManager.Create(Me.SelectedCaseInfo.ArtifactID, parentFolderID, name)
 					RaiseEvent OnEvent(New NewFolderEvent(parentFolderID, folderID, name))
 				Catch ex As System.Exception
@@ -380,7 +396,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Function GetCaseFolders(ByVal caseID As Int32) As System.Data.DataSet
 			Try
-				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _CookieContainer)
+				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(GetCredentials, _CookieContainer)
 				Dim retval As System.Data.DataSet = folderManager.RetrieveIntitialChunk(caseID)
 				Dim dt As System.Data.DataTable = retval.Tables(0)
 				Dim addOn As System.Data.DataTable
@@ -408,7 +424,7 @@ Namespace kCura.EDDS.WinForm
 		Public Function GetCases() As System.Data.DataSet
 			FieldProviderCache.ResetCache()
 			Try
-				Dim csMgr As New kCura.WinEDDS.Service.CaseManager(Credential, _CookieContainer)
+				Dim csMgr As New kCura.WinEDDS.Service.CaseManager(GetCredentials, _CookieContainer)
 				_documentRepositoryList = csMgr.GetAllDocumentFolderPaths()
 				Dim dataset As System.Data.DataSet = csMgr.RetrieveAll()
 
@@ -490,7 +506,7 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Function GetConnectionStatus() As String
-			Dim x As New kCura.WinEDDS.FileUploader(Me.Credential, Me.SelectedCaseInfo.ArtifactID, Me.SelectedCaseInfo.DocumentPath, Me.CookieContainer)
+			Dim x As New kCura.WinEDDS.FileUploader(Me.GetCredentials, Me.SelectedCaseInfo.ArtifactID, Me.SelectedCaseInfo.DocumentPath, Me.CookieContainer)
 			Return x.UploaderType.ToString
 		End Function
 #End Region
@@ -527,7 +543,7 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Function IsAssociatedSearchProviderAccessible(ByVal caseContextArtifactID As Int32, ByVal searchArtifactID As Int32) As Boolean
-			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, Me.CookieContainer)
+			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.GetCredentials, Me.CookieContainer)
 			Dim values As Boolean() = searchManager.IsAssociatedSearchProviderAccessible(caseContextArtifactID, searchArtifactID)
 			Dim isSearchProviderValid As Boolean = values(0) And values(1)
 			Dim message As New System.Text.StringBuilder
@@ -540,7 +556,7 @@ Namespace kCura.EDDS.WinForm
 
 #Region "Utility"
 		Public Function AllUploadableArtifactTypes() As System.Data.DataTable
-			Return New kCura.WinEDDS.Service.ObjectTypeManager(Me.Credential, Me.CookieContainer).RetrieveAllUploadable(Me.SelectedCaseInfo.ArtifactID).Tables(0)
+			Return New kCura.WinEDDS.Service.ObjectTypeManager(Me.GetCredentials, Me.CookieContainer).RetrieveAllUploadable(Me.SelectedCaseInfo.ArtifactID).Tables(0)
 		End Function
 
 		Public Function HasFileField(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As Boolean
@@ -556,7 +572,7 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Function GetObjectTypeName(ByVal artifactTypeID As Int32) As String
-			Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(Me.Credential, Me.CookieContainer)
+			Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(Me.GetCredentials, Me.CookieContainer)
 			Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(Me.SelectedCaseInfo.ArtifactID).Tables(0).Rows
 			For Each objectType As System.Data.DataRow In uploadableObjectTypes
 				With New kCura.WinEDDS.ObjectTypeListItem(CType(objectType("DescriptorArtifactTypeID"), Int32), CType(objectType("Name"), String), CType(objectType("HasAddPermission"), Boolean))
@@ -678,7 +694,7 @@ Namespace kCura.EDDS.WinForm
 			Dim retval = False
 			If Not Me.SelectedCaseInfo Is Nothing Then
 				Try
-					Dim userManager As New kCura.WinEDDS.Service.UserManager(Credential, _CookieContainer)
+					Dim userManager As New kCura.WinEDDS.Service.UserManager(GetCredentials, _CookieContainer)
 					retval = userManager.LoggedIn()
 				Catch ex As System.Exception
 					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
@@ -767,7 +783,7 @@ Namespace kCura.EDDS.WinForm
 			loadFile.SendEmailOnLoadCompletion = Config.SendNotificationOnImportCompletionByDefault
 			loadFile.CopyFilesToDocumentRepository = Config.CopyFilesToRepository
 			loadFile.CaseInfo = caseInfo
-			loadFile.Credentials = Me.Credential
+			loadFile.Credentials = Me.GetCredentials
 			loadFile.CookieContainer = Me.CookieContainer
 			loadFile.OverwriteDestination = Relativity.ImportOverwriteType.Append.ToString
 			loadFile.ArtifactTypeID = Me.ArtifactTypeID
@@ -813,18 +829,18 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Function GetListOfProductionsForCase(ByVal caseInfo As Relativity.CaseInfo) As System.Data.DataTable
-			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _CookieContainer)
+			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.GetCredentials, _CookieContainer)
 			Return productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
 		End Function
 
 
 		Public Function GetNewExportFileSettingsObject(ByVal selectedFolderId As Int32, ByVal caseInfo As Relativity.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType, ByVal artifactTypeID As Int32) As WinEDDS.ExportFile
 			Dim exportFile As New WinEDDS.ExportFile(artifactTypeID)
-			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.Credential, _CookieContainer)
-			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _CookieContainer)
+			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Me.GetCredentials, _CookieContainer)
+			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.GetCredentials, _CookieContainer)
 			exportFile.ArtifactID = selectedFolderId
 			exportFile.CaseInfo = caseInfo
-			exportFile.Credential = Me.Credential
+			exportFile.Credential = Me.GetCredentials
 			exportFile.TypeOfExport = typeOfExport
 			exportFile.ObjectTypeName = Me.GetObjectTypeName(exportFile.ArtifactTypeID)
 			Select Case typeOfExport
@@ -872,7 +888,7 @@ Namespace kCura.EDDS.WinForm
 			Dim frm As New ImageLoad
 			Try
 				Dim imageFile As New ImageLoadFile
-				imageFile.Credential = Me.Credential
+				imageFile.Credential = Me.GetCredentials
 				imageFile.CaseInfo = caseinfo
 				imageFile.SelectedCasePath = caseinfo.DocumentPath
 				imageFile.DestinationFolderID = destinationArtifactID
@@ -900,7 +916,7 @@ Namespace kCura.EDDS.WinForm
 			Dim frm As New ImageLoad
 			Try
 				Dim imageFile As New ImageLoadFile
-				imageFile.Credential = Me.Credential
+				imageFile.Credential = Me.GetCredentials
 				imageFile.CaseInfo = caseinfo
 				imageFile.DestinationFolderID = destinationArtifactID
 				imageFile.ForProduction = True
@@ -908,7 +924,7 @@ Namespace kCura.EDDS.WinForm
 				imageFile.SelectedCasePath = caseinfo.DocumentPath
 				imageFile.FullTextEncoding = System.Text.Encoding.Default
 				imageFile.CopyFilesToDocumentRepository = Config.CopyFilesToRepository
-				Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _CookieContainer)
+				Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.GetCredentials, _CookieContainer)
 				imageFile.ProductionTable = productionManager.RetrieveImportEligibleByContextArtifactID(caseinfo.ArtifactID).Tables(0)
 				imageFile.SendEmailOnLoadCompletion = Config.SendNotificationOnImportCompletionByDefault
 				frm.ImageLoadFile = imageFile
@@ -979,19 +995,15 @@ Namespace kCura.EDDS.WinForm
 			CursorDefault()
 		End Sub
 
-		Public Function NewLogin(Optional ByVal openCaseSelector As Boolean = True) As LoginForm
+		Public Sub NewLogin(Optional ByVal openCaseSelector As Boolean = True)
+			NewLoginAsync(openCaseSelector).Wait()
+		End Sub
+
+		Public Async Function NewLoginAsync(Optional ByVal openCaseSelector As Boolean = True) As Task
+			Await Me.GetCredentialsAsync()
 			CursorWait()
-			If _loginForm Is Nothing OrElse _loginForm.IsDisposed Then
-				_loginForm = New LoginForm
-				Dim authEndpoint As string = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/authorize")
-				Dim implicitProvider = new OAuth2ImplicitCredentials(New Uri(authEndpoint), "b8771c06968d499c684a10f03f", _loginForm.Browser)
-				RelativityWebApiCredentialsProvider.Instance().SetProvider(implicitProvider)
-				AddHandler implicitProvider.Events.TokenRetrieved, AddressOf On_TokenRetrieved
-			End If
 			_openCaseSelector = openCaseSelector
-			_loginForm.Show()
 			CursorDefault()
-			Return _loginForm
 		End Function
 #End Region
 
@@ -1006,7 +1018,7 @@ Namespace kCura.EDDS.WinForm
 				CursorDefault()
 				Exit Function
 			End If
-			Dim proc As New kCura.WinEDDS.ConnectionDetailsProcess(Me.Credential, Me.CookieContainer, Me.SelectedCaseInfo)
+			Dim proc As New kCura.WinEDDS.ConnectionDetailsProcess(Me.GetCredentials, Me.CookieContainer, Me.SelectedCaseInfo)
 			Dim form As New TextDisplayForm
 			form.ProcessObserver = proc.ProcessObserver
 			form.Text = "Relativity Desktop Client | Connectivity Tests"
@@ -1060,7 +1072,7 @@ Namespace kCura.EDDS.WinForm
 				CursorDefault()
 				Exit Function
 			End If
-			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Credential, _CookieContainer)
+			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(GetCredentials, _CookieContainer)
 			If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
 				If CheckFieldMap(loadFile) Then
 					Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
@@ -1245,7 +1257,7 @@ Namespace kCura.EDDS.WinForm
 			tempLoadFile.CaseInfo = Me.SelectedCaseInfo
 			tempLoadFile.CopyFilesToDocumentRepository = loadFile.CopyFilesToDocumentRepository
 			tempLoadFile.SelectedCasePath = Me.SelectedCaseInfo.DocumentPath
-			tempLoadFile.Credentials = Me.Credential
+			tempLoadFile.Credentials = Me.GetCredentials
 			tempLoadFile.DestinationFolderID = loadFile.DestinationFolderID
 			tempLoadFile.SelectedIdentifierField = Me.CurrentFields(ArtifactTypeID, True).Item(Me.GetCaseIdentifierFields(ArtifactTypeID)(0))
 			Dim x As New System.Windows.Forms.OpenFileDialog
@@ -1304,7 +1316,7 @@ Namespace kCura.EDDS.WinForm
 			End Try
 			retval.CaseInfo = Me.SelectedCaseInfo
 			retval.DestinationFolderID = Me.SelectedCaseInfo.RootFolderID
-			retval.Credential = Me.Credential
+			retval.Credential = Me.GetCredentials
 			Return retval
 		End Function
 
@@ -1333,15 +1345,14 @@ Namespace kCura.EDDS.WinForm
 		''' <param name="callingForm">The calling form to be Hooked (what is hooked?) by the Enhance Menu Provider</param>
 		''' <returns>A fresh LoginForm</returns>
 		''' <remarks></remarks>
-		Friend Function AttemptLogin(ByVal callingForm As Form) As LoginForm
+		Friend Async Function AttemptLogin(ByVal callingForm As Form) As Task
 			Dim defaultCredentialResult As Application.CredentialCheckResult = AttemptWindowsAuthentication()
-			Dim newLoginForm As LoginForm = New LoginForm()
 
 			Select Case (defaultCredentialResult)
 				Case Application.CredentialCheckResult.AccessDisabled
 					MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)
 				Case Application.CredentialCheckResult.Fail
-					newLoginForm = NewLogin()
+					Await NewLoginAsync()
 				Case Application.CredentialCheckResult.Success
 					LogOn()
 					If (Not _caseSelected) Then
@@ -1350,7 +1361,6 @@ Namespace kCura.EDDS.WinForm
 					EnhancedMenuProvider.Hook(callingForm)
 			End Select
 
-			Return newLoginForm
 		End Function
 
 
@@ -1393,8 +1403,8 @@ Namespace kCura.EDDS.WinForm
 		''' Loads the workspace permissions into UserHasExportPermission and UserHasImportPermission.
 		''' </summary>
 		Public Sub LoadWorkspacePermissions()
-			UserHasExportPermission = New kCura.WinEDDS.Service.ExportManager(Credential, CookieContainer).HasExportPermissions(SelectedCaseInfo.ArtifactID)
-			UserHasImportPermission = New kCura.WinEDDS.Service.BulkImportManager(Credential, CookieContainer).HasImportPermissions(SelectedCaseInfo.ArtifactID)
+			UserHasExportPermission = New kCura.WinEDDS.Service.ExportManager(GetCredentials, CookieContainer).HasExportPermissions(SelectedCaseInfo.ArtifactID)
+			UserHasImportPermission = New kCura.WinEDDS.Service.BulkImportManager(GetCredentials, CookieContainer).HasImportPermissions(SelectedCaseInfo.ArtifactID)
 		End Sub
 
 		Private Sub CertificatePromptForm_Deny_Click() Handles _certificatePromptForm.DenyUntrustedCertificates
@@ -1402,14 +1412,13 @@ Namespace kCura.EDDS.WinForm
 			NewOptions()
 		End Sub
 
-		Private Sub CertificatePromptForm_Allow_Click() Handles _certificatePromptForm.AllowUntrustedCertificates
+		Private Async Sub CertificatePromptForm_Allow_Click() Handles _certificatePromptForm.AllowUntrustedCertificates
 			'' The magical line that allows untrusted certificates
 			ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) True
-			AttemptLogin(_certificatePromptForm)
+			Await AttemptLogin(_certificatePromptForm)
 		End Sub
 
 		Private Async Sub On_TokenRetrieved(source As ITokenProvider, args As ITokenResponseEventArgs)
-			_loginForm.Close()
 			Dim credential = await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(credential, _CookieContainer)
 			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(credential, _CookieContainer)
@@ -1552,8 +1561,8 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub Reconnect()
-			Dim userManager As New kCura.WinEDDS.Service.UserManager(Credential, _CookieContainer)
-			If userManager.Login(Credential.UserName, Credential.Password) Then
+			Dim userManager As New kCura.WinEDDS.Service.UserManager(GetCredentials, _CookieContainer)
+			If userManager.Login(GetCredentials.UserName, GetCredentials.Password) Then
 				kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
 			End If
 
@@ -1604,7 +1613,7 @@ Namespace kCura.EDDS.WinForm
 		Public Sub Logout()
 			Try
 				RelativityWebApiCredentialsProvider.Instance().Cancel()
-				Dim userManager As New kCura.WinEDDS.Service.UserManager(Credential, _CookieContainer)
+				Dim userManager As New kCura.WinEDDS.Service.UserManager(GetCredentials, _CookieContainer)
 				userManager.Logout()
 			Catch ex As Exception
 
@@ -1618,7 +1627,7 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Function GetSystemConfiguration() As System.Data.DataTable
-			Return New kCura.WinEDDS.Service.RelativityManager(Me.Credential, Me.CookieContainer).RetrieveRdcConfiguration().Tables(0)
+			Return New kCura.WinEDDS.Service.RelativityManager(Me.GetCredentials, Me.CookieContainer).RetrieveRdcConfiguration().Tables(0)
 		End Function
 #End Region
 
@@ -1626,7 +1635,7 @@ Namespace kCura.EDDS.WinForm
 			Dim productionManager As kCura.WinEDDS.Service.ProductionManager
 			Dim dt As System.Data.DataTable
 			Try
-				productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _CookieContainer)
+				productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.GetCredentials, _CookieContainer)
 				dt = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
 			Catch ex As System.Exception
 				If ex.Message.IndexOf("Need To Re Login") <> -1 Then

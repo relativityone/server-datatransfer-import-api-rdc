@@ -1267,7 +1267,7 @@ Public Class ExportForm
 	Public ReadOnly Property ObjectTypeName() As String
 		Get
 			If _objectTypeName = "" Then
-				For Each row As System.Data.DataRow In New kCura.WinEDDS.Service.ObjectTypeManager(_application.Credential, _application.CookieContainer).RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
+				For Each row As System.Data.DataRow In New kCura.WinEDDS.Service.ObjectTypeManager(_application.GetCredentials, _application.CookieContainer).RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
 					If CType(row("DescriptorArtifactTypeID"), Int32) = Me.ExportFile.ArtifactTypeID Then
 						_objectTypeName = row("Name").ToString
 					End If

@@ -19,7 +19,7 @@ Namespace kCura.EDDS.WinForm
 		Friend Sub RunApplicationImport(ByVal importOptions As ImportOptions)
 			Dim packageData As Byte()
 			packageData = System.IO.File.ReadAllBytes(importOptions.LoadFilePath)
-			Dim importer As New kCura.WinEDDS.ApplicationDeploymentProcess(New Int32() {}, Nothing, packageData, _application.Credential, _application.CookieContainer, New Relativity.CaseInfo() {importOptions.SelectedCaseInfo})
+			Dim importer As New kCura.WinEDDS.ApplicationDeploymentProcess(New Int32() {}, Nothing, packageData, _application.GetCredentials, _application.CookieContainer, New Relativity.CaseInfo() {importOptions.SelectedCaseInfo})
 			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, importOptions.ErrorLoadFileLocation, importOptions.ErrorReportFileLocation)
 			_application.StartProcess(importer)
 		End Sub
@@ -44,7 +44,7 @@ Namespace kCura.EDDS.WinForm
 
 		Friend Sub RunNativeImport(ByVal importOptions As ImportOptions)
 			If EnsureEncoding(importOptions) Then
-				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(_application.Credential, _application.CookieContainer)
+				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(_application.GetCredentials, _application.CookieContainer)
 				If folderManager.Exists(importOptions.SelectedCaseInfo.ArtifactID, importOptions.SelectedCaseInfo.RootFolderID) Then
 					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
 					importOptions.SelectedNativeLoadFile.SourceFileEncoding = importOptions.SourceFileEncoding
@@ -72,7 +72,7 @@ Namespace kCura.EDDS.WinForm
 			If EnsureEncoding(importOptions) Then
 				Dim importer As New kCura.WinEDDS.ImportImageFileProcess
 				importOptions.SelectedImageLoadFile.CookieContainer = _application.CookieContainer
-				importOptions.SelectedImageLoadFile.Credential = _application.Credential
+				importOptions.SelectedImageLoadFile.Credential = _application.GetCredentials
 				importOptions.SelectedImageLoadFile.SelectedCasePath = importOptions.SelectedCasePath
 				importOptions.SelectedImageLoadFile.CaseDefaultPath = importOptions.SelectedCaseInfo.DocumentPath
 				importOptions.SelectedImageLoadFile.CopyFilesToDocumentRepository = importOptions.CopyFilesToDocumentRepository
