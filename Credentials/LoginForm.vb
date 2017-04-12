@@ -70,18 +70,5 @@ Namespace Credentials
 			_browser.AllowNavigation = True
 		End Sub
 
-		'Private Async Sub LoginForm_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Shown
-		'	Try
-		'		await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
-		'	Catch ex As TaskCanceledException
-		'		'Login form was closed, ignore
-		'	End Try
-			
-		'End Sub
-
-		 Private Sub LoginForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
-			RelativityWebApiCredentialsProvider.Instance().Cancel()
-		 End Sub
-
 	End Class
 End Namespace

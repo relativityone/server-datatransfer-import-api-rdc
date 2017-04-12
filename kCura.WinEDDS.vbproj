@@ -454,6 +454,7 @@
     <Compile Include="Exceptions\InvalidLoginException.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Exceptions\LoginCanceledException.vb" />
     <Compile Include="Exceptions\RelativityVersionMismatchException.vb" />
     <Compile Include="Exceptions\WebDownloadCorruptException.vb">
       <SubType>Code</SubType>

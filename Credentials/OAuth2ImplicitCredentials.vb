@@ -3,6 +3,7 @@ Imports System.Net
 Imports System.Threading
 Imports System.Threading.Tasks
 Imports Credentials
+Imports kCura.WinEDDS.Exceptions
 Imports Relativity.OAuth2Client.Implicit
 Imports Relativity.OAuth2Client.Implicit.LoginView
 Imports Relativity.OAuth2Client.Implicit.RelativityWebBrowser
@@ -17,8 +18,11 @@ Namespace kCura.WinEDDS.Credentials
 
 		Private Const _OAUTH_USERNAME As String = "XxX_BearerTokenCredentials_XxX"
 		Private Const _REDIRECT_URI As String = "http://relativityimplicit/"
-		Private ReadOnly _tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider
-		Private _loginFormFacotry As Func(Of LoginForm)
+		Private _tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider
+		Private Readonly _loginFormFacotry As Func(Of LoginForm)
+		Private ReadOnly _stsUri As Uri
+		Private ReadOnly _clientId As String
+		Private _loginView As ILoginView
 		Private _cancellationTokenSource As CancellationTokenSource
 		
 		Public WithEvents Events As IOAuth2ClientEvents
@@ -37,17 +41,14 @@ Namespace kCura.WinEDDS.Credentials
 
 		Public Sub New(stsUri As Uri, clientID As String, formFactory As Func(Of LoginForm))
 			_loginFormFacotry = formFactory
-			Dim loginView As ILoginView = New LoginView(stsUri, new Uri(_REDIRECT_URI), clientID, LoginForm.browser)
-			Dim providerFactory As Relativity.OAuth2Client.Interfaces.ITokenProviderFactory = New ImplicitTokenProviderFactory(loginView)
-			Dim tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider = providerFactory.GetTokenProvider("WebApi", New String() {"UserInfoAccess"})
-			_tokenProvider = tokenProvider
-			Events = _tokenProvider.Events
-			AddHandler Events.TokenRequested, AddressOf On_TokenRequested
+			_stsUri = stsUri
+			_clientId = clientID
+			CreateTokenProvider()
 			_cancellationTokenSource = New CancellationTokenSource()
 		End Sub
 
 		Public Function GetCredentials() As System.Net.NetworkCredential Implements ICredentialsProvider.GetCredentials
-			Dim creds As NetworkCredential = New NetworkCredential()
+			Dim creds As NetworkCredential
 			Try
 				creds = Task.Run(AddressOf GetCredentialsAsync).Result
 			Catch ex As AggregateException
@@ -59,11 +60,18 @@ Namespace kCura.WinEDDS.Credentials
 		End Function
 
 		Public Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential) Implements ICredentialsProvider.GetCredentialsAsync
-			Dim token As String = Await _tokenProvider.GetAccessTokenAsync(_cancellationTokenSource.Token)
-			LoginComplete()
-			Dim creds As System.Net.NetworkCredential = New NetworkCredential(_OAUTH_USERNAME, token)
-			Return creds
+			Try
+				If _loginView.Browser.IsDisposed
+					CreateTokenProvider()
+				End If
 
+				Dim token As String = Await _tokenProvider.GetAccessTokenAsync(_cancellationTokenSource.Token)
+				LoginComplete()
+				Dim creds As System.Net.NetworkCredential = New NetworkCredential(_OAUTH_USERNAME, token)
+				Return creds
+			Catch ex As TaskCanceledException
+				Throw new LoginCanceledException(ex)
+			End Try
 		End Function
 
 		Public Sub Cancel() Implements ICredentialsProvider.Cancel
@@ -72,10 +80,26 @@ Namespace kCura.WinEDDS.Credentials
 			End If
 		End Sub
 
+		Private Sub CreateTokenProvider()
+			_loginView = New LoginView(_stsUri, new Uri(_REDIRECT_URI), _clientId, LoginForm.browser)
+			Dim providerFactory As Relativity.OAuth2Client.Interfaces.ITokenProviderFactory = New ImplicitTokenProviderFactory(_loginView)
+			Dim tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider = providerFactory.GetTokenProvider("WebApi", New String() {"UserInfoAccess"})
+			_tokenProvider = tokenProvider
+			Events = _tokenProvider.Events
+			AddHandler Events.TokenRequested, AddressOf On_TokenRequested
+			AddHandler LoginForm.Closed, AddressOf On_LoginFormClosing
+		End Sub
+
 		Private Sub LoginComplete()
 			_cancellationTokenSource = New CancellationTokenSource()
 			LoginForm.Close()
 		End Sub
+
+		Private Sub On_LoginFormClosing(ByVal sender As Object, ByVal e As EventArgs)
+			If(Not _cancellationTokenSource.IsCancellationRequested)
+				_cancellationTokenSource.Cancel()
+			End If
+		 End Sub
 
 		Private Sub On_TokenRequested(source As ITokenProvider, args As ITokenRequestEventArgs)
 			LoginForm.Show()
