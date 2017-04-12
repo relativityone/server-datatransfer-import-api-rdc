@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.WinEDDS.Core.Model;
+using kCura.WinEDDS.Exporters;
 
 namespace kCura.WinEDDS.Core.Export.Natives.Name
 {
-	public class CustomFileNameProvider
+	public class CustomFileNameProvider : IFileNameProvider
 	{
 		#region Fields
 
@@ -26,7 +27,7 @@ namespace kCura.WinEDDS.Core.Export.Natives.Name
 
 		#region Public Methods
 
-		public string GetFileName()
+		public string GetName(ObjectExportInfo exportObjectInfo)
 		{
 			foreach (DescriptorPart descriptor in _fileNamePartDescriptors)
 			{

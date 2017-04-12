@@ -95,6 +95,8 @@
     <Compile Include="Export\Natives\Name\FileNamePartProvider.cs" />
     <Compile Include="Export\Natives\Name\IFileNamePartProvider.cs" />
     <Compile Include="Export\Natives\Name\SeparatorFileNamePartProvider.cs" />
+    <Compile Include="Export\Natives\Name\Factories\FileNameProviderContainerFactory.cs" />
+    <Compile Include="Export\Natives\Name\Factories\IFileNameProviderContainerFactory.cs" />
     <Compile Include="IO\LongPathDirectoryHelper.cs" />
     <Compile Include="IO\LongPathFileHelper.cs" />
     <Compile Include="Model\Export\Natives\Name\DescriptorPart.cs" />
@@ -118,6 +120,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
