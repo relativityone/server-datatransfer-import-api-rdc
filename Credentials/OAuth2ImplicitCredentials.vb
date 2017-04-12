@@ -24,6 +24,7 @@ Namespace kCura.WinEDDS.Credentials
 		Private ReadOnly _clientId As String
 		Private _loginView As ILoginView
 		Private _cancellationTokenSource As CancellationTokenSource
+		Private _currentCredentials As NetworkCredential
 		
 		Public WithEvents Events As IOAuth2ClientEvents
 
@@ -48,14 +49,11 @@ Namespace kCura.WinEDDS.Credentials
 		End Sub
 
 		Public Function GetCredentials() As System.Net.NetworkCredential Implements ICredentialsProvider.GetCredentials
-			Dim creds As NetworkCredential
-			Try
-				creds = Task.Run(AddressOf GetCredentialsAsync).Result
-			Catch ex As AggregateException
-				Throw ex.InnerException
-			End Try
-
-			Return creds
+			If _currentCredentials Is Nothing
+				throw new CredentialsNotSetException()
+			End If
+			
+			Return _currentCredentials
 
 		End Function
 
@@ -63,6 +61,10 @@ Namespace kCura.WinEDDS.Credentials
 			Try
 				If _loginView.Browser.IsDisposed
 					CreateTokenProvider()
+				End If
+
+				If _cancellationTokenSource.IsCancellationRequested
+					_cancellationTokenSource = New CancellationTokenSource()
 				End If
 
 				Dim token As String = Await _tokenProvider.GetAccessTokenAsync(_cancellationTokenSource.Token)
@@ -73,12 +75,6 @@ Namespace kCura.WinEDDS.Credentials
 				Throw new LoginCanceledException(ex)
 			End Try
 		End Function
-
-		Public Sub Cancel() Implements ICredentialsProvider.Cancel
-			If(Not _cancellationTokenSource.IsCancellationRequested)
-				_cancellationTokenSource.Cancel()
-			End If
-		End Sub
 
 		Private Sub CreateTokenProvider()
 			_loginView = New LoginView(_stsUri, new Uri(_REDIRECT_URI), _clientId, LoginForm.browser)
@@ -98,10 +94,13 @@ Namespace kCura.WinEDDS.Credentials
 		Private Sub On_LoginFormClosing(ByVal sender As Object, ByVal e As EventArgs)
 			If(Not _cancellationTokenSource.IsCancellationRequested)
 				_cancellationTokenSource.Cancel()
+				_cancellationTokenSource = New CancellationTokenSource()
 			End If
 		 End Sub
 
 		Private Sub On_TokenRequested(source As ITokenProvider, args As ITokenRequestEventArgs)
+			LoginForm.TopLevel = True
+			LoginForm.TopMost = True
 			LoginForm.Show()
 		End Sub
 		

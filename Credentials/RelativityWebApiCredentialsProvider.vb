@@ -44,9 +44,6 @@ Namespace kCura.WinEDDS.Credentials
 			return _provider.GetCredentialsAsync()
 		End Function
 
-		Public Sub Cancel() Implements ICredentialsProvider.Cancel
-			_provider.Cancel()
-		End Sub
 	End Class
 
 End Namespace

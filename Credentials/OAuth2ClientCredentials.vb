@@ -45,11 +45,6 @@ Namespace kCura.WinEDDS.Credentials
 
 		End Function
 
-		Public Sub Cancel() Implements ICredentialsProvider.Cancel
-			If(Not _tokenSource.IsCancellationRequested)
-				_tokenSource.Cancel()
-			End If
-		End Sub
 	End Class
 
 

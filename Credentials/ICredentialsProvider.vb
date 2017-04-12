@@ -8,8 +8,6 @@ Namespace kCura.WinEDDS.Credentials
 
 		Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential)
 
-		Sub Cancel()
-
 	End Interface
 End Namespace
 
