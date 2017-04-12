@@ -4,6 +4,7 @@ Imports System.Net
 Imports System.Net.Security
 Imports System.Linq
 Imports System.Security.Authentication
+Imports System.Threading
 Imports System.Threading.Tasks
 Imports Credentials
 
@@ -85,7 +86,7 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Friend Function GetCredentials() As System.Net.NetworkCredential
-				return GetCredentialsAsync.Result
+			return GetCredentialsAsync.Result
 		End Function
 
 		Private ReadOnly Property FieldProviderCache() As IFieldProviderCache
@@ -469,8 +470,9 @@ Namespace kCura.EDDS.WinForm
 			_caseSelected = True
 		End Sub
 
-		Public Sub OpenCase()
+		Public Async Function OpenCase() As Task
 			Try
+				Await GetCredentialsAsync() 'Ensure login
 				Dim caseInfo As Relativity.CaseInfo = Me.GetCase
 				If Not caseInfo Is Nothing Then
 					_selectedCaseInfo = caseInfo
@@ -493,7 +495,7 @@ Namespace kCura.EDDS.WinForm
 			Catch ex As System.Exception
 				Throw
 			End Try
-		End Sub
+		End Function
 
 		Public Function GetCase() As Relativity.CaseInfo
 			Dim frm As New CaseSelectForm
@@ -1362,7 +1364,7 @@ Namespace kCura.EDDS.WinForm
 				Case Application.CredentialCheckResult.Success
 					LogOn()
 					If (Not _caseSelected) Then
-						OpenCase()
+						Await OpenCase()
 					End If
 					EnhancedMenuProvider.Hook(callingForm)
 			End Select
@@ -1456,13 +1458,13 @@ Namespace kCura.EDDS.WinForm
                     System.Threading.Thread.CurrentThread.CurrentCulture = locale
 
                     kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-                    If _openCaseSelector Then OpenCase()
+                    If _openCaseSelector Then Await OpenCase()
                     _timeZoneOffset = 0                                                         'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
                     _lastCredentialCheckResult = CredentialCheckResult.Success
                     'This was created specifically for raising an event after login success for RDC forms authentication 
                     LogOnForm()
                 Else
-                    Me.ReLogin("Invalid login. Try again?")
+                    Await Me.NewLoginAsync()
                     _lastCredentialCheckResult = CredentialCheckResult.Fail
                 End If
             Catch ex As System.Exception
@@ -1557,14 +1559,6 @@ Namespace kCura.EDDS.WinForm
 			Dim urlString As String = String.Format("{0}/{1}",relManager.GetRelativityUrl(), "Identity")
 			return urlString
 		End Function
-
-		Public Sub ReLogin(ByVal message As String)
-			If MsgBox(message, MsgBoxStyle.YesNo, "Relativity Desktop Client") = MsgBoxResult.Yes Then
-				NewLogin()
-			Else
-				ExitApplication()
-			End If
-		End Sub
 
 		Private Sub Reconnect()
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(GetCredentials, _CookieContainer)

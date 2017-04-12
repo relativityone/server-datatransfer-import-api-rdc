@@ -1,5 +1,6 @@
 Imports System.Linq
 Imports System.Collections.Generic
+Imports System.Threading.Tasks
 
 Namespace kCura.EDDS.WinForm
 	Public Class CaseSelectForm
@@ -18,12 +19,14 @@ Namespace kCura.EDDS.WinForm
 		Private _cases As System.Data.DataSet
 		Private _debounce As New System.Windows.Forms.Timer With {.Interval = 200}
 
-		Private Sub ItemSelectForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-			_cases = Application.GetCases
+		Private Async Sub ItemSelectForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+			Await Application.GetCredentialsAsync()
+			_cases = Application.GetCases()
 			Me.Text = "Relativity Desktop Client | Select Workspace"
 			Me.LoadItems(String.Empty)
 			Me.Focus()
 			SearchQuery.Focus()
+			Me.Show()
 		End Sub
 
 		Protected Overrides Sub ItemListView_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ItemListView.SelectedIndexChanged
