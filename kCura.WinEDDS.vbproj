@@ -424,6 +424,9 @@
     </Compile>
     <Compile Include="Credentials\CredentialsNotSetException.vb" />
     <Compile Include="Credentials\ICredentialsProvider.vb" />
+    <Compile Include="Credentials\LoginForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Credentials\OAuth2ClientCredentials.vb" />
     <Compile Include="Credentials\OAuth2ImplicitCredentials.vb" />
     <Compile Include="Credentials\RelativityWebApiCredentialsProvider.vb" />
@@ -1284,6 +1287,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\BulkImportManager.disco" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Credentials\LoginForm.resx">
+      <DependentUpon>LoginForm.vb</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
 </Project>
