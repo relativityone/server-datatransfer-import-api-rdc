@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
+using kCura.WinEDDS.Core.Export.Natives.Name.Factories;
 using kCura.WinEDDS.Core.Model;
 using kCura.WinEDDS.Exporters;
 
@@ -10,17 +12,16 @@ namespace kCura.WinEDDS.Core.Export.Natives.Name
 		#region Fields
 
 		private readonly List<DescriptorPart> _fileNamePartDescriptors;
-		private readonly Dictionary<Type, IFileNamePartProvider> _fileNamePartProviders = new Dictionary<Type, IFileNamePartProvider>();
+		private readonly IFileNamePartProviderContainer _fileNamePartNameContainer;
 
 		#endregion Fields
 
 		#region Constructor
 
-		public CustomFileNameProvider(List<DescriptorPart> fileNamePartDescriptors)
+		public CustomFileNameProvider(List<DescriptorPart> fileNamePartDescriptors, IFileNamePartProviderContainer fileNamePartNameContainer)
 		{
 			_fileNamePartDescriptors = fileNamePartDescriptors;
-
-			RegisterFileNamePartProviders();
+			_fileNamePartNameContainer = fileNamePartNameContainer;
 		}
 
 		#endregion //Constructor
@@ -29,37 +30,16 @@ namespace kCura.WinEDDS.Core.Export.Natives.Name
 
 		public string GetName(ObjectExportInfo exportObjectInfo)
 		{
+			var name = new StringBuilder();
 			foreach (DescriptorPart descriptor in _fileNamePartDescriptors)
 			{
-				IFileNamePartProvider fielNamePartProvider = GetProvider(descriptor);
+				IFileNamePartProvider fielNamePartProvider = _fileNamePartNameContainer.GetProvider(descriptor);
+				name.Append(fielNamePartProvider.GetPartName(descriptor, exportObjectInfo.ArtifactID, 10 /*TODO*/));
 			}
-			throw new NotImplementedException();
+			return name.ToString();
 		}
 
 		#endregion //Public Methods
 
-		#region Methods
-
-		private IFileNamePartProvider GetProvider(DescriptorPart descriptor)
-		{
-			throw new NotImplementedException();
-		}
-
-		private void RegisterFileNamePartProviders()
-		{
-			RegisterFileName(typeof(SeparatorDescriptorPart), new SeparatorFileNamePartProvider());
-			RegisterFileName(typeof(FieldDescriptorPart), new FieldFileNamePartProvider());
-		}
-
-		private void RegisterFileName(Type descriptorPartType, IFileNamePartProvider provider)
-		{
-			if (!descriptorPartType.IsSubclassOf(typeof(DescriptorPart)))
-			{
-				throw new Exception($"Registarition of file name part provider failed. Inavlid type arument: {descriptorPartType}");
-			}
-			_fileNamePartProviders[descriptorPartType] = provider;
-		}
-
-		#endregion Methods
 	}
 }

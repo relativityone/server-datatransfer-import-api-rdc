@@ -91,6 +91,8 @@
     <Compile Include="Export\FieldNameProvider.cs" />
     <Compile Include="Export\ExportFileFormatterFactory.cs" />
     <Compile Include="Export\Natives\Name\CustomFileNameProvider.cs" />
+    <Compile Include="Export\Natives\Name\Factories\FileNamePartProviderContainer.cs" />
+    <Compile Include="Export\Natives\Name\Factories\IFileNamePartProviderContainer.cs" />
     <Compile Include="Export\Natives\Name\FieldFileNamePartProvider.cs" />
     <Compile Include="Export\Natives\Name\FileNamePartProvider.cs" />
     <Compile Include="Export\Natives\Name\IFileNamePartProvider.cs" />

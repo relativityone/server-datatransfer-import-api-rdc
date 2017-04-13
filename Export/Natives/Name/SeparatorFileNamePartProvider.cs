@@ -11,7 +11,7 @@ namespace kCura.WinEDDS.Core.Export.Natives.Name
 	/// <typeparam name="T">field artifact id</typeparam>
 	public class SeparatorFileNamePartProvider : FileNamePartProvider<SeparatorDescriptorPart>
 	{
-		public override string GetFileName(SeparatorDescriptorPart descriptorDescriptorPart, int artifactId, int artifactType)
+		public override string GetPartName(SeparatorDescriptorPart descriptorDescriptorPart, int artifactId, int artifactType)
 		{
 			throw new NotImplementedException();
 		}
