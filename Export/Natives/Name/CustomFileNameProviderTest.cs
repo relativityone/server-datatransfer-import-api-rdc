@@ -37,8 +37,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 			Mock<IFileNamePartProvider> separatorProviderMock = new Mock<IFileNamePartProvider>();
 			Mock<IFileNamePartProvider> fieldProviderMock = new Mock<IFileNamePartProvider>();
 
-			separatorProviderMock.Setup(mock => mock.GetPartName(firstDescriptor, It.IsAny<int>(), It.IsAny<int>())).Returns(firstPartName);
-			fieldProviderMock.Setup(mock => mock.GetPartName(secondDescriptor, It.IsAny<int>(), It.IsAny<int>())).Returns(secondPartName);
+			separatorProviderMock.Setup(mock => mock.GetPartName(firstDescriptor, _exportObjectInfo)).Returns(firstPartName);
+			fieldProviderMock.Setup(mock => mock.GetPartName(secondDescriptor, _exportObjectInfo)).Returns(secondPartName);
 
 			_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(firstDescriptor)).Returns(separatorProviderMock.Object);
 			_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(secondDescriptor)).Returns(fieldProviderMock.Object);
