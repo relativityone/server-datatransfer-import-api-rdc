@@ -22,8 +22,8 @@ Namespace kCura.WinEDDS.NUnit
 				max = System.Math.Max(max.Value, CInt(e))
 				count += 1
 			Next
-			Assert.AreEqual(3, count, "All native file name sources should be tested")
-			Assert.AreEqual(2, max, "All native file name sources should be tested")
+			Assert.AreEqual(4, count, "All native file name sources should be tested")
+			Assert.AreEqual(3, max, "All native file name sources should be tested")
 			Assert.AreEqual(0, min, "All native file name sources should be tested")
 		End Sub
 
