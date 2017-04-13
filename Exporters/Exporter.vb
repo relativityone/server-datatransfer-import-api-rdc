@@ -63,13 +63,25 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property Columns() As System.Collections.ArrayList
+		''' <summary>
+		''' This Array contains Fileds that has been selected to export plus fields that values will be later used 
+		''' in other operation (this case is not strictly related to RDC)
+		''' </summary>
+		''' <returns></returns>
+		Public ReadOnly Property AllColumns() As ArrayList
 			Get
 				Return _columns
 			End Get
-			Set(ByVal value As System.Collections.ArrayList)
-				_columns = value
-			End Set
+		End Property
+
+		''' <summary>
+		''' This Array contains Fields that has been selected to export
+		''' </summary>
+		''' <returns></returns>
+		Public ReadOnly Property ExportableColumns() As IEnumerable(Of ViewFieldInfo)
+			Get
+				Return _columns.Exportable()
+			End Get
 		End Property
 
 		Public Property ExportNativesToFileNamedFrom() As kCura.WinEDDS.ExportNativeWithFilenameFrom
@@ -296,7 +308,6 @@ Namespace kCura.WinEDDS
 				Else
 					records = CallServerWithRetry(Function() Me.ExportManager.RetrieveResultsBlock(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, Config.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds), maxTries)
 				End If
-
 
 				If records Is Nothing Then Exit While
 				If Me.Settings.TypeOfExport = ExportFile.ExportType.Production AndAlso production IsNot Nothing AndAlso production.DocumentsHaveRedactions Then
@@ -542,9 +553,15 @@ Namespace kCura.WinEDDS
 				)
 		End Function
 
+		Protected Overridable Function CreateObjectExportInfo() As ObjectExportInfo
+			return New ObjectExportInfo
+		End Function
+
 		Private Function CreateArtifact(ByVal record As Object(), ByVal documentArtifactID As Int32, ByVal nativeRow As System.Data.DataRowView, ByVal images As System.Data.DataView, ByVal productionImages As System.Data.DataView, ByVal beginBatesColumnIndex As Int32,
 																		ByVal identifierColumnIndex As Int32, ByRef lookup As Lazy(Of Dictionary(Of Int32, List(Of BatesEntry))), ByRef prediction As VolumePredictions) As Exporters.ObjectExportInfo
-			Dim artifact As New Exporters.ObjectExportInfo
+
+			Dim artifact As ObjectExportInfo = CreateObjectExportInfo
+
 			If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production AndAlso beginBatesColumnIndex <> -1 Then
 				artifact.ProductionBeginBates = record(beginBatesColumnIndex).ToString
 			End If
@@ -779,7 +796,12 @@ Namespace kCura.WinEDDS
 			For Each field As WinEDDS.ViewFieldInfo In Me.Settings.SelectedViewFields
 				Me.Settings.ExportFullText = Me.Settings.ExportFullText OrElse field.Category = Relativity.FieldCategory.FullText
 			Next
-			_columns = New System.Collections.ArrayList(Me.Settings.SelectedViewFields)
+
+			''' Remove ABOVE LINE!!!!!!!!!!!!!!!!!!!!!!!!!!
+			'Settings.SelectedViewFields(Settings.SelectedViewFields.Length - 1).IsExportable = false
+
+			' !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			_columns = New ArrayList(Settings.SelectedViewFields)
 			If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then
 				Dim longTextSelectedViewFields As New List(Of ViewFieldInfo)()
 				longTextSelectedViewFields.AddRange(Me.Settings.SelectedViewFields.Where(Function(f As ViewFieldInfo) f.FieldType = Relativity.FieldTypeHelper.FieldType.Text OrElse f.FieldType = Relativity.FieldTypeHelper.FieldType.OffTableText))
@@ -790,6 +812,7 @@ Namespace kCura.WinEDDS
 						_columns.RemoveAt(indexOfSelectedViewFieldToRemove)
 						_columns.Insert(indexOfSelectedViewFieldToRemove, New CoalescedTextViewField(Me.Settings.SelectedTextFields.First, True))
 					Else
+
 						_columns.Add(New CoalescedTextViewField(Me.Settings.SelectedTextFields.First, False))
 					End If
 				Else
@@ -797,7 +820,7 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 
-			Dim header As String = _loadFileFormatterFactory.Create(Settings).GetHeader(_columns.Cast(Of ViewFieldInfo)().ToList())
+			Dim header As String = _loadFileFormatterFactory.Create(Settings).GetHeader(_columns.Exportable().ToList())
 			Return header
 		End Function
 

@@ -245,8 +245,8 @@ Namespace kCura.WinEDDS
 			If Me.Settings.ExportFullText AndAlso Me.Settings.ExportFullTextAsFile Then
 				Dim count As Int32
 				Dim columnName As String
-				For count = 0 To _parent.Columns.Count - 1
-					Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
+				For count = 0 To _parent.ExportableColumns.Count - 1
+					Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.ExportableColumns(count), WinEDDS.ViewFieldInfo)
 					columnName = field.AvfColumnName
 					Dim fieldValue As Object = artifact.Metadata(_ordinalLookup(columnName))
 					If field.FieldType = Relativity.FieldTypeHelper.FieldType.Text OrElse field.FieldType = Relativity.FieldTypeHelper.FieldType.OffTableText Then
@@ -1208,8 +1208,8 @@ Namespace kCura.WinEDDS
 			Dim location As String = nativeLocation
 			Dim rowPrefix As String = _loadFileFormatter.RowPrefix
 			If Not String.IsNullOrEmpty(rowPrefix) Then loadFileEntry.AddStringEntry(rowPrefix)
-			For count = 0 To _parent.Columns.Count - 1
-				Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
+			For count = 0 To _parent.ExportableColumns.Count - 1
+				Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.ExportableColumns(count), WinEDDS.ViewFieldInfo)
 				columnName = field.AvfColumnName
 				Dim val As Object = record(_ordinalLookup(columnName))
 				If field.FieldType = Relativity.FieldTypeHelper.FieldType.Text OrElse field.FieldType = Relativity.FieldTypeHelper.FieldType.OffTableText Then
@@ -1249,7 +1249,7 @@ Namespace kCura.WinEDDS
 					loadFileEntry.AddStringEntry(_loadFileFormatter.TransformToCell(fieldValue))
 				End If
 
-				If Not count = _parent.Columns.Count - 1 AndAlso Not Me.Settings.LoadFileIsHtml Then
+				If Not count = _parent.ExportableColumns.Count - 1 AndAlso Not Me.Settings.LoadFileIsHtml Then
 					loadFileEntry.AddStringEntry(_settings.RecordDelimiter)
 				End If
 			Next
