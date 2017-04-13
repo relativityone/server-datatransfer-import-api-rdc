@@ -1,9 +1,12 @@
 ﻿Imports System.Diagnostics
 Imports System.Net
+Imports System.Reflection
+Imports System.Runtime.CompilerServices
 Imports System.Threading
 Imports System.Threading.Tasks
 Imports Credentials
 Imports kCura.WinEDDS.Exceptions
+Imports Relativity.OAuth2Client.Events
 Imports Relativity.OAuth2Client.Implicit
 Imports Relativity.OAuth2Client.Implicit.LoginView
 Imports Relativity.OAuth2Client.Implicit.RelativityWebBrowser
@@ -59,7 +62,7 @@ Namespace kCura.WinEDDS.Credentials
 
 		Public Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential) Implements ICredentialsProvider.GetCredentialsAsync
 			Try
-				If _loginView.Browser.IsDisposed
+				If _loginView.Browser.IsDisposed AndAlso _tokenProvider.Expiration.HasValue AndAlso _tokenProvider.Expiration.Value < DateTime.UtcNow.AddSeconds(5)
 					CreateTokenProvider()
 				End If
 
