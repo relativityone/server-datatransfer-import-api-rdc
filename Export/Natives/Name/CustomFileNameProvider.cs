@@ -34,7 +34,7 @@ namespace kCura.WinEDDS.Core.Export.Natives.Name
 			foreach (DescriptorPart descriptor in _fileNamePartDescriptors)
 			{
 				IFileNamePartProvider fielNamePartProvider = _fileNamePartNameContainer.GetProvider(descriptor);
-				name.Append(fielNamePartProvider.GetPartName(descriptor, exportObjectInfo.ArtifactID, 10 /*TODO*/));
+				name.Append(fielNamePartProvider.GetPartName(descriptor, exportObjectInfo));
 			}
 			return name.ToString();
 		}

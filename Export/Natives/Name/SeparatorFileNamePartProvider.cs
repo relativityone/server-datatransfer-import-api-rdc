@@ -2,6 +2,7 @@
 
 using System;
 using kCura.WinEDDS.Core.Model;
+using kCura.WinEDDS.Exporters;
 
 namespace kCura.WinEDDS.Core.Export.Natives.Name
 {
@@ -11,9 +12,9 @@ namespace kCura.WinEDDS.Core.Export.Natives.Name
 	/// <typeparam name="T">field artifact id</typeparam>
 	public class SeparatorFileNamePartProvider : FileNamePartProvider<SeparatorDescriptorPart>
 	{
-		public override string GetPartName(SeparatorDescriptorPart descriptorDescriptorPart, int artifactId, int artifactType)
+		public override string GetPartName(SeparatorDescriptorPart descriptorDescriptorPart, ObjectExportInfo exportObject)
 		{
-			throw new NotImplementedException();
+			return descriptorDescriptorPart.Value;
 		}
 	}
 }
