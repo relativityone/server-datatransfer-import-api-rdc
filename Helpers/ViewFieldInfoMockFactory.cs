@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Net.Configuration;
 using System.Text;
 using System.Threading.Tasks;
 using Relativity;
@@ -128,6 +129,8 @@ namespace kCura.WinEDDS.Core.NUnit.Helpers
 			dataTable.Columns.Add("SourceFieldDisplayName", typeof(string));
 			dataTable.Columns["SourceFieldDisplayName"].DefaultValue = string.Empty;
 
+			dataTable.Columns.Add("AllowHtml", typeof(bool));
+			dataTable.Columns["AllowHtml"].DefaultValue = false;
 
 			return dataTable;
 		}
