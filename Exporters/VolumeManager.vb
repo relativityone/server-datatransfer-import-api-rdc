@@ -2,6 +2,7 @@ Imports System.Collections.Concurrent
 Imports System.IO
 Imports System.Text
 Imports kCura.WinEDDS.Exporters
+Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.LoadFileEntry
 Imports kCura.WinEDDS.IO
 
@@ -729,14 +730,6 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function GetNativeFileName(ByVal doc As Exporters.ObjectExportInfo) As String
-			'Select Case _parent.ExportNativesToFileNamedFrom
-			'	Case ExportNativeWithFilenameFrom.Identifier
-			'		Return doc.NativeFileName(Me.Settings.AppendOriginalFileName)
-			'	Case ExportNativeWithFilenameFrom.Production
-			'		Return doc.ProductionBeginBatesFileName(Me.Settings.AppendOriginalFileName, _parent.NameTextAndNativesAfterBegBates)
-			'End Select
-			'Return Nothing
-
 			Return _fileNameProvider.GetName(doc)
 		End Function
 
@@ -1219,33 +1212,8 @@ Namespace kCura.WinEDDS
 						extractedTextByteCount += Me.ManageLongText(loadFileEntry, val, field, fullTextTempFile, doc, _settings.QuoteDelimiter, _settings.QuoteDelimiter, currentVolumeNumber, currentSubDirectoryNumber)
 					End If
 				Else
-					If TypeOf val Is Byte() Then val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
-					If field.FieldType = Relativity.FieldTypeHelper.FieldType.Date AndAlso field.Category <> Relativity.FieldCategory.MultiReflected Then
-						If val Is System.DBNull.Value Then
-							val = String.Empty
-						ElseIf TypeOf val Is System.DateTime Then
-							val = DirectCast(val, System.DateTime).ToString(field.FormatString)
-						End If
-						'If TypeOf val Is System.datete Then
+					fieldValue = FieldValueHelper.ConvertToString(val, field, Settings.MultiRecordDelimiter)
 
-						'End If
-						'If Me.Settings.LoadFileIsHtml Then
-						'	Dim datetime As String = kCura.Utility.NullableTypesHelper.DBNullString(val)
-						'	If datetime Is Nothing OrElse datetime = "" Then
-						'		val = ""
-						'	Else
-						'		val = System.DateTime.Parse(datetime, System.Globalization.CultureInfo.InvariantCulture).ToString(field.FormatString)
-						'	End If
-						'Else
-						'	val = Me.ToExportableDateString(val, field.FormatString)
-						'End If
-					End If
-					fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(val))
-					If field.IsMultiValueField Then
-						fieldValue = Me.GetMultivalueString(fieldValue, field)
-					ElseIf field.IsCodeOrMulticodeField Then
-						fieldValue = Me.GetCodeValueString(fieldValue)
-					End If
 					loadFileEntry.AddStringEntry(_loadFileFormatter.TransformToCell(fieldValue))
 				End If
 
@@ -1268,23 +1236,6 @@ Namespace kCura.WinEDDS
 			Return loadFileEntry
 		End Function
 
-		Private Function ToExportableDateString(ByVal val As Object, ByVal formatString As String) As String
-			Dim datetime As String = kCura.Utility.NullableTypesHelper.DBNullString(val)
-			Dim retval As String
-			If datetime Is Nothing OrElse datetime.Trim = "" Then
-				retval = ""
-			Else
-				retval = System.DateTime.Parse(datetime, System.Globalization.CultureInfo.InvariantCulture).ToString(formatString)
-			End If
-			Return retval
-		End Function
-
-		Private Function GetCodeValueString(ByVal input As String) As String
-			input = System.Web.HttpUtility.HtmlDecode(input)
-			input = input.Trim(New Char() {ChrW(11)}).Replace(ChrW(11), _settings.MultiRecordDelimiter)
-			Return input
-		End Function
-
 		Private Function NameTextFilesAfterIdentifier() As Boolean
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
 				Return _parent.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier
@@ -1302,38 +1253,6 @@ Namespace kCura.WinEDDS
 			If Not fileWriter Is Nothing Then Me.WriteLongText(source, fileWriter, formatter)
 			If Not String.IsNullOrEmpty(longTextPath) Then kCura.Utility.File.Instance.Delete(longTextPath)
 		End Sub
-
-		Private Function GetMultivalueString(ByVal input As String, ByVal field As ViewFieldInfo) As String
-			Dim retVal As String = input
-			If input.Contains("<object>") Then
-				Dim xr As New System.Xml.XmlTextReader(New System.IO.StringReader("<objects>" & input & "</objects>"))
-				Dim firstTimeThrough As Boolean = True
-				Dim sb As New System.Text.StringBuilder
-				While xr.Read
-					If xr.Name = "object" And xr.IsStartElement Then
-						xr.Read()
-						If firstTimeThrough Then
-							firstTimeThrough = False
-						Else
-							sb.Append(Me.Settings.MultiRecordDelimiter)
-						End If
-						Dim cleanval As String = xr.Value.Trim
-						Select Case field.FieldType
-							Case Relativity.FieldTypeHelper.FieldType.Code, Relativity.FieldTypeHelper.FieldType.MultiCode
-								cleanval = Me.GetCodeValueString(cleanval)
-							Case Relativity.FieldTypeHelper.FieldType.Date
-								cleanval = Me.ToExportableDateString(cleanval, field.FormatString)
-						End Select
-						'If isCodeOrMulticodeField Then cleanval = Me.GetCodeValueString(cleanval)
-						sb.Append(cleanval)
-					End If
-				End While
-				xr.Close()
-				retVal = sb.ToString
-			End If
-			Return retVal
-
-		End Function
 
 		Public Sub WriteDatFile(ByVal linesToWriteDat As ConcurrentDictionary(Of Int32, ILoadFileEntry), ByVal artifacts As Exporters.ObjectExportInfo())
 			Dim tries As Int32 = 0

@@ -797,10 +797,6 @@ Namespace kCura.WinEDDS
 				Me.Settings.ExportFullText = Me.Settings.ExportFullText OrElse field.Category = Relativity.FieldCategory.FullText
 			Next
 
-			''' Remove ABOVE LINE!!!!!!!!!!!!!!!!!!!!!!!!!!
-			'Settings.SelectedViewFields(Settings.SelectedViewFields.Length - 1).IsExportable = false
-
-			' !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			_columns = New ArrayList(Settings.SelectedViewFields)
 			If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then
 				Dim longTextSelectedViewFields As New List(Of ViewFieldInfo)()
