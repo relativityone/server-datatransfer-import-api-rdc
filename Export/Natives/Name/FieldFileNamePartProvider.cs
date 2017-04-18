@@ -1,30 +1,39 @@
 ﻿
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using kCura.WinEDDS.Core.Model;
 using kCura.WinEDDS.Core.Model.Export.Process;
 using kCura.WinEDDS.Exporters;
+using kCura.WinEDDS.Helpers;
 
 namespace kCura.WinEDDS.Core.Export.Natives.Name
 {
 	public class FieldFileNamePartProvider : FileNamePartProvider<FieldDescriptorPart>
 	{
-		private readonly Dictionary<int, int> _cache = new Dictionary<int, int>();
+		private readonly ConcurrentDictionary<int, int> _cache = new ConcurrentDictionary<int, int>();
 		
 		public override string GetPartName(FieldDescriptorPart descriptorDescriptorPart, ObjectExportInfo exportObject)
 		{
-			CheckCache(descriptorDescriptorPart, exportObject);
-			int index = _cache[descriptorDescriptorPart.Value];
-			return exportObject.Metadata[index].ToString();
+			var extExportObject = exportObject as ExtendedObjectExportInfo;
+
+			UpdateCache(descriptorDescriptorPart, extExportObject);
+
+			int fieldIndex = _cache[descriptorDescriptorPart.Value];
+			ViewFieldInfo fieldInfo = extExportObject.SelectedViewFields[fieldIndex];
+
+			string fieldValue = FieldValueHelper.ConvertToString(exportObject.Metadata[fieldIndex], fieldInfo, ' ');
+
+			return kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(fieldValue);
 		}
 
-		private void CheckCache(FieldDescriptorPart descriptorDescriptorPart, ObjectExportInfo exportObject)
+		private void UpdateCache(FieldDescriptorPart descriptorDescriptorPart, ExtendedObjectExportInfo exportObject)
 		{
-			var extExportObject = exportObject as ExtendedObjectExportInfo;
+			// persist info about field index in SelectedViewFields
 			if (!_cache.ContainsKey(descriptorDescriptorPart.Value))
 			{
-				int foundIndex = extExportObject.SelectedViewFields.ToList().FindIndex(item => item.AvfId == descriptorDescriptorPart.Value);
+				int foundIndex = exportObject.SelectedViewFields.ToList().FindIndex(item => item.AvfId == descriptorDescriptorPart.Value);
 				if (foundIndex < 0)
 				{
 					throw new Exception($"Can not find field id: {descriptorDescriptorPart.Value} in selection list!");
