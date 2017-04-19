@@ -21,7 +21,6 @@ Namespace kCura.WinEDDS.Exporters
 		Public Property ProductionBeginBates() As String = String.Empty
 		Public Property TotalFileSize() As Int64
 		Public Property TotalNumberOfFiles() As Int64
-
 		Friend Property CoalescedProductionID As Int32? = Nothing
 
 #End Region
