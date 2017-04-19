@@ -102,6 +102,7 @@
     <Compile Include="Export\Natives\Name\Factories\IFileNameProviderContainerFactory.cs" />
     <Compile Include="IO\LongPathDirectoryHelper.cs" />
     <Compile Include="IO\LongPathFileHelper.cs" />
+    <Compile Include="Model\Export\ExtendedExportFile.cs" />
     <Compile Include="Model\Export\Natives\Name\DescriptorPart.cs" />
     <Compile Include="Model\Export\Natives\Name\FieldDescriptorPart.cs" />
     <Compile Include="Model\Export\Natives\Name\SeparatorDescriptorPart.cs" />
