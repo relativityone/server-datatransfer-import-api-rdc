@@ -352,14 +352,16 @@ Namespace kCura.EDDS.WinForm
 					
 					_application.NewLogin()
 				Else
+					_application.OpenCaseSelector = False
 					Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
                     _application.LogOn()
-                    Await _application.OpenCase()
+                    _application.OpenCase()
                     kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
                 End If
 			Else
+				_application.OpenCaseSelector = False
 				Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
-                Await _application.OpenCase()
+                _application.OpenCase()
             End If
 		End Sub
 

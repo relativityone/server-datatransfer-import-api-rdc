@@ -46,6 +46,8 @@ Namespace kCura.EDDS.WinForm
 		Public Event ChangeCursor(ByVal cursorStyle As System.Windows.Forms.Cursor)
 		Public Event ReCheckCertificate()
 
+		Public OpenCaseSelector As Boolean = True
+
 		Public Const ACCESS_DISABLED_MESSAGE As String = "Your Relativity account has been disabled.  Please contact your Relativity Administrator to activate your account."
 		Public Const RDC_ERROR_TITLE As String = "Relativity Desktop Client Error"
 
@@ -54,7 +56,6 @@ Namespace kCura.EDDS.WinForm
 		Private _selectedCaseInfo As Relativity.CaseInfo
 		Private _selectedCaseFolderID As Int32
 		Private _fieldProviderCache As IFieldProviderCache
-		Private _openCaseSelector As Boolean = True
 		Private _selectedCaseFolderPath As String
 		Private _timeZoneOffset As Int32
 		Private _loginForm As LoginForm
@@ -470,8 +471,7 @@ Namespace kCura.EDDS.WinForm
 			_caseSelected = True
 		End Sub
 
-		Public Async Function OpenCase() As Task
-			Await Task.Yield()
+		Public Sub OpenCase()
 			Try
 				'Await GetCredentialsAsync() 'Ensure login
 				Dim caseInfo As Relativity.CaseInfo = Me.GetCase
@@ -496,7 +496,7 @@ Namespace kCura.EDDS.WinForm
 			Catch ex As System.Exception
 				Throw
 			End Try
-		End Function
+		End Sub
 
 		Public Function GetCase() As Relativity.CaseInfo
 			Dim frm As New CaseSelectForm
@@ -1008,7 +1008,7 @@ Namespace kCura.EDDS.WinForm
 			Try
 				Await Me.GetCredentialsAsync()
 				CursorWait()
-				_openCaseSelector = openCaseSelector
+				OpenCaseSelector = openCaseSelector
 				CursorDefault()
 			Catch ex As LoginCanceledException
 				'Login form was closed, ignore
@@ -1365,7 +1365,7 @@ Namespace kCura.EDDS.WinForm
 				Case Application.CredentialCheckResult.Success
 					LogOn()
 					If (Not _caseSelected) Then
-						Await OpenCase()
+						OpenCase()
 					End If
 					EnhancedMenuProvider.Hook(callingForm)
 			End Select
@@ -1459,7 +1459,7 @@ Namespace kCura.EDDS.WinForm
                     System.Threading.Thread.CurrentThread.CurrentCulture = locale
 
                     kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-                    If _openCaseSelector Then Await OpenCase()
+                    If OpenCaseSelector Then OpenCase()
                     _timeZoneOffset = 0                                                         'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
                     _lastCredentialCheckResult = CredentialCheckResult.Success
                     'This was created specifically for raising an event after login success for RDC forms authentication 
