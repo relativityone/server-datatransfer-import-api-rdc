@@ -36,10 +36,10 @@ namespace kCura.WinEDDS.Core.Export.Natives.Name
 				IFileNamePartProvider fielNamePartProvider = _fileNamePartNameContainer.GetProvider(descriptor);
 				name.Append(fielNamePartProvider.GetPartName(descriptor, exportObjectInfo));
 			}
-			return FormatName(name, exportObjectInfo);
+			return GetNameWithNativeExtension(name, exportObjectInfo);
 		}
 
-		private string FormatName(StringBuilder name, ObjectExportInfo exportObjectInfo)
+		private string GetNameWithNativeExtension(StringBuilder name, ObjectExportInfo exportObjectInfo)
 		{
 			if (!string.IsNullOrEmpty(exportObjectInfo.NativeExtension))
 			{

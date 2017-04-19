@@ -23,7 +23,7 @@ namespace kCura.WinEDDS.Core.Export
 		{
 			return new ExtendedObjectExportInfo
 			{
-				SelectedViewFields = Settings.SelectedViewFields.ToList(),
+				SelectedViewFieldsCount = Settings.SelectedViewFields.Length,
 				SelectedNativeFileNameViewFields = GetSettings<ExtendedExportFile>().SelectedNativesNameViewFields.ToList()
 			};
 		}

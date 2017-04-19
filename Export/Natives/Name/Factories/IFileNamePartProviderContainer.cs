@@ -11,6 +11,6 @@ namespace kCura.WinEDDS.Core.Export.Natives.Name.Factories
 	{
 		IFileNamePartProvider GetProvider(DescriptorPart descriptor);
 
-		void RegisterFileName(Type descriptorPartType, IFileNamePartProvider provider);
+		void Register(Type descriptorPartType, IFileNamePartProvider provider);
 	}
 }

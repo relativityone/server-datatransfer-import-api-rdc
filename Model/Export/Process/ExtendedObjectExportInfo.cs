@@ -7,6 +7,6 @@ namespace kCura.WinEDDS.Core.Model.Export.Process
 	{
 		public List<ViewFieldInfo> SelectedNativeFileNameViewFields { get; set; }
 
-		public List<ViewFieldInfo> SelectedViewFields { get; set; }
+		public long SelectedViewFieldsCount { get; set; }
 	}
 }

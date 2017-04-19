@@ -23,7 +23,7 @@ namespace kCura.WinEDDS.Core.Export.Natives.Name
 			int fieldIndex = _cache[descriptorDescriptorPart.Value];
 			ViewFieldInfo fieldInfo = extExportObject.SelectedNativeFileNameViewFields[fieldIndex];
 
-			string fieldValue = FieldValueHelper.ConvertToString(exportObject.Metadata[extExportObject.SelectedViewFields.Count + fieldIndex], fieldInfo, ' ');
+			string fieldValue = FieldValueHelper.ConvertToString(exportObject.Metadata[extExportObject.SelectedViewFieldsCount + fieldIndex], fieldInfo, ' ');
 
 			return kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(fieldValue);
 		}

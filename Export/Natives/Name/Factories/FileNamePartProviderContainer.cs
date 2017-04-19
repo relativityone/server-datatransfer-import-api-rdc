@@ -10,8 +10,8 @@ namespace kCura.WinEDDS.Core.Export.Natives.Name.Factories
 
 		public FileNamePartProviderContainer()
 		{
-			RegisterFileName(typeof(SeparatorDescriptorPart), new SeparatorFileNamePartProvider());
-			RegisterFileName(typeof(FieldDescriptorPart), new FieldFileNamePartProvider());
+			Register(typeof(SeparatorDescriptorPart), new SeparatorFileNamePartProvider());
+			Register(typeof(FieldDescriptorPart), new FieldFileNamePartProvider());
 		}
 
 		public IFileNamePartProvider GetProvider(DescriptorPart descriptor)
@@ -24,7 +24,7 @@ namespace kCura.WinEDDS.Core.Export.Natives.Name.Factories
 			return _fileNamePartProviders[descriptorType];
 		}
 
-		public void RegisterFileName(Type descriptorPartType, IFileNamePartProvider provider)
+		public void Register(Type descriptorPartType, IFileNamePartProvider provider)
 		{
 			if (!descriptorPartType.IsSubclassOf(typeof(DescriptorPart)))
 			{
