@@ -21,9 +21,9 @@ namespace kCura.WinEDDS.Core.Export.Natives.Name
 			UpdateCache(descriptorDescriptorPart, extExportObject);
 
 			int fieldIndex = _cache[descriptorDescriptorPart.Value];
-			ViewFieldInfo fieldInfo = extExportObject.SelectedViewFields[fieldIndex];
+			ViewFieldInfo fieldInfo = extExportObject.SelectedNativeFileNameViewFields[fieldIndex];
 
-			string fieldValue = FieldValueHelper.ConvertToString(exportObject.Metadata[fieldIndex], fieldInfo, ' ');
+			string fieldValue = FieldValueHelper.ConvertToString(exportObject.Metadata[extExportObject.SelectedViewFields.Count + fieldIndex], fieldInfo, ' ');
 
 			return kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(fieldValue);
 		}
@@ -33,7 +33,7 @@ namespace kCura.WinEDDS.Core.Export.Natives.Name
 			// persist info about field index in SelectedViewFields
 			if (!_cache.ContainsKey(descriptorDescriptorPart.Value))
 			{
-				int foundIndex = exportObject.SelectedViewFields.ToList().FindIndex(item => item.AvfId == descriptorDescriptorPart.Value);
+				int foundIndex = exportObject.SelectedNativeFileNameViewFields.ToList().FindIndex(item => item.AvfId == descriptorDescriptorPart.Value);
 				if (foundIndex < 0)
 				{
 					throw new Exception($"Can not find field id: {descriptorDescriptorPart.Value} in selection list!");
