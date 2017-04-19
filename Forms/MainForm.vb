@@ -1,6 +1,7 @@
 
 Imports System.Threading.Tasks
 Imports Credentials
+Imports kCura.WinEDDS.Credentials
 
 Namespace kCura.EDDS.WinForm
 	Public Class MainForm
@@ -348,13 +349,16 @@ Namespace kCura.EDDS.WinForm
 				If defaultCredentialResult = Application.CredentialCheckResult.AccessDisabled Then
 					MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)
 				ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
+					
 					_application.NewLogin()
 				Else
+					Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
                     _application.LogOn()
                     Await _application.OpenCase()
                     kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
                 End If
 			Else
+				Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
                 Await _application.OpenCase()
             End If
 		End Sub
