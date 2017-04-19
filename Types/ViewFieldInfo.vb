@@ -30,17 +30,7 @@ Namespace kCura.WinEDDS
 		Public Overrides Function GetHashCode() As Integer
 			Return 45 * Me.AvfId
 		End Function
-		
-		<NonSerialized>
-		Public IsExportable As Boolean = True
 
 	End Class
 
-	Module StringExtensions
-	<Extension()>
-	Public Function Exportable(viewFieldsInfo As ArrayList) As IEnumerable(Of ViewFieldInfo)
-		Return viewFieldsInfo.Cast(Of ViewFieldInfo).Where(Function(x) x.IsExportable)
-	End Function
-
-	End Module
 End Namespace
