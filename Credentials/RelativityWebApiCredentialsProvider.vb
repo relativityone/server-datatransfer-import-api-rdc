@@ -20,6 +20,10 @@ Namespace kCura.WinEDDS.Credentials
 			_provider = provider
 		End Sub
 
+		Public Function GetProvider() As ICredentialsProvider
+			Return _provider
+		End Function
+
 		Public Function ProviderType() As System.Type
 			return _provider.GetType()
 		End Function

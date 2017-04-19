@@ -28,6 +28,7 @@ Namespace kCura.WinEDDS.Credentials
 		Private _loginView As ILoginView
 		Private _cancellationTokenSource As CancellationTokenSource
 		Private _currentCredentials As NetworkCredential
+		Private _onTokenHandler As TokenResponseHandler
 		
 		Public WithEvents Events As IOAuth2ClientEvents
 
@@ -42,11 +43,12 @@ Namespace kCura.WinEDDS.Credentials
 				return _loginFormFacotry.Invoke()
 			End Get
 		End Property
-
-		Public Sub New(stsUri As Uri, clientID As String, formFactory As Func(Of LoginForm))
+		
+		Public Sub New(stsUri As Uri, clientID As String, formFactory As Func(Of LoginForm), onTokenHandler As TokenResponseHandler)
 			_loginFormFacotry = formFactory
 			_stsUri = stsUri
 			_clientId = clientID
+			_onTokenHandler = onTokenHandler
 			CreateTokenProvider()
 			_cancellationTokenSource = New CancellationTokenSource()
 		End Sub
@@ -62,7 +64,9 @@ Namespace kCura.WinEDDS.Credentials
 
 		Public Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential) Implements ICredentialsProvider.GetCredentialsAsync
 			Try
-				If _loginView.Browser.IsDisposed AndAlso _tokenProvider.Expiration.HasValue AndAlso _tokenProvider.Expiration.Value < DateTime.UtcNow.AddSeconds(5)
+				Dim expired As Boolean = Not _tokenProvider.Expiration.HasValue Or (_tokenProvider.Expiration.HasValue AndAlso _tokenProvider.Expiration.Value < DateTime.UtcNow.AddSeconds(5))
+
+				If _loginView.Browser.IsDisposed And expired
 					CreateTokenProvider()
 				End If
 
@@ -85,6 +89,7 @@ Namespace kCura.WinEDDS.Credentials
 			Dim tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider = providerFactory.GetTokenProvider("WebApi", New String() {"UserInfoAccess"})
 			_tokenProvider = tokenProvider
 			Events = _tokenProvider.Events
+			AddHandler Events.TokenRetrieved, _onTokenHandler
 			AddHandler Events.TokenRequested, AddressOf On_TokenRequested
 			AddHandler LoginForm.Closed, AddressOf On_LoginFormClosing
 		End Sub
