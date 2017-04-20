@@ -8,6 +8,7 @@ Imports kCura.WinEDDS.IO
 
 Namespace kCura.WinEDDS
 	Public Class VolumeManager
+		Implements IFieldLookupService
 
 #Region "Members"
 
@@ -1391,5 +1392,8 @@ Namespace kCura.WinEDDS
 			_currentSubdirectoryNumber += 1
 		End Sub
 
+		Public Function GetOrdinalIndex(fieldName As String) As Int32 Implements IFieldLookupService.GetOrdinalIndex
+			Return _ordinalLookup(fieldName)
+		End Function
 	End Class
 End Namespace

@@ -448,6 +448,7 @@
     </Compile>
     <Compile Include="Exporters\IExporter.vb" />
     <Compile Include="Exporters\IExporterStatusNotification.vb" />
+    <Compile Include="Exporters\IFieldLookupService.vb" />
     <Compile Include="Exporters\IUserNotification.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\IFieldNameProvider.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\ILoadFileHeaderFormatterFactory.vb" />
