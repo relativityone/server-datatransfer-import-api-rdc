@@ -79,7 +79,7 @@ Namespace kCura.EDDS.WinForm
 		Friend Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential)
 			If Not RelativityWebApiCredentialsProvider.Instance().CredentialsSet() Then
 				Dim authEndpoint As string = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/authorize")
-				Dim implicitProvider = new OAuth2ImplicitCredentials(New Uri(authEndpoint), "b8771c06968d499c684a10f03f", Function() LoginForm, AddressOf On_TokenRetrieved)
+				Dim implicitProvider = new OAuth2ImplicitCredentials(New Uri(authEndpoint), "8a4e731db51f8523570febf3f0", Function() LoginForm, AddressOf On_TokenRetrieved)
 				RelativityWebApiCredentialsProvider.Instance().SetProvider(implicitProvider)
 				'AddHandler implicitProvider.Events.TokenRetrieved, AddressOf On_TokenRetrieved
 			End If
@@ -87,7 +87,7 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Friend Function GetCredentials() As System.Net.NetworkCredential
-			return GetCredentialsAsync.Result
+			return RelativityWebApiCredentialsProvider.Instance().GetCredentials()
 		End Function
 
 		Private ReadOnly Property FieldProviderCache() As IFieldProviderCache
@@ -1613,9 +1613,14 @@ Namespace kCura.EDDS.WinForm
 #Region "Logout"
 		Public Sub Logout()
 			Try
-				LoginForm.Close()
 				Dim userManager As New kCura.WinEDDS.Service.UserManager(GetCredentials, _CookieContainer)
 				userManager.Logout()
+			Catch ex As Exception
+
+			End Try
+
+			try
+				LoginForm.Close()
 			Catch ex As Exception
 
 			End Try
