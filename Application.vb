@@ -76,12 +76,15 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 
+		Public Sub SetImplicitCredentialProvider()
+			Dim authEndpoint As string = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/authorize")
+			Dim implicitProvider = new OAuth2ImplicitCredentials(New Uri(authEndpoint), "8a4e731db51f8523570febf3f0", Function() LoginForm, AddressOf On_TokenRetrieved)
+			RelativityWebApiCredentialsProvider.Instance().SetProvider(implicitProvider)
+		End Sub
+
 		Friend Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential)
 			If Not RelativityWebApiCredentialsProvider.Instance().CredentialsSet() Then
-				Dim authEndpoint As string = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/authorize")
-				Dim implicitProvider = new OAuth2ImplicitCredentials(New Uri(authEndpoint), "8a4e731db51f8523570febf3f0", Function() LoginForm, AddressOf On_TokenRetrieved)
-				RelativityWebApiCredentialsProvider.Instance().SetProvider(implicitProvider)
-				'AddHandler implicitProvider.Events.TokenRetrieved, AddressOf On_TokenRetrieved
+				SetImplicitCredentialProvider()
 			End If
 			Return Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
 		End Function

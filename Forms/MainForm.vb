@@ -1,4 +1,5 @@
 
+Imports System.Net
 Imports System.Threading.Tasks
 Imports Credentials
 Imports kCura.WinEDDS.Credentials
@@ -408,6 +409,9 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Async Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
+
+			ServicePointManager.DefaultConnectionLimit = Environment.ProcessorCount * 12
+
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			_application.TemporaryForceFolderPreview = kCura.WinEDDS.Config.ForceFolderPreview
             If kCura.WinEDDS.Config.WebServiceURL = String.Empty Then
@@ -422,6 +426,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Async Function CheckCertificate() As Task
 			If (_application.CertificateTrusted()) Then
+				_application.SetImplicitCredentialProvider()
                 Await _application.AttemptLogin(Me)
             Else
                 _application.CertificateCheckPrompt()
