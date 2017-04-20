@@ -5,6 +5,7 @@ using kCura.WinEDDS.Core.Export.Natives.Name;
 using kCura.WinEDDS.Core.Model;
 using kCura.WinEDDS.Core.Model.Export.Process;
 using kCura.WinEDDS.Core.NUnit.Helpers;
+using Moq;
 using NUnit.Framework;
 using Relativity;
 
@@ -14,17 +15,23 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 	{
 		private FieldFileNamePartProvider _subjectUnderTest;
 		private ExtendedObjectExportInfo _extendedObjectExportInfo;
-		private const int _AVF_ID = 1;
+		private Mock<IFieldLookupService> _fieldLookupServiceMock;
 
+		private const int _AVF_ID = 1;
+		private const string _NAME = "ColName";
+		private const int _COL_INDEX = 1;
 
 		private readonly ViewFieldInfoMockFactory _fieldInfoMockFactory = new ViewFieldInfoMockFactory();
 
 		[SetUp]
 		public void SetUp()
 		{
+			_fieldLookupServiceMock = new Mock<IFieldLookupService>();
 			_subjectUnderTest = new FieldFileNamePartProvider();
-			_extendedObjectExportInfo = new ExtendedObjectExportInfo();
-			
+
+			_fieldLookupServiceMock.Setup(item => item.GetOrdinalIndex(_NAME)).Returns(_COL_INDEX);
+
+			_extendedObjectExportInfo = new ExtendedObjectExportInfo(_fieldLookupServiceMock.Object);
 		}
 
 		[Test]
@@ -35,6 +42,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 			ViewFieldInfo viewFieldInfo = _fieldInfoMockFactory
 				.Build()
 				.WithAvfId(_AVF_ID)
+				.WithAvfName(_NAME)
 				.WithFieldType(FieldTypeHelper.FieldType.Date)
 				.WithFormatString("o")
 				.Create();
@@ -43,11 +51,10 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 			_extendedObjectExportInfo.Metadata = new object[]
 			{
 				"Some Control Number",
-				fieldValue
+				fieldValue //_COL_INDEX
 			};
 
 			// assumption: one column selected by user (Control Number)
-			_extendedObjectExportInfo.SelectedViewFieldsCount = 1;
 			_extendedObjectExportInfo.SelectedNativeFileNameViewFields = new List<ViewFieldInfo>
 			{
 				viewFieldInfo
@@ -66,6 +73,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 			ViewFieldInfo viewFieldInfo = _fieldInfoMockFactory
 				.Build()
 				.WithAvfId(_AVF_ID)
+				.WithAvfName(_NAME)
 				.WithFieldType(FieldTypeHelper.FieldType.Code)
 				.Create();
 
@@ -73,11 +81,10 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 			_extendedObjectExportInfo.Metadata = new object[]
 			{
 				"Some Control Number",
-				fieldValue
+				fieldValue //_COL_INDEX
 			};
 
 			// assumption: one column selected by user (Control Number)
-			_extendedObjectExportInfo.SelectedViewFieldsCount = 1;
 			_extendedObjectExportInfo.SelectedNativeFileNameViewFields = new List<ViewFieldInfo>
 			{
 				viewFieldInfo

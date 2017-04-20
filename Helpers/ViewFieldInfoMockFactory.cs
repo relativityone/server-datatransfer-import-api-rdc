@@ -49,6 +49,12 @@ namespace kCura.WinEDDS.Core.NUnit.Helpers
 			return this;
 		}
 
+		public ViewFieldInfoMockFactory WithAvfName(string avfName)
+		{
+			_dataRow["AvfColumnName"] = avfName;
+			return this;
+		}
+
 		public ViewFieldInfoMockFactory WithFieldType(FieldTypeHelper.FieldType fieldType)
 		{
 			_dataRow["FieldTypeID"] = fieldType;
