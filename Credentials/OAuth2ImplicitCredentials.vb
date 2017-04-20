@@ -77,6 +77,7 @@ Namespace kCura.WinEDDS.Credentials
 				Dim token As String = Await _tokenProvider.GetAccessTokenAsync(_cancellationTokenSource.Token)
 				LoginComplete()
 				Dim creds As System.Net.NetworkCredential = New NetworkCredential(_OAUTH_USERNAME, token)
+				_currentCredentials = creds
 				Return creds
 			Catch ex As TaskCanceledException
 				Throw new LoginCanceledException(ex)
