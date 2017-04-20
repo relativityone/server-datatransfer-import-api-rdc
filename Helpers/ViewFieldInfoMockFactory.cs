@@ -55,9 +55,9 @@ namespace kCura.WinEDDS.Core.NUnit.Helpers
 			return this;
 		}
 
-		public ViewFieldInfoMockFactory WithFieldType(FieldCategory fieldCategory)
+		public ViewFieldInfoMockFactory WithFormatString(string formatString)
 		{
-			_dataRow["FieldCategoryID"] = fieldCategory;
+			_dataRow["FormatString"] = formatString;
 			return this;
 		}
 

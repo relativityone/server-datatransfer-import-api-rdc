@@ -17,7 +17,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 		private const int _AVF_ID = 1;
 
 
-		private ViewFieldInfoMockFactory _fieldInfoMockFactory = new ViewFieldInfoMockFactory();
+		private readonly ViewFieldInfoMockFactory _fieldInfoMockFactory = new ViewFieldInfoMockFactory();
 
 		[SetUp]
 		public void SetUp()
@@ -32,7 +32,12 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 		{
 			var fieldValue = new DateTime(2020, 1, 2, 10, 3, 5);
 
-			ViewFieldInfo viewFieldInfo = _fieldInfoMockFactory.Build().WithAvfId(_AVF_ID).Create();
+			ViewFieldInfo viewFieldInfo = _fieldInfoMockFactory
+				.Build()
+				.WithAvfId(_AVF_ID)
+				.WithFieldType(FieldTypeHelper.FieldType.Date)
+				.WithFormatString("o")
+				.Create();
 
 			// first column represent col in load File, second column will refer to field value taken part in creation of native file name
 			_extendedObjectExportInfo.Metadata = new object[]
@@ -50,7 +55,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 
 			string retFieldValue = _subjectUnderTest.GetPartName(new FieldDescriptorPart(_AVF_ID), _extendedObjectExportInfo);
 
-			Assert.That(retFieldValue, Is.EqualTo("01_02_2020 10_03_05 AM"));
+			Assert.That(retFieldValue, Is.EqualTo(fieldValue.ToString("o").Replace(":", "_")));
 		}
 
 		[Test]
