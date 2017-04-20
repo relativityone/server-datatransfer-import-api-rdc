@@ -21,24 +21,24 @@ namespace kCura.WinEDDS.Core.Export
 
 		protected override ObjectExportInfo CreateObjectExportInfo()
 		{
-			return new ExtendedObjectExportInfo
+			return new ExtendedObjectExportInfo(_volumeManager)
 			{
-				SelectedViewFieldsCount = Settings.SelectedViewFields.Length,
 				SelectedNativeFileNameViewFields = GetSettings<ExtendedExportFile>().SelectedNativesNameViewFields.ToList()
 			};
 		}
 
 		protected override List<int> GetAvfIds()
 		{
-			List<int> avfIds = base.GetAvfIds();
-
-			avfIds.AddRange(GetSettings<ExtendedExportFile>().SelectedNativesNameViewFields.Select(item => item.AvfId));
-			return avfIds;
+			var selectedAvfIds = new HashSet<int>(base.GetAvfIds());
+			// Add Native File Name part field id
+			selectedAvfIds.UnionWith(GetSettings<ExtendedExportFile>().SelectedNativesNameViewFields.Select(item => item.AvfId));
+			return selectedAvfIds.ToList();
 		}
 
 		private T GetSettings<T>() where T : ExportFile
 		{
 			return (T) Settings;
 		}
+
 	}
 }

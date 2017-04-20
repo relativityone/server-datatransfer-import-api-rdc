@@ -10,34 +10,33 @@ namespace kCura.WinEDDS.Core.Export.Natives.Name
 {
 	public class FieldFileNamePartProvider : FileNamePartProvider<FieldDescriptorPart>
 	{
-		private readonly ConcurrentDictionary<int, int> _cache = new ConcurrentDictionary<int, int>();
+		private readonly ConcurrentDictionary<int, ViewFieldInfo> _cache = new ConcurrentDictionary<int, ViewFieldInfo>();
 		
 		public override string GetPartName(FieldDescriptorPart descriptorDescriptorPart, ObjectExportInfo exportObject)
 		{
 			var extExportObject = exportObject as ExtendedObjectExportInfo;
 
-			UpdateCache(descriptorDescriptorPart, extExportObject);
+			ViewFieldInfo viewFieldInfo = GetViewField(descriptorDescriptorPart, extExportObject);
 
-			int fieldIndex = _cache[descriptorDescriptorPart.Value];
-			ViewFieldInfo fieldInfo = extExportObject.SelectedNativeFileNameViewFields[fieldIndex];
-
-			string fieldValue = FieldValueHelper.ConvertToString(exportObject.Metadata[extExportObject.SelectedViewFieldsCount + fieldIndex], fieldInfo, ' ');
+			string fieldValue = FieldValueHelper.ConvertToString(extExportObject.GetFieldValue(viewFieldInfo.AvfColumnName), viewFieldInfo, ' ');
 
 			return kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(fieldValue);
 		}
 
-		private void UpdateCache(FieldDescriptorPart descriptorDescriptorPart, ExtendedObjectExportInfo exportObject)
+		private ViewFieldInfo GetViewField(FieldDescriptorPart descriptorDescriptorPart, ExtendedObjectExportInfo exportObject)
 		{
-			// persist info about field index in SelectedViewFields
 			if (!_cache.ContainsKey(descriptorDescriptorPart.Value))
 			{
-				int foundIndex = exportObject.SelectedNativeFileNameViewFields.ToList().FindIndex(item => item.AvfId == descriptorDescriptorPart.Value);
-				if (foundIndex < 0)
+				ViewFieldInfo foundViewField = exportObject.SelectedNativeFileNameViewFields.ToList()
+					.Find(item => item.AvfId == descriptorDescriptorPart.Value);
+
+				if (foundViewField == null)
 				{
 					throw new Exception($"Can not find field id: {descriptorDescriptorPart.Value} in selection list!");
 				}
-				_cache[descriptorDescriptorPart.Value] = foundIndex;
+				_cache[descriptorDescriptorPart.Value] = foundViewField;
 			}
+			return _cache[descriptorDescriptorPart.Value];
 		}
 	}
 
