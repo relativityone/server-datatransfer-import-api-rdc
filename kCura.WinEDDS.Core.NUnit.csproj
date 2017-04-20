@@ -99,6 +99,8 @@
     <Compile Include="Export\ExportFileFormatterFactoryTests.cs" />
     <Compile Include="Export\Natives\Name\CustomFileNameProviderTest.cs" />
     <Compile Include="Export\Natives\Name\Factories\FileNamePartProviderContainerTest.cs" />
+    <Compile Include="Export\Natives\Name\FieldFileNamePartProviderTests.cs" />
+    <Compile Include="Export\Natives\Name\SeparatorFileNamePartProviderTests.cs" />
     <Compile Include="Helpers\ViewFieldInfoMockFactory.cs" />
   </ItemGroup>
   <ItemGroup>
