@@ -4,7 +4,7 @@ Namespace kCura.WinEDDS.Service
 		Implements Export.IProductionManager
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
-			Me.New(credentials, cookieContainer, Config.WebServiceURL)
+			Me.New(credentials, cookieContainer, kCura.WinEDDS.Config.WebServiceURL)
 		End Sub
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, webServiceUrl As String)
