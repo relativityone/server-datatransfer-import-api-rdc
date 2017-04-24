@@ -4,12 +4,7 @@ Namespace kCura.WinEDDS.Service
 		Implements Export.IProductionManager
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
-			MyBase.New()
-
-			Me.Credentials = credentials
-			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}ProductionManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
-			Me.Timeout = Settings.DefaultTimeOut
+			Me.New(credentials, cookieContainer, Config.WebServiceURL)
 		End Sub
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, webServiceUrl As String)
