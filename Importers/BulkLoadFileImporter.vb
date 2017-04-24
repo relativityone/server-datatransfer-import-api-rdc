@@ -647,7 +647,7 @@ Namespace kCura.WinEDDS
 										idDataExtractor = injectableContainer.FileIdData
 									End If
 									If (idDataExtractor Is Nothing) Then
-										oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
+										oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename, true)
 									Else
 										oixFileIdData = idDataExtractor.GetFileIDData()
 									End If
