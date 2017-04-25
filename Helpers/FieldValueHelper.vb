@@ -2,9 +2,9 @@
 Namespace kCura.WinEDDS.Helpers
 
 
-Public Class FieldValueHelper
+Public Module FieldValueHelper
 
-	public Shared  Function ConvertToString(val As Object, field As ViewFieldInfo, multiRecordDelimiter As Char) As String
+	Public Function ConvertToString(val As Object, field As ViewFieldInfo, multiRecordDelimiter As Char) As String
 		
 		If TypeOf val Is Byte() Then val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
 		If field.FieldType = Relativity.FieldTypeHelper.FieldType.Date AndAlso field.Category <> Relativity.FieldCategory.MultiReflected Then
@@ -24,7 +24,7 @@ Public Class FieldValueHelper
 				
 	End Function
 
-	Public Shared Function GetMultivalueString(ByVal input As String, ByVal field As ViewFieldInfo, multiRecordDelimiter As Char) As String
+	Public Function GetMultivalueString(ByVal input As String, ByVal field As ViewFieldInfo, multiRecordDelimiter As Char) As String
 			Dim retVal As String = input
 			If input.Contains("<object>") Then
 				Dim xr As New System.Xml.XmlTextReader(New System.IO.StringReader("<objects>" & input & "</objects>"))
@@ -56,13 +56,13 @@ Public Class FieldValueHelper
 
 	End Function
 
-	Public Shared Function GetCodeValueString(ByVal input As String, multiRecordDelimiter As Char) As String
+	Public Function GetCodeValueString(ByVal input As String, multiRecordDelimiter As Char) As String
 			input = System.Web.HttpUtility.HtmlDecode(input)
 			input = input.Trim(New Char() {ChrW(11)}).Replace(ChrW(11), multiRecordDelimiter)
 			Return input
 	End Function
 
-	Public Shared Function ToExportableDateString(ByVal val As Object, ByVal formatString As String) As String
+	Public Function ToExportableDateString(ByVal val As Object, ByVal formatString As String) As String
 			Dim datetime As String = kCura.Utility.NullableTypesHelper.DBNullString(val)
 			Dim retval As String
 			If datetime Is Nothing OrElse datetime.Trim = "" Then
@@ -73,6 +73,6 @@ Public Class FieldValueHelper
 			Return retval
 	End Function
 
-End Class
+End Module
 
 End Namespace

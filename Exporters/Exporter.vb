@@ -25,7 +25,7 @@ Namespace kCura.WinEDDS
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 		Private WithEvents _downloadHandler As Service.Export.IExportFileDownloader
 		Private _halt As Boolean
-		Protected _volumeManager As VolumeManager
+		Private _volumeManager As VolumeManager
 		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom
 		Private _beginBatesColumn As String = ""
 		Private _timekeeper As New kCura.Utility.Timekeeper
@@ -120,6 +120,11 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Protected ReadOnly Property VolumeManagerObj As VolumeManager
+			Get
+				Return _volumeManager
+			End Get
+		End Property
 #End Region
 
 		Public Event ShutdownEvent()
