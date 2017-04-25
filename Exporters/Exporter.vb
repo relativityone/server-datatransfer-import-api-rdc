@@ -120,7 +120,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Protected ReadOnly Property VolumeManagerObj As VolumeManager
+		Protected ReadOnly Property VolumeManager As VolumeManager
 			Get
 				Return _volumeManager
 			End Get
