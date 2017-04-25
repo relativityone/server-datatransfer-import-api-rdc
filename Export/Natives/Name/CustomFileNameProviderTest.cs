@@ -14,6 +14,9 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 
 		private ObjectExportInfo _exportObjectInfo;
 
+		private const string TextExtension = "txt";
+		private const string NativeExtension = "xls";
+
 		private Mock<IFileNamePartProviderContainer> _fileNamePartProviderContainerMock;
 
 		[SetUp]
@@ -21,11 +24,15 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 		{
 			_exportObjectInfo = new ObjectExportInfo();
 
+			_exportObjectInfo.NativeExtension = NativeExtension;
+
 			_fileNamePartProviderContainerMock = new Mock<IFileNamePartProviderContainer>();
 		}
 
 		[Test]
-		public void ItShouldReturnFileNameTest()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void ItShouldReturnFileNameTest(bool nativeTypeExport)
 		{
 			// Arrange
 			var firstDescriptor = new FieldDescriptorPart(1);
@@ -51,10 +58,22 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 				_fileNamePartProviderContainerMock.Object);
 
 			// Act
-			string retFileName = _subjectUnderTest.GetName(_exportObjectInfo);
+			string retFileName;
+			string extension;
+			if (nativeTypeExport)
+			{
+				retFileName = _subjectUnderTest.GetName(_exportObjectInfo);
+				extension = NativeExtension;
+			}
+			else
+			{
+				retFileName = _subjectUnderTest.GetTextName(_exportObjectInfo);
+				extension = TextExtension;
+			}
+			
 
 			// Assert
-			Assert.That(retFileName, Is.EqualTo($"{firstPartName}{secondPartName}"));
+			Assert.That(retFileName, Is.EqualTo($"{firstPartName}{secondPartName}.{extension}"));
 		}
 	}
 }
