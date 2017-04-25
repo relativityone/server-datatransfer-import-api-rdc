@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using kCura.WinEDDS.Core.Exceptions;
 using kCura.WinEDDS.Core.Model;
 using kCura.WinEDDS.Core.Model.Export.Process;
 using kCura.WinEDDS.Exporters;
@@ -32,7 +33,7 @@ namespace kCura.WinEDDS.Core.Export.Natives.Name
 
 				if (foundViewField == null)
 				{
-					throw new Exception($"Can not find field id: {descriptorDescriptorPart.Value} in selection list!");
+					throw new ObjectNotFoundException($"Can not find field id: {descriptorDescriptorPart.Value} in selection list!");
 				}
 				_cache[descriptorDescriptorPart.Value] = foundViewField;
 			}
