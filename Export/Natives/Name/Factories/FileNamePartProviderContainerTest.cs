@@ -1,4 +1,4 @@
-﻿using System;
+﻿using kCura.WinEDDS.Core.Exceptions;
 using kCura.WinEDDS.Core.Export.Natives.Name;
 using kCura.WinEDDS.Core.Export.Natives.Name.Factories;
 using kCura.WinEDDS.Core.Model;
@@ -19,7 +19,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name.Factories
 		{
 			_subjectUnderTest = new FileNamePartProviderContainer();
 
-			Assert.Throws<Exception>(() => _subjectUnderTest.GetProvider(new HelperDescriptorBasePart()));
+			Assert.Throws<ObjectNotFoundException>(() => _subjectUnderTest.GetProvider(new HelperDescriptorBasePart()));
 		}
 
 		[Test]
