@@ -85,8 +85,6 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Exceptions\NotSupportedTypeException.cs" />
-    <Compile Include="Exceptions\ObjectNotFoundException.cs" />
     <Compile Include="Export\ExportFileFormatter.cs" />
     <Compile Include="Export\ExportFileFormatterBase.cs" />
     <Compile Include="Export\ExtendedExporter.cs" />

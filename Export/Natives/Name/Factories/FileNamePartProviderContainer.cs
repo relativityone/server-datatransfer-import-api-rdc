@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.WinEDDS.Core.Exceptions;
 using kCura.WinEDDS.Core.Model;
 
 namespace kCura.WinEDDS.Core.Export.Natives.Name.Factories
@@ -20,7 +19,7 @@ namespace kCura.WinEDDS.Core.Export.Natives.Name.Factories
 			Type descriptorType = descriptor.GetType();
 			if (!_fileNamePartProviders.ContainsKey(descriptorType))
 			{
-				throw new ObjectNotFoundException($"Can not find file name provider for descriptor: {descriptor.GetType()}");
+				throw new ArgumentOutOfRangeException($"Can not find file name provider for descriptor: {descriptor.GetType()}");
 			}
 			return _fileNamePartProviders[descriptorType];
 		}
@@ -29,7 +28,7 @@ namespace kCura.WinEDDS.Core.Export.Natives.Name.Factories
 		{
 			if (!descriptorPartType.IsSubclassOf(typeof(DescriptorPart)))
 			{
-				throw new NotSupportedTypeException($"File name registration part provider failed. Inavlid type arument: {descriptorPartType}");
+				throw new ArgumentException($"File name registration part provider failed. Inavlid type arument: {descriptorPartType}");
 			}
 			_fileNamePartProviders[descriptorPartType] = provider;
 		}
