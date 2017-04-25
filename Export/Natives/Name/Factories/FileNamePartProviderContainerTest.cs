@@ -1,4 +1,4 @@
-﻿using kCura.WinEDDS.Core.Exceptions;
+﻿using System;
 using kCura.WinEDDS.Core.Export.Natives.Name;
 using kCura.WinEDDS.Core.Export.Natives.Name.Factories;
 using kCura.WinEDDS.Core.Model;
@@ -19,7 +19,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name.Factories
 		{
 			_subjectUnderTest = new FileNamePartProviderContainer();
 
-			Assert.Throws<ObjectNotFoundException>(() => _subjectUnderTest.GetProvider(new HelperDescriptorBasePart()));
+			Assert.Throws<ArgumentOutOfRangeException>(() => _subjectUnderTest.GetProvider(new HelperDescriptorBasePart()));
 		}
 
 		[Test]
