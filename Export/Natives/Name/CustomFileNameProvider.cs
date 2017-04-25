@@ -30,13 +30,20 @@ namespace kCura.WinEDDS.Core.Export.Natives.Name
 
 		public string GetName(ObjectExportInfo exportObjectInfo)
 		{
+			StringBuilder name = CreateFileName(exportObjectInfo);
+			return GetNameWithNativeExtension(name, exportObjectInfo);
+		}
+
+		private StringBuilder CreateFileName(ObjectExportInfo exportObjectInfo)
+		{
 			var name = new StringBuilder();
 			foreach (DescriptorPart descriptor in _fileNamePartDescriptors)
 			{
 				IFileNamePartProvider fielNamePartProvider = _fileNamePartNameContainer.GetProvider(descriptor);
 				name.Append(fielNamePartProvider.GetPartName(descriptor, exportObjectInfo));
 			}
-			return GetNameWithNativeExtension(name, exportObjectInfo);
+
+			return name;
 		}
 
 		private string GetNameWithNativeExtension(StringBuilder name, ObjectExportInfo exportObjectInfo)
@@ -45,6 +52,18 @@ namespace kCura.WinEDDS.Core.Export.Natives.Name
 			{
 				name.Append($".{exportObjectInfo.NativeExtension}");
 			}
+			return name.ToString();
+		}
+
+		public string GetTextName(ObjectExportInfo exportedObjectInfo)
+		{
+			StringBuilder name = CreateFileName(exportedObjectInfo);
+			return GetNameWithTextExtension(name);
+		}
+
+		private string GetNameWithTextExtension(StringBuilder name)
+		{
+			name.Append(".txt");
 			return name.ToString();
 		}
 
