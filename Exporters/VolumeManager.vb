@@ -727,7 +727,7 @@ Namespace kCura.WinEDDS
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
 			localFilePath &= Me.CurrentVolumeLabel(currentVolumeNumber) & "\" & Me.CurrentFullTextSubdirectoryLabel(currentSubDirectoryNumber) & "\"
 			If Not _directoryHelper.Exists(localFilePath) Then _directoryHelper.CreateDirectory(localFilePath)
-			Return localFilePath & doc.FullTextFileName(Me.NameTextFilesAfterIdentifier, _parent.NameTextAndNativesAfterBegBates)
+			Return localFilePath & _fileNameProvider.GetTextName(doc)
 		End Function
 
 		Private Function GetNativeFileName(ByVal doc As Exporters.ObjectExportInfo) As String
@@ -1162,9 +1162,9 @@ Namespace kCura.WinEDDS
 					Case ExportFile.ExportedFilePathType.Absolute
 						textLocation = destinationFilePath
 					Case ExportFile.ExportedFilePathType.Relative
-						textLocation = ".\" & Me.CurrentVolumeLabel(currentVolumeNumber) & "\" & Me.CurrentFullTextSubdirectoryLabel(currentSubDirectoryNumber) & "\" & artifact.FullTextFileName(Me.NameTextFilesAfterIdentifier, _parent.NameTextAndNativesAfterBegBates)
+						textLocation = ".\" & Me.CurrentVolumeLabel(currentVolumeNumber) & "\" & Me.CurrentFullTextSubdirectoryLabel(currentSubDirectoryNumber) & "\" & _fileNameProvider.GetTextName(artifact)
 					Case ExportFile.ExportedFilePathType.Prefix
-						textLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel(currentVolumeNumber) & "\" & Me.CurrentFullTextSubdirectoryLabel(currentSubDirectoryNumber) & "\" & artifact.FullTextFileName(Me.NameTextFilesAfterIdentifier, _parent.NameTextAndNativesAfterBegBates)
+						textLocation = Me.Settings.FilePrefix.TrimEnd("\"c) & "\" & Me.CurrentVolumeLabel(currentVolumeNumber) & "\" & Me.CurrentFullTextSubdirectoryLabel(currentSubDirectoryNumber) & "\" & _fileNameProvider.GetTextName(artifact)
 				End Select
 				If Settings.LoadFileIsHtml Then
 					loadFileEntry.AddStringEntry("<a href='" & textLocation & "' target='_textwindow'>" & textLocation & "</a>")
