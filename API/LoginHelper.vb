@@ -16,32 +16,36 @@
 
 			If relativityManager.ValidateSuccesfulLogin Then
 				CheckVersion(cred, cookieContainer)
-				Initialize(relativityManager)
+				Initialize(relativityManager, kCura.WinEDDS.Config.WebServiceURL)
 				Return cred
 			End If
 			Return Nothing
 		End Function
 
 		Public Shared Function LoginUsernamePassword(ByVal username As String, ByVal password As String, ByVal cookieContainer As Net.CookieContainer) As System.Net.NetworkCredential
+			Return LoginUsernamePassword(username, password, cookieContainer, kCura.WinEDDS.Config.WebServiceURL)
+		End Function
+		
+		Public Shared Function LoginUsernamePassword(ByVal username As String, ByVal password As String, ByVal cookieContainer As Net.CookieContainer, ByVal webServiceUrl As String) As System.Net.NetworkCredential
 			If cookieContainer Is Nothing Then Throw New ArgumentException("Cookie container not set")
 			Dim credential As New Net.NetworkCredential(username, password)
-			Dim userManager As New kCura.WinEDDS.Service.UserManager(credential, cookieContainer)
-			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(credential, cookieContainer)
+			Dim userManager As New kCura.WinEDDS.Service.UserManager(credential, cookieContainer, webServiceUrl)
+			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(credential, cookieContainer, webServiceUrl)
 
 			CheckVersion(credential, cookieContainer)
 			If userManager.Login(username, password) Then
-				Initialize(relativityManager)
+				Initialize(relativityManager, webServiceUrl)
 				Return credential
 			End If
 			Return Nothing
 		End Function
 
-		Private Shared Sub Initialize(ByVal relativityManager As kCura.WinEDDS.Service.RelativityManager)
+		Private Shared Sub Initialize(ByVal relativityManager As kCura.WinEDDS.Service.RelativityManager, ByVal webServiceUrl As String)
 			Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
 			locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol
 			System.Threading.Thread.CurrentThread.CurrentCulture = locale
 
-			Dim userMan As kCura.WinEDDS.Service.UserManager = New kCura.WinEDDS.Service.UserManager(relativityManager.Credentials, relativityManager.CookieContainer)
+			Dim userMan As kCura.WinEDDS.Service.UserManager = New kCura.WinEDDS.Service.UserManager(relativityManager.Credentials, relativityManager.CookieContainer, webServiceUrl)
 
 			kCura.WinEDDS.Service.Settings.AuthenticationToken = userMan.GenerateDistributedAuthenticationToken()
 		End Sub

@@ -1,3 +1,7 @@
+Imports System.Collections.Generic
+Imports System.Runtime.CompilerServices
+Imports System.Runtime.Serialization
+
 Namespace kCura.WinEDDS
 	<Serializable()> Public Class ViewFieldInfo
 		Inherits Relativity.ViewFieldInfo
@@ -26,6 +30,7 @@ Namespace kCura.WinEDDS
 		Public Overrides Function GetHashCode() As Integer
 			Return 45 * Me.AvfId
 		End Function
+
 	End Class
 
 End Namespace

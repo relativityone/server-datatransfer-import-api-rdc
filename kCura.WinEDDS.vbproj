@@ -452,6 +452,7 @@
     </Compile>
     <Compile Include="Exporters\IExporter.vb" />
     <Compile Include="Exporters\IExporterStatusNotification.vb" />
+    <Compile Include="Exporters\IFieldLookupService.vb" />
     <Compile Include="Exporters\IUserNotification.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\IFieldNameProvider.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\ILoadFileHeaderFormatterFactory.vb" />
@@ -497,6 +498,10 @@
     <Compile Include="FileDownloader.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="FileNaming\IdentifierExportFileNameProvider.vb" />
+    <Compile Include="FileNaming\IFileNameProvider.vb" />
+    <Compile Include="FileNaming\ProductionExportFileNameProvider.vb" />
+    <Compile Include="FileNaming\FileNameProviderContainer.vb" />
     <Compile Include="FileObjects\ErrorExportFile.vb" />
     <Compile Include="FileObjects\ExportFile.vb">
       <SubType>Code</SubType>
@@ -511,6 +516,7 @@
     <Compile Include="FileUploader.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Helpers\FieldValueHelper.vb" />
     <Compile Include="IFieldProviderCache.vb" />
     <Compile Include="Importers\BulkImageFileImporter.vb">
       <SubType>Code</SubType>
