@@ -87,16 +87,35 @@
     </Compile>
     <Compile Include="Export\ExportFileFormatter.cs" />
     <Compile Include="Export\ExportFileFormatterBase.cs" />
+    <Compile Include="Export\ExtendedExporter.cs" />
     <Compile Include="Export\HtmlExportFileFormatter.cs" />
     <Compile Include="Export\FieldNameProvider.cs" />
     <Compile Include="Export\ExportFileFormatterFactory.cs" />
+    <Compile Include="Export\Natives\Name\CustomFileNameProvider.cs" />
+    <Compile Include="Export\Natives\Name\Factories\FileNamePartProviderContainer.cs" />
+    <Compile Include="Export\Natives\Name\Factories\IFileNamePartProviderContainer.cs" />
+    <Compile Include="Export\Natives\Name\FieldFileNamePartProvider.cs" />
+    <Compile Include="Export\Natives\Name\FileNamePartProvider.cs" />
+    <Compile Include="Export\Natives\Name\IFileNamePartProvider.cs" />
+    <Compile Include="Export\Natives\Name\SeparatorFileNamePartProvider.cs" />
+    <Compile Include="Export\Natives\Name\Factories\FileNameProviderContainerFactory.cs" />
+    <Compile Include="Export\Natives\Name\Factories\IFileNameProviderContainerFactory.cs" />
     <Compile Include="IO\LongPathDirectoryHelper.cs" />
     <Compile Include="IO\LongPathFileHelper.cs" />
+    <Compile Include="Model\Export\ExtendedExportFile.cs" />
+    <Compile Include="Model\Export\Natives\Name\DescriptorPart.cs" />
+    <Compile Include="Model\Export\Natives\Name\FieldDescriptorPart.cs" />
+    <Compile Include="Model\Export\Natives\Name\SeparatorDescriptorPart.cs" />
+    <Compile Include="Model\Export\Process\ExtendedObjectExportInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
       <Project>{e3450350-56e3-4fe9-a47a-4d24960bcbdb}</Project>
       <Name>kCura.Utility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
+      <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
+      <Name>kCura.Windows.Process</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.WinEDDS\kCura.WinEDDS.vbproj">
       <Project>{f16a2219-5dac-4f2b-89b0-6bd1243cbf8f}</Project>
@@ -110,6 +129,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
