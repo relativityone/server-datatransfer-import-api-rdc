@@ -74,8 +74,8 @@
       <HintPath>..\packages\Moq.4.5.30\lib\net45\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="nunit.framework, Version=3.4.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -97,6 +97,10 @@
     <Compile Include="Export\FieldNameProviderTests.cs" />
     <Compile Include="Export\HtmlExportFileFormatterTests.cs" />
     <Compile Include="Export\ExportFileFormatterFactoryTests.cs" />
+    <Compile Include="Export\Natives\Name\CustomFileNameProviderTest.cs" />
+    <Compile Include="Export\Natives\Name\Factories\FileNamePartProviderContainerTest.cs" />
+    <Compile Include="Export\Natives\Name\FieldFileNamePartProviderTests.cs" />
+    <Compile Include="Export\Natives\Name\SeparatorFileNamePartProviderTests.cs" />
     <Compile Include="Helpers\ViewFieldInfoMockFactory.cs" />
   </ItemGroup>
   <ItemGroup>

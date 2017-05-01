@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Relativity;
 
 namespace kCura.WinEDDS.Core.NUnit.Helpers
@@ -11,6 +8,8 @@ namespace kCura.WinEDDS.Core.NUnit.Helpers
 	
 	internal class ViewFieldInfoMockFactory
 	{
+		private DataRow _dataRow;
+		
 		/// <summary>
 		/// It creates ViewFiledInfo array 
 		/// </summary>
@@ -30,6 +29,47 @@ namespace kCura.WinEDDS.Core.NUnit.Helpers
 				viewFieldInfo.Add(new ViewFieldInfo(row));
 			}
 			return viewFieldInfo.ToArray();
+		}
+
+		public ViewFieldInfoMockFactory Build()
+		{
+			_dataRow = CreateMock().NewRow();
+			return this;
+		}
+
+		public ViewFieldInfoMockFactory WithAvfId(int id)
+		{
+			_dataRow["AvfID"] = id;
+			return this;
+		}
+
+		public ViewFieldInfoMockFactory WithDisplayName(string name)
+		{
+			_dataRow["DisplayName"] = name;
+			return this;
+		}
+
+		public ViewFieldInfoMockFactory WithAvfName(string avfName)
+		{
+			_dataRow["AvfColumnName"] = avfName;
+			return this;
+		}
+
+		public ViewFieldInfoMockFactory WithFieldType(FieldTypeHelper.FieldType fieldType)
+		{
+			_dataRow["FieldTypeID"] = fieldType;
+			return this;
+		}
+
+		public ViewFieldInfoMockFactory WithFormatString(string formatString)
+		{
+			_dataRow["FormatString"] = formatString;
+			return this;
+		}
+
+		public ViewFieldInfo Create()
+		{
+			return new ViewFieldInfo(_dataRow);
 		}
 
 		private static DataTable CreateMock()
@@ -128,6 +168,8 @@ namespace kCura.WinEDDS.Core.NUnit.Helpers
 			dataTable.Columns.Add("SourceFieldDisplayName", typeof(string));
 			dataTable.Columns["SourceFieldDisplayName"].DefaultValue = string.Empty;
 
+			dataTable.Columns.Add("AllowHtml", typeof(bool));
+			dataTable.Columns["AllowHtml"].DefaultValue = false;
 
 			return dataTable;
 		}
