@@ -5,11 +5,15 @@ Namespace kCura.WinEDDS.Service
 		Inherits kCura.EDDS.WebAPI.UserManagerBase.UserManager
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
+			Me.New(credentials, cookieContainer, kCura.WinEDDS.Config.WebServiceURL)
+		End Sub
+
+		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, ByVal webServiceUrl As String)
 			MyBase.New()
 
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}UserManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
+			Me.Url = String.Format("{0}UserManager.asmx", webServiceUrl)
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 

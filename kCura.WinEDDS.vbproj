@@ -323,16 +323,20 @@
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client, Version=1.0.4.14, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.OAuth2Client.1.0.4\lib\net45\Relativity.OAuth2Client.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client, Version=1.0.6.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.1.0.6\lib\net45\Relativity.OAuth2Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.IdentityModel, Version=1.0.4.14, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.OAuth2Client.1.0.4\lib\net45\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel, Version=1.0.6.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.1.0.6\lib\net45\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.4.14, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.4\lib\net45\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.6.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.6\lib\net45\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces, Version=1.0.6.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.6\lib\net45\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System">
@@ -448,6 +452,7 @@
     </Compile>
     <Compile Include="Exporters\IExporter.vb" />
     <Compile Include="Exporters\IExporterStatusNotification.vb" />
+    <Compile Include="Exporters\IFieldLookupService.vb" />
     <Compile Include="Exporters\IUserNotification.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\IFieldNameProvider.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\ILoadFileHeaderFormatterFactory.vb" />
@@ -493,6 +498,10 @@
     <Compile Include="FileDownloader.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="FileNaming\IdentifierExportFileNameProvider.vb" />
+    <Compile Include="FileNaming\IFileNameProvider.vb" />
+    <Compile Include="FileNaming\ProductionExportFileNameProvider.vb" />
+    <Compile Include="FileNaming\FileNameProviderContainer.vb" />
     <Compile Include="FileObjects\ErrorExportFile.vb" />
     <Compile Include="FileObjects\ExportFile.vb">
       <SubType>Code</SubType>
@@ -507,6 +516,7 @@
     <Compile Include="FileUploader.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Helpers\FieldValueHelper.vb" />
     <Compile Include="IFieldProviderCache.vb" />
     <Compile Include="Importers\BulkImageFileImporter.vb">
       <SubType>Code</SubType>
