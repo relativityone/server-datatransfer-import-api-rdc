@@ -1,3 +1,5 @@
+Imports kCura.WinEDDS.Aspera
+
 Namespace kCura.WinEDDS
 	Public Class FileUploader
 		Public Enum Type
@@ -225,6 +227,9 @@ Namespace kCura.WinEDDS
 				Try
 					If Me.UploaderType = Type.Web Then
 						Me.UploaderType = Type.Web
+						If AsperaUploadFile.IsAsperaAvailable() Then
+							Return AsperaUploadFile.UploadFile(filePath, contextArtifactID, newFileName)
+						End If
 						Return Me.WebUploadFile(New System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read), contextArtifactID, newFileName)
 					Else
 						Return Me.DirectUploadFile(filePath, contextArtifactID, newFileName, internalUse, tries < NumberOfRetries)

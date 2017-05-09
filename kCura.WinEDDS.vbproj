@@ -304,6 +304,10 @@
       <Project>{b092d1b2-909b-4ef0-9369-a81675c3fc18}</Project>
       <Name>kCura.Windows.Process</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.WinEDDS.Aspera\kCura.WinEDDS.Aspera.csproj">
+      <Project>{B9E022D8-7BDC-44B8-BEE3-2BB61571FC5E}</Project>
+      <Name>kCura.WinEDDS.Aspera</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Relativity.Applications.Serialization\Relativity.Applications.Serialization.vbproj">
       <Project>{E621897E-45AF-4FBD-ADA4-EEE787E5233F}</Project>
       <Name>Relativity.Applications.Serialization</Name>
