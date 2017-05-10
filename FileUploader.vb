@@ -231,7 +231,7 @@ Namespace kCura.WinEDDS
 					If Me.UploaderType = Type.Web Then
 						Me.UploaderType = Type.Web
 						If _useAspera And AsperaUploadFile.IsAsperaAvailable() Then
-							Return Me.UploadFileUsingAspera(filePath, contextArtifactID, newFileName)
+							Return Me.UploadFileUsingAspera(filePath, newFileName)
 						End If
 						Return Me.WebUploadFile(New System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read), contextArtifactID, newFileName)
 					Else
@@ -261,11 +261,11 @@ Namespace kCura.WinEDDS
 			Return Nothing
 		End Function
 
-		Private Function UploadFileUsingAspera(ByVal filePath As String, ByVal contextArtifactID As Int32, ByVal newFileName As String) As String
+		Private Function UploadFileUsingAspera(ByVal filePath As String, ByVal newFileName As String) As String
 			Dim destinationDirectory As String = _repositoryPathManager.GetNextDestinationDirectory(String.Empty)
 			If Not _sortIntoVolumes Then destinationDirectory = String.Empty
 			Dim destinationFileName As String = Path.Combine(destinationDirectory, newFileName)
-			AsperaUploadFile.UploadFile(filePath, contextArtifactID, destinationFileName)
+			AsperaUploadFile.UploadFile(filePath, _caseArtifactID, destinationFileName)
 			return newFileName
 		End Function
 
