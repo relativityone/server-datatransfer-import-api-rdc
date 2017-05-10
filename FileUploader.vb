@@ -19,6 +19,7 @@ Namespace kCura.WinEDDS
 		Private _repositoryPathManager As Relativity.RepositoryPathManager
 		Private _sortIntoVolumes As Boolean = False
 		Private _doRetry As Boolean = True
+		Private _useAspera As Boolean = True
 
 		Public Property DoRetry() As Boolean
 			Get
@@ -66,6 +67,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Function SetUploaderTypeForBcp() As FileUploader
+			_useAspera = False
 			_destinationFolderPath = _gateway.GetBcpSharePath(_caseArtifactID)
 			SetType(_destinationFolderPath)
 			Return Me
@@ -228,7 +230,7 @@ Namespace kCura.WinEDDS
 				Try
 					If Me.UploaderType = Type.Web Then
 						Me.UploaderType = Type.Web
-						If AsperaUploadFile.IsAsperaAvailable() Then
+						If _useAspera And AsperaUploadFile.IsAsperaAvailable() Then
 							Return Me.UploadFileUsingAspera(filePath, contextArtifactID, newFileName)
 						End If
 						Return Me.WebUploadFile(New System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read), contextArtifactID, newFileName)
