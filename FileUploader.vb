@@ -260,15 +260,11 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function UploadFileUsingAspera(ByVal filePath As String, ByVal contextArtifactID As Int32, ByVal newFileName As String) As String
-			Try
-				Dim destinationDirectory As String = _repositoryPathManager.GetNextDestinationDirectory(String.Empty)
-				If Not _sortIntoVolumes Then destinationDirectory = String.Empty
-				Dim destinationFileName As String = Path.Combine(destinationDirectory, newFileName)
-				Return AsperaUploadFile.UploadFile(filePath, contextArtifactID, destinationFileName)
-			Catch ex As Exception
-				AsperaUploadFile.Dispose()
-				Throw ex
-			End Try
+			Dim destinationDirectory As String = _repositoryPathManager.GetNextDestinationDirectory(String.Empty)
+			If Not _sortIntoVolumes Then destinationDirectory = String.Empty
+			Dim destinationFileName As String = Path.Combine(destinationDirectory, newFileName)
+			AsperaUploadFile.UploadFile(filePath, contextArtifactID, destinationFileName)
+			return newFileName
 		End Function
 
 		Private Function IsWarningException(ByVal ex As System.Exception) As Boolean
