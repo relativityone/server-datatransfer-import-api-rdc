@@ -19,7 +19,7 @@ Namespace kCura.WinEDDS
 		Private _repositoryPathManager As Relativity.RepositoryPathManager
 		Private _sortIntoVolumes As Boolean = False
 		Private _doRetry As Boolean = True
-		Private _useAspera As Boolean = True
+		Private _asperaUploadFile As AsperaUploadFile
 
 		Public Property DoRetry() As Boolean
 			Get
@@ -54,7 +54,7 @@ Namespace kCura.WinEDDS
 
 		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal caseArtifactID As Int32, ByVal destinationFolderPath As String, ByVal cookieContainer As System.Net.CookieContainer, Optional ByVal sortIntoVolumes As Boolean = True)
 			_gateway = New kCura.WinEDDS.Service.FileIO(credentials, cookieContainer)
-
+			_asperaUploadFile = new AsperaUploadFile()
 			_gateway.Credentials = credentials
 			_gateway.Timeout = Int32.MaxValue
 			_credentials = credentials
@@ -67,7 +67,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Function SetUploaderTypeForBcp() As FileUploader
-			_useAspera = False
+			_asperaUploadFile.DestinationPathResolver = new BcpFileDestinationPathResolver()
 			_destinationFolderPath = _gateway.GetBcpSharePath(_caseArtifactID)
 			SetType(_destinationFolderPath)
 			Return Me
@@ -230,7 +230,7 @@ Namespace kCura.WinEDDS
 				Try
 					If Me.UploaderType = Type.Web Then
 						Me.UploaderType = Type.Web
-						If _useAspera And AsperaUploadFile.IsAsperaAvailable() Then
+						If _asperaUploadFile.IsAsperaAvailable() Then
 							Return Me.UploadFileUsingAspera(filePath, newFileName)
 						End If
 						Return Me.WebUploadFile(New System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read), contextArtifactID, newFileName)
@@ -265,7 +265,7 @@ Namespace kCura.WinEDDS
 			Dim destinationDirectory As String = _repositoryPathManager.GetNextDestinationDirectory(String.Empty)
 			If Not _sortIntoVolumes Then destinationDirectory = String.Empty
 			Dim destinationFileName As String = Path.Combine(destinationDirectory, newFileName)
-			AsperaUploadFile.UploadFile(filePath, _caseArtifactID, destinationFileName)
+			_asperaUploadFile.UploadFile(filePath, _caseArtifactID, destinationFileName)
 			return newFileName
 		End Function
 

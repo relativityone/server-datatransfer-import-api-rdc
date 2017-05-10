@@ -324,7 +324,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub _loadFileImporter_EndFileImport(ByVal runID As String) Handles _loadFileImporter.EndFileImport
 			Me.AuditRun(True, runID)
-			AsperaUploadFile.Dispose()
+			AsperaConnection.Instance.Dispose()
 		End Sub
 	End Class
 
