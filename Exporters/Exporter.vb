@@ -106,6 +106,25 @@ Namespace kCura.WinEDDS
 		Public Property FileHelper() As IFileHelper = kCura.Utility.File.Instance
 		Public Property DirectoryHelper() As IDirectoryHelper = kCura.Utility.Directory.Instance
 
+		Private _fileNameProvider As IFileNameProvider
+		Public Property FileNameProvider() As IFileNameProvider
+			Get
+				If _fileNameProvider Is Nothing Then
+					_fileNameProvider = BuildFileNameProvider()
+				End If
+
+				Return _fileNameProvider
+			End Get
+			Set
+				_fileNameProvider = Value
+			End Set
+		End Property
+
+		Protected ReadOnly Property VolumeManager As VolumeManager
+			Get
+				Return _volumeManager
+			End Get
+		End Property
 #End Region
 
 		Public Event ShutdownEvent()
@@ -158,7 +177,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Overridable Function GetHeaderColName(fieldInfo As ViewFieldInfo) As String
-			return fieldInfo.DisplayName
+			Return fieldInfo.DisplayName
 		End Function
 
 
@@ -182,6 +201,31 @@ Namespace kCura.WinEDDS
 			InitializeFieldIndentifier()
 		End Sub
 
+		Protected Overridable Function GetAvfIds() As List(Of Int32)
+
+			Dim allAvfIds As New List(Of Int32)
+			For i As Int32 = 0 To _columns.Count - 1
+				If Not TypeOf _columns(i) Is CoalescedTextViewField Then
+					allAvfIds.Add(Me.Settings.SelectedViewFields(i).AvfId)
+				End If
+			Next
+
+			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
+				With _fieldManager.Read(Me.Settings.CaseArtifactID, _productionExportProduction.BeginBatesReflectedFieldId)
+					_beginBatesColumn = Relativity.SqlNameHelper.GetSqlFriendlyName(.DisplayName)
+					If Not allAvfIds.Contains(.ArtifactViewFieldID) Then allAvfIds.Add(.ArtifactViewFieldID)
+				End With
+			End If
+
+			If Me.Settings.ExportImages AndAlso Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
+				If Not Me.IsExtractedTextSelected Then
+					allAvfIds.Add(Me.ExtractedTextField.AvfId)
+				End If
+			End If
+
+			Return allAvfIds
+		End Function
+
 		Private Function Search() As Boolean
 			InitializeExportProcess()
 			Dim tries As Int32 = 0
@@ -194,12 +238,7 @@ Namespace kCura.WinEDDS
 			Dim startTicks As Int64 = System.DateTime.Now.Ticks
 			Dim exportInitializationArgs As kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults = Nothing
 			Dim columnHeaderString As String = Me.LoadColumns
-			Dim allAvfIds As New List(Of Int32)
-			For i As Int32 = 0 To _columns.Count - 1
-				If Not TypeOf _columns(i) Is CoalescedTextViewField Then
-					allAvfIds.Add(Me.Settings.SelectedViewFields(i).AvfId)
-				End If
-			Next
+
 			Dim production As kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo = Nothing
 
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
@@ -221,17 +260,10 @@ Namespace kCura.WinEDDS
 				End While
 
 				_productionExportProduction = production
-				With _fieldManager.Read(Me.Settings.CaseArtifactID, production.BeginBatesReflectedFieldId)
-					_beginBatesColumn = Relativity.SqlNameHelper.GetSqlFriendlyName(.DisplayName)
-					If Not allAvfIds.Contains(.ArtifactViewFieldID) Then allAvfIds.Add(.ArtifactViewFieldID)
-				End With
 			End If
 
-			If Me.Settings.ExportImages AndAlso Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
-				If Not Me.IsExtractedTextSelected Then
-					allAvfIds.Add(Me.ExtractedTextField.AvfId)
-				End If
-			End If
+			Dim allAvfIds As List(Of Int32) = GetAvfIds()
+
 			tries = 0
 			Select Case Me.Settings.TypeOfExport
 				Case ExportFile.ExportType.ArtifactSearch
@@ -262,7 +294,7 @@ Namespace kCura.WinEDDS
 			End If
 			_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 			RaiseEvent FileTransferModeChangeEvent(_downloadHandler.UploaderType.ToString)
-			_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, _statistics, FileHelper, DirectoryHelper)
+			_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, _statistics, FileHelper, DirectoryHelper, FileNameProvider)
 			Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
 			_volumeManager.ColumnHeaderString = columnHeaderString
 			Me.WriteUpdate("Data retrieved. Beginning " & typeOfExportDisplayString & " export...")
@@ -282,7 +314,6 @@ Namespace kCura.WinEDDS
 				Else
 					records = CallServerWithRetry(Function() Me.ExportManager.RetrieveResultsBlock(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, Config.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds), maxTries)
 				End If
-
 
 				If records Is Nothing Then Exit While
 				If Me.Settings.TypeOfExport = ExportFile.ExportType.Production AndAlso production IsNot Nothing AndAlso production.DocumentsHaveRedactions Then
@@ -384,14 +415,14 @@ Namespace kCura.WinEDDS
 			Dim productionImages As New System.Data.DataView
 			Dim i As Int32 = 0
 			Dim productionArtifactID As Int32 = 0
-	
+
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then productionArtifactID = Settings.ArtifactID
 
-			Dim retrieveThreads As Task(Of System.Data.DataView)() = New Task(Of System.Data.DataView)(2){}
+			Dim retrieveThreads As Task(Of System.Data.DataView)() = New Task(Of System.Data.DataView)(2) {}
 
-			retrieveThreads(0) = RetrieveNatives(natives,productionArtifactID,documentArtifactIDs,maxTries)
-			retrieveThreads(1) = RetrieveImages(images,documentArtifactIDs,maxTries)
-			retrieveThreads(2) = RetrieveProductions(productionImages,documentArtifactIDs,maxTries)
+			retrieveThreads(0) = RetrieveNatives(natives, productionArtifactID, documentArtifactIDs, maxTries)
+			retrieveThreads(1) = RetrieveImages(images, documentArtifactIDs, maxTries)
+			retrieveThreads(2) = RetrieveProductions(productionImages, documentArtifactIDs, maxTries)
 
 			Task.WaitAll(retrieveThreads)
 
@@ -427,7 +458,7 @@ Namespace kCura.WinEDDS
 				Dim prediction As VolumePredictions = New VolumePredictions()
 				Dim artifact As ObjectExportInfo = CreateArtifact(record, documentArtifactIDs(i), nativeRow, images, productionImages, beginBatesColumnIndex, identifierColumnIndex, lookup, prediction)
 
-				 _volumeManager.FinalizeVolumeAndSubDirPredictions(prediction, artifact)
+				_volumeManager.FinalizeVolumeAndSubDirPredictions(prediction, artifact)
 				volumePredictions(i) = prediction
 
 				artifacts(i) = artifact
@@ -438,7 +469,7 @@ Namespace kCura.WinEDDS
 				Dim openThreadNumber As Integer = Task.WaitAny(threads, TimeSpan.FromDays(1))
 				Dim volumeNum As Integer = _volumeManager.GetCurrentVolumeNumber(volumePredictions(i))
 				Dim subDirNum As Integer = _volumeManager.GetCurrentSubDirectoryNumber(volumePredictions(i))
-				threads(openThreadNumber) = ExportArtifactAsync(artifacts(i), maxTries,i,documentArtifactIDs.Length, openThreadNumber, volumeNum, subDirNum)
+				threads(openThreadNumber) = ExportArtifactAsync(artifacts(i), maxTries, i, documentArtifactIDs.Length, openThreadNumber, volumeNum, subDirNum)
 				DocumentsExported += 1
 			Next
 
@@ -448,7 +479,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Async Function RetrieveNatives(ByVal natives As System.Data.DataView, ByVal productionArtifactID As Int32, ByVal documentArtifactIDs As Int32(), ByVal maxTries As Integer) As Task(Of System.Data.DataView)
-			return Await Task.Run(
+			Return Await Task.Run(
 					Function() As System.Data.DataView
 						If Me.Settings.ExportNative Then
 							_timekeeper.MarkStart("Exporter_GetNativesForDocumentBlock")
@@ -469,13 +500,13 @@ Namespace kCura.WinEDDS
 							_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 							_timekeeper.MarkEnd("Exporter_GetNativesForDocumentBlock")
 						End If
-						return natives
+						Return natives
 					End Function
 				)
 		End Function
 
 		Private Async Function RetrieveImages(ByVal images As System.Data.DataView, ByVal documentArtifactIDs As Int32(), ByVal maxTries As Integer) As Task(Of System.Data.DataView)
-			return Await Task.Run(
+			Return Await Task.Run(
 				Function()
 					If Me.Settings.ExportImages Then
 						Dim start As Int64
@@ -487,13 +518,13 @@ Namespace kCura.WinEDDS
 						_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 						_timekeeper.MarkEnd("Exporter_GetImagesForDocumentBlock")
 					End If
-					return images
-					End Function
+					Return images
+				End Function
 				)
 		End Function
 
 		Private Async Function RetrieveProductions(ByVal productionImages As System.Data.DataView, ByVal documentArtifactIDs As Int32(), ByVal maxTries As Integer) As Task(Of System.Data.DataView)
-			return Await Task.Run(
+			Return Await Task.Run(
 				Function()
 					If Me.Settings.ExportImages Then
 						Dim start As Int64
@@ -505,32 +536,38 @@ Namespace kCura.WinEDDS
 						_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 						_timekeeper.MarkEnd("Exporter_GetProductionsForDocumentBlock")
 					End If
-					return productionImages
-					End Function
+					Return productionImages
+				End Function
 				)
 		End Function
 
-		Private Async Function ExportArtifactAsync(ByVal artifact As ObjectExportInfo, ByVal maxTries As Integer, ByVal docNum As Integer , ByVal numDocs As Integer, ByVal threadNumber As Integer, ByVal volumeNumber As Integer, ByVal subDirectoryNumber As Integer) As Task
-			 Await Task.Run(
-					Sub()
-					    _fileCount += CallServerWithRetry(Function()
-							Dim retval As Long
-							retval = _volumeManager.ExportArtifact(artifact, _linesToWriteDat, _linesToWriteOpt, threadNumber, volumeNumber, subDirectoryNumber)
-							If retval >= 0 Then
-								WriteUpdate("Exported document " & docNum + 1, docNum = numDocs - 1)
-								_lastStatisticsSnapshot = _statistics.ToDictionary
-								Return retval
-							Else
-								Return 0
-							End If
-						End Function, maxTries)
-					End Sub
-				)
+		Private Async Function ExportArtifactAsync(ByVal artifact As ObjectExportInfo, ByVal maxTries As Integer, ByVal docNum As Integer, ByVal numDocs As Integer, ByVal threadNumber As Integer, ByVal volumeNumber As Integer, ByVal subDirectoryNumber As Integer) As Task
+			Await Task.Run(
+				   Sub()
+					   _fileCount += CallServerWithRetry(Function()
+															 Dim retval As Long
+															 retval = _volumeManager.ExportArtifact(artifact, _linesToWriteDat, _linesToWriteOpt, threadNumber, volumeNumber, subDirectoryNumber)
+															 If retval >= 0 Then
+																 WriteUpdate("Exported document " & docNum + 1, docNum = numDocs - 1)
+																 _lastStatisticsSnapshot = _statistics.ToDictionary
+																 Return retval
+															 Else
+																 Return 0
+															 End If
+														 End Function, maxTries)
+				   End Sub
+			   )
+		End Function
+
+		Protected Overridable Function CreateObjectExportInfo() As ObjectExportInfo
+			Return New ObjectExportInfo
 		End Function
 
 		Private Function CreateArtifact(ByVal record As Object(), ByVal documentArtifactID As Int32, ByVal nativeRow As System.Data.DataRowView, ByVal images As System.Data.DataView, ByVal productionImages As System.Data.DataView, ByVal beginBatesColumnIndex As Int32,
 																		ByVal identifierColumnIndex As Int32, ByRef lookup As Lazy(Of Dictionary(Of Int32, List(Of BatesEntry))), ByRef prediction As VolumePredictions) As Exporters.ObjectExportInfo
-			Dim artifact As New Exporters.ObjectExportInfo
+
+			Dim artifact As ObjectExportInfo = CreateObjectExportInfo()
+
 			If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production AndAlso beginBatesColumnIndex <> -1 Then
 				artifact.ProductionBeginBates = record(beginBatesColumnIndex).ToString
 			End If
@@ -563,11 +600,11 @@ Namespace kCura.WinEDDS
 
 			prediction.NativeFileCount = artifact.NativeCount
 
-		    If(prediction.NativeFileCount > 0 AndAlso nativeRow?.Row?.Table?.Columns?.Contains("Size")) Then 
-		        prediction.NativeFilesSize = CType(nativeRow("Size"), Long)
-		    Else
-                prediction.NativeFilesSize = 0
-            End If
+			If (prediction.NativeFileCount > 0 AndAlso nativeRow?.Row?.Table?.Columns?.Contains("Size")) Then
+				prediction.NativeFilesSize = CType(nativeRow("Size"), Long)
+			Else
+				prediction.NativeFilesSize = 0
+			End If
 
 			prediction.ImageFileCount = artifact.ImageCount
 
@@ -782,6 +819,7 @@ Namespace kCura.WinEDDS
 						_columns.RemoveAt(indexOfSelectedViewFieldToRemove)
 						_columns.Insert(indexOfSelectedViewFieldToRemove, New CoalescedTextViewField(Me.Settings.SelectedTextFields.First, True))
 					Else
+
 						_columns.Add(New CoalescedTextViewField(Me.Settings.SelectedTextFields.First, False))
 					End If
 				Else
@@ -1061,5 +1099,17 @@ Namespace kCura.WinEDDS
 		Private Sub _downloadHandler_UploadModeChangeEvent(ByVal mode As String) Handles _downloadHandler.UploadModeChangeEvent
 			RaiseEvent FileTransferModeChangeEvent(_downloadHandler.UploaderType.ToString)
 		End Sub
+
+		Private Function BuildFileNameProvider() As IFileNameProvider
+			Dim identifierExportFileNameProvider As IFileNameProvider = New IdentifierExportFileNameProvider(Settings)
+			Dim productionExportFileNameProvider As IFileNameProvider = New ProductionExportFileNameProvider(Settings, NameTextAndNativesAfterBegBates)
+			Dim fileNameProvidersDictionary As New Dictionary(Of ExportNativeWithFilenameFrom, IFileNameProvider) From
+				{
+					{ExportNativeWithFilenameFrom.Identifier, identifierExportFileNameProvider},
+					{ExportNativeWithFilenameFrom.Production, productionExportFileNameProvider}
+				}
+
+			Return New FileNameProviderContainer(Settings, fileNameProvidersDictionary)
+		End Function
 	End Class
 End Namespace
