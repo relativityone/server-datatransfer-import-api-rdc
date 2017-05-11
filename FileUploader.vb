@@ -230,7 +230,7 @@ Namespace kCura.WinEDDS
 				Try
 					If Me.UploaderType = Type.Web Then
 						Me.UploaderType = Type.Web
-						If _asperaUploadFile.IsAsperaAvailable() Then
+						If _asperaUploadFile.IsAsperaAvailable(_caseArtifactID) Then
 							Return Me.UploadFileUsingAspera(filePath, newFileName)
 						End If
 						Return Me.WebUploadFile(New System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read), contextArtifactID, newFileName)
