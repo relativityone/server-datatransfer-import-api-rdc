@@ -101,6 +101,7 @@
     <Compile Include="Export\Natives\Name\Factories\FileNameProviderContainerFactory.cs" />
     <Compile Include="Export\Natives\Name\Factories\IFileNameProviderContainerFactory.cs" />
     <Compile Include="Import\IFileUploader.cs" />
+    <Compile Include="Import\IFileUploaderFactory.cs" />
     <Compile Include="Import\LoadFileImporter.cs" />
     <Compile Include="IO\LongPathDirectoryHelper.cs" />
     <Compile Include="IO\LongPathFileHelper.cs" />
