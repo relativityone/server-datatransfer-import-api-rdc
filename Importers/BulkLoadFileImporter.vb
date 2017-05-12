@@ -2,9 +2,7 @@ Imports System.Collections.Generic
 Imports System.IO
 Imports System.Threading.Tasks
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
-Imports kCura.EDDS.WebAPI.DocumentManagerBase
 Imports kCura.Utility.Extensions
-Imports kCura.WinEDDS.Aspera.Import
 Imports Relativity
 
 Namespace kCura.WinEDDS
