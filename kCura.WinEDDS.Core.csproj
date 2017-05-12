@@ -105,6 +105,7 @@
     <Compile Include="Import\IImportJobBatchFactory.cs" />
     <Compile Include="Import\IImportBatchJob.cs" />
     <Compile Include="Import\ImportBatchContext.cs" />
+    <Compile Include="Import\IFileUploaderFactory.cs" />
     <Compile Include="Import\LoadFileImporter.cs" />
     <Compile Include="IO\LongPathDirectoryHelper.cs" />
     <Compile Include="IO\LongPathFileHelper.cs" />
