@@ -11,20 +11,16 @@ namespace kCura.WinEDDS.Core.Import
 	public class LoadFileImporter : LoadFileBase, ILoadFileImporter
 	{
 		private readonly ITransferConfig _config;
-		private readonly IImportJobBatchFactory _jobBatchJobFactory;
+		private readonly IImportBatchJobFactory _batchJobBatchJobFactory;
+		private readonly IArtifactReader _artReader;
 
-		public LoadFileImporter(LoadFile args, int timezoneoffset, bool doRetryLogic, bool autoDetect, ITransferConfig config, 
-			IImportJobBatchFactory jobBatchJobFactory) : base(args, timezoneoffset, doRetryLogic, autoDetect)
+		public LoadFileImporter(ImportContext context, ITransferConfig config, IImportBatchJobFactory batchJobBatchJobFactory, IArtifactReader artifactReader) 
+			: base(context.Args, context.Timezoneoffset, context.DoRetryLogic, context.AutoDetect,
+				context.InitializeArtifactReader)
 		{
 			_config = config;
-			_jobBatchJobFactory = jobBatchJobFactory;
-		}
-
-		public LoadFileImporter(LoadFile args, int timezoneoffset, bool doRetryLogic, bool autoDetect, bool initializeArtifactReader, ITransferConfig config,
-			IImportJobBatchFactory jobBatchJobFactory) : base(args, timezoneoffset, doRetryLogic, autoDetect, initializeArtifactReader)
-		{
-			_config = config;
-			_jobBatchJobFactory = jobBatchJobFactory;
+			_batchJobBatchJobFactory = batchJobBatchJobFactory;
+			_artifactReader = artifactReader;
 		}
 
 		protected override bool UseTimeZoneOffset { get; }
@@ -66,7 +62,7 @@ namespace kCura.WinEDDS.Core.Import
 
 		private void SendBatch(ImportBatchContext batchContext)
 		{
-			IImportBatchJob importBatchJob = _jobBatchJobFactory.Create(batchContext);
+			IImportBatchJob importBatchJob = _batchJobBatchJobFactory.Create(batchContext);
 			importBatchJob.Run(batchContext);
 		}
 
@@ -79,7 +75,7 @@ namespace kCura.WinEDDS.Core.Import
 		{
 			int currentBatchCounter = 0;
 			var importBatchContext = new ImportBatchContext();
-			while (_artifactReader.HasMoreRecords && currentBatchCounter > _config.ImportBatchSize - 1)
+			while (_artifactReader.HasMoreRecords && currentBatchCounter < _config.ImportBatchSize)
 			{
 				++currentBatchCounter;
 				ProcessBatchRecord(importBatchContext);

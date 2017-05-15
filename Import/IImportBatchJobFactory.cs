@@ -1,7 +1,7 @@
 ﻿
 namespace kCura.WinEDDS.Core.Import
 {
-	public interface IImportJobBatchFactory
+	public interface IImportBatchJobFactory
 	{
 		IImportBatchJob Create(ImportBatchContext batchContext);
 	}
