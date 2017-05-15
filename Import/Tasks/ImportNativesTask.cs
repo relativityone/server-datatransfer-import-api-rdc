@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.WinEDDS.Api;
 using Relativity;
 
-namespace kCura.WinEDDS.Core.Import
+namespace kCura.WinEDDS.Core.Import.Tasks
 {
 	public class ImportNativesTask : IImportNativesTask
 	{
@@ -29,13 +25,21 @@ namespace kCura.WinEDDS.Core.Import
 			// This task reffers to document type native import
 			if (CanExecute(artifactFieldCollection))
 			{
-				// TODO: Need to verify if we need special care for not existing source (native) file
-				// If filename <> String.Empty AndAlso Not fileExists Then lineStatus += Relativity.MassImport.ImportStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
-				string fileName = GetFileName(artifactFieldCollection);
-				if (FileExists(fileName))
+				try
 				{
-					OI.FileID.FileIDData fileId = GetFileId(fileName);
-					CopyFile(fileName);
+					// TODO: Need to verify if we need special care for not existing source (native) file
+					// If filename <> String.Empty AndAlso Not fileExists Then lineStatus += Relativity.MassImport.ImportStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
+					string fileName = GetFileName(artifactFieldCollection);
+					if (FileExists(fileName))
+					{
+						OI.FileID.FileIDData fileId = GetFileId(fileName);
+						CopyFile(fileName);
+					}
+				}
+				catch (Exception ex)
+				{
+					//TODO
+					throw;
 				}
 			}
 		}

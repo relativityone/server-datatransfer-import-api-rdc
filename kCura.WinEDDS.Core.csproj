@@ -104,12 +104,15 @@
     <Compile Include="Import\IFileUploader.cs" />
     <Compile Include="Import\IImportBatchJobFactory.cs" />
     <Compile Include="Import\IImportBatchJob.cs" />
-    <Compile Include="Import\IImportNativesTask.cs" />
+    <Compile Include="Import\Tasks\IImportFoldersTask.cs" />
+    <Compile Include="Import\Tasks\IImportMetadataTask.cs" />
+    <Compile Include="Import\Tasks\IImportPrepareMetadataTask.cs" />
+    <Compile Include="Import\Tasks\IImportNativesTask.cs" />
     <Compile Include="Import\ImportBatchContext.cs" />
     <Compile Include="Import\IFileUploaderFactory.cs" />
     <Compile Include="Import\ImportBatchJob.cs" />
     <Compile Include="Import\ImportContext.cs" />
-    <Compile Include="Import\ImportNativesTask.cs" />
+    <Compile Include="Import\Tasks\ImportNativesTask.cs" />
     <Compile Include="Import\LoadFileImporter.cs" />
     <Compile Include="IO\LongPathDirectoryHelper.cs" />
     <Compile Include="IO\LongPathFileHelper.cs" />

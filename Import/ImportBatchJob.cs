@@ -1,40 +1,55 @@
 ﻿
 using kCura.WinEDDS.Api;
+using kCura.WinEDDS.Core.Import.Tasks;
 
 namespace kCura.WinEDDS.Core.Import
 {
 	public class ImportBatchJob : IImportBatchJob
 	{
+		private readonly IImportNativesTask _importNativesTask;
+		private readonly IImportFoldersTask _importFoldersTask;
+		private readonly IImportPrepareMetadataTask _importCreateMetadataTask;
+		private readonly IImportMetadataTask _importMetadataTask;
+
+		public ImportBatchJob(IImportNativesTask importNativesTask, IImportFoldersTask importFoldersTask, IImportPrepareMetadataTask importCreateMetadataTask,
+			IImportMetadataTask importMetadataTask)
+		{
+			_importNativesTask = importNativesTask;
+			_importFoldersTask = importFoldersTask;
+			_importCreateMetadataTask = importCreateMetadataTask;
+			_importMetadataTask = importMetadataTask;
+		}
+
 		public void Run(ImportBatchContext batchContext)
 		{
-
+			// TODO:
 			foreach (ArtifactFieldCollection record in batchContext.ArtifactFields)
 			{
 				UploadNatives(record);
 				CreateFolderStructure();
-				CreateMetadata();
-				UploadMetadata();
+				MetaDocument metadataDoc = CreateMetadata();
+				UploadMetadata(metadataDoc);
 			}
 		}
 
-		private void UploadMetadata()
+		private void UploadMetadata(MetaDocument metadataDoc)
 		{
-			throw new System.NotImplementedException();
+			_importMetadataTask.Execute(metadataDoc);
 		}
 
-		private void CreateMetadata()
+		private MetaDocument CreateMetadata()
 		{
-			throw new System.NotImplementedException();
+			return _importCreateMetadataTask.Execute();
 		}
 
 		private void CreateFolderStructure()
 		{
-			throw new System.NotImplementedException();
+			_importFoldersTask.Execute();
 		}
 
 		private void UploadNatives(ArtifactFieldCollection record)
 		{
-			throw new System.NotImplementedException();
+			_importNativesTask.Execute(record);
 		}
 
 		

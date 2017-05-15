@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using kCura.WinEDDS.Api;
 
 namespace kCura.WinEDDS.Core.Import
