@@ -2,6 +2,7 @@
 Imports System.Net
 Imports System.Threading.Tasks
 Imports kCura.WinEDDS.Credentials
+Imports Relativity.OAuth2Client.Exceptions
 
 Namespace kCura.EDDS.WinForm
 	Public Class MainForm
@@ -342,26 +343,31 @@ Namespace kCura.EDDS.WinForm
 		Public Const MAX_LENGTH_OF_OBJECT_NAME_BEFORE_TRUNCATION As Int32 = 25
 
 		Private Async Sub OpenRepositoryMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OpenRepositoryMenu.Click
-			If _application.LastCredentialCheckResult = Application.CredentialCheckResult.AccessDisabled Then
-				'The user could have changed the server, so we need to check default credentials again.
-				Dim defaultCredentialResult As Application.CredentialCheckResult = _application.AttemptWindowsAuthentication()
-				If defaultCredentialResult = Application.CredentialCheckResult.AccessDisabled Then
-					MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)
-				ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
+			try
+				If _application.LastCredentialCheckResult = Application.CredentialCheckResult.AccessDisabled Then
+					'The user could have changed the server, so we need to check default credentials again.
+					Dim defaultCredentialResult As Application.CredentialCheckResult = _application.AttemptWindowsAuthentication()
+					If defaultCredentialResult = Application.CredentialCheckResult.AccessDisabled Then
+						MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)
+					ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
 					
-					_application.NewLogin()
+						_application.NewLogin()
+					Else
+						_application.OpenCaseSelector = False
+						Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
+						_application.LogOn()
+						_application.OpenCase()
+						kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
+					End If
 				Else
 					_application.OpenCaseSelector = False
 					Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
-                    _application.LogOn()
-                    _application.OpenCase()
-                    kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
-                End If
-			Else
-				_application.OpenCaseSelector = False
-				Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
-                _application.OpenCase()
-            End If
+					_application.OpenCase()
+				End If
+			Catch ex As LoginCanceledException
+				'user close the login window, do nothing
+			End Try
+			
 		End Sub
 
 		Private Sub ExitMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ExitMenu.Click
