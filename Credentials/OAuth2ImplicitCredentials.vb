@@ -50,15 +50,11 @@ Namespace kCura.WinEDDS.Credentials
 		End Function
 
 		Public Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential) Implements ICredentialsProvider.GetCredentialsAsync
-			Try
 				Dim token As String = Await _tokenProvider.GetAccessTokenAsync(_cancellationTokenSource.Token)
 
 				Dim creds As System.Net.NetworkCredential = New NetworkCredential(_OAUTH_USERNAME, token)
 				_currentCredentials = creds
 				Return creds
-			Catch ex As TaskCanceledException
-				Throw new LoginCanceledException(ex)
-			End Try
 		End Function
 
 		Private Sub CreateTokenProvider()
