@@ -1,7 +1,6 @@
 
 Imports System.Net
 Imports System.Threading.Tasks
-Imports Credentials
 Imports kCura.WinEDDS.Credentials
 
 Namespace kCura.EDDS.WinForm
@@ -337,7 +336,6 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
-		Private _loginForm As LoginForm = Nothing
 		'' Private WithEvents _optionsForm As OptionsForm = Nothing
 		Private firstTime As Boolean = True
 		Friend WithEvents _application As kCura.EDDS.WinForm.Application
