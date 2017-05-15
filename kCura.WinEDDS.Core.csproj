@@ -104,9 +104,12 @@
     <Compile Include="Import\IFileUploader.cs" />
     <Compile Include="Import\IImportBatchJobFactory.cs" />
     <Compile Include="Import\IImportBatchJob.cs" />
+    <Compile Include="Import\IImportNativesTask.cs" />
     <Compile Include="Import\ImportBatchContext.cs" />
     <Compile Include="Import\IFileUploaderFactory.cs" />
+    <Compile Include="Import\ImportBatchJob.cs" />
     <Compile Include="Import\ImportContext.cs" />
+    <Compile Include="Import\ImportNativesTask.cs" />
     <Compile Include="Import\LoadFileImporter.cs" />
     <Compile Include="IO\LongPathDirectoryHelper.cs" />
     <Compile Include="IO\LongPathFileHelper.cs" />
@@ -119,6 +122,10 @@
     <Compile Include="TransferConfig.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\kCura\kCura.OI.FileID\kCura.OI.FileID.vbproj">
+      <Project>{ccefd50f-0840-402d-ab16-c93f8e579b8b}</Project>
+      <Name>kCura.OI.FileID</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
       <Project>{e3450350-56e3-4fe9-a47a-4d24960bcbdb}</Project>
       <Name>kCura.Utility</Name>
