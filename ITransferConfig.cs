@@ -6,5 +6,7 @@ namespace kCura.WinEDDS.Core
 		int ImportBatchSize { get; }
 
 		bool DisableNativeValidation { get; }
+
+		int ConnectionTimeout { get; }
 	}
 }
