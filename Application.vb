@@ -6,7 +6,6 @@ Imports System.Linq
 Imports System.Security.Authentication
 Imports System.Threading
 Imports System.Threading.Tasks
-Imports Credentials
 
 Imports kCura.EDDS.WinForm.Forms
 Imports kCura.Windows.Forms
@@ -58,7 +57,6 @@ Namespace kCura.EDDS.WinForm
 		Private _fieldProviderCache As IFieldProviderCache
 		Private _selectedCaseFolderPath As String
 		Private _timeZoneOffset As Int32
-		Private _loginForm As LoginForm
 		Private WithEvents _certificatePromptForm As CertificatePromptForm
 		Private WithEvents _optionsForm As OptionsForm
 		Private _documentRepositoryList As String()
@@ -66,19 +64,9 @@ Namespace kCura.EDDS.WinForm
 
 #Region "Properties"
 
-		Public Readonly Property LoginForm() As LoginForm
-			Get
-				If _loginForm Is Nothing OrElse _loginForm.IsDisposed Then
-					_loginForm = New LoginForm
-				End If
-
-				return _loginForm
-			End Get
-		End Property
-
 		Public Sub SetImplicitCredentialProvider()
 			Dim authEndpoint As string = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/authorize")
-			Dim implicitProvider = new OAuth2ImplicitCredentials(New Uri(authEndpoint), "8a4e731db51f8523570febf3f0", Function() LoginForm, AddressOf On_TokenRetrieved)
+			Dim implicitProvider = new OAuth2ImplicitCredentials(New Uri(authEndpoint), "8a4e731db51f8523570febf3f0", AddressOf On_TokenRetrieved)
 			RelativityWebApiCredentialsProvider.Instance().SetProvider(implicitProvider)
 		End Sub
 
@@ -954,9 +942,7 @@ Namespace kCura.EDDS.WinForm
 			If (_optionsForm Is Nothing) Then
 				_optionsForm = New OptionsForm
 
-				If Not _loginForm Is Nothing AndAlso _loginForm.Visible Then
-					_optionsForm.Show(_loginForm)
-				ElseIf Not _certificatePromptForm Is Nothing AndAlso _certificatePromptForm.Visible Then
+				If Not _certificatePromptForm Is Nothing AndAlso _certificatePromptForm.Visible Then
 					_certificatePromptForm.Close()
 					_optionsForm.Show()
 				Else
@@ -1622,11 +1608,6 @@ Namespace kCura.EDDS.WinForm
 
 			End Try
 
-			try
-				LoginForm.Close()
-			Catch ex As Exception
-
-			End Try
 		End Sub
 #End Region
 
@@ -1666,22 +1647,13 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Sub DoAbout()
-			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
-				_loginForm.TopMost = False
-			End If
 
 			Dim aboutFrm As New AboutForm()
 			aboutFrm.ShowDialog()
 
-			If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
-				_loginForm.TopMost = True
-			End If
 		End Sub
 
 		Public Sub DoHelp()
-            If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
-                _loginForm.TopMost = False
-            End If
 
             'Default cloud setting
             Dim cloudIsEnabled As Boolean = False
@@ -1708,9 +1680,6 @@ Namespace kCura.EDDS.WinForm
                 Process.Start(urlPrefix & majMin & "/#Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
             End If
 
-            If Not _loginForm Is Nothing AndAlso Not _loginForm.IsDisposed Then
-				_loginForm.TopMost = True
-			End If
 		End Sub
 
 		Public Function Login(authOptions As AuthenticationOptions) As Application.CredentialCheckResult
