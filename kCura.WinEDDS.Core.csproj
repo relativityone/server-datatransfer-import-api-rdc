@@ -102,6 +102,8 @@
     <Compile Include="Export\Natives\Name\Factories\FileNameProviderContainerFactory.cs" />
     <Compile Include="Export\Natives\Name\Factories\IFileNameProviderContainerFactory.cs" />
     <Compile Include="Import\FileMetadata.cs" />
+    <Compile Include="Import\Helpers\FileInfoProvider.cs" />
+    <Compile Include="Import\Helpers\IFileInfoProvider.cs" />
     <Compile Include="Import\IFileUploader.cs" />
     <Compile Include="Import\IImportBatchJobFactory.cs" />
     <Compile Include="Import\IImportBatchJob.cs" />
