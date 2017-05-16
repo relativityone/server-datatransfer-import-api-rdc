@@ -101,11 +101,13 @@
     <Compile Include="Export\Natives\Name\SeparatorFileNamePartProvider.cs" />
     <Compile Include="Export\Natives\Name\Factories\FileNameProviderContainerFactory.cs" />
     <Compile Include="Export\Natives\Name\Factories\IFileNameProviderContainerFactory.cs" />
+    <Compile Include="Import\FileMetadata.cs" />
     <Compile Include="Import\IFileUploader.cs" />
     <Compile Include="Import\IImportBatchJobFactory.cs" />
     <Compile Include="Import\IImportBatchJob.cs" />
     <Compile Include="Import\Tasks\IImportFoldersTask.cs" />
     <Compile Include="Import\Tasks\IImportMetadataTask.cs" />
+    <Compile Include="Import\Tasks\IImportNativesAnalyzer.cs" />
     <Compile Include="Import\Tasks\IImportPrepareMetadataTask.cs" />
     <Compile Include="Import\Tasks\IImportNativesTask.cs" />
     <Compile Include="Import\ImportBatchContext.cs" />
@@ -114,6 +116,7 @@
     <Compile Include="Import\ImportContext.cs" />
     <Compile Include="Import\Tasks\ImportNativesTask.cs" />
     <Compile Include="Import\LoadFileImporter.cs" />
+    <Compile Include="Import\Tasks\ImportNativesAnalyzer.cs" />
     <Compile Include="IO\LongPathDirectoryHelper.cs" />
     <Compile Include="IO\LongPathFileHelper.cs" />
     <Compile Include="ITransferConfig.cs" />

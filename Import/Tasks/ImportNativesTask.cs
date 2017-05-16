@@ -8,15 +8,12 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 	{
 		private readonly LoadFile _settings;
 		private readonly IFileUploader _fileUploader;
-		private readonly IFileHelper _fileHelper;
-		private readonly ITransferConfig _transferConfig;
+		private readonly IImportNativesAnalyzer _importNativesAnalyzer;
 
-		public ImportNativesTask(LoadFile settings, IFileUploaderFactory fileUploaderFactory, IFileHelper fileHelper, ITransferConfig transferConfig)
+		public ImportNativesTask(LoadFile settings, IFileUploaderFactory fileUploaderFactory, IImportNativesAnalyzer importNativesAnalyzer)
 		{
 			_settings = settings;
-			_fileHelper = fileHelper;
-			_transferConfig = transferConfig;
-
+			_importNativesAnalyzer = importNativesAnalyzer;
 			_fileUploader = fileUploaderFactory.CreateNativeFileUploader();
 		}
 
@@ -27,13 +24,10 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			{
 				try
 				{
-					// TODO: Need to verify if we need special care for not existing source (native) file
-					// If filename <> String.Empty AndAlso Not fileExists Then lineStatus += Relativity.MassImport.ImportStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
-					string fileName = GetFileName(artifactFieldCollection);
-					if (FileExists(fileName))
+					FileMetadata fileMetadata = _importNativesAnalyzer.Process(artifactFieldCollection);
+					if (fileMetadata.FileExists)
 					{
-						OI.FileID.FileIDData fileId = GetFileId(fileName);
-						CopyFile(fileName);
+						CopyFile(fileMetadata.FileName);
 					}
 				}
 				catch (Exception ex)
@@ -53,35 +47,10 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			}
 		}
 
-		/// <summary>
-		/// It can be overridden to support IInjectableFieldCollection redord type
-		/// </summary>
-		/// <param name="fileName"></param>
-		/// <returns></returns>
-		protected virtual OI.FileID.FileIDData GetFileId(string fileName)
-		{
-			if (_transferConfig.DisableNativeValidation)
-			{
-				return null;
-			}
-			return OI.FileID.Manager.Instance.GetFileIDDataByFilePath(fileName);
-		}
-
-		private bool FileExists(string fileName)
-		{
-			return _fileHelper.Exists(fileName);
-		}
-
 		private bool CanExecute(ArtifactFieldCollection artifactFieldCollection)
 		{
 			return artifactFieldCollection.get_FieldList(FieldTypeHelper.FieldType.File).Length > 0
-					&& GetFileName(artifactFieldCollection) != null
 					&& _settings.ArtifactTypeID == (int)ArtifactType.Document;
-		}
-
-		private string GetFileName(ArtifactFieldCollection artifactFieldCollection)
-		{
-			return artifactFieldCollection.get_FieldList(FieldTypeHelper.FieldType.File)[0].Value.ToString();
 		}
 	}
 }
