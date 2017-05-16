@@ -102,12 +102,17 @@
     <Compile Include="Export\Natives\Name\FieldFileNamePartProviderTests.cs" />
     <Compile Include="Export\Natives\Name\SeparatorFileNamePartProviderTests.cs" />
     <Compile Include="Helpers\ViewFieldInfoMockFactory.cs" />
+    <Compile Include="Import\ImportNativesAnalyzerTests.cs" />
     <Compile Include="Import\LoadFileImporterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\kCura\kCura.OI.FileID\kCura.OI.FileID.vbproj">
+      <Project>{ccefd50f-0840-402d-ab16-c93f8e579b8b}</Project>
+      <Name>kCura.OI.FileID</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
       <Project>{e3450350-56e3-4fe9-a47a-4d24960bcbdb}</Project>
       <Name>kCura.Utility</Name>
