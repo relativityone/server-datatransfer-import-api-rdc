@@ -65,14 +65,6 @@ Namespace kCura.WinEDDS.Credentials
 			Events = _tokenProvider.Events
 			AddHandler Events.TokenRetrieved, _onTokenHandler
 		End Sub
-
-
-		Private Sub On_LoginFormClosing(ByVal sender As Object, ByVal e As EventArgs)
-			If(Not _cancellationTokenSource.IsCancellationRequested)
-				_cancellationTokenSource.Cancel()
-				_cancellationTokenSource = New CancellationTokenSource()
-			End If
-		 End Sub
 		
 	End Class
 
