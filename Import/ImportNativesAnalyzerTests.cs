@@ -1,8 +1,4 @@
-﻿
-
-using System;
-using kCura.OI.FileID;
-using kCura.WinEDDS.Api;
+﻿using kCura.WinEDDS.Api;
 using kCura.WinEDDS.Core.Import;
 using kCura.WinEDDS.Core.Import.Helpers;
 using kCura.WinEDDS.Core.Import.Tasks;
@@ -19,7 +15,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 
 		private Mock<ITransferConfig> _transferConfigMock;
 		private Mock<IFileHelper> _fileHelper;
-		private Mock<IFileInfoProvider> _fileIdDataProvider;
+		private Mock<IFileInfoProvider> _fileDataProvider;
 
 		private const string _FILE_NAME = "FileName.doc";
 		private const int _ARTIFACT_ID = 1234;
@@ -33,14 +29,14 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 		{
 			_transferConfigMock = new Mock<ITransferConfig>();
 			_fileHelper = new Mock<IFileHelper>();
-			_fileIdDataProvider = new Mock<IFileInfoProvider>();
+			_fileDataProvider = new Mock<IFileInfoProvider>();
 
 			_artifactFieldCollection = new ArtifactFieldCollection
 			{
 				new ArtifactField("File", _ARTIFACT_ID, FieldTypeHelper.FieldType.File, FieldCategory.FileInfo, 1, 1, null, false)
 			};
 			_artifactFieldCollection[_ARTIFACT_ID].Value = _FILE_NAME;
-			_subjectUnderTests = new ImportNativesAnalyzer(_fileIdDataProvider.Object,_transferConfigMock.Object, _fileHelper.Object);
+			_subjectUnderTests = new ImportNativesAnalyzer(_fileDataProvider.Object,_transferConfigMock.Object, _fileHelper.Object);
 		}
 
 		[Test]
@@ -98,7 +94,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_transferConfigMock.SetupGet(config => config.CreateErrorForEmptyNativeFile).Returns(createErrorForEmptyNativeFile);
 
 			_fileHelper.Setup(item => item.Exists(_FILE_NAME)).Returns(true);
-			_fileHelper.Setup(item => item.GetFileSize(_FILE_NAME)).Returns(fileIsEmpty ? 0 : 1);
+			_fileDataProvider.Setup(item => item.GetFileSize(It.IsAny<FileMetadata>())).Returns(fileIsEmpty ? 0 : 1);
 
 			_artifactFieldCollection[_ARTIFACT_ID].Value = _FILE_NAME;
 
@@ -120,9 +116,9 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_transferConfigMock.SetupGet(config => config.DisableNativeLocationValidation).Returns(false);
 			
 			_fileHelper.Setup(item => item.Exists(_FILE_NAME)).Returns(true);
-			_fileHelper.Setup(item => item.GetFileSize(_FILE_NAME)).Returns(1);
+			_fileDataProvider.Setup(item => item.GetFileSize(It.IsAny<FileMetadata>())).Returns(1);
 
-			_fileIdDataProvider.Setup(item => item.GetFileId(_FILE_NAME)).Returns(new FileIDData(_FILE_ID, ".doc"));
+			_fileDataProvider.Setup(item => item.GetFileId(_FILE_NAME)).Returns(new FileIDData(_FILE_ID, ".doc"));
 
 			_artifactFieldCollection[_ARTIFACT_ID].Value = _FILE_NAME;
 
