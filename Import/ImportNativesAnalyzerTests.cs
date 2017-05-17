@@ -1,6 +1,7 @@
 ﻿using kCura.WinEDDS.Api;
 using kCura.WinEDDS.Core.Import;
 using kCura.WinEDDS.Core.Import.Helpers;
+using kCura.WinEDDS.Core.Import.Status;
 using kCura.WinEDDS.Core.Import.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -16,6 +17,8 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 		private Mock<ITransferConfig> _transferConfigMock;
 		private Mock<IFileHelper> _fileHelper;
 		private Mock<IFileInfoProvider> _fileDataProvider;
+		private Mock<IImportStatusManager> _importStatusManager;
+
 
 		private const string _FILE_NAME = "FileName.doc";
 		private const int _ARTIFACT_ID = 1234;
@@ -30,13 +33,15 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_transferConfigMock = new Mock<ITransferConfig>();
 			_fileHelper = new Mock<IFileHelper>();
 			_fileDataProvider = new Mock<IFileInfoProvider>();
+			_importStatusManager = new Mock<IImportStatusManager>();
 
 			_artifactFieldCollection = new ArtifactFieldCollection
 			{
 				new ArtifactField("File", _ARTIFACT_ID, FieldTypeHelper.FieldType.File, FieldCategory.FileInfo, 1, 1, null, false)
 			};
 			_artifactFieldCollection[_ARTIFACT_ID].Value = _FILE_NAME;
-			_subjectUnderTests = new ImportNativesAnalyzer(_fileDataProvider.Object,_transferConfigMock.Object, _fileHelper.Object);
+			_subjectUnderTests = new ImportNativesAnalyzer(_fileDataProvider.Object,_transferConfigMock.Object, _fileHelper.Object,
+				_importStatusManager.Object);
 
 			_fileMetadata = new FileMetadata
 			{
