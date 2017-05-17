@@ -23,9 +23,9 @@ namespace kCura.WinEDDS.Core.Import
 		public void Run(ImportBatchContext batchContext)
 		{
 			// TODO:
-			foreach (ArtifactFieldCollection record in batchContext.ArtifactFields)
+			foreach (FileMetadata fieleMetadata in batchContext.FileMetaDataHolder)
 			{
-				UploadNatives(record);
+				UploadNatives(fieleMetadata);
 				CreateFolderStructure();
 				MetaDocument metadataDoc = CreateMetadata();
 				UploadMetadata(metadataDoc);
@@ -47,12 +47,9 @@ namespace kCura.WinEDDS.Core.Import
 			_importFoldersTask.Execute();
 		}
 
-		private void UploadNatives(ArtifactFieldCollection record)
+		private void UploadNatives(FileMetadata fileMetaData)
 		{
-			_importNativesTask.Execute(record);
+			_importNativesTask.Execute(fileMetaData);
 		}
-
-		
-		
 	}
 }

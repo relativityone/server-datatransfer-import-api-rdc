@@ -1,4 +1,6 @@
 ﻿
+using kCura.WinEDDS.Api;
+
 namespace kCura.WinEDDS.Core.Import
 {
 	public class FileMetadata
@@ -9,12 +11,13 @@ namespace kCura.WinEDDS.Core.Import
 		public bool FileExists { get; set; }
 		public int LineNumber { get; set; }
 		public OI.FileID.FileIDData FileIdData { get; set; }
-
+		public ArtifactFieldCollection ArtifactFieldCollection { get; set; }
+		
 		protected bool Equals(FileMetadata other)
 		{
 			return string.Equals(FileGuid, other.FileGuid);
 		}
-
+		
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(null, obj))
