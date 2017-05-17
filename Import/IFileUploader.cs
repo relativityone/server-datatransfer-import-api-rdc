@@ -4,8 +4,8 @@ namespace kCura.WinEDDS.Core.Import
 {
 	public interface IFileUploader
 	{
-		void UploadFile(string sourceFile, string fileName);
+		void UploadFile(FileMetadata fileMetadata);
 
-		IDictionary<string, bool> WaitForUploadToComplete();
+		IDictionary<FileMetadata, UploadResult> WaitForUploadToComplete();
 	}
 }

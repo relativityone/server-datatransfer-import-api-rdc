@@ -12,5 +12,6 @@ namespace kCura.WinEDDS.Core
 		public bool CreateErrorForEmptyNativeFile => Config.CreateErrorForEmptyNativeFile;
 
 		public int ConnectionTimeout => 30;
+		public int DefaultMaximumErrorCount => Config.DefaultMaximumErrorCount;
 	}
 }

@@ -8,5 +8,7 @@ namespace kCura.WinEDDS.Core
 		bool DisableNativeLocationValidation { get; }
 		bool CreateErrorForEmptyNativeFile { get; }
 		int ConnectionTimeout { get; }
+
+		int DefaultMaximumErrorCount { get; }
 	}
 }
