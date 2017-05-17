@@ -1,19 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.WinEDDS.Core.Import.Errors;
+using Moq;
 using NUnit.Framework;
 
 namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 {
 	[TestFixture]
-	public class ErrorMessageContainerTests
+	public class AllErrorsContainerTests
 	{
-		private ErrorMessageContainer _instance;
+		private AllErrorsContainer _instance;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_instance = new ErrorMessageContainer();
+			var pathHelper = new Mock<IPathHelper>();
+
+			_instance = new AllErrorsContainer(pathHelper.Object);
 		}
 
 		[Test]

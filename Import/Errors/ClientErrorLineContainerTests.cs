@@ -1,4 +1,5 @@
 ﻿using kCura.WinEDDS.Core.Import.Errors;
+using Moq;
 using NUnit.Framework;
 
 namespace kCura.WinEDDS.Core.NUnit.Import.Errors
@@ -11,7 +12,9 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 		[SetUp]
 		public void SetUp()
 		{
-			_instance = new ClientErrorLineContainer();
+			var pathHelper = new Mock<IPathHelper>();
+
+			_instance = new ClientErrorLineContainer(pathHelper.Object);
 		}
 
 		[Test]
