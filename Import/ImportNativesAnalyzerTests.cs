@@ -22,7 +22,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 		private const int _FILE_ID = 1020;
 
 		private ArtifactFieldCollection _artifactFieldCollection;
-
+		private FileMetadata _fileMetadata;
 
 		[SetUp]
 		public void SetUp()
@@ -37,6 +37,12 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			};
 			_artifactFieldCollection[_ARTIFACT_ID].Value = _FILE_NAME;
 			_subjectUnderTests = new ImportNativesAnalyzer(_fileDataProvider.Object,_transferConfigMock.Object, _fileHelper.Object);
+
+			_fileMetadata = new FileMetadata
+			{
+				LineNumber = 1,
+				ArtifactFieldCollection = _artifactFieldCollection
+			};
 		}
 
 		[Test]
@@ -50,7 +56,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_artifactFieldCollection[_ARTIFACT_ID].Value = inputFileName;
 
 			//Act
-			FileMetadata fileMetadata = _subjectUnderTests.Process(_artifactFieldCollection);
+			FileMetadata fileMetadata = _subjectUnderTests.Process(_fileMetadata);
 
 
 			// Assert
@@ -73,7 +79,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 
 
 			// Act
-			FileMetadata fileMetadata = _subjectUnderTests.Process(_artifactFieldCollection);
+			FileMetadata fileMetadata = _subjectUnderTests.Process(_fileMetadata);
 
 			// Assert
 			_fileHelper.Verify(item => item.Exists(expectedFileName), Times.Once);
@@ -99,7 +105,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_artifactFieldCollection[_ARTIFACT_ID].Value = _FILE_NAME;
 
 			// Act
-			FileMetadata fileMetadata = _subjectUnderTests.Process(_artifactFieldCollection);
+			FileMetadata fileMetadata = _subjectUnderTests.Process(_fileMetadata);
 
 			// Assert
 			_fileHelper.Verify(item => item.Exists(_FILE_NAME), Times.Once());
@@ -123,7 +129,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_artifactFieldCollection[_ARTIFACT_ID].Value = _FILE_NAME;
 
 			// Act
-			FileMetadata fileMetadata = _subjectUnderTests.Process(_artifactFieldCollection);
+			FileMetadata fileMetadata = _subjectUnderTests.Process(_fileMetadata);
 
 			// Assert
 			_fileHelper.Verify(item => item.Exists(_FILE_NAME), Times.Once());
