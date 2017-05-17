@@ -10,6 +10,7 @@ namespace kCura.WinEDDS.Core
 		int ConnectionTimeout { get; }
 		int IoErrorNumberOfRetries { get; }
 		int IoErrorWaitTimeInSeconds { get; }
+		int DefaultMaximumErrorCount { get; }
 
 	}
 }

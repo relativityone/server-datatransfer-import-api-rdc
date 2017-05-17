@@ -16,5 +16,6 @@ namespace kCura.WinEDDS.Core
 		public int IoErrorWaitTimeInSeconds => kCura.Utility.Config.IOErrorWaitTimeInSeconds;
 
 		public int ConnectionTimeout => 30;
+		public int DefaultMaximumErrorCount => Config.DefaultMaximumErrorCount;
 	}
 }

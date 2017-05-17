@@ -43,7 +43,11 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			if (_settings.CopyFilesToDocumentRepository)
 			{
 				string destinationFileName = Guid.NewGuid().ToString();
-				_fileUploader.UploadFile(sourceFileName, destinationFileName);
+				_fileUploader.UploadFile(new FileMetadata
+				{
+					FileName = sourceFileName,
+					FileGuid = destinationFileName
+				});
 			}
 		}
 
