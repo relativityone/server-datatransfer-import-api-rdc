@@ -2,8 +2,10 @@
 
 namespace kCura.WinEDDS.Core.Import.Errors
 {
-	public interface IErrorMessages
+	public interface IAllErrors : IErrorFile
 	{
 		IList<LineError> GetAllErrors();
+
+		bool HasErrors();
 	}
 }

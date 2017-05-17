@@ -67,6 +67,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Polly, Version=5.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Polly.5.1.0\lib\net45\Polly.dll</HintPath>
       <Private>True</Private>
@@ -106,12 +107,16 @@
     <Compile Include="Export\Natives\Name\Factories\FileNameProviderContainerFactory.cs" />
     <Compile Include="Export\Natives\Name\Factories\IFileNameProviderContainerFactory.cs" />
     <Compile Include="Import\Errors\ErrorContainerComposite.cs" />
-    <Compile Include="Import\Errors\ErrorMessageContainer.cs" />
+    <Compile Include="Import\Errors\ErrorFileNames.cs" />
+    <Compile Include="Import\Errors\ErrorManager.cs" />
+    <Compile Include="Import\Errors\AllErrorsContainer.cs" />
     <Compile Include="Import\Errors\ErrorReporter.cs" />
     <Compile Include="Import\Errors\ErrorType.cs" />
     <Compile Include="Import\Errors\IClientErrors.cs" />
     <Compile Include="Import\Errors\IErrorContainer.cs" />
-    <Compile Include="Import\Errors\IErrorMessages.cs" />
+    <Compile Include="Import\Errors\IErrorFile.cs" />
+    <Compile Include="Import\Errors\IAllErrors.cs" />
+    <Compile Include="Import\Errors\IErrorManager.cs" />
     <Compile Include="Import\Errors\IErrorReporter.cs" />
     <Compile Include="Import\Errors\LineError.cs" />
     <Compile Include="Import\Errors\ClientErrorLineContainer.cs" />
