@@ -93,7 +93,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_artifactReader.Verify(reader => reader.ReadArtifact(), Times.Exactly(maxBatchSize));
 			_artifactReader.Verify(reader => reader.AdvanceRecord(), Times.Once);
 
-			_importJobBatch.Verify(job => job.Run(It.Is<ImportBatchContext>( context => context.ArtifactFields.Count == maxBatchSize)));
+			_importJobBatch.Verify(job => job.Run(It.Is<ImportBatchContext>( context => context.FileMetaDataHolder.Count == maxBatchSize)));
 		}
 	}
 }
