@@ -76,6 +76,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.ServiceModel.Activities" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -120,6 +121,9 @@
     <Compile Include="Import\Errors\IErrorReporter.cs" />
     <Compile Include="Import\Errors\LineError.cs" />
     <Compile Include="Import\Errors\ClientErrorLineContainer.cs" />
+    <Compile Include="Import\Errors\ServerErrorFile.cs" />
+    <Compile Include="Import\Errors\ServerErrorFileDownloader.cs" />
+    <Compile Include="Import\Errors\ServerErrorManager.cs" />
     <Compile Include="Import\FileMetadata.cs" />
     <Compile Include="Import\Helpers\FileInfoProvider.cs" />
     <Compile Include="Import\Helpers\IFileInfoProvider.cs" />

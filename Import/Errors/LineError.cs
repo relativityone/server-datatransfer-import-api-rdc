@@ -9,9 +9,14 @@ namespace kCura.WinEDDS.Core.Import.Errors
 		public int LineNumber { get; set; }
 
 		public ErrorType ErrorType { get; set; }
+		
+		public string Identifier { get; set; }
 
-		//TODO: Used only in ImportAPI
-		public string Identifier => string.Empty;
+		public LineError()
+		{
+			//TODO: Used only in ImportAPI
+			Identifier = string.Empty;
+		}
 
 		public Hashtable ToHashtable()
 		{
