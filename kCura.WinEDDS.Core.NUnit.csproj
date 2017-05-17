@@ -106,6 +106,9 @@
     <Compile Include="Export\Natives\Name\FieldFileNamePartProviderTests.cs" />
     <Compile Include="Export\Natives\Name\SeparatorFileNamePartProviderTests.cs" />
     <Compile Include="Helpers\ViewFieldInfoMockFactory.cs" />
+    <Compile Include="Import\Errors\ClientErrorLineContainerTests.cs" />
+    <Compile Include="Import\Errors\ErrorMessageContainerTests.cs" />
+    <Compile Include="Import\Errors\ErrorReporterTests.cs" />
     <Compile Include="Import\ImportNativesAnalyzerTests.cs" />
     <Compile Include="Import\LoadFileImporterTests.cs" />
   </ItemGroup>
