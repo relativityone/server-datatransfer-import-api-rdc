@@ -4,6 +4,6 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 {
 	public interface IImportNativesTask
 	{
-		void Execute(ArtifactFieldCollection artifactFieldCollection);
+		void Execute(FileMetadata fileMetadata);
 	}
 }

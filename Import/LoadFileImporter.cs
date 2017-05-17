@@ -74,20 +74,25 @@ namespace kCura.WinEDDS.Core.Import
 		private ImportBatchContext CreateBatch()
 		{
 			int currentBatchCounter = 0;
-			var importBatchContext = new ImportBatchContext();
+			var importBatchContext = new ImportBatchContext(_config.ImportBatchSize);
 			while (_artifactReader.HasMoreRecords && currentBatchCounter < _config.ImportBatchSize)
 			{
 				++currentBatchCounter;
-				ProcessBatchRecord(importBatchContext);
+				ProcessBatchRecord(importBatchContext, currentBatchCounter);
 			}
 			return importBatchContext;
 		}
 
-		private void ProcessBatchRecord(ImportBatchContext importBatchContext)
+		private void ProcessBatchRecord(ImportBatchContext importBatchContext, int index)
 		{
 			try
 			{
-				importBatchContext.ArtifactFields.Add(_artifactReader.ReadArtifact());
+				ArtifactFieldCollection artifactFieldCollection = _artifactReader.ReadArtifact();
+				importBatchContext.FileMetaDataHolder.Add(new FileMetadata
+				{
+					ArtifactFieldCollection = artifactFieldCollection,
+					LineNumber = index
+				});
 			}
 			// Here should go equivalent code to exception handling in BulkLoadFileImporter
 			catch (Exception ex)

@@ -1,10 +1,5 @@
-﻿using System;
-using kCura.Utility;
-using kCura.Utility.Extensions;
-using kCura.WinEDDS.Api;
+﻿using kCura.WinEDDS.Api;
 using kCura.WinEDDS.Core.Import.Helpers;
-using Polly;
-using Polly.Retry;
 using Relativity;
 
 namespace kCura.WinEDDS.Core.Import.Tasks
@@ -22,9 +17,9 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			_fileHelper = fileHelper;
 		}
 
-		public FileMetadata Process(ArtifactFieldCollection artifactFieldCollection)
+		public FileMetadata Process(FileMetadata fileMetadata)
 		{
-			FileMetadata fileMetadata = GetDefaults(artifactFieldCollection);
+			SetDefaults(fileMetadata);
 
 			if (_transferConfig.DisableNativeLocationValidation)
 			{
@@ -93,13 +88,10 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			return fileName;
 		}
 
-		private FileMetadata GetDefaults(ArtifactFieldCollection artifactFieldCollection)
+		private void SetDefaults(FileMetadata fileMetadata)
 		{
-			return new FileMetadata()
-			{
-				FileName = GetFileName(artifactFieldCollection),
-				FileExists = true
-			};
+			fileMetadata.FileName = GetFileName(fileMetadata.ArtifactFieldCollection);
+			fileMetadata.FileExists = true;
 		}
 	}
 }

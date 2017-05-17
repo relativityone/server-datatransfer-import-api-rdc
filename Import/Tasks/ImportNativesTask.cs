@@ -17,17 +17,17 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			_fileUploader = fileUploaderFactory.CreateNativeFileUploader();
 		}
 
-		public void Execute(ArtifactFieldCollection artifactFieldCollection)
+		public void Execute(FileMetadata fileMetadata)
 		{
 			// This task reffers to document type native import
-			if (CanExecute(artifactFieldCollection))
+			if (CanExecute(fileMetadata))
 			{
 				try
 				{
-					FileMetadata fileMetadata = _importNativesAnalyzer.Process(artifactFieldCollection);
-					if (fileMetadata.FileExists)
+					FileMetadata processedFileMetadata = _importNativesAnalyzer.Process(fileMetadata);
+					if (processedFileMetadata.FileExists)
 					{
-						CopyFile(fileMetadata.FileName);
+						CopyFile(processedFileMetadata.FileName);
 					}
 				}
 				catch (Exception ex)
@@ -47,9 +47,9 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			}
 		}
 
-		private bool CanExecute(ArtifactFieldCollection artifactFieldCollection)
+		private bool CanExecute(FileMetadata fileMetadata)
 		{
-			return artifactFieldCollection.get_FieldList(FieldTypeHelper.FieldType.File).Length > 0
+			return fileMetadata.ArtifactFieldCollection.get_FieldList(FieldTypeHelper.FieldType.File).Length > 0
 					&& _settings.ArtifactTypeID == (int)ArtifactType.Document;
 		}
 	}
