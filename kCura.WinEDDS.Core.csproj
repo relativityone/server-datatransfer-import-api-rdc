@@ -121,6 +121,10 @@
     <Compile Include="Import\IFileUploader.cs" />
     <Compile Include="Import\IImportBatchJobFactory.cs" />
     <Compile Include="Import\IImportBatchJob.cs" />
+    <Compile Include="Import\IImportJobInitilizer.cs" />
+    <Compile Include="Import\Status\IImportStatusManager.cs" />
+    <Compile Include="Import\Status\ImportStatusManager.cs" />
+    <Compile Include="Import\Status\ImportStatusEventArgs.cs" />
     <Compile Include="Import\Tasks\IImportFoldersTask.cs" />
     <Compile Include="Import\Tasks\IImportMetadataTask.cs" />
     <Compile Include="Import\Tasks\IImportNativesAnalyzer.cs" />
@@ -169,9 +173,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Import\Status\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using kCura.OI.FileID;
 using kCura.Utility;
 using Polly;

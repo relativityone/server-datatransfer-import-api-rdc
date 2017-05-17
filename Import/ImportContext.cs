@@ -14,5 +14,7 @@ namespace kCura.WinEDDS.Core.Import
 		public bool AutoDetect { get; set; }
 
 		public bool InitializeArtifactReader { get; set; }
-	}
+		public Guid JobRunId { get; set; }
+		public long TotalRecordCount { get; set; }
+}
 }

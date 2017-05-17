@@ -36,7 +36,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			if (!fileExists)
 			{
 				// TODO:
-				// RDC: lineStatus += Relativity.MassImport.ImportStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
+				// RDC: lineStatus += Relativity.MassImport.ImportProcessStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
 				//return false;
 
 				fileMetadata.FileExists = false;
@@ -53,7 +53,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 				else
 				{
 					// TODO:
-					// RDC: lineStatus += Relativity.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
+					// RDC: lineStatus += Relativity.MassImport.ImportProcessStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
 				}
 			}
 			return fileMetadata;
