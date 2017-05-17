@@ -2,6 +2,7 @@
 Imports System.Net
 Imports System.Threading.Tasks
 Imports kCura.WinEDDS.Credentials
+Imports kCura.WinEDDS.Exceptions
 Imports Relativity.OAuth2Client.Exceptions
 
 Namespace kCura.EDDS.WinForm
@@ -375,6 +376,11 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub _application_OnEvent(ByVal appEvent As AppEvent) Handles _application.OnEvent
+			ME.Invoke(Async Sub() Await HandleEventOnUiThread(appEvent))
+		End Sub
+
+		Private Async Function HandleEventOnUiThread(appEvent As AppEvent) As Task
+
 			Select Case appEvent.EventType
 				Case appEvent.AppEventType.LoadCase
 					_fileMenuRefresh.Enabled = True
@@ -384,15 +390,15 @@ Namespace kCura.EDDS.WinForm
 					ImportMenu.Enabled = _application.UserHasImportPermission
 					ExportMenu.Enabled = _application.UserHasExportPermission
 					ImportMenu.Visible = _application.UserHasImportPermission
-                    ExportMenu.Visible = _application.UserHasExportPermission
-                Case AppEvent.AppEventType.LogOnForm
-                    'Enable help once logged into Relativity via RDC login form
-                    Me._helpMenuItem.Enabled = True
-                Case appEvent.AppEventType.LogOn
-                    UpdateUserName(_application.LoggedInUser)
-                    'Enable help once logged into Relativity via Windows Authentication
-                    Me._helpMenuItem.Enabled = True
-                Case appEvent.AppEventType.ExitApplication
+					ExportMenu.Visible = _application.UserHasExportPermission
+				Case AppEvent.AppEventType.LogOnForm
+					'Enable help once logged into Relativity via RDC login form
+					Me._helpMenuItem.Enabled = True
+				Case appEvent.AppEventType.LogOn
+					UpdateUserName(_application.LoggedInUser)
+					'Enable help once logged into Relativity via Windows Authentication
+					Me._helpMenuItem.Enabled = True
+				Case appEvent.AppEventType.ExitApplication
 					Me.Close()
 				Case appEvent.AppEventType.WorkspaceFolderSelected
 					'disable import and export menus if no permission
@@ -400,9 +406,11 @@ Namespace kCura.EDDS.WinForm
 					ExportMenu.Enabled = _application.UserHasExportPermission
 					ImportMenu.Visible = _application.UserHasImportPermission
 					ExportMenu.Visible = _application.UserHasExportPermission
-                    'UpdateStatus("Case Folder Load: " + _application.SelectedCaseInfo.RootFolderID.ToString)
-            End Select
-		End Sub
+					'UpdateStatus("Case Folder Load: " + _application.SelectedCaseInfo.RootFolderID.ToString)
+				Case appEvent.AppEventType.LogOnRequested
+					Await _application.AttemptLogin(me)
+			End Select
+		End Function
 
 		Private Sub UpdateStatus(ByVal text As String)
 			AppStatusPanel.Text = text
@@ -429,12 +437,17 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Async Function CheckCertificate() As Task
-			If (_application.CertificateTrusted()) Then
-				_application.SetImplicitCredentialProvider()
-                Await _application.AttemptLogin(Me)
-            Else
-                _application.CertificateCheckPrompt()
-            End If
+			try
+				If (_application.CertificateTrusted()) Then
+					_application.SetImplicitCredentialProvider()
+					Await _application.AttemptLogin(Me)
+				Else
+					_application.CertificateCheckPrompt()
+				End If
+			Catch ex As WebException
+				_application.HandleWebException(ex)
+			End Try
+			
 		End Function
 
         Private Async Sub WebServiceURLChanged() Handles _application.ReCheckCertificate

@@ -218,9 +218,9 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _application_OnEvent(ByVal appEvent As AppEvent) Handles _application.OnEvent
 			Select Case appEvent.EventType
 				Case appEvent.AppEventType.LoadCase
-					Me.LoadCase(CType(appEvent, LoadCaseEvent).Case)
+					_treeView.Invoke(Sub() Me.LoadCase(CType(appEvent, LoadCaseEvent).Case))
 				Case appEvent.AppEventType.NewFolder
-					Me.AddNewFolder(CType(appEvent, NewFolderEvent))
+					_treeView.Invoke(Sub() Me.AddNewFolder(CType(appEvent, NewFolderEvent)))
 			End Select
 		End Sub
 

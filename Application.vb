@@ -524,7 +524,7 @@ Namespace kCura.EDDS.WinForm
 				If (ex.Status = WebExceptionStatus.TrustFailure) Then
 					isCertificateTrusted = False
 				Else
-					Throw New Exception("There is a problem with your Relativity Web API url")
+					throw
 				End If
 			End Try
 
@@ -1417,15 +1417,7 @@ Namespace kCura.EDDS.WinForm
 			Try
 				CheckVersion(credential)
 			Catch ex As System.Net.WebException
-				If Not ex.Message.IndexOf("The remote name could not be resolved") = -1 AndAlso ex.Source = "System" Then
-					Me.ChangeWebServiceURL("The current Relativity WebAPI URL could not be resolved. Try a new URL?")
-				ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 401") = -1 AndAlso ex.Source = "System.Web.Services" Then
-					Me.ChangeWebServiceURL("The current Relativity WebAPI URL was resolved but is not configured correctly. Try a new URL?")
-				ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 404") = -1 AndAlso ex.Source = "System.Web.Services" Then
-					Me.ChangeWebServiceURL("The current Relativity WebAPI URL was not found. Try a new URL?")
-				Else
-					Me.ChangeWebServiceURL("An error occurred while validating the Relativity WebAPI URL.  Check the URL and try again?")
-				End If
+				HandleWebException(ex)
 				_lastCredentialCheckResult = CredentialCheckResult.Fail
 				Return
 			Catch ex As System.Exception
@@ -1475,6 +1467,19 @@ Namespace kCura.EDDS.WinForm
 					ExitApplication()
 				End If
 			End Try
+		End Sub
+
+		Public Sub HandleWebException(ex As WebException)
+
+			If Not ex.Message.IndexOf("The remote name could not be resolved") = -1 AndAlso ex.Source = "System" Then
+				Me.ChangeWebServiceURL("The current Relativity WebAPI URL could not be resolved. Try a new URL?")
+			ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 401") = -1 AndAlso ex.Source = "System.Web.Services" Then
+				Me.ChangeWebServiceURL("The current Relativity WebAPI URL was resolved but is not configured correctly. Try a new URL?")
+			ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 404") = -1 AndAlso ex.Source = "System.Web.Services" Then
+				Me.ChangeWebServiceURL("The current Relativity WebAPI URL was not found. Try a new URL?")
+			Else
+				Me.ChangeWebServiceURL("An error occurred while validating the Relativity WebAPI URL.  Check the URL and try again?")
+			End If
 		End Sub
 
 		Public Function IsAccessDisabledException(ByVal ex As System.Exception) As Boolean
@@ -1552,12 +1557,12 @@ Namespace kCura.EDDS.WinForm
 
 		End Sub
 
-		Private Sub ChangeWebServiceUrl(ByVal message As String)
+		Public Sub ChangeWebServiceUrl(ByVal message As String)
 			If MsgBox(message, MsgBoxStyle.YesNo, "Relativity Desktop Client") = MsgBoxResult.Yes Then
 				Dim url As String = InputBox("Enter New URL:", DefaultResponse:=kCura.WinEDDS.Config.WebServiceURL)
 				If url <> String.Empty Then
 					kCura.WinEDDS.Config.WebServiceURL = url
-					NewLogin()
+					RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOnRequested))
 				Else
 					ExitApplication()
 				End If
