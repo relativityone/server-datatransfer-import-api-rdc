@@ -8,7 +8,9 @@ namespace kCura.WinEDDS.Core.Import
 		public string FileGuid { get; set; }
 		public bool FileExists { get; set; }
 
-		public OI.FileID.FileIDData FileIdData;
+		public OI.FileID.FileIDData FileIdData { get; set; }
+
+		public int LineNumber { get; set; }
 
 	}
 }

@@ -1,6 +1,10 @@
-﻿using kCura.Utility.Extensions;
+﻿using System;
+using kCura.Utility;
+using kCura.Utility.Extensions;
 using kCura.WinEDDS.Api;
 using kCura.WinEDDS.Core.Import.Helpers;
+using Polly;
+using Polly.Retry;
 using Relativity;
 
 namespace kCura.WinEDDS.Core.Import.Tasks
@@ -42,7 +46,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 
 				fileMetadata.FileExists = false;
 			}
-			if (fileMetadata.FileExists && FileContentIsEmpty(fileMetadata.FileName))
+			if (fileMetadata.FileExists && FileContentIsEmpty(fileMetadata))
 			{
 				if (!_transferConfig.CreateErrorForEmptyNativeFile)
 				{
@@ -69,9 +73,9 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			return null;
 		}
 
-		private bool FileContentIsEmpty(string fileName)
+		private bool FileContentIsEmpty(FileMetadata fileMetadata)
 		{
-			return _fileHelper.GetFileSize(fileName) == 0;
+			return _fileInfoProvider.GetFileSize(fileMetadata) == 0;
 		}
 
 		private bool FileExists(string fileName)

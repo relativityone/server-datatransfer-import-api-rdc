@@ -1,6 +1,4 @@
-﻿
-
-using kCura.WinEDDS.Api;
+﻿using kCura.WinEDDS.Api;
 
 namespace kCura.WinEDDS.Core.Import.Tasks
 {
