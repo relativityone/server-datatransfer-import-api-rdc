@@ -1,6 +1,8 @@
 ﻿
 using kCura.WinEDDS.Api;
 using kCura.WinEDDS.Core.Import;
+using kCura.WinEDDS.Core.Import.Errors;
+using kCura.WinEDDS.Core.Import.Status;
 using Moq;
 using NUnit.Framework;
 
@@ -12,25 +14,34 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 		{
 			public bool InitManagersCheck { get; set; }
 
-			public LoadFileImporterTest(ImportContext context, ITransferConfig config, IImportBatchJobFactory batchJobBatchJobFactory, IArtifactReader artifactReader) : base(context, config, batchJobBatchJobFactory, artifactReader)
+			public LoadFileImporterTest(ImportContext context, ITransferConfig config, IImportBatchJobFactory batchJobBatchJobFactory, 
+				IArtifactReader artifactReader, IErrorContainer errorContainer, IImportStatusManager importStatusManager) 
+				: base(context, config, batchJobBatchJobFactory, errorContainer, importStatusManager)
 			{
+				_artifactReader = artifactReader;
 			}
 
 			protected override void InitializeManagers(LoadFile args)
 			{
 				InitManagersCheck = true;
 			}
-		}
 
+			protected override IArtifactReader GetArtifactReader()
+			{
+				return _artifactReader;
+			}
+		}
 
 		private LoadFileImporterTest _subjectUnderTest;
 		private LoadFile _loadFile;
 		private ImportContext _importContext;
 
 		private Mock<ITransferConfig> _transferConfigMock;
-		private Mock<IImportBatchJobFactory> _importJobBatchFactory;
-		private Mock<IImportBatchJob> _importJobBatch;
-		private Mock<IArtifactReader> _artifactReader;
+		private Mock<IImportBatchJobFactory> _importJobBatchFactoryMock;
+		private Mock<IImportBatchJob> _importJobBatchMock;
+		private Mock<IArtifactReader> _artifactReaderMock;
+		private Mock<IErrorContainer> _errorContainerMock;
+		private Mock<IImportStatusManager> _impStatusManagerMock;
 
 		[SetUp]
 		public void Init()
@@ -39,29 +50,33 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			{
 				Args = new LoadFile()
 			};
-			_importJobBatchFactory = new Mock<IImportBatchJobFactory>();
+			_importJobBatchFactoryMock = new Mock<IImportBatchJobFactory>();
 			_transferConfigMock = new Mock<ITransferConfig>();
-			_importJobBatch = new Mock<IImportBatchJob>();
-			_artifactReader = new Mock<IArtifactReader>();
+			_importJobBatchMock = new Mock<IImportBatchJob>();
+			_artifactReaderMock = new Mock<IArtifactReader>();
+
+			_errorContainerMock = new Mock<IErrorContainer>();
+			_impStatusManagerMock = new Mock<IImportStatusManager>();
 
 			_loadFile = new LoadFile();
 
-			_subjectUnderTest = new LoadFileImporterTest(_importContext, _transferConfigMock.Object, _importJobBatchFactory.Object, _artifactReader.Object);
+			_subjectUnderTest = new LoadFileImporterTest(_importContext, _transferConfigMock.Object, _importJobBatchFactoryMock.Object, 
+				_artifactReaderMock.Object, _errorContainerMock.Object, _impStatusManagerMock.Object);
 
-			_artifactReader.Setup(reader => reader.AdvanceRecord());
+			_artifactReaderMock.Setup(reader => reader.AdvanceRecord());
 		}
 
 		[Test]
 		public void ItShouldReadOnlyHeader()
 		{
 			// Arrange
-			_artifactReader.Setup(reader => reader.HasMoreRecords).Returns(false);
+			_artifactReaderMock.Setup(reader => reader.HasMoreRecords).Returns(false);
 
 			// Act
 			_subjectUnderTest.ReadFile("");
 
 			// Assert
-			_artifactReader.Verify(reader => reader.ReadArtifact(), Times.Never);
+			_artifactReaderMock.Verify(reader => reader.ReadArtifact(), Times.Never);
 
 			Assert.That(_subjectUnderTest.InitManagersCheck, Is.EqualTo(true));
 		}
@@ -71,17 +86,18 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 		{
 			const int maxBatchSize = 3;
 			// Arrange
-			_artifactReader.SetupSequence(reader => reader.HasMoreRecords)
+			_artifactReaderMock.SetupSequence(reader => reader.HasMoreRecords)
 				.Returns(true)
 				.Returns(true)
 				.Returns(true)
 				.Returns(true)
 				.Returns(false);
-			_artifactReader.Setup(reader => reader.AdvanceRecord());
-			_artifactReader.Setup(reader => reader.ReadArtifact()).Returns(new ArtifactFieldCollection());
+			_artifactReaderMock.Setup(reader => reader.AdvanceRecord());
+			_artifactReaderMock.Setup(reader => reader.ReadArtifact()).Returns(new ArtifactFieldCollection());
+			_artifactReaderMock.Setup(reader => reader.CountRecords()).Returns(maxBatchSize);
 
-			_importJobBatchFactory.Setup(jobFactory => jobFactory.Create(It.IsAny<ImportBatchContext>()))
-				.Returns(_importJobBatch.Object);
+			_importJobBatchFactoryMock.Setup(jobFactory => jobFactory.Create(It.IsAny<ImportBatchContext>()))
+				.Returns(_importJobBatchMock.Object);
 
 			_transferConfigMock.SetupGet(config => config.ImportBatchSize).Returns(maxBatchSize);
 
@@ -90,10 +106,11 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_subjectUnderTest.ReadFile("");
 
 			// Assert
-			_artifactReader.Verify(reader => reader.ReadArtifact(), Times.Exactly(maxBatchSize));
-			_artifactReader.Verify(reader => reader.AdvanceRecord(), Times.Once);
+			_artifactReaderMock.Verify(reader => reader.ReadArtifact(), Times.Exactly(maxBatchSize));
+			_artifactReaderMock.Verify(reader => reader.AdvanceRecord(), Times.Once);
+			_artifactReaderMock.Verify(reader => reader.CountRecords(), Times.Once);
 
-			_importJobBatch.Verify(job => job.Run(It.Is<ImportBatchContext>( context => context.FileMetaDataHolder.Count == maxBatchSize)));
+			_importJobBatchMock.Verify(job => job.Run(It.Is<ImportBatchContext>( context => context.FileMetaDataHolder.Count == maxBatchSize)));
 		}
 	}
 }
