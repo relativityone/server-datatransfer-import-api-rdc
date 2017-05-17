@@ -14,6 +14,8 @@ namespace kCura.WinEDDS.Core.Import.Status
 
 		void RaiseEndImportEvent(object sender);
 
+		void ReiseWarningImportEvent(object sender, string message, int recordIndex);
+
 		void RaiseTranserModeChangedEvent(object sender, string message);
 
 		void RaiseUpdateImportEvent(object sender, string message, int recordIndex);

@@ -24,6 +24,11 @@ namespace kCura.WinEDDS.Core.Import.Status
 			StatusChanged?.Invoke(sender, CreateStatusArgs(ImportProcessStatus.Error, message, recordIndex));
 		}
 
+		public void ReiseWarningImportEvent(object sender, string message, int recordIndex)
+		{
+			StatusChanged?.Invoke(sender, CreateStatusArgs(ImportProcessStatus.Update, message, recordIndex));
+		}
+
 		public void RaiseUpdateImportEvent(object sender, string message, int recordIndex)
 		{
 			StatusChanged?.Invoke(sender, CreateStatusArgs(ImportProcessStatus.Update, message, recordIndex));

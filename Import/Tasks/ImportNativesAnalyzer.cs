@@ -1,5 +1,6 @@
 ﻿using kCura.WinEDDS.Api;
 using kCura.WinEDDS.Core.Import.Helpers;
+using kCura.WinEDDS.Core.Import.Status;
 using Relativity;
 
 namespace kCura.WinEDDS.Core.Import.Tasks
@@ -9,12 +10,15 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 		private readonly IFileInfoProvider _fileInfoProvider;
 		private readonly ITransferConfig _transferConfig;
 		private readonly IFileHelper _fileHelper;
+		private readonly IImportStatusManager _importStatusManager;
 
-		public ImportNativesAnalyzer(IFileInfoProvider fileInfoProvider, ITransferConfig transferConfig, IFileHelper fileHelper)
+		public ImportNativesAnalyzer(IFileInfoProvider fileInfoProvider, ITransferConfig transferConfig, IFileHelper fileHelper,
+			IImportStatusManager importStatusManager)
 		{
 			_fileInfoProvider = fileInfoProvider;
 			_transferConfig = transferConfig;
 			_fileHelper = fileHelper;
+			_importStatusManager = importStatusManager;
 		}
 
 		public FileMetadata Process(FileMetadata fileMetadata)
@@ -35,25 +39,20 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			bool fileExists = FileExists(fileMetadata.FileName);
 			if (!fileExists)
 			{
-				// TODO:
-				// RDC: lineStatus += Relativity.MassImport.ImportProcessStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
-				//return false;
-
+				fileMetadata.LineStatus += (int)Relativity.MassImport.ImportStatus.FileSpecifiedDne;
 				fileMetadata.FileExists = false;
 			}
 			if (fileMetadata.FileExists && FileContentIsEmpty(fileMetadata))
 			{
 				if (!_transferConfig.CreateErrorForEmptyNativeFile)
 				{
-					// TODO:
-					// RDC: WriteWarning("The file " & filename & " is empty; only metadata will be loaded for this record.")
+					_importStatusManager.ReiseWarningImportEvent(this, $"The file {fileMetadata.FileName} is empty; only metadata will be loaded for this record.", 0);
 					fileMetadata.FileExists = false;
 					fileMetadata.FileName = string.Empty;
 				}
 				else
 				{
-					// TODO:
-					// RDC: lineStatus += Relativity.MassImport.ImportProcessStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
+					fileMetadata.LineStatus += (int)Relativity.MassImport.ImportStatus.EmptyFile;
 				}
 			}
 			return fileMetadata;

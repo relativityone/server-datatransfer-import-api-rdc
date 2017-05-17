@@ -9,6 +9,7 @@ namespace kCura.WinEDDS.Core.Import.Status
 		Update,
 		Stopped,
 		TransferModeChanged,
+		Warning,
 		Error,
 		FatalError
 	}

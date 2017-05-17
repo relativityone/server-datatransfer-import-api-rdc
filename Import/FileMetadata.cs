@@ -11,6 +11,7 @@ namespace kCura.WinEDDS.Core.Import
 		public bool FileExists { get; set; }
 		public int LineNumber { get; set; }
 		public OI.FileID.FileIDData FileIdData { get; set; }
+		public int LineStatus { get; set; }
 		public ArtifactFieldCollection ArtifactFieldCollection { get; set; }
 		
 		protected bool Equals(FileMetadata other)

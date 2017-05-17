@@ -79,7 +79,6 @@ namespace kCura.WinEDDS.Core.Import
 				fileMode = "Aspera";
 			}
 			stringBuilder.Append($"- Files: {fileMode}");
-
 			_importStatusManager.RaiseTranserModeChangedEvent(this, stringBuilder.ToString());
 		}
 
