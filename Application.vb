@@ -66,7 +66,7 @@ Namespace kCura.EDDS.WinForm
 
 		Public Sub SetImplicitCredentialProvider()
 			Dim authEndpoint As string = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/authorize")
-			Dim implicitProvider = new OAuth2ImplicitCredentials(New Uri(authEndpoint), "d589f9922d802d5df895945765", AddressOf On_TokenRetrieved)
+			Dim implicitProvider = new OAuth2ImplicitCredentials(New Uri(authEndpoint), "Relativity Desktop Client", AddressOf On_TokenRetrieved)
 			RelativityWebApiCredentialsProvider.Instance().SetProvider(implicitProvider)
 		End Sub
 
