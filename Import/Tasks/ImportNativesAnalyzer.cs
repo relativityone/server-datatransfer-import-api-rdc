@@ -1,16 +1,23 @@
-﻿using kCura.Utility.Extensions;
+﻿using System;
+using kCura.Utility;
+using kCura.Utility.Extensions;
 using kCura.WinEDDS.Api;
+using kCura.WinEDDS.Core.Import.Helpers;
+using Polly;
+using Polly.Retry;
 using Relativity;
 
 namespace kCura.WinEDDS.Core.Import.Tasks
 {
 	public class ImportNativesAnalyzer  : IImportNativesAnalyzer
 	{
+		private readonly IFileInfoProvider _fileInfoProvider;
 		private readonly ITransferConfig _transferConfig;
 		private readonly IFileHelper _fileHelper;
 
-		public ImportNativesAnalyzer(ITransferConfig transferConfig, IFileHelper fileHelper)
+		public ImportNativesAnalyzer(IFileInfoProvider fileInfoProvider, ITransferConfig transferConfig, IFileHelper fileHelper)
 		{
+			_fileInfoProvider = fileInfoProvider;
 			_transferConfig = transferConfig;
 			_fileHelper = fileHelper;
 		}
@@ -23,58 +30,52 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			{
 				return fileMetadata;
 			}
-			fileMetadata.FileExists = ExtractFileExists(fileMetadata.FileName);
-			fileMetadata.FileName = ExtractFileName(fileMetadata);
-			fileMetadata.FileIdData = ExtractFileIdData(fileMetadata.FileName);
+			fileMetadata = ExtractFileExistsAndName(fileMetadata);
+			fileMetadata.FileIdData = ExtractFileIdData(fileMetadata);
 			return fileMetadata;
 		}
 
-		private bool ExtractFileExists(string fileName)
+		private FileMetadata ExtractFileExistsAndName(FileMetadata fileMetadata)
 		{
-			bool emptyFileName = fileName.Trim().IsNullOrEmpty();
-			if (emptyFileName)
-			{
-				return false;
-			}
-			bool fileExists = FileExists(fileName);
-
+			bool fileExists = FileExists(fileMetadata.FileName);
 			if (!fileExists)
 			{
 				// TODO:
 				// RDC: lineStatus += Relativity.MassImport.ImportStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
-				return false;
+				//return false;
+
+				fileMetadata.FileExists = false;
 			}
-			if (FileContentIsEmpty(fileName))
+			if (fileMetadata.FileExists && FileContentIsEmpty(fileMetadata))
 			{
-				if (_transferConfig.CreateErrorForEmptyNativeFile)
+				if (!_transferConfig.CreateErrorForEmptyNativeFile)
+				{
+					// TODO:
+					// RDC: WriteWarning("The file " & filename & " is empty; only metadata will be loaded for this record.")
+					fileMetadata.FileExists = false;
+					fileMetadata.FileName = string.Empty;
+				}
+				else
 				{
 					// TODO:
 					// RDC: lineStatus += Relativity.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
-					return true;
 				}
-				return false;
 			}
-			return true;
+			return fileMetadata;
 		}
 
-		private string ExtractFileName(FileMetadata fileMetadata)
+		private OI.FileID.FileIDData ExtractFileIdData(FileMetadata fileMetadata)
 		{
-			if (!fileMetadata.FileExists && FileContentIsEmpty(fileMetadata.FileName))
+			if (fileMetadata.FileExists && !_transferConfig.DisableNativeValidation)
 			{
-				return string.Empty;
+				return _fileInfoProvider.GetFileId(fileMetadata.FileName);
 			}
-			return fileMetadata.FileName;
+			return null;
 		}
 
-		private OI.FileID.FileIDData ExtractFileIdData(string fileName)
+		private bool FileContentIsEmpty(FileMetadata fileMetadata)
 		{
-			return _transferConfig.DisableNativeValidation ? null : OI.FileID.Manager.Instance.GetFileIDDataByFilePath(fileName);
-		}
-
-		private bool FileContentIsEmpty(string fileName)
-		{
-			// TODO
-			return false;
+			return _fileInfoProvider.GetFileSize(fileMetadata) == 0;
 		}
 
 		private bool FileExists(string fileName)
@@ -87,7 +88,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			string fileName = artifactFieldCollection.get_FieldList(FieldTypeHelper.FieldType.File)[0].Value.ToString().Trim();
 			if (fileName.Length > 1 && fileName.StartsWith("\\") && fileName[1] != '\\')
 			{
-				fileName = ".{fileName}";
+				fileName = $".{fileName}";
 			}
 			return fileName;
 		}
@@ -96,7 +97,8 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 		{
 			return new FileMetadata()
 			{
-				FileName = GetFileName(artifactFieldCollection)
+				FileName = GetFileName(artifactFieldCollection),
+				FileExists = true
 			};
 		}
 	}

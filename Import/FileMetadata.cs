@@ -1,5 +1,4 @@
-﻿using kCura.OI.FileID;
-
+﻿
 namespace kCura.WinEDDS.Core.Import
 {
 	public class FileMetadata
@@ -8,8 +7,8 @@ namespace kCura.WinEDDS.Core.Import
 		public string FileFullPathName { get; set; }
 		public string FileGuid { get; set; }
 		public bool FileExists { get; set; }
-
-		public FileIDData FileIdData;
+		public int LineNumber { get; set; }
+		public OI.FileID.FileIDData FileIdData { get; set; }
 
 		protected bool Equals(FileMetadata other)
 		{

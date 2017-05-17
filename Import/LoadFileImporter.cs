@@ -75,7 +75,7 @@ namespace kCura.WinEDDS.Core.Import
 		{
 			int currentBatchCounter = 0;
 			var importBatchContext = new ImportBatchContext();
-			while (_artifactReader.HasMoreRecords && currentBatchCounter > _config.ImportBatchSize - 1)
+			while (_artifactReader.HasMoreRecords && currentBatchCounter < _config.ImportBatchSize)
 			{
 				++currentBatchCounter;
 				ProcessBatchRecord(importBatchContext);

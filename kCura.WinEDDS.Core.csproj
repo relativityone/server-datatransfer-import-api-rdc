@@ -67,6 +67,10 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Polly, Version=5.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Polly.5.1.0\lib\net45\Polly.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.ServiceModel.Activities" />
@@ -112,6 +116,8 @@
     <Compile Include="Import\Errors\LineError.cs" />
     <Compile Include="Import\Errors\ClientErrorLineContainer.cs" />
     <Compile Include="Import\FileMetadata.cs" />
+    <Compile Include="Import\Helpers\FileInfoProvider.cs" />
+    <Compile Include="Import\Helpers\IFileInfoProvider.cs" />
     <Compile Include="Import\IFileUploader.cs" />
     <Compile Include="Import\IImportBatchJobFactory.cs" />
     <Compile Include="Import\IImportBatchJob.cs" />
