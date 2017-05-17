@@ -102,6 +102,9 @@
     <Compile Include="Export\Natives\Name\FieldFileNamePartProviderTests.cs" />
     <Compile Include="Export\Natives\Name\SeparatorFileNamePartProviderTests.cs" />
     <Compile Include="Helpers\ViewFieldInfoMockFactory.cs" />
+    <Compile Include="Import\Errors\ClientErrorLineContainerTests.cs" />
+    <Compile Include="Import\Errors\ErrorMessageContainerTests.cs" />
+    <Compile Include="Import\Errors\ErrorReporterTests.cs" />
     <Compile Include="Import\LoadFileImporterTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -125,6 +128,7 @@
       <Name>Relativity</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
