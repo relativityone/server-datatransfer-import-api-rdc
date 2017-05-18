@@ -127,6 +127,8 @@
     <Compile Include="Import\FileMetadata.cs" />
     <Compile Include="Import\Helpers\FileInfoProvider.cs" />
     <Compile Include="Import\Helpers\IFileInfoProvider.cs" />
+    <Compile Include="Import\Helpers\INativeLoadInfoFactory.cs" />
+    <Compile Include="Import\Helpers\NativeLoadInfoFactory.cs" />
     <Compile Include="Import\IFileUploader.cs" />
     <Compile Include="Import\IImportBatchJobFactory.cs" />
     <Compile Include="Import\IImportBatchJob.cs" />
@@ -134,6 +136,10 @@
     <Compile Include="Import\IImportJobInitilizer.cs" />
     <Compile Include="Import\ILoadFileImporter.cs" />
     <Compile Include="Import\ImportJob.cs" />
+    <Compile Include="Import\Managers\DocumentBulkImportManager.cs" />
+    <Compile Include="Import\Managers\IBulkImportManager.cs" />
+    <Compile Include="Import\Managers\ObjectBulkImportManager.cs" />
+    <Compile Include="Import\MetadataFilesInfo.cs" />
     <Compile Include="Import\Status\IImportStatusManager.cs" />
     <Compile Include="Import\Status\ImportStatusManager.cs" />
     <Compile Include="Import\Status\ImportStatusEventArgs.cs" />
@@ -150,6 +156,8 @@
     <Compile Include="Import\Tasks\ImportNativesTask.cs" />
     <Compile Include="Import\LoadFileImporter.cs" />
     <Compile Include="Import\Tasks\ImportNativesAnalyzer.cs" />
+    <Compile Include="Import\Tasks\IPushMetadataFilesTask.cs" />
+    <Compile Include="Import\Tasks\PushMetadataFilesTask.cs" />
     <Compile Include="Import\UploadResult.cs" />
     <Compile Include="IO\LongPathDirectoryHelper.cs" />
     <Compile Include="IO\LongPathFileHelper.cs" />
