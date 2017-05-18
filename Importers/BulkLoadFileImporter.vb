@@ -1487,7 +1487,7 @@ Namespace kCura.WinEDDS
 
 #Region "Field Preparation"
 
-		Private Function PrepareFieldCollectionAndExtractIdentityValue(ByVal record As Api.ArtifactFieldCollection) As String
+		Protected Function PrepareFieldCollectionAndExtractIdentityValue(ByVal record As Api.ArtifactFieldCollection) As String
 			System.Threading.Monitor.Enter(_outputFileWriter.OutputNativeFileWriter)
 			System.Threading.Monitor.Enter(_outputCodeFileWriter)
 			System.Threading.Monitor.Enter(_outputObjectFileWriter)
