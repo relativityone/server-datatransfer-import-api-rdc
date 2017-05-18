@@ -426,7 +426,7 @@ Namespace kCura.WinEDDS
 		''' <param name="path">The load file which contains information about the document being loaded</param>
 		''' <returns>True indicates success.  False or Nothing indicates failure.</returns>
 		''' <remarks></remarks>
-		Public Function ReadFile(ByVal path As String) As Object Implements ILoadFileImporter.ReadFile
+		Public Overridable  Function ReadFile(ByVal path As String) As Object Implements ILoadFileImporter.ReadFile
 			Dim line As Api.ArtifactFieldCollection
 			_filePath = path
 			_timekeeper.MarkStart("TOTAL")
