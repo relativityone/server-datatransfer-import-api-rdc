@@ -28,8 +28,9 @@ namespace kCura.WinEDDS.Core.Import
 
 		#region IImporterSettings members
 
-		public LoadFile Settings => _settings;
+		public LoadFile LoadFile => _settings;
 
+		public string RunId => _runID;
 		#endregion //IImporterSettings members
 
 		#region IImportMetadata members

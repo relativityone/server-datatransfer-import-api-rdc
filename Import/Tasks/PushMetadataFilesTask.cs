@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using kCura.EDDS.WebAPI.BulkImportManagerBase;
+using kCura.WinEDDS.Core.Import.Errors;
 using kCura.WinEDDS.Core.Import.Helpers;
 using kCura.WinEDDS.Core.Import.Managers;
 using BulkImportManager = kCura.WinEDDS.Service.BulkImportManager;
@@ -14,13 +15,16 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 		private readonly INativeLoadInfoFactory _nativeLoadInfoFactory;
 		private readonly IFileUploader _fileUploader;
 		private readonly IBulkImportManager _bulkImportManager;
+		private readonly IServerErrorManager _serverErrorManager;
 
-		public PushMetadataFilesTask(INativeLoadInfoFactory nativeLoadInfoFactory, IFileUploader fileUploader, ITransferConfig transferConfig, IBulkImportManager bulkImportManager)
+		public PushMetadataFilesTask(INativeLoadInfoFactory nativeLoadInfoFactory, IFileUploader fileUploader, ITransferConfig transferConfig, IBulkImportManager bulkImportManager,
+			IServerErrorManager serverErrorManager)
 		{
 			_nativeLoadInfoFactory = nativeLoadInfoFactory;
 			_fileUploader = fileUploader;
 			_transferConfig = transferConfig;
 			_bulkImportManager = bulkImportManager;
+			_serverErrorManager = serverErrorManager;
 		}
 
 		public void PushMetadataFiles(MetadataFilesInfo metadataFilesInfo)
@@ -40,6 +44,8 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 
 			var result = BulkImport(settings);
 			//TODO statistics
+
+			_serverErrorManager.ManageErrors();
 		}
 
 		private MassImportResults BulkImport(NativeLoadInfo settings)

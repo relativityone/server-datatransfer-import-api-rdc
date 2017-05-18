@@ -30,7 +30,7 @@ namespace kCura.WinEDDS.Core.Import
 
 			_context = new ImportContext()
 			{
-				Settings = importerSettings.Settings
+				Settings = importerSettings
 			};
 
 			Initialized += _importStatusManager.OnSetJobContext;
@@ -83,7 +83,6 @@ namespace kCura.WinEDDS.Core.Import
 
 		private void PopulateJobContext()
 		{
-			_context.JobRunId = Guid.NewGuid();
 			_context.TotalRecordCount = _importer.ArtifactReader.CountRecords();
 			RaiseStartEvents();
 		}
