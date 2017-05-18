@@ -44,7 +44,7 @@ Namespace kCura.WinEDDS
 		Private _overlayArtifactID As Int32
 		Private _executionSource As Relativity.ExecutionSource
 
-		Private _runID As String = System.Guid.NewGuid.ToString.Replace("-", "_")
+		Protected _runID As String = System.Guid.NewGuid.ToString.Replace("-", "_")
 
 		Private _outputCodeFilePath As String = System.IO.Path.GetTempFileName
 		Private _outputObjectFilePath As String = System.IO.Path.GetTempFileName
