@@ -42,6 +42,7 @@ Namespace kCura.WinEDDS
 							If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")
 							If Not tempDict.Contains("CreateFoldersInWebAPI") Then tempDict.Add("CreateFoldersInWebAPI", "True")
 							If Not tempDict.Contains("ForceWebUpload") Then tempDict.Add("ForceWebUpload", "False")
+							If Not tempDict.Contains("DisableAspera") Then tempDict.Add("DisableAspera", "False")
 							If Not tempDict.Contains(NameOf(LoadImportedFullTextFromServer)) Then tempDict.Add(NameOf(LoadImportedFullTextFromServer), "False")
 							If Not tempDict.Contains(NameOf(UsePipeliningForNativeAndObjectImports)) Then tempDict.Add(NameOf(UsePipeliningForNativeAndObjectImports), "False")
 							If Not tempDict.Contains(NameOf(UsePipeliningForFileIdAndCopy)) Then tempDict.Add(NameOf(UsePipeliningForFileIdAndCopy), "False")
@@ -326,6 +327,12 @@ Namespace kCura.WinEDDS
 		Public Shared ReadOnly Property ForceWebUpload() As Boolean
 			Get
 				Return CType(ConfigSettings("ForceWebUpload"), Boolean)
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property DisableAspera() As Boolean
+			Get
+				Return CType(ConfigSettings("DisableAspera"), Boolean)
 			End Get
 		End Property
 
