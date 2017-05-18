@@ -114,7 +114,7 @@
     <Compile Include="Import\Errors\ErrorManagerTests.cs" />
     <Compile Include="Import\Errors\ErrorReporterTests.cs" />
     <Compile Include="Import\ImportNativesAnalyzerTests.cs" />
-    <Compile Include="Import\LoadFileImporterTests.cs" />
+    <Compile Include="Import\JobImporterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -127,6 +127,10 @@
     <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
       <Project>{e3450350-56e3-4fe9-a47a-4d24960bcbdb}</Project>
       <Name>kCura.Utility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
+      <Project>{b092d1b2-909b-4ef0-9369-a81675c3fc18}</Project>
+      <Name>kCura.Windows.Process</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.WinEDDS.Core\kCura.WinEDDS.Core.csproj">
       <Project>{c5eb5351-3f27-4716-a7da-163f0400bcef}</Project>

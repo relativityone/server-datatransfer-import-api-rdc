@@ -1,4 +1,5 @@
 ﻿
+using System;
 using kCura.WinEDDS.Api;
 using kCura.WinEDDS.Core.Import;
 using kCura.WinEDDS.Core.Import.Errors;
@@ -8,33 +9,10 @@ using NUnit.Framework;
 
 namespace kCura.WinEDDS.Core.NUnit.Import
 {
-	public class LoadFileImporterTests
+	public class JobImporterTests
 	{
-		public class LoadFileImporterTest : LoadFileImporter
-		{
-			public bool InitManagersCheck { get; set; }
-
-			public LoadFileImporterTest(ImportContext context, ITransferConfig config, IImportBatchJobFactory batchJobBatchJobFactory, 
-				IArtifactReader artifactReader, IErrorContainer errorContainer, IImportStatusManager importStatusManager) 
-				: base(context, config, batchJobBatchJobFactory, errorContainer, importStatusManager)
-			{
-				_artifactReader = artifactReader;
-			}
-
-			protected override void InitializeManagers(LoadFile args)
-			{
-				InitManagersCheck = true;
-			}
-
-			protected override IArtifactReader GetArtifactReader()
-			{
-				return _artifactReader;
-			}
-		}
-
-		private LoadFileImporterTest _subjectUnderTest;
-		private LoadFile _loadFile;
-		private ImportContext _importContext;
+		
+		private ImportJob _subjectUnderTest;
 
 		private Mock<ITransferConfig> _transferConfigMock;
 		private Mock<IImportBatchJobFactory> _importJobBatchFactoryMock;
@@ -42,14 +20,12 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 		private Mock<IArtifactReader> _artifactReaderMock;
 		private Mock<IErrorContainer> _errorContainerMock;
 		private Mock<IImportStatusManager> _impStatusManagerMock;
+		private Mock<IImportMetadata> _importMetadataMock;
+		private Mock<IImporterSettings> _importSettings;
 
 		[SetUp]
 		public void Init()
 		{
-			_importContext = new ImportContext()
-			{
-				Args = new LoadFile()
-			};
 			_importJobBatchFactoryMock = new Mock<IImportBatchJobFactory>();
 			_transferConfigMock = new Mock<ITransferConfig>();
 			_importJobBatchMock = new Mock<IImportBatchJob>();
@@ -57,11 +33,14 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 
 			_errorContainerMock = new Mock<IErrorContainer>();
 			_impStatusManagerMock = new Mock<IImportStatusManager>();
+			_importSettings = new Mock<IImporterSettings>();
+			_importMetadataMock = new Mock<IImportMetadata>();
 
-			_loadFile = new LoadFile();
+			_importMetadataMock.Setup(item => item.ArtifactReader).Returns(_artifactReaderMock.Object);
 
-			_subjectUnderTest = new LoadFileImporterTest(_importContext, _transferConfigMock.Object, _importJobBatchFactoryMock.Object, 
-				_artifactReaderMock.Object, _errorContainerMock.Object, _impStatusManagerMock.Object);
+			_subjectUnderTest = new ImportJob(_transferConfigMock.Object, _importJobBatchFactoryMock.Object, 
+				_errorContainerMock.Object, _impStatusManagerMock.Object, 
+				_importMetadataMock.Object, _importSettings.Object);
 
 			_artifactReaderMock.Setup(reader => reader.AdvanceRecord());
 		}
@@ -77,8 +56,6 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 
 			// Assert
 			_artifactReaderMock.Verify(reader => reader.ReadArtifact(), Times.Never);
-
-			Assert.That(_subjectUnderTest.InitManagersCheck, Is.EqualTo(true));
 		}
 
 		[Test]
