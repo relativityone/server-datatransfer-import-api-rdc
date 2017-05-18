@@ -301,6 +301,10 @@
     <DefineConstants>EnableInjections</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.WinEDDS.Aspera\kCura.WinEDDS.Aspera.csproj">
+      <Project>{B9E022D8-7BDC-44B8-BEE3-2BB61571FC5E}</Project>
+      <Name>kCura.WinEDDS.Aspera</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.WinEDDS.Core\kCura.WinEDDS.Core.csproj">
       <Project>{c5eb5351-3f27-4716-a7da-163f0400bcef}</Project>
       <Name>kCura.WinEDDS.Core</Name>
