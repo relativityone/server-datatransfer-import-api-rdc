@@ -1,14 +1,16 @@
-Imports System.Collections
 Imports System.Collections.Generic
+Imports kCura.WinEDDS.Importers
 
 Namespace kCura.WinEDDS
 	Public Class FolderCache
+		Implements IFolderCache
+
 		Private _ht As Hashtable
 		Private _folderManager As Service.FolderManager
 		Private _rootFolderID As Int32
 		Private _caseContextArtifactID As Int32
 
-		Default Public ReadOnly Property FolderID(ByVal folderPath As String) As Int32
+		Default Public ReadOnly Property FolderID(ByVal folderPath As String) As Int32 Implements IFolderCache.FolderId
 			Get
 				Dim newFolderPath As New System.Text.StringBuilder
 				For Each folder As String In folderPath.Split("\"c)
