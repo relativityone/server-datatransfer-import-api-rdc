@@ -41,7 +41,7 @@ namespace kCura.WinEDDS.Core.Import.Status
 		public void RaiseFatalErrorImportEvent(object sender, string message, int recordIndex, Exception ex)
 		{
 			ImportStatusEventArgs args = CreateStatusArgs(ImportProcessStatus.FatalError, message, recordIndex, ex);
-			args.JobRunId = _importContext?.JobRunId;
+			args.JobRunId = _importContext?.Settings.RunId;
 			StatusChanged?.Invoke(sender, args);
 		}
 

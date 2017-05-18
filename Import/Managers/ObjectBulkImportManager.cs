@@ -21,7 +21,7 @@ namespace kCura.WinEDDS.Core.Import.Managers
 			{
 				throw new Exception();
 			}
-			return _bulkImportManager.BulkImportObjects(_importContext.Settings.CaseInfo.ArtifactID, objectLoadInfo, _importContext.Settings.CopyFilesToDocumentRepository);
+			return _bulkImportManager.BulkImportObjects(_importContext.Settings.LoadFile.CaseInfo.ArtifactID, objectLoadInfo, _importContext.Settings.LoadFile.CopyFilesToDocumentRepository);
 		}
 	}
 }

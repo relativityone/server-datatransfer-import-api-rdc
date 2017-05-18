@@ -25,9 +25,11 @@ namespace kCura.WinEDDS.Core.Import
 			_importJob = new ImportJob(config, batchJobBatchJobFactory, errorContainer, importStatusManager, this, this);
 		}
 
-		public LoadFile Settings => _settings;
+		public LoadFile LoadFile => _settings;
 
 		public IArtifactReader ArtifactReader => _artifactReader;
+
+		public string RunId => _runID;
 
 		protected override bool UseTimeZoneOffset { get; }
 		protected override Base GetSingleCodeValidator()

@@ -20,7 +20,7 @@ namespace kCura.WinEDDS.Core.Import.Status
 		public int CurrentRecordIndex { private set; get; }
 		public Exception Exception { private set; get; }
 
-		public Guid? JobRunId { set; get; }
+		public string JobRunId { set; get; }
 
 		public ImportStatusEventArgs(ImportProcessStatus processStatus, string message)
 		{

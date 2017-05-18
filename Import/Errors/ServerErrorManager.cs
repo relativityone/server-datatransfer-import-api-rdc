@@ -20,18 +20,18 @@ namespace kCura.WinEDDS.Core.Import.Errors
 
 		public void ManageErrors()
 		{
-			if (!_bulkImportManager.NativeRunHasErrors(_importContext.Settings.CaseInfo.ArtifactID, _importContext.RunId))
+			if (!_bulkImportManager.NativeRunHasErrors(_importContext.Settings.LoadFile.CaseInfo.ArtifactID, _importContext.Settings.RunId))
 			{
 				return;
 			}
 
 			//TODO
 			var keyFieldId = -1;
-			var errorFileKey = _bulkImportManager.GenerateNonImageErrorFiles(_importContext.Settings.CaseInfo.ArtifactID, _importContext.RunId,
-				_importContext.Settings.ArtifactTypeID, true, keyFieldId);
+			var errorFileKey = _bulkImportManager.GenerateNonImageErrorFiles(_importContext.Settings.LoadFile.CaseInfo.ArtifactID, _importContext.Settings.RunId,
+				_importContext.Settings.LoadFile.ArtifactTypeID, true, keyFieldId);
 			//TODO write status
 
-			GenericCsvReader reader = _serverErrorFileDownloader.DownloadErrorFile(errorFileKey.LogKey, _importContext.Settings.CaseInfo);
+			GenericCsvReader reader = _serverErrorFileDownloader.DownloadErrorFile(errorFileKey.LogKey, _importContext.Settings.LoadFile.CaseInfo);
 			_serverErrorFile.HandleServerErrors(reader);
 		}
 	}

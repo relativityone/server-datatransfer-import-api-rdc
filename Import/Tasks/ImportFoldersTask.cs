@@ -29,7 +29,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 
 		private int GetFolderId()
 		{
-			return _importCentext.Settings.CreateFolderStructure ? CreateFolderStructure() : GetDafaultFolderId();
+			return _importCentext.Settings.LoadFile.CreateFolderStructure ? CreateFolderStructure() : GetDafaultFolderId();
 		}
 
 		private int GetDafaultFolderId()
