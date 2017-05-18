@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.IO;
 using System.Text;
 using kCura.Windows.Process;
@@ -25,11 +26,34 @@ namespace kCura.WinEDDS.Core.Import
 			_importJob = new ImportJob(config, batchJobBatchJobFactory, errorContainer, importStatusManager, this, this);
 		}
 
+		#region IImporterSettings members
+
 		public LoadFile Settings => _settings;
+
+		#endregion //IImporterSettings members
+
+		#region IImportMetadata members
 
 		public IArtifactReader ArtifactReader => _artifactReader;
 
+		public string PrepareFieldsAndExtractIdentityValue(FileMetadata fileMetadata)
+		{
+			return PrepareFieldCollectionAndExtractIdentityValue(fileMetadata.ArtifactFieldCollection);
+		}
+
+		public NameValueCollection ProcessedDocIdentifiers
+		{
+			get { return _processedDocumentIdentifiers; }
+
+			set { _processedDocumentIdentifiers = value; }
+		}
+
+		#endregion //IImportMetadata members
+
+		#region Overridden Members
+
 		protected override bool UseTimeZoneOffset { get; }
+
 		protected override Base GetSingleCodeValidator()
 		{
 			return new SingleImporter(_settings.CaseInfo, _codeManager);
@@ -40,9 +64,15 @@ namespace kCura.WinEDDS.Core.Import
 			return new LoadFileReader(_settings, false);
 		}
 
+		
 		public override object ReadFile(string path)
 		{
+			_processedDocumentIdentifiers = new NameValueCollection();
+
 			return _importJob.ReadFile(path);
 		}
+
+		#endregion //Overridden Members
+
 	}
 }

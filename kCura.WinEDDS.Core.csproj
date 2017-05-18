@@ -156,6 +156,7 @@
     <Compile Include="Import\Tasks\ImportNativesTask.cs" />
     <Compile Include="Import\LoadFileImporter.cs" />
     <Compile Include="Import\Tasks\ImportNativesAnalyzer.cs" />
+    <Compile Include="Import\Tasks\ImportPrepareMetadataTask.cs" />
     <Compile Include="Import\Tasks\IPushMetadataFilesTask.cs" />
     <Compile Include="Import\Tasks\PushMetadataFilesTask.cs" />
     <Compile Include="Import\UploadResult.cs" />
