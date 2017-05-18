@@ -1344,6 +1344,7 @@ Namespace kCura.EDDS.WinForm
 				Case Application.CredentialCheckResult.AccessDisabled
 					MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)
 				Case Application.CredentialCheckResult.Fail
+					CheckVersion(System.Net.CredentialCache.DefaultCredentials)
 					Await NewLoginAsync()
 				Case Application.CredentialCheckResult.Success
 					LogOn()
