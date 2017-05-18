@@ -15,8 +15,8 @@ namespace kCura.WinEDDS.Core.Import.Managers
 
 		public MassImportResults BulkImport(NativeLoadInfo loadInfo)
 		{
-			return _bulkImportManager.BulkImportNative(_importContext.Args.CaseInfo.ArtifactID, loadInfo, _importContext.Args.CopyFilesToDocumentRepository,
-				_importContext.Args.FullTextColumnContainsFileLocation);
+			return _bulkImportManager.BulkImportNative(_importContext.Settings.CaseInfo.ArtifactID, loadInfo, _importContext.Settings.CopyFilesToDocumentRepository,
+				_importContext.Settings.FullTextColumnContainsFileLocation);
 		}
 	}
 }
