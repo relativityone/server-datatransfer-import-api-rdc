@@ -1125,9 +1125,7 @@ Namespace kCura.WinEDDS
 			Try
 				Task.WaitAll(_task)
 			Catch ex As AggregateException
-				For Each e As Exception In ex.InnerExceptions
-					Throw e
-				Next
+				Throw ex.InnerExceptions.First()
 			End Try
 		End Sub
 
