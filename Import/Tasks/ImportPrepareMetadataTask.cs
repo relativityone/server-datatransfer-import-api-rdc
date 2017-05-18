@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Linq;
 using kCura.Utility.Extensions;
 using kCura.WinEDDS.Api;
@@ -8,13 +7,13 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 {
 	public class ImportPrepareMetadataTask : IImportPrepareMetadataTask
 	{
+		private readonly ImportContext _importContext;
 		private readonly IImportMetadata _importMetadata;
-		private readonly IImporterSettings _importerSettings;
 
-		public ImportPrepareMetadataTask(IImportMetadata importMetadata, IImporterSettings importerSettings)
+		public ImportPrepareMetadataTask(ImportContext importContext, IImportMetadata importMetadata)
 		{
+			_importContext = importContext;
 			_importMetadata = importMetadata;
-			_importerSettings = importerSettings;
 		}
 
 		public MetadataFilesInfo Execute(FileMetadata fileMetadata)
@@ -26,17 +25,25 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 
 			string dataGridId = GetDataGridId(fileMetadata);
 
-			//var doc = new MetaDocument(fileMetadata.FileGuid, recordId, IndexFileInDb(fileMetadata),
-			//	fileMetadata.FileName, fileMetadata.FileName, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileIdData, lineStatus, destinationVolume, folderPath, dataGridID)
-			
+			var doc = new MetaDocument(fileMetadata.FileGuid, recordId, IndexFileInDb(fileMetadata),
+				fileMetadata.FileName, fileMetadata.FullFilePath, fileMetadata.UploadFile,
+				fileMetadata.LineNumber, _importContext.ParentFolderId, fileMetadata.ArtifactFieldCollection,
+				fileMetadata.FileIdData, fileMetadata.LineStatus, GetDestinationPath(), _importContext.FolderPath, dataGridId);
+
+
 			return metadataFilesInfo;
 		}
 
-		//private bool IndexFileInDb(FileMetadata fileMetadata)
-		//{
-		//	return fileMetadata.FileExists && fileMetadata.UploadFile &&
-		//			(!fileMetadata.FileGuid.IsNullOrEmpty() || !_importerSettings.Settings.CopyFilesToDocumentRepository);
-		//}
+		private string GetDestinationPath()
+		{
+			throw new NotImplementedException();
+		}
+
+		private bool IndexFileInDb(FileMetadata fileMetadata)
+		{
+			return fileMetadata.FileExists && fileMetadata.UploadFile &&
+					(!fileMetadata.FileGuid.IsNullOrEmpty() || !_importContext.Settings.LoadFile.CopyFilesToDocumentRepository);
+		}
 
 		private string GetDataGridId(FileMetadata fileMetadata)
 		{

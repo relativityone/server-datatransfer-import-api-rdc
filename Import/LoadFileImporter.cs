@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Specialized;
-using System.IO;
-using System.Text;
 using kCura.Windows.Process;
 using kCura.WinEDDS.Api;
 using kCura.WinEDDS.CodeValidator;
@@ -31,6 +29,7 @@ namespace kCura.WinEDDS.Core.Import
 		public LoadFile LoadFile => _settings;
 
 		public string RunId => _runID;
+
 		#endregion //IImporterSettings members
 
 		#region IImportMetadata members
