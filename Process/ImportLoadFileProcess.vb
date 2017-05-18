@@ -1,11 +1,9 @@
-
-Imports kCura.WinEDDS.Aspera
-
 Namespace kCura.WinEDDS
 
 	Public Class ImportLoadFileProcess
 		Inherits kCura.Windows.Process.ProcessBase
 
+		Public BulkLoadFileImporterFactory As IBulkLoadFileImporterFactory
 		Public LoadFile As LoadFile
 		Protected WithEvents _loadFileImporter As BulkLoadFileImporter
 		Private _startTime As System.DateTime
@@ -79,6 +77,9 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Overridable Function GetImporter() As kCura.WinEDDS.BulkLoadFileImporter
+			If Not BulkLoadFileImporterFactory Is Nothing
+				Return BulkLoadFileImporterFactory.Create(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter, CloudInstance, ExecutionSource)
+			End If
 			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter, CloudInstance, ExecutionSource)
 
 			Return returnImporter
