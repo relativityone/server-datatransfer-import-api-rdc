@@ -11,7 +11,7 @@ Namespace kCura.WinEDDS
 		Implements ILoadFileImporter
 
 #Region "Members"
-		Private _overwrite As Relativity.ImportOverwriteType
+		Protected _overwrite As Relativity.ImportOverwriteType
 		Private WithEvents _uploader As kCura.WinEDDS.FileUploader
 		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
 		Private _parentFolderDTO As kCura.EDDS.WebAPI.FolderManagerBase.Folder
@@ -41,8 +41,8 @@ Namespace kCura.WinEDDS
 		Private _outputCodeFileWriter As System.IO.StreamWriter
 		Private _outputObjectFileWriter As System.IO.StreamWriter
 		Private _caseInfo As Relativity.CaseInfo
-		Private _overlayArtifactID As Int32
-		Private _executionSource As Relativity.ExecutionSource
+		Protected _overlayArtifactID As Int32
+		Protected _executionSource As Relativity.ExecutionSource
 
 		Protected _runID As String = System.Guid.NewGuid.ToString.Replace("-", "_")
 
@@ -66,7 +66,7 @@ Namespace kCura.WinEDDS
 
 
 		Private _cloudInstance As Boolean
-		Private _bulkLoadFileFieldDelimiter As String
+		Protected _bulkLoadFileFieldDelimiter As String
 
 		Protected Property LinkDataGridRecords As Boolean
 
