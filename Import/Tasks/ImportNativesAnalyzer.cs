@@ -1,4 +1,5 @@
-﻿using kCura.WinEDDS.Api;
+﻿using System.IO;
+using kCura.WinEDDS.Api;
 using kCura.WinEDDS.Core.Import.Helpers;
 using kCura.WinEDDS.Core.Import.Status;
 using Relativity;
@@ -36,7 +37,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 
 		private FileMetadata ExtractFileExistsAndName(FileMetadata fileMetadata)
 		{
-			bool fileExists = FileExists(fileMetadata.FileName);
+			bool fileExists = FileExists(fileMetadata.FullFilePath);
 			if (!fileExists)
 			{
 				fileMetadata.LineStatus += (int)Relativity.MassImport.ImportStatus.FileSpecifiedDne;
@@ -46,15 +47,16 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			{
 				if (!_transferConfig.CreateErrorForEmptyNativeFile)
 				{
-					_importStatusManager.ReiseWarningImportEvent(this, $"The file {fileMetadata.FileName} is empty; only metadata will be loaded for this record.", 0);
+					_importStatusManager.ReiseWarningImportEvent(this, $"The file {fileMetadata.FullFilePath} is empty; only metadata will be loaded for this record.", 0);
 					fileMetadata.FileExists = false;
-					fileMetadata.FileName = string.Empty;
+					fileMetadata.FullFilePath = string.Empty;
 				}
 				else
 				{
 					fileMetadata.LineStatus += (int)Relativity.MassImport.ImportStatus.EmptyFile;
 				}
 			}
+			fileMetadata.FileName = Path.GetFileName(fileMetadata.FullFilePath);
 			return fileMetadata;
 		}
 
@@ -62,7 +64,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 		{
 			if (fileMetadata.FileExists && !_transferConfig.DisableNativeValidation)
 			{
-				return _fileInfoProvider.GetFileId(fileMetadata.FileName);
+				return _fileInfoProvider.GetFileId(fileMetadata.FullFilePath);
 			}
 			return null;
 		}
@@ -77,7 +79,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			return _fileHelper.Exists(fileName);
 		}
 
-		private string GetFileName(ArtifactFieldCollection artifactFieldCollection)
+		private string GetFullFilePath(ArtifactFieldCollection artifactFieldCollection)
 		{
 			string fileName = artifactFieldCollection.get_FieldList(FieldTypeHelper.FieldType.File)[0].Value.ToString().Trim();
 			if (fileName.Length > 1 && fileName.StartsWith("\\") && fileName[1] != '\\')
@@ -89,7 +91,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 
 		private void SetDefaults(FileMetadata fileMetadata)
 		{
-			fileMetadata.FileName = GetFileName(fileMetadata.ArtifactFieldCollection);
+			fileMetadata.FullFilePath = GetFullFilePath(fileMetadata.ArtifactFieldCollection);
 			fileMetadata.FileExists = true;
 		}
 	}

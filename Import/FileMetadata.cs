@@ -1,17 +1,23 @@
 ﻿
+using System;
 using kCura.WinEDDS.Api;
 
 namespace kCura.WinEDDS.Core.Import
 {
 	public class FileMetadata
 	{
-		public string FileName { get; set; }
-		public string FileFullPathName { get; set; }
-		public string FileGuid { get; set; }
+		public string FullFilePath { get; set; } = string.Empty;
+		public string FileName { get; set; } = string.Empty;
+		public string FileGuid { get; set; } = string.Empty;
 		public bool FileExists { get; set; }
 		public int LineNumber { get; set; }
+		public bool UploadFile { get; set; }
+		public string FolderPath { get; set; } = string.Empty;
+		public string DestinationDirectory { get; set; } = string.Empty;
+
 		public OI.FileID.FileIDData FileIdData { get; set; }
 		public int LineStatus { get; set; }
+
 		public ArtifactFieldCollection ArtifactFieldCollection { get; set; }
 		
 		protected bool Equals(FileMetadata other)

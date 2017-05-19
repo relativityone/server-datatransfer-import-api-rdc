@@ -35,11 +35,11 @@ namespace kCura.WinEDDS.Core.Import.Helpers
 						&& exception is ArgumentException
 						&& exception.Message.Contains("Illegal characters in path."))
 					{
-						throw new RobustIoReporter.FileInfoFailedException($"File {fileMetadata.FileName} not found: illegal characters in path.");
+						throw new RobustIoReporter.FileInfoFailedException($"File {fileMetadata.FullFilePath} not found: illegal characters in path.");
 					}
 					IoWarningOccurred?.Invoke(this, new RobustIoReporter.IoWarningEventArgs(0, exception, fileMetadata.LineNumber));
 				});
-			policy.Execute(() => fileSize = _fileHelper.GetFileSize(fileMetadata.FileName));
+			policy.Execute(() => fileSize = _fileHelper.GetFileSize(fileMetadata.FullFilePath));
 			return fileSize;
 		}
 	}

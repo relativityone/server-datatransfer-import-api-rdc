@@ -11,7 +11,8 @@ namespace kCura.WinEDDS.Core.Import
 		private readonly IImportPrepareMetadataTask _importCreateMetadataTask;
 		private readonly IImportMetadataTask _importMetadataTask;
 
-		public ImportBatchJob(IImportNativesTask importNativesTask, IImportFoldersTask importFoldersTask, IImportPrepareMetadataTask importCreateMetadataTask,
+		public ImportBatchJob(IImportNativesTask importNativesTask, IImportFoldersTask importFoldersTask, 
+			IImportPrepareMetadataTask importCreateMetadataTask,
 			IImportMetadataTask importMetadataTask)
 		{
 			_importNativesTask = importNativesTask;
@@ -23,23 +24,23 @@ namespace kCura.WinEDDS.Core.Import
 		public void Run(ImportBatchContext batchContext)
 		{
 			// TODO:
-			foreach (FileMetadata fieleMetadata in batchContext.FileMetaDataHolder)
+			foreach (FileMetadata fileMetadata in batchContext.FileMetaDataHolder)
 			{
-				UploadNatives(fieleMetadata);
+				UploadNatives(fileMetadata);
 				CreateFolderStructure();
-				MetaDocument metadataDoc = CreateMetadata();
+				MetadataFilesInfo metadataDoc = CreateMetadata(fileMetadata);
 				UploadMetadata(metadataDoc);
 			}
 		}
 
-		private void UploadMetadata(MetaDocument metadataDoc)
+		private void UploadMetadata(MetadataFilesInfo metadataDoc)
 		{
 			_importMetadataTask.Execute(metadataDoc);
 		}
 
-		private MetaDocument CreateMetadata()
+		private MetadataFilesInfo CreateMetadata(FileMetadata fileMetadata)
 		{
-			return _importCreateMetadataTask.Execute();
+			return _importCreateMetadataTask.Execute(fileMetadata);
 		}
 
 		private void CreateFolderStructure()
