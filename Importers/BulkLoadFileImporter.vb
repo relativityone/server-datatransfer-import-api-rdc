@@ -37,17 +37,17 @@ Namespace kCura.WinEDDS
 		Private _copyFileToRepository As Boolean
 		Private _oixFileLookup As System.Collections.Specialized.HybridDictionary
 		Private _fieldArtifactIds As Int32()
-		Private _outputFileWriter As kCura.WinEDDS.OutputFileWriter = New kCura.WinEDDS.OutputFileWriter()
-		Private _outputCodeFileWriter As System.IO.StreamWriter
-		Private _outputObjectFileWriter As System.IO.StreamWriter
+		Protected _outputFileWriter As kCura.WinEDDS.OutputFileWriter = New kCura.WinEDDS.OutputFileWriter()
+		private _outputCodeFileWriter As System.IO.StreamWriter
+		private _outputObjectFileWriter As System.IO.StreamWriter
 		Private _caseInfo As Relativity.CaseInfo
 		Private _overlayArtifactID As Int32
 		Private _executionSource As Relativity.ExecutionSource
 
 		Protected _runID As String = System.Guid.NewGuid.ToString.Replace("-", "_")
 
-		Private _outputCodeFilePath As String = System.IO.Path.GetTempFileName
-		Private _outputObjectFilePath As String = System.IO.Path.GetTempFileName
+		Protected _outputCodeFilePath As String = System.IO.Path.GetTempFileName
+		Protected _outputObjectFilePath As String = System.IO.Path.GetTempFileName
 		Private _filePath As String
 		Private _batchCounter As Int32 = 0
 		Private _errorMessageFileLocation As String = String.Empty
@@ -559,7 +559,7 @@ Namespace kCura.WinEDDS
 			_relativityManager = New kCura.WinEDDS.Service.RelativityManager(args.Credentials, args.CookieContainer)
 		End Sub
 
-		Private Sub DeleteFiles()
+		Protected Sub DeleteFiles()
 			kCura.Utility.File.Instance.Delete(_outputFileWriter.OutputNativeFilePath)
 			kCura.Utility.File.Instance.Delete(_outputCodeFilePath)
 			kCura.Utility.File.Instance.Delete(_outputObjectFilePath)
@@ -1133,13 +1133,13 @@ Namespace kCura.WinEDDS
 			End Select
 		End Function
 
-		Private Sub OpenFileWriters()
+		Protected Sub OpenFileWriters()
 			_outputFileWriter.Open()
 			_outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)
 			_outputObjectFileWriter = New System.IO.StreamWriter(_outputObjectFilePath, False, System.Text.Encoding.Unicode)
 		End Sub
 
-		Private Sub CloseFileWriters()
+		Protected Sub CloseFileWriters()
 			_outputFileWriter.Close()
 			_outputCodeFileWriter.Close()
 			_outputObjectFileWriter.Close()
@@ -1172,7 +1172,7 @@ Namespace kCura.WinEDDS
 			Return DirectCast(retval.ToArray(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo)), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo())
 		End Function
 
-		Private Sub ManageDocumentLine(ByVal mdoc As MetaDocument)
+		Protected Sub ManageDocumentLine(ByVal mdoc As MetaDocument)
 			Dim chosenEncoding As System.Text.Encoding = Nothing
 
 			_outputFileWriter.MarkRollbackPosition()
