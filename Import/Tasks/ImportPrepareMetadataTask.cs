@@ -16,27 +16,23 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			_importMetadata = importMetadata;
 		}
 
-		public MetadataFilesInfo Execute(FileMetadata fileMetadata)
+		public void Execute(FileMetadata fileMetadata)
 		{
-			var metadataFilesInfo = new MetadataFilesInfo();
-
 			string recordId = _importMetadata.PrepareFieldsAndExtractIdentityValue(fileMetadata);
-			ValidateRecordId(recordId);
-
 			string dataGridId = GetDataGridId(fileMetadata);
 
+			ValidateRecordId(recordId);
+			ProcessDocumentMetadata(recordId, dataGridId, fileMetadata);
+		}
+
+		private void ProcessDocumentMetadata(string recordId, string dataGridId, FileMetadata fileMetadata)
+		{
 			var doc = new MetaDocument(fileMetadata.FileGuid, recordId, IndexFileInDb(fileMetadata),
 				fileMetadata.FileName, fileMetadata.FullFilePath, fileMetadata.UploadFile,
 				fileMetadata.LineNumber, _importContext.ParentFolderId, fileMetadata.ArtifactFieldCollection,
-				fileMetadata.FileIdData, fileMetadata.LineStatus, GetDestinationPath(), _importContext.FolderPath, dataGridId);
+				fileMetadata.FileIdData, fileMetadata.LineStatus, fileMetadata.DestinationDirectory, _importContext.FolderPath, dataGridId);
 
-
-			return metadataFilesInfo;
-		}
-
-		private string GetDestinationPath()
-		{
-			throw new NotImplementedException();
+			_importMetadata.ProcessDocumentMetadata(doc);
 		}
 
 		private bool IndexFileInDb(FileMetadata fileMetadata)

@@ -1,6 +1,4 @@
-﻿
-using kCura.WinEDDS.Api;
-using kCura.WinEDDS.Core.Import.Tasks;
+﻿using kCura.WinEDDS.Core.Import.Tasks;
 
 namespace kCura.WinEDDS.Core.Import
 {
@@ -9,38 +7,51 @@ namespace kCura.WinEDDS.Core.Import
 		private readonly IImportNativesTask _importNativesTask;
 		private readonly IImportFoldersTask _importFoldersTask;
 		private readonly IImportPrepareMetadataTask _importCreateMetadataTask;
-		private readonly IImportMetadataTask _importMetadataTask;
+		private readonly IPushMetadataFilesTask _pushMetadataFilesTask;
+		private readonly IImportMetadata _importMetadata;
 
 		public ImportBatchJob(IImportNativesTask importNativesTask, IImportFoldersTask importFoldersTask, 
 			IImportPrepareMetadataTask importCreateMetadataTask,
-			IImportMetadataTask importMetadataTask)
+			IPushMetadataFilesTask pushMetadataFilesTask, IImportMetadata importMetadata)
 		{
 			_importNativesTask = importNativesTask;
 			_importFoldersTask = importFoldersTask;
 			_importCreateMetadataTask = importCreateMetadataTask;
-			_importMetadataTask = importMetadataTask;
+			_pushMetadataFilesTask = pushMetadataFilesTask;
+			_importMetadata = importMetadata;
 		}
 
 		public void Run(ImportBatchContext batchContext)
 		{
-			// TODO:
+			InitializeBatch(batchContext);
 			foreach (FileMetadata fileMetadata in batchContext.FileMetaDataHolder)
 			{
 				UploadNatives(fileMetadata);
 				CreateFolderStructure();
-				MetadataFilesInfo metadataDoc = CreateMetadata(fileMetadata);
-				UploadMetadata(metadataDoc);
+				CreateMetadata(fileMetadata);
 			}
+			CompleteMetadataProcess();
+			UploadMetadata(batchContext);
 		}
 
-		private void UploadMetadata(MetadataFilesInfo metadataDoc)
+		private void UploadMetadata(ImportBatchContext batchContext)
 		{
-			_importMetadataTask.Execute(metadataDoc);
+			_pushMetadataFilesTask.PushMetadataFiles(batchContext.MetadataFilesInfo);
 		}
 
-		private MetadataFilesInfo CreateMetadata(FileMetadata fileMetadata)
+		private void CompleteMetadataProcess()
 		{
-			return _importCreateMetadataTask.Execute(fileMetadata);
+			_importMetadata.SubmitMetadataProcess();
+		}
+
+		private void InitializeBatch(ImportBatchContext batchContext)
+		{
+			batchContext.MetadataFilesInfo = _importMetadata.InitMetadataProcess();
+		}
+
+		private void CreateMetadata(FileMetadata fileMetadata)
+		{
+			_importCreateMetadataTask.Execute(fileMetadata);
 		}
 
 		private void CreateFolderStructure()

@@ -7,11 +7,14 @@ namespace kCura.WinEDDS.Core.Import
 	{
 		public List<FileMetadata> FileMetaDataHolder { get; private set; }
 
-		public Guid RunId { get; private set; }
+		public MetadataFilesInfo MetadataFilesInfo { get; set; }
 
-		public ImportBatchContext(int batchSize)
+		public ImportContext ImportContext { get; private set; }
+
+		public ImportBatchContext(ImportContext importContext, int batchSize)
 		{
 			FileMetaDataHolder = new List<FileMetadata>(batchSize);
+			ImportContext = importContext;
 		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.WinEDDS.Api;
+using kCura.WinEDDS.Core.Import.Helpers;
 using Relativity;
 
 namespace kCura.WinEDDS.Core.Import.Tasks
@@ -9,11 +10,14 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 		private readonly LoadFile _settings;
 		private readonly IFileUploader _fileUploader;
 		private readonly IImportNativesAnalyzer _importNativesAnalyzer;
+		private readonly IRepositoryFilePathHelper _repositoryFilePathHelper;
 
-		public ImportNativesTask(LoadFile settings, IFileUploaderFactory fileUploaderFactory, IImportNativesAnalyzer importNativesAnalyzer)
+		public ImportNativesTask(LoadFile settings, IFileUploaderFactory fileUploaderFactory, IImportNativesAnalyzer importNativesAnalyzer,
+			IRepositoryFilePathHelper repositoryFilePathHelper)
 		{
 			_settings = settings;
 			_importNativesAnalyzer = importNativesAnalyzer;
+			_repositoryFilePathHelper = repositoryFilePathHelper;
 			_fileUploader = fileUploaderFactory.CreateNativeFileUploader();
 		}
 
@@ -26,28 +30,24 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 				FileMetadata processedFileMetadata = _importNativesAnalyzer.Process(fileMetadata);
 				if (processedFileMetadata.FileExists)
 				{
-					CopyFile(processedFileMetadata.FullFilePath);
+					processedFileMetadata.FileGuid = Guid.NewGuid().ToString();
+					CopyFile(processedFileMetadata);
 				}
 			}
 		}
 
-		private void CopyFile(string sourceFileName)
+		private void CopyFile(FileMetadata fileMetadata)
 		{
 			if (_settings.CopyFilesToDocumentRepository)
 			{
-				string destinationFileName = Guid.NewGuid().ToString();
-				_fileUploader.UploadFile(new FileMetadata
-				{
-					FullFilePath = sourceFileName,
-					FileGuid = destinationFileName
-				});
+				fileMetadata.DestinationDirectory = _repositoryFilePathHelper.GetNextDestinationDirectory();
+				_fileUploader.UploadFile(fileMetadata);
 			}
 		}
 
 		private bool ExtractUploadCheck(FileMetadata fileMetadata)
 		{
 			return fileMetadata.ArtifactFieldCollection.get_FieldList(FieldTypeHelper.FieldType.File).Length > 0;
-
 		}
 
 		private bool CanExecute(FileMetadata fileMetadata)

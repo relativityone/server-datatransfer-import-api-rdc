@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.IO;
 using kCura.Windows.Process;
 using kCura.WinEDDS.Api;
 using kCura.WinEDDS.CodeValidator;
@@ -36,16 +37,57 @@ namespace kCura.WinEDDS.Core.Import
 
 		public IArtifactReader ArtifactReader => _artifactReader;
 
-		public string PrepareFieldsAndExtractIdentityValue(FileMetadata fileMetadata)
-		{
-			return PrepareFieldCollectionAndExtractIdentityValue(fileMetadata.ArtifactFieldCollection);
-		}
-
 		public NameValueCollection ProcessedDocIdentifiers
 		{
 			get { return _processedDocumentIdentifiers; }
 
 			set { _processedDocumentIdentifiers = value; }
+		}
+
+		public string PrepareFieldsAndExtractIdentityValue(FileMetadata fileMetadata)
+		{
+			return PrepareFieldCollectionAndExtractIdentityValue(fileMetadata.ArtifactFieldCollection);
+		}
+
+		
+		public void ProcessDocumentMetadata(MetaDocument metaDocument)
+		{
+			ManageDocumentLine(metaDocument);
+		}
+
+		public MetadataFilesInfo InitMetadataProcess()
+		{
+			DeleteFiles();
+			OpenFileWriters();
+
+			return new MetadataFilesInfo()
+			{
+				CodeFilePath = new FileMetadata()
+				{
+					FullFilePath = _outputCodeFilePath,
+					FileGuid = Guid.NewGuid().ToString()
+				},
+				NativeFilePath = new FileMetadata
+				{
+					FullFilePath = _outputFileWriter.OutputNativeFilePath,
+					FileGuid = Guid.NewGuid().ToString()
+				},
+				DataGridFilePath = new FileMetadata
+				{
+					FullFilePath = _outputFileWriter.OutputDataGridFilePath,
+					FileGuid = Guid.NewGuid().ToString()
+				},
+				ObjectFilePath = new FileMetadata
+				{
+					FullFilePath = _outputObjectFilePath,
+					FileGuid = Guid.NewGuid().ToString()
+				},
+			};
+		}
+
+		public void SubmitMetadataProcess()
+		{
+			CloseFileWriters();
 		}
 
 		#endregion //IImportMetadata members
@@ -64,7 +106,6 @@ namespace kCura.WinEDDS.Core.Import
 			return new LoadFileReader(_settings, false);
 		}
 
-		
 		public override object ReadFile(string path)
 		{
 			_processedDocumentIdentifiers = new NameValueCollection();
@@ -74,5 +115,9 @@ namespace kCura.WinEDDS.Core.Import
 
 		#endregion //Overridden Members
 
+		private string GetFilePath(StreamWriter streamWriter)
+		{
+			return ((FileStream)(streamWriter.BaseStream)).Name;
+		}
 	}
 }
