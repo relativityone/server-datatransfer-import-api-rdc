@@ -4,6 +4,6 @@ namespace kCura.WinEDDS.Core.Import.Managers
 {
 	public interface IBulkImportManager
 	{
-		MassImportResults BulkImport(NativeLoadInfo loadInfo);
+		MassImportResults BulkImport(NativeLoadInfo loadInfo, ImportContext importContext);
 	}
 }

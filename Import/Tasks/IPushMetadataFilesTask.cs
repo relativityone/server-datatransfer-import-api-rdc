@@ -2,6 +2,6 @@
 {
 	public interface IPushMetadataFilesTask
 	{
-		void PushMetadataFiles(MetadataFilesInfo metadataFilesInfo);
+		void PushMetadataFiles(ImportBatchContext importBatchContext);
 	}
 }

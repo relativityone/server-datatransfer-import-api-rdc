@@ -10,13 +10,12 @@ namespace kCura.WinEDDS.Core.Import.Helpers
 		private readonly ITransferConfig _transferConfig;
 		private readonly ImportContext _importContext;
 
-		public NativeLoadInfoFactory(ITransferConfig transferConfig, ImportContext importContext)
+		public NativeLoadInfoFactory(ITransferConfig transferConfig)
 		{
 			_transferConfig = transferConfig;
-			_importContext = importContext;
 		}
 
-		public NativeLoadInfo Create(MetadataFilesInfo metadataFilesInfo)
+		public NativeLoadInfo Create(MetadataFilesInfo metadataFilesInfo, ImportContext importContext)
 		{
 			var importerSettings = _importContext.Settings;
 

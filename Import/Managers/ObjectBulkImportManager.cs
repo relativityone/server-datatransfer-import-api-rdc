@@ -6,22 +6,21 @@ namespace kCura.WinEDDS.Core.Import.Managers
 	public class ObjectBulkImportManager : IBulkImportManager
 	{
 		private readonly BulkImportManager _bulkImportManager;
-		private readonly ImportContext _importContext;
 
-		public ObjectBulkImportManager(BulkImportManager bulkImportManager, ImportContext importContext)
+		public ObjectBulkImportManager(BulkImportManager bulkImportManager)
 		{
 			_bulkImportManager = bulkImportManager;
-			_importContext = importContext;
 		}
 
-		public MassImportResults BulkImport(NativeLoadInfo loadInfo)
+		public MassImportResults BulkImport(NativeLoadInfo loadInfo, ImportContext importContext)
 		{
 			var objectLoadInfo = loadInfo as ObjectLoadInfo;
 			if (objectLoadInfo == null)
 			{
 				throw new Exception();
 			}
-			return _bulkImportManager.BulkImportObjects(_importContext.Settings.LoadFile.CaseInfo.ArtifactID, objectLoadInfo, _importContext.Settings.LoadFile.CopyFilesToDocumentRepository);
+			return _bulkImportManager.BulkImportObjects(importContext.Settings.LoadFile.CaseInfo.ArtifactID, objectLoadInfo, 
+				importContext.Settings.LoadFile.CopyFilesToDocumentRepository);
 		}
 	}
 }

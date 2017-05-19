@@ -4,6 +4,6 @@ namespace kCura.WinEDDS.Core.Import.Helpers
 {
 	public interface INativeLoadInfoFactory
 	{
-		NativeLoadInfo Create(MetadataFilesInfo metadataFilesInfo);
+		NativeLoadInfo Create(MetadataFilesInfo metadataFilesInfo, ImportContext importContext);
 	}
 }

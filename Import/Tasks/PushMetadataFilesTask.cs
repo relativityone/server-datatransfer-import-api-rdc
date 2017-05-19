@@ -17,8 +17,8 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 		private readonly IBulkImportManager _bulkImportManager;
 		private readonly IServerErrorManager _serverErrorManager;
 
-		public PushMetadataFilesTask(INativeLoadInfoFactory nativeLoadInfoFactory, IFileUploader fileUploader, ITransferConfig transferConfig, IBulkImportManager bulkImportManager,
-			IServerErrorManager serverErrorManager)
+		public PushMetadataFilesTask(INativeLoadInfoFactory nativeLoadInfoFactory, IFileUploader fileUploader, ITransferConfig transferConfig, 
+			IBulkImportManager bulkImportManager, IServerErrorManager serverErrorManager)
 		{
 			_nativeLoadInfoFactory = nativeLoadInfoFactory;
 			_fileUploader = fileUploader;
@@ -27,12 +27,12 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			_serverErrorManager = serverErrorManager;
 		}
 
-		public void PushMetadataFiles(MetadataFilesInfo metadataFilesInfo)
+		public void PushMetadataFiles(ImportBatchContext importBatchContext)
 		{
-			_fileUploader.UploadFile(metadataFilesInfo.NativeFilePath);
-			_fileUploader.UploadFile(metadataFilesInfo.DataGridFilePath);
-			_fileUploader.UploadFile(metadataFilesInfo.CodeFilePath);
-			_fileUploader.UploadFile(metadataFilesInfo.ObjectFilePath);
+			_fileUploader.UploadFile(importBatchContext.MetadataFilesInfo.NativeFilePath);
+			_fileUploader.UploadFile(importBatchContext.MetadataFilesInfo.DataGridFilePath);
+			_fileUploader.UploadFile(importBatchContext.MetadataFilesInfo.CodeFilePath);
+			_fileUploader.UploadFile(importBatchContext.MetadataFilesInfo.ObjectFilePath);
 
 			var uploadResult = _fileUploader.WaitForUploadToComplete();
 			if (uploadResult.Any(x => !x.Value.Success))
@@ -40,15 +40,15 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 				throw new Exception();
 			}
 
-			var settings = _nativeLoadInfoFactory.Create(metadataFilesInfo);
+			var settings = _nativeLoadInfoFactory.Create(importBatchContext.MetadataFilesInfo, importBatchContext.ImportContext);
 
-			var result = BulkImport(settings);
+			var result = BulkImport(settings, importBatchContext.ImportContext);
 			//TODO statistics
 
-			_serverErrorManager.ManageErrors();
+			_serverErrorManager.ManageErrors(importBatchContext.ImportContext);
 		}
 
-		private MassImportResults BulkImport(NativeLoadInfo settings)
+		private MassImportResults BulkImport(NativeLoadInfo settings, ImportContext importContext)
 		{
 			//TODO BatchSizeHistory
 
@@ -59,7 +59,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			{
 				try
 				{
-					results = _bulkImportManager.BulkImport(settings);
+					results = _bulkImportManager.BulkImport(settings, importContext);
 				}
 				catch (BulkImportManager.BulkImportSqlTimeoutException)
 				{

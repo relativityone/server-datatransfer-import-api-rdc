@@ -2,6 +2,6 @@
 {
 	public interface IServerErrorManager
 	{
-		void ManageErrors();
+		void ManageErrors(ImportContext importContext);
 	}
 }

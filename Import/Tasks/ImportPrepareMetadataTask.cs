@@ -7,38 +7,36 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 {
 	public class ImportPrepareMetadataTask : IImportPrepareMetadataTask
 	{
-		private readonly ImportContext _importContext;
 		private readonly IImportMetadata _importMetadata;
 
-		public ImportPrepareMetadataTask(ImportContext importContext, IImportMetadata importMetadata)
+		public ImportPrepareMetadataTask(IImportMetadata importMetadata)
 		{
-			_importContext = importContext;
 			_importMetadata = importMetadata;
 		}
 
-		public void Execute(FileMetadata fileMetadata)
+		public void Execute(FileMetadata fileMetadata, ImportBatchContext importBatchContext)
 		{
 			string recordId = _importMetadata.PrepareFieldsAndExtractIdentityValue(fileMetadata);
 			string dataGridId = GetDataGridId(fileMetadata);
 
 			ValidateRecordId(recordId);
-			ProcessDocumentMetadata(recordId, dataGridId, fileMetadata);
+			ProcessDocumentMetadata(recordId, dataGridId, fileMetadata, importBatchContext.ImportContext);
 		}
 
-		private void ProcessDocumentMetadata(string recordId, string dataGridId, FileMetadata fileMetadata)
+		private void ProcessDocumentMetadata(string recordId, string dataGridId, FileMetadata fileMetadata, ImportContext importContext)
 		{
-			var doc = new MetaDocument(fileMetadata.FileGuid, recordId, IndexFileInDb(fileMetadata),
+			var doc = new MetaDocument(fileMetadata.FileGuid, recordId, IndexFileInDb(fileMetadata, importContext),
 				fileMetadata.FileName, fileMetadata.FullFilePath, fileMetadata.UploadFile,
-				fileMetadata.LineNumber, _importContext.ParentFolderId, fileMetadata.ArtifactFieldCollection,
-				fileMetadata.FileIdData, fileMetadata.LineStatus, fileMetadata.DestinationDirectory, _importContext.FolderPath, dataGridId);
+				fileMetadata.LineNumber, importContext.ParentFolderId, fileMetadata.ArtifactFieldCollection,
+				fileMetadata.FileIdData, fileMetadata.LineStatus, fileMetadata.DestinationDirectory, importContext.FolderPath, dataGridId);
 
 			_importMetadata.ProcessDocumentMetadata(doc);
 		}
 
-		private bool IndexFileInDb(FileMetadata fileMetadata)
+		private bool IndexFileInDb(FileMetadata fileMetadata, ImportContext importContext)
 		{
 			return fileMetadata.FileExists && fileMetadata.UploadFile &&
-					(!fileMetadata.FileGuid.IsNullOrEmpty() || !_importContext.Settings.LoadFile.CopyFilesToDocumentRepository);
+					(!fileMetadata.FileGuid.IsNullOrEmpty() || !importContext.Settings.LoadFile.CopyFilesToDocumentRepository);
 		}
 
 		private string GetDataGridId(FileMetadata fileMetadata)

@@ -6,21 +6,19 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 {
 	public class ImportFoldersTask : IImportFoldersTask
 	{
-		private readonly ImportContext _importContext;
 		private readonly IFolderCache _folderCache;
 
-		public ImportFoldersTask(ImportContext importContext, IFolderCache folderCache)
+		public ImportFoldersTask(IFolderCache folderCache)
 		{
-			_importContext = importContext;
 			_folderCache = folderCache;
 		}
 
-		public void Execute()
+		public void Execute(ImportBatchContext importBatchContext)
 		{
 			try
 			{
-				_importContext.FolderPath = string.Empty;
-				_importContext.ParentFolderId = -1;  //GetFolderId();
+				importBatchContext.ImportContext.FolderPath = string.Empty;
+				importBatchContext.ImportContext.ParentFolderId = -1;  //GetFolderId();
 			}
 			catch (Exception ex)
 			{
@@ -28,9 +26,9 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			}
 		}
 
-		private int GetFolderId()
+		private int GetFolderId(ImportContext importContext)
 		{
-			return _importContext.Settings.LoadFile.CreateFolderStructure ? CreateFolderStructure() : GetDafaultFolderId();
+			return importContext.Settings.LoadFile.CreateFolderStructure ? CreateFolderStructure() : GetDafaultFolderId();
 		}
 
 		private int GetDafaultFolderId()
