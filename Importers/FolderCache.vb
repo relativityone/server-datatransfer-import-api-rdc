@@ -1,12 +1,13 @@
 Imports System.Collections.Generic
 Imports kCura.WinEDDS.Importers
+Imports kCura.WinEDDS.Service
 
 Namespace kCura.WinEDDS
 	Public Class FolderCache
 		Implements IFolderCache
 
 		Private _ht As Hashtable
-		Private _folderManager As Service.FolderManager
+		Private _folderManager As IHierarchicArtifactManager
 		Private _rootFolderID As Int32
 		Private _caseContextArtifactID As Int32
 
@@ -51,7 +52,7 @@ Namespace kCura.WinEDDS
 				'We've gotten this far, so the hashtable mapping of folder paths to artifact ids doesn't contain the folder of interest.
 				'But the hashtable isn't shared across simultaneous imports (via multiple application instances),
 				'so check the database to see if the folder was already created by somebody else.  If not, go ahead and create it.
-				Dim newFolderID As Int32 = _folderManager.ReadID(_caseContextArtifactID, parentFolder.FolderID, newFolderName)
+				Dim newFolderID As Int32 = _folderManager.Read(_caseContextArtifactID, parentFolder.FolderID, newFolderName)
 				If -1 = newFolderID Then
 					newFolderID = _folderManager.Create(_caseContextArtifactID, parentFolder.FolderID, newFolderName)
 				End If
@@ -84,13 +85,13 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
-		Public Sub New(ByVal folderManager As Service.FolderManager, ByVal rootFolderID As Int32, ByVal caseContextArtifactID As Int32)
+		Public Sub New(ByVal folderManager As IHierarchicArtifactManager, ByVal rootFolderID As Int32, ByVal caseContextArtifactID As Int32)
 			_ht = New Hashtable
 			_folderManager = folderManager
 			_caseContextArtifactID = caseContextArtifactID
 			_rootFolderID = rootFolderID
 			Dim folderRow As System.Data.DataRow
-			Dim foldersDataSet As System.Data.DataSet = _folderManager.RetrieveFolderAndDescendants(_caseContextArtifactID, rootFolderID)
+			Dim foldersDataSet As System.Data.DataSet = _folderManager.RetrieveArtifacts(_caseContextArtifactID, rootFolderID)
 			foldersDataSet.Relations.Add("NodeRelation", foldersDataSet.Tables(0).Columns("ArtifactID"), foldersDataSet.Tables(0).Columns("ParentArtifactID"))
 
 			For Each folderRow In foldersDataSet.Tables(0).Rows
