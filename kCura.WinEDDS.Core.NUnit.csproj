@@ -113,6 +113,7 @@
     <Compile Include="Import\Errors\ErrorFileNamesTests.cs" />
     <Compile Include="Import\Errors\ErrorManagerTests.cs" />
     <Compile Include="Import\Errors\ErrorReporterTests.cs" />
+    <Compile Include="Import\Errors\UploadErrorsTests.cs" />
     <Compile Include="Import\ImportNativesAnalyzerTests.cs" />
     <Compile Include="Import\JobImporterTests.cs" />
   </ItemGroup>
