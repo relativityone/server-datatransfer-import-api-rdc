@@ -17,5 +17,6 @@ namespace kCura.WinEDDS.Core
 
 		public int ConnectionTimeout => 30;
 		public int DefaultMaximumErrorCount => Config.DefaultMaximumErrorCount;
+		public bool CreateFoldersInWebAPI => Config.CreateFoldersInWebAPI;
 	}
 }

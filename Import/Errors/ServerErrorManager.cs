@@ -25,10 +25,8 @@ namespace kCura.WinEDDS.Core.Import.Errors
 				return;
 			}
 
-			//TODO
-			var keyFieldId = -1;
 			var errorFileKey = _bulkImportManager.GenerateNonImageErrorFiles(_importContext.Settings.LoadFile.CaseInfo.ArtifactID, _importContext.Settings.RunId,
-				_importContext.Settings.LoadFile.ArtifactTypeID, true, keyFieldId);
+				_importContext.Settings.LoadFile.ArtifactTypeID, true, _importContext.Settings.KeyFieldId);
 			//TODO write status
 
 			GenericCsvReader reader = _serverErrorFileDownloader.DownloadErrorFile(errorFileKey.LogKey, _importContext.Settings.LoadFile.CaseInfo);
