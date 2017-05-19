@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Text;
 using System.Collections.Specialized;
 using kCura.Windows.Process;
 using kCura.WinEDDS.Api;
@@ -15,14 +13,13 @@ namespace kCura.WinEDDS.Core.Import
 	{
 		private readonly ILoadFileImporter _importJob;
 
-		public LoadFileImporter(ITransferConfig config, IImportBatchJobFactory batchJobBatchJobFactory, IErrorContainer errorContainer, 
-			IImportStatusManager importStatusManager, LoadFile args, Controller processController, Guid processID, int timezoneoffset, 
-			bool autoDetect, bool initializeUploaders, bool doRetryLogic, string bulkLoadFileFieldDelimiter, bool isCloudInstance, 
-			ExecutionSource executionSource = ExecutionSource.Unknown) 
-			: base(args, processController, timezoneoffset, autoDetect, initializeUploaders, processID, 
-				  doRetryLogic, bulkLoadFileFieldDelimiter, isCloudInstance, true, executionSource)
+		public LoadFileImporter(ITransferConfig config, IImportBatchJobFactory batchJobBatchJobFactory, IErrorContainer errorContainer,
+			IImportStatusManager importStatusManager, LoadFile args, Controller processController, Guid processID, int timezoneoffset,
+			bool autoDetect, bool initializeUploaders, bool doRetryLogic, string bulkLoadFileFieldDelimiter, bool isCloudInstance,
+			ExecutionSource executionSource = ExecutionSource.Unknown)
+			: base(args, processController, timezoneoffset, autoDetect, initializeUploaders, processID,
+				doRetryLogic, bulkLoadFileFieldDelimiter, isCloudInstance, true, executionSource)
 		{
-			
 			_importJob = new ImportJob(config, batchJobBatchJobFactory, errorContainer, importStatusManager, this, this);
 		}
 
@@ -31,8 +28,15 @@ namespace kCura.WinEDDS.Core.Import
 		public LoadFile LoadFile => _settings;
 
 		public string RunId => _runID;
-		
+
 		public int KeyFieldId => _keyFieldID;
+		public int OverlayArtifactID => _overlayArtifactID;
+		public int FolderId => _folderID;
+		public new bool LinkDataGridRecords => base.LinkDataGridRecords;
+		public string BulkLoadFileFieldDelimiter => _bulkLoadFileFieldDelimiter;
+		public int FilePathColumnIndex => _filePathColumnIndex;
+		public ExecutionSource ExecutionSource => _executionSource;
+		public ImportOverwriteType Overwrite => _overwrite;
 
 		#endregion //IImporterSettings members
 
@@ -68,7 +72,7 @@ namespace kCura.WinEDDS.Core.Import
 			return new LoadFileReader(_settings, false);
 		}
 
-		
+
 		public override object ReadFile(string path)
 		{
 			_processedDocumentIdentifiers = new NameValueCollection();
@@ -77,6 +81,5 @@ namespace kCura.WinEDDS.Core.Import
 		}
 
 		#endregion //Overridden Members
-
 	}
 }

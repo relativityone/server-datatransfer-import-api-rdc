@@ -11,6 +11,7 @@ namespace kCura.WinEDDS.Core
 		int IoErrorNumberOfRetries { get; }
 		int IoErrorWaitTimeInSeconds { get; }
 		int DefaultMaximumErrorCount { get; }
+		bool CreateFoldersInWebAPI { get; }
 
 	}
 }
