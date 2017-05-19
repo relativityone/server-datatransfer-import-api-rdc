@@ -30,6 +30,7 @@ namespace kCura.WinEDDS.Core.Import
 		public IArtifactReader ArtifactReader => _artifactReader;
 
 		public string RunId => _runID;
+		public int KeyFieldId => _keyFieldID;
 
 		protected override bool UseTimeZoneOffset { get; }
 		protected override Base GetSingleCodeValidator()

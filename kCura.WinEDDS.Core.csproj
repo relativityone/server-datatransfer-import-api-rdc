@@ -120,11 +120,13 @@
     <Compile Include="Import\Errors\IErrorManager.cs" />
     <Compile Include="Import\Errors\IErrorReporter.cs" />
     <Compile Include="Import\Errors\IServerErrorManager.cs" />
+    <Compile Include="Import\Errors\IUploadErrors.cs" />
     <Compile Include="Import\Errors\LineError.cs" />
     <Compile Include="Import\Errors\ClientErrorLineContainer.cs" />
     <Compile Include="Import\Errors\ServerErrorFile.cs" />
     <Compile Include="Import\Errors\ServerErrorFileDownloader.cs" />
     <Compile Include="Import\Errors\ServerErrorManager.cs" />
+    <Compile Include="Import\Errors\UploadErrors.cs" />
     <Compile Include="Import\FileMetadata.cs" />
     <Compile Include="Import\Helpers\FileInfoProvider.cs" />
     <Compile Include="Import\Helpers\IFileInfoProvider.cs" />

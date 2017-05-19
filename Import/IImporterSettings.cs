@@ -7,5 +7,7 @@ namespace kCura.WinEDDS.Core.Import
 		LoadFile LoadFile { get; }
 
 		string RunId { get; }
+
+		int KeyFieldId { get; }
 	}
 }
