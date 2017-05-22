@@ -12,24 +12,22 @@ namespace kCura.WinEDDS.Core.Import
 {
 	public class LoadFileImporter : BulkLoadFileImporter, IImportMetadata, IImporterSettings
 	{
+
 		private readonly ILoadFileImporter _importJob;
 
-		public LoadFileImporter(ITransferConfig config, IImportBatchJobFactory batchJobBatchJobFactory, IErrorContainer errorContainer,
-			IImportStatusManager importStatusManager, LoadFile args, Controller processController, Guid processID, int timezoneoffset,
-			bool autoDetect, bool initializeUploaders, bool doRetryLogic, string bulkLoadFileFieldDelimiter, bool isCloudInstance,
-			ExecutionSource executionSource = ExecutionSource.Unknown)
-			: base(args, processController, timezoneoffset, autoDetect, initializeUploaders, processID,
+		public LoadFileImporter(IImportJobFactory jobFactory, ITransferConfig config, IErrorContainer errorContainer,
+			IImportStatusManager importStatusManager, LoadFile args, Controller processController, Guid processId, int timezoneoffset,
+			bool autoDetect, bool initializeUploaders, bool doRetryLogic, string bulkLoadFileFieldDelimiter, bool isCloudInstance, ExecutionSource executionSource = ExecutionSource.Unknown)
+			: base(args, processController, timezoneoffset, autoDetect, initializeUploaders, processId,
 				doRetryLogic, bulkLoadFileFieldDelimiter, isCloudInstance, true, executionSource)
 		{
-			_importJob = new ImportJob(config, batchJobBatchJobFactory, errorContainer, importStatusManager, this, this);
+			_importJob = jobFactory.Create(config, importStatusManager, this, this, errorContainer);
 		}
 
 		#region IImporterSettings members
 
 		public LoadFile LoadFile => _settings;
-
 		public string RunId => _runID;
-
 		public int KeyFieldId => _keyFieldID;
 		public int OverlayArtifactID => _overlayArtifactID;
 		public int FolderId => _folderID;
@@ -113,7 +111,6 @@ namespace kCura.WinEDDS.Core.Import
 		{
 			return new LoadFileReader(_settings, false);
 		}
-
 		
 		public override object ReadFile(string path)
 		{
@@ -123,9 +120,5 @@ namespace kCura.WinEDDS.Core.Import
 		}
 
 		#endregion //Overridden Members
-		private string GetFilePath(StreamWriter streamWriter)
-		{
-			return ((FileStream)(streamWriter.BaseStream)).Name;
-		}
 	}
 }
