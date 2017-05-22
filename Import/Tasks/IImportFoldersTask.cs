@@ -1,8 +1,7 @@
-﻿
-namespace kCura.WinEDDS.Core.Import.Tasks
+﻿namespace kCura.WinEDDS.Core.Import.Tasks
 {
 	public interface IImportFoldersTask
 	{
-		void Execute(ImportBatchContext importBatchContext);
+		void Execute(FileMetadata fileMetadata, ImportBatchContext importBatchContext);
 	}
 }

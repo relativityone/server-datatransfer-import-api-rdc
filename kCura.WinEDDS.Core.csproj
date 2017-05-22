@@ -157,7 +157,7 @@
     <Compile Include="Import\IFileUploaderFactory.cs" />
     <Compile Include="Import\ImportBatchJob.cs" />
     <Compile Include="Import\ImportContext.cs" />
-    <Compile Include="Import\Tasks\ImportFoldersTask.cs" />
+    <Compile Include="Import\Tasks\ImportDocumentFoldersTask.cs" />
     <Compile Include="Import\Tasks\ImportNativesTask.cs" />
     <Compile Include="Import\LoadFileImporter.cs" />
     <Compile Include="Import\Tasks\ImportNativesAnalyzer.cs" />

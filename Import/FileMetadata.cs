@@ -13,6 +13,7 @@ namespace kCura.WinEDDS.Core.Import
 		public int LineNumber { get; set; }
 		public bool UploadFile { get; set; }
 		public string FolderPath { get; set; } = string.Empty;
+		public int ParentFolderId { get; set; }
 		public string DestinationDirectory { get; set; } = string.Empty;
 
 		public OI.FileID.FileIDData FileIdData { get; set; }
