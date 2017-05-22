@@ -138,9 +138,11 @@
     <Compile Include="Import\IImportBatchJobFactory.cs" />
     <Compile Include="Import\IImportBatchJob.cs" />
     <Compile Include="Import\IImporterSettings.cs" />
+    <Compile Include="Import\IImportJobFactory.cs" />
     <Compile Include="Import\IImportJobInitilizer.cs" />
     <Compile Include="Import\ILoadFileImporter.cs" />
     <Compile Include="Import\ImportJob.cs" />
+    <Compile Include="Import\ImportJobFactory.cs" />
     <Compile Include="Import\Managers\DocumentBulkImportManager.cs" />
     <Compile Include="Import\Managers\IBulkImportManager.cs" />
     <Compile Include="Import\Managers\ObjectBulkImportManager.cs" />

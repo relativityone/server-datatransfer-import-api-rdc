@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.IO;
 using kCura.WinEDDS.Api;
 using kCura.WinEDDS.CodeValidator;
@@ -16,6 +15,7 @@ namespace kCura.WinEDDS.Core.Import
 		private readonly IImportBatchJobFactory _batchJobBatchJobFactory;
 		private readonly IErrorContainer _errorContainer;
 		private readonly IImportStatusManager _importStatusManager;
+		private IImporterSettings _importerSettings;
 
 		public event EventHandler<ImportContext> Initialized;
 
@@ -27,10 +27,11 @@ namespace kCura.WinEDDS.Core.Import
 			_errorContainer = errorContainer;
 			_importStatusManager = importStatusManager;
 			_importer = importer;
+			_importerSettings = importerSettings;
 
 			_context = new ImportContext()
 			{
-				Settings = importerSettings
+				Settings = _importerSettings
 			};
 
 			Initialized += _importStatusManager.OnSetJobContext;
@@ -89,7 +90,7 @@ namespace kCura.WinEDDS.Core.Import
 
 		private void SendBatch(ImportBatchContext batchContext)
 		{
-			IImportBatchJob importBatchJob = _batchJobBatchJobFactory.Create(batchContext);
+			IImportBatchJob importBatchJob = _batchJobBatchJobFactory.Create(batchContext, _importer, _importerSettings);
 			importBatchJob.Run(batchContext);
 		}
 
