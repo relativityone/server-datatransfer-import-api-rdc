@@ -1,27 +1,26 @@
 ﻿using System;
+using kCura.WinEDDS.Core.Import.Errors;
 
 namespace kCura.WinEDDS.Core.Import.Status
 {
 	public interface IImportStatusManager
 	{
-		event EventHandler<ImportStatusEventArgs> StatusChanged;
+		event EventHandler<ImportEventArgs> EventOccurred;
+
+		event EventHandler<ImportStatusUpdateEventArgs> UpdateStatus;
 
 		void OnSetJobContext(object sender, ImportContext importContext);
-
-		void ReiseStatusChangedEvent(object sender, ImportStatusEventArgs args);
 
 		void RaiseStartImportEvent(object sender);
 
 		void RaiseEndImportEvent(object sender);
 
-		void ReiseWarningImportEvent(object sender, string message, int recordIndex);
-
 		void RaiseTranserModeChangedEvent(object sender, string message);
 
-		void RaiseUpdateImportEvent(object sender, string message, int recordIndex);
-
-		void RaiseErrorImportEvent(object sender, string message, int recordIndex);
+		void RaiseErrorImportEvent(object sender, LineError lineError);
 
 		void RaiseFatalErrorImportEvent(object sender, string message, int recordIndex, Exception ex);
+
+		void RaiseStatusUpdateEvent(object sender, StatusUpdateType type, string msg, int lineNumber);
 	}	
 }

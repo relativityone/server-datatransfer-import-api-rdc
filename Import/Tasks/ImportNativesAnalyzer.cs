@@ -47,7 +47,8 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			{
 				if (!_transferConfig.CreateErrorForEmptyNativeFile)
 				{
-					_importStatusManager.ReiseWarningImportEvent(this, $"The file {fileMetadata.FullFilePath} is empty; only metadata will be loaded for this record.", 0);
+					_importStatusManager
+						.RaiseStatusUpdateEvent(this, StatusUpdateType.Warning, $"The file {fileMetadata.FullFilePath} is empty; only metadata will be loaded for this record.", fileMetadata.LineNumber);
 					fileMetadata.FileExists = false;
 					fileMetadata.FullFilePath = string.Empty;
 				}

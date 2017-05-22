@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.IO;
 using kCura.Windows.Process;
 using kCura.WinEDDS.Api;
 using kCura.WinEDDS.CodeValidator;
@@ -12,15 +12,22 @@ namespace kCura.WinEDDS.Core.Import
 {
 	public class LoadFileImporter : BulkLoadFileImporter, IImportMetadata, IImporterSettings
 	{
+		private readonly IImportStatusManager _importStatusManager;
 
 		private readonly ILoadFileImporter _importJob;
 
 		public LoadFileImporter(IImportJobFactory jobFactory, ITransferConfig config, IErrorContainer errorContainer,
-			IImportStatusManager importStatusManager, LoadFile args, Controller processController, Guid processId, int timezoneoffset,
-			bool autoDetect, bool initializeUploaders, bool doRetryLogic, string bulkLoadFileFieldDelimiter, bool isCloudInstance, ExecutionSource executionSource = ExecutionSource.Unknown)
+			IImportStatusManager importStatusManager, LoadFile args, Controller processController, Guid processId,
+			int timezoneoffset,
+			bool autoDetect, bool initializeUploaders, bool doRetryLogic, string bulkLoadFileFieldDelimiter, bool isCloudInstance,
+			ExecutionSource executionSource = ExecutionSource.Unknown)
 			: base(args, processController, timezoneoffset, autoDetect, initializeUploaders, processId,
 				doRetryLogic, bulkLoadFileFieldDelimiter, isCloudInstance, true, executionSource)
 		{
+			_importStatusManager = importStatusManager;
+
+			_importStatusManager.EventOccurred += OnEventOccurred;
+			_importStatusManager.UpdateStatus += ImportStatusManagerOnUpdateStatus;
 			_importJob = jobFactory.Create(config, importStatusManager, this, this, errorContainer);
 		}
 
@@ -55,7 +62,6 @@ namespace kCura.WinEDDS.Core.Import
 			return PrepareFieldCollectionAndExtractIdentityValue(fileMetadata.ArtifactFieldCollection);
 		}
 
-		
 		public void ProcessDocumentMetadata(MetaDocument metaDocument)
 		{
 			ManageDocumentLine(metaDocument);
@@ -111,7 +117,7 @@ namespace kCura.WinEDDS.Core.Import
 		{
 			return new LoadFileReader(_settings, false);
 		}
-		
+
 		public override object ReadFile(string path)
 		{
 			_processedDocumentIdentifiers = new NameValueCollection();
@@ -120,5 +126,50 @@ namespace kCura.WinEDDS.Core.Import
 		}
 
 		#endregion //Overridden Members
+
+		private void OnEventOccurred(object sender, ImportEventArgs importEventArgs)
+		{
+			switch (importEventArgs.EventType)
+			{
+				case ImportEventType.Start:
+					OnStartFileImport();
+					break;
+				case ImportEventType.End:
+					OnEndFileImport("Finished");
+					break;
+				case ImportEventType.FatalError:
+					OnFatalError(importEventArgs.Message, importEventArgs.Exception, importEventArgs.JobRunId);
+					break;
+				case ImportEventType.Error:
+					OnReportErrorEvent(importEventArgs.LineError.ToHashtable());
+					break;
+			}
+		}
+
+		private void ImportStatusManagerOnUpdateStatus(object sender, ImportStatusUpdateEventArgs statusUpdateEventArgs)
+		{
+			OnStatusMessage(new StatusEventArgs(GetEventType(statusUpdateEventArgs.Type), statusUpdateEventArgs.LineNumber,
+				_recordCount, statusUpdateEventArgs.Message, Statistics));
+		}
+
+		private EventType GetEventType(StatusUpdateType statusUpdateType)
+		{
+			switch (statusUpdateType)
+			{
+				case StatusUpdateType.Count:
+					return EventType.Count;
+				case StatusUpdateType.End:
+					return EventType.End;
+				case StatusUpdateType.Error:
+					return  EventType.Error;
+				case StatusUpdateType.Progress:
+					return EventType.Progress;
+				case StatusUpdateType.Update:
+					return EventType.Status;
+				case StatusUpdateType.Warning:
+					return EventType.Warning;
+			}
+			throw new ArgumentException($"Unexpected event type {nameof(statusUpdateType)} passed to the method!");
+		}
 	}
 }

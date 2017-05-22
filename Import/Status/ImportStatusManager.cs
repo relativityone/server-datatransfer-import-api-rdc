@@ -1,77 +1,74 @@
 ﻿using System;
+using System.Data;
+using kCura.WinEDDS.Core.Import.Errors;
+
 namespace kCura.WinEDDS.Core.Import.Status
 {
 	public class ImportStatusManager : IImportStatusManager
 	{
 		private ImportContext _importContext;
 
-		public event EventHandler<ImportStatusEventArgs> StatusChanged;
+		public event EventHandler<ImportEventArgs> EventOccurred;
+		public event EventHandler<ImportStatusUpdateEventArgs> UpdateStatus;
 
 		#region Interface Methods
 
 		public void RaiseStartImportEvent(object sender)
 		{
-			StatusChanged?.Invoke(sender, CreateStatusArgs(ImportProcessStatus.Start, string.Empty));
+			EventOccurred?.Invoke(sender, CreateImportEventArgs(ImportEventType.Start, string.Empty));
 		}
 
 		public void RaiseEndImportEvent(object sender)
 		{
-			StatusChanged?.Invoke(sender, CreateStatusArgs(ImportProcessStatus.End, string.Empty));
-		}
+			EventOccurred?.Invoke(sender, CreateImportEventArgs(ImportEventType.End, string.Empty));
+		}		
 
-		public void RaiseErrorImportEvent(object sender, string message, int recordIndex)
+		public void RaiseErrorImportEvent(object sender, LineError lineError)
 		{
-			StatusChanged?.Invoke(sender, CreateStatusArgs(ImportProcessStatus.Error, message, recordIndex));
-		}
+			EventOccurred?.Invoke(sender, new ImportEventArgs(lineError));
 
-		public void ReiseWarningImportEvent(object sender, string message, int recordIndex)
-		{
-			StatusChanged?.Invoke(sender, CreateStatusArgs(ImportProcessStatus.Update, message, recordIndex));
-		}
-
-		public void RaiseUpdateImportEvent(object sender, string message, int recordIndex)
-		{
-			StatusChanged?.Invoke(sender, CreateStatusArgs(ImportProcessStatus.Update, message, recordIndex));
-		}
-		public void ReiseStatusChangedEvent(object sender, ImportStatusEventArgs args)
-		{
-			StatusChanged?.Invoke(sender, args);
+			UpdateStatus?.Invoke(sender, CreateImportUpdateEventArgs(StatusUpdateType.Error, $"{lineError.Message} [line {lineError.LineNumber}]", lineError.LineNumber));
 		}
 
 		public void RaiseFatalErrorImportEvent(object sender, string message, int recordIndex, Exception ex)
 		{
-			ImportStatusEventArgs args = CreateStatusArgs(ImportProcessStatus.FatalError, message, recordIndex, ex);
+			ImportEventArgs args = CreateImportEventArgs(ImportEventType.FatalError, message, recordIndex, ex);
 			args.JobRunId = _importContext?.Settings.RunId;
-			StatusChanged?.Invoke(sender, args);
+			EventOccurred?.Invoke(sender, args);
 		}
 
 		public void RaiseTranserModeChangedEvent(object sender, string message)
 		{
-			StatusChanged?.Invoke(sender, CreateStatusArgs(ImportProcessStatus.TransferModeChanged, message));
+			EventOccurred?.Invoke(sender, CreateImportEventArgs(ImportEventType.TransferModeChanged, message));
 		}
 
-	public void OnSetJobContext(object sender, ImportContext importContext)
+		public void OnSetJobContext(object sender, ImportContext importContext)
 		{
 			_importContext = importContext;
+		}
+
+		public void RaiseStatusUpdateEvent(object sender, StatusUpdateType type, string msg, int lineNumber)
+		{
+			UpdateStatus?.Invoke(sender, CreateImportUpdateEventArgs(type, $"{msg} [line {lineNumber}]", lineNumber));
 		}
 
 		#endregion Interface Methods
 
 		#region Private Methods
 
-		private ImportStatusEventArgs CreateStatusArgs(ImportProcessStatus state, string msg)
+		private ImportEventArgs CreateImportEventArgs(ImportEventType type, string msg)
 		{
-			return new ImportStatusEventArgs(state, msg);
+			return new ImportEventArgs(type, msg);
 		}
 
-		private ImportStatusEventArgs CreateStatusArgs(ImportProcessStatus state, string msg, int recordIndex)
+		private ImportEventArgs CreateImportEventArgs(ImportEventType type, string msg, int recordIndex, Exception ex = null)
 		{
-			return new ImportStatusEventArgs(state, msg, recordIndex);
+			return new ImportEventArgs(type, msg, recordIndex, ex);
 		}
 
-		private ImportStatusEventArgs CreateStatusArgs(ImportProcessStatus state, string msg, int recordIndex, Exception ex)
+		private ImportStatusUpdateEventArgs CreateImportUpdateEventArgs(StatusUpdateType type, string msg, int lineNumber)
 		{
-			return new ImportStatusEventArgs(state, msg, recordIndex, ex);
+			return new ImportStatusUpdateEventArgs(type, msg, lineNumber);
 		}
 
 		#endregion Private Methods

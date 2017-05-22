@@ -130,20 +130,20 @@ namespace kCura.WinEDDS.Core.Import
 				}
 				else
 				{
-					_errorContainer.WriteError(CreateErrorLine(index, ex.Message));
+					HandleRecordError(index, ex.Message);
 				}
 			}
 			catch (PathTooLongException)
 			{
-				_errorContainer.WriteError(CreateErrorLine(index,BulkLoadFileImporter.ERROR_MESSAGE_FOLDER_NAME_TOO_LONG));
+				HandleRecordError(index, BulkLoadFileImporter.ERROR_MESSAGE_FOLDER_NAME_TOO_LONG);
 			}
-			catch (kCura.Utility.ImporterExceptionBase impEx)
+			catch (kCura.Utility.ImporterExceptionBase ex)
 			{
-				_errorContainer.WriteError(CreateErrorLine(index, impEx.Message));
+				HandleRecordError(index, ex.Message);
 			}
 			catch (FileNotFoundException ex)
 			{
-				_errorContainer.WriteError(CreateErrorLine(index, ex.Message));
+				HandleRecordError(index, ex.Message);
 			}
 			catch (Exception ex)
 			{
@@ -155,6 +155,16 @@ namespace kCura.WinEDDS.Core.Import
 		{
 			_importStatusManager.RaiseFatalErrorImportEvent(this, string.Empty, _importer.ArtifactReader.CurrentLineNumber, ex);
 			_importer.ArtifactReader.OnFatalErrorState();
+		}
+
+		private void HandleRecordError(int recordIndex, string message)
+		{
+			_importStatusManager.RaiseErrorImportEvent(this, new LineError
+			{
+				ErrorType = ErrorType.client,
+				Message = message
+			});
+			_errorContainer.WriteError(CreateErrorLine(recordIndex, message));
 		}
 
 		private LineError CreateErrorLine(int index, string message)
