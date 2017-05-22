@@ -22,6 +22,8 @@ namespace kCura.WinEDDS.Core.Import
 		bool LoadImportedFullTextFromServer { get; }
 		ExecutionSource ExecutionSource { get; }
 		ImportOverwriteType Overwrite { get; }
+		ArtifactType ParentArtifactTypeID { get; }
+		int DestinationFolderColumnIndex { get; }
 		FieldInfo[] GetMappedFields(int artifactTypeId, IList<int> objectFieldIdListContainsArtifactId);
 	}
 }

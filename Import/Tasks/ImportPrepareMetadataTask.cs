@@ -27,8 +27,8 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 		{
 			var doc = new MetaDocument(fileMetadata.FileGuid, recordId, IndexFileInDb(fileMetadata, importContext),
 				fileMetadata.FileName, fileMetadata.FullFilePath, fileMetadata.UploadFile,
-				fileMetadata.LineNumber, importContext.ParentFolderId, fileMetadata.ArtifactFieldCollection,
-				fileMetadata.FileIdData, fileMetadata.LineStatus, fileMetadata.DestinationDirectory, importContext.FolderPath, dataGridId);
+				fileMetadata.LineNumber, fileMetadata.ParentFolderId, fileMetadata.ArtifactFieldCollection,
+				fileMetadata.FileIdData, fileMetadata.LineStatus, fileMetadata.DestinationDirectory, fileMetadata.FolderPath, dataGridId);
 
 			_importMetadata.ProcessDocumentMetadata(doc);
 		}
