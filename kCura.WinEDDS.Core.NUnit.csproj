@@ -117,6 +117,7 @@
     <Compile Include="Import\ImportNativesAnalyzerTests.cs" />
     <Compile Include="Import\JobImporterTests.cs" />
     <Compile Include="Import\Tasks\ImportDocumentFoldersTaskTests.cs" />
+    <Compile Include="Import\Tasks\ImportRdoFoldersTaskTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
