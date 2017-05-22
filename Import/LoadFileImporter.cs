@@ -36,6 +36,8 @@ namespace kCura.WinEDDS.Core.Import
 		public int FilePathColumnIndex => _filePathColumnIndex;
 		public ExecutionSource ExecutionSource => _executionSource;
 		public ImportOverwriteType Overwrite => _overwrite;
+		public ArtifactType ParentArtifactTypeID => (ArtifactType) base.ParentArtifactTypeID;
+		public int DestinationFolderColumnIndex => _destinationFolderColumnIndex;
 
 		#endregion //IImporterSettings members
 
