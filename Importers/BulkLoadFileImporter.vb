@@ -718,10 +718,10 @@ Namespace kCura.WinEDDS
 					Dim value As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value))
 					If kCura.WinEDDS.Config.CreateFoldersInWebAPI Then
 						'Server side folder creation
-						Dim cleanFolderPath As String = Me.CleanDestinationFolderPath(value)
+						Dim cleanFolderPath As String = CleanDestinationFolderPath(value)
 						If (String.IsNullOrWhiteSpace(cleanFolderPath)) Then
 							parentFolderID = _folderID
-						ElseIf Me.InnerRelativityFolderPathsAreTooLarge(cleanFolderPath) Then
+						ElseIf InnerRelativityFolderPathsAreTooLarge(cleanFolderPath) Then
 							Throw New PathTooLongException("Error occurred when importing the document. The folder name is longer than 255 characters.")
 						Else
 							folderPath = cleanFolderPath
@@ -730,7 +730,7 @@ Namespace kCura.WinEDDS
 						End If
 					Else
 						'Client side folder creation (added back for Dominus# 1127879)
-						parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(value))
+						parentFolderID = _folderCache.FolderID(CleanDestinationFolderPath(value))
 					End If
 				Else
 					'TODO: If we are going to do this for more than documents, fix this as well...
@@ -793,7 +793,7 @@ Namespace kCura.WinEDDS
 			Return identityValue
 		End Function
 
-		Protected Function CleanDestinationFolderPath(ByVal path As String) As String
+		Public Shared Function CleanDestinationFolderPath(ByVal path As String) As String
 			path = path.Trim()
 			While path.Contains(".\")
 				path = path.Replace(".\", "\")
@@ -814,7 +814,7 @@ Namespace kCura.WinEDDS
 			Return path
 		End Function
 
-		Private Function InnerRelativityFolderPathsAreTooLarge(ByVal cleanFolderPath As String) As Boolean
+		Public Shared Function InnerRelativityFolderPathsAreTooLarge(ByVal cleanFolderPath As String) As Boolean
 			If String.IsNullOrEmpty(cleanFolderPath) Then
 				Return False
 			End If
