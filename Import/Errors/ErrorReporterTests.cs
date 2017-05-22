@@ -1,4 +1,5 @@
 ﻿using kCura.WinEDDS.Core.Import.Errors;
+using kCura.WinEDDS.Core.Import.Status;
 using Moq;
 using NUnit.Framework;
 
@@ -11,13 +12,15 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 
 		private ErrorReporter _instance;
 		private Mock<ITransferConfig> _transferConfig;
+		private Mock<IImportStatusManager> _importStatusMgrMock;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_transferConfig = new Mock<ITransferConfig>();
+			_importStatusMgrMock = new Mock<IImportStatusManager>();
 
-			_instance = new ErrorReporter(_transferConfig.Object);
+			_instance = new ErrorReporter(_transferConfig.Object, _importStatusMgrMock.Object);
 		}
 
 		[Test]
@@ -25,22 +28,19 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 		{
 			_transferConfig.Setup(x => x.DefaultMaximumErrorCount).Returns(10);
 
-			var eventRaised = false;
-			LineError expectedLineError = new LineError();
-			LineError actualLineError = null;
-
-			_instance.ErrorOccurred += (s, e) =>
+			var lineError = new LineError
 			{
-				eventRaised = true;
-				actualLineError = e;
+				LineNumber = 1234,
+				Message = "Error"
 			};
 
+			_importStatusMgrMock.Setup(obj => obj.RaiseErrorImportEvent(It.IsAny<ErrorReporter>(), It.IsAny<LineError>()));
+			
 			// ACT
-			_instance.WriteError(expectedLineError);
+			_instance.WriteError(lineError);
 
 			// ASSERT
-			Assert.That(eventRaised, Is.True);
-			Assert.That(actualLineError, Is.EqualTo(expectedLineError));
+			_importStatusMgrMock.Verify(obj => obj.RaiseErrorImportEvent(_instance, lineError), Times.Once);
 		}
 
 		[Test]
@@ -48,16 +48,19 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 		{
 			_transferConfig.Setup(x => x.DefaultMaximumErrorCount).Returns(0);
 
-			var eventRaised = false;
-			LineError lineError = new LineError();
+			var lineError = new LineError
+			{
+				LineNumber = 1234,
+				Message = "Error"
+			};
 
-			_instance.ErrorOccurred += (s, e) => eventRaised = true;
+			_importStatusMgrMock.Setup(obj => obj.RaiseErrorImportEvent(It.IsAny<ErrorReporter>(), It.IsAny<LineError>()));
 
 			// ACT
 			_instance.WriteError(lineError);
 
 			// ASSERT
-			Assert.That(eventRaised, Is.False);
+			_importStatusMgrMock.Verify(obj => obj.RaiseErrorImportEvent(_instance, lineError), Times.Never);
 		}
 
 		[Test]
@@ -65,22 +68,20 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 		{
 			_transferConfig.Setup(x => x.DefaultMaximumErrorCount).Returns(1);
 
-			var eventRaised = false;
-			LineError lineError = new LineError();
-			LineError actualLineError = null;
-
-			_instance.ErrorOccurred += (s, e) =>
+			var lineError = new LineError
 			{
-				eventRaised = true;
-				actualLineError = e;
+				LineNumber = 1234,
+				Message = "Error"
 			};
+
+			_importStatusMgrMock.Setup(obj => obj.RaiseErrorImportEvent(It.IsAny<ErrorReporter>(), It.IsAny<LineError>()));
 
 			// ACT
 			_instance.WriteError(lineError);
 
 			// ASSERT
-			Assert.That(eventRaised, Is.True);
-			Assert.That(actualLineError.Message, Is.EqualTo(_MAX_ERROR_COUNT_REACHED_MESSAGE));
+			_importStatusMgrMock.Verify(obj => obj.RaiseErrorImportEvent(_instance, It.Is<LineError>(_ => _.LineNumber == 0 && 
+			_.Message.EndsWith("Maximum number of errors for display reached.  Export errors to view full list."))), Times.Once);
 		}
 	}
 }
