@@ -19,7 +19,7 @@ Namespace kCura.WinEDDS
 		Protected _documentManager As kCura.WinEDDS.Service.DocumentManager
 		Protected _relativityManager As kCura.WinEDDS.Service.RelativityManager
 
-		Private _recordCount As Int64 = -1
+		Protected _recordCount As Int64 = -1
 		Private _allFields As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 		Private _fieldsForCreate As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 		Protected _continue As Boolean
@@ -416,7 +416,7 @@ Namespace kCura.WinEDDS
 			End If
 			If retval.Any() Then
 				Dim uploadStatus As String = String.Join(" - ", retval.ToArray())
-				RaiseEvent UploadModeChangeEvent(uploadStatus, isBulkEnabled)
+				OnUploadModeChangeEvent(uploadStatus, isBulkEnabled)
 			End If
 		End Sub
 
@@ -431,7 +431,7 @@ Namespace kCura.WinEDDS
 			_filePath = path
 			_timekeeper.MarkStart("TOTAL")
 			Try
-				RaiseEvent StartFileImport()
+				OnStartFileImport()
 				_timekeeper.MarkStart("ReadFile_InitializeMembers")
 				Dim validateBcp As FileUploadReturnArgs = _bcpuploader.ValidateBcpPath(_caseInfo.ArtifactID, _outputFileWriter.OutputNativeFilePath)
 				'TODO: your check here
@@ -520,7 +520,7 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("ReadFile_ProcessDocuments")
 				_timekeeper.MarkStart("ReadFile_OtherFinalization")
 				Me.TryPushNativeBatch(True)
-				RaiseEvent EndFileImport(_runID)
+				OnEndFileImport(_runID)
 				WriteEndImport("Finish")
 				_artifactReader.Close()
 				_timekeeper.MarkEnd("ReadFile_OtherFinalization")
@@ -540,7 +540,7 @@ Namespace kCura.WinEDDS
 		Private Function InitializeMembers(ByVal path As String) As Boolean
 			_recordCount = _artifactReader.CountRecords
 			If _recordCount = -1 Then
-				RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Progress, CurrentLineNumber, CurrentLineNumber, "cancel import", _currentStatisticsSnapshot))
+				OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Progress, CurrentLineNumber, CurrentLineNumber, "cancel import", _currentStatisticsSnapshot))
 				Return False
 			End If
 
@@ -548,7 +548,7 @@ Namespace kCura.WinEDDS
 			Me.InitializeFieldIdList()
 			DeleteFiles()
 			OpenFileWriters()
-			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, "Reset time for import rolling average", Nothing))
+			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, "Reset time for import rolling average", Nothing))
 			Return True
 		End Function
 
@@ -1574,10 +1574,10 @@ Namespace kCura.WinEDDS
 
 		Private Sub WriteStatusLine(ByVal et As kCura.Windows.Process.EventType, ByVal line As String, ByVal lineNumber As Int32)
 			line = line & String.Format(" [line {0}]", lineNumber)
-			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(et, lineNumber + _offset, _recordCount, line, _currentStatisticsSnapshot))
+			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(et, lineNumber + _offset, _recordCount, line, _currentStatisticsSnapshot))
 		End Sub
 
-		Private Sub WriteStatusLine(ByVal et As kCura.Windows.Process.EventType, ByVal line As String)
+		Protected Sub WriteStatusLine(ByVal et As kCura.Windows.Process.EventType, ByVal line As String)
 			WriteStatusLine(et, line, Me.CurrentLineNumber)
 		End Sub
 
@@ -1587,7 +1587,7 @@ Namespace kCura.WinEDDS
 			_uploader.DoRetry = False
 			_bcpuploader.DoRetry = False
 
-			RaiseEvent FatalErrorEvent("Error processing line: " + lineNumber.ToString, ex, _runID)
+			OnFatalError("Error processing line: " + lineNumber.ToString, ex, _runID)
 		End Sub
 
 		Private Sub WriteError(ByVal currentLineNumber As Int32, ByVal line As String)
@@ -1612,11 +1612,11 @@ Namespace kCura.WinEDDS
 
 			Dim errorMessageFileWriter As New System.IO.StreamWriter(_errorMessageFileLocation, True, System.Text.Encoding.Default)
 			If _errorCount < MaxNumberOfErrorsInGrid Then
-				RaiseEvent ReportErrorEvent(row)
+				OnReportErrorEvent(row)
 			ElseIf _errorCount = MaxNumberOfErrorsInGrid Then
 				Dim moretobefoundMessage As New System.Collections.Hashtable
 				moretobefoundMessage.Add("Message", "Maximum number of errors for display reached.  Export errors to view full list.")
-				RaiseEvent ReportErrorEvent(moretobefoundMessage)
+				OnReportErrorEvent(moretobefoundMessage)
 			End If
 			errorMessageFileWriter.WriteLine(String.Format("{0},{1},{2},{3}", CSVFormat(row("Line Number").ToString), CSVFormat(row("Message").ToString), CSVFormat(identifier), CSVFormat(type)))
 			errorMessageFileWriter.Close()
@@ -1634,12 +1634,8 @@ Namespace kCura.WinEDDS
 			Return ControlChars.Quote + fieldValue.Replace(ControlChars.Quote, ControlChars.Quote + ControlChars.Quote) + ControlChars.Quote
 		End Function
 
-		Private Sub WriteWarning(ByVal line As String)
+		Protected Sub WriteWarning(ByVal line As String)
 			WriteStatusLine(kCura.Windows.Process.EventType.Warning, line)
-		End Sub
-
-		Private Sub WriteUpdate(ByVal line As String)
-			WriteStatusLine(kCura.Windows.Process.EventType.Progress, line)
 		End Sub
 
 		Private Sub WriteEndImport(ByVal line As String)
@@ -1829,15 +1825,15 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Private Sub _artifactReader_DataSourcePrep(ByVal e As Api.DataSourcePrepEventArgs) Handles _artifactReader.DataSourcePrep
-			RaiseEvent DataSourcePrepEvent(e)
+			OnDataSourcePrepEvent(e)
 		End Sub
 
 		Private Sub _artifactReader_StatusMessage(ByVal message As String) Handles _artifactReader.StatusMessage
-			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, _artifactReader.CurrentLineNumber, _recordCount, message, False, _currentStatisticsSnapshot))
+			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, _artifactReader.CurrentLineNumber, _recordCount, message, False, _currentStatisticsSnapshot))
 		End Sub
 
 		Private Sub _artifactReader_FieldMapped(ByVal sourceField As String, ByVal workspaceField As String) Handles _artifactReader.FieldMapped
-			RaiseEvent FieldMapped(sourceField, workspaceField)
+			OnFieldMapped(sourceField, workspaceField)
 		End Sub
 
 
@@ -1864,7 +1860,7 @@ Namespace kCura.WinEDDS
 						' -Phil S. 08/13/2012
 						Const message As String = "There was an error while attempting to retrieve the errors from the server."
 
-						RaiseEvent FatalErrorEvent(message, New Exception(message), _runID)
+						OnFatalError(message, New Exception(message), _runID)
 					Else
 						AddHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
 						Dim line As String() = sr.ReadLine
@@ -1876,7 +1872,7 @@ Namespace kCura.WinEDDS
 							ht.Add("Identifier", line(2))
 							ht.Add("Line Number", Int32.Parse(line(0)))
 							RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
-							RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _recordCount, "[Line " & line(0) & "]" & line(1), _currentStatisticsSnapshot))
+							OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _recordCount, "[Line " & line(0) & "]" & line(1), _currentStatisticsSnapshot))
 							line = sr.ReadLine
 						End While
 						RemoveHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
@@ -1948,6 +1944,39 @@ Namespace kCura.WinEDDS
 		Protected Overrides Function GetArtifactReader() As Api.IArtifactReader
 			Return New kCura.WinEDDS.LoadFileReader(_settings, False)
 		End Function
+
+		Protected Sub OnFatalError(message As String, ex As Exception, runID As String)
+			RaiseEvent FatalErrorEvent(message, ex, runID)
+		End Sub
+
+		Protected Sub OnStatusMessage(args As Windows.Process.StatusEventArgs)
+			RaiseEvent StatusMessage(args)
+		End Sub
+
+		Protected Sub OnEndFileImport(ByVal runID As String)
+			RaiseEvent EndFileImport(runID)
+		End Sub
+
+		Protected Sub OnStartFileImport()
+			RaiseEvent StartFileImport()
+		End Sub
+
+		Protected Sub OnUploadModeChangeEvent(mode As String, isBulkEnabled As Boolean)
+			RaiseEvent UploadModeChangeEvent(mode, isBulkEnabled)
+		End Sub
+
+		Protected Sub OnDataSourcePrepEvent( args As Api.DataSourcePrepEventArgs)
+			RaiseEvent DataSourcePrepEvent(args)
+		End Sub
+
+		Protected Sub OnReportErrorEvent(row As IDictionary)
+			RaiseEvent ReportErrorEvent(row)
+		End Sub
+
+		Protected Sub OnFieldMapped(sourceField As String, workspaceField As String)
+			OnFieldMapped(sourceField, workspaceField)
+		End Sub
+
 	End Class
 
 	Public Class WebServiceFieldInfoNameComparer
