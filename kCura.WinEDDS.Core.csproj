@@ -169,6 +169,8 @@
     <Compile Include="Import\Status\ImportStatusManager.cs" />
     <Compile Include="Import\Status\ImportEventArgs.cs" />
     <Compile Include="Import\Status\ImportStatusUpdateEventArgs.cs" />
+    <Compile Include="Import\Tasks\Helpers\IMetadataFilesServerExecution.cs" />
+    <Compile Include="Import\Tasks\Helpers\MetadataFilesServerExecution.cs" />
     <Compile Include="Import\Tasks\IImportFoldersTask.cs" />
     <Compile Include="Import\Tasks\IImportMetadataTask.cs" />
     <Compile Include="Import\Tasks\IImportNativesAnalyzer.cs" />
