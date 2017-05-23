@@ -10,7 +10,7 @@ using NUnit.Framework;
 
 namespace kCura.WinEDDS.Core.NUnit.Import
 {
-	public class JobImporterTests
+	public class ImportJobTests
 	{
 		private ImportJob _subjectUnderTest;
 
@@ -23,6 +23,8 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 		private Mock<IImportMetadata> _importMetadataMock;
 		private Mock<IImporterSettings> _importSettings;
 		private ImportExceptionHandlerExec _importExceptionHandlerExec;
+
+		private LoadFile _loadFile;
 
 		[SetUp]
 		public void Init()
@@ -46,8 +48,11 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 				_importMetadataMock.Object, _importSettings.Object, _importExceptionHandlerExec);
 
 			_artifactReaderMock.Setup(reader => reader.AdvanceRecord());
-		}
 
+			_loadFile = new LoadFile();
+			_importSettings.SetupGet(obj => obj.LoadFile).Returns(_loadFile);
+		}
+		
 		[Test]
 		public void ItShouldReadOnlyHeader()
 		{
@@ -55,21 +60,20 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_artifactReaderMock.Setup(reader => reader.HasMoreRecords).Returns(false);
 
 			// Act
-			_subjectUnderTest.ReadFile("");
+			var actualRes = (bool?)_subjectUnderTest.ReadFile("");
 
 			// Assert
 			_artifactReaderMock.Verify(reader => reader.ReadArtifact(), Times.Never);
+			Assert.That(actualRes.Value);
+			ValidateSharedConditions();
 		}
 
 		[Test]
 		public void ItShouldCreateBatch()
 		{
 			const int maxBatchSize = 3;
-			LoadFile loadFile = new LoadFile()
-				{
-					StartLineNumber = 1000
-				};
-			_importSettings.SetupGet(obj => obj.LoadFile).Returns(loadFile);
+			_loadFile.StartLineNumber = 1000;
+			
 			// Arrange
 			_artifactReaderMock.SetupSequence(reader => reader.HasMoreRecords)
 				.Returns(true)
@@ -88,7 +92,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_transferConfigMock.SetupGet(config => config.ImportBatchSize).Returns(maxBatchSize);
 
 			// Act
-			_subjectUnderTest.ReadFile("");
+			var actualRes = (bool?)_subjectUnderTest.ReadFile("");
 
 			// Assert
 			_artifactReaderMock.Verify(reader => reader.ReadArtifact(), Times.Exactly(maxBatchSize));
@@ -96,6 +100,63 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_artifactReaderMock.Verify(reader => reader.CountRecords(), Times.Once);
 
 			_importJobBatchMock.Verify(job => job.Run(It.Is<ImportBatchContext>( context => context.FileMetaDataHolder.Count == maxBatchSize)));
+
+			Assert.That(actualRes.Value);
+
+			ValidateSharedConditions();
+		}
+
+		[Test]
+		[TestCase(-1, true)]
+		[TestCase(0, false)]
+		[TestCase(1, false)]
+		public void ItShouldCheckRecordCount(int recCount, bool raiseCancelEvent)
+		{
+			// Arrange
+
+			_artifactReaderMock.Setup(reader => reader.HasMoreRecords).Returns(false);
+			_artifactReaderMock.Setup(reader => reader.CountRecords()).Returns(recCount);
+			// Act
+			var actualResult = (bool?)_subjectUnderTest.ReadFile("");
+
+			// Assert
+			var expectedCallCount = raiseCancelEvent ? new Func<Times>(Times.Once) : Times.Never;
+
+			_impStatusManagerMock.Verify(obj => obj.RaiseStatusUpdateEvent(_subjectUnderTest, StatusUpdateType.Progress, "cancel import", 
+				It.IsAny<int>()), expectedCallCount);
+
+			Assert.That(actualResult.Value, Is.EqualTo(!raiseCancelEvent));
+
+			ValidateSharedConditions();
+		}
+
+		[Test]
+		[TestCase(true, "\\Natives", "Aspera")]
+		[TestCase(false, "", "not copied")]
+		[TestCase(false, null, "not copied")]
+		[TestCase(false, "\\Natives", "not copied")]
+		public void ItShouldValidateUploadMode(bool copyFilesToDocumentRepository, string nativeFilePathColumn, string filesModeDesac)
+		{
+			// Arrange
+			string expectedDesc = $"Metadata: Aspera - Files: {filesModeDesac}";
+
+			_loadFile.CopyFilesToDocumentRepository = copyFilesToDocumentRepository;
+			_loadFile.NativeFilePathColumn = nativeFilePathColumn;
+			_artifactReaderMock.Setup(reader => reader.HasMoreRecords).Returns(false);
+			_artifactReaderMock.Setup(reader => reader.CountRecords()).Returns(1);
+
+			//Act
+			_subjectUnderTest.ReadFile("");
+
+			//Assert
+			_impStatusManagerMock.Verify(obj => obj.RaiseTranserModeChangedEvent(_subjectUnderTest, expectedDesc), Times.Once);
+			ValidateSharedConditions();
+		}
+
+		private void ValidateSharedConditions()
+		{
+			_impStatusManagerMock.Verify(obj => obj.RaiseStartImportEvent(_subjectUnderTest), Times.Once);
+			_importMetadataMock.Verify(obj => obj.CleanUp(), Times.Once);
 		}
 	}
 }
