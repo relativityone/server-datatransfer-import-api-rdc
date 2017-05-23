@@ -12,7 +12,6 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 {
 	public class JobImporterTests
 	{
-		
 		private ImportJob _subjectUnderTest;
 
 		private Mock<ITransferConfig> _transferConfigMock;
@@ -23,6 +22,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 		private Mock<IImportStatusManager> _impStatusManagerMock;
 		private Mock<IImportMetadata> _importMetadataMock;
 		private Mock<IImporterSettings> _importSettings;
+		private ImportExceptionHandlerExec _importExceptionHandlerExec;
 
 		[SetUp]
 		public void Init()
@@ -32,16 +32,18 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_importJobBatchMock = new Mock<IImportBatchJob>();
 			_artifactReaderMock = new Mock<IArtifactReader>();
 
-			_errorContainerMock = new Mock<IErrorContainer>();
 			_impStatusManagerMock = new Mock<IImportStatusManager>();
 			_importSettings = new Mock<IImporterSettings>();
 			_importMetadataMock = new Mock<IImportMetadata>();
+			_errorContainerMock = new Mock<IErrorContainer>();
 
 			_importMetadataMock.Setup(item => item.ArtifactReader).Returns(_artifactReaderMock.Object);
 
-			_subjectUnderTest = new ImportJob(_transferConfigMock.Object, _importJobBatchFactoryMock.Object, 
-				_errorContainerMock.Object, _impStatusManagerMock.Object, 
-				_importMetadataMock.Object, _importSettings.Object);
+			_importExceptionHandlerExec = new ImportExceptionHandlerExec(_impStatusManagerMock.Object, _importMetadataMock.Object,
+				_errorContainerMock.Object);
+
+			_subjectUnderTest = new ImportJob(_transferConfigMock.Object, _importJobBatchFactoryMock.Object, _impStatusManagerMock.Object, 
+				_importMetadataMock.Object, _importSettings.Object, _importExceptionHandlerExec);
 
 			_artifactReaderMock.Setup(reader => reader.AdvanceRecord());
 		}
@@ -63,10 +65,16 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 		public void ItShouldCreateBatch()
 		{
 			const int maxBatchSize = 3;
+			LoadFile loadFile = new LoadFile()
+				{
+					StartLineNumber = 1000
+				};
+			_importSettings.SetupGet(obj => obj.LoadFile).Returns(loadFile);
 			// Arrange
 			_artifactReaderMock.SetupSequence(reader => reader.HasMoreRecords)
 				.Returns(true)
-				.Returns(true)
+				.Returns(false) // Here we should only call once AdvanceRecord methos on artifact reader to move record index(init import)
+				.Returns(true)  // Here we should read lines "maxBatchSize"-times
 				.Returns(true)
 				.Returns(true)
 				.Returns(false);
@@ -78,7 +86,6 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 				.Returns(_importJobBatchMock.Object);
 
 			_transferConfigMock.SetupGet(config => config.ImportBatchSize).Returns(maxBatchSize);
-
 
 			// Act
 			_subjectUnderTest.ReadFile("");
