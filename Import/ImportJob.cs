@@ -1,9 +1,5 @@
 ﻿using System;
-using System.IO;
-using kCura.Utility;
 using kCura.WinEDDS.Api;
-using kCura.WinEDDS.CodeValidator;
-using kCura.WinEDDS.Core.Import.Errors;
 using kCura.WinEDDS.Core.Import.Factories;
 using kCura.WinEDDS.Core.Import.Helpers;
 using kCura.WinEDDS.Core.Import.Status;
@@ -16,61 +12,49 @@ namespace kCura.WinEDDS.Core.Import
 		private readonly ImportContext _context;
 		private readonly ITransferConfig _config;
 		private readonly IImportBatchJobFactory _batchJobBatchJobFactory;
-		private readonly IErrorContainer _errorContainer;
 		private readonly IImportStatusManager _importStatusManager;
 		private readonly IImporterSettings _importerSettings;
+		private readonly IImportExceptionHandlerExec _importExceptionHandlerExec;
 
 		public event EventHandler<ImportContext> Initialized;
 
-		public ImportJob(ITransferConfig config, IImportBatchJobFactory batchJobBatchJobFactory,
-			IErrorContainer errorContainer, IImportStatusManager importStatusManager, IImportMetadata importer, IImporterSettings importerSettings)
+		public ImportJob(ITransferConfig config, IImportBatchJobFactory batchJobBatchJobFactory, IImportStatusManager importStatusManager, 
+			IImportMetadata importer, IImporterSettings importerSettings, IImportExceptionHandlerExec importExceptionHandlerExec)
 		{
 			_config = config;
 			_batchJobBatchJobFactory = batchJobBatchJobFactory;
-			_errorContainer = errorContainer;
 			_importStatusManager = importStatusManager;
 			_importer = importer;
 			_importerSettings = importerSettings;
+			_importExceptionHandlerExec = importExceptionHandlerExec;
 
 			_context = new ImportContext
 			{
 				Settings = _importerSettings
 			};
-
 			Initialized += _importStatusManager.OnSetJobContext;
 		}
 
 		public object ReadFile(string path)
 		{
-			// TODO -> check continue flag
-			try
-			{
-				if (InitializeProcess())
+			return _importExceptionHandlerExec.TryCatchExec<bool?>(
+				() =>
 				{
-					return false;
-				}
-				while (CanCreateBatch())
-				{
+					if (!InitializeProcess())
+					{
+						return false;
+					}
+					// TODO -> check continue flag
 					ImportBatchContext batchSetUp = CreateBatch();
 					SendBatch(batchSetUp);
-				}
-			}
-			catch (Exception ex)
-			{
-				HandleFatalError(ex);
-			}
-			finally
-			{
-				_importer.CleanUp();
-			}
-			return true;
+					return true;
+				}, null, _importer.CleanUp);
 		}
 
 		private bool InitializeProcess()
 		{
-			
 			PopulateJobContext();
-			if (ValidateJobContext(_context))
+			if (!ValidateJobContext(_context))
 			{
 				return false;
 			}
@@ -118,18 +102,16 @@ namespace kCura.WinEDDS.Core.Import
 
 		private void SendBatch(ImportBatchContext batchContext)
 		{
-			IImportBatchJob importBatchJob = _batchJobBatchJobFactory.Create(batchContext);
-			importBatchJob.Run(batchContext);
-		}
-
-		private bool CanCreateBatch()
-		{
-			return _importer.ArtifactReader.HasMoreRecords;
+			if (batchContext.FileMetaDataHolder.Count > 0)
+			{
+				IImportBatchJob importBatchJob = _batchJobBatchJobFactory.Create(batchContext);
+				importBatchJob.Run(batchContext);
+			}
 		}
 
 		private ImportBatchContext CreateBatch()
 		{
-			int currentBatchCounter = 0;
+			var currentBatchCounter = 0;
 			var importBatchContext = new ImportBatchContext(_context, _config.ImportBatchSize);
 			while (_importer.ArtifactReader.HasMoreRecords && currentBatchCounter < _config.ImportBatchSize)
 			{
@@ -141,68 +123,15 @@ namespace kCura.WinEDDS.Core.Import
 
 		private void ProcessBatchRecord(ImportBatchContext importBatchContext, int index)
 		{
-			try
-			{
-				ArtifactFieldCollection artifactFieldCollection = _importer.ArtifactReader.ReadArtifact();
-				importBatchContext.FileMetaDataHolder.Add(new FileMetadata
+			_importExceptionHandlerExec.TryCatchExec(() =>
 				{
-					ArtifactFieldCollection = artifactFieldCollection,
-					LineNumber = index
+					ArtifactFieldCollection artifactFieldCollection = _importer.ArtifactReader.ReadArtifact();
+					importBatchContext.FileMetaDataHolder.Add(new FileMetadata
+					{
+						ArtifactFieldCollection = artifactFieldCollection,
+						LineNumber = index
+					});
 				});
-			}
-			catch (CodeCreationException ex)
-			{
-				if (ex.IsFatal)
-				{
-					HandleFatalError(ex);
-				}
-				else
-				{
-					HandleRecordError(index, ex.Message);
-				}
-			}
-			catch (PathTooLongException)
-			{
-				HandleRecordError(index, BulkLoadFileImporter.ERROR_MESSAGE_FOLDER_NAME_TOO_LONG);
-			}
-			catch (ImporterExceptionBase ex)
-			{
-				HandleRecordError(index, ex.Message);
-			}
-			catch (FileNotFoundException ex)
-			{
-				HandleRecordError(index, ex.Message);
-			}
-			catch (Exception ex)
-			{
-				HandleFatalError(ex);
-			}
-		}
-
-		private void HandleFatalError(Exception ex)
-		{
-			_importStatusManager.RaiseFatalErrorImportEvent(this, string.Empty, _importer.ArtifactReader.CurrentLineNumber, ex);
-			_importer.ArtifactReader.OnFatalErrorState();
-		}
-
-		private void HandleRecordError(int recordIndex, string message)
-		{
-			_importStatusManager.RaiseErrorImportEvent(this, new LineError
-			{
-				ErrorType = ErrorType.client,
-				Message = message
-			});
-			_errorContainer.WriteError(CreateErrorLine(recordIndex, message));
-		}
-
-		private LineError CreateErrorLine(int index, string message)
-		{
-			return new LineError
-			{
-				ErrorType = ErrorType.client,
-				LineNumber = index,
-				Message = message
-			};
 		}
 	}
 }

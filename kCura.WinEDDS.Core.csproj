@@ -128,7 +128,7 @@
     <Compile Include="Import\Errors\IAllErrors.cs" />
     <Compile Include="Import\Errors\IErrorManager.cs" />
     <Compile Include="Import\Errors\IErrorReporter.cs" />
-    <Compile Include="Import\Errors\ImportExceptionHandler.cs" />
+    <Compile Include="Import\Errors\ImportExceptionHandlerExec.cs" />
     <Compile Include="Import\Errors\IServerErrorManager.cs" />
     <Compile Include="Import\Errors\IUploadErrors.cs" />
     <Compile Include="Import\Errors\LineError.cs" />
@@ -155,6 +155,7 @@
     <Compile Include="Import\IImporterManagers.cs" />
     <Compile Include="Import\IImporterSettings.cs" />
     <Compile Include="Import\Factories\IImportJobFactory.cs" />
+    <Compile Include="Import\IImportExceptionHandlerExec.cs" />
     <Compile Include="Import\IImportJobInitilizer.cs" />
     <Compile Include="Import\ILoadFileImporter.cs" />
     <Compile Include="Import\ImportJob.cs" />

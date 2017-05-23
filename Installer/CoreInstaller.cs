@@ -61,6 +61,8 @@ namespace kCura.WinEDDS.Core.Installer
 
 			container.Register(Component.For<IErrorManager>().ImplementedBy<ErrorManager>().LifestyleTransient());
 
+			container.Register(Component.For<IImportExceptionHandlerExec>().ImplementedBy<ImportExceptionHandlerExec>().LifestyleSingleton());
+
 			//TODO register server error handling
 			container.Register(Component.For<IServerErrorManager>().UsingFactoryMethod(k =>
 			{
