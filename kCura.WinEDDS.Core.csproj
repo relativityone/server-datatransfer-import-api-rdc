@@ -119,6 +119,7 @@
     <Compile Include="Import\Errors\IAllErrors.cs" />
     <Compile Include="Import\Errors\IErrorManager.cs" />
     <Compile Include="Import\Errors\IErrorReporter.cs" />
+    <Compile Include="Import\Errors\ImportExceptionHandler.cs" />
     <Compile Include="Import\Errors\IServerErrorManager.cs" />
     <Compile Include="Import\Errors\IUploadErrors.cs" />
     <Compile Include="Import\Errors\LineError.cs" />

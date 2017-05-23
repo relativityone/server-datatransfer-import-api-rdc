@@ -104,6 +104,11 @@ namespace kCura.WinEDDS.Core.Import
 			CloseFileWriters();
 		}
 
+		public void CleanUp()
+		{
+			CleanupTempTables();
+		}
+
 		#endregion //IImportMetadata members
 
 		#region Overridden Members

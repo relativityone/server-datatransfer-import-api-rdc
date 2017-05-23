@@ -17,5 +17,7 @@ namespace kCura.WinEDDS.Core.Import
 		string PrepareFieldsAndExtractIdentityValue(FileMetadata fileMetadata);
 
 		void ProcessDocumentMetadata(MetaDocument metaDocument);
+
+		void CleanUp();
 	}
 }

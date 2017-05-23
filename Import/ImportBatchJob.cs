@@ -1,4 +1,5 @@
-﻿using kCura.WinEDDS.Core.Import.Tasks;
+﻿using System;
+using kCura.WinEDDS.Core.Import.Tasks;
 
 namespace kCura.WinEDDS.Core.Import
 {
@@ -23,15 +24,18 @@ namespace kCura.WinEDDS.Core.Import
 
 		public void Run(ImportBatchContext batchContext)
 		{
-			InitializeBatch(batchContext);
-			foreach (FileMetadata fileMetadata in batchContext.FileMetaDataHolder)
+			//Action action =>
 			{
-				UploadNatives(fileMetadata);
-				CreateFolderStructure(fileMetadata, batchContext);
-				CreateMetadata(fileMetadata, batchContext);
+				InitializeBatch(batchContext);
+				foreach (FileMetadata fileMetadata in batchContext.FileMetaDataHolder)
+				{
+					UploadNatives(fileMetadata);
+					CreateFolderStructure(fileMetadata, batchContext);
+					CreateMetadata(fileMetadata, batchContext);
+				}
+				CompleteMetadataProcess();
+				UploadMetadata(batchContext);
 			}
-			CompleteMetadataProcess();
-			UploadMetadata(batchContext);
 		}
 
 		private void UploadMetadata(ImportBatchContext batchContext)

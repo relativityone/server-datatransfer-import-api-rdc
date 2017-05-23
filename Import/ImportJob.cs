@@ -17,7 +17,7 @@ namespace kCura.WinEDDS.Core.Import
 		private readonly IImportBatchJobFactory _batchJobBatchJobFactory;
 		private readonly IErrorContainer _errorContainer;
 		private readonly IImportStatusManager _importStatusManager;
-		private IImporterSettings _importerSettings;
+		private readonly IImporterSettings _importerSettings;
 
 		public event EventHandler<ImportContext> Initialized;
 
@@ -44,7 +44,10 @@ namespace kCura.WinEDDS.Core.Import
 			// TODO -> check continue flag
 			try
 			{
-				InitializeProcess();
+				if (InitializeProcess())
+				{
+					return false;
+				}
 				while (CanCreateBatch())
 				{
 					ImportBatchContext batchSetUp = CreateBatch();
@@ -57,20 +60,25 @@ namespace kCura.WinEDDS.Core.Import
 			}
 			finally
 			{
-				
+				_importer.CleanUp();
 			}
 			return true;
 		}
 
-		private void InitializeProcess()
+		private bool InitializeProcess()
 		{
 			
 			PopulateJobContext();
+			if (ValidateJobContext(_context))
+			{
+				return false;
+			}
 			SetUploadMode();
 			while (HasToMoveRecordIndex())
 			{
 				_importer.ArtifactReader.AdvanceRecord();
 			}
+			return true;
 		}
 
 		private bool HasToMoveRecordIndex()
@@ -95,6 +103,16 @@ namespace kCura.WinEDDS.Core.Import
 		{
 			_context.TotalRecordCount = _importer.ArtifactReader.CountRecords();
 			RaiseStartEvents();
+		}
+
+		private bool ValidateJobContext(ImportContext context)
+		{
+			if (context.TotalRecordCount < 0)
+			{
+				_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.Progress, "cancel import", _importer.ArtifactReader.CurrentLineNumber);
+				return false;
+			}
+			return true;
 		}
 
 		private void SendBatch(ImportBatchContext batchContext)
