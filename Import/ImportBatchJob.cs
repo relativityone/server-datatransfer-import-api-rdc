@@ -10,29 +10,35 @@ namespace kCura.WinEDDS.Core.Import
 		private readonly IImportPrepareMetadataTask _importCreateMetadataTask;
 		private readonly IPushMetadataFilesTask _pushMetadataFilesTask;
 		private readonly IImportMetadata _importMetadata;
+		private readonly IImportExceptionHandlerExec _importExceptionHandlerExec;
 
 		public ImportBatchJob(IImportNativesTask importNativesTask, IImportFoldersTask importFoldersTask, 
 			IImportPrepareMetadataTask importCreateMetadataTask,
-			IPushMetadataFilesTask pushMetadataFilesTask, IImportMetadata importMetadata)
+			IPushMetadataFilesTask pushMetadataFilesTask, IImportMetadata importMetadata,
+			IImportExceptionHandlerExec importExceptionHandlerExec)
 		{
 			_importNativesTask = importNativesTask;
 			_importFoldersTask = importFoldersTask;
 			_importCreateMetadataTask = importCreateMetadataTask;
 			_pushMetadataFilesTask = pushMetadataFilesTask;
 			_importMetadata = importMetadata;
+			_importExceptionHandlerExec = importExceptionHandlerExec;
 		}
 
 		public void Run(ImportBatchContext batchContext)
 		{
-			InitializeBatch(batchContext);
-			foreach (FileMetadata fileMetadata in batchContext.FileMetaDataHolder)
+			_importExceptionHandlerExec.TryCatchExec(() =>
 			{
-				UploadNatives(fileMetadata, batchContext);
-				CreateFolderStructure(fileMetadata, batchContext);
-				CreateMetadata(fileMetadata, batchContext);
-			}
-			CompleteMetadataProcess();
-			UploadMetadata(batchContext);
+				InitializeBatch(batchContext);
+				foreach (FileMetadata fileMetadata in batchContext.FileMetaDataHolder)
+				{
+					UploadNatives(fileMetadata, batchContext);
+					CreateFolderStructure(fileMetadata, batchContext);
+					CreateMetadata(fileMetadata, batchContext);
+				}
+				CompleteMetadataProcess();
+				UploadMetadata(batchContext);
+			});
 		}
 
 		private void UploadMetadata(ImportBatchContext batchContext)

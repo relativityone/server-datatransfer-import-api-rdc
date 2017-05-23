@@ -14,14 +14,12 @@ namespace kCura.WinEDDS.Core.Import.Factories
 		private readonly IImportExceptionHandlerExec _importExceptionHandlerExec;
 
 		public ImportJobFactory(ITransferConfig transferConfig, IImportStatusManager importStatusManager,
-			IImportBatchJobFactory batchJobBatchJobFactory, IWindsorContainer container,
-			IImportExceptionHandlerExec importExceptionHandlerExec)
+			IImportBatchJobFactory batchJobBatchJobFactory, IWindsorContainer container)
 		{
 			_transferConfig = transferConfig;
 			_importStatusManager = importStatusManager;
 			_batchJobBatchJobFactory = batchJobBatchJobFactory;
 			_container = container;
-			_importExceptionHandlerExec = importExceptionHandlerExec;
 		}
 
 		public IImportJob Create(IImportMetadata importMetadata, IImporterSettings importerSettings, IImporterManagers importerManagers)
@@ -30,8 +28,10 @@ namespace kCura.WinEDDS.Core.Import.Factories
 			_container.Register(Component.For<IImportMetadata>().UsingFactoryMethod(k => importMetadata).LifestyleTransient());
 			_container.Register(Component.For<IImporterSettings>().UsingFactoryMethod(k => importerSettings).LifestyleTransient());
 
+			var importExceptionHandlerExec = _container.Resolve<IImportExceptionHandlerExec>();
+
 			return new ImportJob(_transferConfig, _batchJobBatchJobFactory, _importStatusManager, importMetadata, importerSettings,
-				_importExceptionHandlerExec);
+				importExceptionHandlerExec);
 		}
 	}
 }
