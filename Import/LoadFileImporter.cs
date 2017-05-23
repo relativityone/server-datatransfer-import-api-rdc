@@ -14,7 +14,7 @@ namespace kCura.WinEDDS.Core.Import
 	{
 		private readonly IImportStatusManager _importStatusManager;
 
-		private readonly ILoadFileImporter _importJob;
+		private readonly IImportJob _importJob;
 
 		public LoadFileImporter(IImportJobFactory jobFactory, ITransferConfig config, IErrorContainer errorContainer,
 			IImportStatusManager importStatusManager, LoadFile args, Controller processController, Guid processId,
