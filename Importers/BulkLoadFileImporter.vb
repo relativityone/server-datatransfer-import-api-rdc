@@ -1922,7 +1922,7 @@ Namespace kCura.WinEDDS
 			If processID.ToString = _processID.ToString Then CleanupTempTables()
 		End Sub
 
-		Private Sub CleanupTempTables()
+		Protected Sub CleanupTempTables()
 			If Not _runID Is Nothing AndAlso _runID <> "" Then
 				Try
 					Me.BulkImportManager.DisposeTempTables(_caseInfo.ArtifactID, _runID)
