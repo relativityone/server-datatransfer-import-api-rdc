@@ -3,6 +3,7 @@ using System;
 using kCura.WinEDDS.Api;
 using kCura.WinEDDS.Core.Import;
 using kCura.WinEDDS.Core.Import.Errors;
+using kCura.WinEDDS.Core.Import.Factories;
 using kCura.WinEDDS.Core.Import.Status;
 using Moq;
 using NUnit.Framework;
@@ -73,8 +74,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_artifactReaderMock.Setup(reader => reader.ReadArtifact()).Returns(new ArtifactFieldCollection());
 			_artifactReaderMock.Setup(reader => reader.CountRecords()).Returns(maxBatchSize);
 
-			_importJobBatchFactoryMock.Setup(jobFactory => jobFactory.Create(It.IsAny<ImportBatchContext>(), 
-				_importMetadataMock.Object, _importSettings.Object))
+			_importJobBatchFactoryMock.Setup(jobFactory => jobFactory.Create(It.IsAny<ImportBatchContext>()))
 				.Returns(_importJobBatchMock.Object);
 
 			_transferConfigMock.SetupGet(config => config.ImportBatchSize).Returns(maxBatchSize);
