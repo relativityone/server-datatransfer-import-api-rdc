@@ -32,7 +32,7 @@ Namespace kCura.WinEDDS
 		Private _minimumBatchSize As Int32?
 		Private _batchSizeHistoryList As System.Collections.Generic.List(Of Int32)
 		Protected _destinationFolderColumnIndex As Int32 = -1
-		Private _folderCache As FolderCache
+		Protected _folderCache As FolderCache
 		Private _defaultDestinationFolderPath As String = String.Empty
 		Private _copyFileToRepository As Boolean
 		Private _oixFileLookup As System.Collections.Specialized.HybridDictionary
