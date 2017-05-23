@@ -8,7 +8,6 @@ namespace kCura.WinEDDS.Core.Import.Helpers
 	public class NativeLoadInfoFactory : INativeLoadInfoFactory
 	{
 		private readonly ITransferConfig _transferConfig;
-		private readonly ImportContext _importContext;
 
 		public NativeLoadInfoFactory(ITransferConfig transferConfig)
 		{
@@ -17,7 +16,7 @@ namespace kCura.WinEDDS.Core.Import.Helpers
 
 		public NativeLoadInfo Create(MetadataFilesInfo metadataFilesInfo, ImportContext importContext)
 		{
-			var importerSettings = _importContext.Settings;
+			var importerSettings = importContext.Settings;
 
 			var settings = new NativeLoadInfo();
 			settings.DisableUserSecurityCheck = importerSettings.DisableUserSecurityCheck;

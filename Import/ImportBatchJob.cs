@@ -24,18 +24,15 @@ namespace kCura.WinEDDS.Core.Import
 
 		public void Run(ImportBatchContext batchContext)
 		{
-			//Action action =>
+			InitializeBatch(batchContext);
+			foreach (FileMetadata fileMetadata in batchContext.FileMetaDataHolder)
 			{
-				InitializeBatch(batchContext);
-				foreach (FileMetadata fileMetadata in batchContext.FileMetaDataHolder)
-				{
-					UploadNatives(fileMetadata);
-					CreateFolderStructure(fileMetadata, batchContext);
-					CreateMetadata(fileMetadata, batchContext);
-				}
-				CompleteMetadataProcess();
-				UploadMetadata(batchContext);
+				UploadNatives(fileMetadata, batchContext);
+				CreateFolderStructure(fileMetadata, batchContext);
+				CreateMetadata(fileMetadata, batchContext);
 			}
+			CompleteMetadataProcess();
+			UploadMetadata(batchContext);
 		}
 
 		private void UploadMetadata(ImportBatchContext batchContext)
@@ -63,9 +60,9 @@ namespace kCura.WinEDDS.Core.Import
 			_importFoldersTask.Execute(fileMetadata, importBatchContext);
 		}
 
-		private void UploadNatives(FileMetadata fileMetaData)
+		private void UploadNatives(FileMetadata fileMetaData, ImportBatchContext importBatchContext)
 		{
-			_importNativesTask.Execute(fileMetaData);
+			_importNativesTask.Execute(fileMetaData, importBatchContext);
 		}
 	}
 }

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Text;
+using kCura.Utility;
 using kCura.WinEDDS.Api;
 using kCura.WinEDDS.CodeValidator;
 using kCura.WinEDDS.Core.Import.Errors;
+using kCura.WinEDDS.Core.Import.Factories;
 using kCura.WinEDDS.Core.Import.Helpers;
 using kCura.WinEDDS.Core.Import.Status;
 
@@ -31,7 +32,7 @@ namespace kCura.WinEDDS.Core.Import
 			_importer = importer;
 			_importerSettings = importerSettings;
 
-			_context = new ImportContext()
+			_context = new ImportContext
 			{
 				Settings = _importerSettings
 			};
@@ -83,8 +84,8 @@ namespace kCura.WinEDDS.Core.Import
 
 		private bool HasToMoveRecordIndex()
 		{
-			return _importer.ArtifactReader.HasMoreRecords 
-				&& _importer.ArtifactReader.CurrentLineNumber < _importerSettings.LoadFile.StartLineNumber;
+			return _importer.ArtifactReader.HasMoreRecords
+					&& _importer.ArtifactReader.CurrentLineNumber < _importerSettings.LoadFile.StartLineNumber;
 		}
 
 		private void SetUploadMode()
@@ -117,7 +118,7 @@ namespace kCura.WinEDDS.Core.Import
 
 		private void SendBatch(ImportBatchContext batchContext)
 		{
-			IImportBatchJob importBatchJob = _batchJobBatchJobFactory.Create(batchContext, _importer, _importerSettings);
+			IImportBatchJob importBatchJob = _batchJobBatchJobFactory.Create(batchContext);
 			importBatchJob.Run(batchContext);
 		}
 
@@ -164,7 +165,7 @@ namespace kCura.WinEDDS.Core.Import
 			{
 				HandleRecordError(index, BulkLoadFileImporter.ERROR_MESSAGE_FOLDER_NAME_TOO_LONG);
 			}
-			catch (kCura.Utility.ImporterExceptionBase ex)
+			catch (ImporterExceptionBase ex)
 			{
 				HandleRecordError(index, ex.Message);
 			}
@@ -196,7 +197,7 @@ namespace kCura.WinEDDS.Core.Import
 
 		private LineError CreateErrorLine(int index, string message)
 		{
-			return new LineError()
+			return new LineError
 			{
 				ErrorType = ErrorType.client,
 				LineNumber = index,
