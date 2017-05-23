@@ -7,7 +7,7 @@ using kCura.WinEDDS.Core.Import.Status;
 
 namespace kCura.WinEDDS.Core.Import
 {
-	public class ImportJob : ILoadFileImporter, IImportJobInitilizer
+	public class ImportJob : IImportJob, IImportJobInitilizer
 	{
 		private readonly IImportMetadata _importer;
 		private readonly ImportContext _context;
