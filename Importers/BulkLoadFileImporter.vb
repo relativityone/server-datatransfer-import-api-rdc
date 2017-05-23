@@ -8,7 +8,7 @@ Imports Relativity
 Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
 		Inherits kCura.WinEDDS.LoadFileBase
-		Implements ILoadFileImporter
+		Implements IImportJob
 
 #Region "Members"
 		Protected _overwrite As Relativity.ImportOverwriteType
@@ -426,7 +426,7 @@ Namespace kCura.WinEDDS
 		''' <param name="path">The load file which contains information about the document being loaded</param>
 		''' <returns>True indicates success.  False or Nothing indicates failure.</returns>
 		''' <remarks></remarks>
-		Public Overridable  Function ReadFile(ByVal path As String) As Object Implements ILoadFileImporter.ReadFile
+		Public Overridable  Function ReadFile(ByVal path As String) As Object Implements IImportJob.ReadFile
 			Dim line As Api.ArtifactFieldCollection
 			_filePath = path
 			_timekeeper.MarkStart("TOTAL")
