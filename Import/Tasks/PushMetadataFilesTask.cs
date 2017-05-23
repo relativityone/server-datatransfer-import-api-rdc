@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using kCura.EDDS.WebAPI.BulkImportManagerBase;
 using kCura.WinEDDS.Core.Import.Errors;
+using kCura.WinEDDS.Core.Import.Factories;
 using kCura.WinEDDS.Core.Import.Helpers;
 using kCura.WinEDDS.Core.Import.Managers;
 using BulkImportManager = kCura.WinEDDS.Service.BulkImportManager;
@@ -13,15 +14,15 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 	{
 		private readonly ITransferConfig _transferConfig;
 		private readonly INativeLoadInfoFactory _nativeLoadInfoFactory;
-		private readonly IFileUploader _fileUploader;
+		private readonly IFileUploaderFactory _fileUploaderFactory;
 		private readonly IBulkImportManager _bulkImportManager;
 		private readonly IServerErrorManager _serverErrorManager;
 
-		public PushMetadataFilesTask(INativeLoadInfoFactory nativeLoadInfoFactory, IFileUploader fileUploader, ITransferConfig transferConfig, 
+		public PushMetadataFilesTask(INativeLoadInfoFactory nativeLoadInfoFactory, IFileUploaderFactory fileUploaderFactory, ITransferConfig transferConfig, 
 			IBulkImportManager bulkImportManager, IServerErrorManager serverErrorManager)
 		{
 			_nativeLoadInfoFactory = nativeLoadInfoFactory;
-			_fileUploader = fileUploader;
+			_fileUploaderFactory = fileUploaderFactory;
 			_transferConfig = transferConfig;
 			_bulkImportManager = bulkImportManager;
 			_serverErrorManager = serverErrorManager;
@@ -29,12 +30,14 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 
 		public void PushMetadataFiles(ImportBatchContext importBatchContext)
 		{
-			_fileUploader.UploadFile(importBatchContext.MetadataFilesInfo.NativeFilePath);
-			_fileUploader.UploadFile(importBatchContext.MetadataFilesInfo.DataGridFilePath);
-			_fileUploader.UploadFile(importBatchContext.MetadataFilesInfo.CodeFilePath);
-			_fileUploader.UploadFile(importBatchContext.MetadataFilesInfo.ObjectFilePath);
+			var fileUploader = _fileUploaderFactory.CreateBcpFileUploader();
 
-			var uploadResult = _fileUploader.WaitForUploadToComplete();
+			fileUploader.UploadFile(importBatchContext.MetadataFilesInfo.NativeFilePath);
+			fileUploader.UploadFile(importBatchContext.MetadataFilesInfo.DataGridFilePath);
+			fileUploader.UploadFile(importBatchContext.MetadataFilesInfo.CodeFilePath);
+			fileUploader.UploadFile(importBatchContext.MetadataFilesInfo.ObjectFilePath);
+
+			var uploadResult = fileUploader.WaitForUploadToComplete();
 			if (uploadResult.Any(x => !x.Value.Success))
 			{
 				throw new Exception();

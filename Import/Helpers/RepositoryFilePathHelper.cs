@@ -1,11 +1,10 @@
-﻿using System;
-using Relativity;
+﻿using Relativity;
 
 namespace kCura.WinEDDS.Core.Import.Helpers
 {
 	public class RepositoryFilePathHelper : IRepositoryFilePathHelper
 	{
-		private Relativity.RepositoryPathManager _repositoryPathManager;
+		private readonly RepositoryPathManager _repositoryPathManager;
 
 		public RepositoryFilePathHelper()
 		{

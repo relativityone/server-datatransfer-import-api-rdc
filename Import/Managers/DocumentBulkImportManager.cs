@@ -1,11 +1,11 @@
-﻿using kCura.EDDS.WebAPI.BulkImportManagerBase;
+﻿using System.Net;
+using kCura.EDDS.WebAPI.BulkImportManagerBase;
 
 namespace kCura.WinEDDS.Core.Import.Managers
 {
 	public class DocumentBulkImportManager : IBulkImportManager
 	{
 		private readonly BulkImportManager _bulkImportManager;
-		private readonly ImportContext _importContext;
 
 		public DocumentBulkImportManager(BulkImportManager bulkImportManager)
 		{
@@ -14,8 +14,21 @@ namespace kCura.WinEDDS.Core.Import.Managers
 
 		public MassImportResults BulkImport(NativeLoadInfo loadInfo, ImportContext importContext)
 		{
-			return _bulkImportManager.BulkImportNative(_importContext.Settings.LoadFile.CaseInfo.ArtifactID, loadInfo, _importContext.Settings.LoadFile.CopyFilesToDocumentRepository,
-				_importContext.Settings.LoadFile.FullTextColumnContainsFileLocation);
+			return _bulkImportManager.BulkImportNative(importContext.Settings.LoadFile.CaseInfo.ArtifactID, loadInfo, importContext.Settings.LoadFile.CopyFilesToDocumentRepository,
+				importContext.Settings.LoadFile.FullTextColumnContainsFileLocation);
 		}
+
+		public bool NativeRunHasErrors(int appId, string runId)
+		{
+			return _bulkImportManager.NativeRunHasErrors(appId, runId);
+		}
+
+		public ErrorFileKey GenerateNonImageErrorFiles(int appId, string runId, int artifactTypeId, bool writeHeader, int keyFieldId)
+		{
+			return _bulkImportManager.GenerateNonImageErrorFiles(appId, runId, artifactTypeId, writeHeader, keyFieldId);
+		}
+
+		public ICredentials Credentials => _bulkImportManager.Credentials;
+		public CookieContainer CookieContainer => _bulkImportManager.CookieContainer;
 	}
 }

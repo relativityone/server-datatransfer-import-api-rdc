@@ -1,4 +1,4 @@
-﻿namespace kCura.WinEDDS.Core.Import
+﻿namespace kCura.WinEDDS.Core.Import.Factories
 {
 	public interface IFileUploaderFactory
 	{

@@ -26,7 +26,7 @@ namespace kCura.WinEDDS.Core.Import
 			InitializeBatch(batchContext);
 			foreach (FileMetadata fileMetadata in batchContext.FileMetaDataHolder)
 			{
-				UploadNatives(fileMetadata);
+				UploadNatives(fileMetadata, batchContext);
 				CreateFolderStructure(fileMetadata, batchContext);
 				CreateMetadata(fileMetadata, batchContext);
 			}
@@ -59,9 +59,9 @@ namespace kCura.WinEDDS.Core.Import
 			_importFoldersTask.Execute(fileMetadata, importBatchContext);
 		}
 
-		private void UploadNatives(FileMetadata fileMetaData)
+		private void UploadNatives(FileMetadata fileMetaData, ImportBatchContext importBatchContext)
 		{
-			_importNativesTask.Execute(fileMetaData);
+			_importNativesTask.Execute(fileMetaData, importBatchContext);
 		}
 	}
 }

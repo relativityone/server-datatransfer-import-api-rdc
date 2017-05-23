@@ -1,16 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using kCura.Windows.Process;
 using kCura.WinEDDS.Api;
 using kCura.WinEDDS.CodeValidator;
 using kCura.WinEDDS.Core.Import.Errors;
+using kCura.WinEDDS.Core.Import.Factories;
+using kCura.WinEDDS.Core.Import.Managers;
 using kCura.WinEDDS.Core.Import.Status;
+using kCura.WinEDDS.Service;
 using Relativity;
 
 namespace kCura.WinEDDS.Core.Import
 {
-	public class LoadFileImporter : BulkLoadFileImporter, IImportMetadata, IImporterSettings
+	public class LoadFileImporter : BulkLoadFileImporter, IImportMetadata, IImporterSettings, IImporterManagers
 	{
 		private readonly IImportStatusManager _importStatusManager;
 
@@ -28,7 +30,7 @@ namespace kCura.WinEDDS.Core.Import
 
 			_importStatusManager.EventOccurred += OnEventOccurred;
 			_importStatusManager.UpdateStatus += ImportStatusManagerOnUpdateStatus;
-			_importJob = jobFactory.Create(config, importStatusManager, this, this, errorContainer);
+			_importJob = jobFactory.Create(this, this, this);
 		}
 
 		#region IImporterSettings members
@@ -74,9 +76,9 @@ namespace kCura.WinEDDS.Core.Import
 			DeleteFiles();
 			OpenFileWriters();
 
-			return new MetadataFilesInfo()
+			return new MetadataFilesInfo
 			{
-				CodeFilePath = new FileMetadata()
+				CodeFilePath = new FileMetadata
 				{
 					FullFilePath = _outputCodeFilePath,
 					FileGuid = Guid.NewGuid().ToString()
@@ -95,7 +97,7 @@ namespace kCura.WinEDDS.Core.Import
 				{
 					FullFilePath = _outputObjectFilePath,
 					FileGuid = Guid.NewGuid().ToString()
-				},
+				}
 			};
 		}
 
@@ -105,6 +107,13 @@ namespace kCura.WinEDDS.Core.Import
 		}
 
 		#endregion //IImportMetadata members
+
+		#region IImporterManagers members
+
+		public new IBulkImportManager BulkImportManager => new DocumentBulkImportManager(base.BulkImportManager);
+		public FolderManager FolderManager => _folderManager;
+
+		#endregion
 
 		#region Overridden Members
 
@@ -163,7 +172,7 @@ namespace kCura.WinEDDS.Core.Import
 				case StatusUpdateType.End:
 					return EventType.End;
 				case StatusUpdateType.Error:
-					return  EventType.Error;
+					return EventType.Error;
 				case StatusUpdateType.Progress:
 					return EventType.Progress;
 				case StatusUpdateType.Update:

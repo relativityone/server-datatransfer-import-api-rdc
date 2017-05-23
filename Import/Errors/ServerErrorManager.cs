@@ -1,15 +1,15 @@
 ﻿using kCura.Utility;
-using kCura.WinEDDS.Service;
+using kCura.WinEDDS.Core.Import.Managers;
 
 namespace kCura.WinEDDS.Core.Import.Errors
 {
 	public class ServerErrorManager : IServerErrorManager
 	{
-		private readonly BulkImportManager _bulkImportManager;
+		private readonly IBulkImportManager _bulkImportManager;
 		private readonly ServerErrorFile _serverErrorFile;
 		private readonly ServerErrorFileDownloader _serverErrorFileDownloader;
 
-		public ServerErrorManager(BulkImportManager bulkImportManager, ServerErrorFile serverErrorFile, ServerErrorFileDownloader serverErrorFileDownloader)
+		public ServerErrorManager(IBulkImportManager bulkImportManager, ServerErrorFile serverErrorFile, ServerErrorFileDownloader serverErrorFileDownloader)
 		{
 			_bulkImportManager = bulkImportManager;
 			_serverErrorFile = serverErrorFile;

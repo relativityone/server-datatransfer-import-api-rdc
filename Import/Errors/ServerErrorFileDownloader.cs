@@ -2,6 +2,7 @@
 using System.Net;
 using System.Text;
 using kCura.Utility;
+using kCura.WinEDDS.Core.Import.Managers;
 using kCura.WinEDDS.Service;
 using Relativity;
 
@@ -9,9 +10,9 @@ namespace kCura.WinEDDS.Core.Import.Errors
 {
 	public class ServerErrorFileDownloader
 	{
-		private readonly BulkImportManager _bulkImportManager;
+		private readonly IBulkImportManager _bulkImportManager;
 
-		public ServerErrorFileDownloader(BulkImportManager bulkImportManager)
+		public ServerErrorFileDownloader(IBulkImportManager bulkImportManager)
 		{
 			_bulkImportManager = bulkImportManager;
 		}
