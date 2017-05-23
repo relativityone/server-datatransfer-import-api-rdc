@@ -8,6 +8,7 @@ using kCura.WinEDDS.Core.Import.Helpers;
 using kCura.WinEDDS.Core.Import.Managers;
 using kCura.WinEDDS.Core.Import.Status;
 using kCura.WinEDDS.Core.Import.Tasks;
+using kCura.WinEDDS.Core.Import.Tasks.Helpers;
 using kCura.WinEDDS.Core.IO;
 using kCura.WinEDDS.Importers;
 
@@ -90,6 +91,8 @@ namespace kCura.WinEDDS.Core.Installer
 			container.Register(Component.For<IImportNativesTask>().ImplementedBy<ImportNativesTask>().LifestyleScoped());
 			container.Register(Component.For<IImportPrepareMetadataTask>().ImplementedBy<ImportPrepareMetadataTask>().LifestyleScoped());
 			container.Register(Component.For<IPushMetadataFilesTask>().ImplementedBy<PushMetadataFilesTask>().LifestyleScoped());
+
+			container.Register(Component.For<IMetadataFilesServerExecution>().ImplementedBy<MetadataFilesServerExecution>().LifestyleScoped());
 		}
 
 		private static void RegisterManagers(IWindsorContainer container)
