@@ -118,8 +118,8 @@
     <Compile Include="Import\Errors\ErrorManagerTests.cs" />
     <Compile Include="Import\Errors\ErrorReporterTests.cs" />
     <Compile Include="Import\Errors\UploadErrorsTests.cs" />
+    <Compile Include="Import\ImportJobTests.cs" />
     <Compile Include="Import\ImportNativesAnalyzerTests.cs" />
-    <Compile Include="Import\JobImporterTests.cs" />
     <Compile Include="Import\Tasks\Helpers\MetadataFilesServerExecutionTests.cs" />
     <Compile Include="Import\Tasks\ImportDocumentFoldersTaskTests.cs" />
     <Compile Include="Import\Tasks\ImportRdoFoldersTaskTests.cs" />
