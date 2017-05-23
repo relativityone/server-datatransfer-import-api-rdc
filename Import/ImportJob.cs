@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using kCura.WinEDDS.Api;
 using kCura.WinEDDS.CodeValidator;
 using kCura.WinEDDS.Core.Import.Errors;
+using kCura.WinEDDS.Core.Import.Helpers;
 using kCura.WinEDDS.Core.Import.Status;
 
 namespace kCura.WinEDDS.Core.Import
@@ -40,40 +42,47 @@ namespace kCura.WinEDDS.Core.Import
 		public object ReadFile(string path)
 		{
 			// TODO -> check continue flag
-			InitializeProcess();
-			while (CanCreateBatch())
+			try
 			{
-				ImportBatchContext batchSetUp = CreateBatch();
-				SendBatch(batchSetUp);
+				InitializeProcess();
+				while (CanCreateBatch())
+				{
+					ImportBatchContext batchSetUp = CreateBatch();
+					SendBatch(batchSetUp);
+				}
+			}
+			catch (Exception ex)
+			{
+				HandleFatalError(ex);
+			}
+			finally
+			{
+				
 			}
 			return true;
 		}
 
 		private void InitializeProcess()
 		{
-			try
+			
+			PopulateJobContext();
+			SetUploadMode();
+			while (HasToMoveRecordIndex())
 			{
-				PopulateJobContext();
-				SetUploadMode();
-				// Read First Header Line
 				_importer.ArtifactReader.AdvanceRecord();
 			}
-			catch (Exception ex)
-			{
-				HandleFatalError(ex);
-			}
+		}
+
+		private bool HasToMoveRecordIndex()
+		{
+			return _importer.ArtifactReader.HasMoreRecords 
+				&& _importer.ArtifactReader.CurrentLineNumber < _importerSettings.LoadFile.StartLineNumber;
 		}
 
 		private void SetUploadMode()
 		{
-			//var stringBuilder = new StringBuilder("Metadata: Aspera");
-			//string fileMode = "not copied";
-			//if (_settings.CopyFilesToDocumentRepository && string.IsNullOrEmpty(_settings.NativeFilePathColumn))
-			//{
-			//	fileMode = "Aspera";
-			//}
-			//stringBuilder.Append($"- Files: {fileMode}");
-			//_importStatusManager.RaiseTranserModeChangedEvent(this, stringBuilder.ToString());
+			string uploadModeDesc = UploadModeHelper.GetAsperaModeDescriptor(_importerSettings.LoadFile);
+			_importStatusManager.RaiseTranserModeChangedEvent(this, uploadModeDesc);
 		}
 
 		private void RaiseStartEvents()

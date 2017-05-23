@@ -134,6 +134,7 @@
     <Compile Include="Import\Helpers\IRepositoryFilePathHelper.cs" />
     <Compile Include="Import\Helpers\NativeLoadInfoFactory.cs" />
     <Compile Include="Import\Helpers\RepositoryFilePathHelper.cs" />
+    <Compile Include="Import\Helpers\UploadModeHelper.cs" />
     <Compile Include="Import\IFileUploader.cs" />
     <Compile Include="Import\IImportBatchJobFactory.cs" />
     <Compile Include="Import\IImportBatchJob.cs" />
