@@ -172,8 +172,8 @@ namespace kCura.WinEDDS.Core.Import
 
 		private void ImportStatusManagerOnUpdateStatus(object sender, ImportStatusUpdateEventArgs statusUpdateEventArgs)
 		{
-			OnStatusMessage(new StatusEventArgs(GetEventType(statusUpdateEventArgs.Type), statusUpdateEventArgs.LineNumber,
-				_recordCount, statusUpdateEventArgs.Message, Statistics));
+			//OnStatusMessage(new StatusEventArgs(GetEventType(statusUpdateEventArgs.Type), statusUpdateEventArgs.LineNumber,
+			//	_recordCount, statusUpdateEventArgs.Message, Statistics));
 		}
 
 		private EventType GetEventType(StatusUpdateType statusUpdateType)
