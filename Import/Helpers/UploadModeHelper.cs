@@ -17,11 +17,11 @@ namespace kCura.WinEDDS.Core.Import.Helpers
 		{
 			var stringBuilder = new StringBuilder($"Metadata: {mode}");
 			var fileMode = "not copied";
-			if (loadFile.CopyFilesToDocumentRepository && string.IsNullOrEmpty(loadFile.NativeFilePathColumn))
+			if (loadFile.CopyFilesToDocumentRepository && !string.IsNullOrEmpty(loadFile.NativeFilePathColumn))
 			{
 				fileMode = mode;
 			}
-			stringBuilder.Append($"- Files: {fileMode}");
+			stringBuilder.Append($" - Files: {fileMode}");
 			return stringBuilder.ToString();
 		}
 	}
