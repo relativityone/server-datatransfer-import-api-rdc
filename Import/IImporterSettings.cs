@@ -10,7 +10,7 @@ namespace kCura.WinEDDS.Core.Import
 	{
 		LoadFile LoadFile { get; }
 		string RunId { get; }
-
+		string DefaultDestinationFolderPath { get; }
 		int KeyFieldId { get; }
 		bool DisableUserSecurityCheck { get; }
 		ImportAuditLevel AuditLevel { get; }

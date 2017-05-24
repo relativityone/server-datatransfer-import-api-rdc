@@ -40,9 +40,8 @@ namespace kCura.WinEDDS.Core.Import.Helpers
 			settings.DataFileName = metadataFilesInfo.NativeFilePath.FileGuid;
 			settings.ObjectFileName = metadataFilesInfo.ObjectFilePath.FileGuid;
 			settings.DataGridFileName = metadataFilesInfo.DataGridFilePath.FileGuid;
-
-			//TODO
-			settings.Repository = "TODO";
+			
+			settings.Repository = importerSettings.DefaultDestinationFolderPath;
 			if (string.IsNullOrEmpty(settings.Repository))
 			{
 				settings.Repository = importerSettings.LoadFile.CaseInfo.DocumentPath;

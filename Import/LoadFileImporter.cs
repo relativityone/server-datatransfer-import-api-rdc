@@ -37,6 +37,7 @@ namespace kCura.WinEDDS.Core.Import
 
 		public LoadFile LoadFile => _settings;
 		public string RunId => _runID;
+		public string DefaultDestinationFolderPath => _defaultDestinationFolderPath;
 		public int KeyFieldId => _keyFieldID;
 		public int OverlayArtifactID => _overlayArtifactID;
 		public int FolderId => _folderID;
