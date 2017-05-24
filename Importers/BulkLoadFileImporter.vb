@@ -10,6 +10,13 @@ Namespace kCura.WinEDDS
 		Inherits kCura.WinEDDS.LoadFileBase
 		Implements IImportJob
 
+#Region "Const Fields"
+
+		Public Shared ReadOnly RestartTimeEventMsg As String = "Reset time for import rolling average"
+		Public Shared ReadOnly CancelEventMsg As String = "cancel import"
+
+#End Region
+
 #Region "Members"
 		Protected _overwrite As Relativity.ImportOverwriteType
 		Private WithEvents _uploader As kCura.WinEDDS.FileUploader
@@ -540,7 +547,7 @@ Namespace kCura.WinEDDS
 		Private Function InitializeMembers(ByVal path As String) As Boolean
 			_recordCount = _artifactReader.CountRecords
 			If _recordCount = -1 Then
-				OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Progress, CurrentLineNumber, CurrentLineNumber, "cancel import", _currentStatisticsSnapshot))
+				OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Progress, CurrentLineNumber, CurrentLineNumber, CancelEventMsg, _currentStatisticsSnapshot))
 				Return False
 			End If
 
@@ -548,7 +555,7 @@ Namespace kCura.WinEDDS
 			Me.InitializeFieldIdList()
 			DeleteFiles()
 			OpenFileWriters()
-			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, "Reset time for import rolling average", Nothing))
+			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, RestartTimeEventMsg, Nothing))
 			Return True
 		End Function
 
@@ -566,7 +573,7 @@ Namespace kCura.WinEDDS
 			kCura.Utility.File.Instance.Delete(_outputFileWriter.OutputDataGridFilePath)
 		End Sub
 
-		Private Sub InitializeFolderManagement()
+		Protected Sub InitializeFolderManagement()
 			If _createFolderStructure Then
 				If Not kCura.WinEDDS.Config.CreateFoldersInWebAPI Then
 					'Client side folder creation (added back for Dominus# 1127879)
