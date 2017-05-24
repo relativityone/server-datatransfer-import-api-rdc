@@ -56,7 +56,7 @@ namespace kCura.WinEDDS.Core.Import.Helpers
 				settings.RootFolderID = 0;
 			}
 
-			return null;
+			return settings;
 		}
 
 		private OverlayBehavior GetMassImportOverlayBehavior(LoadFile.FieldOverlayBehavior? behavior)
