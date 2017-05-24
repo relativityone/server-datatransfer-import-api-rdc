@@ -1,7 +1,9 @@
-﻿namespace kCura.WinEDDS.Core.Import.Tasks
+﻿using System.Collections.Generic;
+
+namespace kCura.WinEDDS.Core.Import.Tasks
 {
 	public interface IImportNativesTask
 	{
-		void Execute(FileMetadata fileMetadata, ImportBatchContext importBatchContext);
+		IDictionary<FileMetadata, UploadResult> Execute(ImportBatchContext importBatchContext);
 	}
 }

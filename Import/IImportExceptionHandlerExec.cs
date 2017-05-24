@@ -9,6 +9,6 @@ namespace kCura.WinEDDS.Core.Import
 
 		void TryCatchExec(Action executeAction, Action finalizeAction = null);
 
-		void IgnoreOnExceprionExec<TException>(Action action, Func<bool> condition = null);
+		void IgnoreOnExceptionExec<TException>(Action action, Func<bool> condition = null);
 	}
 }

@@ -69,7 +69,7 @@ namespace kCura.WinEDDS.Core.Import.Errors
 			return defaultRetValue;
 		}
 
-		public void IgnoreOnExceprionExec<TException>(Action action, Func<bool> condition = null)
+		public void IgnoreOnExceptionExec<TException>(Action action, Func<bool> condition = null)
 		{
 			try
 			{

@@ -1,5 +1,6 @@
 ﻿using System;
-using System.IO;
+using System.Collections.Generic;
+using kCura.WinEDDS.Core.Import.Errors;
 using kCura.WinEDDS.Core.Import.Factories;
 using kCura.WinEDDS.Core.Import.Helpers;
 using Relativity;
@@ -8,25 +9,41 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 {
 	public class ImportNativesTask : IImportNativesTask
 	{
-		private readonly IFileUploader _fileUploader;
+		private readonly IFileUploaderFactory _fileUploaderFactory;
 		private readonly IImportNativesAnalyzer _importNativesAnalyzer;
 		private readonly IRepositoryFilePathHelper _repositoryFilePathHelper;
 		private readonly IImportExceptionHandlerExec _importExceptionHandlerExec;
+		private readonly IUploadErrors _uploadErrors;
+
+		private IFileUploader _fileUploader;
 
 		public ImportNativesTask(IFileUploaderFactory fileUploaderFactory, IImportNativesAnalyzer importNativesAnalyzer,
-			IRepositoryFilePathHelper repositoryFilePathHelper, IImportExceptionHandlerExec importExceptionHandlerExec)
+			IRepositoryFilePathHelper repositoryFilePathHelper, IImportExceptionHandlerExec importExceptionHandlerExec, IUploadErrors uploadErrors)
 		{
 			_importNativesAnalyzer = importNativesAnalyzer;
 			_repositoryFilePathHelper = repositoryFilePathHelper;
 			_importExceptionHandlerExec = importExceptionHandlerExec;
-			_fileUploader = fileUploaderFactory.CreateNativeFileUploader();
+			_uploadErrors = uploadErrors;
+			_fileUploaderFactory = fileUploaderFactory;
 		}
 
-		public void Execute(FileMetadata fileMetadata, ImportBatchContext importBatchContext)
+		public IDictionary<FileMetadata, UploadResult> Execute(ImportBatchContext importBatchContext)
+		{
+			_fileUploader = _fileUploaderFactory.CreateNativeFileUploader();
+			foreach (var fileMetadata in importBatchContext.FileMetaDataHolder)
+			{
+				Upload(fileMetadata, importBatchContext);
+			}
+			var uploadResult = _fileUploader.WaitForUploadToComplete();
+			_uploadErrors.HandleUploadErrors(uploadResult);
+			return uploadResult;
+		}
+
+		private void Upload(FileMetadata fileMetadata, ImportBatchContext importBatchContext)
 		{
 			// This task reffers to document type native import
 
-			_importExceptionHandlerExec.IgnoreOnExceprionExec<FileNotFoundException>(() =>
+			_importExceptionHandlerExec.TryCatchExec(() =>
 			{
 				fileMetadata.UploadFile = ExtractUploadCheck(fileMetadata);
 				if (CanExecute(fileMetadata, importBatchContext))

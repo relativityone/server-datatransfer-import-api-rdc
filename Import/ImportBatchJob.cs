@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Linq;
 using kCura.WinEDDS.Core.Import.Tasks;
 
 namespace kCura.WinEDDS.Core.Import
@@ -12,7 +13,7 @@ namespace kCura.WinEDDS.Core.Import
 		private readonly IImportMetadata _importMetadata;
 		private readonly IImportExceptionHandlerExec _importExceptionHandlerExec;
 
-		public ImportBatchJob(IImportNativesTask importNativesTask, IImportFoldersTask importFoldersTask, 
+		public ImportBatchJob(IImportNativesTask importNativesTask, IImportFoldersTask importFoldersTask,
 			IImportPrepareMetadataTask importCreateMetadataTask,
 			IPushMetadataFilesTask pushMetadataFilesTask, IImportMetadata importMetadata,
 			IImportExceptionHandlerExec importExceptionHandlerExec)
@@ -27,15 +28,20 @@ namespace kCura.WinEDDS.Core.Import
 
 		public void Run(ImportBatchContext batchContext)
 		{
+			InitializeBatch(batchContext);
+
+			IDictionary<FileMetadata, UploadResult> result = UploadNatives(batchContext);
+
+			foreach (var keyValuePair in result.Where(x => x.Value.Success))
+			{
+				_importExceptionHandlerExec.TryCatchExec(() =>
+				{
+					CreateFolderStructure(keyValuePair.Key, batchContext);
+					CreateMetadata(keyValuePair.Key, batchContext);
+				});
+			}
 			_importExceptionHandlerExec.TryCatchExec(() =>
 			{
-				InitializeBatch(batchContext);
-				foreach (FileMetadata fileMetadata in batchContext.FileMetaDataHolder)
-				{
-					UploadNatives(fileMetadata, batchContext);
-					CreateFolderStructure(fileMetadata, batchContext);
-					CreateMetadata(fileMetadata, batchContext);
-				}
 				CompleteMetadataProcess();
 				UploadMetadata(batchContext);
 			});
@@ -66,9 +72,9 @@ namespace kCura.WinEDDS.Core.Import
 			_importFoldersTask.Execute(fileMetadata, importBatchContext);
 		}
 
-		private void UploadNatives(FileMetadata fileMetaData, ImportBatchContext importBatchContext)
+		private IDictionary<FileMetadata, UploadResult> UploadNatives(ImportBatchContext importBatchContext)
 		{
-			_importNativesTask.Execute(fileMetaData, importBatchContext);
+			return _importNativesTask.Execute(importBatchContext);
 		}
 	}
 }
