@@ -81,6 +81,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 				.Returns(true)  // Here we should read lines "maxBatchSize"-times
 				.Returns(true)
 				.Returns(true)
+				.Returns(true)
 				.Returns(false);
 			_artifactReaderMock.Setup(reader => reader.AdvanceRecord());
 			_artifactReaderMock.Setup(reader => reader.ReadArtifact()).Returns(new ArtifactFieldCollection());
