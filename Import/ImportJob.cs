@@ -58,7 +58,8 @@ namespace kCura.WinEDDS.Core.Import
 			{
 				return false;
 			}
-			SetUploadMode();
+			InitProcess();
+			
 			while (HasToMoveRecordIndex())
 			{
 				_importer.ArtifactReader.AdvanceRecord();
@@ -72,10 +73,13 @@ namespace kCura.WinEDDS.Core.Import
 					&& _importer.ArtifactReader.CurrentLineNumber < _importerSettings.LoadFile.StartLineNumber;
 		}
 
-		private void SetUploadMode()
+		private void InitProcess()
 		{
 			string uploadModeDesc = UploadModeHelper.GetAsperaModeDescriptor(_importerSettings.LoadFile);
 			_importStatusManager.RaiseTranserModeChangedEvent(this, uploadModeDesc);
+
+			_importer.InitializeFolderManagement();
+			_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.RestartTime, BulkLoadFileImporter.RestartTimeEventMsg, 0);
 		}
 
 		private void RaiseStartEvents()
@@ -94,7 +98,8 @@ namespace kCura.WinEDDS.Core.Import
 		{
 			if (context.TotalRecordCount < 0)
 			{
-				_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.Progress, "cancel import", _importer.ArtifactReader.CurrentLineNumber);
+				_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.Progress, BulkLoadFileImporter.CancelEventMsg, 
+					_importer.ArtifactReader.CurrentLineNumber);
 				return false;
 			}
 			return true;

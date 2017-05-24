@@ -40,19 +40,21 @@ namespace kCura.WinEDDS.Core.Import.Errors
 
 		private void RaiseErrorEvent(LineError lineError, int threadSafeErrorCount)
 		{
+			string lineErrorMessage = lineError.Message;
 			if (threadSafeErrorCount < _transferConfig.DefaultMaximumErrorCount)
 			{
 				_importStatusManager.RaiseErrorImportEvent(this, lineError);
-				
 			}
 			else if (threadSafeErrorCount == _transferConfig.DefaultMaximumErrorCount)
 			{
+				lineErrorMessage = _MAX_ERROR_COUNT_REACHED_MESSAGE;
 				var moreToBeFoundMessage = new LineError
 				{
-					Message = _MAX_ERROR_COUNT_REACHED_MESSAGE
+					Message = lineErrorMessage
 				};
 				_importStatusManager.RaiseErrorImportEvent(this, moreToBeFoundMessage);
 			}
+			_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.Error, lineErrorMessage, lineError.LineNumber);
 		}
 	}
 }

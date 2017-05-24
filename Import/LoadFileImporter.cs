@@ -107,6 +107,10 @@ namespace kCura.WinEDDS.Core.Import
 			CloseFileWriters();
 		}
 
+		public void InitializeFolderManagement()
+		{
+			
+		}
 		public void CleanUp()
 		{
 			CleanupTempTables();
@@ -159,6 +163,9 @@ namespace kCura.WinEDDS.Core.Import
 					break;
 				case ImportEventType.Error:
 					OnReportErrorEvent(importEventArgs.LineError.ToHashtable());
+					break;
+				case ImportEventType.TransferModeChanged:
+					OnUploadModeChangeEvent(importEventArgs.Message, true /*Aspera*/);
 					break;
 			}
 		}

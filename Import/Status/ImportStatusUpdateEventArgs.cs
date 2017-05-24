@@ -9,7 +9,8 @@ namespace kCura.WinEDDS.Core.Import.Status
 		Count,
 		Update,
 		End,
-		Error
+		Error,
+		RestartTime
 	}
 
 	public class ImportStatusUpdateEventArgs
