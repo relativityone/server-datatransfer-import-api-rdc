@@ -1,14 +1,18 @@
-﻿using kCura.Utility;
+﻿using System;
+using kCura.Utility;
+using kCura.WinEDDS.Core.Import.Status;
 
 namespace kCura.WinEDDS.Core.Import.Errors
 {
-	public class ServerErrorFile
+	public class ServerErrorFile : IServerErrorFile
 	{
 		private readonly IErrorContainer _errorContainer;
+		private readonly IImportStatusManager _importStatusManager;
 
-		public ServerErrorFile(IErrorContainer errorContainer)
+		public ServerErrorFile(IErrorContainer errorContainer, IImportStatusManager importStatusManager)
 		{
 			_errorContainer = errorContainer;
+			_importStatusManager = importStatusManager;
 		}
 
 		public void HandleServerErrors(GenericCsvReader reader)
@@ -16,7 +20,7 @@ namespace kCura.WinEDDS.Core.Import.Errors
 			if (reader == null)
 			{
 				const string message = "There was an error while attempting to retrieve the errors from the server.";
-				//TODO raise fatal error
+				_importStatusManager.RaiseFatalErrorImportEvent(this, message, -1, new Exception(message));
 				return;
 			}
 			try
@@ -36,7 +40,7 @@ namespace kCura.WinEDDS.Core.Import.Errors
 					};
 					_errorContainer.WriteError(lineError);
 
-					//TODO raise status event
+					_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.Error, lineError.Message, lineError.LineNumber);
 
 					line = reader.ReadLine();
 				}
@@ -44,6 +48,7 @@ namespace kCura.WinEDDS.Core.Import.Errors
 			finally
 			{
 				reader.IoWarningEvent -= OnIoWarningEvent;
+				reader.Close();
 			}
 		}
 
