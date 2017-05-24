@@ -192,6 +192,8 @@ namespace kCura.WinEDDS.Core.Import
 					return EventType.Status;
 				case StatusUpdateType.Warning:
 					return EventType.Warning;
+				case StatusUpdateType.ResetStartTime:
+					return EventType.ResetStartTime;
 			}
 			throw new ArgumentException($"Unexpected event type {nameof(statusUpdateType)} passed to the method!");
 		}

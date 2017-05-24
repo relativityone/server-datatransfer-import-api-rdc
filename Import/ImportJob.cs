@@ -87,7 +87,7 @@ namespace kCura.WinEDDS.Core.Import
 			_importStatusManager.RaiseTranserModeChangedEvent(this, uploadModeDesc);
 
 			_importer.InitializeFolderManagement();
-			_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.RestartTime, BulkLoadFileImporter.RestartTimeEventMsg, 0);
+			_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.ResetStartTime, BulkLoadFileImporter.RestartTimeEventMsg, 0);
 		}
 
 		private void RaiseStartEvents()

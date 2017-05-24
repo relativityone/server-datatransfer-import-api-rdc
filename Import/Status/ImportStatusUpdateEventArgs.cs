@@ -10,7 +10,7 @@ namespace kCura.WinEDDS.Core.Import.Status
 		Update,
 		End,
 		Error,
-		RestartTime
+		ResetStartTime
 	}
 
 	public class ImportStatusUpdateEventArgs
