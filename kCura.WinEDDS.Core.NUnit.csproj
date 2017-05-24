@@ -117,6 +117,9 @@
     <Compile Include="Import\Errors\ErrorFileNamesTests.cs" />
     <Compile Include="Import\Errors\ErrorManagerTests.cs" />
     <Compile Include="Import\Errors\ErrorReporterTests.cs" />
+    <Compile Include="Import\Errors\ServerErrorFileDownloaderTests.cs" />
+    <Compile Include="Import\Errors\ServerErrorFileTests.cs" />
+    <Compile Include="Import\Errors\ServerErrorManagerTests.cs" />
     <Compile Include="Import\Errors\UploadErrorsTests.cs" />
     <Compile Include="Import\ImportJobTests.cs" />
     <Compile Include="Import\ImportNativesAnalyzerTests.cs" />
