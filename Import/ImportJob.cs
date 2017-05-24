@@ -45,10 +45,18 @@ namespace kCura.WinEDDS.Core.Import
 						return false;
 					}
 					// TODO -> check continue flag
-					ImportBatchContext batchSetUp = CreateBatch();
-					SendBatch(batchSetUp);
+					while (CanCreateBatch())
+					{
+						ImportBatchContext batchSetUp = CreateBatch();
+						SendBatch(batchSetUp);
+					}
 					return true;
 				}, null, _importer.CleanUp);
+		}
+
+		private bool CanCreateBatch()
+		{
+			return _importer.ArtifactReader.HasMoreRecords;
 		}
 
 		private bool InitializeProcess()
