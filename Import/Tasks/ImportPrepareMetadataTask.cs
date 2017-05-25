@@ -2,16 +2,19 @@
 using System.Linq;
 using kCura.Utility.Extensions;
 using kCura.WinEDDS.Api;
+using kCura.WinEDDS.Core.Import.Status;
 
 namespace kCura.WinEDDS.Core.Import.Tasks
 {
 	public class ImportPrepareMetadataTask : IImportPrepareMetadataTask
 	{
 		private readonly IImportMetadata _importMetadata;
+		private readonly IImportStatusManager _importStatusManager;
 
-		public ImportPrepareMetadataTask(IImportMetadata importMetadata)
+		public ImportPrepareMetadataTask(IImportMetadata importMetadata, IImportStatusManager importStatusManager)
 		{
 			_importMetadata = importMetadata;
+			_importStatusManager = importStatusManager;
 		}
 
 		public void Execute(FileMetadata fileMetadata, ImportBatchContext importBatchContext)
@@ -21,6 +24,8 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 
 			ValidateRecordId(recordId);
 			ProcessDocumentMetadata(recordId, dataGridId, fileMetadata, importBatchContext.ImportContext);
+
+			_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.Progress, $"Item '{recordId}' processed.", fileMetadata.LineNumber);
 		}
 
 		private void ProcessDocumentMetadata(string recordId, string dataGridId, FileMetadata fileMetadata, ImportContext importContext)
