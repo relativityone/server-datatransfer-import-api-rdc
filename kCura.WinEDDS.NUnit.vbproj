@@ -281,18 +281,6 @@
       <Project>{4E99F9A8-34DF-462D-B078-EAB253BA2CAA}</Project>
       <Name>kCura.CommandLine</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.Config\kCura.Config.vbproj">
-      <Project>{4705D839-6569-4489-9ED2-2A791AC27965}</Project>
-      <Name>kCura.Config</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.Data.RowDataGateway\kCura.Data.RowDataGateway.vbproj">
-      <Project>{DF390E60-B113-442C-9985-6D3E7ECB451D}</Project>
-      <Name>kCura.Data.RowDataGateway</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.Data\kCura.Data.vbproj">
-      <Project>{6C4D3211-85B6-4A83-9356-7C7F0C319C75}</Project>
-      <Name>kCura.Data</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.ImageValidator\kCura.ImageValidator.vbproj">
       <Project>{C2FD8BF7-723A-4D40-A201-CD7458678A70}</Project>
       <Name>kCura.ImageValidator</Name>
@@ -312,6 +300,10 @@
     <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
       <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
       <Name>kCura.Windows.Process</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura\kCura.vbproj">
+      <Project>{535d782a-2388-416f-ab46-10347e44eec9}</Project>
+      <Name>kCura</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.EDDS.WinForm\kCura.EDDS.WinForm.vbproj">
       <Project>{CDEB4462-2D7B-4244-8640-11BC743CD002}</Project>
