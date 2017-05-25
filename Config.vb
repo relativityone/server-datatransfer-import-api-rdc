@@ -43,6 +43,8 @@ Namespace kCura.WinEDDS
 							If Not tempDict.Contains("CreateFoldersInWebAPI") Then tempDict.Add("CreateFoldersInWebAPI", "True")
 							If Not tempDict.Contains("ForceWebUpload") Then tempDict.Add("ForceWebUpload", "False")
 							If Not tempDict.Contains("DisableAspera") Then tempDict.Add("DisableAspera", "False")
+							If Not tempDict.Contains("RestUrl") Then tempDict.Add("RestUrl", "/Relativity.REST/api")
+							If Not tempDict.Contains("ServicesUrl") Then tempDict.Add("ServicesUrl", "/Relativity.Services/")
 							If Not tempDict.Contains(NameOf(LoadImportedFullTextFromServer)) Then tempDict.Add(NameOf(LoadImportedFullTextFromServer), "False")
 							If Not tempDict.Contains(NameOf(UsePipeliningForNativeAndObjectImports)) Then tempDict.Add(NameOf(UsePipeliningForNativeAndObjectImports), "False")
 							If Not tempDict.Contains(NameOf(UsePipeliningForFileIdAndCopy)) Then tempDict.Add(NameOf(UsePipeliningForFileIdAndCopy), "False")
@@ -336,6 +338,18 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Shared ReadOnly Property RestUrl() As String
+			Get
+				Return CType(ConfigSettings("RestUrl"), String)
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property ServicesUrl() As String
+			Get
+				Return CType(ConfigSettings("ServicesUrl"), String)
+			End Get
+		End Property
+
 		Public Shared Property ForceFolderPreview() As Boolean
 			Get
 				Dim registryValue As String = Config.GetRegistryKeyValue("ForceFolderPreview")
@@ -425,5 +439,6 @@ Namespace kCura.WinEDDS
 				Return System.Math.Max(CType(ConfigSettings("WebBasedFileDownloadChunkSize"), Int32), 1024)
 			End Get
 		End Property
+		
 	End Class
 End Namespace
