@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.WinEDDS.Core.Import.Status;
 using kCura.WinEDDS.Core.Import.Tasks;
 
 namespace kCura.WinEDDS.Core.Import
@@ -12,11 +13,12 @@ namespace kCura.WinEDDS.Core.Import
 		private readonly IPushMetadataFilesTask _pushMetadataFilesTask;
 		private readonly IImportMetadata _importMetadata;
 		private readonly IImportExceptionHandlerExec _importExceptionHandlerExec;
+		private readonly IImportStatusManager _importStatusManager;
 
 		public ImportBatchJob(IImportNativesTask importNativesTask, IImportFoldersTask importFoldersTask,
 			IImportPrepareMetadataTask importCreateMetadataTask,
 			IPushMetadataFilesTask pushMetadataFilesTask, IImportMetadata importMetadata,
-			IImportExceptionHandlerExec importExceptionHandlerExec)
+			IImportExceptionHandlerExec importExceptionHandlerExec, IImportStatusManager importStatusManager)
 		{
 			_importNativesTask = importNativesTask;
 			_importFoldersTask = importFoldersTask;
@@ -24,13 +26,16 @@ namespace kCura.WinEDDS.Core.Import
 			_pushMetadataFilesTask = pushMetadataFilesTask;
 			_importMetadata = importMetadata;
 			_importExceptionHandlerExec = importExceptionHandlerExec;
+			_importStatusManager = importStatusManager;
 		}
 
 		public void Run(ImportBatchContext batchContext)
 		{
 			InitializeBatch(batchContext);
 
-			IDictionary<FileMetadata, UploadResult> result = UploadNatives(batchContext);
+			IDictionary<FileMetadata, UploadResult> result = UploadNatives(batchContext)
+				.OrderBy(item => item.Key.LineNumber)
+				.ToDictionary(keyValSelector => keyValSelector.Key, keyValSelector => keyValSelector.Value);
 
 			foreach (var keyValuePair in result.Where(x => x.Value.Success))
 			{
@@ -38,6 +43,8 @@ namespace kCura.WinEDDS.Core.Import
 				{
 					CreateFolderStructure(keyValuePair.Key, batchContext);
 					CreateMetadata(keyValuePair.Key, batchContext);
+
+					
 				});
 			}
 			_importExceptionHandlerExec.TryCatchExec(() =>

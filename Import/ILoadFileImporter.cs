@@ -18,7 +18,7 @@ namespace kCura.WinEDDS.Core.Import
 
 		void ProcessDocumentMetadata(MetaDocument metaDocument);
 
-		void InitializeFolderManagement();
+		void InitializeJob(ImportContext importContext);
 
 		void CleanUp();
 	}

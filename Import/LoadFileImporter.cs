@@ -107,9 +107,10 @@ namespace kCura.WinEDDS.Core.Import
 			CloseFileWriters();
 		}
 
-		public void InitializeFolderManagement()
+		public void InitializeJob(ImportContext importContext)
 		{
-			
+			_recordCount = importContext.TotalRecordCount;
+			InitializeFolderManagement();
 		}
 		public void CleanUp()
 		{
