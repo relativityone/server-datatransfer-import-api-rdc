@@ -1683,7 +1683,7 @@ Namespace kCura.WinEDDS
 			PublishUploadModeEvent()
 		End Sub
 
-		Private Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
+		Protected Overridable Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
 			If processID.ToString = _processID.ToString Then
 				_continue = False
 				_artifactReader.Halt()
