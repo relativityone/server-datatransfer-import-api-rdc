@@ -25,7 +25,7 @@ namespace kCura.WinEDDS.Core.Import.Errors
 			{
 				executeAction();
 				return true;
-			}, true, finalizeAction);
+			}, (bool?)true, finalizeAction);
 		}
 
 		public T TryCatchExec<T>(Func<T> executeAction, T defaultRetValue = default(T), Action finalizeAction = null)
@@ -58,12 +58,12 @@ namespace kCura.WinEDDS.Core.Import.Errors
 			{
 				HandleRecordError(_metadataImporter.ArtifactReader.CurrentLineNumber, ex.Message);
 			}
-			catch (OperationCanceledException ex)
-			{
-				
-			}
 			catch (Exception ex)
 			{
+				if (ex is OperationCanceledException)
+				{
+					throw;
+				}
 				HandleFatalError(ex);
 			}
 			finally

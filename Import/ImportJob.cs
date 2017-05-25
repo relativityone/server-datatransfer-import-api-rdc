@@ -129,13 +129,18 @@ namespace kCura.WinEDDS.Core.Import
 		{
 			var currentBatchCounter = 0;
 			var importBatchContext = new ImportBatchContext(_context, _config.ImportBatchSize);
-			while (_importer.ArtifactReader.HasMoreRecords && currentBatchCounter < _config.ImportBatchSize)
+			while (CanProcessNextRecord(currentBatchCounter))
 			{
 				++currentBatchCounter;
 				ProcessBatchRecord(importBatchContext, currentBatchCounter);
 				_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.Count, string.Empty, _importer.ArtifactReader.CurrentLineNumber);
 			}
 			return importBatchContext;
+		}
+
+		private bool CanProcessNextRecord(int currentBatchCounter)
+		{
+			return _importer.ArtifactReader.HasMoreRecords && currentBatchCounter < _config.ImportBatchSize;
 		}
 
 		private void ProcessBatchRecord(ImportBatchContext importBatchContext, int index)

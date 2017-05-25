@@ -6,7 +6,7 @@ namespace kCura.WinEDDS.Core.Import.Status
 	{
 		private readonly CancellationTokenSource _cancelTokenSource;
 
-		private CancellationProvider()
+		public CancellationProvider()
 		{
 			_cancelTokenSource = new CancellationTokenSource();
 		}
