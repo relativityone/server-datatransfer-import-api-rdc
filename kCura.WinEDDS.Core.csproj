@@ -129,6 +129,8 @@
     <Compile Include="Import\Errors\IErrorManager.cs" />
     <Compile Include="Import\Errors\IErrorReporter.cs" />
     <Compile Include="Import\Errors\ImportExceptionHandlerExec.cs" />
+    <Compile Include="Import\Errors\IServerErrorFile.cs" />
+    <Compile Include="Import\Errors\IServerErrorFileDownloader.cs" />
     <Compile Include="Import\Errors\IServerErrorManager.cs" />
     <Compile Include="Import\Errors\IUploadErrors.cs" />
     <Compile Include="Import\Errors\LineError.cs" />
@@ -142,7 +144,11 @@
     <Compile Include="Import\Factories\ImportJobFactory.cs" />
     <Compile Include="Import\Factories\LoadFileImporterFactory.cs" />
     <Compile Include="Import\FileMetadata.cs" />
+    <Compile Include="Import\Helpers\ErrorFileDownloader.cs" />
+    <Compile Include="Import\Helpers\ErrorFileDownloaderFactory.cs" />
     <Compile Include="Import\Helpers\FileInfoProvider.cs" />
+    <Compile Include="Import\Helpers\IErrorFileDownloader.cs" />
+    <Compile Include="Import\Helpers\IErrorFileDownloaderFactory.cs" />
     <Compile Include="Import\Helpers\IFileInfoProvider.cs" />
     <Compile Include="Import\Helpers\INativeLoadInfoFactory.cs" />
     <Compile Include="Import\Helpers\IRepositoryFilePathHelper.cs" />

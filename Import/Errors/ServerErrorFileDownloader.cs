@@ -1,37 +1,39 @@
-﻿using System.IO;
-using System.Net;
-using System.Text;
+﻿using System.Text;
 using kCura.Utility;
-using kCura.WinEDDS.Core.Import.Managers;
-using kCura.WinEDDS.Service;
+using kCura.WinEDDS.Core.Import.Helpers;
+using kCura.WinEDDS.Core.Import.Status;
+using Polly;
 using Relativity;
 
 namespace kCura.WinEDDS.Core.Import.Errors
 {
-	public class ServerErrorFileDownloader
+	public class ServerErrorFileDownloader : IServerErrorFileDownloader
 	{
-		private readonly IBulkImportManager _bulkImportManager;
+		private const int _FILE_DOWNLOAD_TRIES = 3;
 
-		public ServerErrorFileDownloader(IBulkImportManager bulkImportManager)
+		private readonly IImportStatusManager _importStatusManager;
+		private readonly IPathHelper _pathHelper;
+		private readonly IErrorFileDownloaderFactory _errorFileDownloaderFactory;
+
+		public ServerErrorFileDownloader(IImportStatusManager importStatusManager, IPathHelper pathHelper, IErrorFileDownloaderFactory errorFileDownloaderFactory)
 		{
-			_bulkImportManager = bulkImportManager;
+			_importStatusManager = importStatusManager;
+			_pathHelper = pathHelper;
+			_errorFileDownloaderFactory = errorFileDownloaderFactory;
 		}
 
 		public GenericCsvReader DownloadErrorFile(string logKey, CaseInfo caseInfo)
 		{
-			FileDownloader fileDownloader = null;
+			IErrorFileDownloader fileDownloader = null;
 			GenericCsvReader reader = null;
 			try
 			{
-				var errorsLocation = Path.GetTempFileName();
+				var errorsLocation = _pathHelper.GetTempFileName();
 
-				fileDownloader = new FileDownloader((NetworkCredential) _bulkImportManager.Credentials, caseInfo.DocumentPath, caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer,
-					Settings.AuthenticationToken);
+				fileDownloader = _errorFileDownloaderFactory.Create(caseInfo);
 				fileDownloader.UploadStatusEvent += OnUploadStatusEvent;
 
-				int triesLeft = 3;
-
-				while (triesLeft > 0)
+				Policy<bool>.HandleResult(x => !x).Retry(_FILE_DOWNLOAD_TRIES - 1).Execute(() =>
 				{
 					fileDownloader.MoveTempFileToLocal(errorsLocation, logKey, caseInfo, false);
 					reader = new GenericCsvReader(errorsLocation, Encoding.UTF8, true);
@@ -39,16 +41,19 @@ namespace kCura.WinEDDS.Core.Import.Errors
 					var firstChar = reader.Peek();
 					if (firstChar == -1)
 					{
-						triesLeft--;
 						reader.Close();
 						reader = null;
+						return false;
 					}
-					else
-					{
-						break;
-					}
-				}
+					return true;
+				});
+
 				fileDownloader.RemoveRemoteTempFile(logKey, caseInfo);
+			}
+			catch
+			{
+				reader?.Close();
+				throw;
 			}
 			finally
 			{
@@ -63,7 +68,7 @@ namespace kCura.WinEDDS.Core.Import.Errors
 
 		private void OnUploadStatusEvent(string message)
 		{
-			//TODO
+			_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.Update, message, -1);
 		}
 	}
 }

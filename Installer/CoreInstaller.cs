@@ -63,15 +63,11 @@ namespace kCura.WinEDDS.Core.Installer
 			container.Register(Component.For<IErrorManager>().ImplementedBy<ErrorManager>().LifestyleTransient());
 
 			container.Register(Component.For<IImportExceptionHandlerExec>().ImplementedBy<ImportExceptionHandlerExec>().LifestyleSingleton());
-
-			//TODO register server error handling
-			container.Register(Component.For<IServerErrorManager>().UsingFactoryMethod(k =>
-			{
-				IImporterManagers importerManagers = k.Resolve<IImporterManagers>();
-				ServerErrorFile serverErrorFile = new ServerErrorFile(k.Resolve<IErrorContainer>());
-				ServerErrorFileDownloader serverErrorFileDownloader = new ServerErrorFileDownloader(importerManagers.BulkImportManager);
-				return new ServerErrorManager(importerManagers.BulkImportManager, serverErrorFile, serverErrorFileDownloader);
-			}).LifestyleScoped());
+			
+			container.Register(Component.For<IServerErrorFileDownloader>().ImplementedBy<ServerErrorFileDownloader>().LifestyleTransient());
+			container.Register(Component.For<IServerErrorFile>().ImplementedBy<ServerErrorFile>().LifestyleTransient());
+			container.Register(Component.For<IServerErrorManager>().ImplementedBy<ServerErrorManager>().LifestyleTransient());
+			container.Register(Component.For<IErrorFileDownloaderFactory>().ImplementedBy<ErrorFileDownloaderFactory>().LifestyleTransient());
 		}
 
 		private static void RegisterScopedForBatch(IWindsorContainer container)
