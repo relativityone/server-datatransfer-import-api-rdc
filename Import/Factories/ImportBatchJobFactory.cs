@@ -1,6 +1,6 @@
 ﻿using Castle.MicroKernel.Lifestyle;
-using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.WinEDDS.Core.Import.Helpers;
 
 namespace kCura.WinEDDS.Core.Import.Factories
 {
@@ -17,7 +17,7 @@ namespace kCura.WinEDDS.Core.Import.Factories
 		{
 			using (var context = _container.BeginScope())
 			{
-				_container.Register(Component.For<ImportContext>().UsingFactoryMethod(k => batchContext.ImportContext).LifestyleScoped());
+				_container.Resolve<ImportBatchContextProvider>().ImportBatchContext = batchContext;
 				return _container.Resolve<IImportBatchJob>();
 			}
 		}

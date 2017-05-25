@@ -150,6 +150,7 @@
     <Compile Include="Import\Helpers\IErrorFileDownloader.cs" />
     <Compile Include="Import\Helpers\IErrorFileDownloaderFactory.cs" />
     <Compile Include="Import\Helpers\IFileInfoProvider.cs" />
+    <Compile Include="Import\Helpers\ImportBatchContextProvider.cs" />
     <Compile Include="Import\Helpers\INativeLoadInfoFactory.cs" />
     <Compile Include="Import\Helpers\IRepositoryFilePathHelper.cs" />
     <Compile Include="Import\Helpers\NativeLoadInfoFactory.cs" />

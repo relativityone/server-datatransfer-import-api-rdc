@@ -75,6 +75,9 @@ namespace kCura.WinEDDS.Core.Installer
 			RegisterTasks(container);
 
 			container.Register(Component.For<IImportBatchJob>().ImplementedBy<ImportBatchJob>().LifestyleScoped());
+			container.Register(Component.For<ImportBatchContextProvider>().ImplementedBy<ImportBatchContextProvider>().LifestyleScoped());
+			container.Register(Component.For<ImportBatchContext>().UsingFactoryMethod(k => k.Resolve<ImportBatchContextProvider>().ImportBatchContext).LifestyleScoped());
+			container.Register(Component.For<ImportContext>().UsingFactoryMethod(k => k.Resolve<ImportBatchContextProvider>().ImportBatchContext.ImportContext).LifestyleScoped());
 			container.Register(Component.For<INativeLoadInfoFactory>().ImplementedBy<NativeLoadInfoFactory>().LifestyleScoped());
 		}
 
