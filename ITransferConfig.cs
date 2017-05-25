@@ -12,6 +12,7 @@ namespace kCura.WinEDDS.Core
 		int IoErrorWaitTimeInSeconds { get; }
 		int DefaultMaximumErrorCount { get; }
 		bool CreateFoldersInWebAPI { get; }
-
+		string RestUrl { get; }
+		string ServicesUrl { get; }
 	}
 }
