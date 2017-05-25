@@ -1207,10 +1207,14 @@ Namespace kCura.WinEDDS
 				columnName = field.AvfColumnName
 				Dim val As Object = record(_ordinalLookup(columnName))
 				If field.FieldType = Relativity.FieldTypeHelper.FieldType.Text OrElse field.FieldType = Relativity.FieldTypeHelper.FieldType.OffTableText Then
+                    Dim downloadedTextTempFile As String = Nothing
+                    If TypeOf field Is CoalescedTextViewField Then
+                        downloadedTextTempFile = fullTextTempFile
+                    End If
 					If Me.Settings.LoadFileIsHtml Then
-						extractedTextByteCount += Me.ManageLongText(loadFileEntry, val, field, fullTextTempFile, doc, "<td>", "</td>", currentVolumeNumber, currentSubDirectoryNumber)
+						extractedTextByteCount += Me.ManageLongText(loadFileEntry, val, field, downloadedTextTempFile, doc, "<td>", "</td>", currentVolumeNumber, currentSubDirectoryNumber)
 					Else
-						extractedTextByteCount += Me.ManageLongText(loadFileEntry, val, field, fullTextTempFile, doc, _settings.QuoteDelimiter, _settings.QuoteDelimiter, currentVolumeNumber, currentSubDirectoryNumber)
+						extractedTextByteCount += Me.ManageLongText(loadFileEntry, val, field, downloadedTextTempFile, doc, _settings.QuoteDelimiter, _settings.QuoteDelimiter, currentVolumeNumber, currentSubDirectoryNumber)
 					End If
 				Else
 					fieldValue = FieldValueHelper.ConvertToString(val, field, Settings.MultiRecordDelimiter)
