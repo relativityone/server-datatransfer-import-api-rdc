@@ -510,16 +510,18 @@ Namespace kCura.WinEDDS
 						WriteFatalError(Me.CurrentLineNumber, ex)
 					End Try
 				End While
+
 				If Not _task Is Nothing AndAlso _task.Status.In(
 					Threading.Tasks.TaskStatus.Running,
 					Threading.Tasks.TaskStatus.WaitingForActivation,
 					Threading.Tasks.TaskStatus.WaitingForChildrenToComplete,
 					Threading.Tasks.TaskStatus.WaitingToRun) Then
-					_task.Wait()
+					WaitOnPushBatchTask()
 				End If
 				_timekeeper.MarkEnd("ReadFile_ProcessDocuments")
 				_timekeeper.MarkStart("ReadFile_OtherFinalization")
 				Me.TryPushNativeBatch(True)
+				WaitOnPushBatchTask()
 				RaiseEvent EndFileImport(_runID)
 				WriteEndImport("Finish")
 				_artifactReader.Close()
@@ -1095,7 +1097,7 @@ Namespace kCura.WinEDDS
 			_statistics.MetadataBytes += (Me.GetFileLength(_outputCodeFilePath) + Me.GetFileLength(outputNativePath) + Me.GetFileLength(_outputObjectFilePath) + Me.GetFileLength(_outputFileWriter.OutputDataGridFilePath))
 			start = System.DateTime.Now.Ticks
 			If Config.UsePipeliningForNativeAndObjectImports AndAlso Not _task Is Nothing Then
-				Threading.Tasks.Task.WaitAll(_task)
+				WaitOnPushBatchTask()
 				_task = Nothing
 			End If
 			Dim makeServiceCalls As Action =
@@ -1116,6 +1118,15 @@ Namespace kCura.WinEDDS
 				makeServiceCalls()
 			End If
 
+		End Sub
+
+		Private Sub WaitOnPushBatchTask()
+			If _task Is Nothing Then Return
+			Try
+				Task.WaitAll(_task)
+			Catch ex As AggregateException
+				Throw ex.InnerExceptions.First()
+			End Try
 		End Sub
 
 		Private _task As System.Threading.Tasks.Task = Nothing
