@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Specialized;
+using System.Threading;
 using kCura.WinEDDS.Api;
 
 namespace kCura.WinEDDS.Core.Import
@@ -21,5 +22,6 @@ namespace kCura.WinEDDS.Core.Import
 		void InitializeJob(ImportContext importContext);
 
 		void CleanUp();
+
 	}
 }

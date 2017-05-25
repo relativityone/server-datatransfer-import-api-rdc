@@ -43,6 +43,7 @@ namespace kCura.WinEDDS.Core.Installer
 			//TODO move to utility project
 			container.Register(Component.For<IPathHelper>().ImplementedBy<PathHelper>().LifestyleSingleton());
 			container.Register(Component.For<IFileHelper>().ImplementedBy<LongPathFileHelper>().LifestyleSingleton());
+			container.Register(Component.For<ICancellationProvider>().ImplementedBy<CancellationProvider>().LifestyleSingleton());
 		}
 
 		private static void RegisterErrorHandling(IWindsorContainer container)

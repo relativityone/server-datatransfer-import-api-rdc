@@ -58,6 +58,10 @@ namespace kCura.WinEDDS.Core.Import.Errors
 			{
 				HandleRecordError(_metadataImporter.ArtifactReader.CurrentLineNumber, ex.Message);
 			}
+			catch (OperationCanceledException ex)
+			{
+				
+			}
 			catch (Exception ex)
 			{
 				HandleFatalError(ex);

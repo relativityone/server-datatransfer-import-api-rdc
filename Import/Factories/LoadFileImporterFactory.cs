@@ -9,24 +9,22 @@ namespace kCura.WinEDDS.Core.Import.Factories
 	public class LoadFileImporterFactory : ILoadFileImporterFactory
 	{
 		private readonly IImportJobFactory _jobFactory;
-		private readonly ITransferConfig _config;
-		private readonly IErrorContainer _errorContainer;
 		private readonly IImportStatusManager _importStatusManager;
+		private readonly ICancellationProvider _cancellationProvider;
 
-		public LoadFileImporterFactory(IImportJobFactory jobFactory, ITransferConfig config, IErrorContainer errorContainer, IImportStatusManager importStatusManager)
+		public LoadFileImporterFactory(IImportJobFactory jobFactory, IImportStatusManager importStatusManager, ICancellationProvider cancellationProvider)
 		{
 			_jobFactory = jobFactory;
-			_config = config;
-			_errorContainer = errorContainer;
 			_importStatusManager = importStatusManager;
+			_cancellationProvider = cancellationProvider;
 		}
 
 		public LoadFileImporter Create(LoadFile args, Controller processController, Guid processId, int timezoneoffset, bool autoDetect, bool initializeUploaders, bool doRetryLogic,
 			string bulkLoadFileFieldDelimiter, bool isCloudInstance,
 			ExecutionSource executionSource)
 		{
-			return new LoadFileImporter(_jobFactory, _config, _errorContainer, _importStatusManager, args, processController, processId, timezoneoffset, autoDetect, initializeUploaders,
-				doRetryLogic, bulkLoadFileFieldDelimiter, isCloudInstance, executionSource);
+			return new LoadFileImporter(_jobFactory, _importStatusManager, _cancellationProvider, args, processController, processId, timezoneoffset, autoDetect, 
+				initializeUploaders, doRetryLogic, bulkLoadFileFieldDelimiter, isCloudInstance, executionSource);
 		}
 	}
 }

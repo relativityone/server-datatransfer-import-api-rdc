@@ -13,7 +13,6 @@ namespace kCura.WinEDDS.Core.Import
 		private readonly IPushMetadataFilesTask _pushMetadataFilesTask;
 		private readonly IImportMetadata _importMetadata;
 		private readonly IImportExceptionHandlerExec _importExceptionHandlerExec;
-		private readonly IImportStatusManager _importStatusManager;
 
 		public ImportBatchJob(IImportNativesTask importNativesTask, IImportFoldersTask importFoldersTask,
 			IImportPrepareMetadataTask importCreateMetadataTask,
@@ -26,7 +25,6 @@ namespace kCura.WinEDDS.Core.Import
 			_pushMetadataFilesTask = pushMetadataFilesTask;
 			_importMetadata = importMetadata;
 			_importExceptionHandlerExec = importExceptionHandlerExec;
-			_importStatusManager = importStatusManager;
 		}
 
 		public void Run(ImportBatchContext batchContext)

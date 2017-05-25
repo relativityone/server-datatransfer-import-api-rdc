@@ -172,6 +172,8 @@
     <Compile Include="Import\Managers\ObjectBulkImportManager.cs" />
     <Compile Include="Import\Managers\ObjectManagerWrapper.cs" />
     <Compile Include="Import\MetadataFilesInfo.cs" />
+    <Compile Include="Import\Status\CancellationProvider.cs" />
+    <Compile Include="Import\Status\ICancellationProvider.cs" />
     <Compile Include="Import\Status\IImportStatusManager.cs" />
     <Compile Include="Import\Status\ImportStatusManager.cs" />
     <Compile Include="Import\Status\ImportEventArgs.cs" />

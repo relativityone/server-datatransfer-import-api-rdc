@@ -3,7 +3,6 @@ using System.Collections.Specialized;
 using kCura.Windows.Process;
 using kCura.WinEDDS.Api;
 using kCura.WinEDDS.CodeValidator;
-using kCura.WinEDDS.Core.Import.Errors;
 using kCura.WinEDDS.Core.Import.Factories;
 using kCura.WinEDDS.Core.Import.Managers;
 using kCura.WinEDDS.Core.Import.Status;
@@ -15,22 +14,23 @@ namespace kCura.WinEDDS.Core.Import
 	public class LoadFileImporter : BulkLoadFileImporter, IImportMetadata, IImporterSettings, IImporterManagers
 	{
 		private readonly IImportStatusManager _importStatusManager;
+		private readonly ICancellationProvider _cancellationProvider;
 
 		private readonly IImportJob _importJob;
 
-		public LoadFileImporter(IImportJobFactory jobFactory, ITransferConfig config, IErrorContainer errorContainer,
-			IImportStatusManager importStatusManager, LoadFile args, Controller processController, Guid processId,
-			int timezoneoffset,
-			bool autoDetect, bool initializeUploaders, bool doRetryLogic, string bulkLoadFileFieldDelimiter, bool isCloudInstance,
+		public LoadFileImporter(IImportJobFactory jobFactory, IImportStatusManager importStatusManager, ICancellationProvider cancellationProvider,
+			LoadFile args, Controller processController, Guid processId,
+			int timezoneoffset, bool autoDetect, bool initializeUploaders, bool doRetryLogic, string bulkLoadFileFieldDelimiter, bool isCloudInstance,
 			ExecutionSource executionSource = ExecutionSource.Unknown)
 			: base(args, processController, timezoneoffset, autoDetect, initializeUploaders, processId,
 				doRetryLogic, bulkLoadFileFieldDelimiter, isCloudInstance, true, executionSource)
 		{
 			_importStatusManager = importStatusManager;
+			_cancellationProvider = cancellationProvider;
 
 			_importStatusManager.EventOccurred += OnEventOccurred;
 			_importStatusManager.UpdateStatus += ImportStatusManagerOnUpdateStatus;
-			_importJob = jobFactory.Create(this, this, this);
+			_importJob = jobFactory.Create(this, this, this, _cancellationProvider);
 		}
 
 		#region IImporterSettings members
@@ -145,6 +145,12 @@ namespace kCura.WinEDDS.Core.Import
 			_processedDocumentIdentifiers = new NameValueCollection();
 
 			return _importJob.ReadFile(path);
+		}
+
+		protected override void _processController_HaltProcessEvent(Guid processId)
+		{
+			base._processController_HaltProcessEvent(processId);
+			_cancellationProvider.Cancel();
 		}
 
 		#endregion //Overridden Members

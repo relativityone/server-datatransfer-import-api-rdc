@@ -15,11 +15,13 @@ namespace kCura.WinEDDS.Core.Import
 		private readonly IImportStatusManager _importStatusManager;
 		private readonly IImporterSettings _importerSettings;
 		private readonly IImportExceptionHandlerExec _importExceptionHandlerExec;
+		private readonly ICancellationProvider _cancellationProvider;
 
 		public event EventHandler<ImportContext> Initialized;
 
 		public ImportJob(ITransferConfig config, IImportBatchJobFactory batchJobBatchJobFactory, IImportStatusManager importStatusManager, 
-			IImportMetadata importer, IImporterSettings importerSettings, IImportExceptionHandlerExec importExceptionHandlerExec)
+			IImportMetadata importer, IImporterSettings importerSettings, IImportExceptionHandlerExec importExceptionHandlerExec,
+			ICancellationProvider cancellationProvider)
 		{
 			_config = config;
 			_batchJobBatchJobFactory = batchJobBatchJobFactory;
@@ -27,6 +29,7 @@ namespace kCura.WinEDDS.Core.Import
 			_importer = importer;
 			_importerSettings = importerSettings;
 			_importExceptionHandlerExec = importExceptionHandlerExec;
+			_cancellationProvider = cancellationProvider;
 
 			_context = new ImportContext
 			{
@@ -67,8 +70,7 @@ namespace kCura.WinEDDS.Core.Import
 				return false;
 			}
 			InitProcess(_context);
-			
-			while (HasToMoveRecordIndex())
+			while (HasToMoveRecordIndex() && !_cancellationProvider.GetToken().IsCancellationRequested)
 			{
 				_importer.ArtifactReader.AdvanceRecord();
 			}

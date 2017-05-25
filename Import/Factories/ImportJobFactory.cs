@@ -22,7 +22,8 @@ namespace kCura.WinEDDS.Core.Import.Factories
 			_container = container;
 		}
 
-		public IImportJob Create(IImportMetadata importMetadata, IImporterSettings importerSettings, IImporterManagers importerManagers)
+		public IImportJob Create(IImportMetadata importMetadata, IImporterSettings importerSettings, IImporterManagers importerManagers,
+			ICancellationProvider cancellationProvider)
 		{
 			_container.Register(Component.For<IImporterManagers>().UsingFactoryMethod(k => importerManagers).LifestyleTransient());
 			_container.Register(Component.For<IImportMetadata>().UsingFactoryMethod(k => importMetadata).LifestyleTransient());
@@ -31,7 +32,7 @@ namespace kCura.WinEDDS.Core.Import.Factories
 			var importExceptionHandlerExec = _container.Resolve<IImportExceptionHandlerExec>();
 
 			return new ImportJob(_transferConfig, _batchJobBatchJobFactory, _importStatusManager, importMetadata, importerSettings,
-				importExceptionHandlerExec);
+				importExceptionHandlerExec, cancellationProvider);
 		}
 	}
 }
