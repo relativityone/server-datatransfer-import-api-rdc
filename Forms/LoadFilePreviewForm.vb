@@ -112,12 +112,12 @@ Namespace kCura.EDDS.WinForm
 			_grid.DataSource = ds
 		End Sub
 
-		Private Sub _thrower_OnEvent(ByVal value As Object) Handles _thrower.OnEvent
+		Private Async Sub _thrower_OnEvent(ByVal value As Object) Handles _thrower.OnEvent
 			Dim args As Object() = DirectCast(value, Object())
 			If _formType = FormType.Codes Then
 				Me.DataSource = _application.BuildFoldersAndCodesDataSource(DirectCast(args(0), ArrayList), _previewCodeCount)
 			Else
-				Me.DataSource = _application.BuildLoadFileDataSource(DirectCast(args(0), ArrayList))
+				Me.DataSource = Await _application.BuildLoadFileDataSource(DirectCast(args(0), ArrayList))
 			End If
 			Me.IsError = CType(args(1), Boolean)
 			Me.Invoke(New HandleDataSourceDelegate(AddressOf HandleDataSource))

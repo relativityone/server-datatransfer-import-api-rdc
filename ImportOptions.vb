@@ -1,6 +1,7 @@
 ﻿Imports kCura.CommandLine
 Imports kCura.EDDS.WinForm
 Imports System.Exception
+Imports System.Threading.Tasks
 Imports kCura.EDDS.WinForm.Exceptions
 
 Public Class ImportOptions
@@ -148,21 +149,21 @@ Public Class ImportOptions
 
 #End Region
 
-	Public Sub SetOptions(ByVal commandLine As kCura.CommandLine.CommandList, ByRef application As kCura.EDDS.WinForm.Application)
+	Public Async Function SetOptions(ByVal commandLine As kCura.CommandLine.CommandList) As Task
 		SetLoadType(GetValueFromCommandListByFlag(commandLine, "m"))
-		SetCaseInfo(GetValueFromCommandListByFlag(commandLine, "c"), application)
+		Await SetCaseInfo(GetValueFromCommandListByFlag(commandLine, "c"))
 		SetFileLocation(GetValueFromCommandListByFlag(commandLine, "f"))
-		SetSavedMapLocation(GetValueFromCommandListByFlag(commandLine, "k"), LoadMode, application)
+		Await SetSavedMapLocation(GetValueFromCommandListByFlag(commandLine, "k"), LoadMode)
 		EnsureLoadFileLocation()
 		SetSourceFileEncoding(GetValueFromCommandListByFlag(commandLine, "e"))
 		SetFullTextFileEncoding(GetValueFromCommandListByFlag(commandLine, "x"))
 		SetSelectedCasePath(GetValueFromCommandListByFlag(commandLine, "r"))
 		SetCopyFilesToDocumentRepository(GetValueFromCommandListByFlag(commandLine, "l"))
-		SetDestinationFolderID(GetValueFromCommandListByFlag(commandLine, "d"), application)
+		Await SetDestinationFolderID(GetValueFromCommandListByFlag(commandLine, "d"))
 		SetStartLineNumber(GetValueFromCommandListByFlag(commandLine, "s"))
 		SetExportErrorReportLocation(commandLine)
 		SetExportErrorFileLocation(commandLine)
-	End Sub
+	End Function
 
 #Region " Input Validation "
 
@@ -182,16 +183,16 @@ Public Class ImportOptions
 		_hasSetLoadFileLocation = Not String.IsNullOrEmpty(LoadFilePath)
 	End Sub
 
-	Private Sub SetCaseInfo(ByVal caseID As String, ByRef application As kCura.EDDS.WinForm.Application)
+	Private Async Function SetCaseInfo(ByVal caseID As String) As Task
 		Try
-			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(application.GetCredentials, application.CookieContainer)
+			Dim caseManager As New kCura.WinEDDS.Service.CaseManager(Await Application.Instance.GetCredentialsAsync(), Application.Instance.CookieContainer)
 			SelectedCaseInfo = caseManager.Read(Int32.Parse(caseID))
 		Catch ex As System.Exception
 			Throw New CaseArtifactIdException(caseID, ex)
 		End Try
 		If SelectedCaseInfo Is Nothing Then Throw New CaseArtifactIdException(caseID)
-		application.RefreshSelectedCaseInfo(SelectedCaseInfo)
-	End Sub
+		Await Application.Instance.RefreshSelectedCaseInfo(SelectedCaseInfo)
+	End Function
 
 	Private Sub SetExportErrorReportLocation(ByVal commandLine As kCura.CommandLine.CommandList)
 		For Each command As kCura.CommandLine.Command In commandLine
@@ -240,12 +241,12 @@ Public Class ImportOptions
 		If Not _exportErrorLoadFile Then ErrorLoadFileLocation = ""
 	End Sub
 
-	Private Sub SetSavedMapLocation(ByVal path As String, ByVal currentLoadMode As LoadMode, ByRef application As kCura.EDDS.WinForm.Application)
+	Private Async Function SetSavedMapLocation(ByVal path As String, ByVal currentLoadMode As LoadMode) As Task
 		Try
 			Select Case currentLoadMode
 				Case LoadMode.Image
 					If Not System.IO.File.Exists(path) Then Throw New SavedSettingsFilePathException(path)
-					SelectedImageLoadFile = application.ReadImageLoadFile(path)
+					SelectedImageLoadFile = Await Application.Instance.ReadImageLoadFile(path)
 					If _hasSetLoadFileLocation Then SelectedImageLoadFile.FileName = LoadFilePath
 				Case LoadMode.Native, LoadMode.DynamicObject
 					If Not System.IO.File.Exists(path) Then Throw New SavedSettingsFilePathException(path)
@@ -256,7 +257,7 @@ Public Class ImportOptions
 					xmlDoc.LoadXml(doc)
 
 					sr = New System.IO.StreamReader(path)
-					Dim stringr As New System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(application.CleanLoadFile(xmlDoc)))
+					Dim stringr As New System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(Application.Instance.CleanLoadFile(xmlDoc)))
 					Dim tempLoadFile As LoadFile
 					Dim deserializer As New System.Runtime.Serialization.Formatters.Soap.SoapFormatter
 					tempLoadFile = DirectCast(deserializer.Deserialize(stringr), LoadFile)
@@ -272,7 +273,7 @@ Public Class ImportOptions
 					tempLoadFile.CopyFilesToDocumentRepository = True           'LoadFile.CopyFilesToDocumentRepository
 					tempLoadFile.SelectedCasePath = SelectedCaseInfo.DocumentPath           ''''''''''
 					tempLoadFile.CaseDefaultPath = SelectedCaseInfo.DocumentPath
-					tempLoadFile.Credentials = application.GetCredentials
+					tempLoadFile.Credentials = Await Application.Instance.GetCredentialsAsync()
 					tempLoadFile.DestinationFolderID = 35
 					tempLoadFile.ExtractedTextFileEncoding = System.Text.Encoding.Unicode
 					tempLoadFile.SourceFileEncoding = System.Text.Encoding.Default
@@ -282,7 +283,7 @@ Public Class ImportOptions
 					Else
 						artifactTypeID = tempLoadFile.ArtifactTypeID
 					End If
-					tempLoadFile.SelectedIdentifierField = application.CurrentFields(artifactTypeID, True).IdentifierFields(0)
+					tempLoadFile.SelectedIdentifierField = (Await Application.Instance.CurrentFields(artifactTypeID, True)).IdentifierFields(0)
 					Dim mapItemToRemove As LoadFileFieldMap.LoadFileFieldMapItem = Nothing
 					If tempLoadFile.GroupIdentifierColumn = "" AndAlso System.IO.File.Exists(tempLoadFile.FilePath) Then
 						Dim fieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem
@@ -290,7 +291,7 @@ Public Class ImportOptions
 							If Not fieldMapItem.DocumentField Is Nothing AndAlso
 							 fieldMapItem.NativeFileColumnIndex >= 0 AndAlso
 							 fieldMapItem.DocumentField.FieldName.ToLower = "group identifier" Then
-								tempLoadFile.GroupIdentifierColumn = application.GetColumnHeadersFromLoadFile(tempLoadFile, tempLoadFile.FirstLineContainsHeaders)(fieldMapItem.NativeFileColumnIndex)
+								tempLoadFile.GroupIdentifierColumn = Application.Instance.GetColumnHeadersFromLoadFile(tempLoadFile, tempLoadFile.FirstLineContainsHeaders)(fieldMapItem.NativeFileColumnIndex)
 							End If
 						Next
 					End If
@@ -299,7 +300,7 @@ Public Class ImportOptions
 					For Each fieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In tempLoadFile.FieldMap
 						If Not fieldMapItem.DocumentField Is Nothing Then
 							Try
-								Dim thisField As DocumentField = application.CurrentFields(tempLoadFile.ArtifactTypeID).Item(fieldMapItem.DocumentField.FieldID)
+								Dim thisField As DocumentField = (Await Application.Instance.CurrentFields(tempLoadFile.ArtifactTypeID)).Item(fieldMapItem.DocumentField.FieldID)
 								fieldMapItem.DocumentField.AssociatedObjectTypeID = thisField.AssociatedObjectTypeID
 								fieldMapItem.DocumentField.UseUnicode = thisField.UseUnicode
 								fieldMapItem.DocumentField.CodeTypeID = thisField.CodeTypeID
@@ -311,15 +312,15 @@ Public Class ImportOptions
 					Next
 					SelectedNativeLoadFile = tempLoadFile
 					SelectedNativeLoadFile.SelectedCasePath = SelectedCaseInfo.DocumentPath
-					SelectedNativeLoadFile.Credentials = application.GetCredentials
-					SelectedNativeLoadFile.CookieContainer = application.CookieContainer
+					SelectedNativeLoadFile.Credentials = Await Application.Instance.GetCredentialsAsync()
+					SelectedNativeLoadFile.CookieContainer = Application.Instance.CookieContainer
 				Case LoadMode.Application
 					If System.IO.File.Exists(path) Then Throw New InvalidOperationException("Load file is not supported for application imports")
 			End Select
 		Catch ex As System.Exception
 			Throw New SavedSettingsRehydrationException(path, ex)
 		End Try
-	End Sub
+	End Function
 
 	Private Sub SetSourceFileEncoding(ByVal value As String)
 		If value Is Nothing OrElse value = "" Then
@@ -380,11 +381,11 @@ Public Class ImportOptions
 		End If
 	End Sub
 
-	Private Sub SetDestinationFolderID(ByVal value As String, ByRef application As kCura.EDDS.WinForm.Application)
+	Private Async Function SetDestinationFolderID(ByVal value As String) As Task
 		If value Is Nothing OrElse value = "" Then
 			DestinationFolderID = SelectedCaseInfo.RootFolderID
 		Else
-			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(application.GetCredentials, application.CookieContainer)
+			Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Await Application.Instance.GetCredentialsAsync(), Application.Instance.CookieContainer)
 			Dim folderExists As Boolean = False
 			Try
 				folderExists = folderManager.Exists(SelectedCaseInfo.ArtifactID, Int32.Parse(value))
@@ -397,7 +398,7 @@ Public Class ImportOptions
 			End If
 		End If
 
-	End Sub
+	End Function
 
 	Private Sub SetLoadType(ByVal loadTypeString As String)
 		Select Case loadTypeString.ToLower.Trim
