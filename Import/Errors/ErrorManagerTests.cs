@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using kCura.WinEDDS.Api;
+using kCura.WinEDDS.Core.Import;
 using kCura.WinEDDS.Core.Import.Errors;
 using Moq;
 using NUnit.Framework;
@@ -31,7 +32,10 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 			var dateTimeHelper = new Mock<IDateTimeHelper>();
 			dateTimeHelper.Setup(x => x.Now()).Returns(DateTime.MinValue + TimeSpan.FromTicks(int.Parse(_FILE_SUFFIX)));
 
-			_instance = new ErrorManager(_artifactReader.Object, _clientErrors.Object, _allErrors.Object, _fileHelper.Object, new ErrorFileNames(dateTimeHelper.Object));
+			var importMetadata = new Mock<IImportMetadata>();
+			importMetadata.Setup(x => x.ArtifactReader).Returns(_artifactReader.Object);
+
+			_instance = new ErrorManager(_clientErrors.Object, _allErrors.Object, importMetadata.Object, _fileHelper.Object, new ErrorFileNames(dateTimeHelper.Object));
 		}
 
 		[Test]
