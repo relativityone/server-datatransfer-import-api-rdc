@@ -541,7 +541,7 @@ Namespace kCura.EDDS.WinForm
 				_overwriteDropdown.SelectedIndex = 1
 				Me.Text = "Relativity Desktop Client | Import Production Load File"
 			End If
-			If Not _application.SendLoadNotificationEmailEnabled Then
+			If Not _application.GetSendLoadNotificationEmailEnabledAsync Then
 				_importMenuSendEmailNotificationItem.Visible = False
 				_MenuItem3.Visible = False
 			Else
