@@ -53,6 +53,7 @@ namespace kCura.WinEDDS.Core.Import
 						ImportBatchContext batchSetUp = CreateBatch();
 						SendBatch(batchSetUp);
 					}
+					_importer.ArtifactReader.Close();
 					return true;
 				}, null, _importer.CleanUp);
 		}
@@ -132,7 +133,7 @@ namespace kCura.WinEDDS.Core.Import
 			while (CanProcessNextRecord(currentBatchCounter))
 			{
 				++currentBatchCounter;
-				ProcessBatchRecord(importBatchContext, currentBatchCounter);
+				ProcessBatchRecord(importBatchContext);
 				_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.Count, string.Empty, _importer.ArtifactReader.CurrentLineNumber);
 			}
 			return importBatchContext;
@@ -143,7 +144,7 @@ namespace kCura.WinEDDS.Core.Import
 			return _importer.ArtifactReader.HasMoreRecords && currentBatchCounter < _config.ImportBatchSize;
 		}
 
-		private void ProcessBatchRecord(ImportBatchContext importBatchContext, int index)
+		private void ProcessBatchRecord(ImportBatchContext importBatchContext)
 		{
 			_importExceptionHandlerExec.TryCatchExec(() =>
 				{
@@ -151,7 +152,7 @@ namespace kCura.WinEDDS.Core.Import
 					importBatchContext.FileMetaDataHolder.Add(new FileMetadata
 					{
 						ArtifactFieldCollection = artifactFieldCollection,
-						LineNumber = index
+						LineNumber = _importer.ArtifactReader.CurrentLineNumber
 					});
 				});
 		}

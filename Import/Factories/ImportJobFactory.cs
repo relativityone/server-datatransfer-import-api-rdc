@@ -1,6 +1,5 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
-using kCura.WinEDDS.Core.Import.Errors;
 using kCura.WinEDDS.Core.Import.Status;
 
 namespace kCura.WinEDDS.Core.Import.Factories
@@ -11,7 +10,6 @@ namespace kCura.WinEDDS.Core.Import.Factories
 		private readonly IImportStatusManager _importStatusManager;
 		private readonly IImportBatchJobFactory _batchJobBatchJobFactory;
 		private readonly IWindsorContainer _container;
-		private readonly IImportExceptionHandlerExec _importExceptionHandlerExec;
 
 		public ImportJobFactory(ITransferConfig transferConfig, IImportStatusManager importStatusManager,
 			IImportBatchJobFactory batchJobBatchJobFactory, IWindsorContainer container)

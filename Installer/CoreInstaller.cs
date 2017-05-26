@@ -43,14 +43,15 @@ namespace kCura.WinEDDS.Core.Installer
 			//TODO move to utility project
 			container.Register(Component.For<IPathHelper>().ImplementedBy<PathHelper>().LifestyleSingleton());
 			container.Register(Component.For<IFileHelper>().ImplementedBy<LongPathFileHelper>().LifestyleSingleton());
+			container.Register(Component.For<IDateTimeHelper>().ImplementedBy<DateTimeHelper>().LifestyleSingleton());
 			container.Register(Component.For<ICancellationProvider>().ImplementedBy<CancellationProvider>().LifestyleSingleton());
 		}
 
 		private static void RegisterErrorHandling(IWindsorContainer container)
 		{
-			container.Register(Component.For<AllErrorsContainer>().ImplementedBy<AllErrorsContainer>().LifestyleTransient());
-			container.Register(Component.For<ClientErrorLineContainer>().ImplementedBy<ClientErrorLineContainer>().LifestyleTransient());
-			container.Register(Component.For<ErrorReporter>().ImplementedBy<ErrorReporter>().LifestyleTransient());
+			container.Register(Component.For<AllErrorsContainer>().ImplementedBy<AllErrorsContainer>().LifestyleSingleton());
+			container.Register(Component.For<ClientErrorLineContainer>().ImplementedBy<ClientErrorLineContainer>().LifestyleSingleton());
+			container.Register(Component.For<ErrorReporter>().ImplementedBy<ErrorReporter>().LifestyleSingleton());
 
 			container.Register(Component.For<IAllErrors>().UsingFactoryMethod(k => k.Resolve<AllErrorsContainer>()).LifestyleTransient());
 			container.Register(Component.For<IClientErrors>().UsingFactoryMethod(k => k.Resolve<ClientErrorLineContainer>()).LifestyleTransient());
@@ -61,7 +62,7 @@ namespace kCura.WinEDDS.Core.Installer
 
 			container.Register(Component.For<IUploadErrors>().ImplementedBy<UploadErrors>().LifestyleTransient());
 
-			container.Register(Component.For<IErrorManager>().ImplementedBy<ErrorManager>().LifestyleTransient());
+			container.Register(Component.For<IErrorManagerFactory>().ImplementedBy<ErrorManagerFactory>().LifestyleTransient());
 
 			container.Register(Component.For<IImportExceptionHandlerExec>().ImplementedBy<ImportExceptionHandlerExec>().LifestyleSingleton());
 			

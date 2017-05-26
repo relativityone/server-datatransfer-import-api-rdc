@@ -1,31 +1,25 @@
 ﻿using System.IO;
-using kCura.WinEDDS.Api;
 
 namespace kCura.WinEDDS.Core.Import.Errors
 {
 	public class ErrorManager : IErrorManager
 	{
-		private readonly IArtifactReader _artifactReader;
+		private readonly IImportMetadata _importMetadata;
 		private readonly IClientErrors _clientErrors;
 		private readonly IAllErrors _allErrors;
 
 		private readonly IFileHelper _fileHelper;
 		private readonly ErrorFileNames _errorFileNames;
 
-		public ErrorManager(IArtifactReader artifactReader, IClientErrors clientErrors, IAllErrors allErrors, IFileHelper fileHelper, ErrorFileNames errorFileNames)
+		public ErrorManager(IClientErrors clientErrors, IAllErrors allErrors, IImportMetadata importMetadata, IFileHelper fileHelper, ErrorFileNames errorFileNames)
 		{
-			_artifactReader = artifactReader;
+			_importMetadata = importMetadata;
 			_clientErrors = clientErrors;
 			_allErrors = allErrors;
 			_fileHelper = fileHelper;
 			_errorFileNames = errorFileNames;
 		}
 
-		/// <summary>
-		/// Old name: ExportServerErrors - TODO remove this comment after integrating with RDC
-		/// </summary>
-		/// <param name="exportLocation"></param>
-		/// <param name="loadFilePath"></param>
 		public void ExportErrors(string exportLocation, string loadFilePath)
 		{
 			var errorFileName = _errorFileNames.GetErrorLinesFileName(loadFilePath);
@@ -63,7 +57,7 @@ namespace kCura.WinEDDS.Core.Import.Errors
 			var allErrorsTempFile = _allErrors.WriteErrorsToTempFile();
 			var clientErrorsTempFile = _clientErrors.WriteErrorsToTempFile();
 
-			return _artifactReader.ManageErrorRecords(allErrorsTempFile, clientErrorsTempFile);
+			return _importMetadata.ArtifactReader.ManageErrorRecords(allErrorsTempFile, clientErrorsTempFile);
 		}
 	}
 }

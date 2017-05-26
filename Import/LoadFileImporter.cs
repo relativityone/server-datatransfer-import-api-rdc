@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using kCura.Windows.Process;
 using kCura.WinEDDS.Api;
 using kCura.WinEDDS.CodeValidator;
+using kCura.WinEDDS.Core.Import.Errors;
 using kCura.WinEDDS.Core.Import.Factories;
 using kCura.WinEDDS.Core.Import.Managers;
 using kCura.WinEDDS.Core.Import.Status;
@@ -13,24 +14,42 @@ namespace kCura.WinEDDS.Core.Import
 {
 	public class LoadFileImporter : BulkLoadFileImporter, IImportMetadata, IImporterSettings, IImporterManagers
 	{
-		private readonly IImportStatusManager _importStatusManager;
 		private readonly ICancellationProvider _cancellationProvider;
-
+		private readonly IErrorManager _errorManager;
 		private readonly IImportJob _importJob;
 
 		public LoadFileImporter(IImportJobFactory jobFactory, IImportStatusManager importStatusManager, ICancellationProvider cancellationProvider,
-			LoadFile args, Controller processController, Guid processId,
+			IErrorManagerFactory errorManagerFactory, LoadFile args, Controller processController, Guid processId,
 			int timezoneoffset, bool autoDetect, bool initializeUploaders, bool doRetryLogic, string bulkLoadFileFieldDelimiter, bool isCloudInstance,
 			ExecutionSource executionSource = ExecutionSource.Unknown)
 			: base(args, processController, timezoneoffset, autoDetect, initializeUploaders, processId,
 				doRetryLogic, bulkLoadFileFieldDelimiter, isCloudInstance, true, executionSource)
 		{
-			_importStatusManager = importStatusManager;
 			_cancellationProvider = cancellationProvider;
 
-			_importStatusManager.EventOccurred += OnEventOccurred;
-			_importStatusManager.UpdateStatus += ImportStatusManagerOnUpdateStatus;
+			importStatusManager.EventOccurred += OnEventOccurred;
+			importStatusManager.UpdateStatus += ImportStatusManagerOnUpdateStatus;
 			_importJob = jobFactory.Create(this, this, this, _cancellationProvider);
+			_errorManager = errorManagerFactory.Create(this);
+
+			processController.ExportErrorFileEvent += OnExportErrorFileEvent;
+			processController.ExportServerErrorsEvent += OnExportServerErrorsEvent;
+			processController.ExportErrorReportEvent += OnExportErrorReportEvent;
+		}
+
+		private void OnExportErrorReportEvent(string exportLocation)
+		{
+			_errorManager.ExportErrorReport(exportLocation);
+		}
+
+		private void OnExportServerErrorsEvent(string exportLocation)
+		{
+			_errorManager.ExportErrors(exportLocation, LoadFile.FilePath);
+		}
+
+		private void OnExportErrorFileEvent(string exportLocation)
+		{
+			_errorManager.ExportErrorFile(exportLocation);
 		}
 
 		#region IImporterSettings members
@@ -112,6 +131,7 @@ namespace kCura.WinEDDS.Core.Import
 			_recordCount = importContext.TotalRecordCount;
 			InitializeFolderManagement();
 		}
+
 		public void CleanUp()
 		{
 			CleanupTempTables();
@@ -179,7 +199,7 @@ namespace kCura.WinEDDS.Core.Import
 
 		private void ImportStatusManagerOnUpdateStatus(object sender, ImportStatusUpdateEventArgs statusUpdateEventArgs)
 		{
-			OnStatusMessage(new StatusEventArgs(GetEventType(statusUpdateEventArgs.Type), statusUpdateEventArgs.LineNumber,
+			OnStatusMessage(new StatusEventArgs(GetEventType(statusUpdateEventArgs.Type), statusUpdateEventArgs.LineNumber - 1,
 				_recordCount, statusUpdateEventArgs.Message, Statistics.ToDictionary()));
 		}
 

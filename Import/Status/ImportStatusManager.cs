@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data;
 using kCura.WinEDDS.Core.Import.Errors;
 
 namespace kCura.WinEDDS.Core.Import.Status
@@ -26,8 +25,6 @@ namespace kCura.WinEDDS.Core.Import.Status
 		public void RaiseErrorImportEvent(object sender, LineError lineError)
 		{
 			EventOccurred?.Invoke(sender, new ImportEventArgs(lineError));
-
-			UpdateStatus?.Invoke(sender, CreateImportUpdateEventArgs(StatusUpdateType.Error, $"{lineError.Message} [line {lineError.LineNumber}]", lineError.LineNumber));
 		}
 
 		public void RaiseFatalErrorImportEvent(object sender, string message, int recordIndex, Exception ex)

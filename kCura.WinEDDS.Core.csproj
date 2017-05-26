@@ -120,6 +120,7 @@
     <Compile Include="Import\Errors\ErrorFileNames.cs" />
     <Compile Include="Import\Errors\ErrorManager.cs" />
     <Compile Include="Import\Errors\AllErrorsContainer.cs" />
+    <Compile Include="Import\Errors\ErrorManagerFactory.cs" />
     <Compile Include="Import\Errors\ErrorReporter.cs" />
     <Compile Include="Import\Errors\ErrorType.cs" />
     <Compile Include="Import\Errors\IClientErrors.cs" />
@@ -127,6 +128,7 @@
     <Compile Include="Import\Errors\IErrorFile.cs" />
     <Compile Include="Import\Errors\IAllErrors.cs" />
     <Compile Include="Import\Errors\IErrorManager.cs" />
+    <Compile Include="Import\Errors\IErrorManagerFactory.cs" />
     <Compile Include="Import\Errors\IErrorReporter.cs" />
     <Compile Include="Import\Errors\ImportExceptionHandlerExec.cs" />
     <Compile Include="Import\Errors\IServerErrorFile.cs" />
