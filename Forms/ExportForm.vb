@@ -1933,8 +1933,8 @@ Public Class ExportForm
 		End Select
 	End Sub
 
-	Private Sub _pickPrecedenceButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _pickPrecedenceButton.Click
-		Dim dt As System.Data.DataTable = _application.GetProductionPrecendenceList(ExportFile.CaseInfo)
+	Private Async Sub _pickPrecedenceButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _pickPrecedenceButton.Click
+		Dim dt As System.Data.DataTable = Await _application.GetProductionPrecendenceList(ExportFile.CaseInfo)
 		If dt Is Nothing Then Exit Sub
 		_precedenceForm = New kCura.EDDS.WinForm.ProductionPrecedenceForm
 		_precedenceForm.ExportFile = Me.ExportFile
