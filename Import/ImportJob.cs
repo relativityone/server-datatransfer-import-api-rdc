@@ -53,7 +53,6 @@ namespace kCura.WinEDDS.Core.Import
 						ImportBatchContext batchSetUp = CreateBatch();
 						SendBatch(batchSetUp);
 					}
-					_importer.ArtifactReader.Close();
 					return true;
 				}, null, _importer.CleanUp);
 		}
