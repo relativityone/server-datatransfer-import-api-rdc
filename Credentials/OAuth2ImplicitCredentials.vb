@@ -41,12 +41,7 @@ Namespace kCura.WinEDDS.Credentials
 		End Sub
 
 		Public Function GetCredentials() As System.Net.NetworkCredential Implements ICredentialsProvider.GetCredentials
-			If _currentCredentials Is Nothing
-				throw new CredentialsNotSetException()
-			End If
-			
-			Return _currentCredentials
-
+			Throw new InvalidOperationException("ImplicitCredentials Provider does not support synchronous requests.")
 		End Function
 
 		Public Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential) Implements ICredentialsProvider.GetCredentialsAsync
