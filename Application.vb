@@ -765,6 +765,7 @@ Namespace kCura.EDDS.WinForm
 			loadFile.OverwriteDestination = Relativity.ImportOverwriteType.Append.ToString
 			loadFile.ArtifactTypeID = Me.ArtifactTypeID
 			frm.LoadFile = loadFile
+			Await frm.LoadFormControls(False)
 			frm.Show()
 		End Function
 

@@ -21,7 +21,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Async Sub ItemSelectForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			Await Application.GetCredentialsAsync()
-			_cases = Application.GetCases()
+			_cases = Await Application.GetCases()
 			Me.Text = "Relativity Desktop Client | Select Workspace"
 			Me.LoadItems(String.Empty)
 			Me.Focus()
