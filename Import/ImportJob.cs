@@ -43,19 +43,32 @@ namespace kCura.WinEDDS.Core.Import
 			return _importExceptionHandlerExec.TryCatchExec<bool?>(
 				() =>
 				{
-					if (!InitializeProcess())
+					try
 					{
-						return false;
+						if (!InitializeProcess())
+						{
+							return false;
+						}
+						// TODO -> check continue flag
+						while (CanCreateBatch())
+						{
+							ImportBatchContext batchSetUp = CreateBatch();
+							SendBatch(batchSetUp);
+						}
+						_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.End, "Import process finished");
+						return true;
 					}
-					// TODO -> check continue flag
-					while (CanCreateBatch())
+					catch (OperationCanceledException )
 					{
-						ImportBatchContext batchSetUp = CreateBatch();
-						SendBatch(batchSetUp);
+						_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.End, "Import process cancelled");
 					}
-					_importer.ArtifactReader.Close();
+					finally
+					{
+						_importStatusManager.RaiseEndImportEvent(this);
+						_importer.ArtifactReader.Close();
+					}
 					return true;
-				}, null, _importer.CleanUp);
+				}, false, _importer.CleanUp);
 		}
 
 		private bool CanCreateBatch()
@@ -71,8 +84,9 @@ namespace kCura.WinEDDS.Core.Import
 				return false;
 			}
 			InitProcess(_context);
-			while (HasToMoveRecordIndex() && !_cancellationProvider.GetToken().IsCancellationRequested)
+			while (HasToMoveRecordIndex())
 			{
+				_cancellationProvider.GetToken().ThrowIfCancellationRequested();
 				_importer.ArtifactReader.AdvanceRecord();
 			}
 			return true;
