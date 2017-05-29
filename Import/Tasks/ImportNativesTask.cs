@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using kCura.WinEDDS.Core.Import.Errors;
 using kCura.WinEDDS.Core.Import.Factories;
 using kCura.WinEDDS.Core.Import.Helpers;
+using kCura.WinEDDS.Core.Import.Status;
 using Relativity;
 
 namespace kCura.WinEDDS.Core.Import.Tasks
@@ -14,16 +15,19 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 		private readonly IRepositoryFilePathHelper _repositoryFilePathHelper;
 		private readonly IImportExceptionHandlerExec _importExceptionHandlerExec;
 		private readonly IUploadErrors _uploadErrors;
+		private readonly ICancellationProvider _cancellationProvider;
 
 		private IFileUploader _fileUploader;
 
 		public ImportNativesTask(IFileUploaderFactory fileUploaderFactory, IImportNativesAnalyzer importNativesAnalyzer,
-			IRepositoryFilePathHelper repositoryFilePathHelper, IImportExceptionHandlerExec importExceptionHandlerExec, IUploadErrors uploadErrors)
+			IRepositoryFilePathHelper repositoryFilePathHelper, IImportExceptionHandlerExec importExceptionHandlerExec, IUploadErrors uploadErrors,
+			ICancellationProvider cancellationProvider)
 		{
 			_importNativesAnalyzer = importNativesAnalyzer;
 			_repositoryFilePathHelper = repositoryFilePathHelper;
 			_importExceptionHandlerExec = importExceptionHandlerExec;
 			_uploadErrors = uploadErrors;
+			_cancellationProvider = cancellationProvider;
 			_fileUploaderFactory = fileUploaderFactory;
 		}
 
@@ -35,6 +39,12 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 				Upload(fileMetadata, importBatchContext);
 			}
 			var uploadResult = _fileUploader.WaitForUploadToComplete();
+
+			if (_cancellationProvider.GetToken().IsCancellationRequested)
+			{
+				_cancellationProvider.GetToken().ThrowIfCancellationRequested();
+			}
+
 			_uploadErrors.HandleUploadErrors(uploadResult);
 			return uploadResult;
 		}

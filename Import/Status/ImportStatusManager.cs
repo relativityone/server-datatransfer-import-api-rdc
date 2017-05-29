@@ -49,11 +49,16 @@ namespace kCura.WinEDDS.Core.Import.Status
 			UpdateStatus?.Invoke(sender, CreateImportUpdateEventArgs(type, $"{msg} [line {lineNumber}]", lineNumber));
 		}
 
+		public void RaiseStatusUpdateEvent(object sender, StatusUpdateType type, string msg)
+		{
+			UpdateStatus?.Invoke(sender, CreateImportUpdateEventArgs(type, msg, 0));
+		}
+
 		public void RaiseCustomStatusUpdateEvent(object sender, StatusUpdateType type, string msg, int lineNumber)
 		{
 			UpdateStatus?.Invoke(sender, CreateImportUpdateEventArgs(type, msg, lineNumber));
 		}
-
+		
 		#endregion Interface Methods
 
 		#region Private Methods

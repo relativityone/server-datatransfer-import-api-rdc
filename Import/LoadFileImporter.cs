@@ -184,7 +184,7 @@ namespace kCura.WinEDDS.Core.Import
 					OnStartFileImport();
 					break;
 				case ImportEventType.End:
-					OnEndFileImport("Finished");
+					OnEndFileImport(RunId);
 					break;
 				case ImportEventType.FatalError:
 					OnFatalError(importEventArgs.Message, importEventArgs.Exception, importEventArgs.JobRunId);
@@ -200,7 +200,7 @@ namespace kCura.WinEDDS.Core.Import
 
 		private void ImportStatusManagerOnUpdateStatus(object sender, ImportStatusUpdateEventArgs statusUpdateEventArgs)
 		{
-			OnStatusMessage(new StatusEventArgs(GetEventType(statusUpdateEventArgs.Type), statusUpdateEventArgs.LineNumber - 1,
+			OnStatusMessage(new StatusEventArgs(GetEventType(statusUpdateEventArgs.Type), Math.Max(statusUpdateEventArgs.LineNumber - 1, 0),
 				_recordCount, statusUpdateEventArgs.Message, Statistics.ToDictionary()));
 		}
 
