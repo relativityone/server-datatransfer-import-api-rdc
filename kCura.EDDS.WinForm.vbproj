@@ -305,6 +305,10 @@
       <Project>{B9E022D8-7BDC-44B8-BEE3-2BB61571FC5E}</Project>
       <Name>kCura.WinEDDS.Aspera</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura\kCura.vbproj">
+      <Project>{535d782a-2388-416f-ab46-10347e44eec9}</Project>
+      <Name>kCura</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.WinEDDS.Core\kCura.WinEDDS.Core.csproj">
       <Project>{c5eb5351-3f27-4716-a7da-163f0400bcef}</Project>
       <Name>kCura.WinEDDS.Core</Name>
@@ -325,20 +329,20 @@
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client, Version=1.0.6.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.OAuth2Client.1.0.6\lib\net45\Relativity.OAuth2Client.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.1.0.8\lib\net462\Relativity.OAuth2Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.IdentityModel, Version=1.0.6.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.OAuth2Client.1.0.6\lib\net45\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.1.0.8\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.6.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.6\lib\net45\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.8\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces, Version=1.0.6.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.6\lib\net45\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.8\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System">
@@ -368,14 +372,6 @@
       <Name>kCura.CommandLine</Name>
       <Project>{4E99F9A8-34DF-462D-B078-EAB253BA2CAA}</Project>
       <Package>{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</Package>
-    </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.Config\kCura.Config.vbproj">
-      <Project>{4705D839-6569-4489-9ED2-2A791AC27965}</Project>
-      <Name>kCura.Config</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
-      <Project>{E3450350-56E3-4FE9-A47A-4D24960BCBDB}</Project>
-      <Name>kCura.Utility</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.Windows.Forms\kCura.Windows.Forms.vbproj">
       <Project>{0DABBD47-5A46-429F-9D90-C95A58611E0A}</Project>
@@ -663,7 +659,6 @@
     <PostBuildEvent>
 			if "$(ConfigurationName)" == "Release" goto :eof
 			copy /Y "$(ProjectDir)..\..\Vendor\FreeImage\3.151\FreeImage\Release\$(PlatformName)\FreeImage.dll" "$(TargetDir)"
-			copy /Y "$(ProjectDir)..\..\Vendor\Oracle\OutsideIn\8.5.3\$(PlatformName)\FileID\redist\*" "$(TargetDir)"
 		</PostBuildEvent>
   </PropertyGroup>
 </Project>
