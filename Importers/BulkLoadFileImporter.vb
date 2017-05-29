@@ -23,7 +23,6 @@ Namespace kCura.WinEDDS
 		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
 		Private _parentFolderDTO As kCura.EDDS.WebAPI.FolderManagerBase.Folder
 		Protected _auditManager As kCura.WinEDDS.Service.AuditManager
-		Protected _documentManager As kCura.WinEDDS.Service.DocumentManager
 		Protected _relativityManager As kCura.WinEDDS.Service.RelativityManager
 
 		Protected _recordCount As Int64 = -1
@@ -96,13 +95,13 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Protected Overridable ReadOnly Property NumberOfRetries() As Int32
+		Protected Overrides ReadOnly Property NumberOfRetries() As Int32
 			Get
 				Return kCura.Utility.Config.IOErrorNumberOfRetries
 			End Get
 		End Property
 
-		Protected Overridable ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
+		Protected Overrides ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
 			Get
 				Return kCura.Utility.Config.IOErrorWaitTimeInSeconds
 			End Get
@@ -517,17 +516,19 @@ Namespace kCura.WinEDDS
 						WriteFatalError(Me.CurrentLineNumber, ex)
 					End Try
 				End While
+
 				If Not _task Is Nothing AndAlso _task.Status.In(
 					Threading.Tasks.TaskStatus.Running,
 					Threading.Tasks.TaskStatus.WaitingForActivation,
 					Threading.Tasks.TaskStatus.WaitingForChildrenToComplete,
 					Threading.Tasks.TaskStatus.WaitingToRun) Then
-					_task.Wait()
+					WaitOnPushBatchTask()
 				End If
 				_timekeeper.MarkEnd("ReadFile_ProcessDocuments")
 				_timekeeper.MarkStart("ReadFile_OtherFinalization")
 				Me.TryPushNativeBatch(True)
-				OnEndFileImport(_runID)
+				WaitOnPushBatchTask()
+				RaiseEvent EndFileImport(_runID)
 				WriteEndImport("Finish")
 				_artifactReader.Close()
 				_timekeeper.MarkEnd("ReadFile_OtherFinalization")
@@ -1102,7 +1103,7 @@ Namespace kCura.WinEDDS
 			_statistics.MetadataBytes += (Me.GetFileLength(_outputCodeFilePath) + Me.GetFileLength(outputNativePath) + Me.GetFileLength(_outputObjectFilePath) + Me.GetFileLength(_outputFileWriter.OutputDataGridFilePath))
 			start = System.DateTime.Now.Ticks
 			If Config.UsePipeliningForNativeAndObjectImports AndAlso Not _task Is Nothing Then
-				Threading.Tasks.Task.WaitAll(_task)
+				WaitOnPushBatchTask()
 				_task = Nothing
 			End If
 			Dim makeServiceCalls As Action =
@@ -1123,6 +1124,15 @@ Namespace kCura.WinEDDS
 				makeServiceCalls()
 			End If
 
+		End Sub
+
+		Private Sub WaitOnPushBatchTask()
+			If _task Is Nothing Then Return
+			Try
+				Task.WaitAll(_task)
+			Catch ex As AggregateException
+				Throw ex.InnerExceptions.First()
+			End Try
 		End Sub
 
 		Private _task As System.Threading.Tasks.Task = Nothing
