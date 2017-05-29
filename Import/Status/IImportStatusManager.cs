@@ -22,5 +22,7 @@ namespace kCura.WinEDDS.Core.Import.Status
 		void RaiseFatalErrorImportEvent(object sender, string message, int recordIndex, Exception ex);
 
 		void RaiseStatusUpdateEvent(object sender, StatusUpdateType type, string msg, int lineNumber);
+
+		void RaiseCustomStatusUpdateEvent(object sender, StatusUpdateType type, string msg, int lineNumber);
 	}	
 }
