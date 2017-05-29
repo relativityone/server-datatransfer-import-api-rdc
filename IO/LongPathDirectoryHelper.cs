@@ -11,7 +11,7 @@ namespace kCura.WinEDDS.Core.IO
             return ZlpPathHelper.Combine(path1, path2);
         }
 
-        public void Create(string path)
+        public void CreateDirectory(string path)
         {
             lock (_lockObject)
             {
