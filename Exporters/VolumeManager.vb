@@ -718,7 +718,7 @@ Namespace kCura.WinEDDS
 			Dim localFilePath As String = Me.Settings.FolderPath
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
 			localFilePath &= Me.CurrentVolumeLabel(currentVolumeNumber) & "\" & Me.CurrentNativeSubdirectoryLabel(currentSubDirectoryNumber) & "\"
-			If Not _directoryHelper.Exists(localFilePath) Then _directoryHelper.Create(localFilePath)
+			If Not _directoryHelper.Exists(localFilePath) Then _directoryHelper.CreateDirectory(localFilePath)
 			Return localFilePath & nativeFileName
 		End Function
 
@@ -726,7 +726,7 @@ Namespace kCura.WinEDDS
 			Dim localFilePath As String = Me.Settings.FolderPath
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
 			localFilePath &= Me.CurrentVolumeLabel(currentVolumeNumber) & "\" & Me.CurrentFullTextSubdirectoryLabel(currentSubDirectoryNumber) & "\"
-			If Not _directoryHelper.Exists(localFilePath) Then _directoryHelper.Create(localFilePath)
+			If Not _directoryHelper.Exists(localFilePath) Then _directoryHelper.CreateDirectory(localFilePath)
 			Return localFilePath & _fileNameProvider.GetTextName(doc)
 		End Function
 
@@ -752,7 +752,7 @@ Namespace kCura.WinEDDS
 			Dim subfolderPath As String = Me.CurrentVolumeLabel(currentVolumeNumber) & "\" & Me.CurrentImageSubdirectoryLabel(currentSubDirectoryNumber) & "\"
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
 			localFilePath &= subfolderPath
-			If Not _directoryHelper.Exists(localFilePath) Then _directoryHelper.Create(localFilePath)
+			If Not _directoryHelper.Exists(localFilePath) Then _directoryHelper.CreateDirectory(localFilePath)
 			Return localFilePath & image.FileName
 		End Function
 
@@ -767,7 +767,7 @@ Namespace kCura.WinEDDS
 			Dim pageOffset As Long
 			If localFilePath.Chars(localFilePath.Length - 1) <> "\"c Then localFilePath &= "\"
 			localFilePath &= subfolderPath
-			If Not _directoryHelper.Exists(localFilePath) AndAlso Me.Settings.VolumeInfo.CopyImageFilesFromRepository Then _directoryHelper.Create(localFilePath)
+			If Not _directoryHelper.Exists(localFilePath) AndAlso Me.Settings.VolumeInfo.CopyImageFilesFromRepository Then _directoryHelper.CreateDirectory(localFilePath)
 			Try
 				If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText Then
 					If _fileHelper.Exists(localFullTextPath) Then
