@@ -212,6 +212,10 @@
     <Compile Include="TransferConfig.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\kCura\kCura.OI.FileID\kCura.OI.FileID.vbproj">
+      <Project>{ccefd50f-0840-402d-ab16-c93f8e579b8b}</Project>
+      <Name>kCura.OI.FileID</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura\kCura.vbproj">
       <Project>{535d782a-2388-416f-ab46-10347e44eec9}</Project>
       <Name>kCura</Name>
