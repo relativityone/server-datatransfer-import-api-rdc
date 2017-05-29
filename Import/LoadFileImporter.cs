@@ -134,6 +134,7 @@ namespace kCura.WinEDDS.Core.Import
 
 		public void CleanUp()
 		{
+			_artifactReader.Close();
 			CleanupTempTables();
 		}
 
