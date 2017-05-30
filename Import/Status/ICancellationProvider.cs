@@ -7,5 +7,7 @@ namespace kCura.WinEDDS.Core.Import.Status
 		CancellationToken GetToken();
 
 		void Cancel();
+
+		void ThrowIfCancellationRequested();
 	}
 }

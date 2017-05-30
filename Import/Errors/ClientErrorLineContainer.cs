@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -37,7 +38,12 @@ namespace kCura.WinEDDS.Core.Import.Errors
 
 		public string WriteErrorsToTempFile()
 		{
-			var filePath = _pathHelper.GetTempFileName();
+			// This is RDC specific validation that requires to return empty string when no errors occurred on the client side
+			if (!HasErrors())
+			{
+				return string.Empty;
+			}
+			string filePath = _pathHelper.GetTempFileName();
 
 			using (var writer = new StreamWriter(filePath, true, Encoding.Default))
 			{

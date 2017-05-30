@@ -41,7 +41,7 @@ namespace kCura.WinEDDS.Core.Import
 		public object ReadFile(string path)
 		{
 			return _importExceptionHandlerExec.TryCatchExec<bool?>(
-				() =>
+			() =>
 				{
 					try
 					{
@@ -49,7 +49,6 @@ namespace kCura.WinEDDS.Core.Import
 						{
 							return false;
 						}
-						// TODO -> check continue flag
 						while (CanCreateBatch())
 						{
 							ImportBatchContext batchSetUp = CreateBatch();
@@ -65,7 +64,6 @@ namespace kCura.WinEDDS.Core.Import
 					finally
 					{
 						_importStatusManager.RaiseEndImportEvent(this);
-						_importer.ArtifactReader.Close();
 					}
 					return true;
 				}, false, _importer.CleanUp);
@@ -86,9 +84,9 @@ namespace kCura.WinEDDS.Core.Import
 			InitProcess(_context);
 			while (HasToMoveRecordIndex())
 			{
-				_cancellationProvider.GetToken().ThrowIfCancellationRequested();
 				_importer.ArtifactReader.AdvanceRecord();
 			}
+			_cancellationProvider.ThrowIfCancellationRequested();
 			return true;
 		}
 
@@ -146,6 +144,7 @@ namespace kCura.WinEDDS.Core.Import
 			var importBatchContext = new ImportBatchContext(_context, _config.ImportBatchSize);
 			while (CanProcessNextRecord(currentBatchCounter))
 			{
+				_cancellationProvider.ThrowIfCancellationRequested();
 				++currentBatchCounter;
 				ProcessBatchRecord(importBatchContext);
 				_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.Count, string.Empty, _importer.ArtifactReader.CurrentLineNumber);
