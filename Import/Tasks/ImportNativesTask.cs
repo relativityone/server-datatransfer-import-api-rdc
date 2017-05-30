@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using kCura.WinEDDS.Core.Import.Errors;
 using kCura.WinEDDS.Core.Import.Factories;
 using kCura.WinEDDS.Core.Import.Helpers;
@@ -33,20 +34,56 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 
 		public IDictionary<FileMetadata, UploadResult> Execute(ImportBatchContext importBatchContext)
 		{
-			_fileUploader = _fileUploaderFactory.CreateNativeFileUploader();
-			foreach (var fileMetadata in importBatchContext.FileMetaDataHolder)
+			IDictionary<FileMetadata, UploadResult> uploadResults;
+			if (!CopyFilesToRepository(importBatchContext))
 			{
-				Upload(fileMetadata, importBatchContext);
+				uploadResults = importBatchContext.FileMetaDataHolder.ToDictionary(x => x, y => new UploadResult
+				{
+					Success = true
+				});
 			}
-			var uploadResult = _fileUploader.WaitForUploadToComplete();
+			else
+			{
+				uploadResults = UploadFiles(importBatchContext);
+			}
 
 			if (_cancellationProvider.GetToken().IsCancellationRequested)
 			{
 				_cancellationProvider.GetToken().ThrowIfCancellationRequested();
 			}
 
-			_uploadErrors.HandleUploadErrors(uploadResult);
-			return uploadResult;
+			_uploadErrors.HandleUploadErrors(uploadResults);
+			return uploadResults;
+		}
+
+		private bool CopyFilesToRepository(ImportBatchContext importBatchContext)
+		{
+			return importBatchContext.ImportContext.Settings.LoadFile.CopyFilesToDocumentRepository;
+		}
+
+		private IDictionary<FileMetadata, UploadResult> UploadFiles(ImportBatchContext importBatchContext)
+		{
+			_fileUploader = _fileUploaderFactory.CreateNativeFileUploader();
+			foreach (var fileMetadata in importBatchContext.FileMetaDataHolder)
+			{
+				Upload(fileMetadata, importBatchContext);
+			}
+			var uploadResults = _fileUploader.WaitForUploadToComplete();
+
+			AddSkippedFilesToResult(importBatchContext, uploadResults);
+
+			return uploadResults;
+		}
+
+		private void AddSkippedFilesToResult(ImportBatchContext importBatchContext, IDictionary<FileMetadata, UploadResult> uploadResults)
+		{
+			foreach (var fileMetadata in importBatchContext.FileMetaDataHolder.Where(x => !x.UploadFile))
+			{
+				uploadResults.Add(fileMetadata, new UploadResult
+				{
+					Success = true
+				});
+			}
 		}
 
 		private void Upload(FileMetadata fileMetadata, ImportBatchContext importBatchContext)
@@ -55,26 +92,17 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 
 			_importExceptionHandlerExec.TryCatchExec(() =>
 			{
+				fileMetadata.FileGuid = Guid.NewGuid().ToString();
 				fileMetadata.UploadFile = ExtractUploadCheck(fileMetadata);
 				if (CanExecute(fileMetadata, importBatchContext))
 				{
 					FileMetadata processedFileMetadata = _importNativesAnalyzer.Process(fileMetadata);
 					if (processedFileMetadata.FileExists)
 					{
-						processedFileMetadata.FileGuid = Guid.NewGuid().ToString();
-						CopyFile(processedFileMetadata, importBatchContext);
+						UploadFile(processedFileMetadata);
 					}
 				}
 			});
-		}
-
-		private void CopyFile(FileMetadata fileMetadata, ImportBatchContext importBatchContext)
-		{
-			if (importBatchContext.ImportContext.Settings.LoadFile.CopyFilesToDocumentRepository)
-			{
-				fileMetadata.DestinationDirectory = _repositoryFilePathHelper.GetNextDestinationDirectory();
-				_fileUploader.UploadFile(fileMetadata);
-			}
 		}
 
 		private bool ExtractUploadCheck(FileMetadata fileMetadata)
@@ -85,6 +113,12 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 		private bool CanExecute(FileMetadata fileMetadata, ImportBatchContext importBatchContext)
 		{
 			return fileMetadata.UploadFile && importBatchContext.ImportContext.Settings.LoadFile.ArtifactTypeID == (int) ArtifactType.Document;
+		}
+
+		private void UploadFile(FileMetadata fileMetadata)
+		{
+			fileMetadata.DestinationDirectory = _repositoryFilePathHelper.GetNextDestinationDirectory();
+			_fileUploader.UploadFile(fileMetadata);
 		}
 	}
 }
