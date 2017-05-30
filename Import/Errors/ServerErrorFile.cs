@@ -40,8 +40,6 @@ namespace kCura.WinEDDS.Core.Import.Errors
 					};
 					_errorContainer.WriteError(lineError);
 
-					_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.Error, lineError.Message, lineError.LineNumber);
-
 					line = reader.ReadLine();
 				}
 			}
