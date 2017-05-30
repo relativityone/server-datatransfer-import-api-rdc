@@ -4,6 +4,7 @@ using kCura.EDDS.WebAPI.BulkImportManagerBase;
 using kCura.WinEDDS.Core.Import;
 using kCura.WinEDDS.Core.Import.Helpers;
 using kCura.WinEDDS.Core.Import.Managers;
+using kCura.WinEDDS.Core.Import.Statistics;
 using kCura.WinEDDS.Core.Import.Tasks.Helpers;
 using Moq;
 using NUnit.Framework;
@@ -30,7 +31,9 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks.Helpers
 			_nativeLoadInfoFactory = new Mock<INativeLoadInfoFactory>();
 			_bulkImportManager = new Mock<IBulkImportManager>();
 
-			_instance = new MetadataFilesServerExecution(_importContext, _transferConfig.Object, _nativeLoadInfoFactory.Object, _bulkImportManager.Object);
+			var bulkImportStatisticsHandler = new Mock<IBulkImportStatisticsHandler>();
+
+			_instance = new MetadataFilesServerExecution(_importContext, _transferConfig.Object, _nativeLoadInfoFactory.Object, _bulkImportManager.Object, bulkImportStatisticsHandler.Object);
 		}
 
 		[Test]
