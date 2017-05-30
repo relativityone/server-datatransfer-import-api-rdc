@@ -179,8 +179,10 @@
     <Compile Include="Import\Statistics\FileMetadataEventArgs.cs" />
     <Compile Include="Import\Statistics\IBulkImportStatisticsHandler.cs" />
     <Compile Include="Import\Statistics\IMetadataStatisticsHandler.cs" />
+    <Compile Include="Import\Statistics\IServerErrorStatisticsHandler.cs" />
     <Compile Include="Import\Statistics\IStatisticsManager.cs" />
     <Compile Include="Import\Statistics\MetadataStatisticsHandler.cs" />
+    <Compile Include="Import\Statistics\ServerErrorStatisticsHandler.cs" />
     <Compile Include="Import\Status\CancellationProvider.cs" />
     <Compile Include="Import\Status\ICancellationProvider.cs" />
     <Compile Include="Import\Status\IImportStatusManager.cs" />
