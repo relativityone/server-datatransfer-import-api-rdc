@@ -6,6 +6,7 @@ using kCura.WinEDDS.Core.Import.Errors;
 using kCura.WinEDDS.Core.Import.Factories;
 using kCura.WinEDDS.Core.Import.Helpers;
 using kCura.WinEDDS.Core.Import.Managers;
+using kCura.WinEDDS.Core.Import.Statistics;
 using kCura.WinEDDS.Core.Import.Status;
 using kCura.WinEDDS.Core.Import.Tasks;
 using kCura.WinEDDS.Core.Import.Tasks.Helpers;
@@ -21,6 +22,7 @@ namespace kCura.WinEDDS.Core.Installer
 			RegisterErrorHandling(container);
 			RegisterScopedForBatch(container);
 			RegisterManagers(container);
+			RegisterStatistics(container);
 
 			container.Register(Component.For<ITransferConfig>().ImplementedBy<TransferConfig>().LifestyleSingleton());
 			container.Register(Component.For<IImportBatchJobFactory>().ImplementedBy<ImportBatchJobFactory>().LifestyleSingleton());
@@ -47,6 +49,11 @@ namespace kCura.WinEDDS.Core.Installer
 			container.Register(Component.For<ICancellationProvider>().ImplementedBy<CancellationProvider>().LifestyleSingleton());
 		}
 
+		private static void RegisterStatistics(IWindsorContainer container)
+		{
+			container.Register(Component.For<IMetadataStatisticsHandler>().ImplementedBy<MetadataStatisticsHandler>().LifestyleSingleton());
+		}
+
 		private static void RegisterErrorHandling(IWindsorContainer container)
 		{
 			container.Register(Component.For<AllErrorsContainer>().ImplementedBy<AllErrorsContainer>().LifestyleSingleton());
@@ -65,7 +72,7 @@ namespace kCura.WinEDDS.Core.Installer
 			container.Register(Component.For<IErrorManagerFactory>().ImplementedBy<ErrorManagerFactory>().LifestyleTransient());
 
 			container.Register(Component.For<IImportExceptionHandlerExec>().ImplementedBy<ImportExceptionHandlerExec>().LifestyleSingleton());
-			
+
 			container.Register(Component.For<IServerErrorFileDownloader>().ImplementedBy<ServerErrorFileDownloader>().LifestyleTransient());
 			container.Register(Component.For<IServerErrorFile>().ImplementedBy<ServerErrorFile>().LifestyleTransient());
 			container.Register(Component.For<IServerErrorManager>().ImplementedBy<ServerErrorManager>().LifestyleTransient());
@@ -90,8 +97,8 @@ namespace kCura.WinEDDS.Core.Installer
 
 			container.Register(Component.For<IImportNativesAnalyzer>().ImplementedBy<ImportNativesAnalyzer>().LifestyleScoped());
 			container.Register(Component.For<IImportNativesTask>().ImplementedBy<ImportNativesTask>().LifestyleScoped());
-			container.Register(Component.For<IImportPrepareMetadataTask>().ImplementedBy<ImportPrepareMetadataTask>().LifestyleScoped());
 			container.Register(Component.For<IPushMetadataFilesTask>().ImplementedBy<PushMetadataFilesTask>().LifestyleScoped());
+			container.Register(Component.For<IImportPrepareMetadataTask>().ImplementedBy<ImportPrepareMetadataTask>().LifestyleScoped());
 
 			container.Register(Component.For<IMetadataFilesServerExecution>().ImplementedBy<MetadataFilesServerExecution>().LifestyleScoped());
 		}
