@@ -157,7 +157,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public ReadOnly Property HasErrors() As Boolean
+		Public Overridable ReadOnly Property HasErrors() As Boolean
 			Get
 				Return _errorCount > 0
 			End Get
@@ -1702,7 +1702,7 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Private Sub _processController_ExportServerErrors(ByVal exportLocation As String) Handles _processController.ExportServerErrorsEvent
+		Protected Overridable Sub _processController_ExportServerErrors(ByVal exportLocation As String) Handles _processController.ExportServerErrorsEvent
 			_errorLinesFileLocation = _artifactReader.ManageErrorRecords(_errorMessageFileLocation, _prePushErrorLineNumbersFileName)
 			Dim rootFileName As String = _filePath
 			Dim defaultExtension As String
