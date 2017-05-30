@@ -174,7 +174,10 @@
     <Compile Include="Import\Managers\ObjectBulkImportManager.cs" />
     <Compile Include="Import\Managers\ObjectManagerWrapper.cs" />
     <Compile Include="Import\MetadataFilesInfo.cs" />
+    <Compile Include="Import\Statistics\BulkImportCompletedEventArgs.cs" />
+    <Compile Include="Import\Statistics\BulkImportStatisticsHandler.cs" />
     <Compile Include="Import\Statistics\FileMetadataEventArgs.cs" />
+    <Compile Include="Import\Statistics\IBulkImportStatisticsHandler.cs" />
     <Compile Include="Import\Statistics\IMetadataStatisticsHandler.cs" />
     <Compile Include="Import\Statistics\IStatisticsManager.cs" />
     <Compile Include="Import\Statistics\MetadataStatisticsHandler.cs" />
