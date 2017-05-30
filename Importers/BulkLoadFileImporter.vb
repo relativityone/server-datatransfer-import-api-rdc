@@ -16,7 +16,6 @@ Namespace kCura.WinEDDS
 		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
 		Private _parentFolderDTO As kCura.EDDS.WebAPI.FolderManagerBase.Folder
 		Protected _auditManager As kCura.WinEDDS.Service.AuditManager
-		Protected _documentManager As kCura.WinEDDS.Service.DocumentManager
 		Protected _relativityManager As kCura.WinEDDS.Service.RelativityManager
 
 		Private _recordCount As Int64 = -1
@@ -89,13 +88,13 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Protected Overridable ReadOnly Property NumberOfRetries() As Int32
+		Protected Overrides ReadOnly Property NumberOfRetries() As Int32
 			Get
 				Return kCura.Utility.Config.IOErrorNumberOfRetries
 			End Get
 		End Property
 
-		Protected Overridable ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
+		Protected Overrides ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
 			Get
 				Return kCura.Utility.Config.IOErrorWaitTimeInSeconds
 			End Get
