@@ -23,7 +23,7 @@ namespace kCura.WinEDDS.Core.Import
 
 		void CleanUp();
 
-		Statistics Statistics { get; }
+		WinEDDS.Statistics Statistics { get; }
 
 	}
 }

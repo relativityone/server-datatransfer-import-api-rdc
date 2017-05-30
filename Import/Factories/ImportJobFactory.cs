@@ -1,5 +1,6 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.WinEDDS.Core.Import.Statistics;
 using kCura.WinEDDS.Core.Import.Status;
 
 namespace kCura.WinEDDS.Core.Import.Factories
@@ -28,6 +29,9 @@ namespace kCura.WinEDDS.Core.Import.Factories
 			_container.Register(Component.For<IImporterSettings>().UsingFactoryMethod(k => importerSettings).LifestyleTransient());
 
 			var importExceptionHandlerExec = _container.Resolve<IImportExceptionHandlerExec>();
+
+			//TODO hack for now! this interface works on events only
+			_container.Resolve<IStatisticsManager>();
 
 			return new ImportJob(_transferConfig, _batchJobBatchJobFactory, _importStatusManager, importMetadata, importerSettings,
 				importExceptionHandlerExec, cancellationProvider);
