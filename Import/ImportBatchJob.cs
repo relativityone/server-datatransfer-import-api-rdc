@@ -13,11 +13,12 @@ namespace kCura.WinEDDS.Core.Import
 		private readonly IPushMetadataFilesTask _pushMetadataFilesTask;
 		private readonly IImportMetadata _importMetadata;
 		private readonly IImportExceptionHandlerExec _importExceptionHandlerExec;
+		private readonly ICancellationProvider _cancellationProvider;
 
 		public ImportBatchJob(IImportNativesTask importNativesTask, IImportFoldersTask importFoldersTask,
 			IImportPrepareMetadataTask importCreateMetadataTask,
 			IPushMetadataFilesTask pushMetadataFilesTask, IImportMetadata importMetadata,
-			IImportExceptionHandlerExec importExceptionHandlerExec, IImportStatusManager importStatusManager)
+			IImportExceptionHandlerExec importExceptionHandlerExec, ICancellationProvider cancellationProvider)
 		{
 			_importNativesTask = importNativesTask;
 			_importFoldersTask = importFoldersTask;
@@ -25,10 +26,12 @@ namespace kCura.WinEDDS.Core.Import
 			_pushMetadataFilesTask = pushMetadataFilesTask;
 			_importMetadata = importMetadata;
 			_importExceptionHandlerExec = importExceptionHandlerExec;
+			_cancellationProvider = cancellationProvider;
 		}
 
 		public void Run(ImportBatchContext batchContext)
 		{
+			_cancellationProvider.ThrowIfCancellationRequested();
 			InitializeBatch(batchContext);
 
 			IDictionary<FileMetadata, UploadResult> result = UploadNatives(batchContext)
@@ -39,15 +42,17 @@ namespace kCura.WinEDDS.Core.Import
 			{
 				_importExceptionHandlerExec.TryCatchExec(() =>
 				{
+					_cancellationProvider.ThrowIfCancellationRequested();
 					CreateFolderStructure(keyValuePair.Key, batchContext);
 					CreateMetadata(keyValuePair.Key, batchContext);
-
-					
 				});
 			}
 			_importExceptionHandlerExec.TryCatchExec(() =>
 			{
+				_cancellationProvider.ThrowIfCancellationRequested();
 				CompleteMetadataProcess();
+
+				_cancellationProvider.ThrowIfCancellationRequested();
 				UploadMetadata(batchContext);
 			});
 		}

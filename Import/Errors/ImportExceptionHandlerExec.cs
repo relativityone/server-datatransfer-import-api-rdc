@@ -62,7 +62,8 @@ namespace kCura.WinEDDS.Core.Import.Errors
 			{
 				if (ex is OperationCanceledException)
 				{
-					return defaultRetValue;
+					// Cancellation will be handled at the top process level
+					throw;
 				}
 				HandleFatalError(ex);
 			}

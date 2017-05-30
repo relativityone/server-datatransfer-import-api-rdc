@@ -20,5 +20,10 @@ namespace kCura.WinEDDS.Core.Import.Status
 		{
 			_cancelTokenSource.Cancel();
 		}
+
+		public void ThrowIfCancellationRequested()
+		{
+			_cancelTokenSource.Token.ThrowIfCancellationRequested();
+		}
 	}
 }
