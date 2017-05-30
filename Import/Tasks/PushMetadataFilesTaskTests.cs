@@ -2,6 +2,7 @@
 using kCura.WinEDDS.Core.Import;
 using kCura.WinEDDS.Core.Import.Errors;
 using kCura.WinEDDS.Core.Import.Factories;
+using kCura.WinEDDS.Core.Import.Status;
 using kCura.WinEDDS.Core.Import.Tasks;
 using kCura.WinEDDS.Core.Import.Tasks.Helpers;
 using Moq;
@@ -30,6 +31,8 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks
 			_metadataFilesServerExecution = new Mock<IMetadataFilesServerExecution>();
 			_serverErrorManager = new Mock<IServerErrorManager>();
 
+			var cancellationProvider = new Mock<ICancellationProvider>();
+
 			_importContext = new ImportContext();
 			_metadataFilesInfo = new MetadataFilesInfo();
 			_importBatchContext = new ImportBatchContext(_importContext, 1000)
@@ -40,7 +43,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks
 			var fileUploaderFactory = new Mock<IFileUploaderFactory>();
 			fileUploaderFactory.Setup(x => x.CreateBcpFileUploader()).Returns(_fileUploader.Object);
 
-			_instance = new PushMetadataFilesTask(_metadataFilesServerExecution.Object, fileUploaderFactory.Object, _serverErrorManager.Object);
+			_instance = new PushMetadataFilesTask(_metadataFilesServerExecution.Object, fileUploaderFactory.Object, _serverErrorManager.Object, cancellationProvider.Object);
 		}
 
 		[Test]

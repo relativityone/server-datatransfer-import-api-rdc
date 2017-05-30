@@ -4,6 +4,7 @@ using kCura.WinEDDS.Api;
 using kCura.WinEDDS.Core.Import;
 using kCura.WinEDDS.Core.Import.Errors;
 using kCura.WinEDDS.Core.Import.Factories;
+using kCura.WinEDDS.Core.Import.Statistics;
 using kCura.WinEDDS.Core.Import.Status;
 using Moq;
 using NUnit.Framework;
@@ -42,13 +43,15 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_errorContainerMock = new Mock<IErrorContainer>();
 			_cancellationProviderMock = new Mock<ICancellationProvider>();
 
+			var jobFinishStatisticsHandler = new Mock<IJobFinishStatisticsHandler>();
+
 			_importMetadataMock.Setup(item => item.ArtifactReader).Returns(_artifactReaderMock.Object);
 
 			_importExceptionHandlerExec = new ImportExceptionHandlerExec(_impStatusManagerMock.Object, _importMetadataMock.Object,
 				_errorContainerMock.Object);
 
 			_subjectUnderTest = new ImportJob(_transferConfigMock.Object, _importJobBatchFactoryMock.Object, _impStatusManagerMock.Object, 
-				_importMetadataMock.Object, _importSettings.Object, _importExceptionHandlerExec, _cancellationProviderMock.Object);
+				_importMetadataMock.Object, _importSettings.Object, _importExceptionHandlerExec, _cancellationProviderMock.Object, jobFinishStatisticsHandler.Object);
 
 			_artifactReaderMock.Setup(reader => reader.AdvanceRecord());
 

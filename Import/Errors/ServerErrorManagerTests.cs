@@ -3,6 +3,7 @@ using kCura.Utility;
 using kCura.WinEDDS.Core.Import;
 using kCura.WinEDDS.Core.Import.Errors;
 using kCura.WinEDDS.Core.Import.Managers;
+using kCura.WinEDDS.Core.Import.Statistics;
 using kCura.WinEDDS.Core.Import.Status;
 using Moq;
 using NUnit.Framework;
@@ -20,7 +21,6 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 		private ImportContext _importContext;
 
 		private Mock<IBulkImportManager> _bulkImportManager;
-		private Mock<IImportStatusManager> _importStatusManager;
 		private Mock<IServerErrorFile> _serverErrorFile;
 		private Mock<IServerErrorFileDownloader> _serverErrorFileDownloader;
 
@@ -28,9 +28,10 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 		public void SetUp()
 		{
 			_bulkImportManager = new Mock<IBulkImportManager>();
-			_importStatusManager = new Mock<IImportStatusManager>();
 			_serverErrorFile = new Mock<IServerErrorFile>();
 			_serverErrorFileDownloader = new Mock<IServerErrorFileDownloader>();
+
+			var serverErrorStatisticsHandler = new Mock<IServerErrorStatisticsHandler>();
 
 			var importSettings = new Mock<IImporterSettings>();
 			importSettings.Setup(x => x.RunId).Returns(_RUN_ID);
@@ -46,7 +47,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 				Settings = importSettings.Object
 			};
 
-			_instance = new ServerErrorManager(_bulkImportManager.Object, _importStatusManager.Object, _serverErrorFile.Object, _serverErrorFileDownloader.Object);
+			_instance = new ServerErrorManager(_bulkImportManager.Object, _serverErrorFile.Object, _serverErrorFileDownloader.Object, serverErrorStatisticsHandler.Object);
 		}
 
 		[Test]

@@ -64,7 +64,6 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 
 			// ASSERT
 			_errorContainer.Verify(x => x.WriteError(It.Is<LineError>(y => y.LineNumber == lineNumber && y.Message == message)), Times.Once);
-			_importStatusManager.Verify(x => x.RaiseStatusUpdateEvent(_instance, StatusUpdateType.Error, message, lineNumber));
 		}
 	}
 }
