@@ -1169,7 +1169,7 @@ Namespace kCura.EDDS.WinForm
         Public Async Function LoadFormControls(ByVal loadFileObjectUpdatedFromFile As Boolean) As Task
             _multiObjectMultiChoiceCache = Nothing
             If Me.LoadFile.ArtifactTypeID = 0 Then Me.LoadFile.ArtifactTypeID = _application.ArtifactTypeID
-            Me.Text = String.Format("Relativity Desktop Client | Import {0} Load File", _application.GetObjectTypeName(Me.LoadFile.ArtifactTypeID))
+            Me.Text = String.Format("Relativity Desktop Client | Import {0} Load File", Await _application.GetObjectTypeName(Me.LoadFile.ArtifactTypeID))
             Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
             kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_recordDelimiter, _loadFile.RecordDelimiter)
             kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_quoteDelimiter, _loadFile.QuoteDelimiter)
