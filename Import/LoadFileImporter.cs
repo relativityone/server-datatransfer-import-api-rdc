@@ -151,6 +151,8 @@ namespace kCura.WinEDDS.Core.Import
 
 		protected override bool UseTimeZoneOffset { get; }
 
+		public override bool HasErrors => _errorManager.HasErrors;
+
 		protected override Base GetSingleCodeValidator()
 		{
 			return new SingleImporter(_settings.CaseInfo, _codeManager);
@@ -172,6 +174,14 @@ namespace kCura.WinEDDS.Core.Import
 		{
 			base._processController_HaltProcessEvent(processId);
 			_cancellationProvider.Cancel();
+		}
+
+		/// <summary>
+		/// We must override this method and make it empty so the ExportServerErrorsEvent event will call method from LoadFileImporter only
+		/// </summary>
+		/// <param name="exportLocation"></param>
+		protected override void _processController_ExportServerErrors(string exportLocation)
+		{
 		}
 
 		#endregion //Overridden Members

@@ -20,6 +20,8 @@ namespace kCura.WinEDDS.Core.Import.Errors
 			_errorFileNames = errorFileNames;
 		}
 
+		public bool HasErrors => _allErrors.HasErrors();
+
 		public void ExportErrors(string exportLocation, string loadFilePath)
 		{
 			var errorFileName = _errorFileNames.GetErrorLinesFileName(loadFilePath);
