@@ -2,6 +2,7 @@
 using kCura.WinEDDS.Api;
 using kCura.WinEDDS.Core.Import.Factories;
 using kCura.WinEDDS.Core.Import.Helpers;
+using kCura.WinEDDS.Core.Import.Statistics;
 using kCura.WinEDDS.Core.Import.Status;
 
 namespace kCura.WinEDDS.Core.Import
@@ -16,12 +17,13 @@ namespace kCura.WinEDDS.Core.Import
 		private readonly IImporterSettings _importerSettings;
 		private readonly IImportExceptionHandlerExec _importExceptionHandlerExec;
 		private readonly ICancellationProvider _cancellationProvider;
+		private readonly IJobFinishStatisticsHandler _jobFinishStatisticsHandler;
 
 		public event EventHandler<ImportContext> Initialized;
 
 		public ImportJob(ITransferConfig config, IImportBatchJobFactory batchJobBatchJobFactory, IImportStatusManager importStatusManager, 
 			IImportMetadata importer, IImporterSettings importerSettings, IImportExceptionHandlerExec importExceptionHandlerExec,
-			ICancellationProvider cancellationProvider)
+			ICancellationProvider cancellationProvider, IJobFinishStatisticsHandler jobFinishStatisticsHandler)
 		{
 			_config = config;
 			_batchJobBatchJobFactory = batchJobBatchJobFactory;
@@ -30,6 +32,7 @@ namespace kCura.WinEDDS.Core.Import
 			_importerSettings = importerSettings;
 			_importExceptionHandlerExec = importExceptionHandlerExec;
 			_cancellationProvider = cancellationProvider;
+			_jobFinishStatisticsHandler = jobFinishStatisticsHandler;
 
 			_context = new ImportContext
 			{
@@ -54,12 +57,12 @@ namespace kCura.WinEDDS.Core.Import
 							ImportBatchContext batchSetUp = CreateBatch();
 							SendBatch(batchSetUp);
 						}
-						_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.End, "Import process finished");
+						_jobFinishStatisticsHandler.RaiseJobFinishedEvent("Import process finished");
 						return true;
 					}
 					catch (OperationCanceledException )
 					{
-						_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.End, "Import process cancelled");
+						_jobFinishStatisticsHandler.RaiseJobFinishedEvent("Import process cancelled");
 					}
 					finally
 					{

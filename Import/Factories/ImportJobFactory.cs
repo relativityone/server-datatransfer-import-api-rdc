@@ -11,14 +11,16 @@ namespace kCura.WinEDDS.Core.Import.Factories
 		private readonly IImportStatusManager _importStatusManager;
 		private readonly IImportBatchJobFactory _batchJobBatchJobFactory;
 		private readonly IWindsorContainer _container;
+		private readonly IJobFinishStatisticsHandler _jobFinishStatisticsHandler;
 
 		public ImportJobFactory(ITransferConfig transferConfig, IImportStatusManager importStatusManager,
-			IImportBatchJobFactory batchJobBatchJobFactory, IWindsorContainer container)
+			IImportBatchJobFactory batchJobBatchJobFactory, IWindsorContainer container, IJobFinishStatisticsHandler jobFinishStatisticsHandler)
 		{
 			_transferConfig = transferConfig;
 			_importStatusManager = importStatusManager;
 			_batchJobBatchJobFactory = batchJobBatchJobFactory;
 			_container = container;
+			_jobFinishStatisticsHandler = jobFinishStatisticsHandler;
 		}
 
 		public IImportJob Create(IImportMetadata importMetadata, IImporterSettings importerSettings, IImporterManagers importerManagers,
@@ -34,7 +36,7 @@ namespace kCura.WinEDDS.Core.Import.Factories
 			_container.Resolve<IStatisticsManager>();
 
 			return new ImportJob(_transferConfig, _batchJobBatchJobFactory, _importStatusManager, importMetadata, importerSettings,
-				importExceptionHandlerExec, cancellationProvider);
+				importExceptionHandlerExec, cancellationProvider, _jobFinishStatisticsHandler);
 		}
 	}
 }

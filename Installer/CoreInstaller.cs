@@ -54,6 +54,7 @@ namespace kCura.WinEDDS.Core.Installer
 			container.Register(Component.For<IMetadataStatisticsHandler>().ImplementedBy<MetadataStatisticsHandler>().LifestyleSingleton());
 			container.Register(Component.For<IBulkImportStatisticsHandler>().ImplementedBy<BulkImportStatisticsHandler>().LifestyleSingleton());
 			container.Register(Component.For<IServerErrorStatisticsHandler>().ImplementedBy<ServerErrorStatisticsHandler>().LifestyleSingleton());
+			container.Register(Component.For<IJobFinishStatisticsHandler>().ImplementedBy<JobFinishStatisticsHandler>().LifestyleSingleton());
 		}
 
 		private static void RegisterErrorHandling(IWindsorContainer container)
