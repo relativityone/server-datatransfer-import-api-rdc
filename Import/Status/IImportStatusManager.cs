@@ -24,5 +24,7 @@ namespace kCura.WinEDDS.Core.Import.Status
 		void RaiseStatusUpdateEvent(object sender, StatusUpdateType type, string msg, int lineNumber);
 
 		void RaiseStatusUpdateEvent(object sender, StatusUpdateType type, string msg);
+		
+		void RaiseCustomStatusUpdateEvent(object sender, StatusUpdateType type, string msg, int lineNumber);
 	}	
 }
