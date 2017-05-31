@@ -979,9 +979,6 @@ Namespace kCura.EDDS.WinForm
 
 			Try
 				Await Me.GetCredentialsAsync()
-				CursorWait()
-				OpenCaseSelector = openCaseSelector
-				CursorDefault()
 			Catch ex As LoginCanceledException
 				'Login form was closed, ignore
 			End Try
@@ -1552,6 +1549,7 @@ Namespace kCura.EDDS.WinForm
 				Dim url As String = InputBox("Enter New URL:", DefaultResponse:=kCura.WinEDDS.Config.WebServiceURL)
 				If url <> String.Empty Then
 					kCura.WinEDDS.Config.WebServiceURL = url
+					OpenCaseSelector = True
 					RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOnRequested))
 				Else
 					ExitApplication()

@@ -391,6 +391,7 @@ Namespace kCura.EDDS.WinForm
 					ExportMenu.Enabled = _application.UserHasExportPermission
 					ImportMenu.Visible = _application.UserHasImportPermission
 					ExportMenu.Visible = _application.UserHasExportPermission
+					_application.OpenCaseSelector = false
 				Case AppEvent.AppEventType.LogOnForm
 					'Enable help once logged into Relativity via RDC login form
 					Me._helpMenuItem.Enabled = True
