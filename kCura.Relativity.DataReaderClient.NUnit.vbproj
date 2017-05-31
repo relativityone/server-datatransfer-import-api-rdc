@@ -37,14 +37,14 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkProfile />
-	<Injections>EnableInjections</Injections>
+    <Injections>EnableInjections</Injections>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-	<DefineConstants>$(Injections)</DefineConstants>
+    <DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>bin\kCura.Relativity.DataReaderClient.NUnit.xml</DocumentationFile>
     <NoWarn>42353,42354,42355,40010</NoWarn>
@@ -56,7 +56,7 @@
     <DebugType>pdbonly</DebugType>
     <DefineDebug>false</DefineDebug>
     <DefineTrace>true</DefineTrace>
-	<DefineConstants>$(Injections)</DefineConstants>
+    <DefineConstants>$(Injections)</DefineConstants>
     <Optimize>true</Optimize>
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>bin\kCura.Relativity.DataReaderClient.NUnit.xml</DocumentationFile>
@@ -69,7 +69,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-	<DefineConstants>$(Injections)</DefineConstants>
+    <DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x64\</OutputPath>
     <DocumentationFile>bin\x64\kCura.Relativity.DataReaderClient.NUnit.xml</DocumentationFile>
     <NoWarn>42353,42354,42355,40010</NoWarn>
@@ -81,7 +81,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <DefineTrace>true</DefineTrace>
-	<DefineConstants>$(Injections)</DefineConstants>
+    <DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x64\</OutputPath>
     <DocumentationFile>bin\x64\kCura.Relativity.DataReaderClient.NUnit.xml</DocumentationFile>
     <Optimize>true</Optimize>
@@ -96,7 +96,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-	<DefineConstants>$(Injections)</DefineConstants>
+    <DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x86\</OutputPath>
     <DocumentationFile>bin\x86\kCura.Relativity.DataReaderClient.NUnit.xml</DocumentationFile>
     <NoWarn>42353,42354,42355,40010</NoWarn>
@@ -108,7 +108,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DefineTrace>true</DefineTrace>
-	<DefineConstants>$(Injections)</DefineConstants>
+    <DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x86\</OutputPath>
     <DocumentationFile>bin\x86\kCura.Relativity.DataReaderClient.NUnit.xml</DocumentationFile>
     <Optimize>true</Optimize>
@@ -216,7 +216,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.NUnit.Integration\kCura.NUnit.Integration.vbproj">
       <Project>{8A6B7E78-51B9-43DB-BBCA-17EE6A49E3FF}</Project>
-      <Name>kCura.IntegrationTest</Name>
+      <Name>kCura.NUnit.Integration</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.OI.FileID\kCura.OI.FileID.vbproj">
       <Project>{CCEFD50F-0840-402D-AB16-C93F8E579B8B}</Project>
