@@ -206,10 +206,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\kCura\kCura.Data\kCura.Data.vbproj">
-      <Project>{6C4D3211-85B6-4A83-9356-7C7F0C319C75}</Project>
-      <Name>kCura.Data</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.ImageValidator\kCura.ImageValidator.vbproj">
       <Project>{C2FD8BF7-723A-4D40-A201-CD7458678A70}</Project>
       <Name>kCura.ImageValidator</Name>
@@ -221,10 +217,6 @@
     <ProjectReference Include="..\..\kCura\kCura.OI.FileID\kCura.OI.FileID.vbproj">
       <Project>{CCEFD50F-0840-402D-AB16-C93F8E579B8B}</Project>
       <Name>kCura.OI.FileID</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura.Utility\kCura.Utility.vbproj">
-      <Project>{E3450350-56E3-4FE9-A47A-4D24960BCBDB}</Project>
-      <Name>kCura.Utility</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.Windows.Forms\kCura.Windows.Forms.vbproj">
       <Project>{0DABBD47-5A46-429F-9D90-C95A58611E0A}</Project>
