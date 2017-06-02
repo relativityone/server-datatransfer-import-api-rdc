@@ -619,6 +619,9 @@
     <Content Include="images\relativity1.ICO" />
     <None Include="packages.config" />
     <None Include="Resources\CopyrightInfo.txt" />
+    <Content Include="LoggerConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="ToDo.txt" />
   </ItemGroup>
   <ItemGroup>
