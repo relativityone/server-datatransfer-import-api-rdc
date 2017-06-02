@@ -45,6 +45,7 @@ Namespace kCura.WinEDDS
 							If Not tempDict.Contains("DisableAspera") Then tempDict.Add("DisableAspera", "False")
 							If Not tempDict.Contains("RestUrl") Then tempDict.Add("RestUrl", "/Relativity.REST/api")
 							If Not tempDict.Contains("ServicesUrl") Then tempDict.Add("ServicesUrl", "/Relativity.Services/")
+							If Not tempDict.Contains("LoggerConfigFile") Then tempDict.Add("LoggerConfigFile", "LoggerConfig.xml")
 							If Not tempDict.Contains(NameOf(LoadImportedFullTextFromServer)) Then tempDict.Add(NameOf(LoadImportedFullTextFromServer), "False")
 							If Not tempDict.Contains(NameOf(UsePipeliningForNativeAndObjectImports)) Then tempDict.Add(NameOf(UsePipeliningForNativeAndObjectImports), "False")
 							If Not tempDict.Contains(NameOf(UsePipeliningForFileIdAndCopy)) Then tempDict.Add(NameOf(UsePipeliningForFileIdAndCopy), "False")
@@ -347,6 +348,12 @@ Namespace kCura.WinEDDS
 		Public Shared ReadOnly Property ServicesUrl() As String
 			Get
 				Return CType(ConfigSettings("ServicesUrl"), String)
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property LoggerConfigFile() As String
+			Get
+				Return CType(ConfigSettings("LoggerConfigFile"), String)
 			End Get
 		End Property
 
