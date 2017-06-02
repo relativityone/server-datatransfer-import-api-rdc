@@ -2,6 +2,7 @@
 using Castle.Windsor;
 using kCura.WinEDDS.Core.Import.Statistics;
 using kCura.WinEDDS.Core.Import.Status;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Import.Factories
 {
@@ -12,15 +13,17 @@ namespace kCura.WinEDDS.Core.Import.Factories
 		private readonly IImportBatchJobFactory _batchJobBatchJobFactory;
 		private readonly IWindsorContainer _container;
 		private readonly IJobFinishStatisticsHandler _jobFinishStatisticsHandler;
+		private readonly ILog _log;
 
 		public ImportJobFactory(ITransferConfig transferConfig, IImportStatusManager importStatusManager,
-			IImportBatchJobFactory batchJobBatchJobFactory, IWindsorContainer container, IJobFinishStatisticsHandler jobFinishStatisticsHandler)
+			IImportBatchJobFactory batchJobBatchJobFactory, IWindsorContainer container, IJobFinishStatisticsHandler jobFinishStatisticsHandler, ILog log)
 		{
 			_transferConfig = transferConfig;
 			_importStatusManager = importStatusManager;
 			_batchJobBatchJobFactory = batchJobBatchJobFactory;
 			_container = container;
 			_jobFinishStatisticsHandler = jobFinishStatisticsHandler;
+			_log = log;
 		}
 
 		public IImportJob Create(IImportMetadata importMetadata, IImporterSettings importerSettings, IImporterManagers importerManagers,
@@ -36,7 +39,7 @@ namespace kCura.WinEDDS.Core.Import.Factories
 			_container.Resolve<IStatisticsManager>();
 
 			return new ImportJob(_transferConfig, _batchJobBatchJobFactory, _importStatusManager, importMetadata, importerSettings,
-				importExceptionHandlerExec, cancellationProvider, _jobFinishStatisticsHandler);
+				importExceptionHandlerExec, cancellationProvider, _jobFinishStatisticsHandler, _log);
 		}
 	}
 }

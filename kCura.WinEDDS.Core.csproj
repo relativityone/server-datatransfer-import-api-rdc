@@ -80,6 +80,14 @@
       <HintPath>..\packages\Polly.5.1.0\lib\net45\Polly.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Logging, Version=9.4.308.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Logging.9.4.308\lib\net462\Relativity.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Logging.Interfaces, Version=9.4.308.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Logging.Interfaces.9.4.308\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.ServiceModel.Activities" />
@@ -221,6 +229,7 @@
     <Compile Include="IO\LongPathDirectoryHelper.cs" />
     <Compile Include="IO\LongPathFileHelper.cs" />
     <Compile Include="ITransferConfig.cs" />
+    <Compile Include="Logging\LoggerFactory.cs" />
     <Compile Include="Model\Export\ExtendedExportFile.cs" />
     <Compile Include="Model\Export\Natives\Name\DescriptorPart.cs" />
     <Compile Include="Model\Export\Natives\Name\FieldDescriptorPart.cs" />
