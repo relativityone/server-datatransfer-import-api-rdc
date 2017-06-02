@@ -8,6 +8,7 @@ using kCura.WinEDDS.Core.Import.Statistics;
 using kCura.WinEDDS.Core.Import.Status;
 using Moq;
 using NUnit.Framework;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.NUnit.Import
 {
@@ -44,6 +45,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_cancellationProviderMock = new Mock<ICancellationProvider>();
 
 			var jobFinishStatisticsHandler = new Mock<IJobFinishStatisticsHandler>();
+			var log = new Mock<ILog>();
 
 			_importMetadataMock.Setup(item => item.ArtifactReader).Returns(_artifactReaderMock.Object);
 
@@ -51,7 +53,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 				_errorContainerMock.Object);
 
 			_subjectUnderTest = new ImportJob(_transferConfigMock.Object, _importJobBatchFactoryMock.Object, _impStatusManagerMock.Object, 
-				_importMetadataMock.Object, _importSettings.Object, _importExceptionHandlerExec, _cancellationProviderMock.Object, jobFinishStatisticsHandler.Object);
+				_importMetadataMock.Object, _importSettings.Object, _importExceptionHandlerExec, _cancellationProviderMock.Object, jobFinishStatisticsHandler.Object, log.Object);
 
 			_artifactReaderMock.Setup(reader => reader.AdvanceRecord());
 
