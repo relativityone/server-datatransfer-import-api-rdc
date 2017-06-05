@@ -1429,7 +1429,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Function GetIsSupportedRelativityFileTypeField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
-			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In _allFields
+			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In AllFields(_artifactTypeID)
 				If field.DisplayName.ToLower = "supported by viewer" Then
 					Return Me.FieldDtoToFieldInfo(field)
 				End If
@@ -1438,7 +1438,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function GetRelativityFileTypeField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
-			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In _allFields
+			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In AllFields(_artifactTypeID)
 				If field.DisplayName.ToLower = "relativity native type" Then
 					Return Me.FieldDtoToFieldInfo(field)
 				End If
@@ -1447,7 +1447,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function GetHasNativesField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
-			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In _allFields
+			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In AllFields(_artifactTypeID)
 				If field.DisplayName.ToLower = "has native" Then
 					Return Me.FieldDtoToFieldInfo(field)
 				End If
@@ -1456,7 +1456,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function GetObjectFileField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
-			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In _allFields
+			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In AllFields(_artifactTypeID)
 				If field.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
 					Return Me.FieldDtoToFieldInfo(field)
 				End If
