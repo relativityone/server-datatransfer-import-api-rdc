@@ -16,9 +16,6 @@ Namespace kCura.EDDS.WinForm
             'This call is required by the Windows Form Designer.
             InitializeComponent()
 
-            'Add any initialization after the InitializeComponent() call
-            'InitializeDocumentSpecificComponents()
-
         End Sub
         Friend WithEvents _importMenuForceFolderPreviewItem As System.Windows.Forms.MenuItem
 
@@ -51,7 +48,11 @@ Namespace kCura.EDDS.WinForm
 
         Private _multiObjectMultiChoiceCache As DocumentFieldCollection = Nothing
 
-        Private Async Sub InitializeDocumentSpecificComponents() Handles Me.Load
+        Private Async Sub InitializeDocumentSpecificComponentsOnLoad() Handles Me.Load
+			Await InitializeDocumentSpecificComponents()
+        End Sub
+
+        Private Async Function InitializeDocumentSpecificComponents() As Task
             If Me.LoadFile.ArtifactTypeID = 0 Then Me.LoadFile.ArtifactTypeID = _application.ArtifactTypeID
             If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
                 Me.GroupBoxNativeFileBehavior.Enabled = True
@@ -74,7 +75,7 @@ Namespace kCura.EDDS.WinForm
                 End If
                 Me.GroupBoxExtractedText.Enabled = False
             End If
-        End Sub
+        End Function
 
         'Form overrides dispose to clean up the component list.
         Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
@@ -1987,7 +1988,7 @@ Namespace kCura.EDDS.WinForm
                 Next
             End If
 
-            InitializeDocumentSpecificComponents()
+            Await InitializeDocumentSpecificComponents()
 		End Sub
 
 		Private Async Function EnsureConnection() As Task(Of Boolean)
