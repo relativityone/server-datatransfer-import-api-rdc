@@ -101,6 +101,10 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 					{
 						UploadFile(processedFileMetadata);
 					}
+					else
+					{
+						fileMetadata.UploadFile = false;
+					}
 				}
 			});
 		}
