@@ -18,7 +18,7 @@ namespace kCura.WinEDDS.Core.Import.Managers
 			var objectLoadInfo = loadInfo as ObjectLoadInfo;
 			if (objectLoadInfo == null)
 			{
-				throw new Exception();
+				throw new ArgumentException("NativeLoadInfo can't be cast to ObjectLoadInfo.");
 			}
 			return _bulkImportManager.BulkImportObjects(importContext.Settings.LoadFile.CaseInfo.ArtifactID, objectLoadInfo,
 				importContext.Settings.LoadFile.CopyFilesToDocumentRepository);

@@ -39,7 +39,8 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			_cancellationProvider.ThrowIfCancellationRequested();
 			if (uploadResult.Any(x => !x.Value.Success))
 			{
-				throw new Exception();
+				throw new Exception(
+					$"Failed to upload metadata files for batch with messages: {string.Join(",", uploadResult.Values.Where(x => !x.Success).Select(x => x.ErrorMessage).ToList())}");
 			}
 
 			_importMetadata.BatchSizeHistoryList.Add(batchSize);
