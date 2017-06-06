@@ -9,17 +9,20 @@ namespace kCura.WinEDDS.Core.Import.Statistics
 		private readonly IImportMetadata _importMetadata;
 		private readonly ITransferConfig _transferConfig;
 
+		private readonly int _startLineNumber;
 		private int _filesTransferred;
 
 		private readonly object _lock = new object();
 
-		public StatisticsManager(IImportStatusManager importStatusManager, IImportMetadata importMetadata, ITransferConfig transferConfig, INativeFilesStatisticsHandler nativeStatistics,
-			IMetadataFilesStatisticsHandler metadataStatistics, IMetadataStatisticsHandler metadataStatisticsHandler, IBulkImportStatisticsHandler bulkImportStatisticsHandler,
-			IServerErrorStatisticsHandler serverErrorStatisticsHandler, IJobFinishStatisticsHandler jobFinishStatisticsHandler)
+		public StatisticsManager(LoadFile loadFile, IImportStatusManager importStatusManager, IImportMetadata importMetadata, ITransferConfig transferConfig,
+			INativeFilesStatisticsHandler nativeStatistics, IMetadataFilesStatisticsHandler metadataStatistics, IMetadataStatisticsHandler metadataStatisticsHandler,
+			IBulkImportStatisticsHandler bulkImportStatisticsHandler, IServerErrorStatisticsHandler serverErrorStatisticsHandler, IJobFinishStatisticsHandler jobFinishStatisticsHandler)
 		{
 			_importStatusManager = importStatusManager;
 			_importMetadata = importMetadata;
 			_transferConfig = transferConfig;
+
+			_startLineNumber = (int) loadFile.StartLineNumber;
 
 			_importMetadata.Statistics.BatchSize = transferConfig.ImportBatchSize;
 
@@ -63,7 +66,7 @@ namespace kCura.WinEDDS.Core.Import.Statistics
 		{
 			lock (_lock)
 			{
-				_filesTransferred = Math.Max(_filesTransferred, filesTransferredEventArgs.FilesTransferred);
+				_filesTransferred = Math.Max(_filesTransferred, filesTransferredEventArgs.FilesTransferred + _startLineNumber);
 			}
 			RaiseUpdateEvent("Uploading files");
 		}
