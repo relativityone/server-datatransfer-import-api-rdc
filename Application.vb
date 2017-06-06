@@ -1066,7 +1066,7 @@ Namespace kCura.EDDS.WinForm
 				If CheckFieldMap(loadFile) Then
 					Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
 					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
-					importer.BulkLoadFileImporterFactory = new kCura.WinEDDS.Aspera.BulkLoadFileImporterFactory()
+					importer.BulkLoadFileImporterFactory = new kCura.WinEDDS.Aspera.BulkLoadFileImporterFactory(Me.GetConnectionStatus())
 					importer.LoadFile = loadFile
 					importer.TimeZoneOffset = _timeZoneOffset
 					importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
