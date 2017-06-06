@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using kCura.WinEDDS.CodeValidator;
 using kCura.WinEDDS.Core.Import.Status;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Import.Errors
 {
@@ -11,12 +12,14 @@ namespace kCura.WinEDDS.Core.Import.Errors
 		private readonly IImportMetadata _metadataImporter;
 		private readonly IImportStatusManager _importStatusManager;
 		private readonly IErrorContainer _errorContainer;
+		private readonly ILog _log;
 
-		public ImportExceptionHandlerExec(IImportStatusManager importStatusManager, IImportMetadata metadataImporter, IErrorContainer errorContainer)
+		public ImportExceptionHandlerExec(IImportStatusManager importStatusManager, IImportMetadata metadataImporter, IErrorContainer errorContainer, ILog log)
 		{
 			_importStatusManager = importStatusManager;
 			_metadataImporter = metadataImporter;
 			_errorContainer = errorContainer;
+			_log = log;
 		}
 
 		public void TryCatchExec(Action executeAction, Action finalizeAction = null)
@@ -63,6 +66,7 @@ namespace kCura.WinEDDS.Core.Import.Errors
 				if (ex is OperationCanceledException)
 				{
 					// Cancellation will be handled at the top process level
+					_log.LogInformation(LogMessages.UserImportCancelMessage);
 					throw;
 				}
 				HandleFatalError(ex);
@@ -107,6 +111,7 @@ namespace kCura.WinEDDS.Core.Import.Errors
 				Message = message
 			});
 			_errorContainer.WriteError(CreateErrorLine(recordIndex, message));
+			_log.LogError(message);
 		}
 		private LineError CreateErrorLine(int index, string message)
 		{
