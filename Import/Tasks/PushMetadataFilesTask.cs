@@ -13,19 +13,26 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 		private readonly IMetadataFilesServerExecution _metadataFilesServerExecution;
 		private readonly IFileUploaderFactory _fileUploaderFactory;
 		private readonly IServerErrorManager _serverErrorManager;
+		private readonly IImportMetadata _importMetadata;
+		private readonly ITransferConfig _transferConfig;
 		private readonly ICancellationProvider _cancellationProvider;
 
-		public PushMetadataFilesTask(IMetadataFilesServerExecution metadataFilesServerExecution, IFileUploaderFactory fileUploaderFactory, 
-			IServerErrorManager serverErrorManager, ICancellationProvider cancellationProvider)
+		public PushMetadataFilesTask(IMetadataFilesServerExecution metadataFilesServerExecution, IFileUploaderFactory fileUploaderFactory,
+			IServerErrorManager serverErrorManager, IImportMetadata importMetadata, ITransferConfig transferConfig, ICancellationProvider cancellationProvider)
 		{
 			_metadataFilesServerExecution = metadataFilesServerExecution;
 			_fileUploaderFactory = fileUploaderFactory;
 			_serverErrorManager = serverErrorManager;
+			_importMetadata = importMetadata;
+			_transferConfig = transferConfig;
 			_cancellationProvider = cancellationProvider;
 		}
 
 		public void PushMetadataFiles(ImportBatchContext importBatchContext)
 		{
+			//TODO change this if batch had been split
+			int batchSize = _transferConfig.ImportBatchSize;
+
 			var uploadResult = UploadFiles(importBatchContext);
 
 			// Here we need to check cancellation operation was requested as uploadResults variable will may not contain any results in that case
@@ -35,6 +42,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 				throw new Exception();
 			}
 
+			_importMetadata.BatchSizeHistoryList.Add(batchSize);
 			_metadataFilesServerExecution.Import(importBatchContext.MetadataFilesInfo);
 
 			_serverErrorManager.ManageErrors(importBatchContext.ImportContext);

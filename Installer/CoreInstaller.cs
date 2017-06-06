@@ -33,20 +33,10 @@ namespace kCura.WinEDDS.Core.Installer
 
 			container.Register(Component.For<IFileInfoProvider>().ImplementedBy<FileInfoProvider>().LifestyleTransient());
 			container.Register(Component.For<IRepositoryFilePathHelper>().ImplementedBy<RepositoryFilePathHelper>().LifestyleTransient());
+			
+			RegisterLegacyFolderCache(container);
 
-			//TODO handle better
-			container.Register(Component.For<IFolderCache>().UsingFactoryMethod(k =>
-			{
-				IImporterManagers importerManagers = k.Resolve<IImporterManagers>();
-				ImportContext importContext = k.Resolve<ImportContext>();
-				return new FolderCache(importerManagers.FolderManager, importContext.Settings.FolderId, importContext.Settings.LoadFile.CaseInfo.ArtifactID);
-			}).LifestyleTransient());
-
-			//TODO move to utility project
-			container.Register(Component.For<IPathHelper>().ImplementedBy<PathHelper>().LifestyleSingleton());
-			container.Register(Component.For<IFileHelper>().ImplementedBy<LongPathFileHelper>().LifestyleSingleton());
-			container.Register(Component.For<IDateTimeHelper>().ImplementedBy<DateTimeHelper>().LifestyleSingleton());
-			container.Register(Component.For<ICancellationProvider>().ImplementedBy<CancellationProvider>().LifestyleSingleton());
+			RegisterComponentsFromUtilityProject(container);
 		}
 
 		private static void RegisterStatistics(IWindsorContainer container)
@@ -95,7 +85,6 @@ namespace kCura.WinEDDS.Core.Installer
 
 		private static void RegisterTasks(IWindsorContainer container)
 		{
-			//TODO document vs rdo
 			container.Register(Component.For<IImportFoldersTask>().ImplementedBy<ImportDocumentFoldersTask>().LifestyleScoped());
 
 			container.Register(Component.For<IImportNativesAnalyzer>().ImplementedBy<ImportNativesAnalyzer>().LifestyleScoped());
@@ -109,6 +98,25 @@ namespace kCura.WinEDDS.Core.Installer
 		private static void RegisterManagers(IWindsorContainer container)
 		{
 			container.Register(Component.For<IBulkImportManager>().UsingFactoryMethod(k => k.Resolve<IImporterManagers>().BulkImportManager).LifestyleTransient());
+		}
+
+		private static void RegisterLegacyFolderCache(IWindsorContainer container)
+		{
+			container.Register(Component.For<IFolderCache>().UsingFactoryMethod(k =>
+			{
+				IImporterManagers importerManagers = k.Resolve<IImporterManagers>();
+				ImportContext importContext = k.Resolve<ImportContext>();
+				LoadFile loadFile = k.Resolve<LoadFile>();
+				return new FolderCache(importerManagers.FolderManager, importContext.Settings.FolderId, loadFile.CaseInfo.ArtifactID);
+			}).LifestyleTransient());
+		}
+
+		private static void RegisterComponentsFromUtilityProject(IWindsorContainer container)
+		{
+			container.Register(Component.For<IPathHelper>().ImplementedBy<PathHelper>().LifestyleSingleton());
+			container.Register(Component.For<IFileHelper>().ImplementedBy<LongPathFileHelper>().LifestyleSingleton());
+			container.Register(Component.For<IDateTimeHelper>().ImplementedBy<DateTimeHelper>().LifestyleSingleton());
+			container.Register(Component.For<ICancellationProvider>().ImplementedBy<CancellationProvider>().LifestyleSingleton());
 		}
 	}
 }

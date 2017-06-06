@@ -1,6 +1,6 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Threading;
 using kCura.WinEDDS.Api;
 
 namespace kCura.WinEDDS.Core.Import
@@ -25,5 +25,6 @@ namespace kCura.WinEDDS.Core.Import
 
 		WinEDDS.Statistics Statistics { get; }
 
+		List<Int32> BatchSizeHistoryList { get; }
 	}
 }

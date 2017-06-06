@@ -26,12 +26,12 @@ namespace kCura.WinEDDS.Core.Import.Managers
 
 		public bool NativeRunHasErrors(int appId, string runId)
 		{
-			throw new NotImplementedException();
+			return _bulkImportManager.NativeRunHasErrors(appId, runId);
 		}
 
 		public ErrorFileKey GenerateNonImageErrorFiles(int appId, string runId, int artifactTypeId, bool writeHeader, int keyFieldId)
 		{
-			throw new NotImplementedException();
+			return _bulkImportManager.GenerateNonImageErrorFiles(appId, runId, artifactTypeId, writeHeader, keyFieldId);
 		}
 
 		public ICredentials Credentials => _bulkImportManager.Credentials;
