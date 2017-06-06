@@ -77,7 +77,7 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="ZetaLongPaths, Version=1.0.0.16, Culture=neutral, PublicKeyToken=b764f59068f31f38, processorArchitecture=MSIL">
-      <HintPath>..\packages\ZetaLongPaths.1.0.0.16\lib\net40-full\ZetaLongPaths.dll</HintPath>
+      <HintPath>..\..\packages\ZetaLongPaths.1.0.0.16\lib\net40-full\ZetaLongPaths.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
