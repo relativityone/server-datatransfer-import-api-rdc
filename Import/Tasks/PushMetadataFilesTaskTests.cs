@@ -43,7 +43,13 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks
 			var fileUploaderFactory = new Mock<IFileUploaderFactory>();
 			fileUploaderFactory.Setup(x => x.CreateBcpFileUploader()).Returns(_fileUploader.Object);
 
-			_instance = new PushMetadataFilesTask(_metadataFilesServerExecution.Object, fileUploaderFactory.Object, _serverErrorManager.Object, cancellationProvider.Object);
+			var importMetadata = new Mock<IImportMetadata>();
+			importMetadata.Setup(x => x.BatchSizeHistoryList).Returns(new List<int>());
+
+			var transferConfig = new Mock<ITransferConfig>();
+
+			_instance = new PushMetadataFilesTask(_metadataFilesServerExecution.Object, fileUploaderFactory.Object, _serverErrorManager.Object, importMetadata.Object, transferConfig.Object,
+				cancellationProvider.Object);
 		}
 
 		[Test]

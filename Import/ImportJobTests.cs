@@ -158,7 +158,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_subjectUnderTest.ReadFile("");
 
 			//Assert
-			_impStatusManagerMock.Verify(obj => obj.RaiseTranserModeChangedEvent(_subjectUnderTest, expectedDesc), Times.Once);
+			_impStatusManagerMock.Verify(obj => obj.RaiseTransferModeChangedEvent(_subjectUnderTest, expectedDesc), Times.Once);
 			ValidateSharedConditions();
 		}
 
