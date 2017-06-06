@@ -46,7 +46,7 @@ namespace kCura.WinEDDS.Core.Import
 
 		public object ReadFile(string path)
 		{
-			_log.LogVerbose("Starting import job with file: {file}.", path);
+			_log.LogInformation("Starting import job with file: {file}.", path);
 			return _importExceptionHandlerExec.TryCatchExec<bool?>(
 			() =>
 				{

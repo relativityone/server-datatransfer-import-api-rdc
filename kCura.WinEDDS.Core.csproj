@@ -230,6 +230,11 @@
     <Compile Include="IO\LongPathFileHelper.cs" />
     <Compile Include="ITransferConfig.cs" />
     <Compile Include="Logging\LoggerFactory.cs" />
+    <Compile Include="LogMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LogMessages.resx</DependentUpon>
+    </Compile>
     <Compile Include="Model\Export\ExtendedExportFile.cs" />
     <Compile Include="Model\Export\Natives\Name\DescriptorPart.cs" />
     <Compile Include="Model\Export\Natives\Name\FieldDescriptorPart.cs" />
@@ -262,7 +267,12 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="LogMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>LogMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
