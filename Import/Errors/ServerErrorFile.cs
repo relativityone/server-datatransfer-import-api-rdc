@@ -19,8 +19,7 @@ namespace kCura.WinEDDS.Core.Import.Errors
 		{
 			if (reader == null)
 			{
-				const string message = "There was an error while attempting to retrieve the errors from the server.";
-				_importStatusManager.RaiseFatalErrorImportEvent(this, message, -1, new Exception(message));
+				_importStatusManager.RaiseFatalErrorImportEvent(this, LogMessages.ErrorFileUploadFailedAttemptMessage, -1, new Exception(LogMessages.ErrorFileUploadFailedAttemptMessage));
 				return;
 			}
 			try

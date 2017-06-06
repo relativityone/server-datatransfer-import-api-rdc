@@ -41,7 +41,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 				var parentFolderPath = GetParentArtifact(fileMetadata);
 				if (PathIsTooLarge(parentFolderPath))
 				{
-					throw new PathTooLongException("Error occurred when importing the document. The folder name is longer than 255 characters.");
+					throw new PathTooLongException(string.Format(LogMessages.PathTooLongMessage, parentFolderPath));
 				}
 				folderPath = parentFolderPath;
 				parentFolderId = _UNKNOWN_PARENT_FOLDER_ID;
