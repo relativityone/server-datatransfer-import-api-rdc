@@ -29,6 +29,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 		private ImportExceptionHandlerExec _importExceptionHandlerExec;
 
 		private LoadFile _loadFile;
+		private Mock<ILog> _log;
 
 		[SetUp]
 		public void Init()
@@ -43,6 +44,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_importMetadataMock = new Mock<IImportMetadata>();
 			_errorContainerMock = new Mock<IErrorContainer>();
 			_cancellationProviderMock = new Mock<ICancellationProvider>();
+			_log = new Mock<ILog>();
 
 			var jobFinishStatisticsHandler = new Mock<IJobFinishStatisticsHandler>();
 			var log = new Mock<ILog>();
@@ -50,7 +52,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_importMetadataMock.Setup(item => item.ArtifactReader).Returns(_artifactReaderMock.Object);
 
 			_importExceptionHandlerExec = new ImportExceptionHandlerExec(_impStatusManagerMock.Object, _importMetadataMock.Object,
-				_errorContainerMock.Object);
+				_errorContainerMock.Object, _log.Object);
 
 			_subjectUnderTest = new ImportJob(_transferConfigMock.Object, _importJobBatchFactoryMock.Object, _impStatusManagerMock.Object, 
 				_importMetadataMock.Object, _importSettings.Object, _importExceptionHandlerExec, _cancellationProviderMock.Object, jobFinishStatisticsHandler.Object, log.Object);
