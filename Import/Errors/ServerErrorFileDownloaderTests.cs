@@ -2,6 +2,7 @@
 using kCura.Utility;
 using kCura.WinEDDS.Core.Import.Errors;
 using kCura.WinEDDS.Core.Import.Helpers;
+using kCura.WinEDDS.Core.Import.Statistics;
 using kCura.WinEDDS.Core.Import.Status;
 using Moq;
 using NUnit.Framework;
@@ -19,7 +20,6 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 		private ServerErrorFileDownloader _instance;
 
 		private Mock<IErrorFileDownloader> _errorFileDownloader;
-		private Mock<IImportStatusManager> _importStatusManager;
 
 		[SetUp]
 		public void SetUp()
@@ -28,7 +28,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 
 			_errorFileDownloader = new Mock<IErrorFileDownloader>();
 
-			_importStatusManager = new Mock<IImportStatusManager>();
+			var statisticsHandler = new Mock<IServerErrorStatisticsHandler>();
 
 			var pathHelper = new Mock<IPathHelper>();
 			pathHelper.Setup(x => x.GetTempFileName()).Returns(_filePath);
@@ -36,7 +36,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 			var errorFileDownloaderFactory = new Mock<IErrorFileDownloaderFactory>();
 			errorFileDownloaderFactory.Setup(x => x.Create(It.IsAny<CaseInfo>())).Returns(_errorFileDownloader.Object);
 
-			_instance = new ServerErrorFileDownloader(_importStatusManager.Object, pathHelper.Object, errorFileDownloaderFactory.Object);
+			_instance = new ServerErrorFileDownloader(pathHelper.Object, errorFileDownloaderFactory.Object, statisticsHandler.Object);
 		}
 
 		[TearDown]
