@@ -427,6 +427,7 @@
     <Compile Include="ConfigDictionary.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ConnectionTest.vb" />
     <Compile Include="Controller\FieldMapFourPickerController.vb" />
     <Compile Include="Controls\CaseFolderExplorer.vb">
       <SubType>UserControl</SubType>

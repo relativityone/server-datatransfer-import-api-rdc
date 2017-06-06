@@ -27,7 +27,7 @@ Namespace kCura.EDDS.WinForm
 			''ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) True
 			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 Or SecurityProtocolType.Tls11 Or SecurityProtocolType.Tls Or SecurityProtocolType.Ssl3
 			_CookieContainer = New System.Net.CookieContainer
-
+			Dim connectionTest As New ConnectionTest(Me)
 		End Sub
 
 		Public Shared ReadOnly Property Instance() As Application
