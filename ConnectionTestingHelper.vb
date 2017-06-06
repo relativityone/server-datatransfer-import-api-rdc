@@ -1,7 +1,7 @@
 ﻿Imports kCura.WinEDDS.Aspera.Diagnostics
 Imports Relativity
 
-Public Class ConnectionTest
+Public Class ConnectionTestingHelper
 	Public Sub New(application As kCura.EDDS.WinForm.Application)
 		_application =  application
 	End Sub
@@ -17,7 +17,7 @@ Public Class ConnectionTest
 
 	Private Sub TestCaseConnection(caseInfo As CaseInfo)
 		Try
-			ConnectionTester.Test(caseInfo.ArtifactID)
+			ConnectionTester.RegisterWorkspaceForTesting(caseInfo.ArtifactID)
 		Catch ex As Exception
 			'ignore as we don't want to impact existing functionality
 		End Try
