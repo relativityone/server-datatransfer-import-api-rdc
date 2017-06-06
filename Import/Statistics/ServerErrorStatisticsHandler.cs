@@ -5,10 +5,16 @@ namespace kCura.WinEDDS.Core.Import.Statistics
 	public class ServerErrorStatisticsHandler : IServerErrorStatisticsHandler
 	{
 		public event EventHandler RetrievingServerErrors;
+		public event EventHandler<string> RetrievingServerErrorStatusUpdated;
 
 		public void RaiseRetrievingServerErrorsEvent()
 		{
 			RetrievingServerErrors?.Invoke(this, EventArgs.Empty);
+		}
+
+		public void RaiseRetrievingServerErrorStatusUpdatedEvent(string message)
+		{
+			RetrievingServerErrorStatusUpdated?.Invoke(this, message);
 		}
 	}
 }

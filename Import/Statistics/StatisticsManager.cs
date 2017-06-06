@@ -33,6 +33,7 @@ namespace kCura.WinEDDS.Core.Import.Statistics
 			bulkImportStatisticsHandler.BulkImportCompleted += OnBulkImportCompleted;
 			bulkImportStatisticsHandler.IoWarningOccurred += OnIoWarningOccurred;
 			serverErrorStatisticsHandler.RetrievingServerErrors += OnRetrievingServerErrors;
+			serverErrorStatisticsHandler.RetrievingServerErrorStatusUpdated += OnRetrievingServerErrorStatusUpdated;
 			jobFinishStatisticsHandler.JobFinished += OnJobFinished;
 		}
 
@@ -44,6 +45,11 @@ namespace kCura.WinEDDS.Core.Import.Statistics
 		private void OnRetrievingServerErrors(object sender, EventArgs eventArgs)
 		{
 			RaiseUpdateEvent("Retrieving errors from server");
+		}
+
+		private void OnRetrievingServerErrorStatusUpdated(object sender, string s)
+		{
+			RaiseUpdateEvent(s);
 		}
 
 		private void OnBulkImportCompleted(object sender, BulkImportCompletedEventArgs bulkImportCompletedEventArgs)

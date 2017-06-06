@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using kCura.Utility;
 using kCura.WinEDDS.Core.Import.Helpers;
-using kCura.WinEDDS.Core.Import.Status;
+using kCura.WinEDDS.Core.Import.Statistics;
 using Polly;
 using Relativity;
 
@@ -11,15 +11,15 @@ namespace kCura.WinEDDS.Core.Import.Errors
 	{
 		private const int _FILE_DOWNLOAD_TRIES = 3;
 
-		private readonly IImportStatusManager _importStatusManager;
+		private readonly IServerErrorStatisticsHandler _serverErrorStatisticsHandler;
 		private readonly IPathHelper _pathHelper;
 		private readonly IErrorFileDownloaderFactory _errorFileDownloaderFactory;
 
-		public ServerErrorFileDownloader(IImportStatusManager importStatusManager, IPathHelper pathHelper, IErrorFileDownloaderFactory errorFileDownloaderFactory)
+		public ServerErrorFileDownloader(IPathHelper pathHelper, IErrorFileDownloaderFactory errorFileDownloaderFactory, IServerErrorStatisticsHandler serverErrorStatisticsHandler)
 		{
-			_importStatusManager = importStatusManager;
 			_pathHelper = pathHelper;
 			_errorFileDownloaderFactory = errorFileDownloaderFactory;
+			_serverErrorStatisticsHandler = serverErrorStatisticsHandler;
 		}
 
 		public GenericCsvReader DownloadErrorFile(string logKey, CaseInfo caseInfo)
@@ -68,7 +68,7 @@ namespace kCura.WinEDDS.Core.Import.Errors
 
 		private void OnUploadStatusEvent(string message)
 		{
-			_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.Update, message, -1);
+			_serverErrorStatisticsHandler.RaiseRetrievingServerErrorStatusUpdatedEvent(message);
 		}
 	}
 }
