@@ -36,6 +36,23 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 			CollectionAssert.AreEqual(result.Select(x => x.LineNumber), lineErrors.OrderBy(x => x.LineNumber).Select(x => x.LineNumber));
 		}
 
+		[Test]
+		[TestCase(true)]
+		[TestCase(false)]
+		public void ItShouldReturnHasErrors(bool expectedResult)
+		{
+			if (expectedResult)
+			{
+				_instance.WriteError(new LineError());
+			}
+
+			// ACT
+			var hasErrors = _instance.HasErrors();
+
+			// ASSERT
+			Assert.That(hasErrors, Is.EqualTo(expectedResult));
+		}
+
 		private static List<LineError> GetTestData()
 		{
 			var clientError1 = new LineError

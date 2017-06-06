@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading;
 using kCura.EDDS.WebAPI.BulkImportManagerBase;
 using kCura.WinEDDS.Core.Import;
 using kCura.WinEDDS.Core.Import.Helpers;
@@ -22,6 +23,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks.Helpers
 		private Mock<ITransferConfig> _transferConfig;
 		private Mock<INativeLoadInfoFactory> _nativeLoadInfoFactory;
 		private Mock<IBulkImportManager> _bulkImportManager;
+		private Mock<ICancellationProvider> _cancellationProvider;
 
 		[SetUp]
 		public void SetUp()
@@ -33,10 +35,10 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks.Helpers
 			_bulkImportManager = new Mock<IBulkImportManager>();
 
 			var bulkImportStatisticsHandler = new Mock<IBulkImportStatisticsHandler>();
-			var cancellationProvider = new Mock<ICancellationProvider>();
+			_cancellationProvider = new Mock<ICancellationProvider>();
 
 			_instance = new MetadataFilesServerExecution(_importContext, _transferConfig.Object, _nativeLoadInfoFactory.Object, _bulkImportManager.Object,
-				bulkImportStatisticsHandler.Object, cancellationProvider.Object);
+				bulkImportStatisticsHandler.Object, _cancellationProvider.Object);
 		}
 
 		[Test]
@@ -47,7 +49,6 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks.Helpers
 
 			_transferConfig.Setup(x => x.IoErrorNumberOfRetries).Returns(1);
 			_nativeLoadInfoFactory.Setup(x => x.Create(metadataFilesInfo, _importContext)).Returns(settings);
-
 
 			// ACT
 			_instance.Import(metadataFilesInfo);
@@ -94,6 +95,28 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks.Helpers
 
 			// ASSERT
 			_bulkImportManager.Verify(x => x.BulkImport(settings, _importContext), Times.Exactly(numberOfRetires));
+		}
+
+		[Test]
+		public void ItShouldRespectCancellationToken()
+		{
+			var metadataFilesInfo = new MetadataFilesInfo();
+			NativeLoadInfo settings = new NativeLoadInfo();
+
+			Exception e = new Exception();
+
+			_cancellationProvider.Setup(x => x.GetToken()).Returns(new CancellationToken(true));
+
+			_transferConfig.Setup(x => x.IoErrorNumberOfRetries).Returns(3);
+			_nativeLoadInfoFactory.Setup(x => x.Create(metadataFilesInfo, _importContext)).Returns(settings);
+
+			_bulkImportManager.Setup(x => x.BulkImport(settings, _importContext)).Throws(e);
+
+			// ACT
+			Assert.That(() => _instance.Import(metadataFilesInfo), Throws.Exception);
+
+			// ASSERT
+			_bulkImportManager.Verify(x => x.BulkImport(settings, _importContext), Times.Once);
 		}
 
 		private static Exception[] TimeoutAndPermissionExceptions()

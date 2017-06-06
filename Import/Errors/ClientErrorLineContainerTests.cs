@@ -63,5 +63,41 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 			// ASSERT
 			CollectionAssert.AreEqual(result, new[] {clientError.LineNumber});
 		}
+
+		[Test]
+		[TestCase(true)]
+		[TestCase(false)]
+		public void ItShouldReturnHasErrors(bool expectedResult)
+		{
+			if (expectedResult)
+			{
+				_instance.WriteError(new LineError
+				{
+					ErrorType = ErrorType.client
+				});
+			}
+
+			// ACT
+			var hasErrors = _instance.HasErrors();
+
+			// ASSERT
+			Assert.That(hasErrors, Is.EqualTo(expectedResult));
+		}
+
+		[Test]
+		public void ItShouldReturnProperHasErrorsWhenAddingOnlyServerErrors()
+		{
+			_instance.WriteError(new LineError
+			{
+				ErrorType = ErrorType.server
+			});
+
+
+			// ACT
+			var hasErrors = _instance.HasErrors();
+
+			// ASSERT
+			Assert.That(hasErrors, Is.False);
+		}
 	}
 }

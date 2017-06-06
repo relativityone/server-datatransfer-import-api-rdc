@@ -56,7 +56,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 			int lineNumber = 556;
 			string message = "msg_887";
 			string identifier = "";
-			
+
 			File.WriteAllText(_filePath, $"{lineNumber},{message},{identifier}{Environment.NewLine}");
 
 			// ACT

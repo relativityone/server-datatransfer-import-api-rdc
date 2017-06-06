@@ -62,5 +62,15 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 			var actual = File.ReadAllLines(_FILE_NAME).Select(int.Parse).ToList();
 			CollectionAssert.AreEqual(expected, actual);
 		}
+
+		[Test]
+		public void ItShouldReturnEmptyStringWhenWritingEmptyErrorList()
+		{
+			// ACT
+			var filePath = _instance.WriteErrorsToTempFile();
+
+			// ASSERT
+			Assert.That(filePath, Is.Empty);
+		}
 	}
 }

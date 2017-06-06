@@ -120,5 +120,19 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 			_fileHelper.Verify(x => x.Copy(allErrorsFile, expectedErrorReportFile, true), Times.Once);
 			_fileHelper.Verify(x => x.Copy(mergedFile, expectedErrorLineFile, true), Times.Once);
 		}
+
+		[Test]
+		[TestCase(true)]
+		[TestCase(false)]
+		public void ItShouldReturnHasErrorsWhenAllErrorsContainsErrors(bool expectedResult)
+		{
+			_allErrors.Setup(x => x.HasErrors()).Returns(expectedResult);
+
+			// ACT
+			var hasErrors = _instance.HasErrors;
+
+			// ASSERT
+			Assert.That(hasErrors, Is.EqualTo(expectedResult));
+		}
 	}
 }
