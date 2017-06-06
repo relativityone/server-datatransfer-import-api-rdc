@@ -1,5 +1,4 @@
-﻿using System;
-using kCura.WinEDDS.Core.Import.Status;
+﻿using kCura.WinEDDS.Core.Import.Status;
 
 namespace kCura.WinEDDS.Core.Import.Errors
 {
