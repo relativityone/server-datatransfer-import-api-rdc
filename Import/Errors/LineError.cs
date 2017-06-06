@@ -9,14 +9,11 @@ namespace kCura.WinEDDS.Core.Import.Errors
 		public int LineNumber { get; set; }
 
 		public ErrorType ErrorType { get; set; }
-		
-		public string Identifier { get; set; }
 
-		public LineError()
-		{
-			//TODO: Used only in ImportAPI
-			Identifier = string.Empty;
-		}
+		/// <summary>
+		///     Identifier is only used in ImportAPI - for RDC it's always empty string
+		/// </summary>
+		public string Identifier { get; set; } = string.Empty;
 
 		public Hashtable ToHashtable()
 		{

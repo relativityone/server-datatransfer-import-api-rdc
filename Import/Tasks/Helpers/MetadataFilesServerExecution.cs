@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Net;
+using System.Threading;
 using kCura.EDDS.WebAPI.BulkImportManagerBase;
 using kCura.WinEDDS.Core.Import.Helpers;
 using kCura.WinEDDS.Core.Import.Managers;
 using kCura.WinEDDS.Core.Import.Statistics;
+using kCura.WinEDDS.Core.Import.Status;
 using BulkImportManager = kCura.WinEDDS.Service.BulkImportManager;
 
 namespace kCura.WinEDDS.Core.Import.Tasks.Helpers
@@ -15,15 +17,17 @@ namespace kCura.WinEDDS.Core.Import.Tasks.Helpers
 		private readonly INativeLoadInfoFactory _nativeLoadInfoFactory;
 		private readonly IBulkImportManager _bulkImportManager;
 		private readonly IBulkImportStatisticsHandler _statisticsHandler;
+		private readonly ICancellationProvider _cancellationProvider;
 
 		public MetadataFilesServerExecution(ImportContext importContext, ITransferConfig transferConfig, INativeLoadInfoFactory nativeLoadInfoFactory,
-			IBulkImportManager bulkImportManager, IBulkImportStatisticsHandler statisticsHandler)
+			IBulkImportManager bulkImportManager, IBulkImportStatisticsHandler statisticsHandler, ICancellationProvider cancellationProvider)
 		{
 			_importContext = importContext;
 			_transferConfig = transferConfig;
 			_nativeLoadInfoFactory = nativeLoadInfoFactory;
 			_bulkImportManager = bulkImportManager;
 			_statisticsHandler = statisticsHandler;
+			_cancellationProvider = cancellationProvider;
 		}
 
 		public void Import(MetadataFilesInfo metadataFilesInfo)
@@ -37,8 +41,6 @@ namespace kCura.WinEDDS.Core.Import.Tasks.Helpers
 
 		private MassImportResults BulkImport(NativeLoadInfo settings)
 		{
-			//TODO BatchSizeHistory
-
 			var tries = _transferConfig.IoErrorNumberOfRetries;
 
 			while (tries > 0)
@@ -63,14 +65,14 @@ namespace kCura.WinEDDS.Core.Import.Tasks.Helpers
 				{
 					throw;
 				}
-				catch (Exception)
+				catch (Exception ex)
 				{
-					//TODO check if we should continue (RDC: _continue)
-					if (--tries == 0)
+					if (--tries == 0 || _cancellationProvider.GetToken().IsCancellationRequested)
 					{
 						throw;
 					}
-					//RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts)
+					_statisticsHandler.RaiseIoWarning(ex);
+					Thread.Sleep(_transferConfig.IoErrorWaitTimeInSeconds * 1000);
 				}
 			}
 

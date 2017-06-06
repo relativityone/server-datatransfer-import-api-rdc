@@ -106,7 +106,7 @@ namespace kCura.WinEDDS.Core.Import
 		private void InitProcess(ImportContext importContext)
 		{
 			string uploadModeDesc = UploadModeHelper.GetAsperaModeDescriptor(_importerSettings.LoadFile);
-			_importStatusManager.RaiseTranserModeChangedEvent(this, uploadModeDesc);
+			_importStatusManager.RaiseTransferModeChangedEvent(this, uploadModeDesc);
 
 			_importer.InitializeJob(importContext);
 			_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.ResetStartTime, BulkLoadFileImporter.RestartTimeEventMsg, 0);

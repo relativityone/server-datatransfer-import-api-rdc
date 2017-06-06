@@ -29,6 +29,7 @@ namespace kCura.WinEDDS.Core.Import
 
 			importStatusManager.EventOccurred += OnEventOccurred;
 			importStatusManager.UpdateStatus += ImportStatusManagerOnUpdateStatus;
+			importStatusManager.IoWarningOccurred += OnIoWarningOccurred;
 			_importJob = jobFactory.Create(this, this, this, _cancellationProvider);
 			_errorManager = errorManagerFactory.Create(this);
 
@@ -212,6 +213,11 @@ namespace kCura.WinEDDS.Core.Import
 		{
 			OnStatusMessage(new StatusEventArgs(GetEventType(statusUpdateEventArgs.Type), Math.Max(statusUpdateEventArgs.LineNumber - 1, 0),
 				Math.Max(_recordCount, 0), statusUpdateEventArgs.Message, Statistics.ToDictionary()));
+		}
+
+		private void OnIoWarningOccurred(object sender, IoWarningEventArgs ioWarningEventArgs)
+		{
+			RaiseIoWarning(ioWarningEventArgs);
 		}
 
 		private EventType GetEventType(StatusUpdateType statusUpdateType)

@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.Utility;
 using kCura.WinEDDS.Core.Import.Errors;
 
 namespace kCura.WinEDDS.Core.Import.Status
@@ -9,6 +10,7 @@ namespace kCura.WinEDDS.Core.Import.Status
 
 		public event EventHandler<ImportEventArgs> EventOccurred;
 		public event EventHandler<ImportStatusUpdateEventArgs> UpdateStatus;
+		public event EventHandler<RobustIoReporter.IoWarningEventArgs> IoWarningOccurred;
 
 		#region Interface Methods
 
@@ -20,7 +22,7 @@ namespace kCura.WinEDDS.Core.Import.Status
 		public void RaiseEndImportEvent(object sender)
 		{
 			EventOccurred?.Invoke(sender, CreateImportEventArgs(ImportEventType.End, string.Empty));
-		}		
+		}
 
 		public void RaiseErrorImportEvent(object sender, LineError lineError)
 		{
@@ -34,7 +36,7 @@ namespace kCura.WinEDDS.Core.Import.Status
 			EventOccurred?.Invoke(sender, args);
 		}
 
-		public void RaiseTranserModeChangedEvent(object sender, string message)
+		public void RaiseTransferModeChangedEvent(object sender, string message)
 		{
 			EventOccurred?.Invoke(sender, CreateImportEventArgs(ImportEventType.TransferModeChanged, message));
 		}
@@ -58,7 +60,12 @@ namespace kCura.WinEDDS.Core.Import.Status
 		{
 			UpdateStatus?.Invoke(sender, CreateImportUpdateEventArgs(type, msg, lineNumber));
 		}
-		
+
+		public void RaiseIoWarningEvent(object sender, int waitTime, int currentLine, Exception ex)
+		{
+			IoWarningOccurred?.Invoke(sender, new RobustIoReporter.IoWarningEventArgs(waitTime, ex, currentLine));
+		}
+
 		#endregion Interface Methods
 
 		#region Private Methods

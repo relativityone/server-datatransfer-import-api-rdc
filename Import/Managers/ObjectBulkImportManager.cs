@@ -18,7 +18,7 @@ namespace kCura.WinEDDS.Core.Import.Managers
 			var objectLoadInfo = loadInfo as ObjectLoadInfo;
 			if (objectLoadInfo == null)
 			{
-				throw new Exception();
+				throw new ArgumentException("NativeLoadInfo can't be cast to ObjectLoadInfo.");
 			}
 			return _bulkImportManager.BulkImportObjects(importContext.Settings.LoadFile.CaseInfo.ArtifactID, objectLoadInfo,
 				importContext.Settings.LoadFile.CopyFilesToDocumentRepository);
@@ -26,12 +26,12 @@ namespace kCura.WinEDDS.Core.Import.Managers
 
 		public bool NativeRunHasErrors(int appId, string runId)
 		{
-			throw new NotImplementedException();
+			return _bulkImportManager.NativeRunHasErrors(appId, runId);
 		}
 
 		public ErrorFileKey GenerateNonImageErrorFiles(int appId, string runId, int artifactTypeId, bool writeHeader, int keyFieldId)
 		{
-			throw new NotImplementedException();
+			return _bulkImportManager.GenerateNonImageErrorFiles(appId, runId, artifactTypeId, writeHeader, keyFieldId);
 		}
 
 		public ICredentials Credentials => _bulkImportManager.Credentials;

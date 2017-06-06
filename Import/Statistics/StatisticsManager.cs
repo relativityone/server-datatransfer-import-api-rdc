@@ -7,6 +7,7 @@ namespace kCura.WinEDDS.Core.Import.Statistics
 	{
 		private readonly IImportStatusManager _importStatusManager;
 		private readonly IImportMetadata _importMetadata;
+		private readonly ITransferConfig _transferConfig;
 
 		private int _filesTransferred;
 
@@ -18,6 +19,7 @@ namespace kCura.WinEDDS.Core.Import.Statistics
 		{
 			_importStatusManager = importStatusManager;
 			_importMetadata = importMetadata;
+			_transferConfig = transferConfig;
 
 			_importMetadata.Statistics.BatchSize = transferConfig.ImportBatchSize;
 
@@ -26,6 +28,7 @@ namespace kCura.WinEDDS.Core.Import.Statistics
 			metadataStatistics.TransferRateChanged += OnMetadataFilesTransferRateChanged;
 			metadataStatisticsHandler.FileMetadataProcessed += OnFileMetadataProcessed;
 			bulkImportStatisticsHandler.BulkImportCompleted += OnBulkImportCompleted;
+			bulkImportStatisticsHandler.IoWarningOccurred += OnIoWarningOccurred;
 			serverErrorStatisticsHandler.RetrievingServerErrors += OnRetrievingServerErrors;
 			jobFinishStatisticsHandler.JobFinished += OnJobFinished;
 		}
@@ -49,6 +52,11 @@ namespace kCura.WinEDDS.Core.Import.Statistics
 			}
 			_importMetadata.Statistics.DocCount = _importMetadata.Statistics.DocumentsCreated + _importMetadata.Statistics.DocumentsUpdated;
 			RaiseUpdateEvent("Metadata uploaded");
+		}
+
+		private void OnIoWarningOccurred(object sender, Exception exception)
+		{
+			_importStatusManager.RaiseIoWarningEvent(sender, _transferConfig.IoErrorWaitTimeInSeconds, _filesTransferred, exception);
 		}
 
 		private void OnFilesTransferred(object sender, FilesTransferredEventArgs filesTransferredEventArgs)

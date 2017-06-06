@@ -225,11 +225,13 @@
     <Compile Include="Import\Tasks\IPushMetadataFilesTask.cs" />
     <Compile Include="Import\Tasks\PushMetadataFilesTask.cs" />
     <Compile Include="Import\UploadResult.cs" />
+    <Compile Include="Installer\ContainerFactory.cs" />
     <Compile Include="Installer\CoreInstaller.cs" />
     <Compile Include="IO\LongPathDirectoryHelper.cs" />
     <Compile Include="IO\LongPathFileHelper.cs" />
     <Compile Include="ITransferConfig.cs" />
     <Compile Include="Logging\LoggerFactory.cs" />
+     <Compile Include="Logging\LoggerProvider.cs" />
     <Compile Include="LogMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

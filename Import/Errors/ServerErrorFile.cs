@@ -52,7 +52,7 @@ namespace kCura.WinEDDS.Core.Import.Errors
 
 		private void OnIoWarningEvent(RobustIoReporter.IoWarningEventArgs ioWarningEventArgs)
 		{
-			//TODO
+			_importStatusManager.RaiseIoWarningEvent(this, ioWarningEventArgs.WaitTime, (int) ioWarningEventArgs.CurrentLineNumber, ioWarningEventArgs.Exception);
 		}
 	}
 }
