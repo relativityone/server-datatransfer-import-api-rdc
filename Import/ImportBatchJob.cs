@@ -10,16 +10,16 @@ namespace kCura.WinEDDS.Core.Import
 		private readonly IImportNativesTask _importNativesTask;
 		private readonly IPushMetadataFilesTask _pushMetadataFilesTask;
 		private readonly IPrepareMetadataFilesTask _prepareMetadataFilesTask;
-		private readonly IImportExceptionHandlerExec _importExceptionHandlerExec;
+		private readonly IBatchCleanUpTask _batchCleanUpTask;
 		private readonly ICancellationProvider _cancellationProvider;
 
 		public ImportBatchJob(IImportNativesTask importNativesTask, IPushMetadataFilesTask pushMetadataFilesTask, IPrepareMetadataFilesTask prepareMetadataFilesTask,
-			IImportExceptionHandlerExec importExceptionHandlerExec, ICancellationProvider cancellationProvider)
+			IBatchCleanUpTask batchCleanUpTask, ICancellationProvider cancellationProvider)
 		{
 			_importNativesTask = importNativesTask;
 			_pushMetadataFilesTask = pushMetadataFilesTask;
-			_importExceptionHandlerExec = importExceptionHandlerExec;
 			_cancellationProvider = cancellationProvider;
+			_batchCleanUpTask = batchCleanUpTask;
 			_prepareMetadataFilesTask = prepareMetadataFilesTask;
 		}
 
@@ -33,11 +33,9 @@ namespace kCura.WinEDDS.Core.Import
 
 			PrepareMetadata(result);
 
-			_importExceptionHandlerExec.TryCatchExec(() =>
-			{
-				_cancellationProvider.ThrowIfCancellationRequested();
-				UploadMetadata(batchContext);
-			});
+			UploadMetadata(batchContext);
+
+			CleanUp();
 		}
 
 		private void PrepareMetadata(IDictionary<FileMetadata, UploadResult> result)
@@ -53,6 +51,11 @@ namespace kCura.WinEDDS.Core.Import
 		private void UploadMetadata(ImportBatchContext batchContext)
 		{
 			_pushMetadataFilesTask.PushMetadataFiles(batchContext);
+		}
+
+		private void CleanUp()
+		{
+			_batchCleanUpTask.Execute();
 		}
 	}
 }
