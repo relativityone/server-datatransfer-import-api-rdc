@@ -37,7 +37,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks
 			_metadataFilesInfo = new MetadataFilesInfo();
 			_importBatchContext = new ImportBatchContext(_importContext, 1000)
 			{
-				MetadataFilesInfo = _metadataFilesInfo
+				MetadataFilesInfo = new List<MetadataFilesInfo> { _metadataFilesInfo }
 			};
 
 			var fileUploaderFactory = new Mock<IFileUploaderFactory>();
@@ -45,11 +45,8 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks
 
 			var importMetadata = new Mock<IImportMetadata>();
 			importMetadata.Setup(x => x.BatchSizeHistoryList).Returns(new List<int>());
-
-			var transferConfig = new Mock<ITransferConfig>();
-
-			_instance = new PushMetadataFilesTask(_metadataFilesServerExecution.Object, fileUploaderFactory.Object, _serverErrorManager.Object, importMetadata.Object, transferConfig.Object,
-				cancellationProvider.Object);
+			
+			_instance = new PushMetadataFilesTask(_metadataFilesServerExecution.Object, fileUploaderFactory.Object, _serverErrorManager.Object, importMetadata.Object, cancellationProvider.Object);
 		}
 
 		[Test]
