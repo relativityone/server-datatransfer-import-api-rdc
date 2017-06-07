@@ -7,6 +7,7 @@ using kCura.WinEDDS.Core.Import.Tasks;
 using kCura.WinEDDS.Core.Import.Tasks.Helpers;
 using Moq;
 using NUnit.Framework;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.NUnit.Import.Tasks
 {
@@ -37,7 +38,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks
 			_metadataFilesInfo = new MetadataFilesInfo();
 			_importBatchContext = new ImportBatchContext(_importContext, 1000)
 			{
-				MetadataFilesInfo = new List<MetadataFilesInfo> { _metadataFilesInfo }
+				MetadataFilesInfo = new List<MetadataFilesInfo> {_metadataFilesInfo}
 			};
 
 			var fileUploaderFactory = new Mock<IFileUploaderFactory>();
@@ -45,8 +46,12 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks
 
 			var importMetadata = new Mock<IImportMetadata>();
 			importMetadata.Setup(x => x.BatchSizeHistoryList).Returns(new List<int>());
-			
-			_instance = new PushMetadataFilesTask(_metadataFilesServerExecution.Object, fileUploaderFactory.Object, _serverErrorManager.Object, importMetadata.Object, cancellationProvider.Object);
+
+			var importExceptionHandlerExec = new ImportExceptionHandlerExec(new Mock<IImportStatusManager>().Object, importMetadata.Object, new Mock<IErrorContainer>().Object,
+				new Mock<ILog>().Object);
+
+			_instance = new PushMetadataFilesTask(_metadataFilesServerExecution.Object, fileUploaderFactory.Object, _serverErrorManager.Object, importMetadata.Object,
+				cancellationProvider.Object, importExceptionHandlerExec);
 		}
 
 		[Test]
