@@ -1,13 +1,16 @@
 ﻿using System.Threading;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Import.Status
 {
 	public class CancellationProvider : ICancellationProvider
 	{
+		private readonly ILog _log;
 		private readonly CancellationTokenSource _cancelTokenSource;
 
-		public CancellationProvider()
+		public CancellationProvider(ILog log)
 		{
+			_log = log;
 			_cancelTokenSource = new CancellationTokenSource();
 		}
 
@@ -18,6 +21,7 @@ namespace kCura.WinEDDS.Core.Import.Status
 
 		public void Cancel()
 		{
+			_log.LogInformation(LogMessages.UserImportCancelMessage);
 			_cancelTokenSource.Cancel();
 		}
 

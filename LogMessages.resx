@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ErrorFileUploadFailedAttemptMessage" xml:space="preserve">
+    <value>There was an error while attempting to retrieve the errors from the server</value>
+  </data>
+  <data name="PathTooLongMessage" xml:space="preserve">
+    <value>The folder name is longer than 255 characters: {0}</value>
+  </data>
   <data name="UserImportCancelMessage" xml:space="preserve">
     <value>User cancelled import process.</value>
   </data>

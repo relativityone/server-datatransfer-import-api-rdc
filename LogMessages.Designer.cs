@@ -61,6 +61,24 @@ namespace kCura.WinEDDS.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error while attempting to retrieve the errors from the server.
+        /// </summary>
+        internal static string ErrorFileUploadFailedAttemptMessage {
+            get {
+                return ResourceManager.GetString("ErrorFileUploadFailedAttemptMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The folder name is longer than 255 characters: {0}.
+        /// </summary>
+        internal static string PathTooLongMessage {
+            get {
+                return ResourceManager.GetString("PathTooLongMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User cancelled import process..
         /// </summary>
         internal static string UserImportCancelMessage {

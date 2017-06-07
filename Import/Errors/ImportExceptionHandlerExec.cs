@@ -66,7 +66,6 @@ namespace kCura.WinEDDS.Core.Import.Errors
 				if (ex is OperationCanceledException)
 				{
 					// Cancellation will be handled at the top process level
-					_log.LogInformation(LogMessages.UserImportCancelMessage);
 					throw;
 				}
 				HandleFatalError(ex);
