@@ -18,9 +18,10 @@ namespace kCura.WinEDDS.Core.Import.Tasks.Helpers
 		private readonly IBulkImportManager _bulkImportManager;
 		private readonly IBulkImportStatisticsHandler _statisticsHandler;
 		private readonly ICancellationProvider _cancellationProvider;
+		private readonly IMetadataStatisticsHandler _metadataStatisticsHandler;
 
 		public MetadataFilesServerExecution(ImportContext importContext, ITransferConfig transferConfig, INativeLoadInfoFactory nativeLoadInfoFactory,
-			IBulkImportManager bulkImportManager, IBulkImportStatisticsHandler statisticsHandler, ICancellationProvider cancellationProvider)
+			IBulkImportManager bulkImportManager, IBulkImportStatisticsHandler statisticsHandler, IMetadataStatisticsHandler metadataStatisticsHandler, ICancellationProvider cancellationProvider)
 		{
 			_importContext = importContext;
 			_transferConfig = transferConfig;
@@ -28,10 +29,12 @@ namespace kCura.WinEDDS.Core.Import.Tasks.Helpers
 			_bulkImportManager = bulkImportManager;
 			_statisticsHandler = statisticsHandler;
 			_cancellationProvider = cancellationProvider;
+			_metadataStatisticsHandler = metadataStatisticsHandler;
 		}
 
 		public void Import(MetadataFilesInfo metadataFilesInfo)
 		{
+			_metadataStatisticsHandler.RaiseBulkImportMetadataStartedEvent();
 			var importSettings = _nativeLoadInfoFactory.Create(metadataFilesInfo, _importContext);
 
 			var ticks = DateTime.Now.Ticks;

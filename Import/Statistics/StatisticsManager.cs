@@ -30,6 +30,8 @@ namespace kCura.WinEDDS.Core.Import.Statistics
 			nativeStatistics.FilesTransferred += OnFilesTransferred;
 			metadataStatistics.TransferRateChanged += OnMetadataFilesTransferRateChanged;
 			metadataStatisticsHandler.FileMetadataProcessed += OnFileMetadataProcessed;
+			metadataStatisticsHandler.UploadingMetadataFile += OnUploadingMetadataFile;
+			metadataStatisticsHandler.BulkImportMetadataStarted += OnBulkImportMetadataStarted;
 			bulkImportStatisticsHandler.BulkImportCompleted += OnBulkImportCompleted;
 			bulkImportStatisticsHandler.IoWarningOccurred += OnIoWarningOccurred;
 			serverErrorStatisticsHandler.RetrievingServerErrors += OnRetrievingServerErrors;
@@ -81,8 +83,16 @@ namespace kCura.WinEDDS.Core.Import.Statistics
 		{
 			_importMetadata.Statistics.MetadataBytes = transferRateEventArgs.TransferredBytes;
 			_importMetadata.Statistics.MetadataTime = transferRateEventArgs.TransferTime;
+		}
 
-			RaiseUpdateEvent("Uploading metadata");
+		private void OnUploadingMetadataFile(object sender, MetadataFileUploadEventArgs eventArgs)
+		{
+			RaiseUpdateEvent($"Uploading metadata files ({eventArgs.CurrentChunk} of {eventArgs.MetadataFileChunks} chunks).");
+		}
+
+		private void OnBulkImportMetadataStarted(object sender, EventArgs eventArgs)
+		{
+			RaiseUpdateEvent("Processing metadata on server");
 		}
 
 		private void OnNativeFilesTransferRateChanged(object sender, TransferRateEventArgs transferRateEventArgs)

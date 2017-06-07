@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.WinEDDS.Core.Import.Errors;
 using kCura.WinEDDS.Core.Import.Factories;
+using kCura.WinEDDS.Core.Import.Statistics;
 using kCura.WinEDDS.Core.Import.Status;
 using kCura.WinEDDS.Core.Import.Tasks.Helpers;
 
@@ -16,9 +17,11 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 		private readonly IImportMetadata _importMetadata;
 		private readonly ICancellationProvider _cancellationProvider;
 		private readonly IImportExceptionHandlerExec _importExceptionHandlerExec;
+		private readonly IMetadataStatisticsHandler _metadataStatisticsHandler;
 
 		public PushMetadataFilesTask(IMetadataFilesServerExecution metadataFilesServerExecution, IFileUploaderFactory fileUploaderFactory,
-			IServerErrorManager serverErrorManager, IImportMetadata importMetadata, ICancellationProvider cancellationProvider, IImportExceptionHandlerExec importExceptionHandlerExec)
+			IServerErrorManager serverErrorManager, IImportMetadata importMetadata, ICancellationProvider cancellationProvider, IImportExceptionHandlerExec importExceptionHandlerExec,
+			IMetadataStatisticsHandler metadataStatisticsHandler)
 		{
 			_metadataFilesServerExecution = metadataFilesServerExecution;
 			_fileUploaderFactory = fileUploaderFactory;
@@ -26,6 +29,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			_importMetadata = importMetadata;
 			_cancellationProvider = cancellationProvider;
 			_importExceptionHandlerExec = importExceptionHandlerExec;
+			_metadataStatisticsHandler = metadataStatisticsHandler;
 		}
 
 		public void PushMetadataFiles(ImportBatchContext importBatchContext)
@@ -35,6 +39,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			{
 				_importExceptionHandlerExec.TryCatchExec(() =>
 				{
+					_metadataStatisticsHandler.RaiseUploadingMetadataFileEvent(importBatchContext.MetadataFilesInfo.Count, importBatchContext.MetadataFilesInfo.IndexOf(metadataFilesInfo) + 1);
 					var uploadResult = UploadFiles(metadataFilesInfo);
 
 					// Here we need to check cancellation operation was requested as uploadResults variable will may not contain any results in that case

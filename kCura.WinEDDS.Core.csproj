@@ -195,6 +195,7 @@
     <Compile Include="Import\Statistics\IStatisticsManager.cs" />
     <Compile Include="Import\Statistics\ITransferRateHandler.cs" />
     <Compile Include="Import\Statistics\JobFinishStatisticsHandler.cs" />
+    <Compile Include="Import\Statistics\MetadataFileUploadEventArgs.cs" />
     <Compile Include="Import\Statistics\MetadataStatisticsHandler.cs" />
     <Compile Include="Import\Statistics\ServerErrorStatisticsHandler.cs" />
     <Compile Include="Import\Statistics\StatisticsManager.cs" />
