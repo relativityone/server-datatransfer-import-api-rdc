@@ -21,5 +21,7 @@
 		public bool CreateFoldersInWebAPI => Config.CreateFoldersInWebAPI;
 		public string RestUrl => Config.RestUrl;
 		public string ServicesUrl => Config.ServicesUrl;
+		public string BcpPathRootFolder => Config.AsperaBcpPathRootFolder;
+		public string NativeFilesRootFolder => Config.AsperaNativeFilesRootFolder;
 	}
 }

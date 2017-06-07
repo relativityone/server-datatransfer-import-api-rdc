@@ -15,5 +15,7 @@ namespace kCura.WinEDDS.Core
 		bool CreateFoldersInWebAPI { get; }
 		string RestUrl { get; }
 		string ServicesUrl { get; }
+		string BcpPathRootFolder { get; }
+		string NativeFilesRootFolder { get; }
 	}
 }
