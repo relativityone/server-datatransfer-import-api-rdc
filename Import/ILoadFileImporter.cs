@@ -11,9 +11,11 @@ namespace kCura.WinEDDS.Core.Import
 
 		NameValueCollection ProcessedDocIdentifiers { get; set; }
 
-		MetadataFilesInfo InitMetadataProcess();
+		MetadataFilesInfo InitNewMetadataProcess();
 
-		void SubmitMetadataProcess();
+		void EndMetadataProcess();
+
+		long CurrentMetadataFileStreamLength();
 
 		string PrepareFieldsAndExtractIdentityValue(FileMetadata fileMetadata);
 

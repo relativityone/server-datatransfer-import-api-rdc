@@ -92,9 +92,9 @@ namespace kCura.WinEDDS.Core.Import
 			ManageDocumentLine(metaDocument);
 		}
 
-		public MetadataFilesInfo InitMetadataProcess()
+		public MetadataFilesInfo InitNewMetadataProcess()
 		{
-			DeleteFiles();
+			_outputFileWriter = new OutputFileWriter();
 			OpenFileWriters();
 
 			return new MetadataFilesInfo
@@ -122,9 +122,14 @@ namespace kCura.WinEDDS.Core.Import
 			};
 		}
 
-		public void SubmitMetadataProcess()
+		public void EndMetadataProcess()
 		{
 			CloseFileWriters();
+		}
+
+		public long CurrentMetadataFileStreamLength()
+		{
+			return _outputFileWriter.CombinedStreamLength;
 		}
 
 		public void InitializeJob(ImportContext importContext)
@@ -178,7 +183,8 @@ namespace kCura.WinEDDS.Core.Import
 		}
 
 		/// <summary>
-		/// We must override this method and make it empty so the ExportServerErrorsEvent event will call method from LoadFileImporter only
+		///     We must override this method and make it empty so the ExportServerErrorsEvent event will call method from
+		///     LoadFileImporter only
 		/// </summary>
 		/// <param name="exportLocation"></param>
 		protected override void _processController_ExportServerErrors(string exportLocation)

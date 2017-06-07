@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace kCura.WinEDDS.Core.Import
 {
 	public class ImportBatchContext
 	{
-		public List<FileMetadata> FileMetaDataHolder { get; private set; }
+		public List<FileMetadata> FileMetaDataHolder { get; }
 
-		public MetadataFilesInfo MetadataFilesInfo { get; set; }
+		public List<MetadataFilesInfo> MetadataFilesInfo { get; set; }
 
-		public ImportContext ImportContext { get; private set; }
+		public ImportContext ImportContext { get; }
 
 		public ImportBatchContext(ImportContext importContext, int batchSize)
 		{
 			FileMetaDataHolder = new List<FileMetadata>(batchSize);
+			MetadataFilesInfo = new List<MetadataFilesInfo>();
 			ImportContext = importContext;
 		}
 	}

@@ -4,6 +4,7 @@ namespace kCura.WinEDDS.Core
 	public interface ITransferConfig
 	{
 		int ImportBatchSize { get; }
+		long ImportBatchMaxVolume { get; }
 		bool DisableNativeValidation { get; }
 		bool DisableNativeLocationValidation { get; }
 		bool CreateErrorForEmptyNativeFile { get; }

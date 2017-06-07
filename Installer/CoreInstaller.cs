@@ -91,6 +91,7 @@ namespace kCura.WinEDDS.Core.Installer
 			container.Register(Component.For<IImportNativesTask>().ImplementedBy<ImportNativesTask>().LifestyleScoped());
 			container.Register(Component.For<IPushMetadataFilesTask>().ImplementedBy<PushMetadataFilesTask>().LifestyleScoped());
 			container.Register(Component.For<IImportPrepareMetadataTask>().ImplementedBy<ImportPrepareMetadataTask>().LifestyleScoped());
+			container.Register(Component.For<IPrepareMetadataFilesTask>().ImplementedBy<PrepareMetadataFilesTask>().LifestyleScoped());
 
 			container.Register(Component.For<IMetadataFilesServerExecution>().ImplementedBy<MetadataFilesServerExecution>().LifestyleScoped());
 		}

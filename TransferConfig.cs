@@ -1,9 +1,10 @@
-﻿
-namespace kCura.WinEDDS.Core
+﻿namespace kCura.WinEDDS.Core
 {
 	public class TransferConfig : ITransferConfig
 	{
 		public int ImportBatchSize => Config.ImportBatchSize;
+
+		public long ImportBatchMaxVolume => Config.ImportBatchMaxVolume;
 
 		public bool DisableNativeValidation => Config.DisableNativeValidation;
 
