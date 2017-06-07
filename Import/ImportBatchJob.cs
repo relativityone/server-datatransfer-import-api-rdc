@@ -31,16 +31,19 @@ namespace kCura.WinEDDS.Core.Import
 			_log.LogInformation("Start processing new batch job");
 			_cancellationProvider.ThrowIfCancellationRequested();
 
-			_log.LogInformation("Start processing new batch");
 			IDictionary<FileMetadata, UploadResult> result = UploadNatives(batchContext)
 				.OrderBy(item => item.Key.LineNumber)
 				.ToDictionary(keyValSelector => keyValSelector.Key, keyValSelector => keyValSelector.Value);
+
+			_log.LogInformation("Upload native files completeted");
 
 			PrepareMetadata(result);
 
 			UploadMetadata(batchContext);
 
 			CleanUp();
+
+			_log.LogInformation("Processing new batch job completed");
 		}
 
 		private void PrepareMetadata(IDictionary<FileMetadata, UploadResult> result)

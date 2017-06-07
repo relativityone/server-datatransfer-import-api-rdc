@@ -6,6 +6,7 @@ using kCura.WinEDDS.Core.Import.Factories;
 using kCura.WinEDDS.Core.Import.Helpers;
 using kCura.WinEDDS.Core.Import.Status;
 using Relativity;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Import.Tasks
 {
@@ -17,23 +18,27 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 		private readonly IImportExceptionHandlerExec _importExceptionHandlerExec;
 		private readonly IUploadErrors _uploadErrors;
 		private readonly ICancellationProvider _cancellationProvider;
+		private readonly ILog _log;
 
 		private IFileUploader _fileUploader;
 
 		public ImportNativesTask(IFileUploaderFactory fileUploaderFactory, IImportNativesAnalyzer importNativesAnalyzer,
 			IRepositoryFilePathHelper repositoryFilePathHelper, IImportExceptionHandlerExec importExceptionHandlerExec, IUploadErrors uploadErrors,
-			ICancellationProvider cancellationProvider)
+			ICancellationProvider cancellationProvider, ILog log)
 		{
 			_importNativesAnalyzer = importNativesAnalyzer;
 			_repositoryFilePathHelper = repositoryFilePathHelper;
 			_importExceptionHandlerExec = importExceptionHandlerExec;
 			_uploadErrors = uploadErrors;
 			_cancellationProvider = cancellationProvider;
+			_log = log;
 			_fileUploaderFactory = fileUploaderFactory;
 		}
 
 		public IDictionary<FileMetadata, UploadResult> Execute(ImportBatchContext importBatchContext)
 		{
+			_log.LogInformation("Upload native files task started");
+
 			IDictionary<FileMetadata, UploadResult> uploadResults;
 			if (!CopyFilesToRepository(importBatchContext))
 			{
@@ -44,6 +49,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			}
 			else
 			{
+				_log.LogInformation("Start uploading native files to the server");
 				uploadResults = UploadFiles(importBatchContext);
 			}
 
@@ -52,7 +58,11 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 				_cancellationProvider.GetToken().ThrowIfCancellationRequested();
 			}
 
+			_log.LogInformation("Handling native files upload...");
+
 			_uploadErrors.HandleUploadErrors(uploadResults);
+
+			_log.LogInformation("Upload native files task completed");
 			return uploadResults;
 		}
 
