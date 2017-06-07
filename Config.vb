@@ -45,6 +45,8 @@ Namespace kCura.WinEDDS
 							If Not tempDict.Contains("DisableAspera") Then tempDict.Add("DisableAspera", "False")
 							If Not tempDict.Contains("RestUrl") Then tempDict.Add("RestUrl", "/Relativity.REST/api")
 							If Not tempDict.Contains("ServicesUrl") Then tempDict.Add("ServicesUrl", "/Relativity.Services/")
+							If Not tempDict.Contains("AsperaBcpPathRootFolder") Then tempDict.Add("AsperaBcpPathRootFolder", "BCPPath")
+							If Not tempDict.Contains("AsperaNativeFilesRootFolder") Then tempDict.Add("AsperaNativeFilesRootFolder", "Files")
 							If Not tempDict.Contains("LoggerConfigFile") Then tempDict.Add("LoggerConfigFile", "LoggerConfig.xml")
 							If Not tempDict.Contains(NameOf(LoadImportedFullTextFromServer)) Then tempDict.Add(NameOf(LoadImportedFullTextFromServer), "False")
 							If Not tempDict.Contains(NameOf(UsePipeliningForNativeAndObjectImports)) Then tempDict.Add(NameOf(UsePipeliningForNativeAndObjectImports), "False")
@@ -354,6 +356,18 @@ Namespace kCura.WinEDDS
 		Public Shared ReadOnly Property LoggerConfigFile() As String
 			Get
 				Return CType(ConfigSettings("LoggerConfigFile"), String)
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property AsperaBcpPathRootFolder() As String
+			Get
+				Return CType(ConfigSettings("AsperaBcpPathRootFolder"), String)
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property AsperaNativeFilesRootFolder() As String
+			Get
+				Return CType(ConfigSettings("AsperaNativeFilesRootFolder"), String)
 			End Get
 		End Property
 
