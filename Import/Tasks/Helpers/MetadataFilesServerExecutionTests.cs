@@ -37,8 +37,10 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks.Helpers
 			var bulkImportStatisticsHandler = new Mock<IBulkImportStatisticsHandler>();
 			_cancellationProvider = new Mock<ICancellationProvider>();
 
+			var metadataStatisticsHandler = new Mock<IMetadataStatisticsHandler>();
+
 			_instance = new MetadataFilesServerExecution(_importContext, _transferConfig.Object, _nativeLoadInfoFactory.Object, _bulkImportManager.Object,
-				bulkImportStatisticsHandler.Object, _cancellationProvider.Object);
+				bulkImportStatisticsHandler.Object, metadataStatisticsHandler.Object, _cancellationProvider.Object);
 		}
 
 		[Test]
