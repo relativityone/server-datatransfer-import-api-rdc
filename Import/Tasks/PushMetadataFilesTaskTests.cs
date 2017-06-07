@@ -2,6 +2,7 @@
 using kCura.WinEDDS.Core.Import;
 using kCura.WinEDDS.Core.Import.Errors;
 using kCura.WinEDDS.Core.Import.Factories;
+using kCura.WinEDDS.Core.Import.Statistics;
 using kCura.WinEDDS.Core.Import.Status;
 using kCura.WinEDDS.Core.Import.Tasks;
 using kCura.WinEDDS.Core.Import.Tasks.Helpers;
@@ -50,8 +51,10 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks
 			var importExceptionHandlerExec = new ImportExceptionHandlerExec(new Mock<IImportStatusManager>().Object, importMetadata.Object, new Mock<IErrorContainer>().Object,
 				new Mock<ILog>().Object);
 
+			var metadataStatisticsHandler = new Mock<IMetadataStatisticsHandler>();
+
 			_instance = new PushMetadataFilesTask(_metadataFilesServerExecution.Object, fileUploaderFactory.Object, _serverErrorManager.Object, importMetadata.Object,
-				cancellationProvider.Object, importExceptionHandlerExec);
+				cancellationProvider.Object, importExceptionHandlerExec, metadataStatisticsHandler.Object);
 		}
 
 		[Test]
