@@ -15,7 +15,7 @@ namespace kCura.WinEDDS.Core.Import.Factories
 
 		public IImportBatchJob Create(ImportBatchContext batchContext)
 		{
-			using (var context = _container.BeginScope())
+			using (_container.BeginScope())
 			{
 				_container.Resolve<ImportBatchContextProvider>().ImportBatchContext = batchContext;
 				return _container.Resolve<IImportBatchJob>();

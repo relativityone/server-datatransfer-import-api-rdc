@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Castle.Facilities.Startable;
 using Castle.MicroKernel.ModelBuilder.Inspectors;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
@@ -15,6 +16,9 @@ namespace kCura.WinEDDS.Core.Installer
 		{
 			var container = new WindsorContainer();
 			DisablePropertyInjection(container);
+
+			container.AddFacility<StartableFacility>();
+
 			container.Install(FromAssembly.Named("kCura.WinEDDS.Core"), FromAssembly.Named("kCura.WinEDDS.Aspera"));
 
 			container.Register(Component.For<IWindsorContainer>().UsingFactoryMethod(k => container).LifestyleSingleton());
