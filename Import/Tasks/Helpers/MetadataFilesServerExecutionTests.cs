@@ -10,6 +10,7 @@ using kCura.WinEDDS.Core.Import.Status;
 using kCura.WinEDDS.Core.Import.Tasks.Helpers;
 using Moq;
 using NUnit.Framework;
+using Relativity.Logging;
 using BulkImportManager = kCura.WinEDDS.Service.BulkImportManager;
 
 namespace kCura.WinEDDS.Core.NUnit.Import.Tasks.Helpers
@@ -24,6 +25,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks.Helpers
 		private Mock<INativeLoadInfoFactory> _nativeLoadInfoFactory;
 		private Mock<IBulkImportManager> _bulkImportManager;
 		private Mock<ICancellationProvider> _cancellationProvider;
+		private Mock<ILog> _log;
 
 		[SetUp]
 		public void SetUp()
@@ -37,6 +39,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks.Helpers
 			var bulkImportStatisticsHandler = new Mock<IBulkImportStatisticsHandler>();
 			_cancellationProvider = new Mock<ICancellationProvider>();
 
+			_log = new Mock<ILog>();
 			_instance = new MetadataFilesServerExecution(_importContext, _transferConfig.Object, _nativeLoadInfoFactory.Object, _bulkImportManager.Object,
 				bulkImportStatisticsHandler.Object, _cancellationProvider.Object);
 		}
