@@ -77,14 +77,5 @@ namespace kCura.WinEDDS.Core {
                 return ResourceManager.GetString("PathTooLongMessage", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to User cancelled import process..
-        /// </summary>
-        internal static string UserImportCancelMessage {
-            get {
-                return ResourceManager.GetString("UserImportCancelMessage", resourceCulture);
-            }
-        }
     }
 }

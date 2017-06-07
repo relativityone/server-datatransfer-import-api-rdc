@@ -123,7 +123,4 @@
   <data name="PathTooLongMessage" xml:space="preserve">
     <value>The folder name is longer than 255 characters: {0}</value>
   </data>
-  <data name="UserImportCancelMessage" xml:space="preserve">
-    <value>User cancelled import process.</value>
-  </data>
 </root>

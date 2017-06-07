@@ -46,14 +46,15 @@ namespace kCura.WinEDDS.Core.Import
 
 		public object ReadFile(string path)
 		{
-			_log.LogInformation("Starting import job with file: {file}.", path);
-			return _importExceptionHandlerExec.TryCatchExec<bool?>(
+			_log.LogInformation($"Import job started for '{path}' file.", path);
+			var returValue =  _importExceptionHandlerExec.TryCatchExec<bool?>(
 			() =>
 				{
 					try
 					{
 						if (!InitializeProcess())
 						{
+							_log.LogInformation("Import job initialization process failed!");
 							return false;
 						}
 						while (CanCreateBatch())
@@ -74,6 +75,8 @@ namespace kCura.WinEDDS.Core.Import
 					}
 					return true;
 				}, false, _importer.CleanUp);
+			_log.LogInformation($"Import job finished for '{path}' file.", path);
+			return returValue;
 		}
 
 		private bool CanCreateBatch()
@@ -83,6 +86,7 @@ namespace kCura.WinEDDS.Core.Import
 
 		private bool InitializeProcess()
 		{
+			_log.LogInformation("Import job process initialization started");
 			PopulateJobContext();
 			if (!ValidateJobContext(_context))
 			{
@@ -147,6 +151,7 @@ namespace kCura.WinEDDS.Core.Import
 
 		private ImportBatchContext CreateBatch()
 		{
+			_log.LogInformation($"New batch creation started at record {_importer.ArtifactReader.CurrentLineNumber}");
 			var currentBatchCounter = 0;
 			var importBatchContext = new ImportBatchContext(_context, _config.ImportBatchSize);
 			while (CanProcessNextRecord(currentBatchCounter))
@@ -156,6 +161,7 @@ namespace kCura.WinEDDS.Core.Import
 				ProcessBatchRecord(importBatchContext);
 				_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.Count, string.Empty, _importer.ArtifactReader.CurrentLineNumber);
 			}
+			_log.LogInformation($"New batch of size: {importBatchContext.FileMetaDataHolder.Count} created");
 			return importBatchContext;
 		}
 

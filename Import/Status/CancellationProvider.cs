@@ -21,7 +21,7 @@ namespace kCura.WinEDDS.Core.Import.Status
 
 		public void Cancel()
 		{
-			_log.LogInformation(LogMessages.UserImportCancelMessage);
+			_log.LogInformation("User cancelled import process.");
 			_cancelTokenSource.Cancel();
 		}
 

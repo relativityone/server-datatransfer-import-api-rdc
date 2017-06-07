@@ -2,6 +2,7 @@
 using System.Linq;
 using kCura.WinEDDS.Core.Import.Status;
 using kCura.WinEDDS.Core.Import.Tasks;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Import
 {
@@ -12,21 +13,25 @@ namespace kCura.WinEDDS.Core.Import
 		private readonly IPrepareMetadataFilesTask _prepareMetadataFilesTask;
 		private readonly IBatchCleanUpTask _batchCleanUpTask;
 		private readonly ICancellationProvider _cancellationProvider;
+		private readonly ILog _log;
 
 		public ImportBatchJob(IImportNativesTask importNativesTask, IPushMetadataFilesTask pushMetadataFilesTask, IPrepareMetadataFilesTask prepareMetadataFilesTask,
-			IBatchCleanUpTask batchCleanUpTask, ICancellationProvider cancellationProvider)
+			IBatchCleanUpTask batchCleanUpTask, ICancellationProvider cancellationProvider, ILog log)
 		{
 			_importNativesTask = importNativesTask;
 			_pushMetadataFilesTask = pushMetadataFilesTask;
 			_cancellationProvider = cancellationProvider;
+			_log = log;
 			_batchCleanUpTask = batchCleanUpTask;
 			_prepareMetadataFilesTask = prepareMetadataFilesTask;
 		}
 
 		public void Run(ImportBatchContext batchContext)
 		{
+			_log.LogInformation("Start processing new batch job");
 			_cancellationProvider.ThrowIfCancellationRequested();
 
+			_log.LogInformation("Start processing new batch");
 			IDictionary<FileMetadata, UploadResult> result = UploadNatives(batchContext)
 				.OrderBy(item => item.Key.LineNumber)
 				.ToDictionary(keyValSelector => keyValSelector.Key, keyValSelector => keyValSelector.Value);
