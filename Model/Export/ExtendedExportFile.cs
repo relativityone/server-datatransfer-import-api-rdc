@@ -12,7 +12,7 @@ namespace kCura.WinEDDS.Core.Model.Export
 		/// <summary>
 		/// This property will hold information about fields that values will be used to format native file names
 		/// </summary>
-		public List<ViewFieldInfo> SelectedNativesNameViewFields;
+		public List<ViewFieldInfo> SelectedNativesNameViewFields = new List<ViewFieldInfo>();
 
-	}
+    }
 }
