@@ -46,7 +46,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 			_instance.HandleServerErrors(null);
 
 			// ASSERT
-			_importStatusManager.Verify(x => x.RaiseFatalErrorImportEvent(_instance, "There was an error while attempting to retrieve the errors from the server.", -1,
+			_importStatusManager.Verify(x => x.RaiseFatalErrorImportEvent(_instance, "There was an error while attempting to retrieve the errors from the server", -1,
 				It.IsAny<Exception>()), Times.Once);
 		}
 
