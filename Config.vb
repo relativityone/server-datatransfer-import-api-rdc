@@ -162,7 +162,7 @@ Namespace kCura.WinEDDS
 				Try
 					Return CType(ConfigSettings(NameOf(UsePipeliningForFileIdAndCopy)), Boolean)
 				Catch
-					Return False
+					Return True
 				End Try
 			End Get
 		End Property
@@ -172,7 +172,7 @@ Namespace kCura.WinEDDS
 				Try
 					Return CType(ConfigSettings(NameOf(UsePipeliningForNativeAndObjectImports)), Boolean)
 				Catch
-					Return False
+					Return True
 				End Try
 			End Get
 		End Property
