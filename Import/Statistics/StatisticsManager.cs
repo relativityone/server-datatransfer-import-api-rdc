@@ -12,6 +12,8 @@ namespace kCura.WinEDDS.Core.Import.Statistics
 		private readonly int _startLineNumber;
 		private int _filesTransferred;
 
+		private string _lastMetadataUploadMessage;
+
 		private readonly object _lock = new object();
 
 		public StatisticsManager(LoadFile loadFile, IImportStatusManager importStatusManager, IImportMetadata importMetadata, ITransferConfig transferConfig,
@@ -62,7 +64,8 @@ namespace kCura.WinEDDS.Core.Import.Statistics
 				_importMetadata.Statistics.SqlTime += bulkImportCompletedEventArgs.Time;
 			}
 			_importMetadata.Statistics.DocCount = _importMetadata.Statistics.DocumentsCreated + _importMetadata.Statistics.DocumentsUpdated;
-			RaiseUpdateEvent("Metadata uploaded");
+			_lastMetadataUploadMessage = "Metadata uploaded";
+			RaiseUpdateEvent(_lastMetadataUploadMessage);
 		}
 
 		private void OnIoWarningOccurred(object sender, Exception exception)
@@ -83,16 +86,20 @@ namespace kCura.WinEDDS.Core.Import.Statistics
 		{
 			_importMetadata.Statistics.MetadataBytes = transferRateEventArgs.TransferredBytes;
 			_importMetadata.Statistics.MetadataTime = transferRateEventArgs.TransferTime;
+
+			RaiseUpdateEvent(_lastMetadataUploadMessage);
 		}
 
 		private void OnUploadingMetadataFile(object sender, MetadataFileUploadEventArgs eventArgs)
 		{
-			RaiseUpdateEvent($"Uploading metadata files ({eventArgs.CurrentChunk} of {eventArgs.MetadataFileChunks} chunks).");
+			_lastMetadataUploadMessage = $"Uploading metadata files ({eventArgs.CurrentChunk} of {eventArgs.MetadataFileChunks} chunks).";
+			RaiseUpdateEvent(_lastMetadataUploadMessage);
 		}
 
 		private void OnBulkImportMetadataStarted(object sender, EventArgs eventArgs)
 		{
-			RaiseUpdateEvent("Processing metadata on server");
+			_lastMetadataUploadMessage = "Processing metadata on server";
+			RaiseUpdateEvent(_lastMetadataUploadMessage);
 		}
 
 		private void OnNativeFilesTransferRateChanged(object sender, TransferRateEventArgs transferRateEventArgs)
