@@ -132,7 +132,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Private Shared Function ValidateURIFormat(ByVal returnValue As String) As String
+		Public Shared Function ValidateURIFormat(ByVal returnValue As String) As String
 			If Not String.IsNullOrEmpty(returnValue) AndAlso Not returnValue.Trim.EndsWith("/") Then
 				returnValue = returnValue.Trim + "/"
 			End If
