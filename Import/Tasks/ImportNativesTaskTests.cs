@@ -81,14 +81,12 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks
 					new FileMetadata()
 					{
 						LineNumber = 1,
-						FileGuid = Guid.NewGuid().ToString(),
 						UploadFile = true,
 						ArtifactFieldCollection = _artifactFieldCollection,
 					},
 					new FileMetadata()
 					{
 						LineNumber = 2,
-						FileGuid = Guid.NewGuid().ToString(),
 						UploadFile = true,
 						ArtifactFieldCollection = _artifactFieldCollection
 					}
