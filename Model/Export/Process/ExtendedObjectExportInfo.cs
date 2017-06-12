@@ -11,7 +11,7 @@ namespace kCura.WinEDDS.Core.Model.Export.Process
 		{
 			_fieldLookupService = fieldLookupService;
 		}
-		public List<ViewFieldInfo> SelectedNativeFileNameViewFields { get; set; }
+		public List<ViewFieldInfo> SelectedNativeFileNameViewFields { get; set; } = new List<ViewFieldInfo>();
 
 		public object GetFieldValue(string fieldName)
 		{
