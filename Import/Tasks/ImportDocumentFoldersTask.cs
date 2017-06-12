@@ -2,6 +2,7 @@
 using kCura.Utility;
 using kCura.WinEDDS.Importers;
 using Relativity;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Import.Tasks
 {
@@ -10,19 +11,23 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 		private const int _UNKNOWN_PARENT_FOLDER_ID = -9;
 
 		private readonly ITransferConfig _transferConfig;
+		private readonly ILog _log;
 		private readonly IFolderCache _folderCache;
 
-		public ImportDocumentFoldersTask(IFolderCache folderCache, ITransferConfig transferConfig)
+		public ImportDocumentFoldersTask(IFolderCache folderCache, ITransferConfig transferConfig, ILog log)
 		{
 			_folderCache = folderCache;
 			_transferConfig = transferConfig;
+			_log = log;
 		}
 
 		public void Execute(FileMetadata fileMetadata, ImportBatchContext importBatchContext)
 		{
 			if (importBatchContext.ImportContext.Settings.LoadFile.CreateFolderStructure)
 			{
+				_log.LogDebug($"Document folder processing task started for record at line {fileMetadata.LineNumber}");
 				CreateFolderStructure(fileMetadata);
+				_log.LogDebug($"Document folder processing task completed for record at line {fileMetadata.LineNumber}");
 			}
 			else
 			{

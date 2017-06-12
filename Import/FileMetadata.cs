@@ -8,7 +8,7 @@ namespace kCura.WinEDDS.Core.Import
 	{
 		public string FullFilePath { get; set; } = string.Empty;
 		public string FileName { get; set; } = string.Empty;
-		public string FileGuid { get; set; } = string.Empty;
+		public string FileGuid { get; set; } = Guid.NewGuid().ToString();
 		public bool FileExists { get; set; }
 		public int LineNumber { get; set; }
 		public bool UploadFile { get; set; }

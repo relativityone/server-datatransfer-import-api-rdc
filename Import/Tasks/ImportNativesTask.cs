@@ -53,10 +53,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 				uploadResults = UploadFiles(importBatchContext);
 			}
 
-			if (_cancellationProvider.GetToken().IsCancellationRequested)
-			{
-				_cancellationProvider.GetToken().ThrowIfCancellationRequested();
-			}
+			_cancellationProvider.GetToken().ThrowIfCancellationRequested();
 
 			_log.LogInformation("Handling native files upload...");
 
@@ -102,7 +99,6 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 
 			_importExceptionHandlerExec.TryCatchExec(() =>
 			{
-				fileMetadata.FileGuid = Guid.NewGuid().ToString();
 				fileMetadata.UploadFile = ExtractUploadCheck(fileMetadata);
 				if (CanExecute(fileMetadata, importBatchContext))
 				{

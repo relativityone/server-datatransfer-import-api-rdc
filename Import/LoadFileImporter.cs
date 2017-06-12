@@ -101,23 +101,19 @@ namespace kCura.WinEDDS.Core.Import
 			{
 				CodeFilePath = new FileMetadata
 				{
-					FullFilePath = _outputCodeFilePath,
-					FileGuid = Guid.NewGuid().ToString()
+					FullFilePath = _outputCodeFilePath
 				},
 				NativeFilePath = new FileMetadata
 				{
-					FullFilePath = _outputFileWriter.OutputNativeFilePath,
-					FileGuid = Guid.NewGuid().ToString()
+					FullFilePath = _outputFileWriter.OutputNativeFilePath
 				},
 				DataGridFilePath = new FileMetadata
 				{
-					FullFilePath = _outputFileWriter.OutputDataGridFilePath,
-					FileGuid = Guid.NewGuid().ToString()
+					FullFilePath = _outputFileWriter.OutputDataGridFilePath
 				},
 				ObjectFilePath = new FileMetadata
 				{
-					FullFilePath = _outputObjectFilePath,
-					FileGuid = Guid.NewGuid().ToString()
+					FullFilePath = _outputObjectFilePath
 				}
 			};
 		}
