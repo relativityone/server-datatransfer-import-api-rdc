@@ -6,6 +6,7 @@ using kCura.WinEDDS.Importers;
 using Moq;
 using NUnit.Framework;
 using Relativity;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.NUnit.Import.Tasks
 {
@@ -23,6 +24,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks
 		private Mock<IImporterSettings> _importerSettings;
 		private Mock<ITransferConfig> _transferConfig;
 		private Mock<IFolderCache> _folderCache;
+		private readonly Mock<ILog> _logMock = new Mock<ILog>();
 
 		[SetUp]
 		public void SetUp()
@@ -46,7 +48,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks
 				}
 			};
 
-			_instance = new ImportDocumentFoldersTask(_folderCache.Object, _transferConfig.Object);
+			_instance = new ImportDocumentFoldersTask(_folderCache.Object, _transferConfig.Object, _logMock.Object);
 		}
 
 		[Test]

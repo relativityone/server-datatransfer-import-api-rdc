@@ -6,6 +6,7 @@ using kCura.WinEDDS.Core.Import.Statistics;
 using kCura.WinEDDS.Core.Import.Status;
 using kCura.WinEDDS.Core.Import.Tasks;
 using kCura.WinEDDS.Core.Import.Tasks.Helpers;
+using kCura.WinEDDS.Core.NUnit.Helpers;
 using Moq;
 using NUnit.Framework;
 using Relativity.Logging;
@@ -24,6 +25,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks
 		private Mock<IFileUploader> _fileUploader;
 		private Mock<IMetadataFilesServerExecution> _metadataFilesServerExecution;
 		private Mock<IServerErrorManager> _serverErrorManager;
+		private readonly Mock<ILog> _logMock = new Mock<ILog>();
 
 		[SetUp]
 		public void SetUp()
@@ -36,7 +38,13 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks
 			var cancellationProvider = new Mock<ICancellationProvider>();
 
 			_importContext = new ImportContext();
-			_metadataFilesInfo = new MetadataFilesInfo();
+			_metadataFilesInfo = new MetadataFilesInfo()
+			{
+				NativeFilePath = new FileMetadata {FileName = "Path"},
+				DataGridFilePath = new FileMetadata {FileName = "Path"},
+				CodeFilePath = new FileMetadata {FileName = "Path"},
+				ObjectFilePath = new FileMetadata {FileName = "Path"}
+			};
 			_importBatchContext = new ImportBatchContext(_importContext, 1000)
 			{
 				MetadataFilesInfo = new List<MetadataFilesInfo> {_metadataFilesInfo}
@@ -48,13 +56,12 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Tasks
 			var importMetadata = new Mock<IImportMetadata>();
 			importMetadata.Setup(x => x.BatchSizeHistoryList).Returns(new List<int>());
 
-			var importExceptionHandlerExec = new ImportExceptionHandlerExec(new Mock<IImportStatusManager>().Object, importMetadata.Object, new Mock<IErrorContainer>().Object,
-				new Mock<ILog>().Object);
+			var importExceptionHandlerExec = ImportExceptionHandlerExecFactory.Create(importMetadata.Object);
 
 			var metadataStatisticsHandler = new Mock<IMetadataStatisticsHandler>();
 
 			_instance = new PushMetadataFilesTask(_metadataFilesServerExecution.Object, fileUploaderFactory.Object, _serverErrorManager.Object, importMetadata.Object,
-				cancellationProvider.Object, importExceptionHandlerExec, metadataStatisticsHandler.Object);
+				cancellationProvider.Object, importExceptionHandlerExec, metadataStatisticsHandler.Object, _logMock.Object);
 		}
 
 		[Test]

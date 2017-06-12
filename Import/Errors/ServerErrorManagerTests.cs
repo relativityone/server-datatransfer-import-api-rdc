@@ -8,6 +8,7 @@ using kCura.WinEDDS.Core.Import.Status;
 using Moq;
 using NUnit.Framework;
 using Relativity;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 {
@@ -23,6 +24,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 		private Mock<IBulkImportManager> _bulkImportManager;
 		private Mock<IServerErrorFile> _serverErrorFile;
 		private Mock<IServerErrorFileDownloader> _serverErrorFileDownloader;
+		private readonly Mock<ILog> _logMock = new Mock<ILog>();
 
 		[SetUp]
 		public void SetUp()
@@ -47,7 +49,8 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 				Settings = importSettings.Object
 			};
 
-			_instance = new ServerErrorManager(_bulkImportManager.Object, _serverErrorFile.Object, _serverErrorFileDownloader.Object, serverErrorStatisticsHandler.Object);
+			_instance = new ServerErrorManager(_bulkImportManager.Object, _serverErrorFile.Object, _serverErrorFileDownloader.Object, 
+				serverErrorStatisticsHandler.Object, _logMock.Object);
 		}
 
 		[Test]

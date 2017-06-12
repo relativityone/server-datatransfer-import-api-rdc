@@ -7,6 +7,7 @@ using kCura.WinEDDS.Core.Import.Status;
 using Moq;
 using NUnit.Framework;
 using Relativity;
+using Relativity.Logging;
 using File = System.IO.File;
 
 namespace kCura.WinEDDS.Core.NUnit.Import.Errors
@@ -20,6 +21,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 		private ServerErrorFileDownloader _instance;
 
 		private Mock<IErrorFileDownloader> _errorFileDownloader;
+		private readonly Mock<ILog> _logMock = new Mock<ILog>();
 
 		[SetUp]
 		public void SetUp()
@@ -36,7 +38,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 			var errorFileDownloaderFactory = new Mock<IErrorFileDownloaderFactory>();
 			errorFileDownloaderFactory.Setup(x => x.Create(It.IsAny<CaseInfo>())).Returns(_errorFileDownloader.Object);
 
-			_instance = new ServerErrorFileDownloader(pathHelper.Object, errorFileDownloaderFactory.Object, statisticsHandler.Object);
+			_instance = new ServerErrorFileDownloader(pathHelper.Object, errorFileDownloaderFactory.Object, statisticsHandler.Object, _logMock.Object);
 		}
 
 		[TearDown]
