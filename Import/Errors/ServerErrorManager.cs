@@ -30,14 +30,14 @@ namespace kCura.WinEDDS.Core.Import.Errors
 				return;
 			}
 
-			_log.LogInformation("Metadata Bulk Import process errors found in the current batch.");
+			_log.LogWarning("Metadata Bulk Import process errors found in the current batch.");
 
 			var errorFileKey = _bulkImportManager.GenerateNonImageErrorFiles(importContext.Settings.LoadFile.CaseInfo.ArtifactID, importContext.Settings.RunId,
 				importContext.Settings.LoadFile.ArtifactTypeID, true, importContext.Settings.KeyFieldId);
 
 			_serverErrorStatisticsHandler.RaiseRetrievingServerErrorsEvent();
 
-			_log.LogInformation("Downaloding error file from the server");
+			_log.LogInformation($"Downaloding error file from the server. Log Key: {errorFileKey.LogKey}");
 			GenericCsvReader reader = _serverErrorFileDownloader.DownloadErrorFile(errorFileKey.LogKey, importContext.Settings.LoadFile.CaseInfo);
 			_serverErrorFile.HandleServerErrors(reader);
 			_log.LogInformation("Handling error file from the server completed");

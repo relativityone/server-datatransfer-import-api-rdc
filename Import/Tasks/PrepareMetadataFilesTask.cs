@@ -35,7 +35,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 
 		public void Execute(IDictionary<FileMetadata, UploadResult> uploadResults)
 		{
-			_log.LogInformation("Metadata creation satrted");
+			_log.LogInformation("Metadata creation started");
 			CreateNewMetadataFiles();
 			foreach (var keyValuePair in uploadResults.Where(x => x.Value.Success))
 			{
