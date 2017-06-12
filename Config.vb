@@ -43,9 +43,9 @@ Namespace kCura.WinEDDS
 							If Not tempDict.Contains("CreateFoldersInWebAPI") Then tempDict.Add("CreateFoldersInWebAPI", "True")
 							If Not tempDict.Contains("ForceWebUpload") Then tempDict.Add("ForceWebUpload", "False")
 							If Not tempDict.Contains(NameOf(LoadImportedFullTextFromServer)) Then tempDict.Add(NameOf(LoadImportedFullTextFromServer), "False")
-							If Not tempDict.Contains(NameOf(UsePipeliningForNativeAndObjectImports)) Then tempDict.Add(NameOf(UsePipeliningForNativeAndObjectImports), "False")
-							If Not tempDict.Contains(NameOf(UsePipeliningForFileIdAndCopy)) Then tempDict.Add(NameOf(UsePipeliningForFileIdAndCopy), "False")
-								If Not tempDict.Contains(NameOf(ProcessFormRefreshRate)) Then tempDict.Add(NameOf(ProcessFormRefreshRate), "0")
+							If Not tempDict.Contains(NameOf(UsePipeliningForNativeAndObjectImports)) Then tempDict.Add(NameOf(UsePipeliningForNativeAndObjectImports), "True")
+							If Not tempDict.Contains(NameOf(UsePipeliningForFileIdAndCopy)) Then tempDict.Add(NameOf(UsePipeliningForFileIdAndCopy), "True")
+							If Not tempDict.Contains(NameOf(ProcessFormRefreshRate)) Then tempDict.Add(NameOf(ProcessFormRefreshRate), "0")
 								_configDictionary = tempDict
 							End If
                     End SyncLock
@@ -162,7 +162,7 @@ Namespace kCura.WinEDDS
 				Try
 					Return CType(ConfigSettings(NameOf(UsePipeliningForFileIdAndCopy)), Boolean)
 				Catch
-					Return False
+					Return True
 				End Try
 			End Get
 		End Property
@@ -172,7 +172,7 @@ Namespace kCura.WinEDDS
 				Try
 					Return CType(ConfigSettings(NameOf(UsePipeliningForNativeAndObjectImports)), Boolean)
 				Catch
-					Return False
+					Return True
 				End Try
 			End Get
 		End Property
