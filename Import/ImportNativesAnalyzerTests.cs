@@ -1,0 +1,179 @@
+﻿using kCura.WinEDDS.Api;
+using kCura.WinEDDS.Core.Import;
+using kCura.WinEDDS.Core.Import.Helpers;
+using kCura.WinEDDS.Core.Import.Status;
+using kCura.WinEDDS.Core.Import.Tasks;
+using Moq;
+using NUnit.Framework;
+using NUnit.Framework.Constraints;
+using Relativity;
+using FileIDData = kCura.OI.FileID.FileIDData;
+
+namespace kCura.WinEDDS.Core.NUnit.Import
+{
+	public class ImportNativesAnalyzerTests
+	{
+		private ImportNativesAnalyzer _subjectUnderTests;
+
+		private Mock<ITransferConfig> _transferConfigMock;
+		private Mock<IFileHelper> _fileHelper;
+		private Mock<IFileInfoProvider> _fileDataProvider;
+		private Mock<IImportStatusManager> _importStatusManager;
+
+
+		private const string _FILE_NAME = "FileName.doc";
+		private const string _FULL_PATH_NAME = "SomeDir\\" + _FILE_NAME;
+		private const int _ARTIFACT_ID = 1234;
+		private const int _FILE_ID = 1020;
+
+		private ArtifactFieldCollection _artifactFieldCollection;
+		private FileMetadata _fileMetadata;
+
+		[SetUp]
+		public void SetUp()
+		{
+			_transferConfigMock = new Mock<ITransferConfig>();
+			_fileHelper = new Mock<IFileHelper>();
+			_fileDataProvider = new Mock<IFileInfoProvider>();
+			_importStatusManager = new Mock<IImportStatusManager>();
+
+			_artifactFieldCollection = new ArtifactFieldCollection
+			{
+				new ArtifactField("File", _ARTIFACT_ID, FieldTypeHelper.FieldType.File, FieldCategory.FileInfo, 1, 1, null, false)
+			};
+			_artifactFieldCollection[_ARTIFACT_ID].Value = _FILE_NAME;
+			_subjectUnderTests = new ImportNativesAnalyzer(_fileDataProvider.Object,_transferConfigMock.Object, _fileHelper.Object,
+				_importStatusManager.Object);
+
+			_fileMetadata = new FileMetadata
+			{
+				LineNumber = 1,
+				ArtifactFieldCollection = _artifactFieldCollection
+			};
+		}
+
+		[Test]
+		[TestCase(_FILE_NAME, _FILE_NAME)]
+		[TestCase("\\" + _FULL_PATH_NAME, ".\\" + _FULL_PATH_NAME)]
+		[TestCase("\\\\" + _FULL_PATH_NAME, "\\\\" + _FULL_PATH_NAME)]
+		public void ItShouldReturnDefaultFileMetadata(string inputFileName, string expectedFileName)
+		{
+			// Arrange
+			_transferConfigMock.SetupGet(config => config.DisableNativeLocationValidation).Returns(true);
+			_artifactFieldCollection[_ARTIFACT_ID].Value = inputFileName;
+
+			//Act
+			FileMetadata fileMetadata = _subjectUnderTests.Process(_fileMetadata);
+
+
+			// Assert
+			_fileHelper.Verify(item => item.Exists(expectedFileName), Times.Never);
+
+			Assert.That(fileMetadata.FullFilePath, Is.EqualTo(expectedFileName));
+			Assert.That(fileMetadata.FileExists);
+			Assert.That(fileMetadata.FileName, Is.Empty);
+		}
+
+		[Test]
+		[TestCase(_FULL_PATH_NAME, _FULL_PATH_NAME)]
+		[TestCase("\\" + _FULL_PATH_NAME, ".\\" + _FULL_PATH_NAME)]
+		[TestCase("\\\\" + _FULL_PATH_NAME, "\\\\" + _FULL_PATH_NAME)]
+		public void ItShouldValidateFileNotExists(string inputFileName, string expectedFileName)
+		{
+			// Arrange
+			_transferConfigMock.SetupGet(config => config.DisableNativeLocationValidation).Returns(false);
+			_fileHelper.Setup(item => item.Exists(expectedFileName)).Returns(false);
+			_artifactFieldCollection[_ARTIFACT_ID].Value = inputFileName;
+
+			// Act
+			FileMetadata fileMetadata = _subjectUnderTests.Process(_fileMetadata);
+
+			// Assert
+			_fileHelper.Verify(item => item.Exists(expectedFileName), Times.Once);
+
+			Assert.That(fileMetadata.FullFilePath, Is.EqualTo(expectedFileName));
+			Assert.That(!fileMetadata.FileExists);
+			Assert.That(fileMetadata.FileName, Is.EqualTo(_FILE_NAME));
+			Assert.That(fileMetadata.LineStatus, Is.EqualTo((int)Relativity.MassImport.ImportStatus.FileSpecifiedDne));
+		}
+
+		[Test]
+		[TestCase(true, true, true, _FULL_PATH_NAME)] // This is a case when file exists and file size is empty and CreateErrorForEmptyNativeFile flag is set
+		[TestCase(false, true, true, _FULL_PATH_NAME)] // This is a case when file exists and file size is not empty and CreateErrorForEmptyNativeFile flag is set
+		[TestCase(true, false, false, "")] // This is a case when file exists and file size is  empty and CreateErrorForEmptyNativeFile flag is not set
+		[TestCase(false, false, true, _FULL_PATH_NAME)] // This is a case when file exists and file size is not empty and CreateErrorForEmptyNativeFile flag is not set
+		public void ItShouldValidateFileContent(bool fileIsEmpty, bool createErrorForEmptyNativeFile, bool expectedResult, string expectedFileName)
+		{
+			// Arrange
+			_transferConfigMock.SetupGet(config => config.DisableNativeLocationValidation).Returns(false);
+			_transferConfigMock.SetupGet(config => config.CreateErrorForEmptyNativeFile).Returns(createErrorForEmptyNativeFile);
+
+			_fileHelper.Setup(item => item.Exists(_FULL_PATH_NAME)).Returns(true);
+			_fileDataProvider.Setup(item => item.GetFileSize(It.IsAny<FileMetadata>())).Returns(fileIsEmpty ? 0 : 1);
+
+			_artifactFieldCollection[_ARTIFACT_ID].Value = _FULL_PATH_NAME;
+
+			// Act
+			FileMetadata fileMetadata = _subjectUnderTests.Process(_fileMetadata);
+
+			// Assert
+			_fileHelper.Verify(item => item.Exists(_FULL_PATH_NAME), Times.Once());
+
+			Assert.That(fileMetadata.FullFilePath, Is.EqualTo(expectedFileName));
+			Assert.That(fileMetadata.FileExists, Is.EqualTo(expectedResult));
+			Assert.That(fileMetadata.FileIdData, Is.Null);
+			Assert.That(fileMetadata.LineStatus, Is.EqualTo(GetExpectedStatus(fileIsEmpty, createErrorForEmptyNativeFile)));
+		}
+
+
+		[Test]
+		public void ItShouldCheckEmptyFilePath()
+		{
+			_transferConfigMock.SetupGet(config => config.DisableNativeLocationValidation).Returns(false);
+			_fileHelper.Setup(item => item.Exists(string.Empty)).Returns(false);
+			_artifactFieldCollection[_ARTIFACT_ID].Value = string.Empty;
+
+			// Act
+			FileMetadata fileMetadata = _subjectUnderTests.Process(_fileMetadata);
+
+			// Assert
+			_fileHelper.Verify(item => item.Exists(string.Empty), Times.Once);
+
+			Assert.That(fileMetadata.FullFilePath, Is.EqualTo(string.Empty));
+			Assert.That(!fileMetadata.FileExists);
+			Assert.That(fileMetadata.FileName, Is.Empty);
+		}
+
+		[Test]
+		public void ItShouldValidateFileIdData()
+		{
+			// Arrange
+			_transferConfigMock.SetupGet(config => config.DisableNativeLocationValidation).Returns(false);
+			
+			_fileHelper.Setup(item => item.Exists(_FILE_NAME)).Returns(true);
+			_fileDataProvider.Setup(item => item.GetFileSize(It.IsAny<FileMetadata>())).Returns(1);
+
+			_fileDataProvider.Setup(item => item.GetFileId(_FILE_NAME)).Returns(new FileIDData(_FILE_ID, ".doc"));
+
+			_artifactFieldCollection[_ARTIFACT_ID].Value = _FILE_NAME;
+
+			// Act
+			FileMetadata fileMetadata = _subjectUnderTests.Process(_fileMetadata);
+
+			// Assert
+			_fileHelper.Verify(item => item.Exists(_FILE_NAME), Times.Once());
+
+			Assert.That(fileMetadata.FullFilePath, Is.EqualTo(_FILE_NAME));
+			Assert.That(fileMetadata.FileExists);
+			Assert.That(fileMetadata.FileIdData, Is.Not.Null);
+			Assert.That(fileMetadata.FileIdData.FileID, Is.EqualTo(_FILE_ID));
+		}
+
+		private int GetExpectedStatus(bool fileIsEmpty, bool createErrorForEmptyNativeFile)
+		{
+			return (createErrorForEmptyNativeFile && fileIsEmpty)
+				? (int)Relativity.MassImport.ImportStatus.EmptyFile 
+				: 0;
+		}
+	}
+}

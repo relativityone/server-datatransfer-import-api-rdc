@@ -70,12 +70,24 @@
       <HintPath>..\..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Castle.Windsor, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Moq, Version=4.5.30.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Moq.4.5.30\lib\net45\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Polly, Version=5.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Polly.5.1.0\lib\net45\Polly.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Logging.Interfaces, Version=9.4.308.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Logging.Interfaces.9.4.308\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -101,12 +113,44 @@
     <Compile Include="Export\Natives\Name\Factories\FileNamePartProviderContainerTest.cs" />
     <Compile Include="Export\Natives\Name\FieldFileNamePartProviderTests.cs" />
     <Compile Include="Export\Natives\Name\SeparatorFileNamePartProviderTests.cs" />
+    <Compile Include="Helpers\ImportExceptionHandlerExecFactory.cs" />
     <Compile Include="Helpers\ViewFieldInfoMockFactory.cs" />
+    <Compile Include="Import\Errors\AllErrorsContainer_FileWriteTests.cs" />
+    <Compile Include="Import\Errors\ClientErrorLineContainerTests.cs" />
+    <Compile Include="Import\Errors\AllErrorsContainerTests.cs" />
+    <Compile Include="Import\Errors\ClientErrorLineContainer_FileWriteTests.cs" />
+    <Compile Include="Import\Errors\ErrorFileNamesTests.cs" />
+    <Compile Include="Import\Errors\ErrorManagerTests.cs" />
+    <Compile Include="Import\Errors\ErrorReporterTests.cs" />
+    <Compile Include="Import\Errors\ServerErrorFileDownloaderTests.cs" />
+    <Compile Include="Import\Errors\ServerErrorFileTests.cs" />
+    <Compile Include="Import\Errors\ServerErrorManagerTests.cs" />
+    <Compile Include="Import\Errors\UploadErrorsTests.cs" />
+    <Compile Include="Import\ImportJobTests.cs" />
+    <Compile Include="Import\ImportNativesAnalyzerTests.cs" />
+    <Compile Include="Import\Tasks\Helpers\MetadataFilesServerExecutionTests.cs" />
+    <Compile Include="Import\Tasks\ImportDocumentFoldersTaskTests.cs" />
+    <Compile Include="Import\Tasks\ImportNativesTaskTests.cs" />
+    <Compile Include="Import\Tasks\ImportRdoFoldersTaskTests.cs" />
+    <Compile Include="Import\Tasks\PrepareMetadataFilesTaskTests.cs" />
+    <Compile Include="Import\Tasks\PushMetadataFilesTaskTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\kCura\kCura.OI.FileID\kCura.OI.FileID.vbproj">
+      <Project>{ccefd50f-0840-402d-ab16-c93f8e579b8b}</Project>
+      <Name>kCura.OI.FileID</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
+      <Project>{b092d1b2-909b-4ef0-9369-a81675c3fc18}</Project>
+      <Name>kCura.Windows.Process</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura\kCura.vbproj">
+      <Project>{535d782a-2388-416f-ab46-10347e44eec9}</Project>
+      <Name>kCura</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.WinEDDS.Core\kCura.WinEDDS.Core.csproj">
       <Project>{c5eb5351-3f27-4716-a7da-163f0400bcef}</Project>
       <Name>kCura.WinEDDS.Core</Name>
