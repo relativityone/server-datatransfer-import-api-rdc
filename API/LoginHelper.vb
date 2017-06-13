@@ -27,6 +27,7 @@
 		End Function
 		
 		Public Shared Function LoginUsernamePassword(ByVal username As String, ByVal password As String, ByVal cookieContainer As Net.CookieContainer, ByVal webServiceUrl As String) As System.Net.NetworkCredential
+			webServiceUrl = kCura.WinEDDS.Config.ValidateURIFormat(webServiceUrl)
 			If cookieContainer Is Nothing Then Throw New ArgumentException("Cookie container not set")
 			Dim credential As New Net.NetworkCredential(username, password)
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(credential, cookieContainer, webServiceUrl)
