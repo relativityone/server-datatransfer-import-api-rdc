@@ -2,23 +2,30 @@ Imports System.Collections.Generic
 Imports System.IO
 Imports System.Threading.Tasks
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
-Imports kCura.EDDS.WebAPI.DocumentManagerBase
 Imports kCura.Utility.Extensions
 Imports Relativity
 
 Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
 		Inherits kCura.WinEDDS.LoadFileBase
+		Implements IImportJob
+
+#Region "Const Fields"
+
+		Public Shared ReadOnly RestartTimeEventMsg As String = "Reset time for import rolling average"
+		Public Shared ReadOnly CancelEventMsg As String = "cancel import"
+
+#End Region
 
 #Region "Members"
-		Private _overwrite As Relativity.ImportOverwriteType
+		Protected _overwrite As Relativity.ImportOverwriteType
 		Private WithEvents _uploader As kCura.WinEDDS.FileUploader
 		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
 		Private _parentFolderDTO As kCura.EDDS.WebAPI.FolderManagerBase.Folder
 		Protected _auditManager As kCura.WinEDDS.Service.AuditManager
 		Protected _relativityManager As kCura.WinEDDS.Service.RelativityManager
 
-		Private _recordCount As Int64 = -1
+		Protected _recordCount As Int64 = -1
 		Private _allFields As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 		Private _fieldsForCreate As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 		Protected _continue As Boolean
@@ -30,23 +37,23 @@ Namespace kCura.WinEDDS
 		Private _importBatchVolume As Int32?
 		Private _minimumBatchSize As Int32?
 		Private _batchSizeHistoryList As System.Collections.Generic.List(Of Int32)
-		Private _destinationFolderColumnIndex As Int32 = -1
-		Private _folderCache As FolderCache
-		Private _defaultDestinationFolderPath As String = String.Empty
+		Protected _destinationFolderColumnIndex As Int32 = -1
+		Protected _folderCache As FolderCache
+		Protected _defaultDestinationFolderPath As String = String.Empty
 		Private _copyFileToRepository As Boolean
 		Private _oixFileLookup As System.Collections.Specialized.HybridDictionary
 		Private _fieldArtifactIds As Int32()
-		Private _outputFileWriter As kCura.WinEDDS.OutputFileWriter = New kCura.WinEDDS.OutputFileWriter()
-		Private _outputCodeFileWriter As System.IO.StreamWriter
-		Private _outputObjectFileWriter As System.IO.StreamWriter
+		Protected _outputFileWriter As kCura.WinEDDS.OutputFileWriter = New kCura.WinEDDS.OutputFileWriter()
+		private _outputCodeFileWriter As System.IO.StreamWriter
+		private _outputObjectFileWriter As System.IO.StreamWriter
 		Private _caseInfo As Relativity.CaseInfo
-		Private _overlayArtifactID As Int32
-		Private _executionSource As Relativity.ExecutionSource
+		Protected _overlayArtifactID As Int32
+		Protected _executionSource As Relativity.ExecutionSource
 
-		Private _runID As String = System.Guid.NewGuid.ToString.Replace("-", "_")
+		Protected _runID As String = System.Guid.NewGuid.ToString.Replace("-", "_")
 
-		Private _outputCodeFilePath As String = System.IO.Path.GetTempFileName
-		Private _outputObjectFilePath As String = System.IO.Path.GetTempFileName
+		Protected _outputCodeFilePath As String = System.IO.Path.GetTempFileName
+		Protected _outputObjectFilePath As String = System.IO.Path.GetTempFileName
 		Private _filePath As String
 		Private _batchCounter As Int32 = 0
 		Private _errorMessageFileLocation As String = String.Empty
@@ -65,7 +72,7 @@ Namespace kCura.WinEDDS
 
 
 		Private _cloudInstance As Boolean
-		Private _bulkLoadFileFieldDelimiter As String
+		Protected _bulkLoadFileFieldDelimiter As String
 
 		Protected Property LinkDataGridRecords As Boolean
 
@@ -73,7 +80,7 @@ Namespace kCura.WinEDDS
 		Private Const _UNKNOWN_PARENT_FOLDER_ID As Int32 = -9
 		Public Const DATA_GRID_ID_FIELD_NAME As String = "DataGridID"
 		Private Const LENGTH_OF_FOLDER_ALLOWED As Integer = 255
-		Private Const ERROR_MESSAGE_FOLDER_NAME_TOO_LONG As String = "Error occurred when importing the document. The folder name is longer than 255 characters."
+		Public Const ERROR_MESSAGE_FOLDER_NAME_TOO_LONG As String = "Error occurred when importing the document. The folder name is longer than 255 characters."
 #End Region
 
 #Region "Accessors"
@@ -150,7 +157,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public ReadOnly Property HasErrors() As Boolean
+		Public Overridable ReadOnly Property HasErrors() As Boolean
 			Get
 				Return _errorCount > 0
 			End Get
@@ -415,7 +422,7 @@ Namespace kCura.WinEDDS
 			End If
 			If retval.Any() Then
 				Dim uploadStatus As String = String.Join(" - ", retval.ToArray())
-				RaiseEvent UploadModeChangeEvent(uploadStatus, isBulkEnabled)
+				OnUploadModeChangeEvent(uploadStatus, isBulkEnabled)
 			End If
 		End Sub
 
@@ -425,12 +432,12 @@ Namespace kCura.WinEDDS
 		''' <param name="path">The load file which contains information about the document being loaded</param>
 		''' <returns>True indicates success.  False or Nothing indicates failure.</returns>
 		''' <remarks></remarks>
-		Public Function ReadFile(ByVal path As String) As Object
+		Public Overridable  Function ReadFile(ByVal path As String) As Object Implements IImportJob.ReadFile
 			Dim line As Api.ArtifactFieldCollection
 			_filePath = path
 			_timekeeper.MarkStart("TOTAL")
 			Try
-				RaiseEvent StartFileImport()
+				OnStartFileImport()
 				_timekeeper.MarkStart("ReadFile_InitializeMembers")
 				Dim validateBcp As FileUploadReturnArgs = _bcpuploader.ValidateBcpPath(_caseInfo.ArtifactID, _outputFileWriter.OutputNativeFilePath)
 				'TODO: your check here
@@ -541,7 +548,7 @@ Namespace kCura.WinEDDS
 		Private Function InitializeMembers(ByVal path As String) As Boolean
 			_recordCount = _artifactReader.CountRecords
 			If _recordCount = -1 Then
-				RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Progress, CurrentLineNumber, CurrentLineNumber, "cancel import", _currentStatisticsSnapshot))
+				OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Progress, CurrentLineNumber, CurrentLineNumber, CancelEventMsg, _currentStatisticsSnapshot))
 				Return False
 			End If
 
@@ -549,7 +556,7 @@ Namespace kCura.WinEDDS
 			Me.InitializeFieldIdList()
 			DeleteFiles()
 			OpenFileWriters()
-			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, "Reset time for import rolling average", Nothing))
+			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, RestartTimeEventMsg, Nothing))
 			Return True
 		End Function
 
@@ -560,14 +567,14 @@ Namespace kCura.WinEDDS
 			_relativityManager = New kCura.WinEDDS.Service.RelativityManager(args.Credentials, args.CookieContainer)
 		End Sub
 
-		Private Sub DeleteFiles()
+		Protected Sub DeleteFiles()
 			kCura.Utility.File.Instance.Delete(_outputFileWriter.OutputNativeFilePath)
 			kCura.Utility.File.Instance.Delete(_outputCodeFilePath)
 			kCura.Utility.File.Instance.Delete(_outputObjectFilePath)
 			kCura.Utility.File.Instance.Delete(_outputFileWriter.OutputDataGridFilePath)
 		End Sub
 
-		Private Sub InitializeFolderManagement()
+		Protected Sub InitializeFolderManagement()
 			If _createFolderStructure Then
 				If Not kCura.WinEDDS.Config.CreateFoldersInWebAPI Then
 					'Client side folder creation (added back for Dominus# 1127879)
@@ -719,10 +726,10 @@ Namespace kCura.WinEDDS
 					Dim value As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value))
 					If kCura.WinEDDS.Config.CreateFoldersInWebAPI Then
 						'Server side folder creation
-						Dim cleanFolderPath As String = Me.CleanDestinationFolderPath(value)
+						Dim cleanFolderPath As String = CleanDestinationFolderPath(value)
 						If (String.IsNullOrWhiteSpace(cleanFolderPath)) Then
 							parentFolderID = _folderID
-						ElseIf Me.InnerRelativityFolderPathsAreTooLarge(cleanFolderPath) Then
+						ElseIf InnerRelativityFolderPathsAreTooLarge(cleanFolderPath) Then
 							Throw New PathTooLongException("Error occurred when importing the document. The folder name is longer than 255 characters.")
 						Else
 							folderPath = cleanFolderPath
@@ -731,7 +738,7 @@ Namespace kCura.WinEDDS
 						End If
 					Else
 						'Client side folder creation (added back for Dominus# 1127879)
-						parentFolderID = _folderCache.FolderID(Me.CleanDestinationFolderPath(value))
+						parentFolderID = _folderCache.FolderID(CleanDestinationFolderPath(value))
 					End If
 				Else
 					'TODO: If we are going to do this for more than documents, fix this as well...
@@ -794,7 +801,7 @@ Namespace kCura.WinEDDS
 			Return identityValue
 		End Function
 
-		Protected Function CleanDestinationFolderPath(ByVal path As String) As String
+		Public Shared Function CleanDestinationFolderPath(ByVal path As String) As String
 			path = path.Trim()
 			While path.Contains(".\")
 				path = path.Replace(".\", "\")
@@ -815,7 +822,7 @@ Namespace kCura.WinEDDS
 			Return path
 		End Function
 
-		Private Function InnerRelativityFolderPathsAreTooLarge(ByVal cleanFolderPath As String) As Boolean
+		Public Shared Function InnerRelativityFolderPathsAreTooLarge(ByVal cleanFolderPath As String) As Boolean
 			If String.IsNullOrEmpty(cleanFolderPath) Then
 				Return False
 			End If
@@ -1143,13 +1150,13 @@ Namespace kCura.WinEDDS
 			End Select
 		End Function
 
-		Private Sub OpenFileWriters()
+		Protected Sub OpenFileWriters()
 			_outputFileWriter.Open()
 			_outputCodeFileWriter = New System.IO.StreamWriter(_outputCodeFilePath, False, System.Text.Encoding.Unicode)
 			_outputObjectFileWriter = New System.IO.StreamWriter(_outputObjectFilePath, False, System.Text.Encoding.Unicode)
 		End Sub
 
-		Private Sub CloseFileWriters()
+		Protected Sub CloseFileWriters()
 			_outputFileWriter.Close()
 			_outputCodeFileWriter.Close()
 			_outputObjectFileWriter.Close()
@@ -1182,7 +1189,7 @@ Namespace kCura.WinEDDS
 			Return DirectCast(retval.ToArray(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo)), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo())
 		End Function
 
-		Private Sub ManageDocumentLine(ByVal mdoc As MetaDocument)
+		Protected Sub ManageDocumentLine(ByVal mdoc As MetaDocument)
 			Dim chosenEncoding As System.Text.Encoding = Nothing
 
 			_outputFileWriter.MarkRollbackPosition()
@@ -1422,7 +1429,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Function GetIsSupportedRelativityFileTypeField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
-			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In _allFields
+			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In AllFields(_artifactTypeID)
 				If field.DisplayName.ToLower = "supported by viewer" Then
 					Return Me.FieldDtoToFieldInfo(field)
 				End If
@@ -1431,7 +1438,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function GetRelativityFileTypeField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
-			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In _allFields
+			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In AllFields(_artifactTypeID)
 				If field.DisplayName.ToLower = "relativity native type" Then
 					Return Me.FieldDtoToFieldInfo(field)
 				End If
@@ -1440,7 +1447,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function GetHasNativesField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
-			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In _allFields
+			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In AllFields(_artifactTypeID)
 				If field.DisplayName.ToLower = "has native" Then
 					Return Me.FieldDtoToFieldInfo(field)
 				End If
@@ -1449,7 +1456,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function GetObjectFileField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
-			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In _allFields
+			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In AllFields(_artifactTypeID)
 				If field.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
 					Return Me.FieldDtoToFieldInfo(field)
 				End If
@@ -1497,7 +1504,7 @@ Namespace kCura.WinEDDS
 
 #Region "Field Preparation"
 
-		Private Function PrepareFieldCollectionAndExtractIdentityValue(ByVal record As Api.ArtifactFieldCollection) As String
+		Protected Function PrepareFieldCollectionAndExtractIdentityValue(ByVal record As Api.ArtifactFieldCollection) As String
 			System.Threading.Monitor.Enter(_outputFileWriter.OutputNativeFileWriter)
 			System.Threading.Monitor.Enter(_outputCodeFileWriter)
 			System.Threading.Monitor.Enter(_outputObjectFileWriter)
@@ -1584,10 +1591,10 @@ Namespace kCura.WinEDDS
 
 		Private Sub WriteStatusLine(ByVal et As kCura.Windows.Process.EventType, ByVal line As String, ByVal lineNumber As Int32)
 			line = line & String.Format(" [line {0}]", lineNumber)
-			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(et, lineNumber + _offset, _recordCount, line, _currentStatisticsSnapshot))
+			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(et, lineNumber + _offset, _recordCount, line, _currentStatisticsSnapshot))
 		End Sub
 
-		Private Sub WriteStatusLine(ByVal et As kCura.Windows.Process.EventType, ByVal line As String)
+		Protected Sub WriteStatusLine(ByVal et As kCura.Windows.Process.EventType, ByVal line As String)
 			WriteStatusLine(et, line, Me.CurrentLineNumber)
 		End Sub
 
@@ -1597,7 +1604,7 @@ Namespace kCura.WinEDDS
 			_uploader.DoRetry = False
 			_bcpuploader.DoRetry = False
 
-			RaiseEvent FatalErrorEvent("Error processing line: " + lineNumber.ToString, ex, _runID)
+			OnFatalError("Error processing line: " + lineNumber.ToString, ex, _runID)
 		End Sub
 
 		Private Sub WriteError(ByVal currentLineNumber As Int32, ByVal line As String)
@@ -1622,11 +1629,11 @@ Namespace kCura.WinEDDS
 
 			Dim errorMessageFileWriter As New System.IO.StreamWriter(_errorMessageFileLocation, True, System.Text.Encoding.Default)
 			If _errorCount < MaxNumberOfErrorsInGrid Then
-				RaiseEvent ReportErrorEvent(row)
+				OnReportErrorEvent(row)
 			ElseIf _errorCount = MaxNumberOfErrorsInGrid Then
 				Dim moretobefoundMessage As New System.Collections.Hashtable
 				moretobefoundMessage.Add("Message", "Maximum number of errors for display reached.  Export errors to view full list.")
-				RaiseEvent ReportErrorEvent(moretobefoundMessage)
+				OnReportErrorEvent(moretobefoundMessage)
 			End If
 			errorMessageFileWriter.WriteLine(String.Format("{0},{1},{2},{3}", CSVFormat(row("Line Number").ToString), CSVFormat(row("Message").ToString), CSVFormat(identifier), CSVFormat(type)))
 			errorMessageFileWriter.Close()
@@ -1644,12 +1651,8 @@ Namespace kCura.WinEDDS
 			Return ControlChars.Quote + fieldValue.Replace(ControlChars.Quote, ControlChars.Quote + ControlChars.Quote) + ControlChars.Quote
 		End Function
 
-		Private Sub WriteWarning(ByVal line As String)
+		Protected Sub WriteWarning(ByVal line As String)
 			WriteStatusLine(kCura.Windows.Process.EventType.Warning, line)
-		End Sub
-
-		Private Sub WriteUpdate(ByVal line As String)
-			WriteStatusLine(kCura.Windows.Process.EventType.Progress, line)
 		End Sub
 
 		Private Sub WriteEndImport(ByVal line As String)
@@ -1690,7 +1693,7 @@ Namespace kCura.WinEDDS
 			PublishUploadModeEvent()
 		End Sub
 
-		Private Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
+		Protected Overridable Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
 			If processID.ToString = _processID.ToString Then
 				_continue = False
 				_artifactReader.Halt()
@@ -1699,7 +1702,7 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Private Sub _processController_ExportServerErrors(ByVal exportLocation As String) Handles _processController.ExportServerErrorsEvent
+		Protected Overridable Sub _processController_ExportServerErrors(ByVal exportLocation As String) Handles _processController.ExportServerErrorsEvent
 			_errorLinesFileLocation = _artifactReader.ManageErrorRecords(_errorMessageFileLocation, _prePushErrorLineNumbersFileName)
 			Dim rootFileName As String = _filePath
 			Dim defaultExtension As String
@@ -1839,15 +1842,15 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Private Sub _artifactReader_DataSourcePrep(ByVal e As Api.DataSourcePrepEventArgs) Handles _artifactReader.DataSourcePrep
-			RaiseEvent DataSourcePrepEvent(e)
+			OnDataSourcePrepEvent(e)
 		End Sub
 
 		Private Sub _artifactReader_StatusMessage(ByVal message As String) Handles _artifactReader.StatusMessage
-			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, _artifactReader.CurrentLineNumber, _recordCount, message, False, _currentStatisticsSnapshot))
+			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, _artifactReader.CurrentLineNumber, _recordCount, message, False, _currentStatisticsSnapshot))
 		End Sub
 
 		Private Sub _artifactReader_FieldMapped(ByVal sourceField As String, ByVal workspaceField As String) Handles _artifactReader.FieldMapped
-			RaiseEvent FieldMapped(sourceField, workspaceField)
+			OnFieldMapped(sourceField, workspaceField)
 		End Sub
 
 
@@ -1874,7 +1877,7 @@ Namespace kCura.WinEDDS
 						' -Phil S. 08/13/2012
 						Const message As String = "There was an error while attempting to retrieve the errors from the server."
 
-						RaiseEvent FatalErrorEvent(message, New Exception(message), _runID)
+						OnFatalError(message, New Exception(message), _runID)
 					Else
 						AddHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
 						Dim line As String() = sr.ReadLine
@@ -1886,7 +1889,7 @@ Namespace kCura.WinEDDS
 							ht.Add("Identifier", line(2))
 							ht.Add("Line Number", Int32.Parse(line(0)))
 							RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
-							RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _recordCount, "[Line " & line(0) & "]" & line(1), _currentStatisticsSnapshot))
+							OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _recordCount, "[Line " & line(0) & "]" & line(1), _currentStatisticsSnapshot))
 							line = sr.ReadLine
 						End While
 						RemoveHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
@@ -1936,7 +1939,7 @@ Namespace kCura.WinEDDS
 			If processID.ToString = _processID.ToString Then CleanupTempTables()
 		End Sub
 
-		Private Sub CleanupTempTables()
+		Protected Sub CleanupTempTables()
 			If Not _runID Is Nothing AndAlso _runID <> "" Then
 				Try
 					Me.BulkImportManager.DisposeTempTables(_caseInfo.ArtifactID, _runID)
@@ -1958,6 +1961,39 @@ Namespace kCura.WinEDDS
 		Protected Overrides Function GetArtifactReader() As Api.IArtifactReader
 			Return New kCura.WinEDDS.LoadFileReader(_settings, False)
 		End Function
+
+		Protected Sub OnFatalError(message As String, ex As Exception, runID As String)
+			RaiseEvent FatalErrorEvent(message, ex, runID)
+		End Sub
+
+		Protected Sub OnStatusMessage(args As Windows.Process.StatusEventArgs)
+			RaiseEvent StatusMessage(args)
+		End Sub
+
+		Protected Sub OnEndFileImport(ByVal runID As String)
+			RaiseEvent EndFileImport(runID)
+		End Sub
+
+		Protected Sub OnStartFileImport()
+			RaiseEvent StartFileImport()
+		End Sub
+
+		Protected Sub OnUploadModeChangeEvent(mode As String, isBulkEnabled As Boolean)
+			RaiseEvent UploadModeChangeEvent(mode, isBulkEnabled)
+		End Sub
+
+		Protected Sub OnDataSourcePrepEvent( args As Api.DataSourcePrepEventArgs)
+			RaiseEvent DataSourcePrepEvent(args)
+		End Sub
+
+		Protected Sub OnReportErrorEvent(row As IDictionary)
+			RaiseEvent ReportErrorEvent(row)
+		End Sub
+
+		Protected Sub OnFieldMapped(sourceField As String, workspaceField As String)
+			RaiseEvent FieldMapped(sourceField, workspaceField)
+		End Sub
+
 	End Class
 
 	Public Class WebServiceFieldInfoNameComparer
