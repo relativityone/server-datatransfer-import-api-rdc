@@ -1991,7 +1991,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Sub OnFieldMapped(sourceField As String, workspaceField As String)
-			OnFieldMapped(sourceField, workspaceField)
+			RaiseEvent FieldMapped(sourceField, workspaceField)
 		End Sub
 
 	End Class
