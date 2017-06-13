@@ -71,7 +71,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Castle.Windsor, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
+      <HintPath>..\..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Moq, Version=4.5.30.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
@@ -83,11 +83,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Polly, Version=5.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Polly.5.1.0\lib\net45\Polly.dll</HintPath>
+      <HintPath>..\..\packages\Polly.5.1.0\lib\net45\Polly.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces, Version=9.4.308.17, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Logging.Interfaces.9.4.308\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.308\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
