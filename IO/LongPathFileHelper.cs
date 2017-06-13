@@ -59,6 +59,11 @@ namespace kCura.WinEDDS.Core.IO
 			return fileInfo.Length;
 		}
 
+		public string GetFullPath(string filePath)
+		{
+			return ZlpPathHelper.GetFullPath(filePath);
+		}
+
 		public void Move(string sourceFilePath, string destinationFilePath)
 		{
 			ZlpIOHelper.MoveFile(sourceFilePath, destinationFilePath);

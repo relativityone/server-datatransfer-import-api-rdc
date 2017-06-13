@@ -67,9 +67,32 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Castle.Windsor, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Polly, Version=5.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Polly.5.1.0\lib\net45\Polly.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Logging, Version=9.4.308.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Logging.9.4.308\lib\net462\Relativity.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Logging.Interfaces, Version=9.4.308.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Logging.Interfaces.9.4.308\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ServiceModel.Activities" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -100,15 +123,137 @@
     <Compile Include="Export\Natives\Name\SeparatorFileNamePartProvider.cs" />
     <Compile Include="Export\Natives\Name\Factories\FileNameProviderContainerFactory.cs" />
     <Compile Include="Export\Natives\Name\Factories\IFileNameProviderContainerFactory.cs" />
+    <Compile Include="Import\Errors\ErrorContainerComposite.cs" />
+    <Compile Include="Import\Errors\ErrorContainerFactory.cs" />
+    <Compile Include="Import\Errors\ErrorFileNames.cs" />
+    <Compile Include="Import\Errors\ErrorManager.cs" />
+    <Compile Include="Import\Errors\AllErrorsContainer.cs" />
+    <Compile Include="Import\Errors\ErrorManagerFactory.cs" />
+    <Compile Include="Import\Errors\ErrorReporter.cs" />
+    <Compile Include="Import\Errors\ErrorType.cs" />
+    <Compile Include="Import\Errors\IClientErrors.cs" />
+    <Compile Include="Import\Errors\IErrorContainer.cs" />
+    <Compile Include="Import\Errors\IErrorFile.cs" />
+    <Compile Include="Import\Errors\IAllErrors.cs" />
+    <Compile Include="Import\Errors\IErrorManager.cs" />
+    <Compile Include="Import\Errors\IErrorManagerFactory.cs" />
+    <Compile Include="Import\Errors\IErrorReporter.cs" />
+    <Compile Include="Import\Errors\ImportExceptionHandlerExec.cs" />
+    <Compile Include="Import\Errors\IServerErrorFile.cs" />
+    <Compile Include="Import\Errors\IServerErrorFileDownloader.cs" />
+    <Compile Include="Import\Errors\IServerErrorManager.cs" />
+    <Compile Include="Import\Errors\IUploadErrors.cs" />
+    <Compile Include="Import\Errors\LineError.cs" />
+    <Compile Include="Import\Errors\ClientErrorLineContainer.cs" />
+    <Compile Include="Import\Errors\ServerErrorFile.cs" />
+    <Compile Include="Import\Errors\ServerErrorFileDownloader.cs" />
+    <Compile Include="Import\Errors\ServerErrorManager.cs" />
+    <Compile Include="Import\Errors\UploadErrors.cs" />
+    <Compile Include="Import\Factories\ILoadFileImporterFactory.cs" />
+    <Compile Include="Import\Factories\ImportBatchJobFactory.cs" />
+    <Compile Include="Import\Factories\ImportJobFactory.cs" />
+    <Compile Include="Import\Factories\LoadFileImporterFactory.cs" />
+    <Compile Include="Import\FileMetadata.cs" />
+    <Compile Include="Import\Helpers\ErrorFileDownloader.cs" />
+    <Compile Include="Import\Helpers\ErrorFileDownloaderFactory.cs" />
+    <Compile Include="Import\Helpers\FileInfoProvider.cs" />
+    <Compile Include="Import\Helpers\IErrorFileDownloader.cs" />
+    <Compile Include="Import\Helpers\IErrorFileDownloaderFactory.cs" />
+    <Compile Include="Import\Helpers\IFileInfoProvider.cs" />
+    <Compile Include="Import\Helpers\ImportBatchContextProvider.cs" />
+    <Compile Include="Import\Helpers\INativeLoadInfoFactory.cs" />
+    <Compile Include="Import\Helpers\IRepositoryFilePathHelper.cs" />
+    <Compile Include="Import\Helpers\NativeLoadInfoFactory.cs" />
+    <Compile Include="Import\Helpers\RepositoryFilePathHelper.cs" />
+    <Compile Include="Import\Helpers\UploadModeHelper.cs" />
+    <Compile Include="Import\IFileUploader.cs" />
+    <Compile Include="Import\Factories\IImportBatchJobFactory.cs" />
+    <Compile Include="Import\IImportBatchJob.cs" />
+    <Compile Include="Import\IImporterManagers.cs" />
+    <Compile Include="Import\IImporterSettings.cs" />
+    <Compile Include="Import\Factories\IImportJobFactory.cs" />
+    <Compile Include="Import\IImportExceptionHandlerExec.cs" />
+    <Compile Include="Import\IImportJobInitilizer.cs" />
+    <Compile Include="Import\ILoadFileImporter.cs" />
+    <Compile Include="Import\ImportJob.cs" />
+    <Compile Include="Import\Managers\DocumentBulkImportManager.cs" />
+    <Compile Include="Import\Managers\IBulkImportManager.cs" />
+    <Compile Include="Import\Managers\IObjectManager.cs" />
+    <Compile Include="Import\Managers\ObjectBulkImportManager.cs" />
+    <Compile Include="Import\Managers\ObjectManagerWrapper.cs" />
+    <Compile Include="Import\MetadataFilesInfo.cs" />
+    <Compile Include="Import\Statistics\BulkImportCompletedEventArgs.cs" />
+    <Compile Include="Import\Statistics\BulkImportStatisticsHandler.cs" />
+    <Compile Include="Import\Statistics\FileMetadataEventArgs.cs" />
+    <Compile Include="Import\Statistics\FilesTransferredEventArgs.cs" />
+    <Compile Include="Import\Statistics\IBulkImportStatisticsHandler.cs" />
+    <Compile Include="Import\Statistics\IJobFinishStatisticsHandler.cs" />
+    <Compile Include="Import\Statistics\IMetadataFilesStatisticsHandler.cs" />
+    <Compile Include="Import\Statistics\IMetadataStatisticsHandler.cs" />
+    <Compile Include="Import\Statistics\INativeFilesStatisticsHandler.cs" />
+    <Compile Include="Import\Statistics\IServerErrorStatisticsHandler.cs" />
+    <Compile Include="Import\Statistics\IStatisticsManager.cs" />
+    <Compile Include="Import\Statistics\ITransferRateHandler.cs" />
+    <Compile Include="Import\Statistics\JobFinishStatisticsHandler.cs" />
+    <Compile Include="Import\Statistics\MetadataFileUploadEventArgs.cs" />
+    <Compile Include="Import\Statistics\MetadataStatisticsHandler.cs" />
+    <Compile Include="Import\Statistics\ServerErrorStatisticsHandler.cs" />
+    <Compile Include="Import\Statistics\StatisticsManager.cs" />
+    <Compile Include="Import\Statistics\TransferRateEventArgs.cs" />
+    <Compile Include="Import\Status\CancellationProvider.cs" />
+    <Compile Include="Import\Status\ICancellationProvider.cs" />
+    <Compile Include="Import\Status\IImportStatusManager.cs" />
+    <Compile Include="Import\Status\ImportStatusManager.cs" />
+    <Compile Include="Import\Status\ImportEventArgs.cs" />
+    <Compile Include="Import\Status\ImportStatusUpdateEventArgs.cs" />
+    <Compile Include="Import\Tasks\BatchCleanUpTask.cs" />
+    <Compile Include="Import\Tasks\Helpers\IMetadataFilesServerExecution.cs" />
+    <Compile Include="Import\Tasks\Helpers\MetadataFilesServerExecution.cs" />
+    <Compile Include="Import\Tasks\IBatchCleanUpTask.cs" />
+    <Compile Include="Import\Tasks\IImportFoldersTask.cs" />
+    <Compile Include="Import\Tasks\IImportMetadataTask.cs" />
+    <Compile Include="Import\Tasks\IImportNativesAnalyzer.cs" />
+    <Compile Include="Import\Tasks\IImportPrepareMetadataTask.cs" />
+    <Compile Include="Import\Tasks\IImportNativesTask.cs" />
+    <Compile Include="Import\ImportBatchContext.cs" />
+    <Compile Include="Import\Factories\IFileUploaderFactory.cs" />
+    <Compile Include="Import\ImportBatchJob.cs" />
+    <Compile Include="Import\ImportContext.cs" />
+    <Compile Include="Import\Tasks\ImportDocumentFoldersTask.cs" />
+    <Compile Include="Import\Tasks\ImportNativesTask.cs" />
+    <Compile Include="Import\LoadFileImporter.cs" />
+    <Compile Include="Import\Tasks\ImportNativesAnalyzer.cs" />
+    <Compile Include="Import\Tasks\ImportPrepareMetadataTask.cs" />
+    <Compile Include="Import\Tasks\ImportRdoFoldersTask.cs" />
+    <Compile Include="Import\Tasks\IPrepareMetadataFilesTask.cs" />
+    <Compile Include="Import\Tasks\IPushMetadataFilesTask.cs" />
+    <Compile Include="Import\Tasks\PrepareMetadataFilesTask.cs" />
+    <Compile Include="Import\Tasks\PushMetadataFilesTask.cs" />
+    <Compile Include="Import\UploadResult.cs" />
+    <Compile Include="Installer\ContainerFactory.cs" />
+    <Compile Include="Installer\CoreInstaller.cs" />
     <Compile Include="IO\LongPathDirectoryHelper.cs" />
     <Compile Include="IO\LongPathFileHelper.cs" />
+    <Compile Include="ITransferConfig.cs" />
+    <Compile Include="Logging\LoggerFactory.cs" />
+    <Compile Include="Logging\LoggerProvider.cs" />
+    <Compile Include="LogMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LogMessages.resx</DependentUpon>
+    </Compile>
     <Compile Include="Model\Export\ExtendedExportFile.cs" />
     <Compile Include="Model\Export\Natives\Name\DescriptorPart.cs" />
     <Compile Include="Model\Export\Natives\Name\FieldDescriptorPart.cs" />
     <Compile Include="Model\Export\Natives\Name\SeparatorDescriptorPart.cs" />
     <Compile Include="Model\Export\Process\ExtendedObjectExportInfo.cs" />
+    <Compile Include="TransferConfig.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\kCura\kCura.OI.FileID\kCura.OI.FileID.vbproj">
+      <Project>{ccefd50f-0840-402d-ab16-c93f8e579b8b}</Project>
+      <Name>kCura.OI.FileID</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura\kCura.vbproj">
       <Project>{535d782a-2388-416f-ab46-10347e44eec9}</Project>
       <Name>kCura</Name>
@@ -129,7 +274,12 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="LogMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>LogMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
