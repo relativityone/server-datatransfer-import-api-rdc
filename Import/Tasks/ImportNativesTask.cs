@@ -53,7 +53,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 				uploadResults = UploadFiles(importBatchContext);
 			}
 
-			_cancellationProvider.GetToken().ThrowIfCancellationRequested();
+			_cancellationProvider.ThrowIfCancellationRequested();
 
 			_log.LogInformation("Handling native files upload...");
 
