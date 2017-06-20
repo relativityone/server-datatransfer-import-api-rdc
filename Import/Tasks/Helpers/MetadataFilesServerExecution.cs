@@ -46,7 +46,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks.Helpers
 			MassImportResults result = BulkImport(importSettings);
 			var endTicks = DateTime.Now.Ticks - ticks;
 			_statisticsHandler.RaiseBulkImportCompleted(endTicks, result);
-			_log.LogInformation($"Metadata bulk import completed. Duration: {ticks / TimeSpan.TicksPerMillisecond } miliseconds");
+			_log.LogInformation($"Metadata bulk import completed. Duration: {endTicks / TimeSpan.TicksPerMillisecond } miliseconds");
 		}
 
 		private MassImportResults BulkImport(NativeLoadInfo settings)
