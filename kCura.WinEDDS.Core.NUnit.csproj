@@ -128,6 +128,7 @@
     <Compile Include="Import\Errors\UploadErrorsTests.cs" />
     <Compile Include="Import\ImportJobTests.cs" />
     <Compile Include="Import\ImportNativesAnalyzerTests.cs" />
+    <Compile Include="Import\Statistics\StatisticsManagerTests.cs" />
     <Compile Include="Import\Tasks\Helpers\MetadataFilesServerExecutionTests.cs" />
     <Compile Include="Import\Tasks\ImportDocumentFoldersTaskTests.cs" />
     <Compile Include="Import\Tasks\ImportNativesTaskTests.cs" />
