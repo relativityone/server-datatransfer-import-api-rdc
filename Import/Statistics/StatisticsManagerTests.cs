@@ -107,7 +107,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Statistics
 
 			//Assert
 			_importStatusManagerMock.Verify(obj => obj.RaiseCustomStatusUpdateEvent(_statisticsManager, StatusUpdateType.Progress,
-				It.IsAny<string>(), lineNumber + (int)_loadFile.StartLineNumber), Times.Once);
+				It.IsAny<string>(), lineNumber), Times.Once);
 		}
 
 
