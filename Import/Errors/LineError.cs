@@ -4,7 +4,13 @@ namespace kCura.WinEDDS.Core.Import.Errors
 {
 	public class LineError
 	{
-		public string Message { get; set; }
+		private string _message;
+
+		public string Message
+		{
+			get { return _message; }
+			set { _message = value ?? "Unknown error occurred"; }
+		}
 
 		public int LineNumber { get; set; }
 
