@@ -3,10 +3,12 @@ using kCura.WinEDDS.Api;
 using kCura.WinEDDS.Core.Import.Helpers;
 using kCura.WinEDDS.Core.Import.Status;
 using Relativity;
+using Relativity.MassImport;
+using FileIDData = kCura.OI.FileID.FileIDData;
 
 namespace kCura.WinEDDS.Core.Import.Tasks
 {
-	public class ImportNativesAnalyzer  : IImportNativesAnalyzer
+	public class ImportNativesAnalyzer : IImportNativesAnalyzer
 	{
 		private readonly IFileInfoProvider _fileInfoProvider;
 		private readonly ITransferConfig _transferConfig;
@@ -40,7 +42,10 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			bool fileExists = FileExists(fileMetadata.FullFilePath);
 			if (!fileExists)
 			{
-				fileMetadata.LineStatus += (int)Relativity.MassImport.ImportStatus.FileSpecifiedDne;
+				if (!string.IsNullOrEmpty(fileMetadata.FullFilePath))
+				{
+					fileMetadata.LineStatus += (int) ImportStatus.FileSpecifiedDne;
+				}
 				fileMetadata.FileExists = false;
 			}
 			if (fileMetadata.FileExists && FileContentIsEmpty(fileMetadata))
@@ -48,20 +53,21 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 				if (!_transferConfig.CreateErrorForEmptyNativeFile)
 				{
 					_importStatusManager
-						.RaiseStatusUpdateEvent(this, StatusUpdateType.Warning, $"The file {fileMetadata.FullFilePath} is empty; only metadata will be loaded for this record.", fileMetadata.LineNumber);
+						.RaiseStatusUpdateEvent(this, StatusUpdateType.Warning, $"The file {fileMetadata.FullFilePath} is empty; only metadata will be loaded for this record.",
+							fileMetadata.LineNumber);
 					fileMetadata.FileExists = false;
 					fileMetadata.FullFilePath = string.Empty;
 				}
 				else
 				{
-					fileMetadata.LineStatus += (int)Relativity.MassImport.ImportStatus.EmptyFile;
+					fileMetadata.LineStatus += (int) ImportStatus.EmptyFile;
 				}
 			}
 			fileMetadata.FileName = Path.GetFileName(fileMetadata.FullFilePath);
 			return fileMetadata;
 		}
 
-		private OI.FileID.FileIDData ExtractFileIdData(FileMetadata fileMetadata)
+		private FileIDData ExtractFileIdData(FileMetadata fileMetadata)
 		{
 			if (fileMetadata.FileExists && !_transferConfig.DisableNativeValidation)
 			{
