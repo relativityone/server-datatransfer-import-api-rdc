@@ -172,15 +172,12 @@ namespace kCura.WinEDDS.Core.Import
 
 		private void ProcessBatchRecord(ImportBatchContext importBatchContext)
 		{
-			_importExceptionHandlerExec.TryCatchExec(() =>
-				{
-					ArtifactFieldCollection artifactFieldCollection = _importer.ArtifactReader.ReadArtifact();
-					importBatchContext.FileMetaDataHolder.Add(new FileMetadata
-					{
-						ArtifactFieldCollection = artifactFieldCollection,
-						LineNumber = _importer.ArtifactReader.CurrentLineNumber
-					});
-				});
+			ArtifactFieldCollection artifactFieldCollection = _importer.ArtifactReader.ReadArtifact();
+			importBatchContext.FileMetaDataHolder.Add(new FileMetadata
+			{
+				ArtifactFieldCollection = artifactFieldCollection,
+				LineNumber = _importer.ArtifactReader.CurrentLineNumber
+			});
 		}
 	}
 }
