@@ -31,7 +31,7 @@ namespace kCura.WinEDDS.Core.Import.Errors
 			}, (bool?)true, finalizeAction);
 		}
 
-		public T TryCatchExec<T>(Func<T> executeAction, T defaultRetValue = default(T), Action finalizeAction = null)
+		public T TryCatchExec<T>(Func<T> executeAction, T defaultRetValue = default(T), Action finalizeAction = null, bool rethrowFatal = false)
 		{
 			try
 			{
@@ -63,7 +63,7 @@ namespace kCura.WinEDDS.Core.Import.Errors
 			}
 			catch (Exception ex)
 			{
-				if (ex is OperationCanceledException)
+				if (rethrowFatal || ex is OperationCanceledException)
 				{
 					// Cancellation will be handled at the top process level
 					throw;
@@ -75,6 +75,15 @@ namespace kCura.WinEDDS.Core.Import.Errors
 				finalizeAction?.Invoke();
 			}
 			return defaultRetValue;
+		}
+
+		public void TryCatchExecNonFatal(Action executeAction, Action finalizeAction = null)
+		{
+			TryCatchExec(() =>
+			{
+				executeAction();
+				return true;
+			}, (bool?)true, finalizeAction, true);
 		}
 
 		public void IgnoreOnExceptionExec<TException>(Action action, Func<bool> condition = null)
@@ -90,6 +99,7 @@ namespace kCura.WinEDDS.Core.Import.Errors
 					if (condition != null && condition())
 					{
 						// Ignore error
+						return;
 					}
 				}
 				throw;

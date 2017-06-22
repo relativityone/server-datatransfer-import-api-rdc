@@ -42,7 +42,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			foreach (var metadataFilesInfo in importBatchContext.MetadataFilesInfo)
 			{
 
-				_importExceptionHandlerExec.TryCatchExec(() =>
+				_importExceptionHandlerExec.TryCatchExecNonFatal(() =>
 				{
 					_metadataStatisticsHandler.RaiseUploadingMetadataFileEvent(importBatchContext.MetadataFilesInfo.Count, importBatchContext.MetadataFilesInfo.IndexOf(metadataFilesInfo) + 1);
 					var uploadResult = UploadFiles(metadataFilesInfo);

@@ -1,4 +1,5 @@
 ﻿using System;
+using Castle.Windsor;
 using kCura.WinEDDS.Api;
 using kCura.WinEDDS.Core.Import.Factories;
 using kCura.WinEDDS.Core.Import.Helpers;
@@ -20,12 +21,13 @@ namespace kCura.WinEDDS.Core.Import
 		private readonly ICancellationProvider _cancellationProvider;
 		private readonly IJobFinishStatisticsHandler _jobFinishStatisticsHandler;
 		private readonly ILog _log;
+		private readonly IWindsorContainer _container;
 
 		public event EventHandler<ImportContext> Initialized;
 
 		public ImportJob(ITransferConfig config, IImportBatchJobFactory batchJobBatchJobFactory, IImportStatusManager importStatusManager, 
 			IImportMetadata importer, IImporterSettings importerSettings, IImportExceptionHandlerExec importExceptionHandlerExec,
-			ICancellationProvider cancellationProvider, IJobFinishStatisticsHandler jobFinishStatisticsHandler, ILog log)
+			ICancellationProvider cancellationProvider, IJobFinishStatisticsHandler jobFinishStatisticsHandler, ILog log, IWindsorContainer container)
 		{
 			_config = config;
 			_batchJobBatchJobFactory = batchJobBatchJobFactory;
@@ -36,6 +38,7 @@ namespace kCura.WinEDDS.Core.Import
 			_cancellationProvider = cancellationProvider;
 			_jobFinishStatisticsHandler = jobFinishStatisticsHandler;
 			_log = log;
+			_container = container;
 
 			_context = new ImportContext
 			{
@@ -47,7 +50,7 @@ namespace kCura.WinEDDS.Core.Import
 		public object ReadFile(string path)
 		{
 			_log.LogInformation($"Import job started for '{path}' file.", path);
-			var returValue =  _importExceptionHandlerExec.TryCatchExec<bool?>(
+			var returnValue =  _importExceptionHandlerExec.TryCatchExec<bool?>(
 			() =>
 				{
 					try
@@ -72,11 +75,12 @@ namespace kCura.WinEDDS.Core.Import
 					finally
 					{
 						_importStatusManager.RaiseEndImportEvent(this);
+						_container.Dispose();
 					}
 					return true;
 				}, false, _importer.CleanUp);
 			_log.LogInformation($"Import job finished for '{path}' file.", path);
-			return returValue;
+			return returnValue;
 		}
 
 		private bool CanCreateBatch()
@@ -172,15 +176,12 @@ namespace kCura.WinEDDS.Core.Import
 
 		private void ProcessBatchRecord(ImportBatchContext importBatchContext)
 		{
-			_importExceptionHandlerExec.TryCatchExec(() =>
-				{
-					ArtifactFieldCollection artifactFieldCollection = _importer.ArtifactReader.ReadArtifact();
-					importBatchContext.FileMetaDataHolder.Add(new FileMetadata
-					{
-						ArtifactFieldCollection = artifactFieldCollection,
-						LineNumber = _importer.ArtifactReader.CurrentLineNumber
-					});
-				});
+			ArtifactFieldCollection artifactFieldCollection = _importer.ArtifactReader.ReadArtifact();
+			importBatchContext.FileMetaDataHolder.Add(new FileMetadata
+			{
+				ArtifactFieldCollection = artifactFieldCollection,
+				LineNumber = _importer.ArtifactReader.CurrentLineNumber
+			});
 		}
 	}
 }

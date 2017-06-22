@@ -20,7 +20,7 @@ namespace kCura.WinEDDS.Core.Import.Errors
 					LineError lineError = new LineError
 					{
 						LineNumber = fileMetadata.LineNumber,
-						Message = uploadResults[fileMetadata].ErrorMessage,
+						Message = uploadResults[fileMetadata].ErrorMessage ?? "Unknown error occurred during file upload.",
 						ErrorType = ErrorType.client
 					};
 					_errorContainer.WriteError(lineError);
