@@ -47,7 +47,7 @@ namespace kCura.WinEDDS.Core.Import
 		public object ReadFile(string path)
 		{
 			_log.LogInformation($"Import job started for '{path}' file.", path);
-			var returValue =  _importExceptionHandlerExec.TryCatchExec<bool?>(
+			var returnValue =  _importExceptionHandlerExec.TryCatchExec<bool?>(
 			() =>
 				{
 					try
@@ -76,7 +76,7 @@ namespace kCura.WinEDDS.Core.Import
 					return true;
 				}, false, _importer.CleanUp);
 			_log.LogInformation($"Import job finished for '{path}' file.", path);
-			return returValue;
+			return returnValue;
 		}
 
 		private bool CanCreateBatch()

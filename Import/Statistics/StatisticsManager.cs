@@ -11,6 +11,7 @@ namespace kCura.WinEDDS.Core.Import.Statistics
 
 		private readonly int _startLineNumber;
 		private int _filesTransferred;
+		private int _filesProcessed;
 
 		private string _lastMetadataUploadMessage;
 
@@ -39,6 +40,16 @@ namespace kCura.WinEDDS.Core.Import.Statistics
 			serverErrorStatisticsHandler.RetrievingServerErrors += OnRetrievingServerErrors;
 			serverErrorStatisticsHandler.RetrievingServerErrorStatusUpdated += OnRetrievingServerErrorStatusUpdated;
 			jobFinishStatisticsHandler.JobFinished += OnJobFinished;
+
+			_importStatusManager.EventOccurred += OnEventOccurred;
+		}
+
+		private void OnEventOccurred(object sender, ImportEventArgs importEventArgs)
+		{
+			if (importEventArgs.EventType == ImportEventType.FatalError)
+			{
+				_importStatusManager.RaiseCustomStatusUpdateEvent(this, StatusUpdateType.Progress, "Fatal error encountered", _filesProcessed);
+			}
 		}
 
 		private void OnJobFinished(object sender, string s)
@@ -61,6 +72,7 @@ namespace kCura.WinEDDS.Core.Import.Statistics
 			_importMetadata.Statistics.ProcessRunResults(bulkImportCompletedEventArgs.Results);
 			lock (_lock)
 			{
+				_filesProcessed = _filesTransferred;
 				_importMetadata.Statistics.SqlTime += bulkImportCompletedEventArgs.Time;
 			}
 			_importMetadata.Statistics.DocCount = _importMetadata.Statistics.DocumentsCreated + _importMetadata.Statistics.DocumentsUpdated;
