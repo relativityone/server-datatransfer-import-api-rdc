@@ -42,7 +42,7 @@ Namespace kCura.WinEDDS
 							If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")
 							If Not tempDict.Contains("CreateFoldersInWebAPI") Then tempDict.Add("CreateFoldersInWebAPI", "True")
 							If Not tempDict.Contains("ForceWebUpload") Then tempDict.Add("ForceWebUpload", "False")
-							If Not tempDict.Contains("DisableAspera") Then tempDict.Add("DisableAspera", "False")
+							If Not tempDict.Contains("DisableAspera") Then tempDict.Add("DisableAspera", "True")
 							If Not tempDict.Contains("RestUrl") Then tempDict.Add("RestUrl", "/Relativity.REST/api")
 							If Not tempDict.Contains("ServicesUrl") Then tempDict.Add("ServicesUrl", "/Relativity.Services/")
 							If Not tempDict.Contains("AsperaBcpPathRootFolder") Then tempDict.Add("AsperaBcpPathRootFolder", "BCPPath")
