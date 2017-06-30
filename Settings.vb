@@ -115,7 +115,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <returns></returns>
 		''' <remarks>If <see cref="OIFileIdMapped">OIFileIdMapped</see> or <see cref="OIFileIdMapped">FileSizeMapped</see> is set to True, set this property to the value that indicates the 
 		'''		<see cref="SourceIDataReader.SourceData">SourceData</see> column that contains the OutsideInFileId. To determine the file ID, call the 
-		'''		kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath() method.</remarks>
+		'''		kCura.OI.FileID.Manager.GetFileIDDataByFilePath() method.</remarks>
 		Public Property OIFileIdColumnName As String
 
 		''' <summary>
@@ -126,7 +126,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <returns></returns>
 		''' <remarks>If the <see cref="OIFileIdMapped">OIFileIdMapped</see> property is to True, set this property to the value that indicates the 
 		'''		<see cref="SourceIDataReader.SourceData">SourceData</see> column that contains the OutsideInFileType. To determine the file type, call the 
-		'''		kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath() method. </remarks>
+		'''		kCura.OI.FileID.Manager.GetFileIDDataByFilePath() method. </remarks>
 		Public Property OIFileTypeColumnName As String
 
 		''' <summary>
