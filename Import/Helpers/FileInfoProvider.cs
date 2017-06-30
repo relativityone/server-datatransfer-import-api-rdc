@@ -21,7 +21,7 @@ namespace kCura.WinEDDS.Core.Import.Helpers
 
 		public FileIDData GetFileId(string fileName)
 		{
-			return Manager.GetFileIDDataByFilePath(fileName);
+			return Manager.Instance.GetFileIDDataByFilePath(fileName);
 		}
 
 		public long GetFileSize(FileMetadata fileMetadata)
