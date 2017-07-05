@@ -272,7 +272,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="oi, Version=2017.1.0.113, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32.2017.1.0\lib\net40\oi.dll</HintPath>
+      <HintPath>..\..\packages\kCura.OutsideIn.FI.unified.2017.1.0\lib\net40\oi.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
@@ -564,27 +564,43 @@
     <Content Include="images\kcura.ICO" />
     <Content Include="images\relativity.ICO" />
     <Content Include="images\relativity1.ICO" />
-    <None Include="oi\unmanaged\cmmap000.bin" />
+    <None Include="oi\unmanaged\x64\cmmap000.bin" />
+    <None Include="oi\unmanaged\x86\cmmap000.bin" />
     <None Include="packages.config" />
     <None Include="Resources\CopyrightInfo.txt" />
     <Content Include="LoggerConfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="oi\unmanaged\oilink.exe" />
-    <Content Include="oi\unmanaged\oilink.jar" />
-    <Content Include="oi\unmanaged\sccca-R1.dll" />
-    <Content Include="oi\unmanaged\sccch-R1.dll" />
-    <Content Include="oi\unmanaged\sccda-R1.dll" />
-    <Content Include="oi\unmanaged\sccex-R1.dll" />
-    <Content Include="oi\unmanaged\sccfa-R1.dll" />
-    <Content Include="oi\unmanaged\sccfi-R1.dll" />
-    <Content Include="oi\unmanaged\sccfmt-R1.dll" />
-    <Content Include="oi\unmanaged\sccfnt-R1.dll" />
-    <Content Include="oi\unmanaged\sccfut-R1.dll" />
-    <Content Include="oi\unmanaged\sccind-R1.dll" />
-    <Content Include="oi\unmanaged\scclo-R1.dll" />
-    <Content Include="oi\unmanaged\sccut-R1.dll" />
-    <Content Include="oi\unmanaged\wvcore-R1.dll" />
+    <Content Include="oi\unmanaged\x64\oilink.exe" />
+    <Content Include="oi\unmanaged\x64\oilink.jar" />
+    <Content Include="oi\unmanaged\x64\sccca-R1.dll" />
+    <Content Include="oi\unmanaged\x64\sccch-R1.dll" />
+    <Content Include="oi\unmanaged\x64\sccda-R1.dll" />
+    <Content Include="oi\unmanaged\x64\sccex-R1.dll" />
+    <Content Include="oi\unmanaged\x64\sccfa-R1.dll" />
+    <Content Include="oi\unmanaged\x64\sccfi-R1.dll" />
+    <Content Include="oi\unmanaged\x64\sccfmt-R1.dll" />
+    <Content Include="oi\unmanaged\x64\sccfnt-R1.dll" />
+    <Content Include="oi\unmanaged\x64\sccfut-R1.dll" />
+    <Content Include="oi\unmanaged\x64\sccind-R1.dll" />
+    <Content Include="oi\unmanaged\x64\scclo-R1.dll" />
+    <Content Include="oi\unmanaged\x64\sccut-R1.dll" />
+    <Content Include="oi\unmanaged\x64\wvcore-R1.dll" />
+    <Content Include="oi\unmanaged\x86\oilink.exe" />
+    <Content Include="oi\unmanaged\x86\oilink.jar" />
+    <Content Include="oi\unmanaged\x86\sccca-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccch-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccda-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccex-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccfa-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccfi-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccfmt-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccfnt-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccfut-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccind-R1.dll" />
+    <Content Include="oi\unmanaged\x86\scclo-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccut-R1.dll" />
+    <Content Include="oi\unmanaged\x86\wvcore-R1.dll" />
     <Content Include="ToDo.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -627,5 +643,5 @@
 			copy /Y "$(ProjectDir)..\..\Vendor\FreeImage\3.151\FreeImage\Release\$(PlatformName)\FreeImage.dll" "$(TargetDir)"
 		</PostBuildEvent>
   </PropertyGroup>
-  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32.2017.1.0\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2017.1.0\build\kCura.OutsideIn.FI.Win32.targets')" />
+  <Import Project="..\..\packages\kCura.OutsideIn.FI.unified.2017.1.0\build\kCura.OutsideIn.FI.unified.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.unified.2017.1.0\build\kCura.OutsideIn.FI.unified.targets')" />
 </Project>
