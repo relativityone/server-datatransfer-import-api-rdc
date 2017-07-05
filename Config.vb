@@ -42,10 +42,16 @@ Namespace kCura.WinEDDS
 							If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")
 							If Not tempDict.Contains("CreateFoldersInWebAPI") Then tempDict.Add("CreateFoldersInWebAPI", "True")
 							If Not tempDict.Contains("ForceWebUpload") Then tempDict.Add("ForceWebUpload", "False")
+							If Not tempDict.Contains("DisableAspera") Then tempDict.Add("DisableAspera", "False")
+							If Not tempDict.Contains("RestUrl") Then tempDict.Add("RestUrl", "/Relativity.REST/api")
+							If Not tempDict.Contains("ServicesUrl") Then tempDict.Add("ServicesUrl", "/Relativity.Services/")
+							If Not tempDict.Contains("AsperaBcpPathRootFolder") Then tempDict.Add("AsperaBcpPathRootFolder", "BCPPath")
+							If Not tempDict.Contains("AsperaNativeFilesRootFolder") Then tempDict.Add("AsperaNativeFilesRootFolder", "Files")
+							If Not tempDict.Contains("LoggerConfigFile") Then tempDict.Add("LoggerConfigFile", "LoggerConfig.xml")
 							If Not tempDict.Contains(NameOf(LoadImportedFullTextFromServer)) Then tempDict.Add(NameOf(LoadImportedFullTextFromServer), "False")
-							If Not tempDict.Contains(NameOf(UsePipeliningForNativeAndObjectImports)) Then tempDict.Add(NameOf(UsePipeliningForNativeAndObjectImports), "False")
-							If Not tempDict.Contains(NameOf(UsePipeliningForFileIdAndCopy)) Then tempDict.Add(NameOf(UsePipeliningForFileIdAndCopy), "False")
-								If Not tempDict.Contains(NameOf(ProcessFormRefreshRate)) Then tempDict.Add(NameOf(ProcessFormRefreshRate), "0")
+							If Not tempDict.Contains(NameOf(UsePipeliningForNativeAndObjectImports)) Then tempDict.Add(NameOf(UsePipeliningForNativeAndObjectImports), "True")
+							If Not tempDict.Contains(NameOf(UsePipeliningForFileIdAndCopy)) Then tempDict.Add(NameOf(UsePipeliningForFileIdAndCopy), "True")
+							If Not tempDict.Contains(NameOf(ProcessFormRefreshRate)) Then tempDict.Add(NameOf(ProcessFormRefreshRate), "0")
 								_configDictionary = tempDict
 							End If
                     End SyncLock
@@ -132,7 +138,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Private Shared Function ValidateURIFormat(ByVal returnValue As String) As String
+		Public Shared Function ValidateURIFormat(ByVal returnValue As String) As String
 			If Not String.IsNullOrEmpty(returnValue) AndAlso Not returnValue.Trim.EndsWith("/") Then
 				returnValue = returnValue.Trim + "/"
 			End If
@@ -162,7 +168,7 @@ Namespace kCura.WinEDDS
 				Try
 					Return CType(ConfigSettings(NameOf(UsePipeliningForFileIdAndCopy)), Boolean)
 				Catch
-					Return False
+					Return True
 				End Try
 			End Get
 		End Property
@@ -172,7 +178,7 @@ Namespace kCura.WinEDDS
 				Try
 					Return CType(ConfigSettings(NameOf(UsePipeliningForNativeAndObjectImports)), Boolean)
 				Catch
-					Return False
+					Return True
 				End Try
 			End Get
 		End Property
@@ -329,6 +335,42 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Shared ReadOnly Property DisableAspera() As Boolean
+			Get
+				Return CType(ConfigSettings("DisableAspera"), Boolean)
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property RestUrl() As String
+			Get
+				Return CType(ConfigSettings("RestUrl"), String)
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property ServicesUrl() As String
+			Get
+				Return CType(ConfigSettings("ServicesUrl"), String)
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property LoggerConfigFile() As String
+			Get
+				Return CType(ConfigSettings("LoggerConfigFile"), String)
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property AsperaBcpPathRootFolder() As String
+			Get
+				Return CType(ConfigSettings("AsperaBcpPathRootFolder"), String)
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property AsperaNativeFilesRootFolder() As String
+			Get
+				Return CType(ConfigSettings("AsperaNativeFilesRootFolder"), String)
+			End Get
+		End Property
+
 		Public Shared Property ForceFolderPreview() As Boolean
 			Get
 				Dim registryValue As String = Config.GetRegistryKeyValue("ForceFolderPreview")
@@ -418,5 +460,6 @@ Namespace kCura.WinEDDS
 				Return System.Math.Max(CType(ConfigSettings("WebBasedFileDownloadChunkSize"), Int32), 1024)
 			End Get
 		End Property
+		
 	End Class
 End Namespace
