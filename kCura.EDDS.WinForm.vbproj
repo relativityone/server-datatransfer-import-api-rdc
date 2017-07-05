@@ -121,6 +121,10 @@
     <DefineConstants>EnableInjections</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.WinEDDS.Aspera\kCura.WinEDDS.Aspera.csproj">
+      <Project>{B9E022D8-7BDC-44B8-BEE3-2BB61571FC5E}</Project>
+      <Name>kCura.WinEDDS.Aspera</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura\kCura.vbproj">
       <Project>{535d782a-2388-416f-ab46-10347e44eec9}</Project>
       <Name>kCura</Name>
@@ -243,6 +247,7 @@
     <Compile Include="ConfigDictionary.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ConnectionTestingHelper.vb" />
     <Compile Include="Controller\FieldMapFourPickerController.vb" />
     <Compile Include="Controls\CaseFolderExplorer.vb">
       <SubType>UserControl</SubType>
@@ -435,6 +440,9 @@
     <Content Include="images\relativity1.ICO" />
     <None Include="packages.config" />
     <None Include="Resources\CopyrightInfo.txt" />
+    <Content Include="LoggerConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="ToDo.txt" />
   </ItemGroup>
   <ItemGroup>
