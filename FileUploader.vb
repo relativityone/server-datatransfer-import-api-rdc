@@ -1,3 +1,6 @@
+Imports System.IO
+Imports kCura.WinEDDS.Aspera
+
 Namespace kCura.WinEDDS
 	Public Class FileUploader
 		Public Enum Type
@@ -50,7 +53,6 @@ Namespace kCura.WinEDDS
 
 		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal caseArtifactID As Int32, ByVal destinationFolderPath As String, ByVal cookieContainer As System.Net.CookieContainer, Optional ByVal sortIntoVolumes As Boolean = True)
 			_gateway = New kCura.WinEDDS.Service.FileIO(credentials, cookieContainer)
-
 			_gateway.Credentials = credentials
 			_gateway.Timeout = Int32.MaxValue
 			_credentials = credentials
@@ -224,7 +226,6 @@ Namespace kCura.WinEDDS
 			While tries > 0 And (DoRetry OrElse tries = NumberOfRetries)
 				Try
 					If Me.UploaderType = Type.Web Then
-						Me.UploaderType = Type.Web
 						Return Me.WebUploadFile(New System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read), contextArtifactID, newFileName)
 					Else
 						Return Me.DirectUploadFile(filePath, contextArtifactID, newFileName, internalUse, tries < NumberOfRetries)
@@ -252,6 +253,14 @@ Namespace kCura.WinEDDS
 			End While
 			Return Nothing
 		End Function
+
+		'Private Function UploadFileUsingAspera(ByVal filePath As String, ByVal newFileName As String) As String
+		'	Dim destinationDirectory As String = _repositoryPathManager.GetNextDestinationDirectory(String.Empty)
+		'	If Not _sortIntoVolumes Then destinationDirectory = String.Empty
+		'	Dim destinationFileName As String = Path.Combine(destinationDirectory, newFileName)
+		'	_asperaUploadFile.UploadFile(filePath, _caseArtifactID, destinationFileName)
+		'	return newFileName
+		'End Function
 
 		Private Function IsWarningException(ByVal ex As System.Exception) As Boolean
 			If Me.UploaderType = Type.Direct And TypeOf ex Is System.IO.IOException Then Return True

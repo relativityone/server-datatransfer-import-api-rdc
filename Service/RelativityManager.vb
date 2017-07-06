@@ -11,7 +11,7 @@ Namespace kCura.WinEDDS.Service
 
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}RelativityManager.asmx", webServiceUrl)
+			Me.Url = String.Format("{0}RelativityManager.asmx", kCura.WinEDDS.Config.ValidateURIFormat(webServiceUrl))
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 
