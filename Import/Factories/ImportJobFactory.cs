@@ -36,7 +36,7 @@ namespace kCura.WinEDDS.Core.Import.Factories
 			var importExceptionHandlerExec = _container.Resolve<IImportExceptionHandlerExec>();
 
 			return new ImportJob(_transferConfig, _batchJobBatchJobFactory, _importStatusManager, importMetadata, importerSettings,
-				importExceptionHandlerExec, cancellationProvider, _jobFinishStatisticsHandler, _log);
+				importExceptionHandlerExec, cancellationProvider, _jobFinishStatisticsHandler, _log, _container);
 		}
 	}
 }

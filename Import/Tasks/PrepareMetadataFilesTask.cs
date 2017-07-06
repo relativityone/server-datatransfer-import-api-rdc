@@ -39,7 +39,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 			CreateNewMetadataFiles();
 			foreach (var keyValuePair in uploadResults.Where(x => x.Value.Success))
 			{
-				_importExceptionHandlerExec.TryCatchExec(() =>
+				_importExceptionHandlerExec.TryCatchExecNonFatal(() =>
 				{
 					_cancellationProvider.ThrowIfCancellationRequested();
 					if (MetadataFilesExceededMaxSize())

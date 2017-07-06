@@ -53,7 +53,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 				uploadResults = UploadFiles(importBatchContext);
 			}
 
-			_cancellationProvider.GetToken().ThrowIfCancellationRequested();
+			_cancellationProvider.ThrowIfCancellationRequested();
 
 			_log.LogInformation("Handling native files upload...");
 
@@ -97,7 +97,7 @@ namespace kCura.WinEDDS.Core.Import.Tasks
 		{
 			// This task reffers to document type native import
 
-			_importExceptionHandlerExec.TryCatchExec(() =>
+			_importExceptionHandlerExec.TryCatchExecNonFatal(() =>
 			{
 				fileMetadata.UploadFile = ExtractUploadCheck(fileMetadata);
 				if (CanExecute(fileMetadata, importBatchContext))
