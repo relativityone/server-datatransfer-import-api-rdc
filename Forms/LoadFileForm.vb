@@ -2002,8 +2002,8 @@ Namespace kCura.EDDS.WinForm
 			Return retval
 		End Function
 
-		Private Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
-			Dim useAspera As Boolean = AsperaModeConfiguration.UseAspera(LoadFile, _application.GetConnectionStatus())
+		Private Async Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
+			Dim useAspera As Boolean = AsperaModeConfiguration.UseAspera(LoadFile, Await _application.GetConnectionStatus())
 			If useAspera Then
 				MsgBox("Repository settings can not be changed when RDC runs in Aspera transfer mode. Aspera Server is " &
 					"configured to upload native files to the default workspace fileshare location. " &
