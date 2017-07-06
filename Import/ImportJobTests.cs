@@ -1,5 +1,5 @@
-﻿
-using System;
+﻿using System;
+using Castle.Windsor;
 using kCura.WinEDDS.Api;
 using kCura.WinEDDS.Core.Import;
 using kCura.WinEDDS.Core.Import.Errors;
@@ -54,15 +54,16 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_importExceptionHandlerExec = new ImportExceptionHandlerExec(_impStatusManagerMock.Object, _importMetadataMock.Object,
 				_errorContainerMock.Object, _log.Object);
 
-			_subjectUnderTest = new ImportJob(_transferConfigMock.Object, _importJobBatchFactoryMock.Object, _impStatusManagerMock.Object, 
-				_importMetadataMock.Object, _importSettings.Object, _importExceptionHandlerExec, _cancellationProviderMock.Object, jobFinishStatisticsHandler.Object, log.Object);
+			_subjectUnderTest = new ImportJob(_transferConfigMock.Object, _importJobBatchFactoryMock.Object, _impStatusManagerMock.Object,
+				_importMetadataMock.Object, _importSettings.Object, _importExceptionHandlerExec, _cancellationProviderMock.Object, jobFinishStatisticsHandler.Object, log.Object,
+				new Mock<IWindsorContainer>().Object);
 
 			_artifactReaderMock.Setup(reader => reader.AdvanceRecord());
 
 			_loadFile = new LoadFile();
 			_importSettings.SetupGet(obj => obj.LoadFile).Returns(_loadFile);
 		}
-		
+
 		[Test]
 		public void ItShouldReadOnlyHeader()
 		{
@@ -70,7 +71,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_artifactReaderMock.Setup(reader => reader.HasMoreRecords).Returns(false);
 
 			// Act
-			var actualRes = (bool?)_subjectUnderTest.ReadFile("");
+			var actualRes = (bool?) _subjectUnderTest.ReadFile("");
 
 			// Assert
 			_artifactReaderMock.Verify(reader => reader.ReadArtifact(), Times.Never);
@@ -83,12 +84,12 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 		{
 			const int maxBatchSize = 3;
 			_loadFile.StartLineNumber = 1000;
-			
+
 			// Arrange
 			_artifactReaderMock.SetupSequence(reader => reader.HasMoreRecords)
 				.Returns(true)
 				.Returns(false) // Here we should only call once AdvanceRecord methos on artifact reader to move record index(init import)
-				.Returns(true)  // Here we should read lines "maxBatchSize"-times
+				.Returns(true) // Here we should read lines "maxBatchSize"-times
 				.Returns(true)
 				.Returns(true)
 				.Returns(true)
@@ -103,14 +104,14 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_transferConfigMock.SetupGet(config => config.ImportBatchSize).Returns(maxBatchSize);
 
 			// Act
-			var actualRes = (bool?)_subjectUnderTest.ReadFile("");
+			var actualRes = (bool?) _subjectUnderTest.ReadFile("");
 
 			// Assert
 			_artifactReaderMock.Verify(reader => reader.ReadArtifact(), Times.Exactly(maxBatchSize));
 			_artifactReaderMock.Verify(reader => reader.AdvanceRecord(), Times.Once);
 			_artifactReaderMock.Verify(reader => reader.CountRecords(), Times.Once);
 
-			_importJobBatchMock.Verify(job => job.Run(It.Is<ImportBatchContext>( context => context.FileMetaDataHolder.Count == maxBatchSize)));
+			_importJobBatchMock.Verify(job => job.Run(It.Is<ImportBatchContext>(context => context.FileMetaDataHolder.Count == maxBatchSize)));
 
 			Assert.That(actualRes.Value);
 
@@ -128,12 +129,12 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			_artifactReaderMock.Setup(reader => reader.HasMoreRecords).Returns(false);
 			_artifactReaderMock.Setup(reader => reader.CountRecords()).Returns(recCount);
 			// Act
-			var actualResult = (bool?)_subjectUnderTest.ReadFile("");
+			var actualResult = (bool?) _subjectUnderTest.ReadFile("");
 
 			// Assert
 			var expectedCallCount = raiseCancelEvent ? new Func<Times>(Times.Once) : Times.Never;
 
-			_impStatusManagerMock.Verify(obj => obj.RaiseStatusUpdateEvent(_subjectUnderTest, StatusUpdateType.Progress, "cancel import", 
+			_impStatusManagerMock.Verify(obj => obj.RaiseStatusUpdateEvent(_subjectUnderTest, StatusUpdateType.Progress, "cancel import",
 				It.IsAny<int>()), expectedCallCount);
 
 			Assert.That(actualResult.Value, Is.EqualTo(!raiseCancelEvent));

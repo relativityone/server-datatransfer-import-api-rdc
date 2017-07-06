@@ -142,6 +142,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import
 			Assert.That(fileMetadata.FullFilePath, Is.EqualTo(string.Empty));
 			Assert.That(!fileMetadata.FileExists);
 			Assert.That(fileMetadata.FileName, Is.Empty);
+			Assert.That(fileMetadata.LineStatus, Is.EqualTo(0));
 		}
 
 		[Test]
