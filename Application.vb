@@ -814,6 +814,20 @@ Namespace kCura.EDDS.WinForm
 			End Try
 		End Sub
 
+        Public Sub NewFileTransfer()
+			Dim frm As FileTransferForm = New FileTransferForm()
+			Try
+				frm.Show()
+			Catch ex As System.Exception
+				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+					NewLogin(False)
+					Exit Sub
+				Else
+					Throw
+				End If
+			End Try
+		End Sub
+
 		Public Function GetListOfProductionsForCase(ByVal caseInfo As Relativity.CaseInfo) As System.Data.DataTable
 			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _CookieContainer)
 			Return productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)

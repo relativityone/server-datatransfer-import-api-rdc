@@ -269,6 +269,8 @@
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="Relativity.OAuth2Client, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.8\lib\net462\Relativity.OAuth2Client.dll</HintPath>
       <Private>True</Private>
@@ -331,6 +333,7 @@
       <Name>kCura.WinEDDS</Name>
     </ProjectReference>
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <Import Include="kCura.WinEDDS" />
@@ -457,6 +460,12 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FormsUserNotification.vb" />
+    <Compile Include="Forms\FileTransferForm.Designer.vb">
+      <DependentUpon>FileTransferForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FileTransferForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="ImportOptions.vb" />
     <Compile Include="ImportManager.vb" />
     <Compile Include="My Project\Resources.Designer.vb">
@@ -545,6 +554,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\TextPrecedenceForm.resx">
       <DependentUpon>TextPrecedenceForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FileTransferForm.resx">
+      <DependentUpon>FileTransferForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
