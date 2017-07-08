@@ -1,0 +1,582 @@
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="NativeFileTransfer.cs" company="kCura Corp">
+//   kCura Corp (C) 2017 All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the core file transfer class object to support native files.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace kCura.WinEDDS.TApi
+{
+    using System;
+    using System.Globalization;
+    using System.Net;
+    using System.Threading;
+
+    using kCura.Utility;
+
+    using Relativity.Services.ServiceProxy;
+    using Relativity.Transfer;
+    using Relativity.Transfer.Aspera;
+    using Strings = kCura.WinEDDS.TApi.Resources.Strings;
+
+    /// <summary>
+    /// Represents a class object to support native file transfers.
+    /// </summary>
+    public class NativeFileTransfer : IDisposable
+    {
+        /// <summary>
+        /// The cancellation token source.
+        /// </summary>
+        private readonly CancellationToken cancellationToken;
+
+        /// <summary>
+        /// The context used for transfer events.
+        /// </summary>
+        private readonly TransferContext context;
+
+        /// <summary>
+        /// The file system service.
+        /// </summary>
+        private readonly IFileSystemService fileSystemService;
+
+        /// <summary>
+        /// The is bulk enabled flag.
+        /// </summary>
+        private readonly bool isBulkEnabled;
+
+        /// <summary>
+        /// The Relativity transfer host.
+        /// </summary>
+        private IRelativityTransferHost transferHost;
+
+        /// <summary>
+        /// The transfer client.
+        /// </summary>
+        private ITransferClient transferClient;
+
+        /// <summary>
+        /// The transfer job.
+        /// </summary>
+        private ITransferJob transferJob;
+
+        /// <summary>
+        /// The disposed backing.
+        /// </summary>
+        private bool disposed;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NativeFileTransfer"/> class.
+        /// </summary>
+        /// <param name="credentials">
+        /// The Relativity network credentials.
+        /// </param>
+        /// <param name="workspaceId">
+        /// The workspace artifact identifier.
+        /// </param>
+        /// <param name="targetPath">
+        /// The target path.
+        /// </param>
+        /// <param name="isBulkEnabled">
+        /// Specify whether the bulk feature is enabled.
+        /// </param>
+        /// <param name="token">
+        /// The cancellation token.
+        /// </param>
+        public NativeFileTransfer(
+            NetworkCredential credentials,
+            int workspaceId,
+            string targetPath,
+            bool isBulkEnabled,
+            CancellationToken token)
+            : this(
+                CreateRelativityConnectionInfo(credentials, workspaceId),
+                workspaceId,
+                targetPath,
+                isBulkEnabled,
+                token)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NativeFileTransfer"/> class.
+        /// </summary>
+        /// <param name="connectionInfo">
+        /// The Relativity connection information.
+        /// </param>
+        /// <param name="workspaceId">
+        /// The workspace artifact identifier.
+        /// </param>
+        /// <param name="targetPath">
+        /// The target path.
+        /// </param>
+        /// <param name="isBulkEnabled">
+        /// Specify whether the bulk feature is enabled.
+        /// </param>
+        /// <param name="token">
+        /// The cancellation token.
+        /// </param>
+        public NativeFileTransfer(
+            RelativityConnectionInfo connectionInfo,
+            int workspaceId,
+            string targetPath,
+            bool isBulkEnabled,
+            CancellationToken token)
+        {
+            if (connectionInfo == null)
+            {
+                throw new ArgumentNullException(nameof(connectionInfo));
+            }
+
+            if (workspaceId < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(workspaceId), Strings.WorkspaceExceptionMessage);
+            }
+
+            if (string.IsNullOrEmpty(targetPath))
+            {
+                throw new ArgumentNullException(nameof(targetPath));
+            }
+
+            // Note: this must be set before constructing the host.
+            var logSettings = LogSettings.Instance;
+            logSettings.Sinks = LogSinks.None;
+            this.transferHost = new RelativityTransferHost(connectionInfo);
+            this.MaxRetryCount = Config.IOErrorNumberOfRetries;
+            this.WorkspaceId = workspaceId;
+            this.TargetPath = targetPath;
+            this.isBulkEnabled = isBulkEnabled;
+            this.cancellationToken = token;
+            this.context = new TransferContext();
+            this.context.TransferFileIssue += this.ContextOnTransferFileIssue;
+            this.context.TransferRequest += this.ContextOnTransferRequest;
+            this.context.TransferStatistics += this.ContextOnTransferStatistics;
+            this.fileSystemService = new FileSystemService();
+        }
+
+        /// <summary>
+        /// Occurs when a status message is available.
+        /// </summary>
+        public event EventHandler<TransferMessageEventArgs> StatusMessage = delegate { };
+
+        /// <summary>
+        /// Occurs when a warning message is available.
+        /// </summary>
+        public event EventHandler<TransferMessageEventArgs> WarningMessage = delegate { };
+
+        /// <summary>
+        /// Occurs when the transfer client is changed.
+        /// </summary>
+        public event EventHandler<TransferClientEventArgs> ClientChanged = delegate { };
+
+        /// <summary>
+        /// Gets the current client identifier.
+        /// </summary>
+        /// <value>
+        /// The <see cref="Guid"/> value.
+        /// </value>
+        public Guid ClientId => this.transferClient?.Id ?? Guid.Empty;
+
+        /// <summary>
+        /// Gets the current client name.
+        /// </summary>
+        /// <value>
+        /// The name.
+        /// </value>
+        public string ClientName => this.transferClient != null ? this.transferClient.Name : string.Empty;
+
+        /// <summary>
+        /// Gets the max retry count.
+        /// </summary>
+        /// <value>
+        /// The count.
+        /// </value>
+        public int MaxRetryCount
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Gets or sets the target path.
+        /// </summary>
+        /// <value>
+        /// The path.
+        /// </value>
+        public string TargetPath
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the target folder name.
+        /// </summary>
+        /// <value>
+        /// The folder name.
+        /// </value>
+        public string TargetFolderName
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets the wait time between retry attempts.
+        /// </summary>
+        /// <value>
+        /// The wait time between retry attempts.
+        /// </value>
+        public int WaitTimeBetweenRetryAttempts => this.transferJob == null
+                                                       ? Config.IOErrorWaitTimeInSeconds
+                                                       : Convert.ToInt32(this.transferJob.RetryWaitPeriod.TotalSeconds);
+
+        /// <summary>
+        /// Gets the workspace artifact identifier.
+        /// </summary>
+        /// <value>
+        /// The artifact identifier.
+        /// </value>
+        public int WorkspaceId
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Adds the path to a transfer job.
+        /// </summary>
+        /// <param name="sourceFile">
+        /// The full path to the source file.
+        /// </param>
+        /// <param name="targetFileName">
+        /// The optional target filename.
+        /// </param>
+        /// <returns>
+        /// The file name.
+        /// </returns>
+        public string AddPath(string sourceFile, string targetFileName)
+        {
+            if (this.transferJob == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            var transferPath = new TransferPath { SourcePath = sourceFile, TargetFileName = targetFileName };
+            this.transferJob.AddPath(transferPath);
+            return string.IsNullOrEmpty(targetFileName)
+                       ? this.fileSystemService.GetFileName(sourceFile)
+                       : targetFileName;
+        }
+
+        /// <summary>
+        /// Creates a new transfer job.
+        /// </summary>
+        /// <param name="direction">
+        /// The transfer direction.
+        /// </param>
+        public void CreateTransferJob(TransferDirection direction)
+        {
+            this.CreateTransferClient();
+            var request = direction == TransferDirection.Upload
+                              ? TransferRequest.ForUploadJob(this.TargetPath, this.context)
+                              : TransferRequest.ForDownloadJob(this.TargetPath, this.context);
+            request.MaxRetryAttempts = this.MaxRetryCount;
+
+            try
+            {
+                // TODO: Potentially wrap with a try/catch if better error handling is needed.
+                var task = this.transferClient.CreateJobAsync(request, this.cancellationToken);
+                task.Wait(this.cancellationToken);
+                this.transferJob = task.GetAwaiter().GetResult();
+            }
+            catch (OperationCanceledException)
+            {
+                this.DestroyTransferJob();
+            }
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Waits for the transfer job to complete all remaining queued transfers.
+        /// </summary>
+        public void WaitForTransferJob()
+        {
+            if (this.transferJob == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            try
+            {
+                // Note: retry is already built into TAPI.
+                var taskResult = this.transferJob.CompleteAsync(this.cancellationToken);
+                taskResult.Wait(this.cancellationToken);
+                var transferResult = taskResult.GetAwaiter().GetResult();
+                if (transferResult.Status != TransferStatus.Failed && transferResult.Status != TransferStatus.Canceled)
+                {
+                    return;
+                }
+
+                var errorMessage = Strings.TransferJobExceptionMessage;
+                var error = transferResult.TransferError;
+                if (!string.IsNullOrEmpty(error?.Message))
+                {
+                    errorMessage = error.Message;
+                }
+
+                throw new InvalidOperationException(errorMessage);
+            }
+            finally
+            {
+                this.DestroyTransferJob();
+            }
+        }
+
+        /// <summary>
+        /// Creates the best transfer client.
+        /// </summary>        
+        protected void CreateTransferClient()
+        {
+            if (this.transferClient != null)
+            {
+                return;
+            }
+
+            var asperaConfiguration =
+                new AsperaClientConfiguration
+                    {
+                        Host = new Uri("172.16.104.21", UriKind.Relative),
+                        AccountUserName = "T999",
+                        AccountPassword = "P@ssw0rd@1P@ssw0rd@1"
+                    };
+            this.transferClient = this.transferHost.CreateClient(asperaConfiguration);
+            this.RaiseClientChanged();
+        }        
+
+        /// <summary>
+        /// Raises a status message event.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        protected void RaiseStatusMessage(string message)
+        {
+            this.StatusMessage.Invoke(this, new TransferMessageEventArgs(message));
+        }
+
+        /// <summary>
+        /// Raises a warning message event.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        protected void RaiseWarningMessage(string message)
+        {
+            this.WarningMessage.Invoke(this, new TransferMessageEventArgs(message));
+        }
+
+        /// <summary>
+        /// Raises a client changed event.
+        /// </summary>
+        protected void RaiseClientChanged()
+        {
+            this.ClientChanged.Invoke(this, new TransferClientEventArgs(this.transferClient.Name, this.isBulkEnabled));
+        }
+
+        /////// <summary>
+        /////// Handles issues in the transfer result.
+        /////// </summary>
+        /////// <param name="result">
+        /////// The transfer result.
+        /////// </param>
+        /////// <exception cref="Exception">
+        /////// An Exception is thrown when the transfer result is null.
+        /////// </exception>
+        /////// <exception cref="ApplicationException">
+        /////// An ApplicationException is thrown for fatal errors.
+        /////// </exception>
+        ////private void HandleTransferResult(ITransferResult result)
+        ////{
+        ////    if (result == null)
+        ////    {
+        ////        throw new Exception("Transfer Result was null.");
+        ////    }
+        ////    else if (result.Status == TransferStatus.Failed)
+        ////    {
+
+        ////        var fatal = false;
+        ////        foreach (ITransferIssue issue in result.Issues)
+        ////        {
+        ////            if (issue.Tags.HasFlag(IssueTags.Error))
+        ////            {
+        ////                Console.WriteLine("Error : " + issue.Message);
+        ////                fatal = true;
+        ////            }
+        ////            else if (issue.Tags.HasFlag(IssueTags.Warning))
+        ////            {
+        ////                Console.WriteLine("Warning : " + issue.Message);
+        ////            }
+        ////            else
+        ////            {
+        ////                Console.WriteLine("Issue Occured During Transfer : " + issue.Message);
+        ////            }
+        ////        }
+
+        ////        if (fatal)
+        ////        {
+        ////            throw new ApplicationException("Transfer Job Failed.");
+        ////        }
+        ////    }
+        ////}
+
+        /// <summary>
+        /// Creates a Relativity connection information object.
+        /// </summary>
+        /// <param name="credentials">
+        /// The network credentials.
+        /// </param>
+        /// <param name="workspaceId">
+        /// The workspace identifier.
+        /// </param>
+        /// <returns>
+        /// The <see cref="RelativityConnectionInfo"/> instance.
+        /// </returns>
+        private static RelativityConnectionInfo CreateRelativityConnectionInfo(NetworkCredential credentials, int workspaceId)
+        {
+            var webServiceUrl = new Uri(WinEDDS.Config.WebServiceURL);
+            var host = new Uri(webServiceUrl.GetLeftPart(UriPartial.Authority));
+            return new RelativityConnectionInfo(
+                host,
+                new UsernamePasswordCredentials(credentials.UserName, credentials.Password),
+                workspaceId);
+        }
+
+        /// <summary>
+        /// Occurs when transfer statistics are available.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The <see cref="TransferStatisticsEventArgs"/> instance containing the event data.
+        /// </param>
+        private void ContextOnTransferStatistics(object sender, TransferStatisticsEventArgs e)
+        {
+            var progressMessage = string.Format(
+                CultureInfo.InvariantCulture,
+                "Transferring {0}/{1} - {2:0.00}%",
+                e.Statistics.TotalTransferredFiles,
+                e.Statistics.TotalFiles,
+                e.Statistics.Progress);
+            this.RaiseStatusMessage(progressMessage);
+        }
+
+        /// <summary>
+        /// Occurs when transfer requests start and end.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The <see cref="TransferRequestEventArgs"/> instance containing the event data.
+        /// </param>
+        private void ContextOnTransferRequest(object sender, TransferRequestEventArgs e)
+        {
+            this.RaiseStatusMessage(e.Started ? "Transfer started." : "Transfer ended.");
+        }
+
+        /// <summary>
+        /// Occurs when transfer file issues occur.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The <see cref="TransferFileIssueEventArgs"/> instance containing the event data.
+        /// </param>
+        private void ContextOnTransferFileIssue(object sender, TransferFileIssueEventArgs e)
+        {
+            this.RaiseWarningMessage(e.Issue.Message);
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        /// <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.
+        /// </param>
+        private void Dispose(bool disposing)
+        {
+            if (this.disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                try
+                {
+                    this.DestroyTransferJob();
+                    this.DestroyTransferClient();
+                    this.DestroyTransferHost();
+                }
+                finally
+                {
+                    this.context.TransferFileIssue -= this.ContextOnTransferFileIssue;
+                    this.context.TransferRequest -= this.ContextOnTransferRequest;
+                    this.context.TransferStatistics -= this.ContextOnTransferStatistics;
+                }
+            }
+
+            this.disposed = true;
+        }
+
+        /// <summary>
+        /// Destroys the transfer job.
+        /// </summary>
+        private void DestroyTransferJob()
+        {
+            if (this.transferJob == null)
+            {
+                return;
+            }
+
+            this.transferJob.Dispose();
+            this.transferJob = null;
+        }
+
+        /// <summary>
+        /// Destroys the transfer client.
+        /// </summary>
+        private void DestroyTransferClient()
+        {
+            if (this.transferClient == null)
+            {
+                return;
+            }
+
+            this.transferClient.Dispose();
+            this.transferClient = null;
+        }
+
+        /// <summary>
+        /// Destroys the transfer host.
+        /// </summary>
+        private void DestroyTransferHost()
+        {
+            if (this.transferHost == null)
+            {
+                return;
+            }
+
+            this.transferHost.Dispose();
+            this.transferHost = null;
+        }
+    }
+}
