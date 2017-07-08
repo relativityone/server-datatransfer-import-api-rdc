@@ -150,8 +150,9 @@ namespace kCura.WinEDDS.TApi
             this.cancellationToken = token;
             this.context = new TransferContext();
             this.context.TransferFileIssue += this.ContextOnTransferFileIssue;
+            this.context.TransferJobRetry += this.ContextOnTransferJobRetry;
             this.context.TransferRequest += this.ContextOnTransferRequest;
-            this.context.TransferStatistics += this.ContextOnTransferStatistics;
+            this.context.TransferStatistics += this.ContextOnTransferStatistics;            
             this.fileSystemService = new FileSystemService();
         }
 
@@ -503,6 +504,20 @@ namespace kCura.WinEDDS.TApi
         private void ContextOnTransferFileIssue(object sender, TransferFileIssueEventArgs e)
         {
             this.RaiseWarningMessage(e.Issue.Message);
+        }
+
+        /// <summary>
+        /// Occurs when the transfer job is retried.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The <see cref="TransferJobRetryEventArgs"/> instance containing the event data.
+        /// </param>
+        private void ContextOnTransferJobRetry(object sender, TransferJobRetryEventArgs e)
+        {
+            this.RaiseStatusMessage($"Retrying transfer job - attempt {e.Count} of {this.MaxRetryCount}.");
         }
 
         /// <summary>
