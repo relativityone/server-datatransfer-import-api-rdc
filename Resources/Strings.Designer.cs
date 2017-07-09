@@ -61,11 +61,74 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Transferring {0}/{1} - {2:0.00}%.
+        /// </summary>
+        internal static string ProgressMessage {
+            get {
+                return ResourceManager.GetString("ProgressMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Retrying transfer job - attempt {0} of {1}..
+        /// </summary>
+        internal static string RetryJobMessage {
+            get {
+                return ResourceManager.GetString("RetryJobMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} download failed: {1}..
+        /// </summary>
+        internal static string TransferFileDownloadIssueMessage {
+            get {
+                return ResourceManager.GetString("TransferFileDownloadIssueMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} upload failed: {1}..
+        /// </summary>
+        internal static string TransferFileUploadIssueMessage {
+            get {
+                return ResourceManager.GetString("TransferFileUploadIssueMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File transfer job ended..
+        /// </summary>
+        internal static string TransferJobEndedMessage {
+            get {
+                return ResourceManager.GetString("TransferJobEndedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A serious error occurred transferring the requested files..
         /// </summary>
         internal static string TransferJobExceptionMessage {
             get {
                 return ResourceManager.GetString("TransferJobExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This operation cannot be performed because the file transfer job hasn&apos;t been created..
+        /// </summary>
+        internal static string TransferJobNullExceptionMessage {
+            get {
+                return ResourceManager.GetString("TransferJobNullExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File transfer job started..
+        /// </summary>
+        internal static string TransferJobStartedMessage {
+            get {
+                return ResourceManager.GetString("TransferJobStartedMessage", resourceCulture);
             }
         }
         
