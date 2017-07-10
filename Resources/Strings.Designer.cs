@@ -97,6 +97,24 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File transfer job was canceled..
+        /// </summary>
+        internal static string TransferJobCanceledMessage {
+            get {
+                return ResourceManager.GetString("TransferJobCanceledMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File transfer job exceeded the max number of retries..
+        /// </summary>
+        internal static string TransferJobEndedMaxRetryMessage {
+            get {
+                return ResourceManager.GetString("TransferJobEndedMaxRetryMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File transfer job ended..
         /// </summary>
         internal static string TransferJobEndedMessage {

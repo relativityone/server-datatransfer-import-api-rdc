@@ -132,6 +132,12 @@
   <data name="TransferJobEndedMessage" xml:space="preserve">
     <value>File transfer job ended.</value>
   </data>
+  <data name="TransferJobEndedMaxRetryMessage" xml:space="preserve">
+    <value>File transfer job exceeded the max number of retries.</value>
+  </data>
+  <data name="TransferJobCanceledMessage" xml:space="preserve">
+    <value>File transfer job was canceled.</value>
+  </data>
   <data name="TransferJobExceptionMessage" xml:space="preserve">
     <value>A serious error occurred transferring the requested files.</value>
   </data>

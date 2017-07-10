@@ -49,6 +49,11 @@ namespace kCura.WinEDDS.TApi
         private readonly ILog transferLog;
 
         /// <summary>
+        /// The file system service used to wrap up all IO API's.
+        /// </summary>
+        private readonly IFileSystemService fileSystemService = new FileSystemService();
+
+        /// <summary>
         /// The client request unique identifier used to tie all jobs to a single request.
         /// </summary>
         private Guid? clientRequestId;
@@ -322,8 +327,11 @@ namespace kCura.WinEDDS.TApi
 
             try
             {
-                var transferPath = new TransferPath {SourcePath = sourceFile, TargetFileName = targetFileName};
-                return this.transferJob.AddPath(transferPath);
+                var transferPath = new TransferPath { SourcePath = sourceFile, TargetFileName = targetFileName };
+                this.transferJob.AddPath(transferPath);
+                return !string.IsNullOrEmpty(targetFileName)
+                           ? targetFileName
+                           : this.fileSystemService.GetFileName(sourceFile);
             }
             catch (OperationCanceledException)
             {
@@ -549,7 +557,24 @@ namespace kCura.WinEDDS.TApi
         /// </param>
         private void ContextOnTransferRequest(object sender, TransferRequestEventArgs e)
         {
-            this.RaiseStatusMessage(e.Started ? Strings.TransferJobStartedMessage : Strings.TransferJobEndedMessage);
+            switch (e.Status)
+            {
+                case TransferRequestStatus.Started:
+                    this.RaiseStatusMessage(Strings.TransferJobStartedMessage);
+                    break;
+
+                case TransferRequestStatus.Ended:
+                    this.RaiseStatusMessage(Strings.TransferJobEndedMessage);
+                    break;
+
+                case TransferRequestStatus.EndedMaxRetry:
+                    this.RaiseStatusMessage(Strings.TransferJobEndedMaxRetryMessage);
+                    break;
+
+                case TransferRequestStatus.Canceled:
+                    this.RaiseStatusMessage(Strings.TransferJobCanceledMessage);
+                    break;
+            }
         }
 
         /// <summary>
