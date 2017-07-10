@@ -253,6 +253,10 @@
       <Project>{c5eb5351-3f27-4716-a7da-163f0400bcef}</Project>
       <Name>kCura.WinEDDS.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.WinEDDS.FileTransfer.Extension\kCura.WinEDDS.FileTransfer.Extension.csproj">
+      <Project>{71ed5bec-445f-4a2f-b2aa-a39f5e06626f}</Project>
+      <Name>kCura.WinEDDS.FileTransfer.Extension</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Relativity.Applications.Serialization\Relativity.Applications.Serialization.vbproj">
       <Project>{E621897E-45AF-4FBD-ADA4-EEE787E5233F}</Project>
       <Name>Relativity.Applications.Serialization</Name>
@@ -423,6 +427,12 @@
     <Compile Include="Forms\FieldMapForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\FileTransferForm.Designer.vb">
+      <DependentUpon>FileTransferForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FileTransferForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\ImageLoadForm.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -460,12 +470,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FormsUserNotification.vb" />
-    <Compile Include="Forms\FileTransferForm.Designer.vb">
-      <DependentUpon>FileTransferForm.vb</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\FileTransferForm.vb">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="ImportOptions.vb" />
     <Compile Include="ImportManager.vb" />
     <Compile Include="My Project\Resources.Designer.vb">
@@ -521,6 +525,9 @@
     <EmbeddedResource Include="Forms\FieldMapForm.resx">
       <DependentUpon>FieldMapForm.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FileTransferForm.resx">
+      <DependentUpon>FileTransferForm.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImageLoadForm.resx">
       <DependentUpon>ImageLoadForm.vb</DependentUpon>
     </EmbeddedResource>
@@ -554,9 +561,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\TextPrecedenceForm.resx">
       <DependentUpon>TextPrecedenceForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FileTransferForm.resx">
-      <DependentUpon>FileTransferForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <CustomToolNamespace>My.Resources</CustomToolNamespace>

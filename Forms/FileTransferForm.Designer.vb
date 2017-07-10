@@ -1,4 +1,6 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+﻿Imports kCura.WinEDDS.FileTransfer.Extension
+
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class FileTransferForm
     Inherits System.Windows.Forms.Form
 
@@ -23,6 +25,7 @@ Partial Class FileTransferForm
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.ElementHost1 = New System.Windows.Forms.Integration.ElementHost()
+        Me.FileTransfer1 = New kCura.WinEDDS.FileTransfer.Extension.FileTransfer()
         Me.SuspendLayout
         '
         'ElementHost1
@@ -30,23 +33,24 @@ Partial Class FileTransferForm
         Me.ElementHost1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.ElementHost1.Location = New System.Drawing.Point(0, 0)
         Me.ElementHost1.Name = "ElementHost1"
-        Me.ElementHost1.Size = New System.Drawing.Size(775, 473)
+        Me.ElementHost1.Size = New System.Drawing.Size(684, 461)
         Me.ElementHost1.TabIndex = 0
         Me.ElementHost1.Text = "ElementHost1"
-        Me.ElementHost1.Child = Nothing
+        Me.ElementHost1.Child = Me.FileTransfer1
         '
-        'TransferFile
+        'FileTransferForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6!, 13!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(775, 473)
+        Me.ClientSize = New System.Drawing.Size(684, 461)
         Me.Controls.Add(Me.ElementHost1)
-        Me.MinimumSize = New System.Drawing.Size(700, 400)
-        Me.Name = "TransferFile"
-        Me.Text = "TransferFile"
+        Me.MinimumSize = New System.Drawing.Size(700, 500)
+        Me.Name = "FileTransferForm"
+        Me.Text = "File Transfer"
         Me.ResumeLayout(false)
 
 End Sub
 
     Friend WithEvents ElementHost1 As Integration.ElementHost
+    Friend FileTransfer1 As FileTransfer
 End Class
