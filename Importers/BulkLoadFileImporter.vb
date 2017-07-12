@@ -678,10 +678,10 @@ Namespace kCura.WinEDDS
 									fileGuid = System.Guid.NewGuid.ToString
 								End If
 								fullFilePath = filename
-								If (injectableContainerIsNothing) Then
-									filename = Path.GetFileName(filename)
-								ElseIf (injectableContainer.HasFileName()) Then
-									filename = injectableContainer.FileName.GetFileName()
+								If (Not injectableContainerIsNothing AndAlso injectableContainer.HasFileName()) Then 
+									filename = injectableContainer.FileName.GetFileName() 
+								Else 
+									filename = Path.GetFileName(filename) 
 								End If
 							End Sub
 
