@@ -1,7 +1,9 @@
 ﻿Imports System.Diagnostics
 Imports System.Net
+Imports System.Net.Security
 Imports System.Reflection
 Imports System.Runtime.CompilerServices
+Imports System.Security.Cryptography.X509Certificates
 Imports System.Threading
 Imports System.Threading.Tasks
 Imports Credentials
@@ -26,8 +28,8 @@ Namespace kCura.WinEDDS.Credentials
 		Private ReadOnly _clientId As String
 		Private _loginView As ILoginView
 		Private _cancellationTokenSource As CancellationTokenSource
-		Private _currentCredentials As NetworkCredential
 		Private _onTokenHandler As TokenResponseHandler
+		Private _logInLock As New SemaphoreSlim(1)
 		
 		Public WithEvents Events As IOAuth2ClientEvents
 
@@ -45,11 +47,19 @@ Namespace kCura.WinEDDS.Credentials
 		End Function
 
 		Public Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential) Implements ICredentialsProvider.GetCredentialsAsync
-				Dim token As String = Await _tokenProvider.GetAccessTokenAsync(_cancellationTokenSource.Token)
-
-				Dim creds As System.Net.NetworkCredential = New NetworkCredential(_OAUTH_USERNAME, token)
-				_currentCredentials = creds
-				Return creds
+			Dim token As String = String.Empty
+			Await _logInLock.WaitAsync() 
+			Dim oldCheck As RemoteCertificateValidationCallback = ServicePointManager.ServerCertificateValidationCallback
+			Try
+				ServicePointManager.ServerCertificateValidationCallback = Nothing
+				token = Await _tokenProvider.GetAccessTokenAsync(_cancellationTokenSource.Token)
+			Finally
+				ServicePointManager.ServerCertificateValidationCallback = oldCheck
+				_logInLock.Release()
+			End Try
+			
+			Dim creds As System.Net.NetworkCredential = New NetworkCredential(_OAUTH_USERNAME, token)
+			Return creds
 		End Function
 
 		Private Sub CreateTokenProvider()
