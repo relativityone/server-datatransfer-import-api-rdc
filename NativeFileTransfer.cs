@@ -414,7 +414,7 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Creates the best fit transfer client.
+        /// Creates the best transfer client.
         /// </summary>        
         protected void CreateTransferClient()
         {
@@ -424,6 +424,7 @@ namespace kCura.WinEDDS.TApi
             }
 
             this.transferClient = this.transferHost.CreateClientAsync().GetAwaiter().GetResult();
+            this.RaiseClientChanged();
         }
 
         /// <summary>
