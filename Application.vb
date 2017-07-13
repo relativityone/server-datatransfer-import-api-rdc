@@ -10,6 +10,7 @@ Imports kCura.EDDS.WinForm.Forms
 Imports kCura.Windows.Forms
 Imports kCura.WinEDDS.Core.Export
 Imports kCura.WinEDDS.Credentials
+Imports kCura.WinEDDS.FileTransfer.Extension.Components.Main
 Imports kCura.WinEDDS.Service
 Imports Relativity.OAuth2Client.TokenProviders.ProviderFactories
 Imports Relativity.OAuth2Client.Exceptions
@@ -815,7 +816,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
         Public Sub NewFileTransfer()
-			Dim frm As FileTransferForm = New FileTransferForm()
+			Dim frm As FileTransferMain = New FileTransferMain()
 			Try
 				frm.Show()
 			Catch ex As System.Exception
