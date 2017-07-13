@@ -414,7 +414,7 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Creates the best transfer client.
+        /// Creates the best fit transfer client.
         /// </summary>        
         protected void CreateTransferClient()
         {
@@ -423,15 +423,7 @@ namespace kCura.WinEDDS.TApi
                 return;
             }
 
-            var asperaConfiguration =
-                new AsperaClientConfiguration
-                {
-                    Host = new Uri("172.16.104.21", UriKind.Relative),
-                    AccountUserName = "T999",
-                    AccountPassword = "P@ssw0rd@1P@ssw0rd@1"
-                };
-            this.transferClient = this.transferHost.CreateClient(asperaConfiguration);
-            this.RaiseClientChanged();
+            this.transferClient = this.transferHost.CreateClientAsync().GetAwaiter().GetResult();
         }
 
         /// <summary>
