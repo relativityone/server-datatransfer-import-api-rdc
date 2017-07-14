@@ -378,7 +378,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)
             ' TAPI Change
-            _uploader2 = New NativeFileTransfer(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, False)
+            _uploader2 = NativeFileTransferFactory.CreateUploadFileTransfer(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, False, CancellationToken.None)
 			' _uploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer)
 			_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, False)
 			_bcpuploader.SetUploaderTypeForBcp()
