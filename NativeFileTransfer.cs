@@ -186,6 +186,14 @@ namespace kCura.WinEDDS.TApi
         public event EventHandler<TransferClientEventArgs> ClientChanged = delegate { };
 
         /// <summary>
+        /// Gets a value indicating whether the bulk setting is enabled.
+        /// </summary>
+        /// <value>
+        /// The bulk setting value.
+        /// </value>
+        public bool IsBulkEnabled => this.isBulkEnabled;
+
+        /// <summary>
         /// Gets the current client identifier.
         /// </summary>
         /// <value>
