@@ -688,7 +688,7 @@ Namespace kCura.WinEDDS
 
 								    ' TAPI Change
                                     ' fileGuid = _uploader.UploadFile(filename, _caseArtifactID)
-								    fileGuid = _uploader2.AddPath(filename, Guid.NewGuid().ToString())
+								    fileGuid = _uploader2.AddPath(filename, Guid.NewGuid().ToString(), Me.CurrentLineNumber)
 									_statistics.FileTime += System.DateTime.Now.Ticks - start
 
 								    ' TAPI Change
@@ -1597,7 +1597,7 @@ Namespace kCura.WinEDDS
 					_statistics.FileBytes += Me.GetFileLength(localFilePath)
 
 				    ' TAPI Change
-                    Dim guid As String = _uploader2.AddPath(localFilePath, System.Guid.NewGuid().ToString())
+                    Dim guid As String = _uploader2.AddPath(localFilePath, System.Guid.NewGuid().ToString(), CurrentLineNumber)
 					' Dim guid As String = _uploader.UploadFile(localFilePath, _caseArtifactID)
 
 				    ' TAPI Change
