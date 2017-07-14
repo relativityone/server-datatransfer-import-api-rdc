@@ -29,6 +29,11 @@ namespace kCura.WinEDDS.TApi
     public class NativeFileTransfer : IDisposable
     {
         /// <summary>
+        /// The manager used to limit the maximum number of files per folder.
+        /// </summary>
+        private readonly FileSharePathManager pathManager;
+
+        /// <summary>
         /// The cancellation token source.
         /// </summary>
         private readonly CancellationToken cancellationToken;
@@ -62,6 +67,12 @@ namespace kCura.WinEDDS.TApi
         /// The transfer unique identifier associated with the current job.
         /// </summary>
         private Guid? currentTransferId;
+
+
+        /// <summary>
+        /// The current job request.
+        /// </summary>
+        private ITransferRequest jobRequest;
 
         /// <summary>
         /// The Relativity transfer host.
@@ -210,6 +221,7 @@ namespace kCura.WinEDDS.TApi
             this.isBulkEnabled = isBulkEnabled;
             this.cancellationToken = token;
             this.transferLog = log;
+            this.pathManager = new FileSharePathManager(int.MaxValue - 1);
 
             // The context is optional and must be supplied on the transfer request (see below).
             this.context = new TransferContext();
@@ -279,7 +291,15 @@ namespace kCura.WinEDDS.TApi
         /// <value>
         /// The folder name.
         /// </value>
-        public string TargetFolderName
+        public string TargetFolderName => this.pathManager.CurrentTargetFolderName;
+
+        /// <summary>
+        /// Gets or sets the current transfer client plugin.
+        /// </summary>
+        /// <value>
+        /// The <see cref="TransferClientPlugin"/> value.
+        /// </value>
+        public TransferClientPlugin Plugin
         {
             get;
             set;
@@ -324,6 +344,9 @@ namespace kCura.WinEDDS.TApi
             {
                 throw new InvalidOperationException(Strings.TransferJobNullExceptionMessage);
             }
+
+            // TODO: Need to dynamically update this after the job has been created.
+            //// this.jobRequest.TargetPath = this.pathManager.GetNextTargetPath(this.TargetFolderName);
 
             try
             {
@@ -450,16 +473,16 @@ namespace kCura.WinEDDS.TApi
             }
 
             this.currentTransferId = Guid.NewGuid();
-            var request = direction == TransferDirection.Upload
+            this.jobRequest = direction == TransferDirection.Upload
                 ? TransferRequest.ForUploadJob(this.TargetPath, this.context)
                 : TransferRequest.ForDownloadJob(this.TargetPath, this.context);
-            request.MaxRetryAttempts = this.MaxRetryCount;
-            request.ClientRequestId = this.clientRequestId;
-            request.TransferId = this.currentTransferId;
+            this.jobRequest.MaxRetryAttempts = this.MaxRetryCount;
+            this.jobRequest.ClientRequestId = this.clientRequestId;
+            this.jobRequest.TransferId = this.currentTransferId;
 
             try
             {
-                var task = this.transferClient.CreateJobAsync(request, this.cancellationToken);
+                var task = this.transferClient.CreateJobAsync(this.jobRequest, this.cancellationToken);
                 task.Wait(this.cancellationToken);
                 this.transferJob = task.GetAwaiter().GetResult();
             }
