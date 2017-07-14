@@ -71,6 +71,8 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="NativeFileTransferFactory.cs" />
+    <Compile Include="Properties\AssemblyInfoLocal.cs" />
     <Compile Include="FileSharePathManager.cs" />
     <Compile Include="TransferClientPlugin.cs" />
     <Compile Include="NativeFileTransfer.cs" />

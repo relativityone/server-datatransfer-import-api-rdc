@@ -11,15 +11,12 @@ namespace kCura.WinEDDS.TApi
 {
     using System;
     using System.Globalization;
-    using System.Net;
     using System.Threading;
 
     using kCura.Utility;
 
     using Relativity.Logging;
-    using Relativity.Services.ServiceProxy;
     using Relativity.Transfer;
-    using Relativity.Transfer.Aspera;
 
     using Strings = kCura.WinEDDS.TApi.Resources.Strings;
 
@@ -59,6 +56,11 @@ namespace kCura.WinEDDS.TApi
         private readonly IFileSystemService fileSystemService = new FileSystemService();
 
         /// <summary>
+        /// The current transfer direction.
+        /// </summary>
+        private readonly TransferDirection currentDirection;
+
+        /// <summary>
         /// The client request unique identifier used to tie all jobs to a single request.
         /// </summary>
         private Guid? clientRequestId;
@@ -90,77 +92,9 @@ namespace kCura.WinEDDS.TApi
         private ITransferJob transferJob;
 
         /// <summary>
-        /// The current transfer direction.
-        /// </summary>
-        private TransferDirection currentDirection;
-
-        /// <summary>
         /// The disposed backing.
         /// </summary>
         private bool disposed;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NativeFileTransfer"/> class.
-        /// </summary>
-        /// <param name="credentials">
-        /// The Relativity network credentials.
-        /// </param>
-        /// <param name="workspaceId">
-        /// The workspace artifact identifier.
-        /// </param>
-        /// <param name="targetPath">
-        /// The target path.
-        /// </param>
-        /// <param name="isBulkEnabled">
-        /// Specify whether the bulk feature is enabled.
-        /// </param>
-        public NativeFileTransfer(
-            NetworkCredential credentials,
-            int workspaceId,
-            string targetPath,
-            bool isBulkEnabled)
-            : this(
-                credentials,
-                workspaceId,
-                targetPath,
-                isBulkEnabled,
-                CancellationToken.None)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NativeFileTransfer"/> class.
-        /// </summary>
-        /// <param name="credentials">
-        /// The Relativity network credentials.
-        /// </param>
-        /// <param name="workspaceId">
-        /// The workspace artifact identifier.
-        /// </param>
-        /// <param name="targetPath">
-        /// The target path.
-        /// </param>
-        /// <param name="isBulkEnabled">
-        /// Specify whether the bulk feature is enabled.
-        /// </param>
-        /// <param name="token">
-        /// The cancellation token.
-        /// </param>
-        public NativeFileTransfer(
-            NetworkCredential credentials,
-            int workspaceId,
-            string targetPath,
-            bool isBulkEnabled,
-            CancellationToken token)
-            : this(
-                CreateRelativityConnectionInfo(credentials, workspaceId),
-                workspaceId,
-                targetPath,
-                isBulkEnabled,
-                token,
-                null)
-        {
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NativeFileTransfer"/> class.
@@ -177,6 +111,9 @@ namespace kCura.WinEDDS.TApi
         /// <param name="isBulkEnabled">
         /// Specify whether the bulk feature is enabled.
         /// </param>
+        /// <param name="direction">
+        /// Specify the desired transfer direction for all created jobs.
+        /// </param>
         /// <param name="token">
         /// The cancellation token.
         /// </param>
@@ -191,6 +128,7 @@ namespace kCura.WinEDDS.TApi
             int workspaceId,
             string targetPath,
             bool isBulkEnabled,
+            TransferDirection direction,
             CancellationToken token,
             ILog log)
         {
@@ -214,6 +152,7 @@ namespace kCura.WinEDDS.TApi
                 log = new NullLogger();
             }
 
+            this.currentDirection = direction;
             this.transferHost = new RelativityTransferHost(connectionInfo, log);
             this.MaxRetryCount = Config.IOErrorNumberOfRetries;
             this.WorkspaceId = workspaceId;
@@ -340,6 +279,7 @@ namespace kCura.WinEDDS.TApi
         /// </returns>
         public string AddPath(string sourceFile, string targetFileName)
         {
+            this.CreateTransferJob();
             if (this.transferJob == null)
             {
                 throw new InvalidOperationException(Strings.TransferJobNullExceptionMessage);
@@ -369,22 +309,6 @@ namespace kCura.WinEDDS.TApi
             }
         }
 
-        /// <summary>
-        /// Creates a new download transfer job.
-        /// </summary>
-        public void CreateDownloadTransferJob()
-        {
-            this.CreateTransferJob(TransferDirection.Download);
-        }
-
-        /// <summary>
-        /// Creates a new upload transfer job.
-        /// </summary>
-        public void CreateUploadTransferJob()
-        {
-            this.CreateTransferJob(TransferDirection.Upload);
-        }
-
         /// <inheritdoc />
         public void Dispose()
         {
@@ -399,14 +323,13 @@ namespace kCura.WinEDDS.TApi
         {
             if (this.transferJob == null)
             {
-                throw new InvalidOperationException();
+                throw new InvalidOperationException(Strings.TransferJobNullExceptionMessage);
             }
 
             try
             {
                 // Note: retry is already built into TAPI.
                 var taskResult = this.transferJob.CompleteAsync(this.cancellationToken);
-                taskResult.Wait(this.cancellationToken);
                 var transferResult = taskResult.GetAwaiter().GetResult();
                 if (transferResult.Status != TransferStatus.Failed && transferResult.Status != TransferStatus.Canceled)
                 {
@@ -453,20 +376,21 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// Creates a new transfer job.
         /// </summary>
-        /// <param name="direction">
-        /// The transfer direction.
-        /// </param>
-        protected void CreateTransferJob(TransferDirection direction)
+        protected void CreateTransferJob()
         {
+            if (this.transferJob != null)
+            {
+                return;
+            }
+
             this.CreateTransferClient();
-            this.currentDirection = direction;
             if (this.clientRequestId == null)
             {
                 this.clientRequestId = Guid.NewGuid();
             }
 
             this.currentTransferId = Guid.NewGuid();
-            this.jobRequest = direction == TransferDirection.Upload
+            this.jobRequest = this.currentDirection == TransferDirection.Upload
                 ? TransferRequest.ForUploadJob(this.TargetPath, this.context)
                 : TransferRequest.ForDownloadJob(this.TargetPath, this.context);
             this.jobRequest.MaxRetryAttempts = this.MaxRetryCount;
@@ -476,7 +400,6 @@ namespace kCura.WinEDDS.TApi
             try
             {
                 var task = this.transferClient.CreateJobAsync(this.jobRequest, this.cancellationToken);
-                task.Wait(this.cancellationToken);
                 this.transferJob = task.GetAwaiter().GetResult();
             }
             catch (OperationCanceledException)
@@ -484,9 +407,10 @@ namespace kCura.WinEDDS.TApi
                 this.LogCancelRequest();
                 this.DestroyTransferJob();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 // TODO: When this fails, use the next best client.
+                Console.WriteLine("Failed to create job. Error: " + e);
             }
         }
 
@@ -518,28 +442,6 @@ namespace kCura.WinEDDS.TApi
         protected void RaiseClientChanged()
         {
             this.ClientChanged.Invoke(this, new TransferClientEventArgs(this.transferClient.Name, this.isBulkEnabled));
-        }
-
-        /// <summary>
-        /// Creates a Relativity connection information object.
-        /// </summary>
-        /// <param name="credentials">
-        /// The network credentials.
-        /// </param>
-        /// <param name="workspaceId">
-        /// The workspace identifier.
-        /// </param>
-        /// <returns>
-        /// The <see cref="RelativityConnectionInfo"/> instance.
-        /// </returns>
-        private static RelativityConnectionInfo CreateRelativityConnectionInfo(NetworkCredential credentials, int workspaceId)
-        {
-            var webServiceUrl = new Uri(WinEDDS.Config.WebServiceURL);
-            var host = new Uri(webServiceUrl.GetLeftPart(UriPartial.Authority));
-            return new RelativityConnectionInfo(
-                host,
-                new UsernamePasswordCredentials(credentials.UserName, credentials.Password),
-                workspaceId);
         }
 
         /// <summary>
