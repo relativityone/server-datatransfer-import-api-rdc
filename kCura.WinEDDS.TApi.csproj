@@ -40,9 +40,6 @@
     <Reference Include="kCura">
       <HintPath>..\..\kCura\kCura\bin\kCura.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.WinEDDS">
-      <HintPath>..\kCura.WinEDDS\bin\kCura.WinEDDS.dll</HintPath>
-    </Reference>
     <Reference Include="Relativity">
       <HintPath>..\Relativity\bin\Relativity.dll</HintPath>
     </Reference>
@@ -88,6 +85,7 @@
     <EmbeddedResource Include="Resources\Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

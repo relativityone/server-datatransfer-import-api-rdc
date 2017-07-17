@@ -25,6 +25,9 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// Creates a <see cref="NativeFileTransfer"/> instance that supports native file upload transfers.
         /// </summary>
+        /// <param name="webServiceUrl">
+        /// The Relativity web service URL.
+        /// </param>
         /// <param name="credentials">
         /// The Relativity network credentials.
         /// </param>
@@ -33,6 +36,9 @@ namespace kCura.WinEDDS.TApi
         /// </param>
         /// <param name="targetPath">
         /// The target path.
+        /// </param>
+        /// <param name="container">
+        /// The cookie container.
         /// </param>
         /// <param name="isBulkEnabled">
         /// Specify whether the bulk feature is enabled.
@@ -44,16 +50,19 @@ namespace kCura.WinEDDS.TApi
         /// The <see cref="NativeFileTransfer"/> instance.
         /// </returns>
         public static NativeFileTransfer CreateUploadFileTransfer(
+            string webServiceUrl,
             NetworkCredential credentials,
             int workspaceId,
             string targetPath,
+            CookieContainer container,
             bool isBulkEnabled,
             CancellationToken token)
         {
             return CreateUploadFileTransfer(
-                CreateRelativityConnectionInfo(credentials, workspaceId),
+                CreateRelativityConnectionInfo(webServiceUrl, credentials, workspaceId),
                 workspaceId,
                 targetPath,
+                container,
                 isBulkEnabled,
                 null,
                 token);
@@ -71,6 +80,9 @@ namespace kCura.WinEDDS.TApi
         /// <param name="targetPath">
         /// The target path.
         /// </param>
+        /// <param name="container">
+        /// The cookie container.
+        /// </param>
         /// <param name="isBulkEnabled">
         /// Specify whether the bulk feature is enabled.
         /// </param>
@@ -87,6 +99,7 @@ namespace kCura.WinEDDS.TApi
             RelativityConnectionInfo connectionInfo,
             int workspaceId,
             string targetPath,
+            CookieContainer container,
             bool isBulkEnabled,
             ILog log,
             CancellationToken token)
@@ -95,16 +108,20 @@ namespace kCura.WinEDDS.TApi
                 connectionInfo,
                 workspaceId,
                 targetPath,
+                container,
                 isBulkEnabled,
                 TransferDirection.Upload,
                 token,
-                log);
+                log ?? new NullLogger());
             return instance;
         }
 
         /// <summary>
         /// Creates a Relativity connection information object.
         /// </summary>
+        /// <param name="webServiceUrl">
+        /// The Relativity web service URL.
+        /// </param>
         /// <param name="credentials">
         /// The network credentials.
         /// </param>
@@ -115,11 +132,12 @@ namespace kCura.WinEDDS.TApi
         /// The <see cref="RelativityConnectionInfo"/> instance.
         /// </returns>
         private static RelativityConnectionInfo CreateRelativityConnectionInfo(
+            string webServiceUrl,
             NetworkCredential credentials,
             int workspaceId)
         {
-            var webServiceUrl = new Uri(Config.WebServiceURL);
-            var host = new Uri(webServiceUrl.GetLeftPart(UriPartial.Authority));
+            var baseUri = new Uri(webServiceUrl);
+            var host = new Uri(baseUri.GetLeftPart(UriPartial.Authority));
             return new RelativityConnectionInfo(
                 host,
                 new UsernamePasswordCredentials(credentials.UserName, credentials.Password),

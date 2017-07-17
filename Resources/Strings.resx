@@ -150,4 +150,7 @@
   <data name="WorkspaceExceptionMessage" xml:space="preserve">
     <value>The workspace artifact must be specified.</value>
   </data>
+  <data name="HttpFallbackExceptionMessage" xml:space="preserve">
+    <value>A serious error has occurred attempting to transfer files over HTTP.</value>
+  </data>
 </root>

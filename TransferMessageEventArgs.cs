@@ -23,9 +23,24 @@ namespace kCura.WinEDDS.TApi
         /// <param name="message">
         /// The message.
         /// </param>
-        public TransferMessageEventArgs(string message)
+        /// <param name="lineNumber">
+        /// The line number.
+        /// </param>
+        public TransferMessageEventArgs(string message, int lineNumber)
         {
             this.Message = message;
+            this.LineNumber = lineNumber;
+        }
+
+        /// <summary>
+        /// Gets the line number.
+        /// </summary>
+        /// <value>
+        /// The line number.
+        /// </value>
+        public int LineNumber
+        {
+            get;
         }
 
         /// <summary>

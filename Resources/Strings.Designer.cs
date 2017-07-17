@@ -61,6 +61,15 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A serious error has occurred attempting to transfer files over HTTP..
+        /// </summary>
+        internal static string HttpFallbackExceptionMessage {
+            get {
+                return ResourceManager.GetString("HttpFallbackExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Transferring {0}/{1} - {2:0.00}%.
         /// </summary>
         internal static string ProgressMessage {
