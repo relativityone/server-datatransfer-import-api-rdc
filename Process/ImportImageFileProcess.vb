@@ -112,9 +112,10 @@ Namespace kCura.WinEDDS
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Append
 				End Select
 				Select Case _imageFileImporter.UploadConnection
-					Case FileUploader.Type.Web
+					Case TApi.TransferClient.Aspera
+				        Case TApi.TransferClient.Web
 						retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Web
-					Case FileUploader.Type.Direct
+					Case TApi.TransferClient.Direct
 						retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Direct
 				End Select
 				retval.RunTimeInMilliseconds = CType(System.DateTime.Now.Subtract(_startTime).TotalMilliseconds, Int32)

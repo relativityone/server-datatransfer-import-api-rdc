@@ -116,7 +116,7 @@ Namespace kCura.WinEDDS
 			End Try
 			Try
 				'uploader.
-				uploader.UploaderType = FileUploader.Type.Web
+				uploader.UploaderType = Tapi.TransferClient.Web
 			Catch ex As Exception
 				Me.WriteStatus("Cannot change uploader type to web")
 				Me.WriteStatus("Actual error: " & ex.ToString)

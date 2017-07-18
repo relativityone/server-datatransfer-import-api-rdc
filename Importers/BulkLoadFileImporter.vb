@@ -167,14 +167,9 @@ Namespace kCura.WinEDDS
             End Get
         End Property
 
-        Public ReadOnly Property UploadConnection() As kCura.WinEDDS.FileUploader.Type
+        Public ReadOnly Property UploadConnection() As TApi.TransferClient
             Get
-                If _nativeFileUploader.Plugin = TransferClientPlugin.Direct
-                    Return FileUploader.Type.Direct
-                Else
-                    ' TAPI - All other clients treated as web.
-                    Return FileUploader.Type.Web
-                End If
+                Return _nativeFileUploader.Client
             End Get
         End Property
 
@@ -429,7 +424,7 @@ Namespace kCura.WinEDDS
             End If
             If _settings.CopyFilesToDocumentRepository AndAlso _settings.NativeFilePathColumn IsNot Nothing Then
                 If Not _nativeFileUploader Is Nothing Then
-                    retval.Add("Files: " & _nativeFileUploader.Plugin.ToString())
+                    retval.Add("Files: " & _nativeFileUploader.ClientName)
                 End If
             Else
                 retval.Add("Files: not copied")

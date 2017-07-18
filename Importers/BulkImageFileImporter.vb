@@ -109,7 +109,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public ReadOnly Property UploadConnection() As FileUploader.Type
+		Public ReadOnly Property UploadConnection() As TApi.TransferClient
 			Get
 				Return _fileUploader.UploaderType
 			End Get
