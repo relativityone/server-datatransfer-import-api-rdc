@@ -153,4 +153,7 @@
   <data name="HttpFallbackExceptionMessage" xml:space="preserve">
     <value>A serious error has occurred attempting to transfer files over HTTP.</value>
   </data>
+  <data name="ClientNotSet" xml:space="preserve">
+    <value>Not Set</value>
+  </data>
 </root>

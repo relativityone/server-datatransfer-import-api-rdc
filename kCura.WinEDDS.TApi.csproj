@@ -71,13 +71,13 @@
     <Compile Include="NativeFileTransferFactory.cs" />
     <Compile Include="Properties\AssemblyInfoLocal.cs" />
     <Compile Include="FileSharePathManager.cs" />
-    <Compile Include="TransferClientPlugin.cs" />
     <Compile Include="NativeFileTransfer.cs" />
     <Compile Include="Resources\Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
+    <Compile Include="TransferClient.cs" />
     <Compile Include="TransferClientEventArgs.cs" />
     <Compile Include="TransferMessageEventArgs.cs" />
   </ItemGroup>

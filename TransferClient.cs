@@ -1,42 +1,40 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="TransferClientPlugin.cs" company="kCura Corp">
+// <copyright file="TransferClient.cs" company="kCura Corp">
 //   kCura Corp (C) 2017 All Rights Reserved.
 // </copyright>
 // <summary>
-//   Defines the supported transfer client plugins.
+//   Defines the supported and well-known transfer API client.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace kCura.WinEDDS.TApi
 {
     /// <summary>
-    /// Represents the supported transfer client plugins.
+    /// Represents the supported transfer API clients.
     /// </summary>
-    public enum TransferClientPlugin
+    /// <remarks>
+    /// This is provided purely for backwards compatibility with WinEDDS.
+    /// </remarks>
+    public enum TransferClient
     {
         /// <summary>
-        /// The client plugin has not been specified.
+        /// The client plugin is not set or is undefined.
         /// </summary>
         None,
 
         /// <summary>
-        /// The HTTP or web client plugin.
+        /// The HTTP or web client.
         /// </summary>
         Web,
 
         /// <summary>
-        /// The File Share or direct client plugin.
+        /// The File Share or direct client.
         /// </summary>
         Direct,
 
         /// <summary>
-        /// The Aspera client plugin.
+        /// The Aspera client.
         /// </summary>
-        Aspera,
-
-        /// <summary>
-        /// The Third Party client plugin.
-        /// </summary>
-        ThirdParty
+        Aspera
     }
 }

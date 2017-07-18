@@ -218,7 +218,7 @@ namespace kCura.WinEDDS.TApi
         public bool IsBulkEnabled => this.isBulkEnabled;
 
         /// <summary>
-        /// Gets the current client identifier.
+        /// Gets the current transfer client unique identifier.
         /// </summary>
         /// <value>
         /// The <see cref="Guid"/> value.
@@ -226,12 +226,40 @@ namespace kCura.WinEDDS.TApi
         public Guid ClientId => this.transferClient?.Id ?? Guid.Empty;
 
         /// <summary>
-        /// Gets the current client name.
+        /// Gets the current transfer client name.
         /// </summary>
         /// <value>
         /// The name.
         /// </value>
-        public string ClientName => this.transferClient != null ? this.transferClient.Name : string.Empty;
+        public string ClientName => this.transferClient != null ? this.transferClient.Name : Strings.ClientNotSet;
+
+        /// <summary>
+        /// Gets the current transfer client.
+        /// </summary>
+        /// <value>
+        /// The <see cref="TransferClient"/> value.
+        /// </value>
+        public TransferClient Client
+        {
+            get
+            {
+                // Note: for backwards compatibility only.
+                switch (this.ClientId.ToString())
+                {
+                    case TransferClientConstants.AsperaClientId:
+                        return TransferClient.Aspera;
+
+                    case TransferClientConstants.FileShareClientId:
+                        return TransferClient.Direct;
+
+                    case TransferClientConstants.HttpClientId:
+                        return TransferClient.Web;
+
+                    default:
+                       return TransferClient.None;                    
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether to force using the HTTP client.
@@ -292,18 +320,6 @@ namespace kCura.WinEDDS.TApi
         public string TargetFolderName => this.pathManager.CurrentTargetFolderName;
 
         /// <summary>
-        /// Gets or sets the current transfer client plugin.
-        /// </summary>
-        /// <value>
-        /// The <see cref="TransferClientPlugin"/> value.
-        /// </value>
-        public TransferClientPlugin Plugin
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Gets the workspace artifact identifier.
         /// </summary>
         /// <value>
@@ -342,7 +358,13 @@ namespace kCura.WinEDDS.TApi
                 var nextTargetPath = this.SortIntoVolumes
                     ? this.pathManager.GetNextTargetPath(this.TargetPath)
                     : this.TargetPath;
-                var transferPath = new TransferPath(sourceFile, nextTargetPath, targetFileName, order);
+                var transferPath = new TransferPath
+                {
+                    SourcePath = sourceFile,
+                    TargetPath = nextTargetPath,
+                    TargetFileName = targetFileName,
+                    Order = order
+                };
                 this.transferJob.AddPath(transferPath);
                 return !string.IsNullOrEmpty(targetFileName)
                     ? targetFileName

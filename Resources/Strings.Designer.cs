@@ -61,6 +61,15 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Not Set.
+        /// </summary>
+        internal static string ClientNotSet {
+            get {
+                return ResourceManager.GetString("ClientNotSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A serious error has occurred attempting to transfer files over HTTP..
         /// </summary>
         internal static string HttpFallbackExceptionMessage {
