@@ -80,7 +80,14 @@
     </Compile>
     <Compile Include="TransferClient.cs" />
     <Compile Include="TransferClientEventArgs.cs" />
+    <Compile Include="EventListeners\TransferFileIssueListener.cs" />
+    <Compile Include="EventListeners\TransferFileListener.cs" />
+    <Compile Include="EventListeners\TransferJobRetryListener.cs" />
+    <Compile Include="TransferLine.cs" />
+    <Compile Include="EventListeners\TransferListenerBase.cs" />
     <Compile Include="TransferMessageEventArgs.cs" />
+    <Compile Include="EventListeners\TransferRequestListener.cs" />
+    <Compile Include="EventListeners\TransferStatisticsListener.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Strings.resx">
