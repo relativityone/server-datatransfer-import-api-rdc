@@ -377,7 +377,19 @@ Namespace kCura.WinEDDS
             Dim parameters As TApi.NativeFileTransferParameters = New TApi.NativeFileTransferParameters
             parameters.WebCookieContainer = args.CookieContainer
             parameters.Credentials = args.Credentials
-            parameters.ForceHttpClient = Config.ForceWebUpload
+            If Config.ForceWebUpload Then
+                ' For backwards compatibility
+                parameters.ForceHttpClient = Config.ForceWebUpload
+            Else If Not String.IsNullOrEmpty(Config.ForceTransferClientId)
+                ' For new integration tests
+                Dim clientId As Guid
+                If Guid.TryParse(Config.ForceTransferClientId, clientId) Then
+                    parameters.ForceClientId = clientId
+                End If
+
+                parameters.ForceClientName = Config.ForceTransferClientName
+            End If
+
             parameters.IsBulkEnabled = False
             parameters.MaxFilesPerFolder = gateway.RepositoryVolumeMax
             parameters.MaxRetryCount = kCura.Utility.Config.IOErrorNumberOfRetries
