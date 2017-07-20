@@ -4,7 +4,6 @@ Imports System.Threading
 Imports System.Threading.Tasks
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.Utility.Extensions
-Imports kCura.WinEDDS.TApi
 Imports Relativity
 
 Namespace kCura.WinEDDS
@@ -22,14 +21,14 @@ Namespace kCura.WinEDDS
 #Region "Members"
 
         Protected _overwrite As Relativity.ImportOverwriteType
-        Private WithEvents _nativeFileUploader As kCura.WinEDDS.TApi.NativeFileTransfer
+        Private WithEvents _nativeFileUploader As TApi.NativeFileTransfer
         Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
         Private _parentFolderDTO As kCura.EDDS.WebAPI.FolderManagerBase.Folder
         Protected _auditManager As kCura.WinEDDS.Service.AuditManager
         Protected _relativityManager As kCura.WinEDDS.Service.RelativityManager
 
         Protected _recordCount As Int64 = -1
-        Private _cancellationToken As System.Threading.CancellationTokenSource
+        Private ReadOnly _cancellationToken As System.Threading.CancellationTokenSource
         Private _allFields As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
         Private _fieldsForCreate As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
         Protected _continue As Boolean
@@ -328,6 +327,7 @@ Namespace kCura.WinEDDS
             ' get an instance of the specific type of artifact reader so we can get the fieldmapped event
             _executionSource = executionSource
             _cloudInstance = cloudInstance
+            _cancellationToken = New CancellationTokenSource()
             If (String.IsNullOrEmpty(args.OverwriteDestination)) Then
                 _overwrite = Relativity.ImportOverwriteType.Append
             Else
@@ -370,11 +370,21 @@ Namespace kCura.WinEDDS
 
             _batchSizeHistoryList = New System.Collections.Generic.List(Of Int32)
             _disableNativeLocationValidation = Config.DisableNativeLocationValidation
-            _cancellationToken = New CancellationTokenSource()
         End Sub
 
         Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)
-            _nativeFileUploader = NativeFileTransferFactory.CreateUploadFileTransfer(Config.WebServiceURL, args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, False, CancellationToken.None)
+            Dim gateway As kCura.WinEDDS.Service.FileIO = New kCura.WinEDDS.Service.FileIO(args.Credentials, args.CookieContainer)
+            Dim parameters As TApi.NativeFileTransferParameters = New TApi.NativeFileTransferParameters
+            parameters.WebCookieContainer = args.CookieContainer
+            parameters.Credentials = args.Credentials
+            parameters.ForceHttpClient = Config.ForceWebUpload
+            parameters.IsBulkEnabled = False
+            parameters.MaxFilesPerFolder = gateway.RepositoryVolumeMax
+            parameters.MaxRetryCount = kCura.Utility.Config.IOErrorNumberOfRetries
+            parameters.TargetPath = _defaultDestinationFolderPath
+            parameters.WebServiceUrl = Config.WebServiceURL
+            parameters.WorkspaceId = args.CaseInfo.ArtifactID
+            _nativeFileUploader = TApi.NativeFileTransferFactory.CreateUploadFileTransfer(parameters, Me._cancellationToken.Token)
             _bcpuploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, False)
             _bcpuploader.SetUploaderTypeForBcp()
         End Sub
@@ -1669,11 +1679,11 @@ Namespace kCura.WinEDDS
             WriteStatusLine(kCura.Windows.Process.EventType.End, line)
         End Sub
 
-        Private Sub _nativeFileUploader_UploadStatusEvent(ByVal sender As Object, ByVal e As TransferMessageEventArgs) Handles _nativeFileUploader.StatusMessage
+        Private Sub _nativeFileUploader_UploadStatusEvent(ByVal sender As Object, ByVal e As TApi.TransferMessageEventArgs) Handles _nativeFileUploader.StatusMessage
             WriteStatusLine(kCura.Windows.Process.EventType.Status, e.Message)
         End Sub
 
-        Private Sub _nativeFileUploader_UploadWarningEvent(ByVal sender As Object, ByVal e As TransferMessageEventArgs) Handles _nativeFileUploader.WarningMessage
+        Private Sub _nativeFileUploader_UploadWarningEvent(ByVal sender As Object, ByVal e As TApi.TransferMessageEventArgs) Handles _nativeFileUploader.WarningMessage
             WriteStatusLine(kCura.Windows.Process.EventType.Warning, e.Message)
         End Sub
 
@@ -1703,7 +1713,7 @@ Namespace kCura.WinEDDS
 
 #Region "Event Handlers"
 
-        Private Sub _nativeFileUploader_UploadModeChangeEvent(ByVal sender As Object, ByVal e As TransferClientEventArgs) Handles _nativeFileUploader.ClientChanged
+        Private Sub _nativeFileUploader_UploadModeChangeEvent(ByVal sender As Object, ByVal e As TApi.TransferClientEventArgs) Handles _nativeFileUploader.ClientChanged
             PublishUploadModeEvent()
         End Sub
 
