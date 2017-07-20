@@ -42,6 +42,8 @@ Namespace kCura.WinEDDS
 							If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")
 							If Not tempDict.Contains("CreateFoldersInWebAPI") Then tempDict.Add("CreateFoldersInWebAPI", "True")
 							If Not tempDict.Contains("ForceWebUpload") Then tempDict.Add("ForceWebUpload", "False")
+						    If Not tempDict.Contains("ForceTransferClientId") Then tempDict.Add("ForceTransferClientId", String.Empty)
+						    If Not tempDict.Contains("ForceTransferClientName") Then tempDict.Add("ForceTransferClientName", String.Empty)
 							If Not tempDict.Contains("DisableAspera") Then tempDict.Add("DisableAspera", "True")
 							If Not tempDict.Contains("RestUrl") Then tempDict.Add("RestUrl", "/Relativity.REST/api")
 							If Not tempDict.Contains("ServicesUrl") Then tempDict.Add("ServicesUrl", "/Relativity.Services/")
@@ -333,6 +335,20 @@ Namespace kCura.WinEDDS
 			Get
 				Return CType(ConfigSettings("ForceWebUpload"), Boolean)
 			End Get
+		End Property
+
+		'This is used strictly for testing different TAPI clients.
+		Public Shared ReadOnly Property ForceTransferClientId() As String
+		    Get
+		        Return CType(ConfigSettings("ForceTransferClientId"), String)
+		    End Get
+		End Property
+
+		'This is used strictly for testing different TAPI clients.
+		Public Shared ReadOnly Property ForceTransferClientName() As String
+		    Get
+		        Return CType(ConfigSettings("ForceTransferClientName"), String)
+		    End Get
 		End Property
 
 		Public Shared ReadOnly Property DisableAspera() As Boolean
