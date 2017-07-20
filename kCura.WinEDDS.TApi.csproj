@@ -69,6 +69,7 @@
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="NativeFileTransferFactory.cs" />
+    <Compile Include="NativeFileTransferParameters.cs" />
     <Compile Include="Properties\AssemblyInfoLocal.cs" />
     <Compile Include="FileSharePathManager.cs" />
     <Compile Include="NativeFileTransfer.cs" />

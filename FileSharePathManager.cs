@@ -18,9 +18,9 @@ namespace kCura.WinEDDS.TApi
     public class FileSharePathManager
     {
         /// <summary>
-        /// The minimum volume size backing.
+        /// The default volume size [1000].
         /// </summary>
-        public const int MinVolumeSize = 500;
+        public const int DefaultVolumeSize = 1000;
 
         /// <summary>
         /// The maximum volume size backing.
@@ -53,7 +53,7 @@ namespace kCura.WinEDDS.TApi
             this.currentSubDirectory = this.GetNewSubdirectory();
             this.lastSubdirectory = string.Copy(this.currentSubDirectory);
             this.currentFileNumber = 0;
-            this.maxVolumeSize = Math.Max(500, maximumVolumeSize);
+            this.maxVolumeSize = Math.Max(DefaultVolumeSize, maximumVolumeSize);
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace kCura.WinEDDS.TApi
         /// </returns>
         private string GetNewSubdirectory()
         {
-            return "RV_" + Guid.NewGuid().ToString();
+            return "RV_" + Guid.NewGuid();
         }
 
         /// <summary>

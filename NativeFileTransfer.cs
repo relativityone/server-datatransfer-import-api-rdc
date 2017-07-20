@@ -16,13 +16,12 @@ namespace kCura.WinEDDS.TApi
     using System.Globalization;
     using System.Threading;
 
-    using kCura.Utility;
-
     using Relativity.Logging;
+    using Relativity.Services.ServiceProxy;
     using Relativity.Transfer;
     using Relativity.Transfer.Aspera;
     using Relativity.Transfer.Http;
-
+    
     using Strings = kCura.WinEDDS.TApi.Resources.Strings;
 
     /// <summary>
@@ -47,9 +46,9 @@ namespace kCura.WinEDDS.TApi
         private readonly TransferContext context;
 
         /// <summary>
-        /// The is bulk enabled flag.
+        /// The native file transfer parameters.
         /// </summary>
-        private readonly bool isBulkEnabled;
+        private readonly NativeFileTransferParameters parameters;
 
         /// <summary>
         /// The Relativity transfer log.
@@ -65,11 +64,6 @@ namespace kCura.WinEDDS.TApi
         /// The current transfer direction.
         /// </summary>
         private readonly TransferDirection currentDirection;
-
-        /// <summary>
-        /// The cookie container.
-        /// </summary>
-        private readonly CookieContainer cookieContainer;
 
         /// <summary>
         /// The client request unique identifier used to tie all jobs to a single request.
@@ -109,81 +103,62 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// Initializes a new instance of the <see cref="NativeFileTransfer"/> class.
         /// </summary>
-        /// <param name="connectionInfo">
-        /// The Relativity connection information.
-        /// </param>
-        /// <param name="workspaceId">
-        /// The workspace artifact identifier.
-        /// </param>
-        /// <param name="targetPath">
-        /// The target path.
-        /// </param>
-        /// <param name="container">
-        /// The cookie container.
-        /// </param>
-        /// <param name="isBulkEnabled">
-        /// Specify whether the bulk feature is enabled.
+        /// <param name="parameters">
+        /// The native file transfer parameters.
         /// </param>
         /// <param name="direction">
-        /// Specify the desired transfer direction for all created jobs.
+        /// The transfer direction.
+        /// </param>
+        /// <param name="log">
+        /// The transfer log.
         /// </param>
         /// <param name="token">
         /// The cancellation token.
-        /// </param>
-        /// <param name="log">
-        /// The Relativity transfer log.  
         /// </param>
         /// <remarks>
         /// Don't expose TAPI objects to WinEDDS - at least not yet. This is reserved for integration tests.
         /// </remarks>
         internal NativeFileTransfer(
-            RelativityConnectionInfo connectionInfo,
-            int workspaceId,
-            string targetPath,
-            CookieContainer container,
-            bool isBulkEnabled,
+            NativeFileTransferParameters parameters,
             TransferDirection direction,
-            CancellationToken token,
-            ILog log)
+            ILog log,
+            CancellationToken token)
         {
-            if (connectionInfo == null)
+            if (parameters == null)
             {
-                throw new ArgumentNullException(nameof(connectionInfo));
+                throw new ArgumentNullException(nameof(parameters));
             }
 
-            if (workspaceId < 1)
+            if (parameters.Credentials == null)
             {
-                throw new ArgumentOutOfRangeException(nameof(workspaceId), Strings.WorkspaceExceptionMessage);
+                throw new ArgumentException("The credentials information must be specified.", nameof(parameters));
             }
 
-            if (string.IsNullOrEmpty(targetPath))
+            if (parameters.WorkspaceId < 1)
             {
-                throw new ArgumentNullException(nameof(targetPath));
+                throw new ArgumentOutOfRangeException(nameof(parameters),
+                    Strings.WorkspaceExceptionMessage);
             }
 
-            if (container == null)
+            if (string.IsNullOrEmpty(parameters.TargetPath))
             {
-                throw new ArgumentNullException(nameof(container));
+                throw new ArgumentException("That target path must be specified.", nameof(parameters));
             }
 
-            if (log == null)
+            if (parameters.WebCookieContainer == null)
             {
-                log = new NullLogger();
+                parameters.WebCookieContainer = new CookieContainer();
             }
 
             this.currentDirection = direction;
-            this.transferHost = new RelativityTransferHost(connectionInfo, log);
-            this.MaxRetryCount = Config.IOErrorNumberOfRetries;
-            this.WorkspaceId = workspaceId;
-            this.TargetPath = targetPath;
-            this.cookieContainer = container;
-            this.isBulkEnabled = isBulkEnabled;
+            this.parameters = parameters;
+            this.transferHost = new RelativityTransferHost(
+                CreateRelativityConnectionInfo(parameters),
+                log);
+            this.TargetPath = parameters.TargetPath;
             this.cancellationToken = token;
             this.transferLog = log;
-            this.pathManager = new FileSharePathManager(int.MaxValue - 1);
-
-            // This should always default to true (BCP specific!).
-            this.SortIntoVolumes = true;
+            this.pathManager = new FileSharePathManager(parameters.MaxFilesPerFolder);
 
             // The context is optional and must be supplied on the transfer request (see below).
             this.context = new TransferContext();
@@ -215,7 +190,7 @@ namespace kCura.WinEDDS.TApi
         /// <value>
         /// The bulk setting value.
         /// </value>
-        public bool IsBulkEnabled => this.isBulkEnabled;
+        public bool IsBulkEnabled => this.parameters.IsBulkEnabled;
 
         /// <summary>
         /// Gets the current transfer client unique identifier.
@@ -262,44 +237,6 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to force using the HTTP client.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> to force the HTTP client; otherwise, <c>false</c>.
-        /// </value>
-        public bool ForceHttpClient
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets the max retry count.
-        /// </summary>
-        /// <value>
-        /// The count.
-        /// </value>
-        public int MaxRetryCount
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to sort all transfers into a volumes folder.
-        /// </summary>
-        /// <value>
-        /// <see langword="true" /> to sort all transfers into a volumes folder; otherwise, <see langword="false" />.
-        /// </value>
-        /// <remarks>
-        /// This is always <see langword="true" /> unless transferring BCP files.
-        /// </remarks>
-        public bool SortIntoVolumes
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Gets or sets the target path.
         /// </summary>
         /// <value>
@@ -318,17 +255,6 @@ namespace kCura.WinEDDS.TApi
         /// The folder name.
         /// </value>
         public string TargetFolderName => this.pathManager.CurrentTargetFolderName;
-
-        /// <summary>
-        /// Gets the workspace artifact identifier.
-        /// </summary>
-        /// <value>
-        /// The artifact identifier.
-        /// </value>
-        public int WorkspaceId
-        {
-            get;
-        }
 
         /// <summary>
         /// Adds the path to a transfer job.
@@ -355,7 +281,7 @@ namespace kCura.WinEDDS.TApi
 
             try
             {
-                var nextTargetPath = this.SortIntoVolumes
+                var nextTargetPath = this.parameters.SortIntoVolumes
                     ? this.pathManager.GetNextTargetPath(this.TargetPath)
                     : this.TargetPath;
                 var transferPath = new TransferPath
@@ -450,13 +376,19 @@ namespace kCura.WinEDDS.TApi
 
             try
             {
-                if (!this.ForceHttpClient)
+                if (this.parameters.ForceClientId == Guid.Empty)
                 {
                     this.transferClient = this.transferHost.CreateClientAsync().GetAwaiter().GetResult();
                 }
-                else
+                else if (this.parameters.ForceHttpClient)
                 {
                     this.CreateHttpClient();
+                }
+                else
+                {
+                    this.transferClient =
+                        this.transferHost.CreateClient(new ClientConfiguration(this.parameters.ForceClientId,
+                            this.parameters.ForceClientName));
                 }
             }
             catch (Exception)
@@ -490,7 +422,7 @@ namespace kCura.WinEDDS.TApi
             this.jobRequest = this.currentDirection == TransferDirection.Upload
                 ? TransferRequest.ForUploadJob(this.TargetPath, this.context)
                 : TransferRequest.ForDownloadJob(this.TargetPath, this.context);
-            this.jobRequest.MaxRetryAttempts = this.MaxRetryCount;
+            this.jobRequest.MaxRetryAttempts = this.parameters.MaxRetryCount;
             this.jobRequest.ClientRequestId = this.clientRequestId;
             this.jobRequest.TransferId = this.currentTransferId;
             this.SetupTargetPathResolvers();
@@ -550,7 +482,26 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         protected void RaiseClientChanged()
         {
-            this.ClientChanged.Invoke(this, new TransferClientEventArgs(this.transferClient.Name, this.isBulkEnabled));
+            this.ClientChanged.Invoke(this, new TransferClientEventArgs(this.transferClient.Name, this.parameters.IsBulkEnabled));
+        }
+
+        /// <summary>
+        /// Creates a Relativity connection information object.
+        /// </summary>
+        /// <param name="parameters">
+        /// The transfer parameters.
+        /// </param>
+        /// <returns>
+        /// The <see cref="RelativityConnectionInfo"/> instance.
+        /// </returns>
+        private static RelativityConnectionInfo CreateRelativityConnectionInfo(NativeFileTransferParameters parameters)
+        {
+            var baseUri = new Uri(parameters.WebServiceUrl);
+            var host = new Uri(baseUri.GetLeftPart(UriPartial.Authority));
+            return new RelativityConnectionInfo(
+                host,
+                new UsernamePasswordCredentials(parameters.Credentials.UserName, parameters.Credentials.Password),
+                parameters.WorkspaceId);
         }
 
         /// <summary>
@@ -676,7 +627,7 @@ namespace kCura.WinEDDS.TApi
                 CultureInfo.CurrentCulture,
                 Strings.RetryJobMessage,
                 e.Count,
-                this.MaxRetryCount);
+                this.parameters.MaxRetryCount);
             this.RaiseStatusMessage(message, 0);
         }
 
@@ -687,7 +638,7 @@ namespace kCura.WinEDDS.TApi
         {
             this.transferClient =
                 this.transferHost.CreateClient(
-                    new HttpClientConfiguration { CookieContainer = this.cookieContainer });
+                    new HttpClientConfiguration { CookieContainer = this.parameters.WebCookieContainer });
         }
 
         /// <summary>
