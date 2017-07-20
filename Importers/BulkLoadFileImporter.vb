@@ -1612,7 +1612,7 @@ Namespace kCura.WinEDDS
 #Region "Status Window"
 
         Private Sub WriteStatusLine(ByVal et As kCura.Windows.Process.EventType, ByVal line As String, ByVal lineNumber As Int32)
-            line = line & String.Format(" [line {0}]", lineNumber)
+            line = line & If(lineNumber > 0, String.Format(" [line {0}]", lineNumber), String.Empty)
             OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(et, lineNumber + _offset, _recordCount, line, _currentStatisticsSnapshot))
         End Sub
 
