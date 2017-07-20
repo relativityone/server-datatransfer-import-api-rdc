@@ -96,6 +96,11 @@ namespace kCura.WinEDDS.TApi
         private ITransferJob transferJob;
 
         /// <summary>
+        /// The list of transfer event listeners.
+        /// </summary>
+        private List<TransferListenerBase> transferListeners;
+
+        /// <summary>
         /// The disposed backing.
         /// </summary>
         private bool disposed;
@@ -162,11 +167,8 @@ namespace kCura.WinEDDS.TApi
 
             // The context is optional and must be supplied on the transfer request (see below).
             this.context = new TransferContext();
-            this.context.TransferFile += this.ContextOnTransferFile;
-            this.context.TransferFileIssue += this.ContextOnTransferFileIssue;
-            this.context.TransferJobRetry += this.ContextOnTransferJobRetry;
-            this.context.TransferRequest += this.ContextOnTransferRequest;
-            this.context.TransferStatistics += this.ContextOnTransferStatistics;
+
+            this.SetupTransferListeners();
         }
 
         /// <summary>
@@ -183,6 +185,16 @@ namespace kCura.WinEDDS.TApi
         /// Occurs when the transfer client is changed.
         /// </summary>
         public event EventHandler<TransferClientEventArgs> ClientChanged = delegate { };
+
+        /// <summary>
+        /// Occurs when a file finishes transferring.
+        /// </summary>
+        public event EventHandler<TransferMessageEventArgs> ProgressEvent = delegate { };
+
+        /// <summary>
+        /// Occurs when there is a fatal error in the transfer.
+        /// </summary>
+        public event EventHandler<TransferMessageEventArgs> FatalError = delegate { };
 
         /// <summary>
         /// Gets a value indicating whether the bulk setting is enabled.
@@ -365,6 +377,19 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
+        /// Prints transfer statistics for each line.
+        /// </summary>
+        /// <param name="fileCount">
+        /// The file count.
+        /// </param>
+        public void DumpTransferStats(int fileCount)
+        {
+            Console.WriteLine($"Summary:\nBatch Size: {fileCount}");
+            var listener = this.transferListeners.OfType<TransferFileListener>().FirstOrDefault();
+            listener?.Dump();
+        }
+
+        /// <summary>
         /// Creates the best transfer client.
         /// </summary>        
         protected void CreateTransferClient()
@@ -505,133 +530,6 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Occurs when transfer statistics are available.
-        /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The <see cref="TransferStatisticsEventArgs"/> instance containing the event data.
-        /// </param>
-        private void ContextOnTransferStatistics(object sender, TransferStatisticsEventArgs e)
-        {
-            var progressMessage = string.Format(
-                CultureInfo.CurrentCulture,
-                Strings.ProgressMessage,
-                e.Statistics.TotalTransferredFiles,
-                e.Statistics.TotalFiles,
-                e.Statistics.Progress);
-            this.RaiseStatusMessage(progressMessage, 0);
-        }
-
-        /// <summary>
-        /// Occurs when transfer requests start and end.
-        /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The <see cref="TransferRequestEventArgs"/> instance containing the event data.
-        /// </param>
-        private void ContextOnTransferRequest(object sender, TransferRequestEventArgs e)
-        {
-            switch (e.Status)
-            {
-                case TransferRequestStatus.Started:
-                    this.RaiseStatusMessage(Strings.TransferJobStartedMessage, 0);
-                    break;
-
-                case TransferRequestStatus.Ended:
-                    this.RaiseStatusMessage(Strings.TransferJobEndedMessage, 0);
-                    break;
-
-                case TransferRequestStatus.EndedMaxRetry:
-                    this.RaiseStatusMessage(Strings.TransferJobEndedMaxRetryMessage, 0);
-                    break;
-
-                case TransferRequestStatus.Canceled:
-                    this.RaiseStatusMessage(Strings.TransferJobCanceledMessage, 0);
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Occurs when a transfer file event occurs.
-        /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The <see cref="TransferFileEventArgs"/> instance containing the event data.
-        /// </param>
-        private void ContextOnTransferFile(object sender, TransferFileEventArgs e)
-        {
-            switch (e.Status)
-            {
-                case TransferFileStatus.Failed:
-                    this.RaiseStatusMessage($"Failed to transfer file. Path={e.Path.SourcePath}.", e.Path.Order);
-                    break;
-
-                case TransferFileStatus.FailedRetryable:
-                    this.RaiseStatusMessage($"Failed to transfer file. Path={e.Path.SourcePath} and will re-queue after the current job is complete.", e.Path.Order);
-                    break;
-
-                case TransferFileStatus.Started:
-                    this.RaiseStatusMessage($"Starting file transfer. Path={e.Path.SourcePath}.", e.Path.Order);
-                    break;
-
-                case TransferFileStatus.Successful:
-                    this.RaiseStatusMessage($"Successfully transferred file. Path={e.Path.SourcePath}.", e.Path.Order);
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Occurs when transfer file issues occur.
-        /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The <see cref="TransferFileIssueEventArgs"/> instance containing the event data.
-        /// </param>
-        private void ContextOnTransferFileIssue(object sender, TransferFileIssueEventArgs e)
-        {
-            var message = string.Format(CultureInfo.CurrentCulture,
-                this.currentDirection == TransferDirection.Download
-                    ? Strings.TransferFileDownloadIssueMessage
-                    : Strings.TransferFileUploadIssueMessage, this.ClientName, e.Issue.Message);
-            this.RaiseWarningMessage(message, e.Issue.Path != null ? e.Issue.Path.Order : -1);
-            if (e.Issue.Attributes.HasFlag(IssueAttributes.Error))
-            {
-                this.transferLog.LogError("A serious transfer error has occurred. Issue={Issue}.", e.Issue);
-            }
-            else if (e.Issue.Attributes.HasFlag(IssueAttributes.Warning))
-            {
-                this.transferLog.LogWarning("A transfer warning has occurred. Issue={Issue}.", e.Issue);
-            }
-        }
-
-        /// <summary>
-        /// Occurs when the transfer job is retried.
-        /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The <see cref="TransferJobRetryEventArgs"/> instance containing the event data.
-        /// </param>
-        private void ContextOnTransferJobRetry(object sender, TransferJobRetryEventArgs e)
-        {
-            var message = string.Format(
-                CultureInfo.CurrentCulture,
-                Strings.RetryJobMessage,
-                e.Count,
-                this.parameters.MaxRetryCount);
-            this.RaiseStatusMessage(message, 0);
-        }
-
-        /// <summary>
         /// Creates the HTTP client.
         /// </summary>
         private void CreateHttpClient()
@@ -695,6 +593,73 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
+        /// Setup the transfer listeners.
+        /// </summary>
+        private void SetupTransferListeners()
+        {
+            this.transferListeners = new List<TransferListenerBase>();
+
+            this.CreateFileListener();
+            this.CreateFileIssueListener();
+            this.CreateRequestListener();
+            this.CreateJobRetryListener();
+            this.CreateStatisticsListener();
+
+            foreach (TransferListenerBase listener in this.transferListeners)
+            {
+                listener.StatusMessage += (sender, args) => this.StatusMessage.Invoke(sender, args);
+                listener.WarningMessage += (sender, args) => this.WarningMessage.Invoke(sender, args);
+            }
+        }
+
+        /// <summary>
+        /// Creates initializes a <inheritdoc cref="TransferFileListener"/> instance.
+        /// </summary>
+        private void CreateFileListener()
+        {
+            var listener = new TransferFileListener(this.transferLog, this.context);
+            listener.ProgressEvent += (sender, args) => this.ProgressEvent.Invoke(sender, args);
+            this.transferListeners.Add(listener);
+        }
+
+        /// <summary>
+        /// Creates and initializes a <inheritdoc cref="TransferFileIssueListener"/> instance. 
+        /// </summary>
+        private void CreateFileIssueListener()
+        {
+            var listener = new TransferFileIssueListener(this.transferLog, this.currentDirection, this.ClientName);
+            listener.FatalError += (sender, args) => this.FatalError.Invoke(sender, args);
+            this.transferListeners.Add(listener);
+        }
+
+        /// <summary>
+        /// Creates and initializes a <inheritdoc cref="TransferRequestListener"/> to listen for transfer request events. 
+        /// </summary>
+        private void CreateRequestListener()
+        {
+            var listener = new TransferRequestListener(this.transferLog, this.context);
+            this.transferListeners.Add(listener);
+        }
+
+        /// <summary>
+        /// Creates and initializes a <inheritdoc cref="TransferJobRetryListener"/> to listen for job retry events.
+        /// </summary>
+        private void CreateJobRetryListener()
+        {
+            var listener = new TransferJobRetryListener(this.transferLog, this.parameters.MaxRetryCount, this.context);
+            this.transferListeners.Add(listener);
+        }
+
+        /// <summary>
+        /// Creates and initializes a <inheritdoc cref="TransferStatisticsListener"/> to listen for transfer statistic events. 
+        /// </summary>
+        private void CreateStatisticsListener()
+        {
+            var listener = new TransferStatisticsListener(this.transferLog, this.context);
+            this.transferListeners.Add(listener);
+        }
+
+        /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
         /// <param name="disposing">
@@ -709,20 +674,10 @@ namespace kCura.WinEDDS.TApi
 
             if (disposing)
             {
-                try
-                {
-                    this.DestroyTransferJob();
-                    this.DestroyTransferClient();
-                    this.DestroyTransferHost();
-                }
-                finally
-                {
-                    this.context.TransferFile -= this.ContextOnTransferFile;
-                    this.context.TransferFileIssue -= this.ContextOnTransferFileIssue;
-                    this.context.TransferJobRetry -= this.ContextOnTransferJobRetry;
-                    this.context.TransferRequest -= this.ContextOnTransferRequest;
-                    this.context.TransferStatistics -= this.ContextOnTransferStatistics;
-                }
+                this.DestroyTransferJob();
+                this.DestroyTransferClient();
+                this.DestroyTransferHost();
+                this.DestroyTransferListeners();
             }
 
             this.disposed = true;
@@ -769,6 +724,25 @@ namespace kCura.WinEDDS.TApi
 
             this.transferHost.Dispose();
             this.transferHost = null;
+        }
+
+        /// <summary>
+        /// Destroys transfer listeners.
+        /// </summary>
+        private void DestroyTransferListeners()
+        {
+            if (this.transferListeners == null)
+            {
+                return;
+            }
+
+            foreach (TransferListenerBase listener in this.transferListeners)
+            {
+                listener.Dispose();
+            }
+
+            this.transferListeners.Clear();
+            this.transferListeners = null;
         }
 
         /// <summary>
