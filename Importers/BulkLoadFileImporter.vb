@@ -689,7 +689,7 @@ Namespace kCura.WinEDDS
                                     _statistics.FileBytes += Me.GetFileLength(filename)
                                     fileGuid = _nativeFileUploader.AddPath(filename, Guid.NewGuid().ToString(), Me.CurrentLineNumber)
                                     _statistics.FileTime += System.DateTime.Now.Ticks - start
-                                    destinationVolume = _nativeFileUploader.TargetPath
+                                    destinationVolume = _nativeFileUploader.TargetFolderName
                                     If updateCurrentStats Then
                                         _currentStatisticsSnapshot = _statistics.ToDictionary
                                         _statisticsLastUpdated = New System.DateTime(start)
