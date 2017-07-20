@@ -423,6 +423,7 @@ Namespace kCura.WinEDDS
 
         private Sub CompletePendingTransfers()
             _nativeFileUploader.WaitForTransferJob()
+            _nativeFileUploader.DumpTransferStats(_batchCounter)
         End Sub
 
         Private Sub PublishUploadModeEvent()
@@ -734,7 +735,7 @@ Namespace kCura.WinEDDS
                             End If
                         End Try
                     End If
-                    WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
+                    'TAPI WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
                 End If
             End If
             _timekeeper.MarkEnd("ManageDocument_Filesystem")
@@ -882,7 +883,7 @@ Namespace kCura.WinEDDS
                 WriteFatalError(metaDoc.LineNumber, ex)
             End Try
             _timekeeper.MarkStart("ManageDocumentMetadata_ProgressEvent")
-            WriteStatusLine(Windows.Process.EventType.Progress, String.Format("Item '{0}' processed.", metaDoc.IdentityValue), metaDoc.LineNumber)
+            'TAPI WriteStatusLine(Windows.Process.EventType.Progress, String.Format("Item '{0}' processed.", metaDoc.IdentityValue), metaDoc.LineNumber)
             _timekeeper.MarkEnd("ManageDocumentMetadata_ProgressEvent")
         End Sub
 
@@ -1680,11 +1681,19 @@ Namespace kCura.WinEDDS
         End Sub
 
         Private Sub _nativeFileUploader_UploadStatusEvent(ByVal sender As Object, ByVal e As TApi.TransferMessageEventArgs) Handles _nativeFileUploader.StatusMessage
-            WriteStatusLine(kCura.Windows.Process.EventType.Status, e.Message)
+            WriteStatusLine(kCura.Windows.Process.EventType.Status, e.Message, e.LineNumber)
         End Sub
 
         Private Sub _nativeFileUploader_UploadWarningEvent(ByVal sender As Object, ByVal e As TApi.TransferMessageEventArgs) Handles _nativeFileUploader.WarningMessage
-            WriteStatusLine(kCura.Windows.Process.EventType.Warning, e.Message)
+            WriteStatusLine(kCura.Windows.Process.EventType.Warning, e.Message, e.LineNumber)
+        End Sub
+
+        Private Sub _nativeFileUploader_ProgressEvent(ByVal sender As Object, ByVal e As TApi.TransferMessageEventArgs) Handles _nativeFileUploader.ProgressEvent
+            WriteStatusLine(kCura.Windows.Process.EventType.Progress, e.Message, e.LineNumber)
+        End Sub
+
+        Private Sub _nativeFileUploader_FatalErrorEvent(ByVal sender As Object, ByVal e As TApi.TransferMessageEventArgs) Handles _nativeFileUploader.FatalError
+            WriteFatalError(e.LineNumber, New Exception(e.Message))
         End Sub
 
         Private Sub _bcpuploader_UploadStatusEvent(ByVal s As String) Handles _bcpuploader.UploadStatusEvent
