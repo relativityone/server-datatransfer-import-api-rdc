@@ -18,11 +18,6 @@ namespace kCura.WinEDDS.TApi
     public class FileSharePathManager
     {
         /// <summary>
-        /// The default volume size [1000].
-        /// </summary>
-        public const int DefaultVolumeSize = 1000;
-
-        /// <summary>
         /// The maximum volume size backing.
         /// </summary>
         private readonly int maxVolumeSize;
@@ -53,7 +48,7 @@ namespace kCura.WinEDDS.TApi
             this.currentSubDirectory = this.GetNewSubdirectory();
             this.lastSubdirectory = string.Copy(this.currentSubDirectory);
             this.currentFileNumber = 0;
-            this.maxVolumeSize = Math.Max(DefaultVolumeSize, maximumVolumeSize);
+            this.maxVolumeSize = maximumVolumeSize;
         }
 
         /// <summary>
