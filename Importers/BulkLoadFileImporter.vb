@@ -328,6 +328,7 @@ Namespace kCura.WinEDDS
             _executionSource = executionSource
             _cloudInstance = cloudInstance
             _cancellationToken = New CancellationTokenSource()
+            '_cancellationToken.CancelAfter(10000)
             If (String.IsNullOrEmpty(args.OverwriteDestination)) Then
                 _overwrite = Relativity.ImportOverwriteType.Append
             Else
@@ -985,22 +986,24 @@ Namespace kCura.WinEDDS
         Private Sub TryPushNativeBatch(Optional ByVal lastRun As Boolean = False)
             CloseFileWriters()
             Dim outputNativePath As String = _outputFileWriter.OutputNativeFilePath
-            Try
-                CompletePendingTransfers()
-                PublishUploadModeEvent()
-                PushNativeBatch(outputNativePath)
-                PublishUploadModeEvent()
-            Catch ex As Exception
-                If BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso _continue Then
-                    Dim originalBatchSize As Int32 = Me.ImportBatchSize
-                    LowerBatchLimits()
-                    Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts)
-                    If Not _continue Then Throw 'after the pause
-                    Me.LowerBatchSizeAndRetry(outputNativePath, originalBatchSize)
-                Else
-                    Throw
-                End If
-            End Try
+            If _nativeFileUploader.TransfersPending
+                Try
+                    CompletePendingTransfers()
+                    PublishUploadModeEvent()
+                    PushNativeBatch(outputNativePath)
+                    PublishUploadModeEvent()
+                Catch ex As Exception
+                    If BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso _continue Then
+                        Dim originalBatchSize As Int32 = Me.ImportBatchSize
+                        LowerBatchLimits()
+                        Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts)
+                        If Not _continue Then Throw 'after the pause
+                        Me.LowerBatchSizeAndRetry(outputNativePath, originalBatchSize)
+                    Else
+                        Throw
+                    End If
+                End Try
+            End If
             DeleteFiles()
             If Not lastRun Then OpenFileWriters()
         End Sub
