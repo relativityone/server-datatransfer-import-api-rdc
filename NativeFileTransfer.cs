@@ -367,7 +367,7 @@ namespace kCura.WinEDDS.TApi
             catch (Exception e)
             {
                 this.transferLog.LogInformation(e, "An unexpected error has occurred attempting to wait for the transfer job to complete.");
-                this.RaiseWarningMessage("An unexpected error has occurred. Message: " + e.Message, -1);
+                this.RaiseWarningMessage("An unexpected error has occurred. Message: " + e.Message, 0);
                 this.FallbackHttpClient();
             }
             finally
@@ -390,6 +390,50 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
+        /// Raises a client changed event.
+        /// </summary>
+        /// <param name="reason">
+        /// The reason for the client change.
+        /// </param>
+        internal void RaiseClientChanged(ClientChangeReason reason)
+        {
+            string message;
+            switch (reason)
+            {
+                case ClientChangeReason.BestFit:
+                    message = string.Format(
+                        CultureInfo.CurrentCulture,
+                        Strings.TransferClientChangedBestFitMessage,
+                        this.ClientName);
+                    break;
+
+                case ClientChangeReason.ForceConfig:
+                    message = string.Format(
+                        CultureInfo.CurrentCulture,
+                        Strings.TransferClientChangedForceConfigMessage,
+                        this.ClientName);
+                    break;
+
+                case ClientChangeReason.HttpFallback:
+                    message = string.Format(
+                        CultureInfo.CurrentCulture,
+                        Strings.TransferClientChangedHttpFallbackMessage,
+                        this.ClientName);
+                    break;
+
+                default:
+                    message = string.Format(
+                        CultureInfo.CurrentCulture,
+                        Strings.TransferClientChangedDefaultMessage,
+                        this.ClientName);
+                    break;
+            }
+
+            this.RaiseStatusMessage(message, 0);
+            this.ClientChanged.Invoke(this, new TransferClientEventArgs(this.transferClient.Name, this.parameters.IsBulkEnabled));
+        }
+
+        /// <summary>
         /// Creates the best transfer client.
         /// </summary>        
         protected void CreateTransferClient()
@@ -404,24 +448,26 @@ namespace kCura.WinEDDS.TApi
                 if (this.parameters.ForceClientId == Guid.Empty)
                 {
                     this.transferClient = this.transferHost.CreateClientAsync().GetAwaiter().GetResult();
+                    this.RaiseClientChanged(ClientChangeReason.BestFit);
                 }
                 else if (this.parameters.ForceHttpClient)
                 {
                     this.CreateHttpClient();
+                    this.RaiseClientChanged(ClientChangeReason.ForceConfig);
                 }
                 else
                 {
                     this.transferClient =
                         this.transferHost.CreateClient(new ClientConfiguration(this.parameters.ForceClientId,
                             this.parameters.ForceClientName));
+                    this.RaiseClientChanged(ClientChangeReason.ForceConfig);
                 }
             }
             catch (Exception)
             {
                 this.CreateHttpClient();
+                this.RaiseClientChanged(ClientChangeReason.HttpFallback);
             }
-
-            this.RaiseClientChanged();
         }
 
         /// <summary>
@@ -500,14 +546,6 @@ namespace kCura.WinEDDS.TApi
         protected void RaiseWarningMessage(string message, int lineNumber)
         {
             this.WarningMessage.Invoke(this, new TransferMessageEventArgs(message, lineNumber));
-        }
-
-        /// <summary>
-        /// Raises a client changed event.
-        /// </summary>
-        protected void RaiseClientChanged()
-        {
-            this.ClientChanged.Invoke(this, new TransferClientEventArgs(this.transferClient.Name, this.parameters.IsBulkEnabled));
         }
 
         /// <summary>

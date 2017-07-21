@@ -68,6 +68,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ClientChangeReason.cs" />
     <Compile Include="NativeFileTransferFactory.cs" />
     <Compile Include="NativeFileTransferParameters.cs" />
     <Compile Include="Properties\AssemblyInfoLocal.cs" />

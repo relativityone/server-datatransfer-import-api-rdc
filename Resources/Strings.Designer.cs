@@ -97,6 +97,51 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Created transfer client &apos;{0}&apos; using a best-fit strategy..
+        /// </summary>
+        internal static string TransferClientChangedBestFitMessage {
+            get {
+                return ResourceManager.GetString("TransferClientChangedBestFitMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Created transfer client &apos;{0}&apos; using a default strategy..
+        /// </summary>
+        internal static string TransferClientChangedDefaultMessage {
+            get {
+                return ResourceManager.GetString("TransferClientChangedDefaultMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Created transfer client &apos;{0}&apos; using a forced configuration setting..
+        /// </summary>
+        internal static string TransferClientChangedForceConfigMessage {
+            get {
+                return ResourceManager.GetString("TransferClientChangedForceConfigMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Created transfer client &apos;{0}&apos; using a fallback strategy..
+        /// </summary>
+        internal static string TransferClientChangedHttpFallbackMessage {
+            get {
+                return ResourceManager.GetString("TransferClientChangedHttpFallbackMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transfer client changed - {0}.
+        /// </summary>
+        internal static string TransferClientChangedMessage {
+            get {
+                return ResourceManager.GetString("TransferClientChangedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} download failed: {1}..
         /// </summary>
         internal static string TransferFileDownloadIssueMessage {
