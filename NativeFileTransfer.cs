@@ -221,6 +221,11 @@ namespace kCura.WinEDDS.TApi
         public string ClientName => this.transferClient != null ? this.transferClient.Name : Strings.ClientNotSet;
 
         /// <summary>
+        /// Gets a value indicating whether there are transfers pending.
+        /// </summary>
+        public bool TransfersPending => this.transferJob != null && this.transferJob.Paths.Count > 0;
+
+        /// <summary>
         /// Gets the current transfer client.
         /// </summary>
         /// <value>
