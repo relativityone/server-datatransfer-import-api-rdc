@@ -7,12 +7,12 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using Relativity.Transfer;
-
 namespace kCura.WinEDDS.TApi
 {
+    using System;
     using System.Net;
+
+    using Relativity.Transfer;
 
     /// <summary>
     /// Represents the generic parameters to setup a native file transfer.
@@ -32,14 +32,19 @@ namespace kCura.WinEDDS.TApi
             this.Credentials = null;
             this.ForceClientId = Guid.Empty;
             this.ForceClientName = null;
+
+            // Backwards compatibility.
             this.ForceHttpClient = false;
             this.IsBulkEnabled = true;
             this.MaxFilesPerFolder = 1000;
-            this.MaxRetryCount = 3;
+            this.MaxJobParallelism = 5;
+            this.MaxJobRetryAttempts = 3;
+            this.MaxSingleFileRetryAttempts = 5;
 
             // FileUploader.vb defaults this parameters to true.
             this.SortIntoVolumes = true;
             this.TargetPath = null;
+            this.TimeoutSeconds = 300;
             this.WebServiceUrl = null;
             this.WebCookieContainer = null;
             this.WorkspaceId = 0;
@@ -89,7 +94,10 @@ namespace kCura.WinEDDS.TApi
         /// </value>
         public bool ForceHttpClient
         {
-            get { return this.forceHttpClient; }
+            get
+            {
+                return this.forceHttpClient;
+            }
 
             set
             {
@@ -109,7 +117,7 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Gets or sets the value indicating whether bulk mode is enabled.
+        /// Gets or sets a value indicating whether bulk mode is enabled.
         /// </summary>
         /// <value>
         /// The bulk mode enabled value.
@@ -133,12 +141,48 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Gets or sets the max retry count.
+        /// Gets or sets the number of retry attempts for a single file. This setting is client specific and not guaranteed to be honored by all clients.
+        /// </summary>
+        /// <value>
+        /// The single file retry attempts.
+        /// </value>
+        public int MaxSingleFileRetryAttempts
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the max degree of parallelism when creating a job.
         /// </summary>
         /// <value>
         /// The count.
         /// </value>
-        public int MaxRetryCount
+        public int MaxJobParallelism
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the max number of job retries.
+        /// </summary>
+        /// <value>
+        /// The max job retry count.
+        /// </value>
+        public int MaxJobRetryAttempts
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the timeout in seconds.
+        /// </summary>
+        /// <value>
+        /// The timeout.
+        /// </value>
+        public int TimeoutSeconds
         {
             get;
             set;

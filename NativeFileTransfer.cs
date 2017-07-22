@@ -9,11 +9,10 @@
 
 namespace kCura.WinEDDS.TApi
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
-    using System;
-    using System.Globalization;
     using System.Threading;
 
     using Relativity.Logging;
@@ -141,8 +140,7 @@ namespace kCura.WinEDDS.TApi
 
             if (parameters.WorkspaceId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(parameters),
-                    Strings.WorkspaceExceptionMessage);
+                throw new ArgumentOutOfRangeException(nameof(parameters), Strings.WorkspaceExceptionMessage);
             }
 
             if (string.IsNullOrEmpty(parameters.TargetPath))
@@ -401,19 +399,30 @@ namespace kCura.WinEDDS.TApi
 
             try
             {
-                if (this.parameters.ForceClientId == Guid.Empty)
-                {
-                    this.transferClient = this.transferHost.CreateClientAsync().GetAwaiter().GetResult();
-                }
-                else if (this.parameters.ForceHttpClient)
+                var configuration =
+                    new ClientConfiguration
+                        {
+                            MaxJobParallelism = this.parameters.MaxJobParallelism,
+                            MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
+                            MaxSingleFileRetryAttempts = this.parameters.MaxSingleFileRetryAttempts,
+                            TimeoutSeconds = this.parameters.TimeoutSeconds,
+                        };
+                if (this.parameters.ForceHttpClient)
                 {
                     this.CreateHttpClient();
                 }
+                else if (this.parameters.ForceClientId == Guid.Empty)
+                {
+                    const bool SupportCheck = true;
+                    this.transferClient = this.transferHost
+                        .CreateClientAsync(SupportCheck, configuration, this.cancellationToken).GetAwaiter()
+                        .GetResult();
+                }
                 else
                 {
-                    this.transferClient =
-                        this.transferHost.CreateClient(new ClientConfiguration(this.parameters.ForceClientId,
-                            this.parameters.ForceClientName));
+                    configuration.ClientId = this.parameters.ForceClientId;
+                    configuration.ClientName = this.parameters.ForceClientName;
+                    this.transferClient = this.transferHost.CreateClient(configuration);
                 }
             }
             catch (Exception)
@@ -447,7 +456,6 @@ namespace kCura.WinEDDS.TApi
             this.jobRequest = this.currentDirection == TransferDirection.Upload
                 ? TransferRequest.ForUploadJob(this.TargetPath, this.context)
                 : TransferRequest.ForDownloadJob(this.TargetPath, this.context);
-            this.jobRequest.MaxRetryAttempts = this.parameters.MaxRetryCount;
             this.jobRequest.ClientRequestId = this.clientRequestId;
             this.jobRequest.TransferId = this.currentTransferId;
             this.SetupTargetPathResolvers();
@@ -534,6 +542,7 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         private void CreateHttpClient()
         {
+            this.transferHost.Clear();
             this.transferClient =
                 this.transferHost.CreateClient(
                     new HttpClientConfiguration { CookieContainer = this.parameters.WebCookieContainer });
@@ -646,7 +655,7 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         private void CreateJobRetryListener()
         {
-            var listener = new TransferJobRetryListener(this.transferLog, this.parameters.MaxRetryCount, this.context);
+            var listener = new TransferJobRetryListener(this.transferLog, this.parameters.MaxSingleFileRetryAttempts, this.context);
             this.transferListeners.Add(listener);
         }
 
@@ -750,8 +759,10 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         private void LogCancelRequest()
         {
-            this.transferLog.LogInformation("The file transfer has been cancelled. ClientId={ClientId}, TransferId={TransferId} ",
-                this.clientRequestId, this.currentTransferId);
+            this.transferLog.LogInformation(
+                "The file transfer has been cancelled. ClientId={ClientId}, TransferId={TransferId} ",
+                this.clientRequestId,
+                this.currentTransferId);
         }
     }
 }
