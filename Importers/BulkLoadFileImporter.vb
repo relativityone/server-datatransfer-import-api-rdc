@@ -397,6 +397,7 @@ Namespace kCura.WinEDDS
             parameters.MaxSingleFileRetryAttempts = Config.TapiMaxSingleFileRetryAttempts
             parameters.MaxJobRetryAttempts = Config.TapiMaxJobRetryAttempts            
             parameters.TargetPath = _defaultDestinationFolderPath
+            parameters.ValidateSourcePaths = Not Config.DisableNativeLocationValidation
             parameters.WebServiceUrl = Config.WebServiceURL
             parameters.WorkspaceId = args.CaseInfo.ArtifactID
             _nativeFileUploader = TApi.NativeFileTransferFactory.CreateUploadFileTransfer(parameters, Me._cancellationToken.Token)
