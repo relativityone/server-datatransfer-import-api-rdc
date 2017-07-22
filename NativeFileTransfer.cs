@@ -462,6 +462,7 @@ namespace kCura.WinEDDS.TApi
                             MaxJobParallelism = this.parameters.MaxJobParallelism,
                             MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
                             MaxSingleFileRetryAttempts = this.parameters.MaxSingleFileRetryAttempts,
+                            PreserveDates = this.parameters.PreserveDates,
                             TimeoutSeconds = this.parameters.TimeoutSeconds,
                             ValidateSourcePaths = this.parameters.ValidateSourcePaths
                         };
