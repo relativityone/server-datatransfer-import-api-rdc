@@ -11,6 +11,7 @@ namespace kCura.WinEDDS.TApi
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Net;
     using System.Threading;
@@ -219,6 +220,11 @@ namespace kCura.WinEDDS.TApi
         public string ClientName => this.transferClient != null ? this.transferClient.Name : Strings.ClientNotSet;
 
         /// <summary>
+        /// Gets a value indicating whether there are transfers pending.
+        /// </summary>
+        public bool TransfersPending => this.transferJob != null && this.transferJob.Paths.Count > 0;
+
+        /// <summary>
         /// Gets the current transfer client.
         /// </summary>
         /// <value>
@@ -365,7 +371,7 @@ namespace kCura.WinEDDS.TApi
             catch (Exception e)
             {
                 this.transferLog.LogInformation(e, "An unexpected error has occurred attempting to wait for the transfer job to complete.");
-                this.RaiseWarningMessage("An unexpected error has occurred. Message: " + e.Message, -1);
+                this.RaiseWarningMessage("An unexpected error has occurred. Message: " + e.Message, 0);
                 this.FallbackHttpClient();
             }
             finally
@@ -385,6 +391,50 @@ namespace kCura.WinEDDS.TApi
             Console.WriteLine($"Summary:\nBatch Size: {fileCount}");
             var listener = this.transferListeners.OfType<TransferFileListener>().FirstOrDefault();
             listener?.Dump();
+        }
+
+        /// <summary>
+        /// Raises a client changed event.
+        /// </summary>
+        /// <param name="reason">
+        /// The reason for the client change.
+        /// </param>
+        internal void RaiseClientChanged(ClientChangeReason reason)
+        {
+            string message;
+            switch (reason)
+            {
+                case ClientChangeReason.BestFit:
+                    message = string.Format(
+                        CultureInfo.CurrentCulture,
+                        Strings.TransferClientChangedBestFitMessage,
+                        this.ClientName);
+                    break;
+
+                case ClientChangeReason.ForceConfig:
+                    message = string.Format(
+                        CultureInfo.CurrentCulture,
+                        Strings.TransferClientChangedForceConfigMessage,
+                        this.ClientName);
+                    break;
+
+                case ClientChangeReason.HttpFallback:
+                    message = string.Format(
+                        CultureInfo.CurrentCulture,
+                        Strings.TransferClientChangedHttpFallbackMessage,
+                        this.ClientName);
+                    break;
+
+                default:
+                    message = string.Format(
+                        CultureInfo.CurrentCulture,
+                        Strings.TransferClientChangedDefaultMessage,
+                        this.ClientName);
+                    break;
+            }
+
+            this.RaiseStatusMessage(message, 0);
+            this.ClientChanged.Invoke(this, new TransferClientEventArgs(this.transferClient.Name, this.parameters.IsBulkEnabled));
         }
 
         /// <summary>
@@ -410,6 +460,7 @@ namespace kCura.WinEDDS.TApi
                 if (this.parameters.ForceHttpClient)
                 {
                     this.CreateHttpClient();
+                    this.RaiseClientChanged(ClientChangeReason.ForceConfig);
                 }
                 else if (this.parameters.ForceClientId == Guid.Empty)
                 {
@@ -417,20 +468,21 @@ namespace kCura.WinEDDS.TApi
                     this.transferClient = this.transferHost
                         .CreateClientAsync(SupportCheck, configuration, this.cancellationToken).GetAwaiter()
                         .GetResult();
+                    this.RaiseClientChanged(ClientChangeReason.BestFit);
                 }
                 else
                 {
                     configuration.ClientId = this.parameters.ForceClientId;
                     configuration.ClientName = this.parameters.ForceClientName;
                     this.transferClient = this.transferHost.CreateClient(configuration);
+                    this.RaiseClientChanged(ClientChangeReason.ForceConfig);
                 }
             }
             catch (Exception)
             {
                 this.CreateHttpClient();
+                this.RaiseClientChanged(ClientChangeReason.HttpFallback);
             }
-
-            this.RaiseClientChanged();
         }
 
         /// <summary>
@@ -508,14 +560,6 @@ namespace kCura.WinEDDS.TApi
         protected void RaiseWarningMessage(string message, int lineNumber)
         {
             this.WarningMessage.Invoke(this, new TransferMessageEventArgs(message, lineNumber));
-        }
-
-        /// <summary>
-        /// Raises a client changed event.
-        /// </summary>
-        protected void RaiseClientChanged()
-        {
-            this.ClientChanged.Invoke(this, new TransferClientEventArgs(this.transferClient.Name, this.parameters.IsBulkEnabled));
         }
 
         /// <summary>
@@ -655,7 +699,10 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         private void CreateJobRetryListener()
         {
-            var listener = new TransferJobRetryListener(this.transferLog, this.parameters.MaxSingleFileRetryAttempts, this.context);
+            var listener = new TransferJobRetryListener(
+                this.transferLog,
+                this.parameters.MaxJobRetryAttempts,
+                this.context);
             this.transferListeners.Add(listener);
         }
 

@@ -156,4 +156,19 @@
   <data name="ClientNotSet" xml:space="preserve">
     <value>Not Set</value>
   </data>
+  <data name="TransferClientChangedBestFitMessage" xml:space="preserve">
+    <value>Created transfer client '{0}' using a best-fit strategy.</value>
+  </data>
+  <data name="TransferClientChangedDefaultMessage" xml:space="preserve">
+    <value>Created transfer client '{0}' using a default strategy.</value>
+  </data>
+  <data name="TransferClientChangedForceConfigMessage" xml:space="preserve">
+    <value>Created transfer client '{0}' using a forced configuration setting.</value>
+  </data>
+  <data name="TransferClientChangedHttpFallbackMessage" xml:space="preserve">
+    <value>Created transfer client '{0}' using a fallback strategy.</value>
+  </data>
+  <data name="TransferClientChangedMessage" xml:space="preserve">
+    <value>Transfer client changed - {0}</value>
+  </data>
 </root>
