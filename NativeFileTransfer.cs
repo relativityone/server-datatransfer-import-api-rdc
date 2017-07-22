@@ -12,6 +12,7 @@ namespace kCura.WinEDDS.TApi
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.IO;
     using System.Linq;
     using System.Net;
     using System.Threading;
@@ -298,19 +299,25 @@ namespace kCura.WinEDDS.TApi
             try
             {
                 var nextTargetPath = this.parameters.SortIntoVolumes
-                    ? this.pathManager.GetNextTargetPath(this.TargetPath)
-                    : this.TargetPath;
+                                         ? this.pathManager.GetNextTargetPath(this.TargetPath)
+                                         : this.TargetPath;
                 var transferPath = new TransferPath
-                {
-                    SourcePath = sourceFile,
-                    TargetPath = nextTargetPath,
-                    TargetFileName = targetFileName,
-                    Order = order
-                };
+                                       {
+                                           SourcePath = sourceFile,
+                                           TargetPath = nextTargetPath,
+                                           TargetFileName = targetFileName,
+                                           Order = order
+                                       };
                 this.transferJob.AddPath(transferPath);
                 return !string.IsNullOrEmpty(targetFileName)
-                    ? targetFileName
-                    : this.fileSystemService.GetFileName(sourceFile);
+                           ? targetFileName
+                           : this.fileSystemService.GetFileName(sourceFile);
+            }
+            catch (ArgumentException e)
+            {
+                // Note: this exception is only thrown when ValidateSourcePaths is true.
+                this.transferLog.LogWarning(e, "There was a problem adding the '{SourceFile}' source file to the transfer job.", sourceFile);
+                throw new FileNotFoundException(e.Message, sourceFile);
             }
             catch (OperationCanceledException)
             {
@@ -456,6 +463,7 @@ namespace kCura.WinEDDS.TApi
                             MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
                             MaxSingleFileRetryAttempts = this.parameters.MaxSingleFileRetryAttempts,
                             TimeoutSeconds = this.parameters.TimeoutSeconds,
+                            ValidateSourcePaths = this.parameters.ValidateSourcePaths
                         };
                 if (this.parameters.ForceHttpClient)
                 {

@@ -45,6 +45,7 @@ namespace kCura.WinEDDS.TApi
             this.SortIntoVolumes = true;
             this.TargetPath = null;
             this.TimeoutSeconds = 300;
+            this.ValidateSourcePaths = false;
             this.WebServiceUrl = null;
             this.WebCookieContainer = null;
             this.WorkspaceId = 0;
@@ -210,6 +211,21 @@ namespace kCura.WinEDDS.TApi
         /// The path.
         /// </value>
         public string TargetPath
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to validate all source paths. If  <see langword="true" />, exceptions are thrown.
+        /// </summary>
+        /// <value>
+        /// <see langword="true" /> to validate all source paths; otherwise, <see langword="false" />.
+        /// </value>
+        /// <remarks>
+        /// This is always <see langword="true" /> unless transferring BCP files.
+        /// </remarks>
+        public bool ValidateSourcePaths
         {
             get;
             set;
