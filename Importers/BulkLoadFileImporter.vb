@@ -380,19 +380,21 @@ Namespace kCura.WinEDDS
             If Config.ForceWebUpload Then
                 ' For backwards compatibility
                 parameters.ForceHttpClient = Config.ForceWebUpload
-            Else If Not String.IsNullOrEmpty(Config.ForceTransferClientId)
+            Else If Not String.IsNullOrEmpty(Config.TapiForceClientId)
                 ' For new integration tests
                 Dim clientId As Guid
-                If Guid.TryParse(Config.ForceTransferClientId, clientId) Then
+                If Guid.TryParse(Config.TapiForceClientId, clientId) Then
                     parameters.ForceClientId = clientId
                 End If
 
-                parameters.ForceClientName = Config.ForceTransferClientName
+                parameters.ForceClientName = Config.TapiForceClientName
             End If
 
             parameters.IsBulkEnabled = False
             parameters.MaxFilesPerFolder = gateway.RepositoryVolumeMax
-            parameters.MaxRetryCount = kCura.Utility.Config.IOErrorNumberOfRetries
+            parameters.MaxJobParallelism = Config.TapiMaxJobParallelism
+            parameters.MaxSingleFileRetryAttempts = Config.TapiMaxSingleFileRetryAttempts
+            parameters.MaxJobRetryAttempts = Config.TapiMaxJobRetryAttempts            
             parameters.TargetPath = _defaultDestinationFolderPath
             parameters.WebServiceUrl = Config.WebServiceURL
             parameters.WorkspaceId = args.CaseInfo.ArtifactID

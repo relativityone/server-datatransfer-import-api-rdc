@@ -42,8 +42,11 @@ Namespace kCura.WinEDDS
 							If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")
 							If Not tempDict.Contains("CreateFoldersInWebAPI") Then tempDict.Add("CreateFoldersInWebAPI", "True")
 							If Not tempDict.Contains("ForceWebUpload") Then tempDict.Add("ForceWebUpload", "False")
-						    If Not tempDict.Contains("ForceTransferClientId") Then tempDict.Add("ForceTransferClientId", String.Empty)
-						    If Not tempDict.Contains("ForceTransferClientName") Then tempDict.Add("ForceTransferClientName", String.Empty)
+                                                        If Not tempDict.Contains("TapiForceClientId") Then tempDict.Add("TapiForceClientId", String.Empty)
+                                                        If Not tempDict.Contains("TapiForceClientName") Then tempDict.Add("TapiForceClientName", String.Empty)
+                                                        If Not tempDict.Contains("TapiMaxJobParallelism") Then tempDict.Add("TapiMaxJobParallelism", "1")
+                                                        If Not tempDict.Contains("TapiMaxJobRetryAttempts") Then tempDict.Add("TapiMaxJobRetryAttempts", "3")
+                                                        If Not tempDict.Contains("TapiMaxSingleFileRetryAttempts") Then tempDict.Add("TapiMaxSingleFileRetryAttempts", "5")
 							If Not tempDict.Contains("DisableAspera") Then tempDict.Add("DisableAspera", "True")
 							If Not tempDict.Contains("RestUrl") Then tempDict.Add("RestUrl", "/Relativity.REST/api")
 							If Not tempDict.Contains("ServicesUrl") Then tempDict.Add("ServicesUrl", "/Relativity.Services/")
@@ -338,16 +341,34 @@ Namespace kCura.WinEDDS
 		End Property
 
 		'This is used strictly for testing different TAPI clients.
-		Public Shared ReadOnly Property ForceTransferClientId() As String
+		Public Shared ReadOnly Property TapiForceClientId() As String
 		    Get
-		        Return CType(ConfigSettings("ForceTransferClientId"), String)
+		        Return CType(ConfigSettings("TapiForceClientId"), String)
 		    End Get
 		End Property
 
 		'This is used strictly for testing different TAPI clients.
-		Public Shared ReadOnly Property ForceTransferClientName() As String
+		Public Shared ReadOnly Property TapiForceClientName() As String
 		    Get
-		        Return CType(ConfigSettings("ForceTransferClientName"), String)
+		        Return CType(ConfigSettings("TapiForceClientName"), String)
+		    End Get
+		End Property
+
+		Public Shared ReadOnly Property TapiMaxJobParallelism() As Int32
+		    Get
+		        Return CType(ConfigSettings("TapiMaxJobParallelism"), Int32)
+		    End Get
+		End Property
+
+		Public Shared ReadOnly Property TapiMaxSingleFileRetryAttempts() As Int32
+		    Get
+		        Return CType(ConfigSettings("TapiMaxSingleFileRetryAttempts"), Int32)
+		    End Get
+		End Property
+
+		Public Shared ReadOnly Property TapiMaxJobRetryAttempts() As Int32
+		    Get
+		        Return CType(ConfigSettings("TapiMaxJobRetryAttempts"), Int32)
 		    End Get
 		End Property
 
