@@ -395,7 +395,8 @@ Namespace kCura.WinEDDS
             parameters.MaxFilesPerFolder = gateway.RepositoryVolumeMax
             parameters.MaxJobParallelism = Config.TapiMaxJobParallelism
             parameters.MaxSingleFileRetryAttempts = Config.TapiMaxSingleFileRetryAttempts
-            parameters.MaxJobRetryAttempts = Config.TapiMaxJobRetryAttempts            
+            parameters.MaxJobRetryAttempts = Config.TapiMaxJobRetryAttempts
+            parameters.PreserveDates = Config.TapiPreserveDates
             parameters.TargetPath = _defaultDestinationFolderPath
             parameters.ValidateSourcePaths = Not Config.DisableNativeLocationValidation
             parameters.WebServiceUrl = Config.WebServiceURL
