@@ -273,13 +273,6 @@
     </Reference>
     <Reference Include="oi, Version=2017.1.2.5, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\kCura.OutsideIn.FI.unified.2017.1.2\lib\net40\oi.dll</HintPath>
-<<<<<<< HEAD
-=======
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.OAuth2Client, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.8\lib\net462\Relativity.OAuth2Client.dll</HintPath>
->>>>>>> develop
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client, Version=1.0.12.2, Culture=neutral, processorArchitecture=MSIL">
