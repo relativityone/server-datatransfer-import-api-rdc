@@ -9,18 +9,12 @@ Namespace kCura.WinEDDS.Credentials
 
 		Private ReadOnly Shared _instance As Lazy(Of RelativityWebApiCredentialsProvider) = new Lazy(Of RelativityWebApiCredentialsProvider)(Function() New RelativityWebApiCredentialsProvider())
 		Private _provider As ICredentialsProvider
-		Private ReadOnly _homeRealm As String
 
 		Private Sub New()
-			_homeRealm = Config.GetRegistryKeyValue(RegistryKeys.HomeRealmKey)
 		End Sub
 
 		Public Shared Function Instance As RelativityWebApiCredentialsProvider
 			return _instance.Value
-		End Function
-
-		Public Function GetHomeRealm() As String
-			Return _homeRealm
 		End Function
 
 		Public Sub SetProvider(provider As ICredentialsProvider)
