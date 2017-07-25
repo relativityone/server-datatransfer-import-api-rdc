@@ -61,11 +61,11 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Not Set.
+        ///   Looks up a localized string similar to Initializing.
         /// </summary>
-        internal static string ClientNotSet {
+        internal static string ClientInitializing {
             get {
-                return ResourceManager.GetString("ClientNotSet", resourceCulture);
+                return ResourceManager.GetString("ClientInitializing", resourceCulture);
             }
         }
         
@@ -115,7 +115,7 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Created transfer client &apos;{0}&apos; using a forced configuration setting..
+        ///   Looks up a localized string similar to Created transfer client &apos;{0}&apos; using a forced configuration setting strategy..
         /// </summary>
         internal static string TransferClientChangedForceConfigMessage {
             get {

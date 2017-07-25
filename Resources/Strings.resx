@@ -153,8 +153,8 @@
   <data name="HttpFallbackExceptionMessage" xml:space="preserve">
     <value>A serious error has occurred attempting to transfer files over HTTP.</value>
   </data>
-  <data name="ClientNotSet" xml:space="preserve">
-    <value>Not Set</value>
+  <data name="ClientInitializing" xml:space="preserve">
+    <value>Initializing</value>
   </data>
   <data name="TransferClientChangedBestFitMessage" xml:space="preserve">
     <value>Created transfer client '{0}' using a best-fit strategy.</value>
@@ -163,7 +163,7 @@
     <value>Created transfer client '{0}' using a default strategy.</value>
   </data>
   <data name="TransferClientChangedForceConfigMessage" xml:space="preserve">
-    <value>Created transfer client '{0}' using a forced configuration setting.</value>
+    <value>Created transfer client '{0}' using a forced configuration setting strategy.</value>
   </data>
   <data name="TransferClientChangedHttpFallbackMessage" xml:space="preserve">
     <value>Created transfer client '{0}' using a fallback strategy.</value>

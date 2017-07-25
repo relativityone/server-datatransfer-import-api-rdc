@@ -218,7 +218,7 @@ namespace kCura.WinEDDS.TApi
         /// <value>
         /// The name.
         /// </value>
-        public string ClientName => this.transferClient != null ? this.transferClient.Name : Strings.ClientNotSet;
+        public string ClientName => this.transferClient != null ? this.transferClient.Name : Strings.ClientInitializing;
 
         /// <summary>
         /// Gets a value indicating whether there are transfers pending.
@@ -624,6 +624,7 @@ namespace kCura.WinEDDS.TApi
             this.DestroyTransferJob();
             this.DestroyTransferClient();
             this.CreateHttpClient();
+            this.RaiseClientChanged(ClientChangeReason.HttpFallback);
             this.CreateTransferJob(true);
             foreach (var path in requeuedPaths)
             {
