@@ -354,7 +354,9 @@ namespace kCura.WinEDDS.TApi
                 // Note: retry is already built into TAPI.
                 var taskResult = this.transferJob.CompleteAsync(this.cancellationToken);
                 var transferResult = taskResult.GetAwaiter().GetResult();
-                Console.WriteLine("{0} transfer elapsed time: {1}", this.ClientName, transferResult.Elapsed);
+                this.RaiseFormattedStatusMessage(0, "{0} transfer elapsed time: {1}", this.ClientName, transferResult.Elapsed);
+                this.RaiseFormattedStatusMessage(0, "{0} transfer rate: {1:0.00} Mbps", this.ClientName, transferResult.TransferRateMbps);
+                this.RaiseFormattedStatusMessage(0, "{0} total transferred files: {1}, total failed files: {2}", this.ClientName, transferResult.TotalTransferredFiles, transferResult.TotalFailedFiles);
                 if (transferResult.Status == TransferStatus.Success ||
                     transferResult.Status == TransferStatus.PartialSuccess ||
                     transferResult.Status == TransferStatus.Canceled)
@@ -440,7 +442,7 @@ namespace kCura.WinEDDS.TApi
                     break;
             }
 
-            this.RaiseStatusMessage(message, 0);
+            this.RaiseStatusMessage(0, message);
             this.ClientChanged.Invoke(this, new TransferClientEventArgs(this.transferClient.Name, this.parameters.IsBulkEnabled));
         }
 
@@ -544,15 +546,36 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Raises a status message event.
+        /// Raises a formatted status message event.
         /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
         /// <param name="lineNumber">
         /// The line number.
         /// </param>
-        protected void RaiseStatusMessage(string message, int lineNumber)
+        /// <param name="format">
+        /// The format.
+        /// </param>
+        /// <param name="args">
+        /// The format arguments.
+        /// </param>
+        protected void RaiseFormattedStatusMessage(int lineNumber, string format, params object[] args)
+        {
+            var message = string.Format(
+                CultureInfo.CurrentCulture,
+                format,
+                args);
+            this.RaiseStatusMessage(lineNumber, message);
+        }
+
+        /// <summary>
+        /// Raises a status message event.
+        /// </summary>
+        /// <param name="lineNumber">
+        /// The line number.
+        /// </param>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        protected void RaiseStatusMessage(int lineNumber, string message)
         {
             this.StatusMessage.Invoke(this, new TransferMessageEventArgs(message, lineNumber));
         }
