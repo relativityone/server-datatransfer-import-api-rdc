@@ -57,7 +57,7 @@ Namespace kCura.WinEDDS
 				statDict = DirectCast(e.AdditionalInfo, IDictionary)
 			End If
 
-			Me.ProcessObserver.RaiseProgressEvent(e.TotalDocuments, e.DocumentsExported, _warningCount, _errorCount, _startTime, New DateTime, Nothing, Nothing, statDict)
+			Me.ProcessObserver.RaiseProgressEvent(e.TotalDocuments, e.DocumentsExported, _warningCount, _errorCount, _startTime, New DateTime, Me.ProcessID, Nothing, Nothing, statDict)
 		End Sub
 
 		Private Sub _productionExporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Handles _searchExporter.FatalErrorEvent
