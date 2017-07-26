@@ -24,7 +24,7 @@ namespace kCura.WinEDDS.TApi
         public TransferLine(TransferPath transferPath)
         {
             this.Path = transferPath;
-            this.TransferStatus = TransferFileStatus.None;
+            this.TransferStatus = TransferPathStatus.None;
             this.RetryCount = 0;
         }
 
@@ -44,9 +44,9 @@ namespace kCura.WinEDDS.TApi
         public int RetryCount { get; set; }
 
         /// <summary>
-        /// Gets the transfer status.
+        /// Gets the transfer path status.
         /// </summary>
-        public TransferFileStatus TransferStatus { get; internal set; }
+        public TransferPathStatus TransferStatus { get; internal set; }
 
         /// <summary>
         /// Gets or sets the transfer path.
@@ -64,7 +64,7 @@ namespace kCura.WinEDDS.TApi
                 this.Path.SourcePath,
                 this.TransferStatus);
 
-            if (this.TransferStatus == TransferFileStatus.Successful)
+            if (this.TransferStatus == TransferPathStatus.Successful)
             {
                 line = String.Concat(line, $", Duration: {this.End - this.Start}");
             }
@@ -74,34 +74,39 @@ namespace kCura.WinEDDS.TApi
                 line = String.Concat(line, $" Retries: {this.RetryCount}");
             }
 
-            Console.WriteLine(line,
-                this.Path.Order, this.Path.SourcePath, this.TransferStatus, this.End - this.Start, this.RetryCount);
+            Console.WriteLine(
+                line,
+                this.Path.Order,
+                this.Path.SourcePath,
+                this.TransferStatus,
+                this.End - this.Start,
+                this.RetryCount);
         }
 
         /// <summary>
         /// Updates statistics for the artifact.
         /// </summary>
         /// <param name="e">
-        /// The <see cref="TransferFileEventArgs"/> instance containing the event data.
+        /// The <see cref="TransferPathProgressEventArgs"/> instance containing the event data.
         /// </param>
-        public void Update(TransferFileEventArgs e)
+        public void Update(TransferPathProgressEventArgs e)
         {
             switch (e.Status)
             {
-                case TransferFileStatus.Failed:
+                case TransferPathStatus.Failed:
                     this.End = DateTime.Now;
                     break;
 
-                case TransferFileStatus.FailedRetryable:
+                case TransferPathStatus.FailedRetryable:
                     this.RetryCount++;
                     break;
 
-                case TransferFileStatus.Started:
-                    this.Start = DateTime.Now;
+                case TransferPathStatus.Started:
+                    this.Start = e.StartTime ?? DateTime.Now;
                     break;
 
-                case TransferFileStatus.Successful:
-                    this.End = DateTime.Now;
+                case TransferPathStatus.Successful:
+                    this.End = e.EndTime ?? DateTime.Now;
                     break;
             }
 

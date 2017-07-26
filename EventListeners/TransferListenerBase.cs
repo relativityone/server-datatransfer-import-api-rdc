@@ -80,8 +80,8 @@ namespace kCura.WinEDDS.TApi
             }
 
             this.Context = context;
-            this.Context.TransferFile += this.OnTransferFileEvent;
-            this.Context.TransferFileIssue += this.OnTransferFileIssueEvent;
+            this.Context.TransferPathProgress += this.OnTransferPathProgress;
+            this.Context.TransferPathIssue += this.OnTransferPathIssue;
             this.Context.TransferRequest += this.OnTransferRequestEvent;
             this.Context.TransferJobRetry += this.OnTransferJobRetryEvent;
             this.Context.TransferStatistics += this.OnTransferStatisticsEvent;
@@ -125,36 +125,36 @@ namespace kCura.WinEDDS.TApi
                 return;
             }
 
-            this.Context.TransferFile -= this.OnTransferFileEvent;
-            this.Context.TransferFileIssue -= this.OnTransferFileIssueEvent;
+            this.Context.TransferPathProgress -= this.OnTransferPathProgress;
+            this.Context.TransferPathIssue -= this.OnTransferPathIssue;
             this.Context.TransferRequest -= this.OnTransferRequestEvent;
             this.Context.TransferJobRetry -= this.OnTransferJobRetryEvent;
             this.Context.TransferStatistics -= this.OnTransferStatisticsEvent;
         }
 
         /// <summary>
-        /// Transfer File event handler.
+        /// Occurs when path transfer progress starts or ends.
         /// </summary>
         /// <param name="sender">
         /// The sender.
         /// </param>
         /// <param name="e">
-        /// The <see cref="TransferFileEventArgs"/> instance containing the event data.
+        /// The <see cref="TransferPathProgressEventArgs"/> instance containing the event data.
         /// </param>
-        protected virtual void OnTransferFileEvent(object sender, TransferFileEventArgs e)
+        protected virtual void OnTransferPathProgress(object sender, TransferPathProgressEventArgs e)
         {
         }
 
         /// <summary>
-        /// Transfer File Issue event handler.
+        /// Occurs when an issue occurs transferring a file.
         /// </summary>
         /// <param name="sender">
         /// The sender.
         /// </param>
         /// <param name="e">
-        /// The <see cref="TransferFileIssueEventArgs"/> instance containing the event data.
+        /// The <see cref="TransferPathIssueEventArgs"/> instance containing the event data.
         /// </param>
-        protected virtual void OnTransferFileIssueEvent(object sender, TransferFileIssueEventArgs e)
+        protected virtual void OnTransferPathIssue(object sender, TransferPathIssueEventArgs e)
         {
         }
 

@@ -357,8 +357,8 @@ namespace kCura.WinEDDS.TApi
                 this.RaiseFormattedStatusMessage(0, "{0} transfer elapsed time: {1}", this.ClientName, transferResult.Elapsed);
                 this.RaiseFormattedStatusMessage(0, "{0} transfer rate: {1:0.00} Mbps", this.ClientName, transferResult.TransferRateMbps);
                 this.RaiseFormattedStatusMessage(0, "{0} total transferred files: {1}, total failed files: {2}", this.ClientName, transferResult.TotalTransferredFiles, transferResult.TotalFailedFiles);
-                if (transferResult.Status == TransferStatus.Success ||
-                    transferResult.Status == TransferStatus.PartialSuccess ||
+                if (transferResult.Status == TransferStatus.Successful ||
+                    transferResult.Status == TransferStatus.PartiallySuccessful ||
                     transferResult.Status == TransferStatus.Canceled)
                 {
                     return;
@@ -398,7 +398,7 @@ namespace kCura.WinEDDS.TApi
         public void DumpTransferStats(int fileCount)
         {
             Console.WriteLine($"Summary:\nBatch Size: {fileCount}");
-            var listener = this.transferListeners.OfType<TransferFileListener>().FirstOrDefault();
+            var listener = this.transferListeners.OfType<TransferPathListener>().FirstOrDefault();
             listener?.Dump();
         }
 
@@ -640,7 +640,7 @@ namespace kCura.WinEDDS.TApi
             if (this.transferJob != null)
             {
                 requeuedPaths.AddRange(this.transferJob.ReadAllJobPaths()
-                    .Where(x => x.Status != TransferFileStatus.Successful)
+                    .Where(x => x.Status != TransferPathStatus.Successful)
                     .Select(jobPath => jobPath.Path));
             }
 
@@ -699,21 +699,21 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Creates initializes a <inheritdoc cref="TransferFileListener"/> instance.
+        /// Creates initializes a <inheritdoc cref="TransferPathListener"/> instance.
         /// </summary>
         private void CreateFileListener()
         {
-            var listener = new TransferFileListener(this.transferLog, this.context);
+            var listener = new TransferPathListener(this.transferLog, this.context);
             listener.ProgressEvent += (sender, args) => this.ProgressEvent.Invoke(sender, args);
             this.transferListeners.Add(listener);
         }
 
         /// <summary>
-        /// Creates and initializes a <inheritdoc cref="TransferFileIssueListener"/> instance. 
+        /// Creates and initializes a <inheritdoc cref="TransferPathIssueListener"/> instance. 
         /// </summary>
         private void CreateFileIssueListener()
         {
-            var listener = new TransferFileIssueListener(this.transferLog, this.currentDirection, this.ClientName);
+            var listener = new TransferPathIssueListener(this.transferLog, this.currentDirection, this.ClientName);
             listener.FatalError += (sender, args) => this.FatalError.Invoke(sender, args);
             this.transferListeners.Add(listener);
         }
