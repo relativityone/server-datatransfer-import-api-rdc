@@ -21,6 +21,7 @@ Namespace kCura.Windows.Process
 		End Property
 
 		Protected Sub New()
+			_processID = Guid.NewGuid()
 			_processObserver = New kCura.Windows.Process.ProcessObserver
 			_processController = New kCura.Windows.Process.Controller
 		End Sub
@@ -39,8 +40,6 @@ Namespace kCura.Windows.Process
 		Public Sub StartProcess() Implements IRunable.StartProcess
 			Try
 				Me.Execute()
-
-
 				' removed this.  The base class should not raise this event.  Let the actual implementation raise it when it is truly complete.
 				'_processObserver.RaiseProcessCompleteEvent()
 			Catch ex As Exception
