@@ -171,4 +171,7 @@
   <data name="TransferClientChangedMessage" xml:space="preserve">
     <value>Transfer client changed - {0}</value>
   </data>
+  <data name="ObjectDisposedExceptionMessage" xml:space="preserve">
+    <value>This opration cannot be performed because this instance has already been disposed.</value>
+  </data>
 </root>

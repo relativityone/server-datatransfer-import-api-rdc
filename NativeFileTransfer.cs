@@ -296,6 +296,7 @@ namespace kCura.WinEDDS.TApi
         /// </returns>
         public string AddPath(string sourceFile, string targetFileName, int order)
         {
+            this.CheckDispose();
             this.CreateTransferJob(false);
             if (this.transferJob == null)
             {
@@ -350,6 +351,7 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         public void WaitForTransferJob()
         {
+            this.CheckDispose();
             if (this.transferJob == null)
             {
                 throw new InvalidOperationException(Strings.TransferJobNullExceptionMessage);
@@ -406,6 +408,7 @@ namespace kCura.WinEDDS.TApi
         /// </returns>
         public IDictionary GetStatsForLine(int lineNumber)
         {
+            this.CheckDispose();
             var listener = this.transferListeners.OfType<TransferPathListener>().FirstOrDefault();
             return listener?.GetStatsForLine(lineNumber);
         }
@@ -418,6 +421,7 @@ namespace kCura.WinEDDS.TApi
         /// </param>
         internal void RaiseClientChanged(ClientChangeReason reason)
         {
+            this.CheckDispose();
             string message;
             switch (reason)
             {
@@ -459,6 +463,7 @@ namespace kCura.WinEDDS.TApi
         /// </summary>        
         protected void CreateTransferClient()
         {
+            this.CheckDispose();
             if (this.transferClient != null)
             {
                 return;
@@ -512,6 +517,7 @@ namespace kCura.WinEDDS.TApi
         /// </param>
         protected void CreateTransferJob(bool httpFallback)
         {
+            this.CheckDispose();
             if (this.transferJob != null)
             {
                 return;
@@ -585,6 +591,7 @@ namespace kCura.WinEDDS.TApi
         /// </param>
         protected void RaiseStatusMessage(int lineNumber, string message)
         {
+            this.CheckDispose();
             this.StatusMessage.Invoke(this, new TransferMessageEventArgs(message, lineNumber));
         }
 
@@ -599,7 +606,24 @@ namespace kCura.WinEDDS.TApi
         /// </param>
         protected void RaiseWarningMessage(string message, int lineNumber)
         {
+            this.CheckDispose();
             this.WarningMessage.Invoke(this, new TransferMessageEventArgs(message, lineNumber));
+        }
+
+        /// <summary>
+        /// Checks to see whether this instance has been disposed.
+        /// </summary>
+        /// <exception cref="System.ObjectDisposedException">
+        /// Thrown when this instance has been disposed.
+        /// </exception>
+        protected void CheckDispose()
+        {
+            if (!this.disposed)
+            {
+                return;
+            }
+
+            throw new ObjectDisposedException(Strings.ObjectDisposedExceptionMessage);
         }
 
         /// <summary>

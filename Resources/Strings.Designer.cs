@@ -79,6 +79,15 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This opration cannot be performed because this instance has already been disposed..
+        /// </summary>
+        internal static string ObjectDisposedExceptionMessage {
+            get {
+                return ResourceManager.GetString("ObjectDisposedExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Transferring {0}/{1} - {2:0.00}%.
         /// </summary>
         internal static string ProgressMessage {
