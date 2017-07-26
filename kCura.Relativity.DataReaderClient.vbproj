@@ -263,6 +263,7 @@
     <Compile Include="JobReport.vb" />
     <Compile Include="Settings.vb" />
     <Compile Include="SourceIDataReader.vb" />
+    <Compile Include="FullStatus.vb" />
     <Compile Include="Status.vb">
       <SubType>Code</SubType>
     </Compile>

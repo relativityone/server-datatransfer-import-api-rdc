@@ -1,4 +1,5 @@
 Imports System.Net
+Imports kCura.Windows.Process
 Imports Relativity
 
 Namespace kCura.Relativity.DataReaderClient
@@ -59,12 +60,15 @@ Namespace kCura.Relativity.DataReaderClient
 			_cookieMonster = cookieMonster
 			Settings.RelativityUsername = relativityUserName
 			Settings.RelativityPassword = password
-
 		End Sub
 
 #End Region
 
 #Region "Events"
+		''' <summary>
+		''' Occurs when a status message needs to be presented to the user related to the Process.
+		''' </summary>
+		Public Event OnProcessProgress(ByVal processStatus As FullStatus)
 		''' <summary>
 		''' Occurs when a call is made to the Execute method. This event contains a status message.
 		''' </summary>
@@ -548,6 +552,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub _observer_OnProcessProgressEvent(ByVal evt As kCura.Windows.Process.ProcessProgressEvent) Handles _observer.OnProcessProgressEvent
 			RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Progress Info: {1} ]", System.DateTime.Now, evt.TotalRecordsProcessedDisplay)))
+			RaiseEvent OnProcessProgress(New FullStatus(evt.TotalRecords, evt.TotalRecordsProcessed, evt.TotalRecordsProcessedWithWarnings, evt.TotalRecordsProcessedWithErrors, evt.StartTime, evt.EndTime, evt.TotalRecordsDisplay, evt.TotalRecordsProcessedDisplay, evt.ProcessID, evt.StatusSuffixEntries))
 		End Sub
 
 		Private Sub _observer_RecordProcessedEvent(ByVal recordNumber As Long) Handles _observer.RecordProcessed
