@@ -1,5 +1,4 @@
 Imports System.Collections.Generic
-Imports System.Collections.Specialized
 Imports System.IO
 Imports System.Threading
 Imports System.Threading.Tasks
@@ -24,6 +23,8 @@ Namespace kCura.WinEDDS
 
         Protected _overwrite As Relativity.ImportOverwriteType
         Private WithEvents _nativeFileUploader As TApi.NativeFileTransfer
+        Private _currentTransferClientName As String
+        Private _currentTransferClientType As TApi.TransferClient = TApi.TransferClient.None
         Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
         Private _parentFolderDTO As kCura.EDDS.WebAPI.FolderManagerBase.Folder
         Protected _auditManager As kCura.WinEDDS.Service.AuditManager
@@ -170,7 +171,7 @@ Namespace kCura.WinEDDS
 
         Public ReadOnly Property UploadConnection() As TApi.TransferClient
             Get
-                Return _nativeFileUploader.Client
+                Return Me._currentTransferClientType
             End Get
         End Property
 
@@ -403,9 +404,31 @@ Namespace kCura.WinEDDS
             parameters.ValidateSourcePaths = Not Config.DisableNativeLocationValidation
             parameters.WebServiceUrl = Config.WebServiceURL
             parameters.WorkspaceId = args.CaseInfo.ArtifactID
+
+            ' For now, TAPI is limited to just native file uploads.
             _nativeFileUploader = TApi.NativeFileTransferFactory.CreateUploadFileTransfer(parameters, Me._cancellationToken.Token)
+            AddHandler _nativeFileUploader.StatusMessage, AddressOf NativeFileUploader_OnStatusEvent
+            AddHandler _nativeFileUploader.WarningMessage, AddressOf NativeFileUploader_OnWarningMessage
+            AddHandler _nativeFileUploader.Progress, AddressOf NativeFileUploader_OnProgress
+            AddHandler _nativeFileUploader.StatisticsAvailable, AddressOf NativeFileUploader_OnStatisticsAvailable
+            AddHandler _nativeFileUploader.FatalError, AddressOf NativeFileUploader_OnFatalError
             _bcpuploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, False)
             _bcpuploader.SetUploaderTypeForBcp()
+        End Sub
+
+        Protected Overridable Sub DestroyNativeUploaders()
+            If _nativeFileUploader Is Nothing Then
+                Return
+            End If
+
+            ' Force TAPI to dispose all resources.
+            RemoveHandler _nativeFileUploader.StatusMessage, AddressOf NativeFileUploader_OnStatusEvent
+            RemoveHandler _nativeFileUploader.WarningMessage, AddressOf NativeFileUploader_OnWarningMessage
+            RemoveHandler _nativeFileUploader.Progress, AddressOf NativeFileUploader_OnProgress
+            RemoveHandler _nativeFileUploader.StatisticsAvailable, AddressOf NativeFileUploader_OnStatisticsAvailable
+            RemoveHandler _nativeFileUploader.FatalError, AddressOf NativeFileUploader_OnFatalError
+            _nativeFileUploader.Dispose()
+            _nativeFileUploader = Nothing
         End Sub
 
 #End Region
@@ -502,8 +525,8 @@ Namespace kCura.WinEDDS
                 isBulkEnabled = _bcpuploader.IsBulkEnabled
             End If
             If _settings.CopyFilesToDocumentRepository AndAlso _settings.NativeFilePathColumn IsNot Nothing Then
-                If Not _nativeFileUploader Is Nothing Then
-                    retval.Add("Files: " & _nativeFileUploader.ClientName)
+                If Not String.IsNullOrEmpty(_currentTransferClientName) Then
+                    retval.Add("Files: " & _currentTransferClientName)
                 End If
             Else
                 retval.Add("Files: not copied")
@@ -626,13 +649,13 @@ Namespace kCura.WinEDDS
                 WriteFatalError(Me.CurrentLineNumber, ex)
             Finally
                 _timekeeper.MarkStart("ReadFile_CleanupTempTables")
-                _nativeFileUploader.Dispose()
+                DestroyNativeUploaders()
                 CleanupTempTables()
                 _timekeeper.MarkEnd("ReadFile_CleanupTempTables")
             End Try
             Return Nothing
         End Function
-
+                
         Private Function InitializeMembers(ByVal path As String) As Boolean
             _recordCount = _artifactReader.CountRecords
             If _recordCount = -1 Then
@@ -1744,15 +1767,15 @@ Namespace kCura.WinEDDS
             WriteStatusLine(kCura.Windows.Process.EventType.End, line)
         End Sub
 
-        Private Sub _nativeFileUploader_UploadStatusEvent(ByVal sender As Object, ByVal e As TApi.TransferMessageEventArgs) Handles _nativeFileUploader.StatusMessage
+        Private Sub NativeFileUploader_OnStatusEvent(ByVal sender As Object, ByVal e As TApi.TransferMessageEventArgs)
             WriteStatusLine(kCura.Windows.Process.EventType.Status, e.Message, e.LineNumber)
         End Sub
 
-        Private Sub _nativeFileUploader_UploadWarningEvent(ByVal sender As Object, ByVal e As TApi.TransferMessageEventArgs) Handles _nativeFileUploader.WarningMessage
+        Private Sub NativeFileUploader_OnWarningMessage(ByVal sender As Object, ByVal e As TApi.TransferMessageEventArgs)
             WriteStatusLine(kCura.Windows.Process.EventType.Warning, e.Message, e.LineNumber)
         End Sub
 
-        Private Sub _nativeFileUploader_ProgressEvent(ByVal sender As Object, ByVal e As TApi.TransferMessageEventArgs) Handles _nativeFileUploader.ProgressEvent
+        Private Sub NativeFileUploader_OnProgress(ByVal sender As Object, ByVal e As TApi.TransferMessageEventArgs)
             _timekeeper.MarkStart("ManageDocumentMetadata_ProgressEvent")
             UpdateStatisticsSnapshot(DateTime.Now)
             _sessionStats.Add(e.LineNumber, GetStatisticsSnapshot(e.LineNumber))
@@ -1760,12 +1783,12 @@ Namespace kCura.WinEDDS
             _timekeeper.MarkStart("ManageDocumentMetadata_ProgressEvent")
         End Sub
 
-        Private Sub _nativeFileUploader_StatisticsAvailable(ByVal sender As Object, ByVal e As TApi.TransferStatisticsAvailableEventArgs) Handles _nativeFileUploader.StatisticsAvailableEvent
+        Private Sub NativeFileUploader_OnStatisticsAvailable(ByVal sender As Object, ByVal e As TApi.TransferStatisticsAvailableEventArgs)
             _statistics.FileBytes = e.TotalBytes
             _statistics.FileTime = e.TotalFiles
         End Sub
 
-        Private Sub _nativeFileUploader_FatalErrorEvent(ByVal sender As Object, ByVal e As TApi.TransferMessageEventArgs) Handles _nativeFileUploader.FatalError
+        Private Sub NativeFileUploader_OnFatalError(ByVal sender As Object, ByVal e As TApi.TransferMessageEventArgs)
             WriteFatalError(e.LineNumber, New Exception(e.Message))
         End Sub
 
@@ -1796,6 +1819,8 @@ Namespace kCura.WinEDDS
 #Region "Event Handlers"
 
         Private Sub _nativeFileUploader_UploadModeChangeEvent(ByVal sender As Object, ByVal e As TApi.TransferClientEventArgs) Handles _nativeFileUploader.ClientChanged
+            Me._currentTransferClientType = e.ClientType
+            Me._currentTransferClientName = e.Name
             PublishUploadModeEvent()
         End Sub
 
