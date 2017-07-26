@@ -7,6 +7,7 @@
 namespace kCura.WinEDDS.TApi
 {
     using System;
+    using System.Collections;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
@@ -56,16 +57,17 @@ namespace kCura.WinEDDS.TApi
         public event EventHandler<TransferMessageEventArgs> ProgressEvent = delegate { };
 
         /// <summary>
-        /// Dumps transfer stats for each line.
+        /// Gets stats for line.
         /// </summary>
-        public void Dump()
+        /// <param name="lineNumber">
+        /// The line number.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IDictionary"/>.
+        /// </returns>
+        public IDictionary GetStatsForLine(int lineNumber)
         {
-            foreach (KeyValuePair<int, TransferLine> entry in this.transferLines.OrderBy(entry => entry.Key))
-            {
-                entry.Value.Print();
-            }
-
-            this.transferLines.Clear();
+            return this.transferLines[lineNumber].ToDictionary();
         }
 
         /// <inheritdoc />

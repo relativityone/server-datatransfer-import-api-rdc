@@ -10,6 +10,7 @@
 namespace kCura.WinEDDS.TApi
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
@@ -190,6 +191,11 @@ namespace kCura.WinEDDS.TApi
         /// Occurs when a file finishes transferring.
         /// </summary>
         public event EventHandler<TransferMessageEventArgs> ProgressEvent = delegate { };
+
+        /// <summary>
+        /// Occurs when transfer statistics are available.
+        /// </summary>
+        public event EventHandler<TransferStatisticsAvailableEventArgs> StatisticsAvailableEvent = delegate { };
 
         /// <summary>
         /// Occurs when there is a fatal error in the transfer.
@@ -390,16 +396,18 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Prints transfer statistics for each line.
+        /// The get stats for line.
         /// </summary>
-        /// <param name="fileCount">
-        /// The file count.
+        /// <param name="lineNumber">
+        /// The line number.
         /// </param>
-        public void DumpTransferStats(int fileCount)
+        /// <returns>
+        /// The <see cref="IDictionary"/>.
+        /// </returns>
+        public IDictionary GetStatsForLine(int lineNumber)
         {
-            Console.WriteLine($"Summary:\nBatch Size: {fileCount}");
             var listener = this.transferListeners.OfType<TransferPathListener>().FirstOrDefault();
-            listener?.Dump();
+            return listener?.GetStatsForLine(lineNumber);
         }
 
         /// <summary>
@@ -745,6 +753,7 @@ namespace kCura.WinEDDS.TApi
         private void CreateStatisticsListener()
         {
             var listener = new TransferStatisticsListener(this.transferLog, this.context);
+            listener.StatisticsEvent += (sender, args) => this.StatisticsAvailableEvent.Invoke(sender, args);
             this.transferListeners.Add(listener);
         }
 

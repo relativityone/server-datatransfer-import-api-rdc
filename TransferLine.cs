@@ -7,6 +7,8 @@
 namespace kCura.WinEDDS.TApi
 {
     using System;
+    using System.Collections;
+    using System.Collections.Specialized;
 
     using Relativity.Transfer;
 
@@ -56,31 +58,18 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// Print transfer statistics to console.
         /// </summary>
-        public void Print()
+        public IDictionary ToDictionary()
         {
-            var line = String.Format(
-                "Line: {0}, Source: {1}, Status: {2}",
-                this.Path.Order,
-                this.Path.SourcePath,
-                this.TransferStatus);
-
-            if (this.TransferStatus == TransferPathStatus.Successful)
+            var retval = new HybridDictionary();
+            retval.Add("Source Path", this.Path.SourcePath);
+            retval.Add("Transfer Status", this.TransferStatus);
+            retval.Add("Retry Count", this.RetryCount);
+            if (this.End != null)
             {
-                line = String.Concat(line, $", Duration: {this.End - this.Start}");
+                retval.Add("File Time", this.End.Ticks - this.Start.Ticks);
             }
 
-            if (this.RetryCount > 0)
-            {
-                line = String.Concat(line, $" Retries: {this.RetryCount}");
-            }
-
-            Console.WriteLine(
-                line,
-                this.Path.Order,
-                this.Path.SourcePath,
-                this.TransferStatus,
-                this.End - this.Start,
-                this.RetryCount);
+            return retval;
         }
 
         /// <summary>

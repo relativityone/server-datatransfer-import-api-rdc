@@ -6,6 +6,7 @@
 
 namespace kCura.WinEDDS.TApi
 {
+    using System;
     using System.Globalization;
 
     using kCura.WinEDDS.TApi.Resources;
@@ -43,6 +44,12 @@ namespace kCura.WinEDDS.TApi
         {
         }
 
+        /// <summary>
+        /// The statistics event.
+        /// </summary>
+        public event EventHandler<TransferStatisticsAvailableEventArgs> StatisticsEvent = delegate { };
+
+
         /// <inheritdoc />
         protected override void OnTransferStatisticsEvent(object sender, TransferStatisticsEventArgs e)
         {
@@ -53,6 +60,18 @@ namespace kCura.WinEDDS.TApi
                 e.Statistics.TotalFiles,
                 e.Statistics.Progress);
             this.RaiseStatusMessage(progressMessage, 0);
+            this.RaiseStatisticsEvent(e.Statistics);
+        }
+
+        /// <summary>
+        /// The raise statistics event.
+        /// </summary>
+        /// <param name="statistics">
+        /// The statistics.
+        /// </param>
+        private void RaiseStatisticsEvent(ITransferStatistics statistics)
+        {
+            this.StatisticsEvent.Invoke(this, new TransferStatisticsAvailableEventArgs(statistics));
         }
     }
 }
