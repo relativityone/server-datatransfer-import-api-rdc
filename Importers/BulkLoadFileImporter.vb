@@ -1,9 +1,11 @@
 Imports System.Collections.Generic
+Imports System.Collections.Specialized
 Imports System.IO
 Imports System.Threading
 Imports System.Threading.Tasks
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.Utility.Extensions
+Imports kCura.Windows.Process
 Imports Relativity
 
 Namespace kCura.WinEDDS
@@ -70,6 +72,7 @@ Namespace kCura.WinEDDS
         Private _statistics As New kCura.WinEDDS.Statistics
         Private _timekeeper As New kCura.Utility.Timekeeper
         Private _currentStatisticsSnapshot As IDictionary
+        Private _sessionStats As IDictionary(Of Int32, IDictionary)
         Private _statisticsLastUpdated As System.DateTime = System.DateTime.Now
         Private _unmappedRelationalFields As System.Collections.ArrayList
 
@@ -371,6 +374,8 @@ Namespace kCura.WinEDDS
 
             _batchSizeHistoryList = New System.Collections.Generic.List(Of Int32)
             _disableNativeLocationValidation = Config.DisableNativeLocationValidation
+
+            _sessionStats = New Dictionary(Of Int32, IDictionary)
         End Sub
 
         Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)
@@ -434,13 +439,46 @@ Namespace kCura.WinEDDS
             _outputObjectFileWriter.WriteLine(String.Format("{1}{0}{2}{0}{3}{0}{4}{0}{5}{0}", _bulkLoadFileFieldDelimiter, ownerIdentifier, objectName, artifactID, objectTypeArtifactID, fieldID))
         End Sub
 
+        Private Function GetStatisticsSnapshot(lineNumber As Int32) As IDictionary
+            UpdateStatisticsSnapshot(DateTime.Now)
+            Try
+                Dim lineStats As IDictionary = _nativeFileUploader.GetStatsForLine(lineNumber)
+                For Each key As String In _currentStatisticsSnapshot.Keys
+                    lineStats.Add(key, _currentStatisticsSnapshot.Item(Key))
+                Next
+                Return lineStats
+            Catch ex As KeyNotFoundException
+                Return _currentStatisticsSnapshot
+            End Try
+        End Function
+
+        Private Sub UpdateStatisticsSnapshot(time As DateTime)
+            _currentStatisticsSnapshot = _statistics.ToDictionary()
+            _statisticsLastUpdated = time
+        End Sub
+
 #End Region
 
 #Region "Main"
 
-        private Sub CompletePendingTransfers()
+        Private Sub CompletePendingTransfers()
             _nativeFileUploader.WaitForTransferJob()
-            _nativeFileUploader.DumpTransferStats(_batchCounter)
+            DumpTransferStats()
+        End Sub
+
+        Private Sub DumpTransferStats()
+            Dim keys As List(Of Integer) = _sessionStats.Keys.ToList()
+            keys.Sort()
+            For Each key As Integer In keys
+                Dim msg As String = $"Line: {key}"
+                Dim lineStats As IDictionary = _sessionStats.Item(key)
+                For Each stat As String In lineStats.Keys
+                    msg += $", {stat}: {lineStats.Item(stat)}"
+                Next
+                WriteStatusLine(EventType.Status, msg, key)
+            Next
+
+            _sessionStats.Clear()
         End Sub
 
         Private Sub PublishUploadModeEvent()
@@ -704,13 +742,12 @@ Namespace kCura.WinEDDS
                                 If _copyFileToRepository Then
                                     Dim start As Int64 = System.DateTime.Now.Ticks
                                     Dim updateCurrentStats As Boolean = (start - _statisticsLastUpdated.Ticks) > 10000000
-                                    _statistics.FileBytes += Me.GetFileLength(filename)
+                                    'TAPI _statistics.FileBytes += Me.GetFileLength(filename)
                                     fileGuid = _nativeFileUploader.AddPath(filename, Guid.NewGuid().ToString(), Me.CurrentLineNumber)
-                                    _statistics.FileTime += System.DateTime.Now.Ticks - start
+                                    'TAPI _statistics.FileTime += System.DateTime.Now.Ticks - start
                                     destinationVolume = _nativeFileUploader.TargetFolderName
                                     If updateCurrentStats Then
-                                        _currentStatisticsSnapshot = _statistics.ToDictionary
-                                        _statisticsLastUpdated = New System.DateTime(start)
+                                        UpdateStatisticsSnapshot(New DateTime(start))
                                     End If
                                 Else
                                     fileGuid = System.Guid.NewGuid.ToString
@@ -899,9 +936,9 @@ Namespace kCura.WinEDDS
             Catch ex As System.Exception
                 WriteFatalError(metaDoc.LineNumber, ex)
             End Try
-            _timekeeper.MarkStart("ManageDocumentMetadata_ProgressEvent")
-            'TAPI WriteStatusLine(Windows.Process.EventType.Progress, String.Format("Item '{0}' processed.", metaDoc.IdentityValue), metaDoc.LineNumber)
-            _timekeeper.MarkEnd("ManageDocumentMetadata_ProgressEvent")
+            'TAPI _timekeeper.MarkStart("ManageDocumentMetadata_ProgressEvent")
+            'WriteStatusLine(Windows.Process.EventType.Progress, String.Format("Item '{0}' processed.", metaDoc.IdentityValue), metaDoc.LineNumber)
+            '_timekeeper.MarkEnd("ManageDocumentMetadata_ProgressEvent")
         End Sub
 
         Protected Function BulkImport(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
@@ -1154,8 +1191,7 @@ Namespace kCura.WinEDDS
                 _statistics.ProcessRunResults(runResults)
                 _statistics.SqlTime += (System.DateTime.Now.Ticks - start)
 
-                _currentStatisticsSnapshot = _statistics.ToDictionary
-                _statisticsLastUpdated = System.DateTime.Now
+                UpdateStatisticsSnapshot(DateTime.Now)
                 Me.ManageErrors(_artifactTypeID)
             End Sub
             If Config.UsePipeliningForNativeAndObjectImports Then
@@ -1607,14 +1643,13 @@ Namespace kCura.WinEDDS
                     location = localFilePath
                 Else
                     Dim start As Int64 = System.DateTime.Now.Ticks
-                    _statistics.FileBytes += Me.GetFileLength(localFilePath)
+                    'TAPI _statistics.FileBytes += Me.GetFileLength(localFilePath)
                     Dim guid As String = _nativeFileUploader.AddPath(localFilePath, System.Guid.NewGuid().ToString(), Me.CurrentLineNumber)
                     location = _nativeFileUploader.TargetPath & _nativeFileUploader.TargetFolderName & "\" & guid
                     Dim updateCurrentStats As Boolean = (start - _statisticsLastUpdated.Ticks) > 10000000
-                    _statistics.FileTime += System.DateTime.Now.Ticks - start
+                    'TAPI _statistics.FileTime += System.DateTime.Now.Ticks - start
                     If updateCurrentStats Then
-                        _currentStatisticsSnapshot = _statistics.ToDictionary
-                        _statisticsLastUpdated = New System.DateTime(start)
+                        UpdateStatisticsSnapshot(DateTime.Now)
                     End If
 
                 End If
@@ -1632,7 +1667,7 @@ Namespace kCura.WinEDDS
 
         Private Sub WriteStatusLine(ByVal et As kCura.Windows.Process.EventType, ByVal line As String, ByVal lineNumber As Int32)
             line = line & If(lineNumber > 0, String.Format(" [line {0}]", lineNumber), String.Empty)
-            OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(et, lineNumber + _offset, _recordCount, line, _currentStatisticsSnapshot))
+            OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(et, lineNumber + _offset, _recordCount, line, GetStatisticsSnapshot(lineNumber)))
         End Sub
 
         Protected Sub WriteStatusLine(ByVal et As kCura.Windows.Process.EventType, ByVal line As String)
@@ -1708,7 +1743,16 @@ Namespace kCura.WinEDDS
         End Sub
 
         Private Sub _nativeFileUploader_ProgressEvent(ByVal sender As Object, ByVal e As TApi.TransferMessageEventArgs) Handles _nativeFileUploader.ProgressEvent
+            _timekeeper.MarkStart("ManageDocumentMetadata_ProgressEvent")
+            UpdateStatisticsSnapshot(DateTime.Now)
+            _sessionStats.Add(e.LineNumber, GetStatisticsSnapshot(e.LineNumber))
             WriteStatusLine(kCura.Windows.Process.EventType.Progress, e.Message, e.LineNumber)
+            _timekeeper.MarkStart("ManageDocumentMetadata_ProgressEvent")
+        End Sub
+
+        Private Sub _nativeFileUploader_StatisticsAvailable(ByVal sender As Object, ByVal e As TApi.TransferStatisticsAvailableEventArgs) Handles _nativeFileUploader.StatisticsAvailableEvent
+            _statistics.FileBytes = e.TotalBytes
+            _statistics.FileTime = e.TotalFiles
         End Sub
 
         Private Sub _nativeFileUploader_FatalErrorEvent(ByVal sender As Object, ByVal e As TApi.TransferMessageEventArgs) Handles _nativeFileUploader.FatalError
@@ -1902,7 +1946,7 @@ Namespace kCura.WinEDDS
         End Sub
 
         Private Sub _artifactReader_StatusMessage(ByVal message As String) Handles _artifactReader.StatusMessage
-            OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, _artifactReader.CurrentLineNumber, _recordCount, message, False, _currentStatisticsSnapshot))
+            OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, _artifactReader.CurrentLineNumber, _recordCount, message, False, GetStatisticsSnapshot(_artifactReader.CurrentLineNumber)))
         End Sub
 
         Private Sub _artifactReader_FieldMapped(ByVal sourceField As String, ByVal workspaceField As String) Handles _artifactReader.FieldMapped
@@ -1945,7 +1989,7 @@ Namespace kCura.WinEDDS
                             ht.Add("Identifier", line(2))
                             ht.Add("Line Number", Int32.Parse(line(0)))
                             RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
-                            OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _recordCount, "[Line " & line(0) & "]" & line(1), _currentStatisticsSnapshot))
+                            OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _recordCount, "[Line " & line(0) & "]" & line(1), GetStatisticsSnapshot(Int32.Parse(line(0)))))
                             line = sr.ReadLine
                         End While
                         RemoveHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
