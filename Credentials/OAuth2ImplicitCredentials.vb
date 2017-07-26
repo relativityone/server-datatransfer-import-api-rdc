@@ -62,6 +62,12 @@ Namespace kCura.WinEDDS.Credentials
 			Return creds
 		End Function
 
+		Public Sub CloseLoginView()
+			If(Not _loginView.LoginForm.IsDisposed AndAlso _loginView.LoginForm.Visible)
+				_loginView.LoginForm.Close()
+			End If
+		End Sub
+
 		Private Sub CreateTokenProvider()
 			_loginView = New LoginView(_stsUri, new Uri(_REDIRECT_URI), _clientId)
 			Dim providerFactory As Relativity.OAuth2Client.Interfaces.ITokenProviderFactory = New ImplicitTokenProviderFactory(_loginView)
