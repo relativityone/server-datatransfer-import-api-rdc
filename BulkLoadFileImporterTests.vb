@@ -47,7 +47,7 @@ Namespace kCura.WinEDDS.NUnit
 
 #Region " Basic Retry + Batch Size  Tests"
 
-		<Test(), Ignore()> Public Sub BulkImportLoadFile_CatchWebException_Retries_CallsLowerBatchSize_True()
+		<Test(), Ignore("")> Public Sub BulkImportLoadFile_CatchWebException_Retries_CallsLowerBatchSize_True()
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True))
 			Try
 				bulkImporter.TryBulkImport(New ObjectLoadInfo())
@@ -80,7 +80,7 @@ Namespace kCura.WinEDDS.NUnit
 		End Sub
 
 
-		<Test(), Ignore()> Public Sub BulkImportLoadFile_CatchSQLException_Retries_CallsLowerBatchSize_True()
+		<Test(), Ignore("")> Public Sub BulkImportLoadFile_CatchSQLException_Retries_CallsLowerBatchSize_True()
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerSqlExceptions(True))
 			Try
 				bulkImporter.TryBulkImport(New ObjectLoadInfo())
@@ -94,7 +94,7 @@ Namespace kCura.WinEDDS.NUnit
 #End Region
 
 #Region " Retry-Until-It-Works Tests"
-		<Test(), Ignore()> Public Sub BulkImportLoadFile_CatchSQLException_500RetryTo400_ThenWork()
+		<Test(), Ignore("")> Public Sub BulkImportLoadFile_CatchSQLException_500RetryTo400_ThenWork()
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerSqlExceptions(400))
 			bulkImporter.TryBulkImport(New ObjectLoadInfo())
 
@@ -103,7 +103,7 @@ Namespace kCura.WinEDDS.NUnit
 			CollectionAssert.AreEquivalent({500, 400}, bulkImporter.BatchSizeHistoryList)
 		End Sub
 
-		<Test(), Ignore()> Public Sub BulkImportLoadFile_CatchSQLException_500RetryToMinimum_ThenWork()
+		<Test(), Ignore("")> Public Sub BulkImportLoadFile_CatchSQLException_500RetryToMinimum_ThenWork()
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerSqlExceptions(300))
 			bulkImporter.MinimumBatch = 300
 			bulkImporter.TryBulkImport(New ObjectLoadInfo())
@@ -112,7 +112,7 @@ Namespace kCura.WinEDDS.NUnit
 			CollectionAssert.AreEquivalent({500, 400, 300}, bulkImporter.BatchSizeHistoryList)
 		End Sub
 
-		<Test(), Ignore()> Public Sub BulkImportLoadFile_CatchSQLException_500Retry_HitMinimum_ThrowException()
+		<Test(), Ignore("")> Public Sub BulkImportLoadFile_CatchSQLException_500Retry_HitMinimum_ThrowException()
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerSqlExceptions(200))
 			bulkImporter.MinimumBatch = 350
 			Try
