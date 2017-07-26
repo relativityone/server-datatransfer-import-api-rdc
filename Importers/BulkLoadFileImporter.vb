@@ -76,7 +76,6 @@ Namespace kCura.WinEDDS
         Private _statisticsLastUpdated As System.DateTime = System.DateTime.Now
         Private _unmappedRelationalFields As System.Collections.ArrayList
 
-
         Private _cloudInstance As Boolean
         Protected _bulkLoadFileFieldDelimiter As String
 
@@ -478,15 +477,23 @@ Namespace kCura.WinEDDS
         Private Function GetStatisticsSnapshot(lineNumber As Int32) As IDictionary
             UpdateStatisticsSnapshot(DateTime.Now)
             Try
-                Dim lineStats As IDictionary = _nativeFileUploader.GetStatsForLine(lineNumber)
-                For Each key As String In _currentStatisticsSnapshot.Keys
-                    lineStats.Add(key, _currentStatisticsSnapshot.Item(Key))
-                Next
-                Return lineStats
+                Return _sessionStats.Item(lineNumber)
             Catch ex As KeyNotFoundException
                 Return _currentStatisticsSnapshot
             End Try
         End Function
+        Private Sub SetStatisticsSnapshot(lineNumber As Int32)
+            UpdateStatisticsSnapshot(DateTime.Now)
+            Try
+                Dim lineStats As IDictionary = _nativeFileUploader.GetStatsForLine(lineNumber)
+                For Each key As String In _currentStatisticsSnapshot.Keys
+                    lineStats.Add(key, _currentStatisticsSnapshot.Item(Key))
+                Next
+                _sessionStats.Add(lineNumber, lineStats)
+            Catch ex As KeyNotFoundException
+                _sessionStats.Add(lineNumber, _currentStatisticsSnapshot)
+            End Try
+        End Sub
 
         Private Sub UpdateStatisticsSnapshot(time As DateTime)
             _currentStatisticsSnapshot = _statistics.ToDictionary()
@@ -503,18 +510,20 @@ Namespace kCura.WinEDDS
         End Sub
 
         Private Sub DumpTransferStats()
-            Dim keys As List(Of Integer) = _sessionStats.Keys.ToList()
-            keys.Sort()
-            For Each key As Integer In keys
-                Dim msg As String = $"Line: {key}"
-                Dim lineStats As IDictionary = _sessionStats.Item(key)
-                For Each stat As String In lineStats.Keys
-                    msg += $", {stat}: {lineStats.Item(stat)}"
+            Try
+                Dim keys As List(Of Integer) = _sessionStats.Keys.ToList()
+                keys.Sort()
+                For Each key As Integer In keys
+                    Dim msg As String = $"Line: {key}"
+                    Dim lineStats As IDictionary = _sessionStats.Item(key)
+                    For Each stat As String In lineStats.Keys
+                        msg += $", {stat}: {lineStats.Item(stat)}"
+                    Next
+                    WriteStatusLine(EventType.Status, msg, key)
                 Next
-                WriteStatusLine(EventType.Status, msg, key)
-            Next
-
-            _sessionStats.Clear()
+            Finally
+                _sessionStats.Clear()
+            End Try
         End Sub
 
         Private Sub PublishUploadModeEvent()
@@ -1777,8 +1786,7 @@ Namespace kCura.WinEDDS
 
         Private Sub NativeFileUploader_OnProgress(ByVal sender As Object, ByVal e As TApi.TransferMessageEventArgs)
             _timekeeper.MarkStart("ManageDocumentMetadata_ProgressEvent")
-            UpdateStatisticsSnapshot(DateTime.Now)
-            _sessionStats.Add(e.LineNumber, GetStatisticsSnapshot(e.LineNumber))
+            SetStatisticsSnapshot(e.LineNumber)
             WriteStatusLine(kCura.Windows.Process.EventType.Progress, e.Message, e.LineNumber)
             _timekeeper.MarkStart("ManageDocumentMetadata_ProgressEvent")
         End Sub
