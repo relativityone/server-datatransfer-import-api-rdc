@@ -63,6 +63,11 @@ namespace kCura.WinEDDS.TApi
         private readonly IFileSystemService fileSystemService = new FileSystemService();
 
         /// <summary>
+        /// The list of transfer event listeners.
+        /// </summary>
+        private readonly List<TransferListenerBase> transferListeners = new List<TransferListenerBase>();
+
+        /// <summary>
         /// The current transfer direction.
         /// </summary>
         private readonly TransferDirection currentDirection;
@@ -96,11 +101,6 @@ namespace kCura.WinEDDS.TApi
         /// The transfer job.
         /// </summary>
         private ITransferJob transferJob;
-
-        /// <summary>
-        /// The list of transfer event listeners.
-        /// </summary>
-        private List<TransferListenerBase> transferListeners;
 
         /// <summary>
         /// The disposed backing.
@@ -398,13 +398,13 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// The get stats for line.
+        /// Gets the statistics for a transfer line.
         /// </summary>
         /// <param name="lineNumber">
         /// The line number.
         /// </param>
         /// <returns>
-        /// The <see cref="IDictionary"/>.
+        /// The statistics <see cref="IDictionary"/>.
         /// </returns>
         public IDictionary GetStatsForLine(int lineNumber)
         {
@@ -715,8 +715,6 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         private void SetupTransferListeners()
         {
-            this.transferListeners = new List<TransferListenerBase>();
-
             this.CreateFileListener();
             this.CreateFileIssueListener();
             this.CreateRequestListener();
@@ -864,7 +862,6 @@ namespace kCura.WinEDDS.TApi
             }
 
             this.transferListeners.Clear();
-            this.transferListeners = null;
         }
 
         /// <summary>
