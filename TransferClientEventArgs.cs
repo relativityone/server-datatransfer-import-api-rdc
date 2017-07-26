@@ -21,24 +21,40 @@ namespace kCura.WinEDDS.TApi
         /// Initializes a new instance of the <see cref="TransferClientEventArgs"/> class.
         /// </summary>
         /// <param name="name">
-        /// The client name.
+        /// The current transfer client name.
+        /// </param>
+        /// <param name="client">
+        /// The current transfer client type.
         /// </param>
         /// <param name="isBulkEnabled">
         /// Specify whether the bulk feature is enabled.
         /// </param>
-        public TransferClientEventArgs(string name, bool isBulkEnabled)
+        public TransferClientEventArgs(string name, TransferClient client, bool isBulkEnabled)
         {
             this.Name = name;
+            this.ClientType = client;
             this.IsBulkEnabled = isBulkEnabled;
         }
 
         /// <summary>
-        /// Gets the client name.
+        /// Gets the current client name.
         /// </summary>
         /// <value>
         /// The name.
         /// </value>
         public string Name
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Gets the current transfer client type.
+        /// </summary>
+        /// <value>
+        /// The name
+        /// <see cref="TransferClient"/> value.
+        /// </value>
+        public TransferClient ClientType
         {
             get;
         }

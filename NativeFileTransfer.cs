@@ -188,14 +188,14 @@ namespace kCura.WinEDDS.TApi
         public event EventHandler<TransferClientEventArgs> ClientChanged = delegate { };
 
         /// <summary>
-        /// Occurs when a file finishes transferring.
+        /// Occurs when a path finishes transferring.
         /// </summary>
-        public event EventHandler<TransferMessageEventArgs> ProgressEvent = delegate { };
+        public event EventHandler<TransferMessageEventArgs> Progress = delegate { };
 
         /// <summary>
         /// Occurs when transfer statistics are available.
         /// </summary>
-        public event EventHandler<TransferStatisticsAvailableEventArgs> StatisticsAvailableEvent = delegate { };
+        public event EventHandler<TransferStatisticsAvailableEventArgs> StatisticsAvailable = delegate { };
 
         /// <summary>
         /// Occurs when there is a fatal error in the transfer.
@@ -455,7 +455,8 @@ namespace kCura.WinEDDS.TApi
             }
 
             this.RaiseStatusMessage(0, message);
-            this.ClientChanged.Invoke(this, new TransferClientEventArgs(this.transferClient.Name, this.parameters.IsBulkEnabled));
+            var eventArgs = new TransferClientEventArgs(this.transferClient.Name, this.Client, this.parameters.IsBulkEnabled);
+            this.ClientChanged.Invoke(this, eventArgs);
         }
 
         /// <summary>
@@ -715,13 +716,13 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         private void SetupTransferListeners()
         {
-            this.CreateFileListener();
-            this.CreateFileIssueListener();
+            this.CreatePathListener();
+            this.CreatePathIssueListener();
             this.CreateRequestListener();
             this.CreateJobRetryListener();
             this.CreateStatisticsListener();
 
-            foreach (TransferListenerBase listener in this.transferListeners)
+            foreach (var listener in this.transferListeners)
             {
                 listener.StatusMessage += (sender, args) => this.StatusMessage.Invoke(sender, args);
                 listener.WarningMessage += (sender, args) => this.WarningMessage.Invoke(sender, args);
@@ -731,17 +732,17 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// Creates initializes a <inheritdoc cref="TransferPathListener"/> instance.
         /// </summary>
-        private void CreateFileListener()
+        private void CreatePathListener()
         {
             var listener = new TransferPathListener(this.transferLog, this.context);
-            listener.ProgressEvent += (sender, args) => this.ProgressEvent.Invoke(sender, args);
+            listener.ProgressEvent += (sender, args) => this.Progress.Invoke(sender, args);
             this.transferListeners.Add(listener);
         }
 
         /// <summary>
         /// Creates and initializes a <inheritdoc cref="TransferPathIssueListener"/> instance. 
         /// </summary>
-        private void CreateFileIssueListener()
+        private void CreatePathIssueListener()
         {
             var listener = new TransferPathIssueListener(this.transferLog, this.currentDirection, this.ClientName);
             listener.FatalError += (sender, args) => this.FatalError.Invoke(sender, args);
@@ -775,7 +776,7 @@ namespace kCura.WinEDDS.TApi
         private void CreateStatisticsListener()
         {
             var listener = new TransferStatisticsListener(this.transferLog, this.context);
-            listener.StatisticsEvent += (sender, args) => this.StatisticsAvailableEvent.Invoke(sender, args);
+            listener.StatisticsEvent += (sender, args) => this.StatisticsAvailable.Invoke(sender, args);
             this.transferListeners.Add(listener);
         }
 
