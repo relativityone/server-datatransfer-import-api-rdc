@@ -33,7 +33,6 @@ Namespace kCura.WinEDDS
         Private ReadOnly _cancellationToken As System.Threading.CancellationTokenSource
         Private _allFields As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
         Private _fieldsForCreate As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
-        Protected _continue As Boolean
         Protected _processedDocumentIdentifiers As Collections.Specialized.NameValueCollection
         Protected WithEvents _processController As kCura.Windows.Process.Controller
         Protected _offset As Int32 = 0
@@ -331,7 +330,6 @@ Namespace kCura.WinEDDS
             _executionSource = executionSource
             _cloudInstance = cloudInstance
             _cancellationToken = New CancellationTokenSource()
-            '_cancellationToken.CancelAfter(10000)
             If (String.IsNullOrEmpty(args.OverwriteDestination)) Then
                 _overwrite = Relativity.ImportOverwriteType.Append
             Else
@@ -358,7 +356,6 @@ Namespace kCura.WinEDDS
                 If autoDetect Then _parentFolderDTO = _folderManager.Read(args.CaseInfo.ArtifactID, args.CaseInfo.RootFolderID)
             End If
             _processController = processController
-            _continue = True
             _firstTimeThrough = True
             _caseInfo = args.CaseInfo
             _settings = args
@@ -437,6 +434,22 @@ Namespace kCura.WinEDDS
 
         Public Sub WriteObjectLineToTempFile(ByVal ownerIdentifier As String, ByVal objectName As String, ByVal artifactID As Int32, ByVal objectTypeArtifactID As Int32, ByVal fieldID As Int32)
             _outputObjectFileWriter.WriteLine(String.Format("{1}{0}{2}{0}{3}{0}{4}{0}{5}{0}", _bulkLoadFileFieldDelimiter, ownerIdentifier, objectName, artifactID, objectTypeArtifactID, fieldID))
+        End Sub
+        
+        Private Function ShouldImport() As Boolean
+            Return Not _cancellationToken.IsCancellationRequested
+        End Function
+
+        Private Sub StopImport()
+            WriteStatusLine(EventType.Status, "Preparing to stop the import process.", 0)
+            Try
+                _cancellationToken.Cancel()
+            Catch ex As Exception
+                WriteStatusLine(EventType.Status, "Error occured while cancelling the import.", 0)
+                throw
+            End Try
+
+            _bcpuploader.DoRetry = False
         End Sub
 
         Private Function GetStatisticsSnapshot(lineNumber As Int32) As IDictionary
@@ -547,7 +560,7 @@ Namespace kCura.WinEDDS
                 If _firstLineContainsColumnNames Then _offset = -1
                 Dim isError As Boolean = False
                 _statistics.BatchSize = Me.ImportBatchSize
-                While _continue AndAlso _artifactReader.HasMoreRecords
+                While ShouldImport() AndAlso _artifactReader.HasMoreRecords
                     Try
                         If Me.CurrentLineNumber < _startLineNumber Then
                             Me.AdvanceLine()
@@ -575,7 +588,6 @@ Namespace kCura.WinEDDS
                         End If
                     Catch ex As LoadFileBase.CodeCreationException
                         If ex.IsFatal Then
-                            _continue = False
                             isError = True
                             WriteFatalError(Me.CurrentLineNumber, ex)
                         Else
@@ -951,7 +963,7 @@ Namespace kCura.WinEDDS
                     Exit While
                 Catch ex As Exception
                     tries -= 1
-                    If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse _continue = False OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) OrElse ex.GetType = GetType(Service.BulkImportManager.InsufficientPermissionsForImportException) Then
+                    If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse Not ShouldImport() OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) OrElse ex.GetType = GetType(Service.BulkImportManager.InsufficientPermissionsForImportException) Then
                         Throw
                     Else
                         Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts)
@@ -1034,11 +1046,11 @@ Namespace kCura.WinEDDS
                     PushNativeBatch(outputNativePath)
                     PublishUploadModeEvent()
                 Catch ex As Exception
-                    If BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso _continue Then
+                    If BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso ShouldImport() Then
                         Dim originalBatchSize As Int32 = Me.ImportBatchSize
                         LowerBatchLimits()
                         Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts)
-                        If Not _continue Then Throw 'after the pause
+                        If Not ShouldImport() Then Throw 'after the pause
                         Me.LowerBatchSizeAndRetry(outputNativePath, originalBatchSize)
                     Else
                         Throw
@@ -1058,7 +1070,7 @@ Namespace kCura.WinEDDS
             Dim charactersSuccessfullyProcessed As Int64 = 0
             Dim hasReachedEof As Boolean = False
             Dim tries As Int32 = 1 'already starts at 1 retry
-            While totalRecords > recordsProcessed AndAlso Not hasReachedEof AndAlso _continue
+            While totalRecords > recordsProcessed AndAlso Not hasReachedEof AndAlso ShouldImport()
                 Dim i As Int32 = 0
                 Dim charactersProcessed As Int64 = 0
                 Using sr As New System.IO.StreamReader(oldNativeFilePath, System.Text.Encoding.Unicode), sw As New System.IO.StreamWriter(newNativeFilePath, False, System.Text.Encoding.Unicode)
@@ -1084,10 +1096,10 @@ Namespace kCura.WinEDDS
                     recordsProcessed += i
                     charactersSuccessfullyProcessed += charactersProcessed
                 Catch ex As Exception
-                    If tries < NumberOfRetries AndAlso BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso _continue Then
+                    If tries < NumberOfRetries AndAlso BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso ShouldImport() Then
                         LowerBatchLimits()
                         Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts)
-                        If Not _continue Then Throw 'after the pause
+                        If Not ShouldImport() Then Throw 'after the pause
                         tries += 1
                         hasReachedEof = False
                     Else
@@ -1675,10 +1687,8 @@ Namespace kCura.WinEDDS
         End Sub
 
         Private Sub WriteFatalError(ByVal lineNumber As Int32, ByVal ex As System.Exception)
-            _continue = False
             _artifactReader.OnFatalErrorState()
-            _cancellationToken.Cancel()
-            _bcpuploader.DoRetry = False
+            StopImport()
             OnFatalError("Error processing line: " + lineNumber.ToString, ex, _runID)
         End Sub
 
@@ -1795,10 +1805,8 @@ Namespace kCura.WinEDDS
 
         Protected Overridable Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
             If processID.ToString = _processID.ToString Then
-                _continue = False
                 _artifactReader.Halt()
-                _cancellationToken.Cancel()
-                _bcpuploader.DoRetry = False
+                StopImport()
             End If
         End Sub
 
@@ -1946,7 +1954,7 @@ Namespace kCura.WinEDDS
         End Sub
 
         Private Sub _artifactReader_StatusMessage(ByVal message As String) Handles _artifactReader.StatusMessage
-            OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, _artifactReader.CurrentLineNumber, _recordCount, message, False, GetStatisticsSnapshot(_artifactReader.CurrentLineNumber)))
+            OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Status, _artifactReader.CurrentLineNumber, _recordCount, message, False, _currentStatisticsSnapshot))
         End Sub
 
         Private Sub _artifactReader_FieldMapped(ByVal sourceField As String, ByVal workspaceField As String) Handles _artifactReader.FieldMapped
