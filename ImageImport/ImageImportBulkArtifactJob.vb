@@ -1,5 +1,4 @@
 Imports System.Net
-Imports kCura.Windows.Process
 Imports Relativity
 
 Namespace kCura.Relativity.DataReaderClient
