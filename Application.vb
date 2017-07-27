@@ -816,7 +816,11 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
         Public Sub NewFileTransfer()
-			Dim frm As FileTransferMain = New FileTransferMain(New RDCContext())
+            Dim rdcContext  = New RDCContext()
+            rdcContext.Credential = Me.Credential
+            rdcContext.WorkspaceID = Me.SelectedCaseInfo.ArtifactID
+            rdcContext.WebServiceURL = kCura.WinEDDS.Config.WebServiceURL 
+            Dim frm As FileTransferMain = New FileTransferMain(rdcContext)
 			Try
 				frm.Show()
 			Catch ex As System.Exception
