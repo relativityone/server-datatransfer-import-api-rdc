@@ -40,6 +40,7 @@ namespace kCura.WinEDDS.TApi
             this.MaxJobParallelism = 5;
             this.MaxJobRetryAttempts = 3;
             this.MaxSingleFileRetryAttempts = 5;
+            this.PreCalculateJobSize = false;
             this.PreserveDates = false;
 
             // FileUploader.vb defaults this parameters to true.
@@ -173,6 +174,18 @@ namespace kCura.WinEDDS.TApi
         /// The max job retry count.
         /// </value>
         public int MaxJobRetryAttempts
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the overall job size is pre-calculated to determine accurate progress. Care should be taken when using this setting on massive datasets.
+        /// </summary>
+        /// <value>
+        /// <see langword="true"/> to enable pre-calculate the job size; otherwise, /// <see langword="false"/>.
+        /// </value>
+        public bool PreCalculateJobSize
         {
             get;
             set;
