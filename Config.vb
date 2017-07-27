@@ -44,6 +44,7 @@ Namespace kCura.WinEDDS
                             If Not tempDict.Contains("ForceWebUpload") Then tempDict.Add("ForceWebUpload", "False")
                             If Not tempDict.Contains("TapiForceClientId") Then tempDict.Add("TapiForceClientId", String.Empty)
                             If Not tempDict.Contains("TapiForceClientName") Then tempDict.Add("TapiForceClientName", String.Empty)
+                            If Not tempDict.Contains("TapiLogEnabled") Then tempDict.Add("TapiLogEnabled", "False")
                             If Not tempDict.Contains("TapiMaxJobParallelism") Then tempDict.Add("TapiMaxJobParallelism", "1")
                             If Not tempDict.Contains("TapiMaxJobRetryAttempts") Then tempDict.Add("TapiMaxJobRetryAttempts", "3")
                             If Not tempDict.Contains("TapiMaxSingleFileRetryAttempts") Then tempDict.Add("TapiMaxSingleFileRetryAttempts", "5")
@@ -353,6 +354,13 @@ Namespace kCura.WinEDDS
         Public Shared ReadOnly Property TapiForceClientName() As String
             Get
                 Return CType(ConfigSettings("TapiForceClientName"), String)
+            End Get
+        End Property
+
+        ' This forces TAPI to use an internal but Serilog-based logger.
+        Public Shared ReadOnly Property TapiLogEnabled() As Boolean
+            Get
+                Return CType(ConfigSettings("TapiLogEnabled"), Boolean)
             End Get
         End Property
 
