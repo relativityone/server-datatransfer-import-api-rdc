@@ -7,12 +7,11 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using Relativity.Logging;
-
 namespace kCura.WinEDDS.TApi
 {
     using System.Threading;
 
+    using Relativity.Logging;
     using Relativity.Transfer;
 
     /// <summary>
@@ -36,7 +35,17 @@ namespace kCura.WinEDDS.TApi
             NativeFileTransferParameters parameters,
             CancellationToken token)
         {
-            return new NativeFileTransfer(parameters, TransferDirection.Upload, new NullLogger(), token);
+            ILog log = new NullLogger();
+            if (parameters.LogEnabled)
+            {
+                // Making a number of assumptions in the interest of testing and testability.
+                LogSettings.Instance.LogEnabled = true;
+                LogSettings.Instance.MinimumLogLevel = LoggingLevel.Debug;
+                LogSettings.Instance.Sinks = LogSinks.Console | LogSinks.Seq;
+                log = new TransferLog();
+            }
+
+            return new NativeFileTransfer(parameters, TransferDirection.Upload, log, token);
         }
 
         /// <summary>

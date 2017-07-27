@@ -132,6 +132,18 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the TAPI log is enabled.
+        /// </summary>
+        /// <value>
+        /// The log enabled value.
+        /// </value>
+        public bool LogEnabled
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Gets or sets the maximum files per folder setting.
         /// </summary>
         /// <value>
