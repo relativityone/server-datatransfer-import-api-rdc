@@ -47,6 +47,7 @@ Namespace kCura.WinEDDS
                             If Not tempDict.Contains("TapiMaxJobParallelism") Then tempDict.Add("TapiMaxJobParallelism", "1")
                             If Not tempDict.Contains("TapiMaxJobRetryAttempts") Then tempDict.Add("TapiMaxJobRetryAttempts", "3")
                             If Not tempDict.Contains("TapiMaxSingleFileRetryAttempts") Then tempDict.Add("TapiMaxSingleFileRetryAttempts", "5")
+                            If Not tempDict.Contains("TapiPreCalculateJobSize") Then tempDict.Add("TapiPreCalculateJobSize", "False")
                             If Not tempDict.Contains("TapiPreserveDates") Then tempDict.Add("TapiPreserveDates", "False")
                             If Not tempDict.Contains("DisableAspera") Then tempDict.Add("DisableAspera", "True")
                             If Not tempDict.Contains("RestUrl") Then tempDict.Add("RestUrl", "/Relativity.REST/api")
@@ -370,6 +371,12 @@ Namespace kCura.WinEDDS
         Public Shared ReadOnly Property TapiMaxJobRetryAttempts() As Int32
             Get
                 Return CType(ConfigSettings("TapiMaxJobRetryAttempts"), Int32)
+            End Get
+        End Property
+
+        Public Shared ReadOnly Property TapiPreCalculateJobSize() As Boolean
+            Get
+                Return CType(ConfigSettings("TapiPreCalculateJobSize"), Boolean)
             End Get
         End Property
 

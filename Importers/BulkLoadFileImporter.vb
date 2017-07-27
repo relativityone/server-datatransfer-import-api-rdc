@@ -398,6 +398,7 @@ Namespace kCura.WinEDDS
             parameters.MaxJobParallelism = Config.TapiMaxJobParallelism
             parameters.MaxSingleFileRetryAttempts = Config.TapiMaxSingleFileRetryAttempts
             parameters.MaxJobRetryAttempts = Config.TapiMaxJobRetryAttempts
+            parameters.PreCalculateJobSize = Config.TapiPreCalculateJobSize
             parameters.PreserveDates = Config.TapiPreserveDates
             parameters.TargetPath = _defaultDestinationFolderPath
             parameters.ValidateSourcePaths = Not Config.DisableNativeLocationValidation
@@ -787,7 +788,7 @@ Namespace kCura.WinEDDS
                                     Dim start As Int64 = System.DateTime.Now.Ticks
                                     Dim updateCurrentStats As Boolean = (start - _statisticsLastUpdated.Ticks) > 10000000
                                     'TAPI _statistics.FileBytes += Me.GetFileLength(filename)
-                                    fileGuid = _nativeFileUploader.AddPath(filename, Guid.NewGuid().ToString(), Me.CurrentLineNumber)
+                                    fileGuid = _nativeFileUploader.AddPath(filename, Guid.NewGuid().ToString(), Me.CurrentLineNumber - 1)
                                     'TAPI _statistics.FileTime += System.DateTime.Now.Ticks - start
                                     destinationVolume = _nativeFileUploader.TargetFolderName
                                     If updateCurrentStats Then
