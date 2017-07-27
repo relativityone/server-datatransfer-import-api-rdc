@@ -816,7 +816,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
         Public Sub NewFileTransfer()
-			Dim frm As FileTransferMain = New FileTransferMain()
+			Dim frm As FileTransferMain = New FileTransferMain(New RDCContext())
 			Try
 				frm.Show()
 			Catch ex As System.Exception
