@@ -46,61 +46,53 @@ Namespace kCura.WinEDDS.NUnit.Service
 
 #Region " Should throw Bulk SQL exceptions "
 		<Test()>
-		<ExpectedException(GetType(WinEDDS.Service.BulkImportManager.BulkImportSqlException))>
 		Public Sub Image_Import_Failure_Throws_Exception()
 			Dim manager As New MockBulkImportManager(True)
-			manager.BulkImportImage(0, _settings, False)
+			Assert.Throws(Of WinEDDS.Service.BulkImportManager.BulkImportSqlException)(Sub() manager.BulkImportImage(0, _settings, False))
 		End Sub
 
 		<Test()>
-		<ExpectedException(GetType(WinEDDS.Service.BulkImportManager.BulkImportSqlException))>
 		Public Sub Production_Image_Import_Failure_Throws_Exception()
 			Dim manager As New MockBulkImportManager(True)
-			manager.BulkImportProductionImage(0, _settings, 0, False)
+			Assert.Throws(Of WinEDDS.Service.BulkImportManager.BulkImportSqlException)(Sub() manager.BulkImportProductionImage(0, _settings, 0, False))
 		End Sub
 
 		<Test()>
-		 <ExpectedException(GetType(WinEDDS.Service.BulkImportManager.BulkImportSqlException))>
 		Public Sub Native_Import_Failure_Throws_Exception()
 			Dim manager As New MockBulkImportManager(True)
-			manager.BulkImportNative(0, Nothing, False, False)
+			Assert.Throws(Of WinEDDS.Service.BulkImportManager.BulkImportSqlException)(Sub() manager.BulkImportNative(0, Nothing, False, False))
 		End Sub
 
 		<Test()>
-		 <ExpectedException(GetType(WinEDDS.Service.BulkImportManager.BulkImportSqlException))>
 		Public Sub Object_Import_Failure_Throws_Exception()
 			Dim manager As New MockBulkImportManager(True)
-			manager.BulkImportObjects(0, Nothing, False)
+			Assert.Throws(Of WinEDDS.Service.BulkImportManager.BulkImportSqlException)(Sub() manager.BulkImportObjects(0, Nothing, False))
 		End Sub
 #End Region
 
 #Region " Should throw Bulk SQL Timeout exceptions "
 		<Test()>
-		<ExpectedException(GetType(WinEDDS.Service.BulkImportManager.BulkImportSqlTimeoutException))>
 		Public Sub Image_Import_Timeout_Throws_Timeout_Exception()
 			Dim manager As New MockBulkImportManager(TimeoutMessage)
-			manager.BulkImportImage(0, _settings, False)
+			Assert.Throws(Of WinEDDS.Service.BulkImportManager.BulkImportSqlTimeoutException)(Sub() manager.BulkImportImage(0, _settings, False))
 		End Sub
 
 		<Test()>
-		<ExpectedException(GetType(WinEDDS.Service.BulkImportManager.BulkImportSqlTimeoutException))>
 		Public Sub Production_Image_Import_Timeout_Throws_Timeout_Exception()
 			Dim manager As New MockBulkImportManager(TimeoutMessage)
-			manager.BulkImportProductionImage(0, _settings, 0, False)
+			Assert.Throws(Of WinEDDS.Service.BulkImportManager.BulkImportSqlTimeoutException)(Sub() manager.BulkImportProductionImage(0, _settings, 0, False))
 		End Sub
 
 		<Test()>
-		 <ExpectedException(GetType(WinEDDS.Service.BulkImportManager.BulkImportSqlTimeoutException))>
 		Public Sub Native_Import_Timeout_Throws_Timeout_Exception()
 			Dim manager As New MockBulkImportManager(TimeoutMessage)
-			manager.BulkImportNative(0, Nothing, False, False)
+			Assert.Throws(Of WinEDDS.Service.BulkImportManager.BulkImportSqlTimeoutException)(Sub() manager.BulkImportNative(0, Nothing, False, False))
 		End Sub
 
 		<Test()>
-		 <ExpectedException(GetType(WinEDDS.Service.BulkImportManager.BulkImportSqlTimeoutException))>
 		Public Sub Object_Import_Timeout_Throws_Timeout_Exception()
 			Dim manager As New MockBulkImportManager(TimeoutMessage)
-			manager.BulkImportObjects(0, Nothing, False)
+			Assert.Throws(Of WinEDDS.Service.BulkImportManager.BulkImportSqlTimeoutException)(Sub() manager.BulkImportObjects(0, Nothing, False))
 		End Sub
 #End Region
 
