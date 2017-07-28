@@ -8,6 +8,7 @@ namespace kCura.WinEDDS.TApi
 {
     using System;
     using System.Globalization;
+    using System.Linq;
 
     using kCura.WinEDDS.TApi.Resources;
 
@@ -76,11 +77,18 @@ namespace kCura.WinEDDS.TApi
         /// <inheritdoc />
         protected override void OnTransferPathIssue(object sender, TransferPathIssueEventArgs e)
         {
-            var message = string.Format(CultureInfo.CurrentCulture,
-                this.transferDirection == TransferDirection.Download
-                    ? Strings.TransferFileDownloadIssueMessage
-                    : Strings.TransferFileUploadIssueMessage, this.clientName, e.Issue.Message);
-            if (e.Issue.Attributes.HasFlag(IssueAttributes.Error))
+            var formattedMessage = this.transferDirection == TransferDirection.Download
+                                       ? Strings.TransferFileDownloadIssueMessage
+                                       : Strings.TransferFileUploadIssueMessage;
+            var message = string.Format(CultureInfo.CurrentCulture, formattedMessage, this.clientName, e.Issue.Message);
+            var fatalIssues = new[]
+                                  {
+                                      IssueAttributes.Error,
+                                      IssueAttributes.StorageOutOfSpace,
+                                      IssueAttributes.Licensing
+                                  };
+            var fatal = fatalIssues.Any(x => e.Issue.Attributes.HasFlag(x));
+            if (fatal)
             {
                 this.TransferLog.LogError("A serious transfer error has occurred. Issue={Issue}.", e.Issue);
                 this.RaiseFatalError($"A serious transfer error has occurred. Issue={e.Issue}.", e.Issue.Path != null ? e.Issue.Path.Order : -1);
