@@ -32,6 +32,7 @@ Namespace kCura.WinEDDS
         Protected _relativityManager As kCura.WinEDDS.Service.RelativityManager
 
         Protected _recordCount As Int64 = -1
+        Private _processedCount As Int64 = 0
         Private ReadOnly _cancellationToken As System.Threading.CancellationTokenSource
         Private _allFields As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
         Private _fieldsForCreate As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
@@ -466,7 +467,6 @@ Namespace kCura.WinEDDS
         End Function
 
         Private Sub StopImport()
-            WriteStatusLine(EventType.Status, "Preparing to stop the import process.")
             Try
                 _cancellationToken.Cancel()
             Catch ex As Exception
@@ -1708,7 +1708,7 @@ Namespace kCura.WinEDDS
         End Sub
 
         Protected Sub WriteStatusLine(ByVal et As kCura.Windows.Process.EventType, ByVal line As String)
-            OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(et, TapiConstants.NO_LINE, _recordCount, line, _currentStatisticsSnapshot))
+            OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(et, _processedCount, _recordCount, line, _currentStatisticsSnapshot))
         End Sub
 
         Private Sub WriteFatalError(ByVal lineNumber As Int32, ByVal ex As System.Exception)
@@ -1781,6 +1781,7 @@ Namespace kCura.WinEDDS
             _timekeeper.MarkStart("NativeFileUploader_ProgressEvent")
             _statistics.FileTime += e.FileTime
             _statistics.FileBytes += e.FileBytes
+            _processedCount += 1
             SetStatisticsSnapshot(e.LineNumber)
             WriteStatusLine(kCura.Windows.Process.EventType.Progress, "", e.LineNumber)
             _timekeeper.MarkEnd("NativeFileUploader_ProgressEvent")
