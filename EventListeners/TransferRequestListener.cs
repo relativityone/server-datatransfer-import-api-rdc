@@ -47,19 +47,19 @@ namespace kCura.WinEDDS.TApi
             switch (e.Status)
             {
                 case TransferRequestStatus.Started:
-                    this.RaiseStatusMessage(Strings.TransferJobStartedMessage, 0);
+                    this.RaiseStatusMessage(Strings.TransferJobStartedMessage);
                     break;
 
                 case TransferRequestStatus.Ended:
-                    this.RaiseStatusMessage(Strings.TransferJobEndedMessage, 0);
+                    this.RaiseStatusMessage(Strings.TransferJobEndedMessage);
                     break;
 
                 case TransferRequestStatus.EndedMaxRetry:
-                    this.RaiseStatusMessage(Strings.TransferJobEndedMaxRetryMessage, 0);
+                    this.RaiseStatusMessage(Strings.TransferJobEndedMaxRetryMessage);
                     break;
 
                 case TransferRequestStatus.Canceled:
-                    this.RaiseStatusMessage(Strings.TransferJobCanceledMessage, 0);
+                    this.RaiseStatusMessage(Strings.TransferJobCanceledMessage);
                     break;
             }
         }

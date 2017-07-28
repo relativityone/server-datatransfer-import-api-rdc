@@ -190,7 +190,7 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// Occurs when a path finishes transferring.
         /// </summary>
-        public event EventHandler<TransferMessageEventArgs> Progress = delegate { };
+        public event EventHandler<TransferProgressEventArgs> Progress = delegate { };
 
         /// <summary>
         /// Occurs when transfer statistics are available.
@@ -406,11 +406,11 @@ namespace kCura.WinEDDS.TApi
         /// <returns>
         /// The statistics <see cref="IDictionary"/>.
         /// </returns>
-        public IDictionary GetStatsForLine(int lineNumber)
+        public IDictionary PullStatsForLine(int lineNumber)
         {
             this.CheckDispose();
             var listener = this.transferListeners.OfType<TransferPathListener>().FirstOrDefault();
-            return listener?.GetStatsForLine(lineNumber);
+            return listener?.PullStatsForLine(lineNumber);
         }
 
         /// <summary>

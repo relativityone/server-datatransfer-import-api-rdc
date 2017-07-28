@@ -93,6 +93,17 @@ namespace kCura.WinEDDS.TApi
         /// <param name="message">
         /// The message.
         /// </param>
+        public void RaiseStatusMessage(string message)
+        {
+            this.StatusMessage.Invoke(this, new TransferMessageEventArgs(message, TApiConstants.NO_LINE));
+        }
+
+        /// <summary>
+        /// Raises a status message event.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
         /// <param name="lineNumber">
         /// The line number.
         /// </param>

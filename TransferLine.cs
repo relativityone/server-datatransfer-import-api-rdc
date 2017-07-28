@@ -27,28 +27,17 @@ namespace kCura.WinEDDS.TApi
         {
             this.Path = transferPath;
             this.TransferStatus = TransferPathStatus.None;
-            this.RetryCount = 0;
         }
 
         /// <summary>
-        /// Gets or sets the start.
+        /// Gets or sets the file time.
         /// </summary>
-        public DateTime Start { get; set; }
+        public TimeSpan? FileTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the end.
+        /// Gets or sets the transfer path status.
         /// </summary>
-        public DateTime End { get; set; }
-
-        /// <summary>
-        /// Gets or sets the retry count.
-        /// </summary>
-        public int RetryCount { get; set; }
-
-        /// <summary>
-        /// Gets the transfer path status.
-        /// </summary>
-        public TransferPathStatus TransferStatus { get; internal set; }
+        public TransferPathStatus TransferStatus { get; set; }
 
         /// <summary>
         /// Gets or sets the transfer path.
@@ -56,50 +45,22 @@ namespace kCura.WinEDDS.TApi
         public TransferPath Path { get; set; }
 
         /// <summary>
-        /// Print transfer statistics to console.
+        /// Get the transfer stats for the line.
         /// </summary>
+        /// <returns>
+        /// The stats in key-value pairs.
+        /// </returns>
         public IDictionary ToDictionary()
         {
             var retval = new HybridDictionary();
             retval.Add("Source Path", this.Path.SourcePath);
             retval.Add("Transfer Status", this.TransferStatus);
-            retval.Add("Retry Count", this.RetryCount);
-            if (this.End != null)
+            if (this.FileTime.HasValue)
             {
-                retval.Add("File Time", this.End.Ticks - this.Start.Ticks);
+                retval.Add("File Time", this.FileTime.Value);
             }
 
             return retval;
-        }
-
-        /// <summary>
-        /// Updates statistics for the artifact.
-        /// </summary>
-        /// <param name="e">
-        /// The <see cref="TransferPathProgressEventArgs"/> instance containing the event data.
-        /// </param>
-        public void Update(TransferPathProgressEventArgs e)
-        {
-            switch (e.Status)
-            {
-                case TransferPathStatus.Failed:
-                    this.End = DateTime.Now;
-                    break;
-
-                case TransferPathStatus.FailedRetryable:
-                    this.RetryCount++;
-                    break;
-
-                case TransferPathStatus.Started:
-                    this.Start = e.StartTime ?? DateTime.Now;
-                    break;
-
-                case TransferPathStatus.Successful:
-                    this.End = e.EndTime ?? DateTime.Now;
-                    break;
-            }
-
-            this.TransferStatus = e.Status;
         }
     }
 }

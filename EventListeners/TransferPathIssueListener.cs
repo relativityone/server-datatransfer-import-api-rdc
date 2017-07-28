@@ -91,12 +91,12 @@ namespace kCura.WinEDDS.TApi
             if (fatal)
             {
                 this.TransferLog.LogError("A serious transfer error has occurred. Issue={Issue}.", e.Issue);
-                this.RaiseFatalError($"A serious transfer error has occurred. Issue={e.Issue}.", e.Issue.Path != null ? e.Issue.Path.Order : -1);
+                this.RaiseFatalError($"A serious transfer error has occurred. Issue={e.Issue}.", e.Issue.Path != null ? e.Issue.Path.Order : TApiConstants.NO_LINE);
             }
             else if (e.Issue.Attributes.HasFlag(IssueAttributes.Warning))
             {
                 this.TransferLog.LogWarning("A transfer warning has occurred. Issue={Issue}.", e.Issue);
-                this.RaiseWarningMessage(message, e.Issue.Path != null ? e.Issue.Path.Order : -1);
+                this.RaiseWarningMessage(message, e.Issue.Path != null ? e.Issue.Path.Order : TApiConstants.NO_LINE);
             }
         }
 

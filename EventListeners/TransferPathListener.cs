@@ -9,8 +9,6 @@ namespace kCura.WinEDDS.TApi
     using System;
     using System.Collections;
     using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Linq;
 
     using Relativity.Logging;
     using Relativity.Transfer;
@@ -54,7 +52,7 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// Occurs when a file has finished transferring.
         /// </summary>
-        public event EventHandler<TransferMessageEventArgs> ProgressEvent = delegate { };
+        public event EventHandler<TransferProgressEventArgs> ProgressEvent = delegate { };
 
         /// <summary>
         /// Gets stats for line.
@@ -65,9 +63,11 @@ namespace kCura.WinEDDS.TApi
         /// <returns>
         /// The <see cref="IDictionary"/>.
         /// </returns>
-        public IDictionary GetStatsForLine(int lineNumber)
+        public IDictionary PullStatsForLine(int lineNumber)
         {
-            return this.transferLines[lineNumber].ToDictionary();
+            TransferLine line;
+            this.transferLines.TryRemove(lineNumber, out line);
+            return line.ToDictionary();
         }
 
         /// <inheritdoc />
@@ -78,7 +78,14 @@ namespace kCura.WinEDDS.TApi
                 this.transferLines[e.Path.Order] = new TransferLine(e.Path);
             }
 
-            this.transferLines[e.Path.Order].Update(e);
+            var line = this.transferLines[e.Path.Order];
+            line.TransferStatus = e.Status;
+
+            if (e.StartTime.HasValue && e.EndTime.HasValue)
+            {
+                line.FileTime = e.EndTime - e.StartTime;
+                this.RaiseProgressEvent(e.Path.Order, e.BytesTransferred, line.FileTime.Value.Ticks);
+            }
 
             switch (e.Status)
             {
@@ -100,7 +107,6 @@ namespace kCura.WinEDDS.TApi
                     this.TransferLog.LogInformation(
                         $"Successfully transferred file. Path={e.Path.SourcePath}.",
                         e.Path.Order);
-                    this.RaiseProgressEvent(string.Empty, e.Path.Order);
                     break;
             }
         }
@@ -108,15 +114,18 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// Raises a progress event.
         /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
         /// <param name="lineNumber">
         /// The line number.
         /// </param>
-        private void RaiseProgressEvent(string message, int lineNumber)
+        /// <param name="fileBytes">
+        /// The file bytes.
+        /// </param>
+        /// <param name="fileTime">
+        /// The file time.
+        /// </param>
+        private void RaiseProgressEvent(int lineNumber, long fileBytes, long fileTime)
         {
-            this.ProgressEvent.Invoke(this, new TransferMessageEventArgs(message, lineNumber));
+            this.ProgressEvent.Invoke(this, new TransferProgressEventArgs(lineNumber, fileBytes, fileTime));
         }
     }
 }

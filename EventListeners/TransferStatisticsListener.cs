@@ -59,7 +59,7 @@ namespace kCura.WinEDDS.TApi
                 e.Statistics.TotalTransferredFiles,
                 e.Statistics.TotalFiles,
                 e.Statistics.Progress);
-            this.RaiseStatusMessage(progressMessage, 0);
+            this.RaiseStatusMessage(progressMessage);
             this.RaiseStatisticsEvent(e.Statistics);
         }
 
