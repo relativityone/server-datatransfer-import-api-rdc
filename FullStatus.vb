@@ -1,5 +1,4 @@
 Namespace kCura.Relativity.DataReaderClient
-
 	''' <summary>
 	''' Represents a status message provided to an OnProcessProgress event.
 	''' </summary>
@@ -7,7 +6,6 @@ Namespace kCura.Relativity.DataReaderClient
 	''' This heavily duplicates ProcessProgressEvent. 
 	''' </remarks>
 	Public Class FullStatus
-
 #Region " Private Variables "
 		Private WithEvents _observer As kCura.Windows.Process.ProcessObserver
 
@@ -115,8 +113,8 @@ Namespace kCura.Relativity.DataReaderClient
 				Return _statusSuffixEntries
 			End Get
 		End Property
-
 #End Region
+
 		Public Sub New(ByVal totRecs As Int64, ByVal totRecsProc As Int64, ByVal totRecsProcWarn As Int64, ByVal totRecsProcErr As Int64, ByVal sTime As DateTime, ByVal eTime As DateTime, ByVal totRecsDisplay As String, ByVal totRecsProcDisplay As String, ByVal theProcessID As Guid, ByVal statusSuffixEntries As IDictionary)
 			Me.TotalRecords = totRecs
 			Me.TotalRecordsProcessed = totRecsProc
@@ -137,14 +135,5 @@ Namespace kCura.Relativity.DataReaderClient
 			Me.EndTime = eTime
 			_statusSuffixEntries = statusSuffixEntries
 		End Sub
-
-		Public Sub New(ByVal totRecs As Int64, ByVal totRecsProc As Int64, ByVal totRecsProcWarn As Int64, ByVal totRecsProcErr As Int64, ByVal sTime As DateTime, ByVal eTime As DateTime, ByVal totRecsDisplay As String, ByVal totRecsProcDisplay As String, ByVal statusSuffixEntries As IDictionary)
-			: Me.New(totRecs, totRecsProc, totRecsProcWarn, totRecsProcErr, sTime, eTime, totRecsDisplay, totRecsProcDisplay, Nothing, statusSuffixEntries)
-		End Sub
-
-		Public Sub New(ByVal totRecs As Int64, ByVal totRecsProc As Int64, ByVal totRecsProcWarn As Int64, ByVal totRecsProcErr As Int64, ByVal sTime As DateTime, ByVal eTime As DateTime, ByVal totRecsDisplay As String, ByVal totRecsProcDisplay As String)
-			Me.New(totRecs, totRecsProc, totRecsProcWarn, totRecsProcErr, sTime, eTime, totRecsDisplay, totRecsProcDisplay, Nothing)
-		End Sub
-
 	End Class
 End Namespace
