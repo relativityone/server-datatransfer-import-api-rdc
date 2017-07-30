@@ -5,7 +5,6 @@ Imports System.Threading.Tasks
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.Utility.Extensions
 Imports kCura.Windows.Process
-Imports kCura.WinEDDS.TApi
 Imports Relativity
 
 Namespace kCura.WinEDDS
@@ -22,6 +21,7 @@ Namespace kCura.WinEDDS
 
 #Region "Members"
 
+        Private ReadOnly _syncRoot As Object = new Object
         Protected _overwrite As Relativity.ImportOverwriteType
         Private WithEvents _nativeFileUploader As TApi.NativeFileTransfer
         Private _currentTransferClientName As String
@@ -74,7 +74,6 @@ Namespace kCura.WinEDDS
         Private _statistics As New kCura.WinEDDS.Statistics
         Private _timekeeper As New kCura.Utility.Timekeeper
         Private _currentStatisticsSnapshot As IDictionary
-        Private _sessionStats As IDictionary(Of Int32, IDictionary)
         Private _statisticsLastUpdated As System.DateTime = System.DateTime.Now
         Private _unmappedRelationalFields As System.Collections.ArrayList
 
@@ -332,6 +331,7 @@ Namespace kCura.WinEDDS
             _executionSource = executionSource
             _cloudInstance = cloudInstance
             _cancellationToken = New CancellationTokenSource()
+            ShouldImport = True
             If (String.IsNullOrEmpty(args.OverwriteDestination)) Then
                 _overwrite = Relativity.ImportOverwriteType.Append
             Else
@@ -373,8 +373,6 @@ Namespace kCura.WinEDDS
 
             _batchSizeHistoryList = New System.Collections.Generic.List(Of Int32)
             _disableNativeLocationValidation = Config.DisableNativeLocationValidation
-
-            _sessionStats = New Dictionary(Of Int32, IDictionary)
         End Sub
 
         Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)
@@ -408,13 +406,14 @@ Namespace kCura.WinEDDS
             parameters.WebServiceUrl = Config.WebServiceURL
             parameters.WorkspaceId = args.CaseInfo.ArtifactID
 
-            ' For now, TAPI is limited to just native file uploads.
+            ' Limiting TAPI integration to just native file uploads.
             _nativeFileUploader = TApi.NativeFileTransferFactory.CreateUploadFileTransfer(parameters, Me._cancellationToken.Token)
-            AddHandler _nativeFileUploader.StatusMessage, AddressOf NativeFileUploader_OnStatusEvent
-            AddHandler _nativeFileUploader.WarningMessage, AddressOf NativeFileUploader_OnWarningMessage
-            AddHandler _nativeFileUploader.Progress, AddressOf NativeFileUploader_OnProgress
-            AddHandler _nativeFileUploader.StatisticsAvailable, AddressOf NativeFileUploader_OnStatisticsAvailable
-            AddHandler _nativeFileUploader.FatalError, AddressOf NativeFileUploader_OnFatalError
+            AddHandler _nativeFileUploader.TapiClientChanged, AddressOf NativeFileUploaderOnTapiClientChanged
+            AddHandler _nativeFileUploader.TapiFatalError, AddressOf NativeFileUploaderOnTapiFatalError
+            AddHandler _nativeFileUploader.TapiProgress, AddressOf NativeFileUploaderOnTapiProgress
+            AddHandler _nativeFileUploader.TapiStatistics, AddressOf NativeFileUploaderOnTapiStatistics
+            AddHandler _nativeFileUploader.TapiStatusMessage, AddressOf NativeFileUploaderOnTapiStatusEvent            
+            AddHandler _nativeFileUploader.TapiWarningMessage, AddressOf NativeFileUploaderOnTapiWarningMessage
             _bcpuploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, False)
             _bcpuploader.SetUploaderTypeForBcp()
         End Sub
@@ -425,11 +424,12 @@ Namespace kCura.WinEDDS
             End If
 
             ' Force TAPI to dispose all resources.
-            RemoveHandler _nativeFileUploader.StatusMessage, AddressOf NativeFileUploader_OnStatusEvent
-            RemoveHandler _nativeFileUploader.WarningMessage, AddressOf NativeFileUploader_OnWarningMessage
-            RemoveHandler _nativeFileUploader.Progress, AddressOf NativeFileUploader_OnProgress
-            RemoveHandler _nativeFileUploader.StatisticsAvailable, AddressOf NativeFileUploader_OnStatisticsAvailable
-            RemoveHandler _nativeFileUploader.FatalError, AddressOf NativeFileUploader_OnFatalError
+            RemoveHandler _nativeFileUploader.TapiClientChanged, AddressOf NativeFileUploaderOnTapiClientChanged
+            RemoveHandler _nativeFileUploader.TapiFatalError, AddressOf NativeFileUploaderOnTapiFatalError
+            RemoveHandler _nativeFileUploader.TapiProgress, AddressOf NativeFileUploaderOnTapiProgress
+            RemoveHandler _nativeFileUploader.TapiStatistics, AddressOf NativeFileUploaderOnTapiStatistics
+            RemoveHandler _nativeFileUploader.TapiStatusMessage, AddressOf NativeFileUploaderOnTapiStatusEvent            
+            RemoveHandler _nativeFileUploader.TapiWarningMessage, AddressOf NativeFileUploaderOnTapiWarningMessage
             _nativeFileUploader.Dispose()
             _nativeFileUploader = Nothing
         End Sub
@@ -462,26 +462,17 @@ Namespace kCura.WinEDDS
             _outputObjectFileWriter.WriteLine(String.Format("{1}{0}{2}{0}{3}{0}{4}{0}{5}{0}", _bulkLoadFileFieldDelimiter, ownerIdentifier, objectName, artifactID, objectTypeArtifactID, fieldID))
         End Sub
         
-        Private Function ShouldImport() As Boolean
-            Return Not _cancellationToken.IsCancellationRequested
-        End Function
+        Private Property ShouldImport As Boolean
 
         Private Sub StopImport()
             Try
+                ShouldImport = False
                 _cancellationToken.Cancel()
+                _bcpuploader.DoRetry = False
             Catch ex As Exception
-                WriteStatusLine(EventType.Status, "Error occured while cancelling the import job.")
+                WriteStatusLine(EventType.Status, "Error occured while stopping the import job.")
                 throw
             End Try
-
-            _bcpuploader.DoRetry = False
-        End Sub
-
-        Private Sub SetStatisticsSnapshot(lineNumber As Int32)
-            Dim lineStats As IDictionary = _nativeFileUploader.PullStatsForLine(lineNumber)
-            UpdateStatisticsSnapshot(DateTime.Now)
-            lineStats.Add("Transfer Rate", _currentStatisticsSnapshot.Item("Average file transfer rate"))
-            _sessionStats.Add(lineNumber, lineStats)
         End Sub
 
         Private Sub UpdateStatisticsSnapshot(time As DateTime)
@@ -494,25 +485,8 @@ Namespace kCura.WinEDDS
 #Region "Main"
 
         Private Sub CompletePendingTransfers()
+            WriteStatusLine(EventType.Status, "Waiting for batch to complete transfers...")
             _nativeFileUploader.WaitForTransferJob()
-            DumpTransferStats()
-        End Sub
-
-        Private Sub DumpTransferStats()
-            Try
-                Dim keys As List(Of Integer) = _sessionStats.Keys.ToList()
-                keys.Sort()
-                For Each key As Integer In keys
-                    Dim msg As String = $"Line: {key}"
-                    Dim lineStats As IDictionary = _sessionStats.Item(key)
-                    For Each stat As String In lineStats.Keys
-                        msg += $", {stat}: {lineStats.Item(stat)}"
-                    Next
-                    WriteStatusLine(EventType.Status, msg, key)
-                Next
-            Finally
-                _sessionStats.Clear()
-            End Try
         End Sub
 
         Private Sub PublishUploadModeEvent()
@@ -773,15 +747,8 @@ Namespace kCura.WinEDDS
                     Dim copyFileToRepository As Action =
                             Sub()
                                 If _copyFileToRepository Then
-                                    Dim start As Int64 = System.DateTime.Now.Ticks
-                                    Dim updateCurrentStats As Boolean = (start - _statisticsLastUpdated.Ticks) > 10000000
-                                    'TAPI _statistics.FileBytes += Me.GetFileLength(filename)
                                     fileGuid = _nativeFileUploader.AddPath(filename, Guid.NewGuid().ToString(), Me.CurrentLineNumber - 1)
-                                    'TAPI _statistics.FileTime += System.DateTime.Now.Ticks - start
                                     destinationVolume = _nativeFileUploader.TargetFolderName
-                                    If updateCurrentStats Then
-                                        UpdateStatisticsSnapshot(New DateTime(start))
-                                    End If
                                 Else
                                     fileGuid = System.Guid.NewGuid.ToString
                                 End If
@@ -822,7 +789,11 @@ Namespace kCura.WinEDDS
                             End If
                         End Try
                     End If
-                    'TAPI WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
+
+                    ' Status must be handled the pre-TAPI way whenever the copy repository option is disabled.
+                    If Not _copyFileToRepository Then
+                        WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
+                    End If
                 End If
             End If
             _timekeeper.MarkEnd("ManageDocument_Filesystem")
@@ -969,9 +940,12 @@ Namespace kCura.WinEDDS
             Catch ex As System.Exception
                 WriteFatalError(metaDoc.LineNumber, ex)
             End Try
-            'TAPI _timekeeper.MarkStart("ManageDocumentMetadata_ProgressEvent")
-            'WriteStatusLine(Windows.Process.EventType.Progress, String.Format("Item '{0}' processed.", metaDoc.IdentityValue), metaDoc.LineNumber)
-            '_timekeeper.MarkEnd("ManageDocumentMetadata_ProgressEvent")
+
+            If Not _copyFileToRepository Then
+                _timekeeper.MarkStart("ManageDocumentMetadata_ProgressEvent")
+                WriteStatusLine(Windows.Process.EventType.Progress, String.Format("Item '{0}' processed.", metaDoc.IdentityValue), metaDoc.LineNumber)
+                _timekeeper.MarkEnd("ManageDocumentMetadata_ProgressEvent")
+            End If
         End Sub
 
         Protected Function BulkImport(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
@@ -1060,7 +1034,7 @@ Namespace kCura.WinEDDS
         Private Sub TryPushNativeBatch(Optional ByVal lastRun As Boolean = False)
             CloseFileWriters()
             Dim outputNativePath As String = _outputFileWriter.OutputNativeFilePath
-            If _nativeFileUploader.TransfersPending
+            If ShouldImport()
                 Try
                     CompletePendingTransfers()
                     PublishUploadModeEvent()
@@ -1143,7 +1117,7 @@ Namespace kCura.WinEDDS
 
         Private Sub PushNativeBatch(ByVal outputNativePath As String)
             Dim start As Int64 = System.DateTime.Now.Ticks
-            If _batchCounter = 0 Then Exit Sub
+            If _batchCounter = 0 OrElse Not ShouldImport() Then Exit Sub
             _batchCounter = 0
             Dim settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Me.GetSettingsObject
             settings.UseBulkDataImport = True
@@ -1675,16 +1649,8 @@ Namespace kCura.WinEDDS
                 If _nativeFileUploader.TargetFolderName = "" Then
                     location = localFilePath
                 Else
-                    Dim start As Int64 = System.DateTime.Now.Ticks
-                    'TAPI _statistics.FileBytes += Me.GetFileLength(localFilePath)
                     Dim guid As String = _nativeFileUploader.AddPath(localFilePath, System.Guid.NewGuid().ToString(), Me.CurrentLineNumber)
                     location = _nativeFileUploader.TargetPath & _nativeFileUploader.TargetFolderName & "\" & guid
-                    Dim updateCurrentStats As Boolean = (start - _statisticsLastUpdated.Ticks) > 10000000
-                    'TAPI _statistics.FileTime += System.DateTime.Now.Ticks - start
-                    If updateCurrentStats Then
-                        UpdateStatisticsSnapshot(DateTime.Now)
-                    End If
-
                 End If
                 location = System.Web.HttpUtility.UrlEncode(location)
                 fileField.Value = String.Format("{1}{0}{2}{0}{3}", ChrW(11), fileName, fileSize, location)
@@ -1699,16 +1665,12 @@ Namespace kCura.WinEDDS
 #Region "Status Window"
 
         Private Sub WriteStatusLine(ByVal et As kCura.Windows.Process.EventType, ByVal line As String, ByVal lineNumber As Int32)
-            If lineNumber <> TapiConstants.NO_LINE
-                line = line & If(lineNumber > 0, String.Format(" [line {0}]", lineNumber), String.Empty)
-                OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(et, lineNumber + _offset, _recordCount, line, _currentStatisticsSnapshot))
-            Else
-                WriteStatusLine(et, line)
-            End If
+            line = line & String.Format(" [line {0}]", lineNumber)
+            OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(et, lineNumber + _offset, _recordCount, line, _currentStatisticsSnapshot))
         End Sub
 
         Protected Sub WriteStatusLine(ByVal et As kCura.Windows.Process.EventType, ByVal line As String)
-            OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(et, _processedCount, _recordCount, line, _currentStatisticsSnapshot))
+            WriteStatusLine(et, line, Me.CurrentLineNumber)
         End Sub
 
         Private Sub WriteFatalError(ByVal lineNumber As Int32, ByVal ex As System.Exception)
@@ -1766,39 +1728,62 @@ Namespace kCura.WinEDDS
         End Sub
 
         Private Sub WriteEndImport(ByVal line As String)
-            WriteStatusLine(kCura.Windows.Process.EventType.End, line)
+            ' When stopped, use the process count; otherwise, the batch size is displayed to the user.
+            If ShouldImport() Then
+                WriteStatusLine(kCura.Windows.Process.EventType.End, line)
+            Else
+                WriteStatusLine(kCura.Windows.Process.EventType.End, line, Convert.ToInt32(_processedCount))
+            End If
         End Sub
 
-        Private Sub NativeFileUploader_OnStatusEvent(ByVal sender As Object, ByVal e As TApi.TransferMessageEventArgs)
-            WriteStatusLine(kCura.Windows.Process.EventType.Status, e.Message, e.LineNumber)
+        Private Sub NativeFileUploaderOnTapiStatusEvent(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
+            SyncLock _syncRoot
+                WriteStatusLine(kCura.Windows.Process.EventType.Status, e.Message, e.LineNumber)
+            End SyncLock
         End Sub
 
-        Private Sub NativeFileUploader_OnWarningMessage(ByVal sender As Object, ByVal e As TApi.TransferMessageEventArgs)
-            WriteStatusLine(kCura.Windows.Process.EventType.Warning, e.Message, e.LineNumber)
+        Private Sub NativeFileUploaderOnTapiWarningMessage(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
+            SyncLock _syncRoot
+                WriteStatusLine(kCura.Windows.Process.EventType.Warning, e.Message, e.LineNumber)
+            End SyncLock
         End Sub
 
-        Private Sub NativeFileUploader_OnProgress(ByVal sender As Object, ByVal e As TApi.TransferProgressEventArgs)
-            _timekeeper.MarkStart("NativeFileUploader_ProgressEvent")
-            _statistics.FileTime += e.FileTime
-            _statistics.FileBytes += e.FileBytes
-            _processedCount += 1
-            SetStatisticsSnapshot(e.LineNumber)
-            WriteStatusLine(kCura.Windows.Process.EventType.Progress, "", e.LineNumber)
-            _timekeeper.MarkEnd("NativeFileUploader_ProgressEvent")
+        Private Sub NativeFileUploaderOnTapiProgress(ByVal sender As Object, ByVal e As TApi.TapiProgressEventArgs)
+            SyncLock _syncRoot
+                ' TODO: Verify we only want to update progress on a successful transfer.
+                If e.Status Then
+                    ' TODO: Verify the entire progress/statistics implementation with Nick.
+                    ' TODO: Timekeeper has a measureable performance impact. Verify this is actually useful.
+                    ' _timekeeper.MarkStart("NativeFileUploader_ProgressEvent")
+                    WriteStatusLine(Windows.Process.EventType.Progress, $"Item '{e.FileName}' processed.", e.LineNumber)
+                    ' _timekeeper.MarkEnd("NativeFileUploader_ProgressEvent")
+                End If
+            End SyncLock
         End Sub
 
-        Private Sub NativeFileUploader_OnStatisticsAvailable(ByVal sender As Object, ByVal e As TApi.TransferStatisticsAvailableEventArgs)
+        Private Sub NativeFileUploaderOnTapiStatistics(ByVal sender As Object, ByVal e As TApi.TapiStatisticsEventArgs)
+            SyncLock _syncRoot
+                ' TODO: Verify the entire progress/statistics implementation with Nick.
+                _processedCount = e.TotalFiles
+                _statistics.FileTime = e.TotalTransferTicks
+                _statistics.FileBytes = e.TotalBytes
+
+                ' Note: The statistics event is already configured to 1-second intervals.
+                UpdateStatisticsSnapshot(DateTime.Now)
+            End SyncLock
         End Sub
 
-        Private Sub NativeFileUploader_OnFatalError(ByVal sender As Object, ByVal e As TApi.TransferMessageEventArgs)
-            WriteFatalError(e.LineNumber, New Exception(e.Message))
+        Private Sub NativeFileUploaderOnTapiFatalError(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
+            SyncLock _syncRoot
+                WriteFatalError(e.LineNumber, New Exception(e.Message))
+            End SyncLock
         End Sub
 
-        Private Sub _bcpuploader_UploadStatusEvent(ByVal s As String) Handles _bcpuploader.UploadStatusEvent
+        Private Sub LegacyUploader_UploadStatusEvent(ByVal s As String) Handles _bcpuploader.UploadStatusEvent
             WriteStatusLine(kCura.Windows.Process.EventType.Status, s)
         End Sub
 
-        Private Sub _bcpuploader_UploadWarningEvent(ByVal s As String) Handles _bcpuploader.UploadWarningEvent
+        Private Sub LegacyUploader_UploadWarningEvent(ByVal s As String) Handles _bcpuploader.UploadWarningEvent
             WriteStatusLine(kCura.Windows.Process.EventType.Warning, s)
         End Sub
 
@@ -1820,13 +1805,13 @@ Namespace kCura.WinEDDS
 
 #Region "Event Handlers"
 
-        Private Sub _nativeFileUploader_UploadModeChangeEvent(ByVal sender As Object, ByVal e As TApi.TransferClientEventArgs) Handles _nativeFileUploader.ClientChanged
+        Private Sub NativeFileUploaderOnTapiClientChanged(ByVal sender As Object, ByVal e As TApi.TapiClientEventArgs)
             Me._currentTransferClientType = e.ClientType
             Me._currentTransferClientName = e.Name
             PublishUploadModeEvent()
         End Sub
 
-        Private Sub _bcpuploader_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _bcpuploader.UploadModeChangeEvent
+        Private Sub LegacyUploader_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _bcpuploader.UploadModeChangeEvent
             PublishUploadModeEvent()
         End Sub
 
@@ -2002,7 +1987,7 @@ Namespace kCura.WinEDDS
                 With Me.BulkImportManager.GenerateNonImageErrorFiles(_caseInfo.ArtifactID, _runID, artifactTypeID, True, _keyFieldID)
                     Me.WriteStatusLine(Windows.Process.EventType.Status, "Retrieving errors from server")
                     downloader = New FileDownloader(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
-                    AddHandler downloader.UploadStatusEvent, AddressOf _bcpuploader_UploadStatusEvent
+                    AddHandler downloader.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
                     Dim errorsLocation As String = System.IO.Path.GetTempFileName
                     sr = AttemptErrorFileDownload(downloader, errorsLocation, .LogKey, _caseInfo)
 
@@ -2030,11 +2015,11 @@ Namespace kCura.WinEDDS
                         RemoveHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
                     End If
 
-                    RemoveHandler downloader.UploadStatusEvent, AddressOf _bcpuploader_UploadStatusEvent
+                    RemoveHandler downloader.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
                 End With
             Catch ex As Exception
                 Try
-                    If downloader IsNot Nothing Then RemoveHandler downloader.UploadStatusEvent, AddressOf _bcpuploader_UploadStatusEvent
+                    If downloader IsNot Nothing Then RemoveHandler downloader.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
                     sr.Close()
                     RemoveHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
                 Catch
@@ -2138,5 +2123,4 @@ Namespace kCura.WinEDDS
             Return String.Compare(DirectCast(x, kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).DisplayName, DirectCast(y, kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).DisplayName)
         End Function
     End Class
-
 End Namespace
