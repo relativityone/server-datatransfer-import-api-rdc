@@ -72,7 +72,7 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// Occurs when there is a fatal error in the transfer job.
         /// </summary>
-        public event EventHandler<TransferMessageEventArgs> FatalError = delegate { };
+        public event EventHandler<TapiMessageEventArgs> FatalError = delegate { };
 
         /// <inheritdoc />
         protected override void OnTransferPathIssue(object sender, TransferPathIssueEventArgs e)
@@ -91,12 +91,12 @@ namespace kCura.WinEDDS.TApi
             if (fatal)
             {
                 this.TransferLog.LogError("A serious transfer error has occurred. Issue={Issue}.", e.Issue);
-                this.RaiseFatalError($"A serious transfer error has occurred. Issue={e.Issue}.", e.Issue.Path != null ? e.Issue.Path.Order : TApiConstants.NO_LINE);
+                this.RaiseFatalError($"A serious transfer error has occurred. Issue={e.Issue}.", e.Issue.Path != null ? e.Issue.Path.Order : TapiConstants.NoLineNumber);
             }
             else if (e.Issue.Attributes.HasFlag(IssueAttributes.Warning))
             {
                 this.TransferLog.LogWarning("A transfer warning has occurred. Issue={Issue}.", e.Issue);
-                this.RaiseWarningMessage(message, e.Issue.Path != null ? e.Issue.Path.Order : TApiConstants.NO_LINE);
+                this.RaiseWarningMessage(message, e.Issue.Path != null ? e.Issue.Path.Order : TapiConstants.NoLineNumber);
             }
         }
 
@@ -111,7 +111,7 @@ namespace kCura.WinEDDS.TApi
         /// </param>
         private void RaiseFatalError(string message, int lineNumber)
         {
-            this.FatalError.Invoke(this, new TransferMessageEventArgs(message, lineNumber));
+            this.FatalError.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
         }
     }
 }

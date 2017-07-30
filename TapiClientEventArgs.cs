@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="TransferClientEventArgs.cs" company="kCura Corp">
+// <copyright file="TapiClientEventArgs.cs" company="kCura Corp">
 //   kCura Corp (C) 2017 All Rights Reserved.
 // </copyright>
 // <summary>
@@ -12,13 +12,13 @@ namespace kCura.WinEDDS.TApi
     using System;
 
     /// <summary>
-    /// Represents the transfer client event arguments.
+    /// Represents the TAPI client event arguments data.
     /// </summary>
     /// <seealso cref="System.EventArgs" />
-    public class TransferClientEventArgs : EventArgs
+    public class TapiClientEventArgs : EventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TransferClientEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="TapiClientEventArgs"/> class.
         /// </summary>
         /// <param name="name">
         /// The current transfer client name.
@@ -29,7 +29,7 @@ namespace kCura.WinEDDS.TApi
         /// <param name="isBulkEnabled">
         /// Specify whether the bulk feature is enabled.
         /// </param>
-        public TransferClientEventArgs(string name, TransferClient client, bool isBulkEnabled)
+        public TapiClientEventArgs(string name, TransferClient client, bool isBulkEnabled)
         {
             this.Name = name;
             this.ClientType = client;

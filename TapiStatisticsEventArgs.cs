@@ -3,7 +3,7 @@
 //   kCura Corp (C) 2017 All Rights Reserved.
 // </copyright>
 // <summary>
-//   Defines the transfer statistics event arguments.
+//   Defines TAPI statistics event arguments data.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -11,24 +11,32 @@ namespace kCura.WinEDDS.TApi
 {
     using System;
 
-    using Relativity.Transfer;
-
     /// <summary>
-    /// Represents the transfer message event arguments.
+    /// Represents TAPI statistics event arguments data.
     /// </summary>
     /// <seealso cref="System.EventArgs" />
-    public class TransferStatisticsAvailableEventArgs : EventArgs
+    public class TapiStatisticsEventArgs : EventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TransferStatisticsAvailableEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="TapiStatisticsEventArgs"/> class.
         /// </summary>
-        /// <param name="statistics">
-        /// The statistics.
+        /// <param name="totalBytes">
+        /// The total number of bytes.
         /// </param>
-        public TransferStatisticsAvailableEventArgs(ITransferStatistics statistics)
+        /// <param name="totalFiles">
+        /// The total number of files.
+        /// </param>
+        /// <param name="totalTransferTicks">
+        /// The total transfer time in ticks.
+        /// </param>
+        public TapiStatisticsEventArgs(
+            long totalBytes,
+            long totalFiles,
+            long totalTransferTicks)
         {
-            this.TotalBytes = statistics.TotalTransferredBytes;
-            this.TotalFiles = statistics.TotalTransferredFiles;
+            this.TotalBytes = totalBytes;
+            this.TotalFiles = totalFiles;
+            this.TotalTransferTicks = totalTransferTicks;
         }
 
         /// <summary>
@@ -49,6 +57,17 @@ namespace kCura.WinEDDS.TApi
         /// The total transferred files.
         /// </value>
         public long TotalFiles
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Gets the total transfer time in ticks.
+        /// </summary>
+        /// <value>
+        /// The transfer time in ticks.
+        /// </value>
+        public long TotalTransferTicks
         {
             get;
         }

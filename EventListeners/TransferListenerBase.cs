@@ -49,12 +49,12 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// Occurs when a status message is available.
         /// </summary>
-        public event EventHandler<TransferMessageEventArgs> StatusMessage = delegate { };
+        public event EventHandler<TapiMessageEventArgs> StatusMessage = delegate { };
 
         /// <summary>
         /// Occurs when a warning message is available.
         /// </summary>
-        public event EventHandler<TransferMessageEventArgs> WarningMessage = delegate { };
+        public event EventHandler<TapiMessageEventArgs> WarningMessage = delegate { };
 
         /// <summary>
         /// Gets or sets the transfer context. 
@@ -93,23 +93,12 @@ namespace kCura.WinEDDS.TApi
         /// <param name="message">
         /// The message.
         /// </param>
-        public void RaiseStatusMessage(string message)
-        {
-            this.StatusMessage.Invoke(this, new TransferMessageEventArgs(message, TApiConstants.NO_LINE));
-        }
-
-        /// <summary>
-        /// Raises a status message event.
-        /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
         /// <param name="lineNumber">
         /// The line number.
         /// </param>
         public void RaiseStatusMessage(string message, int lineNumber)
         {
-            this.StatusMessage.Invoke(this, new TransferMessageEventArgs(message, lineNumber));
+            this.StatusMessage.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
         }
 
         /// <summary>
@@ -123,7 +112,7 @@ namespace kCura.WinEDDS.TApi
         /// </param>
         public void RaiseWarningMessage(string message, int lineNumber)
         {
-            this.WarningMessage.Invoke(this, new TransferMessageEventArgs(message, lineNumber));
+            this.WarningMessage.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
         }
 
         /// <summary>

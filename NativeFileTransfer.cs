@@ -10,7 +10,6 @@
 namespace kCura.WinEDDS.TApi
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
@@ -167,40 +166,39 @@ namespace kCura.WinEDDS.TApi
             this.pathManager = new FileSharePathManager(parameters.MaxFilesPerFolder);
 
             // The context is optional and must be supplied on the transfer request (see below).
-            this.context = new TransferContext();
-
+            this.context = new TransferContext { StatisticsRateSeconds = 1.0 };
             this.SetupTransferListeners();
         }
 
         /// <summary>
         /// Occurs when a status message is available.
         /// </summary>
-        public event EventHandler<TransferMessageEventArgs> StatusMessage = delegate { };
+        public event EventHandler<TapiMessageEventArgs> TapiStatusMessage = delegate { };
 
         /// <summary>
         /// Occurs when a warning message is available.
         /// </summary>
-        public event EventHandler<TransferMessageEventArgs> WarningMessage = delegate { };
+        public event EventHandler<TapiMessageEventArgs> TapiWarningMessage = delegate { };
 
         /// <summary>
         /// Occurs when the transfer client is changed.
         /// </summary>
-        public event EventHandler<TransferClientEventArgs> ClientChanged = delegate { };
+        public event EventHandler<TapiClientEventArgs> TapiClientChanged = delegate { };
 
         /// <summary>
         /// Occurs when a path finishes transferring.
         /// </summary>
-        public event EventHandler<TransferProgressEventArgs> Progress = delegate { };
+        public event EventHandler<TapiProgressEventArgs> TapiProgress = delegate { };
 
         /// <summary>
         /// Occurs when transfer statistics are available.
         /// </summary>
-        public event EventHandler<TransferStatisticsAvailableEventArgs> StatisticsAvailable = delegate { };
+        public event EventHandler<TapiStatisticsEventArgs> TapiStatistics = delegate { };
 
         /// <summary>
         /// Occurs when there is a fatal error in the transfer.
         /// </summary>
-        public event EventHandler<TransferMessageEventArgs> FatalError = delegate { };
+        public event EventHandler<TapiMessageEventArgs> TapiFatalError = delegate { };
 
         /// <summary>
         /// Gets a value indicating whether the bulk setting is enabled.
@@ -225,11 +223,6 @@ namespace kCura.WinEDDS.TApi
         /// The name.
         /// </value>
         public string ClientName => this.transferClient != null ? this.transferClient.Name : Strings.ClientInitializing;
-
-        /// <summary>
-        /// Gets a value indicating whether there are transfers pending.
-        /// </summary>
-        public bool TransfersPending => this.transferJob != null && this.transferJob.Paths.Count > 0;
 
         /// <summary>
         /// Gets the current transfer client.
@@ -309,12 +302,12 @@ namespace kCura.WinEDDS.TApi
                                          ? this.pathManager.GetNextTargetPath(this.TargetPath)
                                          : this.TargetPath;
                 var transferPath = new TransferPath
-                                       {
-                                           SourcePath = sourceFile,
-                                           TargetPath = nextTargetPath,
-                                           TargetFileName = targetFileName,
-                                           Order = order
-                                       };
+                {
+                    SourcePath = sourceFile,
+                    TargetPath = nextTargetPath,
+                    TargetFileName = targetFileName,
+                    Order = order
+                };
                 this.transferJob.AddPath(transferPath);
                 return !string.IsNullOrEmpty(targetFileName)
                            ? targetFileName
@@ -362,9 +355,15 @@ namespace kCura.WinEDDS.TApi
                 // Note: retry is already built into TAPI.
                 var taskResult = this.transferJob.CompleteAsync(this.cancellationToken);
                 var transferResult = taskResult.GetAwaiter().GetResult();
-                this.RaiseFormattedStatusMessage(0, "{0} transfer elapsed time: {1}", this.ClientName, transferResult.Elapsed);
-                this.RaiseFormattedStatusMessage(0, "{0} transfer rate: {1:0.00} Mbps", this.ClientName, transferResult.TransferRateMbps);
-                this.RaiseFormattedStatusMessage(0, "{0} total transferred files: {1}, total failed files: {2}", this.ClientName, transferResult.TotalTransferredFiles, transferResult.TotalFailedFiles);
+                this.transferLog.LogInformation("{ClientName} transfer elapsed time: {Elapsed}", this.ClientName,
+                    transferResult.Elapsed);
+                this.transferLog.LogInformation("{ClientName} transfer rate: {TransferRate:0.00} Mbps", this.ClientName,
+                    transferResult.TransferRateMbps);
+                this.transferLog.LogInformation(
+                    "{ClientName} total transferred files: {TotalTransferredFiles}, total failed files: {TotalFailedFiles}",
+                    this.ClientName,
+                    transferResult.TotalTransferredFiles,
+                    transferResult.TotalFailedFiles);
                 if (transferResult.Status == TransferStatus.Successful ||
                     transferResult.Status == TransferStatus.PartiallySuccessful ||
                     transferResult.Status == TransferStatus.Canceled)
@@ -395,22 +394,6 @@ namespace kCura.WinEDDS.TApi
             {
                 this.DestroyTransferJob();
             }
-        }
-
-        /// <summary>
-        /// Gets the statistics for a transfer line.
-        /// </summary>
-        /// <param name="lineNumber">
-        /// The line number.
-        /// </param>
-        /// <returns>
-        /// The statistics <see cref="IDictionary"/>.
-        /// </returns>
-        public IDictionary PullStatsForLine(int lineNumber)
-        {
-            this.CheckDispose();
-            var listener = this.transferListeners.OfType<TransferPathListener>().FirstOrDefault();
-            return listener?.PullStatsForLine(lineNumber);
         }
 
         /// <summary>
@@ -455,8 +438,8 @@ namespace kCura.WinEDDS.TApi
             }
 
             this.RaiseStatusMessage(0, message);
-            var eventArgs = new TransferClientEventArgs(this.transferClient.Name, this.Client, this.parameters.IsBulkEnabled);
-            this.ClientChanged.Invoke(this, eventArgs);
+            var eventArgs = new TapiClientEventArgs(this.transferClient.Name, this.Client, this.parameters.IsBulkEnabled);
+            this.TapiClientChanged.Invoke(this, eventArgs);
         }
 
         /// <summary>
@@ -470,19 +453,20 @@ namespace kCura.WinEDDS.TApi
                 return;
             }
 
+            var configuration =
+                new ClientConfiguration
+                {
+                    MaxJobParallelism = this.parameters.MaxJobParallelism,
+                    MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
+                    MaxSingleFileRetryAttempts = this.parameters.MaxSingleFileRetryAttempts,
+                    PreCalculateJobSize = this.parameters.PreCalculateJobSize,
+                    PreserveDates = this.parameters.PreserveDates,
+                    TimeoutSeconds = this.parameters.TimeoutSeconds,
+                    ValidateSourcePaths = this.parameters.ValidateSourcePaths
+                };
+
             try
             {
-                var configuration =
-                    new ClientConfiguration
-                        {
-                            MaxJobParallelism = this.parameters.MaxJobParallelism,
-                            MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
-                            MaxSingleFileRetryAttempts = this.parameters.MaxSingleFileRetryAttempts,
-                            PreCalculateJobSize = this.parameters.PreCalculateJobSize,
-                            PreserveDates = this.parameters.PreserveDates,
-                            TimeoutSeconds = this.parameters.TimeoutSeconds,
-                            ValidateSourcePaths = this.parameters.ValidateSourcePaths
-                        };
                 if (this.parameters.ForceHttpClient)
                 {
                     this.CreateHttpClient();
@@ -490,9 +474,9 @@ namespace kCura.WinEDDS.TApi
                 }
                 else if (this.parameters.ForceClientId == Guid.Empty)
                 {
-                    const bool SupportCheck = true;
                     this.transferClient = this.transferHost
-                        .CreateClientAsync(SupportCheck, configuration, this.cancellationToken).GetAwaiter()
+                        .CreateClientAsync(configuration, this.cancellationToken)
+                        .GetAwaiter()
                         .GetResult();
                     this.RaiseClientChanged(ClientChangeReason.BestFit);
                 }
@@ -508,6 +492,10 @@ namespace kCura.WinEDDS.TApi
             {
                 this.CreateHttpClient();
                 this.RaiseClientChanged(ClientChangeReason.HttpFallback);
+            }
+            finally
+            {
+                this.OptimizeClient(configuration);
             }
         }
 
@@ -525,6 +513,7 @@ namespace kCura.WinEDDS.TApi
                 return;
             }
 
+            this.transferLog.LogInformation("Create job started...");
             this.CreateTransferClient();
             if (this.clientRequestId == null)
             {
@@ -543,6 +532,7 @@ namespace kCura.WinEDDS.TApi
             {
                 var task = this.transferClient.CreateJobAsync(this.jobRequest, this.cancellationToken);
                 this.transferJob = task.GetAwaiter().GetResult();
+                this.transferLog.LogInformation("Create job ended.");
             }
             catch (OperationCanceledException)
             {
@@ -562,27 +552,6 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Raises a formatted status message event.
-        /// </summary>
-        /// <param name="lineNumber">
-        /// The line number.
-        /// </param>
-        /// <param name="format">
-        /// The format.
-        /// </param>
-        /// <param name="args">
-        /// The format arguments.
-        /// </param>
-        protected void RaiseFormattedStatusMessage(int lineNumber, string format, params object[] args)
-        {
-            var message = string.Format(
-                CultureInfo.CurrentCulture,
-                format,
-                args);
-            this.RaiseStatusMessage(lineNumber, message);
-        }
-
-        /// <summary>
         /// Raises a status message event.
         /// </summary>
         /// <param name="lineNumber">
@@ -594,7 +563,7 @@ namespace kCura.WinEDDS.TApi
         protected void RaiseStatusMessage(int lineNumber, string message)
         {
             this.CheckDispose();
-            this.StatusMessage.Invoke(this, new TransferMessageEventArgs(message, lineNumber));
+            this.TapiStatusMessage.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
         }
 
         /// <summary>
@@ -609,7 +578,7 @@ namespace kCura.WinEDDS.TApi
         protected void RaiseWarningMessage(string message, int lineNumber)
         {
             this.CheckDispose();
-            this.WarningMessage.Invoke(this, new TransferMessageEventArgs(message, lineNumber));
+            this.TapiWarningMessage.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
         }
 
         /// <summary>
@@ -645,6 +614,32 @@ namespace kCura.WinEDDS.TApi
                 host,
                 new UsernamePasswordCredentials(parameters.Credentials.UserName, parameters.Credentials.Password),
                 parameters.WorkspaceId);
+        }
+
+        /// <summary>
+        /// Apply optimizations to the client.
+        /// </summary>
+        /// <param name="configuration">
+        /// The client configuration.
+        /// </param>
+        private void OptimizeClient(ClientConfiguration configuration)
+        {
+            if (this.transferClient == null)
+            {
+                return;
+            }
+
+            switch (this.transferClient.Id.ToString().ToUpperInvariant())
+            {
+                case TransferClientConstants.FileShareClientId:
+                    if (configuration.MaxJobParallelism == 1)
+                    {
+                        this.transferClient.Configuration.MaxJobParallelism = 10;
+                    }
+
+                    this.transferClient.Configuration.PreserveDates = false;
+                    break;
+            }
         }
 
         /// <summary>
@@ -717,26 +712,25 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         private void SetupTransferListeners()
         {
-            this.CreatePathListener();
+            this.CreatePathProgressListener();
             this.CreatePathIssueListener();
             this.CreateRequestListener();
             this.CreateJobRetryListener();
             this.CreateStatisticsListener();
-
             foreach (var listener in this.transferListeners)
             {
-                listener.StatusMessage += (sender, args) => this.StatusMessage.Invoke(sender, args);
-                listener.WarningMessage += (sender, args) => this.WarningMessage.Invoke(sender, args);
+                listener.StatusMessage += (sender, args) => this.TapiStatusMessage.Invoke(sender, args);
+                listener.WarningMessage += (sender, args) => this.TapiWarningMessage.Invoke(sender, args);
             }
         }
 
         /// <summary>
-        /// Creates initializes a <inheritdoc cref="TransferPathListener"/> instance.
+        /// Creates initializes a <inheritdoc cref="TransferPathProgressListener"/> instance.
         /// </summary>
-        private void CreatePathListener()
+        private void CreatePathProgressListener()
         {
-            var listener = new TransferPathListener(this.transferLog, this.context);
-            listener.ProgressEvent += (sender, args) => this.Progress.Invoke(sender, args);
+            var listener = new TransferPathProgressListener(this.transferLog, this.context);
+            listener.ProgressEvent += (sender, args) => this.TapiProgress.Invoke(sender, args);
             this.transferListeners.Add(listener);
         }
 
@@ -746,7 +740,7 @@ namespace kCura.WinEDDS.TApi
         private void CreatePathIssueListener()
         {
             var listener = new TransferPathIssueListener(this.transferLog, this.currentDirection, this.ClientName);
-            listener.FatalError += (sender, args) => this.FatalError.Invoke(sender, args);
+            listener.FatalError += (sender, args) => this.TapiFatalError.Invoke(sender, args);
             this.transferListeners.Add(listener);
         }
 
@@ -777,7 +771,7 @@ namespace kCura.WinEDDS.TApi
         private void CreateStatisticsListener()
         {
             var listener = new TransferStatisticsListener(this.transferLog, this.context);
-            listener.StatisticsEvent += (sender, args) => this.StatisticsAvailable.Invoke(sender, args);
+            listener.StatisticsEvent += (sender, args) => this.TapiStatistics.Invoke(sender, args);
             this.transferListeners.Add(listener);
         }
 

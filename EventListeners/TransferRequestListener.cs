@@ -44,22 +44,23 @@ namespace kCura.WinEDDS.TApi
         /// <inheritdoc />
         protected override void OnTransferRequestEvent(object sender, TransferRequestEventArgs e)
         {
+            // Note: due to RDC's coupling of messages to lines, sending all messages to just the transfer log.        
             switch (e.Status)
             {
                 case TransferRequestStatus.Started:
-                    this.RaiseStatusMessage(Strings.TransferJobStartedMessage);
+                    this.TransferLog.LogInformation(Strings.TransferJobStartedMessage);
                     break;
 
                 case TransferRequestStatus.Ended:
-                    this.RaiseStatusMessage(Strings.TransferJobEndedMessage);
+                    this.TransferLog.LogInformation(Strings.TransferJobEndedMessage);
                     break;
 
                 case TransferRequestStatus.EndedMaxRetry:
-                    this.RaiseStatusMessage(Strings.TransferJobEndedMaxRetryMessage);
+                    this.TransferLog.LogInformation(Strings.TransferJobEndedMaxRetryMessage);
                     break;
 
                 case TransferRequestStatus.Canceled:
-                    this.RaiseStatusMessage(Strings.TransferJobCanceledMessage);
+                    this.TransferLog.LogInformation(Strings.TransferJobCanceledMessage);
                     break;
             }
         }

@@ -7,13 +7,13 @@
 namespace kCura.WinEDDS.TApi
 {
     /// <summary>
-    /// The tapi constants.
+    /// The TAPI constants.
     /// </summary>
-    public class TApiConstants
+    public class TapiConstants
     {
         /// <summary>
-        /// The default line number.
+        /// The numeric value used to indicate no associated line number exists.
         /// </summary>
-        public const int NO_LINE = 0;
+        public const int NoLineNumber = 0;
     }
 }

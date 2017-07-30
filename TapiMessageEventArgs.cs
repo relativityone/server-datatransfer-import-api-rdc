@@ -1,9 +1,9 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="TransferMessageEventArgs.cs" company="kCura Corp">
+// <copyright file="TapiMessageEventArgs.cs" company="kCura Corp">
 //   kCura Corp (C) 2017 All Rights Reserved.
 // </copyright>
 // <summary>
-//   Defines the transfer message event arguments.
+//   Defines TAPI message event arguments data.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -12,13 +12,13 @@ namespace kCura.WinEDDS.TApi
     using System;
 
     /// <summary>
-    /// Represents the transfer message event arguments.
+    /// Represents TAPI message event arguments data.
     /// </summary>
     /// <seealso cref="System.EventArgs" />
-    public class TransferMessageEventArgs : EventArgs
+    public class TapiMessageEventArgs : EventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TransferMessageEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="TapiMessageEventArgs"/> class.
         /// </summary>
         /// <param name="message">
         /// The message.
@@ -26,7 +26,7 @@ namespace kCura.WinEDDS.TApi
         /// <param name="lineNumber">
         /// The line number.
         /// </param>
-        public TransferMessageEventArgs(string message, int lineNumber)
+        public TapiMessageEventArgs(string message, int lineNumber)
         {
             this.Message = message;
             this.LineNumber = lineNumber;

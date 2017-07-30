@@ -79,19 +79,18 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
-    <Compile Include="TApiConstants.cs" />
+    <Compile Include="TapiConstants.cs" />
     <Compile Include="TransferClient.cs" />
-    <Compile Include="TransferClientEventArgs.cs" />
+    <Compile Include="TapiClientEventArgs.cs" />
     <Compile Include="EventListeners\TransferPathIssueListener.cs" />
-    <Compile Include="EventListeners\TransferPathListener.cs" />
+    <Compile Include="EventListeners\TransferPathProgressListener.cs" />
     <Compile Include="EventListeners\TransferJobRetryListener.cs" />
-    <Compile Include="TransferLine.cs" />
     <Compile Include="EventListeners\TransferListenerBase.cs" />
-    <Compile Include="TransferMessageEventArgs.cs" />
+    <Compile Include="TapiMessageEventArgs.cs" />
     <Compile Include="EventListeners\TransferRequestListener.cs" />
     <Compile Include="EventListeners\TransferStatisticsListener.cs" />
-    <Compile Include="TransferProgressEventArgs.cs" />
-    <Compile Include="TransferStatisticsAvailableEventArgs.cs" />
+    <Compile Include="TapiProgressEventArgs.cs" />
+    <Compile Include="TapiStatisticsEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Strings.resx">

@@ -88,15 +88,6 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Transferring {0}/{1} - {2:0.00}%.
-        /// </summary>
-        internal static string ProgressMessage {
-            get {
-                return ResourceManager.GetString("ProgressMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Retrying transfer job - attempt {0} of {1}..
         /// </summary>
         internal static string RetryJobMessage {
