@@ -1034,7 +1034,7 @@ Namespace kCura.WinEDDS
         Private Sub TryPushNativeBatch(Optional ByVal lastRun As Boolean = False)
             CloseFileWriters()
             Dim outputNativePath As String = _outputFileWriter.OutputNativeFilePath
-            If ShouldImport()
+            If ShouldImport() And _nativeFileUploader.TransfersPending
                 Try
                     CompletePendingTransfers()
                     PublishUploadModeEvent()
