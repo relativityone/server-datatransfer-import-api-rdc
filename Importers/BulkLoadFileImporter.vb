@@ -1038,8 +1038,10 @@ Namespace kCura.WinEDDS
             Dim outputNativePath As String = _outputFileWriter.OutputNativeFilePath
             If ShouldImport()
                 Try
-                    CompletePendingTransfers()
-                    PublishUploadModeEvent()
+                    If _nativeFileUploader.TransfersPending
+                        CompletePendingTransfers()
+                        PublishUploadModeEvent()
+                    End If
                     PushNativeBatch(outputNativePath)
                     PublishUploadModeEvent()
                 Catch ex As Exception
