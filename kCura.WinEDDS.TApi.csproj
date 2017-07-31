@@ -79,6 +79,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
+    <Compile Include="TapiWinEddsHelper.cs" />
     <Compile Include="TapiConstants.cs" />
     <Compile Include="TransferClient.cs" />
     <Compile Include="TapiClientEventArgs.cs" />
