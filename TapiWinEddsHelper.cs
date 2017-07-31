@@ -69,7 +69,7 @@ namespace kCura.WinEDDS.TApi
         public static string BuildDocText()
         {
             var sb = new StringBuilder();
-            foreach (var clientMetadata in TransferClientHelper.SearchClientMetadata())
+            foreach (var clientMetadata in TransferClientHelper.SearchAvailableClients())
             {
                 if (sb.Length > 0)
                 {
