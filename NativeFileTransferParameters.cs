@@ -48,6 +48,7 @@ namespace kCura.WinEDDS.TApi
             this.TargetPath = null;
             this.TimeoutSeconds = 300;
             this.ValidateSourcePaths = false;
+            this.WaitTimeBetweenRetryAttempts = 30;
             this.WebServiceUrl = null;
             this.WebCookieContainer = null;
             this.WorkspaceId = 0;
@@ -276,6 +277,18 @@ namespace kCura.WinEDDS.TApi
         /// The <see cref="CookieContainer"/> instance.
         /// </value>
         public CookieContainer WebCookieContainer
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the amount of time, in seconds, to wait wait between retry attempts.
+        /// </summary>
+        /// <value>
+        /// The wait time.
+        /// </value>
+        public int WaitTimeBetweenRetryAttempts
         {
             get;
             set;

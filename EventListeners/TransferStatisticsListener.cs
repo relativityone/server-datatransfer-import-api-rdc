@@ -81,14 +81,69 @@ namespace kCura.WinEDDS.TApi
                 totalTransferredFiles,
                 Convert.ToInt64(totalTransferTicks));
             this.StatisticsEvent.Invoke(this, args);
-            var progressMessage = string.Format(
+            var ticksPerSecond = totalTransferTicks / 10000000;
+            if (ticksPerSecond > 0)
+            {
+                var aggregateDataRate = totalTransferredBytes / ticksPerSecond;
+                var aggregateMessage = string.Format(
+                    CultureInfo.CurrentCulture,
+                    "WinEDDS aggregate statistics: {0}/sec",
+                    ToFileSize(aggregateDataRate));
+                this.TransferLog.LogInformation(aggregateMessage);
+            }
+
+            var jobMessage = string.Format(
                 CultureInfo.CurrentCulture,
-                "Transferring {0}/{1} - {2:0.00}% - Rate: {3:0.00} Mbps",
+                "TAPI job {0} statistics - Files: {1}/{2} - Progress: {3:0.00}% - Rate: {4:0.00}/sec",
+                e.Request.TransferId,
                 e.Statistics.TotalTransferredFiles,
                 e.Statistics.TotalFiles,
                 e.Statistics.Progress,
-                e.Statistics.TransferRateMbps);
-            this.TransferLog.LogInformation(progressMessage);
+                ToFileSize((e.Statistics.TransferRateMbps * 1000000) / 8.0));
+            this.TransferLog.LogInformation(jobMessage);
+        }
+
+        /// <summary>
+        /// Converts the byte size into a standard file size.
+        /// </summary>
+        /// <param name="value">
+        /// The value.
+        /// </param>
+        /// <returns>
+        /// The file size.
+        /// </returns>
+        private static string ToFileSize(double value)
+        {
+            var prefix = string.Empty;
+            var k = value <= 0 ? 0 : (int)Math.Floor(System.Math.Log(value, 1000.0));
+            switch (k)
+            {
+                case 0:
+                    prefix = string.Empty;
+                    break;
+
+                case 1:
+                    prefix = "K";
+                    break;
+
+                case 2:
+                    prefix = "M";
+                    break;
+
+                case 3:
+                    prefix = "G";
+                    break;
+
+                case 4:
+                    prefix = "T";
+                    break;
+
+                case 5:
+                    prefix = "P";
+                    break;
+            }
+
+            return (value / Math.Pow(1000, k)).ToString("N2") + $" {prefix}B";
         }
     }
 }

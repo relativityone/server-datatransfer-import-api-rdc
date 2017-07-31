@@ -526,6 +526,10 @@ namespace kCura.WinEDDS.TApi
                 : TransferRequest.ForDownloadJob(this.TargetPath, this.context);
             this.jobRequest.ClientRequestId = this.clientRequestId;
             this.jobRequest.TransferId = this.currentTransferId;
+
+            // Note: avoid exponential backoff since that number will be excessive given the default max retry period.
+            this.jobRequest.RetryStrategy =
+                RetryStrategies.CreateFixedTimeStrategy(this.parameters.WaitTimeBetweenRetryAttempts);
             this.SetupTargetPathResolvers();
             
             try
