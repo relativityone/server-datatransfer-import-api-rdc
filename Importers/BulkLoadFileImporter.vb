@@ -403,8 +403,10 @@ Namespace kCura.WinEDDS
             parameters.PreserveDates = Config.TapiPreserveDates
             parameters.TargetPath = _defaultDestinationFolderPath
             parameters.ValidateSourcePaths = Not Config.DisableNativeLocationValidation
+            parameters.WaitTimeBetweenRetryAttempts = WaitTimeBetweenRetryAttempts
             parameters.WebServiceUrl = Config.WebServiceURL
             parameters.WorkspaceId = args.CaseInfo.ArtifactID
+
 
             ' Limiting TAPI integration to just native file uploads.
             _nativeFileUploader = TApi.NativeFileTransferFactory.CreateUploadFileTransfer(parameters, Me._cancellationToken.Token)
