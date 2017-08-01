@@ -1,5 +1,6 @@
 ﻿Imports System.Threading
 Imports System.Threading.Tasks
+Imports Relativity.Constant
 
 Namespace kCura.WinEDDS.Credentials
 
@@ -9,7 +10,7 @@ Namespace kCura.WinEDDS.Credentials
 		Private ReadOnly Shared _instance As Lazy(Of RelativityWebApiCredentialsProvider) = new Lazy(Of RelativityWebApiCredentialsProvider)(Function() New RelativityWebApiCredentialsProvider())
 		Private _provider As ICredentialsProvider
 
-		Private Sub New ()
+		Private Sub New()
 		End Sub
 
 		Public Shared Function Instance As RelativityWebApiCredentialsProvider
