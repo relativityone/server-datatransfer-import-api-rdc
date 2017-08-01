@@ -71,20 +71,17 @@ namespace kCura.WinEDDS.TApi
                 this.totalStatistics[key] = e;
             }
 
+            const int TicksPerSecond = 10000000;
             var totalTransferredBytes = this.totalStatistics.Sum(x => x.Value.Statistics.TotalTransferredBytes);
             var totalTransferredFiles = this.totalStatistics.Sum(x => x.Value.Statistics.TotalTransferredFiles);
             var totalTransferTicks = TimeSpan
-                .FromSeconds(this.totalStatistics.Sum(x => x.Value.Statistics.TransferTimeSeconds))
-                .Ticks;
-            var args = new TapiStatisticsEventArgs(
-                totalTransferredBytes,
-                totalTransferredFiles,
-                Convert.ToInt64(totalTransferTicks));
+                .FromSeconds(this.totalStatistics.Sum(x => x.Value.Statistics.TransferTimeSeconds)).Ticks;
+            var args = new TapiStatisticsEventArgs(totalTransferredBytes, totalTransferredFiles, totalTransferTicks);
             this.StatisticsEvent.Invoke(this, args);
-            var ticksPerSecond = totalTransferTicks / 10000000;
-            if (ticksPerSecond > 0)
+            var totalSeconds = totalTransferTicks / TicksPerSecond;
+            if (totalSeconds > 0)
             {
-                var aggregateDataRate = totalTransferredBytes / ticksPerSecond;
+                var aggregateDataRate = totalTransferredBytes / totalSeconds;
                 var aggregateMessage = string.Format(
                     CultureInfo.CurrentCulture,
                     "WinEDDS aggregate statistics: {0}/sec",
