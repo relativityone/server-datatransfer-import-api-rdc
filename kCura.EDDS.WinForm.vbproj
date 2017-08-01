@@ -156,23 +156,23 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.13\lib\net462\Relativity.OAuth2Client.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.14\lib\net462\Relativity.OAuth2Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client.IdentityModel">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.13\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.14\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.13\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.14\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client.Implicit">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit.1.0.13\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit.1.0.14\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client.Interfaces">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.13\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.14\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System">
