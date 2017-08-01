@@ -112,7 +112,7 @@ Namespace kCura.WinEDDS
 
 #Region "Registry Helpers"
 
-		Private Shared Function GetRegistryKeyValue(ByVal keyName As String) As String
+		Public Shared Function GetRegistryKeyValue(ByVal keyName As String) As String
 			Dim regKey As Microsoft.Win32.RegistryKey = Config.GetRegistryKey(False)
 			Dim value As String = CType(regKey.GetValue(keyName, ""), String)
 			regKey.Close()
