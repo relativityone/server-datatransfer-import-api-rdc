@@ -42,7 +42,7 @@ namespace kCura.WinEDDS.Core.NUnit.Import.Errors
 		public void ItShouldCreateEmptyFileWhenExportingErrorReportWithoutErrors()
 		{
 			_allErrors.Setup(x => x.HasErrors()).Returns(false);
-			_fileHelper.Setup(x => x.Create(_EXPORT_LOCATION)).Returns(new FileStream("a", FileMode.Append));
+			_fileHelper.Setup(x => x.Create(_EXPORT_LOCATION)).Returns(new FileStream(Path.Combine(TestContext.CurrentContext.TestDirectory, "a"), FileMode.Append));
 
 			// ACT
 			_instance.ExportErrorReport(_EXPORT_LOCATION);
