@@ -272,6 +272,8 @@
     <Compile Include="Exceptions\WebDownloadCorruptException.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Exporters\ExportConfig.vb" />
+    <Compile Include="Exporters\IExportConfig.vb" />
     <Compile Include="Exporters\IExporter.vb" />
     <Compile Include="Exporters\IExporterStatusNotification.vb" />
     <Compile Include="Exporters\IFieldLookupService.vb" />
