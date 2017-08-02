@@ -4,7 +4,7 @@
     <OptionExplicit>On</OptionExplicit>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <TargetFrameworkProfile />
-    <ProjectGuid>{1FC8E047-4F98-48E7-9192-B15869C5C402}</ProjectGuid>
+    <ProjectGuid>{048E9473-082F-4053-9070-2868CC8DBBA6}</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup>
     <OptionCompare>Binary</OptionCompare>
