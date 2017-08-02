@@ -488,6 +488,10 @@ Namespace kCura.WinEDDS
 			End Try
 		End Sub
 
+		Private Function IsCancellationRequested() As Boolean
+			return _cancellationToken.IsCancellationRequested
+		End Function
+
 		Private Sub UpdateStatisticsSnapshot(time As DateTime)
 			Dim updateCurrentStats As Boolean = (time.Ticks - _statisticsLastUpdated.Ticks) > 10000000
 			If updateCurrentStats Then
@@ -763,7 +767,7 @@ Namespace kCura.WinEDDS
 					Dim copyFileToRepository As Action =
 							Sub()
 								If _copyFileToRepository Then
-									fileGuid = _nativeFileUploader.AddPath(filename, Guid.NewGuid().ToString(), Me.CurrentLineNumber - 1)
+									fileGuid = _nativeFileUploader.AddPath(filename, Guid.NewGuid().ToString(), Me.CurrentLineNumber + _offset)
 									destinationVolume = _nativeFileUploader.TargetFolderName
 								Else
 									fileGuid = System.Guid.NewGuid.ToString
@@ -1055,7 +1059,7 @@ Namespace kCura.WinEDDS
 		Private Sub TryPushNativeBatch(Optional ByVal lastRun As Boolean = False)
 			CloseFileWriters()
 			Dim outputNativePath As String = _outputFileWriter.OutputNativeFilePath
-			If ShouldImport()
+			If Not IsCancellationRequested()
 				Try
 					If _nativeFileUploader.TransfersPending
 						CompletePendingTransfers()
