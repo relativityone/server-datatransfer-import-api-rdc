@@ -19,66 +19,25 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// Initializes a new instance of the <see cref="TransferListenerBase"/> class. 
         /// </summary>
-        /// <param name="log">
-        /// The transfer log.
-        /// </param>
-        protected TransferListenerBase(ILog log)
-        {
-            if (log == null)
-            {
-                throw new ArgumentNullException(nameof(log));
-            }
-
-            this.TransferLog = log;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TransferListenerBase"/> class. 
-        /// </summary>
          /// <param name="log">
         /// The transfer log.
         /// </param>
         /// <param name="context">
         /// The transfer context.
         /// </param>
-        protected TransferListenerBase(ILog log, TransferContext context) : this(log)
+        protected TransferListenerBase(ILog log, TransferContext context)
         {
-            this.RegisterContext(context);
-        }
+            if (log == null)
+            {
+                throw new ArgumentNullException(nameof(log));
+            }
 
-        /// <summary>
-        /// Occurs when a status message is available.
-        /// </summary>
-        public event EventHandler<TapiMessageEventArgs> StatusMessage = delegate { };
-
-        /// <summary>
-        /// Occurs when a warning message is available.
-        /// </summary>
-        public event EventHandler<TapiMessageEventArgs> WarningMessage = delegate { };
-
-        /// <summary>
-        /// Gets or sets the transfer context. 
-        /// </summary>
-        protected TransferContext Context { get; set; }
-
-        /// <summary>
-        /// Gets the transfer log.
-        /// </summary>
-        protected ILog TransferLog { get; }
-
-        /// <summary>
-        /// Registers events for the transfer context.
-        /// </summary>
-        /// <param name="context">
-        /// The transfer context.
-        /// </param>
-        public void RegisterContext(TransferContext context)
-        {
             if (context == null)
             {
                 throw new ArgumentNullException(nameof(context));
             }
 
+            this.TransferLog = log;
             this.Context = context;
             this.Context.TransferPathProgress += this.OnTransferPathProgress;
             this.Context.TransferPathIssue += this.OnTransferPathIssue;
@@ -88,31 +47,35 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Raises a status message event.
+        /// Occurs when a fatal error is registered.
         /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="lineNumber">
-        /// The line number.
-        /// </param>
-        public void RaiseStatusMessage(string message, int lineNumber)
+        public event EventHandler<TapiMessageEventArgs> FatalError = delegate { };
+
+        /// <summary>
+        /// Occurs when a warning is registered.
+        /// </summary>
+        public event EventHandler<TapiMessageEventArgs> Warning = delegate { };
+
+        /// <summary>
+        /// Occurs when a status message is registered.
+        /// </summary>
+        public event EventHandler<TapiMessageEventArgs> StatusMessage = delegate { };
+
+        /// <summary>
+        /// Gets or sets the transfer context. 
+        /// </summary>
+        protected TransferContext Context
         {
-            this.StatusMessage.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
+            get;
+            set;
         }
 
         /// <summary>
-        /// Raises a warning message event.
+        /// Gets the transfer log.
         /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="lineNumber">
-        /// The line number.
-        /// </param>
-        public void RaiseWarningMessage(string message, int lineNumber)
+        protected ILog TransferLog
         {
-            this.WarningMessage.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
+            get;
         }
 
         /// <summary>
@@ -130,6 +93,48 @@ namespace kCura.WinEDDS.TApi
             this.Context.TransferRequest -= this.OnTransferRequestEvent;
             this.Context.TransferJobRetry -= this.OnTransferJobRetryEvent;
             this.Context.TransferStatistics -= this.OnTransferStatisticsEvent;
+        }
+
+        /// <summary>
+        /// Raises a status message event.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <param name="lineNumber">
+        /// The line number.
+        /// </param>
+        protected void RaiseStatusMessage(string message, int lineNumber)
+        {
+            this.StatusMessage.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
+        }
+
+        /// <summary>
+        /// Raises a warning message event.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <param name="lineNumber">
+        /// The line number.
+        /// </param>
+        protected void RaiseWarningMessage(string message, int lineNumber)
+        {
+            this.Warning.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
+        }
+
+        /// <summary>
+        /// Raises a fatal error event.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <param name="lineNumber">
+        /// The line number.
+        /// </param>
+        protected void RaiseFatalError(string message, int lineNumber)
+        {
+            this.FatalError.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
         }
 
         /// <summary>

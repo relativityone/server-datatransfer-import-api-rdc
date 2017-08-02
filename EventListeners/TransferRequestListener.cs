@@ -22,17 +22,6 @@ namespace kCura.WinEDDS.TApi
         /// <param name="log">
         /// The transfer log.
         /// </param>
-        public TransferRequestListener(ILog log)
-            : base(log)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TransferRequestListener"/> class. 
-        /// </summary>
-        /// <param name="log">
-        /// The transfer log.
-        /// </param>
         /// <param name="context">
         /// The transfer context.
         /// </param>

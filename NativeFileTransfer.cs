@@ -360,9 +360,13 @@ namespace kCura.WinEDDS.TApi
                 // Note: retry is already built into TAPI.
                 var taskResult = this.transferJob.CompleteAsync(this.cancellationToken);
                 var transferResult = taskResult.GetAwaiter().GetResult();
-                this.transferLog.LogInformation("{ClientName} transfer elapsed time: {Elapsed}", this.ClientName,
+                this.transferLog.LogInformation(
+                    "{ClientName} transfer elapsed time: {Elapsed}",
+                    this.ClientName,
                     transferResult.Elapsed);
-                this.transferLog.LogInformation("{ClientName} transfer rate: {TransferRate:0.00} Mbps", this.ClientName,
+                this.transferLog.LogInformation(
+                    "{ClientName} transfer rate: {TransferRate:0.00} Mbps",
+                    this.ClientName,
                     transferResult.TransferRateMbps);
                 this.transferLog.LogInformation(
                     "{ClientName} total transferred files: {TotalTransferredFiles}, total failed files: {TotalFailedFiles}",
@@ -728,8 +732,18 @@ namespace kCura.WinEDDS.TApi
             this.CreateStatisticsListener();
             foreach (var listener in this.transferListeners)
             {
-                listener.StatusMessage += (sender, args) => this.TapiStatusMessage.Invoke(sender, args);
-                listener.WarningMessage += (sender, args) => this.TapiWarningMessage.Invoke(sender, args);
+                listener.FatalError += (sender, args) =>
+                    {
+                        this.TapiFatalError.Invoke(sender, args);
+                    };
+                listener.StatusMessage += (sender, args) =>
+                    {
+                        this.TapiStatusMessage.Invoke(sender, args);
+                    };
+                listener.Warning += (sender, args) =>
+                    {
+                        this.TapiWarningMessage.Invoke(sender, args);
+                    };
             }
         }
 
@@ -739,7 +753,10 @@ namespace kCura.WinEDDS.TApi
         private void CreatePathProgressListener()
         {
             var listener = new TransferPathProgressListener(this.transferLog, this.context);
-            listener.ProgressEvent += (sender, args) => this.TapiProgress.Invoke(sender, args);
+            listener.ProgressEvent += (sender, args) =>
+                {
+                    this.TapiProgress.Invoke(sender, args);
+                };
             this.transferListeners.Add(listener);
         }
 
@@ -748,8 +765,11 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         private void CreatePathIssueListener()
         {
-            var listener = new TransferPathIssueListener(this.transferLog, this.currentDirection, this.ClientName);
-            listener.FatalError += (sender, args) => this.TapiFatalError.Invoke(sender, args);
+            var listener = new TransferPathIssueListener(
+                this.transferLog,
+                this.currentDirection,
+                this.ClientName,
+                this.context);
             this.transferListeners.Add(listener);
         }
 

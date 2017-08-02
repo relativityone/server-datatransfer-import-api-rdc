@@ -4,11 +4,10 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace kCura.WinEDDS.TApi
 {
     using System;
+    using System.IO;
 
     using Relativity.Logging;
     using Relativity.Transfer;
@@ -18,17 +17,6 @@ namespace kCura.WinEDDS.TApi
     /// </summary>
     public class TransferPathProgressListener : TransferListenerBase
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TransferPathProgressListener"/> class.
-        /// </summary>
-        /// <param name="log">
-        /// The transfer log.
-        /// </param>
-        public TransferPathProgressListener(ILog log)
-            : base(log)
-        {
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TransferPathProgressListener"/> class. 
         /// </summary>
@@ -51,15 +39,17 @@ namespace kCura.WinEDDS.TApi
         /// <inheritdoc />
         protected override void OnTransferPathProgress(object sender, TransferPathProgressEventArgs e)
         {
-            if (e.StartTime.HasValue && e.EndTime.HasValue)
+            if ((e.StartTime.HasValue && e.EndTime.HasValue) || e.Status.HasFlag(TransferPathStatus.Failed))
             {
                 var args = new TapiProgressEventArgs(
-                    !string.IsNullOrEmpty(e.Path.TargetFileName) ? e.Path.TargetFileName : Path.GetFileName(e.Path.SourcePath),
+                    !string.IsNullOrEmpty(e.Path.TargetFileName)
+                        ? e.Path.TargetFileName
+                        : Path.GetFileName(e.Path.SourcePath),
                     e.Status == TransferPathStatus.Successful,
                     e.Path.Order,
                     e.BytesTransferred,
-                    e.StartTime.Value,
-                    e.EndTime.Value);
+                    e.StartTime ?? DateTime.Now,
+                    e.EndTime ?? DateTime.Now);
                 this.ProgressEvent.Invoke(this, args);
             }
         }

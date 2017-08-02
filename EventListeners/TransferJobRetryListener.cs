@@ -32,24 +32,11 @@ namespace kCura.WinEDDS.TApi
         /// <param name="maxRetryCount">
         /// The max retry count.
         /// </param>
-        public TransferJobRetryListener(ILog log, int maxRetryCount) : base(log)
-        {
-            this.maxRetryCount = maxRetryCount;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TransferJobRetryListener"/> class.
-        /// </summary>
-        /// <param name="log">
-        /// The transfer log.
-        /// </param>
-        /// <param name="maxRetryCount">
-        /// The max retry count.
-        /// </param>
         /// <param name="context">
         /// The transfer context.
         /// </param>
-        public TransferJobRetryListener(ILog log, int maxRetryCount, TransferContext context) : base(log, context)
+        public TransferJobRetryListener(ILog log, int maxRetryCount, TransferContext context) 
+            : base(log, context)
         {
             this.maxRetryCount = maxRetryCount;
         }
