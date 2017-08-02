@@ -477,6 +477,12 @@ Namespace kCura.WinEDDS
 		
 		Private Property ShouldImport As Boolean
 
+		Private ReadOnly Property CancellationRequested As Boolean
+		    Get 
+		        return _cancellationToken.IsCancellationRequested
+		    End Get
+		End Property
+
 		Private Sub StopImport()
 			Try
 				ShouldImport = False
@@ -487,10 +493,6 @@ Namespace kCura.WinEDDS
 				throw
 			End Try
 		End Sub
-
-		Private Function IsCancellationRequested() As Boolean
-			return _cancellationToken.IsCancellationRequested
-		End Function
 
 		Private Sub UpdateStatisticsSnapshot(time As DateTime)
 			Dim updateCurrentStats As Boolean = (time.Ticks - _statisticsLastUpdated.Ticks) > 10000000
@@ -1059,7 +1061,7 @@ Namespace kCura.WinEDDS
 		Private Sub TryPushNativeBatch(Optional ByVal lastRun As Boolean = False)
 			CloseFileWriters()
 			Dim outputNativePath As String = _outputFileWriter.OutputNativeFilePath
-			If Not IsCancellationRequested()
+			If Not CancellationRequested
 				Try
 					If _nativeFileUploader.TransfersPending
 						CompletePendingTransfers()
