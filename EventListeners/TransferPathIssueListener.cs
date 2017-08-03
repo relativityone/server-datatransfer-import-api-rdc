@@ -71,12 +71,20 @@ namespace kCura.WinEDDS.TApi
                         || e.Issue.RetryAttempt == e.Issue.MaxRetryAttempts;
             if (fatal)
             {
-                this.TransferLog.LogError("A serious transfer error has occurred. Issue={Issue}.", e.Issue);
+                this.TransferLog.LogError(
+                    "A serious transfer error has occurred. LineNumber={LineNumber}, SourcePath={SourcePath}, Attributes={Attributes}.",
+                    e.Issue.Path != null ? e.Issue.Path.Order : TapiConstants.NoLineNumber,
+                    e.Issue.Path != null ? e.Issue.Path.SourcePath : "(no path)",
+                    e.Issue.Attributes);
                 this.RaiseFatalError(message, e.Issue.Path != null ? e.Issue.Path.Order : TapiConstants.NoLineNumber);
             }
             else if (e.Issue.Attributes.HasFlag(IssueAttributes.Warning))
             {
-                this.TransferLog.LogWarning("A transfer warning has occurred. Issue={Issue}.", e.Issue);
+                this.TransferLog.LogWarning(
+                    "A transfer warning has occurred. LineNumber={LineNumber}, SourcePath={SourcePath}, Attributes={Attributes}.",
+                    e.Issue.Path != null ? e.Issue.Path.Order : TapiConstants.NoLineNumber,
+                    e.Issue.Path != null ? e.Issue.Path.SourcePath : "(no path)",
+                    e.Issue.Attributes);
                 this.RaiseWarningMessage(message, e.Issue.Path != null ? e.Issue.Path.Order : TapiConstants.NoLineNumber);
             }
         }       
