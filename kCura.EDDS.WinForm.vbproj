@@ -155,24 +155,29 @@
       <HintPath>..\..\packages\kCura.OutsideIn.FI.unified.2017.1.2\lib\net40\oi.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.14\lib\net462\Relativity.OAuth2Client.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client, Version=1.0.21.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.21-DEV-1\lib\net462\Relativity.OAuth2Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.IdentityModel">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.14\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel, Version=1.0.21.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.21-DEV-1\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.14\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces, Version=1.0.21.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.21-DEV-1\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.Implicit">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit.1.0.14\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client.Implicit, Version=1.0.21.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit.1.0.21-DEV-1\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.Interfaces">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.14\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.21.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.21-DEV-1\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System">

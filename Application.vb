@@ -1329,7 +1329,7 @@ Namespace kCura.EDDS.WinForm
 		''' <remarks></remarks>
 		Friend Async Function AttemptLogin(ByVal callingForm As Form) As Task
 			Dim defaultCredentialResult As Application.CredentialCheckResult = AttemptWindowsAuthentication()
-
+			SetImplicitCredentialProvider()
 			Select Case (defaultCredentialResult)
 				Case Application.CredentialCheckResult.AccessDisabled
 					MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)

@@ -355,14 +355,14 @@ Namespace kCura.EDDS.WinForm
 						_application.NewLogin()
 					Else
 						_application.OpenCaseSelector = False
-						Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
+						Await _application.GetCredentialsAsync()
 						_application.LogOn()
 						Await _application.OpenCase()
 						kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
 					End If
 				Else
 					_application.OpenCaseSelector = False
-					Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
+					Await _application.GetCredentialsAsync()
 					Await _application.OpenCase()
 				End If
 			Catch ex As LoginCanceledException
@@ -431,8 +431,9 @@ Namespace kCura.EDDS.WinForm
                 _application.SetWebServiceURL()
             End If
 
-            '' Can't do this in Application.vb without refactoring AttemptLogin (which needs this form as a parameter)
-            Await CheckCertificate()
+			'' Can't do this in Application.vb without refactoring AttemptLogin (which needs this form as a parameter)
+			Await CheckCertificate()
+            
 
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
@@ -440,7 +441,6 @@ Namespace kCura.EDDS.WinForm
 		Public Async Function CheckCertificate() As Task
 			try
 				If (_application.CertificateTrusted()) Then
-					_application.SetImplicitCredentialProvider()
 					Await _application.AttemptLogin(Me)
 				Else
 					_application.CertificateCheckPrompt()
