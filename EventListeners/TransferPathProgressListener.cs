@@ -39,19 +39,22 @@ namespace kCura.WinEDDS.TApi
         /// <inheritdoc />
         protected override void OnTransferPathProgress(object sender, TransferPathProgressEventArgs e)
         {
-            if ((e.StartTime.HasValue && e.EndTime.HasValue) || e.Status.HasFlag(TransferPathStatus.Failed))
+            if (e.Status != TransferPathStatus.Successful)
             {
-                var args = new TapiProgressEventArgs(
-                    !string.IsNullOrEmpty(e.Path.TargetFileName)
-                        ? e.Path.TargetFileName
-                        : Path.GetFileName(e.Path.SourcePath),
-                    e.Status == TransferPathStatus.Successful,
-                    e.Path.Order,
-                    e.BytesTransferred,
-                    e.StartTime ?? DateTime.Now,
-                    e.EndTime ?? DateTime.Now);
-                this.ProgressEvent.Invoke(this, args);
+                return;
             }
+
+            // Guard against null timestamps.
+            var args = new TapiProgressEventArgs(
+                !string.IsNullOrEmpty(e.Path.TargetFileName)
+                    ? e.Path.TargetFileName
+                    : Path.GetFileName(e.Path.SourcePath),
+                e.Status == TransferPathStatus.Successful,
+                e.Path.Order,
+                e.BytesTransferred,
+                e.StartTime ?? DateTime.Now,
+                e.EndTime ?? DateTime.Now);
+            this.ProgressEvent.Invoke(this, args);
         }
     }
 }
