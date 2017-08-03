@@ -478,9 +478,9 @@ Namespace kCura.WinEDDS
 		Private Property ShouldImport As Boolean
 
 		Private ReadOnly Property CancellationRequested As Boolean
-		    Get 
-		        return _cancellationToken.IsCancellationRequested
-		    End Get
+			Get 
+				return _cancellationToken.IsCancellationRequested
+			End Get
 		End Property
 
 		Private Sub StopImport()
@@ -1766,7 +1766,8 @@ Namespace kCura.WinEDDS
 			If ShouldImport() Then
 				WriteStatusLine(kCura.Windows.Process.EventType.End, line)
 			Else
-				WriteStatusLine(kCura.Windows.Process.EventType.End, line, _processedCount)
+				' An unhandled exception can occur within progress if no paths have been transferred and the process count is zero.
+				WriteStatusLine(kCura.Windows.Process.EventType.End, line, If(_processedCount > 0, _processedCount, Me.CurrentLineNumber))
 			End If
 		End Sub
 
