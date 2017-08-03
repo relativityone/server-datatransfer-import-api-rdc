@@ -13,6 +13,7 @@ Namespace kCura.WinEDDS
 #Region "Members"
 
 		Private _loadFileFormatterFactory As ILoadFileHeaderFormatterFactory
+		Private ReadOnly _exportConfig As IExportConfig
 		Private _fieldProviderCache As IFieldProviderCache
 		Private _searchManager As Service.Export.ISearchManager
 		Private _productionManager As Service.Export.IProductionManager
@@ -135,11 +136,11 @@ Namespace kCura.WinEDDS
 #Region "Constructors"
 
 		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory)
-			Me.New(exportFile, processController, New Service.Export.WebApiServiceFactory(exportFile), loadFileFormatterFactory)
+			Me.New(exportFile, processController, New Service.Export.WebApiServiceFactory(exportFile), loadFileFormatterFactory, New ExportConfig)
 		End Sub
 
 		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller, serviceFactory As Service.Export.IServiceFactory,
-					   loadFileFormatterFactory As ILoadFileHeaderFormatterFactory)
+					   loadFileFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
 			_searchManager = serviceFactory.CreateSearchManager()
 			_downloadHandler = serviceFactory.CreateExportFileDownloader()
 			_productionManager = serviceFactory.CreateProductionManager()
@@ -156,6 +157,7 @@ Namespace kCura.WinEDDS
 			Settings.FolderPath = Me.Settings.FolderPath + "\"
 			ExportNativesToFileNamedFrom = exportFile.ExportNativesToFileNamedFrom
 			_loadFileFormatterFactory = loadFileFormatterFactory
+			_exportConfig = exportConfig
 		End Sub
 
 #End Region
@@ -310,9 +312,9 @@ Namespace kCura.WinEDDS
 				If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then textPrecedenceAvfIds = Me.Settings.SelectedTextFields.Select(Of Int32)(Function(f As ViewFieldInfo) f.AvfId).ToArray
 
 				If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
-					records = CallServerWithRetry(Function() Me.ExportManager.RetrieveResultsBlockForProduction(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, Config.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds, Me.Settings.ArtifactID), maxTries)
+					records = CallServerWithRetry(Function() Me.ExportManager.RetrieveResultsBlockForProduction(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, _exportConfig.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds, Me.Settings.ArtifactID), maxTries)
 				Else
-					records = CallServerWithRetry(Function() Me.ExportManager.RetrieveResultsBlock(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, Config.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds), maxTries)
+					records = CallServerWithRetry(Function() Me.ExportManager.RetrieveResultsBlock(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, _exportConfig.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds), maxTries)
 				End If
 
 				If records Is Nothing Then Exit While
@@ -446,7 +448,7 @@ Namespace kCura.WinEDDS
 			Dim artifacts(documentArtifactIDs.Length - 1) As Exporters.ObjectExportInfo
 			Dim volumePredictions(documentArtifactIDs.Length - 1) As VolumePredictions
 
-			Dim threadCount As Integer = Config.ExportThreadCount - 1
+			Dim threadCount As Integer = _exportConfig.ExportThreadCount - 1
 			Dim threads As Task() = New Task(threadCount) {}
 			For i = 0 To threadCount
 				threads(i) = Task.FromResult(0)
