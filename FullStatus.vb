@@ -7,12 +7,6 @@ Namespace kCura.Relativity.DataReaderClient
 	''' </remarks>
 	Public Class FullStatus
 #Region " Private Variables "
-		Private WithEvents _observer As kCura.Windows.Process.ProcessObserver
-
-		Private _Success As Boolean
-		Private _Message As String
-		Private _TotalRecordProcessed As Int32
-
 		Private _startTime As DateTime
 		Private _endTime As DateTime
 		Private _processID As Guid
@@ -23,7 +17,6 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _totalRecordsDisplay As String
 		Private _totalRecordsProcessedDisplay As String
 		Private _statusSuffixEntries As IDictionary
-
 #End Region
 
 #Region "Accessors"
