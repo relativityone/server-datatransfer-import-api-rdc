@@ -59,7 +59,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents ToolsImportProductionFileMenu As System.Windows.Forms.MenuItem
 		Friend WithEvents _objectTypeDropDown As System.Windows.Forms.ComboBox
 		Friend WithEvents _optionsMenuCheckConnectivityItem As System.Windows.Forms.MenuItem
-        Friend WithEvents MenuItem5 As MenuItem
+        Friend WithEvents TransferMenu As MenuItem
         Friend WithEvents _exportObjectsMenuItem As System.Windows.Forms.MenuItem
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
@@ -81,7 +81,7 @@ Namespace kCura.EDDS.WinForm
         Me._exportFoldersMenuItem = New System.Windows.Forms.MenuItem()
         Me._exportFoldersAndSubfoldersMenuItem = New System.Windows.Forms.MenuItem()
         Me._exportObjectsMenuItem = New System.Windows.Forms.MenuItem()
-        Me.MenuItem5 = New System.Windows.Forms.MenuItem()
+        Me.TransferMenu = New System.Windows.Forms.MenuItem()
         Me._toolsMenu = New System.Windows.Forms.MenuItem()
         Me._toolsMenuSettingsItem = New System.Windows.Forms.MenuItem()
         Me._optionsMenuCheckConnectivityItem = New System.Windows.Forms.MenuItem()
@@ -144,7 +144,7 @@ Namespace kCura.EDDS.WinForm
         '
         Me.EnhancedMenuProvider.SetImageIndex(Me.MenuItem2, -1)
         Me.MenuItem2.Index = 1
-        Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ImportMenu, Me.ExportMenu, Me.MenuItem5})
+        Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ImportMenu, Me.ExportMenu, Me.TransferMenu})
         Me.MenuItem2.OwnerDraw = true
         Me.MenuItem2.Text = "&Tools"
         '
@@ -226,12 +226,13 @@ Namespace kCura.EDDS.WinForm
         Me._exportObjectsMenuItem.Text = "Objects"
         Me._exportObjectsMenuItem.Visible = false
         '
-        'MenuItem5
+        'TransferMenu
         '
-        Me.EnhancedMenuProvider.SetImageIndex(Me.MenuItem5, -1)
-        Me.MenuItem5.Index = 2
-        Me.MenuItem5.OwnerDraw = true
-        Me.MenuItem5.Text = "Transfer..."
+        Me.EnhancedMenuProvider.SetImageIndex(Me.TransferMenu, -1)
+        Me.TransferMenu.Index = 2
+        Me.TransferMenu.OwnerDraw = true
+        Me.TransferMenu.Text = "Transfer..."
+        Me.TransferMenu.Enabled = false
         '
         '_toolsMenu
         '
@@ -281,7 +282,7 @@ Namespace kCura.EDDS.WinForm
         '
         'StatusBar
         '
-        Me.StatusBar.Location = New System.Drawing.Point(0, 410)
+        Me.StatusBar.Location = New System.Drawing.Point(0, 389)
         Me.StatusBar.Name = "StatusBar"
         Me.StatusBar.Panels.AddRange(New System.Windows.Forms.StatusBarPanel() {Me.AppStatusPanel, Me.LoggedInUserPanel})
         Me.StatusBar.ShowPanels = true
@@ -317,13 +318,13 @@ Namespace kCura.EDDS.WinForm
             Or System.Windows.Forms.AnchorStyles.Right),System.Windows.Forms.AnchorStyles)
         Me._caseFolderExplorer.Location = New System.Drawing.Point(0, 25)
         Me._caseFolderExplorer.Name = "_caseFolderExplorer"
-        Me._caseFolderExplorer.Size = New System.Drawing.Size(332, 385)
+        Me._caseFolderExplorer.Size = New System.Drawing.Size(332, 364)
         Me._caseFolderExplorer.TabIndex = 6
         '
         'MainForm
         '
         Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-        Me.ClientSize = New System.Drawing.Size(332, 432)
+        Me.ClientSize = New System.Drawing.Size(332, 411)
         Me.Controls.Add(Me._objectTypeDropDown)
         Me.Controls.Add(Me._caseFolderExplorer)
         Me.Controls.Add(Me.StatusBar)
@@ -382,10 +383,12 @@ End Sub
                 Case AppEvent.AppEventType.LogOnForm
                     'Enable help once logged into Relativity via RDC login form
                     Me._helpMenuItem.Enabled = True
+                    TransferMenu.Enabled = True
                 Case appEvent.AppEventType.LogOn
                     UpdateUserName(_application.LoggedInUser)
                     'Enable help once logged into Relativity via Windows Authentication
                     Me._helpMenuItem.Enabled = True
+                    TransferMenu.Enabled = True
                 Case appEvent.AppEventType.ExitApplication
 					Me.Close()
 				Case appEvent.AppEventType.WorkspaceFolderSelected
@@ -477,7 +480,7 @@ End Sub
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
-        Private Sub ToolsTransferFileMenu_Click(sender As Object, e As EventArgs) Handles MenuItem5.Click
+        Private Sub ToolsTransferFileMenu_Click(sender As Object, e As EventArgs) Handles TransferMenu.Click
             Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			_application.NewFileTransfer()
 			Me.Cursor = System.Windows.Forms.Cursors.Default
