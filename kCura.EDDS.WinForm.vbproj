@@ -163,20 +163,24 @@
       <HintPath>..\..\packages\Relativity.Kepler.1.0.1.348\lib\net462\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.8\lib\net462\Relativity.OAuth2Client.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client">
+      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.14\lib\net462\Relativity.OAuth2Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.IdentityModel, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.8\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel">
+      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.14\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.8\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces">
+      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.14\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.8\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client.Implicit">
+      <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit.1.0.14\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.Interfaces">
+      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.14\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.348, Culture=neutral, processorArchitecture=MSIL">
@@ -327,9 +331,6 @@
     <Compile Include="Forms\LoadFilePreviewForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\LoginForm.vb">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Forms\MainForm.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -418,10 +419,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\LoadFilePreviewForm.resx">
       <DependentUpon>LoadFilePreviewForm.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\LoginForm.resx">
-      <DependentUpon>LoginForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.vb</DependentUpon>

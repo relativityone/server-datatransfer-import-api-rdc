@@ -1,4 +1,5 @@
-﻿Imports Relativity
+﻿Imports System.Threading.Tasks
+Imports Relativity
 
 Namespace kCura.EDDS.WinForm
 
@@ -16,13 +17,13 @@ Namespace kCura.EDDS.WinForm
 
 #Region " Run Import "
 
-		Friend Sub RunApplicationImport(ByVal importOptions As ImportOptions)
+		Friend Async Function RunApplicationImport(ByVal importOptions As ImportOptions) As Task
 			Dim packageData As Byte()
 			packageData = System.IO.File.ReadAllBytes(importOptions.LoadFilePath)
-			Dim importer As New kCura.WinEDDS.ApplicationDeploymentProcess(New Int32() {}, Nothing, packageData, _application.Credential, _application.CookieContainer, New Relativity.CaseInfo() {importOptions.SelectedCaseInfo})
+			Dim importer As New kCura.WinEDDS.ApplicationDeploymentProcess(New Int32() {}, Nothing, packageData, Await _application.GetCredentialsAsync(), _application.CookieContainer, New Relativity.CaseInfo() {importOptions.SelectedCaseInfo})
 			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, importOptions.ErrorLoadFileLocation, importOptions.ErrorReportFileLocation)
 			_application.StartProcess(importer)
-		End Sub
+		End Function
 
 		Friend Sub RunDynamicObjectImport(ByVal importOptions As ImportOptions)
 			Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
@@ -42,9 +43,9 @@ Namespace kCura.EDDS.WinForm
 			_application.StartProcess(importer)
 		End Sub
 
-		Friend Sub RunNativeImport(ByVal importOptions As ImportOptions)
+		Friend Async Function RunNativeImport(ByVal importOptions As ImportOptions) As Task
 			If EnsureEncoding(importOptions) Then
-				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(_application.Credential, _application.CookieContainer)
+				Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Await _application.GetCredentialsAsync(), _application.CookieContainer)
 				If folderManager.Exists(importOptions.SelectedCaseInfo.ArtifactID, importOptions.SelectedCaseInfo.RootFolderID) Then
 					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
 					importOptions.SelectedNativeLoadFile.SourceFileEncoding = importOptions.SourceFileEncoding
@@ -66,13 +67,13 @@ Namespace kCura.EDDS.WinForm
 			Else
 				Throw New Exceptions.EncodingMisMatchException(importOptions.SourceFileEncoding.CodePage, kCura.WinEDDS.Utility.DetectEncoding(importOptions.LoadFilePath, True).DeterminedEncoding.CodePage)
 			End If
-		End Sub
+		End Function
 
-		Friend Sub RunImageImport(ByVal importOptions As ImportOptions)
+		Friend Async Function RunImageImport(ByVal importOptions As ImportOptions) As Task
 			If EnsureEncoding(importOptions) Then
 				Dim importer As New kCura.WinEDDS.ImportImageFileProcess
 				importOptions.SelectedImageLoadFile.CookieContainer = _application.CookieContainer
-				importOptions.SelectedImageLoadFile.Credential = _application.Credential
+				importOptions.SelectedImageLoadFile.Credential = Await _application.GetCredentialsAsync()
 				importOptions.SelectedImageLoadFile.SelectedCasePath = importOptions.SelectedCasePath
 				importOptions.SelectedImageLoadFile.CaseDefaultPath = importOptions.SelectedCaseInfo.DocumentPath
 				importOptions.SelectedImageLoadFile.CopyFilesToDocumentRepository = importOptions.CopyFilesToDocumentRepository
@@ -87,7 +88,7 @@ Namespace kCura.EDDS.WinForm
 			Else
 				Throw New Exceptions.EncodingMisMatchException(importOptions.SourceFileEncoding.CodePage, kCura.WinEDDS.Utility.DetectEncoding(importOptions.LoadFilePath, True).DeterminedEncoding.CodePage)
 			End If
-		End Sub
+		End Function
 
 #End Region
 

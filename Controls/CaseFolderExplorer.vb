@@ -1,3 +1,4 @@
+Imports System.Threading.Tasks
 Imports kCura.Windows.Forms
 
 Namespace kCura.EDDS.WinForm
@@ -145,9 +146,9 @@ Namespace kCura.EDDS.WinForm
 
 		Private _contextMenuTreeNode As System.Windows.Forms.TreeNode
 
-		Private Sub LoadCase(ByVal caseInfo As Relativity.CaseInfo)
+		Private Async Function LoadCase(ByVal caseInfo As Relativity.CaseInfo) As Task
 			'check import/export permissions for the case
-			_application.LoadWorkspacePermissions()
+			Await _application.LoadWorkspacePermissions()
 
 			' sets the availability of import/export menu based on the permissions set for logged in user
 			Import.Enabled = _application.UserHasImportPermission
@@ -157,7 +158,7 @@ Namespace kCura.EDDS.WinForm
 
 			Dim foldersDataSet As System.Data.DataSet = Nothing
 			Try
-				foldersDataSet = _application.GetCaseFolders(caseInfo.ArtifactID)
+				foldersDataSet = Await _application.GetCaseFolders(caseInfo.ArtifactID)
 			Catch ex As System.Exception
 				Dim frm As New ErrorDialog
 				frm.Initialize(ex, "Error retrieving folder information from server.  Continue?")
@@ -169,7 +170,7 @@ Namespace kCura.EDDS.WinForm
 						_application.ExitApplication()
 				End Select
 			End Try
-			If foldersDataSet Is Nothing Then Exit Sub
+			If foldersDataSet Is Nothing Then Return
 			'Dim cleanser As New DataSetCleanser
 			'cleanser.CleanseDataset(foldersDataSet)
 			foldersDataSet.Relations.Add("NodeRelation", foldersDataSet.Tables(0).Columns("ArtifactID"), foldersDataSet.Tables(0).Columns("ParentArtifactID"))
@@ -191,7 +192,7 @@ Namespace kCura.EDDS.WinForm
 			'rootFolderNode.ExpandAll()
 			_treeView.SelectedNode = rootFolderNode
 
-		End Sub
+		End Function
 
 		Private Sub CleanseFoldersDataSet(ByVal ds As System.Data.DataSet)
 			Dim dt As System.Data.DataTable = ds.Tables(0)
@@ -218,9 +219,11 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _application_OnEvent(ByVal appEvent As AppEvent) Handles _application.OnEvent
 			Select Case appEvent.EventType
 				Case appEvent.AppEventType.LoadCase
-					Me.LoadCase(CType(appEvent, LoadCaseEvent).Case)
+					_treeView.Invoke(Async Function() As Task
+					                     Await Me.LoadCase(CType(appEvent, LoadCaseEvent).Case) 
+					                 End Function)
 				Case appEvent.AppEventType.NewFolder
-					Me.AddNewFolder(CType(appEvent, NewFolderEvent))
+					_treeView.Invoke(Sub() Me.AddNewFolder(CType(appEvent, NewFolderEvent)))
 			End Select
 		End Sub
 
@@ -271,32 +274,32 @@ Namespace kCura.EDDS.WinForm
 			End If
 		End Sub
 
-		Private Sub ImportImageFile_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportImageFile.Click
-			_application.NewImageFile(CType(_contextMenuTreeNode.Tag, FolderInfo).ArtifactID, _application.SelectedCaseInfo)
+		Private Async Sub ImportImageFile_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportImageFile.Click
+			Await _application.NewImageFile(CType(_contextMenuTreeNode.Tag, FolderInfo).ArtifactID, _application.SelectedCaseInfo)
 		End Sub
 
-		Private Sub ImportLoadFIle_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportLoadFIle.Click
-			_application.NewLoadFile(CType(_contextMenuTreeNode.Tag, FolderInfo).ArtifactID, _application.SelectedCaseInfo)
+		Private Async Sub ImportLoadFIle_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportLoadFIle.Click
+			Await _application.NewLoadFile(CType(_contextMenuTreeNode.Tag, FolderInfo).ArtifactID, _application.SelectedCaseInfo)
 		End Sub
 
 		Private Sub _treeView_AfterSelect(ByVal sender As Object, ByVal e As System.Windows.Forms.TreeViewEventArgs) Handles _treeView.AfterSelect
 			_application.SelectCaseFolder(CType(_treeView.SelectedNode.Tag, FolderInfo))
 		End Sub
 
-		Private Sub NewFolderMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles NewFolderMenu.Click
-			_application.CreateNewFolder(CType(_treeView.SelectedNode.Tag, FolderInfo).ArtifactID)
+		Private Async Sub NewFolderMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles NewFolderMenu.Click
+			Await _application.CreateNewFolder(CType(_treeView.SelectedNode.Tag, FolderInfo).ArtifactID)
 		End Sub
 
-		Private Sub ExportFolder_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ExportFolder.Click
-			_application.NewSearchExport(CType(_contextMenuTreeNode.Tag, FolderInfo).ArtifactID, _application.SelectedCaseInfo, ExportFile.ExportType.ParentSearch)
+		Private Async Sub ExportFolder_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ExportFolder.Click
+			Await _application.NewSearchExport(CType(_contextMenuTreeNode.Tag, FolderInfo).ArtifactID, _application.SelectedCaseInfo, ExportFile.ExportType.ParentSearch)
 		End Sub
 
-		Private Sub ExportFolderAndSubfolders_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ExportFolderAndSubfolders.Click
-			_application.NewSearchExport(CType(_contextMenuTreeNode.Tag, FolderInfo).ArtifactID, _application.SelectedCaseInfo, ExportFile.ExportType.AncestorSearch)
+		Private Async Sub ExportFolderAndSubfolders_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ExportFolderAndSubfolders.Click
+			Await _application.NewSearchExport(CType(_contextMenuTreeNode.Tag, FolderInfo).ArtifactID, _application.SelectedCaseInfo, ExportFile.ExportType.AncestorSearch)
 		End Sub
 
-		Private Sub ImportProduction_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportProduction.Click
-			_application.NewProductionFile(CType(_contextMenuTreeNode.Tag, FolderInfo).ArtifactID, _application.SelectedCaseInfo)
+		Private Async Sub ImportProduction_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportProduction.Click
+			Await _application.NewProductionFile(CType(_contextMenuTreeNode.Tag, FolderInfo).ArtifactID, _application.SelectedCaseInfo)
 		End Sub
 
 		Private Class DataSetCleanser

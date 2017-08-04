@@ -1,3 +1,5 @@
+Imports System.Threading.Tasks
+
 Namespace kCura.EDDS.WinForm
 	Public Class ImageLoad
 		Inherits System.Windows.Forms.Form
@@ -424,9 +426,9 @@ Namespace kCura.EDDS.WinForm
 			End Set
 		End Property
 
-		Private Function PopulateImageLoadFile(ByVal doFormValidation As Boolean) As Boolean
+		Private Async Function PopulateImageLoadFile(ByVal doFormValidation As Boolean) As Task(Of Boolean)
 			Me.Cursor = Cursors.WaitCursor
-			If Not Me.EnsureConnection() Then
+			If Not Await Me.EnsureConnection() Then
 				Me.Cursor = Cursors.Default
 				Return False
 			End If
@@ -459,7 +461,7 @@ Namespace kCura.EDDS.WinForm
 			ImageLoadFile.FullTextEncoding = _encodingPicker.SelectedEncoding
 			ImageLoadFile.Overwrite = Me.GetOverwrite.ToString
 			ImageLoadFile.DestinationFolderID = _imageLoadFile.DestinationFolderID
-			ImageLoadFile.ControlKeyField = _application.GetCaseIdentifierFields(Relativity.ArtifactType.Document)(0)
+			ImageLoadFile.ControlKeyField = (Await _application.GetCaseIdentifierFields(Relativity.ArtifactType.Document))(0)
 			ImageLoadFile.AutoNumberImages = _autoNumberingOn.Checked
 			If ImageLoadFile.ForProduction Then
 				ImageLoadFile.ProductionArtifactID = CType(_productionDropdown.SelectedValue, Int32)
@@ -474,7 +476,7 @@ Namespace kCura.EDDS.WinForm
 				End If
 				Me.ImageLoadFile.ReplaceFullText = _replaceFullText.Checked
 			End If
-			If Me.ImageLoadFile.IdentityFieldId = -1 Then Me.ImageLoadFile.IdentityFieldId = _application.CurrentFields(Relativity.ArtifactType.Document).IdentifierFields(0).FieldID
+			If Me.ImageLoadFile.IdentityFieldId = -1 Then Me.ImageLoadFile.IdentityFieldId = (Await _application.CurrentFields(Relativity.ArtifactType.Document)).IdentifierFields(0).FieldID
 			Me.ImageLoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
 			Me.ImageLoadFile.SendEmailOnLoadCompletion = _importMenuSendEmailNotificationItem.Checked
 			ImageLoadFile.StartLineNumber = CType(_startLineNumber.Value, Int64)
@@ -508,13 +510,13 @@ Namespace kCura.EDDS.WinForm
 			End Select
 		End Function
 
-		Private Sub ImageLoad_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+		Private Async Sub ImageLoad_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			Me.Cursor = Cursors.WaitCursor
-			If Not Me.EnsureConnection() Then
+			If Not Await Me.EnsureConnection() Then
 				Me.Cursor = Cursors.Default
 				Exit Sub
 			End If
-			Dim dt As System.Data.DataTable = New kCura.WinEDDS.Service.FieldQuery(_application.Credential, _application.CookieContainer).RetrievePotentialBeginBatesFields(ImageLoadFile.CaseInfo.ArtifactID).Tables(0)
+			Dim dt As System.Data.DataTable = New kCura.WinEDDS.Service.FieldQuery(Await _application.GetCredentialsAsync(), _application.CookieContainer).RetrievePotentialBeginBatesFields(ImageLoadFile.CaseInfo.ArtifactID).Tables(0)
 			For Each identifierRow As System.Data.DataRow In dt.Rows
 				If CType(identifierRow("FieldCategoryID"), Relativity.FieldCategory) = Relativity.FieldCategory.Identifier Then
 					_identifierFieldArtifactID = CType(identifierRow("ArtifactID"), Int32)
@@ -541,7 +543,7 @@ Namespace kCura.EDDS.WinForm
 				_overwriteDropdown.SelectedIndex = 1
 				Me.Text = "Relativity Desktop Client | Import Production Load File"
 			End If
-			If Not _application.SendLoadNotificationEmailEnabled Then
+			If Not Await _application.GetSendLoadNotificationEmailEnabledAsync Then
 				_importMenuSendEmailNotificationItem.Visible = False
 				_MenuItem3.Visible = False
 			Else
@@ -551,10 +553,10 @@ Namespace kCura.EDDS.WinForm
 			Me.Cursor = Cursors.Default
 		End Sub
 
-		Private Sub ImportFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportFileMenu.Click
+		Private Async Sub ImportFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportFileMenu.Click
 			Me.Cursor = Cursors.WaitCursor
-			If PopulateImageLoadFile(True) Then
-				If _application.ReadyToLoad(Me.ImageLoadFile, False) Then _application.ImportImageFile(_imageLoadFile)
+			If Await PopulateImageLoadFile(True) Then
+				If Await _application.ReadyToLoad(Me.ImageLoadFile, False) Then Await _application.ImportImageFile(_imageLoadFile)
 			End If
 			Me.Cursor = Cursors.Default
 		End Sub
@@ -565,9 +567,9 @@ Namespace kCura.EDDS.WinForm
 			Me.Cursor = Cursors.Default
 		End Sub
 
-		Private Sub _openFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _openFileDialog.FileOk
+		Private Async Sub _openFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _openFileDialog.FileOk
 			Me.Cursor = Cursors.WaitCursor
-			If Not Me.EnsureConnection() Then
+			If Not Await Me.EnsureConnection() Then
 				Me.Cursor = Cursors.Default
 				Exit Sub
 			End If
@@ -586,18 +588,18 @@ Namespace kCura.EDDS.WinForm
 			End If
 		End Sub
 
-		Private Sub _importMenuSaveSettingsItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuSaveSettingsItem.Click
-			If Not Me.EnsureConnection() Then
+		Private Async Sub _importMenuSaveSettingsItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuSaveSettingsItem.Click
+			If Not Await Me.EnsureConnection() Then
 				Me.Cursor = Cursors.Default
 				Exit Sub
 			End If
-			PopulateImageLoadFile(False)
+			Await PopulateImageLoadFile(False)
 			_saveImageLoadFileDialog.ShowDialog()
 		End Sub
 
-		Private Sub _saveImageLoadFileDialog_FileOk(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _saveImageLoadFileDialog.FileOk
+		Private Async Sub _saveImageLoadFileDialog_FileOk(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _saveImageLoadFileDialog.FileOk
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			If Not Me.EnsureConnection() Then
+			If Not Await Me.EnsureConnection() Then
 				Me.Cursor = Cursors.Default
 				Exit Sub
 			End If
@@ -612,16 +614,16 @@ Namespace kCura.EDDS.WinForm
 			_loadImageLoadFileDialog.ShowDialog()
 		End Sub
 
-		Private Sub _loadImageLoadFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _loadImageLoadFileDialog.FileOk
+		Private Async Sub _loadImageLoadFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _loadImageLoadFileDialog.FileOk
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			If Not Me.EnsureConnection() Then
+			If Not Await Me.EnsureConnection() Then
 				Me.Cursor = Cursors.Default
 				Exit Sub
 			End If
 			If System.IO.File.Exists(_loadImageLoadFileDialog.FileName) Then
 				Dim currentFolder As Int32 = Me.ImageLoadFile.DestinationFolderID
 				Dim copyFilesToRepository As Boolean = Me.ImageLoadFile.CopyFilesToDocumentRepository
-				Me.ImageLoadFile = _application.ReadImageLoadFile(_loadImageLoadFileDialog.FileName)
+				Me.ImageLoadFile = Await _application.ReadImageLoadFile(_loadImageLoadFileDialog.FileName)
 				Me.ImageLoadFile.CopyFilesToDocumentRepository = copyFilesToRepository
 				_encodingPicker.SelectedEncoding = Me.ImageLoadFile.FullTextEncoding
 				_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite.ToString)
@@ -636,18 +638,18 @@ Namespace kCura.EDDS.WinForm
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
-		Private Function EnsureConnection() As Boolean
+		Private Async Function EnsureConnection() As Task(Of Boolean)
 			Dim retval As Boolean = False
 			If Not _imageLoadFile Is Nothing AndAlso Not _imageLoadFile.CaseInfo Is Nothing Then
-				retval = _application.EnsureConnection()
+				retval = Await _application.EnsureConnection()
 			Else
 				retval = True
 			End If
 			Return retval
 		End Function
 
-		Private Sub _importMenuCheckErrorsItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _importMenuCheckErrorsItem.Click
-			If Me.PopulateImageLoadFile(True) Then If _application.ReadyToLoad(Me.ImageLoadFile, True) Then _application.PreviewImageFile(Me.ImageLoadFile)
+		Private Async Sub _importMenuCheckErrorsItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _importMenuCheckErrorsItem.Click
+			If Await Me.PopulateImageLoadFile(True) Then If Await _application.ReadyToLoad(Me.ImageLoadFile, True) Then Await _application.PreviewImageFile(Me.ImageLoadFile)
 		End Sub
 
 		Private Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click

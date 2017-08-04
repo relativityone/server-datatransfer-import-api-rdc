@@ -1,4 +1,10 @@
 
+Imports System.Net
+Imports System.Threading.Tasks
+Imports kCura.WinEDDS.Credentials
+Imports kCura.WinEDDS.Exceptions
+Imports Relativity.OAuth2Client.Exceptions
+
 Namespace kCura.EDDS.WinForm
 	Public Class MainForm
 		Inherits System.Windows.Forms.Form
@@ -340,28 +346,37 @@ End Sub
 
 #End Region
 
-		Private _loginForm As Form = Nothing
 		'' Private WithEvents _optionsForm As OptionsForm = Nothing
 		Private firstTime As Boolean = True
 		Friend WithEvents _application As kCura.EDDS.WinForm.Application
 		Public Const MAX_LENGTH_OF_OBJECT_NAME_BEFORE_TRUNCATION As Int32 = 25
 
-		Private Sub OpenRepositoryMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OpenRepositoryMenu.Click
-			If _application.LastCredentialCheckResult = Application.CredentialCheckResult.AccessDisabled Then
-				'The user could have changed the server, so we need to check default credentials again.
-				Dim defaultCredentialResult As Application.CredentialCheckResult = _application.AttemptWindowsAuthentication()
-				If defaultCredentialResult = Application.CredentialCheckResult.AccessDisabled Then
-					MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)
-				ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
-					_application.NewLogin()
+		Private Async Sub OpenRepositoryMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OpenRepositoryMenu.Click
+			try
+				If _application.LastCredentialCheckResult = Application.CredentialCheckResult.AccessDisabled Then
+					'The user could have changed the server, so we need to check default credentials again.
+					Dim defaultCredentialResult As Application.CredentialCheckResult = _application.AttemptWindowsAuthentication()
+					If defaultCredentialResult = Application.CredentialCheckResult.AccessDisabled Then
+						MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)
+					ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
+					
+						_application.NewLogin()
+					Else
+						_application.OpenCaseSelector = False
+						Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
+						_application.LogOn()
+						Await _application.OpenCase()
+						kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
+					End If
 				Else
-                    _application.LogOn()
-                    _application.OpenCase()
-                    kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
-                End If
-			Else
-                _application.OpenCase()
-            End If
+					_application.OpenCaseSelector = False
+					Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
+					Await _application.OpenCase()
+				End If
+			Catch ex As LoginCanceledException
+				'user close the login window, do nothing
+			End Try
+			
 		End Sub
 
 		Private Sub ExitMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ExitMenu.Click
@@ -369,24 +384,30 @@ End Sub
 		End Sub
 
 		Private Sub _application_OnEvent(ByVal appEvent As AppEvent) Handles _application.OnEvent
+			ME.Invoke(Async Sub() Await HandleEventOnUiThread(appEvent))
+		End Sub
+
+		Private Async Function HandleEventOnUiThread(appEvent As AppEvent) As Task
+
 			Select Case appEvent.EventType
 				Case appEvent.AppEventType.LoadCase
 					_fileMenuRefresh.Enabled = True
-					UpdateStatus("Workspace Loaded - File Transfer Mode: " & _application.GetConnectionStatus)
-					PopulateObjectTypeDropDown()
+					UpdateStatus("Workspace Loaded - File Transfer Mode: " & Await _application.GetConnectionStatus)
+					Await PopulateObjectTypeDropDown()
 					_optionsMenuCheckConnectivityItem.Enabled = True
 					ImportMenu.Enabled = _application.UserHasImportPermission
 					ExportMenu.Enabled = _application.UserHasExportPermission
 					ImportMenu.Visible = _application.UserHasImportPermission
-                    ExportMenu.Visible = _application.UserHasExportPermission
-                Case AppEvent.AppEventType.LogOnForm
-                    'Enable help once logged into Relativity via RDC login form
-                    Me._helpMenuItem.Enabled = True
-                Case appEvent.AppEventType.LogOn
-                    UpdateUserName(_application.LoggedInUser)
-                    'Enable help once logged into Relativity via Windows Authentication
-                    Me._helpMenuItem.Enabled = True
-                Case appEvent.AppEventType.ExitApplication
+					ExportMenu.Visible = _application.UserHasExportPermission
+					_application.OpenCaseSelector = false
+				Case AppEvent.AppEventType.LogOnForm
+					'Enable help once logged into Relativity via RDC login form
+					Me._helpMenuItem.Enabled = True
+				Case appEvent.AppEventType.LogOn
+					UpdateUserName(_application.LoggedInUser)
+					'Enable help once logged into Relativity via Windows Authentication
+					Me._helpMenuItem.Enabled = True
+				Case appEvent.AppEventType.ExitApplication
 					Me.Close()
 				Case appEvent.AppEventType.WorkspaceFolderSelected
 					'disable import and export menus if no permission
@@ -394,9 +415,11 @@ End Sub
 					ExportMenu.Enabled = _application.UserHasExportPermission
 					ImportMenu.Visible = _application.UserHasImportPermission
 					ExportMenu.Visible = _application.UserHasExportPermission
-                    'UpdateStatus("Case Folder Load: " + _application.SelectedCaseInfo.RootFolderID.ToString)
-            End Select
-		End Sub
+					'UpdateStatus("Case Folder Load: " + _application.SelectedCaseInfo.RootFolderID.ToString)
+				Case appEvent.AppEventType.LogOnRequested
+					Await _application.AttemptLogin(me)
+			End Select
+		End Function
 
 		Private Sub UpdateStatus(ByVal text As String)
 			AppStatusPanel.Text = text
@@ -406,14 +429,10 @@ End Sub
 			LoggedInUserPanel.Text = text
 		End Sub
 
-		Private Sub MainForm_Activated(sender As Object, e As EventArgs) Handles Me.Activated
-			If Not _loginForm Is Nothing AndAlso firstTime Then
-				_loginForm.Focus()
-			End If
-			firstTime = False
-		End Sub
+		Private Async Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 
-		Private Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
+			ServicePointManager.DefaultConnectionLimit = Environment.ProcessorCount * 12
+
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			_application.TemporaryForceFolderPreview = kCura.WinEDDS.Config.ForceFolderPreview
             If kCura.WinEDDS.Config.WebServiceURL = String.Empty Then
@@ -421,59 +440,65 @@ End Sub
             End If
 
             '' Can't do this in Application.vb without refactoring AttemptLogin (which needs this form as a parameter)
-            CheckCertificate()
+            Await CheckCertificate()
 
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
-		Public Sub CheckCertificate()
-			If (_application.CertificateTrusted()) Then
-                _loginForm = _application.AttemptLogin(Me)
-            Else
-                _application.CertificateCheckPrompt()
-            End If
-		End Sub
+		Public Async Function CheckCertificate() As Task
+			try
+				If (_application.CertificateTrusted()) Then
+					_application.SetImplicitCredentialProvider()
+					Await _application.AttemptLogin(Me)
+				Else
+					_application.CertificateCheckPrompt()
+				End If
+			Catch ex As WebException
+				_application.HandleWebException(ex)
+			End Try
+			
+		End Function
 
-        Private Sub WebServiceURLChanged() Handles _application.ReCheckCertificate
+        Private Async Sub WebServiceURLChanged() Handles _application.ReCheckCertificate
             'Disable help since user will be asked to login again
             Me._helpMenuItem.Enabled = False
-            CheckCertificate()
+            Await CheckCertificate()
         End Sub
 
-        Private Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
+        Private Async Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
 			_application.UpdateForceFolderPreview()
 			_application.UpdateWebServiceURL(False)
-			_application.Logout()
+			Await _application.Logout()
 			kCura.Windows.Forms.EnhancedMenuProvider.Unhook()
 		End Sub
 
-		Private Sub ToolsImportImageFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportImageFileMenu.Click
+		Private Async Sub ToolsImportImageFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportImageFileMenu.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_application.NewImageFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
+			Await _application.NewImageFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
-		Private Sub ToolsImportProductionFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportProductionFileMenu.Click
+		Private Async Sub ToolsImportProductionFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportProductionFileMenu.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_application.NewProductionFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
+			Await _application.NewProductionFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
-		Private Sub ToolsImportLoadFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportLoadFileMenu.Click
+		Private Async Sub ToolsImportLoadFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportLoadFileMenu.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_application.NewLoadFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
+			Await _application.NewLoadFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
-		Private Sub ToolsExportProductionMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsExportProductionMenu.Click
+		Private Async Sub ToolsExportProductionMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsExportProductionMenu.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_application.NewProductionExport(_application.SelectedCaseInfo)
+			Await _application.NewProductionExport(_application.SelectedCaseInfo)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
-		Private Sub ToolsExportSearchMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsExportSearchMenu.Click
+		Private Async Sub ToolsExportSearchMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsExportSearchMenu.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_application.NewSearchExport(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo, kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
+			Await _application.NewSearchExport(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo, kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
@@ -483,9 +508,9 @@ End Sub
 			Me.Cursor = System.Windows.Forms.Cursors.Default
         End Sub
 
-		Private Sub _exportObjectsMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportObjectsMenuItem.Click
+		Private Async Sub _exportObjectsMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportObjectsMenuItem.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_application.NewSearchExport(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo, kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
+			Await _application.NewSearchExport(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo, kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
@@ -495,11 +520,11 @@ End Sub
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
-		Private Sub _fileMenuRefresh_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileMenuRefresh.Click
+		Private Async Sub _fileMenuRefresh_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileMenuRefresh.Click
 			_application.UpdateWebServiceURL(False)
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_application.RefreshCaseFolders()
-			_application.RefreshSelectedCaseInfo()
+			Await _application.RefreshCaseFolders()
+			Await _application.RefreshSelectedCaseInfo()
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
@@ -507,24 +532,24 @@ End Sub
 			_application.DoAbout()
 		End Sub
 
-		Private Sub _helpMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _helpMenuItem.Click
-			_application.DoHelp()
+		Private Async Sub _helpMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _helpMenuItem.Click
+			Await _application.DoHelp()
 		End Sub
 
 		Private Sub MainForm_Closed(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Closed
 			System.Environment.Exit(0)
 		End Sub
 
-		Private Sub _exportFoldersMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportFoldersMenuItem.Click
-			_application.NewSearchExport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo, ExportFile.ExportType.ParentSearch)
+		Private Async Sub _exportFoldersMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportFoldersMenuItem.Click
+			Await _application.NewSearchExport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo, ExportFile.ExportType.ParentSearch)
 		End Sub
 
-		Private Sub _exportFoldersAndSubfoldersMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportFoldersAndSubfoldersMenuItem.Click
-			_application.NewSearchExport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo, ExportFile.ExportType.AncestorSearch)
+		Private Async Sub _exportFoldersAndSubfoldersMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportFoldersAndSubfoldersMenuItem.Click
+			Await _application.NewSearchExport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo, ExportFile.ExportType.AncestorSearch)
 		End Sub
 
-		Private Sub PopulateObjectTypeDropDown()
-			Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(_application.Credential, _application.CookieContainer)
+		Private Async Function PopulateObjectTypeDropDown() As Task
+			Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(Await _application.GetCredentialsAsync(), _application.CookieContainer)
 			Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
 			Dim selectedObjectTypeID As Int32 = Relativity.ArtifactType.Document
 			If _objectTypeDropDown.Items.Count > 0 Then
@@ -538,7 +563,7 @@ End Sub
 					Me._objectTypeDropDown.SelectedItem = currentObjectType
 				End If
 			Next
-		End Sub
+		End Function
 
 		Private Function TruncateTextWithEllipses(ByVal text As String, ByVal maxLength As Integer) As String
 			If (text.Length > maxLength) Then
@@ -580,8 +605,8 @@ End Sub
 			_application.ArtifactTypeID = selectedItemValue
 		End Sub
 
-		Private Sub _optionsMenuCheckConnectivityItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _optionsMenuCheckConnectivityItem.Click
-			_application.QueryConnectivity()
+		Private Async Sub _optionsMenuCheckConnectivityItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _optionsMenuCheckConnectivityItem.Click
+			Await _application.QueryConnectivity()
 		End Sub
 
         

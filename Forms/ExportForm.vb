@@ -1,5 +1,6 @@
 Imports System.Linq
 Imports System.Collections.Generic
+Imports System.Threading.Tasks
 Imports kCura.Windows.Forms
 
 Public Class ExportForm
@@ -1264,27 +1265,25 @@ Public Class ExportForm
 		End Set
 	End Property
 
-	Public ReadOnly Property ObjectTypeName() As String
-		Get
+	Public Async Function GetObjectTypeName() As Task(Of String)
 			If _objectTypeName = "" Then
-				For Each row As System.Data.DataRow In New kCura.WinEDDS.Service.ObjectTypeManager(_application.Credential, _application.CookieContainer).RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
+				For Each row As System.Data.DataRow In New kCura.WinEDDS.Service.ObjectTypeManager(Await _application.GetCredentialsAsync(), _application.CookieContainer).RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
 					If CType(row("DescriptorArtifactTypeID"), Int32) = Me.ExportFile.ArtifactTypeID Then
 						_objectTypeName = row("Name").ToString
 					End If
 				Next
 			End If
 			Return _objectTypeName
-		End Get
-	End Property
+	End Function
 
 	Private Sub AppendErrorMessage(ByVal msg As System.Text.StringBuilder, ByVal errorText As String)
 		msg.Append(" - ").Append(errorText).Append(vbNewLine)
 	End Sub
 
-	Private Sub SaveExportSettings_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles SaveExportSettings.Click
+	Private Async Sub SaveExportSettings_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles SaveExportSettings.Click
 		Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 		Try
-			If PopulateExportFile(Me, False) Then
+			If Await PopulateExportFile(Me, False) Then
 				Select Case _saveExportSettingsDialog.ShowDialog()
 					Case DialogResult.OK
 						_application.SaveExportFile(_exportFile, _saveExportSettingsDialog.FileName)
@@ -1361,12 +1360,12 @@ Public Class ExportForm
 		Return retval
 	End Function
 
-	Public Function PopulateExportFile(ByVal abstractExportForm As ExportForm, ByVal validateForm As Boolean) As Boolean
-		Dim d As DocumentFieldCollection = _application.CurrentFields(_exportFile.ArtifactTypeID, True)
+	Public Async Function PopulateExportFile(ByVal abstractExportForm As ExportForm, ByVal validateForm As Boolean) As Task(Of Boolean)
+		Dim d As DocumentFieldCollection = Await _application.CurrentFields(_exportFile.ArtifactTypeID, True)
 		Dim retval As Boolean = True
-		_exportFile.ObjectTypeName = _application.GetObjectTypeName(_exportFile.ArtifactTypeID)
+		_exportFile.ObjectTypeName = Await _application.GetObjectTypeName(_exportFile.ArtifactTypeID)
 		If validateForm AndAlso Not Me.IsValid(abstractExportForm) Then Return False
-		If Not _application.IsConnected() Then Return False
+		If Not Await _application.IsConnected() Then Return False
 		_exportFile.FolderPath = _folderPath.Text
 		Select Case Me.ExportFile.TypeOfExport
 			Case ExportFile.ExportType.AncestorSearch
@@ -1374,7 +1373,7 @@ Public Class ExportForm
 				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
 			Case ExportFile.ExportType.ArtifactSearch
 				_exportFile.ArtifactID = CType(_filters.SelectedValue, Int32)
-				If Not _application.IsAssociatedSearchProviderAccessible(_exportFile.CaseArtifactID, _exportFile.ArtifactID) Then
+				If Not Await _application.IsAssociatedSearchProviderAccessible(_exportFile.CaseArtifactID, _exportFile.ArtifactID) Then
 					Me.Cursor = System.Windows.Forms.Cursors.Default
 					Return Nothing
 				End If
@@ -1448,7 +1447,7 @@ Public Class ExportForm
 	End Function
 
 
-	Private Sub LoadExportSettings_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles LoadExportSettings.Click
+	Private Async Sub LoadExportSettings_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles LoadExportSettings.Click
 		If _loadExportSettingsDialog.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
 			Dim settings As String = kCura.Utility.File.Instance.ReadFileAsString(_loadExportSettingsDialog.FileName)
 			Dim newFile As ExportFile = New kCura.WinEDDS.ExportFileSerializer().DeserializeExportFile(_exportFile, settings)
@@ -1461,7 +1460,7 @@ Public Class ExportForm
 					If exportFilterSelectionForm.SelectedItemArtifactIDs IsNot Nothing Then
 						_filters.SelectedValue = exportFilterSelectionForm.SelectedItemArtifactIDs(0)
 					End If
-					LoadExportFile(newFile)
+					Await LoadExportFile(newFile)
 					_exportFile = newFile
 				End If
 
@@ -1470,7 +1469,7 @@ Public Class ExportForm
 		End If
 	End Sub
 
-	Public Sub LoadExportFile(ByVal ef As kCura.WinEDDS.ExportFile)
+	Public Async Function LoadExportFile(ByVal ef As kCura.WinEDDS.ExportFile) As Task
 		_isLoadingExport = True
 		If _exportNativeFiles.Checked <> ef.ExportNative Then _exportNativeFiles.Checked = ef.ExportNative
 		If _exportImages.Checked <> ef.ExportImages Then _exportImages.Checked = ef.ExportImages
@@ -1617,7 +1616,7 @@ Public Class ExportForm
 		End If
 
 		If ef.ImagePrecedence IsNot Nothing AndAlso ef.ImagePrecedence.Length > 0 Then
-			Dim validPrecedenceTable As System.Data.DataTable = _application.GetProductionPrecendenceList(ef.CaseInfo)
+			Dim validPrecedenceTable As System.Data.DataTable = Await _application.GetProductionPrecendenceList(ef.CaseInfo)
 			Dim validPrecedencePairs As New System.Collections.Generic.List(Of kCura.WinEDDS.Pair)()
 			For i As Int32 = 0 To validPrecedenceTable.Rows.Count - 1
 				validPrecedencePairs.Add(New kCura.WinEDDS.Pair(validPrecedenceTable.Rows.Item(i)("Value").ToString, validPrecedenceTable.Rows.Item(i)("Display").ToString))
@@ -1641,12 +1640,12 @@ Public Class ExportForm
 		_isLoadingExport = False
 
 
-	End Sub
+	End Function
 
-	Private Sub RunMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunMenu.Click
+	Private Async Sub RunMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunMenu.Click
 		Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 		Try
-			If Me.PopulateExportFile(Me, True) Then _application.StartSearch(Me.ExportFile)
+			If Await Me.PopulateExportFile(Me, True) Then Await _application.StartSearch(Me.ExportFile)
 		Catch
 			Throw
 		Finally
@@ -1786,7 +1785,7 @@ Public Class ExportForm
 						Me.Text = "Relativity Desktop Client | Export Folder and Subfolders"
 					End If
 				Else
-					Me.Text = String.Format("Relativity Desktop Client | Export {0} Objects", Me.ObjectTypeName)
+					Me.Text = String.Format("Relativity Desktop Client | Export {0} Objects", Me.GetObjectTypeName)
 				End If
 			Case ExportFile.ExportType.Production
 				LabelNamedAfter.Visible = True
@@ -1934,8 +1933,8 @@ Public Class ExportForm
 		End Select
 	End Sub
 
-	Private Sub _pickPrecedenceButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _pickPrecedenceButton.Click
-		Dim dt As System.Data.DataTable = _application.GetProductionPrecendenceList(ExportFile.CaseInfo)
+	Private Async Sub _pickPrecedenceButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _pickPrecedenceButton.Click
+		Dim dt As System.Data.DataTable = Await _application.GetProductionPrecendenceList(ExportFile.CaseInfo)
 		If dt Is Nothing Then Exit Sub
 		_precedenceForm = New kCura.EDDS.WinForm.ProductionPrecedenceForm
 		_precedenceForm.ExportFile = Me.ExportFile
@@ -2062,18 +2061,18 @@ Public Class ExportForm
 		Return (From field In unfilteredList Where field.FieldType = Relativity.FieldTypeHelper.FieldType.Text OrElse field.FieldType = Relativity.FieldTypeHelper.FieldType.OffTableText Select field).ToList()
 	End Function
 
-	Private Sub RefreshMenu_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles RefreshMenu.Click
-		Me.RefreshRelativityInformation()
+	Private Async Sub RefreshMenu_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles RefreshMenu.Click
+		Await Me.RefreshRelativityInformation()
 	End Sub
 
-	Private Sub RefreshRelativityInformation()
+	Private Async Function RefreshRelativityInformation() As Task
 		Dim selectedColumns As New System.Collections.ArrayList
 		For Each field As kCura.WinEDDS.ViewFieldInfo In _columnSelector.RightListBoxItems
 			selectedColumns.Add(New kCura.WinEDDS.ViewFieldInfo(field))
 		Next
 		Dim selectedDataSource As Int32 = CInt(_filters.SelectedValue)
 		_dataSourceIsSet = False
-		Dim newExportFile As kCura.WinEDDS.ExportFile = _application.GetNewExportFileSettingsObject(_exportFile.ArtifactID, _exportFile.CaseInfo, _exportFile.TypeOfExport, _exportFile.ArtifactTypeID)
+		Dim newExportFile As kCura.WinEDDS.ExportFile = Await _application.GetNewExportFileSettingsObject(_exportFile.ArtifactID, _exportFile.CaseInfo, _exportFile.TypeOfExport, _exportFile.ArtifactTypeID)
 		If newExportFile.DataTable.Rows.Count = 0 Then
 			Dim s As New System.Text.StringBuilder
 			s.Append("There are no exportable ")
@@ -2088,7 +2087,7 @@ Public Class ExportForm
 			s.Append("in this case")
 			MsgBox(s.ToString, MsgBoxStyle.Critical, "Relativity Desktop Client")
 			Me.Close()
-			Exit Sub
+			Return
 		End If
 		_exportFile.DataTable = newExportFile.DataTable
 		_exportFile.AllExportableFields = newExportFile.AllExportableFields
@@ -2138,7 +2137,7 @@ Public Class ExportForm
 				_columnSelector.RightListBoxItems.Add(item)
 			End If
 		Next
-	End Sub
+	End Function
 
 	Private ReadOnly Property ExportTypeStringName() As String
 		Get
