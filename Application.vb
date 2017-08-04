@@ -820,7 +820,16 @@ Namespace kCura.EDDS.WinForm
             rdcContext.Credential = Me.Credential
             rdcContext.WorkspaceID = Me.SelectedCaseInfo.ArtifactID
             rdcContext.WebServiceURL = kCura.WinEDDS.Config.WebServiceURL 
-            Dim frm As FileTransferMain = New FileTransferMain(rdcContext)
+
+            If Not frm Is Nothing Then
+                frm.WindowState = FormWindowState.Normal
+                frm.BringToFront()
+            Else 
+                frm = New FileTransferMain(rdcContext)
+                AddHandler frm.Closed, AddressOf OnFileTransferMainClosed
+            End If
+            
+                            
 			Try
 				frm.Show()
 			Catch ex As System.Exception
@@ -831,6 +840,10 @@ Namespace kCura.EDDS.WinForm
 					Throw
 				End If
 			End Try
+		End Sub
+
+		Private Sub OnFileTransferMainClosed(sender As Object, e As EventArgs)
+		    frm = Nothing
 		End Sub
 
 		Public Function GetListOfProductionsForCase(ByVal caseInfo As Relativity.CaseInfo) As System.Data.DataTable
@@ -1341,6 +1354,8 @@ Namespace kCura.EDDS.WinForm
 		End Enum
 
 		Private _lastCredentialCheckResult As CredentialCheckResult = CredentialCheckResult.NotSet
+		Private frm As FileTransferMain
+
 		Public ReadOnly Property LastCredentialCheckResult As CredentialCheckResult
 			Get
 				Return _lastCredentialCheckResult
