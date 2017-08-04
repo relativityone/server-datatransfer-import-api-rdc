@@ -16,8 +16,12 @@ Namespace kCura.WinEDDS.Service
 			dim result As System.Net.NetworkCredential
 
 			Try
-				dim updatedWebApiCreds As System.Net.NetworkCredential = RelativityWebApiCredentialsProvider.Instance().GetCredentials()
-				result = updatedWebApiCreds
+				If(Not RelativityWebApiCredentialsProvider.Instance().CredentialsSet())
+					result = DirectCast(defaultCredentials, System.Net.NetworkCredential)
+				Else 
+					dim updatedWebApiCreds As System.Net.NetworkCredential = RelativityWebApiCredentialsProvider.Instance().GetCredentials()
+					result = updatedWebApiCreds
+				End If
 			Catch ex As Exception
 				result = DirectCast(defaultCredentials, System.Net.NetworkCredential)
 			End Try
