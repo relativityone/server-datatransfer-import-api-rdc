@@ -50,7 +50,7 @@ namespace kCura.WinEDDS.TApi
         /// <inheritdoc />
         protected override void OnTransferStatisticsEvent(object sender, TransferStatisticsEventArgs e)
         {
-            var key = e.Request.TransferId.Value;
+            var key = e.Request.JobId.Value;
             if (!this.totalStatistics.ContainsKey(key))
             {
                 this.totalStatistics.TryAdd(key, e);
@@ -81,7 +81,7 @@ namespace kCura.WinEDDS.TApi
             var jobMessage = string.Format(
                 CultureInfo.CurrentCulture,
                 "TAPI job {0} statistics - Files: {1}/{2} - Progress: {3:0.00}% - Rate: {4:0.00}/sec",
-                e.Request.TransferId,
+                e.Request.JobId,
                 e.Statistics.TotalTransferredFiles,
                 e.Statistics.TotalFiles,
                 e.Statistics.Progress,

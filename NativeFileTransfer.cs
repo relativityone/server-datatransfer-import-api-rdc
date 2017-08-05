@@ -77,9 +77,14 @@ namespace kCura.WinEDDS.TApi
         private Guid? clientRequestId;
 
         /// <summary>
-        /// The transfer unique identifier associated with the current job.
+        /// The job unique identifier associated with the current job.
         /// </summary>
-        private Guid? currentTransferId;
+        private Guid? currentJobId;
+
+        /// <summary>
+        /// The current job number. This is tagged to the request to provide a non-zero line number.
+        /// </summary>
+        private int currentJobNumber;
 
         /// <summary>
         /// The current job request.
@@ -164,6 +169,7 @@ namespace kCura.WinEDDS.TApi
             this.cancellationToken = token;
             this.transferLog = log;
             this.pathManager = new FileSharePathManager(parameters.MaxFilesPerFolder);
+            this.currentJobNumber = 0;
 
             // The context is optional and must be supplied on the transfer request (see below).
             this.context = new TransferContext { StatisticsRateSeconds = 1.0 };
@@ -546,12 +552,14 @@ namespace kCura.WinEDDS.TApi
                 this.clientRequestId = Guid.NewGuid();
             }
 
-            this.currentTransferId = Guid.NewGuid();
+            this.currentJobNumber++;
+            this.currentJobId = Guid.NewGuid();
             this.jobRequest = this.currentDirection == TransferDirection.Upload
                 ? TransferRequest.ForUploadJob(this.TargetPath, this.context)
                 : TransferRequest.ForDownloadJob(this.TargetPath, this.context);
             this.jobRequest.ClientRequestId = this.clientRequestId;
-            this.jobRequest.TransferId = this.currentTransferId;
+            this.jobRequest.JobId = this.currentJobId;
+            this.jobRequest.Tag = this.currentJobNumber;
 
             // Note: avoid exponential backoff since that number will be excessive given the default max retry period.
             this.jobRequest.RetryStrategy =
@@ -903,7 +911,7 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         private void DestroyTransferJob()
         {
-            this.currentTransferId = null;
+            this.currentJobId = null;
             if (this.transferJob == null)
             {
                 return;
@@ -965,9 +973,9 @@ namespace kCura.WinEDDS.TApi
         private void LogCancelRequest()
         {
             this.transferLog.LogInformation(
-                "The file transfer has been cancelled. ClientId={ClientId}, TransferId={TransferId} ",
+                "The file transfer has been cancelled. ClientId={ClientId}, JobId={JobId} ",
                 this.clientRequestId,
-                this.currentTransferId);
+                this.currentJobId);
         }
     }
 }
