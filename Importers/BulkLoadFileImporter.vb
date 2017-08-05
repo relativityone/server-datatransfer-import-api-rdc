@@ -63,6 +63,7 @@ Namespace kCura.WinEDDS
 		Protected _outputObjectFilePath As String = System.IO.Path.GetTempFileName
 		Private _filePath As String
 		Private _batchCounter As Int32 = 0
+		Private _jobCounter As Int32 = 0
 		Private _errorMessageFileLocation As String = String.Empty
 		Private _errorLinesFileLocation As String = String.Empty
 
@@ -564,6 +565,7 @@ Namespace kCura.WinEDDS
 				If _firstLineContainsColumnNames Then _offset = -1
 				Dim isError As Boolean = False
 				_statistics.BatchSize = Me.ImportBatchSize
+				_jobCounter = 1
 				While ShouldImport AndAlso _artifactReader.HasMoreRecords
 					Try
 						If Me.CurrentLineNumber < _startLineNumber Then
@@ -756,7 +758,7 @@ Namespace kCura.WinEDDS
 					Dim copyFileToRepository As Action =
 							Sub()
 								If _copyFileToRepository Then
-									fileGuid = _nativeFileUploader.AddPath(filename, Guid.NewGuid().ToString(), Me.CurrentLineNumber + _offset)
+									fileGuid = _nativeFileUploader.AddPath(filename, Guid.NewGuid().ToString(), Me.CurrentLineNumber)
 									destinationVolume = _nativeFileUploader.TargetFolderName
 								Else
 									fileGuid = System.Guid.NewGuid.ToString
@@ -1053,6 +1055,7 @@ Namespace kCura.WinEDDS
 					If _nativeFileUploader.TransfersPending
 						CompletePendingTransfers()
 						PublishUploadModeEvent()
+						_jobCounter += 1
 					End If
 					PushNativeBatch(outputNativePath)
 					PublishUploadModeEvent()
@@ -1680,14 +1683,29 @@ Namespace kCura.WinEDDS
 
 #Region "Status Window"
 
+		Private Function GetLineMessage(ByVal line As String, ByVal lineNumber As Int32) As String
+			If lineNumber = kCura.WinEDDS.TApi.TapiConstants.NoLineNumber Then
+				line = line & $" [job {_jobCounter}]"
+			Else
+				line = line & $" [line {lineNumber}]"
+			End If
+			Return line
+		End Function
+
 		Private Sub WriteTapiProgressMessage(ByVal message As String, ByVal lineNumber As Int32, ByVal progressVal As Int32)
-			message = message & String.Format(" [line {0}]", lineNumber)
-			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(kCura.Windows.Process.EventType.Progress, progressVal + _offset, _recordCount, message, _currentStatisticsSnapshot))
+			message = GetLineMessage(message, lineNumber)
+			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(kCura.Windows.Process.EventType.Progress, progressVal, _recordCount, message, _currentStatisticsSnapshot))
 		End Sub
 
 		Private Sub WriteStatusLine(ByVal et As kCura.Windows.Process.EventType, ByVal line As String, ByVal lineNumber As Int32)
-			line = line & String.Format(" [line {0}]", lineNumber)
-			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(et, lineNumber + _offset, _recordCount, line, _currentStatisticsSnapshot))
+			' Avoid displaying potential negative numbers.
+			Dim recordNumber As Int32 = lineNumber
+			If recordNumber <> kCura.WinEDDS.TApi.TapiConstants.NoLineNumber Then
+				recordNumber = recordNumber + _offset
+			End If
+
+			line = GetLineMessage(line, lineNumber)
+			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(et, recordNumber, _recordCount, line, _currentStatisticsSnapshot))
 		End Sub
 
 		Protected Sub WriteStatusLine(ByVal et As kCura.Windows.Process.EventType, ByVal line As String)
@@ -1749,13 +1767,14 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub WriteEndImport(ByVal line As String)
-			' When stopped, use the process count; otherwise, the batch size is displayed to the user.
-			If ShouldImport() Then
-				WriteStatusLine(kCura.Windows.Process.EventType.End, line)
-			Else
-				' An unhandled exception can occur within progress if no paths have been transferred and the process count is zero.
-				WriteStatusLine(kCura.Windows.Process.EventType.End, line, If(_processedCount > 0, _processedCount, Me.CurrentLineNumber))
+			' The process count should always be used UNLESS the process is stopped immediately.
+			line = GetLineMessage(line, Me.CurrentLineNumber)
+			Dim totalProcessed As Int32 = Me.CurrentLineNumber
+			If _processedCount > 0 Then
+				totalProcessed = _processedCount
 			End If
+
+			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(kCura.Windows.Process.EventType.End, totalProcessed, _recordCount, line, _currentStatisticsSnapshot))
 		End Sub
 
 		Private Sub NativeFileUploaderOnTapiStatusEvent(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
@@ -1774,7 +1793,7 @@ Namespace kCura.WinEDDS
 			SyncLock _syncRoot
 				If e.Status Then
 					_processedCount += 1
-					WriteTapiProgressMessage($"Item '{e.FileName}' uploaded.", e.LineNumber, _processedCount)
+					WriteTapiProgressMessage($"End upload file. ({DateTime.op_Subtraction(e.EndTime, e.StartTime).Milliseconds}ms)", e.LineNumber, _processedCount)
 				End If
 			End SyncLock
 		End Sub
