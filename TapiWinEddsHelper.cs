@@ -9,11 +9,12 @@ namespace kCura.WinEDDS.TApi
     using System;
     using System.Net;
     using System.Text;
-    using System.Threading.Tasks;
-    
+
+    using kCura.WinEDDS.TApi.Resources;
+
     using Relativity.Transfer;
     using Relativity.Services.ServiceProxy;
-
+    
     /// <summary>
     /// Defines helper methods to provide WinEDDS compatibility functionality.
     /// </summary>
@@ -83,6 +84,36 @@ namespace kCura.WinEDDS.TApi
             }
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Gets the name of the client associated with the specified vlient identifier.
+        /// </summary>
+        /// <param name="clientId">
+        /// The client identifier.
+        /// </param>
+        /// <returns>
+        /// The client name.
+        /// </returns>
+        /// <exception cref="System.ArgumentException">
+        /// Thrown when the client doesn't exist.
+        /// </exception>
+        public static string GetClientName(Guid clientId)
+        {
+            if (clientId == Guid.Empty)
+            {
+                throw new ArgumentException("The client unique identifier must be non-empty.", nameof(clientId));
+            }
+
+            foreach (var clientMetadata in TransferClientHelper.SearchAvailableClients())
+            {
+                if (new Guid(clientMetadata.Id) == clientId)
+                {
+                    return clientMetadata.Name;
+                }
+            }
+
+            throw new ArgumentException(Strings.ClientIdNotFoundExceptionMessage);
         }
     }
 }

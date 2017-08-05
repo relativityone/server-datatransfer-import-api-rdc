@@ -166,12 +166,15 @@
     <value>Created transfer client '{0}' using a forced configuration setting strategy.</value>
   </data>
   <data name="TransferClientChangedHttpFallbackMessage" xml:space="preserve">
-    <value>Created transfer client '{0}' using a fallback strategy.</value>
+    <value>Created transfer client '{0}' using a fallback strategy due to excessive errors.</value>
   </data>
   <data name="TransferClientChangedMessage" xml:space="preserve">
     <value>Transfer client changed - {0}</value>
   </data>
   <data name="ObjectDisposedExceptionMessage" xml:space="preserve">
     <value>This opration cannot be performed because this instance has already been disposed.</value>
+  </data>
+  <data name="ClientIdNotFoundExceptionMessage" xml:space="preserve">
+    <value>The Transfer API client identifier '{0}' does not exist. Check to make sure the value was entered correctly.</value>
   </data>
 </root>

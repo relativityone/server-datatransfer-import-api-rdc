@@ -467,46 +467,61 @@ namespace kCura.WinEDDS.TApi
             var configuration =
                 new ClientConfiguration
                 {
+                    CookieContainer = this.parameters.WebCookieContainer,
                     MaxJobParallelism = this.parameters.MaxJobParallelism,
                     MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
                     MaxSingleFileRetryAttempts = this.parameters.MaxSingleFileRetryAttempts,
-                    PreCalculateJobSize = this.parameters.PreCalculateJobSize,
-                    PreserveDates = this.parameters.PreserveDates,
+                    PreCalculateJobSize = false,
+                    PreserveDates = false,
                     TimeoutSeconds = this.parameters.TimeoutSeconds,
-                    ValidateSourcePaths = this.parameters.ValidateSourcePaths
+                    ValidateSourcePaths = false
                 };
 
             try
             {
-                if (this.parameters.ForceHttpClient)
+                var clientId = Guid.Empty;
+                if (this.parameters.ForceAsperaClient)
                 {
-                    this.CreateHttpClient();
+                    clientId = new Guid(TransferClientConstants.AsperaClientId);
+                }
+                else if (this.parameters.ForceHttpClient)
+                {
+                    clientId = new Guid(TransferClientConstants.HttpClientId);
+                }
+                else if (this.parameters.ForceFileShareClient)
+                {
+                    clientId = new Guid(TransferClientConstants.FileShareClientId);
+                }
+
+                if (clientId != Guid.Empty)
+                {
+                    configuration.ClientId = clientId;
+                    configuration.ClientName = TapiWinEddsHelper.GetClientName(clientId);
+                    this.CreateClient(configuration);
                     this.RaiseClientChanged(ClientChangeReason.ForceConfig);
                 }
-                else if (this.parameters.ForceClientId == Guid.Empty)
+                else
                 {
+                    configuration.ClientId = Guid.Empty;
+                    configuration.ClientName = string.Empty;
                     this.transferClient = this.transferHost
                         .CreateClientAsync(configuration, this.cancellationToken)
                         .GetAwaiter()
                         .GetResult();
                     this.RaiseClientChanged(ClientChangeReason.BestFit);
                 }
-                else
-                {
-                    configuration.ClientId = this.parameters.ForceClientId;
-                    configuration.ClientName = this.parameters.ForceClientName;
-                    this.transferClient = this.transferHost.CreateClient(configuration);
-                    this.RaiseClientChanged(ClientChangeReason.ForceConfig);
-                }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                this.CreateHttpClient();
+                this.transferLog.LogError(e, "The transfer client construction failed.");
+                configuration.ClientId = new Guid(TransferClientConstants.HttpClientId);
+                configuration.ClientName = TapiWinEddsHelper.GetClientName(configuration.ClientId);
+                this.CreateClient(configuration);
                 this.RaiseClientChanged(ClientChangeReason.HttpFallback);
             }
             finally
             {
-                this.OptimizeClient(configuration);
+                this.OptimizeClient();
             }
         }
 
@@ -671,10 +686,7 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// Apply optimizations to the client.
         /// </summary>
-        /// <param name="configuration">
-        /// The client configuration.
-        /// </param>
-        private void OptimizeClient(ClientConfiguration configuration)
+        private void OptimizeClient()
         {
             if (this.transferClient == null)
             {
@@ -685,21 +697,18 @@ namespace kCura.WinEDDS.TApi
             switch (this.transferClient.Id.ToString().ToUpperInvariant())
             {
                 case TransferClientConstants.FileShareClientId:
-                    if (configuration.MaxJobParallelism == 1)
-                    {
-                        this.transferClient.Configuration.MaxJobParallelism = 10;
-                    }
-
                     this.transferClient.Configuration.MaxJobRetryAttempts = 1;
                     this.transferClient.Configuration.PreserveDates = false;
                     break;
 
                 case TransferClientConstants.HttpClientId:
+                    this.transferClient.Configuration.MaxJobParallelism = 1;
                     this.transferClient.Configuration.MaxJobRetryAttempts = 1;
                     this.transferClient.Configuration.PreserveDates = false;
                     break;
 
                 case TransferClientConstants.AsperaClientId:
+                    this.transferClient.Configuration.MaxJobParallelism = 1;
                     this.transferClient.Configuration.MaxJobRetryAttempts = parameters.MaxJobRetryAttempts;
                     this.transferClient.Configuration.PreserveDates = false;
                     break;
@@ -711,10 +720,20 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         private void CreateHttpClient()
         {
+            this.CreateClient(
+                new HttpClientConfiguration { CookieContainer = this.parameters.WebCookieContainer });
+        }
+
+        /// <summary>
+        /// Creates the client using only the specified configuration object.
+        /// </summary>
+        /// <param name="configuration">
+        /// The transfer client configuration.
+        /// </param>
+        private void CreateClient(ClientConfiguration configuration)
+        {
             this.transferHost.Clear();
-            this.transferClient =
-                this.transferHost.CreateClient(
-                    new HttpClientConfiguration { CookieContainer = this.parameters.WebCookieContainer });
+            this.transferClient = this.transferHost.CreateClient(configuration);
         }
 
         /// <summary>

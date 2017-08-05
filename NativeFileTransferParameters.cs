@@ -9,10 +9,7 @@
 
 namespace kCura.WinEDDS.TApi
 {
-    using System;
     using System.Net;
-
-    using Relativity.Transfer;
 
     /// <summary>
     /// Represents the generic parameters to setup a native file transfer.
@@ -20,34 +17,24 @@ namespace kCura.WinEDDS.TApi
     public class NativeFileTransferParameters
     {
         /// <summary>
-        /// The flag that signals whether to force using the HTTP client.
-        /// </summary>
-        private bool forceHttpClient;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="NativeFileTransferParameters"/> class.
         /// </summary>
         public NativeFileTransferParameters()
         {
             this.Credentials = null;
-            this.ForceClientId = Guid.Empty;
-            this.ForceClientName = null;
-
-            // Backwards compatibility.
-            this.ForceHttpClient = false;
+            this.ForceAsperaClient = false;
+            this.ForceHttpClient = false;            
+            this.ForceFileShareClient = false;
             this.IsBulkEnabled = true;
             this.MaxFilesPerFolder = 1000;
-            this.MaxJobParallelism = 5;
+            this.MaxJobParallelism = 10;
             this.MaxJobRetryAttempts = 3;
             this.MaxSingleFileRetryAttempts = 5;
-            this.PreCalculateJobSize = false;
-            this.PreserveDates = false;
 
             // FileUploader.vb defaults this parameters to true.
             this.SortIntoVolumes = true;
             this.TargetPath = null;
             this.TimeoutSeconds = 300;
-            this.ValidateSourcePaths = false;
             this.WaitTimeBetweenRetryAttempts = 30;
             this.WebServiceUrl = null;
             this.WebCookieContainer = null;
@@ -67,24 +54,12 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Gets or sets the client unique identifier that should be forced for the current transfer.
+        /// Gets or sets a value indicating whether to force using the Aspera client.
         /// </summary>
         /// <value>
-        /// The client unique identifier.
+        /// <see langword="true" /> to force using the Aspera client; otherwise, <see langword="false" />.
         /// </value>
-        public Guid ForceClientId
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the client name that should be forced for the current transfer.
-        /// </summary>
-        /// <value>
-        /// The client name.
-        /// </value>
-        public string ForceClientName
+        public bool ForceAsperaClient
         {
             get;
             set;
@@ -98,26 +73,20 @@ namespace kCura.WinEDDS.TApi
         /// </value>
         public bool ForceHttpClient
         {
-            get
-            {
-                return this.forceHttpClient;
-            }
+            get;
+            set;
+        }
 
-            set
-            {
-                if (value)
-                {
-                    this.ForceClientId = new Guid(TransferClientConstants.HttpClientId);
-                    this.ForceClientName = TransferClientConstants.HttpClientName;
-                }
-                else
-                {
-                    this.ForceClientId = Guid.Empty;
-                    this.ForceClientName = null;
-                }
-
-                this.forceHttpClient = value;
-            }
+        /// <summary>
+        /// Gets or sets a value indicating whether to force using the file share client.
+        /// </summary>
+        /// <value>
+        /// <see langword="true" /> to force using the file share client; otherwise, <see langword="false" />.
+        /// </value>
+        public bool ForceFileShareClient
+        {
+            get;
+            set;
         }
 
         /// <summary>
@@ -193,30 +162,6 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the overall job size is pre-calculated to determine accurate progress. Care should be taken when using this setting on massive datasets.
-        /// </summary>
-        /// <value>
-        /// <see langword="true"/> to enable pre-calculate the job size; otherwise, /// <see langword="false"/>.
-        /// </value>
-        public bool PreCalculateJobSize
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether file dates are preserved.
-        /// </summary>
-        /// <value>
-        /// <see langword="true" /> if file dates are preserved; otherwise, <see langword="false" />. 
-        /// </value>
-        public bool PreserveDates
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Gets or sets the timeout in seconds.
         /// </summary>
         /// <value>
@@ -250,21 +195,6 @@ namespace kCura.WinEDDS.TApi
         /// The path.
         /// </value>
         public string TargetPath
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to validate all source paths. If  <see langword="true" />, exceptions are thrown.
-        /// </summary>
-        /// <value>
-        /// <see langword="true" /> to validate all source paths; otherwise, <see langword="false" />.
-        /// </value>
-        /// <remarks>
-        /// This is always <see langword="true" /> unless transferring BCP files.
-        /// </remarks>
-        public bool ValidateSourcePaths
         {
             get;
             set;

@@ -61,6 +61,15 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Transfer API client identifier &apos;{0}&apos; does not exist. Check to make sure the value was entered correctly..
+        /// </summary>
+        internal static string ClientIdNotFoundExceptionMessage {
+            get {
+                return ResourceManager.GetString("ClientIdNotFoundExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Initializing.
         /// </summary>
         internal static string ClientInitializing {
@@ -124,7 +133,7 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Created transfer client &apos;{0}&apos; using a fallback strategy..
+        ///   Looks up a localized string similar to Created transfer client &apos;{0}&apos; using a fallback strategy due to excessive errors..
         /// </summary>
         internal static string TransferClientChangedHttpFallbackMessage {
             get {
