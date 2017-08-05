@@ -89,17 +89,7 @@ Namespace kCura.WinEDDS
             Get
                 Dim sb As New System.Text.StringBuilder
                 sb.Append("FILE TRANSFER MODES:" & vbNewLine)
-                sb.Append(" • Web • ")
-                sb.Append(vbNewLine & "The document repository is accessed through the Relativity web service API.  This is the slower of the two methods, but is globally available.")
-                sb.Append(vbNewLine & vbNewLine)
-                sb.Append(" • Direct • ")
-                sb.Append(vbNewLine)
-                sb.Append("Direct mode is significantly faster than Web mode.  To use Direct mode, you must:")
-                sb.Append(vbNewLine & vbNewLine)
-                sb.Append(" - Have Windows rights to the document repository.")
-                sb.Append(vbNewLine)
-                sb.Append(" - Be logged into the document repository’s network.")
-                sb.Append(vbNewLine & vbNewLine & "If you meet the above criteria, Relativity will automatically load in Direct mode.  If you are loading in Web mode and think you should have Direct mode, contact your Relativity Administrator to establish the correct rights.")
+                sb.Append(kCura.WinEDDS.TApi.TapiWinEddsHelper.BuildDocText())
                 sb.Append(vbNewLine & vbNewLine)
                 If includeBulk Then
                     sb.Append("SQL INSERT MODES:" & vbNewLine)
