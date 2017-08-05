@@ -217,17 +217,20 @@ namespace kCura.WinEDDS.TApi
         public Guid ClientId => this.transferClient?.Id ?? Guid.Empty;
 
         /// <summary>
-        /// Gets the current transfer client name.
+        /// Gets the current transfer client display name.
         /// </summary>
         /// <value>
         /// The name.
         /// </value>
-        public string ClientName => this.transferClient != null ? this.transferClient.Name : Strings.ClientInitializing;
+        public string ClientDisplayName => this.transferClient?.DisplayName ?? Strings.ClientInitializing;
 
         /// <summary>
         /// Gets a value indicating whether there are transfers pending.
         /// </summary>
-        public bool TransfersPending => this.transferJob != null && this.transferJob.Paths.Count > 0;
+        /// <remarks>
+        /// Be careful here. The PathCount property was added to avoid costly hits to the repository.
+        /// </remarks>
+        public bool TransfersPending => this.transferJob != null && this.transferJob.PathCount > 0;
 
         /// <summary>
         /// Gets the current transfer client.
@@ -360,14 +363,14 @@ namespace kCura.WinEDDS.TApi
                 var taskResult = this.transferJob.CompleteAsync(this.cancellationToken);
                 var transferResult = taskResult.GetAwaiter().GetResult();
                 this.transferLog.LogInformation(
-                    "{ClientName} transfer status: {Status}, elapsed time: {Elapsed}, data rate: {TransferRate:0.00} Mbps",
-                    this.ClientName,
+                    "{Name} transfer status: {Status}, elapsed time: {Elapsed}, data rate: {TransferRate:0.00} Mbps",
+                    this.ClientDisplayName,
                     transferResult.Status,
                     transferResult.Elapsed,
                     transferResult.TransferRateMbps);
                 this.transferLog.LogInformation(
-                    "{ClientName} total transferred files: {TotalTransferredFiles}, total failed files: {TotalFailedFiles}",
-                    this.ClientName,
+                    "{Name} total transferred files: {TotalTransferredFiles}, total failed files: {TotalFailedFiles}",
+                    this.ClientDisplayName,
                     transferResult.TotalTransferredFiles,
                     transferResult.TotalFailedFiles);
                 if (transferResult.Status == TransferStatus.Failed ||
@@ -423,33 +426,33 @@ namespace kCura.WinEDDS.TApi
                     message = string.Format(
                         CultureInfo.CurrentCulture,
                         Strings.TransferClientChangedBestFitMessage,
-                        this.ClientName);
+                        this.ClientDisplayName);
                     break;
 
                 case ClientChangeReason.ForceConfig:
                     message = string.Format(
                         CultureInfo.CurrentCulture,
                         Strings.TransferClientChangedForceConfigMessage,
-                        this.ClientName);
+                        this.ClientDisplayName);
                     break;
 
                 case ClientChangeReason.HttpFallback:
                     message = string.Format(
                         CultureInfo.CurrentCulture,
                         Strings.TransferClientChangedHttpFallbackMessage,
-                        this.ClientName);
+                        this.ClientDisplayName);
                     break;
 
                 default:
                     message = string.Format(
                         CultureInfo.CurrentCulture,
                         Strings.TransferClientChangedDefaultMessage,
-                        this.ClientName);
+                        this.ClientDisplayName);
                     break;
             }
 
             this.RaiseStatusMessage(message, TapiConstants.NoLineNumber);
-            var eventArgs = new TapiClientEventArgs(this.transferClient.Name, this.Client, this.parameters.IsBulkEnabled);
+            var eventArgs = new TapiClientEventArgs(this.ClientDisplayName, this.Client, this.parameters.IsBulkEnabled);
             this.TapiClientChanged.Invoke(this, eventArgs);
         }
 
@@ -496,14 +499,12 @@ namespace kCura.WinEDDS.TApi
                 if (clientId != Guid.Empty)
                 {
                     configuration.ClientId = clientId;
-                    configuration.ClientName = TapiWinEddsHelper.GetClientName(clientId);
                     this.CreateClient(configuration);
                     this.RaiseClientChanged(ClientChangeReason.ForceConfig);
                 }
                 else
                 {
                     configuration.ClientId = Guid.Empty;
-                    configuration.ClientName = string.Empty;
                     this.transferClient = this.transferHost
                         .CreateClientAsync(configuration, this.cancellationToken)
                         .GetAwaiter()
@@ -515,7 +516,6 @@ namespace kCura.WinEDDS.TApi
             {
                 this.transferLog.LogError(e, "The transfer client construction failed.");
                 configuration.ClientId = new Guid(TransferClientConstants.HttpClientId);
-                configuration.ClientName = TapiWinEddsHelper.GetClientName(configuration.ClientId);
                 this.CreateClient(configuration);
                 this.RaiseClientChanged(ClientChangeReason.HttpFallback);
             }
@@ -838,7 +838,7 @@ namespace kCura.WinEDDS.TApi
             var listener = new TransferPathIssueListener(
                 this.transferLog,
                 this.currentDirection,
-                this.ClientName,
+                this.ClientDisplayName,
                 this.context);
             this.transferListeners.Add(listener);
         }

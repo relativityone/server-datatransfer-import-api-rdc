@@ -4,6 +4,8 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Linq;
+
 namespace kCura.WinEDDS.TApi
 {
     using System;
@@ -70,15 +72,15 @@ namespace kCura.WinEDDS.TApi
         public static string BuildDocText()
         {
             var sb = new StringBuilder();
-            foreach (var clientMetadata in TransferClientHelper.SearchAvailableClients())
+            foreach (var clientMetadata in TransferClientHelper.SearchAvailableClients().OrderBy(x => x.DisplayName))
             {
                 if (sb.Length > 0)
                 {
                     sb.AppendLine();
                     sb.AppendLine();
                 }
-            
-                sb.AppendFormat(" • {0} • ", clientMetadata.Name);
+
+                sb.AppendFormat(" • {0} • ", clientMetadata.DisplayName);
                 sb.AppendLine();
                 sb.Append(clientMetadata.Description);
             }
@@ -87,18 +89,18 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Gets the name of the client associated with the specified vlient identifier.
+        /// Gets the client display name associated with the specified transfer client identifier.
         /// </summary>
         /// <param name="clientId">
-        /// The client identifier.
+        /// The transfer client identifier.
         /// </param>
         /// <returns>
-        /// The client name.
+        /// The client display name.
         /// </returns>
         /// <exception cref="System.ArgumentException">
         /// Thrown when the client doesn't exist.
         /// </exception>
-        public static string GetClientName(Guid clientId)
+        public static string GetClientDisplayName(Guid clientId)
         {
             if (clientId == Guid.Empty)
             {
@@ -109,7 +111,7 @@ namespace kCura.WinEDDS.TApi
             {
                 if (new Guid(clientMetadata.Id) == clientId)
                 {
-                    return clientMetadata.Name;
+                    return clientMetadata.DisplayName;
                 }
             }
 
