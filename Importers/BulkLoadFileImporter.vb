@@ -392,30 +392,17 @@ Namespace kCura.WinEDDS
 			Dim parameters As TApi.NativeFileTransferParameters = New TApi.NativeFileTransferParameters
 			parameters.WebCookieContainer = args.CookieContainer
 			parameters.Credentials = args.Credentials
-			If Config.ForceWebUpload Then
-				' For backwards compatibility
-				parameters.ForceHttpClient = Config.ForceWebUpload
-			Else If Not String.IsNullOrEmpty(Config.TapiForceClientId)
-				' For new integration tests
-				Dim clientId As Guid
-				If Guid.TryParse(Config.TapiForceClientId, clientId) Then
-					parameters.ForceClientId = clientId
-				End If
-
-				parameters.ForceClientName = Config.TapiForceClientName
-			End If
-
+			parameters.ForceAsperaClient = Config.TapiForceAsperaClient
+			parameters.ForceFileShareClient = Config.TapiForceFileShareClient
+			parameters.ForceHttpClient = Config.ForceWebUpload OrElse Config.TapiForceHttpClient
 			parameters.IsBulkEnabled = False
 			parameters.LogEnabled = Config.TapiLogEnabled
 			parameters.MaxFilesPerFolder = gateway.RepositoryVolumeMax
+			parameters.MaxSingleFileRetryAttempts = Me.NumberOfRetries
 			parameters.MaxJobParallelism = Config.TapiMaxJobParallelism
-			parameters.MaxSingleFileRetryAttempts = Config.TapiMaxSingleFileRetryAttempts
-			parameters.MaxJobRetryAttempts = Config.TapiMaxJobRetryAttempts
-			parameters.PreCalculateJobSize = Config.TapiPreCalculateJobSize
-			parameters.PreserveDates = Config.TapiPreserveDates
-			parameters.TargetPath = _defaultDestinationFolderPath
-			parameters.ValidateSourcePaths = Not Config.DisableNativeLocationValidation
-			parameters.WaitTimeBetweenRetryAttempts = WaitTimeBetweenRetryAttempts
+			parameters.MaxJobRetryAttempts = Me.NumberOfRetries
+			parameters.TargetPath = Me._defaultDestinationFolderPath
+			parameters.WaitTimeBetweenRetryAttempts = Me.WaitTimeBetweenRetryAttempts
 			parameters.WebServiceUrl = Config.WebServiceURL
 			parameters.WorkspaceId = args.CaseInfo.ArtifactID
 
@@ -577,7 +564,7 @@ Namespace kCura.WinEDDS
 				If _firstLineContainsColumnNames Then _offset = -1
 				Dim isError As Boolean = False
 				_statistics.BatchSize = Me.ImportBatchSize
-				While ShouldImport() AndAlso _artifactReader.HasMoreRecords
+				While ShouldImport AndAlso _artifactReader.HasMoreRecords
 					Try
 						If Me.CurrentLineNumber < _startLineNumber Then
 							Me.AdvanceLine()
@@ -985,7 +972,7 @@ Namespace kCura.WinEDDS
 					Exit While
 				Catch ex As Exception
 					tries -= 1
-					If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse Not ShouldImport() OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) OrElse ex.GetType = GetType(Service.BulkImportManager.InsufficientPermissionsForImportException) Then
+					If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse Not ShouldImport OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) OrElse ex.GetType = GetType(Service.BulkImportManager.InsufficientPermissionsForImportException) Then
 						Throw
 					Else
 						Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts)
@@ -1070,11 +1057,11 @@ Namespace kCura.WinEDDS
 					PushNativeBatch(outputNativePath)
 					PublishUploadModeEvent()
 				Catch ex As Exception
-					If BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso ShouldImport() Then
+					If BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso ShouldImport Then
 						Dim originalBatchSize As Int32 = Me.ImportBatchSize
 						LowerBatchLimits()
 						Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts)
-						If Not ShouldImport() Then Throw 'after the pause
+						If Not ShouldImport Then Throw 'after the pause
 						Me.LowerBatchSizeAndRetry(outputNativePath, originalBatchSize)
 					Else
 						Throw
@@ -1094,7 +1081,7 @@ Namespace kCura.WinEDDS
 			Dim charactersSuccessfullyProcessed As Int64 = 0
 			Dim hasReachedEof As Boolean = False
 			Dim tries As Int32 = 1 'already starts at 1 retry
-			While totalRecords > recordsProcessed AndAlso Not hasReachedEof AndAlso ShouldImport()
+			While totalRecords > recordsProcessed AndAlso Not hasReachedEof AndAlso ShouldImport
 				Dim i As Int32 = 0
 				Dim charactersProcessed As Int64 = 0
 				Using sr As New System.IO.StreamReader(oldNativeFilePath, System.Text.Encoding.Unicode), sw As New System.IO.StreamWriter(newNativeFilePath, False, System.Text.Encoding.Unicode)
@@ -1120,10 +1107,10 @@ Namespace kCura.WinEDDS
 					recordsProcessed += i
 					charactersSuccessfullyProcessed += charactersProcessed
 				Catch ex As Exception
-					If tries < NumberOfRetries AndAlso BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso ShouldImport() Then
+					If tries < NumberOfRetries AndAlso BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso ShouldImport Then
 						LowerBatchLimits()
 						Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts)
-						If Not ShouldImport() Then Throw 'after the pause
+						If Not ShouldImport Then Throw 'after the pause
 						tries += 1
 						hasReachedEof = False
 					Else
@@ -1146,7 +1133,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub PushNativeBatch(ByVal outputNativePath As String)
 			Dim start As Int64 = System.DateTime.Now.Ticks
-			If _batchCounter = 0 OrElse Not ShouldImport() Then Exit Sub
+			If _batchCounter = 0 OrElse Not ShouldImport Then Exit Sub
 			_batchCounter = 0
 			Dim settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Me.GetSettingsObject
 			settings.UseBulkDataImport = True

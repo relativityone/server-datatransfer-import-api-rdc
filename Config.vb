@@ -42,14 +42,11 @@ Namespace kCura.WinEDDS
                             If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")
                             If Not tempDict.Contains("CreateFoldersInWebAPI") Then tempDict.Add("CreateFoldersInWebAPI", "True")
                             If Not tempDict.Contains("ForceWebUpload") Then tempDict.Add("ForceWebUpload", "False")
-                            If Not tempDict.Contains("TapiForceClientId") Then tempDict.Add("TapiForceClientId", String.Empty)
-                            If Not tempDict.Contains("TapiForceClientName") Then tempDict.Add("TapiForceClientName", String.Empty)
+                            If Not tempDict.Contains("TapiForceFileShareClient") Then tempDict.Add("TapiForceFileShareClient", "False")
+                            If Not tempDict.Contains("TapiForceHttpClient") Then tempDict.Add("TapiForceHttpClient", "False")
+                            If Not tempDict.Contains("TapiForceAsperaClient") Then tempDict.Add("TapiForceAsperaClient", "False")
                             If Not tempDict.Contains("TapiLogEnabled") Then tempDict.Add("TapiLogEnabled", "False")
-                            If Not tempDict.Contains("TapiMaxJobParallelism") Then tempDict.Add("TapiMaxJobParallelism", "1")
-                            If Not tempDict.Contains("TapiMaxJobRetryAttempts") Then tempDict.Add("TapiMaxJobRetryAttempts", "3")
-                            If Not tempDict.Contains("TapiMaxSingleFileRetryAttempts") Then tempDict.Add("TapiMaxSingleFileRetryAttempts", "5")
-                            If Not tempDict.Contains("TapiPreCalculateJobSize") Then tempDict.Add("TapiPreCalculateJobSize", "False")
-                            If Not tempDict.Contains("TapiPreserveDates") Then tempDict.Add("TapiPreserveDates", "False")
+                            If Not tempDict.Contains("TapiMaxJobParallelism") Then tempDict.Add("TapiMaxJobParallelism", "10")
                             If Not tempDict.Contains("DisableAspera") Then tempDict.Add("DisableAspera", "True")
                             If Not tempDict.Contains("RestUrl") Then tempDict.Add("RestUrl", "/Relativity.REST/api")
                             If Not tempDict.Contains("ServicesUrl") Then tempDict.Add("ServicesUrl", "/Relativity.Services/")
@@ -343,54 +340,38 @@ Namespace kCura.WinEDDS
             End Get
         End Property
 
-        'This is used strictly for testing different TAPI clients.
-        Public Shared ReadOnly Property TapiForceClientId() As String
+        'This is used to force the TAPI file share client.
+        Public Shared ReadOnly Property TapiForceFileShareClient() As Boolean
             Get
-                Return CType(ConfigSettings("TapiForceClientId"), String)
+                Return CType(ConfigSettings("TapiForceFileShareClient"), Boolean)
             End Get
         End Property
 
-        'This is used strictly for testing different TAPI clients.
-        Public Shared ReadOnly Property TapiForceClientName() As String
+        'This is used to force the TAPI HTTP client.
+        Public Shared ReadOnly Property TapiForceHttpClient() As Boolean
             Get
-                Return CType(ConfigSettings("TapiForceClientName"), String)
+                Return CType(ConfigSettings("TapiForceHttpClient"), Boolean)
             End Get
         End Property
 
-        ' This forces TAPI to use an internal but Serilog-based logger.
+        'This is used to force the TAPI Aspera client.
+        Public Shared ReadOnly Property TapiForceAsperaClient() As Boolean
+            Get
+                Return CType(ConfigSettings("TapiForceAsperaClient"), Boolean)
+            End Get
+        End Property
+
+        ' This forces TAPI to use a Serilog-based Relativity Logging ILog derived logger.
         Public Shared ReadOnly Property TapiLogEnabled() As Boolean
             Get
                 Return CType(ConfigSettings("TapiLogEnabled"), Boolean)
             End Get
         End Property
 
+        ' This sets the max number of concurrent threads used by the TAPI job engine.
         Public Shared ReadOnly Property TapiMaxJobParallelism() As Int32
             Get
                 Return CType(ConfigSettings("TapiMaxJobParallelism"), Int32)
-            End Get
-        End Property
-
-        Public Shared ReadOnly Property TapiMaxSingleFileRetryAttempts() As Int32
-            Get
-                Return CType(ConfigSettings("TapiMaxSingleFileRetryAttempts"), Int32)
-            End Get
-        End Property
-
-        Public Shared ReadOnly Property TapiMaxJobRetryAttempts() As Int32
-            Get
-                Return CType(ConfigSettings("TapiMaxJobRetryAttempts"), Int32)
-            End Get
-        End Property
-
-        Public Shared ReadOnly Property TapiPreCalculateJobSize() As Boolean
-            Get
-                Return CType(ConfigSettings("TapiPreCalculateJobSize"), Boolean)
-            End Get
-        End Property
-
-        Public Shared ReadOnly Property TapiPreserveDates() As Boolean
-            Get
-                Return CType(ConfigSettings("TapiPreserveDates"), Boolean)
             End Get
         End Property
 
