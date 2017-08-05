@@ -357,37 +357,39 @@ namespace kCura.WinEDDS.TApi
 
             try
             {
-                // Note: retry is already built into TAPI.
                 var taskResult = this.transferJob.CompleteAsync(this.cancellationToken);
                 var transferResult = taskResult.GetAwaiter().GetResult();
                 this.transferLog.LogInformation(
-                    "{ClientName} transfer elapsed time: {Elapsed}",
+                    "{ClientName} transfer status: {Status}, elapsed time: {Elapsed}, data rate: {TransferRate:0.00} Mbps",
                     this.ClientName,
-                    transferResult.Elapsed);
-                this.transferLog.LogInformation(
-                    "{ClientName} transfer rate: {TransferRate:0.00} Mbps",
-                    this.ClientName,
+                    transferResult.Status,
+                    transferResult.Elapsed,
                     transferResult.TransferRateMbps);
                 this.transferLog.LogInformation(
                     "{ClientName} total transferred files: {TotalTransferredFiles}, total failed files: {TotalFailedFiles}",
                     this.ClientName,
                     transferResult.TotalTransferredFiles,
                     transferResult.TotalFailedFiles);
-                if (transferResult.Status == TransferStatus.Successful ||
-                    transferResult.Status == TransferStatus.PartiallySuccessful ||
-                    transferResult.Status == TransferStatus.Canceled)
+                if (transferResult.Status == TransferStatus.Failed ||
+                    transferResult.Status == TransferStatus.PartiallySuccessful)
                 {
-                    return;
+                    var lastIssue = transferResult.Issues.OrderBy(x => x.Index).LastOrDefault(x => x.Path != null) ??
+                                    transferResult.TransferError;
+                    if (lastIssue != null && lastIssue.Path != null)
+                    {
+                        var message = string.Format(
+                            CultureInfo.CurrentCulture,
+                            Strings.TransferFileErrorMessage,
+                            lastIssue.Message);
+                        this.RaiseStatusMessage(message, lastIssue.Path.Order);
+                        this.RaiseFatalError(message, lastIssue.Path.Order);
+                    }
+                    else
+                    {
+                        this.RaiseStatusMessage(Strings.TransferJobExceptionMessage);
+                        this.RaiseFatalError(Strings.TransferJobExceptionMessage);
+                    }
                 }
-
-                var errorMessage = Strings.TransferJobExceptionMessage;
-                var error = transferResult.TransferError;
-                if (!string.IsNullOrEmpty(error?.Message))
-                {
-                    errorMessage = error.Message;
-                }
-
-                throw new InvalidOperationException(errorMessage);
             }
             catch (OperationCanceledException)
             {
@@ -446,7 +448,7 @@ namespace kCura.WinEDDS.TApi
                     break;
             }
 
-            this.RaiseStatusMessage(0, message);
+            this.RaiseStatusMessage(message, TapiConstants.NoLineNumber);
             var eventArgs = new TapiClientEventArgs(this.transferClient.Name, this.Client, this.parameters.IsBulkEnabled);
             this.TapiClientChanged.Invoke(this, eventArgs);
         }
@@ -567,13 +569,24 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// Raises a status message event.
         /// </summary>
-        /// <param name="lineNumber">
-        /// The line number.
-        /// </param>
         /// <param name="message">
         /// The message.
         /// </param>
-        protected void RaiseStatusMessage(int lineNumber, string message)
+        protected void RaiseStatusMessage(string message)
+        {
+            this.RaiseStatusMessage(message, TapiConstants.NoLineNumber);
+        }
+
+        /// <summary>
+        /// Raises a status message event.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <param name="lineNumber">
+        /// The line number.
+        /// </param>
+        protected void RaiseStatusMessage(string message, int lineNumber)
         {
             this.CheckDispose();
             this.TapiStatusMessage.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
@@ -592,6 +605,32 @@ namespace kCura.WinEDDS.TApi
         {
             this.CheckDispose();
             this.TapiWarningMessage.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
+        }
+
+        /// <summary>
+        /// Raises a fatal error.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        protected void RaiseFatalError(string message)
+        {
+            this.RaiseFatalError(message, TapiConstants.NoLineNumber);
+        }
+
+        /// <summary>
+        /// Raises a fatal error.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <param name="lineNumber">
+        /// The line number.
+        /// </param>
+        protected void RaiseFatalError(string message, int lineNumber)
+        {
+            this.CheckDispose();
+            this.TapiFatalError.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
         }
 
         /// <summary>
@@ -642,6 +681,7 @@ namespace kCura.WinEDDS.TApi
                 return;
             }
 
+            // Tune the job retry to account for different kinds of jobs.
             switch (this.transferClient.Id.ToString().ToUpperInvariant())
             {
                 case TransferClientConstants.FileShareClientId:
@@ -650,6 +690,17 @@ namespace kCura.WinEDDS.TApi
                         this.transferClient.Configuration.MaxJobParallelism = 10;
                     }
 
+                    this.transferClient.Configuration.MaxJobRetryAttempts = 1;
+                    this.transferClient.Configuration.PreserveDates = false;
+                    break;
+
+                case TransferClientConstants.HttpClientId:
+                    this.transferClient.Configuration.MaxJobRetryAttempts = 1;
+                    this.transferClient.Configuration.PreserveDates = false;
+                    break;
+
+                case TransferClientConstants.AsperaClientId:
+                    this.transferClient.Configuration.MaxJobRetryAttempts = parameters.MaxJobRetryAttempts;
                     this.transferClient.Configuration.PreserveDates = false;
                     break;
             }

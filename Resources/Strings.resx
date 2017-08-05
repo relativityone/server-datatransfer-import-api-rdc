@@ -120,11 +120,14 @@
   <data name="RetryJobMessage" xml:space="preserve">
     <value>Retrying transfer job - attempt {0} of {1}.</value>
   </data>
-  <data name="TransferFileDownloadIssueMessage" xml:space="preserve">
-    <value>{0} download failed: {1}.</value>
+  <data name="TransferFileDownloadWarningMessage" xml:space="preserve">
+    <value>{0} download failed: {1} - Retrying in {2} seconds. {3} tries left.</value>
   </data>
-  <data name="TransferFileUploadIssueMessage" xml:space="preserve">
-    <value>{0} upload failed: {1}.</value>
+  <data name="TransferFileUploadWarningMessage" xml:space="preserve">
+    <value>{0} upload failed: {1} - Retrying in {2} seconds. {3} tries left.</value>
+  </data>
+  <data name="TransferFileErrorMessage" xml:space="preserve">
+    <value>Error transferring file: {0}</value>
   </data>
   <data name="TransferJobEndedMessage" xml:space="preserve">
     <value>File transfer job ended.</value>

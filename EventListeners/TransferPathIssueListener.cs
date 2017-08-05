@@ -55,37 +55,49 @@ namespace kCura.WinEDDS.TApi
         /// <inheritdoc />
         protected override void OnTransferPathIssue(object sender, TransferPathIssueEventArgs e)
         {
-            var formattedMessage = this.transferDirection == TransferDirection.Download
-                                       ? Strings.TransferFileDownloadIssueMessage
-                                       : Strings.TransferFileUploadIssueMessage;
-            var message = string.Format(CultureInfo.CurrentCulture, formattedMessage, this.clientName, e.Issue.Message);
-            var fatalIssues = new[]
-                                  {
-                                      IssueAttributes.Error,
-                                      IssueAttributes.StorageOutOfSpace,
-                                      IssueAttributes.Licensing
-                                  };
-
-            // Treat warnings as errors as soon as we reach the max retry attempt.
-            var fatal = fatalIssues.Any(x => e.Issue.Attributes.HasFlag(x))
-                        || e.Issue.RetryAttempt == e.Issue.MaxRetryAttempts;
-            if (fatal)
+            // Note: this issue is indicative of a job-level issue - especially with Aspera.
+            if (e.Issue.Path == null)
             {
-                this.TransferLog.LogError(
-                    "A serious transfer error has occurred. LineNumber={LineNumber}, SourcePath={SourcePath}, Attributes={Attributes}.",
-                    e.Issue.Path != null ? e.Issue.Path.Order : TapiConstants.NoLineNumber,
-                    e.Issue.Path != null ? e.Issue.Path.SourcePath : "(no path)",
-                    e.Issue.Attributes);
-                this.RaiseFatalError(message, e.Issue.Path != null ? e.Issue.Path.Order : TapiConstants.NoLineNumber);
-            }
-            else if (e.Issue.Attributes.HasFlag(IssueAttributes.Warning))
-            {
+                // Don't raise a warning here because you cannot associate it with a line number.
                 this.TransferLog.LogWarning(
                     "A transfer warning has occurred. LineNumber={LineNumber}, SourcePath={SourcePath}, Attributes={Attributes}.",
-                    e.Issue.Path != null ? e.Issue.Path.Order : TapiConstants.NoLineNumber,
-                    e.Issue.Path != null ? e.Issue.Path.SourcePath : "(no path)",
+                    TapiConstants.NoLineNumber,
+                    "(no path)",
                     e.Issue.Attributes);
-                this.RaiseWarningMessage(message, e.Issue.Path != null ? e.Issue.Path.Order : TapiConstants.NoLineNumber);
+                return;
+            }
+
+            var lineNumber = e.Issue.Path.Order;
+            var retryCalculation = e.Request.RetryStrategy.Calculation;
+            var retryTimeSpan = retryCalculation(e.Issue.RetryAttempt);
+            var triesLeft = e.Issue.MaxRetryAttempts - e.Issue.RetryAttempt - 1;
+            if (triesLeft > 0)
+            {
+                var formattedMessage = this.transferDirection == TransferDirection.Download
+                    ? Strings.TransferFileDownloadWarningMessage
+                    : Strings.TransferFileUploadWarningMessage;
+                var message = string.Format(
+                    CultureInfo.CurrentCulture,
+                    formattedMessage,
+                    this.clientName,
+                    e.Issue.Message,
+                    retryTimeSpan.TotalSeconds,
+                    triesLeft);
+                this.RaiseWarningMessage(message, e.Issue.Path.Order);
+                this.TransferLog.LogWarning(
+                    "A transfer warning has occurred. LineNumber={LineNumber}, SourcePath={SourcePath}, Attributes={Attributes}.",
+                    lineNumber,
+                    e.Issue.Path.SourcePath,
+                    e.Issue.Attributes);
+            }
+            else
+            {
+                // Avoid raising this as a warning. The request will now terminate and messaging is handled in NativeFileTransfer.
+                this.TransferLog.LogError(
+                    "A transfer error has occurred. LineNumber={LineNumber}, SourcePath={SourcePath}, Attributes={Attributes}.",
+                    lineNumber,
+                    e.Issue.Path.SourcePath,
+                    e.Issue.Attributes);
             }
         }       
     }

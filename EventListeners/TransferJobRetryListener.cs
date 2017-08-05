@@ -49,7 +49,7 @@ namespace kCura.WinEDDS.TApi
                 Strings.RetryJobMessage,
                 e.Count,
                 this.maxRetryCount);
-            this.RaiseStatusMessage(message, 0);
+            this.RaiseStatusMessage(message, TapiConstants.NoLineNumber);
         }
     }
 }
