@@ -1049,15 +1049,19 @@ Namespace kCura.WinEDDS
 		Private Sub TryPushNativeBatch(Optional ByVal lastRun As Boolean = False)
 			CloseFileWriters()
 			Dim outputNativePath As String = _outputFileWriter.OutputNativeFilePath
-			If Not CancellationRequested
+
+			' REL-157042: Prevent importing bad data into Relativity or honor stoppage.
+			If ShouldImport
 				Try
 					If _nativeFileUploader.TransfersPending
 						CompletePendingTransfers()
 						PublishUploadModeEvent()
 						_jobCounter += 1
 					End If
-					PushNativeBatch(outputNativePath)
-					PublishUploadModeEvent()
+					If ShouldImport Then
+						PushNativeBatch(outputNativePath)
+						PublishUploadModeEvent()
+					End If
 				Catch ex As Exception
 					If BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso ShouldImport Then
 						Dim originalBatchSize As Int32 = Me.ImportBatchSize
