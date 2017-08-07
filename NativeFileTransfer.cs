@@ -479,7 +479,6 @@ namespace kCura.WinEDDS.TApi
                     CookieContainer = this.parameters.WebCookieContainer,
                     MaxJobParallelism = this.parameters.MaxJobParallelism,
                     MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
-                    MaxSingleFileRetryAttempts = this.parameters.MaxSingleFileRetryAttempts,
                     PreCalculateJobSize = false,
                     PreserveDates = false,
                     TimeoutSeconds = this.parameters.TimeoutSeconds,
@@ -705,19 +704,16 @@ namespace kCura.WinEDDS.TApi
             switch (this.transferClient.Id.ToString().ToUpperInvariant())
             {
                 case TransferClientConstants.FileShareClientId:
-                    this.transferClient.Configuration.MaxJobRetryAttempts = 1;
                     this.transferClient.Configuration.PreserveDates = false;
                     break;
 
                 case TransferClientConstants.HttpClientId:
                     this.transferClient.Configuration.MaxJobParallelism = 1;
-                    this.transferClient.Configuration.MaxJobRetryAttempts = 1;
                     this.transferClient.Configuration.PreserveDates = false;
                     break;
 
                 case TransferClientConstants.AsperaClientId:
                     this.transferClient.Configuration.MaxJobParallelism = 1;
-                    this.transferClient.Configuration.MaxJobRetryAttempts = parameters.MaxJobRetryAttempts;
                     this.transferClient.Configuration.PreserveDates = false;
                     break;
             }

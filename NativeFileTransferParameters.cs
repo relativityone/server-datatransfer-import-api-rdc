@@ -29,7 +29,6 @@ namespace kCura.WinEDDS.TApi
             this.MaxFilesPerFolder = 1000;
             this.MaxJobParallelism = 10;
             this.MaxJobRetryAttempts = 3;
-            this.MaxSingleFileRetryAttempts = 5;
 
             // FileUploader.vb defaults this parameters to true.
             this.SortIntoVolumes = true;
@@ -120,18 +119,6 @@ namespace kCura.WinEDDS.TApi
         /// The maximum files per folder.
         /// </value>
         public int MaxFilesPerFolder
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the number of retry attempts for a single file. This setting is client specific and not guaranteed to be honored by all clients.
-        /// </summary>
-        /// <value>
-        /// The single file retry attempts.
-        /// </value>
-        public int MaxSingleFileRetryAttempts
         {
             get;
             set;

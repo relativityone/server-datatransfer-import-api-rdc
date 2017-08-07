@@ -83,7 +83,7 @@ namespace kCura.WinEDDS.TApi
                 "TAPI job {0} statistics - Files: {1}/{2} - Progress: {3:0.00}% - Rate: {4:0.00}/sec",
                 e.Request.JobId,
                 e.Statistics.TotalTransferredFiles,
-                e.Statistics.TotalFiles,
+                e.Statistics.TotalRequestFiles,
                 e.Statistics.Progress,
                 ToFileSize((e.Statistics.TransferRateMbps * 1000000) / 8.0));
             this.TransferLog.LogInformation(jobMessage);
