@@ -7,7 +7,7 @@ Imports kCura.Relativity.DataReaderClient
 
 Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
 
-	<TestFixture()> _
+	<TestFixture(), Explicit()> _
 	Public Class ImportTests
 		Inherits WriteTestsBase
 
