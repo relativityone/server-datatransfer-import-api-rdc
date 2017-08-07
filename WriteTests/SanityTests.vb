@@ -3,7 +3,7 @@ Imports kCura.Relativity.DataReaderClient.NUnit
 Imports System.Configuration
 
 Namespace kCura.Relativity.DataReaderClient.NUnit.WriteTests
-    <TestFixture()> _
+    <TestFixture(), Explicit()> _
     Public Class SanityTests
 
 #Region "Tests"
