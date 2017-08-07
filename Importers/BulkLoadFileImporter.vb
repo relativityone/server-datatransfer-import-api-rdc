@@ -699,6 +699,9 @@ Namespace kCura.WinEDDS
 									Else
 										Throw
 									End If
+								Else
+									' REL-158041: Rethrow to ensure non-pipeline behavior is maintained and results in a fatal error.
+									Throw
 								End If
 							Next
 						End Try
