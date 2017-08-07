@@ -399,7 +399,6 @@ Namespace kCura.WinEDDS
 			parameters.IsBulkEnabled = False
 			parameters.LogEnabled = Config.TapiLogEnabled
 			parameters.MaxFilesPerFolder = gateway.RepositoryVolumeMax
-			parameters.MaxSingleFileRetryAttempts = Me.NumberOfRetries
 			parameters.MaxJobParallelism = Config.TapiMaxJobParallelism
 			parameters.MaxJobRetryAttempts = Me.NumberOfRetries
 			parameters.TargetPath = Me._defaultDestinationFolderPath
