@@ -205,6 +205,7 @@
       <Name>system.runtime.serialization.formatters.soap</Name>
     </Reference>
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Services">
       <Name>System.Web.Services</Name>
