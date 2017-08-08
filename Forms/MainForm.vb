@@ -383,16 +383,15 @@ End Sub
                 Case AppEvent.AppEventType.LogOnForm
                     'Enable help once logged into Relativity via RDC login form
                     Me._helpMenuItem.Enabled = True
-                    TransferMenu.Enabled = True
                 Case appEvent.AppEventType.LogOn
                     UpdateUserName(_application.LoggedInUser)
                     'Enable help once logged into Relativity via Windows Authentication
-                    Me._helpMenuItem.Enabled = True
-                    TransferMenu.Enabled = True
+                    Me._helpMenuItem.Enabled = True                    
                 Case appEvent.AppEventType.ExitApplication
 					Me.Close()
 				Case appEvent.AppEventType.WorkspaceFolderSelected
 					'disable import and export menus if no permission
+                    TransferMenu.Enabled = True
 					ImportMenu.Enabled = _application.UserHasImportPermission
 					ExportMenu.Enabled = _application.UserHasExportPermission
 					ImportMenu.Visible = _application.UserHasImportPermission
