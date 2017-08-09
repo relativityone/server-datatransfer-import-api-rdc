@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
-using Castle.Components.DictionaryAdapter.Xml;
 using ZetaLongPaths;
 using ZetaLongPaths.Native;
 
@@ -79,18 +77,7 @@ namespace kCura.WinEDDS.Core.IO
 
 		public string ReadFileAsString(string path)
 		{
-			var sr = new System.IO.StreamReader(path);
-			String text;
-			try
-			{
-				text = sr.ReadToEnd();
-			}
-			finally
-			{
-				sr.Close();
-			}
-
-			return text;
+			return ZlpIOHelper.ReadAllText(path);
 		}
 	}
 }

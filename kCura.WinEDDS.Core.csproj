@@ -218,13 +218,13 @@
       <Project>{ccefd50f-0840-402d-ab16-c93f8e579b8b}</Project>
       <Name>kCura.OI.FileID</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\kCura\kCura\kCura.vbproj">
-      <Project>{535d782a-2388-416f-ab46-10347e44eec9}</Project>
-      <Name>kCura</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
       <Project>{B092D1B2-909B-4EF0-9369-A81675C3FC18}</Project>
       <Name>kCura.Windows.Process</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura\kCura.vbproj">
+      <Project>{535d782a-2388-416f-ab46-10347e44eec9}</Project>
+      <Name>kCura</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.WinEDDS\kCura.WinEDDS.vbproj">
       <Project>{f16a2219-5dac-4f2b-89b0-6bd1243cbf8f}</Project>
