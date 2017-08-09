@@ -10,6 +10,7 @@ Namespace kCura.WinEDDS
             WorkspaceFolderSelected = 3
             NewFolder = 4
             LogOnForm = 5
+			LogOnRequested = 6
         End Enum
 
 		Public ReadOnly Property EventType() As AppEventType
