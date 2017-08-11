@@ -234,11 +234,11 @@ Namespace kCura.EDDS.WinForm
         '
         'TransferMenu
         '
+        Me.TransferMenu.Enabled = false
         Me.EnhancedMenuProvider.SetImageIndex(Me.TransferMenu, -1)
         Me.TransferMenu.Index = 2
         Me.TransferMenu.OwnerDraw = true
         Me.TransferMenu.Text = "Transfer..."
-        Me.TransferMenu.Enabled = false
         '
         '_toolsMenu
         '
@@ -288,7 +288,7 @@ Namespace kCura.EDDS.WinForm
         '
         'StatusBar
         '
-        Me.StatusBar.Location = New System.Drawing.Point(0, 389)
+        Me.StatusBar.Location = New System.Drawing.Point(0, 347)
         Me.StatusBar.Name = "StatusBar"
         Me.StatusBar.Panels.AddRange(New System.Windows.Forms.StatusBarPanel() {Me.AppStatusPanel, Me.LoggedInUserPanel})
         Me.StatusBar.ShowPanels = true
@@ -324,13 +324,13 @@ Namespace kCura.EDDS.WinForm
             Or System.Windows.Forms.AnchorStyles.Right),System.Windows.Forms.AnchorStyles)
         Me._caseFolderExplorer.Location = New System.Drawing.Point(0, 25)
         Me._caseFolderExplorer.Name = "_caseFolderExplorer"
-        Me._caseFolderExplorer.Size = New System.Drawing.Size(332, 364)
+        Me._caseFolderExplorer.Size = New System.Drawing.Size(332, 322)
         Me._caseFolderExplorer.TabIndex = 6
         '
         'MainForm
         '
         Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-        Me.ClientSize = New System.Drawing.Size(332, 411)
+        Me.ClientSize = New System.Drawing.Size(332, 369)
         Me.Controls.Add(Me._objectTypeDropDown)
         Me.Controls.Add(Me._caseFolderExplorer)
         Me.Controls.Add(Me.StatusBar)
