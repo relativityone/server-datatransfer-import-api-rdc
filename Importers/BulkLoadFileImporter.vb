@@ -412,7 +412,8 @@ Namespace kCura.WinEDDS
 			AddHandler _nativeFileUploader.TapiFatalError, AddressOf NativeFileUploaderOnTapiFatalError
 			AddHandler _nativeFileUploader.TapiProgress, AddressOf NativeFileUploaderOnTapiProgress
 			AddHandler _nativeFileUploader.TapiStatistics, AddressOf NativeFileUploaderOnTapiStatistics
-			AddHandler _nativeFileUploader.TapiStatusMessage, AddressOf NativeFileUploaderOnTapiStatusEvent            
+			AddHandler _nativeFileUploader.TapiStatusMessage, AddressOf NativeFileUploaderOnTapiStatusEvent
+			AddHandler _nativeFileUploader.TapiErrorMessage, AddressOf NativeFileUploaderOnTapiErrorMessage
 			AddHandler _nativeFileUploader.TapiWarningMessage, AddressOf NativeFileUploaderOnTapiWarningMessage
 			_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, False)
 			_bcpuploader.SetUploaderTypeForBcp()
@@ -428,7 +429,8 @@ Namespace kCura.WinEDDS
 			RemoveHandler _nativeFileUploader.TapiFatalError, AddressOf NativeFileUploaderOnTapiFatalError
 			RemoveHandler _nativeFileUploader.TapiProgress, AddressOf NativeFileUploaderOnTapiProgress
 			RemoveHandler _nativeFileUploader.TapiStatistics, AddressOf NativeFileUploaderOnTapiStatistics
-			RemoveHandler _nativeFileUploader.TapiStatusMessage, AddressOf NativeFileUploaderOnTapiStatusEvent            
+			RemoveHandler _nativeFileUploader.TapiStatusMessage, AddressOf NativeFileUploaderOnTapiStatusEvent
+			RemoveHandler _nativeFileUploader.TapiErrorMessage, AddressOf NativeFileUploaderOnTapiErrorMessage
 			RemoveHandler _nativeFileUploader.TapiWarningMessage, AddressOf NativeFileUploaderOnTapiWarningMessage
 			_nativeFileUploader.Dispose()
 			_nativeFileUploader = Nothing
@@ -778,12 +780,15 @@ Namespace kCura.WinEDDS
 						Catch ae As AggregateException
 							For Each x As Exception In ae.Flatten().InnerExceptions
 								If TypeOf x Is FileNotFoundException Then
+									WriteTapiFileNotFoundProgress(filename, Me.CurrentLineNumber)
 									If Me.DisableNativeLocationValidation Then
 										'TODO: raise a warning or something?  I'm just copying this from the old logic rn.
 										'Don't do anything. This exception can only happen if DisableNativeLocationValidation is turned on
 									Else
 										Throw
 									End If
+								Else
+									Throw
 								End If
 							Next
 						End Try
@@ -792,6 +797,7 @@ Namespace kCura.WinEDDS
 							getFileID()
 							copyFileToRepository()
 						Catch ex As System.IO.FileNotFoundException
+							WriteTapiFileNotFoundProgress(filename, Me.CurrentLineNumber)
 							If Me.DisableNativeLocationValidation Then
 								'Don't do anything. This exception can only happen if DisableNativeLocationValidation is turned on
 							Else
@@ -801,9 +807,11 @@ Namespace kCura.WinEDDS
 					End If
 
 					' Status must be handled the pre-TAPI way whenever the copy repository option is disabled.
-					If Not _copyFileToRepository Then
-						WriteStatusLine(Windows.Process.EventType.Status, String.Format("Item '{0}' processed.", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
+					If ShouldImport AndAlso Not _copyFileToRepository Then
+						WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
 					End If
+				Else If ShouldImport AndAlso _copyFileToRepository Then
+					WriteTapiFileNotFoundProgress(filename, Me.CurrentLineNumber)
 				End If
 			End If
 			_timekeeper.MarkEnd("ManageDocument_Filesystem")
@@ -1695,9 +1703,17 @@ Namespace kCura.WinEDDS
 			Return line
 		End Function
 
-		Private Sub WriteTapiProgressMessage(ByVal message As String, ByVal lineNumber As Int32, ByVal progressVal As Int32)
+		Private Sub WriteTapiFileNotFoundProgress(ByVal fileName As String, ByVal lineNumber As Int32)
+			If (ShouldImport AndAlso Me._copyFileToRepository) Then
+				_processedCount = _processedCount + 1
+				WriteTapiProgressMessage(String.Format("Item {0} not found.", fileName), lineNumber)
+			End If
+		End Sub
+
+		Private Sub WriteTapiProgressMessage(ByVal message As String, ByVal lineNumber As Int32)
 			message = GetLineMessage(message, lineNumber)
-			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(kCura.Windows.Process.EventType.Progress, progressVal, _recordCount, message, _currentStatisticsSnapshot))
+			Dim lineProgress As int32 = _processedCount
+			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(kCura.Windows.Process.EventType.Progress, lineProgress, _recordCount, message, _currentStatisticsSnapshot))
 		End Sub
 
 		Private Sub WriteStatusLine(ByVal et As kCura.Windows.Process.EventType, ByVal line As String, ByVal lineNumber As Int32)
@@ -1773,30 +1789,42 @@ Namespace kCura.WinEDDS
 			' The process count should always be used UNLESS the process is stopped immediately.
 			line = GetLineMessage(line, Me.CurrentLineNumber)
 			Dim totalProcessed As Int32 = Me.CurrentLineNumber
-			If _processedCount > 0 Then
+			If ShouldImport AndAlso _processedCount > 0 Then
 				totalProcessed = _processedCount
 			End If
 
-			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(kCura.Windows.Process.EventType.End, totalProcessed, _recordCount, line, _currentStatisticsSnapshot))
+			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(kCura.Windows.Process.EventType.End, totalProcessed + _offset, _recordCount, line, _currentStatisticsSnapshot))
 		End Sub
 
 		Private Sub NativeFileUploaderOnTapiStatusEvent(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
 			SyncLock _syncRoot
-				WriteStatusLine(kCura.Windows.Process.EventType.Status, e.Message, e.LineNumber)
+				If ShouldImport Then
+					WriteStatusLine(kCura.Windows.Process.EventType.Status, e.Message, e.LineNumber)
+				End If
+			End SyncLock
+		End Sub
+
+		Private Sub NativeFileUploaderOnTapiErrorMessage(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
+			SyncLock _syncRoot
+				If ShouldImport Then
+					WriteError(e.LineNumber, e.Message)
+				End If
 			End SyncLock
 		End Sub
 
 		Private Sub NativeFileUploaderOnTapiWarningMessage(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
 			SyncLock _syncRoot
-				WriteStatusLine(kCura.Windows.Process.EventType.Warning, e.Message, e.LineNumber)
+				If ShouldImport Then
+					WriteStatusLine(kCura.Windows.Process.EventType.Warning, e.Message, e.LineNumber)
+				End if
 			End SyncLock
 		End Sub
 
 		Private Sub NativeFileUploaderOnTapiProgress(ByVal sender As Object, ByVal e As TApi.TapiProgressEventArgs)
 			SyncLock _syncRoot
-				If e.Status Then
+				If ShouldImport AndAlso e.Status Then
 					_processedCount += 1
-					WriteTapiProgressMessage($"End upload file. ({DateTime.op_Subtraction(e.EndTime, e.StartTime).Milliseconds}ms)", e.LineNumber, _processedCount)
+					WriteTapiProgressMessage($"End upload file. ({DateTime.op_Subtraction(e.EndTime, e.StartTime).Milliseconds}ms)", e.LineNumber)
 				End If
 			End SyncLock
 		End Sub
