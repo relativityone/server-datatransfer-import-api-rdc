@@ -126,9 +126,6 @@
   <data name="TransferFileUploadWarningMessage" xml:space="preserve">
     <value>{0} upload failed: {1} - Retrying in {2} seconds. {3} tries left.</value>
   </data>
-  <data name="TransferFileErrorMessage" xml:space="preserve">
-    <value>Error transferring file: {0}</value>
-  </data>
   <data name="TransferJobEndedMessage" xml:space="preserve">
     <value>File transfer job ended.</value>
   </data>
@@ -176,5 +173,11 @@
   </data>
   <data name="ClientIdNotFoundExceptionMessage" xml:space="preserve">
     <value>The Transfer API client identifier '{0}' does not exist. Check to make sure the value was entered correctly.</value>
+  </data>
+  <data name="TransferFileDownloadFatalMessage" xml:space="preserve">
+    <value>Error downloading file: {0}</value>
+  </data>
+  <data name="TransferFileUploadFatalMessage" xml:space="preserve">
+    <value>Error uploading file: {0}</value>
   </data>
 </root>

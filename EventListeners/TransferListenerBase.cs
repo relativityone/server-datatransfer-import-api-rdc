@@ -52,9 +52,14 @@ namespace kCura.WinEDDS.TApi
         public event EventHandler<TapiMessageEventArgs> FatalError = delegate { };
 
         /// <summary>
-        /// Occurs when a warning is registered.
+        /// Occurs when a non-fatal error message is registered.
         /// </summary>
-        public event EventHandler<TapiMessageEventArgs> Warning = delegate { };
+        public event EventHandler<TapiMessageEventArgs> ErrorMessage = delegate { };
+
+        /// <summary>
+        /// Occurs when a warning message is registered.
+        /// </summary>
+        public event EventHandler<TapiMessageEventArgs> WarningMessage = delegate { };
 
         /// <summary>
         /// Occurs when a status message is registered.
@@ -110,6 +115,20 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
+        /// Raises an error message event.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <param name="lineNumber">
+        /// The line number.
+        /// </param>
+        protected void RaiseErrorMessage(string message, int lineNumber)
+        {
+            this.ErrorMessage.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
+        }
+
+        /// <summary>
         /// Raises a warning message event.
         /// </summary>
         /// <param name="message">
@@ -120,7 +139,7 @@ namespace kCura.WinEDDS.TApi
         /// </param>
         protected void RaiseWarningMessage(string message, int lineNumber)
         {
-            this.Warning.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
+            this.WarningMessage.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
         }
 
         /// <summary>

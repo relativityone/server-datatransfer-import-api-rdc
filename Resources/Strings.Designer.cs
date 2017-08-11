@@ -151,6 +151,15 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error downloading file: {0}.
+        /// </summary>
+        internal static string TransferFileDownloadFatalMessage {
+            get {
+                return ResourceManager.GetString("TransferFileDownloadFatalMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} download failed: {1} - Retrying in {2} seconds. {3} tries left..
         /// </summary>
         internal static string TransferFileDownloadWarningMessage {
@@ -160,11 +169,11 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error transferring file: {0}.
+        ///   Looks up a localized string similar to Error uploading file: {0}.
         /// </summary>
-        internal static string TransferFileErrorMessage {
+        internal static string TransferFileUploadFatalMessage {
             get {
-                return ResourceManager.GetString("TransferFileErrorMessage", resourceCulture);
+                return ResourceManager.GetString("TransferFileUploadFatalMessage", resourceCulture);
             }
         }
         

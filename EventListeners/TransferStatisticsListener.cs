@@ -11,8 +11,6 @@ namespace kCura.WinEDDS.TApi
     using System.Globalization;
     using System.Linq;
 
-    using kCura.WinEDDS.TApi.Resources;
-
     using Relativity.Logging;
     using Relativity.Transfer;
 

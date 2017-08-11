@@ -22,7 +22,7 @@ namespace kCura.WinEDDS.TApi
     using Relativity.Transfer;
     using Relativity.Transfer.Aspera;
     using Relativity.Transfer.Http;
-    
+
     using Strings = kCura.WinEDDS.TApi.Resources.Strings;
 
     /// <summary>
@@ -162,9 +162,7 @@ namespace kCura.WinEDDS.TApi
 
             this.currentDirection = direction;
             this.parameters = parameters;
-            this.transferHost = new RelativityTransferHost(
-                CreateRelativityConnectionInfo(parameters),
-                log);
+            this.transferHost = new RelativityTransferHost(CreateRelativityConnectionInfo(parameters), log);
             this.TargetPath = parameters.TargetPath;
             this.cancellationToken = token;
             this.transferLog = log;
@@ -180,6 +178,11 @@ namespace kCura.WinEDDS.TApi
         /// Occurs when a status message is available.
         /// </summary>
         public event EventHandler<TapiMessageEventArgs> TapiStatusMessage = delegate { };
+
+        /// <summary>
+        /// Occurs when a non-fatal error message is available.
+        /// </summary>
+        public event EventHandler<TapiMessageEventArgs> TapiErrorMessage = delegate { };
 
         /// <summary>
         /// Occurs when a warning message is available.
@@ -261,7 +264,7 @@ namespace kCura.WinEDDS.TApi
                         return TransferClient.Web;
 
                     default:
-                       return TransferClient.None;                    
+                        return TransferClient.None;
                 }
             }
         }
@@ -316,12 +319,12 @@ namespace kCura.WinEDDS.TApi
                                          ? this.pathManager.GetNextTargetPath(this.TargetPath)
                                          : this.TargetPath;
                 var transferPath = new TransferPath
-                {
-                    SourcePath = sourceFile,
-                    TargetPath = nextTargetPath,
-                    TargetFileName = targetFileName,
-                    Order = order
-                };
+                                       {
+                                           SourcePath = sourceFile,
+                                           TargetPath = nextTargetPath,
+                                           TargetFileName = targetFileName,
+                                           Order = order
+                                       };
                 this.transferJob.AddPath(transferPath);
                 return !string.IsNullOrEmpty(targetFileName)
                            ? targetFileName
@@ -364,6 +367,8 @@ namespace kCura.WinEDDS.TApi
                 throw new InvalidOperationException(Strings.TransferJobNullExceptionMessage);
             }
 
+            const int ValidLineNumber = 1;
+
             try
             {
                 var taskResult = this.transferJob.CompleteAsync(this.cancellationToken);
@@ -379,30 +384,38 @@ namespace kCura.WinEDDS.TApi
                     this.ClientDisplayName,
                     transferResult.TotalTransferredFiles,
                     transferResult.TotalFailedFiles);
-                if (transferResult.Status == TransferStatus.Failed ||
-                    transferResult.Status == TransferStatus.PartiallySuccessful)
+                if (transferResult.Status == TransferStatus.Fatal)
                 {
-                    var lastIssue = transferResult.Issues.OrderBy(x => x.Index).LastOrDefault(x => x.Path != null) ??
+                    var lastIssue = transferResult.Issues.OrderBy(x => x.Index).ToList().FindLast(x => x.Path != null) ??
                                     transferResult.TransferError;
                     if (lastIssue != null && lastIssue.Path != null)
                     {
-                        var message = string.Format(
-                            CultureInfo.CurrentCulture,
-                            Strings.TransferFileErrorMessage,
-                            lastIssue.Message);
-                        this.RaiseStatusMessage(message, lastIssue.Path.Order);
-                        this.RaiseFatalError(message, lastIssue.Path.Order);
+                        var formattedMessage = transferResult.Request.Direction == TransferDirection.Download
+                            ? Strings.TransferFileDownloadFatalMessage
+                            : Strings.TransferFileUploadFatalMessage;
+                        var message = string.Format(formattedMessage, CultureInfo.CurrentCulture, lastIssue.Message);
+                        var lineNumber = lastIssue.Path.Order > 0 ? lastIssue.Path.Order : ValidLineNumber;
+                        this.RaiseStatusMessage(message, lineNumber);
+                        this.RaiseFatalError(message, lineNumber);
                     }
-                    else
-                    {
-                        this.RaiseStatusMessage(Strings.TransferJobExceptionMessage);
-                        this.RaiseFatalError(Strings.TransferJobExceptionMessage);
-                    }
+                }
+                else if (transferResult.Status == TransferStatus.Failed)
+                {
+                    this.RaiseStatusMessage(Strings.TransferJobExceptionMessage);
+                    this.RaiseFatalError(Strings.TransferJobExceptionMessage);
                 }
             }
             catch (OperationCanceledException)
             {
                 this.LogCancelRequest();
+            }
+            catch (TransferException)
+            {
+                this.transferLog.LogWarning2(
+                    this.jobRequest,
+                    "Forcing a fatal error because no more clients are available.");
+                this.RaiseStatusMessage(Strings.TransferJobExceptionMessage, ValidLineNumber);
+                this.RaiseFatalError(Strings.TransferJobExceptionMessage, ValidLineNumber);
             }
             catch (Exception e)
             {
@@ -473,16 +486,22 @@ namespace kCura.WinEDDS.TApi
                 return;
             }
 
+            // Due to FileNotFoundException expectations, do NOT enable this setting.
+            const bool ValidateSourcePaths = false;
+
+            // Intentionally limiting resiliency here; otherwise, status messages don't make it to IAPI.
+            const int MaxHttpRetryAttempts = 1;
             var configuration =
                 new ClientConfiguration
-                {
-                    CookieContainer = this.parameters.WebCookieContainer,
-                    MaxJobParallelism = this.parameters.MaxJobParallelism,
-                    MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
-                    PreCalculateJobSize = false,
-                    PreserveDates = false,
-                    TimeoutSeconds = this.parameters.TimeoutSeconds,
-                    ValidateSourcePaths = false
+                    {
+                        CookieContainer = this.parameters.WebCookieContainer,
+                        MaxJobParallelism = this.parameters.MaxJobParallelism,
+                        MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
+                        MaxHttpRetryAttempts = MaxHttpRetryAttempts,
+                        PreCalculateJobSize = false,
+                        PreserveDates = false,
+                        TimeoutSeconds = this.parameters.TimeoutSeconds,
+                        ValidateSourcePaths = ValidateSourcePaths
                 };
 
             try
@@ -554,8 +573,8 @@ namespace kCura.WinEDDS.TApi
             this.currentJobNumber++;
             this.currentJobId = Guid.NewGuid();
             this.jobRequest = this.currentDirection == TransferDirection.Upload
-                ? TransferRequest.ForUploadJob(this.TargetPath, this.context)
-                : TransferRequest.ForDownloadJob(this.TargetPath, this.context);
+                                  ? TransferRequest.ForUploadJob(this.TargetPath, this.context)
+                                  : TransferRequest.ForDownloadJob(this.TargetPath, this.context);
             this.jobRequest.ClientRequestId = this.clientRequestId;
             this.jobRequest.JobId = this.currentJobId;
             this.jobRequest.Tag = this.currentJobNumber;
@@ -564,7 +583,7 @@ namespace kCura.WinEDDS.TApi
             this.jobRequest.RetryStrategy =
                 RetryStrategies.CreateFixedTimeStrategy(this.parameters.WaitTimeBetweenRetryAttempts);
             this.SetupTargetPathResolvers();
-            
+
             try
             {
                 var task = this.transferClient.CreateJobAsync(this.jobRequest, this.cancellationToken);
@@ -620,6 +639,18 @@ namespace kCura.WinEDDS.TApi
         /// <param name="message">
         /// The message.
         /// </param>
+        protected void RaiseWarningMessage(string message)
+        {
+            this.CheckDispose();
+            this.TapiWarningMessage.Invoke(this, new TapiMessageEventArgs(message, TapiConstants.NoLineNumber));
+        }
+
+        /// <summary>
+        /// Raises a warning message event.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
         /// <param name="lineNumber">
         /// The line number.
         /// </param>
@@ -635,8 +666,12 @@ namespace kCura.WinEDDS.TApi
         /// <param name="message">
         /// The message.
         /// </param>
+        /// <remarks>
+        /// A non-zero line number MUST be supplied.
+        /// </remarks>
         protected void RaiseFatalError(string message)
         {
+            this.CheckDispose();
             this.RaiseFatalError(message, TapiConstants.NoLineNumber);
         }
 
@@ -806,6 +841,10 @@ namespace kCura.WinEDDS.TApi
             this.CreateStatisticsListener();
             foreach (var listener in this.transferListeners)
             {
+                listener.ErrorMessage += (sender, args) =>
+                    {
+                        this.TapiErrorMessage.Invoke(sender, args);
+                    };
                 listener.FatalError += (sender, args) =>
                     {
                         this.TapiFatalError.Invoke(sender, args);
@@ -814,7 +853,7 @@ namespace kCura.WinEDDS.TApi
                     {
                         this.TapiStatusMessage.Invoke(sender, args);
                     };
-                listener.Warning += (sender, args) =>
+                listener.WarningMessage += (sender, args) =>
                     {
                         this.TapiWarningMessage.Invoke(sender, args);
                     };
@@ -839,12 +878,12 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         private void CreatePathIssueListener()
         {
-            var listener = new TransferPathIssueListener(
-                this.transferLog,
-                this.currentDirection,
-                this.ClientDisplayName,
-                this.context);
-            this.transferListeners.Add(listener);
+            this.transferListeners.Add(
+                new TransferPathIssueListener(
+                    this.transferLog,
+                    this.currentDirection,
+                    this.ClientDisplayName,
+                    this.context));
         }
 
         /// <summary>
@@ -852,8 +891,7 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         private void CreateRequestListener()
         {
-            var listener = new TransferRequestListener(this.transferLog, this.context);
-            this.transferListeners.Add(listener);
+            this.transferListeners.Add(new TransferRequestListener(this.transferLog, this.context));
         }
 
         /// <summary>
@@ -861,11 +899,8 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         private void CreateJobRetryListener()
         {
-            var listener = new TransferJobRetryListener(
-                this.transferLog,
-                this.parameters.MaxJobRetryAttempts,
-                this.context);
-            this.transferListeners.Add(listener);
+            this.transferListeners.Add(
+                new TransferJobRetryListener(this.transferLog, this.parameters.MaxJobRetryAttempts, this.context));
         }
 
         /// <summary>
