@@ -2,15 +2,9 @@ Namespace kCura.WinEDDS
 	Public Class ConnectionDetailsProcess
 		Inherits kCura.Windows.Process.ProcessBase
 
-		Private WithEvents _searchExporter As kCura.WinEDDS.Exporter
-		Private _startTime As System.DateTime
-		Private _errorCount As Int32
-		Private _warningCount As Int32
-		Private _uploadModeText As String = Nothing
-		Private _defaultDestinationDirectory As String
-		Private _credential As Net.NetworkCredential
-		Private _cookieContainer As Net.CookieContainer
-		Private _caseInfo As Relativity.CaseInfo
+		Private ReadOnly _credential As Net.NetworkCredential
+		Private ReadOnly _cookieContainer As Net.CookieContainer
+		Private ReadOnly _caseInfo As Relativity.CaseInfo
 
 		Public Sub New(ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfo As Relativity.CaseInfo)
 			MyBase.New()
@@ -18,203 +12,69 @@ Namespace kCura.WinEDDS
 			_credential = credential
 			_cookieContainer = cookieContainer
 			_caseInfo = caseInfo
-			_defaultDestinationDirectory = caseInfo.DocumentPath
 		End Sub
 
-		Public Property DefaultDestinationDirectory() As String
-			Get
-				Return _defaultDestinationDirectory
-			End Get
-			Set(ByVal value As String)
-				_defaultDestinationDirectory = value
-			End Set
-		End Property
-
 		Protected Overrides Sub Execute()
-			Dim bcpEnabled As Boolean = Me.CheckBcp()
+			Me.CheckBcp()
 			Me.WriteStatus("")
 			Me.CheckDownloadHandlerURL()
 			Me.WriteStatus("")
-			Me.CheckRepositoryConnectivity()
-			Me.WriteStatus("")
-			Me.CheckWebBasedRepositoryLifecycle()
-			Me.WriteStatus("")
+
+			' TAPI is now responsible to perform uniform connection checks against all available clients.
+			Dim connectionInfo As Relativity.Transfer.RelativityConnectionInfo =
+				kCura.WinEDDS.TApi.TapiWinEddsHelper.CreateRelativityConnectionInfo(
+					WinEDDS.Config.WebServiceURL,
+					_caseInfo.ArtifactID,
+					_credential.UserName,
+					_credential.Password)
+			Using transferHost As New Relativity.Transfer.RelativityTransferHost(connectionInfo)
+				Dim context As New Relativity.Transfer.DiagnosticsContext
+				Dim configuration As New Relativity.Transfer.DiagnosticsConfiguration(context, _cookieContainer)
+
+				' Reducing these values to more quickly publish error information to the user.
+				configuration.MaxHttpRetryAttempts = 1
+				configuration.MaxJobRetryAttempts = 2
+				Try
+					AddHandler context.DiagnosticMessage, AddressOf DiagnosticsContext_OnDiagnosticMessage
+					transferHost.ConnectionChecksAsync(configuration, System.Threading.CancellationToken.None).GetAwaiter().GetResult()
+				Catch e As Exception
+					Me.WriteStatus($"A fatal error occurred performing the connection check. Error: {e.Message}")
+				Finally
+					RemoveHandler context.DiagnosticMessage, AddressOf DiagnosticsContext_OnDiagnosticMessage
+				End Try
+			End Using
 		End Sub
 
-		Private Function CheckRepositoryConnectivity() As String
-			Me.WriteStatus("Checking default repository access: " & _caseInfo.DocumentPath)
-			Dim isDirect As Boolean = False
-			Try
-				If Not System.IO.Directory.Exists(_caseInfo.DocumentPath) Then
-					System.IO.Directory.CreateDirectory(_caseInfo.DocumentPath)
-				End If
-				Me.WriteStatus("Default repository detected in Direct Mode")
-				isDirect = True
-			Catch ex As Exception
-				Me.WriteStatus("No direct access to repository - proceeding in Web Mode")
-				Me.WriteStatus("Actual error: " & ex.ToString)
-			End Try
-			Dim id As String = _caseInfo.DocumentPath.TrimEnd("\"c) & "\" & System.Guid.NewGuid.ToString("N")
-			If isDirect Then
-				Try
-					System.IO.File.Create(id).Close()
-					Me.WriteStatus("Temporary file created: " & id & " - proceeding in Direct Mode")
-				Catch ex As Exception
-					Me.WriteStatus("Cannot create file in repository - proceeding in Web Mode")
-					Me.WriteStatus("Actual error: " & ex.ToString)
-					isDirect = False
-				End Try
-			End If
-			If isDirect Then
-				Try
-					System.IO.File.Delete(id)
-					Me.WriteStatus("Temporary file deleted: " & id & " - proceeding in Direct Mode")
-				Catch ex As Exception
-					Me.WriteStatus("Cannot delete file in repository - proceeding in Web Mode")
-					Me.WriteStatus("Actual error: " & ex.ToString)
-					isDirect = False
-				End Try
-			End If
-			id = id.TrimEnd("\"c) & "\"
-			If isDirect Then
-				Try
-					Me.WriteStatus("Subdirectory created: " & System.IO.Directory.CreateDirectory(id).FullName & " - proceeding in Direct Mode")
-				Catch ex As Exception
-					Me.WriteStatus("Cannot create directory in repository - proceeding in Web Mode")
-					Me.WriteStatus("Actual error: " & ex.ToString)
-					isDirect = False
-				End Try
-			End If
-			If isDirect Then
-				Try
-					System.IO.Directory.Delete(id)
-					Me.WriteStatus("Subdirectory deleted: " & id & " - proceeding in Direct Mode")
-				Catch ex As Exception
-					Me.WriteStatus("Cannot delete directory - proceeding in Web Mode")
-					Me.WriteStatus("Actual error: " & ex.ToString)
-					isDirect = False
-				End Try
-			End If
-			If isDirect Then
-				Me.WriteStatus("Direct Mode test: Passed")
-				Me.WriteStatus("Uploading in Direct Mode")
-			Else
-				Me.WriteStatus("Direct Mode test: Failed")
-				Me.WriteStatus("Uploading in Web Mode")
-			End If
-			Return Nothing
-		End Function
-
-		Private Function CheckWebBasedRepositoryLifecycle() As Boolean
-			Me.WriteStatus("Web Mode Connectivity:")
-			Dim uploader As kCura.WinEDDS.FileUploader
-			Try
-				uploader = New kCura.WinEDDS.FileUploader(_credential, _caseInfo.ArtifactID, _caseInfo.DocumentPath, _cookieContainer, False)
-			Catch ex As Exception
-				Me.WriteStatus("Error creating uploader object: " & ex.ToString)
-				Return False
-			End Try
-			Try
-				'uploader.
-				uploader.UploaderType = Tapi.TransferClient.Web
-			Catch ex As Exception
-				Me.WriteStatus("Cannot change uploader type to web")
-				Me.WriteStatus("Actual error: " & ex.ToString)
-				Return False
-			End Try
-			Dim path As String
-			Try
-				path = System.IO.Path.GetTempFileName
-				Dim sw As New System.IO.StreamWriter(path)
-				sw.WriteLine("This is only a test")
-				sw.Close()
-			Catch ex As Exception
-				Me.WriteStatus("Error creating local temp file")
-				Me.WriteStatus("Actual error: " & ex.ToString)
-				Return False
-			End Try
-			Dim dest As String
-			Try
-				dest = uploader.UploadFile(path, _caseInfo.ArtifactID)
-				Me.WriteStatus("Web mode upload successful")
-			Catch ex As Exception
-				Me.WriteStatus("Error uploading local temp file in web mode")
-				Me.WriteStatus("Actual error: " & ex.ToString)
-				Return False
-			End Try
-			Dim downloader As kCura.WinEDDS.FileDownloader
-			Try
-				downloader = New kCura.WinEDDS.FileDownloader(_credential, _caseInfo.DocumentPath, kCura.Utility.URI.GetFullyQualifiedPath(_caseInfo.DownloadHandlerURL, New System.Uri(WinEDDS.Config.WebServiceURL)), _cookieContainer, kCura.WinEDDS.Service.Settings.AuthenticationToken)
-			Catch ex As Exception
-				Me.WriteStatus("Error initializing file downloader")
-				Me.WriteStatus("Actual error: " & ex.ToString)
-				Return False
-			End Try
-			Try
-				downloader.DownloadTempFile(path, dest, _caseInfo.ArtifactID.ToString)
-				Me.WriteStatus("Temporary file successfully downloaded")
-			Catch ex As Exception
-				Me.WriteStatus("Error downloading file from repository through Distributed")
-				Me.WriteStatus("Actual error: " & ex.ToString)
-				Return False
-			End Try
-			Try
-				Dim gateway As New kCura.WinEDDS.Service.FileIO(_credential, _cookieContainer)
-
-				gateway.RemoveTempFile(_caseInfo.ArtifactID, dest)
-				Me.WriteStatus("Temp file successfully removed from repository")
-			Catch ex As Exception
-				Me.WriteStatus("Error downloading file from repository through Distributed")
-				Me.WriteStatus("Actual error: " & ex.ToString)
-				Return False
-			End Try
-			Try
-				kCura.Utility.File.Instance.Delete(path)
-			Catch ex As Exception
-			End Try
-			Try
-				Me.WriteStatus("Retrieving default repository drive information:")
-				Dim tempFileIO As Service.FileIO = New kCura.WinEDDS.Service.FileIO(_credential, _cookieContainer)
-
-				Dim s As String()() = tempFileIO.GetDefaultRepositorySpaceReport(_caseInfo.ArtifactID)
-				Me.WriteStatus("Success - report follows:")
-				Me.WriteOutReportString(s)
-			Catch ex As Exception
-				Me.WriteStatus("Error retrieving space information on default repository - make sure relativity service account has full rights to the repository if you want to see this report")
-				Me.WriteStatus("Exact error: " & ex.ToString)
-				Return False
-			End Try
-			Me.WriteStatus("Web based file repository lifecycle successfully completed")
-			Return True
-		End Function
-
+		Private Sub DiagnosticsContext_OnDiagnosticMessage(sender As Object, e As Relativity.Transfer.DiagnosticMessageEventArgs)
+			Me.WriteStatus(e.Message)
+		End Sub
+		
 		Private Sub CheckDownloadHandlerURL()
 			Me.WriteStatus("Validate Download URL:")
 			Dim downloadUrl As String = kCura.Utility.URI.GetFullyQualifiedPath(_caseInfo.DownloadHandlerURL, New System.Uri(kCura.WinEDDS.Config.WebServiceURL))
-			Dim token As String = kCura.WinEDDS.Service.Settings.AuthenticationToken
 			Me.WriteStatus(downloadUrl)
 			Dim myReq As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(downloadUrl & "AccessDenied.aspx"), System.Net.HttpWebRequest)
-      Try
-        'SF00204217: Set credentials to avoid http 401 when IIS is using Integrated Windows Authentication.
-        myReq.UseDefaultCredentials = True
-        myReq.GetResponse()
-        Me.WriteStatus("URL validated")
-      Catch ex As System.Net.WebException
-        With DirectCast(ex.Response, System.Net.HttpWebResponse)
-          If .StatusCode = Net.HttpStatusCode.Forbidden AndAlso .StatusDescription = "kcuraaccessdeniedmarker" Then
-            Me.WriteStatus("URL validated")
-          Else
-            Me.WriteStatus("Cannot find URL")
-            Me.WriteStatus(ex.ToString)
-          End If
-        End With
-      Catch ex As System.Exception
-        Me.WriteStatus("Cannot find URL")
-        Me.WriteStatus(ex.ToString)
-      End Try
+	  Try
+		'SF00204217: Set credentials to avoid http 401 when IIS is using Integrated Windows Authentication.
+		myReq.UseDefaultCredentials = True
+		myReq.GetResponse()
+		Me.WriteStatus("URL validated")
+	  Catch ex As System.Net.WebException
+		With DirectCast(ex.Response, System.Net.HttpWebResponse)
+		  If .StatusCode = Net.HttpStatusCode.Forbidden AndAlso .StatusDescription = "kcuraaccessdeniedmarker" Then
+			Me.WriteStatus("URL validated")
+		  Else
+			Me.WriteStatus("Cannot find URL")
+			Me.WriteStatus(ex.ToString)
+		  End If
+		End With
+	  Catch ex As System.Exception
+		Me.WriteStatus("Cannot find URL")
+		Me.WriteStatus(ex.ToString)
+	  End Try
 		End Sub
 
-		Private Function CheckBcp() As Boolean
+		Private Sub CheckBcp()
 			Me.WriteStatus("Checking Bulk Share Configuration")
 			Dim gateway As New kCura.WinEDDS.Service.FileIO(_credential, _cookieContainer)
 
@@ -231,7 +91,7 @@ Namespace kCura.WinEDDS
 				End If
 				Me.WriteStatus(ensure & " that relativity service account has rights to create/delete files and subdirectories in the BCP folder")
 				Me.WriteStatus("Exact error: " & ex.ToString)
-				Return False
+				Return
 			End Try
 			Try
 				If Not System.IO.Directory.Exists(bcpPath) Then
@@ -259,7 +119,7 @@ Namespace kCura.WinEDDS
 				Dim text As String = ex.ToString
 				If TypeOf ex Is System.Web.Services.Protocols.SoapException Then text = System.Web.HttpUtility.HtmlDecode(text)
 				Me.WriteStatus("Exact error: " & text)
-				Return False
+				Return
 			End Try
 			Try
 				Me.WriteStatus("Retrieving bulk directory drive information:")
@@ -269,10 +129,9 @@ Namespace kCura.WinEDDS
 			Catch ex As Exception
 				Me.WriteStatus("Error retrieving space information on bulk share - make sure relativity service account has full rights to the share if you want to see this report")
 				Me.WriteStatus("Exact error: " & ex.ToString)
-				Return False
+				Return
 			End Try
-			Return True
-		End Function
+		End Sub
 
 		Private Sub WriteOutReportString(ByVal input As String()())
 			For Each line As String() In input
