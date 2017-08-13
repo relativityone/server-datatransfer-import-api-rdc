@@ -117,5 +117,33 @@ namespace kCura.WinEDDS.TApi
 
             throw new ArgumentException(Strings.ClientIdNotFoundExceptionMessage);
         }
+
+        /// <summary>
+        /// Creates a Relativity connection information object.
+        /// </summary>
+        /// <param name="webServiceUrl">
+        /// The Relativity web service URL.
+        /// </param>
+        /// <param name="workspaceId">
+        /// The workspace artifact identifier.
+        /// </param>
+        /// <param name="userName">
+        /// The Relativity user name.
+        /// </param>
+        /// <param name="password">
+        /// The Relativity password.
+        /// </param>
+        /// <returns>
+        /// The <see cref="RelativityConnectionInfo"/> instance.
+        /// </returns>
+        public static RelativityConnectionInfo CreateRelativityConnectionInfo(string webServiceUrl, int workspaceId, string userName, string password)
+        {
+            var baseUri = new Uri(webServiceUrl);
+            var host = new Uri(baseUri.GetLeftPart(UriPartial.Authority));
+            return new RelativityConnectionInfo(
+                host,
+                new UsernamePasswordCredentials(userName, password),
+                workspaceId);
+        }
     }
 }

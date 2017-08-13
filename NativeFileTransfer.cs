@@ -162,7 +162,12 @@ namespace kCura.WinEDDS.TApi
 
             this.currentDirection = direction;
             this.parameters = parameters;
-            this.transferHost = new RelativityTransferHost(CreateRelativityConnectionInfo(parameters), log);
+            var connectionInfo = TapiWinEddsHelper.CreateRelativityConnectionInfo(
+                parameters.WebServiceUrl,
+                parameters.WorkspaceId,
+                parameters.Credentials.UserName,
+                parameters.Credentials.Password);
+            this.transferHost = new RelativityTransferHost(connectionInfo, log);
             this.TargetPath = parameters.TargetPath;
             this.cancellationToken = token;
             this.transferLog = log;
@@ -704,25 +709,6 @@ namespace kCura.WinEDDS.TApi
             }
 
             throw new ObjectDisposedException(Strings.ObjectDisposedExceptionMessage);
-        }
-
-        /// <summary>
-        /// Creates a Relativity connection information object.
-        /// </summary>
-        /// <param name="parameters">
-        /// The transfer parameters.
-        /// </param>
-        /// <returns>
-        /// The <see cref="RelativityConnectionInfo"/> instance.
-        /// </returns>
-        private static RelativityConnectionInfo CreateRelativityConnectionInfo(NativeFileTransferParameters parameters)
-        {
-            var baseUri = new Uri(parameters.WebServiceUrl);
-            var host = new Uri(baseUri.GetLeftPart(UriPartial.Authority));
-            return new RelativityConnectionInfo(
-                host,
-                new UsernamePasswordCredentials(parameters.Credentials.UserName, parameters.Credentials.Password),
-                parameters.WorkspaceId);
         }
 
         /// <summary>
