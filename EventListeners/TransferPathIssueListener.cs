@@ -56,7 +56,15 @@ namespace kCura.WinEDDS.TApi
             // Note: this issue is indicative of a job-level issue - especially with Aspera.
             if (e.Issue.Path == null)
             {
-                // Don't raise a warning here because you cannot associate it with a line number.
+                var formattedMessage = this.transferDirection == TransferDirection.Download
+                    ? Strings.TransferJobDownloadWarningMessage
+                    : Strings.TransferJobUploadWarningMessage;
+                var message = string.Format(
+                    CultureInfo.CurrentCulture,
+                    formattedMessage,
+                    this.clientName,
+                    e.Issue.Message);
+                this.RaiseWarningMessage(message, TapiConstants.NoLineNumber);
                 this.TransferLog.LogWarning(
                     "A transfer warning has occurred. LineNumber={LineNumber}, SourcePath={SourcePath}, Attributes={Attributes}.",
                     TapiConstants.NoLineNumber,
@@ -69,10 +77,10 @@ namespace kCura.WinEDDS.TApi
             var retryCalculation = e.Request.RetryStrategy.Calculation;
             var retryTimeSpan = retryCalculation(e.Issue.RetryAttempt);
             var triesLeft = e.Issue.MaxRetryAttempts - e.Issue.RetryAttempt - 1;
-
-            // TODO: Cleanup this logic - it's way too complicated.
             if (e.Issue.Attributes.HasFlag(IssueAttributes.Error))
             {
+                // Note: paths containing fatal errors force the transfer to terminate
+                //       and error handling is already addressed. Log it here just in case.
                 this.TransferLog.LogError(
                     "A transfer error has occurred. Message={Message}, LineNumber={LineNumber}, SourcePath={SourcePath}, Attributes={Attributes}.",
                     e.Issue.Message,
