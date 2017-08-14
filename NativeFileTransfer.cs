@@ -389,43 +389,39 @@ namespace kCura.WinEDDS.TApi
                     this.ClientDisplayName,
                     transferResult.TotalTransferredFiles,
                     transferResult.TotalFailedFiles);
-                if (transferResult.Status == TransferStatus.Fatal)
+                switch (transferResult.Status)
                 {
-                    var lastIssue = transferResult.Issues.OrderBy(x => x.Index).ToList().FindLast(x => x.Path != null) ??
-                                    transferResult.TransferError;
-                    if (lastIssue != null && lastIssue.Path != null)
-                    {
-                        var formattedMessage = transferResult.Request.Direction == TransferDirection.Download
-                            ? Strings.TransferFileDownloadFatalMessage
-                            : Strings.TransferFileUploadFatalMessage;
-                        var message = string.Format(formattedMessage, CultureInfo.CurrentCulture, lastIssue.Message);
-                        var lineNumber = lastIssue.Path.Order > 0 ? lastIssue.Path.Order : ValidLineNumber;
-                        this.RaiseStatusMessage(message, lineNumber);
-                        this.RaiseFatalError(message, lineNumber);
-                    }
-                }
-                else if (transferResult.Status == TransferStatus.Failed)
-                {
-                    this.RaiseStatusMessage(Strings.TransferJobExceptionMessage);
-                    this.RaiseFatalError(Strings.TransferJobExceptionMessage);
+                    case TransferStatus.Fatal:
+
+                        // Note: Fatal status is non-retryable and normally indicative of issues with data or permissions.
+                        var lastIssue = transferResult.Issues.OrderBy(x => x.Index).ToList().FindLast(x => x.Path != null) ??
+                                        transferResult.TransferError;
+                        if (lastIssue != null && lastIssue.Path != null)
+                        {
+                            var formattedMessage = transferResult.Request.Direction == TransferDirection.Download
+                                ? Strings.TransferFileDownloadFatalMessage
+                                : Strings.TransferFileUploadFatalMessage;
+                            var message = string.Format(CultureInfo.CurrentCulture, formattedMessage, lastIssue.Message);
+                            var lineNumber = lastIssue.Path.Order > 0 ? lastIssue.Path.Order : ValidLineNumber;
+                            this.RaiseStatusMessage(message, lineNumber);
+                            this.RaiseFatalError(message, lineNumber);
+                        }
+
+                        break;
+                    case TransferStatus.Failed:
+
+                        // Note: Failed status indicates a problem with the transport.
+                        throw new TransferException(Strings.TransferJobExceptionMessage);
                 }
             }
             catch (OperationCanceledException)
             {
                 this.LogCancelRequest();
             }
-            catch (TransferException)
-            {
-                this.transferLog.LogWarning2(
-                    this.jobRequest,
-                    "Forcing a fatal error because no more clients are available.");
-                this.RaiseStatusMessage(Strings.TransferJobExceptionMessage, ValidLineNumber);
-                this.RaiseFatalError(Strings.TransferJobExceptionMessage, ValidLineNumber);
-            }
             catch (Exception e)
             {
-                this.transferLog.LogInformation(e, "An unexpected error has occurred attempting to wait for the transfer job to complete.");
-                this.RaiseWarningMessage("An unexpected error has occurred. Message: " + e.Message, 0);
+                this.transferLog.LogWarning2(e, this.jobRequest, Strings.CompleteJobExceptionMessage);
+                this.RaiseWarningMessage(Strings.CompleteJobExceptionMessage + " Message: " + e.Message, 0);
                 this.FallbackHttpClient();
             }
             finally
@@ -605,6 +601,7 @@ namespace kCura.WinEDDS.TApi
                 this.transferLog.LogError(e, "Failed to create the transfer job.");
                 if (httpFallback)
                 {
+                    // Nothing more can be done.
                     throw;
                 }
 
