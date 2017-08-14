@@ -46,6 +46,7 @@ Namespace kCura.WinEDDS
                             If Not tempDict.Contains("TapiForceHttpClient") Then tempDict.Add("TapiForceHttpClient", "False")
                             If Not tempDict.Contains("TapiForceAsperaClient") Then tempDict.Add("TapiForceAsperaClient", "False")
                             If Not tempDict.Contains("TapiLogEnabled") Then tempDict.Add("TapiLogEnabled", "False")
+                            If Not tempDict.Contains("TapiLargeFileProgressEnabled") Then tempDict.Add("TapiLargeFileProgressEnabled", "False")
                             If Not tempDict.Contains("TapiMaxJobParallelism") Then tempDict.Add("TapiMaxJobParallelism", "10")
                             If Not tempDict.Contains("DisableAspera") Then tempDict.Add("DisableAspera", "True")
                             If Not tempDict.Contains("RestUrl") Then tempDict.Add("RestUrl", "/Relativity.REST/api")
@@ -355,6 +356,13 @@ Namespace kCura.WinEDDS
         Public Shared ReadOnly Property TapiLogEnabled() As Boolean
             Get
                 Return CType(ConfigSettings("TapiLogEnabled"), Boolean)
+            End Get
+        End Property
+
+        ' This enables the feature that gives "trip 1 of x" progress for large files.
+        Public Shared ReadOnly Property TapiLargeFileProgressEnabled() As Boolean
+            Get
+                Return CType(ConfigSettings("TapiLargeFileProgressEnabled"), Boolean)
             End Get
         End Property
 

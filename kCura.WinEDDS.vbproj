@@ -289,6 +289,10 @@
       <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.8\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Transfer.Client, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Relativity.TransferClient.1.0.0\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>

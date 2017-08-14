@@ -397,6 +397,7 @@ Namespace kCura.WinEDDS
 			parameters.ForceFileShareClient = Config.TapiForceFileShareClient
 			parameters.ForceHttpClient = Config.ForceWebUpload OrElse Config.TapiForceHttpClient
 			parameters.IsBulkEnabled = False
+			parameters.LargeFileProgressEnabled = Config.TapiLargeFileProgressEnabled
 			parameters.LogEnabled = Config.TapiLogEnabled
 			parameters.MaxFilesPerFolder = gateway.RepositoryVolumeMax
 			parameters.MaxJobParallelism = Config.TapiMaxJobParallelism
