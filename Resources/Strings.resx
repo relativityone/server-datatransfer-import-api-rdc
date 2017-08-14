@@ -180,4 +180,13 @@
   <data name="TransferFileUploadFatalMessage" xml:space="preserve">
     <value>Error uploading file: {0}</value>
   </data>
+  <data name="CompleteJobExceptionMessage" xml:space="preserve">
+    <value>An unexpected error has occurred attempting to wait for the transfer job to complete.</value>
+  </data>
+  <data name="TransferJobDownloadWarningMessage" xml:space="preserve">
+    <value>{0} download job issue: {1}.</value>
+  </data>
+  <data name="TransferJobUploadWarningMessage" xml:space="preserve">
+    <value>{0} upload job issue: {1}.</value>
+  </data>
 </root>

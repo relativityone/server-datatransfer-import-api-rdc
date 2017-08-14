@@ -79,6 +79,15 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An unexpected error has occurred attempting to wait for the transfer job to complete..
+        /// </summary>
+        internal static string CompleteJobExceptionMessage {
+            get {
+                return ResourceManager.GetString("CompleteJobExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A serious error has occurred attempting to transfer files over HTTP..
         /// </summary>
         internal static string HttpFallbackExceptionMessage {
@@ -196,6 +205,15 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} download job issue: {1}..
+        /// </summary>
+        internal static string TransferJobDownloadWarningMessage {
+            get {
+                return ResourceManager.GetString("TransferJobDownloadWarningMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File transfer job exceeded the max number of retries..
         /// </summary>
         internal static string TransferJobEndedMaxRetryMessage {
@@ -237,6 +255,15 @@ namespace kCura.WinEDDS.TApi.Resources {
         internal static string TransferJobStartedMessage {
             get {
                 return ResourceManager.GetString("TransferJobStartedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} upload job issue: {1}..
+        /// </summary>
+        internal static string TransferJobUploadWarningMessage {
+            get {
+                return ResourceManager.GetString("TransferJobUploadWarningMessage", resourceCulture);
             }
         }
         

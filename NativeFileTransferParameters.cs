@@ -26,6 +26,7 @@ namespace kCura.WinEDDS.TApi
             this.ForceHttpClient = false;            
             this.ForceFileShareClient = false;
             this.IsBulkEnabled = true;
+            this.LargeFileProgressEnabled = false;
             this.MaxFilesPerFolder = 1000;
             this.MaxJobParallelism = 10;
             this.MaxJobRetryAttempts = 3;
@@ -95,6 +96,18 @@ namespace kCura.WinEDDS.TApi
         /// The bulk mode enabled value.
         /// </value>
         public bool IsBulkEnabled
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether large file progress is enabled.
+        /// </summary>
+        /// <value>
+        /// The large file progress enabled value.
+        /// </value>
+        public bool LargeFileProgressEnabled
         {
             get;
             set;

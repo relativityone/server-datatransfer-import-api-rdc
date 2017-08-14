@@ -37,6 +37,13 @@ namespace kCura.WinEDDS.TApi
         public event EventHandler<TapiProgressEventArgs> ProgressEvent = delegate { };
 
         /// <inheritdoc />
+        protected override void OnLargeFileProgress(object sender, LargeFileProgressEventArgs e)
+        {
+            base.OnLargeFileProgress(sender, e);
+            this.RaiseStatusMessage($"Trip {e.ChunkNumber} of {e.TotalChunks}", e.Path.Order);
+        }
+
+        /// <inheritdoc />
         protected override void OnTransferPathProgress(object sender, TransferPathProgressEventArgs e)
         {
             if (e.Status != TransferPathStatus.Successful)

@@ -39,6 +39,7 @@ namespace kCura.WinEDDS.TApi
 
             this.TransferLog = log;
             this.Context = context;
+            this.Context.LargeFileProgress += this.OnLargeFileProgress;
             this.Context.TransferPathProgress += this.OnTransferPathProgress;
             this.Context.TransferPathIssue += this.OnTransferPathIssue;
             this.Context.TransferRequest += this.OnTransferRequestEvent;
@@ -93,6 +94,7 @@ namespace kCura.WinEDDS.TApi
                 return;
             }
 
+            this.Context.LargeFileProgress -= this.OnLargeFileProgress;
             this.Context.TransferPathProgress -= this.OnTransferPathProgress;
             this.Context.TransferPathIssue -= this.OnTransferPathIssue;
             this.Context.TransferRequest -= this.OnTransferRequestEvent;
@@ -154,6 +156,19 @@ namespace kCura.WinEDDS.TApi
         protected void RaiseFatalError(string message, int lineNumber)
         {
             this.FatalError.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
+        }
+
+        /// <summary>
+        /// Occurs when large path transfer progress occurs.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The <see cref="LargeFileProgressEventArgs"/> instance containing the event data.
+        /// </param>
+        protected virtual void OnLargeFileProgress(object sender, LargeFileProgressEventArgs e)
+        {
         }
 
         /// <summary>

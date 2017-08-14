@@ -173,9 +173,12 @@ namespace kCura.WinEDDS.TApi
             this.transferLog = log;
             this.pathManager = new FileSharePathManager(parameters.MaxFilesPerFolder);
             this.currentJobNumber = 0;
+            this.context = new TransferContext
+            {
+                StatisticsRateSeconds = 1.0,
+                LargeFileProgressEnabled = parameters.LargeFileProgressEnabled
+            };
 
-            // The context is optional and must be supplied on the transfer request (see below).
-            this.context = new TransferContext { StatisticsRateSeconds = 1.0 };
             this.SetupTransferListeners();
         }
 
