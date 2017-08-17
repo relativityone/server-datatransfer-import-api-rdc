@@ -155,6 +155,9 @@ namespace kCura.WinEDDS.Core.Import
 
 		private ImportBatchContext CreateBatch()
 		{
+			//That's not great but we need to quickly fix the issue
+			int updateStats = Math.Max(_config.ImportBatchSize / 10, _config.ImportBatchSize);
+
 			_log.LogInformation($"New batch creation started at record {_importer.ArtifactReader.CurrentLineNumber}");
 			var currentBatchCounter = 0;
 			var importBatchContext = new ImportBatchContext(_context, _config.ImportBatchSize);
@@ -162,11 +165,30 @@ namespace kCura.WinEDDS.Core.Import
 			{
 				_cancellationProvider.ThrowIfCancellationRequested();
 				++currentBatchCounter;
-				ProcessBatchRecord(importBatchContext);
+
 				_importStatusManager.RaiseStatusUpdateEvent(this, StatusUpdateType.Count, string.Empty, _importer.ArtifactReader.CurrentLineNumber);
+
+				_importExceptionHandlerExec.TryCatchExecNonFatal(() =>
+					ProcessBatchRecord(importBatchContext)
+				);
+
+				if ((_importer.ArtifactReader.CurrentLineNumber - 1) % updateStats == 0)
+				{
+					_importStatusManager.RaiseCustomStatusUpdateEvent(this, StatusUpdateType.Progress,
+						$"Read {_importer.ArtifactReader.CurrentLineNumber -1 } records", ProgressStep());
+				}
 			}
+
+			_importStatusManager.RaiseCustomStatusUpdateEvent(this, StatusUpdateType.Progress,
+						$"Read {_importer.ArtifactReader.CurrentLineNumber - 1 } records", ProgressStep());
+
 			_log.LogInformation($"New batch of size: {importBatchContext.FileMetaDataHolder.Count} created");
 			return importBatchContext;
+		}
+
+		private int ProgressStep()
+		{
+			return (int)((_importer.ArtifactReader.CurrentLineNumber - 2 ) / _config.ImportBatchSize) * _config.ImportBatchSize;
 		}
 
 		private bool CanProcessNextRecord(int currentBatchCounter)
