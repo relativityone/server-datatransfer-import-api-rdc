@@ -50,6 +50,8 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\</OutputPath>
@@ -96,82 +98,6 @@
     <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DefineDebug>true</DefineDebug>
-    <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
-    <OutputPath>bin\x86\</OutputPath>
-    <BaseAddress>285212672</BaseAddress>
-    <DocumentationFile>bin\x86\kCura.EDDS.WinForm.xml</DocumentationFile>
-    <WarningLevel>1</WarningLevel>
-    <NoWarn>
-    </NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Prefer32Bit>false</Prefer32Bit>
-    <DefineConstants>EnableInjections</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
-    <OutputPath>bin\x86\</OutputPath>
-    <BaseAddress>285212672</BaseAddress>
-    <DocumentationFile>bin\x86\kCura.EDDS.WinForm.xml</DocumentationFile>
-    <Optimize>true</Optimize>
-    <WarningLevel>1</WarningLevel>
-    <NoWarn>
-    </NoWarn>
-    <PlatformTarget>x86</PlatformTarget>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <DebugType>pdbonly</DebugType>
-    <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Prefer32Bit>false</Prefer32Bit>
-    <DefineConstants>EnableInjections</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DefineDebug>true</DefineDebug>
-    <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
-    <OutputPath>bin\x64\</OutputPath>
-    <BaseAddress>285212672</BaseAddress>
-    <DocumentationFile>bin\x64\kCura.EDDS.WinForm.xml</DocumentationFile>
-    <WarningLevel>1</WarningLevel>
-    <NoWarn>
-    </NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <Prefer32Bit>false</Prefer32Bit>
-    <DefineConstants>EnableInjections</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-    <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
-    <OutputPath>bin\x64\</OutputPath>
-    <BaseAddress>285212672</BaseAddress>
-    <DocumentationFile>bin\x64\kCura.EDDS.WinForm.xml</DocumentationFile>
-    <Optimize>true</Optimize>
-    <WarningLevel>1</WarningLevel>
-    <NoWarn>
-    </NoWarn>
-    <PlatformTarget>x64</PlatformTarget>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <DebugType>pdbonly</DebugType>
-    <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <Prefer32Bit>false</Prefer32Bit>
-    <DefineConstants>EnableInjections</DefineConstants>
-  </PropertyGroup>
   <PropertyGroup>
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
@@ -189,50 +115,6 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
     <CodeAnalysisLogFile>bin\kCura.EDDS.WinForm.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.vb</CodeAnalysisModuleSuppressionsFile>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
-    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
-    <Prefer32Bit>false</Prefer32Bit>
-    <DefineConstants>EnableInjections</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Documentation|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <DefineDebug>true</DefineDebug>
-    <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
-    <OutputPath>bin\x86\</OutputPath>
-    <BaseAddress>285212672</BaseAddress>
-    <DocumentationFile>bin\x86\kCura.EDDS.WinForm.xml</DocumentationFile>
-    <WarningLevel>1</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
-    <CodeAnalysisLogFile>bin\x86\kCura.EDDS.WinForm.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.vb</CodeAnalysisModuleSuppressionsFile>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
-    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
-    <Prefer32Bit>false</Prefer32Bit>
-    <DefineConstants>EnableInjections</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Documentation|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <DefineDebug>true</DefineDebug>
-    <DefineTrace>true</DefineTrace>
-    <DefineConstants>$(Injections)</DefineConstants>
-    <OutputPath>bin\x64\</OutputPath>
-    <BaseAddress>285212672</BaseAddress>
-    <DocumentationFile>bin\x64\kCura.EDDS.WinForm.xml</DocumentationFile>
-    <WarningLevel>1</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
-    <CodeAnalysisLogFile>bin\x64\kCura.EDDS.WinForm.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.vb</CodeAnalysisModuleSuppressionsFile>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -274,20 +156,32 @@
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.8\lib\net462\Relativity.OAuth2Client.dll</HintPath>
+    <Reference Include="oi, Version=2017.1.2.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\kCura.OutsideIn.FI.unified.2017.1.2\lib\net40\oi.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.IdentityModel, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.8\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client, Version=1.0.23.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.23\lib\net462\Relativity.OAuth2Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.8\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel, Version=1.0.23.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.23\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.8\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces, Version=1.0.23.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.23\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.Implicit">
+      <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit.1.0.23\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.23.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.23\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System">
@@ -434,9 +328,6 @@
     <Compile Include="Forms\LoadFilePreviewForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\LoginForm.vb">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Forms\MainForm.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -526,10 +417,6 @@
     <EmbeddedResource Include="Forms\LoadFilePreviewForm.resx">
       <DependentUpon>LoadFilePreviewForm.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\LoginForm.resx">
-      <DependentUpon>LoginForm.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.vb</DependentUpon>
     </EmbeddedResource>
@@ -563,11 +450,43 @@
     <Content Include="images\kcura.ICO" />
     <Content Include="images\relativity.ICO" />
     <Content Include="images\relativity1.ICO" />
+    <None Include="oi\unmanaged\x64\cmmap000.bin" />
+    <None Include="oi\unmanaged\x86\cmmap000.bin" />
     <None Include="packages.config" />
     <None Include="Resources\CopyrightInfo.txt" />
     <Content Include="LoggerConfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="oi\unmanaged\x64\oilink.exe" />
+    <Content Include="oi\unmanaged\x64\oilink.jar" />
+    <Content Include="oi\unmanaged\x64\sccca-R1.dll" />
+    <Content Include="oi\unmanaged\x64\sccch-R1.dll" />
+    <Content Include="oi\unmanaged\x64\sccda-R1.dll" />
+    <Content Include="oi\unmanaged\x64\sccex-R1.dll" />
+    <Content Include="oi\unmanaged\x64\sccfa-R1.dll" />
+    <Content Include="oi\unmanaged\x64\sccfi-R1.dll" />
+    <Content Include="oi\unmanaged\x64\sccfmt-R1.dll" />
+    <Content Include="oi\unmanaged\x64\sccfnt-R1.dll" />
+    <Content Include="oi\unmanaged\x64\sccfut-R1.dll" />
+    <Content Include="oi\unmanaged\x64\sccind-R1.dll" />
+    <Content Include="oi\unmanaged\x64\scclo-R1.dll" />
+    <Content Include="oi\unmanaged\x64\sccut-R1.dll" />
+    <Content Include="oi\unmanaged\x64\wvcore-R1.dll" />
+    <Content Include="oi\unmanaged\x86\oilink.exe" />
+    <Content Include="oi\unmanaged\x86\oilink.jar" />
+    <Content Include="oi\unmanaged\x86\sccca-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccch-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccda-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccex-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccfa-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccfi-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccfmt-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccfnt-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccfut-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccind-R1.dll" />
+    <Content Include="oi\unmanaged\x86\scclo-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccut-R1.dll" />
+    <Content Include="oi\unmanaged\x86\wvcore-R1.dll" />
     <Content Include="ToDo.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -607,7 +526,14 @@
     </PreBuildEvent>
     <PostBuildEvent>
 			if "$(ConfigurationName)" == "Release" goto :eof
-			copy /Y "$(ProjectDir)..\..\Vendor\FreeImage\3.151\FreeImage\Release\$(PlatformName)\FreeImage.dll" "$(TargetDir)"
+			copy /Y "$(ProjectDir)..\..\Vendor\FreeImage\3.151\FreeImage\Release\x64\FreeImage.dll" "$(TargetDir)"
 		</PostBuildEvent>
   </PropertyGroup>
+  <Import Project="..\..\packages\kCura.OutsideIn.FI.unified.2017.1.2\build\kCura.OutsideIn.FI.unified.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.unified.2017.1.2\build\kCura.OutsideIn.FI.unified.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\kCura.OutsideIn.FI.unified.2017.1.2\build\kCura.OutsideIn.FI.unified.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\kCura.OutsideIn.FI.unified.2017.1.2\build\kCura.OutsideIn.FI.unified.targets'))" />
+  </Target>
 </Project>

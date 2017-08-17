@@ -1,3 +1,5 @@
+Imports System.Threading.Tasks
+
 Namespace kCura.EDDS.WinForm
 	Friend Class ConfigDictionary
 		Inherits kCura.Config.DictionaryBase
@@ -11,7 +13,7 @@ Namespace kCura.EDDS.WinForm
 		Protected Overrides Sub UpdateValues()
 			Dim configTable As System.Data.DataTable
 			Try
-				configTable = _application.GetSystemConfiguration
+				configTable = Task.Run(Async Function() Await _application.GetSystemConfiguration().ConfigureAwait(false)).Result
 				_hasInitialized = True
 			Catch
 				If Not _hasInitialized Then

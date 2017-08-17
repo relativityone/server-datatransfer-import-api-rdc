@@ -1,4 +1,5 @@
 Imports System.Security.AccessControl
+Imports System.Threading.Tasks
 Imports kCura.EDDS.WebAPI.RelativityManagerBase
 Imports kCura.Utility
 Imports kCura.WinEDDS.Credentials
@@ -52,7 +53,9 @@ Namespace kCura.EDDS.WinForm
 				mainForm.Refresh()
 				System.Windows.Forms.Application.Run()
 			Else
-				RunInConsoleMode()
+				Task.Run(Async Function() As Task
+				             Await RunInConsoleMode().ConfigureAwait(false)
+				         End Function).Wait()
 			End If
 		End Sub
 
@@ -78,7 +81,7 @@ Namespace kCura.EDDS.WinForm
 			End Try
 		End Function
 
-		Private Sub RunInConsoleMode()
+		Private Async Function RunInConsoleMode() As Task
 			Try
 				_application = kCura.EDDS.WinForm.Application.Instance
 
@@ -87,14 +90,14 @@ Namespace kCura.EDDS.WinForm
 					If command.Directive.ToLower.Replace("-", "").Replace("/", "") = "h" Then
 						If command.Value Is Nothing OrElse command.Value = "" Then
 							GetHelpPage()
-							Exit Sub
+							Return
 						End If
 						If command.Value.ToLower = "encoding" Then
 							GetEncodingList()
-							Exit Sub
+							Return
 						End If
 						GetHelpPage()
-						Exit Sub
+						Return
 					End If
 				Next
 
@@ -112,7 +115,7 @@ Namespace kCura.EDDS.WinForm
 				Dim defaultCredentialResult As Application.CredentialCheckResult = _application.AttemptWindowsAuthentication()
 				If defaultCredentialResult = Application.CredentialCheckResult.AccessDisabled Then
 					Console.WriteLine(Application.ACCESS_DISABLED_MESSAGE)
-					Exit Sub
+					Return
 				ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
 
 					_authOptions.CredentialsAreSet()
@@ -125,7 +128,7 @@ Namespace kCura.EDDS.WinForm
 					End Try
 					If loginResult = Application.CredentialCheckResult.AccessDisabled Then
 						Console.WriteLine(Application.ACCESS_DISABLED_MESSAGE)
-						Exit Sub
+						Return
 					ElseIf loginResult = Application.CredentialCheckResult.InvalidClientCredentials Then
 						throw new ClientCrendentialsException
 					ElseIf loginResult = Application.CredentialCheckResult.FailToConnectToIdentityServer Then
@@ -136,20 +139,20 @@ Namespace kCura.EDDS.WinForm
 
 				End If
 
-				_importOptions.SetOptions(commandList, _application)
+				Await _importOptions.SetOptions(commandList)
 
 				Select Case _importOptions.LoadMode
 					Case LoadMode.Image
-						_import.RunImageImport(_importOptions)
+						Await _import.RunImageImport(_importOptions)
 					Case LoadMode.Native
-						_import.RunNativeImport(_importOptions)
+						Await _import.RunNativeImport(_importOptions)
 					Case LoadMode.DynamicObject
 						_import.RunDynamicObjectImport(_importOptions)
 					Case LoadMode.Application
-						_import.RunApplicationImport(_importOptions)
+						Await _import.RunApplicationImport(_importOptions)
 				End Select
 
-				_application.Logout()
+				Await _application.Logout()
 			Catch ex As RdcBaseException
 				Console.WriteLine("--------------------------")
 				Console.WriteLine("ERROR: " & ex.Message)
@@ -163,7 +166,7 @@ Namespace kCura.EDDS.WinForm
 				Console.WriteLine("--------------------------")
 			End Try
 
-		End Sub
+		End Function
 
 #Region " Utility "
 

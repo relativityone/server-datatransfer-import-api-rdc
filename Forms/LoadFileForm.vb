@@ -1,6 +1,7 @@
 Imports System.Collections.Generic
 Imports kCura.Windows.Forms
 Imports System.Linq
+Imports System.Threading.Tasks
 Imports kCura.WinEDDS.Aspera.Configuration
 
 Namespace kCura.EDDS.WinForm
@@ -15,9 +16,6 @@ Namespace kCura.EDDS.WinForm
 
             'This call is required by the Windows Form Designer.
             InitializeComponent()
-
-            'Add any initialization after the InitializeComponent() call
-            InitializeDocumentSpecificComponents()
 
         End Sub
         Friend WithEvents _importMenuForceFolderPreviewItem As System.Windows.Forms.MenuItem
@@ -36,10 +34,9 @@ Namespace kCura.EDDS.WinForm
             End Get
         End Property
 
-        Private ReadOnly Property MultiObjectMultiChoiceCache As DocumentFieldCollection
-            Get
+        Private Async Function GetMultiObjectMultiChoiceCache() As Task(Of DocumentFieldCollection)
                 If _multiObjectMultiChoiceCache Is Nothing Then
-                    Dim container As DocumentFieldCollection = _application.CurrentNonFileFields(_application.ArtifactTypeID, False)
+                    Dim container As DocumentFieldCollection = Await _application.CurrentNonFileFields(_application.ArtifactTypeID, False)
                     _multiObjectMultiChoiceCache = New DocumentFieldCollection()
                     For Each docInfo As DocumentField In container
                         If docInfo.FieldTypeID = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse docInfo.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Objects Then
@@ -48,12 +45,15 @@ Namespace kCura.EDDS.WinForm
                     Next
                 End If
                 Return _multiObjectMultiChoiceCache
-            End Get
-        End Property
+        End Function
 
         Private _multiObjectMultiChoiceCache As DocumentFieldCollection = Nothing
 
-        Private Sub InitializeDocumentSpecificComponents()
+        Private Async Sub InitializeDocumentSpecificComponentsOnLoad() Handles Me.Load
+			Await InitializeDocumentSpecificComponents()
+        End Sub
+
+        Private Async Function InitializeDocumentSpecificComponents() As Task
             If Me.LoadFile.ArtifactTypeID = 0 Then Me.LoadFile.ArtifactTypeID = _application.ArtifactTypeID
             If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
                 Me.GroupBoxNativeFileBehavior.Enabled = True
@@ -62,7 +62,7 @@ Namespace kCura.EDDS.WinForm
                 Me._buildFolderStructure.Text = "Folder Information Column"
                 ParentArtifactTypeID = 8
             Else
-                Dim parentQuery As New kCura.WinEDDS.Service.ObjectTypeManager(_application.Credential, _application.CookieContainer)
+                Dim parentQuery As New kCura.WinEDDS.Service.ObjectTypeManager(Await _application.GetCredentialsAsync(), _application.CookieContainer)
                 ParentArtifactTypeID = CType(parentQuery.RetrieveParentArtifactTypeID(_application.SelectedCaseInfo.ArtifactID,
                 Me.LoadFile.ArtifactTypeID).Tables(0).Rows(0)("ParentArtifactTypeID"), Int32)
                 Me.GroupBoxFolderInfo.Enabled = False
@@ -71,12 +71,12 @@ Namespace kCura.EDDS.WinForm
                     _buildFolderStructure.Checked = True
                 End If
                 Me.GroupBoxNativeFileBehavior.Enabled = False
-                If _application.HasFileField(Me.LoadFile.ArtifactTypeID, True) Then
+                If Await _application.HasFileField(Me.LoadFile.ArtifactTypeID, True) Then
                     Me.GroupBoxNativeFileBehavior.Enabled = True
                 End If
                 Me.GroupBoxExtractedText.Enabled = False
             End If
-        End Sub
+        End Function
 
         'Form overrides dispose to clean up the component list.
         Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
@@ -926,9 +926,9 @@ Namespace kCura.EDDS.WinForm
             End Select
         End Function
 
-        Private Function GetSuitableKeyFields() As DocumentField()
+        Private Async Function GetSuitableKeyFields() As Task(Of DocumentField())
             Dim retval As New System.Collections.ArrayList
-            For Each field As DocumentField In _application.CurrentFields(Me.LoadFile.ArtifactTypeID, True)
+            For Each field As DocumentField In Await _application.CurrentFields(Me.LoadFile.ArtifactTypeID, True)
                 If (field.FieldCategory = Relativity.FieldCategory.Generic OrElse field.FieldCategory = Relativity.FieldCategory.Identifier) AndAlso field.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Varchar Then
                     If field.FieldCategory = Relativity.FieldCategory.Identifier Then field.FieldName &= " [Identifier]"
                     retval.Add(field)
@@ -938,8 +938,8 @@ Namespace kCura.EDDS.WinForm
             Return DirectCast(retval.ToArray(GetType(DocumentField)), DocumentField())
         End Function
 
-        Private Function GetLongTextFields() As DocumentFieldCollection
-            Dim container As DocumentFieldCollection = _application.CurrentNonFileFields(_application.ArtifactTypeID, False)
+        Private Async Function GetLongTextFields() As Task(Of DocumentFieldCollection)
+            Dim container As DocumentFieldCollection = Await _application.CurrentNonFileFields(_application.ArtifactTypeID, False)
             Dim longTextFields = New DocumentFieldCollection()
             For Each docInfo As DocumentField In container
                 If docInfo.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Text Then
@@ -950,9 +950,9 @@ Namespace kCura.EDDS.WinForm
 
         End Function
 
-        Private Function GetMappedLongTextFields() As DocumentField()
+        Private Async Function GetMappedLongTextFields() As Task(Of DocumentField())
             Dim mappedLongTextFields As New System.Collections.ArrayList
-            For Each field As DocumentField In Me.GetLongTextFields()
+            For Each field As DocumentField In Await Me.GetLongTextFields()
                 If Me._fieldMap.FieldColumns.RightListBoxItems.Contains(field.FieldName) Then
                     mappedLongTextFields.Add(field)
                 End If
@@ -961,8 +961,8 @@ Namespace kCura.EDDS.WinForm
             Return DirectCast(mappedLongTextFields.ToArray(GetType(DocumentField)), DocumentField())
         End Function
 
-        Private Function AnyLongTextIsMapped() As Boolean
-            If Me.GetMappedLongTextFields.Length > 0 Then
+        Private Async Function AnyLongTextIsMapped() As Task(Of Boolean)
+            If (Await Me.GetMappedLongTextFields).Length > 0 Then
                 Return True
             End If
             Return False
@@ -972,24 +972,24 @@ Namespace kCura.EDDS.WinForm
             msg.Append(" - ").Append(errorText).Append(vbNewLine)
         End Sub
 
-        Private Function IsOverlayBehaviorEnabled() As Boolean
+        Private Async Function IsOverlayBehaviorEnabled() As Task(Of Boolean)
             If GetOverwrite = Relativity.ImportOverwriteType.Append Then
                 Return False
             End If
             For Each fieldName As String In Me._fieldMap.FieldColumns.RightListBoxItems
-                If MultiObjectMultiChoiceCache.Exists(fieldName) Then
+                If (Await GetMultiObjectMultiChoiceCache).Exists(fieldName) Then
                     Return True
                 End If
             Next
             Return False
         End Function
 
-        Private Function PopulateLoadFileObject(ByVal doFormValidation As Boolean) As Boolean
+        Private Async Function PopulateLoadFileObject(ByVal doFormValidation As Boolean) As Task(Of Boolean)
             Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
             If doFormValidation Then
                 Dim msg As New System.Text.StringBuilder
 
-                If Not Me.EnsureConnection() Then Return False
+                If Not Await Me.EnsureConnection() Then Return False
                 If _loadNativeFiles.Checked AndAlso _nativeFilePathField.SelectedIndex = -1 Then Me.AppendErrorMessage(msg, "Native file field unselected")
                 If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
                     If _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex = -1 Then Me.AppendErrorMessage(msg, "Folder information unselected")
@@ -1043,8 +1043,8 @@ Namespace kCura.EDDS.WinForm
                 End If
             End If
             Me.PopulateLoadFileDelimiters()
-            If Not Me.EnsureConnection() Then Return Nothing
-            Dim currentFields As WinEDDS.DocumentFieldCollection = _application.CurrentFields(Me.LoadFile.ArtifactTypeID, True)
+            If Not Await Me.EnsureConnection() Then Return Nothing
+            Dim currentFields As WinEDDS.DocumentFieldCollection = Await _application.CurrentFields(Me.LoadFile.ArtifactTypeID, True)
             If currentFields Is Nothing Then
                 Me.Cursor = System.Windows.Forms.Cursors.Default
                 Return False
@@ -1093,7 +1093,7 @@ Namespace kCura.EDDS.WinForm
             If System.IO.File.Exists(_filePath.Text) Then
                 LoadFile.FilePath = _filePath.Text
             End If
-            LoadFile.SelectedIdentifierField = _application.GetDocumentFieldFromName(_application.GetCaseIdentifierFields(Me.LoadFile.ArtifactTypeID)(0))
+            LoadFile.SelectedIdentifierField = Await _application.GetDocumentFieldFromName((Await _application.GetCaseIdentifierFields(Me.LoadFile.ArtifactTypeID))(0))
 
             If _overlayBehavior.Enabled Then
                 LoadFile.OverlayBehavior = Me.GetOverlayBehavior
@@ -1148,7 +1148,7 @@ Namespace kCura.EDDS.WinForm
             Else
                 Me.LoadFile.StartLineNumber = CType(_startLineNumber.Text, Int64)
             End If
-            If Me.LoadFile.IdentityFieldId = -1 Then Me.LoadFile.IdentityFieldId = _application.CurrentFields(Me.LoadFile.ArtifactTypeID).IdentifierFields(0).FieldID
+            If Me.LoadFile.IdentityFieldId = -1 Then Me.LoadFile.IdentityFieldId = (Await _application.CurrentFields(Me.LoadFile.ArtifactTypeID)).IdentifierFields(0).FieldID
             Me.LoadFile.SendEmailOnLoadCompletion = _importMenuSendEmailNotificationItem.Checked
             Me.LoadFile.ForceFolderPreview = _importMenuForceFolderPreviewItem.Checked
 
@@ -1158,27 +1158,27 @@ Namespace kCura.EDDS.WinForm
             Return True
         End Function
 
-        Private Sub MarkIdentifierField(ByVal fieldNames As String())
-            Dim identifierFields As String() = _application.GetCaseIdentifierFields(Me.LoadFile.ArtifactTypeID)
+        Private Async Function MarkIdentifierField(ByVal fieldNames As String()) As Task
+            Dim identifierFields As String() = Await _application.GetCaseIdentifierFields(Me.LoadFile.ArtifactTypeID)
             Dim i As Int32
             For i = 0 To fieldNames.Length - 1
                 If System.Array.IndexOf(identifierFields, fieldNames(i)) <> -1 Then
                     fieldNames(i) = fieldNames(i) & " [Identifier]"
                 End If
             Next
-        End Sub
+        End Function
 
-        Public Sub LoadFormControls(ByVal loadFileObjectUpdatedFromFile As Boolean)
+        Public Async Function LoadFormControls(ByVal loadFileObjectUpdatedFromFile As Boolean) As Task
             _multiObjectMultiChoiceCache = Nothing
             If Me.LoadFile.ArtifactTypeID = 0 Then Me.LoadFile.ArtifactTypeID = _application.ArtifactTypeID
-            Me.Text = String.Format("Relativity Desktop Client | Import {0} Load File", _application.GetObjectTypeName(Me.LoadFile.ArtifactTypeID))
+            Me.Text = String.Format("Relativity Desktop Client | Import {0} Load File", Await _application.GetObjectTypeName(Me.LoadFile.ArtifactTypeID))
             Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
             kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_recordDelimiter, _loadFile.RecordDelimiter)
             kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_quoteDelimiter, _loadFile.QuoteDelimiter)
             kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_newLineDelimiter, _loadFile.NewlineDelimiter)
             kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_multiRecordDelimiter, _loadFile.MultiRecordDelimiter)
             kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_hierarchicalValueDelimiter, _loadFile.HierarchicalValueDelimiter)
-            _importMenuSendEmailNotificationItem.Visible = _application.SendLoadNotificationEmailEnabled
+            _importMenuSendEmailNotificationItem.Visible = Await _application.GetSendLoadNotificationEmailEnabledAsync
             If Not String.IsNullOrEmpty(LoadFile.FilePath) Then
                 _filePath.Text = LoadFile.FilePath
             End If
@@ -1197,8 +1197,8 @@ Namespace kCura.EDDS.WinForm
                 _fullTextFileEncodingPicker.SelectedEncoding = Me.LoadFile.ExtractedTextFileEncoding
             End If
             RefreshNativeFilePathFieldAndFileColumnHeaders()
-            If Not Me.EnsureConnection() Then Exit Sub
-            Dim caseFields As String() = _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, _application.ArtifactTypeID, True)
+            If Not Await Me.EnsureConnection() Then Return
+            Dim caseFields As String() = Await _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, _application.ArtifactTypeID, True)
 
             If loadFileObjectUpdatedFromFile Then
                 Dim columnHeaders As String()
@@ -1208,7 +1208,7 @@ Namespace kCura.EDDS.WinForm
                     MsgBox("The load file specified does not exist.", MsgBoxStyle.Exclamation, "Relativity Desktop Client Warning")
                     columnHeaders = New String() {}
                 End If
-                BuildMappingFromLoadFile(caseFields, columnHeaders)
+                Await BuildMappingFromLoadFile(caseFields, columnHeaders)
                 If LoadFile.LoadNativeFiles Then
                     _loadNativeFiles.Checked = True
                     If LoadFile.NativeFilePathColumn <> String.Empty Then
@@ -1218,16 +1218,16 @@ Namespace kCura.EDDS.WinForm
                 _buildFolderStructure.Checked = LoadFile.CreateFolderStructure
                 ActionMenuEnabled = ReadyToRun
             Else
-                Me.MarkIdentifierField(caseFields)
+                Await Me.MarkIdentifierField(caseFields)
                 _fieldMap.FieldColumns.LeftListBoxItems.AddRange(caseFields)
             End If
             '_identifiersDropDown.Items.AddRange(_application.IdentiferFieldDropdownPopulator)
             _overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
             _overlayBehavior.SelectedItem = Me.GetOverlayBehaviorDropdownItem(LoadFile.OverlayBehavior)
-            _overlayBehavior.Enabled = IsOverlayBehaviorEnabled()
+            _overlayBehavior.Enabled = Await IsOverlayBehaviorEnabled()
 
             _overlayIdentifier.Items.Clear()
-            _overlayIdentifier.Items.AddRange(Me.GetSuitableKeyFields)
+            _overlayIdentifier.Items.AddRange(Await Me.GetSuitableKeyFields)
             _importMenuSendEmailNotificationItem.Checked = Me.LoadFile.SendEmailOnLoadCompletion
             _importMenuForceFolderPreviewItem.Checked = Me.LoadFile.ForceFolderPreview
             If Not loadFileObjectUpdatedFromFile Then
@@ -1290,13 +1290,13 @@ Namespace kCura.EDDS.WinForm
             'End If
 
             If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
-                _extractedTextValueContainsFileLocation.Enabled = Me.AnyLongTextIsMapped
+                _extractedTextValueContainsFileLocation.Enabled = Await Me.AnyLongTextIsMapped
             End If
 
             'Loading from KWE
             If Me.LoadFile.LongTextColumnThatContainsPathToFullText IsNot Nothing Then
                 _overlayExtractedText.Items.Clear()
-                _overlayExtractedText.Items.AddRange(Me.GetMappedLongTextFields)
+                _overlayExtractedText.Items.AddRange(Await Me.GetMappedLongTextFields)
                 _overlayExtractedText.SelectedItem = Me.GetExtractedTextFieldAsDocField(Me.LoadFile.LongTextColumnThatContainsPathToFullText)
             End If
 
@@ -1314,7 +1314,7 @@ Namespace kCura.EDDS.WinForm
             _startLineNumber.Value = CType(LoadFile.StartLineNumber, Decimal)
             ActionMenuEnabled = ReadyToRun
             Me.Cursor = System.Windows.Forms.Cursors.Default
-        End Sub
+        End Function
 
         Public Property LoadFile() As kCura.WinEDDS.LoadFile
             Get
@@ -1331,7 +1331,6 @@ Namespace kCura.EDDS.WinForm
             End Get
             Set(ByVal value As kCura.WinEDDS.LoadFile)
                 _loadFile = value
-                Me.LoadFormControls(False)
             End Set
         End Property
 
@@ -1488,11 +1487,11 @@ Namespace kCura.EDDS.WinForm
             Return columnHeaders
         End Function
 
-        Private Sub AutoFieldMap_Click(sender As Object, e As EventArgs) Handles AutoFieldMapButton.Click
+        Private Async Sub AutoFieldMap_Click(sender As Object, e As EventArgs) Handles AutoFieldMapButton.Click
             ClearFieldMapping()
             Dim columnHeaders As String() = (_fieldMap.LoadFileColumns.RightListBoxItems.Cast(Of String).ToArray())
             System.Array.Sort(columnHeaders)
-            MatchAndAddLoadFileColumns(columnHeaders)
+            Await MatchAndAddLoadFileColumns(columnHeaders)
             Me._FieldColumns_ItemsShifted()
         End Sub
 
@@ -1508,10 +1507,10 @@ Namespace kCura.EDDS.WinForm
             toRemovelistBoxItems.Clear()
         End Sub
 
-        Private Sub MatchAndAddLoadFileColumns(ByVal columnHeaders As IEnumerable(Of String))
+        Private Async Function MatchAndAddLoadFileColumns(ByVal columnHeaders As IEnumerable(Of String)) As Task
             Dim matchedColumnHeaders = New ArrayList
             Dim matchedFields = New ArrayList
-            Dim currentFields As String() = _application.GetCaseFields(_application.SelectedCaseFolderID, _application.ArtifactTypeID, False)
+            Dim currentFields As String() = Await _application.GetCaseFields(_application.SelectedCaseFolderID, _application.ArtifactTypeID, False)
             For Each header In columnHeaders
                 Dim parsedHeader = ParseHeader(header)
                 For Each field In currentFields
@@ -1522,13 +1521,13 @@ Namespace kCura.EDDS.WinForm
                     End If
                 Next
             Next
-            Dim updatedMatchedFields = AddIdentifierToStrings(_application.GetCaseIdentifierFields(_application.ArtifactTypeID), CType(matchedFields.ToArray(GetType(String)), String()))
+            Dim updatedMatchedFields = AddIdentifierToStrings(Await _application.GetCaseIdentifierFields(_application.ArtifactTypeID), CType(matchedFields.ToArray(GetType(String)), String()))
             Dim updatedMatchedHeaders = CType(matchedColumnHeaders.ToArray(GetType(String)), String())
             CheckAndRemoveStringRange(_fieldMap.FieldColumns.LeftListBoxItems, updatedMatchedFields)
             CheckAndAddStringRange(_fieldMap.FieldColumns.RightListBoxItems, updatedMatchedFields)
             CheckAndRemoveStringRange(_fieldMap.LoadFileColumns.RightListBoxItems, updatedMatchedHeaders)
             CheckAndAddStringRange(_fieldMap.LoadFileColumns.LeftListBoxItems, updatedMatchedHeaders)
-        End Sub
+        End Function
 
         Private Sub CheckAndRemoveStringRange(ByRef listBoxItems As System.Windows.Forms.ListBox.ObjectCollection, ByVal rangeToRemove As String())
             For Each item In rangeToRemove
@@ -1563,13 +1562,13 @@ Namespace kCura.EDDS.WinForm
             Return parsedheader
         End Function
 
-        Private Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
+        Private Async Sub OpenFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog.FileOk
             Dim oldfilepath As String = Nothing
             Try
-                If Not Me.EnsureConnection Then Exit Sub
+                If Not Await Me.EnsureConnection Then Exit Sub
                 oldfilepath = _filePath.Text
                 _filePath.Text = OpenFileDialog.FileName
-                PopulateLoadFileObject(False)
+                Await PopulateLoadFileObject(False)
                 Dim extension As String = _filePath.Text
                 If extension.IndexOf("\") <> -1 Then
                     extension = extension.Substring(extension.LastIndexOf("\") + 1)
@@ -1604,9 +1603,9 @@ Namespace kCura.EDDS.WinForm
             'RefreshNativeFilePathFieldAndFileColumnHeaders()
         End Sub
 
-        Private Sub ImportFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportFileMenu.Click
-            If PopulateLoadFileObject(True) AndAlso _application.ReadyToLoad(Utility.ExtractFieldNames(_fieldMap.LoadFileColumns.LeftListBoxItems)) AndAlso _application.ReadyToLoad(Me.LoadFile, False) Then
-                _application.ImportLoadFile(Me.LoadFile)
+        Private Async Sub ImportFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportFileMenu.Click
+            If (Await PopulateLoadFileObject(True)) AndAlso (Await _application.ReadyToLoad(Utility.ExtractFieldNames(_fieldMap.LoadFileColumns.LeftListBoxItems))) AndAlso (Await _application.ReadyToLoad(Me.LoadFile, False)) Then
+                Await _application.ImportLoadFile(Me.LoadFile)
             End If
         End Sub
 
@@ -1636,7 +1635,7 @@ Namespace kCura.EDDS.WinForm
             ActionMenuEnabled = ReadyToRun
         End Sub
 
-        Private Sub _overwriteDestination_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overwriteDropdown.SelectedIndexChanged
+        Private Async Sub _overwriteDestination_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overwriteDropdown.SelectedIndexChanged
             LoadFile.OverwriteDestination = Me.GetOverwrite.ToString
             If LoadFile.OverwriteDestination.ToLower <> Relativity.ImportOverwriteType.Overlay.ToString.ToLower Then
                 For Each field As DocumentField In _overlayIdentifier.Items
@@ -1701,19 +1700,19 @@ Namespace kCura.EDDS.WinForm
             End If
             ActionMenuEnabled = ReadyToRun
 
-            _overlayBehavior.Enabled = IsOverlayBehaviorEnabled()
+            _overlayBehavior.Enabled = Await IsOverlayBehaviorEnabled()
 
         End Sub
 
-        Private Sub PreviewMenuFile_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PreviewMenuFile.Click
+        Private Async Sub PreviewMenuFile_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PreviewMenuFile.Click
             Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-            If PopulateLoadFileObject(True) AndAlso _application.ReadyToLoad(Me.LoadFile, True) Then _application.PreviewLoadFile(_loadFile, False, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.LoadFile)
+            If (Await PopulateLoadFileObject(True)) AndAlso Await _application.ReadyToLoad(Me.LoadFile, True) Then Await _application.PreviewLoadFile(_loadFile, False, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.LoadFile)
             Me.Cursor = System.Windows.Forms.Cursors.Default
         End Sub
 
-        Private Sub _fileSaveFieldMapMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileSaveFieldMapMenuItem.Click
+        Private Async Sub _fileSaveFieldMapMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileSaveFieldMapMenuItem.Click
             Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-            PopulateLoadFileObject(False)
+            Await PopulateLoadFileObject(False)
             _saveFieldMapDialog.ShowDialog()
             Me.Cursor = System.Windows.Forms.Cursors.Default
         End Sub
@@ -1732,22 +1731,22 @@ Namespace kCura.EDDS.WinForm
             _loadFieldMapDialog.ShowDialog()
         End Sub
 
-        Private Sub _loadFieldMapDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _loadFieldMapDialog.FileOk
-            Dim newLoadFile As LoadFile = _application.ReadLoadFile(Me.LoadFile, _loadFieldMapDialog.FileName, False)
+        Private Async Sub _loadFieldMapDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _loadFieldMapDialog.FileOk
+            Dim newLoadFile As LoadFile = Await _application.ReadLoadFile(Me.LoadFile, _loadFieldMapDialog.FileName, False)
             If Not newLoadFile Is Nothing Then
                 If newLoadFile.ArtifactTypeID <> Relativity.ArtifactType.Document Then
                     newLoadFile.ForceFolderPreview = False
                 End If
                 _loadFile = newLoadFile
-                Me.LoadFormControls(True)
+                Await Me.LoadFormControls(True)
             End If
         End Sub
 
-        Private Sub _FieldColumns_ItemsShifted() Handles _fieldMap.FieldColumnsItemsShifted
+        Private Async Sub _FieldColumns_ItemsShifted() Handles _fieldMap.FieldColumnsItemsShifted
             ActionMenuEnabled = ReadyToRun
 
             'Cell contains file location is enabled if any long text field is mapped
-            _extractedTextValueContainsFileLocation.Enabled = Me.AnyLongTextIsMapped()
+            _extractedTextValueContainsFileLocation.Enabled = Await Me.AnyLongTextIsMapped()
 
             'Extracted Text dropdown is enabled if Cell contains file location is checked and enabled
             _overlayExtractedText.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
@@ -1760,7 +1759,7 @@ Namespace kCura.EDDS.WinForm
 
             'Clear Extracted Text dropdown and then add mapped fields to it
             _overlayExtractedText.Items.Clear()
-            _overlayExtractedText.Items.AddRange(Me.GetMappedLongTextFields)
+            _overlayExtractedText.Items.AddRange(Await Me.GetMappedLongTextFields)
 
             'Set Extracted Text dropdown to previously selected item
             _overlayExtractedText.SelectedItem = selectedItem
@@ -1771,7 +1770,7 @@ Namespace kCura.EDDS.WinForm
             End If
 
             _fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
-            _overlayBehavior.Enabled = IsOverlayBehaviorEnabled()
+            _overlayBehavior.Enabled = Await IsOverlayBehaviorEnabled()
         End Sub
 
         Private Function GetExtractedTextFieldAsDocField(fieldName As String) As DocumentField
@@ -1815,15 +1814,15 @@ Namespace kCura.EDDS.WinForm
             RefreshNativeFilePathFieldAndFileColumnHeaders()
         End Sub
 
-        Private Sub _importMenuPreviewErrorsItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuPreviewErrorsItem.Click
+        Private Async Sub _importMenuPreviewErrorsItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuPreviewErrorsItem.Click
             Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-            If PopulateLoadFileObject(True) AndAlso _application.ReadyToLoad(Me.LoadFile, True) Then _application.PreviewLoadFile(_loadFile, True, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.LoadFile)
+            If (Await PopulateLoadFileObject(True)) AndAlso Await _application.ReadyToLoad(Me.LoadFile, True) Then Await _application.PreviewLoadFile(_loadFile, True, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.LoadFile)
             Me.Cursor = System.Windows.Forms.Cursors.Default
         End Sub
 
-        Private Sub _importMenuPreviewFoldersAndCodesItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuPreviewFoldersAndCodesItem.Click
+        Private Async Sub _importMenuPreviewFoldersAndCodesItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuPreviewFoldersAndCodesItem.Click
             Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-            If PopulateLoadFileObject(True) AndAlso _application.ReadyToLoad(Me.LoadFile, True) Then _application.PreviewLoadFile(_loadFile, False, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.Codes)
+            If (Await PopulateLoadFileObject(True)) AndAlso Await _application.ReadyToLoad(Me.LoadFile, True) Then Await _application.PreviewLoadFile(_loadFile, False, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.Codes)
             Me.Cursor = System.Windows.Forms.Cursors.Default
         End Sub
 
@@ -1851,7 +1850,7 @@ Namespace kCura.EDDS.WinForm
             LoadFile.HierarchicalValueDelimiter = ChrW(CType(_hierarchicalValueDelimiter.SelectedValue, Int32))
         End Sub
 
-        Private Sub BuildMappingFromLoadFile(ByVal casefields As String(), ByVal columnHeaders As String())
+        Private Async Function BuildMappingFromLoadFile(ByVal casefields As String(), ByVal columnHeaders As String()) As Task
             Dim selectedFieldNameList As New ArrayList
             Dim selectedColumnNameList As New ArrayList
             Dim item As LoadFileFieldMap.LoadFileFieldMapItem
@@ -1880,9 +1879,9 @@ Namespace kCura.EDDS.WinForm
                     End If
                 End If
             Next
-            Me.MarkIdentifierField(casefields)
+            Await Me.MarkIdentifierField(casefields)
             _fieldMap.MapCaseFieldsToLoadFileFields(casefields, columnHeaders, selectedFieldNameList, selectedColumnNameList)
-        End Sub
+        End Function
 
         Private Sub _fileMenuCloseItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileMenuCloseItem.Click
             Me.Close()
@@ -1921,9 +1920,9 @@ Namespace kCura.EDDS.WinForm
             ActionMenuEnabled = ReadyToRun
         End Sub
 
-        Private Function FullTextColumnIsMapped() As Boolean
+        Private Async Function FullTextColumnIsMapped() As Task(Of Boolean)
             Try
-                Dim docFieldObj As DocumentField = _application.CurrentFields(Relativity.ArtifactType.Document).FullText
+                Dim docFieldObj As DocumentField = (Await _application.CurrentFields(Relativity.ArtifactType.Document)).FullText
                 'If the LoadFile form is being used to load an object instead of a document, then FullText will be Nothing.
                 If docFieldObj IsNot Nothing Then
                     Dim ftfname As String = docFieldObj.FieldName
@@ -1940,11 +1939,11 @@ Namespace kCura.EDDS.WinForm
             End Try
 		End Function
 
-		Private Sub _fileRefreshMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fileRefreshMenuItem.Click
+		Private Async Sub _fileRefreshMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fileRefreshMenuItem.Click
 			_multiObjectMultiChoiceCache = Nothing
-			Dim caseFields As String() = _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, Me.LoadFile.ArtifactTypeID, True)			'_application.GetCaseFields(LoadFile.CaseInfo.ArtifactID, _application.ArtifactTypeID, True)
+			Dim caseFields As String() = Await _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, Me.LoadFile.ArtifactTypeID, True)			'_application.GetCaseFields(LoadFile.CaseInfo.ArtifactID, _application.ArtifactTypeID, True)
 			If caseFields Is Nothing Then Exit Sub
-			Me.MarkIdentifierField(caseFields)
+			Await Me.MarkIdentifierField(caseFields)
 			Dim fieldName As String
 			For Each fieldName In caseFields
 				If Not _fieldMap.FieldColumns.RightListBoxItems.Contains(fieldName) AndAlso Not _fieldMap.FieldColumns.LeftListBoxItems.Contains(fieldName) Then
@@ -1970,11 +1969,11 @@ Namespace kCura.EDDS.WinForm
 			For Each fieldName In itemsToRemove
 				_fieldMap.FieldColumns.RightListBoxItems.Remove(fieldName)
 			Next
-			_application.RefreshSelectedCaseInfo()
+			Await _application.RefreshSelectedCaseInfo()
 			Me.LoadFile.CaseInfo = _application.SelectedCaseInfo
 			Dim id As Int32 = DirectCast(_overlayIdentifier.SelectedItem, DocumentField).FieldID
 			_overlayIdentifier.Items.Clear()
-			_overlayIdentifier.Items.AddRange(Me.GetSuitableKeyFields)
+			_overlayIdentifier.Items.AddRange(Await Me.GetSuitableKeyFields)
 			For Each field As DocumentField In _overlayIdentifier.Items
 				If field.FieldID = id Then
 					_overlayIdentifier.SelectedItem = field
@@ -1990,21 +1989,21 @@ Namespace kCura.EDDS.WinForm
                 Next
             End If
 
-            InitializeDocumentSpecificComponents()
+            Await InitializeDocumentSpecificComponents()
 		End Sub
 
-		Private Function EnsureConnection() As Boolean
+		Private Async Function EnsureConnection() As Task(Of Boolean)
 			Dim retval As Boolean = False
 			If Not _loadFile Is Nothing AndAlso Not _loadFile.CaseInfo Is Nothing Then
-				retval = _application.EnsureConnection()
+				retval = Await _application.EnsureConnection()
 			Else
 				retval = True
 			End If
 			Return retval
 		End Function
 
-		Private Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
-			Dim useAspera As Boolean = AsperaModeConfiguration.UseAspera(LoadFile, _application.GetConnectionStatus())
+		Private Async Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
+			Dim useAspera As Boolean = AsperaModeConfiguration.UseAspera(LoadFile, Await _application.GetConnectionStatus())
 			If useAspera Then
 				MsgBox("Repository settings can not be changed when RDC runs in Aspera transfer mode. Aspera Server is " &
 					"configured to upload native files to the default workspace fileshare location. " &
