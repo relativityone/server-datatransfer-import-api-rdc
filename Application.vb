@@ -812,7 +812,6 @@ Namespace kCura.EDDS.WinForm
         End Function
 
         Public Async Sub NewFileTransfer()
-
             Await NewLoginAsync()
 
             Dim rdcContext = New RDCContext()
@@ -820,34 +819,9 @@ Namespace kCura.EDDS.WinForm
             rdcContext.WorkspaceID = Me.SelectedCaseInfo.ArtifactID
             rdcContext.WebServiceURL = kCura.WinEDDS.Config.WebServiceURL
             
-
             Dim initParams As String
             initParams = String.Format("{0} {1} {2}", rdcContext.Credential.Password, rdcContext.WorkspaceID, rdcContext.WebServiceURL)
             Process.Start("kCura.WinEDDS.FileTransfer.Extension.exe", initParams)
-
-            '         If Not frm Is Nothing Then
-            '             frm.WindowState = FormWindowState.Normal
-            '             frm.BringToFront()
-            '         Else 
-            '             frm = New FileTransferMain(rdcContext)
-            '             AddHandler frm.Closed, AddressOf OnFileTransferMainClosed
-            '         End If
-
-
-            'Try
-            '	frm.Show()
-            'Catch ex As System.Exception
-            '	If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-            '		NewLogin(False)
-            '		Exit Sub
-            '	Else
-            '		Throw
-            '	End If
-            'End Try
-        End Sub
-
-        Private Sub OnFileTransferMainClosed(sender As Object, e As EventArgs)
-            frm = Nothing
         End Sub
 
         Public Async Function GetListOfProductionsForCase(ByVal caseInfo As Relativity.CaseInfo) As Task(Of System.Data.DataTable)
@@ -1354,7 +1328,6 @@ Namespace kCura.EDDS.WinForm
         End Enum
 
         Private _lastCredentialCheckResult As CredentialCheckResult = CredentialCheckResult.NotSet
-        Private frm As FileTransferMain
 
         Public ReadOnly Property LastCredentialCheckResult As CredentialCheckResult
             Get
