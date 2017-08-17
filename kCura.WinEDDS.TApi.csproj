@@ -23,7 +23,7 @@
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Debug\kCura.WinEDDS.TApi.xml</DocumentationFile>
+    <DocumentationFile>bin\kCura.WinEDDS.TApi.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Debug\kCura.WinEDDS.TApi.xml</DocumentationFile>
+    <DocumentationFile>bin\kCura.WinEDDS.TApi.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Relativity.Kepler, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
