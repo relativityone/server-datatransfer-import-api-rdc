@@ -1,5 +1,4 @@
 Imports System.IO
-Imports kCura.WinEDDS.Aspera
 
 Namespace kCura.WinEDDS
 	Public Class FileUploader

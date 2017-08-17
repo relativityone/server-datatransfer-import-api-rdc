@@ -108,52 +108,52 @@ Namespace kCura.WinEDDS
 
 #Region "Registry Helpers"
 
-        Private Shared Function GetRegistryKeyValue(ByVal keyName As String) As String
-            Dim regKey As Microsoft.Win32.RegistryKey = Config.GetRegistryKey(False)
-            Dim value As String = CType(regKey.GetValue(keyName, ""), String)
-            regKey.Close()
-            Return value
-        End Function
+		Public Shared Function GetRegistryKeyValue(ByVal keyName As String) As String
+			Dim regKey As Microsoft.Win32.RegistryKey = Config.GetRegistryKey(False)
+			Dim value As String = CType(regKey.GetValue(keyName, ""), String)
+			regKey.Close()
+			Return value
+		End Function
 
-        Private Shared Function SetRegistryKeyValue(ByVal keyName As String, ByVal keyVal As String) As String
-            Dim regKey As Microsoft.Win32.RegistryKey = Config.GetRegistryKey(True)
-            regKey.SetValue(keyName, keyVal)
-            regKey.Close()
-            Return Nothing
+		Private Shared Function SetRegistryKeyValue(ByVal keyName As String, ByVal keyVal As String) As String
+			Dim regKey As Microsoft.Win32.RegistryKey = Config.GetRegistryKey(True)
+			regKey.SetValue(keyName, keyVal)
+			regKey.Close()
+			Return Nothing
 
-        End Function
+		End Function
 
-        Private Shared ReadOnly Property GetRegistryKey(ByVal write As Boolean) As Microsoft.Win32.RegistryKey
-            Get
-                Dim regKey As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("software\kCura\Relativity", write)
-                If regKey Is Nothing Then
-                    Microsoft.Win32.Registry.CurrentUser.CreateSubKey("software\\kCura\\Relativity")
-                    regKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("software\kCura\Relativity", write)
-                End If
-                Return regKey
-            End Get
-        End Property
+		Private Shared ReadOnly Property GetRegistryKey(ByVal write As Boolean) As Microsoft.Win32.RegistryKey
+			Get
+				Dim regKey As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("software\kCura\Relativity", write)
+				If regKey Is Nothing Then
+					Microsoft.Win32.Registry.CurrentUser.CreateSubKey("software\\kCura\\Relativity")
+					regKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("software\kCura\Relativity", write)
+				End If
+				Return regKey
+			End Get
+		End Property
 
-        Public Shared Function ValidateURIFormat(ByVal returnValue As String) As String
-            If Not String.IsNullOrEmpty(returnValue) AndAlso Not returnValue.Trim.EndsWith("/") Then
-                returnValue = returnValue.Trim + "/"
-            End If
+		Public Shared Function ValidateURIFormat(ByVal returnValue As String) As String
+			If Not String.IsNullOrEmpty(returnValue) AndAlso Not returnValue.Trim.EndsWith("/") Then
+				returnValue = returnValue.Trim + "/"
+			End If
 
-            'NOTE: This is here for validation; an improper URI will cause this to throw an
-            ' exception. We set it then to 'Nothing' to avoid a warning-turned-error about
-            ' having an unused variable. -Phil S. 12/05/2011
-            ' fixed 1/24/2012 - slm - return an empty string if invalid uri format.  this will cause the 
-            ' rdc to pop up its dialog prompting the user to enter a valid address
+			'NOTE: This is here for validation; an improper URI will cause this to throw an
+			' exception. We set it then to 'Nothing' to avoid a warning-turned-error about
+			' having an unused variable. -Phil S. 12/05/2011
+			' fixed 1/24/2012 - slm - return an empty string if invalid uri format.  this will cause the 
+			' rdc to pop up its dialog prompting the user to enter a valid address
 
-            Try
-                Dim uriObj As Uri = New Uri(returnValue)
-                uriObj = Nothing
-            Catch
-                returnValue = String.Empty
-            End Try
+			Try
+				Dim uriObj As Uri = New Uri(returnValue)
+				uriObj = Nothing
+			Catch
+				returnValue = String.Empty
+			End Try
 
-            Return returnValue
-        End Function
+			Return returnValue
+		End Function
 
 #End Region
 

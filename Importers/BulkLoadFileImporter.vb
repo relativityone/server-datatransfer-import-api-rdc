@@ -766,10 +766,10 @@ Namespace kCura.WinEDDS
 									fileGuid = System.Guid.NewGuid.ToString
 								End If
 								fullFilePath = filename
-								If (injectableContainerIsNothing) Then
-									filename = Path.GetFileName(filename)
-								ElseIf (injectableContainer.HasFileName()) Then
-									filename = injectableContainer.FileName.GetFileName()
+								If (Not injectableContainerIsNothing AndAlso injectableContainer.HasFileName()) Then 
+									filename = injectableContainer.FileName.GetFileName() 
+								Else 
+									filename = Path.GetFileName(filename) 
 								End If
 							End Sub
 
@@ -789,6 +789,7 @@ Namespace kCura.WinEDDS
 										Throw
 									End If
 								Else
+									' REL-158041: Rethrow to ensure non-pipeline behavior is maintained and results in a fatal error.
 									Throw
 								End If
 							Next
