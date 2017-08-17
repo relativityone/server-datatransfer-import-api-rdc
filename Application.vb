@@ -820,7 +820,7 @@ Namespace kCura.EDDS.WinForm
             rdcContext.WebServiceURL = kCura.WinEDDS.Config.WebServiceURL
             
             Dim initParams As String
-            initParams = String.Format("{0} {1} {2}", rdcContext.Credential.Password, rdcContext.WorkspaceID, rdcContext.WebServiceURL)
+            initParams = String.Format("-t {0} -w {1}  -u {2}", rdcContext.Credential.Password, rdcContext.WorkspaceID, rdcContext.WebServiceURL)
             Process.Start("kCura.WinEDDS.FileTransfer.Extension.exe", initParams)
         End Sub
 
