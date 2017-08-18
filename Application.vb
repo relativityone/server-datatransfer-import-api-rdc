@@ -1,3 +1,4 @@
+Imports System.Configuration
 Imports System.Web.Services.Protocols
 Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
@@ -818,11 +819,23 @@ Namespace kCura.EDDS.WinForm
             rdcContext.Credential = Await Me.GetCredentialsAsync()
             rdcContext.WorkspaceID = Me.SelectedCaseInfo.ArtifactID
             rdcContext.WebServiceURL = kCura.WinEDDS.Config.WebServiceURL
-            
-            Dim initParams As String
-            initParams = String.Format("-t {0} -w {1}  -u {2}", rdcContext.Credential.Password, rdcContext.WorkspaceID, rdcContext.WebServiceURL)
-            Process.Start("kCura.WinEDDS.FileTransfer.Extension.exe", initParams)
+            StartFileTransferExtension(rdcContext)
         End Sub
+
+        Private Sub StartFileTransferExtension(rdcContext As RDCContext)
+            Dim initArguments As String
+            initArguments = $"-t {rdcContext.Credential.Password} -w {rdcContext.WorkspaceID}  -u {rdcContext.WebServiceURL}"
+            Dim applicationFile = GetApplicationFilePath()
+            Process.Start(applicationFile, initArguments)
+        End Sub
+        Private Function GetApplicationFilePath() As String
+            Dim appPath = ConfigurationManager.AppSettings("FileTransferExtension.ApplicationFile")
+            If String.IsNullOrEmpty(appPath) Then
+                Return "kCura.WinEDDS.FileTransfer.Extension.exe"            
+            Else
+                Return appPath
+            End If
+        End Function
 
         Public Async Function GetListOfProductionsForCase(ByVal caseInfo As Relativity.CaseInfo) As Task(Of System.Data.DataTable)
             Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Await Me.GetCredentialsAsync(), _CookieContainer)
