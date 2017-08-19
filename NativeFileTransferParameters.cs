@@ -9,6 +9,7 @@
 
 namespace kCura.WinEDDS.TApi
 {
+    using System;
     using System.Net;
 
     /// <summary>
@@ -21,7 +22,10 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         public NativeFileTransferParameters()
         {
+            this.BcpFileTransfer = false;
+            this.DocRootLevels = 1;
             this.Credentials = null;
+            this.FileShare = null;
             this.ForceAsperaClient = false;
             this.ForceHttpClient = false;            
             this.ForceFileShareClient = false;
@@ -30,8 +34,6 @@ namespace kCura.WinEDDS.TApi
             this.MaxFilesPerFolder = 1000;
             this.MaxJobParallelism = 10;
             this.MaxJobRetryAttempts = 3;
-
-            // FileUploader.vb defaults this parameters to true.
             this.SortIntoVolumes = true;
             this.TargetPath = null;
             this.TimeoutSeconds = 300;
@@ -42,12 +44,82 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="NativeFileTransferParameters"/> class.
+        /// </summary>
+        /// <param name="copy">
+        /// The parameters to copy.
+        /// </param>
+        public NativeFileTransferParameters(NativeFileTransferParameters copy)
+        {
+            if (copy == null)
+            {
+                throw new ArgumentNullException(nameof(copy));
+            }
+
+            this.BcpFileTransfer = copy.BcpFileTransfer;
+            this.Credentials = copy.Credentials;
+            this.DocRootLevels = copy.DocRootLevels;
+            this.FileShare = copy.FileShare;
+            this.ForceAsperaClient = copy.ForceAsperaClient;
+            this.ForceHttpClient = copy.ForceHttpClient;
+            this.ForceFileShareClient = copy.ForceFileShareClient;
+            this.IsBulkEnabled = copy.IsBulkEnabled;
+            this.LargeFileProgressEnabled = copy.LargeFileProgressEnabled;
+            this.MaxFilesPerFolder = copy.MaxFilesPerFolder;
+            this.MaxJobParallelism = copy.MaxJobParallelism;
+            this.MaxJobRetryAttempts = copy.MaxJobRetryAttempts;
+            this.SortIntoVolumes = copy.SortIntoVolumes;
+            this.TargetPath = copy.TargetPath;
+            this.TimeoutSeconds = copy.TimeoutSeconds;
+            this.WaitTimeBetweenRetryAttempts = copy.WaitTimeBetweenRetryAttempts;
+            this.WebServiceUrl = copy.WebServiceUrl;
+            this.WebCookieContainer = copy.WebCookieContainer;
+            this.WorkspaceId = copy.WorkspaceId;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the file transfer is BCP based.
+        /// </summary>
+        /// <value>
+        /// <see langword="true" /> if the file transfer is BCP based; otherwise, <see langword="false" />.
+        /// </value>
+        public bool BcpFileTransfer
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Gets or sets the Relativity network credentials.
         /// </summary>
         /// <value>
         /// The <see cref="NetworkCredential"/> instance.
         /// </value>
         public NetworkCredential Credentials
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the number of levels the Aspera doc root folder is relative to the file share.
+        /// </summary>
+        /// <value>
+        /// The number of levels.
+        /// </value>
+        public int DocRootLevels
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the file share UNC path. This value should come directly from the Workspace.
+        /// </summary>
+        /// <value>
+        /// The file share.
+        /// </value>
+        public string FileShare
         {
             get;
             set;
@@ -174,7 +246,7 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to sort all transfers into a volumes folder.
+        /// Gets or sets a value indicating whether to sort all transfers into a volumes folder. This is a native file specific parameter.
         /// </summary>
         /// <value>
         /// <see langword="true" /> to sort all transfers into a volumes folder; otherwise, <see langword="false" />.
@@ -246,6 +318,17 @@ namespace kCura.WinEDDS.TApi
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// Performs a shallow copy of this instance.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="NativeFileTransferParameters"/> instance.
+        /// </returns>
+        public NativeFileTransferParameters ShallowCopy()
+        {
+            return new NativeFileTransferParameters(this);
         }
     }
 }

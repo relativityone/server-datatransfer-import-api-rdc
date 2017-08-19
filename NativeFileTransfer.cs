@@ -18,7 +18,6 @@ namespace kCura.WinEDDS.TApi
     using System.Threading;
 
     using Relativity.Logging;
-    using Relativity.Services.ServiceProxy;
     using Relativity.Transfer;
     using Relativity.Transfer.Aspera;
     using Relativity.Transfer.Http;
@@ -135,6 +134,7 @@ namespace kCura.WinEDDS.TApi
             ILog log,
             CancellationToken token)
         {
+            // Note: Do NOT argument check TargetPath. This is null for metadata-only transfers.
             if (parameters == null)
             {
                 throw new ArgumentNullException(nameof(parameters));
@@ -148,11 +148,6 @@ namespace kCura.WinEDDS.TApi
             if (parameters.WorkspaceId < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(parameters), Strings.WorkspaceExceptionMessage);
-            }
-
-            if (string.IsNullOrEmpty(parameters.TargetPath))
-            {
-                throw new ArgumentException("That target path must be specified.", nameof(parameters));
             }
 
             if (parameters.WebCookieContainer == null)
@@ -174,10 +169,10 @@ namespace kCura.WinEDDS.TApi
             this.pathManager = new FileSharePathManager(parameters.MaxFilesPerFolder);
             this.currentJobNumber = 0;
             this.context = new TransferContext
-            {
-                StatisticsRateSeconds = 1.0,
-                LargeFileProgressEnabled = parameters.LargeFileProgressEnabled
-            };
+                               {
+                                   StatisticsRateSeconds = 1.0,
+                                   LargeFileProgressEnabled = parameters.LargeFileProgressEnabled
+                               };
 
             this.SetupTransferListeners();
         }
@@ -321,28 +316,37 @@ namespace kCura.WinEDDS.TApi
                 throw new InvalidOperationException(Strings.TransferJobNullExceptionMessage);
             }
 
+            var transferPath = new TransferPath
+                                   {
+                                       SourcePath = sourceFile,
+                                       TargetPath =
+                                           this.parameters.SortIntoVolumes
+                                               ? this.pathManager.GetNextTargetPath(this.TargetPath)
+                                               : this.TargetPath,
+                                       TargetFileName = targetFileName,
+                                       Order = order
+                                   };
             try
             {
-                var nextTargetPath = this.parameters.SortIntoVolumes
-                                         ? this.pathManager.GetNextTargetPath(this.TargetPath)
-                                         : this.TargetPath;
-                var transferPath = new TransferPath
-                                       {
-                                           SourcePath = sourceFile,
-                                           TargetPath = nextTargetPath,
-                                           TargetFileName = targetFileName,
-                                           Order = order
-                                       };
                 this.transferJob.AddPath(transferPath);
-                return !string.IsNullOrEmpty(targetFileName)
-                           ? targetFileName
-                           : this.fileSystemService.GetFileName(sourceFile);
+                return !string.IsNullOrEmpty(transferPath.TargetFileName)
+                           ? transferPath.TargetFileName
+                           : this.fileSystemService.GetFileName(transferPath.SourcePath);
             }
             catch (ArgumentException e)
             {
                 // Note: this exception is only thrown when ValidateSourcePaths is true.
-                this.transferLog.LogWarning(e, "There was a problem adding the '{SourceFile}' source file to the transfer job.", sourceFile);
-                throw new FileNotFoundException(e.Message, sourceFile);
+                this.transferLog.LogWarning(
+                    e,
+                    "There was a problem adding the '{SourceFile}' source file to the transfer job.",
+                    transferPath.SourcePath);
+                throw new FileNotFoundException(e.Message, transferPath.SourcePath);
+            }
+            catch (FileNotFoundException e)
+            {
+                // Ensure this exception is accounted for.
+                this.transferLog.LogWarning(e, "The '{SourceFile}' source file doesn't exist.", transferPath.SourcePath);
+                throw;
             }
             catch (OperationCanceledException)
             {
@@ -402,8 +406,8 @@ namespace kCura.WinEDDS.TApi
                         if (lastIssue != null && lastIssue.Path != null)
                         {
                             var formattedMessage = transferResult.Request.Direction == TransferDirection.Download
-                                ? Strings.TransferFileDownloadFatalMessage
-                                : Strings.TransferFileUploadFatalMessage;
+                                                       ? Strings.TransferFileDownloadFatalMessage
+                                                       : Strings.TransferFileUploadFatalMessage;
                             var message = string.Format(CultureInfo.CurrentCulture, formattedMessage, lastIssue.Message);
                             var lineNumber = lastIssue.Path.Order > 0 ? lastIssue.Path.Order : ValidLineNumber;
                             this.RaiseStatusMessage(message, lineNumber);
@@ -506,7 +510,7 @@ namespace kCura.WinEDDS.TApi
                         PreserveDates = false,
                         TimeoutSeconds = this.parameters.TimeoutSeconds,
                         ValidateSourcePaths = ValidateSourcePaths
-                };
+                    };
 
             try
             {
@@ -586,7 +590,7 @@ namespace kCura.WinEDDS.TApi
             // Note: avoid exponential backoff since that number will be excessive given the default max retry period.
             this.jobRequest.RetryStrategy =
                 RetryStrategies.CreateFixedTimeStrategy(this.parameters.WaitTimeBetweenRetryAttempts);
-            this.SetupTargetPathResolvers();
+            this.SetupRemotePathResolvers();
 
             try
             {
@@ -795,20 +799,29 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Setup the target path resolvers.
+        /// Setup the customer resolvers for both source and target paths.
         /// </summary>
-        private void SetupTargetPathResolvers()
+        /// <remarks>
+        /// This provides backwards compatibility with IAPI.
+        /// </remarks>
+        private void SetupRemotePathResolvers()
         {
             switch (this.ClientId.ToString().ToUpperInvariant())
             {
                 case TransferClientConstants.AsperaClientId:
+                    var resolver =
+                        new AsperaUncPathResolver
+                            {
+                                FileShare = this.parameters.FileShare,
+                                DocRootLevels = this.parameters.DocRootLevels
+                            };
                     if (this.currentDirection == TransferDirection.Upload)
                     {
-                        this.jobRequest.TargetPathResolver = new UncNativeFilePathResolver();
+                        this.jobRequest.TargetPathResolver = resolver;
                     }
                     else
                     {
-                        this.jobRequest.SourcePathResolver = new UncNativeFilePathResolver();
+                        this.jobRequest.SourcePathResolver = resolver;
                     }
 
                     break;
