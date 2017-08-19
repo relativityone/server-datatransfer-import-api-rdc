@@ -138,9 +138,15 @@ namespace kCura.WinEDDS.TApi
         /// </returns>
         public static RelativityConnectionInfo CreateRelativityConnectionInfo(string webServiceUrl, int workspaceId, string userName, string password)
         {
+            // Note: this is a temporary workaround to support integration tests.
             var baseUri = new Uri(webServiceUrl);
             var host = new Uri(baseUri.GetLeftPart(UriPartial.Authority));
-            return new RelativityConnectionInfo(host, new BearerTokenCredentials(password), workspaceId);
+            return string.Compare(userName, "XxX_BearerTokenCredentials_XxX", StringComparison.OrdinalIgnoreCase) == 0
+                       ? new RelativityConnectionInfo(host, new BearerTokenCredentials(password), workspaceId)
+                       : new RelativityConnectionInfo(
+                           host,
+                           new UsernamePasswordCredentials(userName, password),
+                           workspaceId);
         }
     }
 }
