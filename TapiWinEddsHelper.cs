@@ -140,10 +140,7 @@ namespace kCura.WinEDDS.TApi
         {
             var baseUri = new Uri(webServiceUrl);
             var host = new Uri(baseUri.GetLeftPart(UriPartial.Authority));
-            return new RelativityConnectionInfo(
-                host,
-                new UsernamePasswordCredentials(userName, password),
-                workspaceId);
+            return new RelativityConnectionInfo(host, new BearerTokenCredentials(password), workspaceId);
         }
     }
 }
