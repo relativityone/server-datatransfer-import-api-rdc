@@ -21,12 +21,14 @@ Namespace kCura.WinEDDS
 
 #Region "Members"
 
-		Private ReadOnly _syncRoot As Object = new Object
+		Private ReadOnly _syncRoot As Object = New Object
 		Protected _overwrite As Relativity.ImportOverwriteType
 		Private WithEvents _nativeFileUploader As TApi.NativeFileTransfer
-		Private _currentTransferClientName As String
-		Private _currentTransferClientType As TApi.TransferClient = TApi.TransferClient.None
-		Private WithEvents _bcpuploader As kCura.WinEDDS.FileUploader
+		Private WithEvents _bcpFileUploader As TApi.NativeFileTransfer
+		Private _nativeFileTransferClientName As String
+		Private _nativeFileTransferClientType As TApi.TransferClient = TApi.TransferClient.None
+		Private _bcpFileTransferClientName As String
+
 		Private _parentFolderDTO As kCura.EDDS.WebAPI.FolderManagerBase.Folder
 		Protected _auditManager As kCura.WinEDDS.Service.AuditManager
 		Protected _relativityManager As kCura.WinEDDS.Service.RelativityManager
@@ -51,8 +53,8 @@ Namespace kCura.WinEDDS
 		Private _oixFileLookup As System.Collections.Specialized.HybridDictionary
 		Private _fieldArtifactIds As Int32()
 		Protected _outputFileWriter As kCura.WinEDDS.OutputFileWriter = New kCura.WinEDDS.OutputFileWriter()
-		private _outputCodeFileWriter As System.IO.StreamWriter
-		private _outputObjectFileWriter As System.IO.StreamWriter
+		Private _outputCodeFileWriter As System.IO.StreamWriter
+		Private _outputObjectFileWriter As System.IO.StreamWriter
 		Private _caseInfo As Relativity.CaseInfo
 		Protected _overlayArtifactID As Int32
 		Protected _executionSource As Relativity.ExecutionSource
@@ -177,7 +179,7 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property UploadConnection() As TApi.TransferClient
 			Get
-				Return Me._currentTransferClientType
+				Return Me._nativeFileTransferClientType
 			End Get
 		End Property
 
@@ -390,25 +392,27 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)
 			Dim gateway As kCura.WinEDDS.Service.FileIO = New kCura.WinEDDS.Service.FileIO(args.Credentials, args.CookieContainer)
-			Dim parameters As TApi.NativeFileTransferParameters = New TApi.NativeFileTransferParameters
-			parameters.WebCookieContainer = args.CookieContainer
-			parameters.Credentials = args.Credentials
-			parameters.ForceAsperaClient = Config.TapiForceAsperaClient
-			parameters.ForceFileShareClient = Config.TapiForceFileShareClient
-			parameters.ForceHttpClient = Config.ForceWebUpload OrElse Config.TapiForceHttpClient
-			parameters.IsBulkEnabled = False
-			parameters.LargeFileProgressEnabled = Config.TapiLargeFileProgressEnabled
-			parameters.LogEnabled = Config.TapiLogEnabled
-			parameters.MaxFilesPerFolder = gateway.RepositoryVolumeMax
-			parameters.MaxJobParallelism = Config.TapiMaxJobParallelism
-			parameters.MaxJobRetryAttempts = Me.NumberOfRetries
-			parameters.TargetPath = Me._defaultDestinationFolderPath
-			parameters.WaitTimeBetweenRetryAttempts = Me.WaitTimeBetweenRetryAttempts
-			parameters.WebServiceUrl = Config.WebServiceURL
-			parameters.WorkspaceId = args.CaseInfo.ArtifactID
+			Dim nativeParameters As TApi.NativeFileTransferParameters = New TApi.NativeFileTransferParameters
+			nativeParameters.BcpFileTransfer = False
+			nativeParameters.Credentials = args.Credentials
+			nativeParameters.DocRootLevels = Config.TapiAsperaNativeDocRootLevels
+			nativeParameters.FileShare = args.CaseInfo.DocumentPath
+			nativeParameters.ForceAsperaClient = Config.TapiForceAsperaClient
+			nativeParameters.ForceFileShareClient = Config.TapiForceFileShareClient
+			nativeParameters.ForceHttpClient = Config.ForceWebUpload OrElse Config.TapiForceHttpClient
+			nativeParameters.IsBulkEnabled = False
+			nativeParameters.LargeFileProgressEnabled = Config.TapiLargeFileProgressEnabled
+			nativeParameters.LogEnabled = Config.TapiLogEnabled
+			nativeParameters.MaxFilesPerFolder = gateway.RepositoryVolumeMax
+			nativeParameters.MaxJobParallelism = Config.TapiMaxJobParallelism
+			nativeParameters.MaxJobRetryAttempts = Me.NumberOfRetries
+			nativeParameters.TargetPath = Me._defaultDestinationFolderPath
+			nativeParameters.WaitTimeBetweenRetryAttempts = Me.WaitTimeBetweenRetryAttempts
+			nativeParameters.WebCookieContainer = args.CookieContainer
+			nativeParameters.WebServiceUrl = Config.WebServiceURL
+			nativeParameters.WorkspaceId = args.CaseInfo.ArtifactID
 
-			' Limiting TAPI integration to just native file uploads.
-			_nativeFileUploader = TApi.NativeFileTransferFactory.CreateUploadFileTransfer(parameters, Me._cancellationToken.Token)
+			_nativeFileUploader = TApi.NativeFileTransferFactory.CreateUploadFileTransfer(nativeParameters, _cancellationToken.Token)
 			AddHandler _nativeFileUploader.TapiClientChanged, AddressOf NativeFileUploaderOnTapiClientChanged
 			AddHandler _nativeFileUploader.TapiFatalError, AddressOf NativeFileUploaderOnTapiFatalError
 			AddHandler _nativeFileUploader.TapiProgress, AddressOf NativeFileUploaderOnTapiProgress
@@ -416,25 +420,46 @@ Namespace kCura.WinEDDS
 			AddHandler _nativeFileUploader.TapiStatusMessage, AddressOf NativeFileUploaderOnTapiStatusEvent
 			AddHandler _nativeFileUploader.TapiErrorMessage, AddressOf NativeFileUploaderOnTapiErrorMessage
 			AddHandler _nativeFileUploader.TapiWarningMessage, AddressOf NativeFileUploaderOnTapiWarningMessage
-			_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credentials, args.CaseInfo.ArtifactID, _defaultDestinationFolderPath, args.CookieContainer, False)
-			_bcpuploader.SetUploaderTypeForBcp()
+
+			' Copying the parameters and tweaking just a few BCP specific parameters.
+			Dim bcpParameters As TApi.NativeFileTransferParameters = nativeParameters.ShallowCopy()
+			bcpParameters.BcpFileTransfer = True
+			bcpParameters.DocRootLevels = Config.TapiAsperaBcpDocRootLevels
+			bcpParameters.FileShare = gateway.GetBcpSharePath(args.CaseInfo.ArtifactID)
+			bcpParameters.SortIntoVolumes = False
+			_bcpFileUploader = TApi.NativeFileTransferFactory.CreateUploadFileTransfer(bcpParameters, _cancellationToken.Token)
+			_bcpFileUploader.TargetPath = bcpParameters.FileShare
+			AddHandler _bcpFileUploader.TapiClientChanged, AddressOf BcpFileUploaderOnTapiClientChanged
+			AddHandler _bcpFileUploader.TapiStatistics, AddressOf BcpFileUploaderOnTapiStatistics
+			AddHandler _bcpFileUploader.TapiFatalError, AddressOf NativeFileUploaderOnTapiFatalError
+			AddHandler _bcpFileUploader.TapiStatusMessage, AddressOf NativeFileUploaderOnTapiStatusEvent
+			AddHandler _bcpFileUploader.TapiErrorMessage, AddressOf NativeFileUploaderOnTapiErrorMessage
+			AddHandler _bcpFileUploader.TapiWarningMessage, AddressOf NativeFileUploaderOnTapiWarningMessage
 		End Sub
 
 		Protected Overridable Sub DestroyNativeUploaders()
-			If _nativeFileUploader Is Nothing Then
-				Return
+			If Not _nativeFileUploader Is Nothing Then
+				RemoveHandler _nativeFileUploader.TapiClientChanged, AddressOf NativeFileUploaderOnTapiClientChanged
+				RemoveHandler _nativeFileUploader.TapiFatalError, AddressOf NativeFileUploaderOnTapiFatalError
+				RemoveHandler _nativeFileUploader.TapiProgress, AddressOf NativeFileUploaderOnTapiProgress
+				RemoveHandler _nativeFileUploader.TapiStatistics, AddressOf NativeFileUploaderOnTapiStatistics
+				RemoveHandler _nativeFileUploader.TapiStatusMessage, AddressOf NativeFileUploaderOnTapiStatusEvent
+				RemoveHandler _nativeFileUploader.TapiErrorMessage, AddressOf NativeFileUploaderOnTapiErrorMessage
+				RemoveHandler _nativeFileUploader.TapiWarningMessage, AddressOf NativeFileUploaderOnTapiWarningMessage
+				_nativeFileUploader.Dispose()
+				_nativeFileUploader = Nothing
 			End If
 
-			' Force TAPI to dispose all resources.
-			RemoveHandler _nativeFileUploader.TapiClientChanged, AddressOf NativeFileUploaderOnTapiClientChanged
-			RemoveHandler _nativeFileUploader.TapiFatalError, AddressOf NativeFileUploaderOnTapiFatalError
-			RemoveHandler _nativeFileUploader.TapiProgress, AddressOf NativeFileUploaderOnTapiProgress
-			RemoveHandler _nativeFileUploader.TapiStatistics, AddressOf NativeFileUploaderOnTapiStatistics
-			RemoveHandler _nativeFileUploader.TapiStatusMessage, AddressOf NativeFileUploaderOnTapiStatusEvent
-			RemoveHandler _nativeFileUploader.TapiErrorMessage, AddressOf NativeFileUploaderOnTapiErrorMessage
-			RemoveHandler _nativeFileUploader.TapiWarningMessage, AddressOf NativeFileUploaderOnTapiWarningMessage
-			_nativeFileUploader.Dispose()
-			_nativeFileUploader = Nothing
+			If Not _bcpFileUploader Is Nothing Then
+				RemoveHandler _bcpFileUploader.TapiClientChanged, AddressOf BcpFileUploaderOnTapiClientChanged
+				RemoveHandler _bcpFileUploader.TapiStatistics, AddressOf BcpFileUploaderOnTapiStatistics
+				RemoveHandler _bcpFileUploader.TapiFatalError, AddressOf NativeFileUploaderOnTapiFatalError
+				RemoveHandler _bcpFileUploader.TapiStatusMessage, AddressOf NativeFileUploaderOnTapiStatusEvent
+				RemoveHandler _bcpFileUploader.TapiErrorMessage, AddressOf NativeFileUploaderOnTapiErrorMessage
+				RemoveHandler _bcpFileUploader.TapiWarningMessage, AddressOf NativeFileUploaderOnTapiWarningMessage
+				_bcpFileUploader.Dispose()
+				_bcpFileUploader = Nothing
+			End If
 		End Sub
 
 #End Region
@@ -464,23 +489,16 @@ Namespace kCura.WinEDDS
 		Public Sub WriteObjectLineToTempFile(ByVal ownerIdentifier As String, ByVal objectName As String, ByVal artifactID As Int32, ByVal objectTypeArtifactID As Int32, ByVal fieldID As Int32)
 			_outputObjectFileWriter.WriteLine(String.Format("{1}{0}{2}{0}{3}{0}{4}{0}{5}{0}", _bulkLoadFileFieldDelimiter, ownerIdentifier, objectName, artifactID, objectTypeArtifactID, fieldID))
 		End Sub
-		
-		Private Property ShouldImport As Boolean
 
-		Private ReadOnly Property CancellationRequested As Boolean
-			Get 
-				return _cancellationToken.IsCancellationRequested
-			End Get
-		End Property
+		Private Property ShouldImport As Boolean
 
 		Private Sub StopImport()
 			Try
 				ShouldImport = False
 				_cancellationToken.Cancel()
-				_bcpuploader.DoRetry = False
 			Catch ex As Exception
 				WriteStatusLine(EventType.Status, "Error occured while stopping the import job.")
-				throw
+				Throw
 			End Try
 		End Sub
 
@@ -496,21 +514,27 @@ Namespace kCura.WinEDDS
 
 #Region "Main"
 
-		Private Sub CompletePendingTransfers()
-			WriteStatusLine(EventType.Status, "Waiting for batch to complete transfers...")
+		Private Sub CompletePendingNativeFileTransfers()
+			WriteStatusLine(EventType.Status, "Waiting for native file batch to complete...")
 			_nativeFileUploader.WaitForTransferJob()
+		End Sub
+
+		Private Sub CompletePendingBcpFileTransfers()
+			WriteStatusLine(EventType.Status, "Waiting for BCP file batch to complete...")
+			_bcpFileUploader.WaitForTransferJob()
 		End Sub
 
 		Private Sub PublishUploadModeEvent()
 			Dim retval As New List(Of String)
 			Dim isBulkEnabled As Boolean = True
-			If Not _bcpuploader Is Nothing Then
-				retval.Add("Metadata: " & _bcpuploader.UploaderType.ToString())
-				isBulkEnabled = _bcpuploader.IsBulkEnabled
+			If Not _bcpFileUploader Is Nothing Then
+				retval.Add("Metadata: " & _bcpFileTransferClientName)
+				isBulkEnabled = _bcpFileUploader.IsBulkEnabled
 			End If
+
 			If _settings.CopyFilesToDocumentRepository AndAlso _settings.NativeFilePathColumn IsNot Nothing Then
-				If Not String.IsNullOrEmpty(_currentTransferClientName) Then
-					retval.Add("Files: " & _currentTransferClientName)
+				If Not String.IsNullOrEmpty(_nativeFileTransferClientName) Then
+					retval.Add("Files: " & _nativeFileTransferClientName)
 				End If
 			Else
 				retval.Add("Files: not copied")
@@ -527,20 +551,14 @@ Namespace kCura.WinEDDS
 		''' <param name="path">The load file which contains information about the document being loaded</param>
 		''' <returns>True indicates success.  False or Nothing indicates failure.</returns>
 		''' <remarks></remarks>
-		Public Overridable  Function ReadFile(ByVal path As String) As Object Implements IImportJob.ReadFile
+		Public Overridable Function ReadFile(ByVal path As String) As Object Implements IImportJob.ReadFile
 			Dim line As Api.ArtifactFieldCollection
 			_filePath = path
 			_timekeeper.MarkStart("TOTAL")
 			Try
 				OnStartFileImport()
 				_timekeeper.MarkStart("ReadFile_InitializeMembers")
-				Dim validateBcp As FileUploadReturnArgs = _bcpuploader.ValidateBcpPath(_caseInfo.ArtifactID, _outputFileWriter.OutputNativeFilePath)
-				'TODO: your check here
-				If validateBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError And Not _enableSingleModeImport Then
-					Throw New BcpPathAccessException(validateBcp.Value)
-				Else
-					PublishUploadModeEvent()
-				End If
+				PublishUploadModeEvent()
 				If Not InitializeMembers(path) Then
 					Return False
 				End If
@@ -640,7 +658,7 @@ Namespace kCura.WinEDDS
 			End Try
 			Return Nothing
 		End Function
-				
+
 		Private Function InitializeMembers(ByVal path As String) As Boolean
 			_recordCount = _artifactReader.CountRecords
 			If _recordCount = -1 Then
@@ -849,7 +867,7 @@ Namespace kCura.WinEDDS
 						Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, _destinationFolderColumnIndex)
 					Else
 						Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID,
-						textIdentifier, _artifactTypeID).Tables(0)
+																															   textIdentifier, _artifactTypeID).Tables(0)
 						If parentObjectTable.Rows.Count > 1 Then
 							Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, _destinationFolderColumnIndex, "Parent Info")
 						ElseIf parentObjectTable.Rows.Count = 0 Then
@@ -951,6 +969,7 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("ManageDocumentMetadata_ManageDocumentLine")
 				_batchCounter += 1
 				_timekeeper.MarkStart("ManageDocumentMetadata_WserviceCall")
+
 				If _outputFileWriter.CombinedStreamLength > ImportBatchVolume OrElse _batchCounter > ImportBatchSize - 1 Then
 					Me.TryPushNativeBatch()
 				End If
@@ -1061,16 +1080,15 @@ Namespace kCura.WinEDDS
 			Dim outputNativePath As String = _outputFileWriter.OutputNativeFilePath
 
 			' REL-157042: Prevent importing bad data into Relativity or honor stoppage.
-			If ShouldImport
+			If ShouldImport Then
+
 				Try
-					If _nativeFileUploader.TransfersPending
-						CompletePendingTransfers()
-						PublishUploadModeEvent()
+					If ShouldImport AndAlso _nativeFileUploader.TransfersPending Then
+						CompletePendingNativeFileTransfers()
 						_jobCounter += 1
 					End If
 					If ShouldImport Then
 						PushNativeBatch(outputNativePath)
-						PublishUploadModeEvent()
 					End If
 				Catch ex As Exception
 					If BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso ShouldImport Then
@@ -1153,44 +1171,27 @@ Namespace kCura.WinEDDS
 			_batchCounter = 0
 			Dim settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Me.GetSettingsObject
 			settings.UseBulkDataImport = True
-			_bcpuploader.DoRetry = True
+			Dim nativeFileUploadKey As String
+			Dim codeFileUploadKey As String
+			Dim objectFileUploadKey As String
+			Dim dataGridFileUploadKey As String
 
-			Dim uploadBcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, outputNativePath)
-			If uploadBcp Is Nothing Then Exit Sub
-
-			Dim codebcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputCodeFilePath)
-			If codebcp Is Nothing Then Exit Sub
-
-			Dim objectbcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputObjectFilePath)
-			If objectbcp Is Nothing Then Exit Sub
-
-			Dim datagridbcp As FileUploadReturnArgs = _bcpuploader.UploadBcpFile(_caseInfo.ArtifactID, _outputFileWriter.OutputDataGridFilePath)
-			If datagridbcp Is Nothing Then Exit Sub
-
-			Dim nativeFileUploadKey As String = uploadBcp.Value
-			Dim codeFileUploadKey As String = codebcp.Value
-			Dim objectFileUploadKey As String = objectbcp.Value
-			Dim dataGridFileUploadKey As String = datagridbcp.Value
+			try
+				nativeFileUploadKey = _bcpFileUploader.AddPath(outputNativePath, Guid.NewGuid().ToString(), 1)
+				codeFileUploadKey = _bcpFileUploader.AddPath(_outputCodeFilePath, Guid.NewGuid().ToString(), 2)
+				objectFileUploadKey = _bcpFileUploader.AddPath(_outputObjectFilePath, Guid.NewGuid().ToString(), 3)
+				dataGridFileUploadKey = _bcpFileUploader.AddPath(_outputFileWriter.OutputDataGridFilePath, Guid.NewGuid().ToString(), 4)
+				CompletePendingBcpFileTransfers()
+			Catch ex As Exception
+			    ' Note: Retry and potential HTTP fallback automatically kick in. Throwing a similar exception if a failure occurs.
+				Throw New BcpPathAccessException("Error accessing BCP Path, could be caused by network connectivity issues: " & ex.Message)
+			End Try
 
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
 				settings.Repository = _defaultDestinationFolderPath
 				If settings.Repository = String.Empty Then settings.Repository = _caseInfo.DocumentPath
 			Else
 				settings.Repository = _caseInfo.DocumentPath
-			End If
-			If uploadBcp.Type = FileUploadReturnArgs.FileUploadReturnType.UploadError Then
-				If _enableSingleModeImport Then
-					PublishUploadModeEvent()
-					_nativeFileUploader.TargetPath = settings.Repository
-					_bcpuploader.DestinationFolderPath = settings.Repository
-					nativeFileUploadKey = _bcpuploader.UploadFile(outputNativePath, _caseInfo.ArtifactID)
-					codeFileUploadKey = _bcpuploader.UploadFile(_outputCodeFilePath, _caseInfo.ArtifactID)
-					objectFileUploadKey = _bcpuploader.UploadFile(_outputObjectFilePath, _caseInfo.ArtifactID)
-					dataGridFileUploadKey = _bcpuploader.UploadFile(_outputFileWriter.OutputDataGridFilePath, _caseInfo.ArtifactID)
-					settings.UseBulkDataImport = False
-				Else
-					Throw New BcpPathAccessException(uploadBcp.Value)
-				End If
 			End If
 
 			settings.RunID = _runID
@@ -1215,24 +1216,21 @@ Namespace kCura.WinEDDS
 			settings.LoadImportedFullTextFromServer = Me.LoadImportedFullTextFromServer
 			settings.ExecutionSource = CType(_executionSource, kCura.EDDS.WebAPI.BulkImportManagerBase.ExecutionSource)
 			settings.Billable = _settings.Billable
-
-			_statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
-			_statistics.MetadataBytes += (Me.GetFileLength(_outputCodeFilePath) + Me.GetFileLength(outputNativePath) + Me.GetFileLength(_outputObjectFilePath) + Me.GetFileLength(_outputFileWriter.OutputDataGridFilePath))
-			start = System.DateTime.Now.Ticks
 			If _usePipeliningForNativeAndObjectImports AndAlso Not _task Is Nothing Then
 				WaitOnPushBatchTask()
 				_task = Nothing
 			End If
 			Dim makeServiceCalls As Action =
-			Sub()
-				Dim runResults As MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
+					Sub()
+						start = DateTime.Now.Ticks
+						Dim runResults As MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
 
-				_statistics.ProcessRunResults(runResults)
-				_statistics.SqlTime += (System.DateTime.Now.Ticks - start)
+						_statistics.ProcessRunResults(runResults)
+						_statistics.SqlTime += (DateTime.Now.Ticks - start)
 
-				UpdateStatisticsSnapshot(DateTime.Now)
-				Me.ManageErrors(_artifactTypeID)
-			End Sub
+						UpdateStatisticsSnapshot(DateTime.Now)
+						Me.ManageErrors(_artifactTypeID)
+					End Sub
 			If _usePipeliningForNativeAndObjectImports Then
 				Dim f As New System.Threading.Tasks.TaskFactory()
 				_task = f.StartNew(makeServiceCalls)
@@ -1285,8 +1283,8 @@ Namespace kCura.WinEDDS
 					Dim i As Integer = retval.Add(item.DocumentField.ToFieldInfo)
 					If Not ObjectFieldIdListContainsArtifactId Is Nothing Then
 						If (CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).Type = kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType.Object _
-						 Or CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).Type = kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType.Objects) _
-						AndAlso ObjectFieldIdListContainsArtifactId.Contains(CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).ArtifactID) Then
+							Or CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).Type = kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType.Objects) _
+						   AndAlso ObjectFieldIdListContainsArtifactId.Contains(CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).ArtifactID) Then
 							CType(retval(i), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo).ImportBehavior = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportBehaviorChoice.ObjectFieldContainsArtifactId
 						End If
 					End If
@@ -1532,7 +1530,7 @@ Namespace kCura.WinEDDS
 						End If
 					End If
 				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Decimal OrElse
-				 field.Type = Relativity.FieldTypeHelper.FieldType.Currency Then
+					   field.Type = Relativity.FieldTypeHelper.FieldType.Currency Then
 					If field.ValueAsString <> String.Empty Then
 						Dim d As String = CDec(field.Value).ToString(System.Globalization.CultureInfo.InvariantCulture)
 						outputWriter.Write(d)
@@ -1714,7 +1712,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub WriteTapiProgressMessage(ByVal message As String, ByVal lineNumber As Int32)
 			message = GetLineMessage(message, lineNumber)
-			Dim lineProgress As int32 = _processedCount
+			Dim lineProgress As Int32 = _processedCount
 			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(kCura.Windows.Process.EventType.Progress, lineProgress, _recordCount, message, _currentStatisticsSnapshot))
 		End Sub
 
@@ -1818,7 +1816,7 @@ Namespace kCura.WinEDDS
 			SyncLock _syncRoot
 				If ShouldImport Then
 					WriteStatusLine(kCura.Windows.Process.EventType.Warning, e.Message, e.LineNumber)
-				End if
+				End If
 			End SyncLock
 		End Sub
 
@@ -1839,20 +1837,23 @@ Namespace kCura.WinEDDS
 			End SyncLock
 		End Sub
 
+		Private Sub BcpFileUploaderOnTapiStatistics(ByVal sender As Object, ByVal e As TApi.TapiStatisticsEventArgs)
+			SyncLock _syncRoot
+				_statistics.MetadataTime = e.TotalTransferTicks
+				_statistics.MetadataBytes = e.TotalBytes
+				UpdateStatisticsSnapshot(DateTime.Now)
+			End SyncLock
+		End Sub
+
 		Private Sub NativeFileUploaderOnTapiFatalError(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
 			SyncLock _syncRoot
 				WriteFatalError(e.LineNumber, New Exception(e.Message))
 			End SyncLock
 		End Sub
 
-		Private Sub LegacyUploader_UploadStatusEvent(ByVal s As String) Handles _bcpuploader.UploadStatusEvent
+		Private Sub LegacyUploader_UploadStatusEvent(ByVal s As String)
 			WriteStatusLine(kCura.Windows.Process.EventType.Status, s)
 		End Sub
-
-		Private Sub LegacyUploader_UploadWarningEvent(ByVal s As String) Handles _bcpuploader.UploadWarningEvent
-			WriteStatusLine(kCura.Windows.Process.EventType.Warning, s)
-		End Sub
-
 #End Region
 
 #Region "Public Events"
@@ -1872,12 +1873,13 @@ Namespace kCura.WinEDDS
 #Region "Event Handlers"
 
 		Private Sub NativeFileUploaderOnTapiClientChanged(ByVal sender As Object, ByVal e As TApi.TapiClientEventArgs)
-			Me._currentTransferClientType = e.ClientType
-			Me._currentTransferClientName = e.Name
+			Me._nativeFileTransferClientType = e.ClientType
+			Me._nativeFileTransferClientName = e.Name
 			PublishUploadModeEvent()
 		End Sub
 
-		Private Sub LegacyUploader_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _bcpuploader.UploadModeChangeEvent
+		Private Sub BcpFileUploaderOnTapiClientChanged(ByVal sender As Object, ByVal e As TApi.TapiClientEventArgs)
+			Me._bcpFileTransferClientName = e.Name
 			PublishUploadModeEvent()
 		End Sub
 
@@ -2168,7 +2170,7 @@ Namespace kCura.WinEDDS
 			RaiseEvent UploadModeChangeEvent(mode, isBulkEnabled)
 		End Sub
 
-		Protected Sub OnDataSourcePrepEvent( args As Api.DataSourcePrepEventArgs)
+		Protected Sub OnDataSourcePrepEvent(args As Api.DataSourcePrepEventArgs)
 			RaiseEvent DataSourcePrepEvent(args)
 		End Sub
 

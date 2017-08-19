@@ -161,8 +161,8 @@
       <HintPath>..\..\packages\Relativity.Kepler.1.0.0.1\lib\net45\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Logging.Interfaces, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Logging.Interfaces.1.0.0\lib\net45\Relativity.Logging.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Logging.Interfaces, Version=9.4.308.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.308\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client, Version=1.0.23.1, Culture=neutral, processorArchitecture=MSIL">
@@ -193,8 +193,8 @@
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.0.1\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client, Version=1.0.17227.7, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\relativity.transfer.client.1.0.0-beta000492\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client, Version=1.0.17231.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.1.0.0-beta000510\lib\net462\Relativity.Transfer.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System">

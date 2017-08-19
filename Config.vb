@@ -48,6 +48,8 @@ Namespace kCura.WinEDDS
                             If Not tempDict.Contains("TapiLogEnabled") Then tempDict.Add("TapiLogEnabled", "False")
                             If Not tempDict.Contains("TapiLargeFileProgressEnabled") Then tempDict.Add("TapiLargeFileProgressEnabled", "False")
                             If Not tempDict.Contains("TapiMaxJobParallelism") Then tempDict.Add("TapiMaxJobParallelism", "10")
+                            If Not tempDict.Contains("TapiAsperaBcpDocRootLevels") Then tempDict.Add("TapiAsperaBcpDocRootLevels", "1")
+                            If Not tempDict.Contains("TapiAsperaNativeDocRootLevels") Then tempDict.Add("TapiAsperaNativeDocRootLevels", "1")
                             If Not tempDict.Contains("DisableAspera") Then tempDict.Add("DisableAspera", "True")
                             If Not tempDict.Contains("RestUrl") Then tempDict.Add("RestUrl", "/Relativity.REST/api")
                             If Not tempDict.Contains("ServicesUrl") Then tempDict.Add("ServicesUrl", "/Relativity.Services/")
@@ -108,52 +110,52 @@ Namespace kCura.WinEDDS
 
 #Region "Registry Helpers"
 
-		Public Shared Function GetRegistryKeyValue(ByVal keyName As String) As String
-			Dim regKey As Microsoft.Win32.RegistryKey = Config.GetRegistryKey(False)
-			Dim value As String = CType(regKey.GetValue(keyName, ""), String)
-			regKey.Close()
-			Return value
-		End Function
+        Public Shared Function GetRegistryKeyValue(ByVal keyName As String) As String
+            Dim regKey As Microsoft.Win32.RegistryKey = Config.GetRegistryKey(False)
+            Dim value As String = CType(regKey.GetValue(keyName, ""), String)
+            regKey.Close()
+            Return value
+        End Function
 
-		Private Shared Function SetRegistryKeyValue(ByVal keyName As String, ByVal keyVal As String) As String
-			Dim regKey As Microsoft.Win32.RegistryKey = Config.GetRegistryKey(True)
-			regKey.SetValue(keyName, keyVal)
-			regKey.Close()
-			Return Nothing
+        Private Shared Function SetRegistryKeyValue(ByVal keyName As String, ByVal keyVal As String) As String
+            Dim regKey As Microsoft.Win32.RegistryKey = Config.GetRegistryKey(True)
+            regKey.SetValue(keyName, keyVal)
+            regKey.Close()
+            Return Nothing
 
-		End Function
+        End Function
 
-		Private Shared ReadOnly Property GetRegistryKey(ByVal write As Boolean) As Microsoft.Win32.RegistryKey
-			Get
-				Dim regKey As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("software\kCura\Relativity", write)
-				If regKey Is Nothing Then
-					Microsoft.Win32.Registry.CurrentUser.CreateSubKey("software\\kCura\\Relativity")
-					regKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("software\kCura\Relativity", write)
-				End If
-				Return regKey
-			End Get
-		End Property
+        Private Shared ReadOnly Property GetRegistryKey(ByVal write As Boolean) As Microsoft.Win32.RegistryKey
+            Get
+                Dim regKey As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("software\kCura\Relativity", write)
+                If regKey Is Nothing Then
+                    Microsoft.Win32.Registry.CurrentUser.CreateSubKey("software\\kCura\\Relativity")
+                    regKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("software\kCura\Relativity", write)
+                End If
+                Return regKey
+            End Get
+        End Property
 
-		Public Shared Function ValidateURIFormat(ByVal returnValue As String) As String
-			If Not String.IsNullOrEmpty(returnValue) AndAlso Not returnValue.Trim.EndsWith("/") Then
-				returnValue = returnValue.Trim + "/"
-			End If
+        Public Shared Function ValidateURIFormat(ByVal returnValue As String) As String
+            If Not String.IsNullOrEmpty(returnValue) AndAlso Not returnValue.Trim.EndsWith("/") Then
+                returnValue = returnValue.Trim + "/"
+            End If
 
-			'NOTE: This is here for validation; an improper URI will cause this to throw an
-			' exception. We set it then to 'Nothing' to avoid a warning-turned-error about
-			' having an unused variable. -Phil S. 12/05/2011
-			' fixed 1/24/2012 - slm - return an empty string if invalid uri format.  this will cause the 
-			' rdc to pop up its dialog prompting the user to enter a valid address
+            'NOTE: This is here for validation; an improper URI will cause this to throw an
+            ' exception. We set it then to 'Nothing' to avoid a warning-turned-error about
+            ' having an unused variable. -Phil S. 12/05/2011
+            ' fixed 1/24/2012 - slm - return an empty string if invalid uri format.  this will cause the 
+            ' rdc to pop up its dialog prompting the user to enter a valid address
 
-			Try
-				Dim uriObj As Uri = New Uri(returnValue)
-				uriObj = Nothing
-			Catch
-				returnValue = String.Empty
-			End Try
+            Try
+                Dim uriObj As Uri = New Uri(returnValue)
+                uriObj = Nothing
+            Catch
+                returnValue = String.Empty
+            End Try
 
-			Return returnValue
-		End Function
+            Return returnValue
+        End Function
 
 #End Region
 
@@ -370,6 +372,20 @@ Namespace kCura.WinEDDS
         Public Shared ReadOnly Property TapiMaxJobParallelism() As Int32
             Get
                 Return CType(ConfigSettings("TapiMaxJobParallelism"), Int32)
+            End Get
+        End Property
+
+        ' This sets the number of levels the Aspera doc root folder is relative to the file share where BCP files are stored.
+        Public Shared ReadOnly Property TapiAsperaBcpDocRootLevels() As Int32
+            Get
+                Return CType(ConfigSettings("TapiAsperaBcpDocRootLevels"), Int32)
+            End Get
+        End Property
+
+        ' This sets the number of levels the Aspera doc root folder is relative to the file share where native files are stored.
+        Public Shared ReadOnly Property TapiAsperaNativeDocRootLevels() As Int32
+            Get
+                Return CType(ConfigSettings("TapiAsperaNativeDocRootLevels"), Int32)
             End Get
         End Property
 
