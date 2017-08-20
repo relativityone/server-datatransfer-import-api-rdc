@@ -67,11 +67,11 @@
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ClientChangeReason.cs" />
-    <Compile Include="NativeFileTransferFactory.cs" />
-    <Compile Include="NativeFileTransferParameters.cs" />
+    <Compile Include="TapiBridgeFactory.cs" />
+    <Compile Include="TapiBridgeParameters.cs" />
     <Compile Include="Properties\AssemblyInfoLocal.cs" />
     <Compile Include="FileSharePathManager.cs" />
-    <Compile Include="NativeFileTransfer.cs" />
+    <Compile Include="TapiBridge.cs" />
     <Compile Include="Resources\Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -79,7 +79,7 @@
     </Compile>
     <Compile Include="TapiWinEddsHelper.cs" />
     <Compile Include="TapiConstants.cs" />
-    <Compile Include="TransferClient.cs" />
+    <Compile Include="TapiClient.cs" />
     <Compile Include="TapiClientEventArgs.cs" />
     <Compile Include="EventListeners\TransferPathIssueListener.cs" />
     <Compile Include="EventListeners\TransferPathProgressListener.cs" />

@@ -1,9 +1,9 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="NativeFileTransferFactory.cs" company="kCura Corp">
+// <copyright file="TapiBridgeFactory.cs" company="kCura Corp">
 //   kCura Corp (C) 2017 All Rights Reserved.
 // </copyright>
 // <summary>
-//   Defines the core file transfer class object to support native files.
+//   Represents a class to create <see cref="TransferClientBridge"/> instances.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -15,12 +15,12 @@ namespace kCura.WinEDDS.TApi
     using Relativity.Transfer;
 
     /// <summary>
-    /// Represents a class to create <see cref="NativeFileTransfer"/> instances.
+    /// Represents a class to create <see cref="TapiBridge"/> instances.
     /// </summary>
-    public static class NativeFileTransferFactory
+    public static class TapiBridgeFactory
     {
         /// <summary>
-        /// Creates a <see cref="NativeFileTransfer"/> instance that supports native file upload transfers.
+        /// Creates a <see cref="TapiBridge"/> instance that supports native file upload transfers.
         /// </summary>
         /// <param name="parameters">
         /// The native file transfer parameters
@@ -29,10 +29,10 @@ namespace kCura.WinEDDS.TApi
         /// The cancellation token.
         /// </param>
         /// <returns>
-        /// The <see cref="NativeFileTransfer"/> instance.
+        /// The <see cref="TapiBridge"/> instance.
         /// </returns>
-        public static NativeFileTransfer CreateUploadFileTransfer(
-            NativeFileTransferParameters parameters,
+        public static TapiBridge CreateUploadBridge(
+            TapiBridgeParameters parameters,
             CancellationToken token)
         {
             ILog log = new NullLogger();
@@ -45,11 +45,11 @@ namespace kCura.WinEDDS.TApi
                 log = new TransferLog();
             }
 
-            return new NativeFileTransfer(parameters, TransferDirection.Upload, log, token);
+            return new TapiBridge(parameters, TransferDirection.Upload, log, token);
         }
 
         /// <summary>
-        /// Creates a <see cref="NativeFileTransfer"/> instance that supports native file upload transfers.
+        /// Creates a <see cref="TapiBridge"/> instance that supports native file upload transfers.
         /// </summary>
         /// <param name="parameters">
         /// The native file transfer parameters
@@ -61,14 +61,14 @@ namespace kCura.WinEDDS.TApi
         /// The cancellation token.
         /// </param>
         /// <returns>
-        /// The <see cref="NativeFileTransfer"/> instance.
+        /// The <see cref="TapiBridge"/> instance.
         /// </returns>
-        public static NativeFileTransfer CreateUploadFileTransfer(
-            NativeFileTransferParameters parameters,
+        public static TapiBridge CreateUploadBridge(
+            TapiBridgeParameters parameters,
             ILog log,
             CancellationToken token)
         {
-            return new NativeFileTransfer(parameters, TransferDirection.Upload, log, token);
+            return new TapiBridge(parameters, TransferDirection.Upload, log, token);
         }
     }
 }

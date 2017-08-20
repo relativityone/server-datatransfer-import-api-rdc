@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="NativeFileTransferParameters.cs" company="kCura Corp">
+// <copyright file="TapiBridgeParameters.cs" company="kCura Corp">
 //   kCura Corp (C) 2017 All Rights Reserved.
 // </copyright>
 // <summary>
@@ -13,14 +13,14 @@ namespace kCura.WinEDDS.TApi
     using System.Net;
 
     /// <summary>
-    /// Represents the generic parameters to setup a native file transfer.
+    /// Represents the generic parameters to setup a Transfer API bridge.
     /// </summary>
-    public class NativeFileTransferParameters
+    public class TapiBridgeParameters
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="NativeFileTransferParameters"/> class.
+        /// Initializes a new instance of the <see cref="TapiBridgeParameters"/> class.
         /// </summary>
-        public NativeFileTransferParameters()
+        public TapiBridgeParameters()
         {
             this.BcpFileTransfer = false;
             this.DocRootLevels = 1;
@@ -43,12 +43,12 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NativeFileTransferParameters"/> class.
+        /// Initializes a new instance of the <see cref="TapiBridgeParameters"/> class.
         /// </summary>
         /// <param name="copy">
         /// The parameters to copy.
         /// </param>
-        public NativeFileTransferParameters(NativeFileTransferParameters copy)
+        public TapiBridgeParameters(TapiBridgeParameters copy)
         {
             if (copy == null)
             {
@@ -310,11 +310,11 @@ namespace kCura.WinEDDS.TApi
         /// Performs a shallow copy of this instance.
         /// </summary>
         /// <returns>
-        /// The <see cref="NativeFileTransferParameters"/> instance.
+        /// The <see cref="TapiBridgeParameters"/> instance.
         /// </returns>
-        public NativeFileTransferParameters ShallowCopy()
+        public TapiBridgeParameters ShallowCopy()
         {
-            return new NativeFileTransferParameters(this);
+            return new TapiBridgeParameters(this);
         }
     }
 }

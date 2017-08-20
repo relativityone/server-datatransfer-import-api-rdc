@@ -12,7 +12,7 @@ namespace kCura.WinEDDS.TApi
     using System;
 
     /// <summary>
-    /// Represents the TAPI client event arguments data.
+    /// Represents the Transfer API client event arguments data.
     /// </summary>
     /// <seealso cref="System.EventArgs" />
     public class TapiClientEventArgs : EventArgs
@@ -26,10 +26,10 @@ namespace kCura.WinEDDS.TApi
         /// <param name="client">
         /// The current transfer client type.
         /// </param>
-        public TapiClientEventArgs(string name, TransferClient client)
+        public TapiClientEventArgs(string name, TapiClient client)
         {
             this.Name = name;
-            this.ClientType = client;
+            this.Client = client;
         }
 
         /// <summary>
@@ -44,13 +44,13 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Gets the current transfer client type.
+        /// Gets the current transfer client.
         /// </summary>
         /// <value>
         /// The name
-        /// <see cref="TransferClient"/> value.
+        /// <see cref="TapiClient"/> value.
         /// </value>
-        public TransferClient ClientType
+        public TapiClient Client
         {
             get;
         }
