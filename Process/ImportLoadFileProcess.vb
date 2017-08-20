@@ -206,10 +206,10 @@ Namespace kCura.WinEDDS
 
 				If LoadFile.CopyFilesToDocumentRepository Then
 					Select Case _loadFileImporter.UploadConnection
-					    Case TApi.TransferClient.Direct
+					    Case TApi.TapiClient.Direct
 							retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Direct
-					    Case TApi.TransferClient.Aspera
-					    Case TApi.TransferClient.Web
+					    Case TApi.TapiClient.Aspera
+					    Case TApi.TapiClient.Web
 							retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Web
 					End Select
 					retval.TotalFileSize = _loadFileImporter.Statistics.FileBytes

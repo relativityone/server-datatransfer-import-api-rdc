@@ -23,10 +23,10 @@ Namespace kCura.WinEDDS
 
 		Private ReadOnly _syncRoot As Object = New Object
 		Protected _overwrite As Relativity.ImportOverwriteType
-		Private WithEvents _nativeFileUploader As TApi.NativeFileTransfer
-		Private WithEvents _bcpFileUploader As TApi.NativeFileTransfer
+		Private WithEvents _nativeUploaderBridge As TApi.TapiBridge
+		Private WithEvents _bcpUploaderBridge As TApi.TapiBridge
 		Private _nativeFileTransferClientName As String
-		Private _nativeFileTransferClientType As TApi.TransferClient = TApi.TransferClient.None
+		Private _nativeFileTransferClient As TApi.TapiClient = TApi.TapiClient.None
 		Private _bcpFileTransferClientName As String
 
 		Private _parentFolderDTO As kCura.EDDS.WebAPI.FolderManagerBase.Folder
@@ -176,9 +176,9 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public ReadOnly Property UploadConnection() As TApi.TransferClient
+		Public ReadOnly Property UploadConnection() As TApi.TapiClient
 			Get
-				Return Me._nativeFileTransferClientType
+				Return Me._nativeFileTransferClient
 			End Get
 		End Property
 
@@ -390,7 +390,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)
 			Dim gateway As kCura.WinEDDS.Service.FileIO = New kCura.WinEDDS.Service.FileIO(args.Credentials, args.CookieContainer)
-			Dim nativeParameters As TApi.NativeFileTransferParameters = New TApi.NativeFileTransferParameters
+			Dim nativeParameters As TApi.TapiBridgeParameters = New TApi.TapiBridgeParameters
 			nativeParameters.BcpFileTransfer = False
 			nativeParameters.Credentials = args.Credentials
 			nativeParameters.DocRootLevels = Config.TapiAsperaNativeDocRootLevels
@@ -409,53 +409,55 @@ Namespace kCura.WinEDDS
 			nativeParameters.WebServiceUrl = Config.WebServiceURL
 			nativeParameters.WorkspaceId = args.CaseInfo.ArtifactID
 
-			_nativeFileUploader = TApi.NativeFileTransferFactory.CreateUploadFileTransfer(nativeParameters, _cancellationToken.Token)
-			AddHandler _nativeFileUploader.TapiClientChanged, AddressOf NativeFileUploaderOnTapiClientChanged
-			AddHandler _nativeFileUploader.TapiFatalError, AddressOf NativeFileUploaderOnTapiFatalError
-			AddHandler _nativeFileUploader.TapiProgress, AddressOf NativeFileUploaderOnTapiProgress
-			AddHandler _nativeFileUploader.TapiStatistics, AddressOf NativeFileUploaderOnTapiStatistics
-			AddHandler _nativeFileUploader.TapiStatusMessage, AddressOf NativeFileUploaderOnTapiStatusEvent
-			AddHandler _nativeFileUploader.TapiErrorMessage, AddressOf NativeFileUploaderOnTapiErrorMessage
-			AddHandler _nativeFileUploader.TapiWarningMessage, AddressOf NativeFileUploaderOnTapiWarningMessage
+			_nativeUploaderBridge = TApi.TapiBridgeFactory.CreateUploadBridge(nativeParameters, _cancellationToken.Token)
+			AddHandler _nativeUploaderBridge.TapiClientChanged, AddressOf NativeTapiUploaderOnTapiClientChanged
+			AddHandler _nativeUploaderBridge.TapiFatalError, AddressOf TapiUploaderOnTapiFatalError
+			AddHandler _nativeUploaderBridge.TapiProgress, AddressOf NativeTapiUploaderOnTapiProgress
+			AddHandler _nativeUploaderBridge.TapiStatistics, AddressOf NativeTapiUploaderOnTapiStatistics
+			AddHandler _nativeUploaderBridge.TapiStatusMessage, AddressOf TapiUploaderOnTapiStatusEvent
+			AddHandler _nativeUploaderBridge.TapiErrorMessage, AddressOf TapiUploaderOnTapiErrorMessage
+			AddHandler _nativeUploaderBridge.TapiWarningMessage, AddressOf TapiUploaderOnTapiWarningMessage
 
 			' Copying the parameters and tweaking just a few BCP specific parameters.
-			Dim bcpParameters As TApi.NativeFileTransferParameters = nativeParameters.ShallowCopy()
+			Dim bcpParameters As TApi.TapiBridgeParameters = nativeParameters.ShallowCopy()
 			bcpParameters.BcpFileTransfer = True
 			bcpParameters.DocRootLevels = Config.TapiAsperaBcpDocRootLevels
 			bcpParameters.FileShare = gateway.GetBcpSharePath(args.CaseInfo.ArtifactID)
 			bcpParameters.SortIntoVolumes = False
-			_bcpFileUploader = TApi.NativeFileTransferFactory.CreateUploadFileTransfer(bcpParameters, _cancellationToken.Token)
-			_bcpFileUploader.TargetPath = bcpParameters.FileShare
-			AddHandler _bcpFileUploader.TapiClientChanged, AddressOf BcpFileUploaderOnTapiClientChanged
-			AddHandler _bcpFileUploader.TapiStatistics, AddressOf BcpFileUploaderOnTapiStatistics
-			AddHandler _bcpFileUploader.TapiFatalError, AddressOf NativeFileUploaderOnTapiFatalError
-			AddHandler _bcpFileUploader.TapiStatusMessage, AddressOf NativeFileUploaderOnTapiStatusEvent
-			AddHandler _bcpFileUploader.TapiErrorMessage, AddressOf NativeFileUploaderOnTapiErrorMessage
-			AddHandler _bcpFileUploader.TapiWarningMessage, AddressOf NativeFileUploaderOnTapiWarningMessage
+			_bcpUploaderBridge = TApi.TapiBridgeFactory.CreateUploadBridge(bcpParameters, _cancellationToken.Token)
+			_bcpUploaderBridge.TargetPath = bcpParameters.FileShare
+
+			' Reuse the events above unless there's specific functionality needed.
+			AddHandler _bcpUploaderBridge.TapiClientChanged, AddressOf BcpTapiUploaderOnTapiClientChanged
+			AddHandler _bcpUploaderBridge.TapiStatistics, AddressOf BcpTapiUploaderOnTapiStatistics
+			AddHandler _bcpUploaderBridge.TapiFatalError, AddressOf TapiUploaderOnTapiFatalError
+			AddHandler _bcpUploaderBridge.TapiStatusMessage, AddressOf TapiUploaderOnTapiStatusEvent
+			AddHandler _bcpUploaderBridge.TapiErrorMessage, AddressOf TapiUploaderOnTapiErrorMessage
+			AddHandler _bcpUploaderBridge.TapiWarningMessage, AddressOf TapiUploaderOnTapiWarningMessage
 		End Sub
 
-		Protected Overridable Sub DestroyNativeUploaders()
-			If Not _nativeFileUploader Is Nothing Then
-				RemoveHandler _nativeFileUploader.TapiClientChanged, AddressOf NativeFileUploaderOnTapiClientChanged
-				RemoveHandler _nativeFileUploader.TapiFatalError, AddressOf NativeFileUploaderOnTapiFatalError
-				RemoveHandler _nativeFileUploader.TapiProgress, AddressOf NativeFileUploaderOnTapiProgress
-				RemoveHandler _nativeFileUploader.TapiStatistics, AddressOf NativeFileUploaderOnTapiStatistics
-				RemoveHandler _nativeFileUploader.TapiStatusMessage, AddressOf NativeFileUploaderOnTapiStatusEvent
-				RemoveHandler _nativeFileUploader.TapiErrorMessage, AddressOf NativeFileUploaderOnTapiErrorMessage
-				RemoveHandler _nativeFileUploader.TapiWarningMessage, AddressOf NativeFileUploaderOnTapiWarningMessage
-				_nativeFileUploader.Dispose()
-				_nativeFileUploader = Nothing
+		Protected Overridable Sub DestroyUploaders()
+			If Not _nativeUploaderBridge Is Nothing Then
+				RemoveHandler _nativeUploaderBridge.TapiClientChanged, AddressOf NativeTapiUploaderOnTapiClientChanged
+				RemoveHandler _nativeUploaderBridge.TapiFatalError, AddressOf TapiUploaderOnTapiFatalError
+				RemoveHandler _nativeUploaderBridge.TapiProgress, AddressOf NativeTapiUploaderOnTapiProgress
+				RemoveHandler _nativeUploaderBridge.TapiStatistics, AddressOf NativeTapiUploaderOnTapiStatistics
+				RemoveHandler _nativeUploaderBridge.TapiStatusMessage, AddressOf TapiUploaderOnTapiStatusEvent
+				RemoveHandler _nativeUploaderBridge.TapiErrorMessage, AddressOf TapiUploaderOnTapiErrorMessage
+				RemoveHandler _nativeUploaderBridge.TapiWarningMessage, AddressOf TapiUploaderOnTapiWarningMessage
+				_nativeUploaderBridge.Dispose()
+				_nativeUploaderBridge = Nothing
 			End If
 
-			If Not _bcpFileUploader Is Nothing Then
-				RemoveHandler _bcpFileUploader.TapiClientChanged, AddressOf BcpFileUploaderOnTapiClientChanged
-				RemoveHandler _bcpFileUploader.TapiStatistics, AddressOf BcpFileUploaderOnTapiStatistics
-				RemoveHandler _bcpFileUploader.TapiFatalError, AddressOf NativeFileUploaderOnTapiFatalError
-				RemoveHandler _bcpFileUploader.TapiStatusMessage, AddressOf NativeFileUploaderOnTapiStatusEvent
-				RemoveHandler _bcpFileUploader.TapiErrorMessage, AddressOf NativeFileUploaderOnTapiErrorMessage
-				RemoveHandler _bcpFileUploader.TapiWarningMessage, AddressOf NativeFileUploaderOnTapiWarningMessage
-				_bcpFileUploader.Dispose()
-				_bcpFileUploader = Nothing
+			If Not _bcpUploaderBridge Is Nothing Then
+				RemoveHandler _bcpUploaderBridge.TapiClientChanged, AddressOf BcpTapiUploaderOnTapiClientChanged
+				RemoveHandler _bcpUploaderBridge.TapiStatistics, AddressOf BcpTapiUploaderOnTapiStatistics
+				RemoveHandler _bcpUploaderBridge.TapiFatalError, AddressOf TapiUploaderOnTapiFatalError
+				RemoveHandler _bcpUploaderBridge.TapiStatusMessage, AddressOf TapiUploaderOnTapiStatusEvent
+				RemoveHandler _bcpUploaderBridge.TapiErrorMessage, AddressOf TapiUploaderOnTapiErrorMessage
+				RemoveHandler _bcpUploaderBridge.TapiWarningMessage, AddressOf TapiUploaderOnTapiWarningMessage
+				_bcpUploaderBridge.Dispose()
+				_bcpUploaderBridge = Nothing
 			End If
 		End Sub
 
@@ -513,17 +515,17 @@ Namespace kCura.WinEDDS
 
 		Private Sub CompletePendingNativeFileTransfers()
 			WriteStatusLine(EventType.Status, "Waiting for native file batch to complete...")
-			_nativeFileUploader.WaitForTransferJob()
+			_nativeUploaderBridge.WaitForTransferJob()
 		End Sub
 
 		Private Sub CompletePendingBcpFileTransfers()
 			WriteStatusLine(EventType.Status, "Waiting for BCP file batch to complete...")
-			_bcpFileUploader.WaitForTransferJob()
+			_bcpUploaderBridge.WaitForTransferJob()
 		End Sub
 
 		Private Sub PublishUploadModeEvent()
 			Dim retval As New List(Of String)
-			If Not _bcpFileUploader Is Nothing Then
+			If Not _bcpUploaderBridge Is Nothing Then
 				retval.Add("Metadata: " & _bcpFileTransferClientName)
 			End If
 
@@ -649,7 +651,7 @@ Namespace kCura.WinEDDS
 				WriteFatalError(Me.CurrentLineNumber, ex)
 			Finally
 				_timekeeper.MarkStart("ReadFile_CleanupTempTables")
-				DestroyNativeUploaders()
+				DestroyUploaders()
 				CleanupTempTables()
 				_timekeeper.MarkEnd("ReadFile_CleanupTempTables")
 			End Try
@@ -775,8 +777,8 @@ Namespace kCura.WinEDDS
 					Dim copyFileToRepository As Action =
 							Sub()
 								If _copyFileToRepository Then
-									fileGuid = _nativeFileUploader.AddPath(filename, Guid.NewGuid().ToString(), Me.CurrentLineNumber)
-									destinationVolume = _nativeFileUploader.TargetFolderName
+									fileGuid = _nativeUploaderBridge.AddPath(filename, Guid.NewGuid().ToString(), Me.CurrentLineNumber)
+									destinationVolume = _nativeUploaderBridge.TargetFolderName
 								Else
 									fileGuid = System.Guid.NewGuid.ToString
 								End If
@@ -1080,7 +1082,7 @@ Namespace kCura.WinEDDS
 			If ShouldImport Then
 
 				Try
-					If ShouldImport AndAlso _nativeFileUploader.TransfersPending Then
+					If ShouldImport AndAlso _nativeUploaderBridge.TransfersPending Then
 						CompletePendingNativeFileTransfers()
 						_jobCounter += 1
 					End If
@@ -1174,10 +1176,10 @@ Namespace kCura.WinEDDS
 			Dim dataGridFileUploadKey As String
 
 			try
-				nativeFileUploadKey = _bcpFileUploader.AddPath(outputNativePath, Guid.NewGuid().ToString(), 1)
-				codeFileUploadKey = _bcpFileUploader.AddPath(_outputCodeFilePath, Guid.NewGuid().ToString(), 2)
-				objectFileUploadKey = _bcpFileUploader.AddPath(_outputObjectFilePath, Guid.NewGuid().ToString(), 3)
-				dataGridFileUploadKey = _bcpFileUploader.AddPath(_outputFileWriter.OutputDataGridFilePath, Guid.NewGuid().ToString(), 4)
+				nativeFileUploadKey = _bcpUploaderBridge.AddPath(outputNativePath, Guid.NewGuid().ToString(), 1)
+				codeFileUploadKey = _bcpUploaderBridge.AddPath(_outputCodeFilePath, Guid.NewGuid().ToString(), 2)
+				objectFileUploadKey = _bcpUploaderBridge.AddPath(_outputObjectFilePath, Guid.NewGuid().ToString(), 3)
+				dataGridFileUploadKey = _bcpUploaderBridge.AddPath(_outputFileWriter.OutputDataGridFilePath, Guid.NewGuid().ToString(), 4)
 				CompletePendingBcpFileTransfers()
 			Catch ex As Exception
 				' Note: Retry and potential HTTP fallback automatically kick in. Throwing a similar exception if a failure occurs.
@@ -1673,11 +1675,11 @@ Namespace kCura.WinEDDS
 				fileSize = Me.GetFileLength(localFilePath)
 				Dim fileName As String = System.IO.Path.GetFileName(localFilePath).Replace(ChrW(11), "_")
 				Dim location As String
-				If _nativeFileUploader.TargetFolderName = "" Then
+				If _nativeUploaderBridge.TargetFolderName = "" Then
 					location = localFilePath
 				Else
-					Dim guid As String = _nativeFileUploader.AddPath(localFilePath, System.Guid.NewGuid().ToString(), Me.CurrentLineNumber)
-					location = _nativeFileUploader.TargetPath & _nativeFileUploader.TargetFolderName & "\" & guid
+					Dim guid As String = _nativeUploaderBridge.AddPath(localFilePath, System.Guid.NewGuid().ToString(), Me.CurrentLineNumber)
+					location = _nativeUploaderBridge.TargetPath & _nativeUploaderBridge.TargetFolderName & "\" & guid
 				End If
 				location = System.Web.HttpUtility.UrlEncode(location)
 				fileField.Value = String.Format("{1}{0}{2}{0}{3}", ChrW(11), fileName, fileSize, location)
@@ -1793,7 +1795,7 @@ Namespace kCura.WinEDDS
 			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(kCura.Windows.Process.EventType.End, totalProcessed + _offset, _recordCount, line, _currentStatisticsSnapshot))
 		End Sub
 
-		Private Sub NativeFileUploaderOnTapiStatusEvent(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
+		Private Sub TapiUploaderOnTapiStatusEvent(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
 			SyncLock _syncRoot
 				If ShouldImport Then
 					WriteStatusLine(kCura.Windows.Process.EventType.Status, e.Message, e.LineNumber)
@@ -1801,7 +1803,7 @@ Namespace kCura.WinEDDS
 			End SyncLock
 		End Sub
 
-		Private Sub NativeFileUploaderOnTapiErrorMessage(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
+		Private Sub TapiUploaderOnTapiErrorMessage(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
 			SyncLock _syncRoot
 				If ShouldImport Then
 					WriteError(e.LineNumber, e.Message)
@@ -1809,7 +1811,7 @@ Namespace kCura.WinEDDS
 			End SyncLock
 		End Sub
 
-		Private Sub NativeFileUploaderOnTapiWarningMessage(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
+		Private Sub TapiUploaderOnTapiWarningMessage(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
 			SyncLock _syncRoot
 				If ShouldImport Then
 					WriteStatusLine(kCura.Windows.Process.EventType.Warning, e.Message, e.LineNumber)
@@ -1817,7 +1819,7 @@ Namespace kCura.WinEDDS
 			End SyncLock
 		End Sub
 
-		Private Sub NativeFileUploaderOnTapiProgress(ByVal sender As Object, ByVal e As TApi.TapiProgressEventArgs)
+		Private Sub NativeTapiUploaderOnTapiProgress(ByVal sender As Object, ByVal e As TApi.TapiProgressEventArgs)
 			SyncLock _syncRoot
 				If ShouldImport AndAlso e.Status Then
 					_processedCount += 1
@@ -1826,7 +1828,7 @@ Namespace kCura.WinEDDS
 			End SyncLock
 		End Sub
 
-		Private Sub NativeFileUploaderOnTapiStatistics(ByVal sender As Object, ByVal e As TApi.TapiStatisticsEventArgs)
+		Private Sub NativeTapiUploaderOnTapiStatistics(ByVal sender As Object, ByVal e As TApi.TapiStatisticsEventArgs)
 			SyncLock _syncRoot
 				_statistics.FileTime = e.TotalTransferTicks
 				_statistics.FileBytes = e.TotalBytes
@@ -1834,7 +1836,7 @@ Namespace kCura.WinEDDS
 			End SyncLock
 		End Sub
 
-		Private Sub BcpFileUploaderOnTapiStatistics(ByVal sender As Object, ByVal e As TApi.TapiStatisticsEventArgs)
+		Private Sub BcpTapiUploaderOnTapiStatistics(ByVal sender As Object, ByVal e As TApi.TapiStatisticsEventArgs)
 			SyncLock _syncRoot
 				_statistics.MetadataTime = e.TotalTransferTicks
 				_statistics.MetadataBytes = e.TotalBytes
@@ -1842,7 +1844,7 @@ Namespace kCura.WinEDDS
 			End SyncLock
 		End Sub
 
-		Private Sub NativeFileUploaderOnTapiFatalError(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
+		Private Sub TapiUploaderOnTapiFatalError(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
 			SyncLock _syncRoot
 				WriteFatalError(e.LineNumber, New Exception(e.Message))
 			End SyncLock
@@ -1869,13 +1871,13 @@ Namespace kCura.WinEDDS
 
 #Region "Event Handlers"
 
-		Private Sub NativeFileUploaderOnTapiClientChanged(ByVal sender As Object, ByVal e As TApi.TapiClientEventArgs)
-			Me._nativeFileTransferClientType = e.ClientType
+		Private Sub NativeTapiUploaderOnTapiClientChanged(ByVal sender As Object, ByVal e As TApi.TapiClientEventArgs)
+			Me._nativeFileTransferClient = e.Client
 			Me._nativeFileTransferClientName = e.Name
 			PublishUploadModeEvent()
 		End Sub
 
-		Private Sub BcpFileUploaderOnTapiClientChanged(ByVal sender As Object, ByVal e As TApi.TapiClientEventArgs)
+		Private Sub BcpTapiUploaderOnTapiClientChanged(ByVal sender As Object, ByVal e As TApi.TapiClientEventArgs)
 			Me._bcpFileTransferClientName = e.Name
 			PublishUploadModeEvent()
 		End Sub

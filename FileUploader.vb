@@ -11,7 +11,7 @@ Namespace kCura.WinEDDS
 
 		Private _gateway As kCura.WinEDDS.Service.FileIO
 		Private _credentials As Net.NetworkCredential
-		Private _type As kCura.WinEDDS.TApi.TransferClient
+		Private _type As kCura.WinEDDS.TApi.TapiClient
 		Private _destinationFolderPath As String
 		Private _caseArtifactID As Int32
 		Private _isBulkEnabled As Boolean = True
@@ -73,7 +73,7 @@ Namespace kCura.WinEDDS
 		Private Sub SetType(ByVal destFolderPath As String)
 			Try
 				If Config.ForceWebUpload Then
-					Me.UploaderType = TApi.TransferClient.Web
+					Me.UploaderType = TApi.TapiClient.Web
 				Else
 					Dim dummyText As String = System.Guid.NewGuid().ToString().Replace("-", String.Empty).Substring(0, 5)
 					'If the destination folder path is empty, we only need to test file Read/Write permissions
@@ -84,10 +84,10 @@ Namespace kCura.WinEDDS
 					End If
 					System.IO.File.Create(destFolderPath & dummyText).Close()
 					System.IO.File.Delete(destFolderPath & dummyText)
-					Me.UploaderType = TApi.TransferClient.Direct
+					Me.UploaderType = TApi.TapiClient.Direct
 				End If
 			Catch ex As System.Exception
-				Me.UploaderType = TApi.TransferClient.Web
+				Me.UploaderType = TApi.TapiClient.Web
 			End Try
 		End Sub
 
@@ -100,7 +100,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property UploaderType() As TApi.TransferClient
+		Public Property UploaderType() As TApi.TapiClient
 			Get
 				Return _type
 			End Get
@@ -177,7 +177,7 @@ Namespace kCura.WinEDDS
 			Dim oldDestinationFolderPath As String = String.Copy(_destinationFolderPath)
 			Try
 				_destinationFolderPath = _gateway.GetBcpSharePath(appID)
-				If Me.UploaderType = TApi.TransferClient.Direct Then
+				If Me.UploaderType = TApi.TapiClient.Direct Then
 					If Not System.IO.Directory.Exists(_destinationFolderPath) Then
 						System.IO.Directory.CreateDirectory(_destinationFolderPath)
 					End If
@@ -224,7 +224,7 @@ Namespace kCura.WinEDDS
 			Dim tries As Int32 = NumberOfRetries
 			While tries > 0 And (DoRetry OrElse tries = NumberOfRetries)
 				Try
-					If Me.UploaderType = TApi.TransferClient.Web Then
+					If Me.UploaderType = TApi.TapiClient.Web Then
 						Return Me.WebUploadFile(New System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read), contextArtifactID, newFileName)
 					Else
 						Return Me.DirectUploadFile(filePath, contextArtifactID, newFileName, internalUse, tries < NumberOfRetries)
@@ -240,7 +240,7 @@ Namespace kCura.WinEDDS
 						RaiseEvent UploadWarningEvent(String.Format("{0} upload failed: {1} - Retrying in {2} seconds.  {3} tries left.", Me.UploaderType.ToString, ex.Message, wait, tries))
 						System.Threading.Thread.CurrentThread.Join(wait * 1000)
 					Else
-						If Me.UploaderType = TApi.TransferClient.Direct And _sortIntoVolumes Then _repositoryPathManager.Rollback()
+						If Me.UploaderType = TApi.TapiClient.Direct And _sortIntoVolumes Then _repositoryPathManager.Rollback()
 						If internalUse Then
 							Throw
 						Else
@@ -262,8 +262,8 @@ Namespace kCura.WinEDDS
 		'End Function
 
 		Private Function IsWarningException(ByVal ex As System.Exception) As Boolean
-			If Me.UploaderType = TApi.TransferClient.Direct And TypeOf ex Is System.IO.IOException Then Return True
-			If Me.UploaderType = TApi.TransferClient.Web Then Return True
+			If Me.UploaderType = TApi.TapiClient.Direct And TypeOf ex Is System.IO.IOException Then Return True
+			If Me.UploaderType = TApi.TapiClient.Web Then Return True
 			Return False
 		End Function
 
@@ -276,11 +276,11 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Function UploadTextAsFile(ByVal content As String, ByVal contextArtifactID As Int32, ByVal fileGuid As String) As String
-			If Me.UploaderType = TApi.TransferClient.Web Then
-				Me.UploaderType = TApi.TransferClient.Web
+			If Me.UploaderType = TApi.TapiClient.Web Then
+				Me.UploaderType = TApi.TapiClient.Web
 				Return WebUploadFile(New System.IO.MemoryStream(System.Text.Encoding.Unicode.GetBytes(content)), contextArtifactID, fileGuid)
 			Else
-				Me.UploaderType = TApi.TransferClient.Direct
+				Me.UploaderType = TApi.TapiClient.Direct
 				Dim newFileName As String = System.Guid.NewGuid.ToString
 				Try
 					Dim sw As New System.IO.StreamWriter(String.Format("{0}{1}", _destinationFolderPath, newFileName), False, System.Text.Encoding.Unicode)
