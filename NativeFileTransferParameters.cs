@@ -29,7 +29,6 @@ namespace kCura.WinEDDS.TApi
             this.ForceAsperaClient = false;
             this.ForceHttpClient = false;            
             this.ForceFileShareClient = false;
-            this.IsBulkEnabled = true;
             this.LargeFileProgressEnabled = false;
             this.MaxFilesPerFolder = 1000;
             this.MaxJobParallelism = 10;
@@ -63,7 +62,6 @@ namespace kCura.WinEDDS.TApi
             this.ForceAsperaClient = copy.ForceAsperaClient;
             this.ForceHttpClient = copy.ForceHttpClient;
             this.ForceFileShareClient = copy.ForceFileShareClient;
-            this.IsBulkEnabled = copy.IsBulkEnabled;
             this.LargeFileProgressEnabled = copy.LargeFileProgressEnabled;
             this.MaxFilesPerFolder = copy.MaxFilesPerFolder;
             this.MaxJobParallelism = copy.MaxJobParallelism;
@@ -156,18 +154,6 @@ namespace kCura.WinEDDS.TApi
         /// <see langword="true" /> to force using the file share client; otherwise, <see langword="false" />.
         /// </value>
         public bool ForceFileShareClient
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether bulk mode is enabled.
-        /// </summary>
-        /// <value>
-        /// The bulk mode enabled value.
-        /// </value>
-        public bool IsBulkEnabled
         {
             get;
             set;

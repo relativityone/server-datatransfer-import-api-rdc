@@ -213,14 +213,6 @@ namespace kCura.WinEDDS.TApi
         public event EventHandler<TapiMessageEventArgs> TapiFatalError = delegate { };
 
         /// <summary>
-        /// Gets a value indicating whether the bulk setting is enabled.
-        /// </summary>
-        /// <value>
-        /// The bulk setting value.
-        /// </value>
-        public bool IsBulkEnabled => this.parameters.IsBulkEnabled;
-
-        /// <summary>
         /// Gets the current transfer client unique identifier.
         /// </summary>
         /// <value>
@@ -479,7 +471,7 @@ namespace kCura.WinEDDS.TApi
             }
 
             this.RaiseStatusMessage(message, TapiConstants.NoLineNumber);
-            var eventArgs = new TapiClientEventArgs(this.ClientDisplayName, this.Client, this.parameters.IsBulkEnabled);
+            var eventArgs = new TapiClientEventArgs(this.ClientDisplayName, this.Client);
             this.TapiClientChanged.Invoke(this, eventArgs);
         }
 

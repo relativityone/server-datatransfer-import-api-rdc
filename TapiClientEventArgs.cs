@@ -26,14 +26,10 @@ namespace kCura.WinEDDS.TApi
         /// <param name="client">
         /// The current transfer client type.
         /// </param>
-        /// <param name="isBulkEnabled">
-        /// Specify whether the bulk feature is enabled.
-        /// </param>
-        public TapiClientEventArgs(string name, TransferClient client, bool isBulkEnabled)
+        public TapiClientEventArgs(string name, TransferClient client)
         {
             this.Name = name;
             this.ClientType = client;
-            this.IsBulkEnabled = isBulkEnabled;
         }
 
         /// <summary>
@@ -55,17 +51,6 @@ namespace kCura.WinEDDS.TApi
         /// <see cref="TransferClient"/> value.
         /// </value>
         public TransferClient ClientType
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the bulk feature is enabled.
-        /// </summary>
-        /// <value>
-        /// <see langword="true" /> if the bulk feature is enabled; otherwise, <see langword="false" />.
-        /// </value>
-        public bool IsBulkEnabled
         {
             get;
         }
