@@ -83,7 +83,6 @@ Namespace kCura.WinEDDS
 		Private _usePipeliningForNativeAndObjectImports As Boolean
 		Private _createFoldersInWebAPI As Boolean
 		Private _createErrorForEmptyNativeFile As Boolean
-		Private _enableSingleModeImport As Boolean
 
 		Private _cloudInstance As Boolean
 		Protected _bulkLoadFileFieldDelimiter As String
@@ -340,7 +339,6 @@ Namespace kCura.WinEDDS
 			_usePipeliningForNativeAndObjectImports = Config.UsePipeliningForNativeAndObjectImports
 			_createFoldersInWebAPI = Config.CreateFoldersInWebAPI
 			_createErrorForEmptyNativeFile = Config.CreateErrorForEmptyNativeFile
-			_enableSingleModeImport = Config.EnableSingleModeImport
 
 			' get an instance of the specific type of artifact reader so we can get the fieldmapped event
 			_executionSource = executionSource
@@ -400,7 +398,6 @@ Namespace kCura.WinEDDS
 			nativeParameters.ForceAsperaClient = Config.TapiForceAsperaClient
 			nativeParameters.ForceFileShareClient = Config.TapiForceFileShareClient
 			nativeParameters.ForceHttpClient = Config.ForceWebUpload OrElse Config.TapiForceHttpClient
-			nativeParameters.IsBulkEnabled = False
 			nativeParameters.LargeFileProgressEnabled = Config.TapiLargeFileProgressEnabled
 			nativeParameters.LogEnabled = Config.TapiLogEnabled
 			nativeParameters.MaxFilesPerFolder = gateway.RepositoryVolumeMax
@@ -526,10 +523,8 @@ Namespace kCura.WinEDDS
 
 		Private Sub PublishUploadModeEvent()
 			Dim retval As New List(Of String)
-			Dim isBulkEnabled As Boolean = True
 			If Not _bcpFileUploader Is Nothing Then
 				retval.Add("Metadata: " & _bcpFileTransferClientName)
-				isBulkEnabled = _bcpFileUploader.IsBulkEnabled
 			End If
 
 			If _settings.CopyFilesToDocumentRepository AndAlso _settings.NativeFilePathColumn IsNot Nothing Then
@@ -541,7 +536,9 @@ Namespace kCura.WinEDDS
 			End If
 			If retval.Any() Then
 				Dim uploadStatus As String = String.Join(" - ", retval.ToArray())
-				OnUploadModeChangeEvent(uploadStatus, isBulkEnabled)
+
+				' Note: single vs. bulk mode is a vestige. Bulk mode is always true.
+				OnUploadModeChangeEvent(uploadStatus, true)
 			End If
 		End Sub
 
@@ -1183,7 +1180,7 @@ Namespace kCura.WinEDDS
 				dataGridFileUploadKey = _bcpFileUploader.AddPath(_outputFileWriter.OutputDataGridFilePath, Guid.NewGuid().ToString(), 4)
 				CompletePendingBcpFileTransfers()
 			Catch ex As Exception
-			    ' Note: Retry and potential HTTP fallback automatically kick in. Throwing a similar exception if a failure occurs.
+				' Note: Retry and potential HTTP fallback automatically kick in. Throwing a similar exception if a failure occurs.
 				Throw New BcpPathAccessException("Error accessing BCP Path, could be caused by network connectivity issues: " & ex.Message)
 			End Try
 
