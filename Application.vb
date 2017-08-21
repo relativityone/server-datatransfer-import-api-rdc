@@ -815,16 +815,16 @@ Namespace kCura.EDDS.WinForm
         Public Async Sub NewFileTransfer()
             Await NewLoginAsync()
 
-            Dim rdcContext = New RDCContext()
+            Dim rdcContext = New RelativityContext()
             rdcContext.Credential = Await Me.GetCredentialsAsync()
             rdcContext.WorkspaceID = Me.SelectedCaseInfo.ArtifactID
             rdcContext.WebServiceURL = kCura.WinEDDS.Config.WebServiceURL
             StartFileTransferExtension(rdcContext)
         End Sub
 
-        Private Sub StartFileTransferExtension(rdcContext As RDCContext)
+        Private Sub StartFileTransferExtension(relativityContext As RelativityContext)
             Dim initArguments As String
-            initArguments = $"-t {rdcContext.Credential.Password} -w {rdcContext.WorkspaceID}  -u {rdcContext.WebServiceURL}"
+            initArguments = $"-t {relativityContext.Credential.Password} -w {relativityContext.WorkspaceID}  -u {relativityContext.WebServiceURL}"
             Dim applicationFile = GetApplicationFilePath()
             Process.Start(applicationFile, initArguments)
         End Sub
