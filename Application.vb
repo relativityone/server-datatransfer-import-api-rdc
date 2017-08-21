@@ -816,22 +816,24 @@ Namespace kCura.EDDS.WinForm
             Await NewLoginAsync()
 
             Dim rdcContext = New RelativityContext()
-            rdcContext.Credential = Await Me.GetCredentialsAsync()
+            Dim authContext = New AuthenticationContext()
+            authContext.Credential = Await Me.GetCredentialsAsync()
             rdcContext.WorkspaceID = Me.SelectedCaseInfo.ArtifactID
             rdcContext.WebServiceURL = kCura.WinEDDS.Config.WebServiceURL
-            StartFileTransferExtension(rdcContext)
+            StartFileTransferExtension(rdcContext, authContext)
         End Sub
 
-        Private Sub StartFileTransferExtension(relativityContext As RelativityContext)
+        Private Sub StartFileTransferExtension(relativityContext As RelativityContext, authContext As AuthenticationContext)
             Dim initArguments As String
-            initArguments = $"-t {relativityContext.Credential.Password} -w {relativityContext.WorkspaceID}  -u {relativityContext.WebServiceURL}"
+            initArguments = $"-t {authContext.Credential.Password} -w {relativityContext.WorkspaceID}  -u {relativityContext.WebServiceURL}"
             Dim applicationFile = GetApplicationFilePath()
+
             Process.Start(applicationFile, initArguments)
         End Sub
         Private Function GetApplicationFilePath() As String
             Dim appPath = ConfigurationManager.AppSettings("FileTransferExtension.ApplicationFile")
             If String.IsNullOrEmpty(appPath) Then
-                Return "kCura.WinEDDS.FileTransfer.Extension.exe"            
+                Return "kCura.WinEDDS.FileTransfer.Extension.exe"
             Else
                 Return appPath
             End If
