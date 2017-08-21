@@ -17,9 +17,14 @@ namespace kCura.WinEDDS.TApi
     public abstract class TransferListenerBase : IDisposable
     {
         /// <summary>
+        /// The disposed backing.
+        /// </summary>
+        private bool disposed;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="TransferListenerBase"/> class. 
         /// </summary>
-         /// <param name="log">
+        /// <param name="log">
         /// The transfer log.
         /// </param>
         /// <param name="context">
@@ -84,22 +89,11 @@ namespace kCura.WinEDDS.TApi
             get;
         }
 
-        /// <summary>
-        /// Unsubscribe to events and dispose.
-        /// </summary>
-        public virtual void Dispose()
+        /// <inheritdoc />
+        public void Dispose()
         {
-            if (this.Context == null)
-            {
-                return;
-            }
-
-            this.Context.LargeFileProgress -= this.OnLargeFileProgress;
-            this.Context.TransferPathProgress -= this.OnTransferPathProgress;
-            this.Context.TransferPathIssue -= this.OnTransferPathIssue;
-            this.Context.TransferRequest -= this.OnTransferRequestEvent;
-            this.Context.TransferJobRetry -= this.OnTransferJobRetryEvent;
-            this.Context.TransferStatistics -= this.OnTransferStatisticsEvent;
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -234,6 +228,33 @@ namespace kCura.WinEDDS.TApi
         /// </param>
         protected virtual void OnTransferStatisticsEvent(object sender, TransferStatisticsEventArgs e)
         {
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        /// <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.
+        /// </param>
+        private void Dispose(bool disposing)
+        {
+            if (this.disposed)
+            {
+                return;
+            }
+
+            if (disposing && this.Context != null)
+            {
+                this.Context.LargeFileProgress -= this.OnLargeFileProgress;
+                this.Context.TransferPathProgress -= this.OnTransferPathProgress;
+                this.Context.TransferPathIssue -= this.OnTransferPathIssue;
+                this.Context.TransferRequest -= this.OnTransferRequestEvent;
+                this.Context.TransferJobRetry -= this.OnTransferJobRetryEvent;
+                this.Context.TransferStatistics -= this.OnTransferStatisticsEvent;
+            }
+
+            this.disposed = true;
+            
         }
     }
 }
