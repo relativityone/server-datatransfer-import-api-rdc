@@ -11,7 +11,6 @@ namespace kCura.WinEDDS.TApi
 {
     using System.Threading;
 
-    using Relativity.Logging;
     using Relativity.Transfer;
 
     /// <summary>

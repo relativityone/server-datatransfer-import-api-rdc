@@ -8,7 +8,6 @@ namespace kCura.WinEDDS.TApi
 {
     using System;
 
-    using Relativity.Logging;
     using Relativity.Transfer;
 
     /// <summary>

@@ -17,7 +17,6 @@ namespace kCura.WinEDDS.TApi
     using System.Net;
     using System.Threading;
 
-    using Relativity.Logging;
     using Relativity.Transfer;
     using Relativity.Transfer.Aspera;
     using Relativity.Transfer.Http;

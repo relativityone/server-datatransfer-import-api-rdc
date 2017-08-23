@@ -1,27 +1,33 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="TapiClientDocs.cs" company="kCura Corp">
+// <copyright file="TapiWinEddsHelper.cs" company="kCura Corp">
 //   kCura Corp (C) 2017 All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.Linq;
-
 namespace kCura.WinEDDS.TApi
 {
     using System;
+    using System.Linq;
     using System.Net;
     using System.Text;
 
     using kCura.WinEDDS.TApi.Resources;
 
     using Relativity.Transfer;
-    using Relativity.Services.ServiceProxy;
     
     /// <summary>
     /// Defines helper methods to provide WinEDDS compatibility functionality.
     /// </summary>
     public static class TapiWinEddsHelper
     {
+        /// <summary>
+        /// The default OAUTH2 bearer-token username.
+        /// </summary>
+        /// <remarks>
+        /// This is now defined within the WinEDDS code.
+        /// </remarks>
+        private const string OAuth2UserName = "XxX_BearerTokenCredentials_XxX";
+
         /// <summary>
         /// Use TAPI to obtain the best-fit client for the specified workspace and retrieve the client name.
         /// </summary>
@@ -44,10 +50,11 @@ namespace kCura.WinEDDS.TApi
         {
             var baseUri = new Uri(webServicesUrl);
             var host = new Uri(baseUri.GetLeftPart(UriPartial.Authority));
-            var connectionInfo = new RelativityConnectionInfo(
-                host,
-                new UsernamePasswordCredentials(credential.UserName, credential.Password),
-                workspaceId);
+            var connectionInfo = CreateRelativityConnectionInfo(
+                webServicesUrl,
+                workspaceId,
+                credential.UserName,
+                credential.Password);
             using (var transferHost = new RelativityTransferHost(connectionInfo))
             {
                 try
@@ -142,10 +149,10 @@ namespace kCura.WinEDDS.TApi
             var baseUri = new Uri(webServiceUrl);
             var host = new Uri(baseUri.GetLeftPart(UriPartial.Authority));
             return string.Compare(userName, "XxX_BearerTokenCredentials_XxX", StringComparison.OrdinalIgnoreCase) == 0
-                       ? new RelativityConnectionInfo(host, new BearerTokenCredentials(password), workspaceId)
+                       ? new RelativityConnectionInfo(host, new BearerTokenCredential(password), workspaceId)
                        : new RelativityConnectionInfo(
                            host,
-                           new UsernamePasswordCredentials(userName, password),
+                           new BasicAuthenticationCredential(userName, password),
                            workspaceId);
         }
     }
