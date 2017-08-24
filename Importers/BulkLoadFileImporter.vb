@@ -755,6 +755,7 @@ Namespace kCura.WinEDDS
 						End If
 					End If
 				End If
+			    fullFilePath = filename
 				If fileExists Then
 					Dim now As Date = Date.Now
 					Dim getFileID As Action =
@@ -768,7 +769,7 @@ Namespace kCura.WinEDDS
 										idDataExtractor = injectableContainer.FileIdData
 									End If
 									If (idDataExtractor Is Nothing) Then
-										oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(filename)
+										oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(fullFilePath)
 									Else
 										oixFileIdData = idDataExtractor.GetFileIDData()
 									End If
@@ -782,11 +783,10 @@ Namespace kCura.WinEDDS
 								Else
 									fileGuid = System.Guid.NewGuid.ToString
 								End If
-								fullFilePath = filename
 								If (Not injectableContainerIsNothing AndAlso injectableContainer.HasFileName()) Then 
 									filename = injectableContainer.FileName.GetFileName() 
 								Else 
-									filename = Path.GetFileName(filename) 
+									filename = Path.GetFileName(fullFilePath)
 								End If
 							End Sub
 
