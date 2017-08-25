@@ -814,12 +814,11 @@ Namespace kCura.EDDS.WinForm
 
         Public Async Sub NewFileTransfer()
             Await NewLoginAsync()
-
-            Dim rdcContext = New RelativityContext()
+            
             Dim authContext = New AuthenticationContext()
             authContext.Credential = Await Me.GetCredentialsAsync()
-            rdcContext.WorkspaceID = Me.SelectedCaseInfo.ArtifactID
-            rdcContext.WebServiceURL = kCura.WinEDDS.Config.WebServiceURL
+            Dim rdcContext = New RelativityContext(kCura.WinEDDS.Config.WebServiceURL,  Me.SelectedCaseInfo.ArtifactID)
+
             StartFileTransferExtension(rdcContext, authContext)
         End Sub
 
