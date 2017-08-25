@@ -9,5 +9,5 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("kCura.WinEDDS.TApi.NUnit")]
+[assembly: InternalsVisibleTo("kCura.WinEDDS.TApi.NUnit.Integration")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
