@@ -1154,34 +1154,34 @@ Namespace kCura.EDDS.WinForm
             CursorDefault()
         End Function
 
-        Public Async Function StartSearch(ByVal exportFile As ExportFile) As Task
-            CursorWait()
-            If Not Await Me.IsConnected() Then
-                CursorDefault()
-                Return
-            End If
-            Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
-            frm.StatusRefreshRate = 0
-            Dim exporter As New kCura.WinEDDS.ExportSearchProcess(New ExportFileFormatterFactory())
-            exporter.UserNotification = New FormsUserNotification()
-            exporter.ExportFile = exportFile
-            frm.ProcessObserver = exporter.ProcessObserver
-            frm.ProcessController = exporter.ProcessController
-            frm.Text = "Export Progress..."
-            Select Case exportFile.TypeOfExport
-                Case ExportFile.ExportType.AncestorSearch
-                    frm.Text = "Export Folders and Subfolders Progress ..."
-                Case ExportFile.ExportType.ArtifactSearch
-                    frm.Text = "Export Saved Search Progress ..."
-                Case ExportFile.ExportType.ParentSearch
-                    frm.Text = "Export Folder Progress ..."
-                Case ExportFile.ExportType.Production
-                    frm.Text = "Export Production Set Progress ..."
-            End Select
-            frm.Show()
-            CursorDefault()
-            _processPool.StartProcess(exporter)
-        End Function
+		Public Async Function StartSearch(ByVal exportFile As ExportFile) As Task
+			CursorWait()
+			If Not Await Me.IsConnected() Then
+				CursorDefault()
+				Return
+			End If
+			Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
+			frm.StatusRefreshRate = 0
+			Dim exporter As New kCura.WinEDDS.ExportSearchProcess(new ExportFileFormatterFactory(), New ExportConfig)
+			exporter.UserNotification = New FormsUserNotification()
+			exporter.ExportFile = exportFile
+			frm.ProcessObserver = exporter.ProcessObserver
+			frm.ProcessController = exporter.ProcessController
+			frm.Text = "Export Progress..."
+			Select Case exportFile.TypeOfExport
+				Case exportFile.ExportType.AncestorSearch
+					frm.Text = "Export Folders and Subfolders Progress ..."
+				Case exportFile.ExportType.ArtifactSearch
+					frm.Text = "Export Saved Search Progress ..."
+				Case exportFile.ExportType.ParentSearch
+					frm.Text = "Export Folder Progress ..."
+				Case exportFile.ExportType.Production
+					frm.Text = "Export Production Set Progress ..."
+			End Select
+			frm.Show()
+			CursorDefault()
+			_processPool.StartProcess(exporter)
+		End Function
 
         Public Sub CancelImport(ByVal importProcessId As Guid)
             CursorWait()
@@ -1351,28 +1351,28 @@ Namespace kCura.EDDS.WinForm
         End Property
 
 #Region "Login"
-        ''' <summary>
-        ''' Attempt to establish a trusted and authenticated connection to Relativity. Success = Case List, Failure = Login Prompt
-        ''' </summary>
-        ''' <param name="callingForm">The calling form to be Hooked (what is hooked?) by the Enhance Menu Provider</param>
-        ''' <returns>A fresh LoginForm</returns>
-        ''' <remarks></remarks>
-        Friend Async Function AttemptLogin(ByVal callingForm As Form) As Task
-            Dim defaultCredentialResult As Application.CredentialCheckResult = AttemptWindowsAuthentication()
-
-            Select Case (defaultCredentialResult)
-                Case Application.CredentialCheckResult.AccessDisabled
-                    MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)
-                Case Application.CredentialCheckResult.Fail
-                    CheckVersion(System.Net.CredentialCache.DefaultCredentials)
-                    Await NewLoginAsync()
-                Case Application.CredentialCheckResult.Success
-                    LogOn()
-                    If (Not _caseSelected) Then
-                        Await OpenCase()
-                    End If
-                    EnhancedMenuProvider.Hook(callingForm)
-            End Select
+		''' <summary>
+		''' Attempt to establish a trusted and authenticated connection to Relativity. Success = Case List, Failure = Login Prompt
+		''' </summary>
+		''' <param name="callingForm">The calling form to be Hooked (what is hooked?) by the Enhance Menu Provider</param>
+		''' <returns>A fresh LoginForm</returns>
+		''' <remarks></remarks>
+		Friend Async Function AttemptLogin(ByVal callingForm As Form) As Task
+			Dim defaultCredentialResult As Application.CredentialCheckResult = AttemptWindowsAuthentication()
+			SetImplicitCredentialProvider()
+			Select Case (defaultCredentialResult)
+				Case Application.CredentialCheckResult.AccessDisabled
+					MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)
+				Case Application.CredentialCheckResult.Fail
+					CheckVersion(System.Net.CredentialCache.DefaultCredentials)
+					Await NewLoginAsync()
+				Case Application.CredentialCheckResult.Success
+					LogOn()
+					If (Not _caseSelected) Then
+						Await OpenCase()
+					End If
+					EnhancedMenuProvider.Hook(callingForm)
+			End Select
 
         End Function
 
