@@ -7,8 +7,8 @@
     <ProjectGuid>{96F9EC3F-5982-4E0E-9FFE-2CBEBB9848B8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>kCura.WinEDDS.TApi.NUnit</RootNamespace>
-    <AssemblyName>kCura.WinEDDS.TApi.NUnit</AssemblyName>
+    <RootNamespace>kCura.WinEDDS.TApi.NUnit.Integration</RootNamespace>
+    <AssemblyName>kCura.WinEDDS.TApi.NUnit.Integration</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -71,12 +71,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Version\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="FileLockedImportJobTests.cs" />
     <Compile Include="FileNotFoundImportJobTests.cs" />
     <Compile Include="PositiveImportJobTests.cs" />
     <Compile Include="ImportJobTestBase.cs" />
     <Compile Include="TapiBridgeTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\AssemblyInfoLocal.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
