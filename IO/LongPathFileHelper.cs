@@ -74,5 +74,10 @@ namespace kCura.WinEDDS.Core.IO
 			FieldInfo nameField = stream.GetType().GetField("_fileName", BindingFlags.NonPublic | BindingFlags.Instance);
 			nameField.SetValue(stream, filePath);
 		}
+
+		public string ReadFileAsString(string path)
+		{
+			return ZlpIOHelper.ReadAllText(path);
+		}
 	}
 }
