@@ -21,6 +21,7 @@ Namespace kCura.Windows.Process.Generic
 		End Property
 
 		Protected Sub New(ByVal getMessage As Func(Of T, String), ByVal getRecordInfo As Func(Of T, String))
+			_processID = Guid.NewGuid()
 			_processObserver = New kCura.Windows.Process.Generic.ProcessObserver(Of T)(getMessage, getRecordInfo)
 			_processController = New kCura.Windows.Process.Controller
 		End Sub
@@ -29,7 +30,7 @@ Namespace kCura.Windows.Process.Generic
 
 		Public Property ProcessID() As Guid Implements IRunable.ProcessID
 			Get
-				Return _processID
+				Return _processID 
 			End Get
 			Set(ByVal value As Guid)
 				_processID = value

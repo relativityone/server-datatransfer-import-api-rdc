@@ -4,6 +4,7 @@ Namespace kCura.Windows.Process
 #Region "Members"
 		Private _startTime As DateTime
 		Private _endTime As DateTime
+		Private _processID As Guid
 		Private _totalRecords As Int64
 		Private _totalRecordsProcessed As Int64
 		Private _totalRecordsProcessedWithWarnings As Int64
@@ -11,6 +12,7 @@ Namespace kCura.Windows.Process
 		Private _totalRecordsDisplay As String
 		Private _totalRecordsProcessedDisplay As String
 		Private _statusSuffixEntries As IDictionary
+
 #End Region
 
 #Region "Accessors"
@@ -29,6 +31,15 @@ Namespace kCura.Windows.Process
 			End Get
 			Set(ByVal value As DateTime)
 				_endTime = value
+			End Set
+		End Property
+
+		Public Property ProcessID() As Guid
+			Get
+				Return _processID
+			End Get
+			Set(ByVal value As Guid)
+				_processID = value
 			End Set
 		End Property
 
@@ -93,8 +104,7 @@ Namespace kCura.Windows.Process
 		End Property
 
 #End Region
-
-		Public Sub New(ByVal totRecs As Int64, ByVal totRecsProc As Int64, ByVal totRecsProcWarn As Int64, ByVal totRecsProcErr As Int64, ByVal sTime As DateTime, ByVal eTime As DateTime, ByVal totRecsDisplay As String, ByVal totRecsProcDisplay As String, ByVal statusSuffixEntries As IDictionary)
+		Public Sub New(ByVal totRecs As Int64, ByVal totRecsProc As Int64, ByVal totRecsProcWarn As Int64, ByVal totRecsProcErr As Int64, ByVal sTime As DateTime, ByVal eTime As DateTime, ByVal totRecsDisplay As String, ByVal totRecsProcDisplay As String, ByVal theProcessID As Guid, ByVal statusSuffixEntries As IDictionary)
 			Me.TotalRecords = totRecs
 			Me.TotalRecordsProcessed = totRecsProc
 			If Not totRecsDisplay Is Nothing Then
@@ -107,11 +117,16 @@ Namespace kCura.Windows.Process
 			Else
 				Me.TotalRecordsProcessedDisplay = totRecsProc.ToString
 			End If
+			Me.ProcessID = theProcessID
 			Me.TotalRecordsProcessedWithWarnings = totRecsProcWarn
 			Me.TotalRecordsProcessedWithErrors = totRecsProcErr
 			Me.StartTime = sTime
 			Me.EndTime = eTime
 			_statusSuffixEntries = statusSuffixEntries
+		End Sub
+
+		Public Sub New(ByVal totRecs As Int64, ByVal totRecsProc As Int64, ByVal totRecsProcWarn As Int64, ByVal totRecsProcErr As Int64, ByVal sTime As DateTime, ByVal eTime As DateTime, ByVal totRecsDisplay As String, ByVal totRecsProcDisplay As String, ByVal statusSuffixEntries As IDictionary)
+			: Me.New(totRecs, totRecsProc, totRecsProcWarn, totRecsProcErr, sTime, eTime, totRecsDisplay, totRecsProcDisplay, Nothing, statusSuffixEntries)
 		End Sub
 
 		Public Sub New(ByVal totRecs As Int64, ByVal totRecsProc As Int64, ByVal totRecsProcWarn As Int64, ByVal totRecsProcErr As Int64, ByVal sTime As DateTime, ByVal eTime As DateTime, ByVal totRecsDisplay As String, ByVal totRecsProcDisplay As String)
