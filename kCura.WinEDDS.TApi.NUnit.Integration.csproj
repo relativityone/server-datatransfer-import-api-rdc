@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{96F9EC3F-5982-4E0E-9FFE-2CBEBB9848B8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>kCura.WinEDDS.TApi.NUnit</RootNamespace>
+    <AssemblyName>kCura.WinEDDS.TApi.NUnit</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FizzWare.NBuilder, Version=5.0.0.138, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NBuilder.5.0.0\lib\net40\FizzWare.NBuilder.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Moq, Version=4.5.30.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Moq.4.5.30\lib\net45\Moq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="nunit.framework, Version=3.7.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Polly, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c8a3ffc3f8f825cc, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Polly.1.0.0\lib\net45\Polly.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client, Version=1.0.17235.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.1.0.0\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Transfer.UnitTestFramework, Version=1.0.17235.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.testframework.1.0.0\lib\net462\Relativity.Transfer.UnitTestFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FileLockedImportJobTests.cs" />
+    <Compile Include="FileNotFoundImportJobTests.cs" />
+    <Compile Include="PositiveImportJobTests.cs" />
+    <Compile Include="ImportJobTestBase.cs" />
+    <Compile Include="TapiBridgeTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\kCura\kCura\kCura.vbproj">
+      <Project>{535d782a-2388-416f-ab46-10347e44eec9}</Project>
+      <Name>kCura</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.Relativity.ImportAPI\kCura.Relativity.ImportAPI.csproj">
+      <Project>{d246bc22-c50a-485d-9a8d-04a04f7ac20e}</Project>
+      <Name>kCura.Relativity.ImportAPI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.WinEDDS.TApi\kCura.WinEDDS.TApi.csproj">
+      <Project>{896f332d-f38d-4bf9-8977-fd04e577eef5}</Project>
+      <Name>kCura.WinEDDS.TApi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.WinEDDS\kCura.WinEDDS.vbproj">
+      <Project>{f16a2219-5dac-4f2b-89b0-6bd1243cbf8f}</Project>
+      <Name>kCura.WinEDDS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.Relativity.DataReader\kCura.Relativity.DataReaderClient.vbproj">
+      <Project>{94bd2810-9fd8-4eee-aa2b-590e4bcd4cc0}</Project>
+      <Name>kCura.Relativity.DataReaderClient</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Ensure that all binaries get copied into the output directory. -->
+    <None Include="oi\unmanaged\cmmap000.bin" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="@(OiNativeLibs)">
+      <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="oi\unmanaged\oilink.exe" />
+    <Content Include="oi\unmanaged\oilink.jar" />
+    <Content Include="oi\unmanaged\sccca-R1.dll" />
+    <Content Include="oi\unmanaged\sccch-R1.dll" />
+    <Content Include="oi\unmanaged\sccda-R1.dll" />
+    <Content Include="oi\unmanaged\sccex-R1.dll" />
+    <Content Include="oi\unmanaged\sccfa-R1.dll" />
+    <Content Include="oi\unmanaged\sccfi-R1.dll" />
+    <Content Include="oi\unmanaged\sccfmt-R1.dll" />
+    <Content Include="oi\unmanaged\sccfnt-R1.dll" />
+    <Content Include="oi\unmanaged\sccfut-R1.dll" />
+    <Content Include="oi\unmanaged\sccind-R1.dll" />
+    <Content Include="oi\unmanaged\scclo-R1.dll" />
+    <Content Include="oi\unmanaged\sccut-R1.dll" />
+    <Content Include="oi\unmanaged\wvcore-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccca-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccch-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccda-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccex-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccfa-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccfi-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccfmt-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccfnt-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccfut-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccind-R1.dll" />
+    <Content Include="oi\unmanaged\x86\scclo-R1.dll" />
+    <Content Include="oi\unmanaged\x86\sccut-R1.dll" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2017.2.0\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\kCura.OutsideIn.FI.Win32.2017.2.0\build\kCura.OutsideIn.FI.Win32.targets'))" />
+  </Target>
+  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32.2017.2.0\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2017.2.0\build\kCura.OutsideIn.FI.Win32.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
