@@ -53,12 +53,12 @@
       <HintPath>..\..\packages\Polly.1.0.0\lib\net45\Polly.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client, Version=1.0.17237.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\relativity.transfer.client.1.0.1\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client, Version=1.0.17238.8, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.1.0.5\lib\net462\Relativity.Transfer.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.UnitTestFramework, Version=1.0.17235.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\relativity.transfer.testframework.1.0.0\lib\net462\Relativity.Transfer.UnitTestFramework.dll</HintPath>
+    <Reference Include="Relativity.Transfer.UnitTestFramework, Version=1.0.17238.8, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.testframework.1.0.5\lib\net462\Relativity.Transfer.UnitTestFramework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
