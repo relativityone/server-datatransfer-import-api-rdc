@@ -42,6 +42,7 @@ Namespace kCura.WinEDDS
                             If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")
                             If Not tempDict.Contains("CreateFoldersInWebAPI") Then tempDict.Add("CreateFoldersInWebAPI", "True")
                             If Not tempDict.Contains("ForceWebUpload") Then tempDict.Add("ForceWebUpload", "False")
+                            If Not tempDict.Contains("TapiForceClientCandidates") Then tempDict.Add("TapiForceClientCandidates", "")
                             If Not tempDict.Contains("TapiForceFileShareClient") Then tempDict.Add("TapiForceFileShareClient", "False")
                             If Not tempDict.Contains("TapiForceHttpClient") Then tempDict.Add("TapiForceHttpClient", "False")
                             If Not tempDict.Contains("TapiForceAsperaClient") Then tempDict.Add("TapiForceAsperaClient", "False")
@@ -351,6 +352,13 @@ Namespace kCura.WinEDDS
         Public Shared ReadOnly Property TapiForceAsperaClient() As Boolean
             Get
                 Return CType(ConfigSettings("TapiForceAsperaClient"), Boolean)
+            End Get
+        End Property
+
+        'This is used to force a semi-colon delimited list of TAPI clients
+        Public Shared ReadOnly Property TapiForceClientCandidates() As String
+            Get
+                Return CType(ConfigSettings("TapiForceClientCandidates"), String)
             End Get
         End Property
 

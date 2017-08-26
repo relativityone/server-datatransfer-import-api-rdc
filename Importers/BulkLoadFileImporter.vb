@@ -396,6 +396,7 @@ Namespace kCura.WinEDDS
 			nativeParameters.DocRootLevels = Config.TapiAsperaNativeDocRootLevels
 			nativeParameters.FileShare = args.CaseInfo.DocumentPath
 			nativeParameters.ForceAsperaClient = Config.TapiForceAsperaClient
+			nativeParameters.ForceClientCandidates = Config.TapiForceClientCandidates
 			nativeParameters.ForceFileShareClient = Config.TapiForceFileShareClient
 			nativeParameters.ForceHttpClient = Config.ForceWebUpload OrElse Config.TapiForceHttpClient
 			nativeParameters.LargeFileProgressEnabled = Config.TapiLargeFileProgressEnabled
@@ -755,7 +756,7 @@ Namespace kCura.WinEDDS
 						End If
 					End If
 				End If
-			    fullFilePath = filename
+				fullFilePath = filename
 				If fileExists Then
 					Dim now As Date = Date.Now
 					Dim getFileID As Action =
