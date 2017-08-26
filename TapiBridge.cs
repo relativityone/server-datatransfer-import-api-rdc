@@ -528,8 +528,24 @@ namespace kCura.WinEDDS.TApi
                 else
                 {
                     configuration.ClientId = Guid.Empty;
+
+                    // The configuration parameters may want to change order or restrict certain clients.
+                    TransferClientStrategy clientStrategy;
+                    if (!string.IsNullOrEmpty(parameters.ForceClientCandidates))
+                    {
+                        clientStrategy = new TransferClientStrategy(parameters.ForceClientCandidates);
+                        this.transferLog.LogInformation(
+                            "Override the default transfer client strategy. Candidates={ForceClientCandidates}",
+                            parameters.ForceClientCandidates);
+                    }
+                    else
+                    {
+                        clientStrategy = new TransferClientStrategy();
+                        this.transferLog.LogInformation("Using the default default transfer client strategy.");
+                    }
+
                     this.transferClient = this.transferHost
-                        .CreateClientAsync(configuration, this.cancellationToken)
+                        .CreateClientAsync(configuration, clientStrategy, this.cancellationToken)
                         .GetAwaiter()
                         .GetResult();
                     this.RaiseClientChanged(ClientChangeReason.BestFit);

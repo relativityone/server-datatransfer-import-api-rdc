@@ -27,6 +27,7 @@ namespace kCura.WinEDDS.TApi
             this.Credentials = null;
             this.FileShare = null;
             this.ForceAsperaClient = false;
+            this.ForceClientCandidates = null;
             this.ForceHttpClient = false;            
             this.ForceFileShareClient = false;
             this.LargeFileProgressEnabled = false;
@@ -60,6 +61,7 @@ namespace kCura.WinEDDS.TApi
             this.DocRootLevels = copy.DocRootLevels;
             this.FileShare = copy.FileShare;
             this.ForceAsperaClient = copy.ForceAsperaClient;
+            this.ForceClientCandidates = copy.ForceClientCandidates;
             this.ForceHttpClient = copy.ForceHttpClient;
             this.ForceFileShareClient = copy.ForceFileShareClient;
             this.LargeFileProgressEnabled = copy.LargeFileProgressEnabled;
@@ -118,6 +120,18 @@ namespace kCura.WinEDDS.TApi
         /// The file share.
         /// </value>
         public string FileShare
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the semi-colon delimited list of client candidates. Native TAPI client identifiers must be used (IE FileShare;Aspera;Http).
+        /// </summary>
+        /// <value>
+        /// The client candidates.
+        /// </value>
+        public string ForceClientCandidates
         {
             get;
             set;
