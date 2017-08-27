@@ -206,10 +206,10 @@ Namespace kCura.WinEDDS
 
 				If LoadFile.CopyFilesToDocumentRepository Then
 					Select Case _loadFileImporter.UploadConnection
-					    Case TApi.TapiClient.Direct
+						Case TApi.TapiClient.Direct
 							retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Direct
-					    Case TApi.TapiClient.Aspera
-					    Case TApi.TapiClient.Web
+						Case TApi.TapiClient.Aspera
+						Case TApi.TapiClient.Web
 							retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Web
 					End Select
 					retval.TotalFileSize = _loadFileImporter.Statistics.FileBytes
@@ -243,6 +243,10 @@ Namespace kCura.WinEDDS
 					Me.ProcessObserver.RaiseErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Progress
 					Me.ProcessObserver.RaiseRecordProcessed(e.CurrentRecordIndex)
+					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, _startTime, New DateTime, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
+				Case kCura.Windows.Process.EventType.ResetProgress
+					' Do NOT raise RaiseRecordProcessed for this event. 
 					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, _startTime, New DateTime, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Status

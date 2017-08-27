@@ -515,13 +515,15 @@ Namespace kCura.WinEDDS
 #Region "Main"
 
 		Private Sub CompletePendingNativeFileTransfers()
-			WriteStatusLine(EventType.Status, "Waiting for native file batch to complete...")
+			WriteStatusLine(EventType.Status, "Waiting for all native files to upload...")
 			_nativeUploaderBridge.WaitForTransferJob()
+			WriteStatusLine(EventType.Status, "Native file uploads completed.")
 		End Sub
 
 		Private Sub CompletePendingBcpFileTransfers()
-			WriteStatusLine(EventType.Status, "Waiting for BCP file batch to complete...")
+			WriteStatusLine(EventType.Status, "Waiting for all bulk load files to upload...")
 			_bcpUploaderBridge.WaitForTransferJob()
+			WriteStatusLine(EventType.Status, "Bulk load file uploads completed.")
 		End Sub
 
 		Private Sub PublishUploadModeEvent()
@@ -590,6 +592,9 @@ Namespace kCura.WinEDDS
 					Try
 						If Me.CurrentLineNumber < _startLineNumber Then
 							Me.AdvanceLine()
+
+							' This will ensure progress takes into account the start line number
+							_processedCount = _processedCount + 1
 						Else
 							_timekeeper.MarkStart("ReadFile_GetLine")
 							_statistics.DocCount += 1
@@ -671,6 +676,10 @@ Namespace kCura.WinEDDS
 			DeleteFiles()
 			OpenFileWriters()
 			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, _recordCount, RestartTimeEventMsg, Nothing))
+
+			' Counting all lines increments progress to 100%.
+			' This will reset progress back to zero instead of waiting for the first transfer to complete.
+			OnStatusMessage(new kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.ResetProgress, 0, _recordCount, "Starting import...", Nothing))
 			Return True
 		End Function
 
@@ -1083,10 +1092,18 @@ Namespace kCura.WinEDDS
 			If ShouldImport Then
 
 				Try
-					If ShouldImport AndAlso _nativeUploaderBridge.TransfersPending Then
+					If ShouldImport AndAlso _copyFileToRepository AndAlso _nativeUploaderBridge.TransfersPending Then
 						CompletePendingNativeFileTransfers()
 						_jobCounter += 1
+
+						' The sync progress addresses an issue with TAPI clients that fail to raise progress when a failure occurs but successfully transfer all files via job retry (Aspera).
+						Dim expectedProcessCount as Int32 =  Me.CurrentLineNumber + _offset
+						If ShouldImport AndAlso _processedCount <> expectedProcessCount Then
+							_processedCount = expectedProcessCount
+							Me.WriteTapiProgressMessage("Synchronized process count.", Me.CurrentLineNumber)
+						End If
 					End If
+					
 					If ShouldImport Then
 						PushNativeBatch(outputNativePath)
 					End If
@@ -1716,6 +1733,10 @@ Namespace kCura.WinEDDS
 			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(kCura.Windows.Process.EventType.Progress, lineProgress, _recordCount, message, _currentStatisticsSnapshot))
 		End Sub
 
+		Protected Sub WriteStatusLine(ByVal et As kCura.Windows.Process.EventType, ByVal line As String)
+			WriteStatusLine(et, line, Me.CurrentLineNumber)
+		End Sub
+
 		Private Sub WriteStatusLine(ByVal et As kCura.Windows.Process.EventType, ByVal line As String, ByVal lineNumber As Int32)
 			' Avoid displaying potential negative numbers.
 			Dim recordNumber As Int32 = lineNumber
@@ -1723,12 +1744,13 @@ Namespace kCura.WinEDDS
 				recordNumber = recordNumber + _offset
 			End If
 
+			' Prevent unnecessary crashes due to to ArgumentException (IE progress).
+			If recordNumber < 0 Then
+				recordNumber = 0
+			End If
+
 			line = GetLineMessage(line, lineNumber)
 			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(et, recordNumber, _recordCount, line, _currentStatisticsSnapshot))
-		End Sub
-
-		Protected Sub WriteStatusLine(ByVal et As kCura.Windows.Process.EventType, ByVal line As String)
-			WriteStatusLine(et, line, Me.CurrentLineNumber)
 		End Sub
 
 		Private Sub WriteFatalError(ByVal lineNumber As Int32, ByVal ex As System.Exception)
@@ -1786,14 +1808,12 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub WriteEndImport(ByVal line As String)
-			' The process count should always be used UNLESS the process is stopped immediately.
-			line = GetLineMessage(line, Me.CurrentLineNumber)
-			Dim totalProcessed As Int32 = Me.CurrentLineNumber
-			If ShouldImport AndAlso _processedCount > 0 Then
-				totalProcessed = _processedCount
+			' When a fatal error occurs or the user stops, provide an accurate count due to async nature of TAPI.
+			If ShouldImport Then
+				WriteStatusLine(kCura.Windows.Process.EventType.End, line)
+			Else
+				WriteStatusLine(kCura.Windows.Process.EventType.End, line, _processedCount)
 			End If
-
-			OnStatusMessage(New kCura.Windows.Process.StatusEventArgs(kCura.Windows.Process.EventType.End, totalProcessed + _offset, _recordCount, line, _currentStatisticsSnapshot))
 		End Sub
 
 		Private Sub TapiUploaderOnTapiStatusEvent(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
