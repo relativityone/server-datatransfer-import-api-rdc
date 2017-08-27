@@ -7,5 +7,6 @@ Namespace kCura.Windows.Process
 		[Error]
 		ResetStartTime
 		Count
+		ResetProgress
 	End Enum
 End Namespace
