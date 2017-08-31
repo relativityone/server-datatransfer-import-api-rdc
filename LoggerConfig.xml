@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <kCuraLogging masterLoggingConfiguration="EDDS">
 	<rules enabled="true">
-		<rule system="*" loggingLevel="Debug" sink="File1"/>
+		<rule system="*" loggingLevel="Information" sink="File1"/>
 	</rules>
 	<sinks>
 		<fileSink name="File1" logFileLocation="%temp%\RDC_log\" maxFileSizeInMB ="10000" />
