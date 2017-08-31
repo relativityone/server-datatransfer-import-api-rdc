@@ -33,7 +33,6 @@ Namespace kCura.WinEDDS.Credentials
 		Private _cancellationTokenSource As CancellationTokenSource
 		Private _onTokenHandler As TokenResponseHandler
 		Private _logInLock As New SemaphoreSlim(1)
-		Private _currentCredentials As NetworkCredential
 		
 		Public WithEvents Events As IOAuth2ClientEvents
 
@@ -47,10 +46,7 @@ Namespace kCura.WinEDDS.Credentials
 		End Sub
 
 		Public Function GetCredentials() As System.Net.NetworkCredential Implements ICredentialsProvider.GetCredentials
-			if(_currentCredentials Is Nothing)
-				Throw new CredentialsNotSetException()
-			End If
-			Return _currentCredentials
+			Throw new InvalidOperationException("ImplicitCredentials Provider does not support synchronous requests.")
 		End Function
 
 		Public Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential) Implements ICredentialsProvider.GetCredentialsAsync
@@ -65,9 +61,8 @@ Namespace kCura.WinEDDS.Credentials
 				_logInLock.Release()
 			End Try
 			
-			_currentCredentials = New NetworkCredential(_OAUTH_USERNAME, token)
-			
-			Return _currentCredentials
+			Dim creds As System.Net.NetworkCredential = New NetworkCredential(_OAUTH_USERNAME, token)
+			Return creds
 		End Function
 
 		Public Sub CloseLoginView()
