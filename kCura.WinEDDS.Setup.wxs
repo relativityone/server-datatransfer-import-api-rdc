@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+	<?define ProductName="Relativity Desktop Client" ?>
+	<?define UpgradeCode="{E32BA6D3-7C36-4D52-B93B-302E360B20B3}" ?>
+	<?define RegistryKey="Software\kCura\RelativityDesktopClient" ?>
+	<Product Id="*" Name="$(var.ProductName)" Codepage="1252" Language="1033" Version="$(var.ProductVersion)" Manufacturer="Relativity ODA LLC" UpgradeCode="$(var.UpgradeCode)">
+		<Package Id="*" Description="$(var.ProductName) Installer package" Comments="$(var.ProductName) Windows Installer database" Manufacturer="Relativity ODA LLC" InstallerVersion="300" Compressed="yes" Platform="$(var.Platform)" />
+		<!-- UI Extensions -->
+		<UIRef Id="WixUI_MondoNoLicense" />
+		<UIRef Id="WixUI_ErrorProgressText" />
+		<!-- The following condition blocks installation if .NET Framework 4.5 is not present on the machine -->
+		<PropertyRef Id="NETFRAMEWORK45"/>
+		<Condition Message="This application requires .NET Framework 4.5. Please install the .NET Framework then run this installer again.">
+			<![CDATA[Installed OR NETFRAMEWORK45]]>
+		</Condition>
+		<!-- Set the icon for the msi and Add/Remove programs -->
+		<Icon Id="relativity_1.exe" SourceFile="$(var.Trunk)\EDDS\RelativityIcons\relativity_1.ico" />
+		<Property Id="ARPPRODUCTICON" Value="relativity_1.exe" />
+		<Property Id="ALLUSERS" Value="1" />
+		<!-- Perform the proper upgrade checks -->
+		<Property Id="NEWERPRODUCTFOUND" Secure="yes" />
+		<Upgrade Id="$(var.UpgradeCode)">
+			<UpgradeVersion Maximum="$(var.ProductVersion)" IncludeMinimum="yes" Language="1033" Property="PREVIOUSVERSIONSINSTALLED" />
+			<UpgradeVersion Minimum="$(var.ProductVersion)" IncludeMinimum="yes" OnlyDetect="yes" Language="1033" Property="NEWERPRODUCTFOUND" />
+		</Upgrade>
+		<Media Id="1" Cabinet="WinEDDS.cab" EmbedCab="yes" />
+		<Property Id="DiskPrompt" Value="kCura $(var.ProductName) $(var.ProductVersion) Installation [1]" />
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder" Name="PFiles">
+				<?if $(var.Platform) = "x64" ?>
+			</Directory>
+			<Directory Id="ProgramFiles64Folder" Name="PFiles">
+				<?endif ?>
+				<Directory Id="kCuraCorp" Name="kCura Corporation">
+					<Directory Id="INSTALLDIR" Name="$(var.ProductName)">
+						<Component Id="MainExecutable" Guid="{878031B1-50D3-48DD-9856-AE3DA2C43463}">
+							<File Id="kCuraEDDSWinFormEXE" Name="kCura.EDDS.WinForm.exe" DiskId="1" Source="$(var.kCura.EDDS.WinForm.TargetPath)" KeyPath="yes">
+								<Shortcut Id="startmenuRelativity" Directory="ProgramMenuFolder" Name="$(var.ProductName)" WorkingDirectory="INSTALLDIR" Icon="relativity_1.exe" IconIndex="0" Advertise="yes" />
+								<Shortcut Id="desktopRelativity" Directory="DesktopFolder" Name="$(var.ProductName)" WorkingDirectory="INSTALLDIR" Icon="relativity_1.exe" IconIndex="0" Advertise="yes" />
+							</File>
+						</Component>
+						<Component Id="NativeDependencies" Guid="{7C02F4C7-9DC9-403E-9242-124F71C39CEB}" KeyPath="yes">
+						  <File Id='Primary.itextsharp' Name='itextsharp.dll' DiskId='1' Source='$(var.Trunk)\Vendor\iTextSharp\5.1.2_bin\$(var.Platform)\itextsharp.dll' />
+						  <File Id='Primary.FreeImageNET' Name='FreeImageNET.dll' DiskId='1' Source='$(var.Trunk)\Vendor\FreeImage\3.151\FreeImage\Wrapper\FreeImage.NET\cs\Deploy\$(var.Platform)\FreeImageNET.dll' />
+						  <File Id='Primary.FreeImage' Name='FreeImage.dll' DiskId='1' Source='$(var.Trunk)\Vendor\FreeImage\3.151\FreeImage\Release\$(var.Platform)\FreeImage.dll' />
+						</Component>
+						<Component Id="RegistryEntries" Guid="{A20005D6-52D7-485B-9A2D-D0C335B0302B}">
+							<RegistryKey Root="HKLM" Key="$(var.RegistryKey)" ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
+								<RegistryValue Type="string" Name="Path" Value="[INSTALLDIR]kCura.EDDS.WinForm.exe" KeyPath="yes" />
+							</RegistryKey>
+						</Component>
+						<Directory Id="Images" Name="Images">
+							<Component Id="ImagesComponent" Guid="{F1A3AE41-6B1C-4C3F-804D-03AA128CB748}" KeyPath="yes">
+								<File Id="folderclosed" Name="folderclosed.ICO" DiskId="1" Source="$(var.Trunk)\EDDS\kCura.EDDS.WinForm\images\folderclosed.ICO" />
+								<File Id="kcura" Name="kcura.ICO" DiskId="1" Source="$(var.Trunk)\EDDS\kCura.EDDS.WinForm\images\kcura.ICO" />
+							</Component>
+						</Directory>
+						<Directory Id="ProgramMenuFolder" Name="Programs">
+							<Directory Id="ProgramMenuDir" Name="$(var.ProductName) $(var.ProductVersion)">
+								<Component Id="ProgramMenuDir" Guid="81799B65-8424-4083-B39C-A5A45E40AE6E">
+									<RemoveFolder Id="ProgramMenuDir" On="uninstall" />
+									<RegistryValue Root="HKCU" Key="$(var.RegistryKey)" Type="string" Value="" KeyPath="yes" />
+								</Component>
+							</Directory>
+						</Directory>
+						<Directory Id="DesktopFolder" Name="Desktop" />
+						<!--<?include ProgramFiles.wxi ?>-->
+						<Directory Id="Licensing3rdPartyFolder" Name="Licenses" />
+					</Directory>
+				</Directory>
+			</Directory>
+		</Directory>
+		<!-- Features -->
+		<Feature Id="Complete" Title="$(var.ProductName) $(var.ProductVersion)" Description="The complete package." Display="expand" Level="1" ConfigurableDirectory="INSTALLDIR">
+			<Feature Id="MainProgram" Title="Program Files" Description="Main Relativity executable files." Level="1" Absent="disallow">
+				<ComponentRef Id="NativeDependencies" />
+				<ComponentRef Id="RegistryEntries" />
+				<ComponentRef Id="MainExecutable" />
+				<ComponentRef Id="ProgramMenuDir" />
+				<ComponentRef Id="ImagesComponent" />
+				<ComponentGroupRef Id="PrimaryComponentGroup" />        
+			</Feature>
+			<Feature Id="Licensing3rdPartyFeature" Title="Licensing_3rdParty" Description="Licensing and attribution for 3rd party libraries." Level="1">
+				<ComponentGroupRef Id="LicensingFor3rdPartyGroup" />
+			</Feature>
+		</Feature>
+		<!-- PREREQ; VC++ 2010 Redist for x64-->
+		<?if $(var.Platform) = "x64" ?>
+		<Feature Id="VCRedist" Title="Visual C++ 2010 Runtime" AllowAdvertise="no" Display="hidden" Level="1">
+			<MergeRef Id="VCRedistATL"/>
+			<MergeRef Id="VCRedistCRT"/>
+			<MergeRef Id="VCRedistMFC"/>
+			<MergeRef Id="VCRedistOpenMP"/>
+		</Feature>
+		<DirectoryRef Id="TARGETDIR">
+			<Merge Id="VCRedistATL" SourceFile="..\..\Vendor\Microsoft\Microsoft_VC100_ATL_x64.msm" DiskId="1" Language="0"/> 
+			<Merge Id="VCRedistCRT" SourceFile="..\..\Vendor\Microsoft\Microsoft_VC100_CRT_x64.msm" DiskId="1" Language="0"/>
+			<Merge Id="VCRedistMFC" SourceFile="..\..\Vendor\Microsoft\Microsoft_VC100_MFC_x64.msm" DiskId="1" Language="0"/> 
+			<Merge Id="VCRedistOpenMP" SourceFile="..\..\Vendor\Microsoft\Microsoft_VC100_OpenMP_x64.msm" DiskId="1" Language="0"/> 
+		</DirectoryRef>
+		<?endif ?>
+		<!-- Prevent downgrading -->
+		<CustomAction Id="PreventDowngrading" Error="Unable to install because a newer version of this product is already installed." />
+		<!-- Sequences -->
+		<InstallExecuteSequence>
+			<Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWERPRODUCTFOUND</Custom>
+			<RemoveExistingProducts After="InstallInitialize" />
+		</InstallExecuteSequence>
+	</Product>
+</Wix>

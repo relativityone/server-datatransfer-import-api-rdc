@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>3.10</ProductVersion>
+    <ProjectGuid>a25301be-f37c-48a4-9554-e7b12c57ff69</ProjectGuid>
+    <SchemaVersion>2.0</SchemaVersion>
+    <OutputName>kCura.WinEDDS.Setup</OutputName>
+    <OutputType>Package</OutputType>
+    <AssemblyVersion>9.5.0.0</AssemblyVersion>
+    <ProductVersion>9.5.00001</ProductVersion>
+    <SignOutput>false</SignOutput>
+    <LicensesPath>$(MSBuildProjectDirectory)\..\..\Vendor\Licenses</LicensesPath>
+    <WinEDDSPath>$(MSBuildProjectDirectory)\..\..\EDDS\kCura.EDDS.WinForm\bin</WinEDDSPath>
+    <DefineConstants>$(DefineConstants);LicensesPath=$(LicensesPath);WinEDDSPath=$(WinEDDSPath);SignOutput=$(SignOutput);AssemblyVersion=$(AssemblyVersion);ProductVersion=$(ProductVersion)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <WixToolPath>..\..\Vendor\WiX\</WixToolPath>
+    <WixTargetsPath>$(WixToolPath)Wix.targets</WixTargetsPath>
+    <WixTasksPath>wixtasks.dll</WixTasksPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <OutputPath>bin\$(Platform)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\$(Platform)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <HarvestDirectoryGenerateGuidsNow>True</HarvestDirectoryGenerateGuidsNow>
+    <HarvestDirectoryNoLogo>True</HarvestDirectoryNoLogo>
+    <HarvestDirectoryVerboseOutput>True</HarvestDirectoryVerboseOutput>
+    <HarvestDirectoryAutogenerateGuids>False</HarvestDirectoryAutogenerateGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
+    <OutputPath>bin\$(Platform)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+    <SuppressAllWarnings>False</SuppressAllWarnings>
+    <Pedantic>True</Pedantic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <DefineConstants>$(DefineConstants)</DefineConstants>
+    <OutputPath>bin\$(Platform)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="kCura.WinEDDS.Setup.wxs" />
+    <Compile Include="WixUI_MondoNoLicense.wxs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="RelativityBanner.bmp" />
+    <Content Include="RelativityWelcome.bmp" />
+    <Content Include="WinEDDSTransform.xsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <HarvestDirectory Include="$(LicensesPath)">
+      <ComponentGroupName>LicensingFor3rdPartyGroup</ComponentGroupName>
+      <SuppressRegistry>True</SuppressRegistry>
+      <SuppressRootDirectory>True</SuppressRootDirectory>
+      <DirectoryRefId>Licensing3rdPartyFolder</DirectoryRefId>
+      <PreprocessorVariable>var.LicensesPath</PreprocessorVariable>
+      <Visible>false</Visible>
+    </HarvestDirectory>
+    <HarvestDirectory Include="$(WinEDDSPath)">
+      <ComponentGroupName>PrimaryComponentGroup</ComponentGroupName>
+      <SuppressRegistry>True</SuppressRegistry>
+      <SuppressRootDirectory>True</SuppressRootDirectory>
+      <DirectoryRefId>INSTALLDIR</DirectoryRefId>
+      <PreprocessorVariable>var.WinEDDSPath</PreprocessorVariable>
+      <Visible>false</Visible>
+      <Transforms>WinEDDSTransform.xsl</Transforms>
+    </HarvestDirectory>
+  </ItemGroup>
+  <ItemGroup>
+    <WixExtension Include="WixNetFxExtension">
+      <HintPath>$(WixExtDir)\WixNetFxExtension.dll</HintPath>
+      <Name>WixNetFxExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixUIExtension">
+      <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
+      <Name>WixUIExtension</Name>
+    </WixExtension>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\EDDS\kCura.EDDS.WinForm\kCura.EDDS.WinForm.vbproj">
+      <Name>kCura.EDDS.WinForm</Name>
+      <Project>{cdeb4462-2d7b-4244-8640-11bc743cd002}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(WixTargetsPath)" />
+  <!--
+	To modify your build process, add your task inside one of the targets below and uncomment it.
+	Other similar extension points exist, see Wix.targets.
+	<Target Name="BeforeBuild">
+	</Target>
+	<Target Name="AfterBuild">
+	</Target>
+	-->
+</Project>
