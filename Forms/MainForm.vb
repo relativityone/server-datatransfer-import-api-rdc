@@ -239,6 +239,7 @@ Namespace kCura.EDDS.WinForm
         Me.TransferMenu.Index = 2
         Me.TransferMenu.OwnerDraw = true
         Me.TransferMenu.Text = "Transfer..."
+        Me.TransferMenu.Visible = false
         '
         '_toolsMenu
         '
@@ -443,7 +444,11 @@ End Sub
 
 			'' Can't do this in Application.vb without refactoring AttemptLogin (which needs this form as a parameter)
 			Await CheckCertificate()
-            
+
+		    Dim isCloudInstance  = Await _application.GetIsCloudInstance()
+            If(isCloudInstance)
+                Me.TransferMenu.Visible = True
+            End If
 
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
