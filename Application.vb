@@ -1692,6 +1692,9 @@ Namespace kCura.EDDS.WinForm
         End Function
 
         Public Async Function GetIsCloudInstance()  As Task(Of System.Boolean) 
+             #if DEBUG
+                Return True
+            #End If
 
             Dim cloudIsEnabled As Boolean = False
 
@@ -1705,6 +1708,7 @@ Namespace kCura.EDDS.WinForm
                 Dim foundRow As System.Data.DataRow = foundRows.ElementAt(0)
                 cloudIsEnabled = CType(foundRow.ItemArray.ElementAt(2), Boolean)
             End If
+           
             Return cloudIsEnabled
         End Function
 

@@ -470,6 +470,7 @@ End Sub
             'Disable help since user will be asked to login again
             Me._helpMenuItem.Enabled = False
             Await CheckCertificate()
+            Me.TransferMenu.Visible  = Await _application.GetIsCloudInstance()
         End Sub
 
         Private Async Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
