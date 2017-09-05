@@ -8,7 +8,6 @@ Namespace kCura.Relativity.DataReaderClient
 	''' </summary>
 	Public Class ImportBulkArtifactJob
 		Implements IImportNotifier
-		Implements IImportBulkArtifactJob
 
 
 
@@ -105,7 +104,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <summary>
 		''' Executes the DataReaderClient, which operates as an iterator over a data source.
 		''' </summary>
-		Public Sub Execute() Implements IImportBulkArtifactJob.Execute
+		Public Sub Execute()
 			_jobReport = New JobReport()
 			_jobReport.StartTime = DateTime.Now()
 
@@ -186,7 +185,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' Exports the error log file for an import job. This file is written only when errors occur.
 		''' </summary>
 		''' <param name="filePathAndName">The folder path and file name to export the error file</param>
-		Public Sub ExportErrorReport(ByVal filePathAndName As String) Implements IImportBulkArtifactJob.ExportErrorReport
+		Public Sub ExportErrorReport(ByVal filePathAndName As String)
 			_controller.ExportErrorReport(filePathAndName)
 		End Sub
 
@@ -194,7 +193,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' Exports the error file for an import job. This file is written only when errors occur.
 		''' </summary>
 		''' <param name="filePathAndName">The folder path and file name to export the error file</param>
-		Public Sub ExportErrorFile(ByVal filePathAndName As String) Implements IImportBulkArtifactJob.ExportErrorFile
+		Public Sub ExportErrorFile(ByVal filePathAndName As String)
 			_controller.ExportErrorFile(filePathAndName)
 		End Sub
 

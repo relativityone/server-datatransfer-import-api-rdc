@@ -8,7 +8,6 @@ Namespace kCura.Relativity.DataReaderClient
 	''' </summary>
 	Public Class ImageImportBulkArtifactJob
 		Implements IImportNotifier
-		Implements IImportBulkArtifactJob
 
 #Region " Public Events and Variables "
 		
@@ -126,7 +125,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <summary>
 		''' Executes the DataReaderClient, which operates as an iterator over a data source.
 		''' </summary>
-		Public Sub Execute() Implements IImportBulkArtifactJob.Execute
+		Public Sub Execute()
 			_jobReport = New JobReport()
 			_jobReport.StartTime = DateTime.Now()
 
@@ -171,22 +170,6 @@ Namespace kCura.Relativity.DataReaderClient
 				RaiseFatalException()
 
 			End If
-		End Sub
-
-		''' <summary>
-		''' Exports the error log file for an import job. This file is written only when errors occur.
-		''' </summary>
-		''' <param name="filePathAndName">Specifies a full path and a filename to contain the output.</param>
-		Public Sub ExportErrorReport(ByVal filePathAndName As String) Implements IImportBulkArtifactJob.ExportErrorReport
-			_controller.ExportErrorReport(filePathAndName)
-		End Sub
-
-		''' <summary>
-		''' Exports the error file for an import job. This file is written only when errors occur.
-		''' </summary>
-		''' <param name="filePathAndName">The folder path and file name to export the error file</param>
-		Public Sub ExportErrorFile(ByVal filePathAndName As String) Implements IImportBulkArtifactJob.ExportErrorFile
-			_controller.ExportErrorFile(filePathAndName)
 		End Sub
 
 #End Region
@@ -411,6 +394,22 @@ Namespace kCura.Relativity.DataReaderClient
 			_jobReport.TotalRows += 1
 		End Sub
 #End Region
-		
+
+		''' <summary>
+		''' Exports the error log file for an import job. This file is written only when errors occur.
+		''' </summary>
+		''' <param name="filePathAndName">Specifies a full path and a filename to contain the output.</param>
+		Public Sub ExportErrorReport(ByVal filePathAndName As String)
+			_controller.ExportErrorReport(filePathAndName)
+		End Sub
+
+		''' <summary>
+		''' Exports the error file for an import job. This file is written only when errors occur.
+		''' </summary>
+		''' <param name="filePathAndName">The folder path and file name to export the error file</param>
+		Public Sub ExportErrorFile(ByVal filePathAndName As String)
+			_controller.ExportErrorFile(filePathAndName)
+		End Sub
+
 	End Class
 End Namespace

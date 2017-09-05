@@ -142,7 +142,6 @@
     </Compile>
     <Compile Include="..\..\Version\ComVisibleFalse.vb" />
     <Compile Include="AssemblyInfoLocal.vb" />
-    <Compile Include="IImportBulkArtifactJob.vb" />
     <Compile Include="ImportCredentialManager.vb" />
     <Compile Include="Enum.vb">
       <SubType>Code</SubType>
