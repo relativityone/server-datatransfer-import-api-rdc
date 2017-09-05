@@ -1692,10 +1692,6 @@ Namespace kCura.EDDS.WinForm
         End Function
 
         Public Async Function GetIsCloudInstance()  As Task(Of System.Boolean) 
-             #if DEBUG
-                Return True
-            #End If
-
             Dim cloudIsEnabled As Boolean = False
 
             'Get configuration information
