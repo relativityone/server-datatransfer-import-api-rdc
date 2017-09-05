@@ -135,10 +135,6 @@
       <Project>{c5eb5351-3f27-4716-a7da-163f0400bcef}</Project>
       <Name>kCura.WinEDDS.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.WinEDDS.FileTransfer.Extension\kCura.WinEDDS.FileTransfer.Extension.csproj">
-      <Project>{71ed5bec-445f-4a2f-b2aa-a39f5e06626f}</Project>
-      <Name>kCura.WinEDDS.FileTransfer.Extension</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Relativity.Applications.Serialization\Relativity.Applications.Serialization.vbproj">
       <Project>{E621897E-45AF-4FBD-ADA4-EEE787E5233F}</Project>
       <Name>Relativity.Applications.Serialization</Name>
@@ -196,9 +192,6 @@
       <Name>system.runtime.serialization.formatters.soap</Name>
     </Reference>
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Web">
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Services">
       <Name>System.Web.Services</Name>
