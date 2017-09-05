@@ -1,5 +1,4 @@
 Imports System.Collections.Concurrent
-Imports System.Collections.Generic
 
 Namespace kCura.WinEDDS.Exporters.LineFactory
 	Public Class SimpleIproImageLineFactory
@@ -87,7 +86,7 @@ Namespace kCura.WinEDDS.Exporters.LineFactory
 
 #Region "Virtual Method Implementation"
 
-		Public Overrides Sub WriteLine(ByVal stream As System.IO.StreamWriter, ByVal linesToWriteOpt As List(Of KeyValuePair(Of String, String)))
+		Public Overrides Sub WriteLine(ByVal stream As System.IO.StreamWriter, ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String))
 			Dim lineToWrite As New System.Text.StringBuilder
 			lineToWrite.Append(Me.ImportCodeIdentifier)
 			lineToWrite.Append(",")
@@ -105,7 +104,7 @@ Namespace kCura.WinEDDS.Exporters.LineFactory
 			lineToWrite.Append(";")
 			lineToWrite.Append(Me.IproImageFileType)
 			lineToWrite.Append(vbNewLine)
-			linesToWriteOpt.Add(New KeyValuePair(Of String,String)(Me.ImageKey, lineToWrite.ToString))
+			linesToWriteOpt.AddOrUpdate(Me.ImageKey, lineToWrite.ToString, Function() lineToWrite.ToString)
 		End Sub
 
 #End Region
