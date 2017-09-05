@@ -13,11 +13,11 @@ Imports kCura.Windows.Forms
 Imports kCura.WinEDDS.Core.Export
 Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Exceptions
-Imports kCura.WinEDDS.FileTransfer.Extension.Components.Main
 Imports kCura.WinEDDS.Service
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
+Imports Relativity.StagingExplorer.Components.Main
 
 Namespace kCura.EDDS.WinForm
     Public Class Application
@@ -830,9 +830,9 @@ Namespace kCura.EDDS.WinForm
             Process.Start(applicationFile, initArguments)
         End Sub
         Private Function GetApplicationFilePath() As String
-            Dim appPath = ConfigurationManager.AppSettings("FileTransferExtension.ApplicationFile")
+            Dim appPath = ConfigurationManager.AppSettings("Relativity.StagingExplorer.ApplicationFile")
             If String.IsNullOrEmpty(appPath) Then
-                Return "kCura.WinEDDS.FileTransfer.Extension.exe"
+                Return "Relativity.StagingExplorer.exe"
             Else
                 Return appPath
             End If

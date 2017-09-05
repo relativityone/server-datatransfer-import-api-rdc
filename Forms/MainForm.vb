@@ -98,8 +98,8 @@ Namespace kCura.EDDS.WinForm
         Me.AppStatusPanel = New System.Windows.Forms.StatusBarPanel()
         Me.LoggedInUserPanel = New System.Windows.Forms.StatusBarPanel()
         Me._objectTypeDropDown = New System.Windows.Forms.ComboBox()
-        Me.EnhancedMenuProvider = New kCura.Windows.Forms.EnhancedMenuProvider(Me.components)
         Me._caseFolderExplorer = New kCura.EDDS.WinForm.CaseFolderExplorer()
+        Me.EnhancedMenuProvider = New kCura.Windows.Forms.EnhancedMenuProvider(Me.components)
         CType(Me.AppStatusPanel,System.ComponentModel.ISupportInitialize).BeginInit
         CType(Me.LoggedInUserPanel,System.ComponentModel.ISupportInitialize).BeginInit
         Me.SuspendLayout
@@ -289,7 +289,7 @@ Namespace kCura.EDDS.WinForm
         '
         'StatusBar
         '
-        Me.StatusBar.Location = New System.Drawing.Point(0, 347)
+        Me.StatusBar.Location = New System.Drawing.Point(0, 284)
         Me.StatusBar.Name = "StatusBar"
         Me.StatusBar.Panels.AddRange(New System.Windows.Forms.StatusBarPanel() {Me.AppStatusPanel, Me.LoggedInUserPanel})
         Me.StatusBar.ShowPanels = true
@@ -325,13 +325,13 @@ Namespace kCura.EDDS.WinForm
             Or System.Windows.Forms.AnchorStyles.Right),System.Windows.Forms.AnchorStyles)
         Me._caseFolderExplorer.Location = New System.Drawing.Point(0, 25)
         Me._caseFolderExplorer.Name = "_caseFolderExplorer"
-        Me._caseFolderExplorer.Size = New System.Drawing.Size(332, 322)
+        Me._caseFolderExplorer.Size = New System.Drawing.Size(332, 259)
         Me._caseFolderExplorer.TabIndex = 6
         '
         'MainForm
         '
         Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-        Me.ClientSize = New System.Drawing.Size(332, 369)
+        Me.ClientSize = New System.Drawing.Size(332, 306)
         Me.Controls.Add(Me._objectTypeDropDown)
         Me.Controls.Add(Me._caseFolderExplorer)
         Me.Controls.Add(Me.StatusBar)
