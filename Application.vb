@@ -819,10 +819,10 @@ Namespace kCura.EDDS.WinForm
             authContext.Credential = Await Me.GetCredentialsAsync()
             Dim rdcContext = New RelativityContext(kCura.WinEDDS.Config.WebServiceURL,  Me.SelectedCaseInfo.ArtifactID)
 
-            StartFileTransferExtension(rdcContext, authContext)
+            StartStagingExplorer(rdcContext, authContext)
         End Sub
 
-        Private Sub StartFileTransferExtension(relativityContext As RelativityContext, authContext As AuthenticationContext)
+        Private Sub StartStagingExplorer(relativityContext As RelativityContext, authContext As AuthenticationContext)
             Dim initArguments As String
             initArguments = $"-t {authContext.Credential.Password} -w {relativityContext.WorkspaceID}  -u {relativityContext.WebServiceURL}"
             Dim applicationFile = GetApplicationFilePath()

@@ -238,7 +238,7 @@ Namespace kCura.EDDS.WinForm
         Me.EnhancedMenuProvider.SetImageIndex(Me.TransferMenu, -1)
         Me.TransferMenu.Index = 2
         Me.TransferMenu.OwnerDraw = true
-        Me.TransferMenu.Text = "Transfer..."
+        Me.TransferMenu.Text = "Staging Explorer..."
         Me.TransferMenu.Visible = false
         '
         '_toolsMenu
