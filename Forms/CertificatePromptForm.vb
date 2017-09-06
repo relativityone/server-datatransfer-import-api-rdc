@@ -8,14 +8,17 @@
 
 	Private CertsAllowed As Nullable(Of Boolean)
 
-	Private Sub LoginForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
+	Protected Overrides Sub OnLoad(ByVal e As System.EventArgs)
 		Me.Focus()
+		MyBase.OnLoad(e)
 	End Sub
 	
-	Private Sub CertForm_Closing(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Closing
+	Protected Overrides Sub OnClosing(ByVal e As System.ComponentModel.CancelEventArgs)
 		If(Not CertsAllowed.HasValue)
-			CloseRDC_Click(sender, e)
+			CertsAllowed = False
+			RaiseEvent DenyUntrustedCertificates()
 		End If
+		MyBase.OnClosing(e)
 	End Sub
 
 	Private Sub CloseRDC_Click(sender As Object, e As EventArgs) Handles CloseButton.Click
