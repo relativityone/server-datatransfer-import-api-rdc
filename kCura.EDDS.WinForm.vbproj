@@ -135,13 +135,13 @@
       <Project>{c5eb5351-3f27-4716-a7da-163f0400bcef}</Project>
       <Name>kCura.WinEDDS.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.WinEDDS.FileTransfer.Extension\kCura.WinEDDS.FileTransfer.Extension.csproj">
-      <Project>{71ed5bec-445f-4a2f-b2aa-a39f5e06626f}</Project>
-      <Name>kCura.WinEDDS.FileTransfer.Extension</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Relativity.Applications.Serialization\Relativity.Applications.Serialization.vbproj">
       <Project>{E621897E-45AF-4FBD-ADA4-EEE787E5233F}</Project>
       <Name>Relativity.Applications.Serialization</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Relativity.StagingExplorer\Relativity.StagingExplorer.csproj">
+      <Project>{71ed5bec-445f-4a2f-b2aa-a39f5e06626f}</Project>
+      <Name>Relativity.StagingExplorer</Name>
     </ProjectReference>
     <ProjectReference Include="..\Relativity\Relativity.vbproj">
       <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>

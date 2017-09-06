@@ -13,11 +13,11 @@ Imports kCura.Windows.Forms
 Imports kCura.WinEDDS.Core.Export
 Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Exceptions
-Imports kCura.WinEDDS.FileTransfer.Extension.Components.Main
 Imports kCura.WinEDDS.Service
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
+Imports Relativity.StagingExplorer.Components.Main
 
 Namespace kCura.EDDS.WinForm
     Public Class Application
@@ -819,10 +819,10 @@ Namespace kCura.EDDS.WinForm
             authContext.Credential = Await Me.GetCredentialsAsync()
             Dim rdcContext = New RelativityContext(kCura.WinEDDS.Config.WebServiceURL,  Me.SelectedCaseInfo.ArtifactID)
 
-            StartFileTransferExtension(rdcContext, authContext)
+            StartStagingExplorer(rdcContext, authContext)
         End Sub
 
-        Private Sub StartFileTransferExtension(relativityContext As RelativityContext, authContext As AuthenticationContext)
+        Private Sub StartStagingExplorer(relativityContext As RelativityContext, authContext As AuthenticationContext)
             Dim initArguments As String
             initArguments = $"-t {authContext.Credential.Password} -w {relativityContext.WorkspaceID}  -u {relativityContext.WebServiceURL}"
             Dim applicationFile = GetApplicationFilePath()
@@ -830,9 +830,9 @@ Namespace kCura.EDDS.WinForm
             Process.Start(applicationFile, initArguments)
         End Sub
         Private Function GetApplicationFilePath() As String
-            Dim appPath = ConfigurationManager.AppSettings("FileTransferExtension.ApplicationFile")
+            Dim appPath = ConfigurationManager.AppSettings("Relativity.StagingExplorer.ApplicationFile")
             If String.IsNullOrEmpty(appPath) Then
-                Return "kCura.WinEDDS.FileTransfer.Extension.exe"
+                Return "Relativity.StagingExplorer.exe"
             Else
                 Return appPath
             End If
@@ -1693,7 +1693,6 @@ Namespace kCura.EDDS.WinForm
 
         Public Async Function GetIsCloudInstance()  As Task(Of System.Boolean) 
             Dim cloudIsEnabled As Boolean = False
-
             'Get configuration information
             Dim configTable As System.Data.DataTable = Await GetSystemConfiguration()
 
