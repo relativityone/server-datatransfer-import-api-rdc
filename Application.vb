@@ -1693,7 +1693,6 @@ Namespace kCura.EDDS.WinForm
 
         Public Async Function GetIsCloudInstance()  As Task(Of System.Boolean) 
             Dim cloudIsEnabled As Boolean = False
-
             'Get configuration information
             Dim configTable As System.Data.DataTable = Await GetSystemConfiguration()
 
