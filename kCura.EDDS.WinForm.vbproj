@@ -139,6 +139,10 @@
       <Project>{E621897E-45AF-4FBD-ADA4-EEE787E5233F}</Project>
       <Name>Relativity.Applications.Serialization</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Relativity.StagingExplorer\Relativity.StagingExplorer.csproj">
+      <Project>{71ed5bec-445f-4a2f-b2aa-a39f5e06626f}</Project>
+      <Name>Relativity.StagingExplorer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Relativity\Relativity.vbproj">
       <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
       <Name>Relativity</Name>
@@ -192,6 +196,9 @@
       <Name>system.runtime.serialization.formatters.soap</Name>
     </Reference>
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Web">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Services">
       <Name>System.Web.Services</Name>
