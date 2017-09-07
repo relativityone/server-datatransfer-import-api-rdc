@@ -37,6 +37,10 @@
       <HintPath>..\..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="FaspManager, Version=3.7.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FaspManager.3.7.2.0\lib\net40\FaspManager.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FizzWare.NBuilder, Version=5.0.0.138, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\NBuilder.5.0.0\lib\net40\FizzWare.NBuilder.dll</HintPath>
       <Private>True</Private>
@@ -45,20 +49,44 @@
       <HintPath>..\..\packages\Moq.4.5.30\lib\net45\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="nunit.framework, Version=3.7.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\..\packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Polly, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c8a3ffc3f8f825cc, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Polly.1.0.0\lib\net45\Polly.dll</HintPath>
+    <Reference Include="Polly, Version=5.3.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Polly.5.3.1\lib\net45\Polly.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client, Version=1.0.17238.13, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\relativity.transfer.client.1.0.7\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client, Version=1.0.17249.13, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.1.1.1\lib\net462\Relativity.Transfer.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.UnitTestFramework, Version=1.0.17238.13, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\relativity.transfer.testframework.1.0.7\lib\net462\Relativity.Transfer.UnitTestFramework.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Aspera, Version=1.0.17249.13, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.1.1.1\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.Core, Version=1.0.17249.13, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.1.1.1\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.FileShare, Version=1.0.17249.13, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.1.1.1\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.Http, Version=1.0.17249.13, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.1.1.1\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Transfer.UnitTestFramework, Version=1.0.17249.13, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.testframework.1.1.1\lib\net462\Relativity.Transfer.UnitTestFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SSH.NET.2016.0.0\lib\net40\Renci.SshNet.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
