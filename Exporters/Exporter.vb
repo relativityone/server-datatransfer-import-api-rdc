@@ -44,7 +44,7 @@ Namespace kCura.WinEDDS
 		Private _productionPrecedenceIds As Int32()
 		Private _tryToNameNativesAndTextFilesAfterPrecedenceBegBates As Boolean = False
 		Private _linesToWriteDat As ConcurrentDictionary(Of Int32, ILoadFileEntry)
-		Private _linesToWriteOpt As ConcurrentDictionary(Of String, String)
+		Private _linesToWriteOpt As List(Of KeyValuePair(Of String, String))
 
 #End Region
 
@@ -443,7 +443,7 @@ Namespace kCura.WinEDDS
 			Dim lookup As New Lazy(Of Dictionary(Of Int32, List(Of BatesEntry)))(Function() GenerateBatesLookup(_productionManager.RetrieveBatesByProductionAndDocument(Me.Settings.CaseArtifactID, productionPrecedenceArtifactIds, documentArtifactIDs)))
 
 			_linesToWriteDat = New ConcurrentDictionary(Of Int32, ILoadFileEntry)
-			_linesToWriteOpt = New ConcurrentDictionary(Of String, String)
+			_linesToWriteOpt = New List(Of KeyValuePair(Of String,String))
 
 			Dim artifacts(documentArtifactIDs.Length - 1) As Exporters.ObjectExportInfo
 			Dim volumePredictions(documentArtifactIDs.Length - 1) As VolumePredictions
@@ -654,7 +654,7 @@ Namespace kCura.WinEDDS
 				Dim dr As System.Data.DataRow
 				For Each dr In matchingRows
 					Dim image As New Exporters.ImageExportInfo
-					image.FileName = dr("ImageFileName").ToString
+					image.FileName = kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(dr("ImageFileName").ToString)
 					image.FileGuid = dr("ImageGuid").ToString
 					image.ArtifactID = documentArtifactID
 					image.PageOffset = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dr("ByteRange"))
@@ -673,7 +673,7 @@ Namespace kCura.WinEDDS
 						 filename.Equals(firstImageFileName, StringComparison.OrdinalIgnoreCase)) Then
 						filename &= "_" & (i + 1).ToString
 					End If
-					image.FileName = filename & filenameExtension
+					image.FileName = kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(filename & filenameExtension)
 					If Not image.FileGuid = "" Then
 						retval.Add(image)
 						prediction.ImageFilesSize += CType(dr("ImageSize"), Long)
@@ -716,7 +716,7 @@ Namespace kCura.WinEDDS
 						Dim i As Int32 = 0
 						For Each drv In productionImagesView
 							Dim image As New Exporters.ImageExportInfo
-							image.FileName = drv("ImageFileName").ToString
+							image.FileName = kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(drv("ImageFileName").ToString)
 							image.FileGuid = drv("ImageGuid").ToString
 							If image.FileGuid <> "" Then
 								image.ArtifactID = documentArtifactID
@@ -731,7 +731,7 @@ Namespace kCura.WinEDDS
 									firstImageFileName = filename
 								End If
 								If (IsDocNumberOnlyProduction(Me.GetProduction(item.Value)) OrElse filename.Equals(firstImageFileName, StringComparison.OrdinalIgnoreCase)) AndAlso i > 0 Then filename &= "_" & (i + 1).ToString
-								image.FileName = filename & filenameExtension
+								image.FileName = kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(filename & filenameExtension)
 								image.SourceLocation = drv("Location").ToString
 								retval.Add(image)
 								prediction.ImageFilesSize += CType(drv("ImageSize"), Long)
@@ -755,7 +755,7 @@ Namespace kCura.WinEDDS
 				Dim drv As System.Data.DataRowView
 				For Each drv In imagesView
 					Dim image As New Exporters.ImageExportInfo
-					image.FileName = drv("Filename").ToString
+					image.FileName = kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(drv("Filename").ToString)
 					image.FileGuid = drv("Guid").ToString
 					image.ArtifactID = documentArtifactID
 					image.PageOffset = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(drv("ByteRange"))
