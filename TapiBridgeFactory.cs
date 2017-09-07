@@ -41,7 +41,9 @@ namespace kCura.WinEDDS.TApi
                 LogSettings.Instance.LogEnabled = true;
                 LogSettings.Instance.MinimumLogLevel = LoggingLevel.Debug;
                 LogSettings.Instance.Sinks = LogSinks.Console | LogSinks.Seq;
-                log = new TransferLog();
+
+                // Note: Disabling logging until IAPI/TAPI packaging is more stable.
+                //// log = new TransferLog();
             }
 
             return new TapiBridge(parameters, TransferDirection.Upload, log, token);
