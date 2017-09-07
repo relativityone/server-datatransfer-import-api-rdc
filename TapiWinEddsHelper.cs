@@ -21,56 +21,6 @@ namespace kCura.WinEDDS.TApi
     public static class TapiWinEddsHelper
     {
         /// <summary>
-        /// The default OAUTH2 bearer-token username.
-        /// </summary>
-        /// <remarks>
-        /// This is now defined within the WinEDDS code.
-        /// </remarks>
-        private const string OAuth2UserName = "XxX_BearerTokenCredentials_XxX";
-
-        /// <summary>
-        /// Use TAPI to obtain the best-fit client for the specified workspace and retrieve the client name.
-        /// </summary>
-        /// <param name="webServicesUrl">
-        /// The web services URL.
-        /// </param>
-        /// <param name="credential">
-        /// The credential.
-        /// </param>
-        /// <param name="workspaceId">
-        /// The workspace identifier.
-        /// </param>
-        /// <returns>
-        /// The task.
-        /// </returns>
-        /// <remarks>
-        /// This will reduce the amount of time it takes to construct a client for a given transfer because the client information is cached for a given Relativity instance and workspace.
-        /// </remarks>
-        public static string GetWorkspaceClientName(string webServicesUrl, NetworkCredential credential, int workspaceId)
-        {
-            var baseUri = new Uri(webServicesUrl);
-            var host = new Uri(baseUri.GetLeftPart(UriPartial.Authority));
-            var connectionInfo = CreateRelativityConnectionInfo(
-                webServicesUrl,
-                workspaceId,
-                credential.UserName,
-                credential.Password);
-            using (var transferHost = new RelativityTransferHost(connectionInfo))
-            {
-                try
-                {
-                    var client = transferHost.CreateClientAsync();
-                    client.Wait();
-                    return client.Result.Name;
-                }
-                catch (Exception)
-                {
-                    return "Web";
-                }
-            }
-        }
-
-        /// <summary>
         /// Searches for all available clients and builds the documentation text from the discovered metadata.
         /// </summary>
         /// <returns>
