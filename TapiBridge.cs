@@ -27,7 +27,7 @@ namespace kCura.WinEDDS.TApi
     /// Represents a class object to provide a bridge from the Transfer API to existing WinEDDS code.
     /// </summary>
     /// <seealso cref="System.IDisposable" />
-    public class TapiBridge : IDisposable
+    public sealed class TapiBridge : IDisposable
     {
         /// <summary>
         /// The manager used to limit the maximum number of files per folder.
@@ -429,55 +429,25 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Raises a client changed event.
+        /// Checks to see whether this instance has been disposed.
         /// </summary>
-        /// <param name="reason">
-        /// The reason for the client change.
-        /// </param>
-        internal void RaiseClientChanged(ClientChangeReason reason)
+        /// <exception cref="System.ObjectDisposedException">
+        /// Thrown when this instance has been disposed.
+        /// </exception>
+        private void CheckDispose()
         {
-            this.CheckDispose();
-            string message;
-            switch (reason)
+            if (!this.disposed)
             {
-                case ClientChangeReason.BestFit:
-                    message = string.Format(
-                        CultureInfo.CurrentCulture,
-                        Strings.TransferClientChangedBestFitMessage,
-                        this.ClientDisplayName);
-                    break;
-
-                case ClientChangeReason.ForceConfig:
-                    message = string.Format(
-                        CultureInfo.CurrentCulture,
-                        Strings.TransferClientChangedForceConfigMessage,
-                        this.ClientDisplayName);
-                    break;
-
-                case ClientChangeReason.HttpFallback:
-                    message = string.Format(
-                        CultureInfo.CurrentCulture,
-                        Strings.TransferClientChangedHttpFallbackMessage,
-                        this.ClientDisplayName);
-                    break;
-
-                default:
-                    message = string.Format(
-                        CultureInfo.CurrentCulture,
-                        Strings.TransferClientChangedDefaultMessage,
-                        this.ClientDisplayName);
-                    break;
+                return;
             }
 
-            this.RaiseStatusMessage(message, TapiConstants.NoLineNumber);
-            var eventArgs = new TapiClientEventArgs(this.ClientDisplayName, this.Client);
-            this.TapiClientChanged.Invoke(this, eventArgs);
+            throw new ObjectDisposedException(Strings.ObjectDisposedExceptionMessage);
         }
 
         /// <summary>
         /// Creates the best transfer client.
         /// </summary>        
-        protected void CreateTransferClient()
+        private void CreateTransferClient()
         {
             this.CheckDispose();
             if (this.transferClient != null)
@@ -522,7 +492,7 @@ namespace kCura.WinEDDS.TApi
                 if (clientId != Guid.Empty)
                 {
                     configuration.ClientId = clientId;
-                    this.CreateClient(configuration);
+                    this.CreateTransferClient(configuration);
                     this.RaiseClientChanged(ClientChangeReason.ForceConfig);
                 }
                 else
@@ -555,7 +525,7 @@ namespace kCura.WinEDDS.TApi
             {
                 this.transferLog.LogError(e, "The transfer client construction failed.");
                 configuration.ClientId = new Guid(TransferClientConstants.HttpClientId);
-                this.CreateClient(configuration);
+                this.CreateTransferClient(configuration);
                 this.RaiseClientChanged(ClientChangeReason.HttpFallback);
             }
             finally
@@ -565,12 +535,24 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
+        /// Creates the client using only the specified configuration object.
+        /// </summary>
+        /// <param name="configuration">
+        /// The transfer client configuration.
+        /// </param>
+        private void CreateTransferClient(ClientConfiguration configuration)
+        {
+            this.transferHost.Clear();
+            this.transferClient = this.transferHost.CreateClient(configuration);
+        }
+
+        /// <summary>
         /// Creates a new transfer job.
         /// </summary>
         /// <param name="httpFallback">
         /// Specify whether this method is setting up the HTTP fallback client.
         /// </param>
-        protected void CreateTransferJob(bool httpFallback)
+        private void CreateTransferJob(bool httpFallback)
         {
             this.CheckDispose();
             if (this.transferJob != null)
@@ -624,152 +606,150 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Raises a status message event.
+        /// Creates the HTTP client.
         /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        protected void RaiseStatusMessage(string message)
+        private void CreateHttpClient()
         {
-            this.RaiseStatusMessage(message, TapiConstants.NoLineNumber);
+            this.CreateTransferClient(
+                new HttpClientConfiguration { CookieContainer = this.parameters.WebCookieContainer });
         }
 
         /// <summary>
-        /// Raises a status message event.
+        /// Creates and initializes a <inheritdoc cref="TransferJobRetryListener"/> to listen for job retry events.
         /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="lineNumber">
-        /// The line number.
-        /// </param>
-        protected void RaiseStatusMessage(string message, int lineNumber)
+        private void CreateJobRetryListener()
         {
-            this.CheckDispose();
-            this.TapiStatusMessage.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
+            this.transferListeners.Add(
+                new TransferJobRetryListener(this.transferLog, this.parameters.MaxJobRetryAttempts, this.context));
         }
 
         /// <summary>
-        /// Raises a warning message event.
+        /// Creates and initializes a <inheritdoc cref="TransferPathIssueListener"/> instance. 
         /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        protected void RaiseWarningMessage(string message)
+        private void CreatePathIssueListener()
         {
-            this.CheckDispose();
-            this.TapiWarningMessage.Invoke(this, new TapiMessageEventArgs(message, TapiConstants.NoLineNumber));
+            this.transferListeners.Add(
+                new TransferPathIssueListener(
+                    this.transferLog,
+                    this.currentDirection,
+                    this.ClientDisplayName,
+                    this.context));
         }
 
         /// <summary>
-        /// Raises a warning message event.
+        /// Creates initializes a <inheritdoc cref="TransferPathProgressListener"/> instance.
         /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="lineNumber">
-        /// The line number.
-        /// </param>
-        protected void RaiseWarningMessage(string message, int lineNumber)
+        private void CreatePathProgressListener()
         {
-            this.CheckDispose();
-            this.TapiWarningMessage.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
+            var listener = new TransferPathProgressListener(this.transferLog, this.context);
+            listener.ProgressEvent += (sender, args) =>
+                {
+                    this.TapiProgress.Invoke(sender, args);
+                };
+            this.transferListeners.Add(listener);
         }
 
         /// <summary>
-        /// Raises a fatal error.
+        /// Creates and initializes a <inheritdoc cref="TransferRequestListener"/> to listen for transfer request events. 
         /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <remarks>
-        /// A non-zero line number MUST be supplied.
-        /// </remarks>
-        protected void RaiseFatalError(string message)
+        private void CreateRequestListener()
         {
-            this.CheckDispose();
-            this.RaiseFatalError(message, TapiConstants.NoLineNumber);
+            this.transferListeners.Add(new TransferRequestListener(this.transferLog, this.context));
         }
 
         /// <summary>
-        /// Raises a fatal error.
+        /// Creates and initializes a <inheritdoc cref="TransferStatisticsListener"/> to listen for transfer statistic events. 
         /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="lineNumber">
-        /// The line number.
-        /// </param>
-        protected void RaiseFatalError(string message, int lineNumber)
+        private void CreateStatisticsListener()
         {
-            this.CheckDispose();
-            this.TapiFatalError.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
+            var listener = new TransferStatisticsListener(this.transferLog, this.context);
+            listener.StatisticsEvent += (sender, args) => this.TapiStatistics.Invoke(sender, args);
+            this.transferListeners.Add(listener);
         }
 
         /// <summary>
-        /// Checks to see whether this instance has been disposed.
+        /// Destroys the transfer client.
         /// </summary>
-        /// <exception cref="System.ObjectDisposedException">
-        /// Thrown when this instance has been disposed.
-        /// </exception>
-        protected void CheckDispose()
-        {
-            if (!this.disposed)
-            {
-                return;
-            }
-
-            throw new ObjectDisposedException(Strings.ObjectDisposedExceptionMessage);
-        }
-
-        /// <summary>
-        /// Apply optimizations to the client.
-        /// </summary>
-        private void OptimizeClient()
+        private void DestroyTransferClient()
         {
             if (this.transferClient == null)
             {
                 return;
             }
 
-            // Tune the job retry to account for different kinds of jobs.
-            switch (this.transferClient.Id.ToString().ToUpperInvariant())
+            this.transferClient.Dispose();
+            this.transferClient = null;
+        }
+
+        /// <summary>
+        /// Destroys the transfer host.
+        /// </summary>
+        private void DestroyTransferHost()
+        {
+            if (this.transferHost == null)
             {
-                case TransferClientConstants.FileShareClientId:
-                    this.transferClient.Configuration.PreserveDates = false;
-                    break;
-
-                case TransferClientConstants.HttpClientId:
-                    this.transferClient.Configuration.MaxJobParallelism = 1;
-                    this.transferClient.Configuration.PreserveDates = false;
-                    break;
-
-                case TransferClientConstants.AsperaClientId:
-                    this.transferClient.Configuration.MaxJobParallelism = 1;
-                    this.transferClient.Configuration.PreserveDates = false;
-                    break;
+                return;
             }
+
+            this.transferHost.Dispose();
+            this.transferHost = null;
         }
 
         /// <summary>
-        /// Creates the HTTP client.
+        /// Destroys the transfer job.
         /// </summary>
-        private void CreateHttpClient()
+        private void DestroyTransferJob()
         {
-            this.CreateClient(
-                new HttpClientConfiguration { CookieContainer = this.parameters.WebCookieContainer });
+            this.currentJobId = null;
+            if (this.transferJob == null)
+            {
+                return;
+            }
+
+            this.transferJob.Dispose();
+            this.transferJob = null;
         }
 
         /// <summary>
-        /// Creates the client using only the specified configuration object.
+        /// Destroys transfer listeners.
         /// </summary>
-        /// <param name="configuration">
-        /// The transfer client configuration.
+        private void DestroyTransferListeners()
+        {
+            if (this.transferListeners == null)
+            {
+                return;
+            }
+
+            foreach (TransferListenerBase listener in this.transferListeners)
+            {
+                listener.Dispose();
+            }
+
+            this.transferListeners.Clear();
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        /// <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.
         /// </param>
-        private void CreateClient(ClientConfiguration configuration)
+        private void Dispose(bool disposing)
         {
-            this.transferHost.Clear();
-            this.transferClient = this.transferHost.CreateClient(configuration);
+            if (this.disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                this.DestroyTransferJob();
+                this.DestroyTransferClient();
+                this.DestroyTransferHost();
+                this.DestroyTransferListeners();
+            }
+
+            this.disposed = true;
         }
 
         /// <summary>
@@ -803,6 +783,137 @@ namespace kCura.WinEDDS.TApi
             }
 
             this.transferLog.LogInformation("Successfully switched the transfer client to HTTP.");
+        }
+
+        /// <summary>
+        /// Logs a cancellation request.
+        /// </summary>
+        private void LogCancelRequest()
+        {
+            this.transferLog.LogInformation(
+                "The file transfer has been cancelled. ClientId={ClientId}, JobId={JobId} ",
+                this.clientRequestId,
+                this.currentJobId);
+        }
+
+        /// <summary>
+        /// Apply optimizations to the client.
+        /// </summary>
+        private void OptimizeClient()
+        {
+            if (this.transferClient == null)
+            {
+                return;
+            }
+
+            // Tune the job retry to account for different kinds of jobs.
+            switch (this.transferClient.Id.ToString().ToUpperInvariant())
+            {
+                case TransferClientConstants.FileShareClientId:
+                    this.transferClient.Configuration.PreserveDates = false;
+                    break;
+
+                case TransferClientConstants.HttpClientId:
+                    this.transferClient.Configuration.MaxJobParallelism = 1;
+                    this.transferClient.Configuration.PreserveDates = false;
+                    break;
+
+                case TransferClientConstants.AsperaClientId:
+                    this.transferClient.Configuration.MaxJobParallelism = 1;
+                    this.transferClient.Configuration.PreserveDates = false;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Raises a client changed event.
+        /// </summary>
+        /// <param name="reason">
+        /// The reason for the client change.
+        /// </param>
+        private void RaiseClientChanged(ClientChangeReason reason)
+        {
+            this.CheckDispose();
+            string message;
+            switch (reason)
+            {
+                case ClientChangeReason.BestFit:
+                    message = string.Format(
+                        CultureInfo.CurrentCulture,
+                        Strings.TransferClientChangedBestFitMessage,
+                        this.ClientDisplayName);
+                    break;
+
+                case ClientChangeReason.ForceConfig:
+                    message = string.Format(
+                        CultureInfo.CurrentCulture,
+                        Strings.TransferClientChangedForceConfigMessage,
+                        this.ClientDisplayName);
+                    break;
+
+                case ClientChangeReason.HttpFallback:
+                    message = string.Format(
+                        CultureInfo.CurrentCulture,
+                        Strings.TransferClientChangedHttpFallbackMessage,
+                        this.ClientDisplayName);
+                    break;
+
+                default:
+                    message = string.Format(
+                        CultureInfo.CurrentCulture,
+                        Strings.TransferClientChangedDefaultMessage,
+                        this.ClientDisplayName);
+                    break;
+            }
+
+            this.RaiseStatusMessage(message, TapiConstants.NoLineNumber);
+            var eventArgs = new TapiClientEventArgs(this.ClientDisplayName, this.Client);
+            this.TapiClientChanged.Invoke(this, eventArgs);
+        }
+
+        /// <summary>
+        /// Raises a fatal error.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <param name="lineNumber">
+        /// The line number.
+        /// </param>
+        private void RaiseFatalError(string message, int lineNumber)
+        {
+            this.CheckDispose();
+            this.TapiFatalError.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
+        }
+
+        /// <summary>
+        /// Raises a status message event.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <param name="lineNumber">
+        /// The line number.
+        /// </param>
+        private void RaiseStatusMessage(string message, int lineNumber)
+        {
+            this.CheckDispose();
+            this.TapiStatusMessage.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
+        }
+
+        /// <summary>
+        /// Raises a warning message event.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <param name="lineNumber">
+        /// The line number.
+        /// </param>
+        private void RaiseWarningMessage(string message, int lineNumber)
+        {
+            this.CheckDispose();
+            this.TapiWarningMessage.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
         }
 
         /// <summary>
@@ -864,155 +975,6 @@ namespace kCura.WinEDDS.TApi
                         this.TapiWarningMessage.Invoke(sender, args);
                     };
             }
-        }
-
-        /// <summary>
-        /// Creates initializes a <inheritdoc cref="TransferPathProgressListener"/> instance.
-        /// </summary>
-        private void CreatePathProgressListener()
-        {
-            var listener = new TransferPathProgressListener(this.transferLog, this.context);
-            listener.ProgressEvent += (sender, args) =>
-                {
-                    this.TapiProgress.Invoke(sender, args);
-                };
-            this.transferListeners.Add(listener);
-        }
-
-        /// <summary>
-        /// Creates and initializes a <inheritdoc cref="TransferPathIssueListener"/> instance. 
-        /// </summary>
-        private void CreatePathIssueListener()
-        {
-            this.transferListeners.Add(
-                new TransferPathIssueListener(
-                    this.transferLog,
-                    this.currentDirection,
-                    this.ClientDisplayName,
-                    this.context));
-        }
-
-        /// <summary>
-        /// Creates and initializes a <inheritdoc cref="TransferRequestListener"/> to listen for transfer request events. 
-        /// </summary>
-        private void CreateRequestListener()
-        {
-            this.transferListeners.Add(new TransferRequestListener(this.transferLog, this.context));
-        }
-
-        /// <summary>
-        /// Creates and initializes a <inheritdoc cref="TransferJobRetryListener"/> to listen for job retry events.
-        /// </summary>
-        private void CreateJobRetryListener()
-        {
-            this.transferListeners.Add(
-                new TransferJobRetryListener(this.transferLog, this.parameters.MaxJobRetryAttempts, this.context));
-        }
-
-        /// <summary>
-        /// Creates and initializes a <inheritdoc cref="TransferStatisticsListener"/> to listen for transfer statistic events. 
-        /// </summary>
-        private void CreateStatisticsListener()
-        {
-            var listener = new TransferStatisticsListener(this.transferLog, this.context);
-            listener.StatisticsEvent += (sender, args) => this.TapiStatistics.Invoke(sender, args);
-            this.transferListeners.Add(listener);
-        }
-
-        /// <summary>
-        /// Releases unmanaged and - optionally - managed resources.
-        /// </summary>
-        /// <param name="disposing">
-        /// <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.
-        /// </param>
-        private void Dispose(bool disposing)
-        {
-            if (this.disposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                this.DestroyTransferJob();
-                this.DestroyTransferClient();
-                this.DestroyTransferHost();
-                this.DestroyTransferListeners();
-            }
-
-            this.disposed = true;
-        }
-
-        /// <summary>
-        /// Destroys the transfer job.
-        /// </summary>
-        private void DestroyTransferJob()
-        {
-            this.currentJobId = null;
-            if (this.transferJob == null)
-            {
-                return;
-            }
-
-            this.transferJob.Dispose();
-            this.transferJob = null;
-        }
-
-        /// <summary>
-        /// Destroys the transfer client.
-        /// </summary>
-        private void DestroyTransferClient()
-        {
-            if (this.transferClient == null)
-            {
-                return;
-            }
-
-            this.transferClient.Dispose();
-            this.transferClient = null;
-        }
-
-        /// <summary>
-        /// Destroys the transfer host.
-        /// </summary>
-        private void DestroyTransferHost()
-        {
-            if (this.transferHost == null)
-            {
-                return;
-            }
-
-            this.transferHost.Dispose();
-            this.transferHost = null;
-        }
-
-        /// <summary>
-        /// Destroys transfer listeners.
-        /// </summary>
-        private void DestroyTransferListeners()
-        {
-            if (this.transferListeners == null)
-            {
-                return;
-            }
-
-            foreach (TransferListenerBase listener in this.transferListeners)
-            {
-                listener.Dispose();
-            }
-
-            this.transferListeners.Clear();
-        }
-
-        /// <summary>
-        /// Logs a cancellation request.
-        /// </summary>
-        private void LogCancelRequest()
-        {
-            this.transferLog.LogInformation(
-                "The file transfer has been cancelled. ClientId={ClientId}, JobId={JobId} ",
-                this.clientRequestId,
-                this.currentJobId);
         }
     }
 }
