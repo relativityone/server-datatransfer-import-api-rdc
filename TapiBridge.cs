@@ -17,11 +17,11 @@ namespace kCura.WinEDDS.TApi
     using System.Net;
     using System.Threading;
 
+    using kCura.WinEDDS.TApi.Resources;
+
     using Relativity.Transfer;
     using Relativity.Transfer.Aspera;
     using Relativity.Transfer.Http;
-
-    using Strings = kCura.WinEDDS.TApi.Resources.Strings;
 
     /// <summary>
     /// Represents a class object to provide a bridge from the Transfer API to existing WinEDDS code.
