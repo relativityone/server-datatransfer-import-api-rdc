@@ -152,7 +152,7 @@
       <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
       <Name>Relativity</Name>
     </ProjectReference>
-    <Reference Include="relativity.faspmanager, Version=3.7.2.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="FaspManager, Version=3.7.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\relativity.faspmanager.3.7.2.0\lib\net40\FaspManager.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -160,8 +160,8 @@
       <Name>Microsoft.VisualBasic</Name>
     </Reference>
     <Reference Include="Microsoft.VisualBasic.PowerPacks.Vs, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="oi, Version=2017.3.0.181, Culture=neutral, PublicKeyToken=null">
