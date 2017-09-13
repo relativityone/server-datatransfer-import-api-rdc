@@ -445,11 +445,10 @@ End Sub
 			'' Can't do this in Application.vb without refactoring AttemptLogin (which needs this form as a parameter)
 			Await CheckCertificate()
 
-		    Dim isCloudInstance  = Await _application.GetIsCloudInstance()
-            If(isCloudInstance)
-                Me.TransferMenu.Visible = True
-            End If
+            Dim isCloudInstance  = Await _application.GetIsCloudInstance()
+            Dim isStagingExplorerEnabled = Await _application.GetIsStagingExplorerEnabled()
 
+            Me.TransferMenu.Visible = isCloudInstance And isStagingExplorerEnabled
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 

@@ -1707,6 +1707,21 @@ Namespace kCura.EDDS.WinForm
             Return cloudIsEnabled
         End Function
 
+        Public Async Function GetIsStagingExplorerEnabled() As Task(Of System.Boolean)
+            Dim configTable As System.Data.DataTable = Await GetSystemConfiguration()
+
+            Dim foundRows() As System.Data.DataRow = configTable.Select("Name = 'EnableStagingExplorer'")
+
+            Dim isStagingExplorerEnabled As Boolean = False
+
+            If foundRows.Length > 0 Then
+                Dim foundRow As System.Data.DataRow = foundRows.ElementAt(0)
+                isStagingExplorerEnabled = CType(foundRow.ItemArray.ElementAt(2), Boolean)
+            End If
+           
+            Return isStagingExplorerEnabled
+        End Function
+
         Public Function Login(authOptions As AuthenticationOptions) As Application.CredentialCheckResult
             Dim loginResult As Application.CredentialCheckResult
 
