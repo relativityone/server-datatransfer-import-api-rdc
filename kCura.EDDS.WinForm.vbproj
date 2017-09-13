@@ -196,6 +196,10 @@
       <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.23\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Services.DataContracts, Version=9.5.230.7, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Services.DataContracts.9.5.230.7\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.Transfer.Client, Version=1.1.17254.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\relativity.transfer.client.1.1.4\lib\net462\Relativity.Transfer.Client.dll</HintPath>
       <Private>True</Private>
