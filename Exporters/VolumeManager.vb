@@ -1325,8 +1325,13 @@ Namespace kCura.WinEDDS
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			Dim lastArtifactId As Int32 = -1
 			Dim loadFileBytes As Int64 = 0
-			While tries < maxTries And Not Me.Halt
-				tries += 1
+
+            If linesToWriteOpt.Count = 0 Then
+                Return
+            End If
+
+            While tries < maxTries And Not Me.Halt
+                tries += 1
 
 				'Rollback stream position if retrying write
 				If tries > 1 Then
