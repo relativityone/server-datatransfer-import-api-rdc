@@ -1326,7 +1326,7 @@ Namespace kCura.WinEDDS
 			Dim lastArtifactId As Int32 = -1
 			Dim loadFileBytes As Int64 = 0
 
-            If linesToWriteOpt.Count = 0 Then
+            If linesToWriteOpt Is Nothing OrElse linesToWriteOpt.Count = 0 Then
                 Return
             End If
 
