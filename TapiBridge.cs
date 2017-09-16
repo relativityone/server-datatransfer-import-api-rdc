@@ -475,20 +475,7 @@ namespace kCura.WinEDDS.TApi
 
             try
             {
-                var clientId = Guid.Empty;
-                if (this.parameters.ForceAsperaClient)
-                {
-                    clientId = new Guid(TransferClientConstants.AsperaClientId);
-                }
-                else if (this.parameters.ForceHttpClient)
-                {
-                    clientId = new Guid(TransferClientConstants.HttpClientId);
-                }
-                else if (this.parameters.ForceFileShareClient)
-                {
-                    clientId = new Guid(TransferClientConstants.FileShareClientId);
-                }
-
+                var clientId = TapiWinEddsHelper.GetClientId(this.parameters);
                 if (clientId != Guid.Empty)
                 {
                     configuration.ClientId = clientId;
@@ -501,12 +488,12 @@ namespace kCura.WinEDDS.TApi
 
                     // The configuration parameters may want to change order or restrict certain clients.
                     TransferClientStrategy clientStrategy;
-                    if (!string.IsNullOrEmpty(parameters.ForceClientCandidates))
+                    if (!string.IsNullOrEmpty(this.parameters.ForceClientCandidates))
                     {
-                        clientStrategy = new TransferClientStrategy(parameters.ForceClientCandidates);
+                        clientStrategy = new TransferClientStrategy(this.parameters.ForceClientCandidates);
                         this.transferLog.LogInformation(
                             "Override the default transfer client strategy. Candidates={ForceClientCandidates}",
-                            parameters.ForceClientCandidates);
+                            this.parameters.ForceClientCandidates);
                     }
                     else
                     {
