@@ -79,7 +79,6 @@ Namespace kCura.WinEDDS
 		Private _currentStatisticsSnapshot As IDictionary
 		Private _statisticsLastUpdated As System.DateTime = System.DateTime.Now
 		Private _unmappedRelationalFields As System.Collections.ArrayList
-		Private _usePipeliningForFileIdAndCopy As Boolean
 		Private _usePipeliningForNativeAndObjectImports As Boolean
 		Private _createFoldersInWebAPI As Boolean
 		Private _createErrorForEmptyNativeFile As Boolean
@@ -335,7 +334,6 @@ Namespace kCura.WinEDDS
 			MyBase.New(args, timeZoneOffset, doRetryLogic, autoDetect, initializeArtifactReader)
 
 			' Avoid excessive concurrent dictionary hits by caching frequently used config settings.
-			_usePipeliningForFileIdAndCopy = Config.UsePipeliningForFileIdAndCopy
 			_usePipeliningForNativeAndObjectImports = Config.UsePipeliningForNativeAndObjectImports
 			_createFoldersInWebAPI = Config.CreateFoldersInWebAPI
 			_createErrorForEmptyNativeFile = Config.CreateErrorForEmptyNativeFile
@@ -768,72 +766,41 @@ Namespace kCura.WinEDDS
 				fullFilePath = filename
 				If fileExists Then
 					Dim now As Date = Date.Now
-					Dim getFileID As Action =
-							Sub()
+					
+					Try
+					    If Me.DisableNativeValidation Then
+					        oixFileIdData = Nothing
+					    Else
+					        Dim idDataExtractor As kCura.WinEDDS.Api.IHasOixFileType = Nothing
+					        If (Not injectableContainerIsNothing) Then
+					            idDataExtractor = injectableContainer.FileIdData
+					        End If
+					        If (idDataExtractor Is Nothing) Then
+					            oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(fullFilePath)
+					        Else
+					            oixFileIdData = idDataExtractor.GetFileIDData()
+					        End If
+					    End If
 
-								If Me.DisableNativeValidation Then
-									oixFileIdData = Nothing
-								Else
-									Dim idDataExtractor As kCura.WinEDDS.Api.IHasOixFileType = Nothing
-									If (Not injectableContainerIsNothing) Then
-										idDataExtractor = injectableContainer.FileIdData
-									End If
-									If (idDataExtractor Is Nothing) Then
-										oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(fullFilePath)
-									Else
-										oixFileIdData = idDataExtractor.GetFileIDData()
-									End If
-								End If
-							End Sub
-					Dim copyFileToRepository As Action =
-							Sub()
-								If _copyFileToRepository Then
-									fileGuid = _nativeUploaderBridge.AddPath(filename, Guid.NewGuid().ToString(), Me.CurrentLineNumber)
-									destinationVolume = _nativeUploaderBridge.TargetFolderName
-								Else
-									fileGuid = System.Guid.NewGuid.ToString
-								End If
-								If (Not injectableContainerIsNothing AndAlso injectableContainer.HasFileName()) Then 
-									filename = injectableContainer.FileName.GetFileName() 
-								Else 
-									filename = Path.GetFileName(fullFilePath)
-								End If
-							End Sub
-
-					If _usePipeliningForFileIdAndCopy Then
-						Try
-							Dim fileId As Task = Task.Factory.StartNew(getFileID)
-							Dim copyFile As Task = Task.Factory.StartNew(copyFileToRepository)
-							Task.WaitAll(fileId, copyFile)
-						Catch ae As AggregateException
-							For Each x As Exception In ae.Flatten().InnerExceptions
-								If TypeOf x Is FileNotFoundException Then
-									WriteTapiFileNotFoundProgress(filename, Me.CurrentLineNumber)
-									If Me.DisableNativeLocationValidation Then
-										'TODO: raise a warning or something?  I'm just copying this from the old logic rn.
-										'Don't do anything. This exception can only happen if DisableNativeLocationValidation is turned on
-									Else
-										Throw
-									End If
-								Else
-									' REL-158041: Rethrow to ensure non-pipeline behavior is maintained and results in a fatal error.
-									Throw
-								End If
-							Next
-						End Try
-					Else
-						Try
-							getFileID()
-							copyFileToRepository()
-						Catch ex As System.IO.FileNotFoundException
-							WriteTapiFileNotFoundProgress(filename, Me.CurrentLineNumber)
-							If Me.DisableNativeLocationValidation Then
-								'Don't do anything. This exception can only happen if DisableNativeLocationValidation is turned on
-							Else
-								Throw
-							End If
-						End Try
-					End If
+					    If _copyFileToRepository Then
+					        fileGuid = _nativeUploaderBridge.AddPath(filename, Guid.NewGuid().ToString(), Me.CurrentLineNumber)
+					        destinationVolume = _nativeUploaderBridge.TargetFolderName
+					    Else
+					        fileGuid = System.Guid.NewGuid.ToString
+					    End If
+					    If (Not injectableContainerIsNothing AndAlso injectableContainer.HasFileName()) Then 
+					        filename = injectableContainer.FileName.GetFileName() 
+					    Else 
+					        filename = Path.GetFileName(fullFilePath)
+					    End If
+					Catch ex As System.IO.FileNotFoundException
+						WriteTapiFileNotFoundProgress(filename, Me.CurrentLineNumber)
+						If Me.DisableNativeLocationValidation Then
+							'Don't do anything. This exception can only happen if DisableNativeLocationValidation is turned on
+						Else
+							Throw
+						End If
+					End Try
 
 					' Status must be handled the pre-TAPI way whenever the copy repository option is disabled.
 					If ShouldImport AndAlso Not _copyFileToRepository Then
