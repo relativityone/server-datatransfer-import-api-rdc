@@ -8,13 +8,13 @@ namespace kCura.WinEDDS.TApi
 {
     using System;
     using System.Linq;
-    using System.Net;
     using System.Text;
+    using System.Threading.Tasks;
 
     using kCura.WinEDDS.TApi.Resources;
 
     using Relativity.Transfer;
-    
+
     /// <summary>
     /// Defines helper methods to provide WinEDDS compatibility functionality.
     /// </summary>
@@ -78,6 +78,29 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// Creates a Relativity connection information object.
         /// </summary>
+        /// <param name="parameters">
+        /// The TAPI bridge parameters.
+        /// </param>
+        /// <returns>
+        /// The <see cref="RelativityConnectionInfo"/> instance.
+        /// </returns>
+        public static RelativityConnectionInfo CreateRelativityConnectionInfo(TapiBridgeParameters parameters)
+        {
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
+            return CreateRelativityConnectionInfo(
+                parameters.WebServiceUrl,
+                parameters.WorkspaceId,
+                parameters.Credentials.UserName,
+                parameters.Credentials.Password);
+        }
+
+        /// <summary>
+        /// Creates a Relativity connection information object.
+        /// </summary>
         /// <param name="webServiceUrl">
         /// The Relativity web service URL.
         /// </param>
@@ -93,7 +116,11 @@ namespace kCura.WinEDDS.TApi
         /// <returns>
         /// The <see cref="RelativityConnectionInfo"/> instance.
         /// </returns>
-        public static RelativityConnectionInfo CreateRelativityConnectionInfo(string webServiceUrl, int workspaceId, string userName, string password)
+        public static RelativityConnectionInfo CreateRelativityConnectionInfo(
+            string webServiceUrl,
+            int workspaceId,
+            string userName,
+            string password)
         {
             // Note: this is a temporary workaround to support integration tests.
             var baseUri = new Uri(webServiceUrl);
@@ -104,6 +131,83 @@ namespace kCura.WinEDDS.TApi
                            host,
                            new BasicAuthenticationCredential(userName, password),
                            workspaceId);
+        }
+
+        /// <summary>
+        /// Gets the client identifier.
+        /// </summary>
+        /// <param name="parameters">
+        /// The parameters.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Guid"/> value.
+        /// </returns>
+        public static Guid GetClientId(TapiBridgeParameters parameters)
+        {
+            var clientId = Guid.Empty;
+            if (parameters.ForceAsperaClient)
+            {
+                clientId = new Guid(TransferClientConstants.AsperaClientId);
+            }
+            else if (parameters.ForceHttpClient)
+            {
+                clientId = new Guid(TransferClientConstants.HttpClientId);
+            }
+            else if (parameters.ForceFileShareClient)
+            {
+                clientId = new Guid(TransferClientConstants.FileShareClientId);
+            }
+
+            return clientId;
+        }
+
+        /// <summary>
+        /// Asynchronously gets the TAPI client display name that will be used for the given workspace.
+        /// </summary>
+        /// <param name="parameters">
+        /// The bridge connection parameters.
+        /// </param>
+        /// <returns>
+        /// The client display name.
+        /// </returns>
+        public static async Task<string> GetWorkspaceClientDisplayNameAsync(TapiBridgeParameters parameters)
+        {
+            var configuration = new ClientConfiguration
+                                    {
+                                        CookieContainer = parameters.WebCookieContainer,
+                                        ClientId = GetClientId(parameters)
+                                    };
+            try
+            {
+                var connectionInfo = CreateRelativityConnectionInfo(parameters);
+                using (var transferHost = new RelativityTransferHost(connectionInfo))
+                {
+                    if (configuration.ClientId != Guid.Empty)
+                    {
+                        using (var client = transferHost.CreateClient(configuration))
+                        {
+                            var supportCheck = await client.SupportCheckAsync();
+                            if (supportCheck.IsSupported)
+                            {
+                                return client.DisplayName;
+                            }
+                        }
+                    }
+
+                    var clientStrategy = string.IsNullOrEmpty(parameters.ForceClientCandidates)
+                                             ? new TransferClientStrategy()
+                                             : new TransferClientStrategy(parameters.ForceClientCandidates);
+                    using (var forcedClient = await transferHost.CreateClientAsync(configuration, clientStrategy)
+                                                  .ConfigureAwait(false))
+                    {
+                        return forcedClient.DisplayName;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return "Connection Failed";
+            }
         }
     }
 }
