@@ -180,8 +180,8 @@
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="oi, Version=2017.3.2.10, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\kCura.OutsideIn.FI.unified.2017.3.2\lib\net40\oi.dll</HintPath>
+    <Reference Include="oi, Version=2017.3.3.13, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\kCura.OutsideIn.FI.unified.2017.3.3\lib\net40\oi.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Polly, Version=5.3.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -600,11 +600,11 @@
 			copy /Y "$(ProjectDir)..\..\Vendor\FreeImage\3.151\FreeImage\Release\x64\FreeImage.dll" "$(TargetDir)"
 		</PostBuildEvent>
   </PropertyGroup>
-  <Import Project="..\..\packages\kCura.OutsideIn.FI.unified.2017.3.2\build\kCura.OutsideIn.FI.unified.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.unified.2017.3.2\build\kCura.OutsideIn.FI.unified.targets')" />
+  <Import Project="..\..\packages\kCura.OutsideIn.FI.unified.2017.3.3\build\kCura.OutsideIn.FI.unified.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.unified.2017.3.3\build\kCura.OutsideIn.FI.unified.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\kCura.OutsideIn.FI.unified.2017.3.2\build\kCura.OutsideIn.FI.unified.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\kCura.OutsideIn.FI.unified.2017.3.2\build\kCura.OutsideIn.FI.unified.targets'))" />
+    <Error Condition="!Exists('..\..\packages\kCura.OutsideIn.FI.unified.2017.3.3\build\kCura.OutsideIn.FI.unified.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\kCura.OutsideIn.FI.unified.2017.3.3\build\kCura.OutsideIn.FI.unified.targets'))" />
   </Target>
 </Project>
