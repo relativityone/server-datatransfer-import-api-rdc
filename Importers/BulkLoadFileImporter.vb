@@ -814,7 +814,6 @@ Namespace kCura.WinEDDS
 							filename = Path.GetFileName(fullFilePath)
 						End If
 					Catch ex As System.IO.FileNotFoundException
-						WriteTapiFileNotFoundProgress(filename, Me.CurrentLineNumber)
 						If Me.DisableNativeLocationValidation Then
 							'Don't do anything. This exception can only happen if DisableNativeLocationValidation is turned on
 						Else
@@ -826,8 +825,6 @@ Namespace kCura.WinEDDS
 					If ShouldImport AndAlso Not _copyFileToRepository Then
 						WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
 					End If
-				Else If ShouldImport AndAlso _copyFileToRepository Then
-					WriteTapiFileNotFoundProgress(filename, Me.CurrentLineNumber)
 				End If
 			End If
 			_timekeeper.MarkEnd("ManageDocument_Filesystem")
@@ -976,13 +973,14 @@ Namespace kCura.WinEDDS
 				WriteFatalError(metaDoc.LineNumber, ex)
 			End Try
 
-			' When TAPI is used to copy the repository, do NOT drive progress. See the TAPI progress event below.
-			If _copyFileToRepository Then
+			' Let TAPI handle progress as long as we're transferring the native. See the TAPI progress event below.
+			If _copyFileToRepository AndAlso metaDoc.IndexFileInDB Then
 				_timekeeper.MarkStart("ManageDocumentMetadata_StatusEvent")
 				WriteStatusLine(Windows.Process.EventType.Status, String.Format("Item '{0}' processed.", metaDoc.IdentityValue), metaDoc.LineNumber)
 				_timekeeper.MarkEnd("ManageDocumentMetadata_StatusEvent")
 			Else
 				_timekeeper.MarkStart("ManageDocumentMetadata_ProgressEvent")
+				_processedCount = _processedCount + 1
 				WriteStatusLine(Windows.Process.EventType.Progress, String.Format("Item '{0}' processed.", metaDoc.IdentityValue), metaDoc.LineNumber)
 				_timekeeper.MarkEnd("ManageDocumentMetadata_ProgressEvent")
 			End If
@@ -1706,13 +1704,6 @@ Namespace kCura.WinEDDS
 			End If
 			Return line
 		End Function
-
-		Private Sub WriteTapiFileNotFoundProgress(ByVal fileName As String, ByVal lineNumber As Int32)
-			If (ShouldImport AndAlso Me._copyFileToRepository) Then
-				_processedCount = _processedCount + 1
-				WriteTapiProgressMessage(String.Format("Item {0} not found.", fileName), lineNumber)
-			End If
-		End Sub
 
 		Private Sub WriteTapiProgressMessage(ByVal message As String, ByVal lineNumber As Int32)
 			message = GetLineMessage(message, lineNumber)
