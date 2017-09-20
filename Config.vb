@@ -59,7 +59,6 @@ Namespace kCura.WinEDDS
                             If Not tempDict.Contains("LoggerConfigFile") Then tempDict.Add("LoggerConfigFile", "LoggerConfig.xml")
                             If Not tempDict.Contains(NameOf(LoadImportedFullTextFromServer)) Then tempDict.Add(NameOf(LoadImportedFullTextFromServer), "False")
                             If Not tempDict.Contains(NameOf(UsePipeliningForNativeAndObjectImports)) Then tempDict.Add(NameOf(UsePipeliningForNativeAndObjectImports), "True")
-                            If Not tempDict.Contains(NameOf(UsePipeliningForFileIdAndCopy)) Then tempDict.Add(NameOf(UsePipeliningForFileIdAndCopy), "True")
                             If Not tempDict.Contains(NameOf(ProcessFormRefreshRate)) Then tempDict.Add(NameOf(ProcessFormRefreshRate), "0")
                                 _configDictionary = tempDict
                             End If
@@ -162,15 +161,6 @@ Namespace kCura.WinEDDS
 
 
 #Region " Feature Toggles " 'TODO: either promote these to client-facing toggles with documentation or remove them
-        Friend Shared ReadOnly Property UsePipeliningForFileIdAndCopy As Boolean
-            Get
-                Try
-                    Return CType(ConfigSettings(NameOf(UsePipeliningForFileIdAndCopy)), Boolean)
-                Catch
-                    Return True
-                End Try
-            End Get
-        End Property
 
         Friend Shared ReadOnly Property UsePipeliningForNativeAndObjectImports As Boolean
             Get

@@ -5,6 +5,7 @@ Imports System.Threading.Tasks
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.Utility.Extensions
 Imports kCura.Windows.Process
+Imports Polly
 Imports Relativity
 
 Namespace kCura.WinEDDS
@@ -79,7 +80,6 @@ Namespace kCura.WinEDDS
 		Private _currentStatisticsSnapshot As IDictionary
 		Private _statisticsLastUpdated As System.DateTime = System.DateTime.Now
 		Private _unmappedRelationalFields As System.Collections.ArrayList
-		Private _usePipeliningForFileIdAndCopy As Boolean
 		Private _usePipeliningForNativeAndObjectImports As Boolean
 		Private _createFoldersInWebAPI As Boolean
 		Private _createErrorForEmptyNativeFile As Boolean
@@ -335,7 +335,6 @@ Namespace kCura.WinEDDS
 			MyBase.New(args, timeZoneOffset, doRetryLogic, autoDetect, initializeArtifactReader)
 
 			' Avoid excessive concurrent dictionary hits by caching frequently used config settings.
-			_usePipeliningForFileIdAndCopy = Config.UsePipeliningForFileIdAndCopy
 			_usePipeliningForNativeAndObjectImports = Config.UsePipeliningForNativeAndObjectImports
 			_createFoldersInWebAPI = Config.CreateFoldersInWebAPI
 			_createErrorForEmptyNativeFile = Config.CreateErrorForEmptyNativeFile
@@ -588,52 +587,54 @@ Namespace kCura.WinEDDS
 				Dim isError As Boolean = False
 				_statistics.BatchSize = Me.ImportBatchSize
 				_jobCounter = 1
-				While ShouldImport AndAlso _artifactReader.HasMoreRecords
-					Try
-						If Me.CurrentLineNumber < _startLineNumber Then
-							Me.AdvanceLine()
+				Using fileService As kCura.OI.FileID.FileIDService = New kCura.OI.FileID.FileIDService()
+					While ShouldImport AndAlso _artifactReader.HasMoreRecords
+						Try
+							If Me.CurrentLineNumber < _startLineNumber Then
+								Me.AdvanceLine()
 
-							' This will ensure progress takes into account the start line number
-							_processedCount = _processedCount + 1
-						Else
-							_timekeeper.MarkStart("ReadFile_GetLine")
-							_statistics.DocCount += 1
-							'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
-							' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
-							' -Phil S. 06/12/2012
-							WriteStatusLine(Windows.Process.EventType.Count, String.Empty)
-							line = _artifactReader.ReadArtifact
-							_timekeeper.MarkEnd("ReadFile_GetLine")
-							Dim lineStatus As Int32 = 0
-							'If line.Count <> _columnHeaders.Length Then
-							'	lineStatus += ImportStatus.ColumnMismatch								 'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
-							'End If
+								' This will ensure progress takes into account the start line number
+								_processedCount = _processedCount + 1
+							Else
+								_timekeeper.MarkStart("ReadFile_GetLine")
+								_statistics.DocCount += 1
+								'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
+								' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
+								' -Phil S. 06/12/2012
+								WriteStatusLine(Windows.Process.EventType.Count, String.Empty)
+								line = _artifactReader.ReadArtifact
+								_timekeeper.MarkEnd("ReadFile_GetLine")
+								Dim lineStatus As Int32 = 0
+								'If line.Count <> _columnHeaders.Length Then
+								'	lineStatus += ImportStatus.ColumnMismatch								 'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
+								'End If
 
-							_timekeeper.MarkStart("ReadFile_ManageDocument")
-							Dim id As String = ManageDocument(line, lineStatus)
-							_timekeeper.MarkEnd("ReadFile_ManageDocument")
+								_timekeeper.MarkStart("ReadFile_ManageDocument")
+								Dim id As String = ManageDocument(fileService, line, lineStatus)
+								_timekeeper.MarkEnd("ReadFile_ManageDocument")
 
-							_timekeeper.MarkStart("ReadFile_IdTrack")
-							_processedDocumentIdentifiers.Add(id, CurrentLineNumber.ToString)
-							_timekeeper.MarkEnd("ReadFile_IdTrack")
-						End If
-					Catch ex As LoadFileBase.CodeCreationException
-						If ex.IsFatal Then
-							isError = True
-							WriteFatalError(Me.CurrentLineNumber, ex)
-						Else
+								_timekeeper.MarkStart("ReadFile_IdTrack")
+								_processedDocumentIdentifiers.Add(id, CurrentLineNumber.ToString)
+								_timekeeper.MarkEnd("ReadFile_IdTrack")
+							End If
+						Catch ex As LoadFileBase.CodeCreationException
+							If ex.IsFatal Then
+								isError = True
+								WriteFatalError(Me.CurrentLineNumber, ex)
+							Else
+								WriteError(Me.CurrentLineNumber, ex.Message)
+							End If
+						Catch ex As System.IO.PathTooLongException
+							WriteError(Me.CurrentLineNumber, ERROR_MESSAGE_FOLDER_NAME_TOO_LONG)
+						Catch ex As kCura.Utility.ImporterExceptionBase
 							WriteError(Me.CurrentLineNumber, ex.Message)
-						End If
-					Catch ex As System.IO.PathTooLongException
-						WriteError(Me.CurrentLineNumber, ERROR_MESSAGE_FOLDER_NAME_TOO_LONG)
-					Catch ex As kCura.Utility.ImporterExceptionBase
-						WriteError(Me.CurrentLineNumber, ex.Message)
-					Catch ex As System.IO.FileNotFoundException
-						WriteError(Me.CurrentLineNumber, ex.Message)
-					Catch ex As System.Exception
-						WriteFatalError(Me.CurrentLineNumber, ex)
-					End Try
-				End While
+						Catch ex As System.IO.FileNotFoundException
+							WriteError(Me.CurrentLineNumber, ex.Message)
+						Catch ex As System.Exception
+							WriteFatalError(Me.CurrentLineNumber, ex)
+						End Try
+					End While
+				End Using
 
 				If Not _task Is Nothing AndAlso _task.Status.In(
 					Threading.Tasks.TaskStatus.Running,
@@ -721,7 +722,7 @@ Namespace kCura.WinEDDS
 			_fieldArtifactIds = DirectCast(fieldIdList.ToArray(GetType(Int32)), Int32())
 		End Sub
 
-		Private Function ManageDocument(ByVal record As Api.ArtifactFieldCollection, ByVal lineStatus As Int64) As String
+		Private Function ManageDocument(ByVal fileService As kCura.OI.FileID.FileIDService, ByVal record As Api.ArtifactFieldCollection, ByVal lineStatus As Int64) As String
 			Dim filename As String = String.Empty
 			Dim fileGuid As String = String.Empty
 			Dim uploadFile As Boolean = record.FieldList(Relativity.FieldTypeHelper.FieldType.File).Length > 0 AndAlso Not record.FieldList(Relativity.FieldTypeHelper.FieldType.File)(0).Value Is Nothing
@@ -768,72 +769,58 @@ Namespace kCura.WinEDDS
 				fullFilePath = filename
 				If fileExists Then
 					Dim now As Date = Date.Now
-					Dim getFileID As Action =
-							Sub()
-
-								If Me.DisableNativeValidation Then
-									oixFileIdData = Nothing
-								Else
-									Dim idDataExtractor As kCura.WinEDDS.Api.IHasOixFileType = Nothing
-									If (Not injectableContainerIsNothing) Then
-										idDataExtractor = injectableContainer.FileIdData
-									End If
-									If (idDataExtractor Is Nothing) Then
-										oixFileIdData = kCura.OI.FileID.Manager.Instance.GetFileIDDataByFilePath(fullFilePath)
-									Else
-										oixFileIdData = idDataExtractor.GetFileIDData()
-									End If
-								End If
-							End Sub
-					Dim copyFileToRepository As Action =
-							Sub()
-								If _copyFileToRepository Then
-									fileGuid = _nativeUploaderBridge.AddPath(filename, Guid.NewGuid().ToString(), Me.CurrentLineNumber)
-									destinationVolume = _nativeUploaderBridge.TargetFolderName
-								Else
-									fileGuid = System.Guid.NewGuid.ToString
-								End If
-								If (Not injectableContainerIsNothing AndAlso injectableContainer.HasFileName()) Then 
-									filename = injectableContainer.FileName.GetFileName() 
-								Else 
-									filename = Path.GetFileName(fullFilePath)
-								End If
-							End Sub
-
-					If _usePipeliningForFileIdAndCopy Then
-						Try
-							Dim fileId As Task = Task.Factory.StartNew(getFileID)
-							Dim copyFile As Task = Task.Factory.StartNew(copyFileToRepository)
-							Task.WaitAll(fileId, copyFile)
-						Catch ae As AggregateException
-							For Each x As Exception In ae.Flatten().InnerExceptions
-								If TypeOf x Is FileNotFoundException Then
-									WriteTapiFileNotFoundProgress(filename, Me.CurrentLineNumber)
-									If Me.DisableNativeLocationValidation Then
-										'TODO: raise a warning or something?  I'm just copying this from the old logic rn.
-										'Don't do anything. This exception can only happen if DisableNativeLocationValidation is turned on
-									Else
-										Throw
-									End If
-								Else
-									' REL-158041: Rethrow to ensure non-pipeline behavior is maintained and results in a fatal error.
-									Throw
-								End If
-							Next
-						End Try
-					Else
-						Try
-							getFileID()
-							copyFileToRepository()
-						Catch ex As System.IO.FileNotFoundException
-							WriteTapiFileNotFoundProgress(filename, Me.CurrentLineNumber)
-							If Me.DisableNativeLocationValidation Then
-								'Don't do anything. This exception can only happen if DisableNativeLocationValidation is turned on
-							Else
-								Throw
+					
+					Try
+						If Me.DisableNativeValidation Then
+							oixFileIdData = Nothing
+						Else
+							Dim idDataExtractor As kCura.WinEDDS.Api.IHasOixFileType = Nothing
+							If (Not injectableContainerIsNothing) Then
+								idDataExtractor = injectableContainer.FileIdData
 							End If
-						End Try
-					End If
+
+							If (idDataExtractor Is Nothing) Then
+								' REL-165493: Added OI resiliency and properly address FileNotFoundException scenarios.
+								Dim retryPolicy As Retry.RetryPolicy = Policy.Handle(Of kCura.OI.FileID.FileIDException).WaitAndRetry(
+									Me.NumberOfRetries,
+									Function(count) As TimeSpan
+										' Force OI to get reinitialized in the event the runtime configuration is invalid.
+										If count > 1 Then
+											fileService.Reinitialize()
+										End If
+										Return TimeSpan.FromSeconds(Me.WaitTimeBetweenRetryAttempts)
+									End Function,
+									Sub(exception, span, context)
+										LogError(exception, $"Retry - {span} - Failed to identify the '{fullFilePath}' source file.")
+									End Sub)
+								oixFileIdData = retryPolicy.Execute(
+									function()
+										Return fileService.Identify(fullFilePath)
+									End Function)
+							Else
+								oixFileIdData = idDataExtractor.GetFileIDData()
+							End If
+						End If
+
+						If _copyFileToRepository Then
+							fileGuid = _nativeUploaderBridge.AddPath(filename, Guid.NewGuid().ToString(), Me.CurrentLineNumber)
+							destinationVolume = _nativeUploaderBridge.TargetFolderName
+						Else
+							fileGuid = System.Guid.NewGuid.ToString
+						End If
+						If (Not injectableContainerIsNothing AndAlso injectableContainer.HasFileName()) Then 
+							filename = injectableContainer.FileName.GetFileName() 
+						Else 
+							filename = Path.GetFileName(fullFilePath)
+						End If
+					Catch ex As System.IO.FileNotFoundException
+						WriteTapiFileNotFoundProgress(filename, Me.CurrentLineNumber)
+						If Me.DisableNativeLocationValidation Then
+							'Don't do anything. This exception can only happen if DisableNativeLocationValidation is turned on
+						Else
+							Throw
+						End If
+					End Try
 
 					' Status must be handled the pre-TAPI way whenever the copy repository option is disabled.
 					If ShouldImport AndAlso Not _copyFileToRepository Then
@@ -2145,6 +2132,11 @@ Namespace kCura.WinEDDS
 
 		Private Sub _processController_ParentFormClosingEvent(ByVal processID As Guid) Handles _processController.ParentFormClosingEvent
 			If processID.ToString = _processID.ToString Then CleanupTempTables()
+		End Sub
+
+		Private Sub LogError(ByVal exception As System.Exception, ByVal message As String)
+			' Until logging is added to WinEDDS, tracing will have to do.
+			System.Diagnostics.Trace.WriteLine($"{message} - Exception: {exception.ToString()}")
 		End Sub
 
 		Protected Sub CleanupTempTables()
