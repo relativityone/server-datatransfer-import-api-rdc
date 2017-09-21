@@ -1,21 +1,20 @@
+Imports System.Configuration
 Imports System.Web.Services.Protocols
 Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
 Imports System.Net.Security
 Imports System.Linq
-Imports System.Security.Authentication
-Imports System.Threading
 Imports System.Threading.Tasks
 
 Imports kCura.EDDS.WinForm.Forms
 Imports kCura.Windows.Forms
 Imports kCura.WinEDDS.Core.Export
 Imports kCura.WinEDDS.Credentials
-Imports kCura.WinEDDS.Exceptions
 Imports kCura.WinEDDS.Service
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
+Imports Relativity.StagingExplorer.Components.Main
 
 Namespace kCura.EDDS.WinForm
 	Public Class Application
@@ -69,8 +68,8 @@ Namespace kCura.EDDS.WinForm
 				Dim tempImplicitProvider As OAuth2ImplicitCredentials = CType(RelativityWebApiCredentialsProvider.Instance().GetProvider(), OAuth2ImplicitCredentials)
 				tempImplicitProvider.CloseLoginView()
 			End If
-			Dim authEndpoint As string = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/authorize")
-			Dim implicitProvider = new OAuth2ImplicitCredentials(New Uri(authEndpoint), "Relativity Desktop Client", AddressOf On_TokenRetrieved)
+			Dim authEndpoint As String = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/authorize")
+			Dim implicitProvider = New OAuth2ImplicitCredentials(New Uri(authEndpoint), "Relativity Desktop Client", AddressOf On_TokenRetrieved)
 			RelativityWebApiCredentialsProvider.Instance().SetProvider(implicitProvider)
 		End Sub
 
@@ -82,10 +81,10 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Private Async Function GetFieldProviderCacheAsync() As Task(Of IFieldProviderCache)
-			If(_fieldProviderCache Is Nothing)
+			If (_fieldProviderCache Is Nothing) Then
 				_fieldProviderCache = New FieldProviderCache(Await GetCredentialsAsync(), _CookieContainer)
 			End If
-			return _fieldProviderCache
+			Return _fieldProviderCache
 		End Function
 
 		Public Property TimeZoneOffset() As Int32
@@ -138,29 +137,29 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Async Function CurrentFields(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As Task(Of DocumentFieldCollection)
-				Try
-					return (Await GetFieldProviderCacheAsync()).CurrentFields(artifactTypeID, SelectedCaseInfo.ArtifactID, refresh)
-				Catch ex As System.Exception
-					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-						NewLogin(False)
-					Else
-						Throw
-					End If
-				End Try
-				Return Nothing
+			Try
+				Return (Await GetFieldProviderCacheAsync()).CurrentFields(artifactTypeID, SelectedCaseInfo.ArtifactID, refresh)
+			Catch ex As System.Exception
+				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+					NewLogin(False)
+				Else
+					Throw
+				End If
+			End Try
+			Return Nothing
 		End Function
 
 		Public Async Function CurrentNonFileFields(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As Task(Of DocumentFieldCollection)
-				Try
-					return (Await GetFieldProviderCacheAsync()).CurrentNonFileFields(artifactTypeID, SelectedCaseInfo.ArtifactID, refresh)
-				Catch ex As System.Exception
-					If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-						NewLogin(False)
-					Else
-						Throw
-					End If
-				End Try
-				Return Nothing
+			Try
+				Return (Await GetFieldProviderCacheAsync()).CurrentNonFileFields(artifactTypeID, SelectedCaseInfo.ArtifactID, refresh)
+			Catch ex As System.Exception
+				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
+					NewLogin(False)
+				Else
+					Throw
+				End If
+			End Try
+			Return Nothing
 		End Function
 
 		Public Property TemporaryWebServiceURL() As String
@@ -183,15 +182,15 @@ Namespace kCura.EDDS.WinForm
 
 
 #Region "Event Throwers"
-        Public Sub LogOn()
-            RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOn))
-        End Sub
+		Public Sub LogOn()
+			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOn))
+		End Sub
 
-        Public Sub LogOnForm()
-            RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOnForm))
-        End Sub
+		Public Sub LogOnForm()
+			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOnForm))
+		End Sub
 
-        Public Sub ExitApplication()
+		Public Sub ExitApplication()
 			UpdateWebServiceURL(False)
 			UpdateForceFolderPreview()
 			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.ExitApplication))
@@ -206,7 +205,7 @@ Namespace kCura.EDDS.WinForm
 				kCura.WinEDDS.Config.WebServiceURL = Me.TemporaryWebServiceURL
 				_caseSelected = False
 				'' Turn off our trust of bad certificates! This needs to happen here (references need to be added to add it to MainForm - bad practice).
-				ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) sslPolicyErrors.Equals(sslPolicyErrors.None)
+				ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) sslPolicyErrors.Equals(SslPolicyErrors.None)
 				RaiseEvent ReCheckCertificate()
 			End If
 		End Sub
@@ -288,7 +287,7 @@ Namespace kCura.EDDS.WinForm
 			If unselectedIDFieldNames.Length = 0 Then
 				Return True
 			Else
-				MsgBox("The following identifier fields have not been mapped: " & ChrW(13) & unselectedIDFieldNames.ToString & _
+				MsgBox("The following identifier fields have not been mapped: " & ChrW(13) & unselectedIDFieldNames.ToString &
 				"Do you wish to continue?", MsgBoxStyle.Critical, "Warning")
 				Return False
 			End If
@@ -493,8 +492,20 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Async Function GetConnectionStatus() As Task(Of String)
-			Dim x As New kCura.WinEDDS.FileUploader(Await Me.GetCredentialsAsync(), Me.SelectedCaseInfo.ArtifactID, Me.SelectedCaseInfo.DocumentPath, Me.CookieContainer)
-			Return x.UploaderType.ToString
+			Dim credentials = Await Me.GetCredentialsAsync()
+			Dim parameters = New TApi.TapiBridgeParameters
+			parameters.Credentials = credentials
+			parameters.DocRootLevels = WinEDDS.Config.TapiAsperaNativeDocRootLevels
+			parameters.FileShare = Me.SelectedCaseInfo.DocumentPath
+			parameters.ForceAsperaClient = WinEDDS.Config.TapiForceAsperaClient
+			parameters.ForceClientCandidates = WinEDDS.Config.TapiForceClientCandidates
+			parameters.ForceFileShareClient = WinEDDS.Config.TapiForceFileShareClient
+			parameters.ForceHttpClient = WinEDDS.Config.ForceWebUpload OrElse WinEDDS.Config.TapiForceHttpClient                                                            
+			parameters.WebCookieContainer = Me.CookieContainer
+			parameters.WebServiceUrl = WinEDDS.Config.WebServiceURL
+			parameters.WorkspaceId = Me.SelectedCaseInfo.ArtifactID
+			Dim clientName = Await kCura.WinEDDS.TApi.TapiWinEddsHelper.GetWorkspaceClientDisplayNameAsync(parameters)
+			Return clientName
 		End Function
 #End Region
 
@@ -516,7 +527,7 @@ Namespace kCura.EDDS.WinForm
 				If (ex.Status = WebExceptionStatus.TrustFailure) Then
 					isCertificateTrusted = False
 				Else
-					throw
+					Throw
 				End If
 			End Try
 
@@ -786,9 +797,9 @@ Namespace kCura.EDDS.WinForm
 					Dim s As New System.Text.StringBuilder
 					s.Append("There are no exportable ")
 					Select Case exportFile.TypeOfExport
-						Case exportFile.ExportType.Production
+						Case ExportFile.ExportType.Production
 							s.Append("productions ")
-						Case exportFile.ExportType.ArtifactSearch
+						Case ExportFile.ExportType.ArtifactSearch
 							s.Append("saved searches ")
 						Case Else
 							s.Append("views ")
@@ -810,6 +821,32 @@ Namespace kCura.EDDS.WinForm
 			End Try
 		End Function
 
+		Public Async Sub NewFileTransfer()
+			Await NewLoginAsync()
+			
+			Dim authContext = New AuthenticationContext()
+			authContext.Credential = Await Me.GetCredentialsAsync()
+			Dim rdcContext = New RelativityContext(kCura.WinEDDS.Config.WebServiceURL,  Me.SelectedCaseInfo.ArtifactID)
+
+			StartStagingExplorer(rdcContext, authContext)
+		End Sub
+
+		Private Sub StartStagingExplorer(relativityContext As RelativityContext, authContext As AuthenticationContext)
+			Dim initArguments As String
+			initArguments = $"-t {authContext.Credential.Password} -w {relativityContext.WorkspaceID}  -u {relativityContext.WebServiceURL}"
+			Dim applicationFile = GetApplicationFilePath()
+
+			Process.Start(applicationFile, initArguments)
+		End Sub
+		Private Function GetApplicationFilePath() As String
+			Dim appPath = ConfigurationManager.AppSettings("Relativity.StagingExplorer.ApplicationFile")
+			If String.IsNullOrEmpty(appPath) Then
+				Return "Relativity.StagingExplorer.exe"
+			Else
+				Return appPath
+			End If
+		End Function
+
 		Public Async Function GetListOfProductionsForCase(ByVal caseInfo As Relativity.CaseInfo) As Task(Of System.Data.DataTable)
 			Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Await Me.GetCredentialsAsync(), _CookieContainer)
 			Return productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
@@ -826,10 +863,10 @@ Namespace kCura.EDDS.WinForm
 			exportFile.TypeOfExport = typeOfExport
 			exportFile.ObjectTypeName = Await Me.GetObjectTypeName(exportFile.ArtifactTypeID)
 			Select Case typeOfExport
-				Case exportFile.ExportType.Production
+				Case ExportFile.ExportType.Production
 					exportFile.DataTable = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
 				Case Else
-					exportFile.DataTable = Me.GetSearchExportDataSource(searchManager, caseInfo.ArtifactID, typeOfExport = exportFile.ExportType.ArtifactSearch, exportFile.ArtifactTypeID)
+					exportFile.DataTable = Me.GetSearchExportDataSource(searchManager, caseInfo.ArtifactID, typeOfExport = ExportFile.ExportType.ArtifactSearch, exportFile.ArtifactTypeID)
 			End Select
 			Dim ids As New System.Collections.ArrayList
 			For Each row As System.Data.DataRow In exportFile.DataTable.Rows
@@ -845,7 +882,7 @@ Namespace kCura.EDDS.WinForm
 				exportFile.ArtifactAvfLookup = New System.Collections.Specialized.HybridDictionary
 				exportFile.AllExportableFields = New WinEDDS.ViewFieldInfo() {}
 			Else
-				exportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(caseInfo.ArtifactID, exportFile.ArtifactTypeID, DirectCast(ids.ToArray(GetType(Int32)), Int32()), typeOfExport = exportFile.ExportType.Production)
+				exportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(caseInfo.ArtifactID, exportFile.ArtifactTypeID, DirectCast(ids.ToArray(GetType(Int32)), Int32()), typeOfExport = ExportFile.ExportType.Production)
 				exportFile.AllExportableFields = searchManager.RetrieveAllExportableViewFields(caseInfo.ArtifactID, exportFile.ArtifactTypeID)
 			End If
 			Return exportFile
@@ -980,8 +1017,8 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Async Function NewLoginAsync(Optional ByVal openCaseSelector As Boolean = True) As Task
-
 			Try
+				Me.OpenCaseSelector = openCaseSelector
 				Await Me.GetCredentialsAsync()
 			Catch ex As LoginCanceledException
 				'Login form was closed, ignore
@@ -1059,7 +1096,7 @@ Namespace kCura.EDDS.WinForm
 				If CheckFieldMap(loadFile) Then
 					Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
 					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
-					importer.BulkLoadFileImporterFactory = new kCura.WinEDDS.Aspera.BulkLoadFileImporterFactory(Await Me.GetConnectionStatus())
+					importer.BulkLoadFileImporterFactory = New kCura.WinEDDS.Aspera.BulkLoadFileImporterFactory(Await Me.GetConnectionStatus())
 					importer.LoadFile = loadFile
 					importer.TimeZoneOffset = _timeZoneOffset
 					importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
@@ -1260,8 +1297,8 @@ Namespace kCura.EDDS.WinForm
 			If tempLoadFile.GroupIdentifierColumn = String.Empty AndAlso System.IO.File.Exists(tempLoadFile.FilePath) Then
 				Dim fieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem
 				For Each fieldMapItem In tempLoadFile.FieldMap
-					If Not fieldMapItem.DocumentField Is Nothing AndAlso _
-					fieldMapItem.NativeFileColumnIndex >= 0 AndAlso _
+					If Not fieldMapItem.DocumentField Is Nothing AndAlso
+					fieldMapItem.NativeFileColumnIndex >= 0 AndAlso
 					fieldMapItem.DocumentField.FieldName.ToLower = "group identifier" Then
 						tempLoadFile.GroupIdentifierColumn = Me.GetColumnHeadersFromLoadFile(tempLoadFile, tempLoadFile.FirstLineContainsHeaders)(fieldMapItem.NativeFileColumnIndex)
 						'mapItemToRemove = fieldMapItem
@@ -1314,6 +1351,7 @@ Namespace kCura.EDDS.WinForm
 		End Enum
 
 		Private _lastCredentialCheckResult As CredentialCheckResult = CredentialCheckResult.NotSet
+
 		Public ReadOnly Property LastCredentialCheckResult As CredentialCheckResult
 			Get
 				Return _lastCredentialCheckResult
@@ -1365,7 +1403,7 @@ Namespace kCura.EDDS.WinForm
 				relativityManager = New kCura.WinEDDS.Service.RelativityManager(cred, _CookieContainer)
 				If relativityManager.ValidateSuccessfulLogin Then
 					CheckVersion(System.Net.CredentialCache.DefaultCredentials)
-					RelativityWebApiCredentialsProvider.Instance().SetProvider(new UserCredentialsProvider(cred))
+					RelativityWebApiCredentialsProvider.Instance().SetProvider(New UserCredentialsProvider(cred))
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = New kCura.WinEDDS.Service.UserManager(cred, _CookieContainer).GenerateDistributedAuthenticationToken()
 					_lastCredentialCheckResult = CredentialCheckResult.Success
 				Else
@@ -1402,7 +1440,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Async Sub On_TokenRetrieved(source As ITokenProvider, args As ITokenResponseEventArgs)
-			Dim credential = await GetCredentialsAsync()
+			Dim credential = Await GetCredentialsAsync()
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(credential, _CookieContainer)
 			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(credential, _CookieContainer)
 			Try
@@ -1412,33 +1450,33 @@ Namespace kCura.EDDS.WinForm
 				_lastCredentialCheckResult = CredentialCheckResult.Fail
 				Return
 			Catch ex As System.Exception
-				Me.ChangeWebServiceURL("An error occurred while validating the Relativity WebAPI URL.  Check the URL and try again?")
+				Me.ChangeWebServiceUrl("An error occurred while validating the Relativity WebAPI URL.  Check the URL and try again?")
 				_lastCredentialCheckResult = CredentialCheckResult.Fail
 				Return
 			End Try
 
-            Try
-                If userManager.Login(credential.UserName, credential.Password) Then
+			Try
+				If userManager.Login(credential.UserName, credential.Password) Then
 
-                    Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
-                    locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol
-                    System.Threading.Thread.CurrentThread.CurrentCulture = locale
+					Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
+					locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol
+					System.Threading.Thread.CurrentThread.CurrentCulture = locale
 
-                    kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-                    If OpenCaseSelector Then Await OpenCase()
-                    _timeZoneOffset = 0                                                         'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
-                    _lastCredentialCheckResult = CredentialCheckResult.Success
-                    'This was created specifically for raising an event after login success for RDC forms authentication 
-                    LogOnForm()
-                Else
-                    Await Me.NewLoginAsync()
-                    _lastCredentialCheckResult = CredentialCheckResult.Fail
-                End If
-            Catch ex As System.Exception
-                Dim errorDialog As New ErrorDialog
+					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
+					If OpenCaseSelector Then Await OpenCase()
+					_timeZoneOffset = 0                                                         'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+					_lastCredentialCheckResult = CredentialCheckResult.Success
+					'This was created specifically for raising an event after login success for RDC forms authentication 
+					LogOnForm()
+				Else
+					Await Me.NewLoginAsync()
+					_lastCredentialCheckResult = CredentialCheckResult.Fail
+				End If
+			Catch ex As System.Exception
+				Dim errorDialog As New ErrorDialog
 				If IsAccessDisabledException(ex) Then
 					errorDialog.Text = "Account Disabled"
-					errorDialog.InitializeSoapExceptionWithCustomMessage(DirectCast(ex, System.Web.Services.Protocols.SoapException), _
+					errorDialog.InitializeSoapExceptionWithCustomMessage(DirectCast(ex, System.Web.Services.Protocols.SoapException),
 					 ACCESS_DISABLED_MESSAGE)
 					_lastCredentialCheckResult = CredentialCheckResult.AccessDisabled
 				Else
@@ -1463,13 +1501,13 @@ Namespace kCura.EDDS.WinForm
 		Public Sub HandleWebException(ex As WebException)
 
 			If Not ex.Message.IndexOf("The remote name could not be resolved") = -1 AndAlso ex.Source = "System" Then
-				Me.ChangeWebServiceURL("The current Relativity WebAPI URL could not be resolved. Try a new URL?")
+				Me.ChangeWebServiceUrl("The current Relativity WebAPI URL could not be resolved. Try a new URL?")
 			ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 401") = -1 AndAlso ex.Source = "System.Web.Services" Then
-				Me.ChangeWebServiceURL("The current Relativity WebAPI URL was resolved but is not configured correctly. Try a new URL?")
+				Me.ChangeWebServiceUrl("The current Relativity WebAPI URL was resolved but is not configured correctly. Try a new URL?")
 			ElseIf Not ex.Message.IndexOf("The request failed with HTTP status 404") = -1 AndAlso ex.Source = "System.Web.Services" Then
-				Me.ChangeWebServiceURL("The current Relativity WebAPI URL was not found. Try a new URL?")
+				Me.ChangeWebServiceUrl("The current Relativity WebAPI URL was not found. Try a new URL?")
 			Else
-				Me.ChangeWebServiceURL("An error occurred while validating the Relativity WebAPI URL.  Check the URL and try again?")
+				Me.ChangeWebServiceUrl("An error occurred while validating the Relativity WebAPI URL.  Check the URL and try again?")
 			End If
 		End Sub
 
@@ -1496,7 +1534,7 @@ Namespace kCura.EDDS.WinForm
 				CheckVersion(netCreds)
 				If userManager.Login(netCreds.UserName, netCreds.Password) Then
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-					_timeZoneOffset = 0											 'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+					_timeZoneOffset = 0                                          'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
 					_lastCredentialCheckResult = CredentialCheckResult.Success
 				Else
 					_lastCredentialCheckResult = CredentialCheckResult.Fail
@@ -1516,11 +1554,11 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Function DoOAuthLogin(ByVal clientId As String, ByVal clientSecret As String, ByVal stsUrl As Uri) As CredentialCheckResult
-			Dim credProvider As ICredentialsProvider = new OAuth2ClientCredentials(stsUrl, clientId, clientSecret)
+			Dim credProvider As ICredentialsProvider = New OAuth2ClientCredentials(stsUrl, clientId, clientSecret)
 			RelativityWebApiCredentialsProvider.Instance().SetProvider(credProvider)
 
 			_lastCredentialCheckResult = DoLogin()
-			
+
 			Return _lastCredentialCheckResult
 		End Function
 
@@ -1529,15 +1567,15 @@ Namespace kCura.EDDS.WinForm
 			Dim stsUrl As Uri = New Uri(urlString)
 
 			_lastCredentialCheckResult = DoOAuthLogin(clientId, clientSecret, stsUrl)
-			
+
 			Return _lastCredentialCheckResult
 		End Function
 
-		Public Function GetIdentityServerLocation() As string
-			Dim tempCred As  System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
+		Public Function GetIdentityServerLocation() As String
+			Dim tempCred As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
 			Dim relManager As Service.RelativityManager = New RelativityManager(tempCred, _CookieContainer)
-			Dim urlString As String = String.Format("{0}/{1}",relManager.GetRelativityUrl(), "Identity")
-			return urlString
+			Dim urlString As String = String.Format("{0}/{1}", relManager.GetRelativityUrl(), "Identity")
+			Return urlString
 		End Function
 
 		Private Async Function Reconnect() As Task
@@ -1613,7 +1651,7 @@ Namespace kCura.EDDS.WinForm
 		End Function
 #End Region
 
-		Public Async Overridable Function GetProductionPrecendenceList(ByVal caseInfo As Relativity.CaseInfo) As Task(Of System.Data.DataTable)
+		Public Overridable Async Function GetProductionPrecendenceList(ByVal caseInfo As Relativity.CaseInfo) As Task(Of System.Data.DataTable)
 			Dim productionManager As kCura.WinEDDS.Service.ProductionManager
 			Dim dt As System.Data.DataTable
 			Try
@@ -1646,42 +1684,61 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Async Function DoHelp() As Task
+			Dim cloudIsEnabled As Boolean = Await GetIsCloudInstance()
+			'Default cloud setting
 
-            'Default cloud setting
-            Dim cloudIsEnabled As Boolean = False
+			Dim urlPrefix As String = "https://help.kcura.com/"
 
-            'Get configuration information
-            Dim configTable As System.Data.DataTable = Await GetSystemConfiguration()
+			'Go to appropriate documentation site
+			If cloudIsEnabled Then
+				Process.Start(urlPrefix & "relativityone/Content/Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
+			Else
+				Dim v As System.Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
+				Dim majMin As String = String.Format("{0}.{1}", v.Major, v.Minor)
+				Process.Start(urlPrefix & majMin & "/#Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
+			End If
 
-            'Get cloud instance setting
-            Dim foundRows() As System.Data.DataRow = configTable.Select("Name = 'CloudInstance'")
+		End Function
+
+		Public Async Function GetIsCloudInstance()  As Task(Of System.Boolean) 
+			Dim cloudIsEnabled As Boolean = False
+			'Get configuration information
+			Dim configTable As System.Data.DataTable = Await GetSystemConfiguration()
+
+			'Get cloud instance setting
+			Dim foundRows() As System.Data.DataRow = configTable.Select("Name = 'CloudInstance'")
 
 			If foundRows.Length > 0 Then
 				Dim foundRow As System.Data.DataRow = foundRows.ElementAt(0)
 				cloudIsEnabled = CType(foundRow.ItemArray.ElementAt(2), Boolean)
-            End If
+			End If
+		   
+			Return cloudIsEnabled
+		End Function
 
-            Dim urlPrefix As String = "https://help.kcura.com/"
+		Public Async Function GetIsStagingExplorerEnabled() As Task(Of System.Boolean)
+			Dim configTable As System.Data.DataTable = Await GetSystemConfiguration()
 
-            'Go to appropriate documentation site
-            If cloudIsEnabled Then
-                Process.Start(urlPrefix & "relativityone/Content/Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
-            Else
-                Dim v As System.Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
-                Dim majMin As String = String.Format("{0}.{1}", v.Major, v.Minor)
-                Process.Start(urlPrefix & majMin & "/#Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
-            End If
+			Dim foundRows() As System.Data.DataRow = configTable.Select("Name = 'EnableStagingExplorer'")
 
+			Dim isStagingExplorerEnabled As Boolean = False
+
+			If foundRows.Length > 0 Then
+				Dim foundRow As System.Data.DataRow = foundRows.ElementAt(0)
+				isStagingExplorerEnabled = CType(foundRow.ItemArray.ElementAt(2), Boolean)
+			End If
+		   
+			Return isStagingExplorerEnabled
 		End Function
 
 		Public Function Login(authOptions As AuthenticationOptions) As Application.CredentialCheckResult
 			Dim loginResult As Application.CredentialCheckResult
 
-			If Not String.IsNullOrEmpty(authOptions.UserName)
+			If Not String.IsNullOrEmpty(authOptions.UserName) Then
 				Dim cred As New UserCredentialsProvider(authOptions.UserName, authOptions.Password)
 				RelativityWebApiCredentialsProvider.Instance().SetProvider(cred)
 				loginResult = DoLogin()
-			Else 
+			Else
 
 				loginResult = DoOAuthLogin(authOptions.ClientId, authOptions.ClientSecret)
 			End If
