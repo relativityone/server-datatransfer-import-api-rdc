@@ -1017,8 +1017,8 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Public Async Function NewLoginAsync(Optional ByVal openCaseSelector As Boolean = True) As Task
-
 			Try
+				Me.OpenCaseSelector = openCaseSelector
 				Await Me.GetCredentialsAsync()
 			Catch ex As LoginCanceledException
 				'Login form was closed, ignore
