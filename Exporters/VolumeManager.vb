@@ -1,4 +1,5 @@
 Imports System.Collections.Concurrent
+Imports System.Collections.Generic
 Imports System.IO
 Imports System.Text
 Imports kCura.WinEDDS.Exporters
@@ -45,7 +46,7 @@ Namespace kCura.WinEDDS
 		Private _halt As Boolean = False
 		Private _ordinalLookup As New System.Collections.Generic.Dictionary(Of String, Int32)
 		Private _loadFileFormatter As Exporters.ILoadFileCellFormatter
-		
+
 		Private _fileHelper As IFileHelper
 		Private _fileStreamFactory As IFileStreamFactory
 		Private _directoryHelper As IDirectoryHelper
@@ -283,7 +284,7 @@ Namespace kCura.WinEDDS
 
 		Public Function GetCurrentSubDirectoryNumber(ByVal predictions As VolumePredictions) As Integer
 			If (_currentNativeSubdirectorySize + predictions.NativeFileCount > Me.SubDirectoryMaxSize AndAlso _currentNativeSubdirectorySize > 0) OrElse
-				 (_currentImageSubdirectorySize + predictions.ImageFileCount > Me.SubDirectoryMaxSize AndAlso _currentImageSubdirectorySize > 0) OrElse 
+				 (_currentImageSubdirectorySize + predictions.ImageFileCount > Me.SubDirectoryMaxSize AndAlso _currentImageSubdirectorySize > 0) OrElse
 				 (_currentTextSubdirectorySize + predictions.TextFileCount > Me.SubDirectoryMaxSize AndAlso _currentTextSubdirectorySize > 0) Then
 				Me.UpdateSubdirectory()
 			End If
@@ -367,7 +368,7 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Public Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal linesToWriteDat As ConcurrentDictionary(Of Int32, ILoadFileEntry),
-																	 ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal threadNumber As Integer, ByVal volumeNumber As Integer,ByVal subDirectoryNumber As Integer) As Int64
+																	 ByVal linesToWriteOpt As ConcurrentBag(Of KeyValuePair(Of String, String)), ByVal threadNumber As Integer, ByVal volumeNumber As Integer, ByVal subDirectoryNumber As Integer) As Int64
 			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			While tries < maxTries And Not Me.Halt
@@ -497,7 +498,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal linesToWrite As ConcurrentDictionary(Of Int32, ILoadFileEntry),
-																		ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal isRetryAttempt As Boolean, ByVal threadNumber As Integer, 
+																		ByVal linesToWriteOpt As ConcurrentBag(Of KeyValuePair(Of String, String)), ByVal isRetryAttempt As Boolean, ByVal threadNumber As Integer,
 																		ByVal volumeNumber As Integer, ByVal subDirectoryNumber As Integer) As Int64
 			Dim totalFileSize As Int64 = 0
 			Dim extractedTextFileSizeForVolume As Int64 = 0
@@ -514,7 +515,7 @@ Namespace kCura.WinEDDS
 					Catch ex As System.Exception
 						If TypeOf ex Is System.IO.FileNotFoundException AndAlso Me.Halt Then
 							Return -1 'Halt was set to true during DownloadImage call before file could be downloaded
-						Else 
+						Else
 							image.TempLocation = ""
 							Me.LogFileExportError(ExportFileType.Image, artifact.IdentifierValue, image.FileGuid, ex.ToString)
 							imageSuccess = False
@@ -540,7 +541,7 @@ Namespace kCura.WinEDDS
 				Catch ex As System.Exception
 					If TypeOf ex Is System.IO.FileNotFoundException AndAlso Me.Halt Then
 						Return -1 'Halt was set to true during DownloadNative call before file could be downloaded
-					Else 
+					Else
 						Me.LogFileExportError(ExportFileType.Native, artifact.IdentifierValue, artifact.NativeFileGuid, ex.ToString)
 					End If
 				End Try
@@ -757,7 +758,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Public Sub ExportImages(ByVal images As System.Collections.ArrayList, ByVal localFullTextPath As String, ByVal successfulRollup As Boolean, ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String),
+		Public Sub ExportImages(ByVal images As System.Collections.ArrayList, ByVal localFullTextPath As String, ByVal successfulRollup As Boolean, ByVal linesToWriteOpt As ConcurrentBag(Of KeyValuePair(Of String, String)),
 														ByVal threadNumber As Integer, ByVal currentVolumeNumber As Integer, ByVal currentSubDirectoryNumber As Integer)
 			Dim image As WinEDDS.Exporters.ImageExportInfo
 			Dim i As Int32 = 0
@@ -922,7 +923,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Sub CreateImageLogEntry(ByVal batesNumber As String, ByVal copyFile As String, ByVal pathToImage As String, ByVal pageNumber As Int32, ByVal fullTextReader As System.IO.StreamReader,
-																		ByVal expectingTextForPage As Boolean, ByVal pageOffset As Long, ByVal numberOfImages As Int32, ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String),
+																		ByVal expectingTextForPage As Boolean, ByVal pageOffset As Long, ByVal numberOfImages As Int32, ByVal linesToWriteOpt As ConcurrentBag(Of KeyValuePair(Of String, String)),
 																		ByVal currentVolumeNumber As Integer)
 			Dim lineToWrite As New System.Text.StringBuilder
 			Try
@@ -941,7 +942,7 @@ Namespace kCura.WinEDDS
 							Else
 								currentPageFirstByteNumber = fullTextReader.BaseStream.Position
 							End If
-							
+
 							lineToWrite.Append("FT,")
 							lineToWrite.Append(batesNumber)
 							lineToWrite.Append(",1,1,")
@@ -963,7 +964,7 @@ Namespace kCura.WinEDDS
 							End Select
 							lineToWrite.Append(vbNewLine)
 						End If
-						linesToWriteOpt.AddOrUpdate("FT" + batesNumber, lineToWrite.ToString, Function() lineToWrite.ToString)
+						linesToWriteOpt.Add(New KeyValuePair(Of String, String)("FT" + batesNumber, lineToWrite.ToString))
 						Me.WriteIproImageLine(batesNumber, pageNumber, copyFile, linesToWriteOpt, currentVolumeNumber)
 				End Select
 			Catch ex As System.IO.IOException
@@ -971,21 +972,21 @@ Namespace kCura.WinEDDS
 			End Try
 		End Sub
 
-		Private Sub WriteIproImageLine(ByVal batesNumber As String, ByVal pageNumber As Int32, ByVal fullFilePath As String, ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal currentVolumeNumber As Integer)
+		Private Sub WriteIproImageLine(ByVal batesNumber As String, ByVal pageNumber As Int32, ByVal fullFilePath As String, ByVal linesToWriteOpt As ConcurrentBag(Of KeyValuePair(Of String, String)), ByVal currentVolumeNumber As Integer)
 			Dim linefactory As New Exporters.LineFactory.SimpleIproImageLineFactory(batesNumber, pageNumber, fullFilePath, Me.CurrentVolumeLabel(currentVolumeNumber), Me.Settings.TypeOfImage.Value)
 			linefactory.WriteLine(_imageFileWriter, linesToWriteOpt)
 
 		End Sub
 
-		Private Sub WriteOpticonLine(ByVal batesNumber As String, ByVal firstDocument As Boolean, ByVal copyFile As String, ByVal imageCount As Int32, ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String),
+		Private Sub WriteOpticonLine(ByVal batesNumber As String, ByVal firstDocument As Boolean, ByVal copyFile As String, ByVal imageCount As Int32, ByVal linesToWriteOpt As ConcurrentBag(Of KeyValuePair(Of String, String)),
 																 ByVal currentVolumeNumber As Integer)
 			Dim log As New System.Text.StringBuilder
 			log.AppendFormat("{0},{1},{2},", batesNumber, Me.CurrentVolumeLabel(currentVolumeNumber), copyFile)
 			If firstDocument Then log.Append("Y")
 			log.Append(",,,")
 			If firstDocument Then log.Append(imageCount)
-			log.Append(vbNewLine)  
-			linesToWriteOpt.AddOrUpdate(batesNumber, log.ToString, Function() log.ToString)
+			log.Append(vbNewLine)
+			linesToWriteOpt.Add(New KeyValuePair(Of String, String)(batesNumber, log.ToString))
 		End Sub
 #End Region
 
@@ -1318,41 +1319,28 @@ Namespace kCura.WinEDDS
 			End While
 		End Sub
 
-		Public Sub WriteOptFile(ByVal linesToWriteOpt As ConcurrentDictionary(Of String, String), ByVal artifacts As Exporters.ObjectExportInfo())
+		Public Sub WriteOptFile(ByVal linesToWriteOpt As ConcurrentBag(Of KeyValuePair(Of String, String)), ByVal artifacts As Exporters.ObjectExportInfo())
 			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			Dim lastArtifactId As Int32 = -1
 			Dim loadFileBytes As Int64 = 0
 
-            If linesToWriteOpt Is Nothing OrElse linesToWriteOpt.Count = 0 Then
-                Return
-            End If
+			If linesToWriteOpt Is Nothing OrElse linesToWriteOpt.Count = 0 Then
+				Return
+			End If
 
-            While tries < maxTries And Not Me.Halt
-                tries += 1
+			While tries < maxTries And Not Me.Halt
+				tries += 1
 
 				'Rollback stream position if retrying write
 				If tries > 1 Then
 					Me.ReInitializeStream(_imageFileWriter, _imageFileWriterPosition, Me.ImageFileDestinationPath, Me.GetImageFileEncoding())
 				End If
 
-				Try	
-					Dim lineToWrite As String = ""
-
-					'Write artifact entries
-					For Each artifact As Exporters.ObjectExportInfo in artifacts
-						For Each image As WinEDDS.Exporters.ImageExportInfo in artifact.Images
-							'If IPRO Full Text append FT Lines
-							If linesToWriteOpt.TryGetValue("FT" + image.BatesNumber, lineToWrite)
-								_imageFileWriter.Write(lineToWrite)
-							End If
-							'Otherwise go and grab the Image line
-							If linesToWriteOpt.TryGetValue(image.BatesNumber, lineToWrite)
-								_imageFileWriter.Write(lineToWrite)
-							End If
-						Next
+				Try
+					For Each entry As KeyValuePair(Of String, String) In linesToWriteOpt.OrderBy(Function(e) e.Key).ThenBy(Function(e) e.Value)
+						_imageFileWriter.Write(entry.Value)
 					Next
-
 					'Flush writer
 					Try
 						If Not _imageFileWriter Is Nothing Then _imageFileWriter.Flush()
@@ -1368,7 +1356,7 @@ Namespace kCura.WinEDDS
 
 					'Store statistics
 					_statistics.MetadataBytes = loadFileBytes + _totalExtractedTextFileLength
-					
+
 					Exit While
 				Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
 					If tries = maxTries Then Throw
