@@ -16,7 +16,7 @@
 			<![CDATA[Installed OR NETFRAMEWORK45]]>
 		</Condition>
 		<!-- Set the icon for the msi and Add/Remove programs -->
-		<Icon Id="relativity_1.exe" SourceFile="$(var.Trunk)\EDDS\RelativityIcons\relativity_1.ico" />
+		<Icon Id="relativity_1.exe" SourceFile="..\..\EDDS\RelativityIcons\relativity_1.ico" />
 		<Property Id="ARPPRODUCTICON" Value="relativity_1.exe" />
 		<Property Id="ALLUSERS" Value="1" />
 		<!-- Perform the proper upgrade checks -->
@@ -91,8 +91,8 @@
 						</Component>
 						<Directory Id="Images" Name="Images">
 							<Component Id="ImagesComponent" Guid="{F1A3AE41-6B1C-4C3F-804D-03AA128CB748}" KeyPath="yes">
-								<File Id="folderclosed" Name="folderclosed.ICO" DiskId="1" Source="$(var.Trunk)\EDDS\kCura.EDDS.WinForm\images\folderclosed.ICO" />
-								<File Id="kcura" Name="kcura.ICO" DiskId="1" Source="$(var.Trunk)\EDDS\kCura.EDDS.WinForm\images\kcura.ICO" />
+								<File Id="folderclosed" Name="folderclosed.ICO" DiskId="1" Source="..\..\EDDS\kCura.EDDS.WinForm\images\folderclosed.ICO" />
+								<File Id="kcura" Name="kcura.ICO" DiskId="1" Source="..\..\EDDS\kCura.EDDS.WinForm\images\kcura.ICO" />
 							</Component>
 						</Directory>
 						<Directory Id="ProgramMenuFolder" Name="Programs">
