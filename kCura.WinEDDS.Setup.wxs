@@ -64,7 +64,6 @@
 							</Directory>
 						</Directory>
 						<Directory Id="DesktopFolder" Name="Desktop" />
-						<!--<?include ProgramFiles.wxi ?>-->
 						<Directory Id="Licensing3rdPartyFolder" Name="Licenses" />
 					</Directory>
 				</Directory>
