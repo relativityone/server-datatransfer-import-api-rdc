@@ -6,15 +6,28 @@
 	Public Event AllowUntrustedCertificates As Action
 	Public Event DenyUntrustedCertificates As Action
 
-	Private Sub LoginForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
+	Private CertsAllowed As Nullable(Of Boolean)
+
+	Protected Overrides Sub OnLoad(ByVal e As System.EventArgs)
 		Me.Focus()
+		MyBase.OnLoad(e)
+	End Sub
+	
+	Protected Overrides Sub OnClosing(ByVal e As System.ComponentModel.CancelEventArgs)
+		If(Not CertsAllowed.HasValue)
+			CertsAllowed = False
+			RaiseEvent DenyUntrustedCertificates()
+		End If
+		MyBase.OnClosing(e)
 	End Sub
 
 	Private Sub CloseRDC_Click(sender As Object, e As EventArgs) Handles CloseButton.Click
+		CertsAllowed = False
 		RaiseEvent DenyUntrustedCertificates()
 	End Sub
 
 	Private Sub AllowUntrustedCertificates_Click(sender As Object, e As EventArgs) Handles AllowButton.Click
+		CertsAllowed = True
 		Close()
 		RaiseEvent AllowUntrustedCertificates()
 	End Sub
