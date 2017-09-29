@@ -64,7 +64,7 @@
 						  <File Id='Primary.FreeImage' Name='FreeImage.dll' DiskId='1' Source='..\..\Vendor\FreeImage\3.151\FreeImage\Release\$(var.Platform)\FreeImage.dll' />
 						</Component>
 						<Component Id="StagingExplorer" Guid="{BC3FC5EE-B4B3-4A88-A7CA-1297D2C3DB52}" KeyPath="yes">
-							<File Id='Relativity.StagingExplorer' Name='Relativity.StagingExplorer.exe' DiskId='1' Source='..\..\EDDS\Relativity.StagingExplorer\bin\Relativity.StagingExplorer.exe'>
+							<File Id='Relativity.StagingExplorer' Name='Relativity.StagingExplorer.exe' DiskId='1' Source='$(var.Relativity.StagingExplorer.TargetDir)\Relativity.StagingExplorer.exe'>
 								<!--Adding firewall exceptions to support Aspera. -->
 								<fw:FirewallException
 									Id="RoseClientTCPInbound"
@@ -91,8 +91,8 @@
 						</Component>
 						<Directory Id="Images" Name="Images">
 							<Component Id="ImagesComponent" Guid="{F1A3AE41-6B1C-4C3F-804D-03AA128CB748}" KeyPath="yes">
-								<File Id="folderclosed" Name="folderclosed.ICO" DiskId="1" Source="..\..\EDDS\kCura.EDDS.WinForm\images\folderclosed.ICO" />
-								<File Id="kcura" Name="kcura.ICO" DiskId="1" Source="..\..\EDDS\kCura.EDDS.WinForm\images\kcura.ICO" />
+								<File Id="folderclosed" Name="folderclosed.ICO" DiskId="1" Source="$(var.kCura.EDDS.WinForm.ProjectDir)\images\folderclosed.ICO" />
+								<File Id="kcura" Name="kcura.ICO" DiskId="1" Source="$(var.kCura.EDDS.WinForm.ProjectDir)\images\kcura.ICO" />
 							</Component>
 						</Directory>
 						<Directory Id="ProgramMenuFolder" Name="Programs">
