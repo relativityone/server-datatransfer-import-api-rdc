@@ -76,7 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <WixExtension Include="WixFirewallExtension">
-      <HintPath>C:\Program Files (x86)\WiX Toolset v3.10\bin\WixFirewallExtension.dll</HintPath>
+      <HintPath>$(WixExtDir)\WixFirewallExtension.dll</HintPath>
       <Name>WixFirewallExtension</Name>
     </WixExtension>
     <WixExtension Include="WixNetFxExtension">
