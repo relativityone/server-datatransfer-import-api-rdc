@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+		 xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension"
+		 xmlns:fw="http://schemas.microsoft.com/wix/FirewallExtension">
 	<?define ProductName="Relativity Desktop Client" ?>
 	<?define UpgradeCode="{E32BA6D3-7C36-4D52-B93B-302E360B20B3}" ?>
 	<?define RegistryKey="Software\kCura\RelativityDesktopClient" ?>
@@ -37,6 +39,23 @@
 							<File Id="kCuraEDDSWinFormEXE" Name="kCura.EDDS.WinForm.exe" DiskId="1" Source="$(var.kCura.EDDS.WinForm.TargetPath)" KeyPath="yes">
 								<Shortcut Id="startmenuRelativity" Directory="ProgramMenuFolder" Name="$(var.ProductName)" WorkingDirectory="INSTALLDIR" Icon="relativity_1.exe" IconIndex="0" Advertise="yes" />
 								<Shortcut Id="desktopRelativity" Directory="DesktopFolder" Name="$(var.ProductName)" WorkingDirectory="INSTALLDIR" Icon="relativity_1.exe" IconIndex="0" Advertise="yes" />
+								<!--Adding firewall exceptions to support Aspera. -->
+								<fw:FirewallException
+									Id="RdcClientTCPInbound"
+									Protocol="tcp"
+									Name="Relativity Desktop Client TCP"
+									Port="*"
+									Scope="any"
+									IgnoreFailure="no"
+									Profile="all"/>
+								<fw:FirewallException
+									Id="RdcClientUDPInbound"
+									Protocol="udp"
+									Name="Relativity Desktop Client UDP"
+									Port="*"
+									Scope="any"
+									IgnoreFailure="no"
+									Profile="all"/>
 							</File>
 						</Component>
 						<Component Id="NativeDependencies" Guid="{7C02F4C7-9DC9-403E-9242-124F71C39CEB}" KeyPath="yes">
@@ -77,27 +96,34 @@
 				<ComponentRef Id="MainExecutable" />
 				<ComponentRef Id="ProgramMenuDir" />
 				<ComponentRef Id="ImagesComponent" />
-				<ComponentGroupRef Id="PrimaryComponentGroup" />        
+				<ComponentGroupRef Id="PrimaryComponentGroup" />
 			</Feature>
 			<Feature Id="Licensing3rdPartyFeature" Title="Licensing_3rdParty" Description="Licensing and attribution for 3rd party libraries." Level="1">
 				<ComponentGroupRef Id="LicensingFor3rdPartyGroup" />
 			</Feature>
 		</Feature>
-		<!-- PREREQ; VC++ 2010 Redist for x64-->
+		<!-- PREREQ; VC++ 2010 Redist for x64 -->
 		<?if $(var.Platform) = "x64" ?>
-		<Feature Id="VCRedist" Title="Visual C++ 2010 Runtime" AllowAdvertise="no" Display="hidden" Level="1">
-			<MergeRef Id="VCRedistATL"/>
-			<MergeRef Id="VCRedistCRT"/>
-			<MergeRef Id="VCRedistMFC"/>
-			<MergeRef Id="VCRedistOpenMP"/>
-		</Feature>
 		<DirectoryRef Id="TARGETDIR">
-			<Merge Id="VCRedistATL" SourceFile="..\..\Vendor\Microsoft\Microsoft_VC100_ATL_x64.msm" DiskId="1" Language="0"/> 
-			<Merge Id="VCRedistCRT" SourceFile="..\..\Vendor\Microsoft\Microsoft_VC100_CRT_x64.msm" DiskId="1" Language="0"/>
-			<Merge Id="VCRedistMFC" SourceFile="..\..\Vendor\Microsoft\Microsoft_VC100_MFC_x64.msm" DiskId="1" Language="0"/> 
-			<Merge Id="VCRedistOpenMP" SourceFile="..\..\Vendor\Microsoft\Microsoft_VC100_OpenMP_x64.msm" DiskId="1" Language="0"/> 
+			<Merge Id="VCRedistATL.x64" SourceFile="..\..\Vendor\Microsoft\Microsoft_VC100_ATL_x64.msm" DiskId="1" Language="0"/>
+			<Merge Id="VCRedistCRT.x64" SourceFile="..\..\Vendor\Microsoft\Microsoft_VC100_CRT_x64.msm" DiskId="1" Language="0"/>
+			<Merge Id="VCRedistMFC.x64" SourceFile="..\..\Vendor\Microsoft\Microsoft_VC100_MFC_x64.msm" DiskId="1" Language="0"/>
+			<Merge Id="VCRedistOpenMP.x64" SourceFile="..\..\Vendor\Microsoft\Microsoft_VC100_OpenMP_x64.msm" DiskId="1" Language="0"/>
 		</DirectoryRef>
+		<Feature Id="VCRedist.x64" Title="Visual C++ 2010 x64 Runtime" AllowAdvertise="no" Display="hidden" Level="1">
+			<MergeRef Id="VCRedistATL.x64"/>
+			<MergeRef Id="VCRedistCRT.x64"/>
+			<MergeRef Id="VCRedistMFC.x64"/>
+			<MergeRef Id="VCRedistOpenMP.x64"/>
+		</Feature>
 		<?endif ?>
+		<!-- PREREQ; VC++ 2010 Redist for x86. This is required for for Aspera integration for BOTH x86 and x64 platforms. -->
+		<DirectoryRef Id="TARGETDIR">
+			<Merge Id="VCRedistCRT.x86" SourceFile="..\..\Vendor\Microsoft\Microsoft_VC100_CRT_x86.msm" DiskId="1" Language="0"/>
+		</DirectoryRef>
+		<Feature Id="VCRedist.x86" Title="Visual C++ 2010 x86 Runtime" AllowAdvertise="no" Display="hidden" Level="1">
+			<MergeRef Id="VCRedistCRT.x86"/>
+		</Feature>
 		<!-- Prevent downgrading -->
 		<CustomAction Id="PreventDowngrading" Error="Unable to install because a newer version of this product is already installed." />
 		<!-- Sequences -->
