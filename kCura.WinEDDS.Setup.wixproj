@@ -6,7 +6,8 @@
     <ProductVersion>3.10</ProductVersion>
     <ProjectGuid>a25301be-f37c-48a4-9554-e7b12c57ff69</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>kCura.WinEDDS.Setup</OutputName>
+    <OutputName Condition="'$(Platform)' == 'x86'">kCura.WinEDDS.Setup</OutputName>
+    <OutputName Condition="'$(Platform)' == 'x64'">kCura.WinEDDS64.Setup</OutputName>
     <OutputType>Package</OutputType>
     <AssemblyVersion>9.5.0.0</AssemblyVersion>
     <ProductVersion>9.5.00001</ProductVersion>
@@ -21,12 +22,12 @@
     <WixTasksPath>wixtasks.dll</WixTasksPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <OutputPath>bin\$(Platform)\</OutputPath>
+    <OutputPath>..\MSI\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>bin\$(Platform)\</OutputPath>
+    <OutputPath>..\MSI\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>$(DefineConstants)</DefineConstants>
   </PropertyGroup>
@@ -38,14 +39,14 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
-    <OutputPath>bin\$(Platform)\</OutputPath>
+    <OutputPath>..\MSI\</OutputPath>
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
     <SuppressAllWarnings>False</SuppressAllWarnings>
     <Pedantic>True</Pedantic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <DefineConstants>$(DefineConstants)</DefineConstants>
-    <OutputPath>bin\$(Platform)\</OutputPath>
+    <OutputPath>..\MSI\</OutputPath>
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
@@ -107,6 +108,9 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
+  <Target Name="SignMsi">
+    <Exec Command="&quot;$(SignScriptPath)&quot; &quot;@(SignMsi)&quot; &quot;$(SignToolPath)&quot;" />
+  </Target>
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.
 	Other similar extension points exist, see Wix.targets.
