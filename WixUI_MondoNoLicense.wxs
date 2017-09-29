@@ -1,7 +1,7 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 	<Fragment>
-		<WixVariable Id="WixUIBannerBmp" Value="RelativityBanner.bmp" />
-		<WixVariable Id="WixUIDialogBmp" Value="RelativityWelcome.bmp" />
+		<WixVariable Id="WixUIBannerBmp" Value="$(var.ProjectDir)..\Images\relativity-banner.bmp" />
+		<WixVariable Id="WixUIDialogBmp" Value="$(var.ProjectDir)..\Images\relativity-welcome.bmp" />
 
 		<UI Id="WixUI_MondoNoLicense">
 			<TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />

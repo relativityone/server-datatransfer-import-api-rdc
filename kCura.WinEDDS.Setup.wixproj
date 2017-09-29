@@ -53,8 +53,6 @@
     <Compile Include="WixUI_MondoNoLicense.wxs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="RelativityBanner.bmp" />
-    <Content Include="RelativityWelcome.bmp" />
     <Content Include="WinEDDSTransform.xsl" />
   </ItemGroup>
   <ItemGroup>
