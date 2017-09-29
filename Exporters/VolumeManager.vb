@@ -1323,9 +1323,11 @@ Namespace kCura.WinEDDS
 			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			Dim lastArtifactId As Int32 = -1
-			Dim loadFileBytes As Int64 = 0
+            Dim loadFileBytes As Int64 = 0
 
-			If linesToWriteOpt Is Nothing OrElse linesToWriteOpt.Count = 0 Then
+            artifacts.SelectMany(Function(a) a.Images.ToArray())
+
+            If linesToWriteOpt Is Nothing OrElse linesToWriteOpt.Count = 0 Then
 				Return
 			End If
 
@@ -1337,29 +1339,40 @@ Namespace kCura.WinEDDS
 					Me.ReInitializeStream(_imageFileWriter, _imageFileWriterPosition, Me.ImageFileDestinationPath, Me.GetImageFileEncoding())
 				End If
 
-				Try
-					For Each entry As KeyValuePair(Of String, String) In linesToWriteOpt.OrderBy(Function(e) e.Key).ThenBy(Function(e) e.Value)
-						_imageFileWriter.Write(entry.Value)
-					Next
-					'Flush writer
-					Try
-						If Not _imageFileWriter Is Nothing Then _imageFileWriter.Flush()
-					Catch ex As Exception
-						Throw New Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Image, ex)
-					End Try
+                Try
+                    'Write artifact entries
+                    For Each artifact As Exporters.ObjectExportInfo In artifacts
+                        For Each bates As String In artifact.Images.Cast(Of WinEDDS.Exporters.ImageExportInfo)().Select(Function(i) i.BatesNumber).Distinct() ' Distinct Bates Id
+                            'If IPRO Full Text append FT Lines
+                            For Each entry As KeyValuePair(Of String, String) In linesToWriteOpt.Where(Function(e) e.Key = "FT" + bates).OrderBy(Function(e) e.Key).ThenBy(Function(e) e.Value)
+                                _imageFileWriter.Write(entry.Value)
+                            Next
+                            'Otherwise go and grab the Image line
+                            For Each entry As KeyValuePair(Of String, String) In linesToWriteOpt.Where(Function(e) e.Key = bates).OrderBy(Function(e) e.Key).ThenBy(Function(e) e.Value)
+                                _imageFileWriter.Write(entry.Value)
+                            Next
+                        Next
+                    Next
 
-					'Save file writer stream position in case we need to rollback on retry attempts
-					If Not _imageFileWriter Is Nothing Then
-						_imageFileWriterPosition = _imageFileWriter.BaseStream.Position
-						loadFileBytes += kCura.Utility.File.Instance.GetFileSize(DirectCast(_imageFileWriter.BaseStream, System.IO.FileStream).Name)
-					End If
+                    'Flush writer
+                    Try
+                        If Not _imageFileWriter Is Nothing Then _imageFileWriter.Flush()
+                    Catch ex As Exception
+                        Throw New Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Image, ex)
+                    End Try
 
-					'Store statistics
-					_statistics.MetadataBytes = loadFileBytes + _totalExtractedTextFileLength
+                    'Save file writer stream position in case we need to rollback on retry attempts
+                    If Not _imageFileWriter Is Nothing Then
+                        _imageFileWriterPosition = _imageFileWriter.BaseStream.Position
+                        loadFileBytes += kCura.Utility.File.Instance.GetFileSize(DirectCast(_imageFileWriter.BaseStream, System.IO.FileStream).Name)
+                    End If
 
-					Exit While
-				Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
-					If tries = maxTries Then Throw
+                    'Store statistics
+                    _statistics.MetadataBytes = loadFileBytes + _totalExtractedTextFileLength
+
+                    Exit While
+                Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
+                    If tries = maxTries Then Throw
 					_parent.WriteWarning(String.Format("Error writing .opt file entry for artifact {0}", lastArtifactId))
 					_parent.WriteWarning(String.Format("Actual error: {0}", ex.ToString))
 					If tries > 1 Then
