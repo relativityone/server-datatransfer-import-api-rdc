@@ -96,7 +96,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         /// <summary>
         /// The transfer log backing.
         /// </summary>
-        private Mock<ILog> transferLog;
+        private Mock<ITransferLog> transferLog;
 
         /// <summary>
         /// The file count.
@@ -135,7 +135,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
             this.relativityHost = null;
             this.nativeFileTransfer = null;
             this.mockRepository = new MockRepository(MockBehavior.Default) { DefaultValue = DefaultValue.Mock };
-            this.transferLog = this.mockRepository.Create<ILog>();
+            this.transferLog = this.mockRepository.Create<ITransferLog>();
             this.cookieContainer = new CookieContainer();
             this.workspaceId = 0;
             this.fileCount = 0;
