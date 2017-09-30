@@ -24,7 +24,7 @@ namespace kCura.WinEDDS.TApi
         /// <param name="context">
         /// The transfer context.
         /// </param>
-        public TransferRequestListener(ILog log, TransferContext context)
+        public TransferRequestListener(ITransferLog log, TransferContext context)
             : base(log, context)
         {
         }

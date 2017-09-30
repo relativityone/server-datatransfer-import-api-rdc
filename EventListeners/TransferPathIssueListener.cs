@@ -42,7 +42,7 @@ namespace kCura.WinEDDS.TApi
         /// <param name="context">
         /// The transfer context.
         /// </param>
-        public TransferPathIssueListener(ILog log, TransferDirection direction, string clientName, TransferContext context)
+        public TransferPathIssueListener(ITransferLog log, TransferDirection direction, string clientName, TransferContext context)
             : base(log, context)
         {
             this.transferDirection = direction;

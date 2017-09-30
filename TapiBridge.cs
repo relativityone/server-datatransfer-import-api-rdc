@@ -19,6 +19,7 @@ namespace kCura.WinEDDS.TApi
 
     using kCura.WinEDDS.TApi.Resources;
 
+    using Relativity.Logging;
     using Relativity.Transfer;
     using Relativity.Transfer.Aspera;
     using Relativity.Transfer.Http;
@@ -52,7 +53,7 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// The Relativity transfer log.
         /// </summary>
-        private readonly ILog transferLog;
+        private readonly ITransferLog transferLog;
 
         /// <summary>
         /// The file system service used to wrap up all IO API's.
@@ -130,7 +131,7 @@ namespace kCura.WinEDDS.TApi
         internal TapiBridge(
             TapiBridgeParameters parameters,
             TransferDirection direction,
-            ILog log,
+            ITransferLog log,
             CancellationToken token)
         {
             // Note: Do NOT argument check TargetPath. This is null for metadata-only transfers.

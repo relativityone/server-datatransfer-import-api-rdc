@@ -29,7 +29,7 @@ namespace kCura.WinEDDS.TApi
         /// <param name="context">
         /// The transfer context.
         /// </param>
-        protected TransferListenerBase(ILog log, TransferContext context)
+        protected TransferListenerBase(ITransferLog log, TransferContext context)
         {
             if (log == null)
             {
@@ -83,7 +83,7 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// Gets the transfer log.
         /// </summary>
-        protected ILog TransferLog
+        protected ITransferLog TransferLog
         {
             get;
         }

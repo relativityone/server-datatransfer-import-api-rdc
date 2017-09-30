@@ -33,7 +33,7 @@ namespace kCura.WinEDDS.TApi
         /// <param name="context">
         /// The transfer context.
         /// </param>
-        public TransferStatisticsListener(ILog log, TransferContext context)
+        public TransferStatisticsListener(ITransferLog log, TransferContext context)
             : base(log, context)
         {
         }
