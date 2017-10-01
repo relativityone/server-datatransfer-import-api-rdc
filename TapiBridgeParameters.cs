@@ -28,9 +28,11 @@ namespace kCura.WinEDDS.TApi
             this.FileShare = null;
             this.ForceAsperaClient = false;
             this.ForceClientCandidates = null;
-            this.ForceHttpClient = false;            
+            this.ForceHttpClient = false;
             this.ForceFileShareClient = false;
             this.LargeFileProgressEnabled = false;
+            this.LogEnabled = false;
+            this.LogConfigFile = null;
             this.MaxFilesPerFolder = 1000;
             this.MaxJobParallelism = 10;
             this.MaxJobRetryAttempts = 3;
@@ -65,6 +67,8 @@ namespace kCura.WinEDDS.TApi
             this.ForceHttpClient = copy.ForceHttpClient;
             this.ForceFileShareClient = copy.ForceFileShareClient;
             this.LargeFileProgressEnabled = copy.LargeFileProgressEnabled;
+            this.LogEnabled = copy.LogEnabled;
+            this.LogConfigFile = copy.LogConfigFile;
             this.MaxFilesPerFolder = copy.MaxFilesPerFolder;
             this.MaxJobParallelism = copy.MaxJobParallelism;
             this.MaxJobRetryAttempts = copy.MaxJobRetryAttempts;
@@ -192,6 +196,18 @@ namespace kCura.WinEDDS.TApi
         /// The log enabled value.
         /// </value>
         public bool LogEnabled
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the full path to the log configuration file.
+        /// </summary>
+        /// <value>
+        /// The full path.
+        /// </value>
+        public string LogConfigFile
         {
             get;
             set;
