@@ -64,7 +64,7 @@
 						  <File Id='Primary.FreeImage' Name='FreeImage.dll' DiskId='1' Source='..\..\Vendor\FreeImage\3.151\FreeImage\Release\$(var.Platform)\FreeImage.dll' />
 						</Component>
 						<Component Id="StagingExplorer" Guid="{BC3FC5EE-B4B3-4A88-A7CA-1297D2C3DB52}" KeyPath="yes">
-							<File Id='Relativity.StagingExplorer' Name='Relativity.StagingExplorer.exe' DiskId='1' Source='$(var.Relativity.StagingExplorer.TargetDir)\Relativity.StagingExplorer.exe'>
+							<File Id='Relativity.StagingExplorer' Name='Relativity.StagingExplorer.exe' DiskId='1' Source='$(var.kCura.EDDS.WinForm.TargetDir)\Relativity.StagingExplorer.exe'>
 								<!--Adding firewall exceptions to support Aspera. -->
 								<fw:FirewallException
 									Id="RoseClientTCPInbound"
