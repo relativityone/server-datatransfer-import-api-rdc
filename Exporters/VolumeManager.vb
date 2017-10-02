@@ -1325,8 +1325,6 @@ Namespace kCura.WinEDDS
 			Dim lastArtifactId As Int32 = -1
             Dim loadFileBytes As Int64 = 0
 
-            artifacts.SelectMany(Function(a) a.Images.ToArray())
-
             If linesToWriteOpt Is Nothing OrElse linesToWriteOpt.Count = 0 Then
 				Return
 			End If
@@ -1340,35 +1338,35 @@ Namespace kCura.WinEDDS
 				End If
 
                 Try
-                    'Write artifact entries
-                    For Each artifact As Exporters.ObjectExportInfo In artifacts
-                        For Each bates As String In artifact.Images.Cast(Of WinEDDS.Exporters.ImageExportInfo)().Select(Function(i) i.BatesNumber).Distinct() ' Distinct Bates Id
-                            'If IPRO Full Text append FT Lines
-                            For Each entry As KeyValuePair(Of String, String) In linesToWriteOpt.Where(Function(e) e.Key = "FT" + bates).OrderBy(Function(e) e.Key).ThenBy(Function(e) e.Value)
-                                _imageFileWriter.Write(entry.Value)
-                            Next
-                            'Otherwise go and grab the Image line
-                            For Each entry As KeyValuePair(Of String, String) In linesToWriteOpt.Where(Function(e) e.Key = bates).OrderBy(Function(e) e.Key).ThenBy(Function(e) e.Value)
-                                _imageFileWriter.Write(entry.Value)
-                            Next
-                        Next
-                    Next
+					'Write artifact entries
+					For Each artifact As Exporters.ObjectExportInfo In artifacts
+						For Each bates As String In artifact.Images.Cast(Of WinEDDS.Exporters.ImageExportInfo)().Select(Function(i) i.BatesNumber).Distinct()
+							'If IPRO Full Text append FT Lines
+							For Each entry As KeyValuePair(Of String, String) In linesToWriteOpt.Where(Function(e) e.Key = "FT" + bates).OrderBy(Function(e) e.Key).ThenBy(Function(e) e.Value)
+								_imageFileWriter.Write(entry.Value)
+							Next
+							'Otherwise go and grab the Image line
+							For Each entry As KeyValuePair(Of String, String) In linesToWriteOpt.Where(Function(e) e.Key = bates).OrderBy(Function(e) e.Key).ThenBy(Function(e) e.Value)
+								_imageFileWriter.Write(entry.Value)
+							Next
+						Next
+					Next
 
-                    'Flush writer
-                    Try
-                        If Not _imageFileWriter Is Nothing Then _imageFileWriter.Flush()
-                    Catch ex As Exception
-                        Throw New Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Image, ex)
-                    End Try
+					'Flush writer
+					Try
+						If Not _imageFileWriter Is Nothing Then _imageFileWriter.Flush()
+					Catch ex As Exception
+						Throw New Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Image, ex)
+					End Try
 
-                    'Save file writer stream position in case we need to rollback on retry attempts
-                    If Not _imageFileWriter Is Nothing Then
-                        _imageFileWriterPosition = _imageFileWriter.BaseStream.Position
-                        loadFileBytes += kCura.Utility.File.Instance.GetFileSize(DirectCast(_imageFileWriter.BaseStream, System.IO.FileStream).Name)
-                    End If
+					'Save file writer stream position in case we need to rollback on retry attempts
+					If Not _imageFileWriter Is Nothing Then
+						_imageFileWriterPosition = _imageFileWriter.BaseStream.Position
+						loadFileBytes += kCura.Utility.File.Instance.GetFileSize(DirectCast(_imageFileWriter.BaseStream, System.IO.FileStream).Name)
+					End If
 
-                    'Store statistics
-                    _statistics.MetadataBytes = loadFileBytes + _totalExtractedTextFileLength
+					'Store statistics
+					_statistics.MetadataBytes = loadFileBytes + _totalExtractedTextFileLength
 
                     Exit While
                 Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
