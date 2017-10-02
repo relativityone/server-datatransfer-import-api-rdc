@@ -54,6 +54,7 @@
     <Compile Include="WixUI_MondoNoLicense.wxs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="README.md" />
     <Content Include="WinEDDSTransform.xsl" />
   </ItemGroup>
   <ItemGroup>
