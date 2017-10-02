@@ -1342,11 +1342,12 @@ Namespace kCura.WinEDDS
 					For Each artifact As Exporters.ObjectExportInfo In artifacts
 						For Each bates As String In artifact.Images.Cast(Of WinEDDS.Exporters.ImageExportInfo)().Select(Function(i) i.BatesNumber).Distinct()
 							'If IPRO Full Text append FT Lines
-							For Each entry As KeyValuePair(Of String, String) In linesToWriteOpt.Where(Function(e) e.Key = "FT" + bates).OrderBy(Function(e) e.Key).ThenBy(Function(e) e.Value)
+							Dim key As String = bates
+							For Each entry As KeyValuePair(Of String, String) In linesToWriteOpt.Where(Function(e) e.Key = "FT" + key).OrderBy(Function(e) e.Key).ThenBy(Function(e) e.Value)
 								_imageFileWriter.Write(entry.Value)
 							Next
 							'Otherwise go and grab the Image line
-							For Each entry As KeyValuePair(Of String, String) In linesToWriteOpt.Where(Function(e) e.Key = bates).OrderBy(Function(e) e.Key).ThenBy(Function(e) e.Value)
+							For Each entry As KeyValuePair(Of String, String) In linesToWriteOpt.Where(Function(e) e.Key = key).OrderBy(Function(e) e.Key).ThenBy(Function(e) e.Value)
 								_imageFileWriter.Write(entry.Value)
 							Next
 						Next
