@@ -92,4 +92,5 @@ Clicking `Cancel` at any time during the install UI sequence will prompt the use
 
 ## Maintainers
  
-- ???
+- Buena Vista Coding Club (BuenaVistaCodingClub@relativity.com)
+- Tools (tools@kcura.com)
