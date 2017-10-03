@@ -442,6 +442,7 @@
     <Compile Include="Importers\OutputFileWriter.vb" />
     <Compile Include="IO\FileStreamFactory.vb" />
     <Compile Include="IO\IFileStreamFactory.vb" />
+    <Compile Include="RelativityLogFactory.vb" />
     <Compile Include="My Project\Settings.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

@@ -410,7 +410,9 @@ Namespace kCura.WinEDDS
 			nativeParameters.WebServiceUrl = Config.WebServiceURL
 			nativeParameters.WorkspaceId = args.CaseInfo.ArtifactID
 
-			_nativeUploaderBridge = TApi.TapiBridgeFactory.CreateUploadBridge(nativeParameters, _cancellationToken.Token)
+			' Ensure that one instance is used for both TAPI objects.
+			Dim log As Relativity.Logging.ILog = RelativityLogFactory.CreateLog("TAPI")
+			_nativeUploaderBridge = TApi.TapiBridgeFactory.CreateUploadBridge(nativeParameters, log, _cancellationToken.Token)
 			AddHandler _nativeUploaderBridge.TapiClientChanged, AddressOf NativeTapiUploaderOnTapiClientChanged
 			AddHandler _nativeUploaderBridge.TapiFatalError, AddressOf TapiUploaderOnTapiFatalError
 			AddHandler _nativeUploaderBridge.TapiProgress, AddressOf NativeTapiUploaderOnTapiProgress
@@ -425,7 +427,7 @@ Namespace kCura.WinEDDS
 			bcpParameters.DocRootLevels = Config.TapiAsperaBcpDocRootLevels
 			bcpParameters.FileShare = gateway.GetBcpSharePath(args.CaseInfo.ArtifactID)
 			bcpParameters.SortIntoVolumes = False
-			_bcpUploaderBridge = TApi.TapiBridgeFactory.CreateUploadBridge(bcpParameters, _cancellationToken.Token)
+			_bcpUploaderBridge = TApi.TapiBridgeFactory.CreateUploadBridge(bcpParameters, log, _cancellationToken.Token)
 			_bcpUploaderBridge.TargetPath = bcpParameters.FileShare
 
 			' Reuse the events above unless there's specific functionality needed.
