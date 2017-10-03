@@ -82,7 +82,7 @@ Clicking `Cancel` at any time during the install UI sequence will prompt the use
 
 1. The 64-bit RDC will fails to install on a 32-bit OS. On launch, the user gets the message: "This installation package is not supported by this processor type. Contact your product vendor."
 1. Attempting to downgrade (install V1 when V2 is already installed) prompts user with message: "Unable to install because a newer version of this product is already installed."
-1. Attempting to install both the 32- and 64-bit RDC on the same machine fails. Exact behavior TBD.
+1. Attempting to install both the 32- and 64-bit RDC on the same machine fails. The user will be prompted with the message: "Unable to install because a newer version of this product is already installed."
 1. Attempting to install either the 32- or 64-bit RDC on a machine without .NET Framework 4.5 fails with the error message: "This application requires .NET Framework 4.5. Please install the .NET Framework then run this installer again."
  
 ## Build artifacts
