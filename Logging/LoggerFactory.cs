@@ -20,7 +20,7 @@ namespace kCura.WinEDDS.Core.Logging
 
 		private static string GetLoggerConfigFilePath()
 		{
-			var path = Config.LoggerConfigFile;
+			var path = Config.LogConfigFile;
 			if (Path.IsPathRooted(path))
 			{
 				return path;
