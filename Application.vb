@@ -1,3 +1,4 @@
+Imports System.Collections.Generic
 Imports System.Configuration
 Imports System.Web.Services.Protocols
 Imports System.Security.Cryptography.X509Certificates
@@ -14,6 +15,8 @@ Imports kCura.WinEDDS.Service
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
+Imports Relativity.Services.Permission
+Imports Relativity.Services.ServiceProxy
 
 Namespace kCura.EDDS.WinForm
 	Public Class Application
@@ -173,13 +176,10 @@ Namespace kCura.EDDS.WinForm
 
 		Public Property UserHasExportPermission() As Boolean
 
+        Public Property UserHasStagingPermission() As Boolean
+
 #End Region
-
-
-
-
-
-
+ 
 #Region "Event Throwers"
 		Public Sub LogOn()
 			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOn))
@@ -1422,6 +1422,13 @@ Namespace kCura.EDDS.WinForm
 		Public Async Function LoadWorkspacePermissions() As Task
 			UserHasExportPermission = New kCura.WinEDDS.Service.ExportManager(Await GetCredentialsAsync(), CookieContainer).HasExportPermissions(SelectedCaseInfo.ArtifactID)
 			UserHasImportPermission = New kCura.WinEDDS.Service.BulkImportManager(Await GetCredentialsAsync(), CookieContainer).HasImportPermissions(SelectedCaseInfo.ArtifactID)
+
+            'additionally load setup and permissions for staging explorer
+            Dim isCloudInstance = Await Me.GetIsCloudInstance()
+            Dim isStagingExplorerEnabled = Await Me.GetIsStagingExplorerEnabled()
+            Dim userHasPermission =  Await Me.CanUserAccessStagingExplorer(Await GetCredentialsAsync())
+
+            UserHasStagingPermission = isCloudInstance And isStagingExplorerEnabled And userHasPermission
 		End Function
 
 		Private Sub CertificatePromptForm_Deny_Click() Handles _certificatePromptForm.DenyUntrustedCertificates
@@ -1712,7 +1719,21 @@ Namespace kCura.EDDS.WinForm
 			Return cloudIsEnabled
 		End Function
 
-		Public Async Function GetIsStagingExplorerEnabled() As Task(Of System.Boolean)
+		Public Function Login(authOptions As AuthenticationOptions) As Application.CredentialCheckResult
+			Dim loginResult As Application.CredentialCheckResult
+
+			If Not String.IsNullOrEmpty(authOptions.UserName) Then
+				Dim cred As New UserCredentialsProvider(authOptions.UserName, authOptions.Password)
+				RelativityWebApiCredentialsProvider.Instance().SetProvider(cred)
+				loginResult = DoLogin()
+			Else
+
+				loginResult = DoOAuthLogin(authOptions.ClientId, authOptions.ClientSecret)
+			End If
+			Return loginResult
+		End Function
+
+		Private Async Function GetIsStagingExplorerEnabled() As Task(Of System.Boolean)
 			Dim configTable As System.Data.DataTable = Await GetSystemConfiguration()
 
 			Dim foundRows() As System.Data.DataRow = configTable.Select("Name = 'EnableStagingExplorer'")
@@ -1727,19 +1748,28 @@ Namespace kCura.EDDS.WinForm
 			Return isStagingExplorerEnabled
 		End Function
 
-		Public Function Login(authOptions As AuthenticationOptions) As Application.CredentialCheckResult
-			Dim loginResult As Application.CredentialCheckResult
+        Private Async Function CanUserAccessStagingExplorer(credentials As NetworkCredential) As Task(Of System.Boolean)
+            Dim result = False
 
-			If Not String.IsNullOrEmpty(authOptions.UserName) Then
-				Dim cred As New UserCredentialsProvider(authOptions.UserName, authOptions.Password)
-				RelativityWebApiCredentialsProvider.Instance().SetProvider(cred)
-				loginResult = DoLogin()
-			Else
+            Dim relativityCredentials = New BearerTokenCredentials(credentials.Password)
 
-				loginResult = DoOAuthLogin(authOptions.ClientId, authOptions.ClientSecret)
-			End If
-			Return loginResult
-		End Function
+            Dim baseUri = New Uri(kCura.WinEDDS.Config.WebServiceURL)
+            Dim settings = New ServiceFactorySettings(New Uri($"https://{baseUri.Host}/Relativity.Services"), New Uri($"https://{baseUri.Host}/Relativity.Rest/api"), relativityCredentials)
+            Dim factory = New ServiceFactory(settings)        
+
+            Using manager As IPermissionManager = factory.CreateProxy(Of IPermissionManager)
+                Dim permissionRef = New PermissionRef()
+                permissionRef.PermissionID = 700
+
+                Dim permissionRefs = New List(Of PermissionRef)
+                permissionRefs.Add(permissionRef)
+
+                Dim permissionValues = Await manager.GetPermissionSelectedAsync(-1, permissionRefs)
+                result = permissionValues.First().Selected
+            End Using
+
+            Return result
+        End Function
 	End Class
 End Namespace
 
