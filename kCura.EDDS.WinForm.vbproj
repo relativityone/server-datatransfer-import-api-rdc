@@ -533,7 +533,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Resources\CopyrightInfo.txt" />
-    <Content Include="LoggerConfig.xml">
+    <Content Include="LogConfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="oi\unmanaged\x64\oilink.exe" />
