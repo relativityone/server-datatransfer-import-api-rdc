@@ -25,7 +25,7 @@ namespace kCura.WinEDDS.Core.Logging
 			{
 				return path;
 			}
-			return Path.Combine(Directory.GetParent(Assembly.GetEntryAssembly().Location).FullName, "LoggerConfig.xml");
+			return Path.Combine(Directory.GetParent(Assembly.GetEntryAssembly().Location).FullName, "LogConfig.xml");
 		}
 	}
 }
