@@ -399,7 +399,7 @@ Namespace kCura.WinEDDS
 			nativeParameters.ForceFileShareClient = Config.TapiForceFileShareClient
 			nativeParameters.ForceHttpClient = Config.ForceWebUpload OrElse Config.TapiForceHttpClient
 			nativeParameters.LargeFileProgressEnabled = Config.TapiLargeFileProgressEnabled
-			nativeParameters.LogConfigFile = Config.LoggerConfigFile
+			nativeParameters.LogConfigFile = Config.LogConfigFile
 			nativeParameters.LogEnabled = Config.TapiLogEnabled
 			nativeParameters.MaxFilesPerFolder = gateway.RepositoryVolumeMax
 			nativeParameters.MaxJobParallelism = Config.TapiMaxJobParallelism
