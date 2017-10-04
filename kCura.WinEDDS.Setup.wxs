@@ -57,6 +57,7 @@
 									IgnoreFailure="no"
 									Profile="all"/>
 							</File>
+						    <File Id="kCuraEDDSWinFormEXEConfig" Name="kCura.EDDS.WinForm.exe.config" DiskId="1" Source="$(var.kCura.EDDS.WinForm.TargetDir)\kCura.EDDS.WinForm.exe.config" />
 						</Component>
 						<Component Id="NativeDependencies" Guid="{7C02F4C7-9DC9-403E-9242-124F71C39CEB}" KeyPath="yes">
 						  <File Id='Primary.itextsharp' Name='itextsharp.dll' DiskId='1' Source='..\..\Vendor\iTextSharp\5.1.2_bin\$(var.Platform)\itextsharp.dll' />
@@ -83,6 +84,7 @@
 									IgnoreFailure="no"
 									Profile="all"/>
 							</File>
+						    <File Id='Relativity.StagingExplorerConfig' Name='Relativity.StagingExplorer.exe.config' DiskId='1' Source='$(var.kCura.EDDS.WinForm.TargetDir)\Relativity.StagingExplorer.exe.config' />
 						</Component>
 						<Component Id="RegistryEntries" Guid="{A20005D6-52D7-485B-9A2D-D0C335B0302B}">
 							<RegistryKey Root="HKLM" Key="$(var.RegistryKey)" ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
