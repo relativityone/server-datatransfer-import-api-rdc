@@ -14,7 +14,6 @@ Imports kCura.WinEDDS.Service
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
-Imports Relativity.StagingExplorer.Components.Main
 
 Namespace kCura.EDDS.WinForm
 	Public Class Application
@@ -824,16 +823,13 @@ Namespace kCura.EDDS.WinForm
 		Public Async Sub NewFileTransfer()
 			Await NewLoginAsync()
 			
-			Dim authContext = New AuthenticationContext()
-			authContext.Credential = Await Me.GetCredentialsAsync()
-			Dim rdcContext = New RelativityContext(kCura.WinEDDS.Config.WebServiceURL,  Me.SelectedCaseInfo.ArtifactID)
+			Dim credentials = Await Me.GetCredentialsAsync()
 
-			StartStagingExplorer(rdcContext, authContext)
+			StartStagingExplorer(credentials)
 		End Sub
 
-		Private Sub StartStagingExplorer(relativityContext As RelativityContext, authContext As AuthenticationContext)
-			Dim initArguments As String
-			initArguments = $"-t {authContext.Credential.Password} -w {relativityContext.WorkspaceID}  -u {relativityContext.WebServiceURL}"
+		Private Sub StartStagingExplorer(credentials As NetworkCredential)
+			Dim initArguments = $"-t {credentials.Password} -w {Me.SelectedCaseInfo.ArtifactID}  -u {kCura.WinEDDS.Config.WebServiceURL}"
 			Dim applicationFile = GetApplicationFilePath()
 
 			Process.Start(applicationFile, initArguments)
