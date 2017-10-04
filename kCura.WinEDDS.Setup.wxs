@@ -16,7 +16,7 @@
 			<![CDATA[Installed OR NETFRAMEWORK45]]>
 		</Condition>
 		<!-- Set the icon for the msi and Add/Remove programs -->
-		<Icon Id="relativity_1.exe" SourceFile="..\..\EDDS\RelativityIcons\relativity_1.ico" />
+		<Icon Id="relativity_1.exe" SourceFile="$(var.ProjectDir)..\Images\relativity-icon.ICO" />
 		<Property Id="ARPPRODUCTICON" Value="relativity_1.exe" />
 		<Property Id="ALLUSERS" Value="1" />
 		<!-- Perform the proper upgrade checks -->
