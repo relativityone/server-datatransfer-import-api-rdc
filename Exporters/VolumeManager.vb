@@ -498,8 +498,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function ExportArtifact(ByVal artifact As Exporters.ObjectExportInfo, ByVal linesToWrite As ConcurrentDictionary(Of Int32, ILoadFileEntry),
-																		ByVal linesToWriteOpt As ConcurrentBag(Of KeyValuePair(Of String, String)), ByVal isRetryAttempt As Boolean, ByVal threadNumber As Integer,
-																		ByVal volumeNumber As Integer, ByVal subDirectoryNumber As Integer) As Int64
+		                                ByVal linesToWriteOpt As ConcurrentBag(Of KeyValuePair(Of String, String)), ByVal isRetryAttempt As Boolean, ByVal threadNumber As Integer,
+		                                ByVal volumeNumber As Integer, ByVal subDirectoryNumber As Integer) As Int64
 			Dim totalFileSize As Int64 = 0
 			Dim extractedTextFileSizeForVolume As Int64 = 0
 			Dim image As Exporters.ImageExportInfo = Nothing
@@ -757,9 +757,8 @@ Namespace kCura.WinEDDS
 			Return localFilePath & image.FileName
 		End Function
 
-
 		Public Sub ExportImages(ByVal images As System.Collections.ArrayList, ByVal localFullTextPath As String, ByVal successfulRollup As Boolean, ByVal linesToWriteOpt As ConcurrentBag(Of KeyValuePair(Of String, String)),
-														ByVal threadNumber As Integer, ByVal currentVolumeNumber As Integer, ByVal currentSubDirectoryNumber As Integer)
+		                        ByVal threadNumber As Integer, ByVal currentVolumeNumber As Integer, ByVal currentSubDirectoryNumber As Integer)
 			Dim image As WinEDDS.Exporters.ImageExportInfo
 			Dim i As Int32 = 0
 			Dim fullTextReader As System.IO.StreamReader = Nothing
@@ -975,11 +974,10 @@ Namespace kCura.WinEDDS
 		Private Sub WriteIproImageLine(ByVal batesNumber As String, ByVal pageNumber As Int32, ByVal fullFilePath As String, ByVal linesToWriteOpt As ConcurrentBag(Of KeyValuePair(Of String, String)), ByVal currentVolumeNumber As Integer)
 			Dim linefactory As New Exporters.LineFactory.SimpleIproImageLineFactory(batesNumber, pageNumber, fullFilePath, Me.CurrentVolumeLabel(currentVolumeNumber), Me.Settings.TypeOfImage.Value)
 			linefactory.WriteLine(_imageFileWriter, linesToWriteOpt)
-
 		End Sub
 
 		Private Sub WriteOpticonLine(ByVal batesNumber As String, ByVal firstDocument As Boolean, ByVal copyFile As String, ByVal imageCount As Int32, ByVal linesToWriteOpt As ConcurrentBag(Of KeyValuePair(Of String, String)),
-																 ByVal currentVolumeNumber As Integer)
+		                             ByVal currentVolumeNumber As Integer)
 			Dim log As New System.Text.StringBuilder
 			log.AppendFormat("{0},{1},{2},", batesNumber, Me.CurrentVolumeLabel(currentVolumeNumber), copyFile)
 			If firstDocument Then log.Append("Y")
@@ -1323,9 +1321,9 @@ Namespace kCura.WinEDDS
 			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			Dim lastArtifactId As Int32 = -1
-            Dim loadFileBytes As Int64 = 0
+			Dim loadFileBytes As Int64 = 0
 
-            If linesToWriteOpt Is Nothing OrElse linesToWriteOpt.Count = 0 Then
+			If linesToWriteOpt Is Nothing OrElse linesToWriteOpt.Count = 0 Then
 				Return
 			End If
 
@@ -1337,7 +1335,7 @@ Namespace kCura.WinEDDS
 					Me.ReInitializeStream(_imageFileWriter, _imageFileWriterPosition, Me.ImageFileDestinationPath, Me.GetImageFileEncoding())
 				End If
 
-                Try
+				Try
 					'Write artifact entries
 					For Each artifact As Exporters.ObjectExportInfo In artifacts
 						For Each bates As String In artifact.Images.Cast(Of WinEDDS.Exporters.ImageExportInfo)().Select(Function(i) i.BatesNumber).Distinct()
@@ -1369,9 +1367,9 @@ Namespace kCura.WinEDDS
 					'Store statistics
 					_statistics.MetadataBytes = loadFileBytes + _totalExtractedTextFileLength
 
-                    Exit While
-                Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
-                    If tries = maxTries Then Throw
+					Exit While
+				Catch ex As kCura.WinEDDS.Exceptions.ExportBaseException
+					If tries = maxTries Then Throw
 					_parent.WriteWarning(String.Format("Error writing .opt file entry for artifact {0}", lastArtifactId))
 					_parent.WriteWarning(String.Format("Actual error: {0}", ex.ToString))
 					If tries > 1 Then
