@@ -13,7 +13,7 @@ Through Visual Studio:
 
 From the command line (this does a lot more than just build the RDC installers, however):
 
-```build [release] -installer```
+    .\build -Package [-Release]
 
 ## Manual Test Cases
 
