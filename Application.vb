@@ -1733,12 +1733,13 @@ Namespace kCura.EDDS.WinForm
 
             Dim baseUri = New Uri(WinEDDS.Config.WebServiceURL)
             Dim settings = New ServiceFactorySettings(New Uri($"https://{baseUri.Host}/Relativity.Services"), New Uri($"https://{baseUri.Host}/Relativity.Rest/api"), relativityCredentials)
-            Dim factory = New ServiceFactory(settings)        
+            Dim factory = New ServiceFactory(settings)
 
-            Using manager As IStagingPermissionsService = factory.CreateProxy(Of IStagingPermissionsService)
-                Dim userCanRunStagingExplorer = Await manager.UserCanRunStagingExplorer()
-                Return userCanRunStagingExplorer
-            End Using
+            'Using manager As IStagingPermissionsService = factory.CreateProxy(Of IStagingPermissionsService)
+            '    Dim userCanRunStagingExplorer = Await manager.UserCanRunStagingExplorer()
+            '    Return userCanRunStagingExplorer
+            'End Using
+            Return Await Task.FromResult(True)
         End Function
 	End Class
 End Namespace
