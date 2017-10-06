@@ -297,16 +297,16 @@
       <HintPath>..\..\packages\Relativity.SecretCatalog.1.0.18\lib\Relativity.SecretCatalog.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.DataContracts, Version=9.5.281.30, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Services.DataContracts.9.5.281.30\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
+    <Reference Include="Relativity.Services.DataContracts, Version=9.5.296.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Services.DataContracts.9.5.296.15\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.Interfaces, Version=9.5.281.30, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Services.Interfaces.9.5.281.30\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Services.Interfaces, Version=9.5.296.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Services.Interfaces.9.5.296.15\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.Interfaces.Private, Version=9.5.281.30, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Services.Interfaces.Private.9.5.281.30\lib\net462\Relativity.Services.Interfaces.Private.dll</HintPath>
+    <Reference Include="Relativity.Services.Interfaces.Private, Version=9.5.296.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Services.Interfaces.Private.9.5.296.15\lib\net462\Relativity.Services.Interfaces.Private.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.409, Culture=neutral, processorArchitecture=MSIL">
