@@ -317,11 +317,11 @@
       <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.1\lib\net462\Relativity.StagingExplorer.exe</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.74.5, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.74\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared">
+      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.153\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.5.281.29, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Telemetry.Services.Interface">
       <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface.9.5.281.29\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
       <Private>True</Private>
     </Reference>
