@@ -415,7 +415,6 @@
     <Compile Include="Importers\FolderCache.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Importers\IBulkLoadFileImporterFactory.vb" />
     <Compile Include="Importers\IFolderCache.vb" />
     <Compile Include="Importers\IImportJob.vb" />
     <Compile Include="Importers\ImageFilePreviewer.vb">

@@ -387,39 +387,9 @@ Namespace kCura.WinEDDS
             End Get
         End Property
 
-        Public Shared ReadOnly Property DisableAspera() As Boolean
-            Get
-                Return CType(ConfigSettings("DisableAspera"), Boolean)
-            End Get
-        End Property
-
-        Public Shared ReadOnly Property RestUrl() As String
-            Get
-                Return CType(ConfigSettings("RestUrl"), String)
-            End Get
-        End Property
-
-        Public Shared ReadOnly Property ServicesUrl() As String
-            Get
-                Return CType(ConfigSettings("ServicesUrl"), String)
-            End Get
-        End Property
-
         Public Shared ReadOnly Property LogConfigFile() As String
             Get
                 Return CType(ConfigSettings("LogConfigFile"), String)
-            End Get
-        End Property
-
-        Public Shared ReadOnly Property AsperaBcpPathRootFolder() As String
-            Get
-                Return CType(ConfigSettings("AsperaBcpPathRootFolder"), String)
-            End Get
-        End Property
-
-        Public Shared ReadOnly Property AsperaNativeFilesRootFolder() As String
-            Get
-                Return CType(ConfigSettings("AsperaNativeFilesRootFolder"), String)
             End Get
         End Property
 
