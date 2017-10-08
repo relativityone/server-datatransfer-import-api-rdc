@@ -77,28 +77,7 @@
     <Compile Include="Export\Natives\Name\Factories\FileNamePartProviderContainerTest.cs" />
     <Compile Include="Export\Natives\Name\FieldFileNamePartProviderTests.cs" />
     <Compile Include="Export\Natives\Name\SeparatorFileNamePartProviderTests.cs" />
-    <Compile Include="Helpers\ImportExceptionHandlerExecFactory.cs" />
     <Compile Include="Helpers\ViewFieldInfoMockFactory.cs" />
-    <Compile Include="Import\Errors\AllErrorsContainer_FileWriteTests.cs" />
-    <Compile Include="Import\Errors\ClientErrorLineContainerTests.cs" />
-    <Compile Include="Import\Errors\AllErrorsContainerTests.cs" />
-    <Compile Include="Import\Errors\ClientErrorLineContainer_FileWriteTests.cs" />
-    <Compile Include="Import\Errors\ErrorFileNamesTests.cs" />
-    <Compile Include="Import\Errors\ErrorManagerTests.cs" />
-    <Compile Include="Import\Errors\ErrorReporterTests.cs" />
-    <Compile Include="Import\Errors\ServerErrorFileDownloaderTests.cs" />
-    <Compile Include="Import\Errors\ServerErrorFileTests.cs" />
-    <Compile Include="Import\Errors\ServerErrorManagerTests.cs" />
-    <Compile Include="Import\Errors\UploadErrorsTests.cs" />
-    <Compile Include="Import\ImportJobTests.cs" />
-    <Compile Include="Import\ImportNativesAnalyzerTests.cs" />
-    <Compile Include="Import\Statistics\StatisticsManagerTests.cs" />
-    <Compile Include="Import\Tasks\Helpers\MetadataFilesServerExecutionTests.cs" />
-    <Compile Include="Import\Tasks\ImportDocumentFoldersTaskTests.cs" />
-    <Compile Include="Import\Tasks\ImportNativesTaskTests.cs" />
-    <Compile Include="Import\Tasks\ImportRdoFoldersTaskTests.cs" />
-    <Compile Include="Import\Tasks\PrepareMetadataFilesTaskTests.cs" />
-    <Compile Include="Import\Tasks\PushMetadataFilesTaskTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
