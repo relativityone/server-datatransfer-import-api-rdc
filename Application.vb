@@ -27,7 +27,6 @@ Namespace kCura.EDDS.WinForm
 			_processPool = New kCura.Windows.Process.ProcessPool
 			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 Or SecurityProtocolType.Tls11 Or SecurityProtocolType.Tls Or SecurityProtocolType.Ssl3
 			_CookieContainer = New System.Net.CookieContainer
-			Dim connectionTest As New ConnectionTestingHelper(Me)
 		End Sub
 
 		Public Shared ReadOnly Property Instance() As Application
@@ -1091,7 +1090,6 @@ Namespace kCura.EDDS.WinForm
 				If CheckFieldMap(loadFile) Then
 					Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
 					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
-					importer.BulkLoadFileImporterFactory = New kCura.WinEDDS.Aspera.BulkLoadFileImporterFactory(Await Me.GetConnectionStatus())
 					importer.LoadFile = loadFile
 					importer.TimeZoneOffset = _timeZoneOffset
 					importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
