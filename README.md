@@ -11,9 +11,9 @@ Through Visual Studio:
 1. Run 'Build Solution' in AnyCPU first to ensure all dependencies are compiled.
 1. Run 'Build Solution', or build just the kCura.WinEDDS.Setup project, in x86 or x64, to build the 32- or 64-bit installer.
 
-From the command line (this does a lot more than just build the RDC installers, however):
+From the command line:
 
-    .\build -Package [-Release]
+    .\build BuildWinEDDSInstallers [-Release]
 
 ## Manual Test Cases
 
