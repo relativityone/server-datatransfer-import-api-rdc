@@ -489,6 +489,18 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Async Function GetConnectionStatus() As Task(Of String)
+			Dim parameters = CreateTapiParametersAsync()
+			Dim clientName = Await kCura.WinEDDS.TApi.TapiWinEddsHelper.GetWorkspaceClientDisplayNameAsync(await parameters)
+			Return clientName
+		End Function
+
+		Public Async Function GetConnectionMode() As Task(Of Guid)
+			Dim parameters = CreateTapiParametersAsync()
+			Dim clientName = Await kCura.WinEDDS.TApi.TapiWinEddsHelper.GetWorkspaceClientIdAsync(await parameters)
+			Return clientName
+		End Function
+
+		Private Async Function CreateTapiParametersAsync() As Task(Of TApi.TapiBridgeParameters)
 			Dim credentials = Await Me.GetCredentialsAsync()
 			Dim parameters = New TApi.TapiBridgeParameters
 			parameters.Credentials = credentials
@@ -501,8 +513,8 @@ Namespace kCura.EDDS.WinForm
 			parameters.WebCookieContainer = Me.CookieContainer
 			parameters.WebServiceUrl = WinEDDS.Config.WebServiceURL
 			parameters.WorkspaceId = Me.SelectedCaseInfo.ArtifactID
-			Dim clientName = Await kCura.WinEDDS.TApi.TapiWinEddsHelper.GetWorkspaceClientDisplayNameAsync(parameters)
-			Return clientName
+
+			return parameters
 		End Function
 #End Region
 
