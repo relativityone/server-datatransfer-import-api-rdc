@@ -13,7 +13,7 @@ Through Visual Studio:
 
 From the command line:
 
-    .\build BuildWinEDDSInstallers [-Release]
+    .\build.ps1 BuildWinEDDSInstallers [-Release]
 
 ## Manual Test Cases
 
