@@ -2,7 +2,7 @@ Imports System.Collections.Generic
 Imports kCura.Windows.Forms
 Imports System.Linq
 Imports System.Threading.Tasks
-Imports kCura.WinEDDS.Aspera.Configuration
+Imports Relativity.Transfer
 
 Namespace kCura.EDDS.WinForm
     Public Class LoadFileForm
@@ -2002,9 +2002,9 @@ Namespace kCura.EDDS.WinForm
 			Return retval
 		End Function
 
-		Private Async Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
-			Dim useAspera As Boolean = AsperaModeConfiguration.UseAspera(LoadFile, Await _application.GetConnectionStatus())
-			If useAspera Then
+		Private Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
+			Dim clientTransferGuid As Guid = _application.GetConnectionMode().ConfigureAwait(False).GetAwaiter().GetResult()
+			If clientTransferGuid = Guid.Parse(TransferClientConstants.AsperaClientId) Then
 				MsgBox("Repository settings can not be changed when RDC runs in Aspera transfer mode. Aspera Server is " &
 					"configured to upload native files to the default workspace fileshare location. " &
 					"If you want to switch Repository in RDC you need to first change RDC settings in application configuration file to force Web transfer mode. " &
