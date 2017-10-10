@@ -27,7 +27,6 @@ Namespace kCura.EDDS.WinForm
 			_processPool = New kCura.Windows.Process.ProcessPool
 			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 Or SecurityProtocolType.Tls11 Or SecurityProtocolType.Tls Or SecurityProtocolType.Ssl3
 			_CookieContainer = New System.Net.CookieContainer
-			Dim connectionTest As New ConnectionTestingHelper(Me)
 		End Sub
 
 		Public Shared ReadOnly Property Instance() As Application
@@ -491,6 +490,18 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Async Function GetConnectionStatus() As Task(Of String)
+			Dim parameters = CreateTapiParametersAsync()
+			Dim clientName = Await kCura.WinEDDS.TApi.TapiWinEddsHelper.GetWorkspaceClientDisplayNameAsync(await parameters)
+			Return clientName
+		End Function
+
+		Public Async Function GetConnectionMode() As Task(Of Guid)
+			Dim parameters = CreateTapiParametersAsync()
+			Dim clientName = Await kCura.WinEDDS.TApi.TapiWinEddsHelper.GetWorkspaceClientIdAsync(await parameters)
+			Return clientName
+		End Function
+
+		Private Async Function CreateTapiParametersAsync() As Task(Of TApi.TapiBridgeParameters)
 			Dim credentials = Await Me.GetCredentialsAsync()
 			Dim parameters = New TApi.TapiBridgeParameters
 			parameters.Credentials = credentials
@@ -503,8 +514,8 @@ Namespace kCura.EDDS.WinForm
 			parameters.WebCookieContainer = Me.CookieContainer
 			parameters.WebServiceUrl = WinEDDS.Config.WebServiceURL
 			parameters.WorkspaceId = Me.SelectedCaseInfo.ArtifactID
-			Dim clientName = Await kCura.WinEDDS.TApi.TapiWinEddsHelper.GetWorkspaceClientDisplayNameAsync(parameters)
-			Return clientName
+
+			return parameters
 		End Function
 #End Region
 
@@ -1107,7 +1118,6 @@ Namespace kCura.EDDS.WinForm
 				If CheckFieldMap(loadFile) Then
 					Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
 					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
-					importer.BulkLoadFileImporterFactory = New kCura.WinEDDS.Aspera.BulkLoadFileImporterFactory(Await Me.GetConnectionStatus())
 					importer.LoadFile = loadFile
 					importer.TimeZoneOffset = _timeZoneOffset
 					importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
