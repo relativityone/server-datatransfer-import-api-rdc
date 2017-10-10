@@ -14,6 +14,8 @@ Imports kCura.WinEDDS.Service
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
+Imports Relativity.Services.ServiceProxy
+Imports Relativity.Services.StagingManager
 
 Namespace kCura.EDDS.WinForm
 	Public Class Application
@@ -25,7 +27,6 @@ Namespace kCura.EDDS.WinForm
 			_processPool = New kCura.Windows.Process.ProcessPool
 			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 Or SecurityProtocolType.Tls11 Or SecurityProtocolType.Tls Or SecurityProtocolType.Ssl3
 			_CookieContainer = New System.Net.CookieContainer
-			Dim connectionTest As New ConnectionTestingHelper(Me)
 		End Sub
 
 		Public Shared ReadOnly Property Instance() As Application
@@ -173,13 +174,10 @@ Namespace kCura.EDDS.WinForm
 
 		Public Property UserHasExportPermission() As Boolean
 
+        Public Property UserHasStagingPermission() As Boolean
+
 #End Region
-
-
-
-
-
-
+ 
 #Region "Event Throwers"
 		Public Sub LogOn()
 			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOn))
@@ -491,6 +489,18 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Async Function GetConnectionStatus() As Task(Of String)
+			Dim parameters = CreateTapiParametersAsync()
+			Dim clientName = Await kCura.WinEDDS.TApi.TapiWinEddsHelper.GetWorkspaceClientDisplayNameAsync(await parameters)
+			Return clientName
+		End Function
+
+		Public Async Function GetConnectionMode() As Task(Of Guid)
+			Dim parameters = CreateTapiParametersAsync()
+			Dim clientName = Await kCura.WinEDDS.TApi.TapiWinEddsHelper.GetWorkspaceClientIdAsync(await parameters)
+			Return clientName
+		End Function
+
+		Private Async Function CreateTapiParametersAsync() As Task(Of TApi.TapiBridgeParameters)
 			Dim credentials = Await Me.GetCredentialsAsync()
 			Dim parameters = New TApi.TapiBridgeParameters
 			parameters.Credentials = credentials
@@ -503,8 +513,8 @@ Namespace kCura.EDDS.WinForm
 			parameters.WebCookieContainer = Me.CookieContainer
 			parameters.WebServiceUrl = WinEDDS.Config.WebServiceURL
 			parameters.WorkspaceId = Me.SelectedCaseInfo.ArtifactID
-			Dim clientName = Await kCura.WinEDDS.TApi.TapiWinEddsHelper.GetWorkspaceClientDisplayNameAsync(parameters)
-			Return clientName
+
+			return parameters
 		End Function
 #End Region
 
@@ -1092,7 +1102,6 @@ Namespace kCura.EDDS.WinForm
 				If CheckFieldMap(loadFile) Then
 					Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
 					Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
-					importer.BulkLoadFileImporterFactory = New kCura.WinEDDS.Aspera.BulkLoadFileImporterFactory(Await Me.GetConnectionStatus())
 					importer.LoadFile = loadFile
 					importer.TimeZoneOffset = _timeZoneOffset
 					importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
@@ -1422,6 +1431,9 @@ Namespace kCura.EDDS.WinForm
 		Public Async Function LoadWorkspacePermissions() As Task
 			UserHasExportPermission = New kCura.WinEDDS.Service.ExportManager(Await GetCredentialsAsync(), CookieContainer).HasExportPermissions(SelectedCaseInfo.ArtifactID)
 			UserHasImportPermission = New kCura.WinEDDS.Service.BulkImportManager(Await GetCredentialsAsync(), CookieContainer).HasImportPermissions(SelectedCaseInfo.ArtifactID)
+
+            'additionally load config and permissions for staging explorer
+            UserHasStagingPermission = Await Me.CanUserAccessStagingExplorer(Await GetCredentialsAsync())
 		End Function
 
 		Private Sub CertificatePromptForm_Deny_Click() Handles _certificatePromptForm.DenyUntrustedCertificates
@@ -1712,21 +1724,6 @@ Namespace kCura.EDDS.WinForm
 			Return cloudIsEnabled
 		End Function
 
-		Public Async Function GetIsStagingExplorerEnabled() As Task(Of System.Boolean)
-			Dim configTable As System.Data.DataTable = Await GetSystemConfiguration()
-
-			Dim foundRows() As System.Data.DataRow = configTable.Select("Name = 'EnableStagingExplorer'")
-
-			Dim isStagingExplorerEnabled As Boolean = False
-
-			If foundRows.Length > 0 Then
-				Dim foundRow As System.Data.DataRow = foundRows.ElementAt(0)
-				isStagingExplorerEnabled = CType(foundRow.ItemArray.ElementAt(2), Boolean)
-			End If
-		   
-			Return isStagingExplorerEnabled
-		End Function
-
 		Public Function Login(authOptions As AuthenticationOptions) As Application.CredentialCheckResult
 			Dim loginResult As Application.CredentialCheckResult
 
@@ -1740,6 +1737,19 @@ Namespace kCura.EDDS.WinForm
 			End If
 			Return loginResult
 		End Function
+
+        Private Async Function CanUserAccessStagingExplorer(credentials As NetworkCredential) As Task(Of System.Boolean)
+            Dim relativityCredentials = New BearerTokenCredentials(credentials.Password)
+
+            Dim baseUri = New Uri(WinEDDS.Config.WebServiceURL)
+            Dim settings = New ServiceFactorySettings(New Uri($"https://{baseUri.Host}/Relativity.Services"), New Uri($"https://{baseUri.Host}/Relativity.Rest/api"), relativityCredentials)
+            Dim factory = New ServiceFactory(settings)
+
+            Using manager As IStagingPermissionsService = factory.CreateProxy(Of IStagingPermissionsService)
+                Dim userCanRunStagingExplorer = Await manager.UserCanRunStagingExplorer()
+                Return userCanRunStagingExplorer
+            End Using
+        End Function
 	End Class
 End Namespace
 
