@@ -855,7 +855,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub OnStagingExplorerProcessExited(sender As Object, e As EventArgs)
             Dim appProcess = TryCast(sender, Process)
-		    If appProcess.ExitCode = 403 Then
+		    If appProcess IsNot Nothing And appProcess.ExitCode = 403 Then
                 MessageBox.Show(ROSE_STARTUP_PERMISSIONS_FAILURE, RDC_ERROR_TITLE)
             End If
 		End Sub
