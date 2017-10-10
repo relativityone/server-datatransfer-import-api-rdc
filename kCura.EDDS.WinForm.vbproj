@@ -318,7 +318,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared">
-      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.153\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.154\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Telemetry.Services.Interface">
