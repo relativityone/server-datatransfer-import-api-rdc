@@ -47,6 +47,7 @@ Namespace kCura.EDDS.WinForm
 		Public OpenCaseSelector As Boolean = True
 
 		Public Const ACCESS_DISABLED_MESSAGE As String = "Your Relativity account has been disabled.  Please contact your Relativity Administrator to activate your account."
+        Public Const ROSE_STARTUP_PERMISSIONS_FAILURE As String = "The RelativityOne Staging Explorer failed to run due to insufficient permissions. Please contact you Relativity Administrator."
 		Public Const RDC_ERROR_TITLE As String = "Relativity Desktop Client Error"
 
 		Private _caseSelected As Boolean = True
@@ -839,11 +840,26 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub StartStagingExplorer(credentials As NetworkCredential)
-			Dim initArguments = $"-t {credentials.Password} -w {Me.SelectedCaseInfo.ArtifactID}  -u {kCura.WinEDDS.Config.WebServiceURL}"
-			Dim applicationFile = GetApplicationFilePath()
+			Dim filename = GetApplicationFilePath()
+			Dim arguments = $"-t {credentials.Password} -w {Me.SelectedCaseInfo.ArtifactID}  -u {kCura.WinEDDS.Config.WebServiceURL}"
 
-			Process.Start(applicationFile, initArguments)
+            Dim appProcess = New Process()
+            appProcess.StartInfo.FileName = filename
+            appProcess.StartInfo.Arguments = arguments
+            appProcess.EnableRaisingEvents = True
+
+            AddHandler appProcess.Exited, Sub(s, e) OnStagingExplorerProcessExited(s, e)
+
+            appProcess.Start()
 		End Sub
+
+		Private Sub OnStagingExplorerProcessExited(sender As Object, e As EventArgs)
+            Dim appProcess = TryCast(sender, Process)
+		    If appProcess IsNot Nothing And appProcess.ExitCode = 403 Then
+                MessageBox.Show(ROSE_STARTUP_PERMISSIONS_FAILURE, RDC_ERROR_TITLE)
+            End If
+		End Sub
+
 		Private Function GetApplicationFilePath() As String
 			Dim appPath = ConfigurationManager.AppSettings("Relativity.StagingExplorer.ApplicationFile")
 			If String.IsNullOrEmpty(appPath) Then
