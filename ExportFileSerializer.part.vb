@@ -310,9 +310,9 @@ Namespace kCura.WinEDDS.NUnit
 						<_relationalTableColumnName2 href="#ref-17"/>
 						<_parentReflectionType>-1</_parentReflectionType>
 						<_reflectedFieldArtifactTypeTableName href="#ref-17"/>
-						<_reflectedFieldArtifactTypeIdentifierColumnName href="#ref-17"/>
-						<_reflectedFieldArtifactTypeConnectorFieldName href="#ref-17"/>
-						<_reflectedConnectorArtifactTypeIdentifierColumnName href="#ref-17"/>
+						<_reflectedFieldIdentifierColumnName href="#ref-17"/>
+						<_reflectedFieldConnectorFieldName href="#ref-17"/>
+						<_reflectedConnectorIdentifierColumnName href="#ref-17"/>
 						<_enableDataGrid>0</_enableDataGrid>
 						<ViewFieldInfo_x002B__fieldArtifactId>6</ViewFieldInfo_x002B__fieldArtifactId>
 						<ViewFieldInfo_x002B__avfId>1000187</ViewFieldInfo_x002B__avfId>
@@ -347,9 +347,9 @@ Namespace kCura.WinEDDS.NUnit
 						<ViewFieldInfo_x002B__relationalTableColumnName2 href="#ref-17"/>
 						<ViewFieldInfo_x002B__parentReflectionType>-1</ViewFieldInfo_x002B__parentReflectionType>
 						<ViewFieldInfo_x002B__reflectedFieldArtifactTypeTableName href="#ref-17"/>
-						<ViewFieldInfo_x002B__reflectedFieldArtifactTypeIdentifierColumnName href="#ref-17"/>
-						<ViewFieldInfo_x002B__reflectedFieldArtifactTypeConnectorFieldName href="#ref-17"/>
-						<ViewFieldInfo_x002B__reflectedConnectorArtifactTypeIdentifierColumnName href="#ref-17"/>
+						<ViewFieldInfo_x002B__reflectedFieldIdentifierColumnName href="#ref-17"/>
+						<ViewFieldInfo_x002B__reflectedFieldConnectorFieldName href="#ref-17"/>
+						<ViewFieldInfo_x002B__reflectedConnectorIdentifierColumnName href="#ref-17"/>
 						<ViewFieldInfo_x002B__enableDataGrid>0</ViewFieldInfo_x002B__enableDataGrid>
 					</a1:ViewFieldInfo>
 					<SOAP-ENC:Array id="ref-9" SOAP-ENC:arrayType="a1:Pair[2]" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/kCura.WinEDDS/kCura.WinEDDS%2C%20Version%3D7.2.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
@@ -464,9 +464,9 @@ Namespace kCura.WinEDDS.NUnit
 					 <_relationalTableColumnName2 href="#ref-22"/>
 					 <_parentReflectionType>-1</_parentReflectionType>
 					 <_reflectedFieldArtifactTypeTableName href="#ref-22"/>
-					 <_reflectedFieldArtifactTypeIdentifierColumnName href="#ref-22"/>
-					 <_reflectedFieldArtifactTypeConnectorFieldName href="#ref-22"/>
-					 <_reflectedConnectorArtifactTypeIdentifierColumnName href="#ref-22"/>
+					 <_reflectedFieldIdentifierColumnName href="#ref-22"/>
+					 <_reflectedFieldConnectorFieldName href="#ref-22"/>
+					 <_reflectedConnectorIdentifierColumnName href="#ref-22"/>
 					 <_enableDataGrid>0</_enableDataGrid>
 					 <ViewFieldInfo_x002B__fieldArtifactId>6</ViewFieldInfo_x002B__fieldArtifactId>
 					 <ViewFieldInfo_x002B__avfId>1000187</ViewFieldInfo_x002B__avfId>
@@ -501,9 +501,9 @@ Namespace kCura.WinEDDS.NUnit
 					 <ViewFieldInfo_x002B__relationalTableColumnName2 href="#ref-22"/>
 					 <ViewFieldInfo_x002B__parentReflectionType>-1</ViewFieldInfo_x002B__parentReflectionType>
 					 <ViewFieldInfo_x002B__reflectedFieldArtifactTypeTableName href="#ref-22"/>
-					 <ViewFieldInfo_x002B__reflectedFieldArtifactTypeIdentifierColumnName href="#ref-22"/>
-					 <ViewFieldInfo_x002B__reflectedFieldArtifactTypeConnectorFieldName href="#ref-22"/>
-					 <ViewFieldInfo_x002B__reflectedConnectorArtifactTypeIdentifierColumnName href="#ref-22"/>
+					 <ViewFieldInfo_x002B__reflectedFieldIdentifierColumnName href="#ref-22"/>
+					 <ViewFieldInfo_x002B__reflectedFieldConnectorFieldName href="#ref-22"/>
+					 <ViewFieldInfo_x002B__reflectedConnectorIdentifierColumnName href="#ref-22"/>
 					 <ViewFieldInfo_x002B__enableDataGrid>0</ViewFieldInfo_x002B__enableDataGrid>
 				 </a1:ViewFieldInfo>
 				 <a1:Pair id="ref-17" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/kCura.WinEDDS/kCura.WinEDDS%2C%20Version%3D7.4.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
@@ -615,9 +615,9 @@ Namespace kCura.WinEDDS.NUnit
 						<_relationalTableColumnName2 href="#ref-7"/>
 						<_parentReflectionType>-1</_parentReflectionType>
 						<_reflectedFieldArtifactTypeTableName href="#ref-7"/>
-						<_reflectedFieldArtifactTypeIdentifierColumnName href="#ref-7"/>
-						<_reflectedFieldArtifactTypeConnectorFieldName href="#ref-7"/>
-						<_reflectedConnectorArtifactTypeIdentifierColumnName href="#ref-7"/>
+						<_reflectedFieldIdentifierColumnName href="#ref-7"/>
+						<_reflectedFieldConnectorFieldName href="#ref-7"/>
+						<_reflectedConnectorIdentifierColumnName href="#ref-7"/>
 						<ViewFieldInfo_x002B__fieldArtifactId>1003667</ViewFieldInfo_x002B__fieldArtifactId>
 						<ViewFieldInfo_x002B__avfId>1000186</ViewFieldInfo_x002B__avfId>
 						<ViewFieldInfo_x002B__category>Identifier</ViewFieldInfo_x002B__category>
@@ -651,9 +651,9 @@ Namespace kCura.WinEDDS.NUnit
 						<ViewFieldInfo_x002B__relationalTableColumnName2 href="#ref-7"/>
 						<ViewFieldInfo_x002B__parentReflectionType>-1</ViewFieldInfo_x002B__parentReflectionType>
 						<ViewFieldInfo_x002B__reflectedFieldArtifactTypeTableName href="#ref-7"/>
-						<ViewFieldInfo_x002B__reflectedFieldArtifactTypeIdentifierColumnName href="#ref-7"/>
-						<ViewFieldInfo_x002B__reflectedFieldArtifactTypeConnectorFieldName href="#ref-7"/>
-						<ViewFieldInfo_x002B__reflectedConnectorArtifactTypeIdentifierColumnName href="#ref-7"/>
+						<ViewFieldInfo_x002B__reflectedFieldIdentifierColumnName href="#ref-7"/>
+						<ViewFieldInfo_x002B__reflectedFieldConnectorFieldName href="#ref-7"/>
+						<ViewFieldInfo_x002B__reflectedConnectorIdentifierColumnName href="#ref-7"/>
 					</a1:ViewFieldInfo>
 					<a1:ViewFieldInfo id="ref-19" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/kCura.WinEDDS/kCura.WinEDDS%2C%20Version%3D7.5.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
 						<_fieldArtifactId>1035348</_fieldArtifactId>
@@ -689,9 +689,9 @@ Namespace kCura.WinEDDS.NUnit
 						<_relationalTableColumnName2 href="#ref-7"/>
 						<_parentReflectionType>-1</_parentReflectionType>
 						<_reflectedFieldArtifactTypeTableName href="#ref-7"/>
-						<_reflectedFieldArtifactTypeIdentifierColumnName href="#ref-7"/>
-						<_reflectedFieldArtifactTypeConnectorFieldName href="#ref-7"/>
-						<_reflectedConnectorArtifactTypeIdentifierColumnName href="#ref-7"/>
+						<_reflectedFieldIdentifierColumnName href="#ref-7"/>
+						<_reflectedFieldConnectorFieldName href="#ref-7"/>
+						<_reflectedConnectorIdentifierColumnName href="#ref-7"/>
 						<ViewFieldInfo_x002B__fieldArtifactId>1035348</ViewFieldInfo_x002B__fieldArtifactId>
 						<ViewFieldInfo_x002B__avfId>1000548</ViewFieldInfo_x002B__avfId>
 						<ViewFieldInfo_x002B__category>Generic</ViewFieldInfo_x002B__category>
@@ -725,9 +725,9 @@ Namespace kCura.WinEDDS.NUnit
 						<ViewFieldInfo_x002B__relationalTableColumnName2 href="#ref-7"/>
 						<ViewFieldInfo_x002B__parentReflectionType>-1</ViewFieldInfo_x002B__parentReflectionType>
 						<ViewFieldInfo_x002B__reflectedFieldArtifactTypeTableName href="#ref-7"/>
-						<ViewFieldInfo_x002B__reflectedFieldArtifactTypeIdentifierColumnName href="#ref-7"/>
-						<ViewFieldInfo_x002B__reflectedFieldArtifactTypeConnectorFieldName href="#ref-7"/>
-						<ViewFieldInfo_x002B__reflectedConnectorArtifactTypeIdentifierColumnName href="#ref-7"/>
+						<ViewFieldInfo_x002B__reflectedFieldIdentifierColumnName href="#ref-7"/>
+						<ViewFieldInfo_x002B__reflectedFieldConnectorFieldName href="#ref-7"/>
+						<ViewFieldInfo_x002B__reflectedConnectorIdentifierColumnName href="#ref-7"/>
 					</a1:ViewFieldInfo>
 					<a1:ViewFieldInfo id="ref-20" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/kCura.WinEDDS/kCura.WinEDDS%2C%20Version%3D7.5.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
 						<_fieldArtifactId>1003668</_fieldArtifactId>
@@ -763,9 +763,9 @@ Namespace kCura.WinEDDS.NUnit
 						<_relationalTableColumnName2 href="#ref-7"/>
 						<_parentReflectionType>-1</_parentReflectionType>
 						<_reflectedFieldArtifactTypeTableName href="#ref-7"/>
-						<_reflectedFieldArtifactTypeIdentifierColumnName href="#ref-7"/>
-						<_reflectedFieldArtifactTypeConnectorFieldName href="#ref-7"/>
-						<_reflectedConnectorArtifactTypeIdentifierColumnName href="#ref-7"/>
+						<_reflectedFieldIdentifierColumnName href="#ref-7"/>
+						<_reflectedFieldConnectorFieldName href="#ref-7"/>
+						<_reflectedConnectorIdentifierColumnName href="#ref-7"/>
 						<ViewFieldInfo_x002B__fieldArtifactId>1003668</ViewFieldInfo_x002B__fieldArtifactId>
 						<ViewFieldInfo_x002B__avfId>1000187</ViewFieldInfo_x002B__avfId>
 						<ViewFieldInfo_x002B__category>FullText</ViewFieldInfo_x002B__category>
@@ -799,9 +799,9 @@ Namespace kCura.WinEDDS.NUnit
 						<ViewFieldInfo_x002B__relationalTableColumnName2 href="#ref-7"/>
 						<ViewFieldInfo_x002B__parentReflectionType>-1</ViewFieldInfo_x002B__parentReflectionType>
 						<ViewFieldInfo_x002B__reflectedFieldArtifactTypeTableName href="#ref-7"/>
-						<ViewFieldInfo_x002B__reflectedFieldArtifactTypeIdentifierColumnName href="#ref-7"/>
-						<ViewFieldInfo_x002B__reflectedFieldArtifactTypeConnectorFieldName href="#ref-7"/>
-						<ViewFieldInfo_x002B__reflectedConnectorArtifactTypeIdentifierColumnName href="#ref-7"/>
+						<ViewFieldInfo_x002B__reflectedFieldIdentifierColumnName href="#ref-7"/>
+						<ViewFieldInfo_x002B__reflectedFieldConnectorFieldName href="#ref-7"/>
+						<ViewFieldInfo_x002B__reflectedConnectorIdentifierColumnName href="#ref-7"/>
 					</a1:ViewFieldInfo>
 				</SOAP-ENV:Body>
 			</SOAP-ENV:Envelope>.ToString
