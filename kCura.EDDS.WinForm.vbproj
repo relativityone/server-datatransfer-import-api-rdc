@@ -124,10 +124,6 @@
     <DefineConstants>EnableInjections</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\kCura.WinEDDS.Aspera\kCura.WinEDDS.Aspera.csproj">
-      <Project>{B9E022D8-7BDC-44B8-BEE3-2BB61571FC5E}</Project>
-      <Name>kCura.WinEDDS.Aspera</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura\kCura.vbproj">
       <Project>{535d782a-2388-416f-ab46-10347e44eec9}</Project>
       <Name>kCura</Name>
@@ -177,47 +173,47 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Data.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.0\lib\net462\DevExpress.Data.v17.1.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.6\lib\net462\DevExpress.Data.v17.1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Images.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.0\lib\net462\DevExpress.Images.v17.1.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.6\lib\net462\DevExpress.Images.v17.1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Mvvm.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.0\lib\net462\DevExpress.Mvvm.v17.1.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.6\lib\net462\DevExpress.Mvvm.v17.1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Printing.v17.1.Core, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.0\lib\net462\DevExpress.Printing.v17.1.Core.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.6\lib\net462\DevExpress.Printing.v17.1.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Utils.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.0\lib\net462\DevExpress.Utils.v17.1.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.6\lib\net462\DevExpress.Utils.v17.1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Xpf.Core.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.0\lib\net462\DevExpress.Xpf.Core.v17.1.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.6\lib\net462\DevExpress.Xpf.Core.v17.1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Xpf.Grid.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.0\lib\net462\DevExpress.Xpf.Grid.v17.1.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.6\lib\net462\DevExpress.Xpf.Grid.v17.1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Xpf.Grid.v17.1.Core, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.0\lib\net462\DevExpress.Xpf.Grid.v17.1.Core.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.6\lib\net462\DevExpress.Xpf.Grid.v17.1.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Xpf.NavBar.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.0\lib\net462\DevExpress.Xpf.NavBar.v17.1.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.6\lib\net462\DevExpress.Xpf.NavBar.v17.1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Xpf.Themes.Office2013.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.0\lib\net462\DevExpress.Xpf.Themes.Office2013.v17.1.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.6\lib\net462\DevExpress.Xpf.Themes.Office2013.v17.1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Xpf.Themes.Office2016White.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.0\lib\net462\DevExpress.Xpf.Themes.Office2016White.v17.1.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.6\lib\net462\DevExpress.Xpf.Themes.Office2016White.v17.1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FaspManager, Version=3.7.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -236,8 +232,8 @@
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="oi, Version=2017.3.3.13, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\kCura.OutsideIn.FI.unified.2017.3.3\lib\net40\oi.dll</HintPath>
+    <Reference Include="oi, Version=2017.4.0.202, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32.2017.4.0\lib\net40\oi.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PCLWebUtility, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -258,6 +254,14 @@
     </Reference>
     <Reference Include="Relativity.Kepler, Version=1.0.1.409, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Kepler.1.0.1.409\lib\net462\Relativity.Kepler.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Logging, Version=9.4.308.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Logging.9.4.308\lib\net462\Relativity.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Logging.Interfaces, Version=9.4.308.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.308\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client, Version=1.0.23.1, Culture=neutral, processorArchitecture=MSIL">
@@ -288,16 +292,16 @@
       <HintPath>..\..\packages\Relativity.SecretCatalog.1.0.18\lib\Relativity.SecretCatalog.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.DataContracts, Version=9.5.281.30, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Services.DataContracts.9.5.281.30\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
+    <Reference Include="Relativity.Services.DataContracts, Version=9.5.296.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Services.DataContracts.9.5.296.15\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.Interfaces, Version=9.5.281.30, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Services.Interfaces.9.5.281.30\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Services.Interfaces, Version=9.5.296.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Services.Interfaces.9.5.296.15\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.Interfaces.Private, Version=9.5.281.30, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Services.Interfaces.Private.9.5.281.30\lib\net462\Relativity.Services.Interfaces.Private.dll</HintPath>
+    <Reference Include="Relativity.Services.Interfaces.Private, Version=9.5.296.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Services.Interfaces.Private.9.5.296.15\lib\net462\Relativity.Services.Interfaces.Private.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.409, Culture=neutral, processorArchitecture=MSIL">
@@ -305,35 +309,39 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.StagingExplorer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.0\lib\net462\Relativity.StagingExplorer.exe</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.6\lib\net462\Relativity.StagingExplorer.exe</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.74.5, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.74\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    <Reference Include="Relativity.StagingExplorer.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.6\lib\net462\Relativity.StagingExplorer.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.5.281.29, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared">
+      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.155\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.Services.Interface">
       <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface.9.5.281.29\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client, Version=1.1.17254.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\relativity.transfer.client.1.1.4\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client, Version=1.1.17276.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.1.1.41\lib\net462\Relativity.Transfer.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Aspera, Version=1.1.17254.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\relativity.transfer.client.1.1.4\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Aspera, Version=1.1.17276.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.1.1.41\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Core, Version=1.1.17254.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\relativity.transfer.client.1.1.4\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Core, Version=1.1.17276.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.1.1.41\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.FileShare, Version=1.1.17254.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\relativity.transfer.client.1.1.4\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.FileShare, Version=1.1.17276.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.1.1.41\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Http, Version=1.1.17254.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\relativity.transfer.client.1.1.4\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Http, Version=1.1.17276.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.1.1.41\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
@@ -451,7 +459,6 @@
     <Compile Include="ConfigDictionary.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ConnectionTestingHelper.vb" />
     <Compile Include="Controller\FieldMapFourPickerController.vb" />
     <Compile Include="Controls\CaseFolderExplorer.vb">
       <SubType>UserControl</SubType>
@@ -635,45 +642,13 @@
     <Content Include="images\kcura.ICO" />
     <Content Include="images\relativity.ICO" />
     <Content Include="images\relativity1.ICO" />
-    <None Include="oi\unmanaged\x64\cmmap000.bin" />
-    <None Include="oi\unmanaged\x86\cmmap000.bin" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
     <None Include="Resources\CopyrightInfo.txt" />
-    <Content Include="LoggerConfig.xml">
+    <Content Include="LogConfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="oi\unmanaged\x64\oilink.exe" />
-    <Content Include="oi\unmanaged\x64\oilink.jar" />
-    <Content Include="oi\unmanaged\x64\sccca-R1.dll" />
-    <Content Include="oi\unmanaged\x64\sccch-R1.dll" />
-    <Content Include="oi\unmanaged\x64\sccda-R1.dll" />
-    <Content Include="oi\unmanaged\x64\sccex-R1.dll" />
-    <Content Include="oi\unmanaged\x64\sccfa-R1.dll" />
-    <Content Include="oi\unmanaged\x64\sccfi-R1.dll" />
-    <Content Include="oi\unmanaged\x64\sccfmt-R1.dll" />
-    <Content Include="oi\unmanaged\x64\sccfnt-R1.dll" />
-    <Content Include="oi\unmanaged\x64\sccfut-R1.dll" />
-    <Content Include="oi\unmanaged\x64\sccind-R1.dll" />
-    <Content Include="oi\unmanaged\x64\scclo-R1.dll" />
-    <Content Include="oi\unmanaged\x64\sccut-R1.dll" />
-    <Content Include="oi\unmanaged\x64\wvcore-R1.dll" />
-    <Content Include="oi\unmanaged\x86\oilink.exe" />
-    <Content Include="oi\unmanaged\x86\oilink.jar" />
-    <Content Include="oi\unmanaged\x86\sccca-R1.dll" />
-    <Content Include="oi\unmanaged\x86\sccch-R1.dll" />
-    <Content Include="oi\unmanaged\x86\sccda-R1.dll" />
-    <Content Include="oi\unmanaged\x86\sccex-R1.dll" />
-    <Content Include="oi\unmanaged\x86\sccfa-R1.dll" />
-    <Content Include="oi\unmanaged\x86\sccfi-R1.dll" />
-    <Content Include="oi\unmanaged\x86\sccfmt-R1.dll" />
-    <Content Include="oi\unmanaged\x86\sccfnt-R1.dll" />
-    <Content Include="oi\unmanaged\x86\sccfut-R1.dll" />
-    <Content Include="oi\unmanaged\x86\sccind-R1.dll" />
-    <Content Include="oi\unmanaged\x86\scclo-R1.dll" />
-    <Content Include="oi\unmanaged\x86\sccut-R1.dll" />
-    <Content Include="oi\unmanaged\x86\wvcore-R1.dll" />
     <Content Include="ToDo.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -712,17 +687,21 @@
     <PreBuildEvent>
     </PreBuildEvent>
     <PostBuildEvent>
-			if "$(ConfigurationName)" == "Release" goto :eof
-			copy /Y "$(ProjectDir)..\..\Vendor\FreeImage\3.151\FreeImage\Release\x64\FreeImage.dll" "$(TargetDir)"
-		</PostBuildEvent>
+    		if $(ConfigurationName) == "Release" (
+    			XCOPY /Y $(ProjectDir)\App.Prod.config $(ProjectDir)\App.config
+			)
+
+      if "$(ConfigurationName)" == "Release" goto :eof
+      copy /Y "$(ProjectDir)..\..\Vendor\FreeImage\3.151\FreeImage\Release\x64\FreeImage.dll" "$(TargetDir)"
+    </PostBuildEvent>
   </PropertyGroup>
-  <Import Project="..\..\packages\kCura.OutsideIn.FI.unified.2017.3.3\build\kCura.OutsideIn.FI.unified.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.unified.2017.3.3\build\kCura.OutsideIn.FI.unified.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\kCura.OutsideIn.FI.unified.2017.3.3\build\kCura.OutsideIn.FI.unified.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\kCura.OutsideIn.FI.unified.2017.3.3\build\kCura.OutsideIn.FI.unified.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Relativity.StagingExplorer.1.0.0\build\Relativity.StagingExplorer.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Relativity.StagingExplorer.1.0.0\build\Relativity.StagingExplorer.targets'))" />
+    <Error Condition="!Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2017.4.0\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\kCura.OutsideIn.FI.Win32.2017.4.0\build\kCura.OutsideIn.FI.Win32.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Relativity.StagingExplorer.1.0.6\build\Relativity.StagingExplorer.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Relativity.StagingExplorer.1.0.6\build\Relativity.StagingExplorer.targets'))" />
   </Target>
-  <Import Project="..\..\packages\Relativity.StagingExplorer.1.0.0\build\Relativity.StagingExplorer.targets" Condition="Exists('..\..\packages\Relativity.StagingExplorer.1.0.0\build\Relativity.StagingExplorer.targets')" />
+  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32.2017.4.0\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2017.4.0\build\kCura.OutsideIn.FI.Win32.targets')" />
+  <Import Project="..\..\packages\Relativity.StagingExplorer.1.0.6\build\Relativity.StagingExplorer.targets" Condition="Exists('..\..\packages\Relativity.StagingExplorer.1.0.6\build\Relativity.StagingExplorer.targets')" />
 </Project>
