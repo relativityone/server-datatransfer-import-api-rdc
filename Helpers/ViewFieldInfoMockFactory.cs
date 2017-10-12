@@ -171,6 +171,22 @@ namespace kCura.WinEDDS.Core.NUnit.Helpers
 			dataTable.Columns.Add("AllowHtml", typeof(bool));
 			dataTable.Columns["AllowHtml"].DefaultValue = false;
 
+			dataTable.Columns.Add("ParentReflectionType", typeof(int));
+			dataTable.Columns["ParentReflectionType"].DefaultValue = -1;
+
+			dataTable.Columns.Add("ReflectedFieldArtifactTypeTableName", typeof(string));
+			dataTable.Columns["ReflectedFieldArtifactTypeTableName"].DefaultValue = string.Empty;
+
+			dataTable.Columns.Add("ReflectedFieldArtifactTypeIdentifierColumnName", typeof(string));
+			dataTable.Columns["ReflectedFieldArtifactTypeIdentifierColumnName"].DefaultValue = string.Empty;
+
+			dataTable.Columns.Add("ReflectedFieldArtifactTypeConnectorFieldName", typeof(string));
+			dataTable.Columns["ReflectedFieldArtifactTypeConnectorFieldName"].DefaultValue = string.Empty;
+
+			dataTable.Columns.Add("ReflectedConnectorArtifactTypeIdentifierColumnName", typeof(string));
+			dataTable.Columns["ReflectedConnectorArtifactTypeIdentifierColumnName"].DefaultValue = string.Empty;
+
+
 			return dataTable;
 		}
 	}
