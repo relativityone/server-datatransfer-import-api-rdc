@@ -119,6 +119,11 @@
 			row("RelationalTableName") = relationalTableName
 			row("RelationalTableColumnName") = relationalTableColumnName
 			row("RelationalTableColumnName2") = relationalTableColumnName2
+			row("ParentReflectionType") = parentReflectionType
+			row("ReflectedFieldArtifactTypeTableName") = reflectedFieldArtifactTypeTableName 
+			row("ReflectedFieldArtifactTypeIdentifierColumnName") = reflectedFieldIdentifierColumnName
+			row("ReflectedFieldArtifactTypeConnectorFieldName") = reflectedFieldConnectorFieldName
+			row("ReflectedConnectorArtifactTypeIdentifierColumnName") = reflectedConnectorIdentifierColumnName
 			row("EnableDataGrid") = enableDataGrid
 			Return New kCura.WinEDDS.ViewFieldInfo(row)
 		End Function
