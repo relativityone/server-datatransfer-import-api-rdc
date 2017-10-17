@@ -306,11 +306,13 @@
     <Reference Include="Relativity.Services.ServiceProxy">
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.423\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.155.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.155\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared">
+      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.156\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.5.281.29, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Telemetry.Services.Interface">
       <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface.9.5.281.29\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
+      <Private>True</Private>
     </Reference>      
     <Reference Include="Relativity.StagingExplorer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.11\lib\net462\Relativity.StagingExplorer.exe</HintPath>
