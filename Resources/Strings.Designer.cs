@@ -97,6 +97,15 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Switching to the HTTP client due to a serious error within the &apos;{0}&apos; transfer client. Error: {1}.
+        /// </summary>
+        internal static string HttpFallbackWarningMessage {
+            get {
+                return ResourceManager.GetString("HttpFallbackWarningMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This opration cannot be performed because this instance has already been disposed..
         /// </summary>
         internal static string ObjectDisposedExceptionMessage {

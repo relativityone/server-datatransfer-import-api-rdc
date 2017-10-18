@@ -23,7 +23,9 @@ namespace kCura.WinEDDS.TApi
         public TapiBridgeParameters()
         {
             this.BcpFileTransfer = false;
-            this.DocRootLevels = 1;
+            this.AsperaBcpRootFolder = "BCPPath";
+            this.AsperaDocRootLevels = 1;
+            this.ClientRequestId = Guid.NewGuid();
             this.Credentials = null;
             this.FileShare = null;
             this.ForceAsperaClient = false;
@@ -31,13 +33,14 @@ namespace kCura.WinEDDS.TApi
             this.ForceHttpClient = false;
             this.ForceFileShareClient = false;
             this.LargeFileProgressEnabled = false;
-            this.LogEnabled = false;
             this.LogConfigFile = null;
             this.MaxFilesPerFolder = 1000;
             this.MaxJobParallelism = 10;
             this.MaxJobRetryAttempts = 3;
             this.SortIntoVolumes = true;
+            this.TargetDataRateMbps = 100;
             this.TargetPath = null;
+            this.TransferLogDirectory = null;
             this.TimeoutSeconds = 300;
             this.WaitTimeBetweenRetryAttempts = 30;
             this.WebServiceUrl = null;
@@ -58,16 +61,18 @@ namespace kCura.WinEDDS.TApi
                 throw new ArgumentNullException(nameof(copy));
             }
 
+            this.AsperaBcpRootFolder = copy.AsperaBcpRootFolder;
+            this.AsperaDocRootLevels = copy.AsperaDocRootLevels;
             this.BcpFileTransfer = copy.BcpFileTransfer;
+            this.ClientRequestId = copy.ClientRequestId;
             this.Credentials = copy.Credentials;
-            this.DocRootLevels = copy.DocRootLevels;
             this.FileShare = copy.FileShare;
             this.ForceAsperaClient = copy.ForceAsperaClient;
             this.ForceClientCandidates = copy.ForceClientCandidates;
             this.ForceHttpClient = copy.ForceHttpClient;
             this.ForceFileShareClient = copy.ForceFileShareClient;
             this.LargeFileProgressEnabled = copy.LargeFileProgressEnabled;
-            this.LogEnabled = copy.LogEnabled;
+            this.TargetDataRateMbps = copy.TargetDataRateMbps;
             this.LogConfigFile = copy.LogConfigFile;
             this.MaxFilesPerFolder = copy.MaxFilesPerFolder;
             this.MaxJobParallelism = copy.MaxJobParallelism;
@@ -75,10 +80,35 @@ namespace kCura.WinEDDS.TApi
             this.SortIntoVolumes = copy.SortIntoVolumes;
             this.TargetPath = copy.TargetPath;
             this.TimeoutSeconds = copy.TimeoutSeconds;
+            this.TransferLogDirectory = copy.TransferLogDirectory;
             this.WaitTimeBetweenRetryAttempts = copy.WaitTimeBetweenRetryAttempts;
             this.WebServiceUrl = copy.WebServiceUrl;
             this.WebCookieContainer = copy.WebCookieContainer;
             this.WorkspaceId = copy.WorkspaceId;
+        }
+
+        /// <summary>
+        /// Gets or sets the Aspera BCP root folder.
+        /// </summary>
+        /// <value>
+        /// The folder.
+        /// </value>
+        public string AsperaBcpRootFolder
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the number of levels the Aspera doc root folder is relative to the file share.
+        /// </summary>
+        /// <value>
+        /// The number of levels.
+        /// </value>
+        public int AsperaDocRootLevels
+        {
+            get;
+            set;
         }
 
         /// <summary>
@@ -94,24 +124,24 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Gets or sets the Relativity network credentials.
+        /// Gets or sets the client request unique identifier.
         /// </summary>
         /// <value>
-        /// The <see cref="NetworkCredential"/> instance.
+        /// The <see cref="Guid"/> value.
         /// </value>
-        public NetworkCredential Credentials
+        public Guid ClientRequestId
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Gets or sets the number of levels the Aspera doc root folder is relative to the file share.
+        /// Gets or sets the Relativity network credentials.
         /// </summary>
         /// <value>
-        /// The number of levels.
+        /// The <see cref="NetworkCredential"/> instance.
         /// </value>
-        public int DocRootLevels
+        public NetworkCredential Credentials
         {
             get;
             set;
@@ -184,18 +214,6 @@ namespace kCura.WinEDDS.TApi
         /// The large file progress enabled value.
         /// </value>
         public bool LargeFileProgressEnabled
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the TAPI log is enabled.
-        /// </summary>
-        /// <value>
-        /// The log enabled value.
-        /// </value>
-        public bool LogEnabled
         {
             get;
             set;
@@ -277,12 +295,36 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
+        /// Gets or sets the target data rate in Mbps units.
+        /// </summary>
+        /// <value>
+        /// The target data rate.
+        /// </value>
+        public int TargetDataRateMbps
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Gets or sets the target path
         /// </summary>
         /// <value>
         /// The path.
         /// </value>
         public string TargetPath
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the transfer log directory.
+        /// </summary>
+        /// <value>
+        /// The directory.
+        /// </value>
+        public string TransferLogDirectory
         {
             get;
             set;

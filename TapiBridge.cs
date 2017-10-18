@@ -19,7 +19,8 @@ namespace kCura.WinEDDS.TApi
 
     using kCura.WinEDDS.TApi.Resources;
 
-    using Relativity.Logging;
+    using Polly;
+
     using Relativity.Transfer;
     using Relativity.Transfer.Aspera;
     using Relativity.Transfer.Http;
@@ -69,11 +70,6 @@ namespace kCura.WinEDDS.TApi
         /// The current transfer direction.
         /// </summary>
         private readonly TransferDirection currentDirection;
-
-        /// <summary>
-        /// The client request unique identifier used to tie all jobs to a single request.
-        /// </summary>
-        private Guid? clientRequestId;
 
         /// <summary>
         /// The job unique identifier associated with the current job.
@@ -318,12 +314,33 @@ namespace kCura.WinEDDS.TApi
                                        TargetFileName = targetFileName,
                                        Order = order
                                    };
+
             try
             {
-                this.transferJob.AddPath(transferPath);
-                return !string.IsNullOrEmpty(transferPath.TargetFileName)
-                           ? transferPath.TargetFileName
-                           : this.fileSystemService.GetFileName(transferPath.SourcePath);
+                const int RetryAttempts = 2;
+                Exception transferException = null;
+                var result = Policy.Handle<TransferException>().Retry(
+                    RetryAttempts,
+                    (exception, count) =>
+                        {
+                            // This will automatically add add paths.
+                            transferException = exception;
+                            this.transferLog.LogError(exception, "Failed to add a path to the transfer job.");
+                            this.FallbackHttpClient(exception, transferPath);
+                        }).Execute(
+                        () =>
+                        {
+                            // Fallback automatically attempts to add paths. Make sure the path isn't added twice.
+                            if (transferException == null || !this.GetIsTransferPathInJobQueue(transferPath))
+                            {
+                                this.transferJob.AddPath(transferPath);
+                            }
+
+                            return !string.IsNullOrEmpty(transferPath.TargetFileName)
+                                       ? transferPath.TargetFileName
+                                       : this.fileSystemService.GetFileName(transferPath.SourcePath);
+                        });
+                return result;
             }
             catch (ArgumentException e)
             {
@@ -343,13 +360,9 @@ namespace kCura.WinEDDS.TApi
             catch (OperationCanceledException)
             {
                 this.LogCancelRequest();
-                return string.Empty;
-            }
-            catch (TransferException e)
-            {
-                this.transferLog.LogError(e, "Failed to add a path to the transfer job.");
-                this.FallbackHttpClient();
-                return string.Empty;
+                return !string.IsNullOrEmpty(transferPath.TargetFileName)
+                           ? transferPath.TargetFileName
+                           : this.fileSystemService.GetFileName(transferPath.SourcePath);
             }
         }
 
@@ -371,57 +384,81 @@ namespace kCura.WinEDDS.TApi
                 throw new InvalidOperationException(Strings.TransferJobNullExceptionMessage);
             }
 
-            const int ValidLineNumber = 1;
-
             try
             {
-                var taskResult = this.transferJob.CompleteAsync(this.cancellationToken);
-                var transferResult = taskResult.GetAwaiter().GetResult();
-                this.transferLog.LogInformation(
-                    "{Name} transfer status: {Status}, elapsed time: {Elapsed}, data rate: {TransferRate:0.00} Mbps",
-                    this.ClientDisplayName,
-                    transferResult.Status,
-                    transferResult.Elapsed,
-                    transferResult.TransferRateMbps);
-                this.transferLog.LogInformation(
-                    "{Name} total transferred files: {TotalTransferredFiles}, total failed files: {TotalFailedFiles}",
-                    this.ClientDisplayName,
-                    transferResult.TotalTransferredFiles,
-                    transferResult.TotalFailedFiles);
-                switch (transferResult.Status)
-                {
-                    case TransferStatus.Fatal:
-
-                        // Note: Fatal status is non-retryable and normally indicative of issues with data or permissions.
-                        var lastIssue = transferResult.Issues.OrderBy(x => x.Index).ToList().FindLast(x => x.Path != null) ??
-                                        transferResult.TransferError;
-                        if (lastIssue != null && lastIssue.Path != null)
+                const int RetryAttempts = 2;
+                Exception handledException = null;
+                Policy.Handle<TransferException>().Retry(
+                    RetryAttempts,
+                    (exception, count) =>
                         {
-                            var formattedMessage = transferResult.Request.Direction == TransferDirection.Download
-                                                       ? Strings.TransferFileDownloadFatalMessage
-                                                       : Strings.TransferFileUploadFatalMessage;
-                            var message = string.Format(CultureInfo.CurrentCulture, formattedMessage, lastIssue.Message);
-                            var lineNumber = lastIssue.Path.Order > 0 ? lastIssue.Path.Order : ValidLineNumber;
-                            this.RaiseStatusMessage(message, lineNumber);
-                            this.RaiseFatalError(message, lineNumber);
-                        }
+                            handledException = exception;
+                            this.transferLog.LogWarning2(
+                                exception,
+                                this.jobRequest,
+                                Strings.CompleteJobExceptionMessage);
+                            this.FallbackHttpClient(exception, null);
+                        }).Execute(
+                    () =>
+                        {
+                            var taskResult = this.transferJob.CompleteAsync(this.cancellationToken);
+                            var transferResult = taskResult.GetAwaiter().GetResult();
+                            this.transferLog.LogInformation(
+                                "{Name} transfer status: {Status}, elapsed time: {Elapsed}, data rate: {TransferRate:0.00} Mbps",
+                                this.ClientDisplayName,
+                                transferResult.Status,
+                                transferResult.Elapsed,
+                                transferResult.TransferRateMbps);
+                            this.transferLog.LogInformation(
+                                "{Name} total transferred files: {TotalTransferredFiles}, total failed files: {TotalFailedFiles}",
+                                this.ClientDisplayName,
+                                transferResult.TotalTransferredFiles,
+                                transferResult.TotalFailedFiles);
+                            switch (transferResult.Status)
+                            {
+                                case TransferStatus.Fatal:
 
-                        break;
-                    case TransferStatus.Failed:
+                                    // Note: Fatal status is non-retryable and normally indicative of issues with data or permissions.
+                                    const int ValidLineNumber = 1;
+                                    var message = "This operation failed due to a fatal transfer error.";
+                                    var lineNumber = ValidLineNumber;
+                                    var lastIssue =
+                                        transferResult.Issues.OrderBy(x => x.Index).ToList()
+                                            .FindLast(x => x.Path != null) ?? transferResult.TransferError;
+                                    if (lastIssue != null && lastIssue.Path != null)
+                                    {
+                                        var formattedMessage =
+                                            transferResult.Request.Direction == TransferDirection.Download
+                                                ? Strings.TransferFileDownloadFatalMessage
+                                                : Strings.TransferFileUploadFatalMessage;
+                                        message = string.Format(
+                                            CultureInfo.CurrentCulture,
+                                            formattedMessage,
+                                            lastIssue.Message);
+                                        lineNumber = lastIssue.Path.Order > 0 ? lastIssue.Path.Order : ValidLineNumber;
+                                    }
 
-                        // Note: Failed status indicates a problem with the transport.
-                        throw new TransferException(Strings.TransferJobExceptionMessage);
-                }
+                                    this.RaiseStatusMessage(message, lineNumber);
+                                    if (handledException == null)
+                                    {
+                                        // Force the fallback.
+                                        throw new TransferException(Strings.TransferJobExceptionMessage);
+                                    }
+
+                                    // Gracefully terminate.
+                                    this.RaiseFatalError(message, lineNumber);
+                                    break;
+
+                                case TransferStatus.Failed:
+
+                                    // Note: Failed status indicates a problem with the transport.
+                                    throw new TransferException(Strings.TransferJobExceptionMessage);
+                            }
+                        });
             }
             catch (OperationCanceledException)
             {
                 this.LogCancelRequest();
-            }
-            catch (Exception e)
-            {
-                this.transferLog.LogWarning2(e, this.jobRequest, Strings.CompleteJobExceptionMessage);
-                this.RaiseWarningMessage(Strings.CompleteJobExceptionMessage + " Message: " + e.Message, 0);
-                this.FallbackHttpClient();
             }
             finally
             {
@@ -470,7 +507,9 @@ namespace kCura.WinEDDS.TApi
                         MaxHttpRetryAttempts = MaxHttpRetryAttempts,
                         PreCalculateJobSize = false,
                         PreserveDates = false,
+                        TargetDataRateMbps = this.parameters.TargetDataRateMbps,
                         TimeoutSeconds = this.parameters.TimeoutSeconds,
+                        TransferLogDirectory = this.parameters.TransferLogDirectory,
                         ValidateSourcePaths = ValidateSourcePaths
                     };
 
@@ -550,17 +589,12 @@ namespace kCura.WinEDDS.TApi
 
             this.transferLog.LogInformation("Create job started...");
             this.CreateTransferClient();
-            if (this.clientRequestId == null)
-            {
-                this.clientRequestId = Guid.NewGuid();
-            }
-
             this.currentJobNumber++;
             this.currentJobId = Guid.NewGuid();
             this.jobRequest = this.currentDirection == TransferDirection.Upload
                                   ? TransferRequest.ForUploadJob(this.TargetPath, this.context)
                                   : TransferRequest.ForDownloadJob(this.TargetPath, this.context);
-            this.jobRequest.ClientRequestId = this.clientRequestId;
+            this.jobRequest.ClientRequestId = this.parameters.ClientRequestId;
             this.jobRequest.JobId = this.currentJobId;
             this.jobRequest.Tag = this.currentJobNumber;
 
@@ -589,7 +623,7 @@ namespace kCura.WinEDDS.TApi
                     throw;
                 }
 
-                this.FallbackHttpClient();
+                this.FallbackHttpClient(e, null);
             }
         }
 
@@ -743,7 +777,13 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// Setup a new HTTP client and potentially re-queue all paths that previously failed.
         /// </summary>
-        private void FallbackHttpClient()
+        /// <param name="exception">
+        /// The exception that forced the fallback.
+        /// </param>
+        /// <param name="addedPath">
+        /// The path attempting to get added to the job. This can be null if the failure occurred outside of adding the path to a job.
+        /// </param>
+        private void FallbackHttpClient(Exception exception, TransferPath addedPath)
         {
             // If we're already using the HTTP client, it's hopeless.
             if (this.transferClient.Id == new Guid(TransferClientConstants.HttpClientId))
@@ -751,13 +791,20 @@ namespace kCura.WinEDDS.TApi
                 throw new TransferException(Strings.HttpFallbackExceptionMessage);
             }
 
-            this.transferLog.LogInformation("Preparing to fallback the transfer client to HTTP.");
-            var requeuedPaths = new List<TransferPath>();
-            if (this.transferJob != null)
+            this.transferLog.LogInformation(exception, "Preparing to fallback to the HTTP client due to an unexpected error.");
+
+            // Ensure the fallback mode is acknowledged via Warning message.
+            var message = string.Format(
+                CultureInfo.CurrentCulture,
+                Strings.HttpFallbackWarningMessage,
+                this.ClientDisplayName,
+                exception.ToString());
+            this.RaiseWarningMessage(message, TapiConstants.NoLineNumber);
+            var retryablePaths = this.GetRetryableTransferPaths().ToList();
+            if (addedPath != null && !retryablePaths.Any(x => x.Equals(addedPath)))
             {
-                requeuedPaths.AddRange(this.transferJob.ReadAllJobPaths()
-                    .Where(x => x.Status != TransferPathStatus.Successful)
-                    .Select(jobPath => jobPath.Path));
+                // Do NOT call AddPath as this could introduce infinite recursion.
+                retryablePaths.Add(addedPath);
             }
 
             this.DestroyTransferJob();
@@ -765,12 +812,49 @@ namespace kCura.WinEDDS.TApi
             this.CreateHttpClient();
             this.RaiseClientChanged(ClientChangeReason.HttpFallback);
             this.CreateTransferJob(true);
-            foreach (var path in requeuedPaths)
+
+            // Restore the original path before adding to the HTTP-based job.
+            foreach (var path in retryablePaths)
             {
-                this.AddPath(path.SourcePath, path.TargetFileName, path.Order);
+                path.RevertPaths();
+                this.transferJob.AddPath(path);
             }
 
-            this.transferLog.LogInformation("Successfully switched the transfer client to HTTP.");
+            this.transferLog.LogInformation(exception, "Successfully switched the transfer client to HTTP.");
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the specified path has already been added to the queue.
+        /// </summary>
+        /// <param name="path">
+        /// The path.
+        /// </param>
+        /// <returns>
+        /// <see langword="true" /> if the path has already been added to the queue; otherwise, <see langword="false" />.
+        /// </returns>
+        private bool GetIsTransferPathInJobQueue(TransferPath path)
+        {
+            var queuedTransferPaths = this.transferJob.ReadAllJobPaths().Select(jobPath => jobPath.Path);
+            return queuedTransferPaths.Any(x => x.Equals(path));
+        }
+
+        /// <summary>
+        /// Gets a collection of transfer paths that are in the queue and not yet transferred.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="TransferPath"/> instance.
+        /// </returns>
+        private IEnumerable<TransferPath> GetRetryableTransferPaths()
+        {
+            var paths = new List<TransferPath>();
+            if (this.transferJob != null)
+            {
+                paths.AddRange(
+                    this.transferJob.ReadAllJobPaths().Where(x => x.Status != TransferPathStatus.Successful)
+                        .Select(jobPath => jobPath.Path));
+            }
+
+            return paths;
         }
 
         /// <summary>
@@ -780,7 +864,7 @@ namespace kCura.WinEDDS.TApi
         {
             this.transferLog.LogInformation(
                 "The file transfer has been cancelled. ClientId={ClientId}, JobId={JobId} ",
-                this.clientRequestId,
+                this.parameters.ClientRequestId,
                 this.currentJobId);
         }
 
@@ -915,12 +999,20 @@ namespace kCura.WinEDDS.TApi
             switch (this.ClientId.ToString().ToUpperInvariant())
             {
                 case TransferClientConstants.AsperaClientId:
-                    var resolver =
-                        new AsperaUncPathResolver
-                            {
-                                FileShare = this.parameters.FileShare,
-                                DocRootLevels = this.parameters.DocRootLevels
-                            };
+                    IRemotePathResolver resolver;
+                    if (this.parameters.BcpFileTransfer)
+                    {
+                        resolver = new AsperaUncBcpPathResolver(
+                            this.parameters.FileShare,
+                            this.parameters.AsperaBcpRootFolder);
+                    }
+                    else
+                    {
+                        resolver = new AsperaUncPathResolver(
+                            this.parameters.FileShare,
+                            this.parameters.AsperaDocRootLevels);
+                    }
+
                     if (this.currentDirection == TransferDirection.Upload)
                     {
                         this.jobRequest.TargetPathResolver = resolver;

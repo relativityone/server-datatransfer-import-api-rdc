@@ -189,4 +189,7 @@
   <data name="TransferJobUploadWarningMessage" xml:space="preserve">
     <value>{0} upload job issue: {1}.</value>
   </data>
+  <data name="HttpFallbackWarningMessage" xml:space="preserve">
+    <value>Switching to the HTTP client due to a serious error within the '{0}' transfer client. Error: {1}</value>
+  </data>
 </root>
