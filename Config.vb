@@ -45,11 +45,13 @@ Namespace kCura.WinEDDS
                             If Not tempDict.Contains("TapiForceClientCandidates") Then tempDict.Add("TapiForceClientCandidates", "")
                             If Not tempDict.Contains("TapiForceFileShareClient") Then tempDict.Add("TapiForceFileShareClient", "False")
                             If Not tempDict.Contains("TapiForceHttpClient") Then tempDict.Add("TapiForceHttpClient", "False")
+                            If Not tempDict.Contains("TapiForceBcpHttpClient") Then tempDict.Add("TapiForceBcpHttpClient", "False")
+                            If Not tempDict.Contains("TapiAsperaBcpRootFolder") Then tempDict.Add("TapiAsperaBcpRootFolder", "BCPPath")
                             If Not tempDict.Contains("TapiForceAsperaClient") Then tempDict.Add("TapiForceAsperaClient", "False")
-                            If Not tempDict.Contains("TapiLogEnabled") Then tempDict.Add("TapiLogEnabled", "False")
+                            If Not tempDict.Contains("TapiTargetDataRateMbps") Then tempDict.Add("TapiTargetDataRateMbps", "100")
+                            If Not tempDict.Contains("TapiTransferLogDirectory") Then tempDict.Add("TapiTransferLogDirectory", "")
                             If Not tempDict.Contains("TapiLargeFileProgressEnabled") Then tempDict.Add("TapiLargeFileProgressEnabled", "False")
                             If Not tempDict.Contains("TapiMaxJobParallelism") Then tempDict.Add("TapiMaxJobParallelism", "10")
-                            If Not tempDict.Contains("TapiAsperaBcpDocRootLevels") Then tempDict.Add("TapiAsperaBcpDocRootLevels", "1")
                             If Not tempDict.Contains("TapiAsperaNativeDocRootLevels") Then tempDict.Add("TapiAsperaNativeDocRootLevels", "1")
                             If Not tempDict.Contains("DisableAspera") Then tempDict.Add("DisableAspera", "True")
                             If Not tempDict.Contains("RestUrl") Then tempDict.Add("RestUrl", "/Relativity.REST/api")
@@ -338,6 +340,20 @@ Namespace kCura.WinEDDS
             End Get
         End Property
 
+        'This is used to force the TAPI HTTP client only for BCP. This is a temp workaround until Aspera supports multiple file shares.
+        Public Shared ReadOnly Property TapiForceBcpHttpClient() As Boolean
+            Get
+                Return CType(ConfigSettings("TapiForceBcpHttpClient"), Boolean)
+            End Get
+        End Property
+
+        'This is used to specify the root folder where the Aspera BCP files are uploaded.
+        Public Shared ReadOnly Property TapiAsperaBcpRootFolder() As String
+            Get
+                Return CType(ConfigSettings("TapiAsperaBcpRootFolder"), String)
+            End Get
+        End Property
+
         'This is used to force the TAPI Aspera client.
         Public Shared ReadOnly Property TapiForceAsperaClient() As Boolean
             Get
@@ -352,10 +368,17 @@ Namespace kCura.WinEDDS
             End Get
         End Property
 
-        ' This forces TAPI to use a Serilog-based Relativity Logging ILog derived logger.
-        Public Shared ReadOnly Property TapiLogEnabled() As Boolean
+        ' This sets a TAPI target data rate in Mbps units.
+        Public Shared ReadOnly Property TapiTargetDataRateMbps() As Int32
             Get
-                Return CType(ConfigSettings("TapiLogEnabled"), Boolean)
+                Return CType(ConfigSettings("TapiTargetDataRateMbps"), Int32)
+            End Get
+        End Property
+
+        ' This sets a directory where TAPI client-specific transfer logs are stored.
+        Public Shared ReadOnly Property TapiTransferLogDirectory() As String
+            Get
+                Return CType(ConfigSettings("TapiTransferLogDirectory"), String)
             End Get
         End Property
 
@@ -370,13 +393,6 @@ Namespace kCura.WinEDDS
         Public Shared ReadOnly Property TapiMaxJobParallelism() As Int32
             Get
                 Return CType(ConfigSettings("TapiMaxJobParallelism"), Int32)
-            End Get
-        End Property
-
-        ' This sets the number of levels the Aspera doc root folder is relative to the file share where BCP files are stored.
-        Public Shared ReadOnly Property TapiAsperaBcpDocRootLevels() As Int32
-            Get
-                Return CType(ConfigSettings("TapiAsperaBcpDocRootLevels"), Int32)
             End Get
         End Property
 

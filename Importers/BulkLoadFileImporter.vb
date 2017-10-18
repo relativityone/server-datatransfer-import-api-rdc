@@ -391,8 +391,12 @@ Namespace kCura.WinEDDS
 			Dim gateway As kCura.WinEDDS.Service.FileIO = New kCura.WinEDDS.Service.FileIO(args.Credentials, args.CookieContainer)
 			Dim nativeParameters As TApi.TapiBridgeParameters = New TApi.TapiBridgeParameters
 			nativeParameters.BcpFileTransfer = False
+			nativeParameters.AsperaBcpRootFolder = String.Empty
+
+			' This will tie both native and BCP to a single unique identifier.
+			nativeParameters.ClientRequestId = Guid.NewGuid()
 			nativeParameters.Credentials = args.Credentials
-			nativeParameters.DocRootLevels = Config.TapiAsperaNativeDocRootLevels
+			nativeParameters.AsperaDocRootLevels = Config.TapiAsperaNativeDocRootLevels
 			nativeParameters.FileShare = args.CaseInfo.DocumentPath
 			nativeParameters.ForceAsperaClient = Config.TapiForceAsperaClient
 			nativeParameters.ForceClientCandidates = Config.TapiForceClientCandidates
@@ -400,11 +404,12 @@ Namespace kCura.WinEDDS
 			nativeParameters.ForceHttpClient = Config.ForceWebUpload OrElse Config.TapiForceHttpClient
 			nativeParameters.LargeFileProgressEnabled = Config.TapiLargeFileProgressEnabled
 			nativeParameters.LogConfigFile = Config.LogConfigFile
-			nativeParameters.LogEnabled = Config.TapiLogEnabled
 			nativeParameters.MaxFilesPerFolder = gateway.RepositoryVolumeMax
 			nativeParameters.MaxJobParallelism = Config.TapiMaxJobParallelism
 			nativeParameters.MaxJobRetryAttempts = Me.NumberOfRetries
 			nativeParameters.TargetPath = Me._defaultDestinationFolderPath
+			nativeParameters.TargetDataRateMbps = Config.TapiTargetDataRateMbps
+			nativeParameters.TransferLogDirectory = Config.TapiTransferLogDirectory
 			nativeParameters.WaitTimeBetweenRetryAttempts = Me.WaitTimeBetweenRetryAttempts
 			nativeParameters.WebCookieContainer = args.CookieContainer
 			nativeParameters.WebServiceUrl = Config.WebServiceURL
@@ -424,9 +429,10 @@ Namespace kCura.WinEDDS
 			' Copying the parameters and tweaking just a few BCP specific parameters.
 			Dim bcpParameters As TApi.TapiBridgeParameters = nativeParameters.ShallowCopy()
 			bcpParameters.BcpFileTransfer = True
-			bcpParameters.DocRootLevels = Config.TapiAsperaBcpDocRootLevels
+			bcpParameters.AsperaBcpRootFolder = Config.TapiAsperaBcpRootFolder
 			bcpParameters.FileShare = gateway.GetBcpSharePath(args.CaseInfo.ArtifactID)
 			bcpParameters.SortIntoVolumes = False
+			bcpParameters.ForceHttpClient = bcpParameters.ForceHttpClient Or Config.TapiForceBcpHttpClient
 			_bcpUploaderBridge = TApi.TapiBridgeFactory.CreateUploadBridge(bcpParameters, log, _cancellationToken.Token)
 			_bcpUploaderBridge.TargetPath = bcpParameters.FileShare
 
@@ -1191,6 +1197,11 @@ Namespace kCura.WinEDDS
 				' Note: Retry and potential HTTP fallback automatically kick in. Throwing a similar exception if a failure occurs.
 				Throw New BcpPathAccessException("Error accessing BCP Path, could be caused by network connectivity issues: " & ex.Message)
 			End Try
+
+			' Account for possible cancellation during the BCP transfers.
+			If Not ShouldImport Then
+				Return
+			End If
 
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
 				settings.Repository = _defaultDestinationFolderPath
