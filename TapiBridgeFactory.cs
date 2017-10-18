@@ -37,23 +37,20 @@ namespace kCura.WinEDDS.TApi
         /// </returns>
         public static TapiBridge CreateUploadBridge(TapiBridgeParameters parameters, ILog log, CancellationToken token)
         {
-            var transferLog = GetTransferLog(parameters, log);
+            var transferLog = GetTransferLog(log);
             return new TapiBridge(parameters, TransferDirection.Upload, transferLog, token);
         }
 
         /// <summary>
         /// Gets the transfer log instance.
         /// </summary>
-        /// <param name="parameters">
-        /// The native file transfer parameters
-        /// </param>
         /// <param name="log">
         /// The Relativity logging instance.
         /// </param>
         /// <returns>
         /// The <see cref="ITransferLog"/> instance.
         /// </returns>
-        private static ITransferLog GetTransferLog(TapiBridgeParameters parameters, ILog log)
+        private static ITransferLog GetTransferLog(ILog log)
         {
             try
             {
@@ -62,11 +59,6 @@ namespace kCura.WinEDDS.TApi
 #else
                 LogSettings.Instance.MinimumLogLevel = LoggingLevel.Information;
 #endif
-                if (!parameters.LogEnabled)
-                {
-                    return new NullTransferLog();
-                }
-
                 return new RelativityTransferLog(log, false);
             }
             catch (Exception e)
