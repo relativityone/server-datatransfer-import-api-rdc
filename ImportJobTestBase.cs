@@ -317,7 +317,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
             this.GivenTheDisableNativeValidationSetting(disableNativeValidation);
 
             // Note: by default, the file/BCP shares are 1 level from the root. These are Aspera and R1 specific parameters.
-            this.GivenTheAsperaBcpDocRootLevels(1);
+            this.GivenTheAsperaBcpRootFolder("BCPPath");
             this.GivenTheAsperaNativeDocRootLevels(1);
         }
 
@@ -400,17 +400,6 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         }
 
         /// <summary>
-        /// Given the Aspera BCP files doc-root levels.
-        /// </summary>
-        /// <param name="value">
-        /// The setting value.
-        /// </param>
-        protected void GivenTheAsperaBcpDocRootLevels(int value)
-        {
-            Config.ConfigSettings["TapiAsperaBcpDocRootLevels"] = value;
-        }
-
-        /// <summary>
         /// Given the Aspera native files doc-root levels.
         /// </summary>
         /// <param name="value">
@@ -419,6 +408,17 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         protected void GivenTheAsperaNativeDocRootLevels(int value)
         {
             Config.ConfigSettings["TapiAsperaNativeDocRootLevels"] = value;
+        }
+
+        /// <summary>
+        /// Given the Aspera BCP root folder.
+        /// </summary>
+        /// <param name="value">
+        /// The setting value.
+        /// </param>
+        protected void GivenTheAsperaBcpRootFolder(string value)
+        {
+            Config.ConfigSettings["TapiAsperaBcpRootFolder"] = value;
         }
 
         /// <summary>
