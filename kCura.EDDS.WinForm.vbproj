@@ -317,7 +317,7 @@
     <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.155.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.155\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.5.281.29, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Telemetry.Services.Interface">
       <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface.9.5.281.29\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Transfer.Client, Version=1.2.17290.3, Culture=neutral, processorArchitecture=MSIL">
