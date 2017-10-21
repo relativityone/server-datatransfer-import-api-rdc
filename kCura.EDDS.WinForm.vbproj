@@ -306,20 +306,20 @@
     <Reference Include="Relativity.Services.ServiceProxy">
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.423\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared">
-      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.156\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.Telemetry.Services.Interface">
-      <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface.9.5.281.29\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
-      <Private>True</Private>
-    </Reference>	
     <Reference Include="Relativity.StagingExplorer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.12\lib\net462\Relativity.StagingExplorer.exe</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.StagingExplorer.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.12\lib\net462\Relativity.StagingExplorer.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>	
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared">
+      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.156\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.Services.Interface">
+      <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface.9.5.281.29\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Transfer.Client, Version=1.2.17290.3, Culture=neutral, processorArchitecture=MSIL">
@@ -697,9 +697,9 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\Relativity.StagingExplorer.1.0.12\Build\Relativity.StagingExplorer.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Relativity.StagingExplorer.1.0.12\Build\Relativity.StagingExplorer.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Relativity.StagingExplorer.1.0.12\build\Relativity.StagingExplorer.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Relativity.StagingExplorer.1.0.12\build\Relativity.StagingExplorer.targets'))" />
     <Error Condition="!Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2017.4.2\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\kCura.OutsideIn.FI.Win32.2017.4.2\build\kCura.OutsideIn.FI.Win32.targets'))" />
   </Target>
-  <Import Project="..\..\packages\Relativity.StagingExplorer.1.0.12\Build\Relativity.StagingExplorer.targets" Condition="Exists('..\..\packages\Relativity.StagingExplorer.1.0.12\Build\Relativity.StagingExplorer.targets')" />
+  <Import Project="..\..\packages\Relativity.StagingExplorer.1.0.12\build\Relativity.StagingExplorer.targets" Condition="Exists('..\..\packages\Relativity.StagingExplorer.1.0.12\build\Relativity.StagingExplorer.targets')" />
   <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32.2017.4.2\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2017.4.2\build\kCura.OutsideIn.FI.Win32.targets')" />
 </Project>
