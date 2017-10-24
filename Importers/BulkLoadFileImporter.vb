@@ -407,6 +407,7 @@ Namespace kCura.WinEDDS
 			nativeParameters.MaxFilesPerFolder = gateway.RepositoryVolumeMax
 			nativeParameters.MaxJobParallelism = Config.TapiMaxJobParallelism
 			nativeParameters.MaxJobRetryAttempts = Me.NumberOfRetries
+			nativeParameters.MinDataRateMbps = Config.TapiMinDataRateMbps
 			nativeParameters.TargetPath = Me._defaultDestinationFolderPath
 			nativeParameters.TargetDataRateMbps = Config.TapiTargetDataRateMbps
 			nativeParameters.TransferLogDirectory = Config.TapiTransferLogDirectory

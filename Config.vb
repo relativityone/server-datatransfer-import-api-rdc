@@ -48,6 +48,7 @@ Namespace kCura.WinEDDS
                             If Not tempDict.Contains("TapiForceBcpHttpClient") Then tempDict.Add("TapiForceBcpHttpClient", "False")
                             If Not tempDict.Contains("TapiAsperaBcpRootFolder") Then tempDict.Add("TapiAsperaBcpRootFolder", "BCPPath")
                             If Not tempDict.Contains("TapiForceAsperaClient") Then tempDict.Add("TapiForceAsperaClient", "False")
+                            If Not tempDict.Contains("TapiMinDataRateMbps") Then tempDict.Add("TapiMinDataRateMbps", "0")
                             If Not tempDict.Contains("TapiTargetDataRateMbps") Then tempDict.Add("TapiTargetDataRateMbps", "100")
                             If Not tempDict.Contains("TapiTransferLogDirectory") Then tempDict.Add("TapiTransferLogDirectory", "")
                             If Not tempDict.Contains("TapiLargeFileProgressEnabled") Then tempDict.Add("TapiLargeFileProgressEnabled", "False")
@@ -365,6 +366,13 @@ Namespace kCura.WinEDDS
         Public Shared ReadOnly Property TapiForceClientCandidates() As String
             Get
                 Return CType(ConfigSettings("TapiForceClientCandidates"), String)
+            End Get
+        End Property
+
+        ' This sets a TAPI minimum data rate in Mbps units.
+        Public Shared ReadOnly Property TapiMinDataRateMbps() As Int32
+            Get
+                Return CType(ConfigSettings("TapiMinDataRateMbps"), Int32)
             End Get
         End Property
 
