@@ -82,8 +82,8 @@ Namespace kCura.EDDS.WinForm
 				importOptions.SelectedImageLoadFile.FullTextEncoding = importOptions.ExtractedTextFileEncoding
 				importOptions.SelectedImageLoadFile.StartLineNumber = importOptions.StartLineNumber
 				importer.ImageLoadFile = importOptions.SelectedImageLoadFile
-				importer.enforceDocumentLimit = Config.CloudInstance
-				importer.enforceDocumentLimit = Config.EnforceDocumentLimit
+				importer.CloudInstance = Config.CloudInstance
+				importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
 				importer.ExecutionSource = ExecutionSource.Rdc
 				_application.SetWorkingDirectory(importOptions.SelectedImageLoadFile.FileName)
 				Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, importOptions.ErrorLoadFileLocation, importOptions.ErrorReportFileLocation)
