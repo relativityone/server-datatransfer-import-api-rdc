@@ -45,6 +45,8 @@ Namespace kCura.WinEDDS
 
 		Public Property CloudInstance As Boolean
 
+		Public Property EnforceDocumentLimit As Boolean
+
 		Public Property ExecutionSource As Relativity.ExecutionSource
 
 		Protected Overrides Sub Execute()
@@ -77,7 +79,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Function GetImageFileImporter() As kCura.WinEDDS.BulkImageFileImporter
-			Dim returnImporter As BulkImageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController, Me.ProcessID, True, CloudInstance, ExecutionSource)
+			Dim returnImporter As BulkImageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController, Me.ProcessID, True, EnforceDocumentLimit, ExecutionSource)
 			Return returnImporter
 		End Function
 

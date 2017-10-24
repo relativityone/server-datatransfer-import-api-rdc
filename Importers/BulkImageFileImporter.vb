@@ -58,6 +58,7 @@ Namespace kCura.WinEDDS
 		Private _totalProcessed As Long
 		Private _startLineNumber As Int64
 		Private _cloudInstance As Boolean
+		Private _enforceDocumentLimit As Boolean
 
 		Private _statistics As New kCura.WinEDDS.Statistics
 		Private _currentStatisticsSnapshot As IDictionary
@@ -178,12 +179,12 @@ Namespace kCura.WinEDDS
 #End Region
 
 #Region "Constructors"
-		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As Guid, ByVal doRetryLogic As Boolean,  ByVal cloudInstance As Boolean,
+		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As Guid, ByVal doRetryLogic As Boolean,  ByVal enforceDocumentLimit As Boolean,
 					   Optional ByVal executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
 			MyBase.New()
 
 			_executionSource = executionSource
-			_cloudInstance = cloudInstance
+			_enforceDocumentLimit = enforceDocumentLimit
 			_doRetryLogic = doRetryLogic
 			InitializeManagers(args)
 			Dim suffix As String = "\EDDS" & args.CaseInfo.ArtifactID & "\"
@@ -547,7 +548,7 @@ Namespace kCura.WinEDDS
 				_imageReader.Initialize()
 				_fileLineCount = _imageReader.CountRecords
 
-				If (_cloudInstance AndAlso _overwrite = Relativity.ImportOverwriteType.Append) Then
+				If (_enforceDocumentLimit AndAlso _overwrite = Relativity.ImportOverwriteType.Append) Then
 
 					Dim tempImageReader As OpticonFileReader = New OpticonFileReader(_folderID, _settings, Nothing, Nothing, _doRetryLogic)
 					tempImageReader.Initialize()
