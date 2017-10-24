@@ -505,6 +505,7 @@ namespace kCura.WinEDDS.TApi
                         MaxJobParallelism = this.parameters.MaxJobParallelism,
                         MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
                         MaxHttpRetryAttempts = MaxHttpRetryAttempts,
+                        MinDataRateMbps = this.parameters.MinDataRateMbps,
                         PreCalculateJobSize = false,
                         PreserveDates = false,
                         TargetDataRateMbps = this.parameters.TargetDataRateMbps,
@@ -597,6 +598,9 @@ namespace kCura.WinEDDS.TApi
             this.jobRequest.ClientRequestId = this.parameters.ClientRequestId;
             this.jobRequest.JobId = this.currentJobId;
             this.jobRequest.Tag = this.currentJobNumber;
+
+            // This will allow better tracking of transfers on the server.
+            this.jobRequest.Name = $"RDC-{this.ClientId}-batch {this.currentJobNumber:0000}";
 
             // Note: avoid exponential backoff since that number will be excessive given the default max retry period.
             this.jobRequest.RetryStrategy =

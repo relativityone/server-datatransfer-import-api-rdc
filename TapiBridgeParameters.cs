@@ -37,6 +37,7 @@ namespace kCura.WinEDDS.TApi
             this.MaxFilesPerFolder = 1000;
             this.MaxJobParallelism = 10;
             this.MaxJobRetryAttempts = 3;
+            this.MinDataRateMbps = 0;
             this.SortIntoVolumes = true;
             this.TargetDataRateMbps = 100;
             this.TargetPath = null;
@@ -77,6 +78,7 @@ namespace kCura.WinEDDS.TApi
             this.MaxFilesPerFolder = copy.MaxFilesPerFolder;
             this.MaxJobParallelism = copy.MaxJobParallelism;
             this.MaxJobRetryAttempts = copy.MaxJobRetryAttempts;
+            this.MinDataRateMbps = copy.MinDataRateMbps;
             this.SortIntoVolumes = copy.SortIntoVolumes;
             this.TargetPath = copy.TargetPath;
             this.TimeoutSeconds = copy.TimeoutSeconds;
@@ -268,12 +270,12 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Gets or sets the timeout in seconds.
+        /// Gets or sets the minimum data rate in Mbps units.
         /// </summary>
         /// <value>
-        /// The timeout.
+        /// The minimum data rate.
         /// </value>
-        public int TimeoutSeconds
+        public int MinDataRateMbps
         {
             get;
             set;
@@ -313,6 +315,18 @@ namespace kCura.WinEDDS.TApi
         /// The path.
         /// </value>
         public string TargetPath
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the timeout in seconds.
+        /// </summary>
+        /// <value>
+        /// The timeout.
+        /// </value>
+        public int TimeoutSeconds
         {
             get;
             set;
