@@ -214,7 +214,7 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} download job issue: {1}..
+        ///   Looks up a localized string similar to {0} download job issue: {1} - Retrying in {2} seconds. {3} tries left..
         /// </summary>
         internal static string TransferJobDownloadWarningMessage {
             get {
@@ -268,7 +268,7 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} upload job issue: {1}..
+        ///   Looks up a localized string similar to {0} upload job issue: {1} - Retrying in {2} seconds. {3} tries left..
         /// </summary>
         internal static string TransferJobUploadWarningMessage {
             get {

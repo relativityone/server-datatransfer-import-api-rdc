@@ -52,6 +52,10 @@ namespace kCura.WinEDDS.TApi
         /// <inheritdoc />
         protected override void OnTransferPathIssue(object sender, TransferPathIssueEventArgs e)
         {
+            var triesLeft = e.Issue.MaxRetryAttempts - e.Issue.RetryAttempt - 1;
+            var retryCalculation = e.Request.RetryStrategy.Calculation;
+            var retryTimeSpan = retryCalculation(e.Issue.RetryAttempt);
+
             // Note: this issue is indicative of a job-level issue - especially with Aspera.
             if (e.Issue.Path == null)
             {
@@ -62,7 +66,9 @@ namespace kCura.WinEDDS.TApi
                     CultureInfo.CurrentCulture,
                     formattedMessage,
                     this.clientName,
-                    e.Issue.Message);
+                    e.Issue.Message,
+                    retryTimeSpan.TotalSeconds,
+                    triesLeft);
                 this.RaiseWarningMessage(message, TapiConstants.NoLineNumber);
                 this.TransferLog.LogWarning(
                     "A transfer warning has occurred. LineNumber={LineNumber}, SourcePath={SourcePath}, Attributes={Attributes}.",
@@ -73,9 +79,6 @@ namespace kCura.WinEDDS.TApi
             }
 
             var lineNumber = e.Issue.Path.Order;
-            var retryCalculation = e.Request.RetryStrategy.Calculation;
-            var retryTimeSpan = retryCalculation(e.Issue.RetryAttempt);
-            var triesLeft = e.Issue.MaxRetryAttempts - e.Issue.RetryAttempt - 1;
             if (e.Issue.Attributes.HasFlag(IssueAttributes.Error))
             {
                 // Note: paths containing fatal errors force the transfer to terminate

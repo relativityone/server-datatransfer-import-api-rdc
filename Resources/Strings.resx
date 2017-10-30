@@ -184,10 +184,10 @@
     <value>An unexpected error has occurred attempting to wait for the transfer job to complete.</value>
   </data>
   <data name="TransferJobDownloadWarningMessage" xml:space="preserve">
-    <value>{0} download job issue: {1}.</value>
+    <value>{0} download job issue: {1} - Retrying in {2} seconds. {3} tries left.</value>
   </data>
   <data name="TransferJobUploadWarningMessage" xml:space="preserve">
-    <value>{0} upload job issue: {1}.</value>
+    <value>{0} upload job issue: {1} - Retrying in {2} seconds. {3} tries left.</value>
   </data>
   <data name="HttpFallbackWarningMessage" xml:space="preserve">
     <value>Switching to the HTTP client due to a serious error within the '{0}' transfer client. Error: {1}</value>
