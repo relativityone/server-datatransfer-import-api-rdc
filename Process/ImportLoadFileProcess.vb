@@ -64,6 +64,8 @@ Namespace kCura.WinEDDS
 
 		Public Property CloudInstance() As Boolean
 
+		Public Property EnforceDocumentLimit() As Boolean
+
 		Public Property ExecutionSource() As Relativity.ExecutionSource
 
 		Public Property TimeZoneOffset() As Int32
@@ -76,7 +78,7 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Overridable Function GetImporter() As kCura.WinEDDS.BulkLoadFileImporter
-			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter, CloudInstance, ExecutionSource)
+			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter, EnforceDocumentLimit, ExecutionSource)
 
 			Return returnImporter
 		End Function
