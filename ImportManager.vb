@@ -37,6 +37,7 @@ Namespace kCura.EDDS.WinForm
 			importer.TimeZoneOffset = _application.TimeZoneOffset
 			importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
 			importer.CloudInstance = Config.CloudInstance
+			importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
 			importer.ExecutionSource = Relativity.ExecutionSource.Rdc
 			_application.SetWorkingDirectory(importOptions.SelectedNativeLoadFile.FilePath)
 			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, importOptions.ErrorLoadFileLocation, importOptions.ErrorReportFileLocation)
@@ -58,6 +59,7 @@ Namespace kCura.EDDS.WinForm
 					importer.TimeZoneOffset = _application.TimeZoneOffset
 					importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
 					importer.CloudInstance = Config.CloudInstance
+					importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
 					importer.ExecutionSource = Relativity.ExecutionSource.Rdc
 					importOptions.SelectedNativeLoadFile.ArtifactTypeID = Relativity.ArtifactType.Document
 					_application.SetWorkingDirectory(importOptions.SelectedNativeLoadFile.FilePath)
@@ -81,6 +83,7 @@ Namespace kCura.EDDS.WinForm
 				importOptions.SelectedImageLoadFile.StartLineNumber = importOptions.StartLineNumber
 				importer.ImageLoadFile = importOptions.SelectedImageLoadFile
 				importer.CloudInstance = Config.CloudInstance
+				importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
 				importer.ExecutionSource = ExecutionSource.Rdc
 				_application.SetWorkingDirectory(importOptions.SelectedImageLoadFile.FileName)
 				Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, importOptions.ErrorLoadFileLocation, importOptions.ErrorReportFileLocation)
