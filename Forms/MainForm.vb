@@ -412,12 +412,15 @@ End Sub
 					Me.Close()
 				Case appEvent.AppEventType.WorkspaceFolderSelected
 					'disable import and export menus if no permission
-					TransferMenu.Enabled = True
 					ImportMenu.Enabled = _application.UserHasImportPermission
 					ExportMenu.Enabled = _application.UserHasExportPermission
 					ImportMenu.Visible = _application.UserHasImportPermission
 					ExportMenu.Visible = _application.UserHasExportPermission
 					'UpdateStatus("Case Folder Load: " + _application.SelectedCaseInfo.RootFolderID.ToString)
+                    
+                    'disable staging explorer menu if no permission
+					TransferMenu.Enabled = _application.UserHasStagingPermission
+                    TransferMenu.Visible = _application.UserHasStagingPermission
 				Case appEvent.AppEventType.LogOnRequested
 					Await _application.AttemptLogin(me)
 			End Select
@@ -444,10 +447,6 @@ End Sub
 			'' Can't do this in Application.vb without refactoring AttemptLogin (which needs this form as a parameter)
 			Await CheckCertificate()
 
-			Dim isCloudInstance  = Await _application.GetIsCloudInstance()
-			Dim isStagingExplorerEnabled = Await _application.GetIsStagingExplorerEnabled()
-
-			Me.TransferMenu.Visible = isCloudInstance And isStagingExplorerEnabled
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
@@ -468,7 +467,6 @@ End Sub
 			'Disable help since user will be asked to login again
 			Me._helpMenuItem.Enabled = False
 			Await CheckCertificate()
-			Me.TransferMenu.Visible  = Await _application.GetIsCloudInstance()
 		End Sub
 
 		Private Async Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
