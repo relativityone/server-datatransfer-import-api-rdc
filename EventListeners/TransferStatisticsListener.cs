@@ -19,10 +19,20 @@ namespace kCura.WinEDDS.TApi
     public class TransferStatisticsListener : TransferListenerBase
     {
         /// <summary>
+        /// The thread synchronization root backing.
+        /// </summary>
+        private static readonly object SyncRoot = new object();
+
+        /// <summary>
         /// The total statistics for all jobs.
         /// </summary>
         private readonly ConcurrentDictionary<Guid, TransferStatisticsEventArgs> totalStatistics =
             new ConcurrentDictionary<Guid, TransferStatisticsEventArgs>();
+
+        /// <summary>
+        /// The logging timestamp
+        /// </summary>
+        private DateTime? logTimestamp;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TransferStatisticsListener"/> class. 
@@ -43,6 +53,30 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         public event EventHandler<TapiStatisticsEventArgs> StatisticsEvent = delegate { };
 
+        /// <summary>
+        /// Gets or sets the log timestamp.
+        /// </summary>
+        /// <value>
+        /// The <see cref="DateTime"/> value.
+        /// </value>
+        private DateTime? LogTimestamp
+        {
+            get
+            {
+                lock (SyncRoot)
+                {
+                    return this.logTimestamp;
+                }
+            }
+
+            set
+            {
+                lock (SyncRoot)
+                {
+                    this.logTimestamp = value;
+                }
+            }
+        }
 
         /// <inheritdoc />
         protected override void OnTransferStatisticsEvent(object sender, TransferStatisticsEventArgs e)
@@ -64,6 +98,17 @@ namespace kCura.WinEDDS.TApi
                 .FromSeconds(this.totalStatistics.Sum(x => x.Value.Statistics.TransferTimeSeconds)).Ticks;
             var args = new TapiStatisticsEventArgs(totalTransferredBytes, totalTransferredFiles, totalTransferTicks);
             this.StatisticsEvent.Invoke(this, args);
+
+            // Be careful with overly agressive statistics logging.
+            const int LogStatisticsRateSeconds = 15;
+            var logTimestampCopy = this.LogTimestamp;
+            var logStatistics = logTimestampCopy == null
+                                || !((DateTime.Now - logTimestampCopy.Value).TotalSeconds <= LogStatisticsRateSeconds);
+            if (!logStatistics)
+            {
+                return;
+            }
+
             var totalSeconds = totalTransferTicks / TicksPerSecond;
             if (totalSeconds > 0)
             {
@@ -72,18 +117,19 @@ namespace kCura.WinEDDS.TApi
                     CultureInfo.CurrentCulture,
                     "WinEDDS aggregate statistics: {0}/sec",
                     ToFileSize(aggregateDataRate));
-                this.TransferLog.LogInformation(aggregateMessage);
+                this.TransferLog.LogInformation2(e.Request, aggregateMessage);
             }
 
             var jobMessage = string.Format(
                 CultureInfo.CurrentCulture,
-                "TAPI job {0} statistics - Files: {1}/{2} - Progress: {3:0.00}% - Rate: {4:0.00}/sec",
+                "WinEDDS job {0} statistics - Files: {1}/{2} - Progress: {3:0.00}% - Rate: {4:0.00}/sec",
                 e.Request.JobId,
                 e.Statistics.TotalTransferredFiles,
                 e.Statistics.TotalRequestFiles,
                 e.Statistics.Progress,
                 ToFileSize((e.Statistics.TransferRateMbps * 1000000) / 8.0));
-            this.TransferLog.LogInformation(jobMessage);
+            this.TransferLog.LogInformation2(e.Request, jobMessage);
+            this.LogTimestamp = DateTime.Now;
         }
 
         /// <summary>

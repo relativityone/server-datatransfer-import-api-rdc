@@ -59,6 +59,8 @@ namespace kCura.WinEDDS.TApi
 #else
                 LogSettings.Instance.MinimumLogLevel = LoggingLevel.Information;
 #endif
+                // For legacy code and performance considerations, disable automated statistics logging.
+                LogSettings.Instance.StatisticsLogEnabled = false;
                 return new RelativityTransferLog(log, false);
             }
             catch (Exception e)
