@@ -344,6 +344,7 @@ Namespace kCura.WinEDDS
 			_executionSource = executionSource
 			_enforceDocumentLimit = enforceDocumentLimit
 			_cancellationToken = New CancellationTokenSource()
+
 			ShouldImport = True
 			If (String.IsNullOrEmpty(args.OverwriteDestination)) Then
 				_overwrite = Relativity.ImportOverwriteType.Append
@@ -418,8 +419,7 @@ Namespace kCura.WinEDDS
 			nativeParameters.WorkspaceId = args.CaseInfo.ArtifactID
 
 			' Ensure that one instance is used for both TAPI objects.
-			Dim log As Relativity.Logging.ILog = RelativityLogFactory.CreateLog("TAPI")
-			_nativeUploaderBridge = TApi.TapiBridgeFactory.CreateUploadBridge(nativeParameters, log, _cancellationToken.Token)
+			_nativeUploaderBridge = TApi.TapiBridgeFactory.CreateUploadBridge(nativeParameters, Me.Logger, _cancellationToken.Token)
 			AddHandler _nativeUploaderBridge.TapiClientChanged, AddressOf NativeTapiUploaderOnTapiClientChanged
 			AddHandler _nativeUploaderBridge.TapiFatalError, AddressOf TapiUploaderOnTapiFatalError
 			AddHandler _nativeUploaderBridge.TapiProgress, AddressOf NativeTapiUploaderOnTapiProgress
@@ -435,7 +435,7 @@ Namespace kCura.WinEDDS
 			bcpParameters.FileShare = gateway.GetBcpSharePath(args.CaseInfo.ArtifactID)
 			bcpParameters.SortIntoVolumes = False
 			bcpParameters.ForceHttpClient = bcpParameters.ForceHttpClient Or Config.TapiForceBcpHttpClient
-			_bcpUploaderBridge = TApi.TapiBridgeFactory.CreateUploadBridge(bcpParameters, log, _cancellationToken.Token)
+			_bcpUploaderBridge = TApi.TapiBridgeFactory.CreateUploadBridge(bcpParameters, Me.Logger, _cancellationToken.Token)
 			_bcpUploaderBridge.TargetPath = bcpParameters.FileShare
 
 			' Reuse the events above unless there's specific functionality needed.
@@ -592,6 +592,7 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 
+				LogInformation("Preparing to import documents via WinEDDS.")
 				_timekeeper.MarkStart("ReadFile_ProcessDocuments")
 				_columnHeaders = _artifactReader.GetColumnNames(_settings)
 				If _firstLineContainsColumnNames Then _offset = -1
@@ -632,17 +633,23 @@ Namespace kCura.WinEDDS
 							If ex.IsFatal Then
 								isError = True
 								WriteFatalError(Me.CurrentLineNumber, ex)
+								Me.LogFatal(ex, "A fatal code operation error has occurred managing an import document.")
 							Else
 								WriteError(Me.CurrentLineNumber, ex.Message)
+								Me.LogError(ex, "A serious code operation error has occurred managing an import document.")
 							End If
 						Catch ex As System.IO.PathTooLongException
 							WriteError(Me.CurrentLineNumber, ERROR_MESSAGE_FOLDER_NAME_TOO_LONG)
+							Me.LogError(ex, "A path too long error has occurred managing an import document.")
 						Catch ex As kCura.Utility.ImporterExceptionBase
 							WriteError(Me.CurrentLineNumber, ex.Message)
+							Me.LogError(ex, "An import data error has occurred managing an import document.")
 						Catch ex As System.IO.FileNotFoundException
 							WriteError(Me.CurrentLineNumber, ex.Message)
+							Me.LogError(ex, "A file not found error has occurred managing an import document.")
 						Catch ex As System.Exception
 							WriteFatalError(Me.CurrentLineNumber, ex)
+							Me.LogFatal(ex, "A serious unexpected error has occurred managing an import document.")
 						End Try
 					End While
 				End Using
@@ -664,9 +671,11 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("ReadFile_OtherFinalization")
 				_timekeeper.MarkEnd("TOTAL")
 				_timekeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
+				LogInformation("Successfully imported {count} documents via WinEDDS.", _processedCount)
 				Return True
 			Catch ex As System.Exception
 				WriteFatalError(Me.CurrentLineNumber, ex)
+				Me.LogFatal(ex, "A serious unexpected error has occurred importing documents.")
 			Finally
 				_timekeeper.MarkStart("ReadFile_CleanupTempTables")
 				DestroyUploaders()
@@ -802,7 +811,7 @@ Namespace kCura.WinEDDS
 										Return TimeSpan.FromSeconds(Me.WaitTimeBetweenRetryAttempts)
 									End Function,
 									Sub(exception, span, context)
-										LogError(exception, $"Retry - {span} - Failed to identify the '{fullFilePath}' source file.")
+										LogError(exception, "Retry - {span} - OI failed to identify the '{fullFilePath}' source file.", span, fullFilePath)
 									End Sub)
 								oixFileIdData = retryPolicy.Execute(
 									function()
@@ -980,8 +989,10 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("ManageDocumentMetadata_WserviceCall")
 			Catch ex As kCura.Utility.ImporterExceptionBase
 				WriteError(metaDoc.LineNumber, ex.Message)
+				Me.LogError(ex, "A serious import error has occurred managing document {file} metadata.", metaDoc.FullFilePath)
 			Catch ex As System.Exception
 				WriteFatalError(metaDoc.LineNumber, ex)
+				Me.LogFatal(ex, "A fatal unexpected error has occurred managing document {file} metadata.", metaDoc.FullFilePath)
 			End Try
 
 			' Let TAPI handle progress as long as we're transferring the native. See the TAPI progress event below.
@@ -1007,9 +1018,23 @@ Namespace kCura.WinEDDS
 					Exit While
 				Catch ex As Exception
 					tries -= 1
-					If tries = 0 OrElse ExceptionIsTimeoutRelated(ex) OrElse Not ShouldImport OrElse ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) OrElse ex.GetType = GetType(Service.BulkImportManager.InsufficientPermissionsForImportException) Then
+					If tries = 0 Then
+						Me.LogFatal(ex, "A fatal error has occurred bulk importing the batch and no more retry attempts are available.")
+						Throw
+					Else If ExceptionIsTimeoutRelated(ex) Then
+						Me.LogFatal(ex, "A fatal SQL or HTTP timeout error has occurred bulk importing the batch.")
+						Throw
+					Else If Not ShouldImport Then
+						' Don't log cancel requests
+						Throw
+					Else If ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException)
+						Me.LogFatal(ex, "A fatal SQL error has occurred bulk importing the batch.")
+						Throw
+					Else If ex.GetType = GetType(Service.BulkImportManager.InsufficientPermissionsForImportException)
+						Me.LogFatal(ex, "A fatal insufficient permissions error has occurred bulk importing the batch.")
 						Throw
 					Else
+						Me.LogFatal(ex, "A serious error has occurred bulk importing the batch. Remaining attempts: {retries}", tries)
 						Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts)
 					End If
 				End Try
@@ -1038,9 +1063,11 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Overridable Sub LowerBatchLimits()
+			Dim oldBatchSize As Int32 = Me.ImportBatchSize
 			Me.ImportBatchSize -= 100
 			Me.Statistics.BatchSize = Me.ImportBatchSize
 			Me.BatchSizeHistoryList.Add(Me.ImportBatchSize)
+			Me.LogWarning("Lowered the batch limits from {OldBatchSize} to {NewBatchSize}.", oldBatchSize, Me.ImportBatchSize)
 		End Sub
 
 		Protected Overridable Sub RaiseWarningAndPause(ByVal ex As Exception, ByVal timeoutSeconds As Int32)
@@ -1101,10 +1128,11 @@ Namespace kCura.WinEDDS
 					End If
 					
 					If ShouldImport Then
-						PushNativeBatch(outputNativePath)
+						Me.PushNativeBatch(outputNativePath)
 					End If
 				Catch ex As Exception
 					If BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso ShouldImport Then
+						Me.LogWarning(ex, "A serious SQL or HTTP timeout error has occurred and the batch will be resized.")
 						Dim originalBatchSize As Int32 = Me.ImportBatchSize
 						LowerBatchLimits()
 						Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts)
@@ -1155,6 +1183,7 @@ Namespace kCura.WinEDDS
 					charactersSuccessfullyProcessed += charactersProcessed
 				Catch ex As Exception
 					If tries < NumberOfRetries AndAlso BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso ShouldImport Then
+						Me.LogWarning(ex, "A serious SQL or HTTP timeout error has occurred and the batch will be resized.")
 						LowerBatchLimits()
 						Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts)
 						If Not ShouldImport Then Throw 'after the pause
@@ -1822,6 +1851,7 @@ Namespace kCura.WinEDDS
 			SyncLock _syncRoot
 				If ShouldImport Then
 					WriteError(e.LineNumber, e.Message)
+					Me.LogError(e.Message)
 				End If
 			End SyncLock
 		End Sub
@@ -1831,6 +1861,7 @@ Namespace kCura.WinEDDS
 				If ShouldImport Then
 					WriteStatusLine(kCura.Windows.Process.EventType.Warning, e.Message, e.LineNumber)
 				End If
+				Me.LogWarning(e.Message)
 			End SyncLock
 		End Sub
 
@@ -1861,7 +1892,9 @@ Namespace kCura.WinEDDS
 
 		Private Sub TapiUploaderOnTapiFatalError(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
 			SyncLock _syncRoot
-				WriteFatalError(e.LineNumber, New Exception(e.Message))
+				Dim exception As Exception = New Exception(e.Message)
+				WriteFatalError(e.LineNumber, exception)
+				Me.LogFatal(exception, "A fatal error has occurred transferring files.")
 			End SyncLock
 		End Sub
 
@@ -2141,16 +2174,12 @@ Namespace kCura.WinEDDS
 			If processID.ToString = _processID.ToString Then CleanupTempTables()
 		End Sub
 
-		Private Sub LogError(ByVal exception As System.Exception, ByVal message As String)
-			' Until logging is added to WinEDDS, tracing will have to do.
-			System.Diagnostics.Trace.WriteLine($"{message} - Exception: {exception.ToString()}")
-		End Sub
-
 		Protected Sub CleanupTempTables()
 			If Not _runID Is Nothing AndAlso _runID <> "" Then
 				Try
 					Me.BulkImportManager.DisposeTempTables(_caseInfo.ArtifactID, _runID)
-				Catch
+				Catch ex As Exception
+					Me.LogError(ex, "A serious unexpected error has occurred disposing the temp tables.")
 				End Try
 			End If
 		End Sub

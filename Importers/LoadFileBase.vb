@@ -30,8 +30,8 @@ Namespace kCura.WinEDDS
 		Protected _timeZoneOffset As Int32
 		Protected _autoDetect As Boolean
 		Protected _uploadFiles As Boolean
-        Protected _fieldMap As LoadFileFieldMap
-        Protected _createFolderStructure As Boolean
+		Protected _fieldMap As LoadFileFieldMap
+		Protected _createFolderStructure As Boolean
 		Protected _destinationFolder As String
 
 		Protected _fullTextColumnMapsToFileLocation As Boolean
@@ -49,6 +49,7 @@ Namespace kCura.WinEDDS
 		Protected _settings As kCura.WinEDDS.LoadFile
 		Private _codeValidator As CodeValidator.Base
 		Private _codesCreated As Int32 = 0
+		Private _logger As Relativity.Logging.ILog
 		Protected WithEvents _artifactReader As Api.IArtifactReader
 		Public Property SkipExtractedTextEncodingCheck As Boolean
 		Public Property LoadImportedFullTextFromServer As Boolean
@@ -130,6 +131,9 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Sub New(args As LoadFile, timezoneoffset As Int32, doRetryLogic As Boolean, autoDetect As Boolean, initializeArtifactReader As Boolean)
+
+			' This must be constructed early. Do NOT arbitrarily move this call!
+			_logger = RelativityLogFactory.CreateLog("WinEDDS")
 			_settings = args
 			OIFileIdColumnName = args.OIFileIdColumnName
 			OIFileIdMapped = args.OIFileIdMapped
@@ -139,7 +143,6 @@ Namespace kCura.WinEDDS
 			FileNameColumn = args.FileNameColumn
 			_timeZoneOffset = timezoneoffset
 			_autoDetect = autoDetect
-
 			InitializeManagers(args)
 
 			If initializeArtifactReader Then
@@ -196,6 +199,44 @@ Namespace kCura.WinEDDS
 			'_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credentials, args.CookieContainer)
 			_objectManager = New kCura.WinEDDS.Service.ObjectManager(args.Credentials, args.CookieContainer)
 		End Sub
+
+		Protected Sub LogInformation(ByVal exception As System.Exception, ByVal messageTemplate As String, ParamArray propertyValues As Object())
+			_logger.LogInformation(exception, messageTemplate, propertyValues)
+		End Sub
+
+		Protected Sub LogInformation(ByVal messageTemplate As String, ParamArray propertyValues As Object())
+			_logger.LogInformation(messageTemplate, propertyValues)
+		End Sub
+
+		Protected Sub LogError(ByVal exception As System.Exception, ByVal messageTemplate As String, ParamArray propertyValues As Object())
+			_logger.LogError(exception, messageTemplate, propertyValues)
+		End Sub
+
+		Protected Sub LogError(ByVal messageTemplate As String, ParamArray propertyValues As Object())
+			_logger.LogError(messageTemplate, propertyValues)
+		End Sub
+
+		Protected Sub LogFatal(ByVal exception As System.Exception, ByVal messageTemplate As String, ParamArray propertyValues As Object())
+			_logger.LogFatal(exception, messageTemplate, propertyValues)
+		End Sub
+
+		Protected Sub LogFatal(ByVal messageTemplate As String, ParamArray propertyValues As Object())
+			_logger.LogFatal(messageTemplate, propertyValues)
+		End Sub
+
+		Protected Sub LogWarning(ByVal exception As System.Exception, ByVal messageTemplate As String, ParamArray propertyValues As Object())
+			_logger.LogWarning(exception, messageTemplate, propertyValues)
+		End Sub
+
+		Protected Sub LogWarning(ByVal messageTemplate As String, ParamArray propertyValues As Object())
+			_logger.LogWarning(messageTemplate, propertyValues)
+		End Sub
+
+		Protected ReadOnly Property Logger As Relativity.Logging.ILog
+			Get
+				Return _logger
+			End Get
+		End Property
 
 #Region "Code Parsing"
 
@@ -493,59 +534,59 @@ Namespace kCura.WinEDDS
 					End If
 
 				Case Relativity.FieldTypeHelper.FieldType.Text, Relativity.FieldTypeHelper.FieldType.OffTableText
-                    If FieldValueContainsTextFileLocation(field) Then
-                        Dim value As String = field.ValueAsString
-                        Dim performExtractedTextFileLocationValidation As Boolean = Not DisableExtractedTextFileLocationValidation
-                        If value = String.Empty Then
-                            field.Value = String.Empty
-                        ElseIf (performExtractedTextFileLocationValidation AndAlso Not System.IO.File.Exists(value)) Then
-                            Throw New MissingFullTextFileException(Me.CurrentLineNumber, columnIndex)
-                        Else
-                            Dim detectedEncoding As System.Text.Encoding = _extractedTextFileEncoding
-                            Dim determinedEncodingStream As DeterminedEncodingStream
+					If FieldValueContainsTextFileLocation(field) Then
+						Dim value As String = field.ValueAsString
+						Dim performExtractedTextFileLocationValidation As Boolean = Not DisableExtractedTextFileLocationValidation
+						If value = String.Empty Then
+							field.Value = String.Empty
+						ElseIf (performExtractedTextFileLocationValidation AndAlso Not System.IO.File.Exists(value)) Then
+							Throw New MissingFullTextFileException(Me.CurrentLineNumber, columnIndex)
+						Else
+							Dim detectedEncoding As System.Text.Encoding = _extractedTextFileEncoding
+							Dim determinedEncodingStream As DeterminedEncodingStream
 
-                            'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
-                            ' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
-                            ' across the network for the file, so this override allows that check to be skipped.
-                            ' -Phil S. 07/27/2012
-                            If Not SkipExtractedTextEncodingCheck Then
-                                determinedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False, performExtractedTextFileLocationValidation)
-                                detectedEncoding = determinedEncodingStream.DeterminedEncoding
-                            End If
+							'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
+							' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
+							' across the network for the file, so this override allows that check to be skipped.
+							' -Phil S. 07/27/2012
+							If Not SkipExtractedTextEncodingCheck Then
+								determinedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False, performExtractedTextFileLocationValidation)
+								detectedEncoding = determinedEncodingStream.DeterminedEncoding
+							End If
 
-                            If (performExtractedTextFileLocationValidation AndAlso (New System.IO.FileInfo(value).Length > GetMaxExtractedTextLength(detectedEncoding))) Then
-                                Throw New ExtractedTextTooLargeException
-                            Else
-                                If forPreview Then
-                                    ' Determine Encoding Here
-                                    determinedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False)
-                                    detectedEncoding = determinedEncodingStream.DeterminedEncoding
-                                    Dim chosenEncoding As System.Text.Encoding
-                                    If detectedEncoding IsNot Nothing Then
-                                        chosenEncoding = detectedEncoding
-                                    Else
-                                        chosenEncoding = _extractedTextFileEncoding
-                                    End If
-                                    Dim sr As New System.IO.StreamReader(determinedEncodingStream.UnderlyingStream, chosenEncoding)
-                                    Dim i As Int32 = 0
-                                    Dim sb As New System.Text.StringBuilder
-                                    While sr.Peek <> -1 AndAlso i < 100
-                                        sb.Append(ChrW(sr.Read))
-                                        i += 1
-                                    End While
-                                    If i = 100 Then sb.Append("...")
-                                    extractedTextFileCodePageId = chosenEncoding.CodePage
-                                    sr.Close()
-                                    determinedEncodingStream.Close()
-                                    'sb = sb.Replace(System.Environment.NewLine, Me.NewlineProxy).Replace(ChrW(10), Me.NewlineProxy).Replace(ChrW(13), Me.NewlineProxy)
-                                    field.Value = sb.ToString
-                                Else
-                                    field.Value = value
-                                End If
-                            End If
-                        End If
-                    End If
-                Case Else
+							If (performExtractedTextFileLocationValidation AndAlso (New System.IO.FileInfo(value).Length > GetMaxExtractedTextLength(detectedEncoding))) Then
+								Throw New ExtractedTextTooLargeException
+							Else
+								If forPreview Then
+									' Determine Encoding Here
+									determinedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False)
+									detectedEncoding = determinedEncodingStream.DeterminedEncoding
+									Dim chosenEncoding As System.Text.Encoding
+									If detectedEncoding IsNot Nothing Then
+										chosenEncoding = detectedEncoding
+									Else
+										chosenEncoding = _extractedTextFileEncoding
+									End If
+									Dim sr As New System.IO.StreamReader(determinedEncodingStream.UnderlyingStream, chosenEncoding)
+									Dim i As Int32 = 0
+									Dim sb As New System.Text.StringBuilder
+									While sr.Peek <> -1 AndAlso i < 100
+										sb.Append(ChrW(sr.Read))
+										i += 1
+									End While
+									If i = 100 Then sb.Append("...")
+									extractedTextFileCodePageId = chosenEncoding.CodePage
+									sr.Close()
+									determinedEncodingStream.Close()
+									'sb = sb.Replace(System.Environment.NewLine, Me.NewlineProxy).Replace(ChrW(10), Me.NewlineProxy).Replace(ChrW(13), Me.NewlineProxy)
+									field.Value = sb.ToString
+								Else
+									field.Value = value
+								End If
+							End If
+						End If
+					End If
+				Case Else
 					Throw New System.Exception("Unsupported Field Type '" & field.Type.ToString & "'")
 			End Select
 		End Sub
