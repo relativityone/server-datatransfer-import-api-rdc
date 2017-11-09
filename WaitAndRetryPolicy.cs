@@ -18,6 +18,15 @@ namespace kCura.WinEDDS.TApi
             WaitTimeBetweenRetryAttempts = waitTimeBetweenRetryAttempts;
         }
 
+        private WaitAndRetryPolicy()
+        {
+        }
+
+        /// <summary>
+        /// The default retry policy backing.
+        /// </summary>
+        private static readonly WaitAndRetryPolicy DefaultWaitAndRetryPolicy = new WaitAndRetryPolicy();
+
         /// <inheritdoc />
         public int NumberOfRetries { get; }
         /// <inheritdoc />
@@ -26,7 +35,7 @@ namespace kCura.WinEDDS.TApi
         /// <inheritdoc />
         public void WaitAndRetry<TException>(Func<int, TimeSpan> retryDuration, Action<Exception, TimeSpan> retryAction, Action execFunc) where TException : Exception
         {
-            this.WaitAndRetry<TException>(this.NumberOfRetries, retryDuration, retryAction, execFunc);
+            WaitAndRetry<TException>(this.NumberOfRetries, retryDuration, retryAction, execFunc);
         }
 
         /// <inheritdoc />

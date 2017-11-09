@@ -7,11 +7,13 @@ using System.IO;
 
 namespace kCura.WinEDDS.TApi
 {
-    class FileSystemService : IFileSystemService
+    /// <inheritdoc />
+    public class FileSystemService : IFileSystemService
     {
-        public long GetFileLength(string filename)
+        /// <inheritdoc />
+        public long GetFileLength(string fileName)
         {
-            var fileInfo = new FileInfo(filename);
+            var fileInfo = new FileInfo(fileName);
             return fileInfo.Length;
         }
     }

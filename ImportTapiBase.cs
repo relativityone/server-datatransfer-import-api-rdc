@@ -11,6 +11,19 @@ namespace kCura.WinEDDS.TApi
     /// </summary>
     public class ImportTapiBase
     {
+        private IFileSystemService fileSystemService;
+        private IWaitAndRetryPolicy waitAndRetryPolicy;
 
+        /// <inheritdoc />
+        public ImportTapiBase(IFileSystemService fileService, IWaitAndRetryPolicy waitAndRetry)
+        {
+            fileSystemService = fileService;
+            waitAndRetryPolicy = waitAndRetry;
+        }
+
+        public long GetFileLength(string fileName)
+        {
+            
+        }
     }
 }

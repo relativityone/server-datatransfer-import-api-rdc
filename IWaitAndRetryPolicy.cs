@@ -2,10 +2,19 @@
 
 namespace kCura.WinEDDS.TApi
 {
-    interface IWaitAndRetryPolicy
+    /// <summary>
+    /// The retry policy class object.
+    /// </summary>
+    public interface IWaitAndRetryPolicy
     {
-         int NumberOfRetries { get; }
-         int WaitTimeBetweenRetryAttempts { get; }
+        /// <summary>
+        /// Number of retries
+        /// </summary>
+        int NumberOfRetries { get; }
+        /// <summary>
+        /// wait time between retry attempts
+        /// </summary>
+        int WaitTimeBetweenRetryAttempts { get; }
 
         /// <summary>
         /// Performs the synchronous retry operation using the specified retry duration function.
