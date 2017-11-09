@@ -90,6 +90,10 @@
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ClientChangeReason.cs" />
+    <Compile Include="FileSystemService.cs" />
+    <Compile Include="IFileSystemService.cs" />
+    <Compile Include="ImportTapiBase.cs" />
+    <Compile Include="IWaitAndRetryPolicy.cs" />
     <Compile Include="TapiBridgeFactory.cs" />
     <Compile Include="TapiBridgeParameters.cs" />
     <Compile Include="Properties\AssemblyInfoLocal.cs" />
@@ -113,6 +117,7 @@
     <Compile Include="EventListeners\TransferStatisticsListener.cs" />
     <Compile Include="TapiProgressEventArgs.cs" />
     <Compile Include="TapiStatisticsEventArgs.cs" />
+    <Compile Include="WaitAndRetryPolicy.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Strings.resx">
