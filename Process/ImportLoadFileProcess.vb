@@ -1,6 +1,7 @@
 Imports Exceptions
 Imports kCura.WinEDDS.TApi
 Imports Relativity.Logging
+Imports Relativity.Transfer
 
 Namespace kCura.WinEDDS
 
