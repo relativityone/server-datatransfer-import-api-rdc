@@ -1,29 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.TApi
 {
     /// <summary>
     /// Base class for Files Importertes
     /// </summary>
-    public class ImportTapiBase
+    public abstract class ImportTapiBase
     {
-        private IFileSystemService fileSystemService;
-        private IWaitAndRetryPolicy waitAndRetryPolicy;
+        private ILog _log;
+        
+        /// <summary>
+        /// Current Line Number
+        /// </summary>
+        protected abstract int CurrentLineNumber { get; }
 
         /// <inheritdoc />
-        public ImportTapiBase(IFileSystemService fileService, IWaitAndRetryPolicy waitAndRetry)
+        protected ImportTapiBase(ILog log)
         {
-            fileSystemService = fileService;
-            waitAndRetryPolicy = waitAndRetry;
+            _log = log;
         }
 
-        public long GetFileLength(string fileName)
-        {
-            
-        }
+        //TODO finish
+        //public event EventHandler IoWarningEvent;
     }
 }

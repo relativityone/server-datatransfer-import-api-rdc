@@ -25,7 +25,7 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// The default retry policy backing.
         /// </summary>
-        private static readonly WaitAndRetryPolicy DefaultWaitAndRetryPolicy = new WaitAndRetryPolicy();
+        private static readonly WaitAndRetryPolicy _defaultWaitAndRetryPolicy = new WaitAndRetryPolicy();
 
         /// <inheritdoc />
         public int NumberOfRetries { get; }

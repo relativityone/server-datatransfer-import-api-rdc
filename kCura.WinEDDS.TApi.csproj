@@ -92,7 +92,10 @@
     <Compile Include="ClientChangeReason.cs" />
     <Compile Include="FileSystemService.cs" />
     <Compile Include="IFileSystemService.cs" />
+    <Compile Include="IIoReporter.cs" />
     <Compile Include="ImportTapiBase.cs" />
+    <Compile Include="IoReporter.cs" />
+    <Compile Include="IoWarningEventArgs.cs" />
     <Compile Include="IWaitAndRetryPolicy.cs" />
     <Compile Include="TapiBridgeFactory.cs" />
     <Compile Include="TapiBridgeParameters.cs" />
