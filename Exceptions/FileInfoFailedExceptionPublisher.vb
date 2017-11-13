@@ -1,9 +1,12 @@
 ﻿Imports kCura.WinEDDS.TApi
 
-Public Class FileInfoFailedExceptionPublisher
-    Implements IFileInfoFailedExceptionPublisher
+Namespace Exceptions
 
-    Public Sub ThrowNewException(message As String) Implements IFileInfoFailedExceptionPublisher.ThrowNewException
-        Throw New FileInfoFailedException(message)
-    End Sub
-End Class
+    Public Class FileInfoFailedExceptionPublisher
+        Implements IFileInfoFailedExceptionPublisher
+
+        Public Sub ThrowNewException(message As String) Implements IFileInfoFailedExceptionPublisher.ThrowNewException
+            Throw New FileInfoFailedException(message)
+        End Sub
+    End Class
+End NameSpace
