@@ -85,7 +85,9 @@ Namespace kCura.WinEDDS
 		    _ioWarningPublisher = New IoWarningPublisher()
             Dim fileSystemService As IFileSystemService = New FileSystemService()
             Dim waitAndRetryPolicy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds)
-            Dim ioReporter As IIoReporter = New IoReporter(fileSystemService, waitAndRetryPolicy, Log.Logger, _ioWarningPublisher, Config.DisableNativeLocationValidation)
+            Dim fileInfoFailedExceptionPublisher As IFileInfoFailedExceptionPublisher = New FileInfoFailedExceptionPublisher
+            'TODO Check if Log.Logger is created correctly
+            Dim ioReporter As IIoReporter = New IoReporter(fileSystemService, waitAndRetryPolicy, Log.Logger, _ioWarningPublisher, fileInfoFailedExceptionPublisher, Config.DisableNativeLocationValidation) 
 
 			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter, EnforceDocumentLimit, ExecutionSource)
 
