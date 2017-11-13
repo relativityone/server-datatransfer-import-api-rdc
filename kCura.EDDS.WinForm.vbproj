@@ -144,10 +144,6 @@
       <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
       <Name>Relativity</Name>
     </ProjectReference>
-    <Reference Include="AppConfigFacility, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\WindsorAppConfigFacility.0.2.0\lib\net45\AppConfigFacility.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Castle.Core.3.3.1\lib\net45\Castle.Core.dll</HintPath>
       <Private>True</Private>
@@ -173,47 +169,47 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Data.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.12-DEV-1\lib\net462\DevExpress.Data.v17.1.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.20\lib\net462\DevExpress.Data.v17.1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Images.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.12-DEV-1\lib\net462\DevExpress.Images.v17.1.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.20\lib\net462\DevExpress.Images.v17.1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Mvvm.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.12-DEV-1\lib\net462\DevExpress.Mvvm.v17.1.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.20\lib\net462\DevExpress.Mvvm.v17.1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Printing.v17.1.Core, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.12-DEV-1\lib\net462\DevExpress.Printing.v17.1.Core.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.20\lib\net462\DevExpress.Printing.v17.1.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Utils.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.12-DEV-1\lib\net462\DevExpress.Utils.v17.1.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.20\lib\net462\DevExpress.Utils.v17.1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Xpf.Core.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.12-DEV-1\lib\net462\DevExpress.Xpf.Core.v17.1.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.20\lib\net462\DevExpress.Xpf.Core.v17.1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Xpf.Grid.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.12-DEV-1\lib\net462\DevExpress.Xpf.Grid.v17.1.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.20\lib\net462\DevExpress.Xpf.Grid.v17.1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Xpf.Grid.v17.1.Core, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.12-DEV-1\lib\net462\DevExpress.Xpf.Grid.v17.1.Core.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.20\lib\net462\DevExpress.Xpf.Grid.v17.1.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Xpf.NavBar.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.12-DEV-1\lib\net462\DevExpress.Xpf.NavBar.v17.1.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.20\lib\net462\DevExpress.Xpf.NavBar.v17.1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Xpf.Themes.Office2013.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.12-DEV-1\lib\net462\DevExpress.Xpf.Themes.Office2013.v17.1.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.20\lib\net462\DevExpress.Xpf.Themes.Office2013.v17.1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Xpf.Themes.Office2016White.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.12-DEV-1\lib\net462\DevExpress.Xpf.Themes.Office2016White.v17.1.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.20\lib\net462\DevExpress.Xpf.Themes.Office2016White.v17.1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FaspManager, Version=3.7.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -232,8 +228,8 @@
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="oi, Version=2017.4.2.22, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32.2017.4.2\lib\net40\oi.dll</HintPath>
+    <Reference Include="oi, Version=2017.5.1.29, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32.2017.5.1\lib\net40\oi.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PCLWebUtility, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -291,27 +287,27 @@
       <HintPath>..\..\packages\Relativity.SecretCatalog.1.0.18\lib\Relativity.SecretCatalog.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.DataContracts, Version=9.5.296.15, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Services.DataContracts.9.5.296.15\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
+    <Reference Include="Relativity.Services.DataContracts, Version=9.5.327.16, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Services.DataContracts.9.5.327.16\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.Interfaces, Version=9.5.296.15, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Services.Interfaces.9.5.296.15\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Services.Interfaces, Version=9.5.327.16, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Services.Interfaces.9.5.327.16\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.Interfaces.Private, Version=9.5.296.15, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Services.Interfaces.Private.9.5.296.15\lib\net462\Relativity.Services.Interfaces.Private.dll</HintPath>
+    <Reference Include="Relativity.Services.Interfaces.Private, Version=9.5.327.16, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Services.Interfaces.Private.9.5.327.16\lib\net462\Relativity.Services.Interfaces.Private.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy">
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.423\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.StagingExplorer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.12-DEV-1\lib\net462\Relativity.StagingExplorer.exe</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.20\lib\net462\Relativity.StagingExplorer.exe</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.StagingExplorer.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.12-DEV-1\lib\net462\Relativity.StagingExplorer.Interfaces.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.20\lib\net462\Relativity.StagingExplorer.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared">
@@ -355,6 +351,9 @@
       <HintPath>..\..\packages\Serilog.1.3.1\lib\net45\Serilog.FullNetFx.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="Stateless, Version=4.0.0.0, Culture=neutral, PublicKeyToken=93038f0927583c9a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Stateless.4.0.0\lib\net45\Stateless.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Name>System</Name>
@@ -697,9 +696,9 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2017.4.2\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\kCura.OutsideIn.FI.Win32.2017.4.2\build\kCura.OutsideIn.FI.Win32.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Relativity.StagingExplorer.1.0.12-DEV-1\Build\Relativity.StagingExplorer.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Relativity.StagingExplorer.1.0.12-DEV-1\Build\Relativity.StagingExplorer.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Relativity.StagingExplorer.1.0.20\build\Relativity.StagingExplorer.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Relativity.StagingExplorer.1.0.20\build\Relativity.StagingExplorer.targets'))" />
+    <Error Condition="!Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2017.5.1\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\kCura.OutsideIn.FI.Win32.2017.5.1\build\kCura.OutsideIn.FI.Win32.targets'))" />
   </Target>
-  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32.2017.4.2\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2017.4.2\build\kCura.OutsideIn.FI.Win32.targets')" />
-  <Import Project="..\..\packages\Relativity.StagingExplorer.1.0.12-DEV-1\Build\Relativity.StagingExplorer.targets" Condition="Exists('..\..\packages\Relativity.StagingExplorer.1.0.12-DEV-1\Build\Relativity.StagingExplorer.targets')" />
+  <Import Project="..\..\packages\Relativity.StagingExplorer.1.0.20\build\Relativity.StagingExplorer.targets" Condition="Exists('..\..\packages\Relativity.StagingExplorer.1.0.20\build\Relativity.StagingExplorer.targets')" />
+  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32.2017.5.1\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2017.5.1\build\kCura.OutsideIn.FI.Win32.targets')" />
 </Project>
