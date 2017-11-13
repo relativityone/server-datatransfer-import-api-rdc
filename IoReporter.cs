@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Relativity.Logging;
+using Relativity.Transfer;
 
 namespace kCura.WinEDDS.TApi
 {
