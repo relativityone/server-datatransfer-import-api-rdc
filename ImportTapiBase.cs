@@ -9,12 +9,7 @@ namespace kCura.WinEDDS.TApi
     public abstract class ImportTapiBase
     {
         private ILog _log;
-
-        public ImportTapiBase()
-        {
-            
-        }
-
+        
         /// <summary>
         /// Current Line Number
         /// </summary>
