@@ -1,3 +1,6 @@
+Imports kCura.WinEDDS.TApi
+Imports Relativity.Logging
+
 Namespace kCura.WinEDDS
 
 	Public Class ImportLoadFileProcess
@@ -5,6 +8,7 @@ Namespace kCura.WinEDDS
 
 		Public LoadFile As LoadFile
 		Protected WithEvents _loadFileImporter As BulkLoadFileImporter
+        Private WithEvents _ioWarningPublisher As IoWarningPublisher
 		Private _startTime As System.DateTime
 		Private _errorCount As Int32
 		Private _warningCount As Int32
@@ -78,6 +82,11 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Overridable Function GetImporter() As kCura.WinEDDS.BulkLoadFileImporter
+		    _ioWarningPublisher = New IoWarningPublisher()
+            Dim fileSystemService As IFileSystemService = New FileSystemService()
+            Dim waitAndRetryPolicy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds)
+            Dim ioReporter As IIoReporter = New IoReporter(fileSystemService, waitAndRetryPolicy, Log.Logger, _ioWarningPublisher, Config.DisableNativeLocationValidation)
+
 			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter, EnforceDocumentLimit, ExecutionSource)
 
 			Return returnImporter
@@ -324,6 +333,22 @@ Namespace kCura.WinEDDS
 			End Select
 			Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, message.ToString)
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
+		End Sub
+
+		Private Sub _imageFileImporter_IoErrorEvent(ByVal sender As Object, ByVal e As IoWarningEventArgs) Handles _ioWarningPublisher.IoWarningEvent
+		    System.Threading.Monitor.Enter(Me.ProcessObserver)
+		    Dim message As New System.Text.StringBuilder
+		    Select Case e.Type
+		        Case IoWarningEventArgs.TypeEnum.Message
+		            message.Append(e.Message)
+		        Case Else
+		            message.Append("Error accessing load file - retrying")
+		            If e.WaitTime > 0 Then message.Append(" in " & e.WaitTime & " seconds")
+		            message.Append(vbNewLine)
+		            message.Append("Actual error: " & e.Exception.Message)
+		    End Select
+		    Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, message.ToString)
+		    System.Threading.Monitor.Exit(Me.ProcessObserver)
 		End Sub
 
 		Private Sub _loadFileImporter_EndFileImport(ByVal runID As String) Handles _loadFileImporter.EndFileImport
