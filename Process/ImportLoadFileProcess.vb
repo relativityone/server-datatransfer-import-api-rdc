@@ -1,3 +1,4 @@
+Imports Exceptions
 Imports kCura.WinEDDS.TApi
 Imports Relativity.Logging
 
@@ -337,7 +338,7 @@ Namespace kCura.WinEDDS
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
 		End Sub
 
-		Private Sub _imageFileImporter_IoErrorEvent(ByVal sender As Object, ByVal e As IoWarningEventArgs) Handles _ioWarningPublisher.IoWarningEvent
+		Private Sub _loadFileImporter_IoErrorEvent(ByVal e As IoWarningEventArgs) Handles _ioWarningPublisher.IoWarningEvent
 		    System.Threading.Monitor.Enter(Me.ProcessObserver)
 		    Dim message As New System.Text.StringBuilder
 		    Select Case e.Type
