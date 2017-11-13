@@ -42,7 +42,7 @@ namespace kCura.WinEDDS.TApi
                     TimeSpan.FromSeconds(retryAttempt == 1 ? 0 : _waitAndRetryPolicy.WaitTimeBetweenRetryAttempts),
                 (exception, timeSpan) =>
                 {
-                    getFileLengthRetryAction(exception, timeSpan, fileName, lineNumberInParentFile);
+                    GetFileLengthRetryAction(exception, timeSpan, fileName, lineNumberInParentFile);
                 },
                 () => { fileLength = _fileSystemService.GetFileLength(fileName); }
             );
@@ -50,19 +50,33 @@ namespace kCura.WinEDDS.TApi
             return fileLength;
         }
 
-        private void getFileLengthRetryAction(Exception ex, TimeSpan timeSpan, string fileName, int lineNumberInParentFile)
+        private void GetFileLengthRetryAction(Exception ex, TimeSpan timeSpan, string fileName, int lineNumberInParentFile)
         {
             if (_disableNativeLocationValidation && ex is ArgumentException &&
                 ex.Message.Contains("Illegal characters in path."))
             {
-                //TODO how to break WaitAndRetry in Polly?
-                //What we should do here? throw this exceprtion
-                //throw new FileInfoFailedException(String.Format("File {0} not found: illegal characters in path.", filename))
-                _fileInfoFailedExceptionPublisher.Message
-                throw _fileInfoFailedExceptionPublisher;
+                string errorMessage = $"File {fileName} not found: illegal characters in path.";
+                _log.LogError(ex, errorMessage);
+                _fileInfoFailedExceptionPublisher.ThrowNewException(errorMessage);
             }
 
             _ioWarningPublisher?.OnIoWarningEvent(new IoWarningEventArgs(timeSpan.Seconds, ex, lineNumberInParentFile));
+
+            string warningMessage =  BuildOnRetryWarningMessage(timeSpan, ex);
+            _log.LogWarning(ex, warningMessage);
+        }
+
+        private string BuildOnRetryWarningMessage(TimeSpan timeSpan, Exception ex)
+        {
+            var messageBuilder = new StringBuilder();
+            messageBuilder.Append("Error accessing load file - retrying");
+            if (timeSpan.Seconds > 0)
+            {
+                messageBuilder.Append($" in {timeSpan.Seconds} seconds");
+            }
+            messageBuilder.Append(Environment.NewLine);
+            messageBuilder.Append($"Actual error: {ex.Message}");
+            return messageBuilder.ToString();
         }
     }
 }
