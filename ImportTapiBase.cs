@@ -9,19 +9,21 @@ namespace kCura.WinEDDS.TApi
     public abstract class ImportTapiBase
     {
         private ILog _log;
-        
+
+        public ImportTapiBase()
+        {
+            
+        }
+
         /// <summary>
         /// Current Line Number
         /// </summary>
-        protected abstract int CurrentLineNumber { get; }
+        protected int CurrentLineNumber { get; }
 
         /// <inheritdoc />
         protected ImportTapiBase(ILog log)
         {
             _log = log;
         }
-
-        //TODO finish
-        //public event EventHandler IoWarningEvent;
     }
 }

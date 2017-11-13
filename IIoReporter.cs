@@ -11,6 +11,6 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// Get file length
         /// </summary>
-        long GetFileLength(string fileName);
+        long GetFileLength(string fileName, int lineNumberInParentFile);
     }
 }
