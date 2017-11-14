@@ -9,16 +9,21 @@ namespace kCura.WinEDDS.TApi
     public abstract class ImportTapiBase
     {
         private ILog _log;
-        private IIoReporter _ioReporter;
 
+        /// <summary>
+        /// IO reporter object
+        /// </summary>
+        protected IIoReporter _ioReporter;
+
+        //TODO Do we need constructor here?
         /// <summary>
         /// Constructor for ImportTapiBase
         /// </summary>
         /// <param name="ioReporter"></param>
-        protected ImportTapiBase(IIoReporter ioReporter)
-        {
-            _ioReporter = ioReporter;
-        }
+        //protected ImportTapiBase(IIoReporter ioReporter)
+        //{
+        //    _ioReporter = ioReporter;
+        //}
 
         /// <summary>
         /// Current Line Number
