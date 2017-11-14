@@ -1,8 +1,9 @@
 Imports kCura.Utility.Extensions.Enumerable
+Imports kCura.WinEDDS.TApi
 
 Namespace kCura.WinEDDS
 	Public MustInherit Class LoadFileBase
-		Inherits kCura.Utility.RobustIoReporter
+		Inherits ImportTapiBase
 
 #Region "Members"
 

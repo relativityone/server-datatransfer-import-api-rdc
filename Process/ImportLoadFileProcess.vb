@@ -2,6 +2,7 @@
 Imports Helpers
 Imports kCura.WinEDDS.TApi
 Imports Relativity.Logging
+Imports Relativity.Logging.Factory
 Imports Relativity.Transfer
 
 Namespace kCura.WinEDDS
@@ -11,7 +12,7 @@ Namespace kCura.WinEDDS
 
 		Public LoadFile As LoadFile
 		Protected WithEvents _loadFileImporter As BulkLoadFileImporter
-        Private WithEvents _ioWarningPublisher As IoWarningPublisher
+		Protected WithEvents _ioWarningPublisher As IoWarningPublisher
 		Private _startTime As System.DateTime
 		Private _errorCount As Int32
 		Private _warningCount As Int32
@@ -89,8 +90,9 @@ Namespace kCura.WinEDDS
             Dim fileSystemService As IFileSystemService = New FileSystemService()
             Dim waitAndRetryPolicy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds)
             Dim fileInfoFailedExceptionHelper As IFileInfoFailedExceptionHelper = New FileInfoFailedExceptionHelper
-            'TODO Check if Log.Logger is created correctly
-            Dim ioReporter As IIoReporter = New IoReporter(fileSystemService, waitAndRetryPolicy, Log.Logger, _ioWarningPublisher, fileInfoFailedExceptionHelper, Config.DisableNativeLocationValidation) 
+		    'TODO Use Here LoggerProvider from kCura.WinEDDS.Core. One concers is why this kCura.WinEDDS.Core proj has a reference to kCura.WinEDDS...
+		    'TODO Do we should set sth here?
+            Dim ioReporter As IIoReporter = New IoReporter(fileSystemService, waitAndRetryPolicy, LogFactory.GetLogger(LogFactory.GetOptionsFromAppDomain().Clone()), _ioWarningPublisher, fileInfoFailedExceptionHelper, Config.DisableNativeLocationValidation)
 
 			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, ioReporter, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter, EnforceDocumentLimit, ExecutionSource)
 
