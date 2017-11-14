@@ -1,4 +1,5 @@
-Imports Exceptions
+
+Imports Helpers
 Imports kCura.WinEDDS.TApi
 Imports Relativity.Logging
 Imports Relativity.Transfer
@@ -87,11 +88,11 @@ Namespace kCura.WinEDDS
 		    _ioWarningPublisher = New IoWarningPublisher()
             Dim fileSystemService As IFileSystemService = New FileSystemService()
             Dim waitAndRetryPolicy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds)
-            Dim fileInfoFailedExceptionPublisher As IFileInfoFailedExceptionPublisher = New FileInfoFailedExceptionPublisher
+            Dim fileInfoFailedExceptionHelper As IFileInfoFailedExceptionHelper = New FileInfoFailedExceptionHelper
             'TODO Check if Log.Logger is created correctly
-            Dim ioReporter As IIoReporter = New IoReporter(fileSystemService, waitAndRetryPolicy, Log.Logger, _ioWarningPublisher, fileInfoFailedExceptionPublisher, Config.DisableNativeLocationValidation) 
+            Dim ioReporter As IIoReporter = New IoReporter(fileSystemService, waitAndRetryPolicy, Log.Logger, _ioWarningPublisher, fileInfoFailedExceptionHelper, Config.DisableNativeLocationValidation) 
 
-			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter, EnforceDocumentLimit, ExecutionSource)
+			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, ioReporter, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter, EnforceDocumentLimit, ExecutionSource)
 
 			Return returnImporter
 		End Function

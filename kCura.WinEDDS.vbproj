@@ -314,7 +314,7 @@
     </Compile>
     <Compile Include="Exceptions\FieldValueImportException.vb" />
     <Compile Include="Exceptions\FileInfoFailedException.vb" />
-    <Compile Include="Exceptions\FileInfoFailedExceptionPublisher.vb" />
+    <Compile Include="Helpers\FileInfoFailedExceptionHelper.vb" />
     <Compile Include="Exceptions\FileWriteError.vb">
       <SubType>Code</SubType>
     </Compile>

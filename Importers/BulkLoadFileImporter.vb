@@ -5,6 +5,7 @@ Imports System.Threading.Tasks
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.Utility.Extensions
 Imports kCura.Windows.Process
+Imports kCura.WinEDDS.TApi
 Imports Polly
 Imports Relativity
 
@@ -291,47 +292,47 @@ Namespace kCura.WinEDDS
 		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean,
+		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByRef ioReporter As IIoReporter, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean,
 					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			Me.New(args, processController, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit, initializeArtifactReader:=True, executionSource:=executionSource)
+			Me.New(args, processController, ioReporter, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit, initializeArtifactReader:=True, executionSource:=executionSource)
 		End Sub
 
-		''' <summary>
-		''' Constructs a new importer that will prepare a bulk load file from a provided file.
-		''' </summary>
-		''' <param name="args">Information about the file being loaded</param>
-		''' <param name="processController">The process that is running</param>
-		''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
-		''' <param name="initializeUploaders">Sets whether or not the uploaders should be initialized
-		''' for use</param>
-		''' <param name="processID">The identifier of the process running</param>
-		''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
-		''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
-		''' <param name="executionSource">Optional parameter that states where the import
-		''' is coming from.</param>
-		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
-		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean,
-					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			Me.New(args, processController, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit, initializeArtifactReader:=True, executionSource:=executionSource)
-		End Sub
+        ''' <summary>
+        ''' Constructs a new importer that will prepare a bulk load file from a provided file.
+        ''' </summary>
+        ''' <param name="args">Information about the file being loaded</param>
+        ''' <param name="processController">The process that is running</param>
+        ''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
+        ''' <param name="initializeUploaders">Sets whether or not the uploaders should be initialized
+        ''' for use</param>
+        ''' <param name="processID">The identifier of the process running</param>
+        ''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
+        ''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
+        ''' <param name="executionSource">Optional parameter that states where the import
+        ''' is coming from.</param>
+        ''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
+        ''' is <c>null</c> or <c>String.Empty</c>.</exception>
+        Public Sub New(ByVal args As LoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean,
+                        ByRef ioReporter As IIoReporter, ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
+            Me.New(args, processController, ioReporter, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit, initializeArtifactReader:=True, executionSource:=executionSource)
+        End Sub
 
-		''' <summary>
-		''' Constructs a new importer that will prepare a bulk load file from a provided file.
-		''' </summary>
-		''' <param name="args">Information about the file being loaded</param>
-		''' <param name="processController">The process that is running</param>
-		''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
-		''' <param name="initializeUploaders">Sets whether or not the uploaders should be initialized
-		''' for use</param>
-		''' <param name="processID">The identifier of the process running</param>
-		''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
-		''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
-		''' <param name="executionSource">Optional parameter that states where the import
-		''' is coming from.</param>
-		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
-		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(args As LoadFile, processController As kCura.Windows.Process.Controller, timeZoneOffset As Int32, autoDetect As Boolean, initializeUploaders As Boolean, processID As Guid, doRetryLogic As Boolean, bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean, initializeArtifactReader As Boolean,
+        ''' <summary>
+        ''' Constructs a new importer that will prepare a bulk load file from a provided file.
+        ''' </summary>
+        ''' <param name="args">Information about the file being loaded</param>
+        ''' <param name="processController">The process that is running</param>
+        ''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
+        ''' <param name="initializeUploaders">Sets whether or not the uploaders should be initialized
+        ''' for use</param>
+        ''' <param name="processID">The identifier of the process running</param>
+        ''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
+        ''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
+        ''' <param name="executionSource">Optional parameter that states where the import
+        ''' is coming from.</param>
+        ''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
+        ''' is <c>null</c> or <c>String.Empty</c>.</exception>
+        Public Sub New(args As LoadFile, processController As kCura.Windows.Process.Controller, ByRef ioReporter As IIoReporter, timeZoneOffset As Int32, autoDetect As Boolean, initializeUploaders As Boolean, processID As Guid, doRetryLogic As Boolean, bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean, initializeArtifactReader As Boolean,
 					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
 			MyBase.New(args, timeZoneOffset, doRetryLogic, autoDetect, initializeArtifactReader)
 
