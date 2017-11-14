@@ -10,7 +10,7 @@ namespace kCura.WinEDDS.TApi
     public class IoWarningEventArgs : EventArgs
     {
         /// <summary>
-        /// 
+        /// IoWarningEventArgs exception types
         /// </summary>
         public enum TypeEnum
         {
@@ -30,19 +30,20 @@ namespace kCura.WinEDDS.TApi
 
         private int _waitTime;
         private System.Exception _exception;
-        private long _currentLineNumber;
         private string _message;
+        private long _currentLineNumber;
 
         private TypeEnum _type;
 
         /// <summary>
-        /// 
+        /// Contructor for IoWarningEventArgs
         /// </summary>
-        public IoWarningEventArgs(int waitTime, System.Exception ex, long currentLineNumber)
+        public IoWarningEventArgs(int waitTime, System.Exception ex, string message, long currentLineNumber)
         {
             _waitTime = waitTime;
             _exception = ex;
             _currentLineNumber = currentLineNumber;
+            _message = message;
             if (waitTime > 0)
             {
                 _type = TypeEnum.WaitRetryError;
@@ -54,7 +55,7 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// 
+        /// Contructor for IoWarningEventArgs
         /// </summary>
         public IoWarningEventArgs(string message, long currentLineNumber)
         {

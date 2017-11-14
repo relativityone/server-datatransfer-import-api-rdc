@@ -9,15 +9,26 @@ namespace kCura.WinEDDS.TApi
     public abstract class ImportTapiBase
     {
         private ILog _log;
-        
+        private IIoReporter _ioReporter;
+
+        /// <summary>
+        /// Constructor for ImportTapiBase
+        /// </summary>
+        /// <param name="ioReporter"></param>
+        protected ImportTapiBase(IIoReporter ioReporter)
+        {
+            _ioReporter = ioReporter;
+        }
+
         /// <summary>
         /// Current Line Number
         /// </summary>
-        protected int CurrentLineNumber { get; }
+        protected abstract int CurrentLineNumber { get; }
 
         /// <inheritdoc />
         protected ImportTapiBase(ILog log)
         {
+            //TODO Introduce argument check
             _log = log;
         }
     }

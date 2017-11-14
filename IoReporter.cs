@@ -16,7 +16,7 @@ namespace kCura.WinEDDS.TApi
         private IFileSystemService _fileSystemService;
         private IWaitAndRetryPolicy _waitAndRetryPolicy;
         private IoWarningPublisher _ioWarningPublisher;
-        private IFileInfoFailedExceptionPublisher _fileInfoFailedExceptionPublisher;
+        private IFileInfoFailedExceptionHelper _fileInfoFailedExceptionHelper;
         private ILog _log;
         private bool _disableNativeLocationValidation;
 
@@ -24,13 +24,13 @@ namespace kCura.WinEDDS.TApi
         /// Constructor for IO reporter
         /// </summary>
         public IoReporter(IFileSystemService fileService, IWaitAndRetryPolicy waitAndRetry, ILog log,
-            IoWarningPublisher ioWarningPublisher, IFileInfoFailedExceptionPublisher fileInfoFailedExceptionPublisher, bool disableNativeLocationValidation)
+            IoWarningPublisher ioWarningPublisher, IFileInfoFailedExceptionHelper fileInfoFailedExceptionHelper, bool disableNativeLocationValidation)
         {
             _fileSystemService = fileService;
             _waitAndRetryPolicy = waitAndRetry;
             _log = log;
             _ioWarningPublisher = ioWarningPublisher;
-            _fileInfoFailedExceptionPublisher = fileInfoFailedExceptionPublisher;
+            _fileInfoFailedExceptionHelper = fileInfoFailedExceptionHelper;
 
             _disableNativeLocationValidation = disableNativeLocationValidation;
         }
@@ -58,12 +58,13 @@ namespace kCura.WinEDDS.TApi
             {
                 string errorMessage = $"File {fileName} not found: illegal characters in path.";
                 _log.LogError(ex, errorMessage);
-                _fileInfoFailedExceptionPublisher.ThrowNewException(errorMessage);
+                _fileInfoFailedExceptionHelper.ThrowNewException(errorMessage);
             }
 
-            _ioWarningPublisher?.OnIoWarningEvent(new IoWarningEventArgs(timeSpan.Seconds, ex, lineNumberInParentFile));
+            string warningMessage = BuildOnRetryWarningMessage(timeSpan, ex);
 
-            string warningMessage =  BuildOnRetryWarningMessage(timeSpan, ex);
+            _ioWarningPublisher?.OnIoWarningEvent(new IoWarningEventArgs(timeSpan.Seconds, ex, warningMessage, lineNumberInParentFile));
+            
             _log.LogWarning(ex, warningMessage);
         }
 

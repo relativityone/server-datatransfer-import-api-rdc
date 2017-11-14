@@ -90,7 +90,7 @@
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ClientChangeReason.cs" />
-    <Compile Include="IFileInfoFailedExceptionPublisher.cs" />
+    <Compile Include="IFileInfoFailedExceptionHelper.cs" />
     <Compile Include="IIoReporter.cs" />
     <Compile Include="ImportTapiBase.cs" />
     <Compile Include="IoReporter.cs" />

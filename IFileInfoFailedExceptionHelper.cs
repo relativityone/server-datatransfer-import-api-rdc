@@ -9,7 +9,7 @@ namespace kCura.WinEDDS.TApi
     /// <summary>
     /// Publish exception when file info operation failed
     /// </summary>
-    public interface IFileInfoFailedExceptionPublisher
+    public interface IFileInfoFailedExceptionHelper
     {
         /// <summary>
         /// Throws new FileInfoFailedException
