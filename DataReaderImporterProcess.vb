@@ -1,3 +1,10 @@
+Imports Helpers
+Imports kCura.WinEDDS.TApi
+Imports Microsoft.VisualBasic.Logging
+Imports Relativity.Logging
+Imports Relativity.Logging.Factory
+Imports Relativity.Transfer
+
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderImporterProcess
 		Inherits kCura.WinEDDS.ImportLoadFileProcess
@@ -32,14 +39,22 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Function
 
 		Public Overrides Function GetImporter() As kCura.WinEDDS.BulkLoadFileImporter
-			LoadFile.OIFileIdColumnName = OIFileIdColumnName
+		    _ioWarningPublisher = New IoWarningPublisher()
+		    Dim fileSystemService As IFileSystemService = New FileSystemService()
+		    Dim waitAndRetryPolicy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds)
+		    Dim fileInfoFailedExceptionHelper As IFileInfoFailedExceptionHelper = New FileInfoFailedExceptionHelper
+		    'TODO Use Here LoggerProvider from kCura.WinEDDS.Core. One concers is why this kCura.WinEDDS.Core proj has a reference to kCura.WinEDDS...
+		    Dim ioReporter As IIoReporter = New IoReporter(fileSystemService, waitAndRetryPolicy, LogFactory.GetLogger(LogFactory.GetOptionsFromAppDomain().Clone()), _ioWarningPublisher, fileInfoFailedExceptionHelper, Config.DisableNativeLocationValidation)
+
+            LoadFile.OIFileIdColumnName = OIFileIdColumnName
 			LoadFile.OIFileIdMapped = OIFileIdMapped
 			LoadFile.OIFileTypeColumnName = OIFileTypeColumnName
 			LoadFile.FileSizeColumn = FileSizeColumn
 			LoadFile.FileSizeMapped = FileSizeMapped
 			LoadFile.FileNameColumn = FileNameColumn
-			'Avoid initializing the Artifact Reader in the constructor because it calls back to a virtual method (GetArtifactReader).  
-			Dim importer As DataReaderImporter = New DataReaderImporter(DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile), ProcessController, BulkLoadFileFieldDelimiter, _temporaryLocalDirectory, initializeArtifactReader:=False,
+			
+            'Avoid initializing the Artifact Reader in the constructor because it calls back to a virtual method (GetArtifactReader).  
+			Dim importer As DataReaderImporter = New DataReaderImporter(DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile), ProcessController, ioReporter, BulkLoadFileFieldDelimiter, _temporaryLocalDirectory, initializeArtifactReader:=False,
 																		executionSource := ExecutionSource) With {.OnBehalfOfUserToken = Me.OnBehalfOfUserToken}
 			importer.Initialize()
 
