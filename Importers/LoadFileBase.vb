@@ -52,6 +52,7 @@ Namespace kCura.WinEDDS
 		Private _codesCreated As Int32 = 0
 		Private _logger As Relativity.Logging.ILog
 		Protected WithEvents _artifactReader As Api.IArtifactReader
+        Protected _ioReporter As IIoReporter
 		Public Property SkipExtractedTextEncodingCheck As Boolean
 		Public Property LoadImportedFullTextFromServer As Boolean
 		Public Property DisableExtractedTextFileLocationValidation As Boolean
@@ -127,11 +128,11 @@ Namespace kCura.WinEDDS
 			_artifactReader.AdvanceRecord()
 		End Sub
 
-		Protected Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean)
-			Me.New(args, timezoneoffset, doRetryLogic, autoDetect, initializeArtifactReader:=True)
+		Protected Sub New(ByVal args As LoadFile, ioReporter As IIoReporter, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean)
+			Me.New(args, ioReporter, timezoneoffset, doRetryLogic, autoDetect, initializeArtifactReader:=True)
 		End Sub
 
-		Protected Sub New(args As LoadFile, timezoneoffset As Int32, doRetryLogic As Boolean, autoDetect As Boolean, initializeArtifactReader As Boolean)
+		Protected Sub New(args As LoadFile, ioReporter As IIoReporter, timezoneoffset As Int32, doRetryLogic As Boolean, autoDetect As Boolean, initializeArtifactReader As Boolean)
             MyBase.New(RelativityLogFactory.CreateLog("WinEDDS"))
 
 			' This must be constructed early. Do NOT arbitrarily move this call!
@@ -145,6 +146,7 @@ Namespace kCura.WinEDDS
 			FileNameColumn = args.FileNameColumn
 			_timeZoneOffset = timezoneoffset
 			_autoDetect = autoDetect
+		    _ioReporter = ioReporter
 			InitializeManagers(args)
 
 			If initializeArtifactReader Then
@@ -837,9 +839,9 @@ Namespace kCura.WinEDDS
 
 		Private Sub _artifactReader_OnIoWarning(ByVal e As Api.IoWarningEventArgs) Handles _artifactReader.OnIoWarning
 			If e.Exception Is Nothing Then
-				Me.RaiseIoWarning(New kCura.Utility.RobustIoReporter.IoWarningEventArgs(e.Message, e.CurrentLineNumber))
+                _ioReporter.IOWarningPublisher?.OnIoWarningEvent(new IoWarningEventArgs(e.Message, e.CurrentLineNumber))
 			Else
-				Me.RaiseIoWarning(New kCura.Utility.RobustIoReporter.IoWarningEventArgs(e.WaitTime, e.Exception, e.CurrentLineNumber))
+			    _ioReporter.IOWarningPublisher?.OnIoWarningEvent(new IoWarningEventArgs(e.WaitTime, e.Exception, _ioReporter.BuildIOReporterWarningMessage(e.Exception), e.CurrentLineNumber))
 			End If
 		End Sub
 

@@ -90,9 +90,7 @@ Namespace kCura.WinEDDS
             Dim fileSystemService As IFileSystemService = New FileSystemService()
             Dim waitAndRetryPolicy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds)
             Dim fileInfoFailedExceptionHelper As IFileInfoFailedExceptionHelper = New FileInfoFailedExceptionHelper
-		    'TODO Use Here LoggerProvider from kCura.WinEDDS.Core. One concers is why this kCura.WinEDDS.Core proj has a reference to kCura.WinEDDS...
-		    'TODO Do we should set sth here?
-            Dim ioReporter As IIoReporter = New IoReporter(fileSystemService, waitAndRetryPolicy, LogFactory.GetLogger(LogFactory.GetOptionsFromAppDomain().Clone()), _ioWarningPublisher, fileInfoFailedExceptionHelper, Config.DisableNativeLocationValidation)
+            Dim ioReporter As IIoReporter = New IoReporter(fileSystemService, waitAndRetryPolicy, RelativityLogFactory.CreateLog("WinEDDS"), _ioWarningPublisher, fileInfoFailedExceptionHelper, Config.DisableNativeLocationValidation)
 
 			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, ioReporter, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter, EnforceDocumentLimit, ExecutionSource)
 
