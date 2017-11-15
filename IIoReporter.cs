@@ -12,5 +12,18 @@ namespace kCura.WinEDDS.TApi
         /// Get file length
         /// </summary>
         long GetFileLength(string fileName, int lineNumberInParentFile);
+
+
+        /// <summary>
+        /// Property to expose IoWarningPublisher
+        /// </summary>
+        IoWarningPublisher IOWarningPublisher { get; }
+
+        /// <summary>
+        /// This method prepares meaningful warning message.
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <returns></returns>
+        string BuildIOReporterWarningMessage(Exception ex);
     }
 }

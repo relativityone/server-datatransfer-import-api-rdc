@@ -35,9 +35,7 @@ namespace kCura.WinEDDS.TApi
             _disableNativeLocationValidation = disableNativeLocationValidation;
         }
 
-        /// <summary>
-        /// Property to expose IoWarningPublisher
-        /// </summary>
+        /// <inheritdoc />
         public IoWarningPublisher IOWarningPublisher => _ioWarningPublisher;
 
         /// <inheritdoc />
@@ -66,24 +64,17 @@ namespace kCura.WinEDDS.TApi
                 _fileInfoFailedExceptionHelper.ThrowNewException(errorMessage);
             }
 
-            string warningMessage = BuildOnRetryWarningMessage(timeSpan, ex);
+            string warningMessage = BuildIOReporterWarningMessage(ex);
 
             _ioWarningPublisher?.OnIoWarningEvent(new IoWarningEventArgs(timeSpan.Seconds, ex, warningMessage, lineNumberInParentFile));
             
             _log.LogWarning(ex, warningMessage);
         }
 
-        private string BuildOnRetryWarningMessage(TimeSpan timeSpan, Exception ex)
+        /// <inheritdoc />
+        public string BuildIOReporterWarningMessage(Exception ex)
         {
-            var messageBuilder = new StringBuilder();
-            messageBuilder.Append("Error accessing load file - retrying");
-            if (timeSpan.Seconds > 0)
-            {
-                messageBuilder.Append($" in {timeSpan.Seconds} seconds");
-            }
-            messageBuilder.Append(Environment.NewLine);
-            messageBuilder.Append($"Actual error: {ex.Message}");
-            return messageBuilder.ToString();
+            return $"Error when accessing load file - retrying. Actual error: {ex.Message}";   
         }
     }
 }
