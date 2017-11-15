@@ -110,13 +110,13 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Protected Overrides ReadOnly Property NumberOfRetries() As Int32
+		Protected Overridable ReadOnly Property NumberOfRetries() As Int32
 			Get
 				Return kCura.Utility.Config.IOErrorNumberOfRetries
 			End Get
 		End Property
 
-		Protected Overrides ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
+		Protected ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
 			Get
 				Return kCura.Utility.Config.IOErrorWaitTimeInSeconds
 			End Get
@@ -1074,7 +1074,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub RaiseWarningAndPause(ByVal ex As Exception, ByVal timeoutSeconds As Int32)
-			Me.RaiseIoWarning(New kCura.Utility.DelimitedFileImporter.IoWarningEventArgs(timeoutSeconds, ex, Me.CurrentLineNumber))
+			_ioReporter.IOWarningPublisher?.OnIoWarningEvent(New IoWarningEventArgs(timeoutSeconds,ex, _ioReporter.BuildIOReporterWarningMessage(ex), Me.CurrentLineNumber))
 			System.Threading.Thread.CurrentThread.Join(1000 * timeoutSeconds)
 		End Sub
 
