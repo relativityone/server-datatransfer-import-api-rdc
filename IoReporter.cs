@@ -35,6 +35,11 @@ namespace kCura.WinEDDS.TApi
             _disableNativeLocationValidation = disableNativeLocationValidation;
         }
 
+        /// <summary>
+        /// Property to expose IoWarningPublisher
+        /// </summary>
+        public IoWarningPublisher IOWarningPublisher => _ioWarningPublisher;
+
         /// <inheritdoc />
         public long GetFileLength(string fileName, int lineNumberInParentFile)
         {

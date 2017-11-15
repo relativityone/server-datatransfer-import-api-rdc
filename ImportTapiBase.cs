@@ -16,10 +16,6 @@ namespace kCura.WinEDDS.TApi
         protected IIoReporter _ioReporter;
 
         //TODO Do we need constructor here?
-        /// <summary>
-        /// Constructor for ImportTapiBase
-        /// </summary>
-        /// <param name="ioReporter"></param>
         //protected ImportTapiBase(IIoReporter ioReporter)
         //{
         //    _ioReporter = ioReporter;
