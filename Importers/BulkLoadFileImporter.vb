@@ -2092,7 +2092,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 
-        'TODO
+        'TODO Extract this Publisher to seperate file
 		Private Event IoWarningEvent(ByVal e As kCura.Utility.RobustIoReporter.IoWarningEventArgs)
 
 		Private Sub IoWarningHandler(ByVal e As kCura.Utility.RobustIoReporter.IoWarningEventArgs)

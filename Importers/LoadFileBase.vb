@@ -132,6 +132,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Sub New(args As LoadFile, timezoneoffset As Int32, doRetryLogic As Boolean, autoDetect As Boolean, initializeArtifactReader As Boolean)
+            MyBase.New(RelativityLogFactory.CreateLog("WinEDDS"))
 
 			' This must be constructed early. Do NOT arbitrarily move this call!
 			_logger = RelativityLogFactory.CreateLog("WinEDDS")
@@ -832,6 +833,7 @@ Namespace kCura.WinEDDS
 		End Class
 
 #End Region
+
 
 		Private Sub _artifactReader_OnIoWarning(ByVal e As Api.IoWarningEventArgs) Handles _artifactReader.OnIoWarning
 			If e.Exception Is Nothing Then
