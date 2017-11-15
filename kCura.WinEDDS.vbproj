@@ -420,6 +420,7 @@
     <Compile Include="Importers\ImageFilePreviewer.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Importers\ImportExportTapiBase.vb" />
     <Compile Include="Importers\LoadFileBase.vb">
       <SubType>Code</SubType>
     </Compile>
