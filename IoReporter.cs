@@ -64,15 +64,15 @@ namespace kCura.WinEDDS.TApi
                 _fileInfoFailedExceptionHelper.ThrowNewException(errorMessage);
             }
 
-            string warningMessage = BuildIOReporterWarningMessage(ex);
+            string warningMessage = BuildIoReporterWarningMessage(ex);
 
-            _ioWarningPublisher?.OnIoWarningEvent(new IoWarningEventArgs(timeSpan.Seconds, ex, warningMessage, lineNumberInParentFile));
+            _ioWarningPublisher?.OnIoWarningEvent(new IoWarningEventArgs(warningMessage, lineNumberInParentFile));
             
             _log.LogWarning(ex, warningMessage);
         }
 
         /// <inheritdoc />
-        public string BuildIOReporterWarningMessage(Exception ex)
+        public static string BuildIoReporterWarningMessage(Exception ex)
         {
             return $"Error when accessing load file - retrying. Actual error: {ex.Message}";   
         }

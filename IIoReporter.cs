@@ -18,12 +18,5 @@ namespace kCura.WinEDDS.TApi
         /// Property to expose IoWarningPublisher
         /// </summary>
         IoWarningPublisher IOWarningPublisher { get; }
-
-        /// <summary>
-        /// This method prepares meaningful warning message.
-        /// </summary>
-        /// <param name="ex"></param>
-        /// <returns></returns>
-        string BuildIOReporterWarningMessage(Exception ex);
     }
 }
