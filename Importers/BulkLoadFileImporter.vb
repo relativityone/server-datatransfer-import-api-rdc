@@ -1074,7 +1074,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub RaiseWarningAndPause(ByVal ex As Exception, ByVal timeoutSeconds As Int32)
-			_ioReporter.IOWarningPublisher?.OnIoWarningEvent(New IoWarningEventArgs(timeoutSeconds,ex, _ioReporter.BuildIOReporterWarningMessage(ex), Me.CurrentLineNumber))
+			_ioReporter.IOWarningPublisher?.OnIoWarningEvent(New IoWarningEventArgs(IoReporter.BuildIOReporterWarningMessage(ex), Me.CurrentLineNumber))
 			System.Threading.Thread.CurrentThread.Join(1000 * timeoutSeconds)
 		End Sub
 

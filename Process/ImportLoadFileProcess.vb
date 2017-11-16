@@ -326,17 +326,7 @@ Namespace kCura.WinEDDS
 		
 		Private Sub _loadFileImporter_IoErrorEvent(ByVal e As IoWarningEventArgs) Handles _ioWarningPublisher.IoWarningEvent
 		    System.Threading.Monitor.Enter(Me.ProcessObserver)
-		    Dim message As New System.Text.StringBuilder
-		    Select Case e.Type
-		        Case IoWarningEventArgs.TypeEnum.Message
-		            message.Append(e.Message)
-		        Case Else
-		            message.Append("Error accessing load file - retrying")
-		            If e.WaitTime > 0 Then message.Append(" in " & e.WaitTime & " seconds")
-		            message.Append(vbNewLine)
-		            message.Append("Actual error: " & e.Exception.Message)
-		    End Select
-		    Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, message.ToString)
+		    Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, e.Message)
 		    System.Threading.Monitor.Exit(Me.ProcessObserver)
 		End Sub
 
