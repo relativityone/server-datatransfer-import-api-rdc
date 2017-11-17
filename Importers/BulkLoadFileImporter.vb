@@ -416,20 +416,20 @@ Namespace kCura.WinEDDS
 			nativeParameters.WaitTimeBetweenRetryAttempts = Me.WaitTimeBetweenRetryAttempts
 			nativeParameters.WebCookieContainer = args.CookieContainer
 			nativeParameters.WebServiceUrl = Config.WebServiceURL
-			nativeParameters.WorkspaceId = args.CaseInfo.ArtifactID
+            nativeParameters.WorkspaceId = args.CaseInfo.ArtifactID
 
-			' Ensure that one instance is used for both TAPI objects.
-			_nativeUploaderBridge = TApi.TapiBridgeFactory.CreateUploadBridge(nativeParameters, Me.Logger, _cancellationToken.Token)
+            ' Ensure that one instance is used for both TAPI objects.
+            _nativeUploaderBridge = TApi.TapiBridgeFactory.CreateUploadBridge(nativeParameters, Me.Logger, _cancellationToken.Token)
 			AddHandler _nativeUploaderBridge.TapiClientChanged, AddressOf NativeTapiUploaderOnTapiClientChanged
 			AddHandler _nativeUploaderBridge.TapiFatalError, AddressOf TapiUploaderOnTapiFatalError
 			AddHandler _nativeUploaderBridge.TapiProgress, AddressOf NativeTapiUploaderOnTapiProgress
 			AddHandler _nativeUploaderBridge.TapiStatistics, AddressOf NativeTapiUploaderOnTapiStatistics
 			AddHandler _nativeUploaderBridge.TapiStatusMessage, AddressOf TapiUploaderOnTapiStatusEvent
 			AddHandler _nativeUploaderBridge.TapiErrorMessage, AddressOf TapiUploaderOnTapiErrorMessage
-			AddHandler _nativeUploaderBridge.TapiWarningMessage, AddressOf TapiUploaderOnTapiWarningMessage
+            AddHandler _nativeUploaderBridge.TapiWarningMessage, AddressOf TapiUploaderOnTapiWarningMessage
 
-			' Copying the parameters and tweaking just a few BCP specific parameters.
-			Dim bcpParameters As TApi.TapiBridgeParameters = nativeParameters.ShallowCopy()
+            ' Copying the parameters and tweaking just a few BCP specific parameters.
+            Dim bcpParameters As TApi.TapiBridgeParameters = nativeParameters.ShallowCopy()
 			bcpParameters.BcpFileTransfer = True
 			bcpParameters.AsperaBcpRootFolder = Config.TapiAsperaBcpRootFolder
 			bcpParameters.FileShare = gateway.GetBcpSharePath(args.CaseInfo.ArtifactID)
@@ -444,8 +444,13 @@ Namespace kCura.WinEDDS
 			AddHandler _bcpUploaderBridge.TapiFatalError, AddressOf TapiUploaderOnTapiFatalError
 			AddHandler _bcpUploaderBridge.TapiStatusMessage, AddressOf TapiUploaderOnTapiStatusEvent
 			AddHandler _bcpUploaderBridge.TapiErrorMessage, AddressOf TapiUploaderOnTapiErrorMessage
-			AddHandler _bcpUploaderBridge.TapiWarningMessage, AddressOf TapiUploaderOnTapiWarningMessage
-		End Sub
+            AddHandler _bcpUploaderBridge.TapiWarningMessage, AddressOf TapiUploaderOnTapiWarningMessage
+
+            ' Dump native and bcp upload bridge
+            _nativeUploaderBridge.DumpInfo()
+            _bcpUploaderBridge.DumpInfo()
+
+        End Sub
 
 		Protected Overridable Sub DestroyUploaders()
 			If Not _nativeUploaderBridge Is Nothing Then
