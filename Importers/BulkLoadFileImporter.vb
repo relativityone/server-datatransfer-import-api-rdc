@@ -605,6 +605,14 @@ Namespace kCura.WinEDDS
 				_statistics.BatchSize = Me.ImportBatchSize
 				_jobCounter = 1
                 Using fileService As kCura.OI.FileID.FileIDService = New kCura.OI.FileID.FileIDService()
+                    ' Dump OutSideIn info
+                    Dim fileIdInfo As FileIDInfo = fileService.ForceInitialize()
+                    Me.LogInformation("FileID service info.")
+                    Me.LogInformation("Version: '{0}'.", fileIdInfo.Version)
+                    Me.LogInformation("Idle worker timeout: '{0}'.", fileIdInfo.IdleWorkerTimeout)
+                    Me.LogInformation("Install location: '{0}'.", fileIdInfo.InstallLocation)
+                    Me.LogInformation("Minimum worker count: '{0}'.", fileIdInfo.MinimumWorkerCount)
+
                     While ShouldImport AndAlso _artifactReader.HasMoreRecords
                         Try
                             If Me.CurrentLineNumber < _startLineNumber Then
@@ -726,6 +734,9 @@ Namespace kCura.WinEDDS
             kCura.Utility.File.Instance.Delete(_outputFileWriter.OutputDataGridFilePath)
         End Sub
 
+        ''' <summary>
+        ''' Dump the statistic object.
+        ''' </summary>
         Protected Sub DumpStatisticsInfo()
             Me.LogInformation("Statistics info:")
             Me.LogInformation("Document count: '{0}'.", _statistics.DocCount)
