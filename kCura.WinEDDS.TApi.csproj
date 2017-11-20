@@ -24,6 +24,7 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DocumentationFile>bin\kCura.WinEDDS.TApi.xml</DocumentationFile>
+    <CodeAnalysisRuleSet>..\..\kCura\DevelopmentScripts\AllErrors.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
