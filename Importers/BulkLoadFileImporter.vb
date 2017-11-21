@@ -585,7 +585,7 @@ Namespace kCura.WinEDDS
 						If _startLineNumber <= 0 Then fileLineStart = 1
 						Dim countAfterJob As Long = currentDocCount + (_recordCount - (fileLineStart - 1))
 						If (docLimit <> 0 And countAfterJob > docLimit) Then
-							Dim errorMessage As String = String.Format("The document import was cancelled.  It would have exceeded the workspace's document limit of {1} by {0} documents.", countAfterJob - docLimit, docLimit)
+							Dim errorMessage As String = String.Format("The document import was canceled.  It would have exceeded the workspace's document limit of {1} by {0} documents.", countAfterJob - docLimit, docLimit)
 							Throw New Exception(errorMessage)
 							Return False
 						End If
