@@ -3,7 +3,6 @@ Imports kCura.WinEDDS.TApi
 
 Namespace kCura.WinEDDS
 	Public MustInherit Class LoadFileBase
-		Inherits ImportTapiBase
 
 #Region "Members"
 
@@ -101,7 +100,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Protected Overrides ReadOnly Property CurrentLineNumber() As Int32
+		Protected ReadOnly Property CurrentLineNumber() As Int32
 			Get
 				Return _artifactReader.CurrentLineNumber
 			End Get
@@ -133,8 +132,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Sub New(args As LoadFile, ioReporter As IIoReporter, timezoneoffset As Int32, doRetryLogic As Boolean, autoDetect As Boolean, initializeArtifactReader As Boolean)
-            MyBase.New(RelativityLogFactory.CreateLog("WinEDDS"))
-
+            
 			' This must be constructed early. Do NOT arbitrarily move this call!
 			_logger = RelativityLogFactory.CreateLog("WinEDDS")
 			_settings = args
