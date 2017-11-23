@@ -345,7 +345,7 @@ Namespace kCura.WinEDDS.NUnit
 			originalBatchSizeWith100Images = originalBatchSizeWith100Images.Replace(Chr(10), vbCrLf)
 			expectedReducedFileWith80Rows = expectedReducedFileWith80Rows.Replace(Chr(10), vbCrLf)
 
-			Dim bulkImporter As MockForLoweBatchSizeBulkImageFileImporter = New MockForLoweBatchSizeBulkImageFileImporter(78, originalBatchSizeWith100Images, _args, _controller, _guid, False, False, New MockBulkImportManagerWebExceptions(True))
+			Dim bulkImporter As MockForLoweBatchSizeBulkImageFileImporter = New MockForLoweBatchSizeBulkImageFileImporter(78, originalBatchSizeWith100Images, _args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True))
 			bulkImporter.MockLowerBatchSizeAndRetry(100)
 			Assert.AreEqual(expectedReducedFileWith80Rows, bulkImporter._outPutFromStringWriter.ToString())
 		End Sub

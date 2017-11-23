@@ -1,6 +1,8 @@
 Imports System.IO
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports System.Text
+Imports kCura.WinEDDS.TApi
+Imports Relativity.Logging
 
 Namespace kCura.WinEDDS.NUnit
 
@@ -20,16 +22,18 @@ Public Class MockForLoweBatchSizeBulkImageFileImporter
 		Private _inputForStringReader As String
 		Private _importBatchSize As Int32
 
-		Public Sub New(ByVal args As ImageLoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager)
-			MyBase.new(0, args, processController, processID, doRetryLogic, False)
+		Public Sub New(ByVal args As ImageLoadFile, ByVal processController As kCura.Windows.Process.Controller, ByRef ioReporter As IIoReporter, ByRef logger As ILog, ByVal processID As Guid, 
+                       ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager)
+			MyBase.new(0, args, processController, ioReporter, logger, processID, doRetryLogic, False)
 			Me.WillThrowException = throwsException
 			_bulkImportManager = bulkManager
 			Me.ImportBatchSize = 500
 			Me.ImportBatchVolume = 1000000
 		End Sub
 
-		Public Sub New(ByVal importBatchSize As Int32, ByVal inputForStringReader As String, ByVal args As ImageLoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager)
-			Me.New(args, processController, processID, doRetryLogic, throwsException, bulkManager)
+		Public Sub New(ByVal importBatchSize As Int32, ByVal inputForStringReader As String, ByVal args As ImageLoadFile, ByVal processController As kCura.Windows.Process.Controller, 
+                       ByRef ioReporter As IIoReporter, ByRef logger As ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager)
+			Me.New(args, processController, ioReporter, logger, processID, doRetryLogic, throwsException, bulkManager)
 			_inputForStringReader = inputForStringReader
 			_importBatchSize = importBatchSize
 		End Sub
