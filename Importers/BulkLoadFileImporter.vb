@@ -2087,12 +2087,10 @@ Namespace kCura.WinEDDS
 			OnFieldMapped(sourceField, workspaceField)
 		End Sub
 
-
         'TODO Extract this Publisher to seperate file
 		Private Event IoWarningEvent(ByVal e As kCura.Utility.RobustIoReporter.IoWarningEventArgs)
 
 		Private Sub IoWarningHandler(ByVal e As kCura.Utility.RobustIoReporter.IoWarningEventArgs)
-			'MyBase.RaiseIoWarning(e)
 		    RaiseEvent IoWarningEvent(e)
 		End Sub
 
