@@ -19,7 +19,7 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// Event which can cause any method that handles IO Warning
         /// </summary>
-        public event IoWarningEventHandler IoWarningEvent();
+        public event IoWarningEventHandler IoWarningEvent;
 
         /// <summary>
         /// Raise IO Warning event
