@@ -43,8 +43,9 @@ Namespace kCura.WinEDDS.ImportExtension
 		    Dim fileSystemService As IFileSystemService = New FileSystemService()
 		    Dim waitAndRetryPolicy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds)
 		    Dim fileInfoFailedExceptionHelper As IFileInfoFailedExceptionHelper = New FileInfoFailedExceptionHelper
-		    'TODO Use Here LoggerProvider from kCura.WinEDDS.Core. One concers is why this kCura.WinEDDS.Core proj has a reference to kCura.WinEDDS...
-		    Dim ioReporter As IIoReporter = New IoReporter(fileSystemService, waitAndRetryPolicy, LogFactory.GetLogger(LogFactory.GetOptionsFromAppDomain().Clone()), _ioWarningPublisher, fileInfoFailedExceptionHelper, Config.DisableNativeLocationValidation)
+
+            Dim logger As ILog = RelativityLogFactory.CreateLog("WinEDDS")
+		    Dim ioReporter As IIoReporter = New IoReporter(fileSystemService, waitAndRetryPolicy, logger, _ioWarningPublisher, fileInfoFailedExceptionHelper, Config.DisableNativeLocationValidation)
 
             LoadFile.OIFileIdColumnName = OIFileIdColumnName
 			LoadFile.OIFileIdMapped = OIFileIdMapped
@@ -54,7 +55,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			LoadFile.FileNameColumn = FileNameColumn
 			
             'Avoid initializing the Artifact Reader in the constructor because it calls back to a virtual method (GetArtifactReader).  
-			Dim importer As DataReaderImporter = New DataReaderImporter(DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile), ProcessController, ioReporter, BulkLoadFileFieldDelimiter, _temporaryLocalDirectory, initializeArtifactReader:=False,
+			Dim importer As DataReaderImporter = New DataReaderImporter(DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile), ProcessController, ioReporter, logger, BulkLoadFileFieldDelimiter, _temporaryLocalDirectory, initializeArtifactReader:=False,
 																		executionSource := ExecutionSource) With {.OnBehalfOfUserToken = Me.OnBehalfOfUserToken}
 			importer.Initialize()
 
