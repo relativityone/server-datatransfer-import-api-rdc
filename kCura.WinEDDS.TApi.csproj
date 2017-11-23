@@ -89,6 +89,7 @@
     <Compile Include="IFileInfoFailedExceptionHelper.cs" />
     <Compile Include="IIoReporter.cs" />
     <Compile Include="IoReporter.cs" />
+    <Compile Include="IoReporterFactory.cs" />
     <Compile Include="IoWarningEventArgs.cs" />
     <Compile Include="IoWarningPublisher.cs" />
     <Compile Include="IWaitAndRetryPolicy.cs" />
