@@ -3,6 +3,7 @@ Imports System.IO
 Imports kCura.WinEDDS.Api
 Imports kCura.Utility
 Imports kCura.WinEDDS.TApi
+Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
 	Public Class LoadFilePreviewer
@@ -24,8 +25,8 @@ Namespace kCura.WinEDDS
 #Region "Constructors"
 
 
-		Public Sub New(ByVal args As LoadFile, ByVal timeZoneOffset As Int32, ByVal errorsOnly As Boolean, ByVal doRetryLogic As Boolean, Optional ByVal processController As kCura.Windows.Process.Controller = Nothing)
-			MyBase.New(args, Nothing, timeZoneOffset, doRetryLogic, True)
+		Public Sub New(ByVal args As LoadFile, ByRef logger As ILog, ByVal timeZoneOffset As Int32, ByVal errorsOnly As Boolean, ByVal doRetryLogic As Boolean, Optional ByVal processController As kCura.Windows.Process.Controller = Nothing)
+			MyBase.New(args, Nothing, logger, timeZoneOffset, doRetryLogic, True)
 			_selectedCaseArtifactID = args.CaseInfo.ArtifactID
 			_errorsOnly = errorsOnly
 			_processController = processController
@@ -339,6 +340,6 @@ Namespace kCura.WinEDDS
 			Return New LoadFileReader(_settings, True)
 		End Function
 
-	End Class
+    End Class
 End Namespace
 

@@ -1,3 +1,5 @@
+Imports Relativity.Logging
+
 Namespace kCura.WinEDDS
 
 	Public Class PreviewLoadFileProcess
@@ -51,7 +53,8 @@ Namespace kCura.WinEDDS
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
-            _loadFilePreviewer = New kCura.WinEDDS.LoadFilePreviewer(LoadFile, _timeZoneOffset, _errorsOnly, True, ProcessController)
+            Dim logger As ILog = RelativityLogFactory.CreateLog("WinEDDS")
+            _loadFilePreviewer = New kCura.WinEDDS.LoadFilePreviewer(LoadFile, logger, _timeZoneOffset, _errorsOnly, True, ProcessController)
 
 			_valueThrower.ThrowValue(New Object() {_loadFilePreviewer.ReadFile(LoadFile.FilePath, _formType), _errorsOnly})
 			Me.ProcessObserver.RaiseProcessCompleteEvent(True)

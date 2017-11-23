@@ -1,8 +1,10 @@
 Imports kCura.Utility.Extensions.Enumerable
 Imports kCura.WinEDDS.TApi
+Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
 	Public MustInherit Class LoadFileBase
+	    Inherits ImportExportTapiBase
 
 #Region "Members"
 
@@ -49,9 +51,7 @@ Namespace kCura.WinEDDS
 		Protected _settings As kCura.WinEDDS.LoadFile
 		Private _codeValidator As CodeValidator.Base
 		Private _codesCreated As Int32 = 0
-		Private _logger As Relativity.Logging.ILog
 		Protected WithEvents _artifactReader As Api.IArtifactReader
-        Protected _ioReporter As IIoReporter
 		Public Property SkipExtractedTextEncodingCheck As Boolean
 		Public Property LoadImportedFullTextFromServer As Boolean
 		Public Property DisableExtractedTextFileLocationValidation As Boolean
@@ -100,7 +100,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Protected ReadOnly Property CurrentLineNumber() As Int32
+		Protected Overrides ReadOnly Property CurrentLineNumber() As Int32
 			Get
 				Return _artifactReader.CurrentLineNumber
 			End Get
@@ -127,14 +127,13 @@ Namespace kCura.WinEDDS
 			_artifactReader.AdvanceRecord()
 		End Sub
 
-		Protected Sub New(ByVal args As LoadFile, ioReporter As IIoReporter, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean)
-			Me.New(args, ioReporter, timezoneoffset, doRetryLogic, autoDetect, initializeArtifactReader:=True)
+		Protected Sub New(ByVal args As LoadFile, ioReporter As IIoReporter, ByRef logger As ILog, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean)
+			Me.New(args, ioReporter, logger, timezoneoffset, doRetryLogic, autoDetect, initializeArtifactReader:=True)
 		End Sub
 
-		Protected Sub New(args As LoadFile, ioReporter As IIoReporter, timezoneoffset As Int32, doRetryLogic As Boolean, autoDetect As Boolean, initializeArtifactReader As Boolean)
-            
-			' This must be constructed early. Do NOT arbitrarily move this call!
-			_logger = RelativityLogFactory.CreateLog("WinEDDS")
+		Protected Sub New(args As LoadFile, ByRef ioReporter As IIoReporter, ByRef logger As ILog, timezoneoffset As Int32, doRetryLogic As Boolean, autoDetect As Boolean, initializeArtifactReader As Boolean)
+            MyBase.New(ioReporter, logger)
+
 			_settings = args
 			OIFileIdColumnName = args.OIFileIdColumnName
 			OIFileIdMapped = args.OIFileIdMapped
