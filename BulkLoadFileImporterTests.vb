@@ -28,15 +28,12 @@ Namespace kCura.WinEDDS.NUnit
 			_args.CaseInfo.RootArtifactID = 1
 			_guid = New Guid("E09E18F3-D0C8-4CFC-96D1-FBB350FAB3E1")
 			_controller = New Controller()
-
-		    Dim ioWarningPublisher As New IoWarningPublisher()
-		    Dim fileSystemService As IFileSystemService = New FileSystemService()
-		    Dim waitAndRetryPolicy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds)
+            
 		    Dim fileInfoFailedExceptionHelper As IFileInfoFailedExceptionHelper = New FileInfoFailedExceptionHelper
-
-		    _ioReporter = New IoReporter(fileSystemService, waitAndRetryPolicy, Log.Logger, ioWarningPublisher, fileInfoFailedExceptionHelper, Config.DisableNativeLocationValidation)
-		    _logger = New NullLogger()
-
+            _logger = New NullLogger()
+		    _ioReporter = IoReporterFactory.CreateIoReporter(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds, 
+		                                                                       WinEDDS.Config.DisableNativeLocationValidation, fileInfoFailedExceptionHelper, _logger)
+            
 			_keyPathExistsAlready = RegKeyHelper.SubKeyPathExists(RegKeyHelper.RelativityKeyPath)
 			_keyValExistsAlready = False
 			If _keyPathExistsAlready = True Then
