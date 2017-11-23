@@ -88,7 +88,6 @@
     <Compile Include="ClientChangeReason.cs" />
     <Compile Include="IFileInfoFailedExceptionHelper.cs" />
     <Compile Include="IIoReporter.cs" />
-    <Compile Include="ImportTapiBase.cs" />
     <Compile Include="IoReporter.cs" />
     <Compile Include="IoWarningEventArgs.cs" />
     <Compile Include="IoWarningPublisher.cs" />
