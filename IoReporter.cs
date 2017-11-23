@@ -46,7 +46,7 @@ namespace kCura.WinEDDS.TApi
                     TimeSpan.FromSeconds(retryAttempt == 1 ? 0 : _waitAndRetryPolicy.WaitTimeBetweenRetryAttempts),
                 (exception, timeSpan) =>
                 {
-                    GetFileLengthRetryAction(exception, timeSpan, fileName, lineNumberInParentFile);
+                    GetFileLengthRetryAction(exception, fileName, lineNumberInParentFile);
                 },
                 () => { fileLength = _fileSystemService.GetFileLength(fileName); }
             );
@@ -54,7 +54,7 @@ namespace kCura.WinEDDS.TApi
             return fileLength;
         }
 
-        private void GetFileLengthRetryAction(Exception ex, TimeSpan timeSpan, string fileName, int lineNumberInParentFile)
+        private void GetFileLengthRetryAction(Exception ex, string fileName, int lineNumberInParentFile)
         {
             if (_disableNativeLocationValidation && ex is ArgumentException &&
                 ex.Message.Contains("Illegal characters in path."))
@@ -72,13 +72,15 @@ namespace kCura.WinEDDS.TApi
         }
         
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="ex"></param>
-        /// <returns></returns>
-        public static string BuildIoReporterWarningMessage(Exception ex)
+		/// Creates warning message out of passed exception
+		/// </summary>
+		public static string BuildIoReporterWarningMessage(Exception ex)
         {
-            return $"Error when accessing load file - retrying. Actual error: {ex.Message}";   
+	        if (ex == null){
+		        return $"Error when accessing load file - retrying. Error details are not available.";
+			}
+
+			return $"Error when accessing load file - retrying. Actual error: {ex.Message}";   
         }
     }
 }

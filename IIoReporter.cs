@@ -18,5 +18,6 @@ namespace kCura.WinEDDS.TApi
         /// Property to expose IoWarningPublisher
         /// </summary>
         IoWarningPublisher IOWarningPublisher { get; }
+
     }
 }

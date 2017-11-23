@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Remoting.Messaging;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.TApi
@@ -10,12 +11,12 @@ namespace kCura.WinEDDS.TApi
     {
         private ILog _log;
 
-        /// <summary>
-        /// IO reporter object
-        /// </summary>
-        protected IIoReporter _ioReporter;
+	    /// <summary>
+	    /// IO reporter property
+	    /// </summary>
+	    protected IIoReporter IoReporter { get; set; }
 
-        //TODO Do we need constructor here?
+	    //TODO Do we need constructor here?
         //protected ImportTapiBase(IIoReporter ioReporter)
         //{
         //    _ioReporter = ioReporter;
