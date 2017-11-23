@@ -841,7 +841,7 @@ Namespace kCura.WinEDDS
 			If e.Exception Is Nothing Then
                 _ioReporter.IOWarningPublisher?.OnIoWarningEvent(new IoWarningEventArgs(e.Message, e.CurrentLineNumber))
 			Else
-			    _ioReporter.IOWarningPublisher?.OnIoWarningEvent(new IoWarningEventArgs(IoReporter.BuildIoReporterWarningMessage(e.Exception), e.CurrentLineNumber))
+			    _ioReporter.IOWarningPublisher?.OnIoWarningEvent(new IoWarningEventArgs(kCura.WinEDDS.TApi.IoReporter.BuildIoReporterWarningMessage(e.Exception), e.CurrentLineNumber))
 			End If
 		End Sub
 
