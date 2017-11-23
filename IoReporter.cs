@@ -70,8 +70,12 @@ namespace kCura.WinEDDS.TApi
             
             _log.LogWarning(ex, warningMessage);
         }
-
-        /// <inheritdoc />
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <returns></returns>
         public static string BuildIoReporterWarningMessage(Exception ex)
         {
             return $"Error when accessing load file - retrying. Actual error: {ex.Message}";   
