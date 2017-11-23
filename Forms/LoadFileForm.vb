@@ -1021,11 +1021,11 @@ Namespace kCura.EDDS.WinForm
                 If _loadFileEncodingPicker.SelectedEncoding Is Nothing Then
                     Me.AppendErrorMessage(msg, "No file encoding selected")
                 End If
-                If _extractedTextValueContainsFileLocation.Checked AndAlso _fullTextFileEncodingPicker.SelectedEncoding Is Nothing Then
+                If _extractedTextValueContainsFileLocation.Enabled AndAlso _extractedTextValueContainsFileLocation.Checked AndAlso _fullTextFileEncodingPicker.SelectedEncoding Is Nothing Then
                     Me.AppendErrorMessage(msg, "No text file encoding selected for extracted text")
                 End If
 
-                If _extractedTextValueContainsFileLocation.Checked Then
+                If _extractedTextValueContainsFileLocation.Enabled AndAlso _extractedTextValueContainsFileLocation.Checked Then
                     If _overlayExtractedText.SelectedItem Is Nothing Then
                         Me.AppendErrorMessage(msg, "No field selected for extracted text")
                     End If
@@ -1065,16 +1065,16 @@ Namespace kCura.EDDS.WinForm
             End If
 
             LoadFile.SourceFileEncoding = _loadFileEncodingPicker.SelectedEncoding
-            LoadFile.FullTextColumnContainsFileLocation = _extractedTextValueContainsFileLocation.Checked
+            LoadFile.FullTextColumnContainsFileLocation = _extractedTextValueContainsFileLocation.Enabled AndAlso _extractedTextValueContainsFileLocation.Checked
 
-            If _extractedTextValueContainsFileLocation.Checked Then
+            If _extractedTextValueContainsFileLocation.Enabled AndAlso _extractedTextValueContainsFileLocation.Checked Then
                 If _overlayExtractedText.SelectedItem IsNot Nothing Then
                     LoadFile.LongTextColumnThatContainsPathToFullText = _overlayExtractedText.SelectedItem.ToString
                 End If
             End If
 
             LoadFile.ExtractedTextFileEncoding = _fullTextFileEncodingPicker.SelectedEncoding
-            If _extractedTextValueContainsFileLocation.Checked AndAlso _fullTextFileEncodingPicker.SelectedEncoding IsNot Nothing Then
+            If _extractedTextValueContainsFileLocation.Enabled AndAlso _extractedTextValueContainsFileLocation.Checked AndAlso _fullTextFileEncodingPicker.SelectedEncoding IsNot Nothing Then
                 LoadFile.ExtractedTextFileEncodingName = Relativity.SqlNameHelper.GetSqlFriendlyName(_fullTextFileEncodingPicker.SelectedEncoding.EncodingName).ToLower
             End If
             LoadFile.LoadNativeFiles = _loadNativeFiles.Checked
@@ -2040,7 +2040,7 @@ Namespace kCura.EDDS.WinForm
                 _overlayExtractedText.SelectedItem = Nothing
             End If
 
-            _fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Checked
+            _fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled AndAlso _extractedTextValueContainsFileLocation.Checked
         End Sub
 
         Private Sub SetExtractedTextAsDefault()
