@@ -1,4 +1,6 @@
 Imports System.Data
+Imports Helpers
+Imports kCura.WinEDDS.TApi
 
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderImageImporterProcess
@@ -12,7 +14,12 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Sub
 
 		Protected Overrides Function GetImageFileImporter() As kCura.WinEDDS.BulkImageFileImporter
-			Return New DataReaderImageImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, Me.ProcessController, System.Guid.NewGuid, _sourceData, enforceDocumentLimit, ExecutionSource)
+		    Dim fileInfoFailedExceptionHelper As IFileInfoFailedExceptionHelper = New FileInfoFailedExceptionHelper
+		    Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog("WinEDDS")
+		    Dim ioReporter As IIoReporter = IoReporterFactory.CreateIoReporter(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds, 
+		                                                                       WinEDDS.Config.DisableNativeLocationValidation, fileInfoFailedExceptionHelper, logger)
+
+			Return New DataReaderImageImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, Me.ProcessController, ioReporter, logger, System.Guid.NewGuid, _sourceData, enforceDocumentLimit, ExecutionSource)
 
 		End Function
 
