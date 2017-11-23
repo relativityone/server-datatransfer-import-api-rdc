@@ -281,6 +281,14 @@ namespace kCura.WinEDDS.TApi
         public string TargetFolderName => this.pathManager.CurrentTargetFolderName;
 
         /// <summary>
+        /// Gets the workspace artifact unique identifier.
+        /// </summary>
+        /// <value>
+        /// The unique identifier.
+        /// </value>
+        public int WorkspaceId => this.parameters.WorkspaceId;
+
+        /// <summary>
         /// Adds the path to a transfer job.
         /// </summary>
         /// <param name="sourceFile">
