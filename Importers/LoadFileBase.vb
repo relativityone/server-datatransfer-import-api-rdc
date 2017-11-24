@@ -143,7 +143,7 @@ Namespace kCura.WinEDDS
 			FileNameColumn = args.FileNameColumn
 			_timeZoneOffset = timezoneoffset
 			_autoDetect = autoDetect
-		    _ioReporter = ioReporter
+		    Me.IoReporter = ioReporter
 			InitializeManagers(args)
 
 			If initializeArtifactReader Then
@@ -200,44 +200,6 @@ Namespace kCura.WinEDDS
 			'_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credentials, args.CookieContainer)
 			_objectManager = New kCura.WinEDDS.Service.ObjectManager(args.Credentials, args.CookieContainer)
 		End Sub
-
-		Protected Sub LogInformation(ByVal exception As System.Exception, ByVal messageTemplate As String, ParamArray propertyValues As Object())
-			_logger.LogInformation(exception, messageTemplate, propertyValues)
-		End Sub
-
-		Protected Sub LogInformation(ByVal messageTemplate As String, ParamArray propertyValues As Object())
-			_logger.LogInformation(messageTemplate, propertyValues)
-		End Sub
-
-		Protected Sub LogError(ByVal exception As System.Exception, ByVal messageTemplate As String, ParamArray propertyValues As Object())
-			_logger.LogError(exception, messageTemplate, propertyValues)
-		End Sub
-
-		Protected Sub LogError(ByVal messageTemplate As String, ParamArray propertyValues As Object())
-			_logger.LogError(messageTemplate, propertyValues)
-		End Sub
-
-		Protected Sub LogFatal(ByVal exception As System.Exception, ByVal messageTemplate As String, ParamArray propertyValues As Object())
-			_logger.LogFatal(exception, messageTemplate, propertyValues)
-		End Sub
-
-		Protected Sub LogFatal(ByVal messageTemplate As String, ParamArray propertyValues As Object())
-			_logger.LogFatal(messageTemplate, propertyValues)
-		End Sub
-
-		Protected Sub LogWarning(ByVal exception As System.Exception, ByVal messageTemplate As String, ParamArray propertyValues As Object())
-			_logger.LogWarning(exception, messageTemplate, propertyValues)
-		End Sub
-
-		Protected Sub LogWarning(ByVal messageTemplate As String, ParamArray propertyValues As Object())
-			_logger.LogWarning(messageTemplate, propertyValues)
-		End Sub
-
-		Protected ReadOnly Property Logger As Relativity.Logging.ILog
-			Get
-				Return _logger
-			End Get
-		End Property
 
 #Region "Code Parsing"
 
@@ -836,9 +798,9 @@ Namespace kCura.WinEDDS
 
 		Private Sub _artifactReader_OnIoWarning(ByVal e As Api.IoWarningEventArgs) Handles _artifactReader.OnIoWarning
 			If e.Exception Is Nothing Then
-                _ioReporter.IOWarningPublisher?.OnIoWarningEvent(new IoWarningEventArgs(e.Message, e.CurrentLineNumber))
+                IoReporter.IOWarningPublisher?.OnIoWarningEvent(new IoWarningEventArgs(e.Message, e.CurrentLineNumber))
 			Else
-			    _ioReporter.IOWarningPublisher?.OnIoWarningEvent(new IoWarningEventArgs(kCura.WinEDDS.TApi.IoReporter.BuildIoReporterWarningMessage(e.Exception), e.CurrentLineNumber))
+			    IoReporter.IOWarningPublisher?.OnIoWarningEvent(new IoWarningEventArgs(kCura.WinEDDS.TApi.IoReporter.BuildIoReporterWarningMessage(e.Exception), e.CurrentLineNumber))
 			End If
 		End Sub
 

@@ -17,25 +17,23 @@ Namespace kCura.WinEDDS
 
 #Region "Members"
         Private ReadOnly _syncRoot As Object = New Object
-        Private ReadOnly _cancellationToken As System.Threading.CancellationTokenSource
-        Private ReadOnly _statistics As New kCura.WinEDDS.Statistics
+        Private ReadOnly _cancellationToken As CancellationTokenSource
+        Private ReadOnly _statistics As New Statistics
 
-        Private WithEvents _bulkLoadTapiBridge As TApi.TapiBridge
-        Private WithEvents _nativeTapiBridge As TApi.TapiBridge
+        Private WithEvents _bulkLoadTapiBridge As TapiBridge
+        Private WithEvents _fileTapiBridge As TapiBridge
 
         Private _bulkLoadTapiClientName As String
-        Private _jobCounter As Int32
-        Private _nativeTapiClientName As String
-        Private _nativeTapiClient As TApi.TapiClient = TApi.TapiClient.None
-        Private _nativeTapiProgressCount As Int32
-        Private _shouldImport As Boolean
-        Private _statisticsLastUpdated As System.DateTime = System.DateTime.Now
-        Private _currentStatisticsSnapshot As IDictionary
 
-        Protected _ioReporter As IIoReporter
+		Private _fileTapiClient As TapiClient = TapiClient.None
+		Private _fileTapiClientName As String
+
+		Private _statisticsLastUpdated As DateTime = DateTime.Now
+
+		Protected IoReporter As IIoReporter
 
         Protected MustOverride ReadOnly Property CurrentLineNumber() As Integer
-        Protected ReadOnly _logger As ILog
+        private ReadOnly _logger As ILog
 #End Region
 
 #Region "Constructor"
@@ -43,102 +41,74 @@ Namespace kCura.WinEDDS
             _logger = logger
             _cancellationToken = New CancellationTokenSource()
 
-            _ioReporter = ioReporter
+            Me.IoReporter = ioReporter
         End Sub
 
 #End Region
 
 #Region "Properties"
-        Public ReadOnly Property Statistics As kCura.WinEDDS.Statistics
+        Public ReadOnly Property Statistics As Statistics
             Get
                 Return _statistics
             End Get
         End Property
 
-        Protected ReadOnly Property BulkLoadTapiBridge As TApi.TapiBridge
+        Protected ReadOnly Property BulkLoadTapiBridge As TapiBridge
             Get
                 Return _bulkLoadTapiBridge
             End Get
         End Property
 
-        Protected ReadOnly Property BulkLoadTapiClientName As System.String
+        Protected ReadOnly Property BulkLoadTapiClientName As String
             Get
                 Return _bulkLoadTapiClientName
             End Get
         End Property
 
-        Protected ReadOnly Property CancellationToken As System.Threading.CancellationToken
+        Protected ReadOnly Property CancellationToken As CancellationToken
             Get
                 Return _cancellationToken.Token
             End Get
         End Property
 
         Protected Property CurrentStatisticsSnapshot As IDictionary
-            Get
-                Return _currentStatisticsSnapshot
-            End Get
-            Private Set
-                _currentStatisticsSnapshot = Value
-            End Set
-        End Property
 
-        Protected Property JobCounter As Int32
-            Get
-                Return _jobCounter
-            End Get
-            Set
-                _jobCounter = Value
-            End Set
-        End Property
+		Protected Property JobCounter As Int32
 
-        Protected ReadOnly Property Logger As Relativity.Logging.ILog
+		Protected ReadOnly Property Logger As ILog
             Get
                 Return _logger
             End Get
         End Property
 
-        Protected ReadOnly Property NativeTapiBridge As TApi.TapiBridge
+        Protected ReadOnly Property FileTapiBridge As TapiBridge
             Get
-                Return _nativeTapiBridge
+                Return _fileTapiBridge
             End Get
         End Property
 
-        Protected ReadOnly Property NativeTapiClient As TApi.TapiClient
+        Protected ReadOnly Property FileTapiClient As TapiClient
             Get
-                Return _nativeTapiClient
+                Return _fileTapiClient
             End Get
         End Property
 
-        Protected ReadOnly Property NativeTapiClientName As System.String
+        Protected ReadOnly Property FileTapiClientName As String
             Get
-                Return _nativeTapiClientName
+                Return _fileTapiClientName
             End Get
         End Property
 
-        Protected Property NativeTapiProgressCount As Int32
-            Get
-                Return _nativeTapiProgressCount
-            End Get
-            Set
-                _nativeTapiProgressCount = Value
-            End Set
-        End Property
+        Protected Property FileTapiProgressCount As Int32
 
-        Protected Property ShouldImport As Boolean
-            Get
-                Return _shouldImport
-            End Get
-            Set
-                _shouldImport = Value
-            End Set
-        End Property
+		Protected Property ShouldImport As Boolean
 
 #End Region
 
         Protected Sub CompletePendingNativeFileTransfers()
-            Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "Waiting for all native files to upload...", 0, 0)
-            Me.NativeTapiBridge.WaitForTransferJob()
-            Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "Native file uploads completed.", 0, 0)
+            Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "Waiting for all files to upload...", 0, 0)
+            Me.FileTapiBridge.WaitForTransferJob()
+            Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "File uploads completed.", 0, 0)
         End Sub
 
         Protected Sub CompletePendingBulkLoadFileTransfers()
@@ -148,17 +118,17 @@ Namespace kCura.WinEDDS
         End Sub
 
 
-        Protected Sub CreateTapiBridges(ByVal nativeParameters As TapiBridgeParameters, ByVal bulkLoadParameters As TapiBridgeParameters)
-            _nativeTapiBridge = TApi.TapiBridgeFactory.CreateUploadBridge(nativeParameters, Me.Logger, Me.CancellationToken)
-            AddHandler _nativeTapiBridge.TapiClientChanged, AddressOf NativeOnTapiClientChanged
-            AddHandler _nativeTapiBridge.TapiFatalError, AddressOf OnTapiFatalError
-            AddHandler _nativeTapiBridge.TapiProgress, AddressOf NativeOnTapiProgress
-            AddHandler _nativeTapiBridge.TapiStatistics, AddressOf NativeOnTapiStatistics
-            AddHandler _nativeTapiBridge.TapiStatusMessage, AddressOf OnTapiStatusEvent
-            AddHandler _nativeTapiBridge.TapiErrorMessage, AddressOf OnTapiErrorMessage
-            AddHandler _nativeTapiBridge.TapiWarningMessage, AddressOf OnTapiWarningMessage
+        Protected Sub CreateTapiBridges(ByVal fileParameters As TapiBridgeParameters, ByVal bulkLoadParameters As TapiBridgeParameters)
+            _fileTapiBridge = TapiBridgeFactory.CreateUploadBridge(fileParameters, Me.Logger, Me.CancellationToken)
+            AddHandler _fileTapiBridge.TapiClientChanged, AddressOf FileOnTapiClientChanged
+            AddHandler _fileTapiBridge.TapiFatalError, AddressOf OnTapiFatalError
+            AddHandler _fileTapiBridge.TapiProgress, AddressOf FileOnTapiProgress
+            AddHandler _fileTapiBridge.TapiStatistics, AddressOf FileOnTapiStatistics
+            AddHandler _fileTapiBridge.TapiStatusMessage, AddressOf OnTapiStatusEvent
+            AddHandler _fileTapiBridge.TapiErrorMessage, AddressOf OnTapiErrorMessage
+            AddHandler _fileTapiBridge.TapiWarningMessage, AddressOf OnTapiWarningMessage
 
-            _bulkLoadTapiBridge = TApi.TapiBridgeFactory.CreateUploadBridge(bulkLoadParameters, Me.Logger, Me.CancellationToken)
+            _bulkLoadTapiBridge = TapiBridgeFactory.CreateUploadBridge(bulkLoadParameters, Me.Logger, Me.CancellationToken)
             _bulkLoadTapiBridge.TargetPath = bulkLoadParameters.FileShare
             AddHandler _bulkLoadTapiBridge.TapiClientChanged, AddressOf BulkLoadOnTapiClientChanged
             AddHandler _bulkLoadTapiBridge.TapiStatistics, AddressOf BulkLoadOnTapiStatistics
@@ -169,16 +139,16 @@ Namespace kCura.WinEDDS
         End Sub
 
         Protected Sub DestroyTapiBridges()
-            If Not _nativeTapiBridge Is Nothing Then
-                RemoveHandler _nativeTapiBridge.TapiClientChanged, AddressOf NativeOnTapiClientChanged
-                RemoveHandler _nativeTapiBridge.TapiFatalError, AddressOf OnTapiFatalError
-                RemoveHandler _nativeTapiBridge.TapiProgress, AddressOf NativeOnTapiProgress
-                RemoveHandler _nativeTapiBridge.TapiStatistics, AddressOf NativeOnTapiStatistics
-                RemoveHandler _nativeTapiBridge.TapiStatusMessage, AddressOf OnTapiStatusEvent
-                RemoveHandler _nativeTapiBridge.TapiErrorMessage, AddressOf OnTapiErrorMessage
-                RemoveHandler _nativeTapiBridge.TapiWarningMessage, AddressOf OnTapiWarningMessage
-                _nativeTapiBridge.Dispose()
-                _nativeTapiBridge = Nothing
+            If Not _fileTapiBridge Is Nothing Then
+                RemoveHandler _fileTapiBridge.TapiClientChanged, AddressOf FileOnTapiClientChanged
+                RemoveHandler _fileTapiBridge.TapiFatalError, AddressOf OnTapiFatalError
+                RemoveHandler _fileTapiBridge.TapiProgress, AddressOf FileOnTapiProgress
+                RemoveHandler _fileTapiBridge.TapiStatistics, AddressOf FileOnTapiStatistics
+                RemoveHandler _fileTapiBridge.TapiStatusMessage, AddressOf OnTapiStatusEvent
+                RemoveHandler _fileTapiBridge.TapiErrorMessage, AddressOf OnTapiErrorMessage
+                RemoveHandler _fileTapiBridge.TapiWarningMessage, AddressOf OnTapiWarningMessage
+                _fileTapiBridge.Dispose()
+                _fileTapiBridge = Nothing
             End If
 
             If Not _bulkLoadTapiBridge Is Nothing Then
@@ -226,11 +196,11 @@ Namespace kCura.WinEDDS
         End Sub
 
         Protected Overridable Sub OnStopImport()
-            'TODO Log this action and call from the derivered class.
+	        Logger.LogWarning("Import has been stopped")
         End Sub
 
         Protected Overridable Sub OnTapiClientChanged()
-            'TODO Log this action and call from the derivered class.
+            Logger.LogWarning($"Tapi client has been changed to {_fileTapiClientName}.")
         End Sub
 
         Protected Overridable Sub OnWriteStatusMessage(ByVal eventType As kCura.Windows.Process.EventType, ByVal message As String)
@@ -238,11 +208,11 @@ Namespace kCura.WinEDDS
         End Sub
 
         Protected Overridable Sub OnWriteStatusMessage(ByVal eventType As kCura.Windows.Process.EventType, ByVal message As String, ByVal progressLineNumber As Int32, ByVal physicalLineNumber As Int32)
-            'TODO Log this action and call from the derivered class.
+	        'TODO Log this action and call from the derivered class.
         End Sub
 
-        Protected Overridable Sub OnWriteFatalError(ByVal exception As Exception)
-            'TODO Log this action and call from the derivered class.
+        Protected Overridable Sub OnWriteFatalError(ByVal lineNumber As Int32, ByVal exception As Exception)
+            Logger.LogFatal($"Fatal error occured in line {lineNumber}, exception message {exception.Message}")
         End Sub
 
         Protected Sub StopImport()
@@ -264,12 +234,12 @@ Namespace kCura.WinEDDS
             End If
         End Sub
 
-        Private Sub BulkLoadOnTapiClientChanged(ByVal sender As Object, ByVal e As TApi.TapiClientEventArgs)
+        Private Sub BulkLoadOnTapiClientChanged(ByVal sender As Object, ByVal e As TapiClientEventArgs)
             Me._bulkLoadTapiClientName = e.Name
             Me.OnTapiClientChanged()
         End Sub
 
-        Private Sub BulkLoadOnTapiStatistics(ByVal sender As Object, ByVal e As TApi.TapiStatisticsEventArgs)
+        Private Sub BulkLoadOnTapiStatistics(ByVal sender As Object, ByVal e As TapiStatisticsEventArgs)
             SyncLock _syncRoot
                 _statistics.MetadataTime = e.TotalTransferTicks
                 _statistics.MetadataBytes = e.TotalBytes
@@ -277,22 +247,22 @@ Namespace kCura.WinEDDS
             End SyncLock
         End Sub
 
-        Private Sub NativeOnTapiClientChanged(ByVal sender As Object, ByVal e As TApi.TapiClientEventArgs)
-            Me._nativeTapiClient = e.Client
-            Me._nativeTapiClientName = e.Name
+        Private Sub FileOnTapiClientChanged(ByVal sender As Object, ByVal e As TapiClientEventArgs)
+            Me._fileTapiClient = e.Client
+            Me._fileTapiClientName = e.Name
             Me.OnTapiClientChanged()
         End Sub
 
-        Private Sub NativeOnTapiProgress(ByVal sender As Object, ByVal e As TApi.TapiProgressEventArgs)
+        Private Sub FileOnTapiProgress(ByVal sender As Object, ByVal e As TapiProgressEventArgs)
             SyncLock _syncRoot
                 If ShouldImport AndAlso e.Status Then
-                    Me.NativeTapiProgressCount += 1
+                    Me.FileTapiProgressCount += 1
                     WriteTapiProgressMessage($"End upload '{e.FileName}' file. ({System.DateTime.op_Subtraction(e.EndTime, e.StartTime).Milliseconds}ms)", e.LineNumber)
                 End If
             End SyncLock
         End Sub
 
-        Private Sub NativeOnTapiStatistics(ByVal sender As Object, ByVal e As TApi.TapiStatisticsEventArgs)
+        Private Sub FileOnTapiStatistics(ByVal sender As Object, ByVal e As TapiStatisticsEventArgs)
             SyncLock _syncRoot
                 _statistics.FileTime = e.TotalTransferTicks
                 _statistics.FileBytes = e.TotalBytes
@@ -300,7 +270,7 @@ Namespace kCura.WinEDDS
             End SyncLock
         End Sub
 
-        Private Sub OnTapiErrorMessage(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
+        Private Sub OnTapiErrorMessage(ByVal sender As Object, ByVal e As TapiMessageEventArgs)
             SyncLock _syncRoot
                 If ShouldImport Then
                     ' TODO: verify raising errors.
@@ -310,7 +280,7 @@ Namespace kCura.WinEDDS
             End SyncLock
         End Sub
 
-        Private Sub OnTapiWarningMessage(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
+        Private Sub OnTapiWarningMessage(ByVal sender As Object, ByVal e As TapiMessageEventArgs)
             SyncLock _syncRoot
                 If ShouldImport Then
                     ' TODO: verify raising warnings.
@@ -320,16 +290,16 @@ Namespace kCura.WinEDDS
             End SyncLock
         End Sub
 
-        Private Sub OnTapiFatalError(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
+        Private Sub OnTapiFatalError(ByVal sender As Object, ByVal e As TapiMessageEventArgs)
             SyncLock _syncRoot
                 ' TODO: verify raising fatal errors.
                 Dim exception As Exception = New Exception(e.Message)
-                OnWriteFatalError(exception)
+                OnWriteFatalError(e.LineNumber, exception)
                 Me.LogFatal(exception, "A fatal error has occurred transferring files.")
             End SyncLock
         End Sub
 
-        Private Sub OnTapiStatusEvent(ByVal sender As Object, ByVal e As TApi.TapiMessageEventArgs)
+        Private Sub OnTapiStatusEvent(ByVal sender As Object, ByVal e As TapiMessageEventArgs)
             SyncLock _syncRoot
                 If ShouldImport Then
                     ' TODO: verify progress vs physical line number.
@@ -340,12 +310,12 @@ Namespace kCura.WinEDDS
 
         Private Sub WriteTapiProgressMessage(ByVal message As String, ByVal lineNumber As Int32)
             message = GetLineMessage(message, lineNumber)
-            Dim lineProgress As Int32 = NativeTapiProgressCount
+            Dim lineProgress As Int32 = FileTapiProgressCount
             Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Progress, message, lineProgress, lineNumber)
         End Sub
 
         Private Function GetLineMessage(ByVal line As String, ByVal lineNumber As Int32) As String
-            If lineNumber = kCura.WinEDDS.TApi.TapiConstants.NoLineNumber Then
+            If lineNumber = TapiConstants.NoLineNumber Then
                 line = line & $" [job {Me.JobCounter}]"
             Else
                 line = line & $" [line {lineNumber}]"
@@ -354,7 +324,7 @@ Namespace kCura.WinEDDS
         End Function
 
         Protected Overridable Sub RaiseWarningAndPause(ByVal ex As Exception, ByVal timeoutSeconds As Int32)
-            _ioReporter.IOWarningPublisher?.OnIoWarningEvent(New IoWarningEventArgs(kCura.WinEDDS.TApi.IoReporter.BuildIoReporterWarningMessage(ex), CurrentLineNumber))
+            IoReporter.IOWarningPublisher?.OnIoWarningEvent(New IoWarningEventArgs(TApi.IoReporter.BuildIoReporterWarningMessage(ex), CurrentLineNumber))
             System.Threading.Thread.CurrentThread.Join(1000 * timeoutSeconds)
         End Sub
     End Class
