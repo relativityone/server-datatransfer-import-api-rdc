@@ -1,5 +1,4 @@
 ﻿using System;
-
 using NUnit.Framework;
 
 namespace kCura.WinEDDS.TApi.NUnit.Integration
@@ -14,10 +13,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         private int _waitTimeBetweenRetryAttempts;
         private int _actualRetryCallCount;
         private int _actualExecFuncCallCount;
-
-        /// <summary>
-        /// The test setup.
-        /// </summary>
+        
         [SetUp]
         public void Setup()
         {
