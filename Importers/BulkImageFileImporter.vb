@@ -720,18 +720,6 @@ Namespace kCura.WinEDDS
 			'check to make sure image is good
 		End Function
 
-		'Private Sub LogErrorInFile(ByVal lines As System.Collections.ArrayList)
-		'	If lines Is Nothing Then Exit Sub
-		'	If _errorLogFileName = "" Then
-		'		_errorLogFileName = System.IO.Path.GetTempFileName()
-		'		_errorLogWriter = New System.IO.StreamWriter(_errorLogFileName, False, System.Text.Encoding.Default)
-		'	End If
-		'	Dim line As String()
-		'	For Each line In lines
-		'		_errorLogWriter.WriteLine(kCura.Utility.Array.StringArrayToCsv(line))
-		'	Next
-		'End Sub
-
 		Public Shared Function GetFileLocation(ByVal record As Api.ImageRecord) As String
 			Dim fileLocation As String = record.FileLocation
 			If fileLocation <> "" AndAlso fileLocation.Chars(0) = "\" AndAlso fileLocation.Chars(1) <> "\" Then
