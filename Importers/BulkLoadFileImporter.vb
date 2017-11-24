@@ -1673,7 +1673,7 @@ Namespace kCura.WinEDDS
 		Private Sub WriteFatalError(ByVal lineNumber As Int32, ByVal ex As System.Exception)
 			_artifactReader.OnFatalErrorState()
 			StopImport()
-			OnFatalError("Error processing line: " + lineNumber.ToString, ex, RunId)
+			OnFatalError($"Error processing line:{lineNumber.ToString}", ex, RunId)
 		End Sub
 
 		Private Sub WriteError(ByVal currentLineNumber As Int32, ByVal line As String)
@@ -1744,8 +1744,8 @@ Namespace kCura.WinEDDS
 			End Select
 		End Sub
 
-		Protected Overrides Sub OnWriteFatalError(ByVal lineNumber As Int32, ByVal exception As Exception)
-			WriteFatalError(lineNumber, exception)
+		Protected Overrides Sub OnWriteFatalError(ByVal exception As Exception)
+			WriteFatalError(CurrentLineNumber, exception)
 		End Sub
 		Private Sub LegacyUploader_UploadStatusEvent(ByVal s As String)
 			WriteStatusLine(EventType.Status, s)

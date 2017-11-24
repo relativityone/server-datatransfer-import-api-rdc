@@ -101,7 +101,7 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property UploadConnection() As TApi.TapiClient
 			Get
-				Return Me.NativeTapiClient
+				Return Me.FileTapiClient
 			End Get
 		End Property
 
@@ -335,7 +335,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub RaiseWarningAndPause(ByVal ex As Exception, ByVal timeoutSeconds As Int32)
-		    _ioReporter.IOWarningPublisher?.OnIoWarningEvent(New IoWarningEventArgs(kCura.WinEDDS.TApi.IoReporter.BuildIOReporterWarningMessage(ex), Me.CurrentLineNumber))
+			IoReporter.IOWarningPublisher?.OnIoWarningEvent(New IoWarningEventArgs(kCura.WinEDDS.TApi.IoReporter.BuildIOReporterWarningMessage(ex), Me.CurrentLineNumber))
 			System.Threading.Thread.CurrentThread.Join(1000 * timeoutSeconds)
 		End Sub
 
@@ -365,7 +365,7 @@ Namespace kCura.WinEDDS
 			_dataGridFileWriter.Close()
 			_fileIdentifierLookup.Clear()
 			Try
-				If ShouldImport AndAlso _copyFilesToRepository AndAlso Me.NativeTapiBridge.TransfersPending Then
+				If ShouldImport AndAlso _copyFilesToRepository AndAlso Me.FileTapiBridge.TransfersPending Then
 					CompletePendingNativeFileTransfers()
 					Me.JobCounter += 1
 				End If
@@ -484,7 +484,7 @@ Namespace kCura.WinEDDS
 			If _batchCount = 0 Then Return
 			PublishUploadModeEvent()
 			_batchCount = 0
-			Me.Statistics.MetadataBytes += (_ioReporter.GetFileLength(bulkLoadFilePath, Me.CurrentLineNumber) + _ioReporter.GetFileLength(dataGridFilePath, Me.CurrentLineNumber))
+			Me.Statistics.MetadataBytes += (IoReporter.GetFileLength(bulkLoadFilePath, Me.CurrentLineNumber) + IoReporter.GetFileLength(dataGridFilePath, Me.CurrentLineNumber))
 			Dim start As Int64 = System.DateTime.Now.Ticks
 
 			try
@@ -543,7 +543,7 @@ Namespace kCura.WinEDDS
 			_totalProcessed = 0
 			_totalValidated = 0
 			Me.JobCounter = 1
-			Me.NativeTapiProgressCount = 0
+			Me.FileTapiProgressCount = 0
 			DeleteFiles(bulkLoadFilePath, dataGridFilePath)
 			_bulkLoadFileWriter = New System.IO.StreamWriter(bulkLoadFilePath, False, System.Text.Encoding.Unicode)
 			_dataGridFileWriter = New System.IO.StreamWriter(dataGridFilePath, False, System.Text.Encoding.Unicode)
@@ -599,7 +599,7 @@ Namespace kCura.WinEDDS
 						Me.AdvanceRecord()
 
 						' This will ensure progress takes into account the start line number
-						Me.NativeTapiProgressCount = Me.NativeTapiProgressCount + 1
+						Me.FileTapiProgressCount = Me.FileTapiProgressCount + 1
 					Else
 						'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
 						' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
@@ -639,7 +639,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub CompleteSuccess()
 			If Not _imageReader Is Nothing Then _imageReader.Close()
-			If _productionArtifactID <> 0 Then _productionManager.DoPostImportProcessing(Me.NativeTapiBridge.WorkspaceId, _productionArtifactID)
+			If _productionArtifactID <> 0 Then _productionManager.DoPostImportProcessing(Me.FileTapiBridge.WorkspaceId, _productionArtifactID)
 			Try
 				RaiseEvent EndRun(True, _runId)
 			Catch
@@ -873,16 +873,16 @@ Namespace kCura.WinEDDS
 				_batchCount += 1
 				If status = 0 Then
 					If _copyFilesToRepository Then
-						fileGuid = Me.NativeTapiBridge.AddPath(imageFile, Guid.NewGuid().ToString(), originalLineNumber)
-						fileLocation = Me.NativeTapiBridge.TargetPath.TrimEnd("\"c) & "\" & Me.NativeTapiBridge.TargetFolderName & "\" & fileGuid
+						fileGuid = Me.FileTapiBridge.AddPath(imageFile, Guid.NewGuid().ToString(), originalLineNumber)
+						fileLocation = Me.FileTapiBridge.TargetPath.TrimEnd("\"c) & "\" & Me.FileTapiBridge.TargetFolderName & "\" & fileGuid
 					Else
 						RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, String.Format("Processing image '{0}'.", batesNumber), CType((_totalValidated + _totalProcessed) / 2, Int64), originalLineNumber)
 						fileGuid = System.Guid.NewGuid.ToString
-						Me.NativeTapiProgressCount = Me.NativeTapiProgressCount + 1
+						Me.FileTapiProgressCount = Me.FileTapiProgressCount + 1
 					End If
 
 					If System.IO.File.Exists(imageFile) Then
-						fileSize = _ioReporter.GetFileLength(imageFile, Me.CurrentLineNumber)
+						fileSize = IoReporter.GetFileLength(imageFile, Me.CurrentLineNumber)
 					End If
 					If _replaceFullText AndAlso System.IO.File.Exists(extractedTextFileName) AndAlso Not fullTextFiles Is Nothing Then
 						fullTextFiles.Add(extractedTextFileName)
@@ -893,7 +893,7 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 				If _replaceFullText AndAlso System.IO.File.Exists(extractedTextFileName) AndAlso Not fullTextFiles Is Nothing Then
-					offset += _ioReporter.GetFileLength(extractedTextFileName, Me.CurrentLineNumber)
+					offset += IoReporter.GetFileLength(extractedTextFileName, Me.CurrentLineNumber)
 				End If
 				_bulkLoadFileWriter.Write(If(isStartRecord, "1,", "0,"))
 				_bulkLoadFileWriter.Write(status & ",")
@@ -936,8 +936,8 @@ Namespace kCura.WinEDDS
 			End If
 
 			If _settings.CopyFilesToDocumentRepository Then
-				If Not String.IsNullOrEmpty(Me.NativeTapiClientName) Then
-					retval.Add("Files: " & Me.NativeTapiClientName)
+				If Not String.IsNullOrEmpty(Me.FileTapiClientName) Then
+					retval.Add("Files: " & Me.FileTapiClientName)
 				End If
 			Else
 				retval.Add("Files: not copied")
@@ -956,7 +956,7 @@ Namespace kCura.WinEDDS
 
 
 		Private Sub RaiseFatalError(ByVal ex As System.Exception)
-			RaiseEvent FatalErrorEvent("Error processing line: " + CurrentLineNumber.ToString, ex)
+			RaiseEvent FatalErrorEvent($"Error processing line: {CurrentLineNumber}", ex)
 		End Sub
 
 		Private Sub RaiseStatusEvent(ByVal et As kCura.Windows.Process.EventType, ByVal line As String, ByVal progressLineNumber As Int64, ByVal physicalLineNumber As Int64)

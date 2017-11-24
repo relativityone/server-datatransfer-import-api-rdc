@@ -221,20 +221,6 @@ Namespace kCura.WinEDDS
 			End Try
 		End Function
 
-		Private Function FindCodeByDisplayValue(ByVal value As String, ByVal codeTypeID As Int32) As Int32
-			Dim i As Int32
-			For i = 0 To _allCodes.Count - 1
-				If _allCodes(i)("Name").ToString.ToLower = value.ToLower AndAlso (DirectCast(_allCodes(i)("CodeTypeID"), Int32)) = codeTypeID Then
-					Return i
-				End If
-			Next
-			Return -1
-		End Function
-
-		Private Function GetNewCodeOrderValue(ByVal codeTypeID As Int32) As Int32
-			Return 0
-		End Function
-
 		Private Function CheckNestedChoicesNameLength(ByVal codeStr As String) As Boolean
 			Dim choiceNames As String() = codeStr.Split(New Char() {CChar(_hierarchicalMultiValueFieldDelmiter)})
 			For Each choiceString As String In choiceNames

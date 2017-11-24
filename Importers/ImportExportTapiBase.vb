@@ -211,8 +211,8 @@ Namespace kCura.WinEDDS
 	        'TODO Log this action and call from the derivered class.
         End Sub
 
-        Protected Overridable Sub OnWriteFatalError(ByVal lineNumber As Int32, ByVal exception As Exception)
-            Logger.LogFatal($"Fatal error occured in line {lineNumber}, exception message {exception.Message}")
+        Protected Overridable Sub OnWriteFatalError(ByVal exception As Exception)
+            Logger.LogFatal($"Fatal error occured in line {CurrentLineNumber}, exception message {exception.Message}")
         End Sub
 
         Protected Sub StopImport()
@@ -294,7 +294,7 @@ Namespace kCura.WinEDDS
             SyncLock _syncRoot
                 ' TODO: verify raising fatal errors.
                 Dim exception As Exception = New Exception(e.Message)
-                OnWriteFatalError(e.LineNumber, exception)
+                OnWriteFatalError(exception)
                 Me.LogFatal(exception, "A fatal error has occurred transferring files.")
             End SyncLock
         End Sub
