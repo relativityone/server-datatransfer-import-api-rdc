@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DocumentationFile>bin\kCura.WinEDDS.TApi.xml</DocumentationFile>
     <CodeAnalysisRuleSet>..\..\kCura\DevelopmentScripts\AllErrors.ruleset</CodeAnalysisRuleSet>
@@ -86,6 +86,7 @@
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ClientChangeReason.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IFileInfoFailedExceptionHelper.cs" />
     <Compile Include="IIoReporter.cs" />
     <Compile Include="IoReporter.cs" />
