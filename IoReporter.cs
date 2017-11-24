@@ -77,7 +77,7 @@ namespace kCura.WinEDDS.TApi
 		public static string BuildIoReporterWarningMessage(Exception ex)
         {
 	        if (ex == null){
-		        return $"Error when accessing load file - retrying. Error details are not available.";
+		        return "Error when accessing load file - retrying. Error details are not available.";
 			}
 
 			return $"Error when accessing load file - retrying. Actual error: {ex.Message}";   
