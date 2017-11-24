@@ -18,7 +18,10 @@ namespace kCura.WinEDDS.TApi
             WaitTimeBetweenRetryAttempts = waitTimeBetweenRetryAttempts;
         }
 
-        private WaitAndRetryPolicy()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WaitAndRetryPolicy"/> class.
+        /// </summary>
+        public WaitAndRetryPolicy()
         {
         }
 
