@@ -346,6 +346,12 @@ Namespace kCura.WinEDDS
 				CreateUploaders(args)
 			End If
 			_copyFileToRepository = args.CopyFilesToDocumentRepository
+
+	        If Not _createFoldersInWebAPI Then
+		        'Client side folder creation (added back for Dominus# 1127879)
+		        If autoDetect Then _folderManager.Read(args.CaseInfo.ArtifactID, args.CaseInfo.RootFolderID)
+			End If
+
 			Me.ProcessController = processController
 			FirstTimeThrough = True
 			_caseInfo = args.CaseInfo
@@ -1169,7 +1175,7 @@ Namespace kCura.WinEDDS
 						Statistics.ProcessRunResults(runResults)
 						Statistics.SqlTime += (DateTime.Now.Ticks - start)
 
-						UpdateStatisticsSnapshot(DateTime.Now, false)
+						UpdateStatisticsSnapshot(DateTime.Now)
 						Me.ManageErrors(_artifactTypeID)
 					End Sub
 			If _usePipeliningForNativeAndObjectImports Then
@@ -1746,6 +1752,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub OnWriteFatalError(ByVal exception As Exception)
 			WriteFatalError(CurrentLineNumber, exception)
+			MyBase.OnWriteFatalError(exception)
 		End Sub
 		Private Sub LegacyUploader_UploadStatusEvent(ByVal s As String)
 			WriteStatusLine(EventType.Status, s)

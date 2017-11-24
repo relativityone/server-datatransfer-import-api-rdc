@@ -200,7 +200,7 @@ Namespace kCura.WinEDDS
         End Sub
 
         Protected Overridable Sub OnTapiClientChanged()
-            Logger.LogWarning($"Tapi client has been changed to {_fileTapiClientName}.")
+            Logger.LogWarning($"Tapi client has been changed.")
         End Sub
 
         Protected Overridable Sub OnWriteStatusMessage(ByVal eventType As kCura.Windows.Process.EventType, ByVal message As String)
@@ -226,7 +226,7 @@ Namespace kCura.WinEDDS
             End Try
         End Sub
 
-        Protected Sub UpdateStatisticsSnapshot(time As System.DateTime, force As Boolean)
+        Protected Sub UpdateStatisticsSnapshot(time As System.DateTime, Optional byval force As Boolean = false)
             Dim updateCurrentStats As Boolean = (time.Ticks - _statisticsLastUpdated.Ticks) > 10000000
             If updateCurrentStats OrElse force Then
                 CurrentStatisticsSnapshot = Me.Statistics.ToDictionary()
@@ -243,7 +243,7 @@ Namespace kCura.WinEDDS
             SyncLock _syncRoot
                 _statistics.MetadataTime = e.TotalTransferTicks
                 _statistics.MetadataBytes = e.TotalBytes
-                Me.UpdateStatisticsSnapshot(System.DateTime.Now, False)
+                Me.UpdateStatisticsSnapshot(System.DateTime.Now)
             End SyncLock
         End Sub
 
@@ -266,7 +266,7 @@ Namespace kCura.WinEDDS
             SyncLock _syncRoot
                 _statistics.FileTime = e.TotalTransferTicks
                 _statistics.FileBytes = e.TotalBytes
-                Me.UpdateStatisticsSnapshot(System.DateTime.Now, False)
+                Me.UpdateStatisticsSnapshot(System.DateTime.Now)
             End SyncLock
         End Sub
 
