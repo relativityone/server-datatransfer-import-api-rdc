@@ -25,8 +25,8 @@ Namespace kCura.WinEDDS
 		
 		Private Const _COPY_TEXT_FILE_BUFFER_SIZE As Int32 = 40000
 		Private Const _UNKNOWN_PARENT_FOLDER_ID As Int32 = -9
-		Public Const DATA_GRID_ID_FIELD_NAME As String = "DataGridID"
 		Private Const _LENGTH_OF_FOLDER_ALLOWED As Integer = 255
+		Public Const DATA_GRID_ID_FIELD_NAME As String = "DataGridID"
 		Public Const ERROR_MESSAGE_FOLDER_NAME_TOO_LONG As String = "Error occurred when importing the document. The folder name is longer than 255 characters."
 
 		Private ReadOnly _copyFileToRepository As Boolean
@@ -1744,7 +1744,10 @@ Namespace kCura.WinEDDS
 				Case eventType.Error
 					WriteError(progressLineNumber, message)
 				Case eventType.Warning
-					WriteStatusLine(EventType.Warning, message, progressLineNumber)
+				Case eventType.Status
+				Case eventType.Progress
+					WriteStatusLine(eventType, message, progressLineNumber)
+				
 				Case Else
 
 			End Select
