@@ -17,7 +17,6 @@ Namespace kCura.WinEDDS
 		Private _errorCount As Int32
 		Private _warningCount As Int32
 		Private _timeZoneOffset As Int32
-		Private WithEvents _newlineCounter As kCura.Utility.File.LineCounter
 		Private _hasRunProcessComplete As Boolean = False
 		Private _uploadModeText As String = Nothing
 
@@ -130,8 +129,6 @@ Namespace kCura.WinEDDS
 			_loadFileImporter.FileSizeMapped = FileSizeMapped
 			_loadFileImporter.FileNameColumn = FileNameColumn
 			_loadFileImporter.LoadImportedFullTextFromServer = (Me.LoadImportedFullTextFromServer OrElse Config.LoadImportedFullTextFromServer)
-			'_newlineCounter = New kCura.Utility.File.Instance.LineCounter
-			'_newlineCounter.Path = LoadFile.FilePath
 			Me.ProcessObserver.InputArgs = LoadFile.FilePath
 
 			If (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) AndAlso Not _hasRunProcessComplete Then
