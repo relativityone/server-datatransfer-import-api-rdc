@@ -32,9 +32,9 @@ Namespace kCura.WinEDDS.ImportExtension
         ''' delimiter followed by a new line.</param>
         ''' <param name="executionSource">Optional parameter that states where the import
         ''' is coming from.</param>
-        Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByRef ioReporter As IIoReporter, ByRef logger As ILog,
+        Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As ILog,
                        ByVal bulkLoadFileFieldDelimiter As String, Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-            Me.New(loadFile, controller, ioReporter, logger, bulkLoadFileFieldDelimiter, Nothing, initializeArtifactReader:=True, executionSource:=executionSource)
+            Me.New(loadFile, controller, ioReporterInstance, logger, bulkLoadFileFieldDelimiter, Nothing, initializeArtifactReader:=True, executionSource:=executionSource)
         End Sub
 
         ''' <summary>
@@ -54,10 +54,10 @@ Namespace kCura.WinEDDS.ImportExtension
         ''' If False, you should initialize the artifact reader later by calling Initialize().</param>
         ''' <param name="executionSource">Optional parameter that states where the import
         ''' is coming from.</param>
-        Public Sub New(loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, controller As kCura.Windows.Process.Controller, ByRef ioReporter As IIoReporter, ByRef logger As ILog,
+        Public Sub New(loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, controller As kCura.Windows.Process.Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As ILog,
                        bulkLoadFileFieldDelimiter As String, temporaryLocalDirectory As String, initializeArtifactReader As Boolean,
                        Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-            MyBase.New(loadFile, controller, ioReporter, logger, 0, True, True, System.Guid.NewGuid, True, bulkLoadFileFieldDelimiter, initializeArtifactReader, executionSource)
+            MyBase.New(loadFile, controller, ioReporterInstance, logger, 0, True, True, System.Guid.NewGuid, True, bulkLoadFileFieldDelimiter, initializeArtifactReader, executionSource)
 
             Me.OIFileIdColumnName = loadFile.OIFileIdColumnName
             Me.OIFileIdMapped = loadFile.OIFileIdMapped
