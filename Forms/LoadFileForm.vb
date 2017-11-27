@@ -1748,8 +1748,18 @@ Namespace kCura.EDDS.WinForm
             'Cell contains file location is enabled if any long text field is mapped
             _extractedTextValueContainsFileLocation.Enabled = Await Me.AnyLongTextIsMapped()
 
+            'If contains file location checkbox is disabled it should not be checked!
+            If Not _extractedTextValueContainsFileLocation.Enabled Then
+                _extractedTextValueContainsFileLocation.Checked = False
+            End If
+
             'Extracted Text dropdown is enabled if Cell contains file location is checked and enabled
             _overlayExtractedText.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
+
+            'If Extracted Text dropdown is disabled it should be cleared!
+            If Not _extractedTextValueContainsFileLocation.Enabled Then
+                _overlayExtractedText.SelectedItem = Nothing
+            End If
 
             'Get selected item before clearing Extracted Text dropdown items
             Dim selectedItem = Nothing
@@ -1770,6 +1780,12 @@ Namespace kCura.EDDS.WinForm
             End If
 
             _fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
+
+            'If encoding dropdown is disabled it should be cleared!
+            If Not _fullTextFileEncodingPicker.Enabled Then
+                _fullTextFileEncodingPicker.SelectedEncoding = Nothing
+            End If
+
             _overlayBehavior.Enabled = Await IsOverlayBehaviorEnabled()
         End Sub
 
