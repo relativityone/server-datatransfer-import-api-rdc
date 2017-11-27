@@ -1754,7 +1754,7 @@ Namespace kCura.EDDS.WinForm
             End If
 
             'Extracted Text dropdown is enabled if Cell contains file location is checked and enabled
-            _overlayExtractedText.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
+            _overlayExtractedText.Enabled = CheckIfExtractedTextValueContainsFileLocationFieldIsEnabledAndChecked()
 
             'If Extracted Text dropdown is disabled it should be cleared!
             If Not _extractedTextValueContainsFileLocation.Enabled Then
@@ -1779,7 +1779,7 @@ Namespace kCura.EDDS.WinForm
                 Me.SetExtractedTextAsDefault()
             End If
 
-            _fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
+            _fullTextFileEncodingPicker.Enabled = CheckIfExtractedTextValueContainsFileLocationFieldIsEnabledAndChecked()
 
             'If encoding dropdown is disabled it should be cleared!
             If Not _fullTextFileEncodingPicker.Enabled Then
