@@ -168,9 +168,9 @@ Namespace kCura.WinEDDS
 #End Region
 
 #Region "Constructors"
-		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByRef ioReporter As IIoReporter, ByRef logger As Logging.ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean,  ByVal enforceDocumentLimit As Boolean,
+		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As Logging.ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean,  ByVal enforceDocumentLimit As Boolean,
 					   Optional ByVal executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			MyBase.New(ioReporter, logger)
+			MyBase.New(ioReporterInstance, logger)
 			_executionSource = executionSource
 			_enforceDocumentLimit = enforceDocumentLimit
 			_doRetryLogic = doRetryLogic
@@ -335,7 +335,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub RaiseWarningAndPause(ByVal ex As Exception, ByVal timeoutSeconds As Int32)
-			IoReporter.IOWarningPublisher?.OnIoWarningEvent(New IoWarningEventArgs(kCura.WinEDDS.TApi.IoReporter.BuildIOReporterWarningMessage(ex), Me.CurrentLineNumber))
+			IoReporterInstance.IOWarningPublisher?.OnIoWarningEvent(New IoWarningEventArgs(kCura.WinEDDS.TApi.IoReporter.BuildIOReporterWarningMessage(ex), Me.CurrentLineNumber))
 			System.Threading.Thread.CurrentThread.Join(1000 * timeoutSeconds)
 		End Sub
 
@@ -484,7 +484,7 @@ Namespace kCura.WinEDDS
 			If _batchCount = 0 Then Return
 			PublishUploadModeEvent()
 			_batchCount = 0
-			Me.Statistics.MetadataBytes += (IoReporter.GetFileLength(bulkLoadFilePath, Me.CurrentLineNumber) + IoReporter.GetFileLength(dataGridFilePath, Me.CurrentLineNumber))
+			Me.Statistics.MetadataBytes += (IoReporterInstance.GetFileLength(bulkLoadFilePath, Me.CurrentLineNumber) + IoReporterInstance.GetFileLength(dataGridFilePath, Me.CurrentLineNumber))
 			Dim start As Int64 = System.DateTime.Now.Ticks
 
 			try
@@ -870,7 +870,7 @@ Namespace kCura.WinEDDS
 					End If
 
 					If System.IO.File.Exists(imageFile) Then
-						fileSize = IoReporter.GetFileLength(imageFile, Me.CurrentLineNumber)
+						fileSize = IoReporterInstance.GetFileLength(imageFile, Me.CurrentLineNumber)
 					End If
 					If _replaceFullText AndAlso System.IO.File.Exists(extractedTextFileName) AndAlso Not fullTextFiles Is Nothing Then
 						fullTextFiles.Add(extractedTextFileName)
@@ -881,7 +881,7 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 				If _replaceFullText AndAlso System.IO.File.Exists(extractedTextFileName) AndAlso Not fullTextFiles Is Nothing Then
-					offset += IoReporter.GetFileLength(extractedTextFileName, Me.CurrentLineNumber)
+					offset += IoReporterInstance.GetFileLength(extractedTextFileName, Me.CurrentLineNumber)
 				End If
 				_bulkLoadFileWriter.Write(If(isStartRecord, "1,", "0,"))
 				_bulkLoadFileWriter.Write(status & ",")
@@ -1084,12 +1084,10 @@ Namespace kCura.WinEDDS
 		End Class
 
 #End Region
-
-		'TODO Extract this Publisher to seperate file
-		Private Event IoWarningEvent(ByVal e As kCura.Utility.RobustIoReporter.IoWarningEventArgs)
-
+        
 		Private Sub IoWarningHandler(ByVal e As RobustIoReporter.IoWarningEventArgs)
-		    RaiseEvent IoWarningEvent(e)
+		    Dim ioWarningEventArgs As New IoWarningEventArgs(e.Message, e.CurrentLineNumber)
+		    IoReporterInstance.IOWarningPublisher?.OnIoWarningEvent(ioWarningEventArgs)
 		End Sub
 
 		Private Sub ManageErrors()

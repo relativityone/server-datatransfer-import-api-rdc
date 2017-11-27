@@ -90,7 +90,7 @@ Namespace kCura.WinEDDS
             Dim fileInfoFailedExceptionHelper As IFileInfoFailedExceptionHelper = New FileInfoFailedExceptionHelper
 		    Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog("WinEDDS")
             Dim ioReporter As IIoReporter = IoReporterFactory.CreateIoReporter(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds, 
-                                                                               WinEDDS.Config.DisableNativeLocationValidation, fileInfoFailedExceptionHelper, logger)
+                                                                               WinEDDS.Config.DisableNativeLocationValidation, fileInfoFailedExceptionHelper, logger, _ioWarningPublisher)
 
 			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, ioReporter, logger, _timeZoneOffset, True, Me.ProcessID, True, 
                                                                                                 BulkLoadFileFieldDelimiter, EnforceDocumentLimit, ExecutionSource)

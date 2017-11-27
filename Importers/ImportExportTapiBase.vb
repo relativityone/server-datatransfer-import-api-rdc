@@ -30,18 +30,18 @@ Namespace kCura.WinEDDS
 
 		Private _statisticsLastUpdated As DateTime = DateTime.Now
 
-		Protected IoReporter As IIoReporter
+		Protected IoReporterInstance As IIoReporter
 
         Protected MustOverride ReadOnly Property CurrentLineNumber() As Integer
         private ReadOnly _logger As ILog
 #End Region
 
 #Region "Constructor"
-        Public Sub New(ByRef ioReporter As IIoReporter, ByRef logger As ILog)
+        Public Sub New(ByRef ioReporterInstance As IIoReporter, ByRef logger As ILog)
             _logger = logger
             _cancellationToken = New CancellationTokenSource()
 
-            Me.IoReporter = ioReporter
+            Me.IoReporterInstance = ioReporterInstance
         End Sub
 
 #End Region
@@ -323,7 +323,7 @@ Namespace kCura.WinEDDS
         End Function
 
         Protected Overridable Sub RaiseWarningAndPause(ByVal ex As Exception, ByVal timeoutSeconds As Int32)
-            IoReporter.IOWarningPublisher?.OnIoWarningEvent(New IoWarningEventArgs(TApi.IoReporter.BuildIoReporterWarningMessage(ex), CurrentLineNumber))
+            IoReporterInstance.IOWarningPublisher?.OnIoWarningEvent(New IoWarningEventArgs(TApi.IoReporter.BuildIoReporterWarningMessage(ex), CurrentLineNumber))
             System.Threading.Thread.CurrentThread.Join(1000 * timeoutSeconds)
         End Sub
     End Class

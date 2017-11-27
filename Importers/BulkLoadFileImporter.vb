@@ -269,9 +269,9 @@ Namespace kCura.WinEDDS
 		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByRef ioReporter As IIoReporter, ByRef logger As Relativity.Logging.ILog, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean,
+		Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean,
 					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			Me.New(args, processController, ioReporter, logger, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit, 
+			Me.New(args, processController, ioReporterInstance, logger, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit, 
                    initializeArtifactReader:=True, executionSource:=executionSource)
 		End Sub
 
@@ -290,9 +290,9 @@ Namespace kCura.WinEDDS
         ''' is coming from.</param>
         ''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
         ''' is <c>null</c> or <c>String.Empty</c>.</exception>
-        Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByRef ioReporter As IIoReporter, ByRef logger As Relativity.Logging.ILog, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean,
+        Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean,
                         ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-            Me.New(args, processController, ioReporter, logger, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit, initializeArtifactReader:=True, executionSource:=executionSource)
+            Me.New(args, processController, ioReporterInstance, logger, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit, initializeArtifactReader:=True, executionSource:=executionSource)
         End Sub
 
         ''' <summary>
@@ -310,10 +310,10 @@ Namespace kCura.WinEDDS
         ''' is coming from.</param>
         ''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
         ''' is <c>null</c> or <c>String.Empty</c>.</exception>
-        Public Sub New(args As LoadFile, processController As Controller, ByRef ioReporter As IIoReporter, ByRef logger As Relativity.Logging.ILog, 
+        Public Sub New(args As LoadFile, processController As Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog, 
                        timeZoneOffset As Int32, autoDetect As Boolean, initializeUploaders As Boolean, processID As Guid, doRetryLogic As Boolean, bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean, initializeArtifactReader As Boolean,
 					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			MyBase.New(args, ioReporter, logger, timeZoneOffset, doRetryLogic, autoDetect, initializeArtifactReader)
+			MyBase.New(args, ioReporterInstance, logger, timeZoneOffset, doRetryLogic, autoDetect, initializeArtifactReader)
 
 			' Avoid excessive concurrent dictionary hits by caching frequently used config settings.
 			_usePipeliningForNativeAndObjectImports = Config.UsePipeliningForNativeAndObjectImports
@@ -368,7 +368,7 @@ Namespace kCura.WinEDDS
 
 			BatchSizeHistoryList = New System.Collections.Generic.List(Of Int32)
 
-            Me.IoReporter = ioReporter
+            Me.IoReporterInstance = ioReporterInstance
 		End Sub
 
 		Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)
@@ -681,7 +681,7 @@ Namespace kCura.WinEDDS
 
 				If filename <> String.Empty AndAlso Not fileExists Then lineStatus += Relativity.MassImport.ImportStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
 				If fileExists AndAlso Not Me.DisableNativeLocationValidation Then
-					If IoReporter.GetFileLength(filename, Me.CurrentLineNumber) = 0 Then
+					If IoReporterInstance.GetFileLength(filename, Me.CurrentLineNumber) = 0 Then
 						If _createErrorForEmptyNativeFile Then
 							lineStatus += Relativity.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
 						Else
@@ -1273,7 +1273,7 @@ Namespace kCura.WinEDDS
 				End If
 				Dim fileSizeExtractor As Api.IHasFileSize = TryCast(mdoc, Api.IHasFileSize)
 				If (fileSizeExtractor Is Nothing) Then
-					OutputFileWriter.OutputNativeFileWriter.Write(IoReporter.GetFileLength(mdoc.FullFilePath, Me.CurrentLineNumber) & BulkLoadFileFieldDelimiter) 'kCura_Import_FileSize
+					OutputFileWriter.OutputNativeFileWriter.Write(IoReporterInstance.GetFileLength(mdoc.FullFilePath, Me.CurrentLineNumber) & BulkLoadFileFieldDelimiter) 'kCura_Import_FileSize
 				Else
 					OutputFileWriter.OutputNativeFileWriter.Write(fileSizeExtractor.GetFileSize() & BulkLoadFileFieldDelimiter) 'kCura_Import_FileSize
 				End If
@@ -1620,7 +1620,7 @@ Namespace kCura.WinEDDS
 			Dim localFilePath As String = fileField.Value.ToString
 			Dim fileSize As Int64
 			If System.IO.File.Exists(localFilePath) Then
-				fileSize = IoReporter.GetFileLength(localFilePath, Me.CurrentLineNumber)
+				fileSize = IoReporterInstance.GetFileLength(localFilePath, Me.CurrentLineNumber)
 				Dim fileName As String = System.IO.Path.GetFileName(localFilePath).Replace(ChrW(11), "_")
 				Dim location As String
 				If FileTapiBridge.TargetFolderName = "" Then
@@ -1940,12 +1940,10 @@ Namespace kCura.WinEDDS
 		Private Sub _artifactReader_FieldMapped(ByVal sourceField As String, ByVal workspaceField As String) Handles _artifactReader.FieldMapped
 			OnFieldMapped(sourceField, workspaceField)
 		End Sub
-
-        'TODO Extract this Publisher to seperate file
-		Private Event IoWarningEvent(ByVal e As kCura.Utility.RobustIoReporter.IoWarningEventArgs)
-
+        
 		Private Sub IoWarningHandler(ByVal e As kCura.Utility.RobustIoReporter.IoWarningEventArgs)
-		    RaiseEvent IoWarningEvent(e)
+            Dim ioWarningEventArgs As New IoWarningEventArgs(e.Message, e.CurrentLineNumber)
+		    IoReporterInstance.IOWarningPublisher?.OnIoWarningEvent(ioWarningEventArgs)
 		End Sub
 
 		Private Sub ManageErrors(ByVal artifactTypeID As Int32)

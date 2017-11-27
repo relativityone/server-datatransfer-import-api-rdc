@@ -127,12 +127,12 @@ Namespace kCura.WinEDDS
 			_artifactReader.AdvanceRecord()
 		End Sub
 
-		Protected Sub New(ByVal args As LoadFile, ioReporter As IIoReporter, ByRef logger As ILog, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean)
-			Me.New(args, ioReporter, logger, timezoneoffset, doRetryLogic, autoDetect, initializeArtifactReader:=True)
+		Protected Sub New(ByVal args As LoadFile, ioReporterInstance As IIoReporter, ByRef logger As ILog, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean)
+			Me.New(args, ioReporterInstance, logger, timezoneoffset, doRetryLogic, autoDetect, initializeArtifactReader:=True)
 		End Sub
 
-		Protected Sub New(args As LoadFile, ByRef ioReporter As IIoReporter, ByRef logger As ILog, timezoneoffset As Int32, doRetryLogic As Boolean, autoDetect As Boolean, initializeArtifactReader As Boolean)
-            MyBase.New(ioReporter, logger)
+		Protected Sub New(args As LoadFile, ByRef ioReporterInstance As IIoReporter, ByRef logger As ILog, timezoneoffset As Int32, doRetryLogic As Boolean, autoDetect As Boolean, initializeArtifactReader As Boolean)
+            MyBase.New(ioReporterInstance, logger)
 
 			_settings = args
 			OIFileIdColumnName = args.OIFileIdColumnName
@@ -143,7 +143,7 @@ Namespace kCura.WinEDDS
 			FileNameColumn = args.FileNameColumn
 			_timeZoneOffset = timezoneoffset
 			_autoDetect = autoDetect
-		    Me.IoReporter = ioReporter
+		    Me.IoReporterInstance = ioReporterInstance
 			InitializeManagers(args)
 
 			If initializeArtifactReader Then
@@ -784,9 +784,9 @@ Namespace kCura.WinEDDS
 
 		Private Sub _artifactReader_OnIoWarning(ByVal e As Api.IoWarningEventArgs) Handles _artifactReader.OnIoWarning
 			If e.Exception Is Nothing Then
-                IoReporter.IOWarningPublisher?.OnIoWarningEvent(new IoWarningEventArgs(e.Message, e.CurrentLineNumber))
+                IoReporterInstance.IOWarningPublisher?.OnIoWarningEvent(new IoWarningEventArgs(e.Message, e.CurrentLineNumber))
 			Else
-			    IoReporter.IOWarningPublisher?.OnIoWarningEvent(new IoWarningEventArgs(kCura.WinEDDS.TApi.IoReporter.BuildIoReporterWarningMessage(e.Exception), e.CurrentLineNumber))
+			    IoReporterInstance.IOWarningPublisher?.OnIoWarningEvent(new IoWarningEventArgs(kCura.WinEDDS.TApi.IoReporter.BuildIoReporterWarningMessage(e.Exception), e.CurrentLineNumber))
 			End If
 		End Sub
 
