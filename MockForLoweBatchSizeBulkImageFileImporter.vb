@@ -22,9 +22,9 @@ Public Class MockForLoweBatchSizeBulkImageFileImporter
 		Private _inputForStringReader As String
 		Private _importBatchSize As Int32
 
-		Public Sub New(ByVal args As ImageLoadFile, ByVal processController As kCura.Windows.Process.Controller, ByRef ioReporter As IIoReporter, ByRef logger As ILog, ByVal processID As Guid, 
+		Public Sub New(ByVal args As ImageLoadFile, ByVal processController As kCura.Windows.Process.Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As ILog, ByVal processID As Guid, 
                        ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager)
-			MyBase.new(0, args, processController, ioReporter, logger, processID, doRetryLogic, False)
+			MyBase.new(0, args, processController, ioReporterInstance, logger, processID, doRetryLogic, False)
 			Me.WillThrowException = throwsException
 			_bulkImportManager = bulkManager
 			Me.ImportBatchSize = 500

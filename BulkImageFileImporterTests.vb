@@ -31,8 +31,9 @@ Namespace kCura.WinEDDS.NUnit
 
 		    Dim fileInfoFailedExceptionHelper As IFileInfoFailedExceptionHelper = New FileInfoFailedExceptionHelper
 		    _logger = New NullLogger()
+            Dim ioWarningPublisher As New IoWarningPublisher()
 		    _ioReporter = IoReporterFactory.CreateIoReporter(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds, 
-		                                                     WinEDDS.Config.DisableNativeLocationValidation, fileInfoFailedExceptionHelper, _logger)
+		                                                     WinEDDS.Config.DisableNativeLocationValidation, fileInfoFailedExceptionHelper, _logger, ioWarningPublisher)
             
 			_keyPathExistsAlready = RegKeyHelper.SubKeyPathExists(RegKeyHelper.RelativityKeyPath)
 			_keyValExistsAlready = False
