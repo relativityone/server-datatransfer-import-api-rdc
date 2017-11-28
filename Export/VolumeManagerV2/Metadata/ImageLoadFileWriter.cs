@@ -25,7 +25,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 		private readonly ILog _logger;
 
 		/// <summary>
-		/// TODO refactor this class. It has to many dependencies
+		/// TODO refactor this class. It has too many dependencies
 		/// </summary>
 		/// <param name="statistics"></param>
 		/// <param name="fileHelper"></param>
