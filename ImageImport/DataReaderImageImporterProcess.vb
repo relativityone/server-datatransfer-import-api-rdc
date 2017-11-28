@@ -1,5 +1,5 @@
 Imports System.Data
-Imports Helpers
+Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.TApi
 
 Namespace kCura.WinEDDS.ImportExtension

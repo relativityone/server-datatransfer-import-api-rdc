@@ -1,4 +1,4 @@
-Imports Helpers
+Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.TApi
 Imports Microsoft.VisualBasic.Logging
 Imports Relativity.Logging
