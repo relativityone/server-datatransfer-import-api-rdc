@@ -53,7 +53,7 @@ Namespace kCura.WinEDDS
 		Private _minimumBatchSize As Int32?
 		Protected DestinationFolderColumnIndex As Int32 = -1
 		Protected FolderCache As FolderCache
-		Protected DefaultDestinationFolderPath As String = String.Empty
+		Private _defaultDestinationFolderPath As String = String.Empty
 		Private _oixFileLookup As System.Collections.Specialized.HybridDictionary
 		Private _fieldArtifactIds As Int32()
 		Protected OutputFileWriter As OutputFileWriter = New OutputFileWriter()
@@ -333,11 +333,11 @@ Namespace kCura.WinEDDS
 			If args.CopyFilesToDocumentRepository Then
 				'DEFECT: SF#226211, repositories without trailing \ caused import to fail. Changed to use Path.Combine. -tmh
 				Dim lastHalfPath As String = "EDDS" & args.CaseInfo.ArtifactID & "\"
-				DefaultDestinationFolderPath = Path.Combine(args.SelectedCasePath, lastHalfPath)
+				_defaultDestinationFolderPath = Path.Combine(args.SelectedCasePath, lastHalfPath)
 				If args.ArtifactTypeID <> Relativity.ArtifactType.Document Then
 					For Each item As LoadFileFieldMap.LoadFileFieldMapItem In args.FieldMap
 						If Not item.DocumentField Is Nothing AndAlso item.NativeFileColumnIndex > -1 AndAlso item.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
-							DefaultDestinationFolderPath &= "File" & item.DocumentField.FieldID & "\"
+							_defaultDestinationFolderPath &= "File" & item.DocumentField.FieldID & "\"
 						End If
 					Next
 				End If
@@ -392,7 +392,7 @@ Namespace kCura.WinEDDS
 			nativeParameters.MaxJobParallelism = Config.TapiMaxJobParallelism
 			nativeParameters.MaxJobRetryAttempts = Me.NumberOfRetries
 			nativeParameters.MinDataRateMbps = Config.TapiMinDataRateMbps
-			nativeParameters.TargetPath = Me.DefaultDestinationFolderPath
+			nativeParameters.TargetPath = Me._defaultDestinationFolderPath
 			nativeParameters.TargetDataRateMbps = Config.TapiTargetDataRateMbps
 			nativeParameters.TransferLogDirectory = Config.TapiTransferLogDirectory
 			nativeParameters.WaitTimeBetweenRetryAttempts = Me.WaitTimeBetweenRetryAttempts
@@ -1135,7 +1135,7 @@ Namespace kCura.WinEDDS
 			End If
 
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
-				settings.Repository = DefaultDestinationFolderPath
+				settings.Repository = _defaultDestinationFolderPath
 				If settings.Repository = String.Empty Then settings.Repository = _caseInfo.DocumentPath
 			Else
 				settings.Repository = _caseInfo.DocumentPath
@@ -1265,7 +1265,7 @@ Namespace kCura.WinEDDS
 				OutputFileWriter.OutputNativeFileWriter.Write(mdoc.FileGuid & BulkLoadFileFieldDelimiter)  'kCura_Import_FileGuid
 				OutputFileWriter.OutputNativeFileWriter.Write(mdoc.Filename & BulkLoadFileFieldDelimiter)  'kCura_Import_FileName
 				If _settings.CopyFilesToDocumentRepository Then
-					OutputFileWriter.OutputNativeFileWriter.Write(DefaultDestinationFolderPath & mdoc.DestinationVolume & "\" & mdoc.FileGuid & BulkLoadFileFieldDelimiter)  'kCura_Import_Location
+					OutputFileWriter.OutputNativeFileWriter.Write(_defaultDestinationFolderPath & mdoc.DestinationVolume & "\" & mdoc.FileGuid & BulkLoadFileFieldDelimiter)  'kCura_Import_Location
 					OutputFileWriter.OutputNativeFileWriter.Write(mdoc.FullFilePath & BulkLoadFileFieldDelimiter) 'kCura_Import_OriginalFileLocation
 				Else
 					OutputFileWriter.OutputNativeFileWriter.Write(mdoc.FullFilePath & BulkLoadFileFieldDelimiter) 'kCura_Import_Location
