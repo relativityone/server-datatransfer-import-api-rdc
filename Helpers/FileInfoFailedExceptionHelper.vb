@@ -1,6 +1,6 @@
 ﻿Imports kCura.WinEDDS.TApi
 
-Namespace Helpers
+Namespace kCura.WinEDDS.Helpers
 
     Public Class FileInfoFailedExceptionHelper
         Implements IFileInfoFailedExceptionHelper
