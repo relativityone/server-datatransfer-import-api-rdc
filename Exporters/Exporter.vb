@@ -3,6 +3,9 @@ Imports System.Collections.Generic
 Imports kCura.Utility.Extensions
 Imports kCura.WinEDDS.Exporters
 Imports System.Threading.Tasks
+Imports Castle.Windsor
+Imports kCura.WinEDDS.Container
+Imports kCura.WinEDDS.Exporters.Validator
 Imports kCura.WinEDDS.LoadFileEntry
 
 Namespace kCura.WinEDDS
@@ -296,52 +299,55 @@ Namespace kCura.WinEDDS
 			End If
 			_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 			RaiseEvent FileTransferModeChangeEvent(_downloadHandler.UploaderType.ToString)
-			_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, _statistics, FileHelper, DirectoryHelper, FileNameProvider)
-			Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
-			_volumeManager.ColumnHeaderString = columnHeaderString
-			Me.WriteUpdate("Data retrieved. Beginning " & typeOfExportDisplayString & " export...")
+			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Settings, ExportManager, InteractionManager)
+				container.Resolve(Of IExportValidation).ValidateExport(Settings, TotalExportArtifactCount)
+				_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, _statistics, FileHelper, DirectoryHelper, FileNameProvider)
+				Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
+				_volumeManager.ColumnHeaderString = columnHeaderString
+				Me.WriteUpdate("Data retrieved. Beginning " & typeOfExportDisplayString & " export...")
 
-			Dim records As Object() = Nothing
-			Dim start, realStart As Int32
-			Dim lastRecordCount As Int32 = -1
-			While lastRecordCount <> 0
-				realStart = start + Me.Settings.StartAtDocumentNumber
-				_timekeeper.MarkStart("Exporter_GetDocumentBlock")
-				startTicks = System.DateTime.Now.Ticks
-				Dim textPrecedenceAvfIds As Int32() = Nothing
-				If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then textPrecedenceAvfIds = Me.Settings.SelectedTextFields.Select(Of Int32)(Function(f As ViewFieldInfo) f.AvfId).ToArray
+				Dim records As Object() = Nothing
+				Dim start, realStart As Int32
+				Dim lastRecordCount As Int32 = -1
+				While lastRecordCount <> 0
+					realStart = start + Me.Settings.StartAtDocumentNumber
+					_timekeeper.MarkStart("Exporter_GetDocumentBlock")
+					startTicks = System.DateTime.Now.Ticks
+					Dim textPrecedenceAvfIds As Int32() = Nothing
+					If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then textPrecedenceAvfIds = Me.Settings.SelectedTextFields.Select(Of Int32)(Function(f As ViewFieldInfo) f.AvfId).ToArray
 
-				If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
-					records = CallServerWithRetry(Function() Me.ExportManager.RetrieveResultsBlockForProduction(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, _exportConfig.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds, Me.Settings.ArtifactID), maxTries)
-				Else
-					records = CallServerWithRetry(Function() Me.ExportManager.RetrieveResultsBlock(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, _exportConfig.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds), maxTries)
-				End If
+					If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
+						records = CallServerWithRetry(Function() Me.ExportManager.RetrieveResultsBlockForProduction(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, _exportConfig.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds, Me.Settings.ArtifactID), maxTries)
+					Else
+						records = CallServerWithRetry(Function() Me.ExportManager.RetrieveResultsBlock(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, _exportConfig.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds), maxTries)
+					End If
 
-				If records Is Nothing Then Exit While
-				If Me.Settings.TypeOfExport = ExportFile.ExportType.Production AndAlso production IsNot Nothing AndAlso production.DocumentsHaveRedactions Then
-					WriteStatusLineWithoutDocCount(kCura.Windows.Process.EventType.Warning, "Please Note - Documents in this production were produced with redactions applied.  Ensure that you have exported text that was generated via OCR of the redacted documents.", True)
-				End If
-				lastRecordCount = records.Length
-				_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
-				_timekeeper.MarkEnd("Exporter_GetDocumentBlock")
-				Dim artifactIDs As New ArrayList
-				Dim artifactIdOrdinal As Int32 = _volumeManager.OrdinalLookup("ArtifactID")
-				If records.Length > 0 Then
-					For Each artifactMetadata As Object() In records
-						artifactIDs.Add(artifactMetadata(artifactIdOrdinal))
-					Next
-					ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), records)
-					artifactIDs.Clear()
-					records = Nothing
-				End If
-				If _halt Then Exit While
-			End While
+					If records Is Nothing Then Exit While
+					If Me.Settings.TypeOfExport = ExportFile.ExportType.Production AndAlso production IsNot Nothing AndAlso production.DocumentsHaveRedactions Then
+						WriteStatusLineWithoutDocCount(kCura.Windows.Process.EventType.Warning, "Please Note - Documents in this production were produced with redactions applied.  Ensure that you have exported text that was generated via OCR of the redacted documents.", True)
+					End If
+					lastRecordCount = records.Length
+					_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
+					_timekeeper.MarkEnd("Exporter_GetDocumentBlock")
+					Dim artifactIDs As New ArrayList
+					Dim artifactIdOrdinal As Int32 = _volumeManager.OrdinalLookup("ArtifactID")
+					If records.Length > 0 Then
+						For Each artifactMetadata As Object() In records
+							artifactIDs.Add(artifactMetadata(artifactIdOrdinal))
+						Next
+						ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), records)
+						artifactIDs.Clear()
+						records = Nothing
+					End If
+					If _halt Then Exit While
+				End While
 
-			Me.WriteStatusLine(Windows.Process.EventType.Status, kCura.WinEDDS.FileDownloader.TotalWebTime.ToString, True)
-			_timekeeper.GenerateCsvReportItemsAsRows()
-			_volumeManager.Finish()
-			Me.AuditRun(True)
-			Return Nothing
+				Me.WriteStatusLine(Windows.Process.EventType.Status, kCura.WinEDDS.FileDownloader.TotalWebTime.ToString, True)
+				_timekeeper.GenerateCsvReportItemsAsRows()
+				_volumeManager.Finish()
+				Me.AuditRun(True)
+				Return Nothing
+			End Using
 		End Function
 
 
