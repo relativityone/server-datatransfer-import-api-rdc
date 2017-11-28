@@ -5,7 +5,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 	/// <summary>
 	/// TODO change name :)
 	/// </summary>
-	public class TrueVolumeManager
+	public class TrueVolumeManager : IVolume
 	{
 		private long _currentVolumeSize;
 

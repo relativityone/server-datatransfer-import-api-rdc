@@ -2,7 +2,7 @@
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 {
-	public class SubdirectoryManager : ISubdirectoryManager
+	public class SubdirectoryManager : ISubdirectoryManager, ISubdirectory
 	{
 		private long _currentNativeSubdirectoryFileCount;
 		private long _currentImageSubdirectoryFileCount;

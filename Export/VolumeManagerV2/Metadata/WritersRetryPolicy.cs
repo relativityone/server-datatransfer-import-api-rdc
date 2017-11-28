@@ -19,7 +19,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 
 		public const string CONTEXT_LAST_ARTIFACT_ID_KEY = "LastArtifactId";
 
-		public WritersRetryPolicy(Config config, IStatus status, ILog logger)
+		public WritersRetryPolicy(Settings.Config config, IStatus status, ILog logger)
 		{
 			_status = status;
 			_logger = logger;

@@ -2,7 +2,7 @@
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 {
-	public class ErrorFileDestinationPath : IDestinationPath
+	public class ErrorFileDestinationPath : IDestinationPath, IErrorFile
 	{
 		private string _errorFilePath;
 		private readonly ExportFile _exportSettings;
@@ -25,5 +25,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 		}
 
 		public Encoding Encoding => _exportSettings.LoadFileEncoding;
+
+		public bool IsErrorFileCreated()
+		{
+			return !string.IsNullOrEmpty(_errorFilePath);
+		}
+
+		string IErrorFile.Path()
+		{
+			return Path;
+		}
 	}
 }

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using kCura.WinEDDS.Exporters;
 using Relativity;
 
@@ -9,25 +7,24 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize
 	public class TextExportableSize
 	{
 		private readonly ExportFile _exportSettings;
-		private readonly ArrayList _columns;
-		private readonly Dictionary<string, int> _ordinalLookup;
+		private readonly IFieldService _fieldService;
 
-		public TextExportableSize(ExportFile exportSettings, ArrayList columns, Dictionary<string, int> ordinalLookup)
+		public TextExportableSize(ExportFile exportSettings, IFieldService fieldService)
 		{
 			_exportSettings = exportSettings;
-			_columns = columns;
-			_ordinalLookup = ordinalLookup;
+			_fieldService = fieldService;
 		}
 
 		public void CalculateTextSize(VolumePredictions volumeSize, ObjectExportInfo artifact)
 		{
 			if (_exportSettings.ExportFullText && _exportSettings.ExportFullTextAsFile)
 			{
-				for (int count = 0; count <= _columns.Count - 1; count++)
+				for (int count = 0; count <= _fieldService.GetColumns().Count - 1; count++)
 				{
-					ViewFieldInfo field = (ViewFieldInfo) _columns[count];
+					ViewFieldInfo field = (ViewFieldInfo) _fieldService.GetColumns()[count];
 					string columnName = field.AvfColumnName;
-					object fieldValue = artifact.Metadata[_ordinalLookup[columnName]];
+					int columnIndex = _fieldService.GetOrdinalIndex(columnName);
+					object fieldValue = artifact.Metadata[columnIndex];
 					if (field.FieldType == FieldTypeHelper.FieldType.Text || field.FieldType == FieldTypeHelper.FieldType.OffTableText)
 					{
 						if (_exportSettings.SelectedTextFields != null && field is CoalescedTextViewField)

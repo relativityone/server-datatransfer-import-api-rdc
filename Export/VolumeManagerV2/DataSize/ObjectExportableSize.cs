@@ -2,7 +2,7 @@
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize
 {
-	public class ObjectExportableSize
+	public class ObjectExportableSize : IObjectExportableSize
 	{
 		private readonly NativeExportableSize _nativeExportableSize;
 		private readonly ImageExportableSize _imageExportableSize;

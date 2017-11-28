@@ -1,4 +1,4 @@
-﻿namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
+﻿namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings
 {
 	public class Config
 	{

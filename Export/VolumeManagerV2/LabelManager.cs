@@ -10,8 +10,14 @@
 		private readonly int _volumeLabelPaddingWidth;
 		private readonly int _subdirectoryPaddingWidth;
 
-		public LabelManager(ExportFile exportSettings)
+		private readonly IVolume _volume;
+		
+		private readonly ISubdirectory _subdirectory;
+
+		public LabelManager(ExportFile exportSettings, IVolume volume, ISubdirectory subdirectory)
 		{
+			_volume = volume;
+			_subdirectory = subdirectory;
 			_volumePrefix = exportSettings.VolumeInfo.VolumePrefix;
 			_subdirectoryImagePrefix = exportSettings.VolumeInfo.get_SubdirectoryImagePrefix();
 			_subdirectoryNativePrefix = exportSettings.VolumeInfo.get_SubdirectoryNativePrefix();
@@ -21,24 +27,24 @@
 			_subdirectoryPaddingWidth = exportSettings.SubdirectoryDigitPadding;
 		}
 
-		public string GetCurrentVolumeLabel(int volumeNumber)
+		public string GetCurrentVolumeLabel()
 		{
-			return FormatLabel(_volumePrefix, volumeNumber, _volumeLabelPaddingWidth);
+			return FormatLabel(_volumePrefix, _volume.CurrentVolumeNumber, _volumeLabelPaddingWidth);
 		}
 
-		public string GetCurrentImageSubdirectoryLabel(int subdirectoryNumber)
+		public string GetCurrentImageSubdirectoryLabel()
 		{
-			return FormatLabel(_subdirectoryImagePrefix, subdirectoryNumber, _subdirectoryPaddingWidth);
+			return FormatLabel(_subdirectoryImagePrefix, _subdirectory.CurrentSubdirectoryNumber, _subdirectoryPaddingWidth);
 		}
 
-		public string GetCurrentNativeSubdirectoryLabel(int subdirectoryNumber)
+		public string GetCurrentNativeSubdirectoryLabel()
 		{
-			return FormatLabel(_subdirectoryNativePrefix, subdirectoryNumber, _subdirectoryPaddingWidth);
+			return FormatLabel(_subdirectoryNativePrefix, _subdirectory.CurrentSubdirectoryNumber, _subdirectoryPaddingWidth);
 		}
 
-		public string GetCurrentTextSubdirectoryLabel(int subdirectoryNumber)
+		public string GetCurrentTextSubdirectoryLabel()
 		{
-			return FormatLabel(_subdirectoryTextPrefix, subdirectoryNumber, _subdirectoryPaddingWidth);
+			return FormatLabel(_subdirectoryTextPrefix, _subdirectory.CurrentSubdirectoryNumber, _subdirectoryPaddingWidth);
 		}
 
 		private string FormatLabel(string prefix, int number, int padding)
