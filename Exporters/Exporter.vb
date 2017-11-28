@@ -1,5 +1,6 @@
 Imports System.Collections.Concurrent
 Imports System.Collections.Generic
+Imports System.Threading
 Imports kCura.Utility.Extensions
 Imports kCura.WinEDDS.Exporters
 Imports System.Threading.Tasks
@@ -28,8 +29,6 @@ Namespace kCura.WinEDDS
 		Public TotalExportArtifactCount As Int32
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 		Private WithEvents _downloadHandler As Service.Export.IExportFileDownloader
-		Private _halt As Boolean
-		Private _volumeManager As VolumeManager
 		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom
 		Private _beginBatesColumn As String = ""
 		Private _timekeeper As New kCura.Utility.Timekeeper
@@ -48,6 +47,9 @@ Namespace kCura.WinEDDS
 		Private _tryToNameNativesAndTextFilesAfterPrecedenceBegBates As Boolean = False
 		Private _linesToWriteDat As ConcurrentDictionary(Of Int32, ILoadFileEntry)
 		Private _linesToWriteOpt As ConcurrentBag(Of KeyValuePair(Of String, String))
+		Protected FieldLookupService As IFieldLookupService
+		Private _errorFile As IErrorFile
+		Private ReadOnly _cancellationTokenSource As CancellationTokenSource
 
 #End Region
 
@@ -87,8 +89,8 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property ErrorLogFileName() As String
 			Get
-				If Not _volumeManager Is Nothing Then
-					Return _volumeManager.ErrorLogFileName
+				If _errorFile.IsErrorFileCreated() Then
+					Return _errorFile.Path()
 				Else
 					Return Nothing
 				End If
@@ -123,12 +125,7 @@ Namespace kCura.WinEDDS
 				_fileNameProvider = Value
 			End Set
 		End Property
-
-		Protected ReadOnly Property VolumeManager As VolumeManager
-			Get
-				Return _volumeManager
-			End Get
-		End Property
+		
 #End Region
 
 		Public Event ShutdownEvent()
@@ -152,7 +149,7 @@ Namespace kCura.WinEDDS
 			ExportManager = serviceFactory.CreateExportManager()
 
 			_fieldProviderCache = New FieldProviderCache(exportFile.Credential, exportFile.CookieContainer)
-			_halt = False
+			_cancellationTokenSource = New CancellationTokenSource()
 			_processController = processController
 			DocumentsExported = 0
 			TotalExportArtifactCount = 1
@@ -174,9 +171,6 @@ Namespace kCura.WinEDDS
 				Me.Search()
 			Catch ex As System.Exception
 				Me.WriteFatalError(String.Format("A fatal error occurred on document #{0}", Me.DocumentsExported), ex)
-				If Not _volumeManager Is Nothing Then
-					_volumeManager.Close()
-				End If
 			End Try
 			Return Me.ErrorLogFileName = ""
 		End Function
@@ -299,11 +293,15 @@ Namespace kCura.WinEDDS
 			End If
 			_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 			RaiseEvent FileTransferModeChangeEvent(_downloadHandler.UploaderType.ToString)
-			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Settings, ExportManager, InteractionManager)
+			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Settings, _columns, columnHeaderString, exportInitializationArgs.ColumnNames, ExportManager, InteractionManager, FileNameProvider)
 				container.Resolve(Of IExportValidation).ValidateExport(Settings, TotalExportArtifactCount)
-				_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, _statistics, FileHelper, DirectoryHelper, FileNameProvider)
+				Dim objectExportableSize As IObjectExportableSize = container.Resolve(Of IObjectExportableSize)
+				FieldLookupService = container.Resolve(Of IFieldLookupService)
+				_errorFile = container.Resolve(Of IErrorFile)
+				Dim batchExporter As IBatchExporter = container.Resolve(Of IBatchExporter)
+
+				'TODO _volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, _statistics, FileHelper, DirectoryHelper, FileNameProvider)
 				Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
-				_volumeManager.ColumnHeaderString = columnHeaderString
 				Me.WriteUpdate("Data retrieved. Beginning " & typeOfExportDisplayString & " export...")
 
 				Dim records As Object() = Nothing
@@ -330,21 +328,20 @@ Namespace kCura.WinEDDS
 					_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 					_timekeeper.MarkEnd("Exporter_GetDocumentBlock")
 					Dim artifactIDs As New ArrayList
-					Dim artifactIdOrdinal As Int32 = _volumeManager.OrdinalLookup("ArtifactID")
+					Dim artifactIdOrdinal As Int32 = FieldLookupService.GetOrdinalIndex("ArtifactID")
 					If records.Length > 0 Then
 						For Each artifactMetadata As Object() In records
 							artifactIDs.Add(artifactMetadata(artifactIdOrdinal))
 						Next
-						ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), records)
+						ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), records, objectExportableSize, batchExporter)
 						artifactIDs.Clear()
 						records = Nothing
 					End If
-					If _halt Then Exit While
+					If _cancellationTokenSource.IsCancellationRequested Then Exit While
 				End While
 
 				Me.WriteStatusLine(Windows.Process.EventType.Status, kCura.WinEDDS.FileDownloader.TotalWebTime.ToString, True)
 				_timekeeper.GenerateCsvReportItemsAsRows()
-				_volumeManager.Finish()
 				Me.AuditRun(True)
 				Return Nothing
 			End Using
@@ -415,7 +412,7 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Private Sub ExportChunk(ByVal documentArtifactIDs As Int32(), ByVal records As Object())
+		Private Sub ExportChunk(documentArtifactIDs As Integer(), records As Object(), objectExportableSize As IObjectExportableSize, batchExporter As IBatchExporter)
 			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			Dim natives As New System.Data.DataView
@@ -439,11 +436,11 @@ Namespace kCura.WinEDDS
 			productionImages = retrieveThreads(2).Result()
 
 			Dim beginBatesColumnIndex As Int32 = -1
-			If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production AndAlso _volumeManager.OrdinalLookup.ContainsKey(_beginBatesColumn) Then
-				beginBatesColumnIndex = _volumeManager.OrdinalLookup(_beginBatesColumn)
+			If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production AndAlso FieldLookupService.ContainsFieldName(_beginBatesColumn) Then
+				beginBatesColumnIndex = FieldLookupService.GetOrdinalIndex(_beginBatesColumn)
 			End If
 			Dim identifierColumnName As String = Relativity.SqlNameHelper.GetSqlFriendlyName(Me.Settings.IdentifierColumnName)
-			Dim identifierColumnIndex As Int32 = _volumeManager.OrdinalLookup(identifierColumnName)
+			Dim identifierColumnIndex As Int32 = FieldLookupService.GetOrdinalIndex(identifierColumnName)
 			'TODO: come back to this
 			Dim productionPrecedenceArtifactIds As Int32() = Settings.ImagePrecedence.Select(Function(pair) CInt(pair.Value)).ToArray()
 			Dim lookup As New Lazy(Of Dictionary(Of Int32, List(Of BatesEntry)))(Function() GenerateBatesLookup(_productionManager.RetrieveBatesByProductionAndDocument(Me.Settings.CaseArtifactID, productionPrecedenceArtifactIds, documentArtifactIDs)))
@@ -453,37 +450,32 @@ Namespace kCura.WinEDDS
 
 			Dim artifacts(documentArtifactIDs.Length - 1) As Exporters.ObjectExportInfo
 			Dim volumePredictions(documentArtifactIDs.Length - 1) As VolumePredictions
-
-			Dim threadCount As Integer = _exportConfig.ExportThreadCount - 1
-			Dim threads As Task() = New Task(threadCount) {}
-			For i = 0 To threadCount
-				threads(i) = Task.FromResult(0)
-			Next
-
+			
 			For i = 0 To documentArtifactIDs.Length - 1
 				Dim record As Object() = DirectCast(records(i), Object())
 				Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, documentArtifactIDs(i))
 				Dim prediction As VolumePredictions = New VolumePredictions()
 				Dim artifact As ObjectExportInfo = CreateArtifact(record, documentArtifactIDs(i), nativeRow, images, productionImages, beginBatesColumnIndex, identifierColumnIndex, lookup, prediction)
 
-				_volumeManager.FinalizeVolumeAndSubDirPredictions(prediction, artifact)
+				objectExportableSize.FinalizeSizeCalculations(artifact, prediction)
 				volumePredictions(i) = prediction
 
 				artifacts(i) = artifact
 			Next
 
+			batchExporter.Export(artifacts, records, _cancellationTokenSource.Token)
+
 			For i = 0 To documentArtifactIDs.Length - 1
-				If _halt Then Exit For
-				Dim openThreadNumber As Integer = Task.WaitAny(threads, TimeSpan.FromDays(1))
-				Dim volumeNum As Integer = _volumeManager.GetCurrentVolumeNumber(volumePredictions(i))
-				Dim subDirNum As Integer = _volumeManager.GetCurrentSubDirectoryNumber(volumePredictions(i))
-				threads(openThreadNumber) = ExportArtifactAsync(artifacts(i), maxTries, i, documentArtifactIDs.Length, openThreadNumber, volumeNum, subDirNum)
+				If _cancellationTokenSource.IsCancellationRequested Then Exit For
+				'Dim volumeNum As Integer = _volumeManager.GetCurrentVolumeNumber(volumePredictions(i))
+				'Dim subDirNum As Integer = _volumeManager.GetCurrentSubDirectoryNumber(volumePredictions(i))
+				'ExportArtifactAsync(artifacts(i), maxTries, i, documentArtifactIDs.Length, volumeNum, subDirNum)
+				'TODO
 				DocumentsExported += 1
 			Next
-
-			Task.WaitAll(threads)
-			_volumeManager.WriteDatFile(_linesToWriteDat, artifacts)
-			_volumeManager.WriteOptFile(_linesToWriteOpt, artifacts)
+			
+			'_volumeManager.WriteDatFile(_linesToWriteDat, artifacts)
+			'_volumeManager.WriteOptFile(_linesToWriteOpt, artifacts)
 		End Sub
 
 		Private Async Function RetrieveNatives(ByVal natives As System.Data.DataView, ByVal productionArtifactID As Int32, ByVal documentArtifactIDs As Int32(), ByVal maxTries As Integer) As Task(Of System.Data.DataView)
@@ -549,23 +541,21 @@ Namespace kCura.WinEDDS
 				)
 		End Function
 
-		Private Async Function ExportArtifactAsync(ByVal artifact As ObjectExportInfo, ByVal maxTries As Integer, ByVal docNum As Integer, ByVal numDocs As Integer, ByVal threadNumber As Integer, ByVal volumeNumber As Integer, ByVal subDirectoryNumber As Integer) As Task
-			Await Task.Run(
-				   Sub()
-					   _fileCount += CallServerWithRetry(Function()
-															 Dim retval As Long
-															 retval = _volumeManager.ExportArtifact(artifact, _linesToWriteDat, _linesToWriteOpt, threadNumber, volumeNumber, subDirectoryNumber)
-															 If retval >= 0 Then
-																 WriteUpdate("Exported document " & docNum + 1, docNum = numDocs - 1)
-																 _lastStatisticsSnapshot = _statistics.ToDictionary
-																 Return retval
-															 Else
-																 Return 0
-															 End If
-														 End Function, maxTries)
-				   End Sub
-			   )
-		End Function
+		Private Sub ExportArtifactAsync(ByVal artifact As ObjectExportInfo, ByVal maxTries As Integer, ByVal docNum As Integer, ByVal numDocs As Integer, ByVal volumeNumber As Integer, ByVal subDirectoryNumber As Integer)
+			
+			_fileCount += CallServerWithRetry(Function()
+					Dim retval As Long
+					'retval = _volumeManager.ExportArtifact(artifact, _linesToWriteDat, _linesToWriteOpt, -1, volumeNumber, subDirectoryNumber)
+					If retval >= 0 Then
+						WriteUpdate("Exported document " & docNum + 1, docNum = numDocs - 1)
+						_lastStatisticsSnapshot = _statistics.ToDictionary
+						Return retval
+					Else
+						Return 0
+					End If
+				End Function, maxTries)
+				  
+		End Sub
 
 		Protected Overridable Function CreateObjectExportInfo() As ObjectExportInfo
 			Return New ObjectExportInfo
@@ -1098,8 +1088,7 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Private Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
-			_halt = True
-			If Not _volumeManager Is Nothing Then _volumeManager.Halt = True
+			_cancellationTokenSource.Cancel()
 		End Sub
 
 		Public Event UploadModeChangeEvent(ByVal mode As String)

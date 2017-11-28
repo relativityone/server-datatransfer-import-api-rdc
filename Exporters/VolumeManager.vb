@@ -1401,5 +1401,9 @@ Namespace kCura.WinEDDS
 		Public Function GetOrdinalIndex(fieldName As String) As Int32 Implements IFieldLookupService.GetOrdinalIndex
 			Return _ordinalLookup(fieldName)
 		End Function
+
+		Public Function ContainsFieldName(fieldName As String) As Boolean Implements IFieldLookupService.ContainsFieldName
+			Return _ordinalLookup.ContainsKey(fieldName)
+		End Function
 	End Class
 End Namespace

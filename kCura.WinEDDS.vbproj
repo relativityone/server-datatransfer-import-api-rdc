@@ -333,10 +333,14 @@
     <Compile Include="Exporters\Container\ContainerFactoryProvider.vb" />
     <Compile Include="Exporters\Container\IContainerFactory.vb" />
     <Compile Include="Exporters\ExportConfig.vb" />
+    <Compile Include="Exporters\IBatchExporter.vb" />
+    <Compile Include="Exporters\IErrorFile.vb" />
     <Compile Include="Exporters\IExportConfig.vb" />
     <Compile Include="Exporters\IExporter.vb" />
     <Compile Include="Exporters\IExporterStatusNotification.vb" />
     <Compile Include="Exporters\IFieldLookupService.vb" />
+    <Compile Include="Exporters\IFieldService.vb" />
+    <Compile Include="Exporters\IObjectExportableSize.vb" />
     <Compile Include="Exporters\IUserNotification.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\IFieldNameProvider.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\ILoadFileHeaderFormatterFactory.vb" />
