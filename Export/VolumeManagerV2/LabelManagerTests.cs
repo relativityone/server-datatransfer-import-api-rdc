@@ -1,5 +1,6 @@
 ﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2;
 using kCura.WinEDDS.Exporters;
+using Moq;
 using NUnit.Framework;
 
 namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2
@@ -7,6 +8,16 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2
 	[TestFixture]
 	public class LabelManagerTests
 	{
+		private Mock<IVolume> _volumeMock;
+		private Mock<ISubdirectory> _subdirectoryMock;
+
+		[SetUp]
+		public void SetUp()
+		{
+			_volumeMock = new Mock<IVolume>();
+			_subdirectoryMock = new Mock<ISubdirectory>();
+		}
+
 		[Test]
 		[TestCase(1, "VOL", 3, ExpectedResult = "VOL001")]
 		[TestCase(123, "VOL", 1, ExpectedResult = "VOL123")]
@@ -26,10 +37,11 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2
 					VolumePrefix = prefix
 				}
 			};
-			var instance = new LabelManager(exportSettings);
+			_volumeMock.SetupGet(x => x.CurrentVolumeNumber).Returns(volumeNumber);
+			var instance = new LabelManager(exportSettings, _volumeMock.Object, _subdirectoryMock.Object);
 
 			//ACT
-			return instance.GetCurrentVolumeLabel(volumeNumber);
+			return instance.GetCurrentVolumeLabel();
 		}
 
 		[Test]
@@ -50,10 +62,11 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2
 			};
 			exportSettings.VolumeInfo.set_SubdirectoryImagePrefix(false, prefix);
 
-			var instance = new LabelManager(exportSettings);
+			_subdirectoryMock.SetupGet(x => x.CurrentSubdirectoryNumber).Returns(subdirectoryNumber);
+			var instance = new LabelManager(exportSettings, _volumeMock.Object, _subdirectoryMock.Object);
 
 			//ACT
-			return instance.GetCurrentImageSubdirectoryLabel(subdirectoryNumber);
+			return instance.GetCurrentImageSubdirectoryLabel();
 		}
 
 		[Test]
@@ -74,10 +87,11 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2
 			};
 			exportSettings.VolumeInfo.set_SubdirectoryNativePrefix(false, prefix);
 
-			var instance = new LabelManager(exportSettings);
+			_subdirectoryMock.SetupGet(x => x.CurrentSubdirectoryNumber).Returns(subdirectoryNumber);
+			var instance = new LabelManager(exportSettings, _volumeMock.Object, _subdirectoryMock.Object);
 
 			//ACT
-			return instance.GetCurrentNativeSubdirectoryLabel(subdirectoryNumber);
+			return instance.GetCurrentNativeSubdirectoryLabel();
 		}
 
 		[Test]
@@ -98,10 +112,11 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2
 			};
 			exportSettings.VolumeInfo.set_SubdirectoryFullTextPrefix(false, prefix);
 
-			var instance = new LabelManager(exportSettings);
+			_subdirectoryMock.SetupGet(x => x.CurrentSubdirectoryNumber).Returns(subdirectoryNumber);
+			var instance = new LabelManager(exportSettings, _volumeMock.Object, _subdirectoryMock.Object);
 
 			//ACT
-			return instance.GetCurrentTextSubdirectoryLabel(subdirectoryNumber);
+			return instance.GetCurrentTextSubdirectoryLabel();
 		}
 	}
 }

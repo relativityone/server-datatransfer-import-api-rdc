@@ -29,7 +29,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
 				TextFilesSize = _TEXT_FILE_SIZE
 			};
 
-			_instance = new TextExportableSize(_exportSettings, null, null);
+			_instance = new TextExportableSize(_exportSettings, null);
 		}
 
 		[Test]
