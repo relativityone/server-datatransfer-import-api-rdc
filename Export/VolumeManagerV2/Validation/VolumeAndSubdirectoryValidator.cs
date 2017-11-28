@@ -3,7 +3,7 @@ using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.Exporters.Validator;
 using Relativity.Logging;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation
 {
 	public class VolumeAndSubdirectoryValidator
 	{

@@ -88,12 +88,15 @@
     <Compile Include="Export\Natives\Name\Factories\FileNameProviderContainerFactory.cs" />
     <Compile Include="Export\Natives\Name\Factories\IFileNameProviderContainerFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Config.cs" />
+    <Compile Include="Export\VolumeManagerV2\Container\ContainerFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Container\ExportInstaller.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\IImagesRollup.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\ImagesRollupFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\MultiPageImagesRollup.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\DestinationPath.cs" />
-    <Compile Include="Export\VolumeManagerV2\ExportPermissionCheck.cs" />
-    <Compile Include="Export\VolumeManagerV2\FilesOverwriteValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Validation\ExportPermissionCheck.cs" />
+    <Compile Include="Export\VolumeManagerV2\Validation\ExportValidation.cs" />
+    <Compile Include="Export\VolumeManagerV2\Validation\FilesOverwriteValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\ImageExportableSize.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\ErrorFileDestinationPath.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\ErrorFileWriter.cs" />
@@ -117,7 +120,7 @@
     <Compile Include="Export\VolumeManagerV2\SubdirectoryManager.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\TextExportableSize.cs" />
     <Compile Include="Export\VolumeManagerV2\TrueVolumeManager.cs" />
-    <Compile Include="Export\VolumeManagerV2\VolumeAndSubdirectoryValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Validation\VolumeAndSubdirectoryValidator.cs" />
     <Compile Include="IO\LongPathDirectoryHelper.cs" />
     <Compile Include="IO\LongPathFileHelper.cs" />
     <Compile Include="Logging\LoggerFactory.cs" />
@@ -167,6 +170,7 @@
   <ItemGroup>
     <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer.1.0.4.0\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
