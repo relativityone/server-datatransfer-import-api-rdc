@@ -333,12 +333,7 @@ Namespace kCura.WinEDDS
 			Me.Statistics.BatchSize = Me.ImportBatchSize
 			Me.BatchSizeHistoryList.Add(Me.ImportBatchSize)
 		End Sub
-
-		Protected Overridable Sub RaiseWarningAndPause(ByVal ex As Exception, ByVal timeoutSeconds As Int32)
-			IoReporterInstance.IOWarningPublisher?.OnIoWarningEvent(New IoWarningEventArgs(kCura.WinEDDS.TApi.IoReporter.BuildIOReporterWarningMessage(ex), Me.CurrentLineNumber))
-			System.Threading.Thread.CurrentThread.Join(1000 * timeoutSeconds)
-		End Sub
-
+        
 		Protected Function GetImageRecord() As Api.ImageRecord
 			Return _imageReader.GetImageRecord
 		End Function
