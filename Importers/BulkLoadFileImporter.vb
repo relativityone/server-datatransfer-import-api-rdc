@@ -603,16 +603,8 @@ Namespace kCura.WinEDDS
 				If _firstLineContainsColumnNames Then _offset = -1
 				Dim isError As Boolean = False
 				_statistics.BatchSize = Me.ImportBatchSize
-				_jobCounter = 1
+                _jobCounter = 1
                 Using fileService As kCura.OI.FileID.FileIDService = New kCura.OI.FileID.FileIDService()
-                    ' Dump OutSideIn info
-                    Dim fileIdInfo As FileIDInfo = fileService.ForceInitialize()
-                    Me.LogInformation("FileID service info.")
-                    Me.LogInformation("Version: '{0}'.", fileIdInfo.Version)
-                    Me.LogInformation("Idle worker timeout: '{0}'.", fileIdInfo.IdleWorkerTimeout)
-                    Me.LogInformation("Install location: '{0}'.", fileIdInfo.InstallLocation)
-                    Me.LogInformation("Minimum worker count: '{0}'.", fileIdInfo.MinimumWorkerCount)
-
                     While ShouldImport AndAlso _artifactReader.HasMoreRecords
                         Try
                             If Me.CurrentLineNumber < _startLineNumber Then
@@ -665,6 +657,14 @@ Namespace kCura.WinEDDS
                             Me.LogFatal(ex, "A serious unexpected error has occurred managing an import document.")
                         End Try
                     End While
+
+                    ' Dump OutSideIn info
+                    Dim fileIdInfo As FileIDInfo = fileService.DumpInfo()
+                    Me.LogInformation("FileID service info.")
+                    Me.LogInformation("Version: '{0}'.", fileIdInfo.Version)
+                    Me.LogInformation("Idle worker timeout: '{0}'.", fileIdInfo.IdleWorkerTimeout)
+                    Me.LogInformation("Install location: '{0}'.", fileIdInfo.InstallLocation)
+                    Me.LogInformation("Minimum worker count: '{0}'.", fileIdInfo.MinimumWorkerCount)
                 End Using
 
                 If Not _task Is Nothing AndAlso _task.Status.In(
