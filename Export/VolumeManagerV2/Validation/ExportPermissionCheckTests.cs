@@ -1,11 +1,11 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2;
+﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation;
 using kCura.WinEDDS.Service;
 using kCura.WinEDDS.Service.Export;
 using Moq;
 using NUnit.Framework;
 using Relativity.Logging;
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2
+namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Validation
 {
 	[TestFixture]
 	public class ExportPermissionCheckTests
