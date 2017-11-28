@@ -113,6 +113,7 @@
     </Compile>
     <Compile Include="FileLockedImportJobTests.cs" />
     <Compile Include="FileNotFoundImportJobTests.cs" />
+    <Compile Include="IoWarningPublisherTests.cs" />
     <Compile Include="IoReporterTests.cs" />
     <Compile Include="PositiveImportJobTests.cs" />
     <Compile Include="ImportJobTestBase.cs" />
