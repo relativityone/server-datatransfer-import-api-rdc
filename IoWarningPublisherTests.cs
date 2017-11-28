@@ -6,7 +6,6 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Logging;
 using Relativity.Transfer;
-using Renci.SshNet;
 
 namespace kCura.WinEDDS.TApi.NUnit.Integration
 {
@@ -15,8 +14,6 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 	{
         private IoWarningPublisher _ioWarningPublisher;
 		private Dictionary<long, string> _results;
-       
-        private const string _FILE_NAME = "TestFileName";
 
         [SetUp]
         public void Setup()
