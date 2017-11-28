@@ -1,7 +1,7 @@
-﻿Imports Helpers
-Imports kCura.EDDS.WebAPI.BulkImportManagerBase
+﻿Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports NUnit.Framework
 Imports kCura.Windows.Process
+Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.TApi
 Imports Relativity.Logging
 
