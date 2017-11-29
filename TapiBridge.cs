@@ -378,21 +378,14 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         public void DumpInfo()
         {
-            var version = this.GetType().Assembly.GetName().Version;
-            this.transferLog.LogInformation("TAPI - System Info - Version: '{0}'.", version);
+            var windEddsVersion = this.GetType().Assembly.GetName().Version;
+            var tapiVersion = typeof(ITransferClient).Assembly.GetName().Version;
 
-            if (this.parameters.BcpFileTransfer)
-            {
-                this.transferLog.LogInformation("Begin dumping BCP parameters.");
-                this.transferLog.LogInformation("BCP file transfer: '{0}'.", parameters.BcpFileTransfer);
-                this.transferLog.LogInformation("Aspera BCP root folder: '{0}'.", parameters.AsperaBcpRootFolder);
-                this.transferLog.LogInformation("Sort into volume: '{0}'.", parameters.SortIntoVolumes);
-            }
-            else
-            {
-                this.transferLog.LogInformation("Begin dumping native parameters.");
-            }
-
+            this.transferLog.LogInformation("WinEDDS - System Info - Version: '{0}'.", windEddsVersion);
+            this.transferLog.LogInformation("TAPI - System Info - Version: '{0}'.", tapiVersion);
+            this.transferLog.LogInformation("BCP file transfer: '{0}'.", parameters.BcpFileTransfer);
+            this.transferLog.LogInformation("Aspera BCP root folder: '{0}'.", parameters.AsperaBcpRootFolder);
+            this.transferLog.LogInformation("Sort into volume: '{0}'.", parameters.SortIntoVolumes);
             this.transferLog.LogInformation("Client request id: '{0}'.", parameters.ClientRequestId);
             this.transferLog.LogInformation("Aspera doc root level: '{0}'.", parameters.AsperaDocRootLevels);
             this.transferLog.LogInformation("File share: '{0}'.", parameters.FileShare);
@@ -407,8 +400,6 @@ namespace kCura.WinEDDS.TApi
             this.transferLog.LogInformation("Target data rate: '{0}' Mbps.", parameters.TargetDataRateMbps);
             this.transferLog.LogInformation("Wait time between retry attempts: '{0}'.", parameters.WaitTimeBetweenRetryAttempts);
             this.transferLog.LogInformation("Workspace identifier: '{0}'.", parameters.WorkspaceId);
-
-            this.transferLog.LogInformation("Successfully dumped parameters.");
         }
 
         /// <summary>
