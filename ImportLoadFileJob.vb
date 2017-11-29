@@ -473,11 +473,11 @@ Namespace kCura.Relativity.DataReaderClient
 		End Sub
 
 		Private Sub ValidateNativeFileSettings()
-			If Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles Then
-				If Not Settings.NativeFilePathSourceFieldName = String.Empty Then
-					Throw New ImportSettingsConflictException("NativeFileCopyMode", "NativeFilePathSourceFieldName", "If NativeFileCopyMode is set to DoNotImportNativeFiles, then NativeFilePathSourceFieldName cannot be set.")
-				End If
-			Else
+				If Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles Then
+					If Not Settings.NativeFilePathSourceFieldName = String.Empty Then
+						Throw New ImportSettingsConflictException("NativeFileCopyMode", "NativeFilePathSourceFieldName", "If NativeFileCopyMode is set to DoNotImportNativeFiles, then NativeFilePathSourceFieldName cannot be set.")
+					End If
+				Else
 				If Settings.NativeFilePathSourceFieldName = String.Empty Then
 					Throw New ImportSettingsException("NativeFilePathSourceFieldName", "If NativeFileCopyMode is set, then NativeFilePathSourceFieldName must be set.")
 				Else
