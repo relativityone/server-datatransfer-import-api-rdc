@@ -6,182 +6,228 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
     [TestFixture]
     public class WaitAndRetryPolicyTests
     {
+        private int _waitTimeMillisecondsBetweenRetryAttempts;
+        private int _actualRetryCallCount;
+        private int _actualExecFuncCallCount;
+        private int _expectedRetryCallCount;
+        private int _expectedExecFuncCallCount;
+        private Func<int, TimeSpan> _retryDuration;
+        private Action<Exception, TimeSpan> _retryAction;
+        private Action _execFunc;
+
         private class WaitAndRetryPolicyException : Exception
         {
         }
 
-        private int _waitTimeBetweenRetryAttempts;
-        private int _actualRetryCallCount;
-        private int _actualExecFuncCallCount;
-        
         [SetUp]
         public void Setup()
         {
-            _waitTimeBetweenRetryAttempts = 1;   //DO NOT INCREASE VALUE BECAUSE IT INCREASE THE TESTS EXECUTION TIME
+            _waitTimeMillisecondsBetweenRetryAttempts = 1;   //DO NOT INCREASE this VALUE BECAUSE IT WILL INCREASE THE TESTS EXECUTION TIME
 
             _actualRetryCallCount = 0;
             _actualExecFuncCallCount = 0;
         }
 
+        #region "Tests"
+
         [TestCase(1)]
         [TestCase(2)]
         [TestCase(2)]
         [TestCase(12)]
-        public void ItShouldWaitAndRetry_withParameters_success(int maxRetryCount)
+        public void ItShouldWaitAndRetry_withMethodParams_success(int maxRetryCount)
         {
-            //Arrange
-            var policy = new WaitAndRetryPolicy();
+            GivenTheExpectedRetryCallCount(0);
+            GivenTheExpectedExecFuncCallCount(1);
 
-            const int expectedRetryCallCount = 0;
-            const int expectedExecFuncCallCount = 1;
+            GivenTheRetryDuration();
+            GivenTheRetryAction();
+            GivenTheExecFunc(() => { _actualExecFuncCallCount++; });
 
-            Func<int, TimeSpan> retryDuration = waitTime => TimeSpan.FromMilliseconds(_waitTimeBetweenRetryAttempts);
-            Action<Exception, TimeSpan> retryAction = (exception, timeSpan) => { _actualRetryCallCount++; };
-            Action execFunc = () => { _actualExecFuncCallCount++; };
-
-            //Act 
-            policy.WaitAndRetry<Exception>(maxRetryCount, retryDuration, retryAction, execFunc);
+            //Act
+            WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParams(maxRetryCount);
 
             //Assert
-            Assert.That(_actualRetryCallCount, Is.EqualTo(expectedRetryCallCount));
-            Assert.That(_actualExecFuncCallCount, Is.EqualTo(expectedExecFuncCallCount));
+            ThenTheActualRetryCallCountShouldEqual();
+            ThenTheActualExecFuncCallCountShouldEqual();
         }
-        
+
+
         [TestCase(1)]
         [TestCase(2)]
         [TestCase(2)]
         [TestCase(12)]
-        public void ItShouldWaitAndRetry_withConstructor_success(int maxRetryCount)
+        public void ItShouldWaitAndRetry_withConstructorParams_success(int maxRetryCount)
         {
-            //Arrange
-            var policy = new WaitAndRetryPolicy(maxRetryCount, _waitTimeBetweenRetryAttempts);
+            GivenTheExpectedRetryCallCount(0);
+            GivenTheExpectedExecFuncCallCount(1);
 
-            const int expectedRetryCallCount = 0;
-            const int expectedExecFuncCallCount = 1;
+            GivenTheRetryDuration();
+            GivenTheRetryAction();
+            GivenTheExecFunc(() => { _actualExecFuncCallCount++; });
             
-            Func<int, TimeSpan> retryDuration = waitTime => TimeSpan.FromMilliseconds(_waitTimeBetweenRetryAttempts);
-            Action<Exception, TimeSpan> retryAction = (exception, timeSpan) => { _actualRetryCallCount++; };
-            Action execFunc = () => { _actualExecFuncCallCount++; };
-
-            //Act 
-            policy.WaitAndRetry<Exception>(retryDuration, retryAction, execFunc);
-
-            //Assert
-            Assert.That(_actualRetryCallCount, Is.EqualTo(expectedRetryCallCount));
-            Assert.That(_actualExecFuncCallCount, Is.EqualTo(expectedExecFuncCallCount));
+            WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParams(maxRetryCount);
+            
+            ThenTheActualRetryCallCountShouldEqual();
+            ThenTheActualExecFuncCallCountShouldEqual();
         }
         
         [TestCase(1)]
         [TestCase(2)]
         [TestCase(3)]
         [TestCase(10)]
-        public void ItShouldWaitAndRetry_withParameters_alwaysFails(int maxRetryCount)
+        public void ItShouldWaitAndRetry_withMethodParams_alwaysFails(int maxRetryCount)
         {
-            //Arrange
-            var policy = new WaitAndRetryPolicy();
+            GivenTheExpectedRetryCallCount(maxRetryCount);
+            GivenTheExpectedExecFuncCallCount(maxRetryCount + 1);
 
-            int expectedRetryCallCount = maxRetryCount;
-            int expectedExecFuncCallCount = maxRetryCount + 1;
-
-            Func<int, TimeSpan> retryDuration = waitTime => TimeSpan.FromMilliseconds(_waitTimeBetweenRetryAttempts);
-            Action<Exception, TimeSpan> retryAction = (exception, timeSpan) => { _actualRetryCallCount++; };
-            Action execFunc = () => { _actualExecFuncCallCount++;
+            GivenTheRetryDuration();
+            GivenTheRetryAction();
+            GivenTheExecFunc(() => {
+                _actualExecFuncCallCount++;
                 throw new WaitAndRetryPolicyException();
-            };
-
-            //Act 
-            Assert.That(() => policy.WaitAndRetry<WaitAndRetryPolicyException>(maxRetryCount, retryDuration, retryAction, execFunc), 
-                Throws.Exception.TypeOf<WaitAndRetryPolicyException>());
-
-            //Assert
-            Assert.That(_actualRetryCallCount, Is.EqualTo(expectedRetryCallCount));
-            Assert.That(_actualExecFuncCallCount, Is.EqualTo(expectedExecFuncCallCount));
+            });
+            
+            WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParamsThenThwowsException(maxRetryCount);
+            
+            ThenTheActualRetryCallCountShouldEqual();
+            ThenTheActualExecFuncCallCountShouldEqual();
         }
         
         [TestCase(1)]
         [TestCase(2)]
         [TestCase(3)]
         [TestCase(10)]
-        public void ItShouldWaitAndRetry_withConstructor_alwaysFails(int maxRetryCount)
+        public void ItShouldWaitAndRetry_withConstructorParams_alwaysFails(int maxRetryCount)
         {
-            //Arrange
-            var policy = new WaitAndRetryPolicy(maxRetryCount, _waitTimeBetweenRetryAttempts);
+            GivenTheExpectedRetryCallCount(maxRetryCount);
+            GivenTheExpectedExecFuncCallCount(maxRetryCount + 1);
 
-            int expectedRetryCallCount = maxRetryCount;
-            int expectedExecFuncCallCount = maxRetryCount + 1;
-
-            Func<int, TimeSpan> retryDuration = waitTime => TimeSpan.FromMilliseconds(_waitTimeBetweenRetryAttempts);
-            Action<Exception, TimeSpan> retryAction = (exception, timeSpan) => { _actualRetryCallCount++; };
-            Action execFunc = () => {
+            GivenTheRetryDuration();
+            GivenTheRetryAction();
+            GivenTheExecFunc(() => {
                 _actualExecFuncCallCount++;
                 throw new WaitAndRetryPolicyException();
-            };
-
-            //Act 
-            Assert.That(() => policy.WaitAndRetry<WaitAndRetryPolicyException>(retryDuration, retryAction, execFunc),
-                Throws.Exception.TypeOf<WaitAndRetryPolicyException>());
-
-            //Assert
-            Assert.That(_actualRetryCallCount, Is.EqualTo(expectedRetryCallCount));
-            Assert.That(_actualExecFuncCallCount, Is.EqualTo(expectedExecFuncCallCount));
+            });
+            
+            WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParamsThenThwowsException(maxRetryCount);
+            
+            ThenTheActualRetryCallCountShouldEqual();
+            ThenTheActualExecFuncCallCountShouldEqual();
         }
         
         [TestCase(2, 1)]
         [TestCase(3, 2)]
         [TestCase(10, 5)]
-        public void ItShouldWaitAndRetry_withParameters_notAllFails(int maxRetryCount, int succesAfterRetryNum)
+        public void ItShouldWaitAndRetry_withMethodParams_notAllFails(int maxRetryCount, int succesAfterRetryNum)
         {
-            //Arrange
-            var policy = new WaitAndRetryPolicy();
+            GivenTheExpectedRetryCallCount(succesAfterRetryNum);
+            GivenTheExpectedExecFuncCallCount(succesAfterRetryNum + 1);
 
-            int expectedRetryCallCount = succesAfterRetryNum;
-            int expectedExecFuncCallCount = succesAfterRetryNum + 1;
-
-            Func<int, TimeSpan> retryDuration = waitTime => TimeSpan.FromMilliseconds(_waitTimeBetweenRetryAttempts);
-            Action<Exception, TimeSpan> retryAction = (exception, timeSpan) => { _actualRetryCallCount++; };
-            Action execFunc = () => {
+            GivenTheRetryDuration();
+            GivenTheRetryAction();
+            GivenTheExecFunc(() => {
                 _actualExecFuncCallCount++;
                 if (_actualExecFuncCallCount <= succesAfterRetryNum)
                 {
                     throw new WaitAndRetryPolicyException();
                 }
-            };
-
-            //Act 
-            policy.WaitAndRetry<WaitAndRetryPolicyException>(maxRetryCount, retryDuration, retryAction, execFunc);
-
-            //Assert
-            Assert.That(_actualRetryCallCount, Is.EqualTo(expectedRetryCallCount));
-            Assert.That(_actualExecFuncCallCount, Is.EqualTo(expectedExecFuncCallCount));
+            });
+            
+            WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParams(maxRetryCount);
+            
+            ThenTheActualRetryCallCountShouldEqual();
+            ThenTheActualExecFuncCallCountShouldEqual();
         }
 
         [TestCase(2, 1)]
         [TestCase(3, 2)]
         [TestCase(10, 5)]
-        public void ItShouldWaitAndRetry_withConstructor_notAllFails(int maxRetryCount, int succesAfterRetryNum)
+        public void ItShouldWaitAndRetry_withConstructorParams_notAllFails(int maxRetryCount, int succesAfterRetryNum)
         {
-            //Arrange
-            var policy = new WaitAndRetryPolicy(maxRetryCount, _waitTimeBetweenRetryAttempts);
+            GivenTheExpectedRetryCallCount(succesAfterRetryNum);
+            GivenTheExpectedExecFuncCallCount(succesAfterRetryNum + 1);
 
-            int expectedRetryCallCount = succesAfterRetryNum;
-            int expectedExecFuncCallCount = succesAfterRetryNum + 1;
-
-            Func<int, TimeSpan> retryDuration = waitTime => TimeSpan.FromMilliseconds(_waitTimeBetweenRetryAttempts);
-            Action<Exception, TimeSpan> retryAction = (exception, timeSpan) => { _actualRetryCallCount++; };
-            Action execFunc = () => {
+            GivenTheRetryDuration();
+            GivenTheRetryAction();
+            GivenTheExecFunc(() => {
                 _actualExecFuncCallCount++;
                 if (_actualExecFuncCallCount <= succesAfterRetryNum)
                 {
                     throw new WaitAndRetryPolicyException();
                 }
-            };
-
-            //Act 
-            policy.WaitAndRetry<WaitAndRetryPolicyException>(retryDuration, retryAction, execFunc);
-
-            //Assert
-            Assert.That(_actualRetryCallCount, Is.EqualTo(expectedRetryCallCount));
-            Assert.That(_actualExecFuncCallCount, Is.EqualTo(expectedExecFuncCallCount));
+            });
+            
+            WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParams(maxRetryCount);
+            
+            ThenTheActualRetryCallCountShouldEqual();
+            ThenTheActualExecFuncCallCountShouldEqual();
         }
+
+        #endregion
+
+        #region "Helper methods"
+
+        private void GivenTheExpectedRetryCallCount(int expectedRetryCallCount)
+        {
+            _expectedRetryCallCount = expectedRetryCallCount;
+        }
+
+        private void GivenTheExpectedExecFuncCallCount(int expectedExecFuncCallCount)
+        {
+            _expectedExecFuncCallCount = expectedExecFuncCallCount;
+        }
+
+        private void GivenTheRetryDuration()
+        {
+            _retryDuration = waitTime => TimeSpan.FromMilliseconds(_waitTimeMillisecondsBetweenRetryAttempts);
+        }
+
+        private void GivenTheRetryAction()
+        {
+            _retryAction = (exception, timeSpan) => { _actualRetryCallCount++; };
+        }
+        
+        private void GivenTheExecFunc(Action action)
+        {
+            _execFunc = action;
+        }
+
+        private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParams(int maxRetryCount)
+        {
+            var waitAndRetryPolicy = new WaitAndRetryPolicy(maxRetryCount, _waitTimeMillisecondsBetweenRetryAttempts);
+            waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(_retryDuration, _retryAction, _execFunc);
+        }
+
+        private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParamsThenThwowsException(int maxRetryCount)
+        {
+            var waitAndRetryPolicy = new WaitAndRetryPolicy(maxRetryCount, _waitTimeMillisecondsBetweenRetryAttempts);
+            Assert.That(() => waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(_retryDuration, _retryAction, _execFunc),
+                Throws.Exception.TypeOf<WaitAndRetryPolicyException>());
+        }
+
+        private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParams(int maxRetryCount)
+        {
+            var waitAndRetryPolicy = new WaitAndRetryPolicy();
+            waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(maxRetryCount, _retryDuration, _retryAction, _execFunc);
+        }
+
+        private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParamsThenThwowsException(int maxRetryCount)
+        {
+            var waitAndRetryPolicy = new WaitAndRetryPolicy();
+            Assert.That(() => waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(maxRetryCount, _retryDuration, _retryAction, _execFunc),
+                Throws.Exception.TypeOf<WaitAndRetryPolicyException>());
+        }
+        
+        private void ThenTheActualRetryCallCountShouldEqual()
+        {
+            Assert.That(_actualRetryCallCount, Is.EqualTo(_expectedRetryCallCount));
+        }
+
+        private void ThenTheActualExecFuncCallCountShouldEqual()
+        {
+            Assert.That(_actualExecFuncCallCount, Is.EqualTo(_expectedExecFuncCallCount));
+        }
+
+        #endregion
     }
 }

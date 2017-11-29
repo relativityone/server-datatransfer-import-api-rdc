@@ -63,7 +63,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         {
             //Arrange
             Func<int, TimeSpan> actualRetryDuractionFunc = null;
-            _waitAndRetry.Setup(obj => obj.WaitTimeBetweenRetryAttempts).Returns(waitTimeBetweenRetryAttempts);
+            _waitAndRetry.Setup(obj => obj.WaitTimeSecondsBetweenRetryAttempts).Returns(waitTimeBetweenRetryAttempts);
             _waitAndRetry.Setup(obj => obj.WaitAndRetry<Exception>(It.IsAny<Func<int, TimeSpan>>(),
                     It.IsAny<Action<Exception, TimeSpan>>(), It.IsAny<Action>()))
                 .Callback<Func<int, TimeSpan>, Action<Exception, TimeSpan>, Action>((retryDuration, retryAction, execFunc) =>
