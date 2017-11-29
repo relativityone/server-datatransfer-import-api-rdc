@@ -670,7 +670,7 @@ Namespace kCura.WinEDDS
                     Me.LogInformation("Minimum worker count: '{0}'.", fileIdInfo.MinimumWorkerCount)
 
                     If fileIdInfo.HasError Then
-                        Me.LogInformation("Error: {0}", fileIdInfo.Exception)
+                        Me.LogWarning("Error: {0}", fileIdInfo.Exception)
                     End If
                 End Using
 
