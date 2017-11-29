@@ -341,6 +341,7 @@
     <Compile Include="Exporters\IFieldLookupService.vb" />
     <Compile Include="Exporters\IFieldService.vb" />
     <Compile Include="Exporters\IObjectExportableSize.vb" />
+    <Compile Include="Exporters\IStatus.vb" />
     <Compile Include="Exporters\IUserNotification.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\IFieldNameProvider.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\ILoadFileHeaderFormatterFactory.vb" />

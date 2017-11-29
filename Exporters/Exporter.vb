@@ -13,6 +13,7 @@ Namespace kCura.WinEDDS
 	Public Class Exporter
 		Implements IExporterStatusNotification
 		Implements IExporter
+		Implements IStatus
 
 #Region "Members"
 
@@ -293,7 +294,7 @@ Namespace kCura.WinEDDS
 			End If
 			_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 			RaiseEvent FileTransferModeChangeEvent(_downloadHandler.UploaderType.ToString)
-			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Settings, _columns, columnHeaderString, exportInitializationArgs.ColumnNames, ExportManager, InteractionManager, FileNameProvider)
+			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, columnHeaderString, exportInitializationArgs.ColumnNames)
 				container.Resolve(Of IExportValidation).ValidateExport(Settings, TotalExportArtifactCount)
 				Dim objectExportableSize As IObjectExportableSize = container.Resolve(Of IObjectExportableSize)
 				FieldLookupService = container.Resolve(Of IFieldLookupService)
@@ -1026,7 +1027,7 @@ Namespace kCura.WinEDDS
 			RaiseEvent FatalErrorEvent(line, ex)
 		End Sub
 
-		Friend Sub WriteStatusLine(ByVal e As kCura.Windows.Process.EventType, ByVal line As String, ByVal isEssential As Boolean)
+		Friend Sub WriteStatusLine(ByVal e As kCura.Windows.Process.EventType, ByVal line As String, ByVal isEssential As Boolean) Implements IStatus.WriteStatusLine
 			Dim now As Long = System.DateTime.Now.Ticks
 			If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
 				_lastStatusMessageTs = now
@@ -1045,12 +1046,12 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Friend Sub WriteError(ByVal line As String)
+		Friend Sub WriteError(ByVal line As String) Implements IStatus.WriteError
 			_errorCount += 1
 			WriteStatusLine(kCura.Windows.Process.EventType.Error, line, True)
 		End Sub
 
-		Friend Sub WriteImgProgressError(ByVal artifact As Exporters.ObjectExportInfo, ByVal imageIndex As Int32, ByVal ex As System.Exception, Optional ByVal notes As String = "")
+		Friend Sub WriteImgProgressError(ByVal artifact As Exporters.ObjectExportInfo, ByVal imageIndex As Int32, ByVal ex As System.Exception, Optional ByVal notes As String = "") Implements IStatus.WriteImgProgressError
 			Dim sw As New System.IO.StreamWriter(_exportFile.FolderPath & "\" & _exportFile.LoadFilesPrefix & "_img_errors.txt", True, _exportFile.LoadFileEncoding)
 			sw.WriteLine(System.DateTime.Now.ToString("s"))
 			sw.WriteLine(String.Format("DOCUMENT: {0}", artifact.IdentifierValue))
@@ -1066,7 +1067,7 @@ Namespace kCura.WinEDDS
 			Me.WriteError(errorLine)
 		End Sub
 
-		Friend Sub WriteWarning(ByVal line As String)
+		Friend Sub WriteWarning(ByVal line As String) Implements IStatus.WriteWarning
 			_warningCount += 1
 			WriteStatusLine(kCura.Windows.Process.EventType.Warning, line, True)
 		End Sub
