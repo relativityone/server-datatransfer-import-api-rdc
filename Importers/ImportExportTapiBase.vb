@@ -31,9 +31,9 @@ Namespace kCura.WinEDDS
 
 #Region "Constructor"
         Public Sub New(ByRef ioReporterInstance As IIoReporter, ByRef logger As ILog)
-	        If ioReporterInstance Is Nothing Then
-		        Throw New ArgumentNullException("ioReporterInstance")
-			End If
+	  '      If ioReporterInstance Is Nothing Then
+		 '       Throw New ArgumentNullException("ioReporterInstance")
+			'End If
 
 		    If logger Is Nothing Then
 			    Throw New ArgumentNullException("logger")
