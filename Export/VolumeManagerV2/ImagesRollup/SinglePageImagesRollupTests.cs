@@ -12,7 +12,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.ImagesRollup
 			var instance = new SinglePageImagesRollup();
 
 			//ACT
-			bool imagesRollupResult = instance.RollupImages(null, null, 1, 1);
+			bool imagesRollupResult = instance.RollupImages(null);
 
 			//ASSERT
 			Assert.That(imagesRollupResult, Is.False);
