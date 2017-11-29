@@ -15,21 +15,20 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         private Mock<ILog> _logger;
         private IoWarningPublisher _ioWarningPublisher;
         private Mock<IFileInfoFailedExceptionHelper> _fileInfoFailedExceptionHelper;
-        private bool _disableNativeLocationValidation;
-        private const string _FILE_NAME = "TestFileName";
         private long _actualFileLength;
         private Func<int, TimeSpan> _actualRetryDuractionFunc = null;
         private Exception _expectedException; 
-        private ArgumentException _expectedArgumentException; 
+        private ArgumentException _expectedArgumentException;
+        private const string _FILE_NAME = "TestFileName";
         private const string _EXPECTED_DEFAULT_EXCEPTION_MESSAGE = "Expected exception message";
         private const string _EXPECTED_INVALID_PATH_EXCEPTION_MESSAGE = "Illegal characters in path.";
+        private const string _EXPECTED_RETHROWN_EXCEPTION_MESSAGE = "rethrowed exception";
         private string _expectedLogWarningMessage;
         private string _expectedLogErrorMessage;
         private string _actualExceptionMessage = string.Empty;
         private string _actualLogWarningMessage = string.Empty;
         private string _actualInvalidPathExceptionMessage = string.Empty;
         private string _actualLogErrorMessage = string.Empty;
-        private const string _EXPECTED_RETHROWN_EXCEPTION_MESSAGE = "rethrowed exception";
 
         [SetUp]
         public void Setup()
@@ -39,7 +38,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
             _logger = new Mock<ILog>();
             _fileInfoFailedExceptionHelper = new Mock<IFileInfoFailedExceptionHelper>();
 
-            _disableNativeLocationValidation = false;
+            _ioWarningPublisher = new IoWarningPublisher();
         }
 
         [TestCase(1)]
