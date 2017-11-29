@@ -14,7 +14,6 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         private Mock<IWaitAndRetryPolicy> _waitAndRetry;
         private Mock<ILog> _logger;
         private IoWarningPublisher _ioWarningPublisher;
-        private Mock<IFileInfoFailedExceptionHelper> _fileInfoFailedExceptionHelper;
         private long _actualFileLength;
         private Func<int, TimeSpan> _actualRetryDuractionFunc = null;
         private Exception _expectedException; 
@@ -36,7 +35,6 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
             _fileService = new Mock<IFileSystemService>();
             _waitAndRetry = new Mock<IWaitAndRetryPolicy>();
             _logger = new Mock<ILog>();
-            _fileInfoFailedExceptionHelper = new Mock<IFileInfoFailedExceptionHelper>();
 
             _ioWarningPublisher = new IoWarningPublisher();
         }
@@ -93,7 +91,6 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
             GivenTheExpectedLogErrorMessage();
             GivenTheWaitAndRetryCallbackThatThrowsArgumentException();
             GivenTheLoggerErrorCallback();
-            GivenTheFileInfoFailedExceptionHelperThrows();
             
             WhenExecutingIoReporterGetFileLengthThenThwowsException(true);
 
@@ -171,14 +168,6 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
                 });
         }
 
-
-        private void GivenTheFileInfoFailedExceptionHelperThrows()
-        {
-            var expectedRethrowedException = new Exception(_EXPECTED_RETHROWN_EXCEPTION_MESSAGE);
-            _fileInfoFailedExceptionHelper.Setup(helper => helper.ThrowNewException(It.IsAny<string>()))
-                .Throws(expectedRethrowedException);
-        }
-
         private void GivenTheExpectedLogWarningMessage()
         {
             _expectedLogWarningMessage = IoReporter.BuildIoReporterWarningMessage(_expectedException);
@@ -201,19 +190,17 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 
         private void WhenExecutingTheGetFileLength(bool disableNativeLocationValidation = false)
         {
-            _ioReporterInstance = new IoReporter(_fileService.Object, _waitAndRetry.Object, _logger.Object, _ioWarningPublisher,
-                _fileInfoFailedExceptionHelper.Object, disableNativeLocationValidation);
+            _ioReporterInstance = new IoReporter(_fileService.Object, _waitAndRetry.Object, _logger.Object, _ioWarningPublisher, disableNativeLocationValidation);
 
             _actualFileLength = _ioReporterInstance.GetFileLength(_FILE_NAME, 0);
         }
 
         private void WhenExecutingIoReporterGetFileLengthThenThwowsException(bool disableNativeLocationValidation)
         {
-            _ioReporterInstance = new IoReporter(_fileService.Object, _waitAndRetry.Object, _logger.Object, _ioWarningPublisher,
-                _fileInfoFailedExceptionHelper.Object, disableNativeLocationValidation);
+            _ioReporterInstance = new IoReporter(_fileService.Object, _waitAndRetry.Object, _logger.Object, _ioWarningPublisher, disableNativeLocationValidation);
 
             Assert.That(() => _ioReporterInstance.GetFileLength(_FILE_NAME, 0),
-                Throws.Exception.TypeOf<Exception>());
+                Throws.Exception.TypeOf<FileInfoInvalidPathException>());
         }
 
         private void ThenTheActualRetryDuractionShouldCalculated(int retryAttempt, int waitTimeBetweenRetryAttempts)
