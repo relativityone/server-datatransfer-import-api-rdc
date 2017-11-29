@@ -374,6 +374,35 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
+        /// Dump the transfer bridge parameter.
+        /// </summary>
+        public void DumpInfo()
+        {
+            var windEddsVersion = this.GetType().Assembly.GetName().Version;
+            var tapiVersion = typeof(ITransferClient).Assembly.GetName().Version;
+
+            this.transferLog.LogInformation("WinEDDS - System Info - Version: '{0}'.", windEddsVersion);
+            this.transferLog.LogInformation("TAPI - System Info - Version: '{0}'.", tapiVersion);
+            this.transferLog.LogInformation("BCP file transfer: '{0}'.", parameters.BcpFileTransfer);
+            this.transferLog.LogInformation("Aspera BCP root folder: '{0}'.", parameters.AsperaBcpRootFolder);
+            this.transferLog.LogInformation("Sort into volume: '{0}'.", parameters.SortIntoVolumes);
+            this.transferLog.LogInformation("Client request id: '{0}'.", parameters.ClientRequestId);
+            this.transferLog.LogInformation("Aspera doc root level: '{0}'.", parameters.AsperaDocRootLevels);
+            this.transferLog.LogInformation("File share: '{0}'.", parameters.FileShare);
+            this.transferLog.LogInformation("Force Aspera client: '{0}'.", parameters.ForceAsperaClient);
+            this.transferLog.LogInformation("Force Fileshare client: '{0}'.", parameters.ForceFileShareClient);
+            this.transferLog.LogInformation("Force HTTP client: '{0}'.", parameters.ForceHttpClient);
+            this.transferLog.LogInformation("Force client candidates: '{0}'.", parameters.ForceClientCandidates);
+            this.transferLog.LogInformation("Max file per folder: '{0}'.", parameters.MaxFilesPerFolder);
+            this.transferLog.LogInformation("Max job parallelism: '{0}'.", parameters.MaxJobParallelism);
+            this.transferLog.LogInformation("Max job retry attempts: '{0}'.", parameters.MaxJobRetryAttempts);
+            this.transferLog.LogInformation("Min data rate: '{0}' Mbps.", parameters.MinDataRateMbps);
+            this.transferLog.LogInformation("Target data rate: '{0}' Mbps.", parameters.TargetDataRateMbps);
+            this.transferLog.LogInformation("Wait time between retry attempts: '{0}'.", parameters.WaitTimeBetweenRetryAttempts);
+            this.transferLog.LogInformation("Workspace identifier: '{0}'.", parameters.WorkspaceId);
+        }
+
+        /// <summary>
         /// Waits for the transfer job to complete all pending transfers in the queue.
         /// </summary>
         public void WaitForTransferJob()
