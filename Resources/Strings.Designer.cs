@@ -106,6 +106,33 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error when accessing load file - retrying. Actual error is: {0}.
+        /// </summary>
+        internal static string IoReporterWarningMessageWithException {
+            get {
+                return ResourceManager.GetString("IoReporterWarningMessageWithException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error when accessing load file - retrying. Error details are not available..
+        /// </summary>
+        internal static string IoReporterWarningMessageWithoutException {
+            get {
+                return ResourceManager.GetString("IoReporterWarningMessageWithoutException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value of {0} must be non-negative..
+        /// </summary>
+        internal static string LineNumberOutOfRangeExceptionMessage {
+            get {
+                return ResourceManager.GetString("LineNumberOutOfRangeExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This opration cannot be performed because this instance has already been disposed..
         /// </summary>
         internal static string ObjectDisposedExceptionMessage {

@@ -11,23 +11,18 @@ namespace kCura.WinEDDS.TApi
     /// </summary>
     public class IoWarningPublisher
     {
-        /// <summary>
-        /// Represents the method that will handle an IO Warning event
-        /// </summary>
-        public delegate void IoWarningEventHandler(IoWarningEventArgs e);
+	    /// <summary>
+	    /// This is an event which can be raised by any method which handles IO Warnings.
+	    /// </summary>
+	    public event EventHandler<IoWarningEventArgs> IoWarningEvent;
 
-        /// <summary>
-        /// Event which can cause any method that handles IO Warning
-        /// </summary>
-        public event IoWarningEventHandler IoWarningEvent;
-
-        /// <summary>
-        /// Raise IO Warning event
-        /// </summary>
-        /// <param name="e"></param>
-        public void OnIoWarningEvent(IoWarningEventArgs e)
+		/// <summary>
+		/// Raises IO Warning event.
+		/// </summary>
+		/// <param name="eventArgs"></param>
+		public void PublishIoWarningEvent(IoWarningEventArgs eventArgs)
         {
-            IoWarningEvent?.Invoke(e);
+            IoWarningEvent?.Invoke(this, eventArgs);
         }
     }
 }

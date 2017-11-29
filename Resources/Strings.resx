@@ -192,4 +192,13 @@
   <data name="HttpFallbackWarningMessage" xml:space="preserve">
     <value>Switching to the HTTP client due to a serious error within the '{0}' transfer client. Error: {1}</value>
   </data>
+  <data name="IoReporterWarningMessageWithException" xml:space="preserve">
+    <value>Error when accessing load file - retrying. Actual error is: {0}</value>
+  </data>
+  <data name="IoReporterWarningMessageWithoutException" xml:space="preserve">
+    <value>Error when accessing load file - retrying. Error details are not available.</value>
+  </data>
+  <data name="LineNumberOutOfRangeExceptionMessage" xml:space="preserve">
+    <value>The value of {0} must be non-negative.</value>
+  </data>
 </root>
