@@ -25,14 +25,11 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         [TestCase("Event message from huge load file", 3000000000)]
         public void ItShouldGetFileLength(string message, long lineNubmer)
         {
-            //Arrange
 	        GivenTheInstanceOfPublisher();
 	        GivenTheMethodWhichHandlesTheEvent(TestEventHandler);
 
-            //Act
 	        WhenEventOccursWithMessageAndLineNumber(message, lineNubmer);
 
-            //Assert
 	        ResultsDictionaryContains(message, lineNubmer);
         }
 
@@ -41,10 +38,10 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 		#region helper methods
 		private void WhenEventOccursWithMessageAndLineNumber(string message, long lineNumber)
 		{
-			_ioWarningPublisher.OnIoWarningEvent(new IoWarningEventArgs(message, lineNumber));
+			_ioWarningPublisher.PublishIoWarningEvent(new IoWarningEventArgs(message, lineNumber));
 		}
 
-		private void GivenTheMethodWhichHandlesTheEvent(IoWarningPublisher.IoWarningEventHandler testEventHandler)
+		private void GivenTheMethodWhichHandlesTheEvent(EventHandler<IoWarningEventArgs> testEventHandler)
 		{
 			_ioWarningPublisher.IoWarningEvent += testEventHandler;
 		}
@@ -54,7 +51,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 			_ioWarningPublisher = new IoWarningPublisher();
 		}
 
-		void TestEventHandler(IoWarningEventArgs eventArgs)
+		void TestEventHandler(object sender, IoWarningEventArgs eventArgs)
 		{
 			_results.Add(eventArgs.CurrentLineNumber, eventArgs.Message);
 		}
