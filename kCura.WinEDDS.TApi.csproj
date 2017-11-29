@@ -90,6 +90,7 @@
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ClientChangeReason.cs" />
+    <Compile Include="DownloadTapiBridge.cs" />
     <Compile Include="TapiBridgeFactory.cs" />
     <Compile Include="TapiBridgeParameters.cs" />
     <Compile Include="Properties\AssemblyInfoLocal.cs" />
@@ -113,6 +114,7 @@
     <Compile Include="EventListeners\TransferStatisticsListener.cs" />
     <Compile Include="TapiProgressEventArgs.cs" />
     <Compile Include="TapiStatisticsEventArgs.cs" />
+    <Compile Include="UploadTapiBridge.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Strings.resx">
