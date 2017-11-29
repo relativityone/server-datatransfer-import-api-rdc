@@ -14,11 +14,11 @@ namespace kCura.WinEDDS.TApi
         /// reates a <see cref="IoReporter"/> instance.
         /// </summary>
         /// <returns>The <see cref="IoReporter"/> instance.</returns>
-        public static IIoReporter CreateIoReporter(int numberOfRetries, int waitTimeBetweenRetryAttempts, bool disableNativeLocationValidation, IFileInfoFailedExceptionHelper fileInfoFailedExceptionHelper, ILog logger, IoWarningPublisher ioWarningPublisher)
+        public static IIoReporter CreateIoReporter(int numberOfRetries, int waitTimeBetweenRetryAttempts, bool disableNativeLocationValidation, ILog logger, IoWarningPublisher ioWarningPublisher)
         {
             var fileSystemService = new FileSystemService();
             var waitAndRetryPolicy = new WaitAndRetryPolicy(numberOfRetries, waitTimeBetweenRetryAttempts);
-            var ioReporter = new IoReporter(fileSystemService, waitAndRetryPolicy, logger, ioWarningPublisher, fileInfoFailedExceptionHelper, disableNativeLocationValidation);
+            var ioReporter = new IoReporter(fileSystemService, waitAndRetryPolicy, logger, ioWarningPublisher, disableNativeLocationValidation);
 
             return ioReporter;
         }

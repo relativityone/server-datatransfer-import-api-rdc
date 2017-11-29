@@ -88,7 +88,6 @@
     <Compile Include="ClientChangeReason.cs" />
     <Compile Include="FileInfoInvalidPathException.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="IFileInfoFailedExceptionHelper.cs" />
     <Compile Include="IIoReporter.cs" />
     <Compile Include="IoReporter.cs" />
     <Compile Include="IoReporterFactory.cs" />

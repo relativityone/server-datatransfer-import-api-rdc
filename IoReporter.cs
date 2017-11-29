@@ -17,7 +17,6 @@ namespace kCura.WinEDDS.TApi
         private readonly IFileSystemService _fileSystemService;
         private readonly IWaitAndRetryPolicy _waitAndRetryPolicy;
         private readonly IoWarningPublisher _ioWarningPublisher;
-        private readonly IFileInfoFailedExceptionHelper _fileInfoFailedExceptionHelper;
         private readonly ILog _log;
         private readonly bool _disableNativeLocationValidation;
 
@@ -25,7 +24,7 @@ namespace kCura.WinEDDS.TApi
         /// Constructor for IO reporter
         /// </summary>
         public IoReporter(IFileSystemService fileService, IWaitAndRetryPolicy waitAndRetry, ILog log,
-            IoWarningPublisher ioWarningPublisher, IFileInfoFailedExceptionHelper fileInfoFailedExceptionHelper, bool disableNativeLocationValidation)
+            IoWarningPublisher ioWarningPublisher, bool disableNativeLocationValidation)
         {
 	        if (fileService == null)
 	        {
@@ -47,16 +46,10 @@ namespace kCura.WinEDDS.TApi
 		        throw new ArgumentNullException(nameof(ioWarningPublisher));
 			}
 
-			if (fileInfoFailedExceptionHelper == null)
-			{
-				throw new ArgumentNullException(nameof(fileInfoFailedExceptionHelper));
-			}
-
 			_fileSystemService = fileService;
             _waitAndRetryPolicy = waitAndRetry;
             _log = log;
             _ioWarningPublisher = ioWarningPublisher;
-            _fileInfoFailedExceptionHelper = fileInfoFailedExceptionHelper;
 
             _disableNativeLocationValidation = disableNativeLocationValidation;
         }
@@ -110,7 +103,7 @@ namespace kCura.WinEDDS.TApi
             {
                 string errorMessage = $"File {fileName} not found: illegal characters in path.";
                 _log.LogError(ex, errorMessage);
-                _fileInfoFailedExceptionHelper.ThrowNewException(errorMessage);
+				throw new FileInfoInvalidPathException(errorMessage);
             }
 
             string warningMessage = BuildIoReporterWarningMessage(ex);
