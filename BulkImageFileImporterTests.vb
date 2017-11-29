@@ -28,12 +28,11 @@ Namespace kCura.WinEDDS.NUnit
 			_guid = New Guid("E09E18F3-D0C8-4CFC-96D1-FBB350FAB3E1")
 			_controller = New Controller()
 			_overwrite = OverwriteType.Both
-
-		    Dim fileInfoFailedExceptionHelper As IFileInfoFailedExceptionHelper = New FileInfoFailedExceptionHelper
+			
 		    _logger = New NullLogger()
             Dim ioWarningPublisher As New IoWarningPublisher()
 		    _ioReporter = IoReporterFactory.CreateIoReporter(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds, 
-		                                                     WinEDDS.Config.DisableNativeLocationValidation, fileInfoFailedExceptionHelper, _logger, ioWarningPublisher)
+		                                                     WinEDDS.Config.DisableNativeLocationValidation, _logger, ioWarningPublisher)
             
 			_keyPathExistsAlready = RegKeyHelper.SubKeyPathExists(RegKeyHelper.RelativityKeyPath)
 			_keyValExistsAlready = False
