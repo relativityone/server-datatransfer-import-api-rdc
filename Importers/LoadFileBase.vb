@@ -784,9 +784,9 @@ Namespace kCura.WinEDDS
 
 		Private Sub _artifactReader_OnIoWarning(ByVal e As Api.IoWarningEventArgs) Handles _artifactReader.OnIoWarning
 			If e.Exception Is Nothing Then
-                IoReporterInstance.IOWarningPublisher?.OnIoWarningEvent(new IoWarningEventArgs(e.Message, e.CurrentLineNumber))
+                IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(new IoWarningEventArgs(e.Message, e.CurrentLineNumber))
 			Else
-			    IoReporterInstance.IOWarningPublisher?.OnIoWarningEvent(new IoWarningEventArgs(kCura.WinEDDS.TApi.IoReporter.BuildIoReporterWarningMessage(e.Exception), e.CurrentLineNumber))
+			    IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(new IoWarningEventArgs(kCura.WinEDDS.TApi.IoReporter.BuildIoReporterWarningMessage(e.Exception), e.CurrentLineNumber))
 			End If
 		End Sub
 

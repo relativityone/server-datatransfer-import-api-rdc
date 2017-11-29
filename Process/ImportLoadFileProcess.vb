@@ -322,7 +322,7 @@ Namespace kCura.WinEDDS
 			Me.ProcessObserver.RaiseReportErrorEvent(row)
 		End Sub
 		
-		Private Sub _loadFileImporter_IoErrorEvent(ByVal e As IoWarningEventArgs) Handles _ioWarningPublisher.IoWarningEvent
+		Private Sub _loadFileImporter_IoErrorEvent(ByVal sender As Object, ByVal e As IoWarningEventArgs) Handles _ioWarningPublisher.IoWarningEvent
 		    System.Threading.Monitor.Enter(Me.ProcessObserver)
 		    Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, e.Message)
 		    System.Threading.Monitor.Exit(Me.ProcessObserver)

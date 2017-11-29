@@ -1943,7 +1943,7 @@ Namespace kCura.WinEDDS
         
 		Private Sub IoWarningHandler(ByVal e As kCura.Utility.RobustIoReporter.IoWarningEventArgs)
             Dim ioWarningEventArgs As New IoWarningEventArgs(e.Message, e.CurrentLineNumber)
-		    IoReporterInstance.IOWarningPublisher?.OnIoWarningEvent(ioWarningEventArgs)
+		    IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(ioWarningEventArgs)
 		End Sub
 
 		Private Sub ManageErrors(ByVal artifactTypeID As Int32)

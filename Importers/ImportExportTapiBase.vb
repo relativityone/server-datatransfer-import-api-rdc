@@ -16,28 +16,29 @@ Namespace kCura.WinEDDS
     Public MustInherit Class ImportExportTapiBase
 
 #Region "Members"
+		Protected IoReporterInstance As IIoReporter
         Private ReadOnly _syncRoot As Object = New Object
         Private ReadOnly _cancellationToken As CancellationTokenSource
         Private ReadOnly _statistics As New Statistics
-
         Private WithEvents _bulkLoadTapiBridge As TapiBridge
         Private WithEvents _fileTapiBridge As TapiBridge
-
         Private _bulkLoadTapiClientName As String
-
 		Private _fileTapiClient As TapiClient = TapiClient.None
 		Private _fileTapiClientName As String
-
 		Private _statisticsLastUpdated As DateTime = DateTime.Now
-
-		Protected IoReporterInstance As IIoReporter
-
-        Protected MustOverride ReadOnly Property CurrentLineNumber() As Integer
-        private ReadOnly _logger As ILog
+		Private ReadOnly _logger As ILog
 #End Region
 
 #Region "Constructor"
         Public Sub New(ByRef ioReporterInstance As IIoReporter, ByRef logger As ILog)
+	        If ioReporterInstance Is Nothing Then
+		        Throw New ArgumentNullException("ioReporterInstance")
+			End If
+
+		    If logger Is Nothing Then
+			    Throw New ArgumentNullException("logger")
+			End If
+
             _logger = logger
             _cancellationToken = New CancellationTokenSource()
 
@@ -52,6 +53,8 @@ Namespace kCura.WinEDDS
                 Return _statistics
             End Get
         End Property
+
+		Protected MustOverride ReadOnly Property CurrentLineNumber() As Integer
 
         Protected ReadOnly Property BulkLoadTapiBridge As TapiBridge
             Get
@@ -323,7 +326,7 @@ Namespace kCura.WinEDDS
         End Function
 
         Protected Overridable Sub RaiseWarningAndPause(ByVal ex As Exception, ByVal timeoutSeconds As Int32)
-            IoReporterInstance.IOWarningPublisher?.OnIoWarningEvent(New IoWarningEventArgs(TApi.IoReporter.BuildIoReporterWarningMessage(ex), CurrentLineNumber))
+            IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(New IoWarningEventArgs(TApi.IoReporter.BuildIoReporterWarningMessage(ex), CurrentLineNumber))
             System.Threading.Thread.CurrentThread.Join(1000 * timeoutSeconds)
         End Sub
     End Class

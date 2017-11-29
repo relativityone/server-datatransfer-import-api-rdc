@@ -126,6 +126,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Applications\ApplicationBase\Relativity.ApplicationBase.InvariantApi\Relativity.ApplicationBase.InvariantApi.csproj">
+      <Project>{2269D903-87CC-4785-8E63-CC6ACEB4EBE8}</Project>
+      <Name>Relativity.ApplicationBase.InvariantApi</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
       <Project>{b092d1b2-909b-4ef0-9369-a81675c3fc18}</Project>
       <Name>kCura.Windows.Process</Name>
