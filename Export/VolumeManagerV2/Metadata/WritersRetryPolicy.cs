@@ -60,7 +60,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 
 		private void OnRetry(Exception exception, int retryCount, Context context, string warningMessage)
 		{
-			_logger.LogWarning("Retrying writing to file {exception}.", exception.Message);
+			_logger.LogWarning("Retrying writing to file. Error occurred {exception}.", exception.Message);
 
 			int lastArtifactId = -1;
 			if (context.ContainsKey(CONTEXT_LAST_ARTIFACT_ID_KEY))

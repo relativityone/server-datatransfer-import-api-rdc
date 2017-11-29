@@ -11,9 +11,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 {
 	public abstract class MultiPageImagesRollup : IImagesRollup
 	{
-		/// <summary>
-		///     TODO remove it
-		/// </summary>
+		private const string _TEMP_FILE_EXTENSION = ".tmp";
+
 		private readonly ExportFile _exportSettings;
 
 		private readonly IFileHelper _fileHelper;
@@ -31,12 +30,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 			ImageConverter = imageConverter;
 		}
 
-		/// <summary>
-		///     TODO image count should be changed to 1 after successful rollup
-		///     TODO try to use VolumeManager and SubdirectoryManager
-		/// </summary>
-		/// <returns></returns>
-		public bool RollupImages(ObjectExportInfo artifact, string imageTempLocation, int currentVolumeNumber, int currentSubdirectoryNumber)
+		public bool RollupImages(ObjectExportInfo artifact)
 		{
 			if (artifact.Images.Count == 0)
 			{
@@ -55,9 +49,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 
 				DeleteImages(imagesLocations);
 
-				UpdateImageLocation(destinationImage, imageTempLocation);
+				UpdateImageLocation(destinationImage);
 
-				MoveFileFromTempToDestination(destinationImage, imageTempLocation);
+				MoveFileFromTempToDestination(destinationImage, rollupTempLocation);
 			}
 			catch (Image.ImageRollupException ex)
 			{
@@ -68,15 +62,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 			return true;
 		}
 
-		/// <summary>
-		///     TODO remove this!
-		/// </summary>
-		/// <returns></returns>
 		private string GetTempLocation()
 		{
-			string tempFile = $"{_exportSettings.FolderPath.TrimEnd('\\')}\\{Guid.NewGuid()}.tmp";
-			_logger.LogVerbose("Temp file {tempFile} for images rollup created.", tempFile);
-			return tempFile;
+			string tempFileName = Path.ChangeExtension(Guid.NewGuid().ToString(), _TEMP_FILE_EXTENSION);
+			string tempFilePath = Path.Combine(_exportSettings.FolderPath, tempFileName);
+			_logger.LogVerbose("Temp file {tempFile} for images rollup created.", tempFilePath);
+			return tempFilePath;
 		}
 
 		protected abstract void ConvertImage(IList<string> imageList, string tempLocation);
@@ -90,13 +81,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 			}
 		}
 
-		private void UpdateImageLocation(ImageExportInfo image, string imageTempLocation)
+		private void UpdateImageLocation(ImageExportInfo image)
 		{
 			string extension = GetExtension();
 
-			_logger.LogVerbose("Updating image location for {image} to {location}.", image.TempLocation, imageTempLocation);
-
-			image.TempLocation = Path.ChangeExtension(imageTempLocation, extension);
+			image.TempLocation = Path.ChangeExtension(image.TempLocation, extension);
 			image.FileName = Path.ChangeExtension(image.FileName, extension);
 		}
 
@@ -106,7 +95,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 			{
 				if (_exportSettings.Overwrite)
 				{
-					_logger.LogVerbose("Overwriting image {image} with {tempLocation}.", image.TempLocation, rollupTempLocation);
+					_logger.LogVerbose("Overwriting image {image} with image from {tempLocation}.", image.TempLocation, rollupTempLocation);
 
 					_fileHelper.Delete(image.TempLocation);
 					_fileHelper.Move(rollupTempLocation, image.TempLocation);
@@ -119,7 +108,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 			}
 			else
 			{
-				_logger.LogVerbose("Moving file {tempLocation} to {destinationLocation}.", rollupTempLocation, image.TempLocation);
+				_logger.LogVerbose("Moving file from {tempLocation} to {destinationLocation}.", rollupTempLocation, image.TempLocation);
 				_fileHelper.Move(rollupTempLocation, image.TempLocation);
 			}
 		}

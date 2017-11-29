@@ -13,8 +13,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 
 		protected string FormatPath(string extension)
 		{
-			//TODO change to Path.Combine()
-			return $"{ExportSettings.FolderPath.TrimEnd('\\')}\\{ExportSettings.LoadFilesPrefix}_export{extension}";
+			return System.IO.Path.Combine(ExportSettings.FolderPath, $"{ExportSettings.LoadFilesPrefix}_export{extension}");
 		}
 
 		public abstract string Path { get; }

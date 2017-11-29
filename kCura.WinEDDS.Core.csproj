@@ -88,8 +88,11 @@
     <Compile Include="Export\Natives\Name\Factories\FileNameProviderContainerFactory.cs" />
     <Compile Include="Export\Natives\Name\Factories\IFileNameProviderContainerFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\BatchExporter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\FilesDownloader.cs" />
+    <Compile Include="Export\VolumeManagerV2\ExportTapiBridgeFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\ISubdirectory.cs" />
     <Compile Include="Export\VolumeManagerV2\IVolume.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\MetadataFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Requests\ExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Requests\ImageExportRequestBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Requests\NativeExportRequestBuilder.cs" />
@@ -113,7 +116,6 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\FieldUtils.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\IDestinationPath.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\ImageLoadFileDestinationPath.cs" />
-    <Compile Include="Export\VolumeManagerV2\IStatus.cs" />
     <Compile Include="Export\VolumeManagerV2\ISubdirectoryManager.cs" />
     <Compile Include="Export\VolumeManagerV2\LabelManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\LoadFileDestinationPath.cs" />
@@ -158,6 +160,10 @@
     <ProjectReference Include="..\..\kCura\kCura\kCura.vbproj">
       <Project>{535d782a-2388-416f-ab46-10347e44eec9}</Project>
       <Name>kCura</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.WinEDDS.TApi\kCura.WinEDDS.TApi.csproj">
+      <Project>{896f332d-f38d-4bf9-8977-fd04e577eef5}</Project>
+      <Name>kCura.WinEDDS.TApi</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.WinEDDS\kCura.WinEDDS.vbproj">
       <Project>{f16a2219-5dac-4f2b-89b0-6bd1243cbf8f}</Project>

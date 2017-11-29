@@ -1,20 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Requests;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
 using kCura.WinEDDS.Exporters;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 {
 	public class BatchExporter : IBatchExporter
 	{
-		private readonly NativeExportRequestBuilder _nativeExportRequestBuilder;
-		private readonly ImageExportRequestBuilder _imageExportRequestBuilder;
+		private readonly FilesDownloader _filesDownloader;
+		private readonly IImagesRollup _imagesRollup;
 
-		public BatchExporter(NativeExportRequestBuilder nativeExportRequestBuilder, ImageExportRequestBuilder imageExportRequestBuilder)
+		public BatchExporter(FilesDownloader filesDownloader, IImagesRollup imagesRollup)
 		{
-			_nativeExportRequestBuilder = nativeExportRequestBuilder;
-			_imageExportRequestBuilder = imageExportRequestBuilder;
+			_filesDownloader = filesDownloader;
+			_imagesRollup = imagesRollup;
 		}
 
 		public void Export(ObjectExportInfo[] artifacts, object[] records, CancellationToken cancellationToken)
@@ -24,23 +24,23 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 				return;
 			}
 
-			List<ExportRequest> exportRequests = new List<ExportRequest>();
+			try
+			{
+				_filesDownloader.DownloadFilesForArtifacts(artifacts, cancellationToken);
+			}
+			catch (OperationCanceledException ex)
+			{
+				return;
+			}
+			catch (Exception ex)
+			{
+				return;
+			}
 
 			foreach (var artifact in artifacts)
 			{
-				ExportRequest nativeExportRequest = _nativeExportRequestBuilder.Create(artifact);
-				exportRequests.Add(nativeExportRequest);
-
-				foreach (var image in artifact.Images.Cast<ImageExportInfo>())
-				{
-					ExportRequest imageExportRequest = _imageExportRequestBuilder.Create(image);
-					exportRequests.Add(imageExportRequest);
-				}
+				_imagesRollup.RollupImages(artifact);
 			}
-
-			exportRequests.RemoveAll(x => x == null);
-
-			//TODO
 		}
 	}
 }
