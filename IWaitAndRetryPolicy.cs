@@ -12,9 +12,9 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         int NumberOfRetries { get; }
         /// <summary>
-        /// wait time between retry attempts
+        /// Wait time in seconds between retry attempts
         /// </summary>
-        int WaitTimeBetweenRetryAttempts { get; }
+        int WaitTimeSecondsBetweenRetryAttempts { get; }
 
         /// <summary>
         /// Performs the synchronous retry operation using the specified retry duration function.

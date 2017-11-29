@@ -78,7 +78,7 @@ namespace kCura.WinEDDS.TApi
 
 	        long fileLength = 0;
             _waitAndRetryPolicy.WaitAndRetry<Exception>(retryAttempt =>
-                    TimeSpan.FromSeconds(retryAttempt == 1 ? 0 : _waitAndRetryPolicy.WaitTimeBetweenRetryAttempts),
+                    TimeSpan.FromSeconds(retryAttempt == 1 ? 0 : _waitAndRetryPolicy.WaitTimeSecondsBetweenRetryAttempts),
                 (exception, timeSpan) =>
                 {
                     GetFileLengthRetryAction(exception, fileName, lineNumberInParentFile);

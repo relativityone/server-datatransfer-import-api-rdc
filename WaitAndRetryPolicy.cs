@@ -9,26 +9,28 @@ namespace kCura.WinEDDS.TApi
     /// </summary>
     public class WaitAndRetryPolicy : IWaitAndRetryPolicy
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WaitAndRetryPolicy"/> class.
-        /// </summary>
-        public WaitAndRetryPolicy(int numberOfRetries, int waitTimeBetweenRetryAttempts)
-        {
-            NumberOfRetries = numberOfRetries;
-            WaitTimeBetweenRetryAttempts = waitTimeBetweenRetryAttempts;
-        }
+        private const int _DEFAULT_NUMBER_OF_RETRIES = 1;
+        private const int _DEFAULT_WAIT_TIME_SECONDS_BETWEEN_RETRY_ATTEMPTS = 1;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WaitAndRetryPolicy"/> class.
         /// </summary>
+        public WaitAndRetryPolicy(int numberOfRetries, int waitTimeSecondsBetweenRetryAttempts)
+        {
+            NumberOfRetries = numberOfRetries;
+            WaitTimeSecondsBetweenRetryAttempts = waitTimeSecondsBetweenRetryAttempts;
+        }
+
+        /// <inheritdoc />
         public WaitAndRetryPolicy()
+            : this(_DEFAULT_NUMBER_OF_RETRIES, _DEFAULT_WAIT_TIME_SECONDS_BETWEEN_RETRY_ATTEMPTS)
         {
         }
 
         /// <inheritdoc />
         public int NumberOfRetries { get; }
         /// <inheritdoc />
-        public int WaitTimeBetweenRetryAttempts { get; }
+        public int WaitTimeSecondsBetweenRetryAttempts { get; }
 
         /// <inheritdoc />
         public void WaitAndRetry<TException>(Func<int, TimeSpan> retryDuration, Action<Exception, TimeSpan> retryAction, Action execFunc) where TException : Exception
