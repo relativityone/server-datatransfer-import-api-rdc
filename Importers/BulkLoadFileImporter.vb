@@ -546,7 +546,10 @@ Namespace kCura.WinEDDS
 						Catch ex As System.IO.PathTooLongException
 							WriteError(Me.CurrentLineNumber, ERROR_MESSAGE_FOLDER_NAME_TOO_LONG)
 							Me.LogError(ex, "A path too long error has occurred managing an import document.")
-						Catch ex As kCura.Utility.ImporterExceptionBase
+						Catch ex As kCura.Utility.ImporterExceptionBase 
+							WriteError(Me.CurrentLineNumber, ex.Message)
+							Me.LogError(ex, "An import data error has occurred managing an import document.")
+						Catch ex As kCura.WinEDDS.TApi.FileInfoInvalidPathException
 							WriteError(Me.CurrentLineNumber, ex.Message)
 							Me.LogError(ex, "An import data error has occurred managing an import document.")
 						Catch ex As System.IO.FileNotFoundException
@@ -894,6 +897,9 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("ManageDocumentMetadata_WserviceCall")
 			Catch ex As kCura.Utility.ImporterExceptionBase
 				WriteError(metaDoc.LineNumber, ex.Message)
+				Me.LogError(ex, "A serious import error has occurred managing document {file} metadata.", metaDoc.FullFilePath)
+			Catch ex As kCura.WinEDDS.TApi.FileInfoInvalidPathException
+				WriteError(Me.CurrentLineNumber, ex.Message)
 				Me.LogError(ex, "A serious import error has occurred managing document {file} metadata.", metaDoc.FullFilePath)
 			Catch ex As System.Exception
 				WriteFatalError(metaDoc.LineNumber, ex)

@@ -88,10 +88,9 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable Function GetImageFileImporter() As kCura.WinEDDS.BulkImageFileImporter
 		    _ioWarningPublisher = New IoWarningPublisher()
-		    Dim fileInfoFailedExceptionHelper As IFileInfoFailedExceptionHelper = New FileInfoFailedExceptionHelper
 		    Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog("WinEDDS")
 		    Dim ioReporter As IIoReporter = IoReporterFactory.CreateIoReporter(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds, 
-		                                                                       WinEDDS.Config.DisableNativeLocationValidation, fileInfoFailedExceptionHelper, logger, _ioWarningPublisher)
+		                                                                       WinEDDS.Config.DisableNativeLocationValidation, logger, _ioWarningPublisher)
 
             Dim returnImporter As BulkImageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController, ioReporter, logger, Me.ProcessID, True, EnforceDocumentLimit, ExecutionSource)
 			Return returnImporter
