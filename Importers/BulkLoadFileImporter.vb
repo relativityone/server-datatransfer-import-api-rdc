@@ -447,7 +447,10 @@ Namespace kCura.WinEDDS
             AddHandler _bcpUploaderBridge.TapiWarningMessage, AddressOf TapiUploaderOnTapiWarningMessage
 
             ' Dump native and bcp upload bridge
+            Me.LogInformation("Begin dumping native parameters.")
             _nativeUploaderBridge.DumpInfo()
+
+            Me.LogInformation("Begin dumping bcp parameters.")
             _bcpUploaderBridge.DumpInfo()
 
         End Sub
@@ -659,12 +662,16 @@ Namespace kCura.WinEDDS
                     End While
 
                     ' Dump OutSideIn info
-                    Dim fileIdInfo As FileIDInfo = fileService.DumpInfo()
+                    Dim fileIdInfo As kCura.OI.FileID.FileIDInfo = fileService.GetConfigInfo()
                     Me.LogInformation("FileID service info.")
                     Me.LogInformation("Version: '{0}'.", fileIdInfo.Version)
                     Me.LogInformation("Idle worker timeout: '{0}'.", fileIdInfo.IdleWorkerTimeout)
                     Me.LogInformation("Install location: '{0}'.", fileIdInfo.InstallLocation)
                     Me.LogInformation("Minimum worker count: '{0}'.", fileIdInfo.MinimumWorkerCount)
+
+                    If fileIdInfo.HasError Then
+                        Me.LogInformation("Error: {0}", fileIdInfo.Exception)
+                    End If
                 End Using
 
                 If Not _task Is Nothing AndAlso _task.Status.In(
