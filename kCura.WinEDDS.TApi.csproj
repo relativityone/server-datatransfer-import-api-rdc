@@ -86,6 +86,7 @@
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ClientChangeReason.cs" />
+    <Compile Include="FileInfoInvalidPathException.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IFileInfoFailedExceptionHelper.cs" />
     <Compile Include="IIoReporter.cs" />
