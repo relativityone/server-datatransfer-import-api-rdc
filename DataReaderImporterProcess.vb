@@ -40,11 +40,10 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Public Overrides Function GetImporter() As kCura.WinEDDS.BulkLoadFileImporter
 		    _ioWarningPublisher = New IoWarningPublisher()
-
-            Dim fileInfoFailedExceptionHelper As IFileInfoFailedExceptionHelper = New FileInfoFailedExceptionHelper
+			
 		    Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog("WinEDDS")
 		    Dim ioReporter As IIoReporter = IoReporterFactory.CreateIoReporter(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds, 
-		                                                                       WinEDDS.Config.DisableNativeLocationValidation, fileInfoFailedExceptionHelper, logger, _ioWarningPublisher)
+		                                                                       WinEDDS.Config.DisableNativeLocationValidation,  logger, _ioWarningPublisher)
 
             LoadFile.OIFileIdColumnName = OIFileIdColumnName
 			LoadFile.OIFileIdMapped = OIFileIdMapped
