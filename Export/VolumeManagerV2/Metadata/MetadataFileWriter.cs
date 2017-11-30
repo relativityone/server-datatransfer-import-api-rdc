@@ -41,6 +41,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 			_streamFactory = streamFactory;
 
 			_fileWriterLastPosition = 0;
+
+			//TODO remove this
+			_fileWriter = _streamFactory.Create(_fileWriter, _fileWriterLastPosition, _destinationPath.Path, _destinationPath.Encoding, false);
 		}
 
 		protected void ExecuteWithRetry(Action<Context, CancellationToken> action, CancellationToken token)
@@ -51,7 +54,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 		protected void ReinitializeStream()
 		{
 			//TODO this will open stream for every batch - the question is: is this impacting performance in a way we should change it?
-			_fileWriter = _streamFactory.Create(_fileWriter, _fileWriterLastPosition, _destinationPath.Path, _destinationPath.Encoding);
+			_fileWriter = _streamFactory.Create(_fileWriter, _fileWriterLastPosition, _destinationPath.Path, _destinationPath.Encoding, true);
 		}
 
 		protected void FlushStream()

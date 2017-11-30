@@ -6,11 +6,13 @@ using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation;
 using kCura.WinEDDS.Core.IO;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.Exporters.Validator;
+using kCura.WinEDDS.IO;
 using kCura.WinEDDS.Service.Export;
 using Relativity.Logging;
 
@@ -60,6 +62,26 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 
 			container.Register(Component.For<IBatchExporter>().ImplementedBy<BatchExporter>());
 			container.Register(Component.For<FilesDownloader>().ImplementedBy<FilesDownloader>());
+
+			container.Register(Component.For<FilePathProviderFactory>().ImplementedBy<FilePathProviderFactory>());
+			container.Register(Component.For<IFilePathProvider>().UsingFactoryMethod(k => k.Resolve<FilePathProviderFactory>().Create(_exporter.Settings)));
+
+			container.Register(Component.For<ImageLoadFileFactory>().ImplementedBy<ImageLoadFileFactory>());
+			container.Register(Component.For<Metadata.Images.ImageLoadFile>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileFactory>().Create(_exporter.Settings)));
+			container.Register(Component.For<LoadFileEntryFactory>().ImplementedBy<LoadFileEntryFactory>());
+			container.Register(Component.For<ILoadFileEntry>().UsingFactoryMethod(k => k.Resolve<LoadFileEntryFactory>().Create(_exporter.Settings)));
+
+			container.Register(Component.For<StreamFactory>().ImplementedBy<StreamFactory>());
+
+			container.Register(Component.For<ImageLoadFileDestinationPath>().ImplementedBy<ImageLoadFileDestinationPath>());
+			container.Register(Component.For<StatisticsWrapper>().UsingFactoryMethod(k => new StatisticsWrapper(_exporter._statistics)));
+
+			container.Register(Component.For<Settings.Config>().ImplementedBy<Settings.Config>());
+
+			container.Register(Component.For<WritersRetryPolicy>().ImplementedBy<WritersRetryPolicy>());
+
+			container.Register(Component.For<ImageLoadFileWriterFactory>().ImplementedBy<ImageLoadFileWriterFactory>());
+			container.Register(Component.For<ImageLoadFileWriter>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileWriterFactory>().Create()));
 		}
 
 		private void InstallLogger(IWindsorContainer container)
@@ -99,6 +121,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 		private static void InstallUtils(IWindsorContainer container)
 		{
 			container.Register(Component.For<IFileHelper>().ImplementedBy<LongPathFileHelper>());
+			container.Register(Component.For<IFileStreamFactory>().ImplementedBy<FileStreamFactory>());
 			container.Register(Component.For<IDirectoryHelper>().ImplementedBy<LongPathDirectoryHelper>());
 		}
 

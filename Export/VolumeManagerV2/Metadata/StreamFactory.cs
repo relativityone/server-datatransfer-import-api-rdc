@@ -18,7 +18,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 			_logger = logger;
 		}
 
-		public StreamWriter Create(StreamWriter currentStreamWriter, long lastStreamWriterPosition, string path, Encoding encoding)
+		public StreamWriter Create(StreamWriter currentStreamWriter, long lastStreamWriterPosition, string path, Encoding encoding, bool append)
 		{
 			if (currentStreamWriter != null)
 			{
@@ -34,7 +34,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 			try
 			{
 				_logger.LogVerbose("Creating new file stream {path}.", path);
-				FileStream newStream = _fileStreamFactory.Create(path, true);
+				FileStream newStream = _fileStreamFactory.Create(path, append);
 				StreamWriter newWriter = new StreamWriter(newStream, encoding);
 				newWriter.BaseStream.Position = lastStreamWriterPosition;
 				return newWriter;

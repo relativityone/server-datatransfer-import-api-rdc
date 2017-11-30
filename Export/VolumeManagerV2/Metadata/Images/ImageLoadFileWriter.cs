@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using kCura.WinEDDS.Exceptions;
@@ -8,16 +7,16 @@ using Polly;
 using Polly.Retry;
 using Relativity.Logging;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 {
 	public class ImageLoadFileWriter : MetadataFileWriter
 	{
-		public ImageLoadFileWriter(ILog logger, StatisticsWrapper statistics, IFileHelper fileHelper, RetryPolicy retryPolicy, IDestinationPath destinationPath,
+		public ImageLoadFileWriter(ILog logger, StatisticsWrapper statistics, IFileHelper fileHelper, RetryPolicy retryPolicy, ImageLoadFileDestinationPath destinationPath,
 			StreamFactory streamFactory) : base(logger, statistics, fileHelper, retryPolicy, destinationPath, streamFactory)
 		{
 		}
 
-		public void Write(ConcurrentBag<KeyValuePair<string, string>> linesToWrite, ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
+		public void Write(IList<KeyValuePair<string, string>> linesToWrite, ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
 			if (linesToWrite == null || linesToWrite.Count == 0)
 			{
@@ -32,7 +31,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 			}, cancellationToken);
 		}
 
-		private void Write(ConcurrentBag<KeyValuePair<string, string>> linesToWrite, ObjectExportInfo[] artifacts, Context context)
+		private void Write(IList<KeyValuePair<string, string>> linesToWrite, ObjectExportInfo[] artifacts, Context context)
 		{
 			ReinitializeStream();
 
@@ -43,7 +42,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 			SaveStreamPositionAndUpdateStatistics();
 		}
 
-		private void WriteArtifacts(ConcurrentBag<KeyValuePair<string, string>> linesToWrite, ObjectExportInfo[] artifacts, Context context)
+		private void WriteArtifacts(IList<KeyValuePair<string, string>> linesToWrite, ObjectExportInfo[] artifacts, Context context)
 		{
 			//TODO this "sorting" was introduced after changing ConcurrentDictionary to ConcurrentBag - is it needed?
 			foreach (var artifact in artifacts)

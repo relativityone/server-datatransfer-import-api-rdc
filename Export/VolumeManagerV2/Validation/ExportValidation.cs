@@ -1,4 +1,5 @@
 ﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
 using kCura.WinEDDS.Exporters.Validator;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation

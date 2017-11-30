@@ -47,7 +47,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 						string text = rawText.ToString();
 						if (text == Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN)
 						{
-							string tempLocation = Path.GetTempPath();
+							string tempLocation = Path.GetTempFileName();
 
 							if (_exportSettings.ArtifactTypeID == (int) ArtifactType.Document && field.Category == FieldCategory.FullText && !(field is CoalescedTextViewField))
 							{
@@ -83,7 +83,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 						{
 							if (!(fieldInfo is CoalescedTextViewField) && !_textFilesRepository.IsTextFileDownloaded(artifact.ArtifactID, fieldInfo.FieldArtifactId))
 							{
-								string tempLocation = Path.GetTempPath();
+								string tempLocation = Path.GetTempFileName();
 								AddTextExportRequest(TextExportRequest.CreateRequestForLongText(artifact, fieldInfo, tempLocation));
 							}
 						}

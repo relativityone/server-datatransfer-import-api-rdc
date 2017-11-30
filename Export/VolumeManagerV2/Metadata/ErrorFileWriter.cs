@@ -43,7 +43,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 		{
 			if (_streamWriter == null)
 			{
-				_streamWriter = _streamFactory.Create(_streamWriter, 0, _errorFileDestinationPath.Path, _errorFileDestinationPath.Encoding);
+				_streamWriter = _streamFactory.Create(_streamWriter, 0, _errorFileDestinationPath.Path, _errorFileDestinationPath.Encoding, false);
 				WriteHeader();
 			}
 		}
