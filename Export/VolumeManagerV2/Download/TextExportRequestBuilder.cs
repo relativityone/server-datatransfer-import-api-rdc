@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata;
 using kCura.WinEDDS.Exporters;
 using Relativity;
 using Constants = Relativity.Export.Constants;
@@ -31,6 +32,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 			CreateRequestForTextFields(artifact);
 
+			CreateRequestForIproFullTextWithoutPrecedence(artifact);
+
 			return _exportRequests;
 		}
 
@@ -41,23 +44,18 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			{
 				if (_fieldService.ContainsFieldName(Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME))
 				{
-					object rawText = artifact.Metadata[_fieldService.GetOrdinalIndex(Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)];
-					if (rawText != null)
+					if (artifact.IsTextTooLong(_fieldService, Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME))
 					{
-						string text = rawText.ToString();
-						if (text == Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN)
-						{
-							string tempLocation = Path.GetTempFileName();
+						string tempLocation = Path.GetTempFileName();
 
-							if (_exportSettings.ArtifactTypeID == (int) ArtifactType.Document && field.Category == FieldCategory.FullText && !(field is CoalescedTextViewField))
-							{
-								AddTextExportRequest(TextExportRequest.CreateRequestForFullText(artifact, field, tempLocation));
-							}
-							else
-							{
-								ViewFieldInfo fieldToExport = GetFieldForLongTextPrecedenceDownload(artifact, field);
-								AddTextExportRequest(TextExportRequest.CreateRequestForLongText(artifact, fieldToExport, tempLocation));
-							}
+						if (_exportSettings.ArtifactTypeID == (int) ArtifactType.Document && field.Category == FieldCategory.FullText && !(field is CoalescedTextViewField))
+						{
+							AddTextExportRequest(TextExportRequest.CreateRequestForFullText(artifact, field.FieldArtifactId, tempLocation));
+						}
+						else
+						{
+							ViewFieldInfo fieldToExport = GetFieldForLongTextPrecedenceDownload(artifact, field);
+							AddTextExportRequest(TextExportRequest.CreateRequestForLongText(artifact, fieldToExport.FieldArtifactId, tempLocation));
 						}
 					}
 				}
@@ -69,25 +67,40 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			for (int i = 0; i < _fieldService.GetColumns().Count; i++)
 			{
 				var fieldInfo = (ViewFieldInfo) _fieldService.GetColumns()[i];
-				if (fieldInfo.FieldType == FieldTypeHelper.FieldType.Text || fieldInfo.FieldType == FieldTypeHelper.FieldType.OffTableText)
+				if (fieldInfo.FieldType.IsTextField())
 				{
-					object rawText = artifact.Metadata[_fieldService.GetOrdinalIndex(fieldInfo.AvfColumnName)];
-					if (rawText is byte[])
-					{
-						rawText = Encoding.Unicode.GetString((byte[]) rawText);
-					}
-					if (rawText != null)
-					{
-						string text = rawText.ToString();
-						if (text == Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN)
-						{
-							if (!(fieldInfo is CoalescedTextViewField) && !_textFilesRepository.IsTextFileDownloaded(artifact.ArtifactID, fieldInfo.FieldArtifactId))
-							{
-								string tempLocation = Path.GetTempFileName();
-								AddTextExportRequest(TextExportRequest.CreateRequestForLongText(artifact, fieldInfo, tempLocation));
-							}
-						}
-					}
+					CreateRequest(artifact, fieldInfo);
+				}
+			}
+		}
+
+		private void CreateRequestForIproFullTextWithoutPrecedence(ObjectExportInfo artifact)
+		{
+			if (_exportSettings.IsTextPrecedenceSet() || _exportSettings.LogFileFormat != LoadFileType.FileFormat.IPRO_FullText)
+			{
+				return;
+			}
+			int fieldIndex = _fieldService.GetOrdinalIndex(FieldUtils.EXTRACTED_TEXT_COLUMN_NAME);
+			
+			if (fieldIndex >= _fieldService.GetColumns().Count)
+			{
+				//Missing ExtractedText field for IPRO_FullText
+				if (artifact.IsTextTooLong(_fieldService, FieldUtils.EXTRACTED_TEXT_COLUMN_NAME))
+				{
+					string tempLocation = Path.GetTempFileName();
+					AddTextExportRequest(TextExportRequest.CreateRequestForFullText(artifact, FieldUtils.EXTRACTED_TEXT_FIELD_ID, tempLocation));
+				}
+			}
+		}
+
+		private void CreateRequest(ObjectExportInfo artifact, ViewFieldInfo fieldInfo)
+		{
+			if (artifact.IsTextTooLong(_fieldService, fieldInfo.AvfColumnName))
+			{
+				if (!(fieldInfo is CoalescedTextViewField) && !_textFilesRepository.IsTextFileDownloaded(artifact.ArtifactID, fieldInfo.FieldArtifactId))
+				{
+					string tempLocation = Path.GetTempFileName();
+					AddTextExportRequest(TextExportRequest.CreateRequestForLongText(artifact, fieldInfo.FieldArtifactId, tempLocation));
 				}
 			}
 		}

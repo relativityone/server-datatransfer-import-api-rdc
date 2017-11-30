@@ -13,22 +13,22 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			RemoteFileGuid = string.Empty;
 		}
 
-		public static TextExportRequest CreateRequestForFullText(ObjectExportInfo artifact, ViewFieldInfo field, string destinationLocation)
+		public static TextExportRequest CreateRequestForFullText(ObjectExportInfo artifact, int fieldArtifactId, string destinationLocation)
 		{
 			var request = new TextExportRequest(artifact, destinationLocation)
 			{
 				FullText = true,
-				FieldArtifactId = field.FieldArtifactId
+				FieldArtifactId = fieldArtifactId
 			};
 			return request;
 		}
 
-		public static TextExportRequest CreateRequestForLongText(ObjectExportInfo artifact, ViewFieldInfo field, string destinationLocation)
+		public static TextExportRequest CreateRequestForLongText(ObjectExportInfo artifact, int fieldArtifactId, string destinationLocation)
 		{
 			var request = new TextExportRequest(artifact, destinationLocation)
 			{
 				FullText = false,
-				FieldArtifactId = field.FieldArtifactId
+				FieldArtifactId = fieldArtifactId
 			};
 			return request;
 		}

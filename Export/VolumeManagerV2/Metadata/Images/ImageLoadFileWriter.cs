@@ -57,7 +57,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 				{
 					string key = bate;
 
-					foreach (var line in linesToWrite.Where(x => x.Key == $"FF{key}").OrderBy(x => x.Key).ThenBy(x => x.Value))
+					foreach (var line in linesToWrite.Where(x => x.Key == $"FT{key}").OrderBy(x => x.Key).ThenBy(x => x.Value))
 					{
 						_fileWriter.Write(line.Value);
 					}

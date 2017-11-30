@@ -11,12 +11,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 		private readonly ILoadFileEntry _loadFileEntry;
 		private readonly ExportFile _exportSettings;
 		private readonly IFilePathProvider _filePathProvider;
+		private readonly IFullTextLoadFileEntry _fullTextLoadFileEntry;
 
-		protected ImageLoadFile(ExportFile exportSettings, IFilePathProvider filePathProvider, ILoadFileEntry loadFileEntry)
+		protected ImageLoadFile(ExportFile exportSettings, IFilePathProvider filePathProvider, ILoadFileEntry loadFileEntry, IFullTextLoadFileEntry fullTextLoadFileEntry)
 		{
 			_exportSettings = exportSettings;
 			_filePathProvider = filePathProvider;
 			_loadFileEntry = loadFileEntry;
+			_fullTextLoadFileEntry = fullTextLoadFileEntry;
 		}
 
 		public IList<KeyValuePair<string, string>> CreateLoadFileEntries(ObjectExportInfo[] artifacts)
@@ -53,6 +55,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 				}
 
 				string localFilePath = GetLocalFilePath(images, i);
+
+				KeyValuePair<string, string> fullTextEntry;
+				if (_fullTextLoadFileEntry.TryCreateFullTextLine(artifact, image.BatesNumber, i, pageOffset, out fullTextEntry))
+				{
+					_lines.Add(fullTextEntry);
+				}
 
 				KeyValuePair<string, string> loadFileEntry = _loadFileEntry.Create(image.BatesNumber, localFilePath, i + 1, pageOffset, numberOfPages);
 				_lines.Add(loadFileEntry);

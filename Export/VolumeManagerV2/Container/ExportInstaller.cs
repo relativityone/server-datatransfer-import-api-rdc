@@ -68,8 +68,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 
 			container.Register(Component.For<ImageLoadFileFactory>().ImplementedBy<ImageLoadFileFactory>());
 			container.Register(Component.For<Metadata.Images.ImageLoadFile>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileFactory>().Create(_exporter.Settings)));
-			container.Register(Component.For<LoadFileEntryFactory>().ImplementedBy<LoadFileEntryFactory>());
-			container.Register(Component.For<ILoadFileEntry>().UsingFactoryMethod(k => k.Resolve<LoadFileEntryFactory>().Create(_exporter.Settings)));
+			container.Register(Component.For<ImageLoadFileEntryFactory>().ImplementedBy<ImageLoadFileEntryFactory>());
+			container.Register(Component.For<ILoadFileEntry>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileEntryFactory>().Create(_exporter.Settings)));
+
+			container.Register(Component.For<FullTextLoadFileEntryFactory>().ImplementedBy<FullTextLoadFileEntryFactory>());
+			container.Register(Component.For<IFullTextLoadFileEntry>().UsingFactoryMethod(k => k.Resolve<FullTextLoadFileEntryFactory>().Create(_exporter.Settings)));
 
 			container.Register(Component.For<StreamFactory>().ImplementedBy<StreamFactory>());
 

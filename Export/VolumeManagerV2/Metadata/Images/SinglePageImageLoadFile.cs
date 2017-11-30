@@ -7,8 +7,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 {
 	public class SinglePageImageLoadFile : ImageLoadFile
 	{
-		public SinglePageImageLoadFile(ExportFile exportSettings, IFilePathProvider filePathProvider, ILoadFileEntry loadFileEntry) : base(exportSettings, filePathProvider,
-			loadFileEntry)
+		public SinglePageImageLoadFile(ExportFile exportSettings, IFilePathProvider filePathProvider, ILoadFileEntry loadFileEntry, IFullTextLoadFileEntry fullTextLoadFileEntry) : base(
+			exportSettings, filePathProvider, loadFileEntry, fullTextLoadFileEntry)
 		{
 		}
 

@@ -3,11 +3,11 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 {
-	public class LoadFileEntryFactory
+	public class ImageLoadFileEntryFactory
 	{
 		private readonly ILog _logger;
 
-		public LoadFileEntryFactory(ILog logger)
+		public ImageLoadFileEntryFactory(ILog logger)
 		{
 			_logger = logger;
 		}

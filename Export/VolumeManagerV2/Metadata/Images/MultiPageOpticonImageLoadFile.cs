@@ -6,8 +6,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 {
 	public class MultiPageOpticonImageLoadFile : ImageLoadFile
 	{
-		public MultiPageOpticonImageLoadFile(ExportFile exportSettings, IFilePathProvider filePathProvider, ILoadFileEntry loadFileEntry) : base(exportSettings, filePathProvider,
-			loadFileEntry)
+		public MultiPageOpticonImageLoadFile(ExportFile exportSettings, IFilePathProvider filePathProvider, ILoadFileEntry loadFileEntry, IFullTextLoadFileEntry fullTextLoadFileEntry) :
+			base(exportSettings, filePathProvider, loadFileEntry, fullTextLoadFileEntry)
 		{
 		}
 
