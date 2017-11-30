@@ -85,9 +85,9 @@ Namespace kCura.WinEDDS
 				If record.BatesNumber = "" Then
 					Me.RaiseStatusEvent(Windows.Process.EventType.Progress, "Line improperly formatted.")
 				ElseIf filePath = "" Then
-					Me.RaiseStatusEvent(Windows.Process.EventType.Progress, String.Format("Record '{0}' processed - file info error.", record.BatesNumber))
+					Me.RaiseStatusEvent(Windows.Process.EventType.Progress, $"Record '{record.BatesNumber}' processed - file info error.")
 				Else
-					Me.RaiseStatusEvent(Windows.Process.EventType.Progress, String.Format("Record '{0}' processed.", record.BatesNumber))
+					Me.RaiseStatusEvent(Windows.Process.EventType.Progress, $"Record '{record.BatesNumber}' processed.")
 				End If
 				If MyBase.HasReachedEOF Then
 					valuearray = Nothing
@@ -120,9 +120,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Function CheckFile(ByVal path As String) As String
-			'See if exists
 			If Not System.IO.File.Exists(path) Then
-				Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("File '{0}' does not exist.", path))
+				Me.RaiseStatusEvent(Windows.Process.EventType.Error, $"File '{path}' does not exist.")
 				Return ""
 			End If
 
