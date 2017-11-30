@@ -464,7 +464,7 @@ Namespace kCura.WinEDDS
 				artifacts(i) = artifact
 			Next
 
-			batchExporter.Export(artifacts, records, _cancellationTokenSource.Token)
+			batchExporter.Export(artifacts, records, volumePredictions, _cancellationTokenSource.Token)
 
 			For i = 0 To documentArtifactIDs.Length - 1
 				If _cancellationTokenSource.IsCancellationRequested Then Exit For
