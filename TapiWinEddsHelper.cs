@@ -144,10 +144,12 @@ namespace kCura.WinEDDS.TApi
         /// </returns>
         public static Guid GetClientId(TapiBridgeParameters parameters)
         {
-	        if (parameters == null)
-		        return Guid.Empty;
+			if(parameters == null)
+	        {
+		        throw new ArgumentNullException(nameof(parameters));
+	        }
 
-            var clientId = Guid.Empty;
+			var clientId = Guid.Empty;
             if (parameters.ForceAsperaClient)
             {
                 clientId = new Guid(TransferClientConstants.AsperaClientId);
