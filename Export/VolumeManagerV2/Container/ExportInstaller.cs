@@ -6,7 +6,6 @@ using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Requests;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation;
 using kCura.WinEDDS.Core.IO;
@@ -54,6 +53,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 
 			container.Register(Component.For<NativeExportRequestBuilder>().ImplementedBy<NativeExportRequestBuilder>());
 			container.Register(Component.For<ImageExportRequestBuilder>().ImplementedBy<ImageExportRequestBuilder>());
+			container.Register(Component.For<TextExportRequestBuilder>().ImplementedBy<TextExportRequestBuilder>());
+			container.Register(Component.For<DownloadedTextFilesRepository>().ImplementedBy<DownloadedTextFilesRepository>());
 
 			container.Register(Component.For<ExportTapiBridgeFactory>().ImplementedBy<ExportTapiBridgeFactory>());
 

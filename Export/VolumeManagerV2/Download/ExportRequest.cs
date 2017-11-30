@@ -1,6 +1,6 @@
 ﻿using kCura.WinEDDS.Exporters;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Requests
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
 	public class ExportRequest
 	{
@@ -12,9 +12,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Requests
 		/// <summary>
 		///     Needed for Web mode
 		/// </summary>
-		public string RemoteFileGuid { get; }
+		public string RemoteFileGuid { get; protected set; }
 
-		public string SourceLocation { get; }
+		public string SourceLocation { get; protected set; }
 		public string DestinationLocation { get; }
 
 		public ExportRequest(ImageExportInfo image, string destinationLocation)

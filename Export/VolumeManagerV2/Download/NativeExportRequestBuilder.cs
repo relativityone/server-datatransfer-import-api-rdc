@@ -3,7 +3,7 @@ using kCura.Windows.Process;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Exporters;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Requests
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
 	public class NativeExportRequestBuilder
 	{

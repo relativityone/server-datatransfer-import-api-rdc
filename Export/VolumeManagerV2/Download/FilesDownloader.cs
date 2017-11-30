@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Requests;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.TApi;
 using Relativity.Logging;
@@ -13,6 +13,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 	{
 		private readonly NativeExportRequestBuilder _nativeExportRequestBuilder;
 		private readonly ImageExportRequestBuilder _imageExportRequestBuilder;
+		private readonly TextExportRequestBuilder _textExportRequestBuilder;
 		private readonly IDirectoryManager _directoryManager;
 
 		private readonly ExportTapiBridgeFactory _exportTapiBridgeFactory;
@@ -20,13 +21,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private readonly ILog _logger;
 
 		public FilesDownloader(NativeExportRequestBuilder nativeExportRequestBuilder, ImageExportRequestBuilder imageExportRequestBuilder,
-			ExportTapiBridgeFactory exportTapiBridgeFactory, IDirectoryManager directoryManager, ILog logger)
+			TextExportRequestBuilder textExportRequestBuilder, ExportTapiBridgeFactory exportTapiBridgeFactory, IDirectoryManager directoryManager, ILog logger)
 		{
 			_nativeExportRequestBuilder = nativeExportRequestBuilder;
 			_imageExportRequestBuilder = imageExportRequestBuilder;
 			_exportTapiBridgeFactory = exportTapiBridgeFactory;
 			_directoryManager = directoryManager;
 			_logger = logger;
+			_textExportRequestBuilder = textExportRequestBuilder;
 		}
 
 		public void DownloadFilesForArtifacts(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
@@ -43,6 +45,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				return;
 			}
 
+			//TODO we can add request when creating them, no need to create list first
 			DownloadFiles(cancellationToken, exportRequests);
 		}
 
@@ -55,6 +58,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				_directoryManager.MoveNext(volumePredictions[i]);
 				ExportRequest nativeExportRequest = _nativeExportRequestBuilder.Create(artifacts[i]);
 				exportRequests.Add(nativeExportRequest);
+
+				_textExportRequestBuilder.Create(artifacts[i]);
 
 				foreach (var image in artifacts[i].Images.Cast<ImageExportInfo>())
 				{
@@ -81,7 +86,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 						_logger.LogVerbose("Adding export request for downloading file {source} to {destination}.", exportRequest.SourceLocation, exportRequest.DestinationLocation);
 						tapiBridge.AddPath(exportRequest.SourceLocation, exportRequest.DestinationLocation, order++);
 					}
-					catch (System.Exception ex)
+					catch (Exception ex)
 					{
 						_logger.LogError(ex, "Error occurred during adding export request to TAPI bridge. Skipping.");
 						throw;

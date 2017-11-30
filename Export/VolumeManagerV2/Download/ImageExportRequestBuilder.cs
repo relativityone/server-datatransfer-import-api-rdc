@@ -3,7 +3,7 @@ using kCura.Windows.Process;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Exporters;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Requests
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
 	/// <summary>
 	/// TODO probably can extract some code from here and from NativeExportRequestBuilder
