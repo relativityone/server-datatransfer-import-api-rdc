@@ -1,6 +1,6 @@
 ﻿using kCura.WinEDDS.Exporters;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 {
 	public class SubdirectoryManager : ISubdirectoryManager, ISubdirectory
 	{

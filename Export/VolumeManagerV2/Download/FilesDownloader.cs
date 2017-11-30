@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Requests;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.TApi;
@@ -12,28 +13,30 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 	{
 		private readonly NativeExportRequestBuilder _nativeExportRequestBuilder;
 		private readonly ImageExportRequestBuilder _imageExportRequestBuilder;
+		private readonly IDirectoryManager _directoryManager;
 
 		private readonly ExportTapiBridgeFactory _exportTapiBridgeFactory;
 
 		private readonly ILog _logger;
 
 		public FilesDownloader(NativeExportRequestBuilder nativeExportRequestBuilder, ImageExportRequestBuilder imageExportRequestBuilder,
-			ExportTapiBridgeFactory exportTapiBridgeFactory, ILog logger)
+			ExportTapiBridgeFactory exportTapiBridgeFactory, IDirectoryManager directoryManager, ILog logger)
 		{
 			_nativeExportRequestBuilder = nativeExportRequestBuilder;
 			_imageExportRequestBuilder = imageExportRequestBuilder;
 			_exportTapiBridgeFactory = exportTapiBridgeFactory;
+			_directoryManager = directoryManager;
 			_logger = logger;
 		}
 
-		public void DownloadFilesForArtifacts(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
+		public void DownloadFilesForArtifacts(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return;
 			}
 
-			List<ExportRequest> exportRequests = CreateExportRequests(artifacts);
+			List<ExportRequest> exportRequests = CreateExportRequests(artifacts, volumePredictions);
 
 			if (exportRequests.Count == 0 || cancellationToken.IsCancellationRequested)
 			{
@@ -43,16 +46,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			DownloadFiles(cancellationToken, exportRequests);
 		}
 
-		private List<ExportRequest> CreateExportRequests(ObjectExportInfo[] artifacts)
+		private List<ExportRequest> CreateExportRequests(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions)
 		{
 			List<ExportRequest> exportRequests = new List<ExportRequest>();
 
-			foreach (var artifact in artifacts)
+			for (int i = 0; i < artifacts.Length; i++)
 			{
-				ExportRequest nativeExportRequest = _nativeExportRequestBuilder.Create(artifact);
+				_directoryManager.MoveNext(volumePredictions[i]);
+				ExportRequest nativeExportRequest = _nativeExportRequestBuilder.Create(artifacts[i]);
 				exportRequests.Add(nativeExportRequest);
 
-				foreach (var image in artifact.Images.Cast<ImageExportInfo>())
+				foreach (var image in artifacts[i].Images.Cast<ImageExportInfo>())
 				{
 					ExportRequest imageExportRequest = _imageExportRequestBuilder.Create(image);
 					exportRequests.Add(imageExportRequest);

@@ -1,11 +1,11 @@
 ﻿using kCura.WinEDDS.Exporters;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 {
 	/// <summary>
 	/// TODO change name :)
 	/// </summary>
-	public class TrueVolumeManager : IVolume
+	public class TrueVolumeManager : IVolume, IDirectoryManager
 	{
 		private long _currentVolumeSize;
 

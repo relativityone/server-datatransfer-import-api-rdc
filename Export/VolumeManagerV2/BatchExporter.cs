@@ -17,7 +17,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 			_imagesRollup = imagesRollup;
 		}
 
-		public void Export(ObjectExportInfo[] artifacts, object[] records, CancellationToken cancellationToken)
+		public void Export(ObjectExportInfo[] artifacts, object[] records, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -26,7 +26,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 
 			try
 			{
-				_filesDownloader.DownloadFilesForArtifacts(artifacts, cancellationToken);
+				_filesDownloader.DownloadFilesForArtifacts(artifacts, volumePredictions, cancellationToken);
 			}
 			catch (OperationCanceledException ex)
 			{

@@ -88,10 +88,12 @@
     <Compile Include="Export\Natives\Name\Factories\FileNameProviderContainerFactory.cs" />
     <Compile Include="Export\Natives\Name\Factories\IFileNameProviderContainerFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\BatchExporter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\DirectoryManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\FilesDownloader.cs" />
     <Compile Include="Export\VolumeManagerV2\ExportTapiBridgeFactory.cs" />
-    <Compile Include="Export\VolumeManagerV2\ISubdirectory.cs" />
-    <Compile Include="Export\VolumeManagerV2\IVolume.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\ISubdirectory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\IVolume.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\IDirectoryManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\MetadataFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Requests\ExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Requests\ImageExportRequestBuilder.cs" />
@@ -116,8 +118,8 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\FieldUtils.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\IDestinationPath.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\ImageLoadFileDestinationPath.cs" />
-    <Compile Include="Export\VolumeManagerV2\ISubdirectoryManager.cs" />
-    <Compile Include="Export\VolumeManagerV2\LabelManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\ISubdirectoryManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\LabelManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\LoadFileDestinationPath.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\NativeExportableSize.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\ObjectExportableSize.cs" />
@@ -129,9 +131,9 @@
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\MultiPageTiffImagesRollup.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\PdfImagesRollup.cs" />
     <Compile Include="Export\VolumeManagerV2\StatisticsWrapper.cs" />
-    <Compile Include="Export\VolumeManagerV2\SubdirectoryManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\SubdirectoryManager.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\TextExportableSize.cs" />
-    <Compile Include="Export\VolumeManagerV2\TrueVolumeManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\TrueVolumeManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\VolumeAndSubdirectoryValidator.cs" />
     <Compile Include="IO\LongPathDirectoryHelper.cs" />
     <Compile Include="IO\LongPathFileHelper.cs" />
