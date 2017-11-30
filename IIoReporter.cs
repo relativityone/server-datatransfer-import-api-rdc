@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 
 namespace kCura.WinEDDS.TApi
@@ -18,6 +19,11 @@ namespace kCura.WinEDDS.TApi
         /// Property to expose IoWarningPublisher
         /// </summary>
         IoWarningPublisher IOWarningPublisher { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		 CancellationToken CancellationToken { get; set; }
 
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Resources;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Logging;
 using Relativity.Transfer;
@@ -20,7 +21,7 @@ namespace kCura.WinEDDS.TApi
         private readonly ILog _log;
         private readonly bool _disableNativeLocationValidation;
 
-        /// <summary>
+	    /// <summary>
         /// Constructor for IO reporter
         /// </summary>
         public IoReporter(IFileSystemService fileService, IWaitAndRetryPolicy waitAndRetry, ILog log,
@@ -46,7 +47,8 @@ namespace kCura.WinEDDS.TApi
 		        throw new ArgumentNullException(nameof(ioWarningPublisher));
 			}
 
-			_fileSystemService = fileService;
+	        CancellationToken = CancellationToken.None;
+	        _fileSystemService = fileService;
             _waitAndRetryPolicy = waitAndRetry;
             _log = log;
             _ioWarningPublisher = ioWarningPublisher;
@@ -57,7 +59,12 @@ namespace kCura.WinEDDS.TApi
         /// <inheritdoc />
         public IoWarningPublisher IOWarningPublisher => _ioWarningPublisher;
 
-        /// <inheritdoc />
+	    /// <summary>
+	    /// 
+	    /// </summary>
+	    public CancellationToken CancellationToken { get; set; }
+
+	    /// <inheritdoc />
         public long GetFileLength(string fileName, int lineNumberInParentFile)
         {
 	        if (string.IsNullOrEmpty(fileName))
@@ -70,15 +77,18 @@ namespace kCura.WinEDDS.TApi
 	        }
 
 	        long fileLength = 0;
-            _waitAndRetryPolicy.WaitAndRetry<Exception>(retryAttempt =>
-                    TimeSpan.FromSeconds(retryAttempt == 1 ? 0 : _waitAndRetryPolicy.WaitTimeSecondsBetweenRetryAttempts),
-                (exception, timeSpan) =>
-                {
-                    GetFileLengthRetryAction(exception, fileName, lineNumberInParentFile);
+            _waitAndRetryPolicy.WaitAndRetry<Exception>(
+				retryAttempt => TimeSpan.FromSeconds(retryAttempt == 1 ? 0 : _waitAndRetryPolicy.WaitTimeSecondsBetweenRetryAttempts),
+                (exception, timeSpan) => 
+				{
+                    GetFileLengthRetryAction(exception, fileName, lineNumberInParentFile, CancellationToken);
                 },
-                () => { fileLength = _fileSystemService.GetFileLength(fileName); }
+				() =>
+				{
+					fileLength = _fileSystemService.GetFileLength(fileName);
+				}
             );
-
+			
             return fileLength;
         }
 		
@@ -96,8 +106,11 @@ namespace kCura.WinEDDS.TApi
         }
    
 
-		private void GetFileLengthRetryAction(Exception ex, string fileName, int lineNumberInParentFile)
+		private void GetFileLengthRetryAction(Exception ex, string fileName, int lineNumberInParentFile, CancellationToken token)
         {
+			if (token != CancellationToken.None && token.IsCancellationRequested)
+				throw new OperationCanceledException();
+
             if (_disableNativeLocationValidation && ex is ArgumentException &&
                 ex.Message.Contains("Illegal characters in path."))
             {
