@@ -36,7 +36,7 @@ Namespace kCura.WinEDDS
 		Private _productionArtifactIDs As Int32()
 		Private _lastStatusMessageTs As Long = System.DateTime.Now.Ticks
 		Private _lastDocumentsExportedCountReported As Int32 = 0
-		Private _statistics As New kCura.WinEDDS.ExportStatistics
+		Public _statistics As New kCura.WinEDDS.ExportStatistics
 		Private _lastStatisticsSnapshot As IDictionary
 		Private _start As System.DateTime
 		Private _warningCount As Int32 = 0
