@@ -423,9 +423,7 @@ Namespace kCura.Windows.Process
 					_stopImportButton.Enabled = False
 					_currentRecordLabel.Text = "Process halting"
 					_hasClickedStop = True
-                    '_application.CancelImport(_processId)
                 Else
-                    '_application.deletethread(processID)
                     Me.Close()
 				End If
 			Catch
