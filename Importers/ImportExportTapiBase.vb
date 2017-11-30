@@ -43,6 +43,7 @@ Namespace kCura.WinEDDS
             _cancellationToken = New CancellationTokenSource()
 
             Me.IoReporterInstance = ioReporterInstance
+			Me.IoReporterInstance.CancellationToken = _cancellationToken.Token
         End Sub
 
 #End Region

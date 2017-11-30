@@ -1791,8 +1791,13 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles ProcessController.HaltProcessEvent
 			If processID.ToString = _processID.ToString Then
-				_artifactReader.Halt()
 				StopImport()
+			End If
+		End Sub
+
+		Protected Overrides Sub OnStopImport()
+			If Not _artifactReader Is Nothing Then
+				_artifactReader.Halt()
 			End If
 		End Sub
 
