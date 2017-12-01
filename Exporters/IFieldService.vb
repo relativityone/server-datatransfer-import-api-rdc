@@ -1,9 +1,8 @@
 ﻿Namespace kCura.WinEDDS
 	Public Interface IFieldService
 		Inherits IFieldLookupService
-
-		'TODO change type to ViewFieldInfo
-		Function GetColumns() As ArrayList
+		
+		Function GetColumns() As ViewFieldInfo()
 
 		Function GetColumnHeader() As String
 
