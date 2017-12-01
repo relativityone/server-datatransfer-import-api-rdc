@@ -18,16 +18,25 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private readonly ExportTapiBridgeFactory _exportTapiBridgeFactory;
 
+		//TODO replace with new TAPI client
+		private readonly FileDownloader _fileDownloader;
+
+		//TODO remove this after replacing FileDownloader
+		private readonly ExportFile _exportFile;
+
 		private readonly ILog _logger;
 
 		public FilesDownloader(NativeExportRequestBuilder nativeExportRequestBuilder, ImageExportRequestBuilder imageExportRequestBuilder,
-			TextExportRequestBuilder textExportRequestBuilder, ExportTapiBridgeFactory exportTapiBridgeFactory, IDirectoryManager directoryManager, ILog logger)
+			TextExportRequestBuilder textExportRequestBuilder, ExportTapiBridgeFactory exportTapiBridgeFactory, IDirectoryManager directoryManager, ILog logger,
+			FileDownloader fileDownloader, ExportFile exportFile)
 		{
 			_nativeExportRequestBuilder = nativeExportRequestBuilder;
 			_imageExportRequestBuilder = imageExportRequestBuilder;
 			_exportTapiBridgeFactory = exportTapiBridgeFactory;
 			_directoryManager = directoryManager;
 			_logger = logger;
+			_fileDownloader = fileDownloader;
+			_exportFile = exportFile;
 			_textExportRequestBuilder = textExportRequestBuilder;
 		}
 
@@ -59,7 +68,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				ExportRequest nativeExportRequest = _nativeExportRequestBuilder.Create(artifacts[i]);
 				exportRequests.Add(nativeExportRequest);
 
-				_textExportRequestBuilder.Create(artifacts[i]);
+				BuildTextRequests(artifacts, i);
 
 				foreach (var image in artifacts[i].Images.Cast<ImageExportInfo>())
 				{
@@ -71,6 +80,25 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			//TODO yeah, I know...
 			exportRequests.RemoveAll(x => x == null);
 			return exportRequests;
+		}
+
+		private void BuildTextRequests(ObjectExportInfo[] artifacts, int i)
+		{
+			IList<TextExportRequest> textExportRequests = _textExportRequestBuilder.Create(artifacts[i]);
+
+			//TODO replace with new TAPI client
+			foreach (var textExportRequest in textExportRequests)
+			{
+				if (textExportRequest.FullText)
+				{
+					_fileDownloader.DownloadFullTextFile(textExportRequest.DestinationLocation, textExportRequest.ArtifactId, _exportFile.CaseInfo.ArtifactID.ToString());
+				}
+				else
+				{
+					_fileDownloader.DownloadLongTextFile(textExportRequest.DestinationLocation, textExportRequest.ArtifactId, textExportRequest.FieldArtifactId,
+						_exportFile.CaseInfo.ArtifactID.ToString());
+				}
+			}
 		}
 
 		private void DownloadFiles(CancellationToken cancellationToken, List<ExportRequest> exportRequests)

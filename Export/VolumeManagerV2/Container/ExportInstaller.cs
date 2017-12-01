@@ -18,11 +18,16 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 {
+	/// <summary>
+	///     TODO clean this up!
+	/// </summary>
 	public class ExportInstaller : IWindsorInstaller
 	{
 		private readonly Exporter _exporter;
 		private readonly string _columnHeader;
 		private readonly string[] _columnNamesInOrder;
+
+		protected ExportFile ExportSettings => _exporter.Settings;
 
 		public ExportInstaller(Exporter exporter, string columnHeader, string[] columnNamesInOrder)
 		{
@@ -40,13 +45,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			InstallUtils(container);
 			InstallLabelManager(container);
 
-			container.Register(Component.For<ExportFile>().Instance(_exporter.Settings).LifestyleSingleton());
+			container.Register(Component.For<ExportFile>().Instance(ExportSettings).LifestyleSingleton());
 			container.Register(Component.For<ExportColumns>().UsingFactoryMethod(k => new ExportColumns(_exporter.Columns, k.Resolve<IFieldLookupService>())));
 			container.Register(Component.For<IExportManager>().Instance(_exporter.ExportManager).LifestyleSingleton());
 			container.Register(Component.For<IStatus>().Instance(_exporter));
 
 			container.Register(Component.For<ImagesRollupFactory>().ImplementedBy<ImagesRollupFactory>());
-			container.Register(Component.For<IImagesRollup>().UsingFactoryMethod(k => k.Resolve<ImagesRollupFactory>().Create(_exporter.Settings)));
+			container.Register(Component.For<IImagesRollup>().UsingFactoryMethod(k => k.Resolve<ImagesRollupFactory>().Create(ExportSettings)));
 
 			container.Register(Component.For<ErrorFileDestinationPath>().ImplementedBy<ErrorFileDestinationPath>());
 			container.Register(Component.For<IErrorFile>().UsingFactoryMethod(k => k.Resolve<ErrorFileDestinationPath>()));
@@ -64,15 +69,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			container.Register(Component.For<FilesDownloader>().ImplementedBy<FilesDownloader>());
 
 			container.Register(Component.For<FilePathProviderFactory>().ImplementedBy<FilePathProviderFactory>());
-			container.Register(Component.For<IFilePathProvider>().UsingFactoryMethod(k => k.Resolve<FilePathProviderFactory>().Create(_exporter.Settings)));
+			container.Register(Component.For<IFilePathProvider>().UsingFactoryMethod(k => k.Resolve<FilePathProviderFactory>().Create(ExportSettings)));
 
 			container.Register(Component.For<ImageLoadFileFactory>().ImplementedBy<ImageLoadFileFactory>());
-			container.Register(Component.For<Metadata.Images.ImageLoadFile>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileFactory>().Create(_exporter.Settings)));
+			container.Register(Component.For<Metadata.Images.ImageLoadFile>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileFactory>().Create(ExportSettings)));
 			container.Register(Component.For<ImageLoadFileEntryFactory>().ImplementedBy<ImageLoadFileEntryFactory>());
-			container.Register(Component.For<ILoadFileEntry>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileEntryFactory>().Create(_exporter.Settings)));
+			container.Register(Component.For<ILoadFileEntry>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileEntryFactory>().Create(ExportSettings)));
 
 			container.Register(Component.For<FullTextLoadFileEntryFactory>().ImplementedBy<FullTextLoadFileEntryFactory>());
-			container.Register(Component.For<IFullTextLoadFileEntry>().UsingFactoryMethod(k => k.Resolve<FullTextLoadFileEntryFactory>().Create(_exporter.Settings)));
+			container.Register(Component.For<IFullTextLoadFileEntry>().UsingFactoryMethod(k => k.Resolve<FullTextLoadFileEntryFactory>().Create(ExportSettings)));
 
 			container.Register(Component.For<StreamFactory>().ImplementedBy<StreamFactory>());
 
@@ -85,6 +90,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 
 			container.Register(Component.For<ImageLoadFileWriterFactory>().ImplementedBy<ImageLoadFileWriterFactory>());
 			container.Register(Component.For<ImageLoadFileWriter>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileWriterFactory>().Create()));
+
+			//TODO temporary
+			container.Register(Component.For<FileDownloader>().UsingFactoryMethod(k => new FileDownloader(ExportSettings.Credential,
+				$"{ExportSettings.CaseInfo.DocumentPath}\\EDDS{ExportSettings.CaseInfo.ArtifactID}", ExportSettings.CaseInfo.DownloadHandlerURL, ExportSettings.CookieContainer,
+				Service.Settings.AuthenticationToken)));
 		}
 
 		private void InstallLogger(IWindsorContainer container)
@@ -115,7 +125,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 		{
 			container.Register(Component.For<FieldServiceFactory>().ImplementedBy<FieldServiceFactory>());
 			container.Register(Component.For<FieldService>()
-				.UsingFactoryMethod(k => k.Resolve<FieldServiceFactory>().Create(_exporter.Settings, _exporter.Columns, _columnHeader, _columnNamesInOrder)).LifestyleSingleton());
+				.UsingFactoryMethod(k => k.Resolve<FieldServiceFactory>().Create(ExportSettings, _exporter.Columns, _columnHeader, _columnNamesInOrder)).LifestyleSingleton());
 
 			container.Register(Component.For<IFieldLookupService>().UsingFactoryMethod(k => k.Resolve<FieldService>()));
 			container.Register(Component.For<IFieldService>().UsingFactoryMethod(k => k.Resolve<FieldService>()));
