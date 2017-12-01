@@ -1,7 +1,8 @@
-﻿using Polly.Retry;
+﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
+using Polly.Retry;
 using Relativity.Logging;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 {
 	public class ImageLoadFileWriterFactory
 	{

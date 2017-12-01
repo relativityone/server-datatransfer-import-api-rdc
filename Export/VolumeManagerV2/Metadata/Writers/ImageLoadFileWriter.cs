@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
 using kCura.WinEDDS.Exceptions;
 using kCura.WinEDDS.Exporters;
 using Polly;
 using Polly.Retry;
 using Relativity.Logging;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 {
 	public class ImageLoadFileWriter : MetadataFileWriter
 	{

@@ -4,7 +4,7 @@ using kCura.Utility;
 using kCura.WinEDDS.Exceptions;
 using Relativity.Logging;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 {
 	public class ErrorFileWriter : IDisposable
 	{

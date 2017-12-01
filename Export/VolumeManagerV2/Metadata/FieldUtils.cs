@@ -28,12 +28,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 		///     TODO move to LongTextRepository or something
 		/// </summary>
 		/// <param name="artifact"></param>
-		/// <param name="fieldService"></param>
+		/// <param name="fieldLookupService"></param>
 		/// <param name="columnName"></param>
 		/// <returns></returns>
-		public static bool IsTextTooLong(this ObjectExportInfo artifact, IFieldService fieldService, string columnName)
+		public static bool IsTextTooLong(this ObjectExportInfo artifact, IFieldLookupService fieldLookupService, string columnName)
 		{
-			string text = artifact.GetText(fieldService, columnName);
+			string text = artifact.GetText(fieldLookupService, columnName);
 
 			if (text == Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN)
 			{
@@ -43,9 +43,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 			return false;
 		}
 
-		public static string GetText(this ObjectExportInfo artifact, IFieldService fieldService, string columnName)
+		public static string GetText(this ObjectExportInfo artifact, IFieldLookupService fieldLookupService, string columnName)
 		{
-			object rawText = artifact.Metadata[fieldService.GetOrdinalIndex(columnName)];
+			object rawText = artifact.Metadata[fieldLookupService.GetOrdinalIndex(columnName)];
 
 			if (rawText is byte[])
 			{

@@ -5,7 +5,7 @@ using kCura.WinEDDS.Exceptions;
 using kCura.WinEDDS.IO;
 using Relativity.Logging;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 {
 	public class StreamFactory
 	{

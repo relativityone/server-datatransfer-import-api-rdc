@@ -107,7 +107,8 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\ILoadFileEntry.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFileFactory.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFileWriterFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LoadFileCellFormatterFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ImageLoadFileWriterFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\IproFullTextWithoutPrecedenceLoadFileEntry.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\IproFullTextLoadFileEntry.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\IproFullTextWithPrecedenceLoadFileEntry.cs" />
@@ -118,7 +119,9 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\NoFullTextLoadFileEntry.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\OpticonLoadFileEntry.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\SinglePageImageLoadFile.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\MetadataFileWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LoadFileData.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\LoadFileWriterFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\MetadataFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ImageExportRequestBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\NativeExportRequestBuilder.cs" />
@@ -138,7 +141,7 @@
     <Compile Include="Export\VolumeManagerV2\Validation\FilesOverwriteValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\ImageExportableSize.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\ErrorFileDestinationPath.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\ErrorFileWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ErrorFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\FieldUtils.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\IDestinationPath.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFileDestinationPath.cs" />
@@ -147,10 +150,10 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\LoadFileDestinationPath.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\NativeExportableSize.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\ObjectExportableSize.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFileWriter.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\LoadFileWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ImageLoadFileWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\LoadFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\SinglePageImagesRollup.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\StreamFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\StreamFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\WritersRetryPolicy.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\MultiPageTiffImagesRollup.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\PdfImagesRollup.cs" />

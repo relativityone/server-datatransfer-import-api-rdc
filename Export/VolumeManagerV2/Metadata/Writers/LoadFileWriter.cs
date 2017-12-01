@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Collections.Generic;
 using System.Threading;
 using kCura.WinEDDS.Exceptions;
 using kCura.WinEDDS.Exporters;
@@ -7,7 +7,7 @@ using Polly;
 using Polly.Retry;
 using Relativity.Logging;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 {
 	public class LoadFileWriter : MetadataFileWriter
 	{
@@ -16,7 +16,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 		{
 		}
 
-		public void Write(ConcurrentDictionary<int, ILoadFileEntry> linesToWrite, ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
+		public void Write(IDictionary<int, ILoadFileEntry> linesToWrite, ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
 			if (linesToWrite == null || linesToWrite.Count == 0)
 			{
@@ -32,7 +32,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 			}, cancellationToken);
 		}
 
-		private void Write(ConcurrentDictionary<int, ILoadFileEntry> linesToWrite, ObjectExportInfo[] artifacts, Context context)
+		private void Write(IDictionary<int, ILoadFileEntry> linesToWrite, ObjectExportInfo[] artifacts, Context context)
 		{
 			ReinitializeStream();
 
@@ -45,7 +45,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 			SaveStreamPositionAndUpdateStatistics();
 		}
 
-		public void WriteHeaderIfNeeded(ConcurrentDictionary<int, ILoadFileEntry> linesToWrite)
+		public void WriteHeaderIfNeeded(IDictionary<int, ILoadFileEntry> linesToWrite)
 		{
 			const int headerArtifactID = -1;
 
@@ -56,7 +56,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 			}
 		}
 
-		private void WriteArtifacts(ConcurrentDictionary<int, ILoadFileEntry> linesToWrite, ObjectExportInfo[] artifacts, Context context)
+		private void WriteArtifacts(IDictionary<int, ILoadFileEntry> linesToWrite, ObjectExportInfo[] artifacts, Context context)
 		{
 			foreach (var artifact in artifacts)
 			{

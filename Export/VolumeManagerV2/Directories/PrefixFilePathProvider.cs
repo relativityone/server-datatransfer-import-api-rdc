@@ -16,7 +16,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 		public string GetPathForLoadFile(string filePath)
 		{
 			string relativePath = _relativeFilePathProvider.GetPathForLoadFile(filePath);
-			return Path.Combine(_exportSettings.FilePrefix, relativePath);
+			//TODO I don't like this trimming
+			return Path.Combine(_exportSettings.FilePrefix, relativePath.TrimStart('.').TrimStart('\\'));
 		}
 	}
 }

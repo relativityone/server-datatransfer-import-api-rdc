@@ -6,7 +6,7 @@ using Polly;
 using Polly.Retry;
 using Relativity.Logging;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 {
 	public abstract class MetadataFileWriter : IDisposable
 	{
