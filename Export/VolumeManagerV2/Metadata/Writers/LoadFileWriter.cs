@@ -40,8 +40,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 
 			WriteArtifacts(linesToWrite, artifacts, context);
 
-			FlushStream();
-
 			SaveStreamPositionAndUpdateStatistics();
 		}
 

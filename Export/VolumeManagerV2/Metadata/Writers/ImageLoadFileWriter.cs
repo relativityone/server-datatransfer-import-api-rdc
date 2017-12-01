@@ -37,9 +37,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			ReinitializeStream();
 
 			WriteArtifacts(linesToWrite, artifacts, context);
-
-			FlushStream();
-
+			
 			SaveStreamPositionAndUpdateStatistics();
 		}
 

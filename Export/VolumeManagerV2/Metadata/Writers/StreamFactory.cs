@@ -24,7 +24,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			{
 				try
 				{
-					currentStreamWriter.Close();
+					currentStreamWriter.Dispose();
 				}
 				catch (Exception ex)
 				{
@@ -34,8 +34,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			try
 			{
 				_logger.LogVerbose("Creating new file stream {path}.", path);
-				FileStream newStream = _fileStreamFactory.Create(path, append);
-				StreamWriter newWriter = new StreamWriter(newStream, encoding);
+				StreamWriter newWriter = new StreamWriter(path, append, encoding);
 				newWriter.BaseStream.Position = lastStreamWriterPosition;
 				return newWriter;
 			}

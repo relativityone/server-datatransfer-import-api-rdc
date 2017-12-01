@@ -39,11 +39,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			_retryPolicy = retryPolicy;
 			_destinationPath = destinationPath;
 			_streamFactory = streamFactory;
-
-			_fileWriterLastPosition = 0;
-
+			
 			//TODO remove this
 			_fileWriter = _streamFactory.Create(_fileWriter, _fileWriterLastPosition, _destinationPath.Path, _destinationPath.Encoding, false);
+			// ****
+
+			SaveStreamPositionAndUpdateStatistics();
 		}
 
 		protected void ExecuteWithRetry(Action<Context, CancellationToken> action, CancellationToken token)
@@ -57,7 +58,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			_fileWriter = _streamFactory.Create(_fileWriter, _fileWriterLastPosition, _destinationPath.Path, _destinationPath.Encoding, true);
 		}
 
-		protected void FlushStream()
+		private void FlushStream()
 		{
 			try
 			{
@@ -76,6 +77,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 		{
 			if (_fileWriter != null)
 			{
+				FlushStream();
 				_fileWriterLastPosition = _fileWriter.BaseStream.Position;
 				_statistics.MetadataBytes = _fileHelper.GetFileSize(GetStreamName());
 			}
