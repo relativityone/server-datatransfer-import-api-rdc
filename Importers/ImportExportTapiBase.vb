@@ -31,10 +31,6 @@ Namespace kCura.WinEDDS
 
 #Region "Constructor"
         Public Sub New(ByRef ioReporterInstance As IIoReporter, ByRef logger As ILog)
-	  '      If ioReporterInstance Is Nothing Then
-		 '       Throw New ArgumentNullException("ioReporterInstance")
-			'End If
-
 		    If logger Is Nothing Then
 			    Throw New ArgumentNullException("logger")
 			End If
@@ -140,6 +136,13 @@ Namespace kCura.WinEDDS
             AddHandler _bulkLoadTapiBridge.TapiStatusMessage, AddressOf OnTapiStatusEvent
             AddHandler _bulkLoadTapiBridge.TapiErrorMessage, AddressOf OnTapiErrorMessage
             AddHandler _bulkLoadTapiBridge.TapiWarningMessage, AddressOf OnTapiWarningMessage
+
+            ' Dump native and bcp upload bridge
+            Me.LogInformation("Begin dumping native parameters.")
+            _fileTapiBridge.DumpInfo()
+
+            Me.LogInformation("Begin dumping bcp parameters.")
+            _bulkLoadTapiBridge.DumpInfo()
         End Sub
 
         Protected Sub DestroyTapiBridges()
@@ -166,6 +169,22 @@ Namespace kCura.WinEDDS
                 _bulkLoadTapiBridge = Nothing
             End If
         End Sub
+
+		''' <summary>
+		''' Dump the statistic object.
+		''' </summary>
+		Protected Sub DumpStatisticsInfo()
+		    Me.LogInformation("Statistics info:")
+		    Me.LogInformation("Document count: '{0}'.", _statistics.DocCount)
+		    Me.LogInformation("Documents created: '{0}'.", _statistics.DocumentsCreated)
+		    Me.LogInformation("Documents updated: '{0}'.", _statistics.DocumentsUpdated)
+		    Me.LogInformation("Files processed: '{0}'.", _statistics.FilesProcessed)
+
+		    Dim pair As DictionaryEntry
+		    For Each pair In _statistics.ToDictionary()
+		        Me.LogInformation("{0}: '{1}'.", pair.Key, pair.Value)
+		    Next
+		End Sub
 
         Protected Sub LogInformation(ByVal exception As System.Exception, ByVal messageTemplate As String, ParamArray propertyValues As Object())
             _logger.LogInformation(exception, messageTemplate, propertyValues)
