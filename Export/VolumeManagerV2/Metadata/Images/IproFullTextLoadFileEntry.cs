@@ -10,7 +10,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 {
 	public abstract class IproFullTextLoadFileEntry : IFullTextLoadFileEntry
 	{
-		private StreamReader _textReader;
+		private TextReader _textReader;
 
 		private readonly ExportFile _exportSettings;
 		private readonly DownloadedTextFilesRepository _downloadedTextFilesRepository;
@@ -64,7 +64,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 			return true;
 		}
 
-		private StreamReader GetTextStream(ObjectExportInfo artifact)
+		private TextReader GetTextStream(ObjectExportInfo artifact)
 		{
 			string text = artifact.GetText(FieldService, GetTextColumnName());
 
@@ -74,8 +74,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 				return new StreamReader(fileLocation, _exportSettings.LoadFileEncoding);
 			}
 
-			var memoryStream = new MemoryStream(_exportSettings.LoadFileEncoding.GetBytes(text));
-			return new StreamReader(memoryStream, _exportSettings.LoadFileEncoding);
+			return new StringReader(text);
 		}
 
 		protected abstract int GetTextSourceFieldId(ObjectExportInfo artifact);
