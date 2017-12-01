@@ -408,22 +408,14 @@ Namespace kCura.WinEDDS
 			bcpParameters.SortIntoVolumes = False
 			bcpParameters.ForceHttpClient = bcpParameters.ForceHttpClient Or Config.TapiForceBcpHttpClient
 
-			CreateTapiBridges(nativeParameters, bcpParameters)
-
-			' Dump native and bcp upload bridge
-			Me.LogInformation("Begin dumping native parameters.")
-			_nativeUploaderBridge.DumpInfo()
-
-			Me.LogInformation("Begin dumping bcp parameters.")
-			_bcpUploaderBridge.DumpInfo()
-
-		End Sub
+            CreateTapiBridges(nativeParameters, bcpParameters)
+        End Sub
 
 #End Region
 
 #Region "Utility"
 
-		Public Function GetColumnNames(ByVal args As Object) As String()
+        Public Function GetColumnNames(ByVal args As Object) As String()
 			Dim columnNames As String() = _artifactReader.GetColumnNames(args)
 			If Not _firstLineContainsColumnNames Then
 				Dim i As Int32
@@ -472,46 +464,46 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		''' <summary>
-		''' Loads all the documents in a load file
-		''' </summary>
-		''' <param name="path">The load file which contains information about the document being loaded</param>
-		''' <returns>True indicates success.  False or Nothing indicates failure.</returns>
-		''' <remarks></remarks>
-		Public Overridable Function ReadFile(ByVal path As String) As Object Implements IImportJob.ReadFile
-			Dim line As Api.ArtifactFieldCollection
-			_filePath = path
-			_timekeeper.MarkStart("TOTAL")
-			Try
-				OnStartFileImport()
-				_timekeeper.MarkStart("ReadFile_InitializeMembers")
-				PublishUploadModeEvent()
-				If Not InitializeMembers(path) Then
-					Return False
-				End If
-				ProcessedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
-				_timekeeper.MarkEnd("ReadFile_InitializeMembers")
+        ''' <summary>
+        ''' Loads all the documents in a load file
+        ''' </summary>
+        ''' <param name="path">The load file which contains information about the document being loaded</param>
+        ''' <returns>True indicates success.  False or Nothing indicates failure.</returns>
+        ''' <remarks></remarks>
+        Public Overridable Function ReadFile(ByVal path As String) As Object Implements IImportJob.ReadFile
+            Dim line As Api.ArtifactFieldCollection
+            _filePath = path
+            _timekeeper.MarkStart("TOTAL")
+            Try
+                OnStartFileImport()
+                _timekeeper.MarkStart("ReadFile_InitializeMembers")
+                PublishUploadModeEvent()
+                If Not InitializeMembers(path) Then
+                    Return False
+                End If
+                ProcessedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
+                _timekeeper.MarkEnd("ReadFile_InitializeMembers")
 
-				If (_enforceDocumentLimit) Then
-					If (Overwrite = Relativity.ImportOverwriteType.Append And _artifactTypeID = Relativity.ArtifactType.Document) Then
-						Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
-						Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
-						Dim fileLineStart As Long = _startLineNumber
-						If _startLineNumber <= 0 Then fileLineStart = 1
-						Dim countAfterJob As Long = currentDocCount + (RecordCount - (fileLineStart - 1))
-						If (docLimit <> 0 And countAfterJob > docLimit) Then
-							Dim errorMessage As String = String.Format("The document import was canceled.  It would have exceeded the workspace's document limit of {1} by {0} documents.", countAfterJob - docLimit, docLimit)
-							Throw New Exception(errorMessage)
-							Return False
-						End If
-					End If
-				End If
+                If (_enforceDocumentLimit) Then
+                    If (Overwrite = Relativity.ImportOverwriteType.Append And _artifactTypeID = Relativity.ArtifactType.Document) Then
+                        Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
+                        Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
+                        Dim fileLineStart As Long = _startLineNumber
+                        If _startLineNumber <= 0 Then fileLineStart = 1
+                        Dim countAfterJob As Long = currentDocCount + (RecordCount - (fileLineStart - 1))
+                        If (docLimit <> 0 And countAfterJob > docLimit) Then
+                            Dim errorMessage As String = String.Format("The document import was canceled.  It would have exceeded the workspace's document limit of {1} by {0} documents.", countAfterJob - docLimit, docLimit)
+                            Throw New Exception(errorMessage)
+                            Return False
+                        End If
+                    End If
+                End If
 
-				LogInformation("Preparing to import documents via WinEDDS.")
-				_timekeeper.MarkStart("ReadFile_ProcessDocuments")
-				_columnHeaders = _artifactReader.GetColumnNames(_settings)
-				If _firstLineContainsColumnNames Then Offset = -1
-				Statistics.BatchSize = Me.ImportBatchSize
+                LogInformation("Preparing to import documents via WinEDDS.")
+                _timekeeper.MarkStart("ReadFile_ProcessDocuments")
+                _columnHeaders = _artifactReader.GetColumnNames(_settings)
+                If _firstLineContainsColumnNames Then Offset = -1
+                Statistics.BatchSize = Me.ImportBatchSize
                 _jobCounter = 1
                 Using fileService As kCura.OI.FileID.FileIDService = New kCura.OI.FileID.FileIDService()
                     While ShouldImport AndAlso _artifactReader.HasMoreRecords
@@ -520,10 +512,10 @@ Namespace kCura.WinEDDS
                                 Me.AdvanceLine()
 
                                 ' This will ensure progress takes into account the start line number
-								FileTapiProgressCount += 1
+                                FileTapiProgressCount += 1
                             Else
                                 _timekeeper.MarkStart("ReadFile_GetLine")
-								Statistics.DocCount += 1
+                                Statistics.DocCount += 1
                                 'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
                                 ' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
                                 ' -Phil S. 06/12/2012
@@ -540,7 +532,7 @@ Namespace kCura.WinEDDS
                                 _timekeeper.MarkEnd("ReadFile_ManageDocument")
 
                                 _timekeeper.MarkStart("ReadFile_IdTrack")
-								ProcessedDocumentIdentifiers.Add(id, CurrentLineNumber.ToString)
+                                ProcessedDocumentIdentifiers.Add(id, CurrentLineNumber.ToString)
                                 _timekeeper.MarkEnd("ReadFile_IdTrack")
                             End If
                         Catch ex As LoadFileBase.CodeCreationException
@@ -553,13 +545,13 @@ Namespace kCura.WinEDDS
                             End If
                         Catch ex As System.IO.PathTooLongException
                             WriteError(Me.CurrentLineNumber, ERROR_MESSAGE_FOLDER_NAME_TOO_LONG)
-							Me.LogError(ex, "An import error has occured because of invalid document path - the path is too long.")
-						Catch ex As kCura.Utility.ImporterExceptionBase
+                            Me.LogError(ex, "An import error has occured because of invalid document path - the path is too long.")
+                        Catch ex As kCura.Utility.ImporterExceptionBase
                             WriteError(Me.CurrentLineNumber, ex.Message)
                             Me.LogError(ex, "An import data error has occurred managing an import document.")
-						Catch ex As kCura.WinEDDS.TApi.FileInfoInvalidPathException
-							WriteError(Me.CurrentLineNumber, ex.Message)
-							Me.LogError(ex, "An import error has occured because of invalid document path - illegal characters in path.")
+                        Catch ex As kCura.WinEDDS.TApi.FileInfoInvalidPathException
+                            WriteError(Me.CurrentLineNumber, ex.Message)
+                            Me.LogError(ex, "An import error has occured because of invalid document path - illegal characters in path.")
                         Catch ex As System.IO.FileNotFoundException
                             WriteError(Me.CurrentLineNumber, ex.Message)
                             Me.LogError(ex, "A file not found error has occurred managing an import document.")
@@ -590,33 +582,33 @@ Namespace kCura.WinEDDS
                     WaitOnPushBatchTask()
                 End If
                 _timekeeper.MarkEnd("ReadFile_ProcessDocuments")
-				_timekeeper.MarkStart("ReadFile_OtherFinalization")
-				Me.TryPushNativeBatch(True)
-				WaitOnPushBatchTask()
-				RaiseEvent EndFileImport(RunId)
-				WriteEndImport("Finish")
-				_artifactReader.Close()
-				_timekeeper.MarkEnd("ReadFile_OtherFinalization")
-				_timekeeper.MarkEnd("TOTAL")
-				_timekeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
-				LogInformation("Successfully imported {count} documents via WinEDDS.", FileTapiProgressCount)
+                _timekeeper.MarkStart("ReadFile_OtherFinalization")
+                Me.TryPushNativeBatch(True)
+                WaitOnPushBatchTask()
+                RaiseEvent EndFileImport(RunId)
+                WriteEndImport("Finish")
+                _artifactReader.Close()
+                _timekeeper.MarkEnd("ReadFile_OtherFinalization")
+                _timekeeper.MarkEnd("TOTAL")
+                _timekeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
+                LogInformation("Successfully imported {count} documents via WinEDDS.", FileTapiProgressCount)
 
                 ' Dump statistic object.
                 Me.DumpStatisticsInfo()
                 Return True
-			Catch ex As System.Exception
-				WriteFatalError(Me.CurrentLineNumber, ex)
-				Me.LogFatal(ex, "A serious unexpected error has occurred importing documents.")
-			Finally
-				_timekeeper.MarkStart("ReadFile_CleanupTempTables")
-				DestroyTapiBridges()
-				CleanupTempTables()
-				_timekeeper.MarkEnd("ReadFile_CleanupTempTables")
-			End Try
-			Return Nothing
-		End Function
+            Catch ex As System.Exception
+                WriteFatalError(Me.CurrentLineNumber, ex)
+                Me.LogFatal(ex, "A serious unexpected error has occurred importing documents.")
+            Finally
+                _timekeeper.MarkStart("ReadFile_CleanupTempTables")
+                DestroyTapiBridges()
+                CleanupTempTables()
+                _timekeeper.MarkEnd("ReadFile_CleanupTempTables")
+            End Try
+            Return Nothing
+        End Function
 
-		Private Function InitializeMembers(ByVal path As String) As Boolean
+        Private Function InitializeMembers(ByVal path As String) As Boolean
 			RecordCount = _artifactReader.CountRecords
 			If RecordCount = -1 Then
 				OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.Progress, CurrentLineNumber, CurrentLineNumber, CancelEventMsg, CurrentStatisticsSnapshot))
@@ -647,22 +639,6 @@ Namespace kCura.WinEDDS
 			kCura.Utility.File.Instance.Delete(OutputCodeFilePath)
 			kCura.Utility.File.Instance.Delete(OutputObjectFilePath)
 			kCura.Utility.File.Instance.Delete(OutputFileWriter.OutputDataGridFilePath)
-        End Sub
-
-        ''' <summary>
-        ''' Dump the statistic object.
-        ''' </summary>
-        Protected Sub DumpStatisticsInfo()
-            Me.LogInformation("Statistics info:")
-            Me.LogInformation("Document count: '{0}'.", _statistics.DocCount)
-            Me.LogInformation("Documents created: '{0}'.", _statistics.DocumentsCreated)
-            Me.LogInformation("Documents updated: '{0}'.", _statistics.DocumentsUpdated)
-            Me.LogInformation("Files processed: '{0}'.", _statistics.FilesProcessed)
-
-            Dim pair As DictionaryEntry
-            For Each pair In _statistics.ToDictionary()
-                Me.LogInformation("{0}: '{1}'.", pair.Key, pair.Value)
-            Next
         End Sub
 
         Protected Sub InitializeFolderManagement()
