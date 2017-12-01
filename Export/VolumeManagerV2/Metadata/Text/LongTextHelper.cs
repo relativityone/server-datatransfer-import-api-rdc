@@ -117,5 +117,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 		{
 			return _downloadedTextFilesRepository.GetTextFileLocation(artifact.ArtifactID, fieldArtifactId);
 		}
+
+		public Encoding GetLongTextFieldFileEncoding(ViewFieldInfo field)
+		{
+			if (field.IsUnicodeEnabled)
+			{
+				return Encoding.Unicode;
+			}
+			return Encoding.Default;
+		}
 	}
 }

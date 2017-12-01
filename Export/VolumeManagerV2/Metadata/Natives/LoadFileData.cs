@@ -19,22 +19,18 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 		private readonly IFilePathProvider _filePathProvider;
 		private readonly IFieldService _fieldLookupService;
 		private readonly LongTextHelper _longTextHelper;
-		private readonly StatisticsWrapper _statistics;
-
-		/// <summary>
-		///     TODO remove this
-		/// </summary>
+		private readonly ILongTextHandler _longTextHandler;
 		private readonly ExportFile _exportSettings;
 
-		public LoadFileData(ILoadFileCellFormatter loadFileCellFormatter, IFieldService fieldLookupService, StatisticsWrapper statistics, ExportFile exportSettings,
-			IFilePathProvider filePathProvider, LongTextHelper longTextHelper)
+		public LoadFileData(ILoadFileCellFormatter loadFileCellFormatter, IFieldService fieldLookupService, ExportFile exportSettings, IFilePathProvider filePathProvider,
+			LongTextHelper longTextHelper, ILongTextHandler longTextHandler)
 		{
 			_loadFileCellFormatter = loadFileCellFormatter;
 			_fieldLookupService = fieldLookupService;
-			_statistics = statistics;
 			_exportSettings = exportSettings;
 			_filePathProvider = filePathProvider;
 			_longTextHelper = longTextHelper;
+			_longTextHandler = longTextHandler;
 
 			_hasWrittenColumnHeaderString = false;
 		}
@@ -93,15 +89,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 			{
 				ViewFieldInfo field = fields[i];
 
-				object rawFieldValue = record[_fieldLookupService.GetOrdinalIndex(field.AvfColumnName)];
-
 				if (_longTextHelper.IsLongTextField(field))
 				{
-					HandleTextField(rawFieldValue, field);
+					HandleTextField(field);
 				}
 				else
 				{
-					HandleNonTextField(rawFieldValue, field);
+					HandleNonTextField(record, field);
 				}
 
 				if (i != fields.Count - 1 && !_exportSettings.LoadFileIsHtml)
@@ -111,20 +105,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 			}
 		}
 
-		private void HandleTextField(object rawFieldValue, ViewFieldInfo field)
+		private void HandleTextField(ViewFieldInfo field)
 		{
-			if (_longTextHelper.IsTextTooLong(_artifact, field.AvfColumnName))
-			{
-				//TODO handle too long text
-			}
-
-			//TODO
-			//Slong extractedTextByteCount = _longTextData.AddLongText(_loadFileEntry, rawFieldValue, field, downloadedTextTempFile, _artifact, 1 /*currentVolumeNumber*/, 1 /*currentSubdirectoryNumber*/);
-			//_statistics.TotalExtractedTextFileLength += extractedTextByteCount;
+			_longTextHandler.HandleLongText(_artifact, field, _loadFileEntry);
 		}
 
-		private void HandleNonTextField(object rawFieldValue, ViewFieldInfo field)
+		private void HandleNonTextField(object[] record, ViewFieldInfo field)
 		{
+			object rawFieldValue = record[_fieldLookupService.GetOrdinalIndex(field.AvfColumnName)];
 			string fieldValue = FieldValueHelper.ConvertToString(rawFieldValue, field, _exportSettings.MultiRecordDelimiter);
 			_loadFileEntry.AddStringEntry(_loadFileCellFormatter.TransformToCell(fieldValue));
 		}

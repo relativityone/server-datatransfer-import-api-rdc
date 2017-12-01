@@ -48,6 +48,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			InstallUtils(container);
 			InstallLabelManager(container);
 			InstallWriters(container);
+			InstallLongText(container);
 
 			container.Register(Component.For<ExportFile>().Instance(ExportSettings).LifestyleSingleton());
 			container.Register(Component.For<ExportColumns>().UsingFactoryMethod(k => new ExportColumns(_exporter.Columns, k.Resolve<IFieldLookupService>())));
@@ -92,13 +93,27 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			container.Register(Component.For<StatisticsWrapper>().UsingFactoryMethod(k => new StatisticsWrapper(_exporter._statistics)));
 
 			container.Register(Component.For<Settings.Config>().ImplementedBy<Settings.Config>());
-
-			container.Register(Component.For<LongTextHelper>().ImplementedBy<LongTextHelper>());
+			
+			container.Register(Component.For<LongTextStreamFormatterFactory>().ImplementedBy<LongTextStreamFormatterFactory>());
 			
 			//TODO temporary
 			container.Register(Component.For<FileDownloader>().UsingFactoryMethod(k => new FileDownloader(ExportSettings.Credential,
 				$"{ExportSettings.CaseInfo.DocumentPath}\\EDDS{ExportSettings.CaseInfo.ArtifactID}", ExportSettings.CaseInfo.DownloadHandlerURL, ExportSettings.CookieContainer,
 				Service.Settings.AuthenticationToken)));
+		}
+		
+		private void InstallLongText(IWindsorContainer container)
+		{
+			container.Register(Component.For<LongTextHelper>().ImplementedBy<LongTextHelper>());
+			container.Register(Component.For<ILongTextHandler>().ImplementedBy<LongTextHandler>());
+			container.Register(Component.For<DelimiterFactory>().ImplementedBy<DelimiterFactory>());
+			container.Register(Component.For<IDelimiter>().UsingFactoryMethod(k => k.Resolve<DelimiterFactory>().Create(ExportSettings)));
+			
+			container.Register(Component.For<LongTextToLoadFile>().ImplementedBy<LongTextToLoadFile>());
+			container.Register(Component.For<TooLongTextToLoadFile>().ImplementedBy<TooLongTextToLoadFile>());
+			container.Register(Component.For<NotTooLongTextToLoadFile>().ImplementedBy<NotTooLongTextToLoadFile>());
+			container.Register(Component.For<FromFileToLoadFileWriter>().ImplementedBy<FromFileToLoadFileWriter>());
+			container.Register(Component.For<FromFieldToLoadFileWriter>().ImplementedBy<FromFieldToLoadFileWriter>());
 		}
 
 		private static void InstallWriters(IWindsorContainer container)

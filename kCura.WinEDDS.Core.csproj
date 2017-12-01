@@ -108,7 +108,18 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFileFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LoadFileCellFormatterFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\ConfigurableDelimiter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\DelimiterFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\HtmlDelimiter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\IDelimiter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\ILongTextHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextStreamFormatterFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextToLoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextHelper.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\NotTooLongTextToLoadFile.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\TooLongTextToLoadFile.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\FromFieldToLoadFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ImageLoadFileWriterFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\IproFullTextWithoutPrecedenceLoadFileEntry.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\IproFullTextLoadFileEntry.cs" />
@@ -122,6 +133,7 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\SinglePageImageLoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LoadFileData.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\LoadFileWriterFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\FromFileToLoadFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\MetadataFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ImageExportRequestBuilder.cs" />
