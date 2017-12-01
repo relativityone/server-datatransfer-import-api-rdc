@@ -409,6 +409,14 @@ Namespace kCura.WinEDDS
 			bcpParameters.ForceHttpClient = bcpParameters.ForceHttpClient Or Config.TapiForceBcpHttpClient
 
 			CreateTapiBridges(nativeParameters, bcpParameters)
+
+			' Dump native and bcp upload bridge
+			Me.LogInformation("Begin dumping native parameters.")
+			_nativeUploaderBridge.DumpInfo()
+
+			Me.LogInformation("Begin dumping bcp parameters.")
+			_bcpUploaderBridge.DumpInfo()
+
 		End Sub
 
 #End Region
@@ -492,7 +500,7 @@ Namespace kCura.WinEDDS
 						If _startLineNumber <= 0 Then fileLineStart = 1
 						Dim countAfterJob As Long = currentDocCount + (RecordCount - (fileLineStart - 1))
 						If (docLimit <> 0 And countAfterJob > docLimit) Then
-							Dim errorMessage As String = String.Format("The document import was cancelled.  It would have exceeded the workspace's document limit of {1} by {0} documents.", countAfterJob - docLimit, docLimit)
+							Dim errorMessage As String = String.Format("The document import was canceled.  It would have exceeded the workspace's document limit of {1} by {0} documents.", countAfterJob - docLimit, docLimit)
 							Throw New Exception(errorMessage)
 							Return False
 						End If
@@ -504,72 +512,84 @@ Namespace kCura.WinEDDS
 				_columnHeaders = _artifactReader.GetColumnNames(_settings)
 				If _firstLineContainsColumnNames Then Offset = -1
 				Statistics.BatchSize = Me.ImportBatchSize
-				_jobCounter = 1
-				Using fileService As kCura.OI.FileID.FileIDService = New kCura.OI.FileID.FileIDService()
-					While ShouldImport AndAlso _artifactReader.HasMoreRecords
-						Try
-							If Me.CurrentLineNumber < _startLineNumber Then
-								Me.AdvanceLine()
+                _jobCounter = 1
+                Using fileService As kCura.OI.FileID.FileIDService = New kCura.OI.FileID.FileIDService()
+                    While ShouldImport AndAlso _artifactReader.HasMoreRecords
+                        Try
+                            If Me.CurrentLineNumber < _startLineNumber Then
+                                Me.AdvanceLine()
 
-								' This will ensure progress takes into account the start line number
+                                ' This will ensure progress takes into account the start line number
 								FileTapiProgressCount += 1
-							Else
-								_timekeeper.MarkStart("ReadFile_GetLine")
+                            Else
+                                _timekeeper.MarkStart("ReadFile_GetLine")
 								Statistics.DocCount += 1
-								'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
-								' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
-								' -Phil S. 06/12/2012
-								WriteStatusLine(Windows.Process.EventType.Count, String.Empty)
-								line = _artifactReader.ReadArtifact
-								_timekeeper.MarkEnd("ReadFile_GetLine")
-								Dim lineStatus As Int32 = 0
-								'If line.Count <> _columnHeaders.Length Then
-								'	lineStatus += ImportStatus.ColumnMismatch								 'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
-								'End If
+                                'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
+                                ' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
+                                ' -Phil S. 06/12/2012
+                                WriteStatusLine(Windows.Process.EventType.Count, String.Empty)
+                                line = _artifactReader.ReadArtifact
+                                _timekeeper.MarkEnd("ReadFile_GetLine")
+                                Dim lineStatus As Int32 = 0
+                                'If line.Count <> _columnHeaders.Length Then
+                                '	lineStatus += ImportStatus.ColumnMismatch								 'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
+                                'End If
 
-								_timekeeper.MarkStart("ReadFile_ManageDocument")
-								Dim id As String = ManageDocument(fileService, line, lineStatus)
-								_timekeeper.MarkEnd("ReadFile_ManageDocument")
+                                _timekeeper.MarkStart("ReadFile_ManageDocument")
+                                Dim id As String = ManageDocument(fileService, line, lineStatus)
+                                _timekeeper.MarkEnd("ReadFile_ManageDocument")
 
-								_timekeeper.MarkStart("ReadFile_IdTrack")
+                                _timekeeper.MarkStart("ReadFile_IdTrack")
 								ProcessedDocumentIdentifiers.Add(id, CurrentLineNumber.ToString)
-								_timekeeper.MarkEnd("ReadFile_IdTrack")
-							End If
-						Catch ex As LoadFileBase.CodeCreationException
-							If ex.IsFatal Then
-								WriteFatalError(Me.CurrentLineNumber, ex)
-								Me.LogFatal(ex, "A fatal code operation error has occurred managing an import document.")
-							Else
-								WriteError(Me.CurrentLineNumber, ex.Message)
-								Me.LogError(ex, "A serious code operation error has occurred managing an import document.")
-							End If
-						Catch ex As System.IO.PathTooLongException
-							WriteError(Me.CurrentLineNumber, ERROR_MESSAGE_FOLDER_NAME_TOO_LONG)
+                                _timekeeper.MarkEnd("ReadFile_IdTrack")
+                            End If
+                        Catch ex As LoadFileBase.CodeCreationException
+                            If ex.IsFatal Then
+                                WriteFatalError(Me.CurrentLineNumber, ex)
+                                Me.LogFatal(ex, "A fatal code operation error has occurred managing an import document.")
+                            Else
+                                WriteError(Me.CurrentLineNumber, ex.Message)
+                                Me.LogError(ex, "A serious code operation error has occurred managing an import document.")
+                            End If
+                        Catch ex As System.IO.PathTooLongException
+                            WriteError(Me.CurrentLineNumber, ERROR_MESSAGE_FOLDER_NAME_TOO_LONG)
 							Me.LogError(ex, "An import error has occured because of invalid document path - the path is too long.")
-						Catch ex As kCura.Utility.ImporterExceptionBase 
-							WriteError(Me.CurrentLineNumber, ex.Message)
-							Me.LogError(ex, "An import data error has occurred managing an import document.")
+						Catch ex As kCura.Utility.ImporterExceptionBase
+                            WriteError(Me.CurrentLineNumber, ex.Message)
+                            Me.LogError(ex, "An import data error has occurred managing an import document.")
 						Catch ex As kCura.WinEDDS.TApi.FileInfoInvalidPathException
 							WriteError(Me.CurrentLineNumber, ex.Message)
 							Me.LogError(ex, "An import error has occured because of invalid document path - illegal characters in path.")
-						Catch ex As System.IO.FileNotFoundException
-							WriteError(Me.CurrentLineNumber, ex.Message)
-							Me.LogError(ex, "A file not found error has occurred managing an import document.")
-						Catch ex As System.Exception
-							WriteFatalError(Me.CurrentLineNumber, ex)
-							Me.LogFatal(ex, "A serious unexpected error has occurred managing an import document.")
-						End Try
-					End While
-				End Using
+                        Catch ex As System.IO.FileNotFoundException
+                            WriteError(Me.CurrentLineNumber, ex.Message)
+                            Me.LogError(ex, "A file not found error has occurred managing an import document.")
+                        Catch ex As System.Exception
+                            WriteFatalError(Me.CurrentLineNumber, ex)
+                            Me.LogFatal(ex, "A serious unexpected error has occurred managing an import document.")
+                        End Try
+                    End While
 
-				If Not _task Is Nothing AndAlso _task.Status.In(
-					Threading.Tasks.TaskStatus.Running,
-					Threading.Tasks.TaskStatus.WaitingForActivation,
-					Threading.Tasks.TaskStatus.WaitingForChildrenToComplete,
-					Threading.Tasks.TaskStatus.WaitingToRun) Then
-					WaitOnPushBatchTask()
-				End If
-				_timekeeper.MarkEnd("ReadFile_ProcessDocuments")
+                    ' Dump OutSideIn info
+                    Dim fileIdInfo As kCura.OI.FileID.FileIDInfo = fileService.GetConfigInfo()
+                    Me.LogInformation("FileID service info.")
+                    Me.LogInformation("Version: '{0}'.", fileIdInfo.Version)
+                    Me.LogInformation("Idle worker timeout: '{0}'.", fileIdInfo.IdleWorkerTimeout)
+                    Me.LogInformation("Install location: '{0}'.", fileIdInfo.InstallLocation)
+                    Me.LogInformation("Minimum worker count: '{0}'.", fileIdInfo.MinimumWorkerCount)
+
+                    If fileIdInfo.HasError Then
+                        Me.LogWarning("Error: {0}", fileIdInfo.Exception)
+                    End If
+                End Using
+
+                If Not _task Is Nothing AndAlso _task.Status.In(
+                    Threading.Tasks.TaskStatus.Running,
+                    Threading.Tasks.TaskStatus.WaitingForActivation,
+                    Threading.Tasks.TaskStatus.WaitingForChildrenToComplete,
+                    Threading.Tasks.TaskStatus.WaitingToRun) Then
+                    WaitOnPushBatchTask()
+                End If
+                _timekeeper.MarkEnd("ReadFile_ProcessDocuments")
 				_timekeeper.MarkStart("ReadFile_OtherFinalization")
 				Me.TryPushNativeBatch(True)
 				WaitOnPushBatchTask()
@@ -580,7 +600,10 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("TOTAL")
 				_timekeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
 				LogInformation("Successfully imported {count} documents via WinEDDS.", FileTapiProgressCount)
-				Return True
+
+                ' Dump statistic object.
+                Me.DumpStatisticsInfo()
+                Return True
 			Catch ex As System.Exception
 				WriteFatalError(Me.CurrentLineNumber, ex)
 				Me.LogFatal(ex, "A serious unexpected error has occurred importing documents.")
@@ -619,14 +642,30 @@ Namespace kCura.WinEDDS
 			RelativityManager = New Service.RelativityManager(args.Credentials, args.CookieContainer)
 		End Sub
 
-		Protected Sub DeleteFiles()
+        Protected Sub DeleteFiles()
 			kCura.Utility.File.Instance.Delete(OutputFileWriter.OutputNativeFilePath)
 			kCura.Utility.File.Instance.Delete(OutputCodeFilePath)
 			kCura.Utility.File.Instance.Delete(OutputObjectFilePath)
 			kCura.Utility.File.Instance.Delete(OutputFileWriter.OutputDataGridFilePath)
-		End Sub
+        End Sub
 
-		Protected Sub InitializeFolderManagement()
+        ''' <summary>
+        ''' Dump the statistic object.
+        ''' </summary>
+        Protected Sub DumpStatisticsInfo()
+            Me.LogInformation("Statistics info:")
+            Me.LogInformation("Document count: '{0}'.", _statistics.DocCount)
+            Me.LogInformation("Documents created: '{0}'.", _statistics.DocumentsCreated)
+            Me.LogInformation("Documents updated: '{0}'.", _statistics.DocumentsUpdated)
+            Me.LogInformation("Files processed: '{0}'.", _statistics.FilesProcessed)
+
+            Dim pair As DictionaryEntry
+            For Each pair In _statistics.ToDictionary()
+                Me.LogInformation("{0}: '{1}'.", pair.Key, pair.Value)
+            Next
+        End Sub
+
+        Protected Sub InitializeFolderManagement()
 			If _createFolderStructure Then
 				If Not _createFoldersInWebAPI Then
 					'Client side folder creation (added back for Dominus# 1127879)
