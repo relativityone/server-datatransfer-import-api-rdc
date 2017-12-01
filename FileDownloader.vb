@@ -112,6 +112,10 @@ Namespace kCura.WinEDDS
 			Return WebDownloadFile(localFilePath, artifactID, "", appId, Nothing, False, field.FieldArtifactId, -1, -1)
 		End Function
 
+		Public Function DownloadLongTextFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal fieldId As Int32, ByVal appId As String) As Boolean
+			Return WebDownloadFile(localFilePath, artifactID, "", appId, Nothing, False, fieldId, -1, -1)
+		End Function
+
 		Private Function DownloadFile(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal remoteLocation As String, ByVal artifactID As Int32, ByVal appID As String, ByVal fileFieldArtifactID As Int32, ByVal fileID As Int32) As Boolean
 			'If Me.UploaderType = Type.Web Then
 			If remoteLocation.Length > 7 Then
