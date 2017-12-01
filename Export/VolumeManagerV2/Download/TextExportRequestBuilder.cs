@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using kCura.WinEDDS.Exporters;
 using Relativity;
 using Constants = Relativity.Export.Constants;
@@ -16,12 +15,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private readonly ExportFile _exportSettings;
 		private readonly IFieldService _fieldService;
 		private readonly DownloadedTextFilesRepository _textFilesRepository;
+		private readonly LongTextHelper _longTextHelper;
 
-		public TextExportRequestBuilder(ExportFile exportSettings, IFieldService fieldService, DownloadedTextFilesRepository textFilesRepository)
+		public TextExportRequestBuilder(ExportFile exportSettings, IFieldService fieldService, DownloadedTextFilesRepository textFilesRepository, LongTextHelper longTextHelper)
 		{
 			_exportSettings = exportSettings;
 			_fieldService = fieldService;
 			_textFilesRepository = textFilesRepository;
+			_longTextHelper = longTextHelper;
 		}
 
 		public IList<TextExportRequest> Create(ObjectExportInfo artifact)
@@ -44,7 +45,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			{
 				if (_fieldService.ContainsFieldName(Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME))
 				{
-					if (artifact.IsTextTooLong(_fieldService, Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME))
+					if (_longTextHelper.IsTextTooLong(artifact, Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME))
 					{
 						string tempLocation = Path.GetTempFileName();
 
@@ -64,10 +65,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private void CreateRequestForTextFields(ObjectExportInfo artifact)
 		{
-			for (int i = 0; i < _fieldService.GetColumns().Count; i++)
+			for (int i = 0; i < _fieldService.GetColumns().Length; i++)
 			{
-				var fieldInfo = (ViewFieldInfo) _fieldService.GetColumns()[i];
-				if (fieldInfo.FieldType.IsTextField())
+				ViewFieldInfo fieldInfo = _fieldService.GetColumns()[i];
+				if (_longTextHelper.IsLongTextField(fieldInfo))
 				{
 					CreateRequest(artifact, fieldInfo);
 				}
@@ -76,26 +77,25 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private void CreateRequestForIproFullTextWithoutPrecedence(ObjectExportInfo artifact)
 		{
-			if (_exportSettings.IsTextPrecedenceSet() || _exportSettings.LogFileFormat != LoadFileType.FileFormat.IPRO_FullText)
+			if (_longTextHelper.IsTextPrecedenceSet() || _exportSettings.LogFileFormat != LoadFileType.FileFormat.IPRO_FullText)
 			{
 				return;
 			}
-			int fieldIndex = _fieldService.GetOrdinalIndex(FieldUtils.EXTRACTED_TEXT_COLUMN_NAME);
-			
-			if (fieldIndex >= _fieldService.GetColumns().Count)
+
+			if (_longTextHelper.IsExtractedTextMissing())
 			{
-				//Missing ExtractedText field for IPRO_FullText
-				if (artifact.IsTextTooLong(_fieldService, FieldUtils.EXTRACTED_TEXT_COLUMN_NAME))
+				if (_longTextHelper.IsTextTooLong(artifact, LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME))
 				{
 					string tempLocation = Path.GetTempFileName();
-					AddTextExportRequest(TextExportRequest.CreateRequestForFullText(artifact, FieldUtils.EXTRACTED_TEXT_FIELD_ID, tempLocation));
+					int extractedTextFieldId = _longTextHelper.GetFieldArtifactId(LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME);
+					AddTextExportRequest(TextExportRequest.CreateRequestForFullText(artifact, extractedTextFieldId, tempLocation));
 				}
 			}
 		}
 
 		private void CreateRequest(ObjectExportInfo artifact, ViewFieldInfo fieldInfo)
 		{
-			if (artifact.IsTextTooLong(_fieldService, fieldInfo.AvfColumnName))
+			if (_longTextHelper.IsTextTooLong(artifact, fieldInfo.AvfColumnName))
 			{
 				if (!(fieldInfo is CoalescedTextViewField) && !_textFilesRepository.IsTextFileDownloaded(artifact.ArtifactID, fieldInfo.FieldArtifactId))
 				{
@@ -126,9 +126,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private void AddTextExportRequest(TextExportRequest textExportRequest)
 		{
-			//TODO REMOVE THIS!!!! THIS IS JUST FOR TESTING BEFORE WE GET CLIENT FOR LONG TEXT
-			File.WriteAllText(textExportRequest.DestinationLocation, $"Long text sample for Field {textExportRequest.FieldArtifactId} in Artifact {textExportRequest.ArtifactId}.");
-			//********************************************************************************
 			_textFilesRepository.AddTextExportLocation(textExportRequest);
 			_exportRequests.Add(textExportRequest);
 		}

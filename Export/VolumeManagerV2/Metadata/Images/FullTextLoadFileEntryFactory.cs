@@ -1,17 +1,16 @@
-﻿using System.Linq;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
+﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 {
 	public class FullTextLoadFileEntryFactory
 	{
 		private readonly IFieldService _fieldService;
-		private readonly DownloadedTextFilesRepository _downloadedTextFilesRepository;
+		private readonly LongTextHelper _longTextHelper;
 
-		public FullTextLoadFileEntryFactory(IFieldService fieldService, DownloadedTextFilesRepository downloadedTextFilesRepository)
+		public FullTextLoadFileEntryFactory(IFieldService fieldService, LongTextHelper longTextHelper)
 		{
 			_fieldService = fieldService;
-			_downloadedTextFilesRepository = downloadedTextFilesRepository;
+			_longTextHelper = longTextHelper;
 		}
 
 		public IFullTextLoadFileEntry Create(ExportFile exportSettings)
@@ -19,11 +18,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 			//TODO validate arguments
 			if (exportSettings.LogFileFormat == LoadFileType.FileFormat.IPRO_FullText)
 			{
-				if (exportSettings.IsTextPrecedenceSet())
+				if (_longTextHelper.IsTextPrecedenceSet())
 				{
-					return new IproFullTextWithPrecedenceLoadFileEntry(exportSettings, _fieldService, _downloadedTextFilesRepository);
+					return new IproFullTextWithPrecedenceLoadFileEntry(exportSettings, _fieldService, _longTextHelper);
 				}
-				return new IproFullTextWithoutPrecedenceLoadFileEntry(exportSettings, _fieldService, _downloadedTextFilesRepository);
+				return new IproFullTextWithoutPrecedenceLoadFileEntry(exportSettings, _fieldService, _longTextHelper);
 			}
 			return new NoFullTextLoadFileEntry();
 		}

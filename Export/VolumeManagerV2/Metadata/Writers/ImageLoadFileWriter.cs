@@ -58,12 +58,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 
 					foreach (var line in linesToWrite.Where(x => x.Key == $"FT{key}").OrderBy(x => x.Key).ThenBy(x => x.Value))
 					{
-						_fileWriter.Write(line.Value);
+						FileWriter.Write(line.Value);
 					}
 
 					foreach (var line in linesToWrite.Where(x => x.Key == key).OrderBy(x => x.Key).ThenBy(x => x.Value))
 					{
-						_fileWriter.Write(line.Value);
+						FileWriter.Write(line.Value);
 					}
 				}
 			}

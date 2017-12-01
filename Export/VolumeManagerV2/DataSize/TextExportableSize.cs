@@ -19,7 +19,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize
 		{
 			if (_exportSettings.ExportFullText && _exportSettings.ExportFullTextAsFile)
 			{
-				for (int count = 0; count <= _fieldService.GetColumns().Count - 1; count++)
+				for (int count = 0; count <= _fieldService.GetColumns().Length - 1; count++)
 				{
 					ViewFieldInfo field = (ViewFieldInfo) _fieldService.GetColumns()[count];
 					string columnName = field.AvfColumnName;

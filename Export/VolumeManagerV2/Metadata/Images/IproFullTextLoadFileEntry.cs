@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using kCura.WinEDDS.Exporters;
-using Relativity;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 {
@@ -13,15 +12,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 		private TextReader _textReader;
 
 		private readonly ExportFile _exportSettings;
-		private readonly DownloadedTextFilesRepository _downloadedTextFilesRepository;
 
 		protected readonly IFieldService FieldService;
+		protected readonly LongTextHelper LongTextHelper;
 
-		protected IproFullTextLoadFileEntry(ExportFile exportSettings, IFieldService fieldService, DownloadedTextFilesRepository downloadedTextFilesRepository)
+		protected IproFullTextLoadFileEntry(ExportFile exportSettings, IFieldService fieldService, LongTextHelper longTextHelper)
 		{
 			_exportSettings = exportSettings;
 			FieldService = fieldService;
-			_downloadedTextFilesRepository = downloadedTextFilesRepository;
+			LongTextHelper = longTextHelper;
 		}
 
 		public bool TryCreateFullTextLine(ObjectExportInfo artifact, string batesNumber, int pageNumber, long pageOffset, out KeyValuePair<string, string> fullTextEntry)
@@ -66,14 +65,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 
 		private TextReader GetTextStream(ObjectExportInfo artifact)
 		{
-			string text = artifact.GetText(FieldService, GetTextColumnName());
-
-			if (text == Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN)
+			if (LongTextHelper.IsTextTooLong(artifact, GetTextColumnName()))
 			{
-				string fileLocation = _downloadedTextFilesRepository.GetTextFileLocation(artifact.ArtifactID, GetTextSourceFieldId(artifact));
+				string fileLocation = LongTextHelper.GetLongTextFileLocation(artifact, GetTextSourceFieldId(artifact));
 				return new StreamReader(fileLocation, _exportSettings.LoadFileEncoding);
 			}
-
+			string text = LongTextHelper.GetTextFromField(artifact, GetTextColumnName());
 			return new StringReader(text);
 		}
 

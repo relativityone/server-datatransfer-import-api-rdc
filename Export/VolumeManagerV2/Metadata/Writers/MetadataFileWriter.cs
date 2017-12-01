@@ -18,7 +18,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 		private readonly IDestinationPath _destinationPath;
 		private readonly StreamFactory _streamFactory;
 
-		protected StreamWriter _fileWriter;
+		protected StreamWriter FileWriter;
 		protected ILog Logger { get; }
 
 		/// <summary>
@@ -41,7 +41,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			_streamFactory = streamFactory;
 			
 			//TODO remove this
-			_fileWriter = _streamFactory.Create(_fileWriter, _fileWriterLastPosition, _destinationPath.Path, _destinationPath.Encoding, false);
+			FileWriter = _streamFactory.Create(FileWriter, _fileWriterLastPosition, _destinationPath.Path, _destinationPath.Encoding, false);
 			// ****
 
 			SaveStreamPositionAndUpdateStatistics();
@@ -55,14 +55,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 		protected void ReinitializeStream()
 		{
 			//TODO this will open stream for every batch - the question is: is this impacting performance in a way we should change it?
-			_fileWriter = _streamFactory.Create(_fileWriter, _fileWriterLastPosition, _destinationPath.Path, _destinationPath.Encoding, true);
+			FileWriter = _streamFactory.Create(FileWriter, _fileWriterLastPosition, _destinationPath.Path, _destinationPath.Encoding, true);
 		}
 
 		private void FlushStream()
 		{
 			try
 			{
-				_fileWriter?.Flush();
+				FileWriter?.Flush();
 			}
 			catch (Exception ex)
 			{
@@ -75,10 +75,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 
 		protected void SaveStreamPositionAndUpdateStatistics()
 		{
-			if (_fileWriter != null)
+			if (FileWriter != null)
 			{
 				FlushStream();
-				_fileWriterLastPosition = _fileWriter.BaseStream.Position;
+				_fileWriterLastPosition = FileWriter.BaseStream.Position;
 				_statistics.MetadataBytes = _fileHelper.GetFileSize(GetStreamName());
 			}
 		}
@@ -89,14 +89,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 		/// <returns></returns>
 		private string GetStreamName()
 		{
-			Stream baseStream = _fileWriter.BaseStream;
+			Stream baseStream = FileWriter.BaseStream;
 			FileStream fileStream = (FileStream) baseStream;
 			return fileStream.Name;
 		}
 
 		public void Dispose()
 		{
-			_fileWriter?.Dispose();
+			FileWriter?.Dispose();
 		}
 	}
 }

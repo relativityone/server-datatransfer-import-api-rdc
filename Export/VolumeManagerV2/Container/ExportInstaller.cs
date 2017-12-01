@@ -8,6 +8,7 @@ using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation;
@@ -92,7 +93,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 
 			container.Register(Component.For<Settings.Config>().ImplementedBy<Settings.Config>());
 
-
+			container.Register(Component.For<LongTextHelper>().ImplementedBy<LongTextHelper>());
+			
 			//TODO temporary
 			container.Register(Component.For<FileDownloader>().UsingFactoryMethod(k => new FileDownloader(ExportSettings.Credential,
 				$"{ExportSettings.CaseInfo.DocumentPath}\\EDDS{ExportSettings.CaseInfo.ArtifactID}", ExportSettings.CaseInfo.DownloadHandlerURL, ExportSettings.CookieContainer,

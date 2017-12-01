@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.Helpers;
 using kCura.WinEDDS.LoadFileEntry;
@@ -17,6 +18,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 		private readonly ILoadFileCellFormatter _loadFileCellFormatter;
 		private readonly IFilePathProvider _filePathProvider;
 		private readonly IFieldService _fieldLookupService;
+		private readonly LongTextHelper _longTextHelper;
 		private readonly StatisticsWrapper _statistics;
 
 		/// <summary>
@@ -25,13 +27,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 		private readonly ExportFile _exportSettings;
 
 		public LoadFileData(ILoadFileCellFormatter loadFileCellFormatter, IFieldService fieldLookupService, StatisticsWrapper statistics, ExportFile exportSettings,
-			IFilePathProvider filePathProvider)
+			IFilePathProvider filePathProvider, LongTextHelper longTextHelper)
 		{
 			_loadFileCellFormatter = loadFileCellFormatter;
 			_fieldLookupService = fieldLookupService;
 			_statistics = statistics;
 			_exportSettings = exportSettings;
 			_filePathProvider = filePathProvider;
+			_longTextHelper = longTextHelper;
 
 			_hasWrittenColumnHeaderString = false;
 		}
@@ -85,14 +88,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 
 		private void AddFieldsValue(object[] record)
 		{
-			List<ViewFieldInfo> fields = _fieldLookupService.GetColumns().Cast<ViewFieldInfo>().ToList();
+			List<ViewFieldInfo> fields = _fieldLookupService.GetColumns().ToList();
 			for (int i = 0; i < fields.Count; i++)
 			{
 				ViewFieldInfo field = fields[i];
 
 				object rawFieldValue = record[_fieldLookupService.GetOrdinalIndex(field.AvfColumnName)];
 
-				if (field.FieldType.IsTextField())
+				if (_longTextHelper.IsLongTextField(field))
 				{
 					HandleTextField(rawFieldValue, field);
 				}
@@ -110,7 +113,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 
 		private void HandleTextField(object rawFieldValue, ViewFieldInfo field)
 		{
-			if (_artifact.IsTextTooLong(_fieldLookupService, field.AvfColumnName))
+			if (_longTextHelper.IsTextTooLong(_artifact, field.AvfColumnName))
 			{
 				//TODO handle too long text
 			}

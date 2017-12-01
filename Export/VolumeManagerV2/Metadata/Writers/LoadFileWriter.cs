@@ -50,7 +50,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			ILoadFileEntry loadFileEntry;
 			if (linesToWrite.TryGetValue(headerArtifactID, out loadFileEntry))
 			{
-				loadFileEntry?.Write(ref _fileWriter);
+				loadFileEntry?.Write(ref FileWriter);
 			}
 		}
 
@@ -64,7 +64,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 				ILoadFileEntry loadFileEntry;
 				if (linesToWrite.TryGetValue(artifact.ArtifactID, out loadFileEntry))
 				{
-					loadFileEntry?.Write(ref _fileWriter);
+					loadFileEntry?.Write(ref FileWriter);
 				}
 			}
 		}
