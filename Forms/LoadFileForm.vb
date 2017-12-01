@@ -1021,11 +1021,11 @@ Namespace kCura.EDDS.WinForm
                 If _loadFileEncodingPicker.SelectedEncoding Is Nothing Then
                     Me.AppendErrorMessage(msg, "No file encoding selected")
                 End If
-                If _extractedTextValueContainsFileLocation.Checked AndAlso _fullTextFileEncodingPicker.SelectedEncoding Is Nothing Then
+                If CheckIfExtractedTextValueContainsFileLocationFieldIsEnabledAndChecked() AndAlso _fullTextFileEncodingPicker.SelectedEncoding Is Nothing Then
                     Me.AppendErrorMessage(msg, "No text file encoding selected for extracted text")
                 End If
 
-                If _extractedTextValueContainsFileLocation.Checked Then
+                If CheckIfExtractedTextValueContainsFileLocationFieldIsEnabledAndChecked() Then
                     If _overlayExtractedText.SelectedItem Is Nothing Then
                         Me.AppendErrorMessage(msg, "No field selected for extracted text")
                     End If
@@ -1065,16 +1065,16 @@ Namespace kCura.EDDS.WinForm
             End If
 
             LoadFile.SourceFileEncoding = _loadFileEncodingPicker.SelectedEncoding
-            LoadFile.FullTextColumnContainsFileLocation = _extractedTextValueContainsFileLocation.Checked
+            LoadFile.FullTextColumnContainsFileLocation = CheckIfExtractedTextValueContainsFileLocationFieldIsEnabledAndChecked()
 
-            If _extractedTextValueContainsFileLocation.Checked Then
+            If CheckIfExtractedTextValueContainsFileLocationFieldIsEnabledAndChecked() Then
                 If _overlayExtractedText.SelectedItem IsNot Nothing Then
                     LoadFile.LongTextColumnThatContainsPathToFullText = _overlayExtractedText.SelectedItem.ToString
                 End If
             End If
 
             LoadFile.ExtractedTextFileEncoding = _fullTextFileEncodingPicker.SelectedEncoding
-            If _extractedTextValueContainsFileLocation.Checked AndAlso _fullTextFileEncodingPicker.SelectedEncoding IsNot Nothing Then
+            If CheckIfExtractedTextValueContainsFileLocationFieldIsEnabledAndChecked() AndAlso _fullTextFileEncodingPicker.SelectedEncoding IsNot Nothing Then
                 LoadFile.ExtractedTextFileEncodingName = Relativity.SqlNameHelper.GetSqlFriendlyName(_fullTextFileEncodingPicker.SelectedEncoding.EncodingName).ToLower
             End If
             LoadFile.LoadNativeFiles = _loadNativeFiles.Checked
@@ -1748,8 +1748,18 @@ Namespace kCura.EDDS.WinForm
             'Cell contains file location is enabled if any long text field is mapped
             _extractedTextValueContainsFileLocation.Enabled = Await Me.AnyLongTextIsMapped()
 
+            'If contains file location checkbox is disabled it should not be checked!
+            If Not _extractedTextValueContainsFileLocation.Enabled Then
+                _extractedTextValueContainsFileLocation.Checked = False
+            End If
+
             'Extracted Text dropdown is enabled if Cell contains file location is checked and enabled
-            _overlayExtractedText.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
+            _overlayExtractedText.Enabled = CheckIfExtractedTextValueContainsFileLocationFieldIsEnabledAndChecked()
+
+            'If Extracted Text dropdown is disabled it should be cleared!
+            If Not _extractedTextValueContainsFileLocation.Enabled Then
+                _overlayExtractedText.SelectedItem = Nothing
+            End If
 
             'Get selected item before clearing Extracted Text dropdown items
             Dim selectedItem = Nothing
@@ -1769,7 +1779,13 @@ Namespace kCura.EDDS.WinForm
                 Me.SetExtractedTextAsDefault()
             End If
 
-            _fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
+            _fullTextFileEncodingPicker.Enabled = CheckIfExtractedTextValueContainsFileLocationFieldIsEnabledAndChecked()
+
+            'If encoding dropdown is disabled it should be cleared!
+            If Not _fullTextFileEncodingPicker.Enabled Then
+                _fullTextFileEncodingPicker.SelectedEncoding = Nothing
+            End If
+
             _overlayBehavior.Enabled = Await IsOverlayBehaviorEnabled()
         End Sub
 
@@ -2040,7 +2056,7 @@ Namespace kCura.EDDS.WinForm
                 _overlayExtractedText.SelectedItem = Nothing
             End If
 
-            _fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Checked
+            _fullTextFileEncodingPicker.Enabled = CheckIfExtractedTextValueContainsFileLocationFieldIsEnabledAndChecked()
         End Sub
 
         Private Sub SetExtractedTextAsDefault()
@@ -2086,5 +2102,10 @@ Namespace kCura.EDDS.WinForm
 			dgv.DataSource = drv
 			x.ShowDialog()
 		End Sub
-	End Class
+
+        Private Function CheckIfExtractedTextValueContainsFileLocationFieldIsEnabledAndChecked() As Boolean
+            Return _extractedTextValueContainsFileLocation.Enabled AndAlso _extractedTextValueContainsFileLocation.Checked
+        End Function
+
+    End Class
 End Namespace
