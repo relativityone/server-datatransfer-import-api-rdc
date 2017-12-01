@@ -545,8 +545,8 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FormsUserNotification.vb" />
-    <Compile Include="ImportOptions.vb" />
     <Compile Include="ImportManager.vb" />
+    <Compile Include="ImportOptions.vb" />
     <Compile Include="My Project\Resources.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
