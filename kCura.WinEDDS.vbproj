@@ -349,6 +349,7 @@
     <Compile Include="Exporters\LoadFileEntry\CompletedEntry.vb" />
     <Compile Include="Exporters\LoadFileEntry\DeferredEntry.vb" />
     <Compile Include="Exporters\LoadFileEntry\ILoadFileEntry.vb" />
+    <Compile Include="Exporters\LoadFileEntry\ILongTextEntryWriter.vb" />
     <Compile Include="Exporters\NullUserNotification.vb" />
     <Compile Include="Exporters\TempTextFileDeletor.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\DelimitedCellFormatter.vb" />
