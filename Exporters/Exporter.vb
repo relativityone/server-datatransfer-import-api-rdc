@@ -163,7 +163,15 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Public Property DocumentsExported As Integer Implements IExporter.DocumentsExported
-		Public Property InteractionManager As Exporters.IUserNotification = New Exporters.NullUserNotification Implements IExporter.InteractionManager
+		Private _interactionManager As IUserNotification = New Exporters.NullUserNotification
+		Public Property InteractionManager As Exporters.IUserNotification Implements IExporter.InteractionManager
+			Get
+				Return If(_interactionManager, New NullUserNotification)
+			End Get
+			Set(value As Exporters.IUserNotification)
+				_interactionManager = value
+			End Set
+		End Property
 
 		Public Function ExportSearch() As Boolean Implements IExporter.ExportSearch
 			Try
@@ -891,7 +899,7 @@ Namespace kCura.WinEDDS
 			args.DestinationFilesystemFolder = Me.Settings.FolderPath
 			args.DocumentExportCount = Me.DocumentsExported
 			args.ErrorCount = _errorCount
-			If Not Me.Settings.SelectedTextFields Is Nothing Then args.ExportedTextFieldID = Me.Settings.SelectedTextFields(0).FieldArtifactId
+			If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Any() Then args.ExportedTextFieldID = Me.Settings.SelectedTextFields.First().FieldArtifactId
 			If Me.Settings.ExportFullTextAsFile Then
 				args.ExportedTextFileEncodingCodePage = Me.Settings.TextFileEncoding.CodePage
 				args.ExportTextFieldAsFiles = True

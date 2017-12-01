@@ -1,16 +1,18 @@
+Imports System.Collections.Generic
+
 Namespace kCura.WinEDDS
 	Public Class DocumentFieldCollection
-		Implements IEnumerable
+		Implements System.Collections.Generic.IEnumerable(Of DocumentField)
 
-		Private _idIndex As System.Collections.Hashtable
-		Private _nameIndex As System.Collections.Hashtable
+		Private _idIndex As Dictionary(Of Int32, DocumentField)
+		Private _nameIndex As Dictionary(Of String, DocumentField)
 
 		Public Function Item(ByVal fieldID As Int32) As DocumentField
-			Return DirectCast(_idIndex.Item(fieldID), DocumentField)
+			Return _idIndex(fieldID)
 		End Function
 
 		Public Function Item(ByVal fieldName As String) As DocumentField
-			Return DirectCast(_nameIndex.Item(fieldName), DocumentField)
+			Return _nameIndex.Item(fieldName)
 		End Function
 
 		Public Function Count() As Int32
@@ -32,22 +34,18 @@ Namespace kCura.WinEDDS
 
 		Public Function Names() As String()
 			Dim i As Int32 = 0
-			Dim o(_nameIndex.Keys.Count - 1) As Object
 			Dim retval(_nameIndex.Keys.Count - 1) As String
-			_nameIndex.Keys.CopyTo(o, 0)
-			For i = 0 To o.Length - 1
-				retval(i) = CType(o(i), String)
-			Next
+			_nameIndex.Keys.CopyTo(retval, 0)
 			Array.Sort(retval)
 			Return retval
 		End Function
 
 		Public Function Exists(ByVal fieldID As Int32) As Boolean
-			Return Not _idIndex.Item(fieldID) Is Nothing
+			Return _idIndex.ContainsKey(fieldID) AndAlso Not _idIndex.Item(fieldID) Is Nothing
 		End Function
 
 		Public Function Exists(ByVal fieldName As String) As Boolean
-			Return Not _nameIndex.Item(fieldName) Is Nothing
+			Return _nameIndex.ContainsKey(fieldName) AndAlso Not _nameIndex.Item(fieldName) Is Nothing
 		End Function
 
 		Private Function GetFieldByCategory(ByVal type As Relativity.FieldCategory) As DocumentField
@@ -123,10 +121,10 @@ Namespace kCura.WinEDDS
 			Dim al As New ArrayList
 			Dim field As DocumentField
 			For Each field In _idIndex.Values
-				If ( _
-				 field.FieldCategoryID <> 8 AndAlso _
-				 field.FieldCategoryID <> 5 AndAlso _
-				 field.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Varchar _
+				If (
+				 field.FieldCategoryID <> 8 AndAlso
+				 field.FieldCategoryID <> 5 AndAlso
+				 field.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Varchar
 				) Then
 					al.Add(field.FieldName)
 				End If
@@ -137,8 +135,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Sub New()
-			_idIndex = New System.Collections.Hashtable
-			_nameIndex = New System.Collections.Hashtable
+			_idIndex = New Dictionary(Of Int32, DocumentField)()
+			_nameIndex = New Dictionary(Of String, DocumentField)()
 		End Sub
 		Public Sub New(ByVal fields As DocumentField())
 			Me.New()
@@ -154,17 +152,12 @@ Namespace kCura.WinEDDS
 			End Function
 		End Class
 
-		Public Class FieldComparer
-			Implements IComparer
-			Public Function Compare(ByVal x As Object, ByVal y As Object) As Integer Implements System.Collections.IComparer.Compare
-				Dim lhs As DocumentField = DirectCast(x, DocumentField)
-				Dim rhs As DocumentField = DirectCast(y, DocumentField)
-				Return Nothing
-			End Function
-		End Class
-
 		Public Function GetEnumerator() As System.Collections.IEnumerator Implements System.Collections.IEnumerable.GetEnumerator
-			Return _idIndex.Values.GetEnumerator
+			Return IEnumerable_GetEnumerator()
+		End Function
+
+		Private Function IEnumerable_GetEnumerator() As IEnumerator(Of DocumentField) Implements IEnumerable(Of DocumentField).GetEnumerator
+			Return _idIndex.Values.GetEnumerator()
 		End Function
 	End Class
 End Namespace
