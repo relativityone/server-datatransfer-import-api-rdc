@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Polly;
 using Relativity.Logging;
 
@@ -33,17 +34,17 @@ namespace kCura.WinEDDS.TApi
         public int WaitTimeSecondsBetweenRetryAttempts { get; }
 
         /// <inheritdoc />
-        public void WaitAndRetry<TException>(Func<int, TimeSpan> retryDuration, Action<Exception, TimeSpan> retryAction, Action execFunc) where TException : Exception
+        public void WaitAndRetry<TException>(Func<int, TimeSpan> retryDuration, Action<Exception, TimeSpan> retryAction, Action<CancellationToken> execFunc, CancellationToken token) where TException : Exception
         {
-            WaitAndRetry<TException>(this.NumberOfRetries, retryDuration, retryAction, execFunc);
+            WaitAndRetry<TException>(this.NumberOfRetries, retryDuration, retryAction, execFunc, token);
         }
 
         /// <inheritdoc />
-        public void WaitAndRetry<TException>(int maxRetryCount, Func<int, TimeSpan> retryDuration, Action<Exception, TimeSpan> retryAction, Action execFunc) where TException : Exception
+        public void WaitAndRetry<TException>(int maxRetryCount, Func<int, TimeSpan> retryDuration, Action<Exception, TimeSpan> retryAction, Action<CancellationToken> execFunc, CancellationToken token) where TException : Exception
         {
             Policy.Handle<TException>()
                 .WaitAndRetry(maxRetryCount, retryDuration, retryAction)
-                .Execute(execFunc);
+                .Execute(execFunc, token);
         }
     }
 }

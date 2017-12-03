@@ -81,12 +81,13 @@ namespace kCura.WinEDDS.TApi
 				retryAttempt => TimeSpan.FromSeconds(retryAttempt == 1 ? 0 : _waitAndRetryPolicy.WaitTimeSecondsBetweenRetryAttempts),
                 (exception, timeSpan) => 
 				{
-                    GetFileLengthRetryAction(exception, fileName, lineNumberInParentFile, CancellationToken);
+                    GetFileLengthRetryAction(exception, fileName, lineNumberInParentFile);
                 },
-				() =>
+				(CancellationToken) =>
 				{
 					fileLength = _fileSystemService.GetFileLength(fileName);
-				}
+				}, 
+				CancellationToken
             );
 			
             return fileLength;
@@ -106,10 +107,8 @@ namespace kCura.WinEDDS.TApi
         }
    
 
-		private void GetFileLengthRetryAction(Exception ex, string fileName, int lineNumberInParentFile, CancellationToken token)
+		private void GetFileLengthRetryAction(Exception ex, string fileName, int lineNumberInParentFile)
         {
-			if (token != CancellationToken.None && token.IsCancellationRequested)
-				throw new OperationCanceledException();
 
             if (_disableNativeLocationValidation && ex is ArgumentException &&
                 ex.Message.Contains("Illegal characters in path."))
