@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using NUnit.Framework;
 
 namespace kCura.WinEDDS.TApi.NUnit.Integration
@@ -13,7 +14,8 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         private int _expectedExecFuncCallCount;
         private Func<int, TimeSpan> _retryDuration;
         private Action<Exception, TimeSpan> _retryAction;
-        private Action _execFunc;
+        private Action<CancellationToken> _execFunc;
+	    private CancellationToken token;
 
         private class WaitAndRetryPolicyException : Exception
         {
@@ -41,7 +43,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 
             GivenTheRetryDuration();
             GivenTheRetryAction();
-            GivenTheExecFunc(() => { _actualExecFuncCallCount++; });
+            GivenTheExecFunc((token) => { _actualExecFuncCallCount++; });
 
             //Act
             WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParams(maxRetryCount);
@@ -63,7 +65,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 
             GivenTheRetryDuration();
             GivenTheRetryAction();
-            GivenTheExecFunc(() => { _actualExecFuncCallCount++; });
+            GivenTheExecFunc((token) => { _actualExecFuncCallCount++; });
             
             WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParams(maxRetryCount);
             
@@ -82,7 +84,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 
             GivenTheRetryDuration();
             GivenTheRetryAction();
-            GivenTheExecFunc(() => {
+            GivenTheExecFunc((token) => {
                 _actualExecFuncCallCount++;
                 throw new WaitAndRetryPolicyException();
             });
@@ -104,7 +106,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 
             GivenTheRetryDuration();
             GivenTheRetryAction();
-            GivenTheExecFunc(() => {
+            GivenTheExecFunc((token) => {
                 _actualExecFuncCallCount++;
                 throw new WaitAndRetryPolicyException();
             });
@@ -125,7 +127,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 
             GivenTheRetryDuration();
             GivenTheRetryAction();
-            GivenTheExecFunc(() => {
+            GivenTheExecFunc((token) => {
                 _actualExecFuncCallCount++;
                 if (_actualExecFuncCallCount <= succesAfterRetryNum)
                 {
@@ -149,7 +151,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 
             GivenTheRetryDuration();
             GivenTheRetryAction();
-            GivenTheExecFunc(() => {
+            GivenTheExecFunc((token) => {
                 _actualExecFuncCallCount++;
                 if (_actualExecFuncCallCount <= succesAfterRetryNum)
                 {
@@ -187,7 +189,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
             _retryAction = (exception, timeSpan) => { _actualRetryCallCount++; };
         }
         
-        private void GivenTheExecFunc(Action action)
+        private void GivenTheExecFunc(Action<CancellationToken> action)
         {
             _execFunc = action;
         }
@@ -195,26 +197,26 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParams(int maxRetryCount)
         {
             var waitAndRetryPolicy = new WaitAndRetryPolicy(maxRetryCount, _waitTimeMillisecondsBetweenRetryAttempts);
-            waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(_retryDuration, _retryAction, _execFunc);
+            waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(_retryDuration, _retryAction, _execFunc, CancellationToken.None);
         }
 
         private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParamsThenThwowsException(int maxRetryCount)
         {
             var waitAndRetryPolicy = new WaitAndRetryPolicy(maxRetryCount, _waitTimeMillisecondsBetweenRetryAttempts);
-            Assert.That(() => waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(_retryDuration, _retryAction, _execFunc),
+            Assert.That(() => waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(_retryDuration, _retryAction, _execFunc, CancellationToken.None),
                 Throws.Exception.TypeOf<WaitAndRetryPolicyException>());
         }
 
         private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParams(int maxRetryCount)
         {
             var waitAndRetryPolicy = new WaitAndRetryPolicy();
-            waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(maxRetryCount, _retryDuration, _retryAction, _execFunc);
+            waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(maxRetryCount, _retryDuration, _retryAction, _execFunc, CancellationToken.None);
         }
 
         private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParamsThenThwowsException(int maxRetryCount)
         {
             var waitAndRetryPolicy = new WaitAndRetryPolicy();
-            Assert.That(() => waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(maxRetryCount, _retryDuration, _retryAction, _execFunc),
+            Assert.That(() => waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(maxRetryCount, _retryDuration, _retryAction, _execFunc, CancellationToken.None),
                 Throws.Exception.TypeOf<WaitAndRetryPolicyException>());
         }
         

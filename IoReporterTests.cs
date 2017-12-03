@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Moq;
 using NUnit.Framework;
 using Relativity.Logging;
@@ -124,12 +125,12 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         private void GivenTheWaitAndRetryCallback()
         {
             _waitAndRetry.Setup(obj => obj.WaitAndRetry<Exception>(It.IsAny<Func<int, TimeSpan>>(),
-                    It.IsAny<Action<Exception, TimeSpan>>(), It.IsAny<Action>()))
-                .Callback<Func<int, TimeSpan>, Action<Exception, TimeSpan>, Action>((retryDuration, retryAction, execFunc) =>
+                    It.IsAny<Action<Exception, TimeSpan>>(), It.IsAny<Action<CancellationToken>>(), It.IsAny<CancellationToken>()))
+                .Callback<Func<int, TimeSpan>, Action<Exception, TimeSpan>, Action<CancellationToken>, CancellationToken>((retryDuration, retryAction, execFunc, token) =>
                 {
                     _actualRetryDuractionFunc = retryDuration;
                     retryAction(_expectedException, TimeSpan.Zero);
-                    execFunc();
+                    execFunc(token);
                 });
         }
 
@@ -161,8 +162,8 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         private void GivenTheWaitAndRetryCallbackThatThrowsArgumentException()
         {
             _waitAndRetry.Setup(obj => obj.WaitAndRetry<Exception>(It.IsAny<Func<int, TimeSpan>>(),
-                    It.IsAny<Action<Exception, TimeSpan>>(), It.IsAny<Action>()))
-                .Callback<Func<int, TimeSpan>, Action<Exception, TimeSpan>, Action>((retryDuration, retryAction, execFunc) =>
+                    It.IsAny<Action<Exception, TimeSpan>>(), It.IsAny<Action<CancellationToken>>(), It.IsAny<CancellationToken>()))
+                .Callback<Func<int, TimeSpan>, Action<Exception, TimeSpan>, Action<CancellationToken>, CancellationToken>((retryDuration, retryAction, execFunc, token) =>
                 {
                     retryAction(_expectedArgumentException, TimeSpan.Zero);
                 });

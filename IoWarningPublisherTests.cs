@@ -23,7 +23,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 
         [TestCase("Event message", 10)]
         [TestCase("Event message from huge load file", 3000000000)]
-        public void ItShouldGetFileLength(string message, long lineNubmer)
+        public void ItShouldPublishWarningMessage(string message, long lineNubmer)
         {
 	        GivenTheInstanceOfPublisher();
 	        GivenTheMethodWhichHandlesTheEvent(TestEventHandler);
@@ -32,9 +32,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 
 	        ResultsDictionaryContains(message, lineNubmer);
         }
-
 		
-
 		#region helper methods
 		private void WhenEventOccursWithMessageAndLineNumber(string message, long lineNumber)
 		{
