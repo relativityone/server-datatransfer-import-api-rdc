@@ -3,25 +3,26 @@ using System.Text;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.LoadFileEntry;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 {
-	/// <summary>
-	///     TODO NotTooLong... heh
-	/// </summary>
 	public class NotTooLongTextToLoadFile : ILongTextHandler
 	{
 		private readonly LongTextHelper _longTextHelper;
 		private readonly FromFieldToLoadFileWriter _fileWriter;
+		private readonly ILog _logger;
 
-		public NotTooLongTextToLoadFile(LongTextHelper longTextHelper, FromFieldToLoadFileWriter fileWriter)
+		public NotTooLongTextToLoadFile(LongTextHelper longTextHelper, FromFieldToLoadFileWriter fileWriter, ILog logger)
 		{
 			_longTextHelper = longTextHelper;
 			_fileWriter = fileWriter;
+			_logger = logger;
 		}
 
 		public void HandleLongText(ObjectExportInfo artifact, ViewFieldInfo field, DeferredEntry lineEntry)
 		{
+			_logger.LogVerbose("Writing text from memory to memory stream for formatting. Passing value to line entry. Field {fieldName}.", field.AvfColumnName);
 			using (var memoryStream = new MemoryStream())
 			{
 				using (var streamWriter = new StreamWriter(memoryStream, Encoding.Default))
