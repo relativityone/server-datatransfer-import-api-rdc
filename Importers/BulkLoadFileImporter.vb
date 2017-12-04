@@ -271,53 +271,53 @@ Namespace kCura.WinEDDS
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
 		Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean,
 					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			Me.New(args, processController, ioReporterInstance, logger, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit, 
-                   initializeArtifactReader:=True, executionSource:=executionSource)
+			Me.New(args, processController, ioReporterInstance, logger, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit,
+				   initializeArtifactReader:=True, executionSource:=executionSource)
 		End Sub
 
-        ''' <summary>
-        ''' Constructs a new importer that will prepare a bulk load file from a provided file.
-        ''' </summary>
-        ''' <param name="args">Information about the file being loaded</param>
-        ''' <param name="processController">The process that is running</param>
-        ''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
-        ''' <param name="initializeUploaders">Sets whether or not the uploaders should be initialized
-        ''' for use</param>
-        ''' <param name="processID">The identifier of the process running</param>
-        ''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
-        ''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
-        ''' <param name="executionSource">Optional parameter that states where the import
-        ''' is coming from.</param>
-        ''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
-        ''' is <c>null</c> or <c>String.Empty</c>.</exception>
-        Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean,
-                        ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-            Me.New(args, processController, ioReporterInstance, logger, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit, initializeArtifactReader:=True, executionSource:=executionSource)
-        End Sub
+		''' <summary>
+		''' Constructs a new importer that will prepare a bulk load file from a provided file.
+		''' </summary>
+		''' <param name="args">Information about the file being loaded</param>
+		''' <param name="processController">The process that is running</param>
+		''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
+		''' <param name="initializeUploaders">Sets whether or not the uploaders should be initialized
+		''' for use</param>
+		''' <param name="processID">The identifier of the process running</param>
+		''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
+		''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
+		''' <param name="executionSource">Optional parameter that states where the import
+		''' is coming from.</param>
+		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
+		''' is <c>null</c> or <c>String.Empty</c>.</exception>
+		Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean,
+						ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
+			Me.New(args, processController, ioReporterInstance, logger, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit, initializeArtifactReader:=True, executionSource:=executionSource)
+		End Sub
 
-        ''' <summary>
-        ''' Constructs a new importer that will prepare a bulk load file from a provided file.
-        ''' </summary>
-        ''' <param name="args">Information about the file being loaded</param>
-        ''' <param name="processController">The process that is running</param>
-        ''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
-        ''' <param name="initializeUploaders">Sets whether or not the uploaders should be initialized
-        ''' for use</param>
-        ''' <param name="processID">The identifier of the process running</param>
-        ''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
-        ''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
-        ''' <param name="executionSource">Optional parameter that states where the import
-        ''' is coming from.</param>
-        ''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
-        ''' is <c>null</c> or <c>String.Empty</c>.</exception>
-        Public Sub New(args As LoadFile, processController As Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog, 
-                       timeZoneOffset As Int32, autoDetect As Boolean, initializeUploaders As Boolean, processID As Guid, doRetryLogic As Boolean, bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean, initializeArtifactReader As Boolean,
+		''' <summary>
+		''' Constructs a new importer that will prepare a bulk load file from a provided file.
+		''' </summary>
+		''' <param name="args">Information about the file being loaded</param>
+		''' <param name="processController">The process that is running</param>
+		''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
+		''' <param name="initializeUploaders">Sets whether or not the uploaders should be initialized
+		''' for use</param>
+		''' <param name="processID">The identifier of the process running</param>
+		''' <param name="bulkLoadFileFieldDelimiter">Sets the field delimiter to use when writing
+		''' out the bulk load file. Line delimiters will be this value plus a line feed.</param>
+		''' <param name="executionSource">Optional parameter that states where the import
+		''' is coming from.</param>
+		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
+		''' is <c>null</c> or <c>String.Empty</c>.</exception>
+		Public Sub New(args As LoadFile, processController As Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog,
+					   timeZoneOffset As Int32, autoDetect As Boolean, initializeUploaders As Boolean, processID As Guid, doRetryLogic As Boolean, bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean, initializeArtifactReader As Boolean,
 					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
 			MyBase.New(args, ioReporterInstance, logger, timeZoneOffset, doRetryLogic, autoDetect, initializeArtifactReader)
 
 			' Avoid excessive concurrent dictionary hits by caching frequently used config settings.
 			_usePipeliningForNativeAndObjectImports = Config.UsePipeliningForNativeAndObjectImports
-			_createFoldersInWebAPI = Config.CreateFoldersInWebAPI
+			_createFoldersInWebApi = Config.CreateFoldersInWebAPI
 			_createErrorForEmptyNativeFile = Config.CreateErrorForEmptyNativeFile
 
 			' get an instance of the specific type of artifact reader so we can get the fieldmapped event
@@ -347,16 +347,16 @@ Namespace kCura.WinEDDS
 			End If
 			_copyFileToRepository = args.CopyFilesToDocumentRepository
 
-	        If Not _createFoldersInWebAPI Then
-		        'Client side folder creation (added back for Dominus# 1127879)
-		        If autoDetect Then _folderManager.Read(args.CaseInfo.ArtifactID, args.CaseInfo.RootFolderID)
+			If Not _createFoldersInWebApi Then
+				'Client side folder creation (added back for Dominus# 1127879)
+				If autoDetect Then _folderManager.Read(args.CaseInfo.ArtifactID, args.CaseInfo.RootFolderID)
 			End If
 
 			Me.ProcessController = processController
 			FirstTimeThrough = True
 			_caseInfo = args.CaseInfo
 			_settings = args
-			_processID = processID
+			_processId = processID
 			_startLineNumber = args.StartLineNumber
 			OverlayArtifactId = args.IdentityFieldId
 
@@ -368,7 +368,7 @@ Namespace kCura.WinEDDS
 
 			BatchSizeHistoryList = New System.Collections.Generic.List(Of Int32)
 
-            Me.IoReporterInstance = ioReporterInstance
+			Me.IoReporterInstance = ioReporterInstance
 		End Sub
 
 		Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)
@@ -438,7 +438,7 @@ Namespace kCura.WinEDDS
 		Public Sub WriteObjectLineToTempFile(ByVal ownerIdentifier As String, ByVal objectName As String, ByVal artifactID As Int32, ByVal objectTypeArtifactID As Int32, ByVal fieldID As Int32)
 			_outputObjectFileWriter.WriteLine(String.Format("{1}{0}{2}{0}{3}{0}{4}{0}{5}{0}", BulkLoadFileFieldDelimiter, ownerIdentifier, objectName, artifactID, objectTypeArtifactID, fieldID))
 		End Sub
-		
+
 #End Region
 
 #Region "Main"
@@ -460,155 +460,155 @@ Namespace kCura.WinEDDS
 				Dim uploadStatus As String = String.Join(" - ", retval.ToArray())
 
 				' Note: single vs. bulk mode is a vestige. Bulk mode is always true.
-				OnUploadModeChangeEvent(uploadStatus, true)
+				OnUploadModeChangeEvent(uploadStatus, True)
 			End If
 		End Sub
 
-        ''' <summary>
-        ''' Loads all the documents in a load file
-        ''' </summary>
-        ''' <param name="path">The load file which contains information about the document being loaded</param>
-        ''' <returns>True indicates success.  False or Nothing indicates failure.</returns>
-        ''' <remarks></remarks>
-        Public Overridable Function ReadFile(ByVal path As String) As Object Implements IImportJob.ReadFile
-            Dim line As Api.ArtifactFieldCollection
-            _filePath = path
-            _timekeeper.MarkStart("TOTAL")
-            Try
-                OnStartFileImport()
-                _timekeeper.MarkStart("ReadFile_InitializeMembers")
-                PublishUploadModeEvent()
-                If Not InitializeMembers(path) Then
-                    Return False
-                End If
-                ProcessedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
-                _timekeeper.MarkEnd("ReadFile_InitializeMembers")
+		''' <summary>
+		''' Loads all the documents in a load file
+		''' </summary>
+		''' <param name="path">The load file which contains information about the document being loaded</param>
+		''' <returns>True indicates success.  False or Nothing indicates failure.</returns>
+		''' <remarks></remarks>
+		Public Overridable Function ReadFile(ByVal path As String) As Object Implements IImportJob.ReadFile
+			Dim line As Api.ArtifactFieldCollection
+			_filePath = path
+			_timekeeper.MarkStart("TOTAL")
+			Try
+				OnStartFileImport()
+				_timekeeper.MarkStart("ReadFile_InitializeMembers")
+				PublishUploadModeEvent()
+				If Not InitializeMembers(path) Then
+					Return False
+				End If
+				ProcessedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
+				_timekeeper.MarkEnd("ReadFile_InitializeMembers")
 
-                If (_enforceDocumentLimit) Then
-                    If (Overwrite = Relativity.ImportOverwriteType.Append And _artifactTypeID = Relativity.ArtifactType.Document) Then
-                        Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
-                        Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
-                        Dim fileLineStart As Long = _startLineNumber
-                        If _startLineNumber <= 0 Then fileLineStart = 1
-                        Dim countAfterJob As Long = currentDocCount + (RecordCount - (fileLineStart - 1))
-                        If (docLimit <> 0 And countAfterJob > docLimit) Then
-                            Dim errorMessage As String = String.Format("The document import was canceled.  It would have exceeded the workspace's document limit of {1} by {0} documents.", countAfterJob - docLimit, docLimit)
-                            Throw New Exception(errorMessage)
-                            Return False
-                        End If
-                    End If
-                End If
+				If (_enforceDocumentLimit) Then
+					If (Overwrite = Relativity.ImportOverwriteType.Append And _artifactTypeID = Relativity.ArtifactType.Document) Then
+						Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
+						Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
+						Dim fileLineStart As Long = _startLineNumber
+						If _startLineNumber <= 0 Then fileLineStart = 1
+						Dim countAfterJob As Long = currentDocCount + (RecordCount - (fileLineStart - 1))
+						If (docLimit <> 0 And countAfterJob > docLimit) Then
+							Dim errorMessage As String = String.Format("The document import was canceled.  It would have exceeded the workspace's document limit of {1} by {0} documents.", countAfterJob - docLimit, docLimit)
+							Throw New Exception(errorMessage)
+							Return False
+						End If
+					End If
+				End If
 
-                LogInformation("Preparing to import documents via WinEDDS.")
-                _timekeeper.MarkStart("ReadFile_ProcessDocuments")
-                _columnHeaders = _artifactReader.GetColumnNames(_settings)
-                If _firstLineContainsColumnNames Then Offset = -1
-                Statistics.BatchSize = Me.ImportBatchSize
-                _jobCounter = 1
-                Using fileService As kCura.OI.FileID.FileIDService = New kCura.OI.FileID.FileIDService()
-                    While ShouldImport AndAlso _artifactReader.HasMoreRecords
-                        Try
-                            If Me.CurrentLineNumber < _startLineNumber Then
-                                Me.AdvanceLine()
+				LogInformation("Preparing to import documents via WinEDDS.")
+				_timekeeper.MarkStart("ReadFile_ProcessDocuments")
+				_columnHeaders = _artifactReader.GetColumnNames(_settings)
+				If _firstLineContainsColumnNames Then Offset = -1
+				Statistics.BatchSize = Me.ImportBatchSize
+				_jobCounter = 1
+				Using fileService As kCura.OI.FileID.FileIDService = New kCura.OI.FileID.FileIDService()
+					While ShouldImport AndAlso _artifactReader.HasMoreRecords
+						Try
+							If Me.CurrentLineNumber < _startLineNumber Then
+								Me.AdvanceLine()
 
-                                ' This will ensure progress takes into account the start line number
-                                FileTapiProgressCount += 1
-                            Else
-                                _timekeeper.MarkStart("ReadFile_GetLine")
-                                Statistics.DocCount += 1
-                                'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
-                                ' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
-                                ' -Phil S. 06/12/2012
-                                WriteStatusLine(Windows.Process.EventType.Count, String.Empty)
-                                line = _artifactReader.ReadArtifact
-                                _timekeeper.MarkEnd("ReadFile_GetLine")
-                                Dim lineStatus As Int32 = 0
-                                'If line.Count <> _columnHeaders.Length Then
-                                '	lineStatus += ImportStatus.ColumnMismatch								 'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
-                                'End If
+								' This will ensure progress takes into account the start line number
+								FileTapiProgressCount += 1
+							Else
+								_timekeeper.MarkStart("ReadFile_GetLine")
+								Statistics.DocCount += 1
+								'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
+								' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
+								' -Phil S. 06/12/2012
+								WriteStatusLine(Windows.Process.EventType.Count, String.Empty)
+								line = _artifactReader.ReadArtifact
+								_timekeeper.MarkEnd("ReadFile_GetLine")
+								Dim lineStatus As Int32 = 0
+								'If line.Count <> _columnHeaders.Length Then
+								'	lineStatus += ImportStatus.ColumnMismatch								 'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
+								'End If
 
-                                _timekeeper.MarkStart("ReadFile_ManageDocument")
-                                Dim id As String = ManageDocument(fileService, line, lineStatus)
-                                _timekeeper.MarkEnd("ReadFile_ManageDocument")
+								_timekeeper.MarkStart("ReadFile_ManageDocument")
+								Dim id As String = ManageDocument(fileService, line, lineStatus)
+								_timekeeper.MarkEnd("ReadFile_ManageDocument")
 
-                                _timekeeper.MarkStart("ReadFile_IdTrack")
-                                ProcessedDocumentIdentifiers.Add(id, CurrentLineNumber.ToString)
-                                _timekeeper.MarkEnd("ReadFile_IdTrack")
-                            End If
-                        Catch ex As LoadFileBase.CodeCreationException
-                            If ex.IsFatal Then
-                                WriteFatalError(Me.CurrentLineNumber, ex)
-                                Me.LogFatal(ex, "A fatal code operation error has occurred managing an import document.")
-                            Else
-                                WriteError(Me.CurrentLineNumber, ex.Message)
-                                Me.LogError(ex, "A serious code operation error has occurred managing an import document.")
-                            End If
-                        Catch ex As System.IO.PathTooLongException
-                            WriteError(Me.CurrentLineNumber, ERROR_MESSAGE_FOLDER_NAME_TOO_LONG)
-                            Me.LogError(ex, "An import error has occured because of invalid document path - the path is too long.")
-                        Catch ex As kCura.Utility.ImporterExceptionBase
-                            WriteError(Me.CurrentLineNumber, ex.Message)
-                            Me.LogError(ex, "An import data error has occurred managing an import document.")
-                        Catch ex As kCura.WinEDDS.TApi.FileInfoInvalidPathException
-                            WriteError(Me.CurrentLineNumber, ex.Message)
-                            Me.LogError(ex, "An import error has occured because of invalid document path - illegal characters in path.")
-                        Catch ex As System.IO.FileNotFoundException
-                            WriteError(Me.CurrentLineNumber, ex.Message)
-                            Me.LogError(ex, "A file not found error has occurred managing an import document.")
-                        Catch ex As System.Exception
-                            WriteFatalError(Me.CurrentLineNumber, ex)
-                            Me.LogFatal(ex, "A serious unexpected error has occurred managing an import document.")
-                        End Try
-                    End While
+								_timekeeper.MarkStart("ReadFile_IdTrack")
+								ProcessedDocumentIdentifiers.Add(id, CurrentLineNumber.ToString)
+								_timekeeper.MarkEnd("ReadFile_IdTrack")
+							End If
+						Catch ex As LoadFileBase.CodeCreationException
+							If ex.IsFatal Then
+								WriteFatalError(Me.CurrentLineNumber, ex)
+								Me.LogFatal(ex, "A fatal code operation error has occurred managing an import document.")
+							Else
+								WriteError(Me.CurrentLineNumber, ex.Message)
+								Me.LogError(ex, "A serious code operation error has occurred managing an import document.")
+							End If
+						Catch ex As System.IO.PathTooLongException
+							WriteError(Me.CurrentLineNumber, ERROR_MESSAGE_FOLDER_NAME_TOO_LONG)
+							Me.LogError(ex, "An import error has occured because of invalid document path - the path is too long.")
+						Catch ex As kCura.Utility.ImporterExceptionBase
+							WriteError(Me.CurrentLineNumber, ex.Message)
+							Me.LogError(ex, "An import data error has occurred managing an import document.")
+						Catch ex As kCura.WinEDDS.TApi.FileInfoInvalidPathException
+							WriteError(Me.CurrentLineNumber, ex.Message)
+							Me.LogError(ex, "An import error has occured because of invalid document path - illegal characters in path.")
+						Catch ex As System.IO.FileNotFoundException
+							WriteError(Me.CurrentLineNumber, ex.Message)
+							Me.LogError(ex, "A file not found error has occurred managing an import document.")
+						Catch ex As System.Exception
+							WriteFatalError(Me.CurrentLineNumber, ex)
+							Me.LogFatal(ex, "A serious unexpected error has occurred managing an import document.")
+						End Try
+					End While
 
-                    ' Dump OutSideIn info
-                    Dim fileIdInfo As kCura.OI.FileID.FileIDInfo = fileService.GetConfigInfo()
-                    Me.LogInformation("FileID service info.")
-                    Me.LogInformation("Version: '{0}'.", fileIdInfo.Version)
-                    Me.LogInformation("Idle worker timeout: '{0}'.", fileIdInfo.IdleWorkerTimeout)
-                    Me.LogInformation("Install location: '{0}'.", fileIdInfo.InstallLocation)
-                    Me.LogInformation("Minimum worker count: '{0}'.", fileIdInfo.MinimumWorkerCount)
+					' Dump OutSideIn info
+					Dim fileIdInfo As kCura.OI.FileID.FileIDInfo = fileService.GetConfigInfo()
+					Me.LogInformation("FileID service info.")
+					Me.LogInformation("Version: '{0}'.", fileIdInfo.Version)
+					Me.LogInformation("Idle worker timeout: '{0}'.", fileIdInfo.IdleWorkerTimeout)
+					Me.LogInformation("Install location: '{0}'.", fileIdInfo.InstallLocation)
+					Me.LogInformation("Minimum worker count: '{0}'.", fileIdInfo.MinimumWorkerCount)
 
-                    If fileIdInfo.HasError Then
-                        Me.LogWarning("Error: {0}", fileIdInfo.Exception)
-                    End If
-                End Using
+					If fileIdInfo.HasError Then
+						Me.LogWarning("Error: {0}", fileIdInfo.Exception)
+					End If
+				End Using
 
-                If Not _task Is Nothing AndAlso _task.Status.In(
-                    Threading.Tasks.TaskStatus.Running,
-                    Threading.Tasks.TaskStatus.WaitingForActivation,
-                    Threading.Tasks.TaskStatus.WaitingForChildrenToComplete,
-                    Threading.Tasks.TaskStatus.WaitingToRun) Then
-                    WaitOnPushBatchTask()
-                End If
-                _timekeeper.MarkEnd("ReadFile_ProcessDocuments")
-                _timekeeper.MarkStart("ReadFile_OtherFinalization")
-                Me.TryPushNativeBatch(True)
-                WaitOnPushBatchTask()
-                RaiseEvent EndFileImport(RunId)
-                WriteEndImport("Finish")
-                _artifactReader.Close()
-                _timekeeper.MarkEnd("ReadFile_OtherFinalization")
-                _timekeeper.MarkEnd("TOTAL")
-                _timekeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
-                LogInformation("Successfully imported {count} documents via WinEDDS.", FileTapiProgressCount)
+				If Not _task Is Nothing AndAlso _task.Status.In(
+					Threading.Tasks.TaskStatus.Running,
+					Threading.Tasks.TaskStatus.WaitingForActivation,
+					Threading.Tasks.TaskStatus.WaitingForChildrenToComplete,
+					Threading.Tasks.TaskStatus.WaitingToRun) Then
+					WaitOnPushBatchTask()
+				End If
+				_timekeeper.MarkEnd("ReadFile_ProcessDocuments")
+				_timekeeper.MarkStart("ReadFile_OtherFinalization")
+				Me.TryPushNativeBatch(True)
+				WaitOnPushBatchTask()
+				RaiseEvent EndFileImport(RunId)
+				WriteEndImport("Finish")
+				_artifactReader.Close()
+				_timekeeper.MarkEnd("ReadFile_OtherFinalization")
+				_timekeeper.MarkEnd("TOTAL")
+				_timekeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
+				LogInformation("Successfully imported {count} documents via WinEDDS.", FileTapiProgressCount)
 
-                ' Dump statistic object.
-                Me.DumpStatisticsInfo()
-                Return True
-            Catch ex As System.Exception
-                WriteFatalError(Me.CurrentLineNumber, ex)
-                Me.LogFatal(ex, "A serious unexpected error has occurred importing documents.")
-            Finally
-                _timekeeper.MarkStart("ReadFile_CleanupTempTables")
-                DestroyTapiBridges()
-                CleanupTempTables()
-                _timekeeper.MarkEnd("ReadFile_CleanupTempTables")
-            End Try
-            Return Nothing
-        End Function
+				' Dump statistic object.
+				Me.DumpStatisticsInfo()
+				Return True
+			Catch ex As System.Exception
+				WriteFatalError(Me.CurrentLineNumber, ex)
+				Me.LogFatal(ex, "A serious unexpected error has occurred importing documents.")
+			Finally
+				_timekeeper.MarkStart("ReadFile_CleanupTempTables")
+				DestroyTapiBridges()
+				CleanupTempTables()
+				_timekeeper.MarkEnd("ReadFile_CleanupTempTables")
+			End Try
+			Return Nothing
+		End Function
 
-        Private Function InitializeMembers(ByVal path As String) As Boolean
+		Private Function InitializeMembers(ByVal path As String) As Boolean
 			RecordCount = _artifactReader.CountRecords
 			If RecordCount = -1 Then
 				OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.Progress, CurrentLineNumber, CurrentLineNumber, CancelEventMsg, CurrentStatisticsSnapshot))
