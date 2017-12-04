@@ -10,20 +10,22 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 
 		private readonly LongTextHelper _longTextHelper;
 
+		private readonly LongTextRepository _longTextRepository;
 		private readonly ILongTextBuilder _longTextPrecedenceBuilder;
 		private readonly ILongTextBuilder _longTextFieldBuilder;
 		private readonly ILongTextBuilder _longTextIproFullTextBuilder;
 
 		public LongTextRepositoryBuilder(LongTextHelper longTextHelper, ILongTextBuilder longTextPrecedenceBuilder, ILongTextBuilder longTextFieldBuilder,
-			ILongTextBuilder longTextIproFullTextBuilder)
+			ILongTextBuilder longTextIproFullTextBuilder, LongTextRepository longTextRepository)
 		{
 			_longTextHelper = longTextHelper;
 			_longTextPrecedenceBuilder = longTextPrecedenceBuilder;
 			_longTextFieldBuilder = longTextFieldBuilder;
 			_longTextIproFullTextBuilder = longTextIproFullTextBuilder;
+			_longTextRepository = longTextRepository;
 		}
 
-		public List<LongText> AddLongTextForArtifact(ObjectExportInfo artifact)
+		public void AddLongTextForArtifact(ObjectExportInfo artifact)
 		{
 			_longTexts = new List<LongText>();
 
@@ -39,7 +41,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			IList<LongText> iproFullTexts = _longTextIproFullTextBuilder.CreateLongText(artifact);
 			Add(iproFullTexts);
 
-			return _longTexts;
+			//TODO think of something better...
+			_longTextRepository.Add(_longTexts);
 		}
 
 

@@ -1,7 +1,6 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
@@ -13,8 +12,6 @@ using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Delimiter;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation;
-using kCura.WinEDDS.Core.IO;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.Exporters.Validator;
 using kCura.WinEDDS.IO;
@@ -43,147 +40,93 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
-			InstallLogger(container);
-			InstallValidators(container);
-			InstallDataSize(container);
-			InstallFieldService(container);
-			InstallUtils(container);
-			InstallLabelManager(container);
-			InstallWriters(container);
-			InstallLongText(container);
+			InstallFromWinEdds(container);
+			InstallConnectionToWinEdds(container);
+			InstallTemporary(container);
+			InstallCustom(container);
 
-			container.Register(Component.For<ExportFile>().Instance(ExportSettings).LifestyleSingleton());
-			container.Register(Component.For<IExportManager>().Instance(_exporter.ExportManager).LifestyleSingleton());
+			//TODO extract interfaces and then remove Self()
+			container.Register(Classes.FromThisAssembly().Pick().WithService.DefaultInterfaces().WithService.Self());
+		}
+
+		private void InstallFromWinEdds(IWindsorContainer container)
+		{
+			container.Register(Component.For<PaddingWarningValidator>().ImplementedBy<PaddingWarningValidator>());
+			container.Register(Component.For<IFileStreamFactory>().ImplementedBy<FileStreamFactory>());
+		}
+
+		private void InstallConnectionToWinEdds(IWindsorContainer container)
+		{
+			container.Register(Component.For<ExportFile>().Instance(ExportSettings));
+			container.Register(Component.For<IExportManager>().Instance(_exporter.ExportManager));
 			container.Register(Component.For<IStatus>().Instance(_exporter));
-
-			container.Register(Component.For<ImagesRollupFactory>().ImplementedBy<ImagesRollupFactory>());
-			container.Register(Component.For<IImagesRollup>().UsingFactoryMethod(k => k.Resolve<ImagesRollupFactory>().Create(ExportSettings)));
-
-			container.Register(Component.For<ErrorFileDestinationPath>().ImplementedBy<ErrorFileDestinationPath>());
-			container.Register(Component.For<IErrorFile>().UsingFactoryMethod(k => k.Resolve<ErrorFileDestinationPath>()));
-
 			container.Register(Component.For<IFileNameProvider>().Instance(_exporter.FileNameProvider));
+			container.Register(Component.For<IUserNotification>().Instance(_exporter.InteractionManager));
+		}
 
-			container.Register(Component.For<NativeExportRequestBuilder>().ImplementedBy<NativeExportRequestBuilder>());
-			container.Register(Component.For<ImageExportRequestBuilder>().ImplementedBy<ImageExportRequestBuilder>());
-
-			container.Register(Component.For<LongTextRepository>().ImplementedBy<LongTextRepository>());
-			container.Register(Component.For<LongTextRepositoryBuilderFactory>().ImplementedBy<LongTextRepositoryBuilderFactory>());
-			container.Register(Component.For<LongTextRepositoryBuilder>().UsingFactoryMethod(k => k.Resolve<LongTextRepositoryBuilderFactory>().Create(ExportSettings)));
-
-			container.Register(Component.For<ExportTapiBridgeFactory>().ImplementedBy<ExportTapiBridgeFactory>());
-
-			container.Register(Component.For<IBatchExporter>().ImplementedBy<BatchExporter>());
-			container.Register(Component.For<FilesDownloader>().ImplementedBy<FilesDownloader>());
-
-			container.Register(Component.For<IExportCleanUp>().ImplementedBy<ExportCleanUp>());
-
-			container.Register(Component.For<FilePathTransformerFactory>().ImplementedBy<FilePathTransformerFactory>());
-			container.Register(Component.For<IFilePathTransformer>().UsingFactoryMethod(k => k.Resolve<FilePathTransformerFactory>().Create(ExportSettings)));
-
-			container.Register(Component.For<ImageLoadFileFactory>().ImplementedBy<ImageLoadFileFactory>());
-			container.Register(Component.For<Metadata.Images.ImageLoadFile>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileFactory>().Create(ExportSettings)));
-			container.Register(Component.For<ImageLoadFileEntryFactory>().ImplementedBy<ImageLoadFileEntryFactory>());
-			container.Register(Component.For<ILoadFileEntry>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileEntryFactory>().Create(ExportSettings)));
-
-			container.Register(Component.For<LoadFileData>().ImplementedBy<LoadFileData>());
-			container.Register(Component.For<LoadFileCellFormatterFactory>().ImplementedBy<LoadFileCellFormatterFactory>());
-			container.Register(Component.For<ILoadFileCellFormatter>().UsingFactoryMethod(k => k.Resolve<LoadFileCellFormatterFactory>().Create(ExportSettings)));
-
-			container.Register(Component.For<FullTextLoadFileEntryFactory>().ImplementedBy<FullTextLoadFileEntryFactory>());
-			container.Register(Component.For<IFullTextLoadFileEntry>().UsingFactoryMethod(k => k.Resolve<FullTextLoadFileEntryFactory>().Create(ExportSettings)));
-
-			container.Register(Component.For<ImageLoadFileDestinationPath>().ImplementedBy<ImageLoadFileDestinationPath>());
-			container.Register(Component.For<LoadFileDestinationPath>().ImplementedBy<LoadFileDestinationPath>());
+		/// <summary>
+		///     TODO remove
+		/// </summary>
+		/// <param name="container"></param>
+		private void InstallTemporary(IWindsorContainer container)
+		{
 			container.Register(Component.For<StatisticsWrapper>().UsingFactoryMethod(k => new StatisticsWrapper(_exporter._statistics)));
+			container.Register(Component.For<ILog>().Instance(new NullLogger()).LifestyleSingleton());
 
-			container.Register(Component.For<Settings.Config>().ImplementedBy<Settings.Config>());
-
-			container.Register(Component.For<LongTextStreamFormatterFactory>().ImplementedBy<LongTextStreamFormatterFactory>());
-
-			//TODO temporary
 			container.Register(Component.For<FileDownloader>().UsingFactoryMethod(k => new FileDownloader(ExportSettings.Credential,
 				$"{ExportSettings.CaseInfo.DocumentPath}\\EDDS{ExportSettings.CaseInfo.ArtifactID}", ExportSettings.CaseInfo.DownloadHandlerURL, ExportSettings.CookieContainer,
 				Service.Settings.AuthenticationToken)));
 		}
 
-		private void InstallLongText(IWindsorContainer container)
+		private void InstallCustom(IWindsorContainer container)
 		{
-			container.Register(Component.For<LongTextHelper>().ImplementedBy<LongTextHelper>());
-			container.Register(Component.For<LongTextHandlerFactory>().ImplementedBy<LongTextHandlerFactory>());
-			container.Register(Component.For<ILongTextHandler>().UsingFactoryMethod(k => k.Resolve<LongTextHandlerFactory>().Create(ExportSettings)));
-			container.Register(Component.For<DelimiterFactory>().ImplementedBy<DelimiterFactory>());
-			container.Register(Component.For<IDelimiter>().UsingFactoryMethod(k => k.Resolve<DelimiterFactory>().Create(ExportSettings)));
+			InstallFieldService(container);
+			InstallDirectory(container);
+			InstallImages(container);
+			InstallNatives(container);
+			InstallLongText(container);
 
-			container.Register(Component.For<LongTextToLoadFile>().ImplementedBy<LongTextToLoadFile>());
-			container.Register(Component.For<TooLongTextToLoadFile>().ImplementedBy<TooLongTextToLoadFile>());
-			container.Register(Component.For<NotTooLongTextToLoadFile>().ImplementedBy<NotTooLongTextToLoadFile>());
-			container.Register(Component.For<FromFileToLoadFileWriter>().ImplementedBy<FromFileToLoadFileWriter>());
-			container.Register(Component.For<FromFieldToLoadFileWriter>().ImplementedBy<FromFieldToLoadFileWriter>());
-		}
-
-		private static void InstallWriters(IWindsorContainer container)
-		{
-			container.Register(Component.For<StreamFactory>().ImplementedBy<StreamFactory>());
-			container.Register(Component.For<WritersRetryPolicy>().ImplementedBy<WritersRetryPolicy>());
-
-			container.Register(Component.For<ImageLoadFileWriterFactory>().ImplementedBy<ImageLoadFileWriterFactory>());
-			container.Register(Component.For<ImageLoadFileWriter>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileWriterFactory>().Create()));
-
-			container.Register(Component.For<LoadFileWriterFactory>().ImplementedBy<LoadFileWriterFactory>());
-			container.Register(Component.For<LoadFileWriter>().UsingFactoryMethod(k => k.Resolve<LoadFileWriterFactory>().Create()));
-		}
-
-		private void InstallLogger(IWindsorContainer container)
-		{
-			container.Register(Component.For<ILog>().Instance(new NullLogger()).LifestyleSingleton());
-		}
-
-		private void InstallValidators(IWindsorContainer container)
-		{
-			container.Register(Component.For<ExportPermissionCheck>().ImplementedBy<ExportPermissionCheck>());
-			container.Register(Component.For<FilesOverwriteValidator>().ImplementedBy<FilesOverwriteValidator>());
-			container.Register(Component.For<VolumeAndSubdirectoryValidator>().ImplementedBy<VolumeAndSubdirectoryValidator>());
-			container.Register(Component.For<PaddingWarningValidator>().ImplementedBy<PaddingWarningValidator>());
-			container.Register(Component.For<IExportValidation>().ImplementedBy<ExportValidation>());
-
-			container.Register(Component.For<IUserNotification>().Instance(_exporter.InteractionManager));
-		}
-
-		private void InstallDataSize(IWindsorContainer container)
-		{
-			container.Register(Component.For<ImageExportableSize>().ImplementedBy<ImageExportableSize>());
-			container.Register(Component.For<NativeExportableSize>().ImplementedBy<NativeExportableSize>());
-			container.Register(Component.For<TextExportableSize>().ImplementedBy<TextExportableSize>());
-			container.Register(Component.For<IObjectExportableSize>().ImplementedBy<ObjectExportableSize>());
+			// OTHER
+			container.Register(Component.For<IErrorFile>().UsingFactoryMethod(k => k.Resolve<ErrorFileDestinationPath>()));
+			container.Register(Component.For<IFilePathTransformer>().UsingFactoryMethod(k => k.Resolve<FilePathTransformerFactory>().Create(ExportSettings)));
+			container.Register(Component.For<FilesDownloader>().UsingFactoryMethod(k => k.Resolve<FilesDownloaderFactory>().Create(ExportSettings)));
 		}
 
 		private void InstallFieldService(IWindsorContainer container)
 		{
-			container.Register(Component.For<FieldServiceFactory>().ImplementedBy<FieldServiceFactory>());
-			container.Register(Component.For<FieldService>()
-				.UsingFactoryMethod(k => k.Resolve<FieldServiceFactory>().Create(ExportSettings, _exporter.Columns, _columnHeader, _columnNamesInOrder)).LifestyleSingleton());
-
 			container.Register(Component.For<IFieldLookupService>().UsingFactoryMethod(k => k.Resolve<FieldService>()));
 			container.Register(Component.For<IFieldService>().UsingFactoryMethod(k => k.Resolve<FieldService>()));
+			container.Register(Component.For<FieldService>()
+				.UsingFactoryMethod(k => k.Resolve<FieldServiceFactory>().Create(ExportSettings, _exporter.Columns, _columnHeader, _columnNamesInOrder)).LifestyleSingleton());
 		}
 
-		private static void InstallUtils(IWindsorContainer container)
+		private void InstallDirectory(IWindsorContainer container)
 		{
-			container.Register(Component.For<IFileHelper>().ImplementedBy<LongPathFileHelper>());
-			container.Register(Component.For<IFileStreamFactory>().ImplementedBy<FileStreamFactory>());
-			container.Register(Component.For<IDirectoryHelper>().ImplementedBy<LongPathDirectoryHelper>());
-		}
-
-		private static void InstallLabelManager(IWindsorContainer container)
-		{
-			container.Register(Component.For<LabelManager>().ImplementedBy<LabelManager>());
-			container.Register(Component.For<TrueVolumeManager>().ImplementedBy<TrueVolumeManager>());
-			container.Register(Component.For<SubdirectoryManager>().ImplementedBy<SubdirectoryManager>());
 			container.Register(Component.For<IVolume>().UsingFactoryMethod(k => k.Resolve<TrueVolumeManager>()));
 			container.Register(Component.For<ISubdirectory>().UsingFactoryMethod(k => k.Resolve<SubdirectoryManager>()));
 			container.Register(Component.For<ISubdirectoryManager>().UsingFactoryMethod(k => k.Resolve<SubdirectoryManager>()));
-			container.Register(Component.For<IDirectoryManager>().ImplementedBy<DirectoryManager>());
+		}
+
+		private void InstallImages(IWindsorContainer container)
+		{
+			container.Register(Component.For<IImagesRollup>().UsingFactoryMethod(k => k.Resolve<ImagesRollupFactory>().Create(ExportSettings)));
+			container.Register(Component.For<Metadata.Images.ImageLoadFile>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileFactory>().Create(ExportSettings)));
+			container.Register(Component.For<ILoadFileEntry>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileEntryFactory>().Create(ExportSettings)));
+			container.Register(Component.For<ImageLoadFileWriter>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileWriterFactory>().Create()));
+		}
+
+		private void InstallNatives(IWindsorContainer container)
+		{
+			container.Register(Component.For<ILoadFileCellFormatter>().UsingFactoryMethod(k => k.Resolve<LoadFileCellFormatterFactory>().Create(ExportSettings)));
+			container.Register(Component.For<LoadFileWriter>().UsingFactoryMethod(k => k.Resolve<LoadFileWriterFactory>().Create()));
+		}
+
+		private void InstallLongText(IWindsorContainer container)
+		{
+			container.Register(Component.For<LongTextRepositoryBuilder>().UsingFactoryMethod(k => k.Resolve<LongTextRepositoryBuilderFactory>().Create(ExportSettings)));
+			container.Register(Component.For<IFullTextLoadFileEntry>().UsingFactoryMethod(k => k.Resolve<FullTextLoadFileEntryFactory>().Create(ExportSettings)));
+			container.Register(Component.For<ILongTextHandler>().UsingFactoryMethod(k => k.Resolve<LongTextHandlerFactory>().Create(ExportSettings)));
+			container.Register(Component.For<IDelimiter>().UsingFactoryMethod(k => k.Resolve<DelimiterFactory>().Create(ExportSettings)));
 		}
 	}
 }

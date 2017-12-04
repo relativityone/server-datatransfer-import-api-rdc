@@ -9,15 +9,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 		private readonly IFieldService _fieldService;
 		private readonly IFileNameProvider _fileNameProvider;
 		private readonly LongTextFilePathProvider _filePathProvider;
+		private readonly LongTextRepository _longTextRepository;
 
 		public LongTextRepositoryBuilderFactory(ExportFile exportSettings, LongTextFilePathProvider filePathProvider, LongTextHelper longTextHelper, IFieldService fieldService,
-			IFileNameProvider fileNameProvider)
+			IFileNameProvider fileNameProvider, LongTextRepository longTextRepository)
 		{
 			_exportSettings = exportSettings;
 			_filePathProvider = filePathProvider;
 			_longTextHelper = longTextHelper;
 			_fieldService = fieldService;
 			_fileNameProvider = fileNameProvider;
+			_longTextRepository = longTextRepository;
 		}
 
 		public LongTextRepositoryBuilder Create(ExportFile exportFile)
@@ -25,7 +27,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			ILongTextBuilder longTextPrecedenceBuilder = GetLongTextPrecedenceBuilder();
 			ILongTextBuilder longTextFieldBuilder = new LongTextFieldBuilder(_fieldService, _longTextHelper);
 			ILongTextBuilder longTextIproFullTextBuilder = GetLongTextIproFullTextBuilder();
-			return new LongTextRepositoryBuilder(_longTextHelper, longTextPrecedenceBuilder, longTextFieldBuilder, longTextIproFullTextBuilder);
+			return new LongTextRepositoryBuilder(_longTextHelper, longTextPrecedenceBuilder, longTextFieldBuilder, longTextIproFullTextBuilder, _longTextRepository);
 		}
 
 		private ILongTextBuilder GetLongTextIproFullTextBuilder()
