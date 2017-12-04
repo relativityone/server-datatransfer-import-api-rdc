@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Exporters;
@@ -67,7 +66,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			{
 				string destinationLocation = GetDestinationLocation(artifact);
 				//TODO encoding
-				using (StreamWriter streamWriter = new StreamWriter(destinationLocation, false, Encoding.Default))
+				using (StreamWriter streamWriter = new StreamWriter(destinationLocation, false, _exportSettings.TextFileEncoding))
 				{
 					streamWriter.Write(longTextValue);
 				}

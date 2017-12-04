@@ -3,7 +3,7 @@
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 {
 	/// <summary>
-	/// TODO change name :)
+	///     TODO change name :)
 	/// </summary>
 	public class TrueVolumeManager : IVolume, IDirectoryManager
 	{

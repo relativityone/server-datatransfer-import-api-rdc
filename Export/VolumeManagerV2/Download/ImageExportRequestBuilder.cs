@@ -6,7 +6,7 @@ using kCura.WinEDDS.Exporters;
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
 	/// <summary>
-	/// TODO probably can extract some code from here and from NativeExportRequestBuilder
+	///     TODO probably can extract some code from here and from NativeExportRequestBuilder
 	/// </summary>
 	public class ImageExportRequestBuilder
 	{

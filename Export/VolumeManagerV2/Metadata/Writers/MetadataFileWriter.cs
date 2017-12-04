@@ -39,7 +39,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			_retryPolicy = retryPolicy;
 			_destinationPath = destinationPath;
 			_streamFactory = streamFactory;
-			
+
 			//TODO remove this
 			FileWriter = _streamFactory.Create(FileWriter, _fileWriterLastPosition, _destinationPath.Path, _destinationPath.Encoding, false);
 			// ****

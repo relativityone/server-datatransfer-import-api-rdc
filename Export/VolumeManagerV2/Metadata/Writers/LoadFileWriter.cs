@@ -26,10 +26,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 
 			Logger.LogVerbose("Writing to load file with retry policy.");
 
-			ExecuteWithRetry((context, token) =>
-			{
-				Write(linesToWrite, artifacts, context);
-			}, cancellationToken);
+			ExecuteWithRetry((context, token) => { Write(linesToWrite, artifacts, context); }, cancellationToken);
 		}
 
 		private void Write(IDictionary<int, ILoadFileEntry> linesToWrite, ObjectExportInfo[] artifacts, Context context)

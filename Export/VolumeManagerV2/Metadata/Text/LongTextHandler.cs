@@ -6,11 +6,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 {
 	public class LongTextHandler : ILongTextHandler
 	{
-		private readonly LongTextToLoadFile _textPrecedenceHandler;
+		private readonly ILongTextHandler _textPrecedenceHandler;
 		private readonly LongTextToLoadFile _textToLoadFile;
 		private readonly IDelimiter _delimiter;
 
-		public LongTextHandler(LongTextToLoadFile textPrecedenceHandler, LongTextToLoadFile textToLoadFile, IDelimiter delimiter)
+		public LongTextHandler(ILongTextHandler textPrecedenceHandler, LongTextToLoadFile textToLoadFile, IDelimiter delimiter)
 		{
 			_textPrecedenceHandler = textPrecedenceHandler;
 			_textToLoadFile = textToLoadFile;

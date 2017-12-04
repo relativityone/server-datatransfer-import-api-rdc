@@ -21,7 +21,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize
 			{
 				for (int count = 0; count <= _fieldService.GetColumns().Length - 1; count++)
 				{
-					ViewFieldInfo field = (ViewFieldInfo) _fieldService.GetColumns()[count];
+					ViewFieldInfo field = _fieldService.GetColumns()[count];
 					string columnName = field.AvfColumnName;
 					int columnIndex = _fieldService.GetOrdinalIndex(columnName);
 					object fieldValue = artifact.Metadata[columnIndex];

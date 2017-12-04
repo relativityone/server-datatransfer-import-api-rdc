@@ -91,28 +91,29 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 
 			container.Register(Component.For<FullTextLoadFileEntryFactory>().ImplementedBy<FullTextLoadFileEntryFactory>());
 			container.Register(Component.For<IFullTextLoadFileEntry>().UsingFactoryMethod(k => k.Resolve<FullTextLoadFileEntryFactory>().Create(ExportSettings)));
-			
+
 			container.Register(Component.For<ImageLoadFileDestinationPath>().ImplementedBy<ImageLoadFileDestinationPath>());
 			container.Register(Component.For<LoadFileDestinationPath>().ImplementedBy<LoadFileDestinationPath>());
 			container.Register(Component.For<StatisticsWrapper>().UsingFactoryMethod(k => new StatisticsWrapper(_exporter._statistics)));
 
 			container.Register(Component.For<Settings.Config>().ImplementedBy<Settings.Config>());
-			
+
 			container.Register(Component.For<LongTextStreamFormatterFactory>().ImplementedBy<LongTextStreamFormatterFactory>());
-			
+
 			//TODO temporary
 			container.Register(Component.For<FileDownloader>().UsingFactoryMethod(k => new FileDownloader(ExportSettings.Credential,
 				$"{ExportSettings.CaseInfo.DocumentPath}\\EDDS{ExportSettings.CaseInfo.ArtifactID}", ExportSettings.CaseInfo.DownloadHandlerURL, ExportSettings.CookieContainer,
 				Service.Settings.AuthenticationToken)));
 		}
-		
+
 		private void InstallLongText(IWindsorContainer container)
 		{
 			container.Register(Component.For<LongTextHelper>().ImplementedBy<LongTextHelper>());
-			container.Register(Component.For<ILongTextHandler>().ImplementedBy<LongTextHandler>());
+			container.Register(Component.For<LongTextHandlerFactory>().ImplementedBy<LongTextHandlerFactory>());
+			container.Register(Component.For<ILongTextHandler>().UsingFactoryMethod(k => k.Resolve<LongTextHandlerFactory>().Create(ExportSettings)));
 			container.Register(Component.For<DelimiterFactory>().ImplementedBy<DelimiterFactory>());
 			container.Register(Component.For<IDelimiter>().UsingFactoryMethod(k => k.Resolve<DelimiterFactory>().Create(ExportSettings)));
-			
+
 			container.Register(Component.For<LongTextToLoadFile>().ImplementedBy<LongTextToLoadFile>());
 			container.Register(Component.For<TooLongTextToLoadFile>().ImplementedBy<TooLongTextToLoadFile>());
 			container.Register(Component.For<NotTooLongTextToLoadFile>().ImplementedBy<NotTooLongTextToLoadFile>());

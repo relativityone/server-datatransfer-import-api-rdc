@@ -26,10 +26,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			}
 
 			Logger.LogVerbose("Writing to image load file with retry policy.");
-			ExecuteWithRetry((context, token) =>
-			{
-				Write(linesToWrite, artifacts, context);
-			}, cancellationToken);
+			ExecuteWithRetry((context, token) => { Write(linesToWrite, artifacts, context); }, cancellationToken);
 		}
 
 		private void Write(IList<KeyValuePair<string, string>> linesToWrite, ObjectExportInfo[] artifacts, Context context)
@@ -37,7 +34,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			ReinitializeStream();
 
 			WriteArtifacts(linesToWrite, artifacts, context);
-			
+
 			SaveStreamPositionAndUpdateStatistics();
 		}
 

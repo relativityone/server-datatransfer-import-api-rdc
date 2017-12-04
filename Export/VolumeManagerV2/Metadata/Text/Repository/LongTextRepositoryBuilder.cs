@@ -42,7 +42,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			return _longTexts;
 		}
 
-		
 
 		private void Add(IList<LongText> longTexts)
 		{

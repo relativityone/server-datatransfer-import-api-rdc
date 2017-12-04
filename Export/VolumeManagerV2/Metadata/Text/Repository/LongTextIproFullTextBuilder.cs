@@ -42,7 +42,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			string longTextValue = _longTextHelper.GetTextFromField(artifact, LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME);
 			int extractedTextFieldId = _longTextHelper.GetFieldArtifactId(LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME);
 			LongText longText = LongText.CreateFromExistingValue(artifact.ArtifactID, extractedTextFieldId, longTextValue);
-			return new List<LongText> { longText };
+			return new List<LongText> {longText};
 		}
 	}
 }

@@ -4,7 +4,7 @@ using kCura.WinEDDS.Exporters;
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 {
 	/// <summary>
-	/// TODO factory of factory?
+	///     TODO factory of factory?
 	/// </summary>
 	public class LongTextStreamFormatterFactory
 	{

@@ -11,7 +11,7 @@
 		private readonly int _subdirectoryPaddingWidth;
 
 		private readonly IVolume _volume;
-		
+
 		private readonly ISubdirectory _subdirectory;
 
 		public LabelManager(ExportFile exportSettings, IVolume volume, ISubdirectory subdirectory)

@@ -257,8 +257,10 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\ILongTextHandler.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongText.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextHandlerFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextInFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextInMemory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextToFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\EmptyLongTextBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\ILongTextBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\LongTextFieldBuilder.cs" />
