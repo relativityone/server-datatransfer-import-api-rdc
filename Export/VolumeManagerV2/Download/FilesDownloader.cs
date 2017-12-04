@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.TApi;
 using Relativity.Logging;
@@ -13,7 +15,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 	{
 		private readonly NativeExportRequestBuilder _nativeExportRequestBuilder;
 		private readonly ImageExportRequestBuilder _imageExportRequestBuilder;
-		private readonly TextExportRequestBuilder _textExportRequestBuilder;
+		private readonly LongTextRepositoryBuilder _longTextRepositoryBuilder;
+		private readonly LongTextRepository _longTextRepository;
 		private readonly IDirectoryManager _directoryManager;
 
 		private readonly ExportTapiBridgeFactory _exportTapiBridgeFactory;
@@ -27,8 +30,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private readonly ILog _logger;
 
 		public FilesDownloader(NativeExportRequestBuilder nativeExportRequestBuilder, ImageExportRequestBuilder imageExportRequestBuilder,
-			TextExportRequestBuilder textExportRequestBuilder, ExportTapiBridgeFactory exportTapiBridgeFactory, IDirectoryManager directoryManager, ILog logger,
-			FileDownloader fileDownloader, ExportFile exportFile)
+			LongTextRepositoryBuilder longTextRepositoryBuilder, ExportTapiBridgeFactory exportTapiBridgeFactory, IDirectoryManager directoryManager, ILog logger,
+			FileDownloader fileDownloader, ExportFile exportFile, LongTextRepository longTextRepository)
 		{
 			_nativeExportRequestBuilder = nativeExportRequestBuilder;
 			_imageExportRequestBuilder = imageExportRequestBuilder;
@@ -37,7 +40,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_logger = logger;
 			_fileDownloader = fileDownloader;
 			_exportFile = exportFile;
-			_textExportRequestBuilder = textExportRequestBuilder;
+			_longTextRepository = longTextRepository;
+			_longTextRepositoryBuilder = longTextRepositoryBuilder;
 		}
 
 		public void DownloadFilesForArtifacts(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
@@ -68,7 +72,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				ExportRequest nativeExportRequest = _nativeExportRequestBuilder.Create(artifacts[i]);
 				exportRequests.Add(nativeExportRequest);
 
-				BuildTextRequests(artifacts, i);
+				BuildTextRequests(artifacts[i]);
 
 				foreach (var image in artifacts[i].Images.Cast<ImageExportInfo>())
 				{
@@ -82,12 +86,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			return exportRequests;
 		}
 
-		private void BuildTextRequests(ObjectExportInfo[] artifacts, int i)
+		private void BuildTextRequests(ObjectExportInfo artifact)
 		{
-			IList<TextExportRequest> textExportRequests = _textExportRequestBuilder.Create(artifacts[i]);
+			List<LongText> longTexts = _longTextRepositoryBuilder.AddLongTextForArtifact(artifact);
+			_longTextRepository.Add(longTexts);
 
 			//TODO replace with new TAPI client
-			foreach (var textExportRequest in textExportRequests)
+			foreach (var textExportRequest in longTexts.Select(x => x.ExportRequest).Where(x => x != null))
 			{
 				if (textExportRequest.FullText)
 				{

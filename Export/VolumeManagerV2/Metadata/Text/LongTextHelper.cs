@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
 using kCura.WinEDDS.Exporters;
 using Relativity;
 
@@ -13,14 +14,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 
 		private readonly ExportFile _exportSettings;
 		private readonly IFieldService _fieldService;
-		private readonly DownloadedTextFilesRepository _downloadedTextFilesRepository;
+		private readonly LongTextRepository _longTextRepository;
 
 		public const string EXTRACTED_TEXT_COLUMN_NAME = "ExtractedText";
 
-		public LongTextHelper(ExportFile exportSettings, IFieldService fieldService, DownloadedTextFilesRepository downloadedTextFilesRepository)
+		public LongTextHelper(ExportFile exportSettings, IFieldService fieldService, LongTextRepository longTextRepository)
 		{
 			_fieldService = fieldService;
-			_downloadedTextFilesRepository = downloadedTextFilesRepository;
+			_longTextRepository = longTextRepository;
 			_exportSettings = exportSettings;
 		}
 
@@ -115,7 +116,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 
 		public string GetLongTextFileLocation(ObjectExportInfo artifact, int fieldArtifactId)
 		{
-			return _downloadedTextFilesRepository.GetTextFileLocation(artifact.ArtifactID, fieldArtifactId);
+			return _longTextRepository.GetTextFileLocation(artifact.ArtifactID, fieldArtifactId);
 		}
 
 		public Encoding GetLongTextFieldFileEncoding(ViewFieldInfo field)

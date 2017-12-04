@@ -9,6 +9,8 @@ using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Delimiter;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation;
@@ -65,8 +67,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 
 			container.Register(Component.For<NativeExportRequestBuilder>().ImplementedBy<NativeExportRequestBuilder>());
 			container.Register(Component.For<ImageExportRequestBuilder>().ImplementedBy<ImageExportRequestBuilder>());
-			container.Register(Component.For<TextExportRequestBuilder>().ImplementedBy<TextExportRequestBuilder>());
-			container.Register(Component.For<DownloadedTextFilesRepository>().ImplementedBy<DownloadedTextFilesRepository>());
+
+			container.Register(Component.For<LongTextRepository>().ImplementedBy<LongTextRepository>());
+			container.Register(Component.For<LongTextRepositoryBuilderFactory>().ImplementedBy<LongTextRepositoryBuilderFactory>());
+			container.Register(Component.For<LongTextRepositoryBuilder>().UsingFactoryMethod(k => k.Resolve<LongTextRepositoryBuilderFactory>().Create(ExportSettings)));
 
 			container.Register(Component.For<ExportTapiBridgeFactory>().ImplementedBy<ExportTapiBridgeFactory>());
 
