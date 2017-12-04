@@ -1,13 +1,14 @@
 ﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using kCura.WinEDDS.Exporters;
-using Relativity.Export;
+using Relativity.Logging;
+using Constants = Relativity.Export.Constants;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 {
 	public class IproFullTextWithPrecedenceLoadFileEntry : IproFullTextLoadFileEntry
 	{
-		public IproFullTextWithPrecedenceLoadFileEntry(ExportFile exportSettings, IFieldService fieldService, LongTextHelper longTextHelper) :
-			base(exportSettings, fieldService, longTextHelper)
+		public IproFullTextWithPrecedenceLoadFileEntry(ExportFile exportSettings, IFieldService fieldService, LongTextHelper longTextHelper, ILog logger) :
+			base(exportSettings, fieldService, longTextHelper, logger)
 		{
 		}
 

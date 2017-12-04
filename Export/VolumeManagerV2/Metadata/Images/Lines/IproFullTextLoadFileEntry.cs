@@ -4,34 +4,52 @@ using System.IO;
 using System.Text;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using kCura.WinEDDS.Exporters;
+using Relativity.Logging;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 {
 	public abstract class IproFullTextLoadFileEntry : IFullTextLoadFileEntry
 	{
 		private TextReader _textReader;
 
 		private readonly ExportFile _exportSettings;
+		private readonly ILog _logger;
 
 		protected readonly IFieldService FieldService;
 		protected readonly LongTextHelper LongTextHelper;
 
-		protected IproFullTextLoadFileEntry(ExportFile exportSettings, IFieldService fieldService, LongTextHelper longTextHelper)
+		protected IproFullTextLoadFileEntry(ExportFile exportSettings, IFieldService fieldService, LongTextHelper longTextHelper, ILog logger)
 		{
 			_exportSettings = exportSettings;
 			FieldService = fieldService;
 			LongTextHelper = longTextHelper;
+			_logger = logger;
 		}
 
 		public bool TryCreateFullTextLine(ObjectExportInfo artifact, string batesNumber, int pageNumber, long pageOffset, out KeyValuePair<string, string> fullTextEntry)
 		{
-			StringBuilder lineToWrite = new StringBuilder();
-
+			_logger.LogVerbose("Attempting to create Full text entry for image {batesNumber}.", batesNumber);
 			if (pageNumber == 0)
 			{
+				_logger.LogVerbose("Processing first page - disposing old Text Reader and creating new one.");
 				_textReader?.Dispose();
 				_textReader = GetTextStream(artifact);
 			}
+
+			string lineToWrite = BuildLineToWrite(batesNumber, pageOffset);
+
+			fullTextEntry = new KeyValuePair<string, string>($"FT{batesNumber}", lineToWrite);
+
+			_logger.LogVerbose("Successfully create Full text entry for image.");
+
+			return true;
+		}
+
+		private string BuildLineToWrite(string batesNumber, long pageOffset)
+		{
+			//TODO
+			//REL-185532 This is an issue. We're putting whole ExtractedText into memory
+			StringBuilder lineToWrite = new StringBuilder();
 
 			lineToWrite.Append("FT,");
 			lineToWrite.Append(batesNumber);
@@ -58,9 +76,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 			}
 			lineToWrite.Append(Environment.NewLine);
 
-			fullTextEntry = new KeyValuePair<string, string>($"FT{batesNumber}", lineToWrite.ToString());
-
-			return true;
+			return lineToWrite.ToString();
 		}
 
 		private TextReader GetTextStream(ObjectExportInfo artifact)

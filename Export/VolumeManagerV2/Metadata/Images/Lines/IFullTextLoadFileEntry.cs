@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using kCura.WinEDDS.Exporters;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 {
 	public interface IFullTextLoadFileEntry : IDisposable
 	{

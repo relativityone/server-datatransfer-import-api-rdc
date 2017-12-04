@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
 using kCura.WinEDDS.Exporters;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 {
-	public class MultiPageOpticonImageLoadFile : ImageLoadFile
+	public class MultiPageOpticonImageLoadFileMetadataBuilder : ImageLoadFileMetadataBuilder
 	{
-		public MultiPageOpticonImageLoadFile(ExportFile exportSettings, IFilePathTransformer filePathTransformer, ILoadFileEntry loadFileEntry, IFullTextLoadFileEntry fullTextLoadFileEntry) :
-			base(exportSettings, filePathTransformer, loadFileEntry, fullTextLoadFileEntry)
+		public MultiPageOpticonImageLoadFileMetadataBuilder(ExportFile exportSettings, IFilePathTransformer filePathTransformer, IImageLoadFileEntry imageLoadFileEntry,
+			IFullTextLoadFileEntry fullTextLoadFileEntry, ILog logger) : base(exportSettings, filePathTransformer, imageLoadFileEntry, fullTextLoadFileEntry, logger)
 		{
 		}
 

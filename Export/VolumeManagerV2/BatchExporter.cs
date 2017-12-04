@@ -14,19 +14,19 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 	public class BatchExporter : IBatchExporter
 	{
 		private readonly LoadFileMetadataBuilder _loadFileMetadataBuilder;
-		private readonly Metadata.Images.ImageLoadFile _imageLoadFile;
+		private readonly Metadata.Images.ImageLoadFileMetadataBuilder _imageLoadFileMetadataBuilder;
 		private readonly LoadFileWriter _loadFileWriter;
 		private readonly ImageLoadFileWriter _imageLoadFileWriter;
 		private readonly FilesDownloader _filesDownloader;
 		private readonly IImagesRollup _imagesRollup;
 		private readonly LongTextRepositoryBuilder _longTextRepositoryBuilder;
 
-		public BatchExporter(FilesDownloader filesDownloader, IImagesRollup imagesRollup, Metadata.Images.ImageLoadFile imageLoadFile, ImageLoadFileWriter imageLoadFileWriter,
+		public BatchExporter(FilesDownloader filesDownloader, IImagesRollup imagesRollup, Metadata.Images.ImageLoadFileMetadataBuilder imageLoadFileMetadataBuilder, ImageLoadFileWriter imageLoadFileWriter,
 			LoadFileMetadataBuilder loadFileMetadataBuilder, LoadFileWriter loadFileWriter, LongTextRepositoryBuilder longTextRepositoryBuilder)
 		{
 			_filesDownloader = filesDownloader;
 			_imagesRollup = imagesRollup;
-			_imageLoadFile = imageLoadFile;
+			_imageLoadFileMetadataBuilder = imageLoadFileMetadataBuilder;
 			_imageLoadFileWriter = imageLoadFileWriter;
 			_loadFileMetadataBuilder = loadFileMetadataBuilder;
 			_loadFileWriter = loadFileWriter;
@@ -64,7 +64,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 				_imagesRollup.RollupImages(artifact);
 			}
 
-			IList<KeyValuePair<string, string>> entries = _imageLoadFile.CreateLoadFileEntries(artifacts);
+			IList<KeyValuePair<string, string>> entries = _imageLoadFileMetadataBuilder.CreateLoadFileEntries(artifacts);
 			_imageLoadFileWriter.Write(entries, artifacts, cancellationToken);
 
 			IDictionary<int, ILoadFileEntry> loadFileEntries = _loadFileMetadataBuilder.AddLines(artifacts);

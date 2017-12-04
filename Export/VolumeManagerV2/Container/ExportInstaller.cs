@@ -6,6 +6,7 @@ using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
@@ -111,8 +112,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 		private void InstallImages(IWindsorContainer container)
 		{
 			container.Register(Component.For<IImagesRollup>().UsingFactoryMethod(k => k.Resolve<ImagesRollupFactory>().Create(ExportSettings)));
-			container.Register(Component.For<Metadata.Images.ImageLoadFile>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileFactory>().Create(ExportSettings)));
-			container.Register(Component.For<ILoadFileEntry>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileEntryFactory>().Create(ExportSettings)));
+			container.Register(Component.For<Metadata.Images.ImageLoadFileMetadataBuilder>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileMetadataBuilderFactory>().Create(ExportSettings)));
+			container.Register(Component.For<IImageLoadFileEntry>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileEntryFactory>().Create(ExportSettings)));
 			container.Register(Component.For<ImageLoadFileWriter>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileWriterFactory>().Create()));
 		}
 
