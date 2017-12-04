@@ -1,5 +1,6 @@
 ﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using NUnit.Framework;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Directories
 {
@@ -7,22 +8,24 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Directories
 	public class RelativeFilePathProviderTests
 	{
 		[Test]
-		public void ItShouldReturnRelativePath()
+		[TestCase(@"C:\ABC\", @"C:\ABC\DEF\GHI", @".\DEF\GHI")]
+		[TestCase(@"\\NETWORK\", @"\\NETWORK\DEF\GHI", @".\DEF\GHI")]
+		public void ItShouldReturnRelativePath(string root, string path, string result)
 		{
 			var exportSettings = new ExportFile(1)
 			{
-				FolderPath = "C:\\ABC\\"
+				FolderPath = root
 			};
 
-			string absolutePath = "C:\\ABC\\DEF\\GHI";
+			string absolutePath = path;
 
-			var instance = new RelativeFilePathProvider(exportSettings);
+			var instance = new RelativeFilePathTransformer(exportSettings, new FilePathHelper(new NullLogger()));
 
 			//ACT
-			string relativePath = instance.GetPathForLoadFile(absolutePath);
+			string relativePath = instance.TransformPath(absolutePath);
 
 			//ASSERT
-			Assert.That(relativePath, Is.EqualTo("DEF\\GHI"));
+			Assert.That(relativePath, Is.EqualTo(result));
 		}
 	}
 }
