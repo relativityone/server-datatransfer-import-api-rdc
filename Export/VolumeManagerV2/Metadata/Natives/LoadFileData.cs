@@ -16,19 +16,19 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 		private bool _hasWrittenColumnHeaderString;
 
 		private readonly ILoadFileCellFormatter _loadFileCellFormatter;
-		private readonly IFilePathProvider _filePathProvider;
+		private readonly IFilePathTransformer _filePathTransformer;
 		private readonly IFieldService _fieldLookupService;
 		private readonly LongTextHelper _longTextHelper;
 		private readonly ILongTextHandler _longTextHandler;
 		private readonly ExportFile _exportSettings;
 
-		public LoadFileData(ILoadFileCellFormatter loadFileCellFormatter, IFieldService fieldLookupService, ExportFile exportSettings, IFilePathProvider filePathProvider,
+		public LoadFileData(ILoadFileCellFormatter loadFileCellFormatter, IFieldService fieldLookupService, ExportFile exportSettings, IFilePathTransformer filePathTransformer,
 			LongTextHelper longTextHelper, ILongTextHandler longTextHandler)
 		{
 			_loadFileCellFormatter = loadFileCellFormatter;
 			_fieldLookupService = fieldLookupService;
 			_exportSettings = exportSettings;
-			_filePathProvider = filePathProvider;
+			_filePathTransformer = filePathTransformer;
 			_longTextHelper = longTextHelper;
 			_longTextHandler = longTextHandler;
 
@@ -133,7 +133,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 				string nativeLocationCell;
 				if (_exportSettings.VolumeInfo.CopyNativeFilesFromRepository)
 				{
-					string nativeLocation = _filePathProvider.GetPathForLoadFile(_artifact.NativeTempLocation);
+					string nativeLocation = _filePathTransformer.TransformPath(_artifact.NativeTempLocation);
 					nativeLocationCell = _loadFileCellFormatter.CreateNativeCell(nativeLocation, _artifact);
 				}
 				else

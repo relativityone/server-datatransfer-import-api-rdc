@@ -34,8 +34,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 				_logger.LogVerbose("Creating PDF rollup.");
 				return new PdfImagesRollup(exportSettings, _fileHelper, _status, _logger, new Image());
 			}
-			_logger.LogError("Exporting images, but image type is unknown.");
-			throw new ArgumentException("Unknown image type.");
+			_logger.LogError("Exporting images, but image type {type} is unknown.", exportSettings.TypeOfImage);
+			throw new ArgumentException($"Unknown image type {exportSettings.TypeOfImage}.");
 		}
 	}
 }

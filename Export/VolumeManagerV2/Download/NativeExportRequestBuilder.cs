@@ -1,71 +1,54 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.Linq;
 using kCura.Windows.Process;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Exporters;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public class NativeExportRequestBuilder
+	public class NativeExportRequestBuilder : IExportRequestBuilder
 	{
 		private readonly ExportFile _exportSettings;
-		private readonly LabelManager _labelManager;
+		private readonly IFilePathProvider _filePathProvider;
 		private readonly IFileHelper _fileHelper;
-		private readonly IDirectoryHelper _directoryHelper;
 		private readonly IFileNameProvider _fileNameProvider;
 		private readonly IStatus _status;
+		private readonly ILog _logger;
 
-		public NativeExportRequestBuilder(ExportFile exportSettings, LabelManager labelManager, IFileHelper fileHelper, IDirectoryHelper directoryHelper,
-			IFileNameProvider fileNameProvider, IStatus status)
+		public NativeExportRequestBuilder(ExportFile exportSettings, NativeFilePathProvider filePathProvider, IFileHelper fileHelper, IFileNameProvider fileNameProvider, IStatus status,
+			ILog logger)
 		{
 			_exportSettings = exportSettings;
-			_labelManager = labelManager;
+			_filePathProvider = filePathProvider;
 			_fileHelper = fileHelper;
-			_directoryHelper = directoryHelper;
 			_fileNameProvider = fileNameProvider;
 			_status = status;
+			_logger = logger;
 		}
 
-		public ExportRequest Create(ObjectExportInfo artifact)
+		public IEnumerable<ExportRequest> Create(ObjectExportInfo artifact)
 		{
-			if (!ExportingNativeFiles())
-			{
-				//TODO
-				return null;
-			}
-
+			_logger.LogVerbose("Creating native file ExportRequest for artifact {artifactId}.", artifact.ArtifactID);
 			string destinationLocation = GetExportDestinationLocation(artifact);
 
 			if (!CanExport(destinationLocation))
 			{
-				//TODO
-				return null;
+				return Enumerable.Empty<ExportRequest>();
 			}
 
+			_logger.LogVerbose("Native file for artifact {artifactId} will be export to {destinationLocation}.", artifact.ArtifactID, destinationLocation);
 			artifact.NativeTempLocation = destinationLocation;
 
-			return new ExportRequest(artifact, destinationLocation);
-		}
-
-		private bool ExportingNativeFiles()
-		{
-			return _exportSettings.ExportNative && _exportSettings.VolumeInfo.CopyNativeFilesFromRepository;
+			ExportRequest exportRequest = new ExportRequest(artifact, destinationLocation);
+			return new List<ExportRequest> {exportRequest};
 		}
 
 		private string GetExportDestinationLocation(ObjectExportInfo artifact)
 		{
 			string fileName = _fileNameProvider.GetName(artifact);
 
-			string volumeLabel = _labelManager.GetCurrentVolumeLabel();
-			string subdirectoryLabel = _labelManager.GetCurrentNativeSubdirectoryLabel();
-
-			string destinationDirectory = Path.Combine(_exportSettings.FolderPath, volumeLabel, subdirectoryLabel);
-
-			if (!_directoryHelper.Exists(destinationDirectory))
-			{
-				_directoryHelper.CreateDirectory(destinationDirectory);
-			}
-
-			return Path.Combine(destinationDirectory, fileName);
+			return _filePathProvider.GetPathForFile(fileName);
 		}
 
 		private bool CanExport(string destinationLocation)
@@ -74,11 +57,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			{
 				if (_exportSettings.Overwrite)
 				{
+					_logger.LogVerbose($"Overwriting document {destinationLocation}. Removing already existing file.");
 					_fileHelper.Delete(destinationLocation);
 					_status.WriteStatusLine(EventType.Status, $"Overwriting document {destinationLocation}.", false);
 				}
 				else
 				{
+					_logger.LogVerbose($"{destinationLocation} already exists. Skipping file export.");
 					_status.WriteWarning($"{destinationLocation} already exists. Skipping file export.");
 					return false;
 				}

@@ -4,13 +4,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 {
 	public class ImageLoadFileFactory
 	{
-		private readonly IFilePathProvider _filePathProvider;
+		private readonly IFilePathTransformer _filePathTransformer;
 		private readonly ILoadFileEntry _loadFileEntry;
 		private readonly IFullTextLoadFileEntry _fullTextLoadFileEntry;
 
-		public ImageLoadFileFactory(IFilePathProvider filePathProvider, ILoadFileEntry loadFileEntry, IFullTextLoadFileEntry fullTextLoadFileEntry)
+		public ImageLoadFileFactory(IFilePathTransformer filePathTransformer, ILoadFileEntry loadFileEntry, IFullTextLoadFileEntry fullTextLoadFileEntry)
 		{
-			_filePathProvider = filePathProvider;
+			_filePathTransformer = filePathTransformer;
 			_loadFileEntry = loadFileEntry;
 			_fullTextLoadFileEntry = fullTextLoadFileEntry;
 		}
@@ -20,13 +20,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 			//TODO validate arguments
 			if (exportSettings.TypeOfImage == ExportFile.ImageType.SinglePage)
 			{
-				return new SinglePageImageLoadFile(exportSettings, _filePathProvider, _loadFileEntry, _fullTextLoadFileEntry);
+				return new SinglePageImageLoadFile(exportSettings, _filePathTransformer, _loadFileEntry, _fullTextLoadFileEntry);
 			}
 			if (exportSettings.LogFileFormat == LoadFileType.FileFormat.Opticon)
 			{
-				return new MultiPageOpticonImageLoadFile(exportSettings, _filePathProvider, _loadFileEntry, _fullTextLoadFileEntry);
+				return new MultiPageOpticonImageLoadFile(exportSettings, _filePathTransformer, _loadFileEntry, _fullTextLoadFileEntry);
 			}
-			return new MultiPageNotOpticonImageLoadFile(exportSettings, _filePathProvider, _loadFileEntry, _fullTextLoadFileEntry);
+			return new MultiPageNotOpticonImageLoadFile(exportSettings, _filePathTransformer, _loadFileEntry, _fullTextLoadFileEntry);
 		}
 	}
 }

@@ -1,73 +1,64 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.Linq;
 using kCura.Windows.Process;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Exporters;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	/// <summary>
-	///     TODO probably can extract some code from here and from NativeExportRequestBuilder
-	/// </summary>
-	public class ImageExportRequestBuilder
+	public class ImageExportRequestBuilder : IExportRequestBuilder
 	{
 		private readonly ExportFile _exportSettings;
-		private readonly LabelManager _labelManager;
+		private readonly IFilePathProvider _filePathProvider;
 		private readonly IFileHelper _fileHelper;
-		private readonly IDirectoryHelper _directoryHelper;
 		private readonly IStatus _status;
+		private readonly ILog _logger;
 
-		public ImageExportRequestBuilder(ExportFile exportSettings, LabelManager labelManager, IFileHelper fileHelper, IDirectoryHelper directoryHelper, IStatus status)
+		public ImageExportRequestBuilder(ExportFile exportSettings, ImageFilePathProvider filePathProvider, IFileHelper fileHelper, IStatus status, ILog logger)
 		{
 			_exportSettings = exportSettings;
-			_labelManager = labelManager;
+			_filePathProvider = filePathProvider;
 			_fileHelper = fileHelper;
-			_directoryHelper = directoryHelper;
 			_status = status;
+			_logger = logger;
 		}
 
-		public ImageExportRequestBuilder(ExportFile exportSettings)
+		public IEnumerable<ExportRequest> Create(ObjectExportInfo artifact)
 		{
-			_exportSettings = exportSettings;
-		}
-
-		public ExportRequest Create(ImageExportInfo image)
-		{
-			if (!ExportingImagesFiles())
+			_logger.LogVerbose("Creating image files ExportRequests for artifact {artifactId}.", artifact.ArtifactID);
+			foreach (var image in artifact.Images.Cast<ImageExportInfo>())
 			{
-				//TODO OMG!
-				return null;
+				ExportRequest exportRequest;
+				if (TryCreate(image, out exportRequest))
+				{
+					yield return exportRequest;
+				}
 			}
+		}
 
+		private bool TryCreate(ImageExportInfo image, out ExportRequest exportRequest)
+		{
+			_logger.LogVerbose("Creating image file ExportRequest for image {image}.", image.FileName);
 			string destinationLocation = GetExportDestinationLocation(image);
 
 			if (!CanExport(image, destinationLocation))
 			{
-				//TODO OMG!
-				return null;
+				exportRequest = null;
+				return false;
 			}
 
+			_logger.LogVerbose("Image file will be export to {destinationLocation}.", destinationLocation);
 			image.TempLocation = destinationLocation;
 
-			return new ExportRequest(image, destinationLocation);
-		}
-
-		private bool ExportingImagesFiles()
-		{
-			return _exportSettings.ExportImages && _exportSettings.VolumeInfo.CopyImageFilesFromRepository;
+			exportRequest = new ExportRequest(image, destinationLocation);
+			return true;
 		}
 
 		private string GetExportDestinationLocation(ImageExportInfo image)
 		{
-			string volumeLabel = _labelManager.GetCurrentVolumeLabel();
-			string subdirectoryLabel = _labelManager.GetCurrentImageSubdirectoryLabel();
-
-			string destinationDirectory = Path.Combine(_exportSettings.FolderPath, volumeLabel, subdirectoryLabel);
-
-			if (!_directoryHelper.Exists(destinationDirectory))
-			{
-				_directoryHelper.CreateDirectory(destinationDirectory);
-			}
-			return Path.Combine(destinationDirectory, image.FileName);
+			string fileName = image.FileName;
+			return _filePathProvider.GetPathForFile(fileName);
 		}
 
 		private bool CanExport(ImageExportInfo image, string destinationLocation)
@@ -76,11 +67,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			{
 				if (_exportSettings.Overwrite)
 				{
+					_logger.LogVerbose($"Overwriting document {destinationLocation}. Removing already existing file.");
 					_fileHelper.Delete(destinationLocation);
 					_status.WriteStatusLine(EventType.Status, $"Overwriting image for {image.BatesNumber}.", false);
 				}
 				else
 				{
+					_logger.LogVerbose($"{destinationLocation} already exists. Skipping file export.");
 					_status.WriteWarning($"{destinationLocation} already exists. Skipping file export.");
 					return false;
 				}

@@ -4,7 +4,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
 	public class TextExportRequest : ExportRequest
 	{
+		/// <summary>
+		///     For Web mode
+		/// </summary>
 		public bool FullText { get; private set; }
+
+		/// <summary>
+		///     For Web mode
+		/// </summary>
 		public int FieldArtifactId { get; private set; }
 
 		private TextExportRequest(ObjectExportInfo artifact, string destinationLocation) : base(artifact, destinationLocation)

@@ -17,9 +17,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize
 			{
 				if (volumeSize.ImageFileCount > 0 && (_exportSettings.TypeOfImage == ExportFile.ImageType.MultiPageTiff || _exportSettings.TypeOfImage == ExportFile.ImageType.Pdf))
 				{
-					//TODO image size will probably be changed after merging - another issue with size calculations?
+					//TODO image size will probably be changed after merging - another issue with size calculations? REL-185531
 					//After merging size will be probably smaller, so calculation isn't precise, but we can live with that
 					//What about changing format from tif to i.e. pdf?
+
 					//Image files will be merge into one file
 					volumeSize.ImageFileCount = 1;
 				}

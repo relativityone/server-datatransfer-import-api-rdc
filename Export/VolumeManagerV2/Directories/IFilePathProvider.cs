@@ -2,6 +2,6 @@
 {
 	public interface IFilePathProvider
 	{
-		string GetPathForLoadFile(string filePath);
+		string GetPathForFile(string fileName);
 	}
 }

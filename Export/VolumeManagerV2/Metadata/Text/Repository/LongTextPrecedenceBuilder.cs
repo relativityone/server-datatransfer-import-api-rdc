@@ -12,21 +12,19 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 	public class LongTextPrecedenceBuilder : ILongTextBuilder
 	{
 		private readonly ExportFile _exportSettings;
+		private readonly IFilePathProvider _filePathProvider;
 		private readonly IFieldService _fieldService;
 		private readonly LongTextHelper _longTextHelper;
-		private readonly LabelManager _labelManager;
 		private readonly IFileNameProvider _fileNameProvider;
-		private readonly IDirectoryHelper _directoryHelper;
 
-		public LongTextPrecedenceBuilder(ExportFile exportSettings, IFieldService fieldService, LongTextHelper longTextHelper, LabelManager labelManager,
-			IFileNameProvider fileNameProvider, IDirectoryHelper directoryHelper)
+		public LongTextPrecedenceBuilder(ExportFile exportSettings, LongTextFilePathProvider filePathProvider, IFieldService fieldService, LongTextHelper longTextHelper,
+			IFileNameProvider fileNameProvider)
 		{
 			_exportSettings = exportSettings;
+			_filePathProvider = filePathProvider;
 			_fieldService = fieldService;
 			_longTextHelper = longTextHelper;
-			_labelManager = labelManager;
 			_fileNameProvider = fileNameProvider;
-			_directoryHelper = directoryHelper;
 		}
 
 		public IList<LongText> CreateLongText(ObjectExportInfo artifact)
@@ -106,26 +104,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 
 		private string GetDestinationLocation(ObjectExportInfo artifact)
 		{
-			string destinationLocation;
 			if (_exportSettings.ExportFullTextAsFile)
 			{
-				string volumeLabel = _labelManager.GetCurrentVolumeLabel();
-				string subdirectoryLabel = _labelManager.GetCurrentTextSubdirectoryLabel();
-
-				string destinationDirectory = Path.Combine(_exportSettings.FolderPath, volumeLabel, subdirectoryLabel);
-
-				if (!_directoryHelper.Exists(destinationDirectory))
-				{
-					_directoryHelper.CreateDirectory(destinationDirectory);
-				}
-
-				destinationLocation = Path.Combine(destinationDirectory, _fileNameProvider.GetTextName(artifact));
+				string fileName = _fileNameProvider.GetTextName(artifact);
+				return _filePathProvider.GetPathForFile(fileName);
 			}
-			else
-			{
-				destinationLocation = Path.GetTempFileName();
-			}
-			return destinationLocation;
+			return Path.GetTempFileName();
 		}
 	}
 }

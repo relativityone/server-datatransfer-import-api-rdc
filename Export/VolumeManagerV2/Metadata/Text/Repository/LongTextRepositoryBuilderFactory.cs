@@ -7,19 +7,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 		private readonly ExportFile _exportSettings;
 		private readonly LongTextHelper _longTextHelper;
 		private readonly IFieldService _fieldService;
-		private readonly LabelManager _labelManager;
 		private readonly IFileNameProvider _fileNameProvider;
-		private readonly IDirectoryHelper _directoryHelper;
+		private readonly LongTextFilePathProvider _filePathProvider;
 
-		public LongTextRepositoryBuilderFactory(ExportFile exportSettings, LongTextHelper longTextHelper, IFieldService fieldService, LabelManager labelManager,
-			IFileNameProvider fileNameProvider, IDirectoryHelper directoryHelper)
+		public LongTextRepositoryBuilderFactory(ExportFile exportSettings, LongTextFilePathProvider filePathProvider, LongTextHelper longTextHelper, IFieldService fieldService,
+			IFileNameProvider fileNameProvider)
 		{
 			_exportSettings = exportSettings;
+			_filePathProvider = filePathProvider;
 			_longTextHelper = longTextHelper;
 			_fieldService = fieldService;
-			_labelManager = labelManager;
 			_fileNameProvider = fileNameProvider;
-			_directoryHelper = directoryHelper;
 		}
 
 		public LongTextRepositoryBuilder Create(ExportFile exportFile)
@@ -49,7 +47,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			ILongTextBuilder longTextPrecedenceBuilder;
 			if (_longTextHelper.IsTextPrecedenceSet())
 			{
-				longTextPrecedenceBuilder = new LongTextPrecedenceBuilder(_exportSettings, _fieldService, _longTextHelper, _labelManager, _fileNameProvider, _directoryHelper);
+				longTextPrecedenceBuilder = new LongTextPrecedenceBuilder(_exportSettings, _filePathProvider, _fieldService, _longTextHelper, _fileNameProvider);
 			}
 			else
 			{

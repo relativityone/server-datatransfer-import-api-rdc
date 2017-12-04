@@ -24,5 +24,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 		{
 			return _longTexts.First(x => x.FieldArtifactId == fieldArtifactId && x.ArtifactId == artifactId).Location;
 		}
+
+		public IList<LongText> GetLongTexts()
+		{
+			return _longTexts;
+		}
 	}
 }

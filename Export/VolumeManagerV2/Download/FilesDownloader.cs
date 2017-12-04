@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.TApi;
 using Relativity.Logging;
@@ -13,10 +10,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
 	public class FilesDownloader
 	{
-		private readonly NativeExportRequestBuilder _nativeExportRequestBuilder;
-		private readonly ImageExportRequestBuilder _imageExportRequestBuilder;
-		private readonly LongTextRepositoryBuilder _longTextRepositoryBuilder;
-		private readonly LongTextRepository _longTextRepository;
+		private readonly IExportRequestBuilder _nativeExportRequestBuilder;
+		private readonly IExportRequestBuilder _imageExportRequestBuilder;
+		private readonly LongTextExportRequestBuilder _longTextExportRequestBuilder;
 		private readonly IDirectoryManager _directoryManager;
 
 		private readonly ExportTapiBridgeFactory _exportTapiBridgeFactory;
@@ -29,19 +25,18 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private readonly ILog _logger;
 
-		public FilesDownloader(NativeExportRequestBuilder nativeExportRequestBuilder, ImageExportRequestBuilder imageExportRequestBuilder,
-			LongTextRepositoryBuilder longTextRepositoryBuilder, ExportTapiBridgeFactory exportTapiBridgeFactory, IDirectoryManager directoryManager, ILog logger,
-			FileDownloader fileDownloader, ExportFile exportFile, LongTextRepository longTextRepository)
+		public FilesDownloader(IExportRequestBuilder nativeExportRequestBuilder, IExportRequestBuilder imageExportRequestBuilder,
+			LongTextExportRequestBuilder longTextExportRequestBuilder, ExportTapiBridgeFactory exportTapiBridgeFactory, IDirectoryManager directoryManager, ILog logger,
+			FileDownloader fileDownloader, ExportFile exportFile)
 		{
 			_nativeExportRequestBuilder = nativeExportRequestBuilder;
 			_imageExportRequestBuilder = imageExportRequestBuilder;
+			_longTextExportRequestBuilder = longTextExportRequestBuilder;
 			_exportTapiBridgeFactory = exportTapiBridgeFactory;
 			_directoryManager = directoryManager;
 			_logger = logger;
 			_fileDownloader = fileDownloader;
 			_exportFile = exportFile;
-			_longTextRepository = longTextRepository;
-			_longTextRepositoryBuilder = longTextRepositoryBuilder;
 		}
 
 		public void DownloadFilesForArtifacts(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
@@ -69,30 +64,25 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			for (int i = 0; i < artifacts.Length; i++)
 			{
 				_directoryManager.MoveNext(volumePredictions[i]);
-				ExportRequest nativeExportRequest = _nativeExportRequestBuilder.Create(artifacts[i]);
-				exportRequests.Add(nativeExportRequest);
+
+				IEnumerable<ExportRequest> nativeExportRequests = _nativeExportRequestBuilder.Create(artifacts[i]);
+				exportRequests.AddRange(nativeExportRequests);
+
+				IEnumerable<ExportRequest> imageExportRequests = _imageExportRequestBuilder.Create(artifacts[i]);
+				exportRequests.AddRange(imageExportRequests);
 
 				BuildTextRequests(artifacts[i]);
-
-				foreach (var image in artifacts[i].Images.Cast<ImageExportInfo>())
-				{
-					ExportRequest imageExportRequest = _imageExportRequestBuilder.Create(image);
-					exportRequests.Add(imageExportRequest);
-				}
 			}
 
-			//TODO yeah, I know...
-			exportRequests.RemoveAll(x => x == null);
 			return exportRequests;
 		}
 
 		private void BuildTextRequests(ObjectExportInfo artifact)
 		{
-			List<LongText> longTexts = _longTextRepositoryBuilder.AddLongTextForArtifact(artifact);
-			_longTextRepository.Add(longTexts);
+			IEnumerable<TextExportRequest> longTextExportRequests = _longTextExportRequestBuilder.Create(artifact);
 
 			//TODO replace with new TAPI client
-			foreach (var textExportRequest in longTexts.Select(x => x.ExportRequest).Where(x => x != null))
+			foreach (var textExportRequest in longTextExportRequests)
 			{
 				if (textExportRequest.FullText)
 				{

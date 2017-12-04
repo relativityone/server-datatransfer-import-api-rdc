@@ -34,23 +34,28 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 		{
 			if (artifact.Images.Count == 0)
 			{
-				_logger.LogVerbose("No images found for artifact {artifactId}.", artifact.ArtifactID);
+				_logger.LogVerbose("No images found for artifact {artifactId}. Skipping rollup.", artifact.ArtifactID);
 				return false;
 			}
 
 			IList<string> imagesLocations = artifact.Images.Cast<ImageExportInfo>().Select(x => x.TempLocation).ToList();
+
 			var destinationImage = (ImageExportInfo) artifact.Images[0];
 
 			string rollupTempLocation = GetTempLocation();
 
 			try
 			{
+				_logger.LogVerbose("Attempting to rollup images in temporary location {tempLocation}. List of images {images}.", rollupTempLocation, string.Join(",", imagesLocations));
 				ConvertImage(imagesLocations, rollupTempLocation);
 
+				_logger.LogVerbose("Attempting to delete images.");
 				DeleteImages(imagesLocations);
 
+				_logger.LogVerbose("Attempting to update images location.");
 				UpdateImageLocation(destinationImage);
 
+				_logger.LogVerbose("Attempting to move temporary image {tempImage} to destination location {destinationLocation}.", rollupTempLocation, destinationImage.TempLocation);
 				MoveFileFromTempToDestination(destinationImage, rollupTempLocation);
 			}
 			catch (Image.ImageRollupException ex)
@@ -59,6 +64,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 				return false;
 			}
 
+			_logger.LogVerbose("Images rollup finished.");
 			return true;
 		}
 
@@ -127,7 +133,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 			}
 			catch (IOException ioEx)
 			{
-				_logger.LogError(ioEx, "Failed to delete image temp file.");
+				_logger.LogError(ioEx, "Failed to delete image temp file {tempFile}.", rollupTempLocation);
 				throw new FileWriteException(FileWriteException.DestinationFile.Errors, ioEx);
 			}
 		}

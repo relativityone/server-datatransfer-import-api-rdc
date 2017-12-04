@@ -10,13 +10,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 
 		private readonly ILoadFileEntry _loadFileEntry;
 		private readonly ExportFile _exportSettings;
-		private readonly IFilePathProvider _filePathProvider;
+		private readonly IFilePathTransformer _filePathTransformer;
 		private readonly IFullTextLoadFileEntry _fullTextLoadFileEntry;
 
-		protected ImageLoadFile(ExportFile exportSettings, IFilePathProvider filePathProvider, ILoadFileEntry loadFileEntry, IFullTextLoadFileEntry fullTextLoadFileEntry)
+		protected ImageLoadFile(ExportFile exportSettings, IFilePathTransformer filePathTransformer, ILoadFileEntry loadFileEntry, IFullTextLoadFileEntry fullTextLoadFileEntry)
 		{
 			_exportSettings = exportSettings;
-			_filePathProvider = filePathProvider;
+			_filePathTransformer = filePathTransformer;
 			_loadFileEntry = loadFileEntry;
 			_fullTextLoadFileEntry = fullTextLoadFileEntry;
 		}
@@ -73,7 +73,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 			string localFilePath = images[baseImageIndex].SourceLocation;
 			if (_exportSettings.VolumeInfo.CopyImageFilesFromRepository)
 			{
-				localFilePath = _filePathProvider.GetPathForLoadFile(images[baseImageIndex].TempLocation);
+				localFilePath = _filePathTransformer.TransformPath(images[baseImageIndex].TempLocation);
 			}
 			return localFilePath;
 		}

@@ -5,12 +5,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 	public class ExportRequest
 	{
 		/// <summary>
-		///     Needed for Web mode
+		///     For Web mode
 		/// </summary>
 		public int ArtifactId { get; }
 
 		/// <summary>
-		///     Needed for Web mode
+		///     For Web mode
 		/// </summary>
 		public string RemoteFileGuid { get; protected set; }
 

@@ -7,16 +7,16 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 	public class LongTextHandlerFactory
 	{
 		private readonly IDelimiter _delimiter;
-		private readonly IFilePathProvider _filePathProvider;
+		private readonly IFilePathTransformer _filePathTransformer;
 		private readonly LongTextRepository _longTextRepository;
 		private readonly LongTextToLoadFile _longTextToLoadFile;
 		private readonly LongTextHelper _longTextHelper;
 
-		public LongTextHandlerFactory(IDelimiter delimiter, IFilePathProvider filePathProvider, LongTextRepository longTextRepository, LongTextToLoadFile longTextToLoadFile,
+		public LongTextHandlerFactory(IDelimiter delimiter, IFilePathTransformer filePathTransformer, LongTextRepository longTextRepository, LongTextToLoadFile longTextToLoadFile,
 			LongTextHelper longTextHelper)
 		{
 			_delimiter = delimiter;
-			_filePathProvider = filePathProvider;
+			_filePathTransformer = filePathTransformer;
 			_longTextRepository = longTextRepository;
 			_longTextToLoadFile = longTextToLoadFile;
 			_longTextHelper = longTextHelper;
@@ -27,7 +27,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 			ILongTextHandler textPrecedenceHandler;
 			if (exportFile.ExportFullTextAsFile)
 			{
-				textPrecedenceHandler = new LongTextToFile(exportFile, _filePathProvider, _longTextRepository, _longTextHelper);
+				textPrecedenceHandler = new LongTextToFile(exportFile, _filePathTransformer, _longTextRepository, _longTextHelper);
 			}
 			else
 			{

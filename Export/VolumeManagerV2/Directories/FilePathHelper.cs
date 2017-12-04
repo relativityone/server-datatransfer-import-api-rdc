@@ -1,24 +1,21 @@
 ﻿using System;
 using System.IO;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 {
-	public class RelativeFilePathProvider : IFilePathProvider
+	public class FilePathHelper
 	{
-		private readonly ExportFile _exportSettings;
+		private readonly ILog _logger;
 
-		public RelativeFilePathProvider(ExportFile exportSettings)
+		public FilePathHelper(ILog logger)
 		{
-			_exportSettings = exportSettings;
+			_logger = logger;
 		}
 
-		public string GetPathForLoadFile(string filePath)
+		public string MakeRelativePath(string fromPath, string toPath)
 		{
-			return MakeRelativePath(_exportSettings.FolderPath, filePath);
-		}
-
-		public static string MakeRelativePath(string fromPath, string toPath)
-		{
+			_logger.LogVerbose("Trying to make path {toPath} relative to path {fromPath}.", toPath, fromPath);
 			if (string.IsNullOrEmpty(fromPath))
 			{
 				throw new ArgumentNullException(nameof(fromPath));
@@ -33,6 +30,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 
 			if (fromUri.Scheme != toUri.Scheme)
 			{
+				_logger.LogWarning("Path cannot be made relative.");
 				return toPath;
 			} // path can't be made relative.
 
@@ -44,7 +42,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 				relativePath = relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 			}
 
-			return Path.Combine(".", relativePath);
+			_logger.LogVerbose("Relative path result {relativePath}.", relativePath);
+			return relativePath;
 		}
 	}
 }

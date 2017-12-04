@@ -53,7 +53,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			InstallLongText(container);
 
 			container.Register(Component.For<ExportFile>().Instance(ExportSettings).LifestyleSingleton());
-			container.Register(Component.For<ExportColumns>().UsingFactoryMethod(k => new ExportColumns(_exporter.Columns, k.Resolve<IFieldLookupService>())));
 			container.Register(Component.For<IExportManager>().Instance(_exporter.ExportManager).LifestyleSingleton());
 			container.Register(Component.For<IStatus>().Instance(_exporter));
 
@@ -77,8 +76,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			container.Register(Component.For<IBatchExporter>().ImplementedBy<BatchExporter>());
 			container.Register(Component.For<FilesDownloader>().ImplementedBy<FilesDownloader>());
 
-			container.Register(Component.For<FilePathProviderFactory>().ImplementedBy<FilePathProviderFactory>());
-			container.Register(Component.For<IFilePathProvider>().UsingFactoryMethod(k => k.Resolve<FilePathProviderFactory>().Create(ExportSettings)));
+			container.Register(Component.For<IExportCleanUp>().ImplementedBy<ExportCleanUp>());
+
+			container.Register(Component.For<FilePathTransformerFactory>().ImplementedBy<FilePathTransformerFactory>());
+			container.Register(Component.For<IFilePathTransformer>().UsingFactoryMethod(k => k.Resolve<FilePathTransformerFactory>().Create(ExportSettings)));
 
 			container.Register(Component.For<ImageLoadFileFactory>().ImplementedBy<ImageLoadFileFactory>());
 			container.Register(Component.For<Metadata.Images.ImageLoadFile>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileFactory>().Create(ExportSettings)));
