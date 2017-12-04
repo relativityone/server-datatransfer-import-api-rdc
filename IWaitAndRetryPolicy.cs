@@ -3,19 +3,19 @@ using System.Threading;
 
 namespace kCura.WinEDDS.TApi
 {
-    /// <summary>
-    /// The retry policy class object.
-    /// </summary>
-    public interface IWaitAndRetryPolicy
-    {
-        /// <summary>
-        /// Number of retries
-        /// </summary>
-        int NumberOfRetries { get; }
-        /// <summary>
-        /// Wait time in seconds between retry attempts
-        /// </summary>
-        int WaitTimeSecondsBetweenRetryAttempts { get; }
+	/// <summary>
+	/// The retry policy class object.
+	/// </summary>
+	public interface IWaitAndRetryPolicy
+	{
+		/// <summary>
+		/// Number of retries
+		/// </summary>
+		int NumberOfRetries { get; }
+		/// <summary>
+		/// Wait time in seconds between retry attempts
+		/// </summary>
+		int WaitTimeSecondsBetweenRetryAttempts { get; }
 
 		/// <summary>
 		/// Performs the synchronous retry operation using the specified retry duration function.
@@ -62,10 +62,10 @@ namespace kCura.WinEDDS.TApi
 		/// A token which is used to cancell current task.
 		/// </param>
 		void WaitAndRetry<TException>(
-            int maxRetryCount,
-            Func<int, TimeSpan> retryDuration,
-            Action<Exception, TimeSpan> retryAction,
-            Action<CancellationToken> execFunc, CancellationToken token) where TException : Exception;
+			int maxRetryCount,
+			Func<int, TimeSpan> retryDuration,
+			Action<Exception, TimeSpan> retryAction,
+			Action<CancellationToken> execFunc, CancellationToken token) where TException : Exception;
 
-    }
+	}
 }
