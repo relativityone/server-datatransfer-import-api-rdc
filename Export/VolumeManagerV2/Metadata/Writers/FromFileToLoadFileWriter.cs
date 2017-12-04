@@ -2,12 +2,11 @@
 using System.Text;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.LoadFileEntry;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 {
-	public class FromFileToLoadFileWriter : ILongTextEntryWriter
+	public class FromFileToLoadFileWriter : ToLoadFileWriter
 	{
 		private readonly LongTextStreamFormatterFactory _formatterFactory;
 		private readonly ILog _logger;
@@ -18,23 +17,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			_formatterFactory = formatterFactory;
 		}
 
-		public void WriteLongTextFileToDatFile(StreamWriter fileWriter, string longTextPath, Encoding encoding)
+		public override void WriteLongTextFileToDatFile(StreamWriter fileWriter, string longTextPath, Encoding encoding)
 		{
+			_logger.LogVerbose("Writing entry from file {path} to load file.", longTextPath);
 			using (TextReader source = new StreamReader(longTextPath, encoding))
 			{
 				ILongTextStreamFormatter formatter = _formatterFactory.Create(source);
 				WriteLongText(source, fileWriter, formatter);
-			}
-		}
-
-		private void WriteLongText(TextReader source, TextWriter fileWriter, ILongTextStreamFormatter formatter)
-		{
-			int c = source.Read();
-
-			while (c != -1)
-			{
-				formatter.TransformAndWriteCharacter(c, fileWriter);
-				c = source.Read();
 			}
 		}
 	}

@@ -2,19 +2,16 @@
 using System.IO;
 using System.Text;
 using kCura.WinEDDS.Exceptions;
-using kCura.WinEDDS.IO;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 {
 	public class StreamFactory
 	{
-		private readonly IFileStreamFactory _fileStreamFactory;
 		private readonly ILog _logger;
 
-		public StreamFactory(IFileStreamFactory fileStreamFactory, ILog logger)
+		public StreamFactory(ILog logger)
 		{
-			_fileStreamFactory = fileStreamFactory;
 			_logger = logger;
 		}
 

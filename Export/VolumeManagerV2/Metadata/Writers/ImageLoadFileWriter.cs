@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
 using kCura.WinEDDS.Exceptions;
 using kCura.WinEDDS.Exporters;
@@ -44,6 +43,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			//TODO this "sorting" was introduced after changing ConcurrentDictionary to ConcurrentBag - is it needed?
 			foreach (var artifact in artifacts)
 			{
+				Logger.LogVerbose("Writing entries to image load file for artifact {artifactId}.", artifact.ArtifactID);
+
 				//TODO I don't like this :(
 				context[WritersRetryPolicy.CONTEXT_LAST_ARTIFACT_ID_KEY] = artifact.ArtifactID;
 
@@ -52,15 +53,18 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 
 				foreach (var bate in bates)
 				{
+					Logger.LogVerbose("Writing entry to image load file for image {bateNumber}.", bate);
 					string key = bate;
 
 					foreach (var line in linesToWrite.Where(x => x.Key == $"FT{key}").OrderBy(x => x.Key).ThenBy(x => x.Value))
 					{
+						Logger.LogVerbose("Writing Full text entry to image load file for image {bateNumber}.", bate);
 						FileWriter.Write(line.Value);
 					}
 
 					foreach (var line in linesToWrite.Where(x => x.Key == key).OrderBy(x => x.Key).ThenBy(x => x.Value))
 					{
+						Logger.LogVerbose("Writing metadata entry to image load file for image {bateNumber}.", bate);
 						FileWriter.Write(line.Value);
 					}
 				}

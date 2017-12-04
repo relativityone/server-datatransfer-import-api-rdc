@@ -48,6 +48,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			ILoadFileEntry loadFileEntry;
 			if (linesToWrite.TryGetValue(headerArtifactID, out loadFileEntry))
 			{
+				Logger.LogVerbose("Writing header to load file.");
 				loadFileEntry?.Write(ref FileWriter);
 			}
 		}
@@ -62,6 +63,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 				ILoadFileEntry loadFileEntry;
 				if (linesToWrite.TryGetValue(artifact.ArtifactID, out loadFileEntry))
 				{
+					Logger.LogVerbose("Writing entry to load file for artifact {artifactId}.", artifact.ArtifactID);
 					loadFileEntry?.Write(ref FileWriter);
 				}
 			}

@@ -313,6 +313,7 @@
     <Compile Include="Export\VolumeManagerV2\Download\ExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ImageExportRequestBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\NativeExportRequestBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ToLoadFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Settings\Config.cs" />
     <Compile Include="Export\VolumeManagerV2\Container\ContainerFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Container\ExportInstaller.cs" />
