@@ -300,6 +300,7 @@ Namespace kCura.WinEDDS
 				FieldLookupService = container.Resolve(Of IFieldLookupService)
 				_errorFile = container.Resolve(Of IErrorFile)
 				Dim batchExporter As IBatchExporter = container.Resolve(Of IBatchExporter)
+				Dim exportCleanUp As IExportCleanUp = container.Resolve(Of IExportCleanUp)
 
 				'TODO _volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, _statistics, FileHelper, DirectoryHelper, FileNameProvider)
 				Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
@@ -340,6 +341,8 @@ Namespace kCura.WinEDDS
 					End If
 					If _cancellationTokenSource.IsCancellationRequested Then Exit While
 				End While
+
+				exportCleanUp.CleanUp()
 
 				Me.WriteStatusLine(Windows.Process.EventType.Status, kCura.WinEDDS.FileDownloader.TotalWebTime.ToString, True)
 				_timekeeper.GenerateCsvReportItemsAsRows()

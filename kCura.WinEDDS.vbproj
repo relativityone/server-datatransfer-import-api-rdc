@@ -335,6 +335,7 @@
     <Compile Include="Exporters\ExportConfig.vb" />
     <Compile Include="Exporters\IBatchExporter.vb" />
     <Compile Include="Exporters\IErrorFile.vb" />
+    <Compile Include="Exporters\IExportCleanUp.vb" />
     <Compile Include="Exporters\IExportConfig.vb" />
     <Compile Include="Exporters\IExporter.vb" />
     <Compile Include="Exporters\IExporterStatusNotification.vb" />
