@@ -59,10 +59,8 @@ namespace kCura.WinEDDS.TApi
         /// <inheritdoc />
         public IoWarningPublisher IOWarningPublisher => _ioWarningPublisher;
 
-	    /// <summary>
-	    /// 
-	    /// </summary>
-	    public CancellationToken CancellationToken { get; set; }
+		/// <inheritdoc />
+		public CancellationToken CancellationToken { get; set; }
 
 	    /// <inheritdoc />
         public long GetFileLength(string fileName, int lineNumberInParentFile)
