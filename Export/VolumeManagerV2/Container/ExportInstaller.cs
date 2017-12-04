@@ -7,6 +7,7 @@ using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Delimiter;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;

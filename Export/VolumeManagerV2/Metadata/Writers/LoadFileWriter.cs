@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
 using kCura.WinEDDS.Exceptions;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.LoadFileEntry;

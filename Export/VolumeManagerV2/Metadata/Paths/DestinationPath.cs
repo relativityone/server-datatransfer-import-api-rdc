@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths
 {
 	public abstract class DestinationPath : IDestinationPath
 	{

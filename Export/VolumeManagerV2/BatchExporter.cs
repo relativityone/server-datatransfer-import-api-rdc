@@ -13,7 +13,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 {
 	public class BatchExporter : IBatchExporter
 	{
-		private readonly LoadFileData _loadFileData;
+		private readonly LoadFileMetadataBuilder _loadFileMetadataBuilder;
 		private readonly Metadata.Images.ImageLoadFile _imageLoadFile;
 		private readonly LoadFileWriter _loadFileWriter;
 		private readonly ImageLoadFileWriter _imageLoadFileWriter;
@@ -22,13 +22,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 		private readonly LongTextRepositoryBuilder _longTextRepositoryBuilder;
 
 		public BatchExporter(FilesDownloader filesDownloader, IImagesRollup imagesRollup, Metadata.Images.ImageLoadFile imageLoadFile, ImageLoadFileWriter imageLoadFileWriter,
-			LoadFileData loadFileData, LoadFileWriter loadFileWriter, LongTextRepositoryBuilder longTextRepositoryBuilder)
+			LoadFileMetadataBuilder loadFileMetadataBuilder, LoadFileWriter loadFileWriter, LongTextRepositoryBuilder longTextRepositoryBuilder)
 		{
 			_filesDownloader = filesDownloader;
 			_imagesRollup = imagesRollup;
 			_imageLoadFile = imageLoadFile;
 			_imageLoadFileWriter = imageLoadFileWriter;
-			_loadFileData = loadFileData;
+			_loadFileMetadataBuilder = loadFileMetadataBuilder;
 			_loadFileWriter = loadFileWriter;
 			_longTextRepositoryBuilder = longTextRepositoryBuilder;
 		}
@@ -67,7 +67,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 			IList<KeyValuePair<string, string>> entries = _imageLoadFile.CreateLoadFileEntries(artifacts);
 			_imageLoadFileWriter.Write(entries, artifacts, cancellationToken);
 
-			IDictionary<int, ILoadFileEntry> loadFileEntries = _loadFileData.AddLines(artifacts);
+			IDictionary<int, ILoadFileEntry> loadFileEntries = _loadFileMetadataBuilder.AddLines(artifacts);
 			_loadFileWriter.Write(loadFileEntries, artifacts, cancellationToken);
 		}
 	}

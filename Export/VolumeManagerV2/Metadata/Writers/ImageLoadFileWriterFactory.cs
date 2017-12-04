@@ -1,4 +1,5 @@
 ﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
 using Polly.Retry;
 using Relativity.Logging;
 

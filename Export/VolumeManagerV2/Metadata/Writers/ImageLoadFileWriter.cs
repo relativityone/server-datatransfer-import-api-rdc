@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
 using kCura.WinEDDS.Exceptions;
 using kCura.WinEDDS.Exporters;
 using Polly;

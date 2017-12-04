@@ -1,5 +1,6 @@
 ﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
 

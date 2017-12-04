@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using kCura.Utility;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
 using kCura.WinEDDS.Exceptions;
 using Relativity.Logging;
 
@@ -43,6 +44,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 		{
 			if (_streamWriter == null)
 			{
+				_logger.LogVerbose("Creating stream for error file in {destination}.", _errorFileDestinationPath.Path);
 				_streamWriter = _streamFactory.Create(_streamWriter, 0, _errorFileDestinationPath.Path, _errorFileDestinationPath.Encoding, false);
 				WriteHeader();
 			}
@@ -57,6 +59,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 		private void WriteLine(ExportFileType type, string recordIdentifier, string fileLocation, string errorText)
 		{
 			string line = FormatErrorLine(type.ToString(), recordIdentifier, fileLocation, Strings.ToCsvCellContents(errorText));
+			_logger.LogError(line);
 			_streamWriter.WriteLine(line);
 		}
 
