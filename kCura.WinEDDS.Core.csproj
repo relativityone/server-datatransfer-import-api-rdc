@@ -283,7 +283,7 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextToFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\EmptyLongTextBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\ILongTextBuilder.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\LongTextFieldBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\LongTextFromFieldBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\LongTextIproFullTextBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\LongTextPrecedenceBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\LongTextRepository.cs" />

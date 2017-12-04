@@ -5,6 +5,7 @@ using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Exporters;
 using Relativity;
+using Relativity.Logging;
 using Constants = Relativity.Export.Constants;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
@@ -16,32 +17,31 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 		private readonly IFieldService _fieldService;
 		private readonly LongTextHelper _longTextHelper;
 		private readonly IFileNameProvider _fileNameProvider;
+		private readonly ILog _logger;
 
 		public LongTextPrecedenceBuilder(ExportFile exportSettings, LongTextFilePathProvider filePathProvider, IFieldService fieldService, LongTextHelper longTextHelper,
-			IFileNameProvider fileNameProvider)
+			IFileNameProvider fileNameProvider, ILog logger)
 		{
 			_exportSettings = exportSettings;
 			_filePathProvider = filePathProvider;
 			_fieldService = fieldService;
 			_longTextHelper = longTextHelper;
 			_fileNameProvider = fileNameProvider;
+			_logger = logger;
 		}
 
-		public IList<LongText> CreateLongText(ObjectExportInfo artifact)
+		public IEnumerable<LongText> CreateLongText(ObjectExportInfo artifact)
 		{
+			_logger.LogVerbose("Attempting to create LongText for TextPrecedence field.");
 			ViewFieldInfo field = GetFieldForLongTextPrecedenceDownload(artifact);
+
+			_logger.LogVerbose("Text Precedence is stored in field {fieldName}:{fieldId}.", field.AvfColumnName, field.FieldArtifactId);
 
 			if (_longTextHelper.IsTextTooLong(artifact, Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME))
 			{
-				return new List<LongText>
-				{
-					CreateForTooLongText(artifact, field)
-				};
+				yield return CreateForTooLongText(artifact, field);
 			}
-			return new List<LongText>
-			{
-				CreateForLongText(artifact, field)
-			};
+			yield return CreateForLongText(artifact, field);
 		}
 
 		private LongText CreateForTooLongText(ObjectExportInfo artifact, ViewFieldInfo field)
@@ -50,8 +50,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			TextExportRequest textExportRequest = CreateExportRequest(artifact, field, destinationLocation);
 			if (_exportSettings.ExportFullTextAsFile)
 			{
+				_logger.LogVerbose("LongText file missing - creating ExportRequest to destination file.");
 				return LongText.CreateFromMissingFile(artifact.ArtifactID, textExportRequest.FieldArtifactId, textExportRequest);
 			}
+			_logger.LogVerbose("LongText file missing - creating ExportRequest to temporary file.");
 			return LongText.CreateFromMissingValue(artifact.ArtifactID, textExportRequest.FieldArtifactId, textExportRequest);
 		}
 
@@ -63,13 +65,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			if (_exportSettings.ExportFullTextAsFile)
 			{
 				string destinationLocation = GetDestinationLocation(artifact);
-				//TODO encoding
+				_logger.LogVerbose("LongText value exists - writing it to destination file {location}.", destinationLocation);
 				using (StreamWriter streamWriter = new StreamWriter(destinationLocation, false, _exportSettings.TextFileEncoding))
 				{
 					streamWriter.Write(longTextValue);
 				}
 				return LongText.CreateFromExistingFile(artifact.ArtifactID, fieldForPrecedence.FieldArtifactId, destinationLocation);
 			}
+			_logger.LogVerbose("LongText value exists - storing it into memory.");
 			return LongText.CreateFromExistingValue(artifact.ArtifactID, fieldForPrecedence.FieldArtifactId, longTextValue);
 		}
 

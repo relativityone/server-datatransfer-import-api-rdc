@@ -5,6 +5,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 {
 	public interface ILongTextBuilder
 	{
-		IList<LongText> CreateLongText(ObjectExportInfo artifact);
+		IEnumerable<LongText> CreateLongText(ObjectExportInfo artifact);
 	}
 }
