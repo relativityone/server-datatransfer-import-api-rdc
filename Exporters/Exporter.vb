@@ -295,7 +295,11 @@ Namespace kCura.WinEDDS
 			_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 			RaiseEvent FileTransferModeChangeEvent(_downloadHandler.UploaderType.ToString)
 			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, columnHeaderString, exportInitializationArgs.ColumnNames)
-				container.Resolve(Of IExportValidation).ValidateExport(Settings, TotalExportArtifactCount)
+				Dim validator As IExportValidation = container.Resolve(Of IExportValidation)
+				if(Not validator.ValidateExport(Settings, TotalExportArtifactCount))
+					Shutdown()
+					Return False
+				End If
 				Dim objectExportableSize As IObjectExportableSize = container.Resolve(Of IObjectExportableSize)
 				FieldLookupService = container.Resolve(Of IFieldLookupService)
 				_errorFile = container.Resolve(Of IErrorFile)
