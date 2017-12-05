@@ -365,8 +365,9 @@ Public Class ImportOptions
 					activeSettings.ImagePrecedence = deserializedSettings.ImagePrecedence
 					If Not activeSettings.ImagePrecedence Is Nothing AndAlso activeSettings.ImagePrecedence.Any() Then
 						Dim dt As DataTable = Await _application.GetProductionPrecendenceList(Me.SelectedCaseInfo)
-						Dim availablePrecendenceItems As Pair() = dt.Select().Select(Function(row) New Pair(row("Value").ToString, row("Display").ToString)).ToArray()
-						activeSettings.ImagePrecedence = EnsureImagePrecedence(availablePrecendenceItems, activeSettings.ImagePrecedence)
+						Dim availablePrecendenceItems As List(Of Pair) = dt.Select().Select(Function(row) New Pair(row("Value").ToString, row("Display").ToString)).ToList()
+						availablePrecendenceItems.Add(New Pair("-1", "Original"))
+						activeSettings.ImagePrecedence = EnsureImagePrecedence(activeSettings.ImagePrecedence, availablePrecendenceItems.ToArray())
 					End If
 					activeSettings.CookieContainer = _application.CookieContainer
 					Dim potentialErrors As String = New Exporters.Validator.ExportInitializationValidator().IsValid(activeSettings)
