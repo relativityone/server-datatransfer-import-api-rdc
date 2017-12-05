@@ -5,9 +5,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
 	public class FilesDownloaderFactory
 	{
-		private readonly IFileHelper _fileHelper;
 		private readonly IFileNameProvider _fileNameProvider;
-		private readonly IStatus _status;
 		private readonly LongTextExportRequestBuilder _longTextExportRequestBuilder;
 		private readonly ExportTapiBridgeFactory _exportTapiBridgeFactory;
 		private readonly IDirectoryManager _directoryManager;
@@ -15,14 +13,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private readonly FileDownloader _fileDownloader;
 		private readonly NativeFilePathProvider _nativeFilePathProvider;
 		private readonly ImageFilePathProvider _imageFilePathProvider;
+		private readonly ExportFileValidator _validator;
 
-		public FilesDownloaderFactory(IFileHelper fileHelper, IFileNameProvider fileNameProvider, IStatus status,
-			LongTextExportRequestBuilder longTextExportRequestBuilder, ExportTapiBridgeFactory exportTapiBridgeFactory, IDirectoryManager directoryManager, ILog logger,
-			FileDownloader fileDownloader, NativeFilePathProvider nativeFilePathProvider, ImageFilePathProvider imageFilePathProvider)
+		public FilesDownloaderFactory(IFileNameProvider fileNameProvider, ExportFileValidator validator, LongTextExportRequestBuilder longTextExportRequestBuilder,
+			ExportTapiBridgeFactory exportTapiBridgeFactory, IDirectoryManager directoryManager, ILog logger, FileDownloader fileDownloader, NativeFilePathProvider nativeFilePathProvider,
+			ImageFilePathProvider imageFilePathProvider)
 		{
-			_fileHelper = fileHelper;
 			_fileNameProvider = fileNameProvider;
-			_status = status;
+			_validator = validator;
 			_longTextExportRequestBuilder = longTextExportRequestBuilder;
 			_exportTapiBridgeFactory = exportTapiBridgeFactory;
 			_directoryManager = directoryManager;
@@ -39,7 +37,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			if (exportSettings.ExportNative && exportSettings.VolumeInfo.CopyNativeFilesFromRepository)
 			{
 				_logger.LogVerbose("Creating {requestBuilder} for natives.", nameof(NativeExportRequestBuilder));
-				nativeExportRequestBuilder = new NativeExportRequestBuilder(exportSettings, _nativeFilePathProvider, _fileHelper, _fileNameProvider, _status, _logger);
+				nativeExportRequestBuilder = new NativeExportRequestBuilder(_nativeFilePathProvider, _fileNameProvider, _validator, _logger);
 			}
 			else
 			{
@@ -50,7 +48,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			if (exportSettings.ExportImages && exportSettings.VolumeInfo.CopyImageFilesFromRepository)
 			{
 				_logger.LogVerbose("Creating {requestBuilder} for images.", nameof(ImageExportRequestBuilder));
-				imageExportRequestBuilder = new ImageExportRequestBuilder(exportSettings, _imageFilePathProvider, _fileHelper, _status, _logger);
+				imageExportRequestBuilder = new ImageExportRequestBuilder(_imageFilePathProvider, _validator, _logger);
 			}
 			else
 			{

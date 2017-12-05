@@ -18,9 +18,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 		private readonly LongTextHelper _longTextHelper;
 		private readonly IFileNameProvider _fileNameProvider;
 		private readonly ILog _logger;
+		private readonly ExportFileValidator _exportFileValidator;
 
 		public LongTextPrecedenceBuilder(ExportFile exportSettings, LongTextFilePathProvider filePathProvider, IFieldService fieldService, LongTextHelper longTextHelper,
-			IFileNameProvider fileNameProvider, ILog logger)
+			IFileNameProvider fileNameProvider, ILog logger, ExportFileValidator exportFileValidator)
 		{
 			_exportSettings = exportSettings;
 			_filePathProvider = filePathProvider;
@@ -28,6 +29,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			_longTextHelper = longTextHelper;
 			_fileNameProvider = fileNameProvider;
 			_logger = logger;
+			_exportFileValidator = exportFileValidator;
 		}
 
 		public IEnumerable<LongText> CreateLongText(ObjectExportInfo artifact)
@@ -50,8 +52,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			LongTextExportRequest longTextExportRequest = CreateExportRequest(artifact, field, destinationLocation);
 			if (_exportSettings.ExportFullTextAsFile)
 			{
-				_logger.LogVerbose("LongText file missing - creating ExportRequest to destination file.");
-				return LongText.CreateFromMissingFile(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, longTextExportRequest);
+				if (CanExport(destinationLocation))
+				{
+					_logger.LogVerbose("LongText file missing - creating ExportRequest to destination file.");
+					return LongText.CreateFromMissingFile(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, longTextExportRequest);
+				}
+				_logger.LogVerbose("LongText file already exists and cannot overwrite - creating ExportRequest from existing file.");
+				return LongText.CreateFromExistingFile(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, destinationLocation);
 			}
 			_logger.LogVerbose("LongText file missing - creating ExportRequest to temporary file.");
 			return LongText.CreateFromMissingValue(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, longTextExportRequest);
@@ -65,10 +72,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			if (_exportSettings.ExportFullTextAsFile)
 			{
 				string destinationLocation = GetDestinationLocation(artifact);
-				_logger.LogVerbose("LongText value exists - writing it to destination file {location}.", destinationLocation);
-				using (StreamWriter streamWriter = new StreamWriter(destinationLocation, false, _exportSettings.TextFileEncoding))
+				if (CanExport(destinationLocation))
 				{
-					streamWriter.Write(longTextValue);
+					_logger.LogVerbose("LongText value exists - writing it to destination file {location}.", destinationLocation);
+					using (StreamWriter streamWriter = new StreamWriter(destinationLocation, false, _exportSettings.TextFileEncoding))
+					{
+						streamWriter.Write(longTextValue);
+					}
+				}
+				else
+				{
+					_logger.LogVerbose("LongText file already exists and cannot overwrite - using existing file {location}.", destinationLocation);
 				}
 				return LongText.CreateFromExistingFile(artifact.ArtifactID, fieldForPrecedence.FieldArtifactId, destinationLocation);
 			}
@@ -113,6 +127,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 				return _filePathProvider.GetPathForFile(fileName);
 			}
 			return Path.GetTempFileName();
+		}
+
+		private bool CanExport(string destinationLocation)
+		{
+			string warningMessageInCaseOfOverwriting = $"Overwriting text file {destinationLocation}.";
+			return _exportFileValidator.CanExport(destinationLocation, warningMessageInCaseOfOverwriting);
 		}
 	}
 }

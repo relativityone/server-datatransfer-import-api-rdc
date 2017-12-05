@@ -1,4 +1,5 @@
 ﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
@@ -12,9 +13,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 		private readonly LongTextFilePathProvider _filePathProvider;
 		private readonly LongTextRepository _longTextRepository;
 		private readonly ILog _logger;
+		private readonly ExportFileValidator _validator;
 
 		public LongTextRepositoryBuilderFactory(ExportFile exportSettings, LongTextFilePathProvider filePathProvider, LongTextHelper longTextHelper, IFieldService fieldService,
-			IFileNameProvider fileNameProvider, LongTextRepository longTextRepository, ILog logger)
+			IFileNameProvider fileNameProvider, LongTextRepository longTextRepository, ILog logger, ExportFileValidator validator)
 		{
 			_exportSettings = exportSettings;
 			_filePathProvider = filePathProvider;
@@ -23,6 +25,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			_fileNameProvider = fileNameProvider;
 			_longTextRepository = longTextRepository;
 			_logger = logger;
+			_validator = validator;
 		}
 
 		public LongTextRepositoryBuilder Create(ExportFile exportFile)
@@ -55,7 +58,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			if (_longTextHelper.IsTextPrecedenceSet())
 			{
 				_logger.LogVerbose("Text precedence is set - creating {type}.", nameof(LongTextPrecedenceBuilder));
-				longTextPrecedenceBuilder = new LongTextPrecedenceBuilder(_exportSettings, _filePathProvider, _fieldService, _longTextHelper, _fileNameProvider, _logger);
+				longTextPrecedenceBuilder = new LongTextPrecedenceBuilder(_exportSettings, _filePathProvider, _fieldService, _longTextHelper, _fileNameProvider, _logger, _validator);
 			}
 			else
 			{
