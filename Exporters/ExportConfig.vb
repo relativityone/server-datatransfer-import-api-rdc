@@ -15,6 +15,11 @@ Public Class ExportConfig
 		End Get
 	End Property
 
+	Public ReadOnly Property UseOldExport As Boolean Implements IExportConfig.UseOldExport
+		Get
+			Return Config.UseOldExport
+		End Get
+	End Property
 End Class
 
 End Namespace
