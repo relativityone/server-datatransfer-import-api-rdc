@@ -55,10 +55,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 			{
 				return;
 			}
-			catch (Exception ex)
-			{
-				return;
-			}
 
 			foreach (var artifact in artifacts)
 			{

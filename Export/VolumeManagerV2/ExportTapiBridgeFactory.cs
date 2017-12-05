@@ -45,7 +45,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 				WorkspaceId = _exportSettings.CaseInfo.ArtifactID
 			};
 
-			return TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, token);
+			return null;//TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, token);
 		}
 	}
 }
