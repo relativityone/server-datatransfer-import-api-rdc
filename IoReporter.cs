@@ -20,12 +20,13 @@ namespace kCura.WinEDDS.TApi
 		private readonly IoWarningPublisher _ioWarningPublisher;
 		private readonly ILog _log;
 		private readonly bool _disableNativeLocationValidation;
+		private readonly CancellationToken _cancellationToken;
 
 		/// <summary>
 		/// Constructor for IO reporter
 		/// </summary>
 		public IoReporter(IFileSystemService fileService, IWaitAndRetryPolicy waitAndRetry, ILog log,
-			IoWarningPublisher ioWarningPublisher, bool disableNativeLocationValidation)
+			IoWarningPublisher ioWarningPublisher, bool disableNativeLocationValidation, CancellationToken cancellationToken)
 		{
 			if (fileService == null)
 			{
@@ -46,22 +47,19 @@ namespace kCura.WinEDDS.TApi
 			{
 				throw new ArgumentNullException(nameof(ioWarningPublisher));
 			}
-
-			CancellationToken = CancellationToken.None;
+			
 			_fileSystemService = fileService;
 			_waitAndRetryPolicy = waitAndRetry;
 			_log = log;
 			_ioWarningPublisher = ioWarningPublisher;
 
 			_disableNativeLocationValidation = disableNativeLocationValidation;
+			_cancellationToken = cancellationToken;
 		}
 
 		/// <inheritdoc />
 		public IoWarningPublisher IOWarningPublisher => _ioWarningPublisher;
-
-		/// <inheritdoc />
-		public CancellationToken CancellationToken { get; set; }
-
+		
 		/// <inheritdoc />
 		public long GetFileLength(string fileName, int lineNumberInParentFile)
 		{
@@ -79,13 +77,13 @@ namespace kCura.WinEDDS.TApi
 				retryAttempt => TimeSpan.FromSeconds(retryAttempt == 1 ? 0 : _waitAndRetryPolicy.WaitTimeSecondsBetweenRetryAttempts),
 				(exception, timeSpan) =>
 				{
-					GetFileLengthRetryAction(exception, fileName, lineNumberInParentFile);
+					GetFileLengthRetryAction(exception, lineNumberInParentFile);
 				},
-				(CancellationToken) =>
+				(_cancellationToken) =>
 				{
-					fileLength = _fileSystemService.GetFileLength(fileName);
+					fileLength = GetFileLengthAction(fileName);
 				},
-				CancellationToken
+				_cancellationToken
 			);
 
 			return fileLength;
@@ -105,23 +103,32 @@ namespace kCura.WinEDDS.TApi
 		}
 
 
-		private void GetFileLengthRetryAction(Exception ex, string fileName, int lineNumberInParentFile)
+		private void GetFileLengthRetryAction(Exception ex, int lineNumberInParentFile)
 		{
-
-			if (_disableNativeLocationValidation && ex is ArgumentException &&
-				ex.Message.Contains("Illegal characters in path."))
-			{
-				string errorMessage = $"File {fileName} not found: illegal characters in path.";
-				_log.LogError(ex, errorMessage);
-
-				throw new FileInfoInvalidPathException(errorMessage);
-			}
-
 			string warningMessage = BuildIoReporterWarningMessage(ex);
-
 			_ioWarningPublisher?.PublishIoWarningEvent(new IoWarningEventArgs(warningMessage, lineNumberInParentFile));
-
 			_log.LogWarning(ex, warningMessage);
+		}
+
+		private long GetFileLengthAction(string fileName)
+		{
+			try
+			{
+				return _fileSystemService.GetFileLength(fileName);
+			}
+			catch (Exception ex)
+			{
+				if (_disableNativeLocationValidation && ex is ArgumentException &&
+					ex.Message.Contains("Illegal characters in path."))
+				{
+					string errorMessage = $"File {fileName} not found: illegal characters in path.";
+					_log.LogError(ex, errorMessage);
+
+					throw new FileInfoInvalidPathException(errorMessage);
+				}
+
+				throw;
+			}
 		}
 	}
 }

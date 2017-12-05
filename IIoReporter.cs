@@ -20,10 +20,5 @@ namespace kCura.WinEDDS.TApi
 		/// </summary>
 		IoWarningPublisher IOWarningPublisher { get; }
 
-		/// <summary>
-		/// A token which is used to cancell current task.
-		/// </summary>
-		 CancellationToken CancellationToken { get; set; }
-
     }
 }

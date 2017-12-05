@@ -42,7 +42,7 @@ namespace kCura.WinEDDS.TApi
 		/// <inheritdoc />
 		public void WaitAndRetry<TException>(int maxRetryCount, Func<int, TimeSpan> retryDuration, Action<Exception, TimeSpan> retryAction, Action<CancellationToken> execFunc, CancellationToken token) where TException : Exception
 		{
-			Policy.Handle<TException>()
+			Policy.Handle<TException>(ex => !(ex is FileInfoInvalidPathException))
 				.WaitAndRetry(maxRetryCount, retryDuration, retryAction)
 				.Execute(execFunc, token);
 		}
