@@ -288,16 +288,8 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
                 WorkspaceId = this.workspaceId
             };
 
-			if (direction == TransferDirection.Download)
-			{
-				this.nativeFileTransfer = new DownloadTapiBridge(parameters, this.transferLog?.Object, CancellationToken.None);
-			}
-			else if (direction == TransferDirection.Upload)
-			{
-				this.nativeFileTransfer = new UploadTapiBridge(parameters, this.transferLog?.Object, CancellationToken.None);
-			}
-
-			this.nativeFileTransfer.TapiFatalError += (sender, args) =>
+            this.nativeFileTransfer = new TapiBridge(parameters, direction, this.transferLog?.Object, CancellationToken.None);
+            this.nativeFileTransfer.TapiFatalError += (sender, args) =>
             {
                 lock (SyncRoot)
                 {
