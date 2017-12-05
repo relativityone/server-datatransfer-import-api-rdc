@@ -1,4 +1,4 @@
-﻿using kCura.WinEDDS.Exporters;
+﻿using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
@@ -16,5 +16,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			ArtifactId = artifactId;
 			DestinationLocation = destinationLocation;
 		}
+
+		public abstract TransferPath CreateTransferPath(int order);
 	}
 }

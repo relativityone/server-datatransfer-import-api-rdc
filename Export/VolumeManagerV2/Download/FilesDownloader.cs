@@ -23,19 +23,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private readonly ILog _logger;
 
-		#region TEMP
-
-		//TODO replace with new TAPI client
-		private readonly FileDownloader _fileDownloader;
-
-		//TODO remove this after replacing FileDownloader
-		private readonly ExportFile _exportFile;
-
-		#endregion
-
 		public FilesDownloader(IFileExportRequestBuilder nativeExportRequestBuilder, IFileExportRequestBuilder imageExportRequestBuilder,
 			LongTextExportRequestBuilder longTextExportRequestBuilder, ExportTapiBridgeFactory exportTapiBridgeFactory, IDirectoryManager directoryManager, ILog logger,
-			FileDownloader fileDownloader, ExportFile exportFile, LabelManager labelManager)
+			LabelManager labelManager)
 		{
 			_nativeExportRequestBuilder = nativeExportRequestBuilder;
 			_imageExportRequestBuilder = imageExportRequestBuilder;
@@ -43,8 +33,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_exportTapiBridgeFactory = exportTapiBridgeFactory;
 			_directoryManager = directoryManager;
 			_logger = logger;
-			_fileDownloader = fileDownloader;
-			_exportFile = exportFile;
 			_labelManager = labelManager;
 		}
 
@@ -63,9 +51,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				return;
 			}
 
-			DownloadFiles(cancellationToken);
-			//TODO temporary, until we introduce TAPI client for Long Text
-			//DownloadLongTexts(cancellationToken);
+			DownloadRequests(cancellationToken);
 		}
 
 		private void CreateExportRequests(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
@@ -96,57 +82,93 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			}
 		}
 
-		private void DownloadFiles(CancellationToken cancellationToken)
+		private void DownloadRequests(CancellationToken cancellationToken)
 		{
-			_logger.LogVerbose("Creating TAPI bridge for export. Adding {count} requests to it.", _fileExportRequests.Count);
-			using (TapiBridge tapiBridge = _exportTapiBridgeFactory.Create(cancellationToken))
+			DownloadTapiBridge filesDownloader = null;
+			DownloadTapiBridge longTextDownloader = null;
+			try
 			{
-				int order = 1;
-				foreach (var fileExportRequest in _fileExportRequests)
+				filesDownloader = DownloadFiles(cancellationToken);
+				longTextDownloader = DownloadLongTexts(cancellationToken);
+
+				_logger.LogVerbose("Waiting for file transfer to finish.");
+				filesDownloader.WaitForTransferJob();
+				_logger.LogVerbose("File transfer finished.");
+
+				_logger.LogVerbose("Waiting for long text transfer to finish.");
+				longTextDownloader.WaitForTransferJob();
+				_logger.LogVerbose("Long text transfer finished.");
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error occurred during transfer.");
+				throw;
+			}
+			finally
+			{
+				try
 				{
-					try
-					{
-						_logger.LogVerbose("Adding export request for downloading file {source} to {destination}.", fileExportRequest.SourceLocation, fileExportRequest.DestinationLocation);
-						tapiBridge.AddPath(fileExportRequest.SourceLocation, fileExportRequest.DestinationLocation, order++);
-					}
-					catch (Exception ex)
-					{
-						_logger.LogError(ex, "Error occurred during adding export request to TAPI bridge. Skipping.");
-						throw;
-					}
+					filesDownloader?.Dispose();
 				}
-
-				_logger.LogVerbose("Waiting for transfer to finish.");
-
-				//TODO temporary, until we introduce TAPI client for Long Text
-				DownloadLongTexts(cancellationToken);
-
-				tapiBridge.WaitForTransferJob();
-				_logger.LogVerbose("Transfer finished. Exiting file downloader.");
+				catch (Exception ex)
+				{
+					_logger.LogError(ex, "Failed to dispose DownloadTapiBridge for files.");
+				}
+				try
+				{
+					longTextDownloader?.Dispose();
+				}
+				catch (Exception ex)
+				{
+					_logger.LogError(ex, "Failed to dispose DownloadTapiBridge for long text.");
+				}
 			}
 		}
 
-		private void DownloadLongTexts(CancellationToken cancellationToken)
+		private DownloadTapiBridge DownloadFiles(CancellationToken cancellationToken)
 		{
-			//TODO replace with new TAPI client
-			foreach (var textExportRequest in _longTextExportRequests)
+			_logger.LogVerbose("Creating TAPI bridge for file export. Adding {count} requests to it.", _fileExportRequests.Count);
+			DownloadTapiBridge tapiBridge = _exportTapiBridgeFactory.Create(cancellationToken);
+
+			int order = 1;
+			foreach (var fileExportRequest in _fileExportRequests)
 			{
-				if (cancellationToken.IsCancellationRequested)
+				try
 				{
-					return;
+					_logger.LogVerbose("Adding export request for downloading file {source} to {destination}.", fileExportRequest.SourceLocation, fileExportRequest.DestinationLocation);
+					tapiBridge.AddPath(fileExportRequest.CreateTransferPath(order++));
 				}
-				if (textExportRequest.FullText)
+				catch (Exception ex)
 				{
-					_logger.LogVerbose("Downloading Full Text for artifact {artifactId}. Field {fieldId}.", textExportRequest.ArtifactId, textExportRequest.FieldArtifactId);
-					_fileDownloader.DownloadFullTextFile(textExportRequest.DestinationLocation, textExportRequest.ArtifactId, _exportFile.CaseInfo.ArtifactID.ToString());
-				}
-				else
-				{
-					_logger.LogVerbose("Downloading Long Text for artifact {artifactId}. Field {fieldId}.", textExportRequest.ArtifactId, textExportRequest.FieldArtifactId);
-					_fileDownloader.DownloadLongTextFile(textExportRequest.DestinationLocation, textExportRequest.ArtifactId, textExportRequest.FieldArtifactId,
-						_exportFile.CaseInfo.ArtifactID.ToString());
+					_logger.LogError(ex, "Error occurred during adding file export request to TAPI bridge. Skipping.");
+					throw;
 				}
 			}
+
+			return tapiBridge;
+		}
+
+		private DownloadTapiBridge DownloadLongTexts(CancellationToken cancellationToken)
+		{
+			_logger.LogVerbose("Creating TAPI bridge for long text export. Adding {count} requests to it.", _longTextExportRequests.Count);
+			DownloadTapiBridge tapiBridge = _exportTapiBridgeFactory.CreateForLongText(cancellationToken);
+
+			int order = 1;
+			foreach (var textExportRequest in _longTextExportRequests)
+			{
+				try
+				{
+					_logger.LogVerbose("Adding export request for downloading long text {fieldId} to {destination}.", textExportRequest.FieldArtifactId, textExportRequest.DestinationLocation);
+					tapiBridge.AddPath(textExportRequest.CreateTransferPath(order++));
+				}
+				catch (Exception ex)
+				{
+					_logger.LogError(ex, "Error occurred during adding long text export request to TAPI bridge. Skipping.");
+					throw;
+				}
+			}
+
+			return tapiBridge;
 		}
 	}
 }

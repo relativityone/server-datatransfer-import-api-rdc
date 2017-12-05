@@ -1,4 +1,6 @@
 ﻿using kCura.WinEDDS.Exporters;
+using Relativity.Transfer;
+using Relativity.Transfer.Http;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
@@ -21,6 +23,27 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		{
 			SourceLocation = artifact.NativeSourceLocation;
 			RemoteFileGuid = artifact.NativeFileGuid;
+		}
+
+		public override TransferPath CreateTransferPath(int order)
+		{
+			var httpTransferPathData = new HttpTransferPathData
+			{
+				ArtifactId = ArtifactId,
+				ExportType = ExportType.NativeFile
+			};
+
+			var fileInfo = new System.IO.FileInfo(DestinationLocation);
+			var transferPath = new TransferPath
+			{
+				SourcePath = SourceLocation,
+				TargetPath = fileInfo.Directory.FullName,
+				TargetFileName = fileInfo.Name,
+				Order = order
+			};
+
+			transferPath.AddData(HttpTransferPathData.HttpTransferPathDataKey, httpTransferPathData);
+			return transferPath;
 		}
 	}
 }

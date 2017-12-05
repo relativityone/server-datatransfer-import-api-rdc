@@ -1,4 +1,6 @@
 ﻿using kCura.WinEDDS.Exporters;
+using Relativity.Transfer;
+using Relativity.Transfer.Http;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
@@ -36,6 +38,28 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				FieldArtifactId = fieldArtifactId
 			};
 			return request;
+		}
+
+		public override TransferPath CreateTransferPath(int order)
+		{
+			var httpTransferPathData = new HttpTransferPathData
+			{
+				ArtifactId = ArtifactId,
+				ExportType = FullText ? ExportType.FullText : ExportType.LongTextFieldArtifact,
+				LongTextFieldArtifactId = FieldArtifactId
+			};
+
+			var fileInfo = new System.IO.FileInfo(DestinationLocation);
+			var transferPath = new TransferPath
+			{
+				SourcePath = "LongText",
+				TargetPath = fileInfo.Directory.FullName,
+				TargetFileName = fileInfo.Name,
+				Order = order
+			};
+
+			transferPath.AddData(HttpTransferPathData.HttpTransferPathDataKey, httpTransferPathData);
+			return transferPath;
 		}
 	}
 }
