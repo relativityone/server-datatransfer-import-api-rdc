@@ -370,8 +370,7 @@ Namespace kCura.WinEDDS
 			Me.BulkLoadFileFieldDelimiter = bulkLoadFileFieldDelimiter
 
 			BatchSizeHistoryList = New System.Collections.Generic.List(Of Int32)
-
-			Me.IoReporterInstance = ioReporterInstance
+			
 		End Sub
 
 		Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)

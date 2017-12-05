@@ -143,7 +143,6 @@ Namespace kCura.WinEDDS
 			FileNameColumn = args.FileNameColumn
 			_timeZoneOffset = timezoneoffset
 			_autoDetect = autoDetect
-		    Me.IoReporterInstance = ioReporterInstance
 			InitializeManagers(args)
 
 			If initializeArtifactReader Then

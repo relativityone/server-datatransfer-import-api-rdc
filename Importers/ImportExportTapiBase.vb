@@ -37,7 +37,7 @@ Namespace kCura.WinEDDS
 
 			_logger = logger
 			_cancellationToken = cancellationToken
-			IoReporterInstance = ioReporterInstance
+			Me.IoReporterInstance = ioReporterInstance
 		End Sub
 
 #End Region

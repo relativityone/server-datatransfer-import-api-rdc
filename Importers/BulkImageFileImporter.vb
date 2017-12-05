@@ -209,8 +209,6 @@ Namespace kCura.WinEDDS
 				_fullTextStorageIsInSql = (_fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, Relativity.ArtifactType.Document).FullText.EnableDataGrid = False)
 			End If
 
-			'Even though we inject instance of IoReporter into base class, this assignment is required. Otherwise the property value is equal to Nothing.
-			Me.IoReporterInstance = ioReporterInstance
 		End Sub
 
 		Protected Overridable Sub InitializeUploaders(ByVal args As ImageLoadFile)
