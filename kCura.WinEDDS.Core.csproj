@@ -302,7 +302,7 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\LongTextRepositoryBuilderFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\TooLongTextToLoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\FromFieldToLoadFileWriter.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ImageLoadFileWriterFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\IImageLoadFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\IproFullTextWithoutPrecedenceLoadFileEntry.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\IproFullTextLoadFileEntry.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\IproFullTextWithPrecedenceLoadFileEntry.cs" />
@@ -314,13 +314,16 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\OpticonLoadFileEntry.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\SinglePageMetadataForArtifactBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LoadFileMetadataBuilder.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\LoadFileWriterFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ILoadFileWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ImageLoadFileWriterRetryable.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\FromFileToLoadFileWriter.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\MetadataFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ImageExportRequestBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\NativeExportRequestBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ArtifactEnumerator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\LoadFileWriterRetryable.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ToLoadFileWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\WriterRetryable.cs" />
     <Compile Include="Export\VolumeManagerV2\Settings\Config.cs" />
     <Compile Include="Export\VolumeManagerV2\Container\ContainerFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Container\ExportInstaller.cs" />

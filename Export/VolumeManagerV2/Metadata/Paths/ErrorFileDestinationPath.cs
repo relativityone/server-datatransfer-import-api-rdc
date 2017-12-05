@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using kCura.WinEDDS.Exceptions;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths
 {
@@ -25,6 +26,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths
 		}
 
 		public Encoding Encoding => _exportSettings.LoadFileEncoding;
+		public FileWriteException.DestinationFile DestinationFileType => FileWriteException.DestinationFile.Errors;
 
 		public bool IsErrorFileCreated()
 		{

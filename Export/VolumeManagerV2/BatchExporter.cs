@@ -16,14 +16,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 	{
 		private readonly LoadFileMetadataBuilder _loadFileMetadataBuilder;
 		private readonly IImageLoadFileMetadataBuilder _imageLoadFileMetadataBuilder;
-		private readonly LoadFileWriter _loadFileWriter;
-		private readonly ImageLoadFileWriter _imageLoadFileWriter;
+		private readonly ILoadFileWriter _loadFileWriter;
+		private readonly IImageLoadFileWriter _imageLoadFileWriter;
 		private readonly FilesDownloader _filesDownloader;
 		private readonly IImagesRollup _imagesRollup;
 		private readonly LongTextRepositoryBuilder _longTextRepositoryBuilder;
 
 		public BatchExporter(FilesDownloader filesDownloader, IImagesRollup imagesRollup, IImageLoadFileMetadataBuilder imageLoadFileMetadataBuilder,
-			ImageLoadFileWriter imageLoadFileWriter, LoadFileMetadataBuilder loadFileMetadataBuilder, LoadFileWriter loadFileWriter, LongTextRepositoryBuilder longTextRepositoryBuilder)
+			IImageLoadFileWriter imageLoadFileWriter, LoadFileMetadataBuilder loadFileMetadataBuilder, ILoadFileWriter loadFileWriter, LongTextRepositoryBuilder longTextRepositoryBuilder)
 		{
 			_filesDownloader = filesDownloader;
 			_imagesRollup = imagesRollup;

@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using kCura.WinEDDS.Exceptions;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths
 {
@@ -18,5 +19,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths
 
 		public abstract string Path { get; }
 		public abstract Encoding Encoding { get; }
+		public abstract FileWriteException.DestinationFile DestinationFileType { get; }
 	}
 }

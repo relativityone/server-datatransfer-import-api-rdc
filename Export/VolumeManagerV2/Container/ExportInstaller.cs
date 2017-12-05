@@ -114,13 +114,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			container.Register(Component.For<IImagesRollup>().UsingFactoryMethod(k => k.Resolve<ImagesRollupFactory>().Create(ExportSettings)));
 			container.Register(Component.For<IImageLoadFileMetadataBuilder>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileMetadataBuilderFactory>().Create(ExportSettings)));
 			container.Register(Component.For<IImageLoadFileEntry>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileEntryFactory>().Create(ExportSettings)));
-			container.Register(Component.For<ImageLoadFileWriter>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileWriterFactory>().Create()));
 		}
 
 		private void InstallNatives(IWindsorContainer container)
 		{
 			container.Register(Component.For<ILoadFileCellFormatter>().UsingFactoryMethod(k => k.Resolve<LoadFileCellFormatterFactory>().Create(ExportSettings)));
-			container.Register(Component.For<LoadFileWriter>().UsingFactoryMethod(k => k.Resolve<LoadFileWriterFactory>().Create()));
 		}
 
 		private void InstallLongText(IWindsorContainer container)

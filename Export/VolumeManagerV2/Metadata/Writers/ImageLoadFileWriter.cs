@@ -1,80 +1,59 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
-using kCura.WinEDDS.Exceptions;
 using kCura.WinEDDS.Exporters;
-using Polly;
-using Polly.Retry;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 {
-	public class ImageLoadFileWriter : MetadataFileWriter
+	public class ImageLoadFileWriter
 	{
-		public ImageLoadFileWriter(ILog logger, StatisticsWrapper statistics, IFileHelper fileHelper, RetryPolicy retryPolicy, ImageLoadFileDestinationPath destinationPath,
-			StreamFactory streamFactory) : base(logger, statistics, fileHelper, retryPolicy, destinationPath, streamFactory)
+		private readonly ILog _logger;
+
+		public ImageLoadFileWriter(ILog logger)
 		{
+			_logger = logger;
 		}
 
-		public void Write(IList<KeyValuePair<string, string>> linesToWrite, ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
+		public void Write(StreamWriter streamWriter, IList<KeyValuePair<string, string>> linesToWrite, IEnumerator<ObjectExportInfo> artifacts)
 		{
 			if (linesToWrite == null || linesToWrite.Count == 0)
 			{
-				Logger.LogVerbose("No lines to write to image load file - skipping.");
+				_logger.LogVerbose("No lines to write to image load file - skipping.");
 				return;
 			}
 
-			Logger.LogVerbose("Writing to image load file with retry policy.");
-			ExecuteWithRetry((context, token) => { Write(linesToWrite, artifacts, context); }, cancellationToken);
+			WriteArtifacts(streamWriter, linesToWrite, artifacts);
 		}
 
-		private void Write(IList<KeyValuePair<string, string>> linesToWrite, ObjectExportInfo[] artifacts, Context context)
-		{
-			ReinitializeStream();
-
-			WriteArtifacts(linesToWrite, artifacts, context);
-
-			SaveStreamPositionAndUpdateStatistics();
-		}
-
-		private void WriteArtifacts(IList<KeyValuePair<string, string>> linesToWrite, ObjectExportInfo[] artifacts, Context context)
+		private void WriteArtifacts(StreamWriter streamWriter, IList<KeyValuePair<string, string>> linesToWrite, IEnumerator<ObjectExportInfo> artifacts)
 		{
 			//TODO this "sorting" was introduced after changing ConcurrentDictionary to ConcurrentBag - is it needed?
-			foreach (var artifact in artifacts)
+			while (artifacts.MoveNext())
 			{
-				Logger.LogVerbose("Writing entries to image load file for artifact {artifactId}.", artifact.ArtifactID);
+				_logger.LogVerbose("Writing entries to image load file for artifact {artifactId}.", artifacts.Current.ArtifactID);
 
-				//TODO I don't like this :(
-				context[WritersRetryPolicy.CONTEXT_LAST_ARTIFACT_ID_KEY] = artifact.ArtifactID;
-
-				IEnumerable<ImageExportInfo> imagesList = artifact.Images.Cast<ImageExportInfo>();
+				IEnumerable<ImageExportInfo> imagesList = artifacts.Current.Images.Cast<ImageExportInfo>();
 				IEnumerable<string> bates = imagesList.Select(x => x.BatesNumber).Distinct();
 
 				foreach (var bate in bates)
 				{
-					Logger.LogVerbose("Writing entry to image load file for image {bateNumber}.", bate);
+					_logger.LogVerbose("Writing entry to image load file for image {bateNumber}.", bate);
 					string key = bate;
 
 					foreach (var line in linesToWrite.Where(x => x.Key == $"FT{key}").OrderBy(x => x.Key).ThenBy(x => x.Value))
 					{
-						Logger.LogVerbose("Writing Full text entry to image load file for image {bateNumber}.", bate);
-						FileWriter.Write(line.Value);
+						_logger.LogVerbose("Writing Full text entry to image load file for image {bateNumber}.", bate);
+						streamWriter.Write(line.Value);
 					}
 
 					foreach (var line in linesToWrite.Where(x => x.Key == key).OrderBy(x => x.Key).ThenBy(x => x.Value))
 					{
-						Logger.LogVerbose("Writing metadata entry to image load file for image {bateNumber}.", bate);
-						FileWriter.Write(line.Value);
+						_logger.LogVerbose("Writing metadata entry to image load file for image {bateNumber}.", bate);
+						streamWriter.Write(line.Value);
 					}
 				}
 			}
-		}
-
-
-		protected override FileWriteException.DestinationFile GetLoadFileContext()
-		{
-			return FileWriteException.DestinationFile.Image;
 		}
 	}
 }
