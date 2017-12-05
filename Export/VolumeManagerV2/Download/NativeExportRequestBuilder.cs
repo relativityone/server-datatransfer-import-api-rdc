@@ -20,7 +20,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_validator = validator;
 		}
 
-		public IEnumerable<FileExportRequest> Create(ObjectExportInfo artifact)
+		public IList<FileExportRequest> Create(ObjectExportInfo artifact)
 		{
 			_logger.LogVerbose("Creating native file ExportRequest for artifact {artifactId}.", artifact.ArtifactID);
 			string destinationLocation = GetExportDestinationLocation(artifact);
@@ -28,14 +28,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			string warningInCaseOfOverwriting = $"Overwriting document {destinationLocation}.";
 			if (!_validator.CanExport(destinationLocation, warningInCaseOfOverwriting))
 			{
-				yield break;
+				return new List<FileExportRequest>();
 			}
 
 			_logger.LogVerbose("Native file for artifact {artifactId} will be export to {destinationLocation}.", artifact.ArtifactID, destinationLocation);
 			artifact.NativeTempLocation = destinationLocation;
 
 			FileExportRequest exportRequest = new FileExportRequest(artifact, destinationLocation);
-			yield return exportRequest;
+			return exportRequest.InList();
 		}
 
 		private string GetExportDestinationLocation(ObjectExportInfo artifact)

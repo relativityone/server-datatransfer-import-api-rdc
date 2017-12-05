@@ -32,7 +32,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			_exportFileValidator = exportFileValidator;
 		}
 
-		public IEnumerable<LongText> CreateLongText(ObjectExportInfo artifact)
+		public IList<LongText> CreateLongText(ObjectExportInfo artifact)
 		{
 			_logger.LogVerbose("Attempting to create LongText for TextPrecedence field.");
 			ViewFieldInfo field = GetFieldForLongTextPrecedenceDownload(artifact);
@@ -41,9 +41,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 
 			if (_longTextHelper.IsTextTooLong(artifact, Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME))
 			{
-				yield return CreateForTooLongText(artifact, field);
+				return CreateForTooLongText(artifact, field).InList();
 			}
-			yield return CreateForLongText(artifact, field);
+			return CreateForLongText(artifact, field).InList();
 		}
 
 		private LongText CreateForTooLongText(ObjectExportInfo artifact, ViewFieldInfo field)

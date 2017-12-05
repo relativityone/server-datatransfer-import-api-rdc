@@ -17,15 +17,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			_logger = logger;
 		}
 
-		public IEnumerable<LongText> CreateLongText(ObjectExportInfo artifact)
+		public IList<LongText> CreateLongText(ObjectExportInfo artifact)
 		{
 			_logger.LogVerbose("Attempting to create LongText for IPRO Full text.");
 
 			if (_longTextHelper.IsTextTooLong(artifact, LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME))
 			{
-				yield return CreateTooLongTextForIpro(artifact);
+				return CreateTooLongTextForIpro(artifact).InList();
 			}
-			yield return CreateLongTextForIpro(artifact);
+			return CreateLongTextForIpro(artifact).InList();
 		}
 
 		private LongText CreateTooLongTextForIpro(ObjectExportInfo artifact)

@@ -19,17 +19,19 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_logger = logger;
 		}
 
-		public IEnumerable<FileExportRequest> Create(ObjectExportInfo artifact)
+		public IList<FileExportRequest> Create(ObjectExportInfo artifact)
 		{
+			var fileExportRequests = new List<FileExportRequest>();
 			_logger.LogVerbose("Creating image files ExportRequests for artifact {artifactId}.", artifact.ArtifactID);
 			foreach (var image in artifact.Images.Cast<ImageExportInfo>())
 			{
 				FileExportRequest exportRequest;
 				if (TryCreate(image, out exportRequest))
 				{
-					yield return exportRequest;
+					fileExportRequests.Add(exportRequest);
 				}
 			}
+			return fileExportRequests;
 		}
 
 		private bool TryCreate(ImageExportInfo image, out FileExportRequest exportRequest)

@@ -257,6 +257,7 @@
     <Compile Include="Export\VolumeManagerV2\Directories\ISubdirectory.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\IVolume.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\IDirectoryManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\ListHelper.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\FullTextLoadFileEntryFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\IFullTextLoadFileEntry.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\IImageLoadFileEntry.cs" />

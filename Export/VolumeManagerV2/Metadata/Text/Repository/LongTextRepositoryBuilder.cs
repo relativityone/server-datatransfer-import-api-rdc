@@ -31,18 +31,18 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			_longTexts = new List<LongText>();
 
 			_logger.LogVerbose("Creating LongText entries for text precedence.");
-			IEnumerable<LongText> precedenceLongTexts = _longTextPrecedenceBuilder.CreateLongText(artifact);
-			_logger.LogVerbose("{count} LongText entries created.", precedenceLongTexts.Count());
+			IList<LongText> precedenceLongTexts = _longTextPrecedenceBuilder.CreateLongText(artifact);
+			_logger.LogVerbose("{count} LongText entries created.", precedenceLongTexts.Count);
 			Add(precedenceLongTexts);
 
 			_logger.LogVerbose("Creating LongText entries for fields.");
-			IEnumerable<LongText> fieldLongTexts = _longTextFieldBuilder.CreateLongText(artifact);
-			_logger.LogVerbose("{count} LongText entries created.", fieldLongTexts.Count());
+			IList<LongText> fieldLongTexts = _longTextFieldBuilder.CreateLongText(artifact);
+			_logger.LogVerbose("{count} LongText entries created.", fieldLongTexts.Count);
 			Add(fieldLongTexts);
 
 			_logger.LogVerbose("Creating LongText entries for missing Extracted Text.");
-			IEnumerable<LongText> iproFullTexts = _longTextIproFullTextBuilder.CreateLongText(artifact);
-			_logger.LogVerbose("{count} LongText entries created.", iproFullTexts.Count());
+			IList<LongText> iproFullTexts = _longTextIproFullTextBuilder.CreateLongText(artifact);
+			_logger.LogVerbose("{count} LongText entries created.", iproFullTexts.Count);
 			Add(iproFullTexts);
 
 			//TODO think of something better...
@@ -50,7 +50,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 		}
 
 
-		private void Add(IEnumerable<LongText> longTexts)
+		private void Add(IList<LongText> longTexts)
 		{
 			foreach (var longText in longTexts)
 			{

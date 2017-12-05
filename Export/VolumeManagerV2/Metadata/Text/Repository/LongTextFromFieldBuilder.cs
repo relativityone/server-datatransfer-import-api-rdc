@@ -19,7 +19,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			_logger = logger;
 		}
 
-		public IEnumerable<LongText> CreateLongText(ObjectExportInfo artifact)
+		public IList<LongText> CreateLongText(ObjectExportInfo artifact)
 		{
 			_logger.LogVerbose("Creating LongText from fields for artifact {artifactId}.", artifact.ArtifactID);
 			IList<LongText> longTexts = new List<LongText>();

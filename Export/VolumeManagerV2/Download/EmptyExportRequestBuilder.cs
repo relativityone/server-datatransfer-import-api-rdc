@@ -6,9 +6,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
 	public class EmptyExportRequestBuilder : IFileExportRequestBuilder
 	{
-		public IEnumerable<FileExportRequest> Create(ObjectExportInfo artifact)
+		public IList<FileExportRequest> Create(ObjectExportInfo artifact)
 		{
-			return Enumerable.Empty<FileExportRequest>();
+			return Enumerable.Empty<FileExportRequest>().ToList();
 		}
 	}
 }
