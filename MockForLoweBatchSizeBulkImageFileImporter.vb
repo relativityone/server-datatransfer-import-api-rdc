@@ -1,6 +1,7 @@
 Imports System.IO
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports System.Text
+Imports System.Threading
 Imports kCura.WinEDDS.TApi
 Imports Relativity.Logging
 
@@ -22,9 +23,8 @@ Public Class MockForLoweBatchSizeBulkImageFileImporter
 		Private _inputForStringReader As String
 		Private _importBatchSize As Int32
 
-		Public Sub New(ByVal args As ImageLoadFile, ByVal processController As kCura.Windows.Process.Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As ILog, ByVal processID As Guid, 
-                       ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager)
-			MyBase.new(0, args, processController, ioReporterInstance, logger, processID, doRetryLogic, False)
+		Public Sub New(ByVal args As ImageLoadFile, ByVal processController As kCura.Windows.Process.Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager, ByRef tokenSource As CancellationTokenSource)
+			MyBase.new(0, args, processController, ioReporterInstance, logger, processID, doRetryLogic, False, tokenSource)
 			Me.WillThrowException = throwsException
 			_bulkImportManager = bulkManager
 			Me.ImportBatchSize = 500
@@ -32,8 +32,8 @@ Public Class MockForLoweBatchSizeBulkImageFileImporter
 		End Sub
 
 		Public Sub New(ByVal importBatchSize As Int32, ByVal inputForStringReader As String, ByVal args As ImageLoadFile, ByVal processController As kCura.Windows.Process.Controller, 
-                       ByRef ioReporter As IIoReporter, ByRef logger As ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager)
-			Me.New(args, processController, ioReporter, logger, processID, doRetryLogic, throwsException, bulkManager)
+                       ByRef ioReporter As IIoReporter, ByRef logger As ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager,  ByRef tokenSource As CancellationTokenSource)
+			Me.New(args, processController, ioReporter, logger, processID, doRetryLogic, throwsException, bulkManager, tokenSource)
 			_inputForStringReader = inputForStringReader
 			_importBatchSize = importBatchSize
 		End Sub
