@@ -7,9 +7,9 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 {
-	public class SinglePageImageLoadFileMetadataBuilder : ImageLoadFileMetadataBuilder
+	public class MultiPageNotOpticonMetadataForArtifactBuilder : ImageLoadFileMetadataForArtifactBuilder
 	{
-		public SinglePageImageLoadFileMetadataBuilder(ExportFile exportSettings, IFilePathTransformer filePathTransformer, IImageLoadFileEntry imageLoadFileEntry,
+		public MultiPageNotOpticonMetadataForArtifactBuilder(ExportFile exportSettings, IFilePathTransformer filePathTransformer, IImageLoadFileEntry imageLoadFileEntry,
 			IFullTextLoadFileEntry fullTextLoadFileEntry, ILog logger) : base(exportSettings, filePathTransformer, imageLoadFileEntry, fullTextLoadFileEntry, logger)
 		{
 		}
@@ -21,7 +21,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 
 		protected override int GetBaseImageIndex(int i)
 		{
-			return i;
+			return 0;
 		}
 	}
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
@@ -14,15 +15,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 	public class BatchExporter : IBatchExporter
 	{
 		private readonly LoadFileMetadataBuilder _loadFileMetadataBuilder;
-		private readonly Metadata.Images.ImageLoadFileMetadataBuilder _imageLoadFileMetadataBuilder;
+		private readonly IImageLoadFileMetadataBuilder _imageLoadFileMetadataBuilder;
 		private readonly LoadFileWriter _loadFileWriter;
 		private readonly ImageLoadFileWriter _imageLoadFileWriter;
 		private readonly FilesDownloader _filesDownloader;
 		private readonly IImagesRollup _imagesRollup;
 		private readonly LongTextRepositoryBuilder _longTextRepositoryBuilder;
 
-		public BatchExporter(FilesDownloader filesDownloader, IImagesRollup imagesRollup, Metadata.Images.ImageLoadFileMetadataBuilder imageLoadFileMetadataBuilder, ImageLoadFileWriter imageLoadFileWriter,
-			LoadFileMetadataBuilder loadFileMetadataBuilder, LoadFileWriter loadFileWriter, LongTextRepositoryBuilder longTextRepositoryBuilder)
+		public BatchExporter(FilesDownloader filesDownloader, IImagesRollup imagesRollup, IImageLoadFileMetadataBuilder imageLoadFileMetadataBuilder,
+			ImageLoadFileWriter imageLoadFileWriter, LoadFileMetadataBuilder loadFileMetadataBuilder, LoadFileWriter loadFileWriter, LongTextRepositoryBuilder longTextRepositoryBuilder)
 		{
 			_filesDownloader = filesDownloader;
 			_imagesRollup = imagesRollup;

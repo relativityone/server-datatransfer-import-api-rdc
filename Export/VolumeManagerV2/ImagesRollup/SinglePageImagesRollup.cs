@@ -4,9 +4,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 {
 	public class SinglePageImagesRollup : IImagesRollup
 	{
-		public bool RollupImages(ObjectExportInfo artifact)
+		public void RollupImages(ObjectExportInfo artifact)
 		{
-			return false;
+			((ImageExportInfo) artifact.Images[0]).SuccessfulRollup = false;
 		}
 	}
 }

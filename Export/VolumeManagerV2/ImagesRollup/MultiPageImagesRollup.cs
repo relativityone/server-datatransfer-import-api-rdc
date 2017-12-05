@@ -30,18 +30,18 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 			ImageConverter = imageConverter;
 		}
 
-		public bool RollupImages(ObjectExportInfo artifact)
+		public void RollupImages(ObjectExportInfo artifact)
 		{
+			var destinationImage = (ImageExportInfo)artifact.Images[0];
+
 			if (artifact.Images.Count == 0)
 			{
 				_logger.LogVerbose("No images found for artifact {artifactId}. Skipping rollup.", artifact.ArtifactID);
-				return false;
+				destinationImage.SuccessfulRollup = false;
 			}
 
 			IList<string> imagesLocations = artifact.Images.Cast<ImageExportInfo>().Select(x => x.TempLocation).ToList();
-
-			var destinationImage = (ImageExportInfo) artifact.Images[0];
-
+			
 			string rollupTempLocation = GetTempLocation();
 
 			try
@@ -61,11 +61,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 			catch (Image.ImageRollupException ex)
 			{
 				HandleImageRollupException(artifact, ex, rollupTempLocation);
-				return false;
+				destinationImage.SuccessfulRollup = false;
 			}
 
 			_logger.LogVerbose("Images rollup finished.");
-			return true;
+			destinationImage.SuccessfulRollup = true;
 		}
 
 		private string GetTempLocation()

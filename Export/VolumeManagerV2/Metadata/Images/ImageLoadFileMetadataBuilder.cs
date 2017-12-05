@@ -1,28 +1,20 @@
 ﻿using System.Collections.Generic;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 {
-	public abstract class ImageLoadFileMetadataBuilder
+	public class ImageLoadFileMetadataBuilder : IImageLoadFileMetadataBuilder
 	{
-		private IList<KeyValuePair<string, string>> _lines;
-
-		private readonly IImageLoadFileEntry _imageLoadFileEntry;
-		private readonly ExportFile _exportSettings;
-		private readonly IFilePathTransformer _filePathTransformer;
-		private readonly IFullTextLoadFileEntry _fullTextLoadFileEntry;
+		private readonly IImageLoadFileMetadataForArtifactBuilder _forArtifactBuilder;
+		private readonly IImageLoadFileMetadataForArtifactBuilder _unsuccessfulRollupForArtifactBuilder;
 		private readonly ILog _logger;
 
-		protected ImageLoadFileMetadataBuilder(ExportFile exportSettings, IFilePathTransformer filePathTransformer, IImageLoadFileEntry imageLoadFileEntry,
-			IFullTextLoadFileEntry fullTextLoadFileEntry, ILog logger)
+		public ImageLoadFileMetadataBuilder(IImageLoadFileMetadataForArtifactBuilder forArtifactBuilder, IImageLoadFileMetadataForArtifactBuilder unsuccessfulRollupForArtifactBuilder,
+			ILog logger)
 		{
-			_exportSettings = exportSettings;
-			_filePathTransformer = filePathTransformer;
-			_imageLoadFileEntry = imageLoadFileEntry;
-			_fullTextLoadFileEntry = fullTextLoadFileEntry;
+			_forArtifactBuilder = forArtifactBuilder;
+			_unsuccessfulRollupForArtifactBuilder = unsuccessfulRollupForArtifactBuilder;
 			_logger = logger;
 		}
 
@@ -30,74 +22,34 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 		{
 			_logger.LogVerbose("Creating metadata for image load file for current batch.");
 
-			_lines = new List<KeyValuePair<string, string>>();
+			var lines = new List<KeyValuePair<string, string>>();
 
 			foreach (var artifact in artifacts)
 			{
 				_logger.LogVerbose("Creating image load file entry for artifact {artifactId}.", artifact.ArtifactID);
-				CreateLoadFileEntry(artifact);
+
+				if (artifact.Images.Count > 0)
+				{
+					var image = (ImageExportInfo) artifact.Images[0];
+					if (image.SuccessfulRollup)
+					{
+						_logger.LogVerbose("Rollup successful for image {batesNumber}. Continuing with default metadata builder.", image.BatesNumber);
+						_forArtifactBuilder.CreateLoadFileEntry(artifact, lines);
+					}
+					else
+					{
+						_logger.LogVerbose("Rollup unsuccessful for image {batesNumber}. Continuing with metadata builder for unsuccessful rollup.", image.BatesNumber);
+						_unsuccessfulRollupForArtifactBuilder.CreateLoadFileEntry(artifact, lines);
+					}
+				}
+				else
+				{
+					_logger.LogVerbose("No images for artifact {artifactId}.", artifact.ArtifactID);
+				}
 			}
 
 			_logger.LogVerbose("Successfully create metadata for images.");
-			return _lines;
+			return lines;
 		}
-
-		protected abstract List<ImageExportInfo> GetImagesToProcess(ObjectExportInfo artifact);
-
-		private void CreateLoadFileEntry(ObjectExportInfo artifact)
-		{
-			int numberOfPages = artifact.Images.Count;
-			List<ImageExportInfo> images = GetImagesToProcess(artifact);
-
-			_logger.LogVerbose("Number of pages in image {numberOfPages}. Actual number of images to process {imagesCount}.", numberOfPages, images.Count);
-
-			for (int i = 0; i < images.Count; i++)
-			{
-				ImageExportInfo image = images[i];
-
-				_logger.LogVerbose("Processing image {image}.", image.FileName);
-
-				long pageOffset;
-				if (i == 0 && image.PageOffset == null || i == images.Count - 1)
-				{
-					pageOffset = long.MinValue;
-				}
-				else
-				{
-					ImageExportInfo nextImage = images[i + 1];
-					pageOffset = nextImage.PageOffset ?? long.MinValue;
-				}
-
-				_logger.LogVerbose("Attempting to create full text entry for image.");
-				KeyValuePair<string, string> fullTextEntry;
-				if (_fullTextLoadFileEntry.TryCreateFullTextLine(artifact, image.BatesNumber, i, pageOffset, out fullTextEntry))
-				{
-					_logger.LogVerbose("Full text entry for image created.");
-					_lines.Add(fullTextEntry);
-				}
-				else
-				{
-					_logger.LogVerbose("Full text entry not required for this image.");
-				}
-
-				string localFilePath = GetLocalFilePath(images, i);
-				_logger.LogVerbose("Creating image load file entry using image file path {path}.", localFilePath);
-				KeyValuePair<string, string> loadFileEntry = _imageLoadFileEntry.Create(image.BatesNumber, localFilePath, artifact.DestinationVolume, i + 1, pageOffset, numberOfPages);
-				_lines.Add(loadFileEntry);
-			}
-		}
-
-		private string GetLocalFilePath(List<ImageExportInfo> images, int i)
-		{
-			int baseImageIndex = GetBaseImageIndex(i);
-			string localFilePath = images[baseImageIndex].SourceLocation;
-			if (_exportSettings.VolumeInfo.CopyImageFilesFromRepository)
-			{
-				localFilePath = _filePathTransformer.TransformPath(images[baseImageIndex].TempLocation);
-			}
-			return localFilePath;
-		}
-
-		protected abstract int GetBaseImageIndex(int i);
 	}
 }
