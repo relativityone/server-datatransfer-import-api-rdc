@@ -19,16 +19,16 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         private Func<int, TimeSpan> _actualRetryDuractionFunc = null;
         private Exception _expectedException; 
         private ArgumentException _expectedArgumentException;
-        private const string _FILE_NAME = "TestFileName";
+		private const string _FILE_NAME = "TestFileName";
         private const string _EXPECTED_DEFAULT_EXCEPTION_MESSAGE = "Expected exception message";
         private const string _EXPECTED_INVALID_PATH_EXCEPTION_MESSAGE = "Illegal characters in path.";
-        private const string _EXPECTED_RETHROWN_EXCEPTION_MESSAGE = "rethrowed exception";
         private string _expectedLogWarningMessage;
         private string _expectedLogErrorMessage;
         private string _actualExceptionMessage = string.Empty;
         private string _actualLogWarningMessage = string.Empty;
         private string _actualInvalidPathExceptionMessage = string.Empty;
         private string _actualLogErrorMessage = string.Empty;
+	    private CancellationTokenSource _tokenSource = new CancellationTokenSource();
 
         [SetUp]
         public void Setup()
@@ -74,7 +74,6 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         {
             GivenTheExpectedException();
             GivenTheExpectedLogWarningMessage();
-            
             GivenTheWaitAndRetryCallback();
             GivenTheLoggerWarningCallback();
             
@@ -86,14 +85,15 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         }
         
         [Test]
-        public void ItShouldRetryOnExceptionWhenDisabledNativeLocationValidation()
+        public void ItShouldThrowFileInfoInvalidPathException()
         {
             GivenTheExpectedInvalidPathException();
             GivenTheExpectedLogErrorMessage();
-            GivenTheWaitAndRetryCallbackThatThrowsArgumentException();
-            GivenTheLoggerErrorCallback();
+	        GivenTheFileServiceWhichThrowsArgumentException(_expectedArgumentException);
+	        GivenTheWaitAndRetryCallback();
+			GivenTheLoggerErrorCallback();
             
-            WhenExecutingIoReporterGetFileLengthThenThwowsException(true);
+            WhenExecutingIoReporterGetFileLengthThenThrowsException(true);
 
             ThenTheActualInvalidPathExceptionMessageShouldEqual();
             ThenTheActualLogErrorMessageShouldEqual();
@@ -139,7 +139,13 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
             _fileService.Setup(obj => obj.GetFileLength(_FILE_NAME)).Returns(expectedLength);
         }
 
-        private void GivenTheLoggerWarningCallback()
+	    private void GivenTheFileServiceWhichThrowsArgumentException(ArgumentException exception)
+	    {
+		    _fileService.Setup(obj => obj.GetFileLength(It.IsAny<string>())).Throws(exception);
+	    }
+
+
+	    private void GivenTheLoggerWarningCallback()
         {
             _logger.Setup(logger => logger.LogWarning(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object[]>()))
                 .Callback<Exception, string, object[]>((ex, logWarningMessage, param) =>
@@ -169,7 +175,18 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
                 });
         }
 
-        private void GivenTheExpectedLogWarningMessage()
+	    private void GivenTheExecuteCallbackThatThrows()
+	    {
+		    _waitAndRetry.Setup(obj => obj.WaitAndRetry<Exception>(It.IsAny<Func<int, TimeSpan>>(),
+				    It.IsAny<Action<Exception, TimeSpan>>(), It.IsAny<Action<CancellationToken>>(), It.IsAny<CancellationToken>()))
+			    .Callback<Func<int, TimeSpan>, Action<Exception, TimeSpan>, Action<CancellationToken>, CancellationToken>((retryDuration, retryAction, execFunc, token) =>
+			    {
+				    retryAction(_expectedException, TimeSpan.Zero);
+					execFunc(token);
+			    });
+	    }
+
+		private void GivenTheExpectedLogWarningMessage()
         {
             _expectedLogWarningMessage = IoReporter.BuildIoReporterWarningMessage(_expectedException);
         }
@@ -191,14 +208,14 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 
         private void WhenExecutingTheGetFileLength(bool disableNativeLocationValidation = false)
         {
-            _ioReporterInstance = new IoReporter(_fileService.Object, _waitAndRetry.Object, _logger.Object, _ioWarningPublisher, disableNativeLocationValidation);
+            _ioReporterInstance = new IoReporter(_fileService.Object, _waitAndRetry.Object, _logger.Object, _ioWarningPublisher, disableNativeLocationValidation, _tokenSource.Token);
 
             _actualFileLength = _ioReporterInstance.GetFileLength(_FILE_NAME, 0);
         }
 
-        private void WhenExecutingIoReporterGetFileLengthThenThwowsException(bool disableNativeLocationValidation)
+        private void WhenExecutingIoReporterGetFileLengthThenThrowsException(bool disableNativeLocationValidation)
         {
-            _ioReporterInstance = new IoReporter(_fileService.Object, _waitAndRetry.Object, _logger.Object, _ioWarningPublisher, disableNativeLocationValidation);
+            _ioReporterInstance = new IoReporter(_fileService.Object, _waitAndRetry.Object, _logger.Object, _ioWarningPublisher, disableNativeLocationValidation, _tokenSource.Token);
 
             Assert.That(() => _ioReporterInstance.GetFileLength(_FILE_NAME, 0),
                 Throws.Exception.TypeOf<FileInfoInvalidPathException>());
