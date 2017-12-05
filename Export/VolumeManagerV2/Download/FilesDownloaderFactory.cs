@@ -14,10 +14,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private readonly ImageFilePathProvider _imageFilePathProvider;
 		private readonly ExportFileValidator _validator;
 		private readonly LabelManager _labelManager;
+		private readonly ExportFileDownloaderStatus _exportFileDownloaderStatus;
 
 		public FilesDownloaderFactory(IFileNameProvider fileNameProvider, ExportFileValidator validator, LongTextExportRequestBuilder longTextExportRequestBuilder,
 			ExportTapiBridgeFactory exportTapiBridgeFactory, IDirectoryManager directoryManager, ILog logger, NativeFilePathProvider nativeFilePathProvider,
-			ImageFilePathProvider imageFilePathProvider, LabelManager labelManager)
+			ImageFilePathProvider imageFilePathProvider, LabelManager labelManager, ExportFileDownloaderStatus exportFileDownloaderStatus)
 		{
 			_fileNameProvider = fileNameProvider;
 			_validator = validator;
@@ -28,6 +29,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_nativeFilePathProvider = nativeFilePathProvider;
 			_imageFilePathProvider = imageFilePathProvider;
 			_labelManager = labelManager;
+			_exportFileDownloaderStatus = exportFileDownloaderStatus;
 		}
 
 
@@ -57,7 +59,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			}
 
 			return new FilesDownloader(nativeExportRequestBuilder, imageExportRequestBuilder, _longTextExportRequestBuilder, _exportTapiBridgeFactory, _directoryManager, _logger,
-				_labelManager);
+				_labelManager, _exportFileDownloaderStatus);
 		}
 	}
 }

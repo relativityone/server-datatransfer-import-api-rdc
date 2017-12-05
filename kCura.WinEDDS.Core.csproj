@@ -245,6 +245,7 @@
     <Compile Include="Export\VolumeManagerV2\Directories\PrefixFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\RelativeFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EmptyExportRequestBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\ExportFileDownloaderStatus.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ExportFileValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\FileExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\FilesDownloader.cs" />

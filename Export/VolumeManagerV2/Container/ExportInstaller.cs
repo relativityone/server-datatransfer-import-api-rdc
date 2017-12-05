@@ -53,6 +53,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 		{
 			container.Register(Component.For<PaddingWarningValidator>().ImplementedBy<PaddingWarningValidator>());
 			container.Register(Component.For<IFileStreamFactory>().ImplementedBy<FileStreamFactory>());
+			container.Register(Component.For<IExportFileDownloaderStatus, ExportFileDownloaderStatus>().ImplementedBy<ExportFileDownloaderStatus>());
 		}
 
 		private void InstallConnectionToWinEdds(IWindsorContainer container)
