@@ -168,9 +168,10 @@ Namespace kCura.WinEDDS
 #End Region
 
 #Region "Constructors"
-		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As Logging.ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean,  ByVal enforceDocumentLimit As Boolean,
+		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByRef ioReporterInstance As IIoReporter, 
+					   ByRef logger As Logging.ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean,  ByVal enforceDocumentLimit As Boolean, ByRef tokenSource As CancellationTokenSource,
 					   Optional ByVal executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			MyBase.New(ioReporterInstance, logger)
+			MyBase.New(ioReporterInstance, logger, tokenSource)
 			_executionSource = executionSource
 			_enforceDocumentLimit = enforceDocumentLimit
 			_doRetryLogic = doRetryLogic
@@ -207,6 +208,9 @@ Namespace kCura.WinEDDS
 			If args.ReplaceFullText Then
 				_fullTextStorageIsInSql = (_fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, Relativity.ArtifactType.Document).FullText.EnableDataGrid = False)
 			End If
+
+			'Even though we inject instance of IoReporter into base class, this assignment is required. Otherwise the property value is equal to Nothing.
+			Me.IoReporterInstance = ioReporterInstance
 		End Sub
 
 		Protected Overridable Sub InitializeUploaders(ByVal args As ImageLoadFile)

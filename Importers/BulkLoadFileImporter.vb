@@ -269,9 +269,10 @@ Namespace kCura.WinEDDS
 		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog, ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean,
+		Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog, 
+					   ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean, ByRef tokenSource As CancellationTokenSource,
 					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			Me.New(args, processController, ioReporterInstance, logger, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit,
+			Me.New(args, processController, ioReporterInstance, logger, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit, tokenSource,
 				   initializeArtifactReader:=True, executionSource:=executionSource)
 		End Sub
 
@@ -290,9 +291,10 @@ Namespace kCura.WinEDDS
 		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog, ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean,
+		Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog, 
+					   ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean, ByRef tokenSource As CancellationTokenSource,
 						ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			Me.New(args, processController, ioReporterInstance, logger, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit, initializeArtifactReader:=True, executionSource:=executionSource)
+			Me.New(args, processController, ioReporterInstance, logger, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit, tokenSource,  initializeArtifactReader:=True, executionSource:=executionSource)
 		End Sub
 
 		''' <summary>
@@ -311,9 +313,10 @@ Namespace kCura.WinEDDS
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
 		Public Sub New(args As LoadFile, processController As Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog,
-					   timeZoneOffset As Int32, autoDetect As Boolean, initializeUploaders As Boolean, processID As Guid, doRetryLogic As Boolean, bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean, initializeArtifactReader As Boolean,
+					   timeZoneOffset As Int32, autoDetect As Boolean, initializeUploaders As Boolean, processID As Guid, doRetryLogic As Boolean, bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean,ByRef tokenSource As CancellationTokenSource,
+					   initializeArtifactReader As Boolean, 
 					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			MyBase.New(args, ioReporterInstance, logger, timeZoneOffset, doRetryLogic, autoDetect, initializeArtifactReader)
+			MyBase.New(args, ioReporterInstance, logger, timeZoneOffset, doRetryLogic, autoDetect, tokenSource, initializeArtifactReader)
 
 			' Avoid excessive concurrent dictionary hits by caching frequently used config settings.
 			_usePipeliningForNativeAndObjectImports = Config.UsePipeliningForNativeAndObjectImports

@@ -1,5 +1,6 @@
 'Imports kCura.EDDS.DynamicFields
 Imports System.IO
+Imports System.Threading
 Imports kCura.WinEDDS.Api
 Imports kCura.Utility
 Imports kCura.WinEDDS.TApi
@@ -24,8 +25,9 @@ Namespace kCura.WinEDDS
 #Region "Constructors"
 
 
-		Public Sub New(ByVal args As LoadFile, ByRef logger As ILog, ByVal timeZoneOffset As Int32, ByVal errorsOnly As Boolean, ByVal doRetryLogic As Boolean, Optional ByVal processController As kCura.Windows.Process.Controller = Nothing)
-			MyBase.New(args, Nothing, logger, timeZoneOffset, doRetryLogic, True)
+		Public Sub New(ByVal args As LoadFile, ByRef logger As ILog, ByVal timeZoneOffset As Int32, ByVal errorsOnly As Boolean, ByVal doRetryLogic As Boolean, ByRef tokenSource As CancellationTokenSource,
+					   Optional ByVal processController As kCura.Windows.Process.Controller = Nothing)
+			MyBase.New(args, Nothing, logger, timeZoneOffset, doRetryLogic, True, tokenSource)
 			_selectedCaseArtifactID = args.CaseInfo.ArtifactID
 			_errorsOnly = errorsOnly
 			_processController = processController

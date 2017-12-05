@@ -1,3 +1,4 @@
+Imports System.Threading
 Imports kCura.Utility.Extensions.Enumerable
 Imports kCura.WinEDDS.TApi
 Imports Relativity.Logging
@@ -50,7 +51,6 @@ Namespace kCura.WinEDDS
 		Protected _keyFieldID As Int32
 		Protected _settings As kCura.WinEDDS.LoadFile
 		Private _codeValidator As CodeValidator.Base
-		Private _codesCreated As Int32 = 0
 		Protected WithEvents _artifactReader As Api.IArtifactReader
 		Public Property SkipExtractedTextEncodingCheck As Boolean
 		Public Property LoadImportedFullTextFromServer As Boolean
@@ -127,12 +127,12 @@ Namespace kCura.WinEDDS
 			_artifactReader.AdvanceRecord()
 		End Sub
 
-		Protected Sub New(ByVal args As LoadFile, ioReporterInstance As IIoReporter, ByRef logger As ILog, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean)
-			Me.New(args, ioReporterInstance, logger, timezoneoffset, doRetryLogic, autoDetect, initializeArtifactReader:=True)
+		Protected Sub New(ByVal args As LoadFile, ioReporterInstance As IIoReporter, ByRef logger As ILog, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean, cancellationToken As CancellationTokenSource)
+			Me.New(args, ioReporterInstance, logger, timezoneoffset, doRetryLogic, autoDetect, cancellationToken,  initializeArtifactReader:=True)
 		End Sub
 
-		Protected Sub New(args As LoadFile, ByRef ioReporterInstance As IIoReporter, ByRef logger As ILog, timezoneoffset As Int32, doRetryLogic As Boolean, autoDetect As Boolean, initializeArtifactReader As Boolean)
-            MyBase.New(ioReporterInstance, logger)
+		Protected Sub New(args As LoadFile, ByRef ioReporterInstance As IIoReporter, ByRef logger As ILog, timezoneoffset As Int32, doRetryLogic As Boolean, autoDetect As Boolean, cancellationToken As CancellationTokenSource, initializeArtifactReader As Boolean)
+            MyBase.New(ioReporterInstance, logger, cancellationToken)
 
 			_settings = args
 			OIFileIdColumnName = args.OIFileIdColumnName

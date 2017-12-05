@@ -1,3 +1,4 @@
+Imports System.Threading
 Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.TApi
 Imports Relativity.Logging
@@ -84,14 +85,15 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Overridable Function GetImporter() As kCura.WinEDDS.BulkLoadFileImporter
+			Dim tokenSource As CancellationTokenSource = New CancellationTokenSource()
 		    _ioWarningPublisher = New IoWarningPublisher()
             
 		    Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog("WinEDDS")
             Dim ioReporter As IIoReporter = IoReporterFactory.CreateIoReporter(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds, 
-                                                                               WinEDDS.Config.DisableNativeLocationValidation, logger, _ioWarningPublisher)
+                                                                               WinEDDS.Config.DisableNativeLocationValidation, logger, _ioWarningPublisher, tokenSource.Token)
 
 			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, ioReporter, logger, _timeZoneOffset, True, Me.ProcessID, True, 
-                                                                                                BulkLoadFileFieldDelimiter, EnforceDocumentLimit, ExecutionSource)
+                                                                                                BulkLoadFileFieldDelimiter, EnforceDocumentLimit, tokenSource,  ExecutionSource)
 
 			Return returnImporter
 		End Function
