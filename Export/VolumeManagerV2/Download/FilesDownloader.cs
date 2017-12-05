@@ -17,6 +17,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private readonly IFileExportRequestBuilder _imageExportRequestBuilder;
 		private readonly LongTextExportRequestBuilder _longTextExportRequestBuilder;
 		private readonly IDirectoryManager _directoryManager;
+		private readonly LabelManager _labelManager;
 
 		private readonly ExportTapiBridgeFactory _exportTapiBridgeFactory;
 
@@ -34,7 +35,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		public FilesDownloader(IFileExportRequestBuilder nativeExportRequestBuilder, IFileExportRequestBuilder imageExportRequestBuilder,
 			LongTextExportRequestBuilder longTextExportRequestBuilder, ExportTapiBridgeFactory exportTapiBridgeFactory, IDirectoryManager directoryManager, ILog logger,
-			FileDownloader fileDownloader, ExportFile exportFile)
+			FileDownloader fileDownloader, ExportFile exportFile, LabelManager labelManager)
 		{
 			_nativeExportRequestBuilder = nativeExportRequestBuilder;
 			_imageExportRequestBuilder = imageExportRequestBuilder;
@@ -44,6 +45,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_logger = logger;
 			_fileDownloader = fileDownloader;
 			_exportFile = exportFile;
+			_labelManager = labelManager;
 		}
 
 		public void DownloadFilesForArtifacts(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
@@ -62,7 +64,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			}
 
 			DownloadFiles(cancellationToken);
-			DownloadLongTexts(cancellationToken);
+			//TODO temporary, until we introduce TAPI client for Long Text
+			//DownloadLongTexts(cancellationToken);
 		}
 
 		private void CreateExportRequests(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
@@ -80,6 +83,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				_logger.LogVerbose("Creating export requests for artifact {artifactId}.", artifacts[i].ArtifactID);
 
 				_directoryManager.MoveNext(volumePredictions[i]);
+				artifacts[i].DestinationVolume = _labelManager.GetCurrentVolumeLabel();
 
 				IEnumerable<FileExportRequest> nativeExportRequests = _nativeExportRequestBuilder.Create(artifacts[i]);
 				_fileExportRequests.AddRange(nativeExportRequests);
@@ -113,6 +117,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				}
 
 				_logger.LogVerbose("Waiting for transfer to finish.");
+
+				//TODO temporary, until we introduce TAPI client for Long Text
+				DownloadLongTexts(cancellationToken);
+
 				tapiBridge.WaitForTransferJob();
 				_logger.LogVerbose("Transfer finished. Exiting file downloader.");
 			}

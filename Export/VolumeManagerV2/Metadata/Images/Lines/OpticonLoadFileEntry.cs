@@ -14,12 +14,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 			_logger = logger;
 		}
 
-		public KeyValuePair<string, string> Create(string batesNumber, string filePath, int pageNumber, long pageOffset, int numberOfImages)
+		public KeyValuePair<string, string> Create(string batesNumber, string filePath, string volume, int pageNumber, long pageOffset, int numberOfImages)
 		{
 			_logger.LogVerbose("Creating Opticon load file entry for image {batesNumber}.", batesNumber);
 			StringBuilder line = new StringBuilder();
-			//TODO
-			line.AppendFormat("{0},{1},{2},", batesNumber, "TODO", filePath);
+			line.AppendFormat("{0},{1},{2},", batesNumber, volume, filePath);
 			if (pageNumber == 1)
 			{
 				line.Append("Y");

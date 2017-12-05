@@ -20,7 +20,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		public IEnumerable<LongTextExportRequest> Create(ObjectExportInfo artifact)
 		{
 			_logger.LogVerbose("Creating TextExportRequests based on LongTextRepository.");
-			return _longTextRepository.GetLongTexts().Select(x => x.ExportRequest).Where(x => x != null);
+			return _longTextRepository.GetLongTexts().Where(x => x.ArtifactId == artifact.ArtifactID).Select(x => x.ExportRequest).Where(x => x != null);
 		}
 	}
 }

@@ -82,7 +82,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 
 				string localFilePath = GetLocalFilePath(images, i);
 				_logger.LogVerbose("Creating image load file entry using image file path {path}.", localFilePath);
-				KeyValuePair<string, string> loadFileEntry = _imageLoadFileEntry.Create(image.BatesNumber, localFilePath, i + 1, pageOffset, numberOfPages);
+				KeyValuePair<string, string> loadFileEntry = _imageLoadFileEntry.Create(image.BatesNumber, localFilePath, artifact.DestinationVolume, i + 1, pageOffset, numberOfPages);
 				_lines.Add(loadFileEntry);
 			}
 		}
