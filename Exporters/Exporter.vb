@@ -8,6 +8,7 @@ Imports Castle.Windsor
 Imports kCura.WinEDDS.Container
 Imports kCura.WinEDDS.Exporters.Validator
 Imports kCura.WinEDDS.LoadFileEntry
+Imports kCura.WinEDDS.Service.Export
 
 Namespace kCura.WinEDDS
 	Public Class Exporter
@@ -29,7 +30,8 @@ Namespace kCura.WinEDDS
 		Private _columns As System.Collections.ArrayList
 		Public TotalExportArtifactCount As Int32
 		Private WithEvents _processController As kCura.Windows.Process.Controller
-		Private WithEvents _downloadHandler As Service.Export.IExportFileDownloader
+		Private _downloadHandler As Service.Export.IExportFileDownloader
+		Private WithEvents _downloadModeStatus As Service.Export.IExportFileDownloaderStatus
 		Private _volumeManager As VolumeManager
 		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom
 		Private _beginBatesColumn As String = ""
@@ -158,6 +160,7 @@ Namespace kCura.WinEDDS
 					   loadFileFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
 			_searchManager = serviceFactory.CreateSearchManager()
 			_downloadHandler = serviceFactory.CreateExportFileDownloader()
+			_downloadModeStatus = _downloadHandler
 			_productionManager = serviceFactory.CreateProductionManager()
 			_auditManager = serviceFactory.CreateAuditManager()
 			_fieldManager = serviceFactory.CreateFieldManager()
@@ -310,7 +313,7 @@ Namespace kCura.WinEDDS
 				Me.TotalExportArtifactCount -= Me.Settings.StartAtDocumentNumber
 			End If
 			_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
-			RaiseEvent FileTransferModeChangeEvent(_downloadHandler.UploaderType.ToString)
+			
 			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, columnHeaderString, exportInitializationArgs.ColumnNames, UseOldExport)
 				Dim batchExporter As IBatchExporter = Nothing
 				Dim objectExportableSize As IObjectExportableSize = Nothing
@@ -333,7 +336,10 @@ Namespace kCura.WinEDDS
 					_errorFile = container.Resolve(Of IErrorFile)
 					batchExporter = container.Resolve(Of IBatchExporter)
 					exportCleanUp = container.Resolve(Of IExportCleanUp)
+					_downloadModeStatus = container.Resolve(Of IExportFileDownloaderStatus)
 				End If
+
+				RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType.ToString)
 				
 				Dim records As Object() = Nothing
 				Dim start, realStart As Int32
@@ -1149,8 +1155,8 @@ Namespace kCura.WinEDDS
 
 		Public Event UploadModeChangeEvent(ByVal mode As String)
 
-		Private Sub _downloadHandler_UploadModeChangeEvent(ByVal mode As String) Handles _downloadHandler.UploadModeChangeEvent
-			RaiseEvent FileTransferModeChangeEvent(_downloadHandler.UploaderType.ToString)
+		Private Sub _downloadModeStatus_UploadModeChangeEvent(ByVal mode As String) Handles _downloadModeStatus.UploadModeChangeEvent
+			RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType.ToString)
 		End Sub
 
 		Private Function BuildFileNameProvider() As IFileNameProvider

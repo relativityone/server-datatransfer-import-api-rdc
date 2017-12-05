@@ -517,6 +517,7 @@
       <SubType>code</SubType>
     </Compile>
     <Compile Include="Service\ExportManager.vb" />
+    <Compile Include="Service\Export\IExportFileDownloaderStatus.vb" />
     <Compile Include="Service\Export\IExportManager.vb" />
     <Compile Include="Service\Export\IFieldManager.vb" />
     <Compile Include="Service\Export\IAuditManager.vb" />
