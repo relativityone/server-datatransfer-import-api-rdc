@@ -47,14 +47,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 		private LongText CreateForTooLongText(ObjectExportInfo artifact, ViewFieldInfo field)
 		{
 			string destinationLocation = GetDestinationLocation(artifact);
-			TextExportRequest textExportRequest = CreateExportRequest(artifact, field, destinationLocation);
+			LongTextExportRequest longTextExportRequest = CreateExportRequest(artifact, field, destinationLocation);
 			if (_exportSettings.ExportFullTextAsFile)
 			{
 				_logger.LogVerbose("LongText file missing - creating ExportRequest to destination file.");
-				return LongText.CreateFromMissingFile(artifact.ArtifactID, textExportRequest.FieldArtifactId, textExportRequest);
+				return LongText.CreateFromMissingFile(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, longTextExportRequest);
 			}
 			_logger.LogVerbose("LongText file missing - creating ExportRequest to temporary file.");
-			return LongText.CreateFromMissingValue(artifact.ArtifactID, textExportRequest.FieldArtifactId, textExportRequest);
+			return LongText.CreateFromMissingValue(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, longTextExportRequest);
 		}
 
 		private LongText CreateForLongText(ObjectExportInfo artifact, ViewFieldInfo field)
@@ -76,14 +76,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			return LongText.CreateFromExistingValue(artifact.ArtifactID, fieldForPrecedence.FieldArtifactId, longTextValue);
 		}
 
-		private TextExportRequest CreateExportRequest(ObjectExportInfo artifact, ViewFieldInfo field, string destinationLocation)
+		private LongTextExportRequest CreateExportRequest(ObjectExportInfo artifact, ViewFieldInfo field, string destinationLocation)
 		{
 			if (_exportSettings.ArtifactTypeID == (int) ArtifactType.Document && field.Category == FieldCategory.FullText && !(field is CoalescedTextViewField))
 			{
-				return TextExportRequest.CreateRequestForFullText(artifact, field.FieldArtifactId, destinationLocation);
+				return LongTextExportRequest.CreateRequestForFullText(artifact, field.FieldArtifactId, destinationLocation);
 			}
 			ViewFieldInfo fieldToExport = GetFieldForLongTextPrecedenceDownload(artifact, field);
-			return TextExportRequest.CreateRequestForLongText(artifact, fieldToExport.FieldArtifactId, destinationLocation);
+			return LongTextExportRequest.CreateRequestForLongText(artifact, fieldToExport.FieldArtifactId, destinationLocation);
 		}
 
 		private ViewFieldInfo GetFieldForLongTextPrecedenceDownload(ObjectExportInfo artifact)

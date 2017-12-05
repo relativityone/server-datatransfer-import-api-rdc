@@ -52,7 +52,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 		{
 			_logger.LogVerbose("Creating LongText with missing value.");
 			string tempLocation = Path.GetTempFileName();
-			TextExportRequest exportRequest = TextExportRequest.CreateRequestForLongText(artifact, field.FieldArtifactId, tempLocation);
+			LongTextExportRequest exportRequest = LongTextExportRequest.CreateRequestForLongText(artifact, field.FieldArtifactId, tempLocation);
 			LongText longText = LongText.CreateFromMissingValue(artifact.ArtifactID, field.FieldArtifactId, exportRequest);
 			longTexts.Add(longText);
 		}

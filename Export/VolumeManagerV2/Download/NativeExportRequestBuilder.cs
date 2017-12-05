@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using kCura.Windows.Process;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Exporters;
@@ -7,7 +6,7 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public class NativeExportRequestBuilder : IExportRequestBuilder
+	public class NativeExportRequestBuilder : IFileExportRequestBuilder
 	{
 		private readonly ExportFile _exportSettings;
 		private readonly IFilePathProvider _filePathProvider;
@@ -27,21 +26,21 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_logger = logger;
 		}
 
-		public IEnumerable<ExportRequest> Create(ObjectExportInfo artifact)
+		public IEnumerable<FileExportRequest> Create(ObjectExportInfo artifact)
 		{
 			_logger.LogVerbose("Creating native file ExportRequest for artifact {artifactId}.", artifact.ArtifactID);
 			string destinationLocation = GetExportDestinationLocation(artifact);
 
 			if (!CanExport(destinationLocation))
 			{
-				return Enumerable.Empty<ExportRequest>();
+				yield break;
 			}
 
 			_logger.LogVerbose("Native file for artifact {artifactId} will be export to {destinationLocation}.", artifact.ArtifactID, destinationLocation);
 			artifact.NativeTempLocation = destinationLocation;
 
-			ExportRequest exportRequest = new ExportRequest(artifact, destinationLocation);
-			return new List<ExportRequest> {exportRequest};
+			FileExportRequest exportRequest = new FileExportRequest(artifact, destinationLocation);
+			yield return exportRequest;
 		}
 
 		private string GetExportDestinationLocation(ObjectExportInfo artifact)

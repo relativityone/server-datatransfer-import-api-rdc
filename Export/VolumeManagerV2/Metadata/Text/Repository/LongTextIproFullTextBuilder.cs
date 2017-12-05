@@ -33,8 +33,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			_logger.LogVerbose("Creating LongText for IPRO Full text with missing value.");
 			string tempLocation = Path.GetTempFileName();
 			int extractedTextFieldId = _longTextHelper.GetFieldArtifactId(LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME);
-			TextExportRequest textExportRequest = TextExportRequest.CreateRequestForFullText(artifact, extractedTextFieldId, tempLocation);
-			LongText longText = LongText.CreateFromMissingValue(artifact.ArtifactID, extractedTextFieldId, textExportRequest);
+			LongTextExportRequest longTextExportRequest = LongTextExportRequest.CreateRequestForFullText(artifact, extractedTextFieldId, tempLocation);
+			LongText longText = LongText.CreateFromMissingValue(artifact.ArtifactID, extractedTextFieldId, longTextExportRequest);
 			return longText;
 		}
 

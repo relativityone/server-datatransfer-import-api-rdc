@@ -2,34 +2,18 @@
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public class ExportRequest
+	public abstract class ExportRequest
 	{
 		/// <summary>
 		///     For Web mode
 		/// </summary>
 		public int ArtifactId { get; }
 
-		/// <summary>
-		///     For Web mode
-		/// </summary>
-		public string RemoteFileGuid { get; protected set; }
-
-		public string SourceLocation { get; protected set; }
 		public string DestinationLocation { get; }
 
-		public ExportRequest(ImageExportInfo image, string destinationLocation)
+		protected ExportRequest(int artifactId, string destinationLocation)
 		{
-			SourceLocation = image.SourceLocation;
-			ArtifactId = image.ArtifactID;
-			RemoteFileGuid = image.FileGuid;
-			DestinationLocation = destinationLocation;
-		}
-
-		public ExportRequest(ObjectExportInfo artifact, string destinationLocation)
-		{
-			SourceLocation = artifact.NativeSourceLocation;
-			ArtifactId = artifact.ArtifactID;
-			RemoteFileGuid = artifact.NativeFileGuid;
+			ArtifactId = artifactId;
 			DestinationLocation = destinationLocation;
 		}
 	}

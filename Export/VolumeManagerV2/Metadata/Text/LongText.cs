@@ -7,7 +7,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 	{
 		protected string LongTextValue { get; private set; }
 
-		public TextExportRequest ExportRequest { get; private set; }
+		public LongTextExportRequest ExportRequest { get; private set; }
 		public string Location { get; private set; }
 		public bool RequireDeletion { get; private set; }
 		public int ArtifactId { get; private set; }
@@ -15,7 +15,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 
 		public abstract TextReader GetLongText();
 
-		public static LongText CreateFromMissingFile(int artifactId, int fieldArtifactId, TextExportRequest exportRequest)
+		public static LongText CreateFromMissingFile(int artifactId, int fieldArtifactId, LongTextExportRequest exportRequest)
 		{
 			return new LongTextInFile
 			{
@@ -27,7 +27,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 			};
 		}
 
-		public static LongText CreateFromMissingValue(int artifactId, int fieldArtifactId, TextExportRequest exportRequest)
+		public static LongText CreateFromMissingValue(int artifactId, int fieldArtifactId, LongTextExportRequest exportRequest)
 		{
 			return new LongTextInFile
 			{

@@ -245,11 +245,12 @@
     <Compile Include="Export\VolumeManagerV2\Directories\PrefixFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\RelativeFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EmptyExportRequestBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\FileExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\FilesDownloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\FilesDownloaderFactory.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\IExportRequestBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\IFileExportRequestBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\LongTextExportRequestBuilder.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\TextExportRequest.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\LongTextExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\ExportCleanUp.cs" />
     <Compile Include="Export\VolumeManagerV2\ExportTapiBridgeFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\ISubdirectory.cs" />

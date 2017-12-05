@@ -3,8 +3,8 @@ using kCura.WinEDDS.Exporters;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public interface IExportRequestBuilder
+	public interface IFileExportRequestBuilder
 	{
-		IEnumerable<ExportRequest> Create(ObjectExportInfo artifact);
+		IEnumerable<FileExportRequest> Create(ObjectExportInfo artifact);
 	}
 }

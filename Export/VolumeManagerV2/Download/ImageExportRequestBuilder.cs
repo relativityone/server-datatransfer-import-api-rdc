@@ -7,7 +7,7 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public class ImageExportRequestBuilder : IExportRequestBuilder
+	public class ImageExportRequestBuilder : IFileExportRequestBuilder
 	{
 		private readonly ExportFile _exportSettings;
 		private readonly IFilePathProvider _filePathProvider;
@@ -24,12 +24,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_logger = logger;
 		}
 
-		public IEnumerable<ExportRequest> Create(ObjectExportInfo artifact)
+		public IEnumerable<FileExportRequest> Create(ObjectExportInfo artifact)
 		{
 			_logger.LogVerbose("Creating image files ExportRequests for artifact {artifactId}.", artifact.ArtifactID);
 			foreach (var image in artifact.Images.Cast<ImageExportInfo>())
 			{
-				ExportRequest exportRequest;
+				FileExportRequest exportRequest;
 				if (TryCreate(image, out exportRequest))
 				{
 					yield return exportRequest;
@@ -37,7 +37,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			}
 		}
 
-		private bool TryCreate(ImageExportInfo image, out ExportRequest exportRequest)
+		private bool TryCreate(ImageExportInfo image, out FileExportRequest exportRequest)
 		{
 			_logger.LogVerbose("Creating image file ExportRequest for image {image}.", image.FileName);
 			string destinationLocation = GetExportDestinationLocation(image);
@@ -51,7 +51,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_logger.LogVerbose("Image file will be export to {destinationLocation}.", destinationLocation);
 			image.TempLocation = destinationLocation;
 
-			exportRequest = new ExportRequest(image, destinationLocation);
+			exportRequest = new FileExportRequest(image, destinationLocation);
 			return true;
 		}
 

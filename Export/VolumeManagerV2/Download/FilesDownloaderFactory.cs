@@ -35,7 +35,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		public FilesDownloader Create(ExportFile exportSettings)
 		{
-			IExportRequestBuilder nativeExportRequestBuilder;
+			IFileExportRequestBuilder nativeExportRequestBuilder;
 			if (exportSettings.ExportNative && exportSettings.VolumeInfo.CopyNativeFilesFromRepository)
 			{
 				_logger.LogVerbose("Creating {requestBuilder} for natives.", nameof(NativeExportRequestBuilder));
@@ -46,7 +46,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				_logger.LogVerbose("Creating {requestBuilder} for natives.", nameof(EmptyExportRequestBuilder));
 				nativeExportRequestBuilder = new EmptyExportRequestBuilder();
 			}
-			IExportRequestBuilder imageExportRequestBuilder;
+			IFileExportRequestBuilder imageExportRequestBuilder;
 			if (exportSettings.ExportImages && exportSettings.VolumeInfo.CopyImageFilesFromRepository)
 			{
 				_logger.LogVerbose("Creating {requestBuilder} for images.", nameof(ImageExportRequestBuilder));
