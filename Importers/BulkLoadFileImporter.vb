@@ -24,8 +24,8 @@ Namespace kCura.WinEDDS
 
 		Private ReadOnly _syncRoot As Object = New Object
 		Protected _overwrite As Relativity.ImportOverwriteType
-		Private WithEvents _nativeUploaderBridge As TApi.TapiBridge
-		Private WithEvents _bcpUploaderBridge As TApi.TapiBridge
+		Private WithEvents _nativeUploaderBridge As TApi.UploadTapiBridge
+		Private WithEvents _bcpUploaderBridge As TApi.UploadTapiBridge
 		Private _nativeFileTransferClientName As String
 		Private _nativeFileTransferClient As TApi.TapiClient = TApi.TapiClient.None
 		Private _bcpFileTransferClientName As String
