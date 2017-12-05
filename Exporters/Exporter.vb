@@ -91,6 +91,13 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property ErrorLogFileName() As String
 			Get
+				If UseOldExport Then
+					If Not _volumeManager Is Nothing Then
+						Return _volumeManager.ErrorLogFileName
+					Else 
+						Return Nothing
+					End If
+				End If
 				If _errorFile.IsErrorFileCreated() Then
 					Return _errorFile.Path()
 				Else
@@ -312,6 +319,9 @@ Namespace kCura.WinEDDS
 				If UseOldExport Then
 					_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, _statistics, FileHelper, DirectoryHelper, FileNameProvider)
 					FieldLookupService = _volumeManager
+					Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
+					_volumeManager.ColumnHeaderString = columnHeaderString
+					Me.WriteUpdate("Data retrieved. Beginning " & typeOfExportDisplayString & " export...")
 				Else
 					Dim validator As IExportValidation = container.Resolve(Of IExportValidation)
 					if(Not validator.ValidateExport(Settings, TotalExportArtifactCount))
@@ -324,9 +334,7 @@ Namespace kCura.WinEDDS
 					batchExporter = container.Resolve(Of IBatchExporter)
 					exportCleanUp = container.Resolve(Of IExportCleanUp)
 				End If
-				Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
-				Me.WriteUpdate("Data retrieved. Beginning " & typeOfExportDisplayString & " export...")
-
+				
 				Dim records As Object() = Nothing
 				Dim start, realStart As Int32
 				Dim lastRecordCount As Int32 = -1
@@ -367,6 +375,9 @@ Namespace kCura.WinEDDS
 
 				Me.WriteStatusLine(Windows.Process.EventType.Status, kCura.WinEDDS.FileDownloader.TotalWebTime.ToString, True)
 				_timekeeper.GenerateCsvReportItemsAsRows()
+
+				If UseOldExport Then _volumeManager.Finish()
+
 				Me.AuditRun(True)
 				Return Nothing
 			End Using
@@ -508,7 +519,7 @@ Namespace kCura.WinEDDS
 					Dim openThreadNumber As Integer = Task.WaitAny(threads, TimeSpan.FromDays(1))
 					Dim volumeNum As Integer = _volumeManager.GetCurrentVolumeNumber(volumePredictions(i))
 					Dim subDirNum As Integer = _volumeManager.GetCurrentSubDirectoryNumber(volumePredictions(i))
-					threads(openThreadNumber) = ExportArtifactAsync(artifacts(i), maxTries, i, documentArtifactIDs.Length, volumeNum, openThreadNumber, subDirNum)
+					threads(openThreadNumber) = ExportArtifactAsync(artifacts(i), maxTries, i, documentArtifactIDs.Length, openThreadNumber, volumeNum, subDirNum)
 					DocumentsExported += 1
 				Next
 
