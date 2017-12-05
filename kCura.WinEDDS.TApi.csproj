@@ -74,8 +74,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Transfer.Client.Http, Version=1.2.17319.7, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\relativity.transfer.client.1.2.10\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\transfer-api\Source\Relativity.Transfer.Client.Http\bin\Debug\Relativity.Transfer.Client.Http.dll</HintPath>
     </Reference>
     <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
       <HintPath>..\..\packages\SSH.NET.2016.0.0\lib\net40\Renci.SshNet.dll</HintPath>
@@ -90,6 +90,7 @@
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ClientChangeReason.cs" />
+    <Compile Include="DownloadTapiBridge.cs" />
     <Compile Include="TapiBridgeFactory.cs" />
     <Compile Include="TapiBridgeParameters.cs" />
     <Compile Include="Properties\AssemblyInfoLocal.cs" />
@@ -113,6 +114,7 @@
     <Compile Include="EventListeners\TransferStatisticsListener.cs" />
     <Compile Include="TapiProgressEventArgs.cs" />
     <Compile Include="TapiStatisticsEventArgs.cs" />
+    <Compile Include="UploadTapiBridge.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Strings.resx">

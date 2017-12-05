@@ -29,12 +29,12 @@ namespace kCura.WinEDDS.TApi
     /// Represents a class object to provide a bridge from the Transfer API to existing WinEDDS code.
     /// </summary>
     /// <seealso cref="System.IDisposable" />
-    public sealed class TapiBridge : IDisposable
+    public abstract class TapiBridge : IDisposable
     {
         /// <summary>
         /// The manager used to limit the maximum number of files per folder.
         /// </summary>
-        private readonly FileSharePathManager pathManager;
+        protected readonly FileSharePathManager pathManager;
 
         /// <summary>
         /// The cancellation token source.
@@ -49,7 +49,7 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// The native file transfer parameters.
         /// </summary>
-        private readonly TapiBridgeParameters parameters;
+        protected readonly TapiBridgeParameters parameters;
 
         /// <summary>
         /// The Relativity transfer log.
@@ -280,22 +280,16 @@ namespace kCura.WinEDDS.TApi
         /// </value>
         public string TargetFolderName => this.pathManager.CurrentTargetFolderName;
 
-        /// <summary>
-        /// Adds the path to a transfer job.
-        /// </summary>
-        /// <param name="sourceFile">
-        /// The full path to the source file.
-        /// </param>
-        /// <param name="targetFileName">
-        /// The optional target filename.
-        /// </param>
-        /// <param name="order">
-        /// The order the path is added to the transfer job.
-        /// </param>
-        /// <returns>
-        /// The file name.
-        /// </returns>
-        public string AddPath(string sourceFile, string targetFileName, int order)
+		/// <summary>
+		/// Adds the path to a transfer job.
+		/// </summary>
+		/// <param name="transferPath">
+		/// The path to add to the job.
+		/// </param>
+		/// <returns>
+		/// The file name.
+		/// </returns>
+		protected string AddPath(TransferPath transferPath)
         {
             this.CheckDispose();
             this.CreateTransferJob(false);
@@ -303,17 +297,6 @@ namespace kCura.WinEDDS.TApi
             {
                 throw new InvalidOperationException(Strings.TransferJobNullExceptionMessage);
             }
-
-            var transferPath = new TransferPath
-                                   {
-                                       SourcePath = sourceFile,
-                                       TargetPath =
-                                           this.parameters.SortIntoVolumes
-                                               ? this.pathManager.GetNextTargetPath(this.TargetPath)
-                                               : this.TargetPath,
-                                       TargetFileName = targetFileName,
-                                       Order = order
-                                   };
 
             try
             {

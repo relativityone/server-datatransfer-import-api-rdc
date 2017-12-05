@@ -20,37 +20,58 @@ namespace kCura.WinEDDS.TApi
     /// </summary>
     public static class TapiBridgeFactory
     {
-        /// <summary>
-        /// Creates a <see cref="TapiBridge"/> instance that supports native file upload transfers.
-        /// </summary>
-        /// <param name="parameters">
-        /// The native file transfer parameters
-        /// </param>
-        /// <param name="log">
-        /// The Relativity logging instance.
-        /// </param>
-        /// <param name="token">
-        /// The cancellation token.
-        /// </param>
-        /// <returns>
-        /// The <see cref="TapiBridge"/> instance.
-        /// </returns>
-        public static TapiBridge CreateUploadBridge(TapiBridgeParameters parameters, ILog log, CancellationToken token)
+		/// <summary>
+		/// Creates a <see cref="UploadTapiBridge"/> instance that supports native file upload transfers.
+		/// </summary>
+		/// <param name="parameters">
+		/// The native file transfer parameters
+		/// </param>
+		/// <param name="log">
+		/// The Relativity logging instance.
+		/// </param>
+		/// <param name="token">
+		/// The cancellation token.
+		/// </param>
+		/// <returns>
+		/// The <see cref="UploadTapiBridge"/> instance.
+		/// </returns>
+		public static UploadTapiBridge CreateUploadBridge(TapiBridgeParameters parameters, ILog log, CancellationToken token)
         {
             var transferLog = GetTransferLog(log);
-            return new TapiBridge(parameters, TransferDirection.Upload, transferLog, token);
+            return new UploadTapiBridge(parameters, transferLog, token);
         }
 
-        /// <summary>
-        /// Gets the transfer log instance.
-        /// </summary>
-        /// <param name="log">
-        /// The Relativity logging instance.
-        /// </param>
-        /// <returns>
-        /// The <see cref="ITransferLog"/> instance.
-        /// </returns>
-        private static ITransferLog GetTransferLog(ILog log)
+		/// <summary>
+		/// Creates a <see cref="DownloadTapiBridge"/> instance that supports download transfers.
+		/// </summary>
+		/// <param name="parameters">
+		/// The native file transfer parameters
+		/// </param>
+		/// <param name="log">
+		/// The Relativity logging instance.
+		/// </param>
+		/// <param name="token">
+		/// The cancellation token.
+		/// </param>
+		/// <returns>
+		/// The <see cref="DownloadTapiBridge"/> instance.
+		/// </returns>
+		public static DownloadTapiBridge CreateDownloadBridge(TapiBridgeParameters parameters, ILog log, CancellationToken token)
+		{
+			var transferLog = GetTransferLog(log);
+			return new DownloadTapiBridge(parameters, transferLog, token);
+		}
+
+		/// <summary>
+		/// Gets the transfer log instance.
+		/// </summary>
+		/// <param name="log">
+		/// The Relativity logging instance.
+		/// </param>
+		/// <returns>
+		/// The <see cref="ITransferLog"/> instance.
+		/// </returns>
+		private static ITransferLog GetTransferLog(ILog log)
         {
             try
             {
