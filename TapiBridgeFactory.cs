@@ -38,21 +38,8 @@ namespace kCura.WinEDDS.TApi
         public static TapiBridge CreateUploadBridge(TapiBridgeParameters parameters, ILog log, CancellationToken token)
         {
             var transferLog = GetTransferLog(log);
-            return new UploadTapiBridge(parameters, transferLog, token);
+            return new TapiBridge(parameters, TransferDirection.Upload, transferLog, token);
         }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="parameters"></param>
-		/// <param name="log"></param>
-		/// <param name="token"></param>
-		/// <returns></returns>
-		public static TapiBridge CreateDownloadBridge(TapiBridgeParameters parameters, ILog log, CancellationToken token)
-		{
-			var transferLog = GetTransferLog(log);
-			return new DownloadTapiBridge(parameters, transferLog, token);
-		}
 
         /// <summary>
         /// Gets the transfer log instance.

@@ -29,12 +29,12 @@ namespace kCura.WinEDDS.TApi
     /// Represents a class object to provide a bridge from the Transfer API to existing WinEDDS code.
     /// </summary>
     /// <seealso cref="System.IDisposable" />
-    public abstract class TapiBridge : IDisposable
+    public sealed class TapiBridge : IDisposable
     {
         /// <summary>
         /// The manager used to limit the maximum number of files per folder.
         /// </summary>
-        protected readonly FileSharePathManager pathManager;
+        private readonly FileSharePathManager pathManager;
 
         /// <summary>
         /// The cancellation token source.
@@ -49,7 +49,7 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// The native file transfer parameters.
         /// </summary>
-        protected readonly TapiBridgeParameters parameters;
+        private readonly TapiBridgeParameters parameters;
 
         /// <summary>
         /// The Relativity transfer log.
@@ -304,7 +304,16 @@ namespace kCura.WinEDDS.TApi
                 throw new InvalidOperationException(Strings.TransferJobNullExceptionMessage);
             }
 
-			var transferPath = CreateTransferPath(sourceFile, targetFileName, order);
+            var transferPath = new TransferPath
+                                   {
+                                       SourcePath = sourceFile,
+                                       TargetPath =
+                                           this.parameters.SortIntoVolumes
+                                               ? this.pathManager.GetNextTargetPath(this.TargetPath)
+                                               : this.TargetPath,
+                                       TargetFileName = targetFileName,
+                                       Order = order
+                                   };
 
             try
             {
@@ -1051,14 +1060,5 @@ namespace kCura.WinEDDS.TApi
                     };
             }
         }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sourceFile"></param>
-		/// <param name="targetFileName"></param>
-		/// <param name="order"></param>
-		/// <returns></returns>
-		protected abstract TransferPath CreateTransferPath(string sourceFile, string targetFileName, int order);
-	}
+    }
 }
