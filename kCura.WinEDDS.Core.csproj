@@ -234,6 +234,12 @@
     <Compile Include="Export\VolumeManagerV2\Batches\BatchCleanUp.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchInitialization.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\BatchValidatorFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\ImageFileBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\ImageLoadFileBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\LoadFileBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\LongTextBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\NativeFileBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\BatchExporter.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\AbsoluteFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\DirectoryManager.cs" />

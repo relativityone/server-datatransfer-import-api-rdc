@@ -88,6 +88,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			container.Register(Component.For<IErrorFile>().UsingFactoryMethod(k => k.Resolve<ErrorFileDestinationPath>()));
 			container.Register(Component.For<IFilePathTransformer>().UsingFactoryMethod(k => k.Resolve<FilePathTransformerFactory>().Create(ExportSettings)));
 			container.Register(Component.For<FilesDownloader>().UsingFactoryMethod(k => k.Resolve<FilesDownloaderFactory>().Create(ExportSettings)));
+			container.Register(Component.For<IBatchValidator>().UsingFactoryMethod(k => k.Resolve<BatchValidatorFactory>().Create(ExportSettings, k)));
 		}
 
 		private void InstallFieldService(IWindsorContainer container)

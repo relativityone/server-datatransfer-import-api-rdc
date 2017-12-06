@@ -70,7 +70,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 				IDictionary<int, ILoadFileEntry> loadFileEntries = _loadFileMetadataBuilder.AddLines(artifacts);
 				_loadFileWriter.Write(loadFileEntries, artifacts, cancellationToken);
 
-				_batchValidator.ValidateExportedBatch(artifacts);
+				_batchValidator.ValidateExportedBatch(artifacts, volumePredictions);
 			}
 			finally
 			{
