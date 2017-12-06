@@ -1128,7 +1128,7 @@ Namespace kCura.WinEDDS
 			WriteStatusLine(kCura.Windows.Process.EventType.Warning, line, True)
 		End Sub
 
-		Friend Sub WriteUpdate(ByVal line As String, Optional ByVal isEssential As Boolean = True)
+		Friend Sub WriteUpdate(ByVal line As String, Optional ByVal isEssential As Boolean = True) Implements IStatus.WriteUpdate
 			WriteStatusLine(kCura.Windows.Process.EventType.Progress, line, isEssential)
 		End Sub
 

@@ -4,6 +4,7 @@
 		Sub WriteImgProgressError(ByVal artifact As Exporters.ObjectExportInfo, ByVal imageIndex As Int32, ByVal ex As System.Exception, Optional ByVal notes As String = "")
 		Sub WriteStatusLine(ByVal e As kCura.Windows.Process.EventType, ByVal line As String, ByVal isEssential As Boolean)
 		Sub WriteWarning(ByVal line As String)
+		Sub WriteUpdate(ByVal line As String, Optional ByVal isEssential As Boolean = True)
 	End Interface
 
 End Namespace
