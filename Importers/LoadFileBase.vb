@@ -1,4 +1,5 @@
 Imports kCura.Utility.Extensions.Enumerable
+Imports Relativity
 
 Namespace kCura.WinEDDS
 	Public MustInherit Class LoadFileBase
@@ -51,6 +52,7 @@ Namespace kCura.WinEDDS
 		Private _codesCreated As Int32 = 0
 		Private _logger As Relativity.Logging.ILog
 		Protected WithEvents _artifactReader As Api.IArtifactReader
+		Protected _executionSource As Relativity.ExecutionSource
 		Public Property SkipExtractedTextEncodingCheck As Boolean
 		Public Property LoadImportedFullTextFromServer As Boolean
 		Public Property DisableExtractedTextFileLocationValidation As Boolean
@@ -60,6 +62,7 @@ Namespace kCura.WinEDDS
 		Public Property FileSizeMapped() As Boolean
 		Public Property FileSizeColumn() As String
 		Public Property FileNameColumn As String
+		
 #End Region
 
 #Region "Accessors"
@@ -126,11 +129,11 @@ Namespace kCura.WinEDDS
 			_artifactReader.AdvanceRecord()
 		End Sub
 
-		Protected Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean)
-			Me.New(args, timezoneoffset, doRetryLogic, autoDetect, initializeArtifactReader:=True)
+		Protected Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean, ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
+			Me.New(args, timezoneoffset, doRetryLogic, autoDetect, initializeArtifactReader:=True, executionSource := executionSource)
 		End Sub
 
-		Protected Sub New(args As LoadFile, timezoneoffset As Int32, doRetryLogic As Boolean, autoDetect As Boolean, initializeArtifactReader As Boolean)
+		Protected Sub New(args As LoadFile, timezoneoffset As Int32, doRetryLogic As Boolean, autoDetect As Boolean, initializeArtifactReader As Boolean, ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
 
 			' This must be constructed early. Do NOT arbitrarily move this call!
 			_logger = RelativityLogFactory.CreateLog("WinEDDS")
@@ -143,6 +146,7 @@ Namespace kCura.WinEDDS
 			FileNameColumn = args.FileNameColumn
 			_timeZoneOffset = timezoneoffset
 			_autoDetect = autoDetect
+			_executionSource = _executionSource
 			InitializeManagers(args)
 
 			If initializeArtifactReader Then

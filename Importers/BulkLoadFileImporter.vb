@@ -333,7 +333,7 @@ Namespace kCura.WinEDDS
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
 		Public Sub New(args As LoadFile, processController As kCura.Windows.Process.Controller, timeZoneOffset As Int32, autoDetect As Boolean, initializeUploaders As Boolean, processID As Guid, doRetryLogic As Boolean, bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean, initializeArtifactReader As Boolean,
 					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			MyBase.New(args, timeZoneOffset, doRetryLogic, autoDetect, initializeArtifactReader)
+			MyBase.New(args, timeZoneOffset, doRetryLogic, autoDetect, initializeArtifactReader, executionSource := executionSource)
 
 			' Avoid excessive concurrent dictionary hits by caching frequently used config settings.
 			_usePipeliningForNativeAndObjectImports = Config.UsePipeliningForNativeAndObjectImports
@@ -341,7 +341,6 @@ Namespace kCura.WinEDDS
 			_createErrorForEmptyNativeFile = Config.CreateErrorForEmptyNativeFile
 
 			' get an instance of the specific type of artifact reader so we can get the fieldmapped event
-			_executionSource = executionSource
 			_enforceDocumentLimit = enforceDocumentLimit
 			_cancellationToken = New CancellationTokenSource()
 
