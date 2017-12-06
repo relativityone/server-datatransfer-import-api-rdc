@@ -106,7 +106,7 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error when accessing load file - retrying. Actual error is: {0}.
+        ///   Looks up a localized string similar to Error when accessing load file - Retrying in {0} seconds. Error: {1}.
         /// </summary>
         internal static string IoReporterWarningMessageWithException {
             get {
@@ -115,11 +115,29 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error when accessing load file - retrying. Error details are not available..
+        ///   Looks up a localized string similar to Error when accessing load file - Retrying in {0} seconds - {1} tries left. Error: {2}.
+        /// </summary>
+        internal static string IoReporterWarningMessageWithExceptionAndRetryInfo {
+            get {
+                return ResourceManager.GetString("IoReporterWarningMessageWithExceptionAndRetryInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error when accessing load file - Retrying in {0} seconds. Error details are not available..
         /// </summary>
         internal static string IoReporterWarningMessageWithoutException {
             get {
                 return ResourceManager.GetString("IoReporterWarningMessageWithoutException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error when accessing load file - Retrying in {0} seconds - {1} tries left. Error details are not available..
+        /// </summary>
+        internal static string IoReporterWarningMessageWithoutExceptionAndRetryInfo {
+            get {
+                return ResourceManager.GetString("IoReporterWarningMessageWithoutExceptionAndRetryInfo", resourceCulture);
             }
         }
         
@@ -241,7 +259,7 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} download job issue: {1} - Retrying in {2} seconds. {3} tries left..
+        ///   Looks up a localized string similar to {0} download job issue: {1} - Retrying in {2} seconds - {3} tries left..
         /// </summary>
         internal static string TransferJobDownloadWarningMessage {
             get {
@@ -295,7 +313,7 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} upload job issue: {1} - Retrying in {2} seconds. {3} tries left..
+        ///   Looks up a localized string similar to {0} upload job issue: {1} - Retrying in {2} seconds - {3} tries left..
         /// </summary>
         internal static string TransferJobUploadWarningMessage {
             get {
