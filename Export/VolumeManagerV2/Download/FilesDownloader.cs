@@ -18,7 +18,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private readonly LongTextExportRequestBuilder _longTextExportRequestBuilder;
 		private readonly IDirectoryManager _directoryManager;
 		private readonly LabelManager _labelManager;
-		private readonly ExportFileDownloaderStatus _exportFileDownloaderStatus;
 
 		private readonly ExportTapiBridgeFactory _exportTapiBridgeFactory;
 
@@ -26,7 +25,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		public FilesDownloader(IFileExportRequestBuilder nativeExportRequestBuilder, IFileExportRequestBuilder imageExportRequestBuilder,
 			LongTextExportRequestBuilder longTextExportRequestBuilder, ExportTapiBridgeFactory exportTapiBridgeFactory, IDirectoryManager directoryManager, ILog logger,
-			LabelManager labelManager, ExportFileDownloaderStatus exportFileDownloaderStatus)
+			LabelManager labelManager)
 		{
 			_nativeExportRequestBuilder = nativeExportRequestBuilder;
 			_imageExportRequestBuilder = imageExportRequestBuilder;
@@ -35,7 +34,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_directoryManager = directoryManager;
 			_logger = logger;
 			_labelManager = labelManager;
-			_exportFileDownloaderStatus = exportFileDownloaderStatus;
 		}
 
 		public void DownloadFilesForArtifacts(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
@@ -131,9 +129,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		{
 			_logger.LogVerbose("Creating TAPI bridge for file export. Adding {count} requests to it.", _fileExportRequests.Count);
 			DownloadTapiBridge tapiBridge = _exportTapiBridgeFactory.Create(cancellationToken);
-			
-			//TODO move it
-			tapiBridge.TapiClientChanged += _exportFileDownloaderStatus.OnTapiClientChanged;
 
 			int order = 1;
 			foreach (var fileExportRequest in _fileExportRequests)

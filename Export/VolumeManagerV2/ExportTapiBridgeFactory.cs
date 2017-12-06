@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.TApi;
 using Relativity.Logging;
 
@@ -9,11 +10,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 	{
 		private readonly ExportFile _exportSettings;
 		private readonly ILog _logger;
+		private readonly ExportFileDownloaderStatus _exportFileDownloaderStatus;
 
-		public ExportTapiBridgeFactory(ExportFile exportSettings, ILog logger)
+		public ExportTapiBridgeFactory(ExportFile exportSettings, ILog logger, ExportFileDownloaderStatus exportFileDownloaderStatus)
 		{
 			_exportSettings = exportSettings;
 			_logger = logger;
+			_exportFileDownloaderStatus = exportFileDownloaderStatus;
 		}
 
 		public DownloadTapiBridge Create(CancellationToken token)
@@ -45,7 +48,16 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 				WorkspaceId = _exportSettings.CaseInfo.ArtifactID
 			};
 
-			return TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, token);
+			DownloadTapiBridge tapiBridge = TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, token);
+			
+			AttachEventHandlers(tapiBridge);
+
+			return tapiBridge;
+		}
+
+		private void AttachEventHandlers(DownloadTapiBridge tapiBridge)
+		{
+			tapiBridge.TapiClientChanged += _exportFileDownloaderStatus.OnTapiClientChanged;
 		}
 
 		public DownloadTapiBridge CreateForLongText(CancellationToken token)
