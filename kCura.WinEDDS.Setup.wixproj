@@ -50,11 +50,13 @@
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="EventLogEntries.wxs" />
     <Compile Include="kCura.WinEDDS.Setup.wxs" />
     <Compile Include="WixUI_MondoNoLicense.wxs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.md" />
+    <Content Include="Variables.wxi" />
     <Content Include="WinEDDSTransform.xsl" />
   </ItemGroup>
   <ItemGroup>
@@ -77,6 +79,10 @@
     </HarvestDirectory>
   </ItemGroup>
   <ItemGroup>
+    <WixExtension Include="WixUtilExtension">
+      <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
+      <Name>WixUtilExtension</Name>
+    </WixExtension>
     <WixExtension Include="WixFirewallExtension">
       <HintPath>$(WixExtDir)\WixFirewallExtension.dll</HintPath>
       <Name>WixFirewallExtension</Name>
