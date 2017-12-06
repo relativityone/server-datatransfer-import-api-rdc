@@ -231,6 +231,9 @@
     <Compile Include="Export\Natives\Name\SeparatorFileNamePartProvider.cs" />
     <Compile Include="Export\Natives\Name\Factories\FileNameProviderContainerFactory.cs" />
     <Compile Include="Export\Natives\Name\Factories\IFileNameProviderContainerFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\BatchCleanUp.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\BatchInitialization.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\BatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\BatchExporter.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\AbsoluteFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\DirectoryManager.cs" />
@@ -253,11 +256,13 @@
     <Compile Include="Export\VolumeManagerV2\Download\IFileExportRequestBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\LongTextExportRequestBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\LongTextExportRequest.cs" />
-    <Compile Include="Export\VolumeManagerV2\ExportCleanUp.cs" />
     <Compile Include="Export\VolumeManagerV2\ExportTapiBridgeFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\ISubdirectory.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\IVolume.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\IDirectoryManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\IBatchCleanUp.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\IBatchInitialization.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\IBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\ListHelper.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\IImageLoadFileMetadataBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\IImageLoadFileMetadataForArtifactBuilder.cs" />

@@ -5,7 +5,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 {
 	public class LongTextRepository
 	{
-		private readonly IList<LongText> _longTexts;
+		private IList<LongText> _longTexts;
 
 		public LongTextRepository()
 		{
@@ -28,6 +28,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 		public IList<LongText> GetLongTexts()
 		{
 			return _longTexts;
+		}
+
+		public void Clear()
+		{
+			_longTexts = new List<LongText>();
 		}
 	}
 }

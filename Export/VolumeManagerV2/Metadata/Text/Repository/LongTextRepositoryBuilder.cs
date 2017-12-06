@@ -25,7 +25,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			_logger = logger;
 		}
 
-		public void AddLongTextForArtifact(ObjectExportInfo artifact)
+		public void AddLongTextForBatchToRepository(ObjectExportInfo[] artifacts)
+		{
+			foreach (var artifact in artifacts)
+			{
+				AddLongTextForArtifact(artifact);
+			}
+		}
+
+		private void AddLongTextForArtifact(ObjectExportInfo artifact)
 		{
 			_logger.LogVerbose("Attempting to build LongText repository.");
 			_longTexts = new List<LongText>();
