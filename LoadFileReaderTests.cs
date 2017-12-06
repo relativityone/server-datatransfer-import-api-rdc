@@ -57,11 +57,5 @@ namespace kCura.WinEDDS.ImportExtension.NUnit
 			Assert.AreNotEqual(_EXPECTED_DECIMAL, result);
 			Assert.AreEqual(_DECIMAL_PARSED_INVARIANT_WAY, result);
 		}
-
-
-		[TearDown]
-		public void TearDown()
-		{
-		}
 	}
 }
