@@ -269,7 +269,7 @@ Namespace kCura.WinEDDS
 		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByVal ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog, 
+		Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByVal ioReporterInstance As IIoReporter, ByVal logger As Relativity.Logging.ILog, 
 					   ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean, ByVal tokenSource As CancellationTokenSource,
 					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
 			Me.New(args, processController, ioReporterInstance, logger, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit, tokenSource,
@@ -291,7 +291,7 @@ Namespace kCura.WinEDDS
 		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByVal ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog, 
+		Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByVal ioReporterInstance As IIoReporter, ByVal logger As Relativity.Logging.ILog, 
 					   ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean, ByVal tokenSource As CancellationTokenSource,
 						ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
 			Me.New(args, processController, ioReporterInstance, logger, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit, tokenSource,  initializeArtifactReader:=True, executionSource:=executionSource)
@@ -312,7 +312,7 @@ Namespace kCura.WinEDDS
 		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(args As LoadFile, processController As Controller, ByVal ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog,
+		Public Sub New(args As LoadFile, processController As Controller, ByVal ioReporterInstance As IIoReporter, ByVal logger As Relativity.Logging.ILog,
 					   timeZoneOffset As Int32, autoDetect As Boolean, initializeUploaders As Boolean, processID As Guid, doRetryLogic As Boolean, bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean,ByVal tokenSource As CancellationTokenSource,
 					   initializeArtifactReader As Boolean, 
 					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
@@ -410,14 +410,14 @@ Namespace kCura.WinEDDS
 			bcpParameters.SortIntoVolumes = False
 			bcpParameters.ForceHttpClient = bcpParameters.ForceHttpClient Or Config.TapiForceBcpHttpClient
 
-            CreateTapiBridges(nativeParameters, bcpParameters)
-        End Sub
+			CreateTapiBridges(nativeParameters, bcpParameters)
+		End Sub
 
 #End Region
 
 #Region "Utility"
 
-        Public Function GetColumnNames(ByVal args As Object) As String()
+		Public Function GetColumnNames(ByVal args As Object) As String()
 			Dim columnNames As String() = _artifactReader.GetColumnNames(args)
 			If Not _firstLineContainsColumnNames Then
 				Dim i As Int32
@@ -501,7 +501,7 @@ Namespace kCura.WinEDDS
 					End If
 				End If
 
-				LogInformation("Preparing to import documents via WinEDDS.")
+				Me.LogInformation("Preparing to import documents via WinEDDS.")
 				_timekeeper.MarkStart("ReadFile_ProcessDocuments")
 				_columnHeaders = _artifactReader.GetColumnNames(_settings)
 				If _firstLineContainsColumnNames Then Offset = -1
@@ -593,14 +593,13 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkEnd("ReadFile_OtherFinalization")
 				_timekeeper.MarkEnd("TOTAL")
 				_timekeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
-				LogInformation("Successfully imported {count} documents via WinEDDS.", FileTapiProgressCount)
-
-				' Dump statistic object.
+				Me.LogInformation("Successfully imported {ImportCount} documents via WinEDDS.", Me.FileTapiProgressCount)
 				Me.DumpStatisticsInfo()
 				Return True
 			Catch ex As System.Exception
-				WriteFatalError(Me.CurrentLineNumber, ex)
+				Me.WriteFatalError(Me.CurrentLineNumber, ex)
 				Me.LogFatal(ex, "A serious unexpected error has occurred importing documents.")
+				Me.DumpStatisticsInfo()
 			Finally
 				_timekeeper.MarkStart("ReadFile_CleanupTempTables")
 				DestroyTapiBridges()
@@ -636,14 +635,14 @@ Namespace kCura.WinEDDS
 			RelativityManager = New Service.RelativityManager(args.Credentials, args.CookieContainer)
 		End Sub
 
-        Protected Sub DeleteFiles()
+		Protected Sub DeleteFiles()
 			kCura.Utility.File.Instance.Delete(OutputFileWriter.OutputNativeFilePath)
 			kCura.Utility.File.Instance.Delete(OutputCodeFilePath)
 			kCura.Utility.File.Instance.Delete(OutputObjectFilePath)
 			kCura.Utility.File.Instance.Delete(OutputFileWriter.OutputDataGridFilePath)
-        End Sub
+		End Sub
 
-        Protected Sub InitializeFolderManagement()
+		Protected Sub InitializeFolderManagement()
 			If _createFolderStructure Then
 				If Not _createFoldersInWebAPI Then
 					'Client side folder creation (added back for Dominus# 1127879)
@@ -938,7 +937,8 @@ Namespace kCura.WinEDDS
 
 		Protected Function BulkImport(ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal includeExtractedTextEncoding As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			If BatchSizeHistoryList.Count = 0 Then BatchSizeHistoryList.Add(ImportBatchSize)
-			Dim tries As Int32 = NumberOfRetries
+			Dim totalTries As Int32 = NumberOfRetries
+			Dim tries As Int32 = totalTries
 			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			While tries > 0
 				Try
@@ -947,23 +947,24 @@ Namespace kCura.WinEDDS
 				Catch ex As Exception
 					tries -= 1
 					If tries = 0 Then
-						Me.LogFatal(ex, "A fatal error has occurred bulk importing the batch and no more retry attempts are available.")
+						Me.LogFatal(ex, "The native bulk import service call failed and exceeded the max retry attempts.")
 						Throw
-					Else If ExceptionIsTimeoutRelated(ex) Then
-						Me.LogFatal(ex, "A fatal SQL or HTTP timeout error has occurred bulk importing the batch.")
+					Else If IsTimeoutException(ex) Then
+						' A timeout exception can be retried.
+						Me.LogError(ex, "A SQL or HTTP timeout error has occurred bulk importing the native batch.")
 						Throw
 					Else If Not ShouldImport Then
 						' Don't log cancel requests
 						Throw
-					Else If ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException)
-						Me.LogFatal(ex, "A fatal SQL error has occurred bulk importing the batch.")
+					Else If IsBulkImportSqlException(ex)
+						Me.LogFatal(ex, "A fatal SQL error has occurred bulk importing the native batch.")
 						Throw
-					Else If ex.GetType = GetType(Service.BulkImportManager.InsufficientPermissionsForImportException)
-						Me.LogFatal(ex, "A fatal insufficient permissions error has occurred bulk importing the batch.")
+					Else If IsInsufficientPermissionsForImportException(ex)
+						Me.LogFatal(ex, "A fatal insufficient permissions error has occurred bulk importing the native batch.")
 						Throw
 					Else
-						Me.LogFatal(ex, "A serious error has occurred bulk importing the batch. Remaining attempts: {retries}", tries)
-						Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts)
+						Me.LogWarning(ex, "A serious error has occurred bulk importing the native batch. Retry info: {Count} of {TotalRetry}.", totalTries - tries, totalTries)
+						Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts, totalTries - tries, totalTries)
 					End If
 				End Try
 			End While
@@ -980,24 +981,14 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Private Function ExceptionIsTimeoutRelated(ByVal ex As Exception) As Boolean
-			If ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlTimeoutException) Then
-				Return True
-			ElseIf TypeOf ex Is System.Net.WebException AndAlso ex.Message.ToString.Contains("timed out") Then
-				Return True
-			Else
-				Return False
-			End If
-		End Function
-
 		Protected Overridable Sub LowerBatchLimits()
 			Dim oldBatchSize As Int32 = Me.ImportBatchSize
 			Me.ImportBatchSize -= 100
 			Me.Statistics.BatchSize = Me.ImportBatchSize
 			Me.BatchSizeHistoryList.Add(Me.ImportBatchSize)
-			Me.LogWarning("Lowered the batch limits from {OldBatchSize} to {NewBatchSize}.", oldBatchSize, Me.ImportBatchSize)
+			Me.LogWarning("Lowered the native batch limits from {OldBatchSize} to {NewBatchSize}.", oldBatchSize, Me.ImportBatchSize)
 		End Sub
-        
+		
 		Private Function GetSettingsObject() As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
 			Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Nothing
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
@@ -1054,14 +1045,22 @@ Namespace kCura.WinEDDS
 						Me.PushNativeBatch(outputNativePath)
 					End If
 				Catch ex As Exception
-					If BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso ShouldImport Then
-						Me.LogWarning(ex, "A serious SQL or HTTP timeout error has occurred and the batch will be resized.")
+					If BatchResizeEnabled AndAlso IsTimeoutException(ex) AndAlso ShouldImport Then
+						Me.LogWarning(ex, "A SQL or HTTP timeout error has occurred bulk importing the native batch and the batch will be resized.")
 						Dim originalBatchSize As Int32 = Me.ImportBatchSize
 						LowerBatchLimits()
 						Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts)
 						If Not ShouldImport Then Throw 'after the pause
 						Me.LowerBatchSizeAndRetry(outputNativePath, originalBatchSize)
 					Else
+						If ShouldImport AndAlso Not BatchResizeEnabled Then
+							Me.LogError("Pushing the native batch failed but lowering the batch and performing a retry is disabled.", ex)
+						End If
+
+						If ShouldImport AndAlso BatchResizeEnabled Then
+							Me.LogError("Pushing the native batch failed but lowering the batch isn't supported because the error isn't timeout related.", ex)
+						End If
+
 						Throw
 					End If
 				End Try
@@ -1105,10 +1104,10 @@ Namespace kCura.WinEDDS
 					recordsProcessed += i
 					charactersSuccessfullyProcessed += charactersProcessed
 				Catch ex As Exception
-					If tries < NumberOfRetries AndAlso BatchResizeEnabled AndAlso ExceptionIsTimeoutRelated(ex) AndAlso ShouldImport Then
-						Me.LogWarning(ex, "A serious SQL or HTTP timeout error has occurred and the batch will be resized.")
+					If tries < NumberOfRetries AndAlso BatchResizeEnabled AndAlso IsTimeoutException(ex) AndAlso ShouldImport Then
+						Me.LogWarning(ex, "A serious SQL or HTTP timeout error has occurred and the native batch will be resized.")
 						LowerBatchLimits()
-						Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts)
+						Me.RaiseWarningAndPause(ex, WaitTimeBetweenRetryAttempts, tries, NumberOfRetries)
 						If Not ShouldImport Then Throw 'after the pause
 						tries += 1
 						hasReachedEof = False
@@ -1968,10 +1967,10 @@ Namespace kCura.WinEDDS
 		Private Sub _artifactReader_FieldMapped(ByVal sourceField As String, ByVal workspaceField As String) Handles _artifactReader.FieldMapped
 			OnFieldMapped(sourceField, workspaceField)
 		End Sub
-        
+		
 		Private Sub IoWarningHandler(ByVal e As kCura.Utility.RobustIoReporter.IoWarningEventArgs)
-            Dim ioWarningEventArgs As New IoWarningEventArgs(e.Message, e.CurrentLineNumber)
-		    IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(ioWarningEventArgs)
+			Dim ioWarningEventArgs As New IoWarningEventArgs(e.Message, e.CurrentLineNumber)
+			IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(ioWarningEventArgs)
 		End Sub
 
 		Private Sub ManageErrors(ByVal artifactTypeID As Int32)
@@ -2059,7 +2058,7 @@ Namespace kCura.WinEDDS
 				Try
 					Me.BulkImportManager.DisposeTempTables(_caseInfo.ArtifactID, RunId)
 				Catch ex As Exception
-					Me.LogError(ex, "A serious unexpected error has occurred disposing the temp tables.")
+					Me.LogWarning(ex, "Failed to drop the {RunId} SQL temp tables.", RunId)
 				End Try
 			End If
 		End Sub

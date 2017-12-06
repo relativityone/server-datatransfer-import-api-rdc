@@ -30,7 +30,7 @@ Namespace kCura.WinEDDS
 #End Region
 
 #Region "Constructor"
-		Public Sub New(ByVal ioReporterInstance As IIoReporter, ByRef logger As ILog, cancellationToken As CancellationTokenSource)
+		Public Sub New(ByVal ioReporterInstance As IIoReporter, ByVal logger As ILog, cancellationToken As CancellationTokenSource)
 			If logger Is Nothing Then
 				Throw New ArgumentNullException("logger")
 			End If
@@ -103,16 +103,52 @@ Namespace kCura.WinEDDS
 
 #End Region
 
+		Protected Shared Function IsTimeoutException(ByVal ex As Exception) As Boolean
+			If ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlTimeoutException) Then
+				Return True
+			ElseIf TypeOf ex Is System.Net.WebException AndAlso ex.Message.ToString.Contains("timed out") Then
+				Return True
+			Else
+				Return False
+			End If
+		End Function
+
+		Protected Shared Function IsBulkImportSqlException(ByVal ex As Exception) As Boolean
+			If ex.GetType = GetType(Service.BulkImportManager.BulkImportSqlException) Then
+				Return True
+			Else
+				Return False
+			End If
+		End Function
+
+		Protected Shared Function IsInsufficientPermissionsForImportException(ByVal ex As Exception) As Boolean
+			If ex.GetType = GetType(Service.BulkImportManager.InsufficientPermissionsForImportException) Then
+				Return True
+			Else
+				Return False
+			End If
+		End Function
+
 		Protected Sub CompletePendingNativeFileTransfers()
-			Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "Waiting for all files to upload...", 0, 0)
-			Me.FileTapiBridge.WaitForTransferJob()
-			Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "File uploads completed.", 0, 0)
+			Try
+				Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "Waiting for all native files to upload...", 0, 0)
+				Me.FileTapiBridge.WaitForTransferJob()
+				Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "Native file uploads completed.", 0, 0)
+			Catch ex As Exception
+				Me.LogError(ex, "Failed to complete all pending native file transfers.")
+				Throw
+			End Try
 		End Sub
 
 		Protected Sub CompletePendingBulkLoadFileTransfers()
-			Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "Waiting for all bulk load files to upload...", 0, 0)
-			Me.BulkLoadTapiBridge.WaitForTransferJob()
-			Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "Bulk load file uploads completed.", 0, 0)
+			Try
+				Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "Waiting for all bulk load files to upload...", 0, 0)
+				Me.BulkLoadTapiBridge.WaitForTransferJob()
+				Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "Bulk load file uploads completed.", 0, 0)
+			Catch ex As Exception
+				Me.LogError(ex, "Failed to complete all pending bulk load file transfers.")
+				Throw
+			End Try
 		End Sub
 
 
@@ -173,14 +209,14 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		Protected Sub DumpStatisticsInfo()
 			Me.LogInformation("Statistics info:")
-			Me.LogInformation("Document count: '{0}'.", _statistics.DocCount)
-			Me.LogInformation("Documents created: '{0}'.", _statistics.DocumentsCreated)
-			Me.LogInformation("Documents updated: '{0}'.", _statistics.DocumentsUpdated)
-			Me.LogInformation("Files processed: '{0}'.", _statistics.FilesProcessed)
+			Me.LogInformation("Document count: {DocCount}", _statistics.DocCount)
+			Me.LogInformation("Documents created: {DocsCreated}", _statistics.DocumentsCreated)
+			Me.LogInformation("Documents updated: {DocsUpdated}", _statistics.DocumentsUpdated)
+			Me.LogInformation("Files processed: {FilesProcessed}", _statistics.FilesProcessed)
 
 			Dim pair As DictionaryEntry
 			For Each pair In _statistics.ToDictionary()
-				Me.LogInformation("{0}: '{1}'.", pair.Key, pair.Value)
+				Me.LogInformation("{StatsKey}: {StatsValue}", pair.Key, pair.Value)
 			Next
 		End Sub
 
@@ -343,8 +379,13 @@ Namespace kCura.WinEDDS
 			Return line
 		End Function
 
-		Protected Overridable Sub RaiseWarningAndPause(ByVal ex As Exception, ByVal timeoutSeconds As Int32)
-			IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(New IoWarningEventArgs(TApi.IoReporter.BuildIoReporterWarningMessage(ex), CurrentLineNumber))
+		Protected Overridable Sub RaiseWarningAndPause(ByVal exception As Exception, ByVal timeoutSeconds As Int32)
+			Me.RaiseWarningAndPause(exception, timeoutSeconds, -1, -1)
+		End Sub
+
+		Protected Overridable Sub RaiseWarningAndPause(ByVal exception As Exception, ByVal timeoutSeconds As Int32, ByVal retryCount As Int32, ByVal totalRetryCount As Int32)
+			Dim message As String = TApi.IoReporter.BuildIoReporterWarningMessage(exception, timeoutSeconds, retryCount, totalRetryCount)
+			IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(New IoWarningEventArgs(message, CurrentLineNumber))
 			System.Threading.Thread.CurrentThread.Join(1000 * timeoutSeconds)
 		End Sub
 	End Class
