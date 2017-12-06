@@ -119,7 +119,7 @@ Namespace kCura.WinEDDS
 					Case Relativity.FieldTypeHelper.FieldType.Integer
 						field.Value = Me.GetNullableInteger(value.Trim, column)
 					Case Relativity.FieldTypeHelper.FieldType.Currency, Relativity.FieldTypeHelper.FieldType.Decimal
-						field.Value = Me.GetNullableDecimal(value.Trim, column)' to change
+						field.Value = Me.GetNullableDecimal(value.Trim, column)
 					Case Relativity.FieldTypeHelper.FieldType.Date
 						field.Value = Me.GetNullableDateTime(value.Trim, column)
 					Case Relativity.FieldTypeHelper.FieldType.Code, Relativity.FieldTypeHelper.FieldType.Object, Relativity.FieldTypeHelper.FieldType.User, Relativity.FieldTypeHelper.FieldType.File

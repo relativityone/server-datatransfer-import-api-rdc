@@ -62,7 +62,6 @@ Namespace kCura.WinEDDS
 		Public Property FileSizeMapped() As Boolean
 		Public Property FileSizeColumn() As String
 		Public Property FileNameColumn As String
-		
 #End Region
 
 #Region "Accessors"
