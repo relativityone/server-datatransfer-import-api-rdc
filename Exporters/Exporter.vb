@@ -317,7 +317,6 @@ Namespace kCura.WinEDDS
 			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, columnHeaderString, exportInitializationArgs.ColumnNames, UseOldExport)
 				Dim batchExporter As IBatchExporter = Nothing
 				Dim objectExportableSize As IObjectExportableSize = Nothing
-				Dim exportCleanUp As IExportCleanUp = Nothing
 
 				If UseOldExport Then
 					_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, _statistics, FileHelper, DirectoryHelper, FileNameProvider)
@@ -335,7 +334,6 @@ Namespace kCura.WinEDDS
 					FieldLookupService = container.Resolve(Of IFieldLookupService)
 					_errorFile = container.Resolve(Of IErrorFile)
 					batchExporter = container.Resolve(Of IBatchExporter)
-					exportCleanUp = container.Resolve(Of IExportCleanUp)
 					_downloadModeStatus = container.Resolve(Of IExportFileDownloaderStatus)
 				End If
 
@@ -376,9 +374,7 @@ Namespace kCura.WinEDDS
 					End If
 					If _cancellationTokenSource.IsCancellationRequested Then Exit While
 				End While
-
-				If Not exportCleanUp Is Nothing Then exportCleanUp.CleanUp()
-
+				
 				Me.WriteStatusLine(Windows.Process.EventType.Status, kCura.WinEDDS.FileDownloader.TotalWebTime.ToString, True)
 				_timekeeper.GenerateCsvReportItemsAsRows()
 
