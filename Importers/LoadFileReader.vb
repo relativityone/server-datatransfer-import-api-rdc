@@ -296,24 +296,13 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Overloads Function GetNullableDecimal(ByVal value As String, ByVal column As Int32) As Nullable(Of Decimal)
-			Try
-				Dim returnDecimal As Decimal?
 
-				If _executionSource = ExecutionSource.Rdc
-				 returnDecimal = NullableTypesHelper.ToNullableDecimalUsingCurrentCulture(value)
-				Else
-					returnDecimal =  NullableTypesHelper.ToNullableDecimal(value) 
-				End If
-
-				If returnDecimal.HasValue Then
-					Dim decimalIntegerPart As String = CStr(Decimal.Truncate(returnDecimal.Value))
-					If decimalIntegerPart.Length > 15 Then Throw New Exception()
-				End If
-				Return returnDecimal
-			Catch ex As Exception
-				Throw New DecimalException(Me.CurrentLineNumber, column)
-			End Try
+		Protected Overloads Function ParseNullableDecimal(ByVal value As String) As Nullable(Of Decimal)
+			If _executionSource = ExecutionSource.Rdc
+				Return NullableTypesHelper.ToNullableDecimalUsingCurrentCulture(value)
+			Else
+				Return NullableTypesHelper.ToNullableDecimal(value) 
+			End If
 		End Function
 
 		Public Sub OnFatalErrorState() Implements Api.IArtifactReader.OnFatalErrorState
