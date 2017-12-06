@@ -4,7 +4,7 @@
   <?include $(sys.CURRENTDIR)\Variables.wxi ?>
 	<Fragment>
 
-    <ComponentGroup Id="EventLogEntires" Directory="INSTALLDIR">
+    <ComponentGroup Id="EventLogEntries" Directory="INSTALLDIR">
       <Component Id="RoseEntry" Guid="{B3880A8A-3EC9-4D5A-B135-8B7D5134E8DE}" Permanent="yes">
         <util:EventSource Log="$(var.RoseEventLogEntryName)" Name="$(var.RoseEventLogEntryName)" KeyPath="yes"
                           EventMessageFile="[NETFRAMEWORK40FULLINSTALLROOTDIR]EventLogMessages.dll"/>

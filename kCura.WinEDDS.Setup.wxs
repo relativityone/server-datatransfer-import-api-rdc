@@ -122,7 +122,7 @@
 				<ComponentRef Id="ProgramMenuDir" />
 				<ComponentRef Id="ImagesComponent" />
 				<ComponentRef Id="StagingExplorer" />
-        <ComponentGroupRef Id="EventLogEntires"/>
+        <ComponentGroupRef Id="EventLogEntries"/>
 				<ComponentGroupRef Id="PrimaryComponentGroup" />
 			</Feature>
 			<Feature Id="Licensing3rdPartyFeature" Title="Licensing_3rdParty" Description="Licensing and attribution for 3rd party libraries." Level="1">
