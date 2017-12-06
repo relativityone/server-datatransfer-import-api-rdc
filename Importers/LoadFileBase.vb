@@ -4,7 +4,7 @@ Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
 	Public MustInherit Class LoadFileBase
-	    Inherits ImportExportTapiBase
+		Inherits ImportExportTapiBase
 
 #Region "Members"
 
@@ -132,7 +132,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Sub New(args As LoadFile, ByRef ioReporterInstance As IIoReporter, ByRef logger As ILog, timezoneoffset As Int32, doRetryLogic As Boolean, autoDetect As Boolean, initializeArtifactReader As Boolean)
-            MyBase.New(ioReporterInstance, logger)
+			MyBase.New(ioReporterInstance, logger)
 
 			_settings = args
 			OIFileIdColumnName = args.OIFileIdColumnName
@@ -143,7 +143,7 @@ Namespace kCura.WinEDDS
 			FileNameColumn = args.FileNameColumn
 			_timeZoneOffset = timezoneoffset
 			_autoDetect = autoDetect
-		    Me.IoReporterInstance = ioReporterInstance
+			Me.IoReporterInstance = ioReporterInstance
 			InitializeManagers(args)
 
 			If initializeArtifactReader Then
@@ -784,9 +784,10 @@ Namespace kCura.WinEDDS
 
 		Private Sub _artifactReader_OnIoWarning(ByVal e As Api.IoWarningEventArgs) Handles _artifactReader.OnIoWarning
 			If e.Exception Is Nothing Then
-                IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(new IoWarningEventArgs(e.Message, e.CurrentLineNumber))
+				IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(new IoWarningEventArgs(e.Message, e.CurrentLineNumber))
 			Else
-			    IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(new IoWarningEventArgs(kCura.WinEDDS.TApi.IoReporter.BuildIoReporterWarningMessage(e.Exception), e.CurrentLineNumber))
+				Dim message As String = IoReporter.BuildIoReporterWarningMessage(e.Exception, e.WaitTime)
+				IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(new IoWarningEventArgs(message, e.CurrentLineNumber))
 			End If
 		End Sub
 
