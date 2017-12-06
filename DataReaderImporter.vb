@@ -33,7 +33,7 @@ Namespace kCura.WinEDDS.ImportExtension
         ''' delimiter followed by a new line.</param>
         ''' <param name="executionSource">Optional parameter that states where the import
         ''' is coming from.</param>
-        Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal ioReporterInstance As IIoReporter, ByRef logger As ILog,
+        Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal ioReporterInstance As IIoReporter, ByVal logger As ILog,
                        ByVal bulkLoadFileFieldDelimiter As String,  ByVal tokenSource As CancellationTokenSource,
 					   Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
             Me.New(loadFile, controller, ioReporterInstance, logger, bulkLoadFileFieldDelimiter, Nothing, tokenSource, initializeArtifactReader:=True, executionSource:=executionSource)
@@ -56,7 +56,7 @@ Namespace kCura.WinEDDS.ImportExtension
         ''' If False, you should initialize the artifact reader later by calling Initialize().</param>
         ''' <param name="executionSource">Optional parameter that states where the import
         ''' is coming from.</param>
-        Public Sub New(loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, controller As kCura.Windows.Process.Controller, ByVal ioReporterInstance As IIoReporter, ByRef logger As ILog,
+        Public Sub New(loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, controller As kCura.Windows.Process.Controller, ByVal ioReporterInstance As IIoReporter, ByVal logger As ILog,
                        bulkLoadFileFieldDelimiter As String, temporaryLocalDirectory As String, ByVal tokenSource As CancellationTokenSource, 
 					   initializeArtifactReader As Boolean,
                        Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)

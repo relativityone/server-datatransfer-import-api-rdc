@@ -13,7 +13,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private _sourceTable As System.Data.DataTable
 
 		Public Sub New(ByVal folderId As Int32, ByVal imageLoadFile As kCura.WinEDDS.ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal ioReporterInstance As IIoReporter, 
-					   ByRef logger As Logging.ILog, ByVal processID As System.Guid, ByVal sourceDataReader As System.Data.DataTable, ByVal enforceDocumentLimit As Boolean, ByVal tokenSource As CancellationTokenSource,
+					   ByVal logger As Logging.ILog, ByVal processID As System.Guid, ByVal sourceDataReader As System.Data.DataTable, ByVal enforceDocumentLimit As Boolean, ByVal tokenSource As CancellationTokenSource,
 					   Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
 			MyBase.New(folderId, imageLoadFile, controller, ioReporterInstance, logger, processID, False, enforceDocumentLimit, tokenSource, executionSource)
 			_sourceTable = sourceDataReader
