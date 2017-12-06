@@ -122,7 +122,8 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable ReadOnly Property UseOldExport() As Boolean
 			Get
-				Return _exportConfig.UseOldExport
+				'TODO add support for RDOs in new export
+				Return (_exportConfig.UseOldExport Or Settings.ArtifactTypeID <> Relativity.ArtifactType.Document)
 			End Get
 		End Property
 
