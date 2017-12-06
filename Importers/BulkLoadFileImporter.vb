@@ -58,8 +58,6 @@ Namespace kCura.WinEDDS
 		Private _outputObjectFileWriter As System.IO.StreamWriter
 		Private _caseInfo As Relativity.CaseInfo
 		Protected _overlayArtifactID As Int32
-		Protected _executionSource As Relativity.ExecutionSource
-
 		Protected _runID As String = System.Guid.NewGuid.ToString.Replace("-", "_")
 
 		Protected _outputCodeFilePath As String = System.IO.Path.GetTempFileName
@@ -333,7 +331,7 @@ Namespace kCura.WinEDDS
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
 		Public Sub New(args As LoadFile, processController As kCura.Windows.Process.Controller, timeZoneOffset As Int32, autoDetect As Boolean, initializeUploaders As Boolean, processID As Guid, doRetryLogic As Boolean, bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean, initializeArtifactReader As Boolean,
 					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			MyBase.New(args, timeZoneOffset, doRetryLogic, autoDetect, initializeArtifactReader)
+			MyBase.New(args, timeZoneOffset, doRetryLogic, autoDetect, initializeArtifactReader, executionSource := executionSource)
 
 			' Avoid excessive concurrent dictionary hits by caching frequently used config settings.
 			_usePipeliningForNativeAndObjectImports = Config.UsePipeliningForNativeAndObjectImports
@@ -341,7 +339,6 @@ Namespace kCura.WinEDDS
 			_createErrorForEmptyNativeFile = Config.CreateErrorForEmptyNativeFile
 
 			' get an instance of the specific type of artifact reader so we can get the fieldmapped event
-			_executionSource = executionSource
 			_enforceDocumentLimit = enforceDocumentLimit
 			_cancellationToken = New CancellationTokenSource()
 
@@ -2234,7 +2231,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Overrides Function GetArtifactReader() As Api.IArtifactReader
-			Return New kCura.WinEDDS.LoadFileReader(_settings, False)
+			Return New kCura.WinEDDS.LoadFileReader(_settings, False, _executionSource)
 		End Function
 
 		Protected Sub OnFatalError(message As String, ex As Exception, runID As String)
