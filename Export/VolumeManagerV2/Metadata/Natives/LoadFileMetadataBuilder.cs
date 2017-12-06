@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.LoadFileEntry;
 using Relativity.Logging;
@@ -18,7 +19,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 			_logger = logger;
 		}
 
-		public IDictionary<int, ILoadFileEntry> AddLines(ObjectExportInfo[] artifacts)
+		public IDictionary<int, ILoadFileEntry> AddLines(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
 			_logger.LogVerbose("Creating metadata for load file for current batch.");
 
@@ -28,6 +29,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 
 			foreach (var artifact in artifacts)
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return new Dictionary<int, ILoadFileEntry>();
+				}
 				_logger.LogVerbose("Adding line for artifact {artifactId}.", artifact.ArtifactID);
 				ILoadFileEntry line = _loadFileLine.CreateLine(artifact);
 				loadFileEntries.Add(artifact.ArtifactID, line);

@@ -21,7 +21,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 		{
 			Execute((enumerator, streamWriter) =>
 			{
-				_imageLoadFileWriter.Write(streamWriter, linesToWrite, enumerator);
+				_imageLoadFileWriter.Write(streamWriter, linesToWrite, enumerator, cancellationToken);
 			}, artifacts, cancellationToken);
 		}
 	}

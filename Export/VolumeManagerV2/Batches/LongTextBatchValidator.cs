@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
 using kCura.WinEDDS.Exporters;
@@ -23,11 +24,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 			_logger = logger;
 		}
 
-		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions)
+		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions, CancellationToken cancellationToken)
 		{
 			IEnumerable<LongText> downloadedFiles = _longTextRepository.GetLongTexts().Where(x => x.ExportRequest != null && !x.RequireDeletion);
 			foreach (LongText longText in downloadedFiles)
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return;
+				}
 				if (!_fileHelper.Exists(longText.Location))
 				{
 					_logger.LogWarning("File {file} for LongText {fieldId} for artifact {artifactId} missing.", longText.Location, longText.FieldArtifactId, longText.ArtifactId);

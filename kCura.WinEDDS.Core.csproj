@@ -275,6 +275,8 @@
     <Compile Include="Export\VolumeManagerV2\Batches\IBatchCleanUp.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\IBatchInitialization.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\IBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\ImagesRollup\IImagesRollupManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\ImagesRollup\ImagesRollupManager.cs" />
     <Compile Include="Export\VolumeManagerV2\ListHelper.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\IImageLoadFileMetadataBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\IImageLoadFileMetadataForArtifactBuilder.cs" />

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
@@ -20,13 +21,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			_logger = logger;
 		}
 
-		public IList<LongText> CreateLongText(ObjectExportInfo artifact)
+		public IList<LongText> CreateLongText(ObjectExportInfo artifact, CancellationToken cancellationToken)
 		{
 			_logger.LogVerbose("Creating LongText from fields for artifact {artifactId}.", artifact.ArtifactID);
 			IList<LongText> longTexts = new List<LongText>();
 
 			for (int i = 0; i < _fieldService.GetColumns().Length; i++)
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return longTexts;
+				}
 				ViewFieldInfo field = _fieldService.GetColumns()[i];
 				if (_longTextHelper.IsLongTextField(field))
 				{

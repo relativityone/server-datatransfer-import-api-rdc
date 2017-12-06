@@ -1,4 +1,5 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
+﻿using System.Threading;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
 
@@ -15,15 +16,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 			_logger = logger;
 		}
 
-		public void PrepareBatch(ObjectExportInfo[] artifacts)
+		public void PrepareBatch(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
-			FillLongTextRepository(artifacts);
+			FillLongTextRepository(artifacts, cancellationToken);
 		}
 
-		private void FillLongTextRepository(ObjectExportInfo[] artifacts)
+		private void FillLongTextRepository(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
 			_logger.LogVerbose("Building LongTextRepository for current batch.");
-			_longTextRepositoryBuilder.AddLongTextForBatchToRepository(artifacts);
+			_longTextRepositoryBuilder.AddLongTextForBatchToRepository(artifacts, cancellationToken);
 		}
 	}
 }

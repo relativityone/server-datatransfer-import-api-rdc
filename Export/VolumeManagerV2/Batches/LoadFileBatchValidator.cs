@@ -1,4 +1,5 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
+﻿using System.Threading;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
 
@@ -20,7 +21,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 			_logger = logger;
 		}
 
-		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions)
+		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions, CancellationToken cancellationToken)
 		{
 			if (!_fileHelper.Exists(_destinationPath.Path))
 			{

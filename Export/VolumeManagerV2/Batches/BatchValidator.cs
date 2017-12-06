@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using kCura.WinEDDS.Exporters;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
@@ -17,11 +18,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 			_validators.Add(validator);
 		}
 
-		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions)
+		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions, CancellationToken cancellationToken)
 		{
 			foreach (var batchValidator in _validators)
 			{
-				batchValidator.ValidateExportedBatch(artifacts, predictions);
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return;
+				}
+				batchValidator.ValidateExportedBatch(artifacts, predictions, cancellationToken);
 			}
 		}
 	}

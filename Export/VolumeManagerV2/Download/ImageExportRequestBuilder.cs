@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
@@ -19,12 +20,16 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_logger = logger;
 		}
 
-		public IList<FileExportRequest> Create(ObjectExportInfo artifact)
+		public IList<FileExportRequest> Create(ObjectExportInfo artifact, CancellationToken cancellationToken)
 		{
 			var fileExportRequests = new List<FileExportRequest>();
 			_logger.LogVerbose("Creating image files ExportRequests for artifact {artifactId}.", artifact.ArtifactID);
 			foreach (var image in artifact.Images.Cast<ImageExportInfo>())
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Enumerable.Empty<FileExportRequest>().ToList();
+				}
 				FileExportRequest exportRequest;
 				if (TryCreate(image, out exportRequest))
 				{

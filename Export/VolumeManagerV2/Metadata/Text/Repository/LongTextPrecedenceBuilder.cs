@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Exporters;
@@ -33,9 +34,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			_exportFileValidator = exportFileValidator;
 		}
 
-		public IList<LongText> CreateLongText(ObjectExportInfo artifact)
+		public IList<LongText> CreateLongText(ObjectExportInfo artifact, CancellationToken cancellationToken)
 		{
 			_logger.LogVerbose("Attempting to create LongText for TextPrecedence field.");
+
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Enumerable.Empty<LongText>().ToList();
+			}
+
 			ViewFieldInfo field = GetFieldForLongTextPrecedenceDownload(artifact);
 
 			_logger.LogVerbose("Text Precedence is stored in field {fieldName}:{fieldId}.", field.AvfColumnName, field.FieldArtifactId);

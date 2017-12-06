@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
 
@@ -18,10 +19,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 			_logger = logger;
 		}
 
-		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions)
+		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions, CancellationToken cancellationToken)
 		{
 			for (int i = 0; i < artifacts.Length; i++)
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return;
+				}
 				ValidateImagesForArtifact(artifacts[i], predictions[i]);
 			}
 		}

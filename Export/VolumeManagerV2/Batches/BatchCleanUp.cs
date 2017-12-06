@@ -43,7 +43,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 					{
 						_fileHelper.Delete(longText.Location);
 					}
-					catch (Exception ex)
+					catch (Exception)
 					{
 						_logger.LogError("Failed to delete temp file {file} with LongText.", longText.Location);
 					}

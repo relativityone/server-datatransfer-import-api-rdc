@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
 
@@ -25,31 +26,45 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			_logger = logger;
 		}
 
-		public void AddLongTextForBatchToRepository(ObjectExportInfo[] artifacts)
+		public void AddLongTextForBatchToRepository(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
 			foreach (var artifact in artifacts)
 			{
-				AddLongTextForArtifact(artifact);
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return;
+				}
+				AddLongTextForArtifact(artifact, cancellationToken);
 			}
 		}
 
-		private void AddLongTextForArtifact(ObjectExportInfo artifact)
+		private void AddLongTextForArtifact(ObjectExportInfo artifact, CancellationToken cancellationToken)
 		{
 			_logger.LogVerbose("Attempting to build LongText repository.");
 			_longTexts = new List<LongText>();
 
 			_logger.LogVerbose("Creating LongText entries for text precedence.");
-			IList<LongText> precedenceLongTexts = _longTextPrecedenceBuilder.CreateLongText(artifact);
+			IList<LongText> precedenceLongTexts = _longTextPrecedenceBuilder.CreateLongText(artifact, cancellationToken);
 			_logger.LogVerbose("{count} LongText entries created.", precedenceLongTexts.Count);
 			Add(precedenceLongTexts);
 
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return;
+			}
+
 			_logger.LogVerbose("Creating LongText entries for fields.");
-			IList<LongText> fieldLongTexts = _longTextFieldBuilder.CreateLongText(artifact);
+			IList<LongText> fieldLongTexts = _longTextFieldBuilder.CreateLongText(artifact, cancellationToken);
 			_logger.LogVerbose("{count} LongText entries created.", fieldLongTexts.Count);
 			Add(fieldLongTexts);
 
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return;
+			}
+
 			_logger.LogVerbose("Creating LongText entries for missing Extracted Text.");
-			IList<LongText> iproFullTexts = _longTextIproFullTextBuilder.CreateLongText(artifact);
+			IList<LongText> iproFullTexts = _longTextIproFullTextBuilder.CreateLongText(artifact, cancellationToken);
 			_logger.LogVerbose("{count} LongText entries created.", iproFullTexts.Count);
 			Add(iproFullTexts);
 

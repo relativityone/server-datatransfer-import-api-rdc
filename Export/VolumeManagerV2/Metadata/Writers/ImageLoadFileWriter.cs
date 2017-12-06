@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
 
@@ -15,7 +16,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			_logger = logger;
 		}
 
-		public void Write(StreamWriter streamWriter, IList<KeyValuePair<string, string>> linesToWrite, IEnumerator<ObjectExportInfo> artifacts)
+		public void Write(StreamWriter streamWriter, IList<KeyValuePair<string, string>> linesToWrite, IEnumerator<ObjectExportInfo> artifacts, CancellationToken cancellationToken)
 		{
 			if (linesToWrite == null || linesToWrite.Count == 0)
 			{
@@ -23,14 +24,19 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 				return;
 			}
 
-			WriteArtifacts(streamWriter, linesToWrite, artifacts);
+			WriteArtifacts(streamWriter, linesToWrite, artifacts, cancellationToken);
 		}
 
-		private void WriteArtifacts(StreamWriter streamWriter, IList<KeyValuePair<string, string>> linesToWrite, IEnumerator<ObjectExportInfo> artifacts)
+		private void WriteArtifacts(StreamWriter streamWriter, IList<KeyValuePair<string, string>> linesToWrite, IEnumerator<ObjectExportInfo> artifacts, CancellationToken cancellationToken)
 		{
 			//TODO this "sorting" was introduced after changing ConcurrentDictionary to ConcurrentBag - is it needed?
 			while (artifacts.MoveNext())
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return;
+				}
+
 				_logger.LogVerbose("Writing entries to image load file for artifact {artifactId}.", artifacts.Current.ArtifactID);
 
 				IEnumerable<ImageExportInfo> imagesList = artifacts.Current.Images.Cast<ImageExportInfo>();

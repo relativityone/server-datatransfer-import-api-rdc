@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
@@ -18,9 +20,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			_logger = logger;
 		}
 
-		public IList<LongText> CreateLongText(ObjectExportInfo artifact)
+		public IList<LongText> CreateLongText(ObjectExportInfo artifact, CancellationToken cancellationToken)
 		{
 			_logger.LogVerbose("Attempting to create LongText for IPRO Full text.");
+
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Enumerable.Empty<LongText>().ToList();
+			}
 
 			if (_longTextHelper.IsTextTooLong(artifact, LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME))
 			{

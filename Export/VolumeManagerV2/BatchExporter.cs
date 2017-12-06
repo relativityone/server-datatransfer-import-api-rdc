@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
@@ -19,17 +18,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 		private readonly ILoadFileWriter _loadFileWriter;
 		private readonly IImageLoadFileWriter _imageLoadFileWriter;
 		private readonly FilesDownloader _filesDownloader;
-		private readonly IImagesRollup _imagesRollup;
+		private readonly IImagesRollupManager _imagesRollupManager;
 		private readonly IBatchInitialization _batchInitialization;
 		private readonly IBatchCleanUp _batchCleanUp;
 		private readonly IBatchValidator _batchValidator;
 
-		public BatchExporter(FilesDownloader filesDownloader, IImagesRollup imagesRollup, IImageLoadFileMetadataBuilder imageLoadFileMetadataBuilder,
+		public BatchExporter(FilesDownloader filesDownloader, IImagesRollupManager imagesRollupManager, IImageLoadFileMetadataBuilder imageLoadFileMetadataBuilder,
 			IImageLoadFileWriter imageLoadFileWriter, LoadFileMetadataBuilder loadFileMetadataBuilder, ILoadFileWriter loadFileWriter, IBatchCleanUp batchCleanUp,
 			IBatchInitialization batchInitialization, IBatchValidator batchValidator)
 		{
 			_filesDownloader = filesDownloader;
-			_imagesRollup = imagesRollup;
+			_imagesRollupManager = imagesRollupManager;
 			_imageLoadFileMetadataBuilder = imageLoadFileMetadataBuilder;
 			_imageLoadFileWriter = imageLoadFileWriter;
 			_loadFileMetadataBuilder = loadFileMetadataBuilder;
@@ -48,29 +47,56 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 					return;
 				}
 
-				_batchInitialization.PrepareBatch(artifacts);
+				_batchInitialization.PrepareBatch(artifacts, cancellationToken);
 
-				try
-				{
-					_filesDownloader.DownloadFilesForArtifacts(artifacts, volumePredictions, cancellationToken);
-				}
-				catch (OperationCanceledException ex)
+				if (cancellationToken.IsCancellationRequested)
 				{
 					return;
 				}
 
-				foreach (var artifact in artifacts)
+				_filesDownloader.DownloadFilesForArtifacts(artifacts, volumePredictions, cancellationToken);
+
+				if (cancellationToken.IsCancellationRequested)
 				{
-					_imagesRollup.RollupImages(artifact);
+					return;
 				}
 
-				IList<KeyValuePair<string, string>> entries = _imageLoadFileMetadataBuilder.CreateLoadFileEntries(artifacts);
+				_imagesRollupManager.RollupImagesForArtifacts(artifacts, cancellationToken);
+
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return;
+				}
+
+				IList<KeyValuePair<string, string>> entries = _imageLoadFileMetadataBuilder.CreateLoadFileEntries(artifacts, cancellationToken);
+
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return;
+				}
+
 				_imageLoadFileWriter.Write(entries, artifacts, cancellationToken);
 
-				IDictionary<int, ILoadFileEntry> loadFileEntries = _loadFileMetadataBuilder.AddLines(artifacts);
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return;
+				}
+
+				IDictionary<int, ILoadFileEntry> loadFileEntries = _loadFileMetadataBuilder.AddLines(artifacts, cancellationToken);
+
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return;
+				}
+
 				_loadFileWriter.Write(loadFileEntries, artifacts, cancellationToken);
 
-				_batchValidator.ValidateExportedBatch(artifacts, volumePredictions);
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return;
+				}
+
+				_batchValidator.ValidateExportedBatch(artifacts, volumePredictions, cancellationToken);
 			}
 			finally
 			{

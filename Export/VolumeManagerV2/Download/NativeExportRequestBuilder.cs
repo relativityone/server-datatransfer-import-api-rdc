@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
@@ -20,9 +22,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_validator = validator;
 		}
 
-		public IList<FileExportRequest> Create(ObjectExportInfo artifact)
+		public IList<FileExportRequest> Create(ObjectExportInfo artifact, CancellationToken cancellationToken)
 		{
 			_logger.LogVerbose("Creating native file ExportRequest for artifact {artifactId}.", artifact.ArtifactID);
+
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Enumerable.Empty<FileExportRequest>().ToList();
+			}
+
 			string destinationLocation = GetExportDestinationLocation(artifact);
 
 			string warningInCaseOfOverwriting = $"Overwriting document {destinationLocation}.";

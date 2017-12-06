@@ -4,6 +4,7 @@ using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
+using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
@@ -70,11 +71,21 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				_directoryManager.MoveNext(volumePredictions[i]);
 				artifacts[i].DestinationVolume = _labelManager.GetCurrentVolumeLabel();
 
-				IEnumerable<FileExportRequest> nativeExportRequests = _nativeExportRequestBuilder.Create(artifacts[i]);
+				IEnumerable<FileExportRequest> nativeExportRequests = _nativeExportRequestBuilder.Create(artifacts[i], cancellationToken);
 				_fileExportRequests.AddRange(nativeExportRequests);
 
-				IEnumerable<FileExportRequest> imageExportRequests = _imageExportRequestBuilder.Create(artifacts[i]);
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return;
+				}
+
+				IEnumerable<FileExportRequest> imageExportRequests = _imageExportRequestBuilder.Create(artifacts[i], cancellationToken);
 				_fileExportRequests.AddRange(imageExportRequests);
+
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return;
+				}
 
 				IEnumerable<LongTextExportRequest> longTextExportRequestsForArtifact = _longTextExportRequestBuilder.Create(artifacts[i]);
 				_longTextExportRequests.AddRange(longTextExportRequestsForArtifact);
@@ -97,6 +108,25 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				_logger.LogVerbose("Waiting for long text transfer to finish.");
 				longTextDownloader.WaitForTransferJob();
 				_logger.LogVerbose("Long text transfer finished.");
+			}
+			catch (OperationCanceledException ex)
+			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					_logger.LogWarning(ex, "Operation canceled during transfer.");
+					return;
+				}
+				throw;
+			}
+			catch (TransferException ex)
+			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					//this is needed, because TAPI in Web mode throws TransferException after canceling
+					_logger.LogWarning(ex, "TransferException occurred during transfer, but cancellation has been requested.");
+					return;
+				}
+				throw;
 			}
 			catch (Exception ex)
 			{

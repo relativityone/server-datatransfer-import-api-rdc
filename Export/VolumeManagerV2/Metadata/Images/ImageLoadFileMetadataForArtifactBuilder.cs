@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
 using kCura.WinEDDS.Exporters;
@@ -26,7 +27,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 
 		protected abstract List<ImageExportInfo> GetImagesToProcess(ObjectExportInfo artifact);
 
-		public void CreateLoadFileEntry(ObjectExportInfo artifact, IList<KeyValuePair<string, string>> lines)
+		public void CreateLoadFileEntry(ObjectExportInfo artifact, IList<KeyValuePair<string, string>> lines, CancellationToken cancellationToken)
 		{
 			int numberOfPages = artifact.Images.Count;
 			List<ImageExportInfo> images = GetImagesToProcess(artifact);
@@ -35,6 +36,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 
 			for (int i = 0; i < images.Count; i++)
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return;
+				}
+
 				ImageExportInfo image = images[i];
 
 				_logger.LogVerbose("Processing image {image}.", image.FileName);

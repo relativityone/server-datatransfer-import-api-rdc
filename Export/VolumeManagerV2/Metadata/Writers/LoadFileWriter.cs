@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.LoadFileEntry;
 using Relativity.Logging;
@@ -15,7 +16,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			_logger = logger;
 		}
 
-		public void Write(StreamWriter streamWriter, IDictionary<int, ILoadFileEntry> linesToWrite, IEnumerator<ObjectExportInfo> artifacts)
+		public void Write(StreamWriter streamWriter, IDictionary<int, ILoadFileEntry> linesToWrite, IEnumerator<ObjectExportInfo> artifacts, CancellationToken cancellationToken)
 		{
 			if (linesToWrite == null || linesToWrite.Count == 0)
 			{
@@ -27,7 +28,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 
 			WriteHeaderIfNeeded(streamWriter, linesToWrite);
 
-			WriteArtifacts(streamWriter, linesToWrite, artifacts);
+			WriteArtifacts(streamWriter, linesToWrite, artifacts, cancellationToken);
 		}
 
 		private void WriteHeaderIfNeeded(StreamWriter streamWriter, IDictionary<int, ILoadFileEntry> linesToWrite)
@@ -42,10 +43,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			}
 		}
 
-		private void WriteArtifacts(StreamWriter streamWriter, IDictionary<int, ILoadFileEntry> linesToWrite, IEnumerator<ObjectExportInfo> artifacts)
+		private void WriteArtifacts(StreamWriter streamWriter, IDictionary<int, ILoadFileEntry> linesToWrite, IEnumerator<ObjectExportInfo> artifacts, CancellationToken cancellationToken)
 		{
 			while (artifacts.MoveNext())
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return;
+				}
+
 				ILoadFileEntry loadFileEntry;
 				if (linesToWrite.TryGetValue(artifacts.Current.ArtifactID, out loadFileEntry))
 				{
