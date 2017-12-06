@@ -389,25 +389,25 @@ namespace kCura.WinEDDS.TApi
             var windEddsVersion = this.GetType().Assembly.GetName().Version;
             var tapiVersion = typeof(ITransferClient).Assembly.GetName().Version;
 
-            this.transferLog.LogInformation("WinEDDS - System Info - Version: '{0}'.", windEddsVersion);
-            this.transferLog.LogInformation("TAPI - System Info - Version: '{0}'.", tapiVersion);
-            this.transferLog.LogInformation("BCP file transfer: '{0}'.", parameters.BcpFileTransfer);
-            this.transferLog.LogInformation("Aspera BCP root folder: '{0}'.", parameters.AsperaBcpRootFolder);
-            this.transferLog.LogInformation("Sort into volume: '{0}'.", parameters.SortIntoVolumes);
-            this.transferLog.LogInformation("Client request id: '{0}'.", parameters.ClientRequestId);
-            this.transferLog.LogInformation("Aspera doc root level: '{0}'.", parameters.AsperaDocRootLevels);
-            this.transferLog.LogInformation("File share: '{0}'.", parameters.FileShare);
-            this.transferLog.LogInformation("Force Aspera client: '{0}'.", parameters.ForceAsperaClient);
-            this.transferLog.LogInformation("Force Fileshare client: '{0}'.", parameters.ForceFileShareClient);
-            this.transferLog.LogInformation("Force HTTP client: '{0}'.", parameters.ForceHttpClient);
-            this.transferLog.LogInformation("Force client candidates: '{0}'.", parameters.ForceClientCandidates);
-            this.transferLog.LogInformation("Max file per folder: '{0}'.", parameters.MaxFilesPerFolder);
-            this.transferLog.LogInformation("Max job parallelism: '{0}'.", parameters.MaxJobParallelism);
-            this.transferLog.LogInformation("Max job retry attempts: '{0}'.", parameters.MaxJobRetryAttempts);
-            this.transferLog.LogInformation("Min data rate: '{0}' Mbps.", parameters.MinDataRateMbps);
-            this.transferLog.LogInformation("Target data rate: '{0}' Mbps.", parameters.TargetDataRateMbps);
-            this.transferLog.LogInformation("Wait time between retry attempts: '{0}'.", parameters.WaitTimeBetweenRetryAttempts);
-            this.transferLog.LogInformation("Workspace identifier: '{0}'.", parameters.WorkspaceId);
+            this.transferLog.LogInformation("WinEDDS - Version: {WinEDDSVersion}", windEddsVersion);
+            this.transferLog.LogInformation("TAPI - Version: {TapiVersion}", tapiVersion);
+            this.transferLog.LogInformation("BCP file transfer: {BcpFileTransfer}", parameters.BcpFileTransfer);
+            this.transferLog.LogInformation("Aspera BCP root folder: {AsperaBcpRootFolder}", parameters.AsperaBcpRootFolder);
+            this.transferLog.LogInformation("Sort into volume: {SortIntoVolumes}", parameters.SortIntoVolumes);
+            this.transferLog.LogInformation("Client request id: {ClientRequestId}", parameters.ClientRequestId);
+            this.transferLog.LogInformation("Aspera doc root level: {AsperaDocRootLevels}", parameters.AsperaDocRootLevels);
+            this.transferLog.LogInformation("File share: {FileShare}", parameters.FileShare);
+            this.transferLog.LogInformation("Force Aspera client: {ForceAsperaClient}", parameters.ForceAsperaClient);
+            this.transferLog.LogInformation("Force Fileshare client: {ForceFileShareClient}", parameters.ForceFileShareClient);
+            this.transferLog.LogInformation("Force HTTP client: {ForceHttpClient}", parameters.ForceHttpClient);
+            this.transferLog.LogInformation("Force client candidates: {ForceClientCandidates}", parameters.ForceClientCandidates);
+            this.transferLog.LogInformation("Max file per folder: {MaxFilesPerFolder}", parameters.MaxFilesPerFolder);
+            this.transferLog.LogInformation("Max job parallelism: {MaxJobParallelism}", parameters.MaxJobParallelism);
+            this.transferLog.LogInformation("Max job retry attempts: {MaxJobRetryAttempts}", parameters.MaxJobRetryAttempts);
+            this.transferLog.LogInformation("Min data rate: {MinDataRateMbps} Mbps", parameters.MinDataRateMbps);
+            this.transferLog.LogInformation("Target data rate: {TargetDataRateMbps} Mbps", parameters.TargetDataRateMbps);
+            this.transferLog.LogInformation("Wait time between retry attempts: {WaitTimeBetweenRetryAttempts}", parameters.WaitTimeBetweenRetryAttempts);
+            this.transferLog.LogInformation("Workspace identifier: {WorkspaceId}", parameters.WorkspaceId);
         }
 
         /// <summary>
@@ -576,13 +576,16 @@ namespace kCura.WinEDDS.TApi
                     else
                     {
                         clientStrategy = new TransferClientStrategy();
-                        this.transferLog.LogInformation("Using the default default transfer client strategy.");
+                        this.transferLog.LogInformation("Using the default transfer client strategy.");
                     }
 
                     this.transferClient = this.transferHost
                         .CreateClientAsync(configuration, clientStrategy, this.cancellationToken)
                         .GetAwaiter()
                         .GetResult();
+                    this.transferLog.LogInformation(
+                        "TAPI created the {Client} client via best-fit strategy.",
+                        this.transferClient.DisplayName);
                     this.RaiseClientChanged(ClientChangeReason.BestFit);
                 }
             }
@@ -839,7 +842,7 @@ namespace kCura.WinEDDS.TApi
                 CultureInfo.CurrentCulture,
                 Strings.HttpFallbackWarningMessage,
                 this.ClientDisplayName,
-                exception.ToString());
+                exception.Message);
             this.RaiseWarningMessage(message, TapiConstants.NoLineNumber);
             var retryablePaths = this.GetRetryableTransferPaths().ToList();
             if (addedPath != null && !retryablePaths.Any(x => x.Equals(addedPath)))
