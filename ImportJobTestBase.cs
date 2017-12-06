@@ -636,7 +636,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         {
             for (var i = 0; i < maxFiles; i++)
             {
-                RandomHelper.NextFile(
+                RandomHelper.NextTextFile(
                     MinTestFileLength,
                     MaxTestFileLength,
                     this.TempDirectory.Directory,

@@ -253,7 +253,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
             
             for (var i = 0; i < this.fileCount; i++)
             {
-                var file = RandomHelper.NextFile(
+                var file = RandomHelper.NextTextFile(
                     MinTestFileLength,
                     MaxTestFileLength,
                     directory,
