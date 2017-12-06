@@ -842,7 +842,7 @@ namespace kCura.WinEDDS.TApi
                 CultureInfo.CurrentCulture,
                 Strings.HttpFallbackWarningMessage,
                 this.ClientDisplayName,
-                exception.ToString());
+                exception.Message);
             this.RaiseWarningMessage(message, TapiConstants.NoLineNumber);
             var retryablePaths = this.GetRetryableTransferPaths().ToList();
             if (addedPath != null && !retryablePaths.Any(x => x.Equals(addedPath)))
