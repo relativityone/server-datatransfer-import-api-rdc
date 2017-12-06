@@ -297,7 +297,7 @@ Namespace kCura.WinEDDS
 		End Property
 
 
-		Protected Overloads Function ParseNullableDecimal(ByVal value As String) As Nullable(Of Decimal)
+		Protected Overrides Function ParseNullableDecimal(ByVal value As String) As Nullable(Of Decimal)
 			If _executionSource = ExecutionSource.Rdc
 				Return NullableTypesHelper.ToNullableDecimalUsingCurrentCulture(value)
 			Else
