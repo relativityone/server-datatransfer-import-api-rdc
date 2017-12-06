@@ -451,10 +451,10 @@ Namespace kCura.WinEDDS.ImportExtension
 						field.Value = kCura.Utility.NullableTypesEnhanced.GetNullableBoolean(value)
 
 					Case Relativity.FieldTypeHelper.FieldType.Currency, Relativity.FieldTypeHelper.FieldType.Decimal
-						field.Value = kCura.Utility.NullableTypesHelper.ToNullableDecimal(value.Trim)
+						field.Value = kCura.Utility.NullableTypesHelper.ToNullableDecimal(value.Trim)'To change`
 
 					Case Relativity.FieldTypeHelper.FieldType.Date
-						field.Value = kCura.Utility.NullableTypesEnhanced.GetNullableDateTime(value)
+						field.Value = kCura.Utility.NullableTypesEnhanced.GetNullableDateTime(value) 'To change`
 
 					Case Relativity.FieldTypeHelper.FieldType.Integer
 						field.Value = NullableTypesHelper.ToNullableInt32(value.Replace(",", ""))
