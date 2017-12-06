@@ -28,7 +28,7 @@ Namespace kCura.WinEDDS.NUnit
 
 		Public PauseCalled As Int32 = 0
 
-		Public Sub New(ByVal args As ImageLoadFile, ByVal processController As kCura.Windows.Process.Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager, ByRef tokenSource As CancellationTokenSource)
+		Public Sub New(ByVal args As ImageLoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal ioReporterInstance As IIoReporter, ByRef logger As ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager, ByVal tokenSource As CancellationTokenSource)
 			MyBase.new(0, args, processController, ioReporterInstance, logger, processID, doRetryLogic, False, tokenSource)
 			Me.WillThrowException = throwsException
 			_bulkImportManager = bulkManager
