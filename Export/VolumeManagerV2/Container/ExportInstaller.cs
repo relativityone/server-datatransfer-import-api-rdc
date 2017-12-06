@@ -21,9 +21,6 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 {
-	/// <summary>
-	///     TODO clean this up!
-	/// </summary>
 	public class ExportInstaller : IWindsorInstaller
 	{
 		private readonly Exporter _exporter;
@@ -101,7 +98,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 
 		private void InstallDirectory(IWindsorContainer container)
 		{
-			container.Register(Component.For<IVolume>().UsingFactoryMethod(k => k.Resolve<TrueVolumeManager>()));
+			container.Register(Component.For<IVolume>().UsingFactoryMethod(k => k.Resolve<Directories.VolumeManager>()));
 			container.Register(Component.For<ISubdirectory>().UsingFactoryMethod(k => k.Resolve<SubdirectoryManager>()));
 			container.Register(Component.For<ISubdirectoryManager>().UsingFactoryMethod(k => k.Resolve<SubdirectoryManager>()));
 		}

@@ -2,17 +2,14 @@
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 {
-	/// <summary>
-	///     TODO change name :)
-	/// </summary>
-	public class TrueVolumeManager : IVolume, IDirectoryManager
+	public class VolumeManager : IVolume, IDirectoryManager
 	{
 		private long _currentVolumeSize;
 
 		private readonly long _volumeMaxSizeInMB;
 		private readonly ISubdirectoryManager _subdirectoryManager;
 
-		public TrueVolumeManager(ExportFile exportSettings, ISubdirectoryManager subdirectoryManager)
+		public VolumeManager(ExportFile exportSettings, ISubdirectoryManager subdirectoryManager)
 		{
 			_subdirectoryManager = subdirectoryManager;
 

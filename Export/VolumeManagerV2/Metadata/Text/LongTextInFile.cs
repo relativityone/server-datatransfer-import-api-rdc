@@ -7,8 +7,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 	{
 		public override TextReader GetLongText()
 		{
-			//TODO encoding?
-			return new StreamReader(Location, Encoding.Default);
+			return new StreamReader(Location, SourceEncoding);
 		}
 	}
 }

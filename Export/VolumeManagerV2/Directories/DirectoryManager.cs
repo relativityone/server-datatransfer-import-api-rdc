@@ -4,10 +4,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 {
 	public class DirectoryManager : IDirectoryManager
 	{
-		private readonly TrueVolumeManager _volumeManager;
+		private readonly VolumeManager _volumeManager;
 		private readonly SubdirectoryManager _subdirectoryManager;
 
-		public DirectoryManager(TrueVolumeManager volumeManager, SubdirectoryManager subdirectoryManager)
+		public DirectoryManager(VolumeManager volumeManager, SubdirectoryManager subdirectoryManager)
 		{
 			_volumeManager = volumeManager;
 			_subdirectoryManager = subdirectoryManager;

@@ -375,7 +375,7 @@
     <Compile Include="Export\VolumeManagerV2\StatisticsWrapper.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\SubdirectoryManager.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\TextExportableSize.cs" />
-    <Compile Include="Export\VolumeManagerV2\Directories\TrueVolumeManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\VolumeManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\VolumeAndSubdirectoryValidator.cs" />
     <Compile Include="IO\LongPathDirectoryHelper.cs" />
     <Compile Include="IO\LongPathFileHelper.cs" />
