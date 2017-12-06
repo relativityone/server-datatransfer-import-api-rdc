@@ -79,6 +79,11 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         private int workspaceId;
 
         /// <summary>
+        /// The Relativity Logging logger used to capture logs for this integration test.
+        /// </summary>
+        private TestRelativityLog logger;
+
+        /// <summary>
         /// Gets or sets the relativity import URL.
         /// </summary>
         /// <value>
@@ -144,6 +149,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         [SetUp]
         public void Setup()
         {
+            this.logger = TestRelativityLogFactory.Create();
             ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, errors) => true;
             ServicePointManager.SecurityProtocol =
                 SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
@@ -183,7 +189,8 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
                 this.importJob.OnProgress -= this.ImportJob_OnProgress;
             }
 
-            this.TempDirectory.Dispose();
+            this.TempDirectory?.Dispose();
+            this.logger?.Dispose();
             this.OnTearDown();
         }
 
