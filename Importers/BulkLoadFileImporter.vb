@@ -2234,7 +2234,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Overrides Function GetArtifactReader() As Api.IArtifactReader
-			Return New kCura.WinEDDS.LoadFileReader(_settings, False)
+			Return New kCura.WinEDDS.LoadFileReader(_settings, False, _executionSource)
 		End Function
 
 		Protected Sub OnFatalError(message As String, ex As Exception, runID As String)
