@@ -100,6 +100,8 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
             ThenTheLoggerErrorShouldBeInvokedOneTime();
         }
 
+
+
         private void ThenTheLoggerErrorShouldBeInvokedOneTime()
         {
             _logger.Verify(logger => logger.LogError(It.IsAny<Exception>(), It.IsAny<string>()), Times.Once);
