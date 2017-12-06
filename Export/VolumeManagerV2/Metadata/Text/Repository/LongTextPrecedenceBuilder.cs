@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Exporters;
@@ -50,18 +51,21 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 		{
 			string destinationLocation = GetDestinationLocation(artifact);
 			LongTextExportRequest longTextExportRequest = CreateExportRequest(artifact, field, destinationLocation);
+			Encoding sourceEncoding = _longTextHelper.GetLongTextFieldFileEncoding(field);
 			if (_exportSettings.ExportFullTextAsFile)
 			{
 				if (CanExport(destinationLocation))
 				{
 					_logger.LogVerbose("LongText file missing - creating ExportRequest to destination file.");
-					return LongText.CreateFromMissingFile(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, longTextExportRequest);
+					
+					return LongText.CreateFromMissingFile(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, longTextExportRequest, sourceEncoding, _exportSettings.TextFileEncoding);
 				}
 				_logger.LogVerbose("LongText file already exists and cannot overwrite - creating ExportRequest from existing file.");
-				return LongText.CreateFromExistingFile(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, destinationLocation);
+				//TODO File already exists. We assuming that encoding is the same as selected
+				return LongText.CreateFromExistingFile(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, destinationLocation, _exportSettings.TextFileEncoding);
 			}
 			_logger.LogVerbose("LongText file missing - creating ExportRequest to temporary file.");
-			return LongText.CreateFromMissingValue(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, longTextExportRequest);
+			return LongText.CreateFromMissingValue(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, longTextExportRequest, sourceEncoding);
 		}
 
 		private LongText CreateForLongText(ObjectExportInfo artifact, ViewFieldInfo field)
@@ -84,7 +88,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 				{
 					_logger.LogVerbose("LongText file already exists and cannot overwrite - using existing file {location}.", destinationLocation);
 				}
-				return LongText.CreateFromExistingFile(artifact.ArtifactID, fieldForPrecedence.FieldArtifactId, destinationLocation);
+				return LongText.CreateFromExistingFile(artifact.ArtifactID, fieldForPrecedence.FieldArtifactId, destinationLocation, _exportSettings.TextFileEncoding);
 			}
 			_logger.LogVerbose("LongText value exists - storing it into memory.");
 			return LongText.CreateFromExistingValue(artifact.ArtifactID, fieldForPrecedence.FieldArtifactId, longTextValue);

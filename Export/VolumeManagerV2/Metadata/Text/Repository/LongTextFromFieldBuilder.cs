@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
@@ -53,7 +54,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			_logger.LogVerbose("Creating LongText with missing value.");
 			string tempLocation = Path.GetTempFileName();
 			LongTextExportRequest exportRequest = LongTextExportRequest.CreateRequestForLongText(artifact, field.FieldArtifactId, tempLocation);
-			LongText longText = LongText.CreateFromMissingValue(artifact.ArtifactID, field.FieldArtifactId, exportRequest);
+			Encoding sourceEncoding = _longTextHelper.GetLongTextFieldFileEncoding(field);
+			LongText longText = LongText.CreateFromMissingValue(artifact.ArtifactID, field.FieldArtifactId, exportRequest, sourceEncoding);
 			longTexts.Add(longText);
 		}
 

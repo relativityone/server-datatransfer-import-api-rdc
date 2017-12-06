@@ -22,7 +22,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 
 		public string GetTextFileLocation(int artifactId, int fieldArtifactId)
 		{
-			return _longTexts.First(x => x.FieldArtifactId == fieldArtifactId && x.ArtifactId == artifactId).Location;
+			return GetLongText(artifactId, fieldArtifactId).Location;
+		}
+
+		public LongText GetLongText(int artifactId, int fieldArtifactId)
+		{
+			return _longTexts.First(x => x.FieldArtifactId == fieldArtifactId && x.ArtifactId == artifactId);
 		}
 
 		public IList<LongText> GetLongTexts()

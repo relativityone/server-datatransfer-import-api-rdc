@@ -56,8 +56,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				imageExportRequestBuilder = new EmptyExportRequestBuilder();
 			}
 
-			return new FilesDownloader(nativeExportRequestBuilder, imageExportRequestBuilder, _longTextExportRequestBuilder, _exportTapiBridgeFactory, _directoryManager, _logger,
-				_labelManager);
+			return new FilesDownloader(nativeExportRequestBuilder, imageExportRequestBuilder, _longTextExportRequestBuilder, _exportTapiBridgeFactory, _directoryManager, _logger, _labelManager);
 		}
 	}
 }

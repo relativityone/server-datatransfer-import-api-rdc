@@ -126,5 +126,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 			}
 			return Encoding.Default;
 		}
+
+		public Encoding GetLongTextFieldFileEncoding(int fieldId)
+		{
+			ViewFieldInfo field = _fieldService.GetColumns().First(x => x.FieldArtifactId == fieldId);
+			return GetLongTextFieldFileEncoding(field);
+		}
 	}
 }

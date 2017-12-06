@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
@@ -12,10 +13,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 		public bool RequireDeletion { get; private set; }
 		public int ArtifactId { get; private set; }
 		public int FieldArtifactId { get; private set; }
+		public Encoding SourceEncoding { get; set; }
+		public Encoding DestinationEncoding { get; private set; }
 
 		public abstract TextReader GetLongText();
 
-		public static LongText CreateFromMissingFile(int artifactId, int fieldArtifactId, LongTextExportRequest exportRequest)
+		public static LongText CreateFromMissingFile(int artifactId, int fieldArtifactId, LongTextExportRequest exportRequest, Encoding sourceEncoding, Encoding destinationEncoding)
 		{
 			return new LongTextInFile
 			{
@@ -23,11 +26,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 				FieldArtifactId = fieldArtifactId,
 				Location = exportRequest.DestinationLocation,
 				ExportRequest = exportRequest,
-				RequireDeletion = false
+				RequireDeletion = false,
+				SourceEncoding = sourceEncoding,
+				DestinationEncoding = destinationEncoding
 			};
 		}
 
-		public static LongText CreateFromMissingValue(int artifactId, int fieldArtifactId, LongTextExportRequest exportRequest)
+		public static LongText CreateFromMissingValue(int artifactId, int fieldArtifactId, LongTextExportRequest exportRequest, Encoding encoding)
 		{
 			return new LongTextInFile
 			{
@@ -36,18 +41,22 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 				Location = exportRequest.DestinationLocation,
 				ExportRequest = exportRequest,
 				//It will be stored in temporary file
-				RequireDeletion = true
+				RequireDeletion = true,
+				SourceEncoding = encoding,
+				DestinationEncoding = encoding
 			};
 		}
 
-		public static LongText CreateFromExistingFile(int artifactId, int fieldArtifactId, string location)
+		public static LongText CreateFromExistingFile(int artifactId, int fieldArtifactId, string location, Encoding encoding)
 		{
 			return new LongTextInFile
 			{
 				ArtifactId = artifactId,
 				FieldArtifactId = fieldArtifactId,
 				Location = location,
-				RequireDeletion = false
+				RequireDeletion = false,
+				SourceEncoding = encoding,
+				DestinationEncoding = encoding
 			};
 		}
 
@@ -58,7 +67,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 				ArtifactId = artifactId,
 				FieldArtifactId = fieldArtifactId,
 				LongTextValue = text,
-				RequireDeletion = false
+				RequireDeletion = false,
+				SourceEncoding = Encoding.Default,
+				DestinationEncoding = Encoding.Default
 			};
 		}
 	}

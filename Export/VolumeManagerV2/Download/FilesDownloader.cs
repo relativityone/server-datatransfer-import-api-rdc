@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.TApi;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
@@ -84,8 +83,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private void DownloadRequests(CancellationToken cancellationToken)
 		{
-			DownloadTapiBridge filesDownloader = null;
-			DownloadTapiBridge longTextDownloader = null;
+			IDownloadTapiBridge filesDownloader = null;
+			IDownloadTapiBridge longTextDownloader = null;
 			try
 			{
 				filesDownloader = DownloadFiles(cancellationToken);
@@ -125,14 +124,18 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			}
 		}
 
-		private DownloadTapiBridge DownloadFiles(CancellationToken cancellationToken)
+		private IDownloadTapiBridge DownloadFiles(CancellationToken cancellationToken)
 		{
 			_logger.LogVerbose("Creating TAPI bridge for file export. Adding {count} requests to it.", _fileExportRequests.Count);
-			DownloadTapiBridge tapiBridge = _exportTapiBridgeFactory.Create(cancellationToken);
+			IDownloadTapiBridge tapiBridge = _exportTapiBridgeFactory.Create(cancellationToken);
 
 			int order = 1;
 			foreach (var fileExportRequest in _fileExportRequests)
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return tapiBridge;
+				}
 				try
 				{
 					_logger.LogVerbose("Adding export request for downloading file {source} to {destination}.", fileExportRequest.SourceLocation, fileExportRequest.DestinationLocation);
@@ -148,14 +151,18 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			return tapiBridge;
 		}
 
-		private DownloadTapiBridge DownloadLongTexts(CancellationToken cancellationToken)
+		private IDownloadTapiBridge DownloadLongTexts(CancellationToken cancellationToken)
 		{
 			_logger.LogVerbose("Creating TAPI bridge for long text export. Adding {count} requests to it.", _longTextExportRequests.Count);
-			DownloadTapiBridge tapiBridge = _exportTapiBridgeFactory.CreateForLongText(cancellationToken);
+			IDownloadTapiBridge tapiBridge = _exportTapiBridgeFactory.CreateForLongText(cancellationToken);
 
 			int order = 1;
 			foreach (var textExportRequest in _longTextExportRequests)
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return tapiBridge;
+				}
 				try
 				{
 					_logger.LogVerbose("Adding export request for downloading long text {fieldId} to {destination}.", textExportRequest.FieldArtifactId, textExportRequest.DestinationLocation);

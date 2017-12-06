@@ -11,15 +11,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 		private readonly ExportFile _exportSettings;
 		private readonly ILog _logger;
 		private readonly ExportFileDownloaderStatus _exportFileDownloaderStatus;
+		private readonly LongTextEncodingConverterFactory _converterFactory;
 
-		public ExportTapiBridgeFactory(ExportFile exportSettings, ILog logger, ExportFileDownloaderStatus exportFileDownloaderStatus)
+		public ExportTapiBridgeFactory(ExportFile exportSettings, ILog logger, ExportFileDownloaderStatus exportFileDownloaderStatus, LongTextEncodingConverterFactory converterFactory)
 		{
 			_exportSettings = exportSettings;
 			_logger = logger;
 			_exportFileDownloaderStatus = exportFileDownloaderStatus;
+			_converterFactory = converterFactory;
 		}
 
-		public DownloadTapiBridge Create(CancellationToken token)
+		public IDownloadTapiBridge Create(CancellationToken token)
 		{
 			//TODO probably we should create parameters for download first (in tapi bridge)
 			TapiBridgeParameters parameters = new TapiBridgeParameters
@@ -49,10 +51,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 			};
 
 			DownloadTapiBridge tapiBridge = TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, token);
-			
+
 			AttachEventHandlers(tapiBridge);
 
-			return tapiBridge;
+			return new DownloadTapiBridgeWrapper(tapiBridge);
 		}
 
 		private void AttachEventHandlers(DownloadTapiBridge tapiBridge)
@@ -60,7 +62,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 			tapiBridge.TapiClientChanged += _exportFileDownloaderStatus.OnTapiClientChanged;
 		}
 
-		public DownloadTapiBridge CreateForLongText(CancellationToken token)
+		public IDownloadTapiBridge CreateForLongText(CancellationToken token)
 		{
 			//TODO probably we should create parameters for download first (in tapi bridge)
 			TapiBridgeParameters parameters = new TapiBridgeParameters
@@ -72,7 +74,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 				AsperaDocRootLevels = Config.TapiAsperaNativeDocRootLevels,
 				FileShare = _exportSettings.CaseInfo.DocumentPath,
 				ForceAsperaClient = false,
-				ForceClientCandidates = String.Empty,
+				ForceClientCandidates = string.Empty,
 				ForceFileShareClient = false,
 				ForceHttpClient = true,
 				LargeFileProgressEnabled = Config.TapiLargeFileProgressEnabled,
@@ -89,7 +91,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 				WorkspaceId = _exportSettings.CaseInfo.ArtifactID
 			};
 
-			return TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, token);
+			return CreateTapiBridgeForLongText(parameters, token);
+		}
+
+		private IDownloadTapiBridge CreateTapiBridgeForLongText(TapiBridgeParameters parameters, CancellationToken token)
+		{
+			LongTextEncodingConverter longTextEncodingConverter = _converterFactory.Create(token);
+			DownloadTapiBridge tapiBridge = TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, token);
+			return new DownloadTapiBridgeWithEncodingConversion(tapiBridge, longTextEncodingConverter, _logger);
 		}
 	}
 }
