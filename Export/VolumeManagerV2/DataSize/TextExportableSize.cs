@@ -17,7 +17,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize
 
 		public void CalculateTextSize(VolumePredictions volumeSize, ObjectExportInfo artifact)
 		{
-			if (_exportSettings.ExportFullText && _exportSettings.ExportFullTextAsFile)
+			bool isTextBeingExportedToFile = _exportSettings.ExportFullText && _exportSettings.ExportFullTextAsFile;
+			if (isTextBeingExportedToFile)
 			{
 				for (int count = 0; count <= _fieldService.GetColumns().Length - 1; count++)
 				{
@@ -34,10 +35,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize
 							{
 								fieldValue = Encoding.Unicode.GetString((byte[]) fieldValue);
 							}
-							if (fieldValue == null)
-							{
-								fieldValue = string.Empty;
-							}
+							fieldValue = fieldValue ?? string.Empty;
 							string textValue = fieldValue.ToString();
 							if (textValue == Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN)
 							{
@@ -55,7 +53,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize
 			}
 			else
 			{
-				//We're not exporting files with text
 				volumeSize.TextFileCount = 0;
 				volumeSize.TextFilesSize = 0;
 			}
