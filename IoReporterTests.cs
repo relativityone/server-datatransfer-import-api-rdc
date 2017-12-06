@@ -170,7 +170,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 
         private void GivenTheExpectedLogWarningMessage()
         {
-            _expectedLogWarningMessage = IoReporter.BuildIoReporterWarningMessage(_expectedException);
+            _expectedLogWarningMessage = IoReporter.BuildIoReporterWarningMessage(_expectedException, 0);
         }
 
         private void GivenTheExpectedLogErrorMessage()
