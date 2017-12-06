@@ -54,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LoadFileReaderTests.cs" />
     <Compile Include="DataReaderReaderTests.cs" />
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <SubType>Code</SubType>
