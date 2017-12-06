@@ -44,7 +44,7 @@ namespace kCura.WinEDDS.ImportExtension.NUnit
 		[TestCase(ExecutionSource.ImportAPI)]
 		[TestCase(ExecutionSource.Processing)]
 		[TestCase(ExecutionSource.RIP)]
-		public void GetNullableDecimal_NeglectsCurrentCultureOnOtherExecutionSources( ExecutionSource executionSource)
+		public void GetNullableDecimal_NeglectsCurrentCultureOnOtherExecutionSources(ExecutionSource executionSource)
 		{
 			//Arrange
 			_subjectUnderTest = new LoadFileReader(_loadFileArgs, false, executionSource);
