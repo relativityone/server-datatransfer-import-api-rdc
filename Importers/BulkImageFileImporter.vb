@@ -168,8 +168,8 @@ Namespace kCura.WinEDDS
 #End Region
 
 #Region "Constructors"
-		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByRef ioReporterInstance As IIoReporter, 
-					   ByRef logger As Logging.ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean,  ByVal enforceDocumentLimit As Boolean, ByRef tokenSource As CancellationTokenSource,
+		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal ioReporterInstance As IIoReporter, 
+					   ByRef logger As Logging.ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean,  ByVal enforceDocumentLimit As Boolean, ByVal tokenSource As CancellationTokenSource,
 					   Optional ByVal executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
 			MyBase.New(ioReporterInstance, logger, tokenSource)
 			_executionSource = executionSource

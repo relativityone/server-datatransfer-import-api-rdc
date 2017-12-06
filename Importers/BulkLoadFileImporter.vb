@@ -269,8 +269,8 @@ Namespace kCura.WinEDDS
 		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog, 
-					   ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean, ByRef tokenSource As CancellationTokenSource,
+		Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByVal ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog, 
+					   ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean, ByVal tokenSource As CancellationTokenSource,
 					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
 			Me.New(args, processController, ioReporterInstance, logger, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit, tokenSource,
 				   initializeArtifactReader:=True, executionSource:=executionSource)
@@ -291,8 +291,8 @@ Namespace kCura.WinEDDS
 		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog, 
-					   ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean, ByRef tokenSource As CancellationTokenSource,
+		Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByVal ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog, 
+					   ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean, ByVal tokenSource As CancellationTokenSource,
 						ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
 			Me.New(args, processController, ioReporterInstance, logger, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit, tokenSource,  initializeArtifactReader:=True, executionSource:=executionSource)
 		End Sub
@@ -312,8 +312,8 @@ Namespace kCura.WinEDDS
 		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(args As LoadFile, processController As Controller, ByRef ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog,
-					   timeZoneOffset As Int32, autoDetect As Boolean, initializeUploaders As Boolean, processID As Guid, doRetryLogic As Boolean, bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean,ByRef tokenSource As CancellationTokenSource,
+		Public Sub New(args As LoadFile, processController As Controller, ByVal ioReporterInstance As IIoReporter, ByRef logger As Relativity.Logging.ILog,
+					   timeZoneOffset As Int32, autoDetect As Boolean, initializeUploaders As Boolean, processID As Guid, doRetryLogic As Boolean, bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean,ByVal tokenSource As CancellationTokenSource,
 					   initializeArtifactReader As Boolean, 
 					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
 			MyBase.New(args, ioReporterInstance, logger, timeZoneOffset, doRetryLogic, autoDetect, tokenSource, initializeArtifactReader)

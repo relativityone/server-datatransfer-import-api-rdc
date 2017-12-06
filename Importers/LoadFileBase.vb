@@ -131,7 +131,7 @@ Namespace kCura.WinEDDS
 			Me.New(args, ioReporterInstance, logger, timezoneoffset, doRetryLogic, autoDetect, cancellationToken,  initializeArtifactReader:=True)
 		End Sub
 
-		Protected Sub New(args As LoadFile, ByRef ioReporterInstance As IIoReporter, ByRef logger As ILog, timezoneoffset As Int32, doRetryLogic As Boolean, autoDetect As Boolean, cancellationToken As CancellationTokenSource, initializeArtifactReader As Boolean)
+		Protected Sub New(args As LoadFile, ByVal ioReporterInstance As IIoReporter, ByRef logger As ILog, timezoneoffset As Int32, doRetryLogic As Boolean, autoDetect As Boolean, cancellationToken As CancellationTokenSource, initializeArtifactReader As Boolean)
             MyBase.New(ioReporterInstance, logger, cancellationToken)
 
 			_settings = args
