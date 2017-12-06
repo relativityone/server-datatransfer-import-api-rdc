@@ -58,8 +58,6 @@ Namespace kCura.WinEDDS
 		Private _outputObjectFileWriter As System.IO.StreamWriter
 		Private _caseInfo As Relativity.CaseInfo
 		Protected _overlayArtifactID As Int32
-		Protected _executionSource As Relativity.ExecutionSource
-
 		Protected _runID As String = System.Guid.NewGuid.ToString.Replace("-", "_")
 
 		Protected _outputCodeFilePath As String = System.IO.Path.GetTempFileName

@@ -146,7 +146,7 @@ Namespace kCura.WinEDDS
 			FileNameColumn = args.FileNameColumn
 			_timeZoneOffset = timezoneoffset
 			_autoDetect = autoDetect
-			_executionSource = _executionSource
+			_executionSource = executionSource
 			InitializeManagers(args)
 
 			If initializeArtifactReader Then
