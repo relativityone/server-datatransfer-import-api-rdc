@@ -7,251 +7,230 @@ using Relativity.Transfer;
 
 namespace kCura.WinEDDS.TApi.NUnit.Integration
 {
-    [TestFixture]
-    public class IoReporterTests
-    {
-        private IIoReporter _ioReporterInstance;
-        private Mock<IFileSystemService> _fileService;
-        private Mock<IWaitAndRetryPolicy> _waitAndRetry;
-        private Mock<ILog> _logger;
-        private IoWarningPublisher _ioWarningPublisher;
-        private long _actualFileLength;
-        private Func<int, TimeSpan> _actualRetryDuractionFunc = null;
-        private Exception _expectedException; 
-        private ArgumentException _expectedArgumentException;
+	[TestFixture]
+	public class IoReporterTests
+	{
+		private IIoReporter _ioReporterInstance;
+		private Mock<IFileSystemService> _fileService;
+		private Mock<IWaitAndRetryPolicy> _waitAndRetry;
+		private Mock<ILog> _logger;
+		private IoWarningPublisher _ioWarningPublisher;
+		private long _actualFileLength;
+		private Func<int, TimeSpan> _actualRetryDuractionFunc = null;
+		private Exception _expectedException;
+		private ArgumentException _expectedArgumentException;
 		private const string _FILE_NAME = "TestFileName";
-        private const string _EXPECTED_DEFAULT_EXCEPTION_MESSAGE = "Expected exception message";
-        private const string _EXPECTED_INVALID_PATH_EXCEPTION_MESSAGE = "Illegal characters in path.";
-        private string _expectedLogWarningMessage;
-        private string _expectedLogErrorMessage;
-        private string _actualExceptionMessage = string.Empty;
-        private string _actualLogWarningMessage = string.Empty;
-        private string _actualInvalidPathExceptionMessage = string.Empty;
-        private string _actualLogErrorMessage = string.Empty;
-	    private CancellationTokenSource _tokenSource = new CancellationTokenSource();
+		private const string _EXPECTED_DEFAULT_EXCEPTION_MESSAGE = "Expected exception message";
+		private const string _EXPECTED_INVALID_PATH_EXCEPTION_MESSAGE = "Illegal characters in path.";
+		private string _expectedLogWarningMessage;
+		private string _expectedLogErrorMessage;
+		private string _actualExceptionMessage = string.Empty;
+		private string _actualLogWarningMessage = string.Empty;
+		private string _actualInvalidPathExceptionMessage = string.Empty;
+		private string _actualLogErrorMessage = string.Empty;
+		private readonly CancellationTokenSource _tokenSource = new CancellationTokenSource();
 
-        [SetUp]
-        public void Setup()
-        {
-            _fileService = new Mock<IFileSystemService>();
-            _waitAndRetry = new Mock<IWaitAndRetryPolicy>();
-            _logger = new Mock<ILog>();
+		[SetUp]
+		public void Setup()
+		{
+			_fileService = new Mock<IFileSystemService>();
+			_waitAndRetry = new Mock<IWaitAndRetryPolicy>();
+			_logger = new Mock<ILog>();
 
-            _ioWarningPublisher = new IoWarningPublisher();
-        }
+			_ioWarningPublisher = new IoWarningPublisher();
+		}
 
-        [TestCase(1)]
-        [TestCase(10)]
-        [TestCase(1299)]
-        public void ItShouldGetFileLength(int expectedLength)
-        {
-            GivenTheWaitAndRetryCallback();
-            GivenTheFileLength(expectedLength);
-            
-            WhenExecutingTheGetFileLength();
-            
-            ThenTheActualFileLengthShouldEqual(expectedLength);
-        }
+		[TestCase(1)]
+		[TestCase(10)]
+		[TestCase(1299)]
+		public void ItShouldGetFileLength(int expectedLength)
+		{
+			GivenTheWaitAndRetryCallback();
+			GivenTheFileLength(expectedLength);
 
-        [TestCase(1, 1)]
-        [TestCase(2, 1)]
-        [TestCase(2, 2)]
-        [TestCase(3, 10)]
-        [TestCase(2, -1)]
-        [TestCase(2, 0)]
-        public void ItShouldCalculateProperRetryDuration(int retryAttempt, int waitTimeBetweenRetryAttempts)
-        {
-            GivenTheWaitAndRetryReturns(waitTimeBetweenRetryAttempts);
-            GivenTheWaitAndRetryCallback();
-            
-            WhenExecutingTheGetFileLength();
-            
-            ThenTheActualRetryDuractionShouldCalculated(retryAttempt, waitTimeBetweenRetryAttempts);
-        }
+			WhenExecutingTheGetFileLength();
 
-        [Test]
-        public void ItShouldRetryOnExceptionWhenNotDisabledNativeLocationValidation()
-        {
-            GivenTheExpectedException();
-            GivenTheExpectedLogWarningMessage();
-            GivenTheWaitAndRetryCallback();
-            GivenTheLoggerWarningCallback();
-            
-            WhenExecutingTheGetFileLength();
-            
-            ThenTheActualExceptionMessageShouldEqual();
-            ThenTheActualLogWarningMessageShouldEqual();
-            ThenTheLoggerWarningShouldBeInvokedOneTime();
-        }
-        
-        [Test]
-        public void ItShouldThrowFileInfoInvalidPathException()
-        {
-            GivenTheExpectedInvalidPathException();
-            GivenTheExpectedLogErrorMessage();
-	        GivenTheFileServiceWhichThrowsArgumentException(_expectedArgumentException);
-	        GivenTheWaitAndRetryCallback();
+			ThenTheActualFileLengthShouldEqual(expectedLength);
+		}
+
+		[TestCase(1, 1)]
+		[TestCase(2, 1)]
+		[TestCase(2, 2)]
+		[TestCase(3, 10)]
+		[TestCase(2, -1)]
+		[TestCase(2, 0)]
+		public void ItShouldCalculateProperRetryDuration(int retryAttempt, int waitTimeBetweenRetryAttempts)
+		{
+			GivenTheWaitAndRetryReturns(waitTimeBetweenRetryAttempts);
+			GivenTheWaitAndRetryCallback();
+
+			WhenExecutingTheGetFileLength();
+
+			ThenTheActualRetryDuractionShouldCalculated(retryAttempt, waitTimeBetweenRetryAttempts);
+		}
+
+		[Test]
+		public void ItShouldRetryOnExceptionWhenNotDisabledNativeLocationValidation()
+		{
+			GivenTheExpectedException();
+			GivenTheExpectedLogWarningMessage();
+			GivenTheWaitAndRetryCallback();
+			GivenTheLoggerWarningCallback();
+
+			WhenExecutingTheGetFileLength();
+
+			ThenTheActualExceptionMessageShouldEqual();
+			ThenTheActualLogWarningMessageShouldEqual();
+			ThenTheLoggerWarningShouldBeInvokedOneTime();
+		}
+
+		[Test]
+		public void ItShouldThrowFileInfoInvalidPathException()
+		{
+			GivenTheExpectedInvalidPathException();
+			GivenTheExpectedLogErrorMessage();
+			GivenTheFileServiceWhichThrowsArgumentException(_expectedArgumentException);
+			GivenTheWaitAndRetryCallback();
 			GivenTheLoggerErrorCallback();
-            
-            WhenExecutingIoReporterGetFileLengthThenThrowsException(true);
 
-            ThenTheActualInvalidPathExceptionMessageShouldEqual();
-            ThenTheActualLogErrorMessageShouldEqual();
-            ThenTheLoggerErrorShouldBeInvokedOneTime();
-        }
+			WhenExecutingIoReporterGetFileLengthThenThrowsException(true);
 
-
-
-        private void ThenTheLoggerErrorShouldBeInvokedOneTime()
-        {
-            _logger.Verify(logger => logger.LogError(It.IsAny<Exception>(), It.IsAny<string>()), Times.Once);
-        }
-
-        private void ThenTheActualLogErrorMessageShouldEqual()
-        {
-            Assert.That(_actualLogErrorMessage, Is.EqualTo(_expectedLogErrorMessage));
-        }
-
-        private void ThenTheActualInvalidPathExceptionMessageShouldEqual()
-        {
-            Assert.That(_actualInvalidPathExceptionMessage, Is.EqualTo(_EXPECTED_INVALID_PATH_EXCEPTION_MESSAGE));
-        }
-
-        #region "Helper methods"
-
-        private void GivenTheWaitAndRetryReturns(int waitTimeBetweenRetryAttempts)
-        {
-            _waitAndRetry.Setup(obj => obj.WaitTimeSecondsBetweenRetryAttempts).Returns(waitTimeBetweenRetryAttempts);
-        }
-
-        private void GivenTheWaitAndRetryCallback()
-        {
-            _waitAndRetry.Setup(obj => obj.WaitAndRetry<Exception>(It.IsAny<Func<int, TimeSpan>>(),
-                    It.IsAny<Action<Exception, TimeSpan>>(), It.IsAny<Action<CancellationToken>>(), It.IsAny<CancellationToken>()))
-                .Callback<Func<int, TimeSpan>, Action<Exception, TimeSpan>, Action<CancellationToken>, CancellationToken>((retryDuration, retryAction, execFunc, token) =>
-                {
-                    _actualRetryDuractionFunc = retryDuration;
-                    retryAction(_expectedException, TimeSpan.Zero);
-                    execFunc(token);
-                });
-        }
-
-        private void GivenTheFileLength(int expectedLength)
-        {
-            _fileService.Setup(obj => obj.GetFileLength(_FILE_NAME)).Returns(expectedLength);
-        }
-
-	    private void GivenTheFileServiceWhichThrowsArgumentException(ArgumentException exception)
-	    {
-		    _fileService.Setup(obj => obj.GetFileLength(It.IsAny<string>())).Throws(exception);
-	    }
+			ThenTheActualInvalidPathExceptionMessageShouldEqual();
+			ThenTheActualLogErrorMessageShouldEqual();
+			ThenTheLoggerErrorShouldBeInvokedOneTime();
+		}
 
 
-	    private void GivenTheLoggerWarningCallback()
-        {
-            _logger.Setup(logger => logger.LogWarning(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object[]>()))
-                .Callback<Exception, string, object[]>((ex, logWarningMessage, param) =>
-                {
-                    _actualExceptionMessage = ex.Message;
-                    _actualLogWarningMessage = logWarningMessage;
-                });
-        }
 
-        private void GivenTheLoggerErrorCallback()
-        {
-            _logger.Setup(logger => logger.LogError(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object[]>()))
-                .Callback<Exception, string, object[]>((ex, logWarningMessage, param) =>
-                {
-                    _actualInvalidPathExceptionMessage = ex.Message;
-                    _actualLogErrorMessage = logWarningMessage;
-                });
-        }
+		private void ThenTheLoggerErrorShouldBeInvokedOneTime()
+		{
+			_logger.Verify(logger => logger.LogError(It.IsAny<Exception>(), It.IsAny<string>()), Times.Once);
+		}
 
-        private void GivenTheWaitAndRetryCallbackThatThrowsArgumentException()
-        {
-            _waitAndRetry.Setup(obj => obj.WaitAndRetry<Exception>(It.IsAny<Func<int, TimeSpan>>(),
-                    It.IsAny<Action<Exception, TimeSpan>>(), It.IsAny<Action<CancellationToken>>(), It.IsAny<CancellationToken>()))
-                .Callback<Func<int, TimeSpan>, Action<Exception, TimeSpan>, Action<CancellationToken>, CancellationToken>((retryDuration, retryAction, execFunc, token) =>
-                {
-                    retryAction(_expectedArgumentException, TimeSpan.Zero);
-                });
-        }
+		private void ThenTheActualLogErrorMessageShouldEqual()
+		{
+			Assert.That(_actualLogErrorMessage, Is.EqualTo(_expectedLogErrorMessage));
+		}
 
-	    private void GivenTheExecuteCallbackThatThrows()
-	    {
-		    _waitAndRetry.Setup(obj => obj.WaitAndRetry<Exception>(It.IsAny<Func<int, TimeSpan>>(),
-				    It.IsAny<Action<Exception, TimeSpan>>(), It.IsAny<Action<CancellationToken>>(), It.IsAny<CancellationToken>()))
-			    .Callback<Func<int, TimeSpan>, Action<Exception, TimeSpan>, Action<CancellationToken>, CancellationToken>((retryDuration, retryAction, execFunc, token) =>
-			    {
-				    retryAction(_expectedException, TimeSpan.Zero);
+		private void ThenTheActualInvalidPathExceptionMessageShouldEqual()
+		{
+			Assert.That(_actualInvalidPathExceptionMessage, Is.EqualTo(_EXPECTED_INVALID_PATH_EXCEPTION_MESSAGE));
+		}
+
+		#region "Helper methods"
+
+		private void GivenTheWaitAndRetryReturns(int waitTimeBetweenRetryAttempts)
+		{
+			_waitAndRetry.Setup(obj => obj.WaitTimeSecondsBetweenRetryAttempts).Returns(waitTimeBetweenRetryAttempts);
+		}
+
+		private void GivenTheWaitAndRetryCallback()
+		{
+			_waitAndRetry.Setup(obj => obj.WaitAndRetry<Exception>(It.IsAny<Func<int, TimeSpan>>(),
+					It.IsAny<Action<Exception, TimeSpan>>(), It.IsAny<Action<CancellationToken>>(), It.IsAny<CancellationToken>()))
+				.Callback<Func<int, TimeSpan>, Action<Exception, TimeSpan>, Action<CancellationToken>, CancellationToken>((retryDuration, retryAction, execFunc, token) =>
+				{
+					_actualRetryDuractionFunc = retryDuration;
+					retryAction(_expectedException, TimeSpan.Zero);
 					execFunc(token);
-			    });
-	    }
+				});
+		}
+
+		private void GivenTheFileLength(int expectedLength)
+		{
+			_fileService.Setup(obj => obj.GetFileLength(_FILE_NAME)).Returns(expectedLength);
+		}
+
+		private void GivenTheFileServiceWhichThrowsArgumentException(ArgumentException exception)
+		{
+			_fileService.Setup(obj => obj.GetFileLength(It.IsAny<string>())).Throws(exception);
+		}
+
+
+		private void GivenTheLoggerWarningCallback()
+		{
+			_logger.Setup(logger => logger.LogWarning(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object[]>()))
+				.Callback<Exception, string, object[]>((ex, logWarningMessage, param) =>
+				{
+					_actualExceptionMessage = ex.Message;
+					_actualLogWarningMessage = logWarningMessage;
+				});
+		}
+
+		private void GivenTheLoggerErrorCallback()
+		{
+			_logger.Setup(logger => logger.LogError(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object[]>()))
+				.Callback<Exception, string, object[]>((ex, logWarningMessage, param) =>
+				{
+					_actualInvalidPathExceptionMessage = ex.Message;
+					_actualLogErrorMessage = logWarningMessage;
+				});
+		}
 
 		private void GivenTheExpectedLogWarningMessage()
-        {
-            _expectedLogWarningMessage = IoReporter.BuildIoReporterWarningMessage(_expectedException);
-        }
+		{
+			_expectedLogWarningMessage = IoReporter.BuildIoReporterWarningMessage(_expectedException, 0);
+		}
 
-        private void GivenTheExpectedLogErrorMessage()
-        {
-            _expectedLogErrorMessage = $"File {_FILE_NAME} not found: illegal characters in path.";
-        }
+		private void GivenTheExpectedLogErrorMessage()
+		{
+			_expectedLogErrorMessage = $"File {_FILE_NAME} not found: illegal characters in path.";
+		}
 
-        private void GivenTheExpectedException()
-        {
-            _expectedException = new Exception(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE);
-        }
+		private void GivenTheExpectedException()
+		{
+			_expectedException = new Exception(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE);
+		}
 
-        private void GivenTheExpectedInvalidPathException()
-        {
-            _expectedArgumentException = new ArgumentException(_EXPECTED_INVALID_PATH_EXCEPTION_MESSAGE);
-        }
+		private void GivenTheExpectedInvalidPathException()
+		{
+			_expectedArgumentException = new ArgumentException(_EXPECTED_INVALID_PATH_EXCEPTION_MESSAGE);
+		}
 
-        private void WhenExecutingTheGetFileLength(bool disableNativeLocationValidation = false)
-        {
-            _ioReporterInstance = new IoReporter(_fileService.Object, _waitAndRetry.Object, _logger.Object, _ioWarningPublisher, disableNativeLocationValidation, _tokenSource.Token);
+		private void WhenExecutingTheGetFileLength(bool disableNativeLocationValidation = false)
+		{
+			_ioReporterInstance = new IoReporter(_fileService.Object, _waitAndRetry.Object, _logger.Object, _ioWarningPublisher, disableNativeLocationValidation, _tokenSource.Token);
 
-            _actualFileLength = _ioReporterInstance.GetFileLength(_FILE_NAME, 0);
-        }
+			_actualFileLength = _ioReporterInstance.GetFileLength(_FILE_NAME, 0);
+		}
 
-        private void WhenExecutingIoReporterGetFileLengthThenThrowsException(bool disableNativeLocationValidation)
-        {
-            _ioReporterInstance = new IoReporter(_fileService.Object, _waitAndRetry.Object, _logger.Object, _ioWarningPublisher, disableNativeLocationValidation, _tokenSource.Token);
+		private void WhenExecutingIoReporterGetFileLengthThenThrowsException(bool disableNativeLocationValidation)
+		{
+			_ioReporterInstance = new IoReporter(_fileService.Object, _waitAndRetry.Object, _logger.Object, _ioWarningPublisher, disableNativeLocationValidation, _tokenSource.Token);
 
-            Assert.That(() => _ioReporterInstance.GetFileLength(_FILE_NAME, 0),
-                Throws.Exception.TypeOf<FileInfoInvalidPathException>());
-        }
+			Assert.That(() => _ioReporterInstance.GetFileLength(_FILE_NAME, 0),
+				Throws.Exception.TypeOf<FileInfoInvalidPathException>());
+		}
 
-        private void ThenTheActualRetryDuractionShouldCalculated(int retryAttempt, int waitTimeBetweenRetryAttempts)
-        {
-            TimeSpan actualRetryDuraction = _actualRetryDuractionFunc(retryAttempt);
-            Assert.That(actualRetryDuraction,
-                retryAttempt == 1
-                    ? Is.EqualTo(TimeSpan.FromSeconds(0))
-                    : Is.EqualTo(TimeSpan.FromSeconds(waitTimeBetweenRetryAttempts)));
-        }
+		private void ThenTheActualRetryDuractionShouldCalculated(int retryAttempt, int waitTimeBetweenRetryAttempts)
+		{
+			TimeSpan actualRetryDuraction = _actualRetryDuractionFunc(retryAttempt);
+			Assert.That(actualRetryDuraction,
+				retryAttempt == 1
+					? Is.EqualTo(TimeSpan.FromSeconds(0))
+					: Is.EqualTo(TimeSpan.FromSeconds(waitTimeBetweenRetryAttempts)));
+		}
 
-        private void ThenTheActualFileLengthShouldEqual(int expectedLength)
-        {
-            Assert.That(_actualFileLength, Is.EqualTo(expectedLength));
-        }
+		private void ThenTheActualFileLengthShouldEqual(int expectedLength)
+		{
+			Assert.That(_actualFileLength, Is.EqualTo(expectedLength));
+		}
 
-        private void ThenTheLoggerWarningShouldBeInvokedOneTime()
-        {
-            _logger.Verify(logger => logger.LogWarning(It.IsAny<Exception>(), It.IsAny<string>()), Times.Once);
-        }
+		private void ThenTheLoggerWarningShouldBeInvokedOneTime()
+		{
+			_logger.Verify(logger => logger.LogWarning(It.IsAny<Exception>(), It.IsAny<string>()), Times.Once);
+		}
 
-        private void ThenTheActualLogWarningMessageShouldEqual()
-        {
-            Assert.That(_actualLogWarningMessage, Is.EqualTo(_expectedLogWarningMessage));
-        }
+		private void ThenTheActualLogWarningMessageShouldEqual()
+		{
+			Assert.That(_actualLogWarningMessage, Is.EqualTo(_expectedLogWarningMessage));
+		}
 
-        private void ThenTheActualExceptionMessageShouldEqual()
-        {
-            Assert.That(_actualExceptionMessage, Is.EqualTo(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE));
-        }
+		private void ThenTheActualExceptionMessageShouldEqual()
+		{
+			Assert.That(_actualExceptionMessage, Is.EqualTo(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE));
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }
