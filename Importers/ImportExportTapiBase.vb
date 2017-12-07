@@ -31,13 +31,9 @@ Namespace kCura.WinEDDS
 
 #Region "Constructor"
 		Public Sub New(ByVal ioReporterInstance As IIoReporter, ByVal logger As ILog, cancellationToken As CancellationTokenSource)
-			
+			'There is no argument checks for ioReporterInstance and cancellationToken here as both of these are not used when the constructor is called in Application.vb for previewing the content of load file.
 			If logger Is Nothing Then
 				Throw New ArgumentNullException("logger")
-			End If
-
-			If cancellationToken Is Nothing Then
-				Throw New ArgumentNullException("cancellationToken")
 			End If
 
 			_logger = logger
