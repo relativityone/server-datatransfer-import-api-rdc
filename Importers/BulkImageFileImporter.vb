@@ -376,13 +376,13 @@ Namespace kCura.WinEDDS
 			_dataGridFileWriter.Close()
 			_fileIdentifierLookup.Clear()
 			Try
-				If ShouldImport AndAlso _copyFilesToRepository AndAlso Me.FileTapiBridge.TransfersPending Then
-					CompletePendingNativeFileTransfers()
-					Me.JobCounter += 1
-				End If
+                If ShouldImport AndAlso _copyFilesToRepository AndAlso Me.FileTapiBridge.TransfersPending Then
+                    CompletePendingNativeFileTransfers()
+                    Me.JobCounter += 1
 
-				PushImageBatch(bulkLoadFilePath, dataGridFilePath)
-			Catch ex As Exception
+                    PushImageBatch(bulkLoadFilePath, dataGridFilePath)
+                End If
+            Catch ex As Exception
 				If BatchResizeEnabled AndAlso IsTimeoutException(ex) AndAlso ShouldImport Then
 					Me.LogWarning(ex, "A SQL or HTTP timeout error has occurred bulk importing the image batch and the batch will be resized.")
 					Dim originalBatchSize As Int32 = Me.ImportBatchSize
@@ -523,23 +523,25 @@ Namespace kCura.WinEDDS
 			Me.Statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
 
 			Dim overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType
-			Select Case _overwrite
-				Case Relativity.ImportOverwriteType.AppendOverlay
-					overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
-				Case Relativity.ImportOverwriteType.Overlay
-					overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
-				Case Else
-					overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Append
-			End Select
+            Select Case _overwrite
+                Case Relativity.ImportOverwriteType.AppendOverlay
+                    overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
+                Case Relativity.ImportOverwriteType.Overlay
+                    overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
+                Case Else
+                    overwrite = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Append
+            End Select
 
-			start = System.DateTime.Now.Ticks
-			Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.RunBulkImport(overwrite, True)
-			Me.Statistics.ProcessRunResults(runResults)
-			_runId = runResults.RunID
-			Me.Statistics.SqlTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
-			PublishUploadModeEvent()
-			ManageErrors()
-		End Sub
+            If ShouldImport Then
+                start = System.DateTime.Now.Ticks
+                Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.RunBulkImport(overwrite, True)
+                Me.Statistics.ProcessRunResults(runResults)
+                _runId = runResults.RunID
+                Me.Statistics.SqlTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
+                PublishUploadModeEvent()
+                ManageErrors()
+            End If
+        End Sub
 
 		Public Overridable Function GetImageReader() As kCura.WinEDDS.Api.IImageReader
 			Return New OpticonFileReader(_folderID, _settings, Nothing, Nothing, _doRetryLogic)
@@ -873,7 +875,7 @@ Namespace kCura.WinEDDS
 			Dim fileSize As Int64 = 0
 			_batchCount += 1
 			If status = 0 Then
-				If _copyFilesToRepository Then
+				If _copyFilesToRepository AndAlso ShouldImport Then
 					fileGuid = Me.FileTapiBridge.AddPath(imageFile, Guid.NewGuid().ToString(), originalLineNumber)
 					fileLocation = Me.FileTapiBridge.TargetPath.TrimEnd("\"c) & "\" & Me.FileTapiBridge.TargetFolderName & "\" & fileGuid
 				Else
