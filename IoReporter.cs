@@ -176,19 +176,33 @@ namespace kCura.WinEDDS.TApi
                 throw new ArgumentOutOfRangeException(nameof(lineNumberInParentFile), string.Format(Resources.Strings.LineNumberOutOfRangeExceptionMessage, nameof(lineNumberInParentFile)));
             }
 
-            return this.waitAndRetryPolicy.WaitAndRetry<long, Exception>(
-                retryAttempt => TimeSpan.FromSeconds(
-                    retryAttempt == 1 ? 0 : this.waitAndRetryPolicy.WaitTimeSecondsBetweenRetryAttempts),
-                (exception, timeSpan) =>
+            try
+            {
+                return this.waitAndRetryPolicy.WaitAndRetry<long, Exception>(
+                    retryAttempt => TimeSpan.FromSeconds(
+                        retryAttempt == 1 ? 0 : this.waitAndRetryPolicy.WaitTimeSecondsBetweenRetryAttempts),
+                    (exception, timeSpan) =>
                     {
                         this.HandleGetFileLengthException(
                             exception,
                             lineNumberInParentFile,
                             timeSpan.TotalSeconds);
                     },
-                (cancellationToken) => this.GetFileLength(fileName),
-                cancellationToken
-            );
+                    (cancellationToken) => this.GetFileLength(fileName),
+                    cancellationToken
+                );
+            }
+            catch (OperationCanceledException)
+            {
+                this.LogCancelRequest(fileName, lineNumberInParentFile);
+                return -1;
+            }
+            
+        }
+
+        private void LogCancelRequest(string fileName, int lineNumber)
+        {
+            this.log.LogInformation($"Get file lenght for line number {lineNumber} and filename {fileName} has been canceled.");
         }
 
         /// <summary>
