@@ -1,5 +1,6 @@
 ﻿using Castle.Windsor;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+using Relativity;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
@@ -26,26 +27,36 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		public FilesDownloader Create(ExportFile exportSettings, IWindsorContainer container)
 		{
 			IFileExportRequestBuilder nativeExportRequestBuilder;
-			if (exportSettings.ExportNative && exportSettings.VolumeInfo.CopyNativeFilesFromRepository)
-			{
-				_logger.LogVerbose("Creating {requestBuilder} for natives.", nameof(NativeExportRequestBuilder));
-				nativeExportRequestBuilder = container.Resolve<NativeExportRequestBuilder>();
-			}
-			else
-			{
-				_logger.LogVerbose("Creating {requestBuilder} for natives.", nameof(EmptyExportRequestBuilder));
-				nativeExportRequestBuilder = container.Resolve<EmptyExportRequestBuilder>();
-			}
 			IFileExportRequestBuilder imageExportRequestBuilder;
-			if (exportSettings.ExportImages && exportSettings.VolumeInfo.CopyImageFilesFromRepository)
+
+			if (exportSettings.ArtifactTypeID != (int) ArtifactType.Document)
 			{
-				_logger.LogVerbose("Creating {requestBuilder} for images.", nameof(ImageExportRequestBuilder));
-				imageExportRequestBuilder = container.Resolve<ImageExportRequestBuilder>();
+				nativeExportRequestBuilder = container.Resolve<FieldFileExportRequestBuilder>();
+				imageExportRequestBuilder = container.Resolve<EmptyExportRequestBuilder>();
 			}
 			else
 			{
-				_logger.LogVerbose("Creating {requestBuilder} for images.", nameof(EmptyExportRequestBuilder));
-				imageExportRequestBuilder = container.Resolve<EmptyExportRequestBuilder>();
+				if (exportSettings.ExportNative && exportSettings.VolumeInfo.CopyNativeFilesFromRepository)
+				{
+					_logger.LogVerbose("Creating {requestBuilder} for natives.", nameof(NativeFileExportRequestBuilder));
+					nativeExportRequestBuilder = container.Resolve<NativeFileExportRequestBuilder>();
+				}
+				else
+				{
+					_logger.LogVerbose("Creating {requestBuilder} for natives.", nameof(EmptyExportRequestBuilder));
+					nativeExportRequestBuilder = container.Resolve<EmptyExportRequestBuilder>();
+				}
+
+				if (exportSettings.ExportImages && exportSettings.VolumeInfo.CopyImageFilesFromRepository)
+				{
+					_logger.LogVerbose("Creating {requestBuilder} for images.", nameof(ImageExportRequestBuilder));
+					imageExportRequestBuilder = container.Resolve<ImageExportRequestBuilder>();
+				}
+				else
+				{
+					_logger.LogVerbose("Creating {requestBuilder} for images.", nameof(EmptyExportRequestBuilder));
+					imageExportRequestBuilder = container.Resolve<EmptyExportRequestBuilder>();
+				}
 			}
 
 			return new FilesDownloader(nativeExportRequestBuilder, imageExportRequestBuilder, _longTextExportRequestBuilder, _exportTapiBridgeFactory, _directoryManager, _logger,

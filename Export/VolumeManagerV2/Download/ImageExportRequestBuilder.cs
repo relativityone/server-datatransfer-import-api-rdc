@@ -54,7 +54,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_logger.LogVerbose("Image file will be export to {destinationLocation}.", destinationLocation);
 			image.TempLocation = destinationLocation;
 
-			exportRequest = new FileExportRequest(image, destinationLocation);
+			exportRequest = new NativeFileExportRequest(image, destinationLocation);
 			return true;
 		}
 

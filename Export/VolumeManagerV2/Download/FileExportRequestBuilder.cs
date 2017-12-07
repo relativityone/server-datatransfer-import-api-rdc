@@ -7,23 +7,27 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public class NativeExportRequestBuilder : IFileExportRequestBuilder
+	public abstract class FileExportRequestBuilder : IFileExportRequestBuilder
 	{
 		private readonly IFilePathProvider _filePathProvider;
 		private readonly IFileNameProvider _fileNameProvider;
 		private readonly ExportFileValidator _validator;
 		private readonly ILog _logger;
 
-		public NativeExportRequestBuilder(NativeFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, ExportFileValidator validator, ILog logger)
+		protected FileExportRequestBuilder(IFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, ExportFileValidator validator, ILog logger)
 		{
 			_filePathProvider = filePathProvider;
 			_fileNameProvider = fileNameProvider;
-			_logger = logger;
 			_validator = validator;
+			_logger = logger;
 		}
 
 		public IList<FileExportRequest> Create(ObjectExportInfo artifact, CancellationToken cancellationToken)
 		{
+			if (!IsFileToExport(artifact))
+			{
+				_logger.LogVerbose("No native file to export for artifact {artifactId}.", artifact.ArtifactID);
+			}
 			_logger.LogVerbose("Creating native file ExportRequest for artifact {artifactId}.", artifact.ArtifactID);
 
 			if (cancellationToken.IsCancellationRequested)
@@ -42,9 +46,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_logger.LogVerbose("Native file for artifact {artifactId} will be export to {destinationLocation}.", artifact.ArtifactID, destinationLocation);
 			artifact.NativeTempLocation = destinationLocation;
 
-			FileExportRequest exportRequest = new FileExportRequest(artifact, destinationLocation);
+			FileExportRequest exportRequest = CreateExportRequest(artifact, destinationLocation);
 			return exportRequest.InList();
 		}
+
+		protected abstract FileExportRequest CreateExportRequest(ObjectExportInfo artifact, string destinationLocation);
+
+		protected abstract bool IsFileToExport(ObjectExportInfo artifact);
 
 		private string GetExportDestinationLocation(ObjectExportInfo artifact)
 		{
