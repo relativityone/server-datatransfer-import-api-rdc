@@ -233,10 +233,13 @@
     <Compile Include="Export\Natives\Name\Factories\IFileNameProviderContainerFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchCleanUp.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchInitialization.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\BatchState.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchValidatorFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\IBatchState.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\ImageFileBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\ImageLoadFileBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\IStateful.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\LoadFileBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\LongTextBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\NativeFileBatchValidator.cs" />

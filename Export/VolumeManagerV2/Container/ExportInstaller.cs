@@ -81,6 +81,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			InstallDirectory(container);
 			InstallImages(container);
 			InstallLongText(container);
+			InstallStatefulComponents(container);
 
 			// OTHER
 			container.Register(Component.For<IErrorFile>().UsingFactoryMethod(k => k.Resolve<ErrorFileDestinationPath>()));
@@ -115,6 +116,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			container.Register(Component.For<IFullTextLoadFileEntry>().UsingFactoryMethod(k => k.Resolve<FullTextLoadFileEntryFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<ILongTextHandler>().UsingFactoryMethod(k => k.Resolve<LongTextHandlerFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<IDelimiter>().UsingFactoryMethod(k => k.Resolve<DelimiterFactory>().Create(ExportSettings)));
+		}
+
+		private void InstallStatefulComponents(IWindsorContainer container)
+		{
+			container.Register(Component.For<IStateful, ILoadFileWriter>().ImplementedBy<LoadFileWriterRetryable>(),
+				Component.For<IStateful, IImageLoadFileWriter>().ImplementedBy<ImageLoadFileWriterRetryable>());
 		}
 	}
 }

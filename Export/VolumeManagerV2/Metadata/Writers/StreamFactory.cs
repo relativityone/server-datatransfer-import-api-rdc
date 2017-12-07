@@ -8,10 +8,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 {
 	public class StreamFactory
 	{
+		private readonly IFileHelper _fileHelper;
 		private readonly ILog _logger;
 
-		public StreamFactory(ILog logger)
+		public StreamFactory(IFileHelper fileHelper, ILog logger)
 		{
+			_fileHelper = fileHelper;
 			_logger = logger;
 		}
 
@@ -31,7 +33,16 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			try
 			{
 				_logger.LogVerbose("Creating new file stream {path}.", path);
-				StreamWriter newWriter = new StreamWriter(path, append, encoding);
+				FileStream fileStream;
+				if (append)
+				{
+					fileStream = _fileHelper.CreateAndTruncate(path, lastStreamWriterPosition);
+				}
+				else
+				{
+					fileStream = _fileHelper.Create(path, false);
+				}
+				StreamWriter newWriter = new StreamWriter(fileStream, encoding);
 				newWriter.BaseStream.Position = lastStreamWriterPosition;
 				return newWriter;
 			}

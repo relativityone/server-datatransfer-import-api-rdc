@@ -22,10 +22,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 		private readonly IBatchInitialization _batchInitialization;
 		private readonly IBatchCleanUp _batchCleanUp;
 		private readonly IBatchValidator _batchValidator;
+		private readonly IBatchState _batchState;
 
 		public BatchExporter(FilesDownloader filesDownloader, IImagesRollupManager imagesRollupManager, IImageLoadFileMetadataBuilder imageLoadFileMetadataBuilder,
 			IImageLoadFileWriter imageLoadFileWriter, LoadFileMetadataBuilder loadFileMetadataBuilder, ILoadFileWriter loadFileWriter, IBatchCleanUp batchCleanUp,
-			IBatchInitialization batchInitialization, IBatchValidator batchValidator)
+			IBatchInitialization batchInitialization, IBatchValidator batchValidator, IBatchState batchState)
 		{
 			_filesDownloader = filesDownloader;
 			_imagesRollupManager = imagesRollupManager;
@@ -36,6 +37,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 			_batchCleanUp = batchCleanUp;
 			_batchInitialization = batchInitialization;
 			_batchValidator = batchValidator;
+			_batchState = batchState;
 		}
 
 		public void Export(ObjectExportInfo[] artifacts, object[] records, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
@@ -97,9 +99,20 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 				}
 
 				_batchValidator.ValidateExportedBatch(artifacts, volumePredictions, cancellationToken);
+
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return;
+				}
+
+				_batchState.SaveState();
 			}
 			finally
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					_batchState.RestoreState();
+				}
 				_batchCleanUp.CleanUp();
 			}
 		}

@@ -1,4 +1,5 @@
-﻿using Castle.Windsor;
+﻿using Castle.MicroKernel.Resolvers.SpecializedResolvers;
+using Castle.Windsor;
 using kCura.WinEDDS.Container;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
@@ -11,6 +12,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 
 			if (!useOldExport)
 			{
+				container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel, true));
 				container.Install(new ExportInstaller(exporter, columnHeader, columnNamesInOrder));
 			}
 

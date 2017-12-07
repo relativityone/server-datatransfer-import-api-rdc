@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
 using kCura.WinEDDS.Exceptions;
 using kCura.WinEDDS.Exporters;
@@ -11,12 +12,14 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 {
-	public class WriterRetryable : IDisposable
+	public class WriterRetryable : IStateful, IDisposable
 	{
 		private StreamWriter _streamWriter;
 		private long _streamWriterLastPosition;
 		private bool _isBroken;
 		private bool _initialCreation;
+
+		private long _lastBatchSavedState;
 
 		private readonly RetryPolicy _retryPolicy;
 		private readonly StreamFactory _streamFactory;
@@ -33,6 +36,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			_retryPolicy = writersRetryPolicy.CreateRetryPolicy(OnRetry);
 
 			_streamWriterLastPosition = 0;
+			_lastBatchSavedState = 0;
 			_isBroken = false;
 			_initialCreation = true;
 		}
@@ -132,6 +136,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 		public void Dispose()
 		{
 			_streamWriter?.Dispose();
+		}
+
+		public void SaveState()
+		{
+			_lastBatchSavedState = _streamWriterLastPosition;
+		}
+
+		public void RestoreLastState()
+		{
+			_streamWriter = _streamFactory.Create(_streamWriter, _lastBatchSavedState, _destinationPath.Path, _destinationPath.Encoding, true);
+			_streamWriterLastPosition = _lastBatchSavedState;
 		}
 	}
 }
