@@ -1,6 +1,9 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
+﻿using Castle.Windsor;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
 using kCura.WinEDDS.Exporters;
+using Moq;
 using NUnit.Framework;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.ImagesRollup
 {
@@ -13,7 +16,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.ImagesRollup
 		[TestCase(true, false)]
 		public void ItShouldReturnSinglePageRollupWhenNotExportingImages(bool exportImages, bool copyFiles)
 		{
-			ExportFile exportSettings = new ExportFile(1)
+			ExportFile exportSettings = new ExportFile((int) Relativity.ArtifactType.Document)
 			{
 				ExportImages = exportImages,
 				VolumeInfo = new VolumeInfo
@@ -23,13 +26,15 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.ImagesRollup
 				TypeOfImage = ExportFile.ImageType.MultiPageTiff
 			};
 
-			var instance = new ImagesRollupFactory(null, null, null);
+			var windsorContainerMock = new Mock<IWindsorContainer>();
+
+			var instance = new ImagesRollupFactory(new NullLogger());
 
 			//ACT
-			IImagesRollup imagesRollup = instance.Create(exportSettings);
+			instance.Create(exportSettings, windsorContainerMock.Object);
 
 			//ASSERT
-			Assert.That(imagesRollup, Is.InstanceOf<SinglePageImagesRollup>());
+			windsorContainerMock.Verify(x => x.Resolve<SinglePageImagesRollup>());
 		}
 	}
 }
