@@ -3,4 +3,5 @@
   <?define RoseEventLogEntryName="Logging_ROSE" ?>
   <?define TapiEventLogEntryName="Logging_TAPI" ?>
   <?define RdcEventLogEntryName="Logging_RDC" ?>
+  <?define Logname="kCura"?>
 </Include>

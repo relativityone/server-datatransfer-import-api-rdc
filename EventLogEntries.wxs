@@ -6,15 +6,15 @@
 
     <ComponentGroup Id="EventLogEntries" Directory="INSTALLDIR">
       <Component Id="RoseEntry" Guid="{B3880A8A-3EC9-4D5A-B135-8B7D5134E8DE}" Permanent="yes">
-        <util:EventSource Log="$(var.RoseEventLogEntryName)" Name="$(var.RoseEventLogEntryName)" KeyPath="yes"
+        <util:EventSource Log="$(var.Logname)" Name="$(var.RoseEventLogEntryName)" KeyPath="yes"
                           EventMessageFile="[NETFRAMEWORK40FULLINSTALLROOTDIR]EventLogMessages.dll"/>
       </Component>
       <Component Id="RdcEntry" Guid="{46199603-63ED-4E5E-94BD-95B6BDAE73DE}" Permanent="yes">
-        <util:EventSource Log="$(var.RdcEventLogEntryName)" Name="$(var.RdcEventLogEntryName)" KeyPath="yes"
+        <util:EventSource Log="$(var.Logname)" Name="$(var.RdcEventLogEntryName)" KeyPath="yes"
                           EventMessageFile="[NETFRAMEWORK40FULLINSTALLROOTDIR]EventLogMessages.dll"/>
       </Component>
       <Component Id="TapiEntry" Guid="{F995EDB9-BC7E-4780-A13F-EE4BC0E3A69C}" Permanent="yes">
-        <util:EventSource Log="$(var.TapiEventLogEntryName)" Name="$(var.TapiEventLogEntryName)" KeyPath="yes"
+        <util:EventSource Log="$(var.Logname)" Name="$(var.TapiEventLogEntryName)" KeyPath="yes"
                           EventMessageFile="[NETFRAMEWORK40FULLINSTALLROOTDIR]EventLogMessages.dll"/>
       </Component>
     </ComponentGroup>
