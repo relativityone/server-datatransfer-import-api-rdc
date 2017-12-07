@@ -31,8 +31,13 @@ Namespace kCura.WinEDDS
 
 #Region "Constructor"
 		Public Sub New(ByVal ioReporterInstance As IIoReporter, ByVal logger As ILog, cancellationToken As CancellationTokenSource)
+			
 			If logger Is Nothing Then
 				Throw New ArgumentNullException("logger")
+			End If
+
+			If cancellationToken Is Nothing Then
+				Throw New ArgumentNullException("cancellationToken")
 			End If
 
 			_logger = logger
