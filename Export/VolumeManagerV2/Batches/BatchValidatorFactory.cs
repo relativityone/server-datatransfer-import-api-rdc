@@ -1,10 +1,10 @@
-﻿using Castle.MicroKernel;
+﻿using Castle.Windsor;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 {
 	public class BatchValidatorFactory
 	{
-		public IBatchValidator Create(ExportFile exportSettings, IKernel container)
+		public IBatchValidator Create(ExportFile exportSettings, IWindsorContainer container)
 		{
 			BatchValidator batchValidator = new BatchValidator();
 

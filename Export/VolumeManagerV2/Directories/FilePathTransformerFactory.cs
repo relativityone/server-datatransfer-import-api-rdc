@@ -1,4 +1,5 @@
 ﻿using System;
+using Castle.Windsor;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
@@ -6,27 +7,25 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 	public class FilePathTransformerFactory
 	{
 		private readonly ILog _logger;
-		private readonly FilePathHelper _filePathHelper;
 
-		public FilePathTransformerFactory(ILog logger, FilePathHelper filePathHelper)
+		public FilePathTransformerFactory(ILog logger)
 		{
 			_logger = logger;
-			_filePathHelper = filePathHelper;
 		}
 
-		public IFilePathTransformer Create(ExportFile exportSettings)
+		public IFilePathTransformer Create(ExportFile exportSettings, IWindsorContainer container)
 		{
 			if (exportSettings.TypeOfExportedFilePath == ExportFile.ExportedFilePathType.Absolute)
 			{
-				return new AbsoluteFilePathTransformer();
+				return container.Resolve<AbsoluteFilePathTransformer>();
 			}
 			if (exportSettings.TypeOfExportedFilePath == ExportFile.ExportedFilePathType.Relative)
 			{
-				return new RelativeFilePathTransformer(exportSettings, _filePathHelper);
+				return container.Resolve<RelativeFilePathTransformer>();
 			}
 			if (exportSettings.TypeOfExportedFilePath == ExportFile.ExportedFilePathType.Prefix)
 			{
-				return new PrefixFilePathTransformer(exportSettings, _filePathHelper);
+				return container.Resolve<PrefixFilePathTransformer>();
 			}
 			_logger.LogError("Unknown file path type {type}. Unable to create IFilePathTransformer.", exportSettings.TypeOfExportedFilePath);
 			throw new ArgumentException($"Unknown file path type {exportSettings.TypeOfExportedFilePath}.");

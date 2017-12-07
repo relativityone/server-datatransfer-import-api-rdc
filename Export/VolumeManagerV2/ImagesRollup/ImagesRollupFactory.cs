@@ -1,38 +1,39 @@
 ﻿using System;
-using kCura.Utility;
+using Castle.Windsor;
+using Relativity;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 {
 	public class ImagesRollupFactory
 	{
-		private readonly IFileHelper _fileHelper;
-		private readonly IStatus _status;
 		private readonly ILog _logger;
 
-		public ImagesRollupFactory(IFileHelper fileHelper, IStatus status, ILog logger)
+		public ImagesRollupFactory(ILog logger)
 		{
-			_fileHelper = fileHelper;
-			_status = status;
 			_logger = logger;
 		}
 
-		public IImagesRollup Create(ExportFile exportSettings)
+		public IImagesRollup Create(ExportFile exportSettings, IWindsorContainer container)
 		{
+			if (exportSettings.ArtifactTypeID != (int) ArtifactType.Document)
+			{
+				return container.Resolve<EmptyImagesRollup>();
+			}
 			if (!exportSettings.ExportImages || !exportSettings.VolumeInfo.CopyImageFilesFromRepository || exportSettings.TypeOfImage == ExportFile.ImageType.SinglePage)
 			{
 				_logger.LogVerbose("Creating SinglePage rollup.");
-				return new SinglePageImagesRollup();
+				return container.Resolve<SinglePageImagesRollup>();
 			}
 			if (exportSettings.TypeOfImage == ExportFile.ImageType.MultiPageTiff)
 			{
 				_logger.LogVerbose("Creating MultiPageTiff rollup.");
-				return new MultiPageTiffImagesRollup(exportSettings, _fileHelper, _status, _logger, new Image());
+				return container.Resolve<MultiPageTiffImagesRollup>();
 			}
 			if (exportSettings.TypeOfImage == ExportFile.ImageType.Pdf)
 			{
 				_logger.LogVerbose("Creating PDF rollup.");
-				return new PdfImagesRollup(exportSettings, _fileHelper, _status, _logger, new Image());
+				return container.Resolve<PdfImagesRollup>();
 			}
 			_logger.LogError("Exporting images, but image type {type} is unknown.", exportSettings.TypeOfImage);
 			throw new ArgumentException($"Unknown image type {exportSettings.TypeOfImage}.");

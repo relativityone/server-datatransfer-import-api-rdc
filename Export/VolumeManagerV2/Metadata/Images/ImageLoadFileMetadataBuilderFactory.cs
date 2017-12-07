@@ -1,22 +1,27 @@
-﻿using Relativity.Logging;
+﻿using Castle.Windsor;
+using Relativity;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 {
 	public class ImageLoadFileMetadataBuilderFactory
 	{
-		private readonly ImageLoadFileMetadataForArtifactBuilderFactory _forArtifactBuilderFactory;
 		private readonly ILog _logger;
 
-		public ImageLoadFileMetadataBuilderFactory(ImageLoadFileMetadataForArtifactBuilderFactory forArtifactBuilderFactory, ILog logger)
+		public ImageLoadFileMetadataBuilderFactory(ILog logger)
 		{
-			_forArtifactBuilderFactory = forArtifactBuilderFactory;
 			_logger = logger;
 		}
 
-		public IImageLoadFileMetadataBuilder Create(ExportFile exportSettings)
+		public IImageLoadFileMetadataBuilder Create(ExportFile exportSettings, IWindsorContainer container)
 		{
-			IImageLoadFileMetadataForArtifactBuilder defaultMetadataBuilder = _forArtifactBuilderFactory.Create(exportSettings);
-			IImageLoadFileMetadataForArtifactBuilder unsuccessfulRollupMetadataBuilder = _forArtifactBuilderFactory.CreateForUnsuccessfulRollup(exportSettings);
+			if (exportSettings.ArtifactTypeID != (int) ArtifactType.Document)
+			{
+				return new EmptyImageLoadFileMetadataBuilder();
+			}
+			ImageLoadFileMetadataForArtifactBuilderFactory factory = container.Resolve<ImageLoadFileMetadataForArtifactBuilderFactory>();
+			IImageLoadFileMetadataForArtifactBuilder defaultMetadataBuilder = factory.Create(exportSettings);
+			IImageLoadFileMetadataForArtifactBuilder unsuccessfulRollupMetadataBuilder = factory.CreateForUnsuccessfulRollup(exportSettings);
 
 			return new ImageLoadFileMetadataBuilder(defaultMetadataBuilder, unsuccessfulRollupMetadataBuilder, _logger);
 		}
