@@ -18,7 +18,7 @@ Namespace kCura.WinEDDS.NUnit
 		Dim _keyValExistsAlready As Boolean
         Dim _ioReporter As IIoReporter
         Dim _logger As ILog
-		Dim _tokenSource As CancellationTokenSource
+		Dim tokenSource As CancellationTokenSource
 #End Region
 
 #Region " Setup "
@@ -32,10 +32,10 @@ Namespace kCura.WinEDDS.NUnit
 			_overwrite = OverwriteType.Both
 			
 		    _logger = New NullLogger()
-			_tokenSource = New CancellationTokenSource()
+			tokenSource = New CancellationTokenSource()
             Dim ioWarningPublisher As New IoWarningPublisher()
 		    _ioReporter = IoReporterFactory.CreateIoReporter(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds, 
-		                                                     WinEDDS.Config.DisableNativeLocationValidation, _logger, ioWarningPublisher, _tokenSource.Token)
+		                                                     WinEDDS.Config.DisableNativeLocationValidation, _logger, ioWarningPublisher, tokenSource.Token)
             
 			_keyPathExistsAlready = RegKeyHelper.SubKeyPathExists(RegKeyHelper.RelativityKeyPath)
 			_keyValExistsAlready = False
@@ -58,7 +58,7 @@ Namespace kCura.WinEDDS.NUnit
 #Region " Basic Retry + Batch Size  Tests"
 
 		<Test(), Ignore("")> Public Sub BulkImportImageFile_CatchWebException_Retries_CallsLowerBatchSize_True()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), _tokenSource)
+			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), tokenSource)
 			Try
 				bulkImporter.TryBulkImport(_overwrite)
 			Catch ex As Exception
@@ -69,7 +69,7 @@ Namespace kCura.WinEDDS.NUnit
 		End Sub
 
 		<Test()> Public Sub BulkImportImageFile_NoException_NoRetries_CallsLowerBatchSize_False()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(False), _tokenSource)
+			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(False), tokenSource)
 			bulkImporter.TryBulkImport(_overwrite)
 			Assert.AreEqual(500, bulkImporter.BatchSize)
 			Assert.AreEqual(0, bulkImporter.PauseCalled)
@@ -78,7 +78,7 @@ Namespace kCura.WinEDDS.NUnit
 		<Test(), Ignore("")> Public Sub BulkImportImageFile_CatchSystemException_Retries_CallsLowerBatchSize_False()
 			Dim manager As New MockBulkImportManagerWebExceptions(True)
 			manager.ErrorMessage = New System.Exception("bombed out")
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, manager, _tokenSource)
+			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, manager, tokenSource)
 			Try
 				bulkImporter.TryBulkImport(_overwrite)
 			Catch ex As Exception
@@ -90,7 +90,7 @@ Namespace kCura.WinEDDS.NUnit
 		End Sub
 
 		<Test(), Ignore("")> Public Sub BulkImportImageFile_CatchSQLException_Retries_CallsLowerBatchSize_True()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerSqlExceptions(True), _tokenSource)
+			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerSqlExceptions(True), tokenSource)
 			Try
 				bulkImporter.TryBulkImport(_overwrite)
 			Catch ex As Exception
@@ -104,7 +104,7 @@ Namespace kCura.WinEDDS.NUnit
 
 #Region " Retry-Until-It-Works Tests"
 		<Test(), Ignore("")> Public Sub BulkImportImageFile_CatchSQLException_500RetryTo400_ThenWork()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerSqlExceptions(400), _tokenSource)
+			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerSqlExceptions(400), tokenSource)
 			bulkImporter.TryBulkImport(_overwrite)
 
 			Assert.AreEqual(400, bulkImporter.BatchSize)
@@ -113,7 +113,7 @@ Namespace kCura.WinEDDS.NUnit
 		End Sub
 
 		<Test(), Ignore("")> Public Sub BulkImportImageFile_CatchSQLException_500RetryToMinimum_ThenWork()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerSqlExceptions(300), _tokenSource)
+			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerSqlExceptions(300), tokenSource)
 			bulkImporter.MinimumBatch = 300
 			bulkImporter.TryBulkImport(_overwrite)
 			Assert.AreEqual(300, bulkImporter.BatchSize)
@@ -122,7 +122,7 @@ Namespace kCura.WinEDDS.NUnit
 		End Sub
 
 		<Test(), Ignore("")> Public Sub BulkImportImageFile_CatchSQLException_500Retry_HitMinimum_ThrowException()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerSqlExceptions(200), _tokenSource)
+			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerSqlExceptions(200), tokenSource)
 			bulkImporter.MinimumBatch = 350
 			Try
 				bulkImporter.TryBulkImport(_overwrite)
@@ -138,20 +138,20 @@ Namespace kCura.WinEDDS.NUnit
 
 #Region " Batch Size Adjustment "
 		<Test()> Public Sub BulkImportImageFile_Lower_500BatchSize_to300()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), _tokenSource)
+			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), tokenSource)
 			bulkImporter.BatchSize = 300
 			Assert.AreEqual(300, bulkImporter.BatchSize)
 		End Sub
 
 		<Test()> Public Sub BulkImportImageFile_Lower_500BatchSize_ToMinimum300()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), _tokenSource)
+			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), tokenSource)
 			bulkImporter.MinimumBatch = 300
 			bulkImporter.BatchSize = 300
 			Assert.AreEqual(300, bulkImporter.BatchSize)
 		End Sub
 
 		<Test()> Public Sub BulkImportImageFile_Lower_500BatchSize_To200_PastMinimum300()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), _tokenSource)
+			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), tokenSource)
 			bulkImporter.MinimumBatch = 300
 			bulkImporter.BatchSize = 200
 			Assert.AreEqual(300, bulkImporter.BatchSize)
@@ -348,7 +348,7 @@ Namespace kCura.WinEDDS.NUnit
 			originalBatchSizeWith100Images = originalBatchSizeWith100Images.Replace(Chr(10), vbCrLf)
 			expectedReducedFileWith80Rows = expectedReducedFileWith80Rows.Replace(Chr(10), vbCrLf)
 
-			Dim bulkImporter As MockForLoweBatchSizeBulkImageFileImporter = New MockForLoweBatchSizeBulkImageFileImporter(78, originalBatchSizeWith100Images, _args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), _tokenSource)
+			Dim bulkImporter As MockForLoweBatchSizeBulkImageFileImporter = New MockForLoweBatchSizeBulkImageFileImporter(78, originalBatchSizeWith100Images, _args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), tokenSource)
 			bulkImporter.MockLowerBatchSizeAndRetry(100)
 			Assert.AreEqual(expectedReducedFileWith80Rows, bulkImporter._outPutFromStringWriter.ToString())
 		End Sub
