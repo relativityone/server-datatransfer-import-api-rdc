@@ -36,6 +36,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		public void WaitForTransferJob()
 		{
+			if (!_initialized)
+			{
+				return;
+			}
 			try
 			{
 				_downloadTapiBridge.WaitForTransferJob();
