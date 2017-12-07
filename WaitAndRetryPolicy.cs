@@ -1,49 +1,95 @@
-﻿using System;
-using Polly;
-using Relativity.Logging;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="WaitAndRetryPolicy.cs" company="kCura Corp">
+//   kCura Corp (C) 2017 All Rights Reserved.
+// </copyright>
+// <summary>
+//   Represents a class object to support resiliency and retry policies.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace kCura.WinEDDS.TApi
 {
-	/// <summary>
-	/// Represents a wait and retry policy class objects with a default back-off time strategy.
-	/// </summary>
-	public class WaitAndRetryPolicy : IWaitAndRetryPolicy
-	{
-		private const int _DEFAULT_NUMBER_OF_RETRIES = 1;
-		private const int _DEFAULT_WAIT_TIME_SECONDS_BETWEEN_RETRY_ATTEMPTS = 1;
+    using System;
+    using Polly;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="WaitAndRetryPolicy"/> class.
-		/// </summary>
-		public WaitAndRetryPolicy(int numberOfRetries, int waitTimeSecondsBetweenRetryAttempts)
-		{
-			NumberOfRetries = numberOfRetries;
-			WaitTimeSecondsBetweenRetryAttempts = waitTimeSecondsBetweenRetryAttempts;
-		}
+    /// <summary>
+    /// Represents a wait and retry policy class objects with a default back-off time strategy.
+    /// </summary>
+    public class WaitAndRetryPolicy : IWaitAndRetryPolicy
+    {
+        /// <summary>
+        /// The default number of retries.
+        /// </summary>
+        private const int DefaultNumberOfRetries = 1;
 
-		/// <inheritdoc />
-		public WaitAndRetryPolicy()
-			: this(_DEFAULT_NUMBER_OF_RETRIES, _DEFAULT_WAIT_TIME_SECONDS_BETWEEN_RETRY_ATTEMPTS)
-		{
-		}
+        /// <summary>
+        /// The default wait time in seconds.
+        /// </summary>
+        private const int DefaultWaitTimeSeconds = 1;
 
-		/// <inheritdoc />
-		public int NumberOfRetries { get; }
-		/// <inheritdoc />
-		public int WaitTimeSecondsBetweenRetryAttempts { get; }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WaitAndRetryPolicy"/> class.
+        /// </summary>
+        public WaitAndRetryPolicy()
+            : this(DefaultNumberOfRetries, DefaultWaitTimeSeconds)
+        {
+        }
 
-		/// <inheritdoc />
-		public void WaitAndRetry<TException>(Func<int, TimeSpan> retryDuration, Action<Exception, TimeSpan> retryAction, Action execFunc) where TException : Exception
-		{
-			WaitAndRetry<TException>(this.NumberOfRetries, retryDuration, retryAction, execFunc);
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WaitAndRetryPolicy"/> class.
+        /// </summary>
+        /// <param name="maxRetryAttempts">
+        /// The maximum number of retries.
+        /// </param>
+        /// <param name="waitTimeSecondsBetweenRetryAttempts">
+        /// The number of seconds to wait between retry attempts.
+        /// </param>
+        public WaitAndRetryPolicy(int maxRetryAttempts, int waitTimeSecondsBetweenRetryAttempts)
+        {
+            this.MaxRetryAttempts = maxRetryAttempts;
+            this.WaitTimeSecondsBetweenRetryAttempts = waitTimeSecondsBetweenRetryAttempts;
+        }
 
-		/// <inheritdoc />
-		public void WaitAndRetry<TException>(int maxRetryCount, Func<int, TimeSpan> retryDuration, Action<Exception, TimeSpan> retryAction, Action execFunc) where TException : Exception
-		{
-			Policy.Handle<TException>()
-				.WaitAndRetry(maxRetryCount, retryDuration, retryAction)
-				.Execute(execFunc);
-		}
-	}
+        /// <inheritdoc />
+        public int MaxRetryAttempts
+        {
+            get;
+            set;
+        }
+
+        /// <inheritdoc />
+        public int WaitTimeSecondsBetweenRetryAttempts
+        {
+            get;
+            set;
+        }
+
+        /// <inheritdoc />
+        public void WaitAndRetry<TException>(Func<int, TimeSpan> retryDuration, Action<Exception, TimeSpan> retryAction, Action execFunc) where TException : Exception
+        {
+            this.WaitAndRetry<TException>(this.MaxRetryAttempts, retryDuration, retryAction, execFunc);
+        }
+
+        /// <inheritdoc />
+        public void WaitAndRetry<TException>(int maxRetryCount, Func<int, TimeSpan> retryDuration, Action<Exception, TimeSpan> retryAction, Action execFunc) where TException : Exception
+        {
+            Policy.Handle<TException>()
+                .WaitAndRetry(maxRetryCount, retryDuration, retryAction)
+                .Execute(execFunc);
+        }
+
+        /// <inheritdoc />
+        public TResult WaitAndRetry<TResult, TException>(Func<int, TimeSpan> retryDuration, Action<Exception, TimeSpan> retryAction, Func<TResult> execFunc) where TException : Exception
+        {
+            return Policy.Handle<TException>().WaitAndRetry(this.MaxRetryAttempts, retryDuration, retryAction)
+                .Execute(execFunc);
+        }
+
+        /// <inheritdoc />
+        public TResult WaitAndRetry<TResult, TException>(int maxRetryCount, Func<int, TimeSpan> retryDuration, Action<Exception, TimeSpan> retryAction, Func<TResult> execFunc) where TException : Exception
+        {
+            return Policy.Handle<TException>().WaitAndRetry(maxRetryCount, retryDuration, retryAction)
+                .Execute(execFunc);
+        }
+    }
 }

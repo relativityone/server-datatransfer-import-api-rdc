@@ -207,4 +207,7 @@
   <data name="LineNumberOutOfRangeExceptionMessage" xml:space="preserve">
     <value>The value of {0} must be non-negative.</value>
   </data>
+  <data name="ImportInvalidPathCharactersExceptionMessage" xml:space="preserve">
+    <value>The file {0} cannot be imported because it contains illegal characters within the path.</value>
+  </data>
 </root>

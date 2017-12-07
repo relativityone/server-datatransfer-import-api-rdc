@@ -106,6 +106,15 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file {0} cannot be imported because it contains illegal characters within the path..
+        /// </summary>
+        internal static string ImportInvalidPathCharactersExceptionMessage {
+            get {
+                return ResourceManager.GetString("ImportInvalidPathCharactersExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error when accessing load file - Retrying in {0} seconds. Error: {1}.
         /// </summary>
         internal static string IoReporterWarningMessageWithException {

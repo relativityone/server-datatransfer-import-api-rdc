@@ -10,6 +10,10 @@
 namespace kCura.WinEDDS.TApi
 {
     using System;
+    using System.Globalization;
+
+    using kCura.WinEDDS.TApi.Resources;
+
     using Relativity.Logging;
     using Relativity.Transfer;
 
@@ -22,17 +26,36 @@ namespace kCura.WinEDDS.TApi
         /// The value that indicates no retry information is provided.
         /// </summary>
         private const int NoRetryInfo = -1;
-        private readonly IFileSystemService _fileSystemService;
-        private readonly IWaitAndRetryPolicy _waitAndRetryPolicy;
-        private readonly IoWarningPublisher _ioWarningPublisher;
-        private readonly ILog _log;
-        private readonly bool _disableNativeLocationValidation;
+        private readonly IFileSystemService fileSystemService;
+        private readonly IWaitAndRetryPolicy waitAndRetryPolicy;
+        private readonly IoWarningPublisher publisher;
+        private readonly ILog log;
+        private readonly bool disableNativeLocationValidation;
 
         /// <summary>
-        /// Constructor for IO reporter
+        /// Initializes a new instance of the <see cref="IoReporter"/> class.
         /// </summary>
-        public IoReporter(IFileSystemService fileService, IWaitAndRetryPolicy waitAndRetry, ILog log,
-            IoWarningPublisher ioWarningPublisher, bool disableNativeLocationValidation)
+        /// <param name="fileService">
+        /// The file system service.
+        /// </param>
+        /// <param name="waitAndRetry">
+        /// The resiliency component.
+        /// </param>
+        /// <param name="log">
+        /// The Relativity log.
+        /// </param>
+        /// <param name="publisher">
+        /// The I/O warning publisher.
+        /// </param>
+        /// <param name="disableNativeLocationValidation">
+        /// if set to <c>true</c> [disable native location validation].
+        /// </param>
+        public IoReporter(
+            IFileSystemService fileService,
+            IWaitAndRetryPolicy waitAndRetry,
+            ILog log,
+            IoWarningPublisher publisher,
+            bool disableNativeLocationValidation)
         {
             if (fileService == null)
             {
@@ -49,21 +72,20 @@ namespace kCura.WinEDDS.TApi
                 throw new ArgumentNullException(nameof(log));
             }
 
-            if (ioWarningPublisher == null)
+            if (publisher == null)
             {
-                throw new ArgumentNullException(nameof(ioWarningPublisher));
+                throw new ArgumentNullException(nameof(publisher));
             }
 
-            _fileSystemService = fileService;
-            _waitAndRetryPolicy = waitAndRetry;
-            _log = log;
-            _ioWarningPublisher = ioWarningPublisher;
-
-            _disableNativeLocationValidation = disableNativeLocationValidation;
+            this.fileSystemService = fileService;
+            this.waitAndRetryPolicy = waitAndRetry;
+            this.log = log;
+            this.publisher = publisher;
+            this.disableNativeLocationValidation = disableNativeLocationValidation;
         }
 
         /// <inheritdoc />
-        public IoWarningPublisher IOWarningPublisher => _ioWarningPublisher;
+        public IoWarningPublisher IOWarningPublisher => this.publisher;
 
         /// <summary>
         /// Creates warning message from <paramref name="exception"/>.
@@ -143,37 +165,64 @@ namespace kCura.WinEDDS.TApi
             {
                 throw new ArgumentNullException(nameof(fileName));
             }
+
             if (lineNumberInParentFile < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(lineNumberInParentFile), string.Format(Resources.Strings.LineNumberOutOfRangeExceptionMessage, nameof(lineNumberInParentFile)));
             }
 
-            long fileLength = 0;
-            _waitAndRetryPolicy.WaitAndRetry<Exception>(retryAttempt =>
-                    TimeSpan.FromSeconds(retryAttempt == 1 ? 0 : _waitAndRetryPolicy.WaitTimeSecondsBetweenRetryAttempts),
+            return this.waitAndRetryPolicy.WaitAndRetry<long, Exception>(
+                retryAttempt => TimeSpan.FromSeconds(
+                    retryAttempt == 1 ? 0 : this.waitAndRetryPolicy.WaitTimeSecondsBetweenRetryAttempts),
                 (exception, timeSpan) =>
-                {
-                    this.GetFileLengthRetryAction(exception, fileName, lineNumberInParentFile, timeSpan.TotalSeconds);
-                },
-                () => { fileLength = _fileSystemService.GetFileLength(fileName); }
-            );
-
-            return fileLength;
+                    {
+                        this.HandleGetFileLengthException(
+                            exception,
+                            fileName,
+                            lineNumberInParentFile,
+                            timeSpan.TotalSeconds);
+                    },
+                () =>
+                    {
+                        // TODO: This policy block needs to support rethrowing ArgumentException immediately.
+                        return this.fileSystemService.GetFileLength(fileName);
+                    });
         }
 
-        private void GetFileLengthRetryAction(Exception ex, string fileName, int lineNumberInParentFile, double timeoutSeconds)
+        /// <summary>
+        ///  Handles all exceptions when retrieving the file length fails.
+        /// </summary>
+        /// <param name="exception">
+        /// The thrown exception.
+        /// </param>
+        /// <param name="fileName">
+        /// The name of the file that failed.
+        /// </param>
+        /// <param name="lineNumberInParentFile">
+        /// The line number from the parent file.
+        /// </param>
+        /// <param name="timeoutSeconds">
+        /// The timeout in seconds.
+        /// </param>
+        /// <exception cref="FileInfoInvalidPathException">
+        /// Thrown when the path contains invalid path characters.
+        /// </exception>
+        private void HandleGetFileLengthException(Exception exception, string fileName, int lineNumberInParentFile, double timeoutSeconds)
         {
-            if (_disableNativeLocationValidation && ex is ArgumentException &&
-                ex.Message.Contains("Illegal characters in path."))
+            if (this.disableNativeLocationValidation && exception is ArgumentException &&
+                exception.Message.Contains("Illegal characters in path."))
             {
-                var errorMessage = $"File {fileName} not found: illegal characters in path.";
-                _log.LogError(ex, errorMessage);
-                throw new FileInfoInvalidPathException(errorMessage);
+                var message = string.Format(
+                    CultureInfo.CurrentCulture,
+                    Strings.ImportInvalidPathCharactersExceptionMessage,
+                    fileName);
+                this.log.LogError(exception, message);
+                throw new FileInfoInvalidPathException(message);
             }
 
-            var warningMessage = BuildIoReporterWarningMessage(ex, timeoutSeconds);
-            _ioWarningPublisher?.PublishIoWarningEvent(new IoWarningEventArgs(warningMessage, lineNumberInParentFile));
-            _log.LogWarning(ex, warningMessage);
+            var warningMessage = BuildIoReporterWarningMessage(exception, timeoutSeconds);
+            this.publisher?.PublishIoWarningEvent(new IoWarningEventArgs(warningMessage, lineNumberInParentFile));
+            this.log.LogWarning(exception, warningMessage);
         }
     }
 }
