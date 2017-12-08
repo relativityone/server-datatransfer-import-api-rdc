@@ -49,7 +49,9 @@ Namespace kCura.EDDS.WinForm
 
         Public Const ACCESS_DISABLED_MESSAGE As String = "Your Relativity account has been disabled.  Please contact your Relativity Administrator to activate your account."
         Public Const ROSE_STARTUP_PERMISSIONS_FAILURE As String = "The RelativityOne Staging Explorer failed to run due to insufficient permissions. Please contact you Relativity Administrator."
+        Public Const ROSE_STARTUP_ALREADY_RUNNING As String = "Only one Staging Explorer session is allowed per one logged in user."
         Public Const RDC_ERROR_TITLE As String = "Relativity Desktop Client Error"
+        Public Const RDC_TITLE As String = "Relativity Desktop Client"
 
         Private _caseSelected As Boolean = True
         Private _processPool As kCura.Windows.Process.ProcessPool
@@ -856,8 +858,14 @@ Namespace kCura.EDDS.WinForm
 
         Private Sub OnStagingExplorerProcessExited(sender As Object, e As EventArgs)
             Dim appProcess = TryCast(sender, Process)
-            If appProcess IsNot Nothing And appProcess.ExitCode = 403 Then
+            If appProcess Is Nothing Then
+                Return
+            End If
+
+            If appProcess.ExitCode = 403 Then
                 MessageBox.Show(ROSE_STARTUP_PERMISSIONS_FAILURE, RDC_ERROR_TITLE)
+            ElseIf appProcess.ExitCode = 423 Then
+                MessageBox.Show(ROSE_STARTUP_ALREADY_RUNNING, RDC_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information)
             End If
         End Sub
 
