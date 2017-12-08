@@ -1,6 +1,4 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
+﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
 
@@ -30,7 +28,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation
 			if (!overwrite && _fileHelper.Exists(loadFileDestinationPath.Path))
 			{
 				_interactionManager.Alert(CreateErrorMessage(loadFileDestinationPath.Path));
-				_logger.LogVerbose("Load file exists. Canceling the export.");
+				_logger.LogError("Load file exists. Canceling the export.");
 				return false;
 			}
 			_logger.LogVerbose("Load file doesn't exist or overwrite selected.");
@@ -42,7 +40,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation
 			if (!overwrite && exportImages && _fileHelper.Exists(imageLoadFileDestinationPath.Path))
 			{
 				_interactionManager.Alert(CreateErrorMessage(imageLoadFileDestinationPath.Path));
-				_logger.LogVerbose("Image load file exists. Canceling the export.");
+				_logger.LogError("Image load file exists. Canceling the export.");
 				return false;
 			}
 			_logger.LogVerbose("Image load file doesn't exist, overwrite selected or exporting images skipped.");
