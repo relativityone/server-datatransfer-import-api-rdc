@@ -28,6 +28,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		{
 			if (!_initialized)
 			{
+				_logger.LogVerbose("Initializing long text encoding converter.");
 				_initialized = true;
 				_longTextEncodingConverter.StartListening();
 				TapiBridge.TapiProgress += _longTextEncodingConverter.OnTapiProgress;
@@ -39,6 +40,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		{
 			if (!_initialized)
 			{
+				_logger.LogVerbose("Long text encoding conversion bridge hasn't been initialized, so skipping waiting.");
 				return;
 			}
 			try

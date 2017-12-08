@@ -1,15 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using kCura.WinEDDS.Exporters;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 {
 	public class BatchValidator : IBatchValidator
 	{
 		private readonly IList<IBatchValidator> _validators;
+		private readonly ILog _logger;
 
-		public BatchValidator()
+		public BatchValidator(ILog logger)
 		{
+			_logger = logger;
 			_validators = new List<IBatchValidator>();
 		}
 
@@ -20,14 +24,24 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 
 		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions, CancellationToken cancellationToken)
 		{
-			foreach (var batchValidator in _validators)
+			_logger.LogVerbose("Verifying batch correctness.");
+			try
 			{
-				if (cancellationToken.IsCancellationRequested)
+				foreach (var batchValidator in _validators)
 				{
-					return;
+					if (cancellationToken.IsCancellationRequested)
+					{
+						return;
+					}
+					batchValidator.ValidateExportedBatch(artifacts, predictions, cancellationToken);
 				}
-				batchValidator.ValidateExportedBatch(artifacts, predictions, cancellationToken);
 			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error occurred during checking batch correctness.");
+				throw;
+			}
+			_logger.LogVerbose("Batch verified.");
 		}
 	}
 }

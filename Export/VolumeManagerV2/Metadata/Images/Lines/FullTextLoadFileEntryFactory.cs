@@ -21,6 +21,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 		{
 			if (exportSettings.ArtifactTypeID != (int) ArtifactType.Document)
 			{
+				_logger.LogVerbose("Created {type} for handling artifact type different than Document - {type}.", nameof(NoFullTextLoadFileEntry), exportSettings.ArtifactTypeID);
 				return container.Resolve<NoFullTextLoadFileEntry>();
 			}
 			if (exportSettings.LogFileFormat == LoadFileType.FileFormat.IPRO_FullText)

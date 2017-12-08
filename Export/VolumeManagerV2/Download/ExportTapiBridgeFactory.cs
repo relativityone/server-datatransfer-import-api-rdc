@@ -62,7 +62,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 			//AttachEventHandlers(tapiBridgeAdapter);
 
-			return new DownloadTapiBridgeForFiles(tapiBridge, new NativeFilesProgressHandler(_downloadStatistics), _messageHandler, _transferClientHandler);
+			return new DownloadTapiBridgeForFiles(tapiBridge, new NativeFilesProgressHandler(_downloadStatistics, _logger), _messageHandler, _transferClientHandler, _logger);
 		}
 
 		private void AttachEventHandlers(DownloadTapiBridgeAdapter tapiBridgeAdapter)
@@ -107,7 +107,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		{
 			LongTextEncodingConverter longTextEncodingConverter = _converterFactory.Create(token);
 			DownloadTapiBridge tapiBridge = TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, token);
-			return new DownloadTapiBridgeWithEncodingConversion(tapiBridge, new LongTextProgressHandler(_downloadStatistics), _messageHandler, longTextEncodingConverter, _logger);
+			return new DownloadTapiBridgeWithEncodingConversion(tapiBridge, new LongTextProgressHandler(_downloadStatistics, _logger), _messageHandler, longTextEncodingConverter, _logger);
 		}
 
 		public IDownloadTapiBridge CreateForImages(CancellationToken token)
@@ -143,7 +143,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 			//AttachEventHandlers(tapiBridgeAdapter);
 
-			return new DownloadTapiBridgeForFiles(tapiBridge, new ImageFilesProgressHandler(_downloadStatistics), _messageHandler, _transferClientHandler);
+			return new DownloadTapiBridgeForFiles(tapiBridge, new ImageFilesProgressHandler(_downloadStatistics, _logger), _messageHandler, _transferClientHandler, _logger);
 		}
 	}
 }

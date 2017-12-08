@@ -9,21 +9,20 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 {
 	public class BatchInitialization : IBatchInitialization
 	{
+		//TODO maybe extract common interface and use list injection. order of execution should matter
 		private readonly LongTextRepositoryBuilder _longTextRepositoryBuilder;
 		private readonly NativeRepositoryBuilder _nativeRepositoryBuilder;
 		private readonly ImageRepositoryBuilder _imageRepositoryBuilder;
 		private readonly IDirectoryManager _directoryManager;
-		private readonly LabelManager _labelManager;
 		private readonly ILog _logger;
 
 		public BatchInitialization(LongTextRepositoryBuilder longTextRepositoryBuilder, NativeRepositoryBuilder nativeRepositoryBuilder, ImageRepositoryBuilder imageRepositoryBuilder,
-			IDirectoryManager directoryManager, LabelManager labelManager, ILog logger)
+			IDirectoryManager directoryManager,ILog logger)
 		{
 			_longTextRepositoryBuilder = longTextRepositoryBuilder;
 			_nativeRepositoryBuilder = nativeRepositoryBuilder;
 			_imageRepositoryBuilder = imageRepositoryBuilder;
 			_directoryManager = directoryManager;
-			_labelManager = labelManager;
 			_logger = logger;
 		}
 
@@ -37,9 +36,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 				}
 				_directoryManager.MoveNext(volumePredictions[i]);
 
-				//TODO move this
-				artifacts[i].DestinationVolume = _labelManager.GetCurrentVolumeLabel();
-
+				_logger.LogVerbose("Adding artifact {artifactId} to repositories.", artifacts[i].ArtifactID);
 				PrepareArtifact(artifacts[i], cancellationToken);
 			}
 		}

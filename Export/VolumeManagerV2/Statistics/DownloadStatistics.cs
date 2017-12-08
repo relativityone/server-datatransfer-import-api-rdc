@@ -5,8 +5,9 @@ using kCura.Windows.Process;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
+using Relativity.Logging;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 {
 	public class DownloadStatistics
 	{
@@ -17,63 +18,83 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private readonly LongTextRepository _longTextRepository;
 
 		private readonly IStatus _status;
+		private readonly ILog _logger;
 
-		public DownloadStatistics(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, IStatus status)
+		public DownloadStatistics(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, IStatus status, ILog logger)
 		{
 			_nativeRepository = nativeRepository;
 			_imageRepository = imageRepository;
 			_longTextRepository = longTextRepository;
 			_status = status;
+			_logger = logger;
 
 			_artifactsDownloaded = new ConcurrentDictionary<int, bool>();
 		}
 
 		public void MarkNativeAsDownloaded(string id)
 		{
+			_logger.LogVerbose("Marking {id} native as downloaded.", id);
 			Native native = _nativeRepository.GetByUniqueId(id);
 			if (native != null)
 			{
 				native.HasBeenDownloaded = true;
-				UpdateDownloadedCountAndNotify(native.Artifact.ArtifactID, id);
+				UpdateDownloadedCountAndNotify(native.Artifact.ArtifactID);
+			}
+			else
+			{
+				_logger.LogWarning("Native for {id} not found.", id);
 			}
 		}
 
 		public void MarkImageAsDownloaded(string id)
 		{
+			_logger.LogVerbose("Marking {id} image as downloaded.", id);
 			Image image = _imageRepository.GetByUniqueId(id);
 			if (image != null)
 			{
 				image.HasBeenDownloaded = true;
-				UpdateDownloadedCountAndNotify(image.Artifact.ArtifactID, id);
+				UpdateDownloadedCountAndNotify(image.Artifact.ArtifactID);
+			}
+			else
+			{
+				_logger.LogWarning("Image for {id} not found.", id);
 			}
 		}
 
 		public void MarkLongTextAsDownloaded(string id)
 		{
+			_logger.LogVerbose("Marking {id} long text as downloaded.", id);
 			LongText longText = _longTextRepository.GetByUniqueId(id);
 			if (longText != null)
 			{
 				longText.HasBeenDownloaded = true;
-				UpdateDownloadedCountAndNotify(longText.ArtifactId, id);
+				UpdateDownloadedCountAndNotify(longText.ArtifactId);
+			}
+			else
+			{
+				_logger.LogWarning("Long text for {id} not found.", id);
 			}
 		}
 
-		private void UpdateDownloadedCountAndNotify(int artifactId, string id)
+		private void UpdateDownloadedCountAndNotify(int artifactId)
 		{
+			_logger.LogVerbose("Updating downloaded document count after artifact {artifactId} has been downloaded.", artifactId);
 			bool documentCountUpdated = UpdateDownloadedCount(artifactId);
-			if (documentCountUpdated)
+			Native native = _nativeRepository.GetNative(artifactId);
+			if (documentCountUpdated && native != null)
 			{
-				_status.WriteStatusLine(EventType.Progress, $"Document downloaded {id}.", true);
+				_status.WriteStatusLine(EventType.Progress, $"Document {native.Artifact.IdentifierValue} downloaded.", true);
 			}
 		}
 
 		public void FinalizeDownloadedCount()
 		{
+			_logger.LogVerbose("Finalizing downloaded document count after batch has been downloaded.");
 			foreach (Native native in _nativeRepository.GetNatives())
 			{
 				UpdateDownloadedCount(native.Artifact.ArtifactID);
 			}
-			_status.WriteStatusLine(EventType.Progress, "Files for batch downloaded.", true);
+			_status.WriteStatusLine(EventType.Progress, "Document for batch downloaded.", true);
 		}
 
 		private bool UpdateDownloadedCount(int artifactId)

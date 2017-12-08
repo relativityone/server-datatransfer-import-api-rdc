@@ -1,5 +1,6 @@
 ﻿using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.LoadFileEntry;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 {
@@ -11,8 +12,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 		private readonly LineNativeFilePath _nativeFilePath;
 		private readonly LineSuffix _suffix;
 		private readonly LineNewLine _newLine;
+		private readonly ILog _logger;
 
-		public LoadFileLine(LinePrefix prefix, LineFieldsValue fieldsValue, LineImageField imageField, LineNativeFilePath nativeFilePath, LineSuffix suffix, LineNewLine newLine)
+		public LoadFileLine(LinePrefix prefix, LineFieldsValue fieldsValue, LineImageField imageField, LineNativeFilePath nativeFilePath, LineSuffix suffix, LineNewLine newLine,
+			ILog logger)
 		{
 			_prefix = prefix;
 			_fieldsValue = fieldsValue;
@@ -20,10 +23,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 			_nativeFilePath = nativeFilePath;
 			_suffix = suffix;
 			_newLine = newLine;
+			_logger = logger;
 		}
 
 		public ILoadFileEntry CreateLine(ObjectExportInfo artifact)
 		{
+			_logger.LogVerbose("Creating load file entry for artifact {artifactId}.", artifact.ArtifactID);
+
 			DeferredEntry loadFileEntry = new DeferredEntry();
 
 			_prefix.AddPrefix(loadFileEntry);
@@ -38,6 +44,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 
 			_newLine.AddNewLine(loadFileEntry);
 
+			_logger.LogVerbose("Load file entry created.");
 			return loadFileEntry;
 		}
 	}

@@ -30,7 +30,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				}
 				else
 				{
-					_logger.LogVerbose($"{destinationLocation} already exists. Skipping file export.");
+					_logger.LogWarning($"{destinationLocation} already exists. Skipping file export.");
 					_status.WriteWarning($"{destinationLocation} already exists. Skipping file export.");
 					return false;
 				}

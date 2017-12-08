@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
 using Relativity.Transfer;
@@ -43,6 +44,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				return;
 			}
 
+			_logger.LogVerbose("Retrieving all export requests from repositories.");
 			RetrieveExportRequests();
 
 			if (cancellationToken.IsCancellationRequested)
@@ -50,6 +52,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				return;
 			}
 
+			_logger.LogVerbose("Attempting to download files.");
 			DownloadRequests(cancellationToken);
 		}
 

@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 {
@@ -9,8 +11,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 	{
 		private List<LongText> _longTexts;
 
-		public LongTextRepository()
+		private readonly IFileHelper _fileHelper;
+		private readonly ILog _logger;
+
+		public LongTextRepository(IFileHelper fileHelper, ILog logger)
 		{
+			_fileHelper = fileHelper;
+			_logger = logger;
 			_longTexts = new List<LongText>();
 		}
 
@@ -51,6 +58,21 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 
 		public void Clear()
 		{
+			foreach (var longText in _longTexts)
+			{
+				if (longText.RequireDeletion)
+				{
+					_logger.LogInformation("Removing long text temp file {file}.", longText.Location);
+					try
+					{
+						_fileHelper.Delete(longText.Location);
+					}
+					catch (Exception)
+					{
+						_logger.LogError("Failed to delete temp file {file} with LongText.", longText.Location);
+					}
+				}
+			}
 			_longTexts = new List<LongText>();
 		}
 	}

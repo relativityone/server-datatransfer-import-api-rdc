@@ -1,5 +1,6 @@
 ﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using kCura.WinEDDS.TApi;
+using Relativity.Logging;
 using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
@@ -9,11 +10,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private bool _isEmpty;
 
 		private readonly ITransferClientHandler _transferClientHandler;
+		private readonly ILog _logger;
 
 		public DownloadTapiBridgeForFiles(DownloadTapiBridge downloadTapiBridge, IProgressHandler progressHandler, IMessagesHandler messagesHandler,
-			ITransferClientHandler transferClientHandler) : base(downloadTapiBridge, progressHandler, messagesHandler)
+			ITransferClientHandler transferClientHandler, ILog logger) : base(downloadTapiBridge, progressHandler, messagesHandler)
 		{
 			_transferClientHandler = transferClientHandler;
+			_logger = logger;
 			_transferClientHandler.Attach(downloadTapiBridge);
 			_isEmpty = true;
 		}
@@ -28,6 +31,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		{
 			if (_isEmpty)
 			{
+				_logger.LogVerbose("Files transfer bridge is empty, so skipping waiting.");
 				return;
 			}
 			TapiBridge.WaitForTransferJob();

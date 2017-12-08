@@ -11,6 +11,9 @@ using kCura.WinEDDS.LoadFileEntry;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 {
+	/// <summary>
+	/// TODO refactor
+	/// </summary>
 	public class BatchExporter : IBatchExporter
 	{
 		private readonly LoadFileMetadataBuilder _loadFileMetadataBuilder;

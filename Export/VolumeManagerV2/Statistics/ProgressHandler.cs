@@ -1,5 +1,5 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-using kCura.WinEDDS.TApi;
+﻿using kCura.WinEDDS.TApi;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 {
@@ -7,11 +7,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 	{
 		private TapiBridge _tapiBridge;
 
+		private readonly ILog _logger;
+
 		protected DownloadStatistics DownloadStatistics { get; }
 
-		protected ProgressHandler(DownloadStatistics downloadStatistics)
+		protected ProgressHandler(DownloadStatistics downloadStatistics, ILog logger)
 		{
 			DownloadStatistics = downloadStatistics;
+			_logger = logger;
 		}
 
 		public void Attach(TapiBridge tapiBridge)
@@ -22,6 +25,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 
 		private void OnFileProgress(object sender, TapiProgressEventArgs e)
 		{
+			_logger.LogVerbose("Tapi progress event for {fileName} with status {status} ({lineNumber}).", e.FileName, e.Status, e.LineNumber);
 			MarkAsDownloaded(e.FileName);
 		}
 

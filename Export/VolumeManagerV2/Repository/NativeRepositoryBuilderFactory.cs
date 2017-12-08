@@ -1,4 +1,5 @@
 ﻿using Castle.Windsor;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using Relativity;
 using Relativity.Logging;
@@ -37,7 +38,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 				}
 			}
 
-			return new NativeRepositoryBuilder(container.Resolve<NativeRepository>(), nativeExportRequestBuilder);
+			return new NativeRepositoryBuilder(container.Resolve<NativeRepository>(), container.Resolve<LabelManager>(), nativeExportRequestBuilder, _logger);
 		}
 	}
 }

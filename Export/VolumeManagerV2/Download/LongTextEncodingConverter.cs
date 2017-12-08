@@ -63,9 +63,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				string longTextFile;
 				while (_longTextFilesToConvert.TryTake(out longTextFile, Timeout.Infinite, _cancellationToken))
 				{
+					_logger.LogVerbose("New item in conversion queue {file}. Proceeding.", longTextFile);
 					LongText longText = GetLongTextForFile(longTextFile);
 					if (ConversionRequired(longText))
 					{
+						_logger.LogVerbose("Encoding conversion required for file {file}.", longTextFile);
 						ConvertLongTextFile(longText);
 					}
 				}

@@ -43,7 +43,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		{
 			if (string.IsNullOrWhiteSpace(image.FileGuid))
 			{
-				_logger.LogVerbose("Image {imageId} has no GUID so assuming there is nothing to download.", image.ArtifactID);
+				_logger.LogInformation("Image {imageId} has no GUID so assuming there is nothing to download.", image.ArtifactID);
 			}
 
 			_logger.LogVerbose("Creating image file ExportRequest for image {image}.", image.FileName);

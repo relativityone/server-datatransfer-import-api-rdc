@@ -37,7 +37,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 				}
 			}
 
-			return new ImageRepositoryBuilder(container.Resolve<ImageRepository>(), imageExportRequestBuilder);
+			return new ImageRepositoryBuilder(container.Resolve<ImageRepository>(), imageExportRequestBuilder, _logger);
 		}
 	}
 }

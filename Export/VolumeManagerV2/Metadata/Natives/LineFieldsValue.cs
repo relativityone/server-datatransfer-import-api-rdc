@@ -3,6 +3,7 @@ using System.Linq;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.LoadFileEntry;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 {
@@ -13,15 +14,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 		private readonly LongTextHelper _longTextHelper;
 		private readonly NonTextFieldHandler _nonTextFieldHandler;
 		private readonly ExportFile _exportSettings;
+		private readonly ILog _logger;
 
 		public LineFieldsValue(IFieldService fieldLookupService, ILongTextHandler longTextHandler, LongTextHelper longTextHelper, NonTextFieldHandler nonTextFieldHandler,
-			ExportFile exportSettings)
+			ExportFile exportSettings, ILog logger)
 		{
 			_fieldLookupService = fieldLookupService;
 			_longTextHandler = longTextHandler;
 			_longTextHelper = longTextHelper;
 			_nonTextFieldHandler = nonTextFieldHandler;
 			_exportSettings = exportSettings;
+			_logger = logger;
 		}
 
 		public void AddFieldsValue(DeferredEntry loadFileEntry, ObjectExportInfo artifact)
@@ -30,6 +33,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 			for (int i = 0; i < fields.Count; i++)
 			{
 				ViewFieldInfo field = fields[i];
+
+				_logger.LogVerbose("Adding field {field} value to load file entry.", field.AvfColumnName);
 
 				if (_longTextHelper.IsLongTextField(field))
 				{

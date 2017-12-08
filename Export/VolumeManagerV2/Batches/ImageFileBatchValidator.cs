@@ -34,13 +34,19 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 		private void ValidateImagesForArtifact(ObjectExportInfo artifact, VolumePredictions volumePredictions)
 		{
 			List<ImageExportInfo> images = artifact.Images.Cast<ImageExportInfo>().ToList();
+			if (images.Count == 0)
+			{
+				return;
+			}
 
 			if (images[0].SuccessfulRollup)
 			{
+				_logger.LogVerbose("Image {image} successfully rollup, so checking single image.", images[0].BatesNumber);
 				ValidateSingleImage(artifact, images[0], volumePredictions);
 			}
 			else
 			{
+				_logger.LogVerbose("Image {image} wasn't rollup, so checking multiple images.", images[0].BatesNumber);
 				ValidateAllImages(artifact, images, volumePredictions);
 			}
 		}
