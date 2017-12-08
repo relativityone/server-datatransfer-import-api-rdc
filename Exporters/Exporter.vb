@@ -1135,6 +1135,7 @@ Namespace kCura.WinEDDS
 
 		Sub UpdateDocumentExportedCount(count As Int32) Implements IStatus.UpdateDocumentExportedCount
 			DocumentsExported = count
+			_lastStatisticsSnapshot = _statistics.ToDictionary()
 		End Sub
 
 #End Region
