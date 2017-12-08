@@ -321,9 +321,7 @@ Namespace kCura.WinEDDS
 				If UseOldExport Then
 					_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, _statistics, FileHelper, DirectoryHelper, FileNameProvider)
 					FieldLookupService = _volumeManager
-					Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
 					_volumeManager.ColumnHeaderString = columnHeaderString
-					Me.WriteUpdate("Data retrieved. Beginning " & typeOfExportDisplayString & " export...")
 				Else
 					Dim validator As IExportValidation = container.Resolve(Of IExportValidation)
 					if(Not validator.ValidateExport(Settings, TotalExportArtifactCount))
@@ -336,6 +334,9 @@ Namespace kCura.WinEDDS
 					batchExporter = container.Resolve(Of IBatchExporter)
 					_downloadModeStatus = container.Resolve(Of IExportFileDownloaderStatus)
 				End If
+
+				Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
+				Me.WriteUpdate("Data retrieved. Beginning " & typeOfExportDisplayString & " export...")
 
 				RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType.ToString)
 				
