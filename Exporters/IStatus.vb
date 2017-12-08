@@ -5,6 +5,7 @@
 		Sub WriteStatusLine(ByVal e As kCura.Windows.Process.EventType, ByVal line As String, ByVal isEssential As Boolean)
 		Sub WriteWarning(ByVal line As String)
 		Sub WriteUpdate(ByVal line As String, Optional ByVal isEssential As Boolean = True)
+		Sub UpdateDocumentExportedCount(count As Int32)
 	End Interface
 
 End Namespace

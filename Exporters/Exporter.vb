@@ -1133,6 +1133,10 @@ Namespace kCura.WinEDDS
 			WriteStatusLine(kCura.Windows.Process.EventType.Progress, line, isEssential)
 		End Sub
 
+		Sub UpdateDocumentExportedCount(count As Int32) Implements IStatus.UpdateDocumentExportedCount
+			DocumentsExported = count
+		End Sub
+
 #End Region
 
 #Region "Public Events"
