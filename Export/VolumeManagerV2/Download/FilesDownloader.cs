@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
 using Relativity.Transfer;
@@ -10,30 +11,25 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
 	public class FilesDownloader
 	{
-		private List<FileExportRequest> _fileExportRequests;
+		private List<ExportRequest> _fileExportRequests;
 		private List<LongTextExportRequest> _longTextExportRequests;
 
-		private readonly IFileExportRequestBuilder _nativeExportRequestBuilder;
-		private readonly IFileExportRequestBuilder _imageExportRequestBuilder;
-		private readonly LongTextExportRequestBuilder _longTextExportRequestBuilder;
-		private readonly IDirectoryManager _directoryManager;
-		private readonly LabelManager _labelManager;
+		private readonly NativeRepository _nativeRepository;
+		private readonly ImageRepository _imageRepository;
+		private readonly LongTextRepository _longTextRepository;
 
 		private readonly ExportTapiBridgeFactory _exportTapiBridgeFactory;
 
 		private readonly ILog _logger;
 
-		public FilesDownloader(IFileExportRequestBuilder nativeExportRequestBuilder, IFileExportRequestBuilder imageExportRequestBuilder,
-			LongTextExportRequestBuilder longTextExportRequestBuilder, ExportTapiBridgeFactory exportTapiBridgeFactory, IDirectoryManager directoryManager, ILog logger,
-			LabelManager labelManager)
+		public FilesDownloader(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, ExportTapiBridgeFactory exportTapiBridgeFactory,
+			ILog logger)
 		{
-			_nativeExportRequestBuilder = nativeExportRequestBuilder;
-			_imageExportRequestBuilder = imageExportRequestBuilder;
-			_longTextExportRequestBuilder = longTextExportRequestBuilder;
+			_nativeRepository = nativeRepository;
+			_imageRepository = imageRepository;
+			_longTextRepository = longTextRepository;
 			_exportTapiBridgeFactory = exportTapiBridgeFactory;
-			_directoryManager = directoryManager;
 			_logger = logger;
-			_labelManager = labelManager;
 		}
 
 		public void DownloadFilesForArtifacts(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
@@ -43,8 +39,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				return;
 			}
 
-			//TODO depending on how slow this is we could consider adding requests to TAPI when we create them
-			CreateExportRequests(artifacts, volumePredictions, cancellationToken);
+			RetrieveExportRequests();
 
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -54,42 +49,19 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			DownloadRequests(cancellationToken);
 		}
 
-		private void CreateExportRequests(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
+		private void RetrieveExportRequests()
 		{
-			_fileExportRequests = new List<FileExportRequest>();
+			IList<ExportRequest> nativeExportRequests = _nativeRepository.GetExportRequests();
+			IList<ExportRequest> imageExportRequests = _imageRepository.GetExportRequests();
+
+			_fileExportRequests = new List<ExportRequest>();
+			_fileExportRequests.AddRange(nativeExportRequests);
+			_fileExportRequests.AddRange(imageExportRequests);
+
+			IList<LongTextExportRequest> longTextExportRequests = _longTextRepository.GetExportRequests();
+
 			_longTextExportRequests = new List<LongTextExportRequest>();
-
-			for (int i = 0; i < artifacts.Length; i++)
-			{
-				if (cancellationToken.IsCancellationRequested)
-				{
-					return;
-				}
-
-				_logger.LogVerbose("Creating export requests for artifact {artifactId}.", artifacts[i].ArtifactID);
-
-				_directoryManager.MoveNext(volumePredictions[i]);
-				artifacts[i].DestinationVolume = _labelManager.GetCurrentVolumeLabel();
-
-				IEnumerable<FileExportRequest> nativeExportRequests = _nativeExportRequestBuilder.Create(artifacts[i], cancellationToken);
-				_fileExportRequests.AddRange(nativeExportRequests);
-
-				if (cancellationToken.IsCancellationRequested)
-				{
-					return;
-				}
-
-				IEnumerable<FileExportRequest> imageExportRequests = _imageExportRequestBuilder.Create(artifacts[i], cancellationToken);
-				_fileExportRequests.AddRange(imageExportRequests);
-
-				if (cancellationToken.IsCancellationRequested)
-				{
-					return;
-				}
-
-				IEnumerable<LongTextExportRequest> longTextExportRequestsForArtifact = _longTextExportRequestBuilder.Create(artifacts[i]);
-				_longTextExportRequests.AddRange(longTextExportRequestsForArtifact);
-			}
+			_longTextExportRequests.AddRange(longTextExportRequests);
 		}
 
 		private void DownloadRequests(CancellationToken cancellationToken)
@@ -159,7 +131,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_logger.LogVerbose("Creating TAPI bridge for file export. Adding {count} requests to it.", _fileExportRequests.Count);
 			IDownloadTapiBridge tapiBridge = _exportTapiBridgeFactory.Create(cancellationToken);
 
-			int order = 1;
 			foreach (var fileExportRequest in _fileExportRequests)
 			{
 				if (cancellationToken.IsCancellationRequested)
@@ -168,8 +139,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				}
 				try
 				{
-					_logger.LogVerbose("Adding export request for downloading file {source} to {destination}.", fileExportRequest.SourceLocation, fileExportRequest.DestinationLocation);
-					tapiBridge.AddPath(fileExportRequest.CreateTransferPath(order++));
+					_logger.LogVerbose("Adding export request for downloading file for artifact {artifactId} to {destination}.", fileExportRequest.ArtifactId,
+						fileExportRequest.DestinationLocation);
+					tapiBridge.AddPath(fileExportRequest.CreateTransferPath());
 				}
 				catch (Exception ex)
 				{
@@ -186,7 +158,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_logger.LogVerbose("Creating TAPI bridge for long text export. Adding {count} requests to it.", _longTextExportRequests.Count);
 			IDownloadTapiBridge tapiBridge = _exportTapiBridgeFactory.CreateForLongText(cancellationToken);
 
-			int order = 1;
 			foreach (var textExportRequest in _longTextExportRequests)
 			{
 				if (cancellationToken.IsCancellationRequested)
@@ -196,7 +167,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				try
 				{
 					_logger.LogVerbose("Adding export request for downloading long text {fieldId} to {destination}.", textExportRequest.FieldArtifactId, textExportRequest.DestinationLocation);
-					tapiBridge.AddPath(textExportRequest.CreateTransferPath(order++));
+					tapiBridge.AddPath(textExportRequest.CreateTransferPath());
 				}
 				catch (Exception ex)
 				{

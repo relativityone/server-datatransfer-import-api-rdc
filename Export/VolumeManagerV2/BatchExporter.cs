@@ -49,7 +49,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 					return;
 				}
 
-				_batchInitialization.PrepareBatch(artifacts, cancellationToken);
+				_batchInitialization.PrepareBatch(artifacts, volumePredictions, cancellationToken);
 
 				if (cancellationToken.IsCancellationRequested)
 				{

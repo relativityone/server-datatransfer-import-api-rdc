@@ -26,22 +26,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			_logger = logger;
 		}
 
-		public void AddLongTextForBatchToRepository(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
-		{
-			foreach (var artifact in artifacts)
-			{
-				if (cancellationToken.IsCancellationRequested)
-				{
-					return;
-				}
-				AddLongTextForArtifact(artifact, cancellationToken);
-			}
-		}
-
-		private void AddLongTextForArtifact(ObjectExportInfo artifact, CancellationToken cancellationToken)
+		public void AddToRepository(ObjectExportInfo artifact, CancellationToken cancellationToken)
 		{
 			_logger.LogVerbose("Attempting to build LongText repository.");
 			_longTexts = new List<LongText>();
+
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return;
+			}
 
 			_logger.LogVerbose("Creating LongText entries for text precedence.");
 			IList<LongText> precedenceLongTexts = _longTextPrecedenceBuilder.CreateLongText(artifact, cancellationToken);
@@ -67,8 +60,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			IList<LongText> iproFullTexts = _longTextIproFullTextBuilder.CreateLongText(artifact, cancellationToken);
 			_logger.LogVerbose("{count} LongText entries created.", iproFullTexts.Count);
 			Add(iproFullTexts);
-
-			//TODO think of something better...
+			
 			_longTextRepository.Add(_longTexts);
 		}
 

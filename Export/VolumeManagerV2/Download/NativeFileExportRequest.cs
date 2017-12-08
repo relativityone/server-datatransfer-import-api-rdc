@@ -23,7 +23,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			RemoteFileGuid = artifact.NativeFileGuid;
 		}
 
-		public override TransferPath CreateTransferPath(int order)
+		public override TransferPath CreateTransferPath()
 		{
 			var httpTransferPathData = new HttpTransferPathData
 			{
@@ -37,7 +37,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				SourcePath = SourceLocation,
 				TargetPath = fileInfo.Directory?.FullName,
 				TargetFileName = fileInfo.Name,
-				Order = order
+				Order = Order
 			};
 
 			transferPath.AddData(HttpTransferPathData.HttpTransferPathDataKey, httpTransferPathData);

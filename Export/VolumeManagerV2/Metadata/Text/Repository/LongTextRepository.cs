@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 {
-	public class LongTextRepository
+	public class LongTextRepository : IRepository
 	{
-		private IList<LongText> _longTexts;
+		private List<LongText> _longTexts;
 
 		public LongTextRepository()
 		{
@@ -14,10 +16,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 
 		public void Add(IList<LongText> longTexts)
 		{
-			foreach (var longText in longTexts)
-			{
-				_longTexts.Add(longText);
-			}
+			_longTexts.AddRange(longTexts);
 		}
 
 		public string GetTextFileLocation(int artifactId, int fieldArtifactId)
@@ -33,6 +32,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 		public IList<LongText> GetLongTexts()
 		{
 			return _longTexts;
+		}
+
+		public IList<LongTextExportRequest> GetExportRequests()
+		{
+			return _longTexts.Select(x => x.ExportRequest).Where(x => x != null).ToList();
 		}
 
 		public void Clear()

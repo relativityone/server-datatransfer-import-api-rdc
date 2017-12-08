@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
@@ -8,13 +10,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 	{
 		private readonly LongTextRepository _longTextRepository;
 		private readonly IFileHelper _fileHelper;
+		private readonly IList<IRepository> _repositories;
 
 		private readonly ILog _logger;
 
-		public BatchCleanUp(LongTextRepository longTextRepository, IFileHelper fileHelper, ILog logger)
+		public BatchCleanUp(LongTextRepository longTextRepository, IFileHelper fileHelper, IList<IRepository> repositories, ILog logger)
 		{
 			_longTextRepository = longTextRepository;
 			_fileHelper = fileHelper;
+			_repositories = repositories;
 			_logger = logger;
 		}
 
@@ -30,8 +34,18 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 				_logger.LogError(ex, "Error occurred during batch cleanup. Ignoring exception and continuing with export.");
 			}
 			_logger.LogVerbose("Clean up finished.");
+
+			_logger.LogVerbose("Clearing repositories after exporting batch.");
+			foreach (var repository in _repositories)
+			{
+				repository.Clear();
+			}
+			_logger.LogVerbose("Repositories cleared.");
 		}
 
+		/// <summary>
+		///     TODO consider moving to repository
+		/// </summary>
 		private void RemoveLongTextTempFiles()
 		{
 			foreach (var longText in _longTextRepository.GetLongTexts())
@@ -49,7 +63,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 					}
 				}
 			}
-			_longTextRepository.Clear();
 		}
 	}
 }
