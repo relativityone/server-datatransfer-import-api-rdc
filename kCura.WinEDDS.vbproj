@@ -361,6 +361,8 @@
     <Compile Include="Exporters\LineFactory\SimpleIproImageLineFactory.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Exporters\UserNotificationRedirectToMessage.vb" />
+    <Compile Include="Exporters\Validator\ExportInitializationValidator.vb" />
     <Compile Include="Exporters\Validator\PaddingWarningValidator.vb" />
     <Compile Include="Exporters\VolumeInfo.vb">
       <SubType>Code</SubType>
