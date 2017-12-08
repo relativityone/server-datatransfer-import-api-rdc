@@ -81,7 +81,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 			string localFilePath = images[baseImageIndex].SourceLocation;
 			if (_exportSettings.VolumeInfo.CopyImageFilesFromRepository)
 			{
-				localFilePath = _filePathTransformer.TransformPath(images[baseImageIndex].TempLocation);
+				localFilePath = string.IsNullOrWhiteSpace(images[baseImageIndex].TempLocation)
+					? images[baseImageIndex].TempLocation
+					: _filePathTransformer.TransformPath(images[baseImageIndex].TempLocation);
 			}
 			return localFilePath;
 		}

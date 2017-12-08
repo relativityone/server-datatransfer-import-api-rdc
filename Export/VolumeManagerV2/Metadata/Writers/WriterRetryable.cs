@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using kCura.WinEDDS.Exceptions;
 using kCura.WinEDDS.Exporters;
 using Polly;
@@ -26,13 +27,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 		private readonly ILog _logger;
 		private readonly IStatus _status;
 		private readonly IDestinationPath _destinationPath;
+		private readonly IProcessingStatistics _processingStatistics;
 
-		public WriterRetryable(WritersRetryPolicy writersRetryPolicy, StreamFactory streamFactory, ILog logger, IStatus status, IDestinationPath destinationPath)
+		public WriterRetryable(WritersRetryPolicy writersRetryPolicy, StreamFactory streamFactory, ILog logger, IStatus status, IDestinationPath destinationPath, IProcessingStatistics processingStatistics)
 		{
 			_streamFactory = streamFactory;
 			_logger = logger;
 			_status = status;
 			_destinationPath = destinationPath;
+			_processingStatistics = processingStatistics;
 			_retryPolicy = writersRetryPolicy.CreateRetryPolicy(OnRetry);
 
 			_streamWriterLastPosition = 0;
@@ -59,7 +62,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 					_logger.LogError(ex, "Error occurred during writing to file {type}.", _destinationPath.DestinationFileType);
 					throw new FileWriteException(_destinationPath.DestinationFileType, ex);
 				}
-				SaveStreamPositionAndUpdateStatistics();
+				SaveStreamPosition();
+				UpdateStatistics();
 			}, context, cancellationToken);
 		}
 
@@ -95,15 +99,19 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			}
 		}
 
-		private void SaveStreamPositionAndUpdateStatistics()
+		private void SaveStreamPosition()
 		{
 			if (_streamWriter != null)
 			{
 				FlushStream();
 				_streamWriterLastPosition = _streamWriter.BaseStream.Position;
-				//TODO
-				//_statistics.MetadataBytes = _fileHelper.GetFileSize(GetStreamName());
+
 			}
+		}
+
+		private void UpdateStatistics()
+		{
+			_processingStatistics.AddStatisticsForFile(_destinationPath.Path);
 		}
 
 		private void FlushStream()

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.LoadFileEntry;
 using Relativity.Logging;
@@ -12,7 +13,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 		private readonly LoadFileWriter _loadFileWriter;
 
 		public LoadFileWriterRetryable(WritersRetryPolicy writersRetryPolicy, StreamFactory streamFactory, ILog logger, IStatus status, LoadFileDestinationPath destinationPath,
-			LoadFileWriter loadFileWriter) : base(writersRetryPolicy, streamFactory, logger, status, destinationPath)
+			LoadFileWriter loadFileWriter, IMetadataProcessingStatistics metadataProcessingStatistics) : base(writersRetryPolicy, streamFactory, logger, status, destinationPath, metadataProcessingStatistics)
 		{
 			_loadFileWriter = loadFileWriter;
 		}

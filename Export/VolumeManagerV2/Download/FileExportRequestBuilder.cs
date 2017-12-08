@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
 
@@ -12,13 +13,16 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private readonly IFilePathProvider _filePathProvider;
 		private readonly IFileNameProvider _fileNameProvider;
 		private readonly ExportFileValidator _validator;
+		private readonly IFileProcessingStatistics _fileProcessingStatistics;
 		private readonly ILog _logger;
 
-		protected FileExportRequestBuilder(IFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, ExportFileValidator validator, ILog logger)
+		protected FileExportRequestBuilder(IFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, ExportFileValidator validator,
+			IFileProcessingStatistics fileProcessingStatistics, ILog logger)
 		{
 			_filePathProvider = filePathProvider;
 			_fileNameProvider = fileNameProvider;
 			_validator = validator;
+			_fileProcessingStatistics = fileProcessingStatistics;
 			_logger = logger;
 		}
 
@@ -42,6 +46,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			string warningInCaseOfOverwriting = $"Overwriting document {destinationLocation}.";
 			if (!_validator.CanExport(destinationLocation, warningInCaseOfOverwriting))
 			{
+				_logger.LogVerbose("File {file} already exists - updating statistics.", destinationLocation);
+				_fileProcessingStatistics.AddStatisticsForFile(destinationLocation);
 				return new List<FileExportRequest>();
 			}
 

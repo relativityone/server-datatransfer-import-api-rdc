@@ -3,7 +3,6 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
@@ -56,7 +55,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			container.Register(Component.For<IFileStreamFactory>().ImplementedBy<FileStreamFactory>());
 			container.Register(Component.For<ITransferClientHandler, IExportFileDownloaderStatus, ExportFileDownloaderStatus>().ImplementedBy<ExportFileDownloaderStatus>());
 			container.Register(Component.For<ILoadFileCellFormatter>().UsingFactoryMethod(k => k.Resolve<LoadFileCellFormatterFactory>().Create(ExportSettings)));
-			container.Register(Component.For<ExportStatistics>().Instance(_exporter._statistics));
+			container.Register(Component.For<ExportStatistics, WinEDDS.Statistics>().Instance(_exporter._statistics));
 		}
 
 		private void InstallConnectionToWinEdds(IWindsorContainer container)
@@ -85,6 +84,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			InstallImages(container);
 			InstallLongText(container);
 			InstallStatefulComponents(container);
+			InstallStatistics(container);
 
 			// OTHER
 			container.Register(Component.For<IErrorFile>().UsingFactoryMethod(k => k.Resolve<ErrorFileDestinationPath>()));
@@ -134,6 +134,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 		{
 			container.Register(Component.For<IStateful, ILoadFileWriter>().ImplementedBy<LoadFileWriterRetryable>(),
 				Component.For<IStateful, IImageLoadFileWriter>().ImplementedBy<ImageLoadFileWriterRetryable>());
+		}
+
+		private void InstallStatistics(IWindsorContainer container)
+		{
+			container.Register(Component.For<IStateful, IFileProcessingStatistics, FilesStatistics>().ImplementedBy<FilesStatistics>());
+			container.Register(Component.For<IStateful, IMetadataProcessingStatistics, MetadataStatistics>().ImplementedBy<MetadataStatistics>());
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
 
@@ -8,8 +9,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 	{
 		private readonly FieldFileExportRequestFactory _requestFactory;
 
-		public FieldFileExportRequestBuilder(NativeFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, ExportFileValidator validator, ILog logger,
-			FieldFileExportRequestFactory requestFactory) : base(filePathProvider, fileNameProvider, validator, logger)
+		public FieldFileExportRequestBuilder(NativeFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, ExportFileValidator validator,
+			IFileProcessingStatistics fileProcessingStatistics, ILog logger, FieldFileExportRequestFactory requestFactory) : base(filePathProvider, fileNameProvider, validator,
+			fileProcessingStatistics, logger)
 		{
 			_requestFactory = requestFactory;
 		}

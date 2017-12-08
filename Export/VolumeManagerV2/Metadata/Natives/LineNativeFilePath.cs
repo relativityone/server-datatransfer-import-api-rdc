@@ -28,7 +28,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 				string nativeLocationCell;
 				if (_exportSettings.VolumeInfo.CopyNativeFilesFromRepository)
 				{
-					string nativeLocation = _filePathTransformer.TransformPath(artifact.NativeTempLocation);
+					string nativeLocation = string.IsNullOrWhiteSpace(artifact.NativeTempLocation) ? artifact.NativeTempLocation : _filePathTransformer.TransformPath(artifact.NativeTempLocation);
 					nativeLocationCell = _loadFileCellFormatter.CreateNativeCell(nativeLocation, artifact);
 					_logger.LogVerbose("Copying natives, so path is local {path}.", nativeLocation);
 				}
