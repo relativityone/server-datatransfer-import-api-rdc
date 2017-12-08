@@ -9,7 +9,7 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 {
-	public class DownloadStatistics
+	public class DownloadProgressManager
 	{
 		private readonly ConcurrentDictionary<int, bool> _artifactsDownloaded;
 
@@ -20,7 +20,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		private readonly IStatus _status;
 		private readonly ILog _logger;
 
-		public DownloadStatistics(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, IStatus status, ILog logger)
+		public DownloadProgressManager(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, IStatus status, ILog logger)
 		{
 			_nativeRepository = nativeRepository;
 			_imageRepository = imageRepository;

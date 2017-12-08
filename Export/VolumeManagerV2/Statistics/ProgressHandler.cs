@@ -9,11 +9,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 
 		private readonly ILog _logger;
 
-		protected DownloadStatistics DownloadStatistics { get; }
+		protected DownloadProgressManager DownloadProgressManager { get; }
 
-		protected ProgressHandler(DownloadStatistics downloadStatistics, ILog logger)
+		protected ProgressHandler(DownloadProgressManager downloadProgressManager, ILog logger)
 		{
-			DownloadStatistics = downloadStatistics;
+			DownloadProgressManager = downloadProgressManager;
 			_logger = logger;
 		}
 

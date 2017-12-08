@@ -4,13 +4,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 {
 	public class LongTextProgressHandler : ProgressHandler
 	{
-		public LongTextProgressHandler(DownloadStatistics downloadStatistics, ILog logger) : base(downloadStatistics, logger)
+		public LongTextProgressHandler(DownloadProgressManager downloadProgressManager, ILog logger) : base(downloadProgressManager, logger)
 		{
 		}
 
 		protected override void MarkAsDownloaded(string id)
 		{
-			DownloadStatistics.MarkLongTextAsDownloaded(id);
+			DownloadProgressManager.MarkLongTextAsDownloaded(id);
 		}
 	}
 }

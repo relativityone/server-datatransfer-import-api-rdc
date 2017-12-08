@@ -256,7 +256,7 @@
     <Compile Include="Export\VolumeManagerV2\Directories\NativeFilePathProvider.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\PrefixFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\RelativeFilePathTransformer.cs" />
-    <Compile Include="Export\VolumeManagerV2\Statistics\DownloadStatistics.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\DownloadProgressManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\DownloadTapiBridgeAdapter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\DownloadTapiBridgeForFiles.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\DownloadTapiBridgeWithEncodingConversion.cs" />

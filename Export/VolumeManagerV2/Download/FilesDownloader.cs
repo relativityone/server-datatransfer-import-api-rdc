@@ -20,21 +20,21 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private readonly ImageRepository _imageRepository;
 		private readonly LongTextRepository _longTextRepository;
 
-		private readonly DownloadStatistics _downloadStatistics;
+		private readonly DownloadProgressManager _downloadProgressManager;
 
 		private readonly ExportTapiBridgeFactory _exportTapiBridgeFactory;
 
 		private readonly ILog _logger;
 
 		public FilesDownloader(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, ExportTapiBridgeFactory exportTapiBridgeFactory,
-			ILog logger, DownloadStatistics downloadStatistics)
+			ILog logger, DownloadProgressManager downloadProgressManager)
 		{
 			_nativeRepository = nativeRepository;
 			_imageRepository = imageRepository;
 			_longTextRepository = longTextRepository;
 			_exportTapiBridgeFactory = exportTapiBridgeFactory;
 			_logger = logger;
-			_downloadStatistics = downloadStatistics;
+			_downloadProgressManager = downloadProgressManager;
 		}
 
 		public void DownloadFilesForArtifacts(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
@@ -95,7 +95,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				longTextDownloader.WaitForTransferJob();
 				_logger.LogVerbose("Long text transfer finished.");
 
-				_downloadStatistics.FinalizeDownloadedCount();
+				_downloadProgressManager.FinalizeDownloadedCount();
 			}
 			catch (OperationCanceledException ex)
 			{

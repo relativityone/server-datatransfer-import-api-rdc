@@ -4,13 +4,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 {
 	public class NativeFilesProgressHandler : ProgressHandler
 	{
-		public NativeFilesProgressHandler(DownloadStatistics downloadStatistics, ILog logger) : base(downloadStatistics, logger)
+		public NativeFilesProgressHandler(DownloadProgressManager downloadProgressManager, ILog logger) : base(downloadProgressManager, logger)
 		{
 		}
 
 		protected override void MarkAsDownloaded(string id)
 		{
-			DownloadStatistics.MarkNativeAsDownloaded(id);
+			DownloadProgressManager.MarkNativeAsDownloaded(id);
 		}
 	}
 }
