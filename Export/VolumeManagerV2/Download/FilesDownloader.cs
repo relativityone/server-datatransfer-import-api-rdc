@@ -11,25 +11,29 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
 	public class FilesDownloader
 	{
-		private List<ExportRequest> _fileExportRequests;
+		private List<ExportRequest> _nativeFileExportRequests;
+		private List<ExportRequest> _imageFileExprotRequests;
 		private List<LongTextExportRequest> _longTextExportRequests;
 
 		private readonly NativeRepository _nativeRepository;
 		private readonly ImageRepository _imageRepository;
 		private readonly LongTextRepository _longTextRepository;
 
+		private readonly DownloadStatistics _downloadStatistics;
+
 		private readonly ExportTapiBridgeFactory _exportTapiBridgeFactory;
 
 		private readonly ILog _logger;
 
 		public FilesDownloader(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, ExportTapiBridgeFactory exportTapiBridgeFactory,
-			ILog logger)
+			ILog logger, DownloadStatistics downloadStatistics)
 		{
 			_nativeRepository = nativeRepository;
 			_imageRepository = imageRepository;
 			_longTextRepository = longTextRepository;
 			_exportTapiBridgeFactory = exportTapiBridgeFactory;
 			_logger = logger;
+			_downloadStatistics = downloadStatistics;
 		}
 
 		public void DownloadFilesForArtifacts(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
@@ -52,34 +56,43 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private void RetrieveExportRequests()
 		{
 			IList<ExportRequest> nativeExportRequests = _nativeRepository.GetExportRequests();
-			IList<ExportRequest> imageExportRequests = _imageRepository.GetExportRequests();
+			_nativeFileExportRequests = new List<ExportRequest>();
+			_nativeFileExportRequests.AddRange(nativeExportRequests);
 
-			_fileExportRequests = new List<ExportRequest>();
-			_fileExportRequests.AddRange(nativeExportRequests);
-			_fileExportRequests.AddRange(imageExportRequests);
+			IList<ExportRequest> imageExportRequests = _imageRepository.GetExportRequests();
+			_imageFileExprotRequests = new List<ExportRequest>();
+			_imageFileExprotRequests.AddRange(imageExportRequests);
 
 			IList<LongTextExportRequest> longTextExportRequests = _longTextRepository.GetExportRequests();
-
 			_longTextExportRequests = new List<LongTextExportRequest>();
 			_longTextExportRequests.AddRange(longTextExportRequests);
 		}
 
 		private void DownloadRequests(CancellationToken cancellationToken)
 		{
-			IDownloadTapiBridge filesDownloader = null;
+			//TODO we need three tapi bridges until I figure out how to identify files in TAPI without file name (which can be duplicated in case of native being an image)
+			IDownloadTapiBridge nativeFilesDownloader = null;
+			IDownloadTapiBridge imageFilesDownloader = null;
 			IDownloadTapiBridge longTextDownloader = null;
 			try
 			{
-				filesDownloader = DownloadFiles(cancellationToken);
+				nativeFilesDownloader = DownloadNativeFiles(cancellationToken);
+				imageFilesDownloader = DownloadImageFiles(cancellationToken);
 				longTextDownloader = DownloadLongTexts(cancellationToken);
 
-				_logger.LogVerbose("Waiting for file transfer to finish.");
-				filesDownloader.WaitForTransferJob();
-				_logger.LogVerbose("File transfer finished.");
+				_logger.LogVerbose("Waiting for native files transfer to finish.");
+				nativeFilesDownloader.WaitForTransferJob();
+				_logger.LogVerbose("Native files transfer finished.");
+
+				_logger.LogVerbose("Waiting for image files transfer to finish.");
+				imageFilesDownloader.WaitForTransferJob();
+				_logger.LogVerbose("Image files transfer finished.");
 
 				_logger.LogVerbose("Waiting for long text transfer to finish.");
 				longTextDownloader.WaitForTransferJob();
 				_logger.LogVerbose("Long text transfer finished.");
+
+				_downloadStatistics.FinalizeDownloadedCount();
 			}
 			catch (OperationCanceledException ex)
 			{
@@ -109,11 +122,19 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			{
 				try
 				{
-					filesDownloader?.Dispose();
+					nativeFilesDownloader?.Dispose();
 				}
 				catch (Exception ex)
 				{
-					_logger.LogError(ex, "Failed to dispose DownloadTapiBridge for files.");
+					_logger.LogError(ex, "Failed to dispose DownloadTapiBridge for native files.");
+				}
+				try
+				{
+					imageFilesDownloader?.Dispose();
+				}
+				catch (Exception ex)
+				{
+					_logger.LogError(ex, "Failed to dispose DownloadTapiBridge for image files.");
 				}
 				try
 				{
@@ -126,12 +147,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			}
 		}
 
-		private IDownloadTapiBridge DownloadFiles(CancellationToken cancellationToken)
+		private IDownloadTapiBridge DownloadNativeFiles(CancellationToken cancellationToken)
 		{
-			_logger.LogVerbose("Creating TAPI bridge for file export. Adding {count} requests to it.", _fileExportRequests.Count);
-			IDownloadTapiBridge tapiBridge = _exportTapiBridgeFactory.Create(cancellationToken);
+			_logger.LogVerbose("Creating TAPI bridge for native file export. Adding {count} requests to it.", _nativeFileExportRequests.Count);
+			IDownloadTapiBridge tapiBridge = _exportTapiBridgeFactory.CreateForNatives(cancellationToken);
 
-			foreach (var fileExportRequest in _fileExportRequests)
+			foreach (var fileExportRequest in _nativeFileExportRequests)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{
@@ -139,13 +160,40 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				}
 				try
 				{
-					_logger.LogVerbose("Adding export request for downloading file for artifact {artifactId} to {destination}.", fileExportRequest.ArtifactId,
+					_logger.LogVerbose("Adding export request for downloading native file for artifact {artifactId} to {destination}.", fileExportRequest.ArtifactId,
 						fileExportRequest.DestinationLocation);
-					tapiBridge.AddPath(fileExportRequest.CreateTransferPath());
+					fileExportRequest.UniqueId = tapiBridge.AddPath(fileExportRequest.CreateTransferPath());
 				}
 				catch (Exception ex)
 				{
-					_logger.LogError(ex, "Error occurred during adding file export request to TAPI bridge. Skipping.");
+					_logger.LogError(ex, "Error occurred during adding native file export request to TAPI bridge. Skipping.");
+					throw;
+				}
+			}
+
+			return tapiBridge;
+		}
+
+		private IDownloadTapiBridge DownloadImageFiles(CancellationToken cancellationToken)
+		{
+			_logger.LogVerbose("Creating TAPI bridge for image file export. Adding {count} requests to it.", _imageFileExprotRequests.Count);
+			IDownloadTapiBridge tapiBridge = _exportTapiBridgeFactory.CreateForImages(cancellationToken);
+
+			foreach (var fileExportRequest in _imageFileExprotRequests)
+			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return tapiBridge;
+				}
+				try
+				{
+					_logger.LogVerbose("Adding export request for downloading image file for artifact {artifactId} to {destination}.", fileExportRequest.ArtifactId,
+						fileExportRequest.DestinationLocation);
+					fileExportRequest.UniqueId = tapiBridge.AddPath(fileExportRequest.CreateTransferPath());
+				}
+				catch (Exception ex)
+				{
+					_logger.LogError(ex, "Error occurred during adding image file export request to TAPI bridge. Skipping.");
 					throw;
 				}
 			}
@@ -167,7 +215,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				try
 				{
 					_logger.LogVerbose("Adding export request for downloading long text {fieldId} to {destination}.", textExportRequest.FieldArtifactId, textExportRequest.DestinationLocation);
-					tapiBridge.AddPath(textExportRequest.CreateTransferPath());
+					textExportRequest.UniqueId = tapiBridge.AddPath(textExportRequest.CreateTransferPath());
 				}
 				catch (Exception ex)
 				{

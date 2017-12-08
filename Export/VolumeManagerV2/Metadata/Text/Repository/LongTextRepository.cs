@@ -39,6 +39,16 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			return _longTexts.Select(x => x.ExportRequest).Where(x => x != null).ToList();
 		}
 
+		public LongText GetByUniqueId(string id)
+		{
+			return _longTexts.FirstOrDefault(x => x.ExportRequest != null && x.ExportRequest.UniqueId == id);
+		}
+
+		public IList<LongText> GetArtifactLongTexts(int artifactId)
+		{
+			return _longTexts.Where(x => x.ArtifactId == artifactId).ToList();
+		}
+
 		public void Clear()
 		{
 			_longTexts = new List<LongText>();

@@ -48,8 +48,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 			_logger.LogVerbose("Creating image file ExportRequest for image {image}.", image.FileName);
 			string destinationLocation = GetExportDestinationLocation(image);
+			image.TempLocation = destinationLocation;
 
 			string warningInCaseOfOverwriting = $"Overwriting image for {image.BatesNumber}.";
+
 			if (!_validator.CanExport(destinationLocation, warningInCaseOfOverwriting))
 			{
 				exportRequest = null;
@@ -57,7 +59,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			}
 
 			_logger.LogVerbose("Image file will be export to {destinationLocation}.", destinationLocation);
-			image.TempLocation = destinationLocation;
 
 			exportRequest = new NativeFileExportRequest(image, destinationLocation);
 			return true;

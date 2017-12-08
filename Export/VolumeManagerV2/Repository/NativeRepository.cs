@@ -33,6 +33,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 			return _natives.Where(x => !x.HasBeenDownloaded).Select(x => x.ExportRequest).ToList();
 		}
 
+		public Native GetByUniqueId(string id)
+		{
+			return _natives.FirstOrDefault(x => !x.HasBeenDownloaded && x.ExportRequest.UniqueId == id);
+		}
+
 		public void Clear()
 		{
 			_natives = new List<Native>();

@@ -9,6 +9,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 		protected string LongTextValue { get; private set; }
 
 		public LongTextExportRequest ExportRequest { get; private set; }
+		public bool HasBeenDownloaded { get; set; }
 		public string Location { get; private set; }
 		public bool RequireDeletion { get; private set; }
 		public int ArtifactId { get; private set; }
@@ -28,7 +29,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 				ExportRequest = exportRequest,
 				RequireDeletion = false,
 				SourceEncoding = sourceEncoding,
-				DestinationEncoding = destinationEncoding
+				DestinationEncoding = destinationEncoding,
+				HasBeenDownloaded = false
 			};
 		}
 
@@ -43,7 +45,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 				//It will be stored in temporary file
 				RequireDeletion = true,
 				SourceEncoding = encoding,
-				DestinationEncoding = encoding
+				DestinationEncoding = encoding,
+				HasBeenDownloaded = false
 			};
 		}
 
@@ -56,7 +59,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 				Location = location,
 				RequireDeletion = false,
 				SourceEncoding = encoding,
-				DestinationEncoding = encoding
+				DestinationEncoding = encoding,
+				HasBeenDownloaded = true
 			};
 		}
 
@@ -69,7 +73,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 				LongTextValue = text,
 				RequireDeletion = false,
 				SourceEncoding = Encoding.Default,
-				DestinationEncoding = Encoding.Default
+				DestinationEncoding = Encoding.Default,
+				HasBeenDownloaded = true
 			};
 		}
 	}

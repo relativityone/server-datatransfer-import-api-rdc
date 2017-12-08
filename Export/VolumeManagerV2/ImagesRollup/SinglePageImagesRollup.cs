@@ -6,7 +6,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 	{
 		public void RollupImages(ObjectExportInfo artifact)
 		{
-			((ImageExportInfo) artifact.Images[0]).SuccessfulRollup = false;
+			if (artifact.Images.Count > 0)
+			{
+				((ImageExportInfo) artifact.Images[0]).SuccessfulRollup = false;
+			}
 		}
 	}
 }

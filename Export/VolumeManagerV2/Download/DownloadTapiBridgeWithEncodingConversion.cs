@@ -1,40 +1,41 @@
 ﻿using System;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using kCura.WinEDDS.TApi;
 using Relativity.Logging;
 using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public class DownloadTapiBridgeWithEncodingConversion : IDownloadTapiBridge
+	public class DownloadTapiBridgeWithEncodingConversion : DownloadTapiBridgeAdapter
 	{
 		private bool _initialized;
 
-		private readonly DownloadTapiBridge _downloadTapiBridge;
 		private readonly LongTextEncodingConverter _longTextEncodingConverter;
 
 		private readonly ILog _logger;
 
-		public DownloadTapiBridgeWithEncodingConversion(DownloadTapiBridge downloadTapiBridge, LongTextEncodingConverter longTextEncodingConverter, ILog logger)
+		public DownloadTapiBridgeWithEncodingConversion(DownloadTapiBridge downloadTapiBridge, IProgressHandler progressHandler, IMessagesHandler messagesHandler,
+			LongTextEncodingConverter longTextEncodingConverter, ILog logger) : base(downloadTapiBridge, progressHandler, messagesHandler)
 		{
-			_downloadTapiBridge = downloadTapiBridge;
 			_longTextEncodingConverter = longTextEncodingConverter;
 			_logger = logger;
 
 			_initialized = false;
+			progressHandler.Attach(downloadTapiBridge);
 		}
 
-		public string AddPath(TransferPath transferPath)
+		public override string AddPath(TransferPath transferPath)
 		{
 			if (!_initialized)
 			{
 				_initialized = true;
 				_longTextEncodingConverter.StartListening();
-				_downloadTapiBridge.TapiProgress += _longTextEncodingConverter.OnTapiProgress;
+				TapiBridge.TapiProgress += _longTextEncodingConverter.OnTapiProgress;
 			}
-			return _downloadTapiBridge.AddPath(transferPath);
+			return TapiBridge.AddPath(transferPath);
 		}
 
-		public void WaitForTransferJob()
+		public override void WaitForTransferJob()
 		{
 			if (!_initialized)
 			{
@@ -42,13 +43,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			}
 			try
 			{
-				_downloadTapiBridge.WaitForTransferJob();
+				TapiBridge.WaitForTransferJob();
 			}
 			finally
 			{
 				try
 				{
-					_downloadTapiBridge.TapiProgress -= _longTextEncodingConverter.OnTapiProgress;
+					TapiBridge.TapiProgress -= _longTextEncodingConverter.OnTapiProgress;
 					_longTextEncodingConverter.StopListening();
 				}
 				catch (Exception e)
@@ -57,12 +58,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				}
 			}
 			_longTextEncodingConverter.WaitForConversionCompletion();
-		}
-
-		public void Dispose()
-		{
-			_downloadTapiBridge?.Dispose();
-			_longTextEncodingConverter?.Dispose();
 		}
 	}
 }

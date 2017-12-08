@@ -4,8 +4,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
 	public abstract class ExportRequest
 	{
-		private static int _exportRequestUniqueOrder;
-
 		/// <summary>
 		///     For Web mode
 		/// </summary>
@@ -13,13 +11,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		public string DestinationLocation { get; }
 
-		public int Order { get; }
+		public string UniqueId { get; set; }
 
 		protected ExportRequest(int artifactId, string destinationLocation)
 		{
 			ArtifactId = artifactId;
 			DestinationLocation = destinationLocation;
-			Order = _exportRequestUniqueOrder++;
 		}
 
 		public abstract TransferPath CreateTransferPath();

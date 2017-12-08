@@ -23,6 +23,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 			return _images.First(x => x.Artifact.ArtifactID == artifactId && x.Artifact.BatesNumber == batesNumber);
 		}
 
+		public IList<Image> GetArtifactImages(int artifactId)
+		{
+			return _images.Where(x => x.Artifact.ArtifactID == artifactId).ToList();
+		}
+
 		public IList<Image> GetImages()
 		{
 			return _images;
@@ -31,6 +36,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 		public IList<ExportRequest> GetExportRequests()
 		{
 			return _images.Where(x => !x.HasBeenDownloaded).Select(x => x.ExportRequest).ToList();
+		}
+
+		public Image GetByUniqueId(string id)
+		{
+			return _images.FirstOrDefault(x => !x.HasBeenDownloaded && x.ExportRequest.UniqueId == id);
 		}
 
 		public void Clear()

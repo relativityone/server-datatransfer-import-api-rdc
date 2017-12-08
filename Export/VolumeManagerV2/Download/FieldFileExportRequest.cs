@@ -38,8 +38,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			{
 				SourcePath = SourceLocation,
 				TargetPath = fileInfo.Directory?.FullName,
-				TargetFileName = fileInfo.Name,
-				Order = Order
+				TargetFileName = fileInfo.Name
 			};
 
 			transferPath.AddData(HttpTransferPathData.HttpTransferPathDataKey, httpTransferPathData);

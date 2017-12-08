@@ -256,7 +256,9 @@
     <Compile Include="Export\VolumeManagerV2\Directories\NativeFilePathProvider.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\PrefixFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\RelativeFilePathTransformer.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\DownloadTapiBridgeWrapper.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\DownloadStatistics.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\DownloadTapiBridgeAdapter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\DownloadTapiBridgeForFiles.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\DownloadTapiBridgeWithEncodingConversion.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EmptyExportRequestBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ExportFileDownloaderStatus.cs" />
@@ -274,7 +276,7 @@
     <Compile Include="Export\VolumeManagerV2\Download\LongTextEncodingConverterFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\LongTextExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\NativeFileExportRequestBuilder.cs" />
-    <Compile Include="Export\VolumeManagerV2\ExportTapiBridgeFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\ExportTapiBridgeFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\ISubdirectory.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\IVolume.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\IDirectoryManager.cs" />
@@ -373,6 +375,14 @@
     <Compile Include="Export\VolumeManagerV2\Settings\FieldLookupService.cs" />
     <Compile Include="Export\VolumeManagerV2\Settings\FieldService.cs" />
     <Compile Include="Export\VolumeManagerV2\Settings\FieldServiceFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\ImageFilesProgressHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\IMessagesHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\IProgressHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\ITransferClientHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\LongTextProgressHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\MessagesHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\NativeFilesProgressHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\ProgressHandler.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\ExportPermissionCheck.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\ExportValidation.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\FilesOverwriteValidator.cs" />
@@ -393,7 +403,6 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\WritersRetryPolicy.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\MultiPageTiffImagesRollup.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\PdfImagesRollup.cs" />
-    <Compile Include="Export\VolumeManagerV2\StatisticsWrapper.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\SubdirectoryManager.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\TextExportableSize.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\VolumeManager.cs" />

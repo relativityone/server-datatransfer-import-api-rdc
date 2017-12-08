@@ -37,6 +37,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			}
 
 			string destinationLocation = GetExportDestinationLocation(artifact);
+			artifact.NativeTempLocation = destinationLocation;
 
 			string warningInCaseOfOverwriting = $"Overwriting document {destinationLocation}.";
 			if (!_validator.CanExport(destinationLocation, warningInCaseOfOverwriting))
@@ -45,7 +46,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			}
 
 			_logger.LogVerbose("Native file for artifact {artifactId} will be export to {destinationLocation}.", artifact.ArtifactID, destinationLocation);
-			artifact.NativeTempLocation = destinationLocation;
 
 			FileExportRequest exportRequest = CreateExportRequest(artifact, destinationLocation);
 			return exportRequest.InList();

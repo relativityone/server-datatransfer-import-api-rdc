@@ -1,11 +1,14 @@
 ﻿using System;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using kCura.WinEDDS.Service.Export;
 using kCura.WinEDDS.TApi;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public class ExportFileDownloaderStatus : IExportFileDownloaderStatus
+	public class ExportFileDownloaderStatus : IExportFileDownloaderStatus, ITransferClientHandler
 	{
+		private TapiBridge _tapiBridge;
+
 		public event IExportFileDownloaderStatus.UploadModeChangeEventEventHandler UploadModeChangeEvent;
 
 		public FileDownloader.FileAccessType UploaderType { get; set; }
@@ -15,7 +18,18 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			UploaderType = FileDownloader.FileAccessType.Initializing;
 		}
 
-		public void OnTapiClientChanged(object sender, TapiClientEventArgs e)
+		public void Attach(TapiBridge tapiBridge)
+		{
+			_tapiBridge = tapiBridge;
+			_tapiBridge.TapiClientChanged += OnTapiClientChanged;
+		}
+
+		public void Detach()
+		{
+			_tapiBridge.TapiClientChanged -= OnTapiClientChanged;
+		}
+
+		private void OnTapiClientChanged(object sender, TapiClientEventArgs e)
 		{
 			FileDownloader.FileAccessType uploaderType;
 			if (Enum.TryParse(e.Name, out uploaderType))
