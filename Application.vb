@@ -11,6 +11,7 @@ Imports kCura.Windows.Forms
 Imports kCura.WinEDDS.Core.Export
 Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Service
+Imports Relativity
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
@@ -444,7 +445,7 @@ Namespace kCura.EDDS.WinForm
             Return Nothing
         End Function
 
-        Public Sub SelectCaseFolder(ByVal folderInfo As FolderInfo)
+        Public Sub SelectCaseFolder(ByVal folderInfo As WinEDDS.FolderInfo)
             _selectedCaseFolderID = folderInfo.ArtifactID
             _selectedCaseFolderPath = folderInfo.Path
             _caseSelected = True
@@ -587,7 +588,7 @@ Namespace kCura.EDDS.WinForm
         Public Function GetColumnHeadersFromLoadFile(ByVal loadfile As kCura.WinEDDS.LoadFile, ByVal firstLineContainsColumnHeaders As Boolean) As String()
             loadfile.CookieContainer = Me.CookieContainer
             Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog("WinEDDS")
-            Dim parser As New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, Nothing, logger, _timeZoneOffset, False, Nothing, False, Config.BulkLoadFileFieldDelimiter, Config.EnforceDocumentLimit, Nothing)
+            Dim parser As New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, _timeZoneOffset, False, Nothing, False, Config.BulkLoadFileFieldDelimiter, Config.EnforceDocumentLimit, Nothing, ExecutionSource.Rdc)
             Return parser.GetColumnNames(loadfile)
         End Function
 
