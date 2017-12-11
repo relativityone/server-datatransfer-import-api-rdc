@@ -315,7 +315,7 @@ Namespace kCura.WinEDDS
 			_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 			
 			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, columnHeaderString, exportInitializationArgs.ColumnNames, UseOldExport)
-				Dim batchExporter As IBatchExporter = Nothing
+				Dim batch As IBatch = Nothing
 				Dim objectExportableSize As IObjectExportableSize = Nothing
 
 				If UseOldExport Then
@@ -331,7 +331,7 @@ Namespace kCura.WinEDDS
 					objectExportableSize = container.Resolve(Of IObjectExportableSize)
 					FieldLookupService = container.Resolve(Of IFieldLookupService)
 					_errorFile = container.Resolve(Of IErrorFile)
-					batchExporter = container.Resolve(Of IBatchExporter)
+					batch = container.Resolve(Of IBatch)
 					_downloadModeStatus = container.Resolve(Of IExportFileDownloaderStatus)
 				End If
 
@@ -369,7 +369,7 @@ Namespace kCura.WinEDDS
 						For Each artifactMetadata As Object() In records
 							artifactIDs.Add(artifactMetadata(artifactIdOrdinal))
 						Next
-						ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), records, objectExportableSize, batchExporter)
+						ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), records, objectExportableSize, batch)
 						artifactIDs.Clear()
 						records = Nothing
 					End If
@@ -451,7 +451,7 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Private Sub ExportChunk(documentArtifactIDs As Integer(), records As Object(), objectExportableSize As IObjectExportableSize, batchExporter As IBatchExporter)
+		Private Sub ExportChunk(documentArtifactIDs As Integer(), records As Object(), objectExportableSize As IObjectExportableSize, batch As IBatch)
 			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			Dim natives As New System.Data.DataView
@@ -530,7 +530,7 @@ Namespace kCura.WinEDDS
 				_volumeManager.WriteDatFile(_linesToWriteDat, artifacts)
 				_volumeManager.WriteOptFile(_linesToWriteOpt, artifacts)
 			Else
-				batchExporter.Export(artifacts, records, volumePredictions, _cancellationTokenSource.Token)
+				batch.Export(artifacts, volumePredictions, _cancellationTokenSource.Token)
 			End If
 		End Sub
 

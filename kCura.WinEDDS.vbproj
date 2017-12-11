@@ -333,7 +333,7 @@
     <Compile Include="Exporters\Container\ContainerFactoryProvider.vb" />
     <Compile Include="Exporters\Container\IContainerFactory.vb" />
     <Compile Include="Exporters\ExportConfig.vb" />
-    <Compile Include="Exporters\IBatchExporter.vb" />
+    <Compile Include="Exporters\IBatch.vb" />
     <Compile Include="Exporters\IErrorFile.vb" />
     <Compile Include="Exporters\IExportConfig.vb" />
     <Compile Include="Exporters\IExporter.vb" />
