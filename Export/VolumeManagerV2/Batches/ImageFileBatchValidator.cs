@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
 
@@ -8,12 +9,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 {
 	public class ImageFileBatchValidator : IBatchValidator
 	{
+		private readonly ErrorFileWriter _errorFileWriter;
 		private readonly IFileHelper _fileHelper;
 		private readonly IStatus _status;
 		private readonly ILog _logger;
 
-		public ImageFileBatchValidator(IFileHelper fileHelper, IStatus status, ILog logger)
+		public ImageFileBatchValidator(ErrorFileWriter errorFileWriter, IFileHelper fileHelper, IStatus status, ILog logger)
 		{
+			_errorFileWriter = errorFileWriter;
 			_fileHelper = fileHelper;
 			_status = status;
 			_logger = logger;
@@ -53,10 +56,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 
 		private void ValidateSingleImage(ObjectExportInfo artifact, ImageExportInfo image, VolumePredictions predictions)
 		{
-			if (!_fileHelper.Exists(image.TempLocation))
+			if (string.IsNullOrWhiteSpace(image.FileGuid))
 			{
-				_logger.LogWarning("Image file {file} missing for image {image.BatesNumber} in artifact {artifactId}.", image.TempLocation, image.BatesNumber, artifact.ArtifactID);
-				_status.WriteWarning($"Image file {image.TempLocation} missing for image {image.BatesNumber} in artifact {artifact.ArtifactID}.");
+				return;
+			}
+			if (!_fileHelper.Exists(image.TempLocation) || _fileHelper.GetFileSize(image.TempLocation) == 0)
+			{
+				_logger.LogError("Image file {file} missing or empty for image {image.BatesNumber} in artifact {artifactId}.", image.TempLocation, image.BatesNumber, artifact.ArtifactID);
+				string errorMessage = _fileHelper.Exists(image.TempLocation) ? "File empty." : "File missing.";
+				_errorFileWriter.Write(ErrorFileWriter.ExportFileType.Image, artifact.IdentifierValue, image.FileGuid, errorMessage);
 			}
 			else if (_fileHelper.GetFileSize(image.TempLocation) != predictions.ImageFilesSize)
 			{
@@ -81,10 +89,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 			bool imageMissing = false;
 			for (int i = 0; i < images.Count; i++)
 			{
-				if (!_fileHelper.Exists(images[i].TempLocation))
+				if (!_fileHelper.Exists(images[i].TempLocation) || _fileHelper.GetFileSize(images[i].TempLocation) == 0)
 				{
-					_logger.LogWarning("Image file {file} missing for image {image.BatesNumber} in artifact {artifactId}.", images[i].TempLocation, images[i].BatesNumber, artifact.ArtifactID);
-					_status.WriteWarning($"Image file {images[i].TempLocation} missing for image {images[i].BatesNumber} in artifact {artifact.ArtifactID}.");
+					_logger.LogWarning("Image file {file} missing or empty for image {image.BatesNumber} in artifact {artifactId}.", images[i].TempLocation, images[i].BatesNumber,
+						artifact.ArtifactID);
+					string errorMessage = _fileHelper.Exists(images[i].TempLocation) ? "File empty." : "File missing.";
+					_errorFileWriter.Write(ErrorFileWriter.ExportFileType.Image, artifact.IdentifierValue, images[i].FileGuid, errorMessage);
 					imageMissing = true;
 				}
 			}
