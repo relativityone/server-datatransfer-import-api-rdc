@@ -1,6 +1,7 @@
 Imports System.Threading
 Imports kCura.Utility.Extensions.Enumerable
 Imports kCura.WinEDDS.TApi
+Imports Relativity
 Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
@@ -52,6 +53,7 @@ Namespace kCura.WinEDDS
 		Protected _settings As kCura.WinEDDS.LoadFile
 		Private _codeValidator As CodeValidator.Base
 		Protected WithEvents _artifactReader As Api.IArtifactReader
+		Protected _executionSource As Relativity.ExecutionSource
 		Public Property SkipExtractedTextEncodingCheck As Boolean
 		Public Property LoadImportedFullTextFromServer As Boolean
 		Public Property DisableExtractedTextFileLocationValidation As Boolean
@@ -127,11 +129,11 @@ Namespace kCura.WinEDDS
 			_artifactReader.AdvanceRecord()
 		End Sub
 
-		Protected Sub New(ByVal args As LoadFile, ioReporterInstance As IIoReporter, ByVal logger As ILog, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean, cancellationToken As CancellationTokenSource)
-			Me.New(args, ioReporterInstance, logger, timezoneoffset, doRetryLogic, autoDetect, cancellationToken,  initializeArtifactReader:=True)
+		Protected Sub New(ByVal args As LoadFile, ioReporterInstance As IIoReporter, ByVal logger As ILog, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean, cancellationToken As CancellationTokenSource, ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
+			Me.New(args, ioReporterInstance, logger, timezoneoffset, doRetryLogic, autoDetect, cancellationToken,  initializeArtifactReader:=True, executionSource := executionSource)
 		End Sub
 
-		Protected Sub New(args As LoadFile, ByVal ioReporterInstance As IIoReporter, ByVal logger As ILog, timezoneoffset As Int32, doRetryLogic As Boolean, autoDetect As Boolean, cancellationToken As CancellationTokenSource, initializeArtifactReader As Boolean)
+		Protected Sub New(args As LoadFile, ByVal ioReporterInstance As IIoReporter, ByVal logger As ILog, timezoneoffset As Int32, doRetryLogic As Boolean, autoDetect As Boolean, cancellationToken As CancellationTokenSource, initializeArtifactReader As Boolean, ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
             MyBase.New(ioReporterInstance, logger, cancellationToken)
 
 			_settings = args
@@ -143,6 +145,7 @@ Namespace kCura.WinEDDS
 			FileNameColumn = args.FileNameColumn
 			_timeZoneOffset = timezoneoffset
 			_autoDetect = autoDetect
+			_executionSource = executionSource
 			InitializeManagers(args)
 
 			If initializeArtifactReader Then

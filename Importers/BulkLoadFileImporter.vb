@@ -60,8 +60,6 @@ Namespace kCura.WinEDDS
 		Private _outputCodeFileWriter As System.IO.StreamWriter
 		Private _outputObjectFileWriter As System.IO.StreamWriter
 		Protected OverlayArtifactId As Int32
-		Protected ExecutionSource As Relativity.ExecutionSource
-
 		Protected RunId As String = System.Guid.NewGuid.ToString.Replace("-", "_")
 
 		Protected OutputCodeFilePath As String = System.IO.Path.GetTempFileName
@@ -316,7 +314,7 @@ Namespace kCura.WinEDDS
 					   timeZoneOffset As Int32, autoDetect As Boolean, initializeUploaders As Boolean, processID As Guid, doRetryLogic As Boolean, bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean,ByVal tokenSource As CancellationTokenSource,
 					   initializeArtifactReader As Boolean, 
 					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			MyBase.New(args, ioReporterInstance, logger, timeZoneOffset, doRetryLogic, autoDetect, tokenSource, initializeArtifactReader)
+			MyBase.New(args, ioReporterInstance, logger, timeZoneOffset, doRetryLogic, autoDetect, tokenSource, initializeArtifactReader, executionSource := executionSource)
 
 			' Avoid excessive concurrent dictionary hits by caching frequently used config settings.
 			_usePipeliningForNativeAndObjectImports = Config.UsePipeliningForNativeAndObjectImports
@@ -324,7 +322,6 @@ Namespace kCura.WinEDDS
 			_createErrorForEmptyNativeFile = Config.CreateErrorForEmptyNativeFile
 
 			' get an instance of the specific type of artifact reader so we can get the fieldmapped event
-			Me.ExecutionSource = executionSource
 			_enforceDocumentLimit = enforceDocumentLimit
 
 			ShouldImport = True
@@ -2074,7 +2071,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Overrides Function GetArtifactReader() As Api.IArtifactReader
-			Return New LoadFileReader(_settings, False)
+			Return New kCura.WinEDDS.LoadFileReader(_settings, False, _executionSource)
 		End Function
 
 		Protected Sub OnFatalError(message As String, ex As Exception, runID As String)
