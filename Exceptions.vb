@@ -115,7 +115,7 @@
 			End Sub
 
 			Public Sub New(ByVal path As String, ByVal innerException As System.Exception)
-				MyBase.New("The saved settings file specified is in an invalid format: " & path, innerException)
+				MyBase.New($"The saved settings file specified in '{path}' is in an invalid format.  {If(innerException?.Message, String.Empty)}", innerException)
 			End Sub
 		End Class
 

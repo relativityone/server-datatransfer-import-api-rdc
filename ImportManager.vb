@@ -1,4 +1,6 @@
 ﻿Imports System.Threading.Tasks
+Imports kCura.WinEDDS.Core.Export
+Imports kCura.WinEDDS.Exporters
 Imports Relativity
 
 Namespace kCura.EDDS.WinForm
@@ -16,6 +18,15 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region " Run Import "
+
+		Friend Async Function RunExport(options As ExportFile) As Task
+			Dim credentials As Net.NetworkCredential = Await _application.GetCredentialsAsync()
+			Dim exporter As New ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig())
+			exporter.UserNotificationFactory = Function(e) New EventBackedUserNotification(e)
+			exporter.ExportFile = options
+			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(exporter.ProcessObserver, exporter.ProcessController, Nothing, Nothing)
+			_application.StartProcess(exporter)
+		End Function
 
 		Friend Async Function RunApplicationImport(ByVal importOptions As ImportOptions) As Task
 			Dim packageData As Byte()
