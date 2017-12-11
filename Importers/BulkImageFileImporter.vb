@@ -725,7 +725,7 @@ Namespace kCura.WinEDDS
 						validator.ValidateImage(path)
 					End If
 
-					Me.RaiseStatusEvent(Windows.Process.EventType.Progress, String.Format("Image file ( {0} ) validated.", imageRecord.FileLocation), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+					Me.RaiseStatusEvent(Windows.Process.EventType.Status, String.Format("Image file ( {0} ) validated.", imageRecord.FileLocation), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 				Catch ex As Exception
 					If TypeOf ex Is kCura.ImageValidator.Exception.Base Then
 						Me.LogError(ex, "Failed to validate the {Path} image.", path)
