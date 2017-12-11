@@ -11,9 +11,9 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata
 		[Test]
 		[TestCase("dat", "ABC\\DEF", "Prefix", ExpectedResult = "ABC\\DEF\\Prefix_export.dat")]
 		[TestCase("csv", "C:\\Export\\", "", ExpectedResult = "C:\\Export\\_export.csv")]
-		[TestCase("html", "", "Pref", ExpectedResult = "\\Pref_export.html")]
+		[TestCase("html", "", "Pref", ExpectedResult = "Pref_export.html")]
 		[TestCase("abc", "\\Q\\", "AbC", ExpectedResult = "\\Q\\AbC_export.abc")]
-		[TestCase(null, "", "", ExpectedResult = "\\_export.")]
+		[TestCase(null, "", "", ExpectedResult = "_export.")]
 		public string ItShouldReturnValidLoadFilePath(string extension, string folderPath, string prefix)
 		{
 			var exportSettings = new ExportFile(1)
@@ -32,7 +32,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata
 		[Test]
 		[TestCase(LoadFileType.FileFormat.IPRO, "ABC\\DEF", "Prefix", ExpectedResult = "ABC\\DEF\\Prefix_export.lfp")]
 		[TestCase(LoadFileType.FileFormat.IPRO_FullText, "C:\\Export\\", "", ExpectedResult = "C:\\Export\\_export_FULLTEXT_.lfp")]
-		[TestCase(LoadFileType.FileFormat.Opticon, "", "Pref", ExpectedResult = "\\Pref_export.opt")]
+		[TestCase(LoadFileType.FileFormat.Opticon, "", "Pref", ExpectedResult = "Pref_export.opt")]
 		[TestCase(null, "\\Q\\", "AbC", ExpectedResult = "\\Q\\AbC_export")]
 		public string ItShouldReturnValidImageLoadFilePath(LoadFileType.FileFormat? extension, string folderPath, string prefix)
 		{
