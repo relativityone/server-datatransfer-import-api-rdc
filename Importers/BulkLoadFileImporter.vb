@@ -1180,7 +1180,7 @@ Namespace kCura.WinEDDS
 			End Select
 			settings.UploadFiles = _filePathColumnIndex <> -1 AndAlso _settings.LoadNativeFiles
 			settings.LoadImportedFullTextFromServer = Me.LoadImportedFullTextFromServer
-			settings.ExecutionSource = CType(ExecutionSource, kCura.EDDS.WebAPI.BulkImportManagerBase.ExecutionSource)
+			settings.ExecutionSource = CType(_executionSource, kCura.EDDS.WebAPI.BulkImportManagerBase.ExecutionSource)
 			settings.Billable = _settings.Billable
 			If _usePipeliningForNativeAndObjectImports AndAlso Not _task Is Nothing Then
 				WaitOnPushBatchTask()
