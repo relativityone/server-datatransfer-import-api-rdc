@@ -29,7 +29,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 		private readonly IDestinationPath _destinationPath;
 		private readonly IProcessingStatistics _processingStatistics;
 
-		public WriterRetryable(WritersRetryPolicy writersRetryPolicy, StreamFactory streamFactory, ILog logger, IStatus status, IDestinationPath destinationPath, IProcessingStatistics processingStatistics)
+		public WriterRetryable(WritersRetryPolicy writersRetryPolicy, StreamFactory streamFactory, ILog logger, IStatus status, IDestinationPath destinationPath,
+			IProcessingStatistics processingStatistics)
 		{
 			_streamFactory = streamFactory;
 			_logger = logger;
@@ -105,7 +106,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			{
 				FlushStream();
 				_streamWriterLastPosition = _streamWriter.BaseStream.Position;
-
 			}
 		}
 
@@ -153,6 +153,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 
 		public void RestoreLastState()
 		{
+			if (_initialCreation)
+			{
+				_logger.LogVerbose("StreamWriter hasn't been initialized. Nothing to restore.");
+				return;
+			}
 			_streamWriter = _streamFactory.Create(_streamWriter, _lastBatchSavedState, _destinationPath.Path, _destinationPath.Encoding, true);
 			_streamWriterLastPosition = _lastBatchSavedState;
 		}
