@@ -378,9 +378,11 @@
     <Compile Include="Export\VolumeManagerV2\Settings\FieldService.cs" />
     <Compile Include="Export\VolumeManagerV2\Settings\FieldServiceFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\FilesStatistics.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\IDownloadProgress.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\ImageFilesProgressHandler.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\IMessagesHandler.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\IFileProcessingStatistics.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\IMessenger.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\IMetadataProcessingStatistics.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\IProcessingStatistics.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\IProgressHandler.cs" />
@@ -388,6 +390,7 @@
     <Compile Include="Export\VolumeManagerV2\Statistics\ITransferClientHandler.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\LongTextProgressHandler.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\MessagesHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\Messenger.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\MetadataStatistics.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\NativeFilesProgressHandler.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\ProgressHandler.cs" />

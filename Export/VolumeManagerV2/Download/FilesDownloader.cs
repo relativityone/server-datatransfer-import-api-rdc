@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
 using Relativity.Transfer;
@@ -20,21 +19,18 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private readonly ImageRepository _imageRepository;
 		private readonly LongTextRepository _longTextRepository;
 
-		private readonly DownloadProgressManager _downloadProgressManager;
-
 		private readonly ExportTapiBridgeFactory _exportTapiBridgeFactory;
 
 		private readonly ILog _logger;
 
 		public FilesDownloader(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, ExportTapiBridgeFactory exportTapiBridgeFactory,
-			ILog logger, DownloadProgressManager downloadProgressManager)
+			ILog logger)
 		{
 			_nativeRepository = nativeRepository;
 			_imageRepository = imageRepository;
 			_longTextRepository = longTextRepository;
 			_exportTapiBridgeFactory = exportTapiBridgeFactory;
 			_logger = logger;
-			_downloadProgressManager = downloadProgressManager;
 		}
 
 		public void DownloadFilesForArtifacts(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
@@ -94,8 +90,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				_logger.LogVerbose("Waiting for long text transfer to finish.");
 				longTextDownloader.WaitForTransferJob();
 				_logger.LogVerbose("Long text transfer finished.");
-
-				_downloadProgressManager.FinalizeDownloadedCount();
 			}
 			catch (OperationCanceledException ex)
 			{

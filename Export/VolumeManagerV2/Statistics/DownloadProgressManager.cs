@@ -9,8 +9,10 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 {
-	public class DownloadProgressManager
+	public class DownloadProgressManager : IDownloadProgress
 	{
+		private int _savedDocumentsDownloadedCount;
+
 		private readonly ConcurrentDictionary<int, bool> _artifactsDownloaded;
 
 		private readonly NativeRepository _nativeRepository;
@@ -87,14 +89,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			}
 		}
 
-		public void FinalizeDownloadedCount()
+		public void UpdateDownloadedCount()
 		{
 			_logger.LogVerbose("Finalizing downloaded document count after batch has been downloaded.");
 			foreach (Native native in _nativeRepository.GetNatives())
 			{
 				UpdateDownloadedCount(native.Artifact.ArtifactID);
 			}
-			_status.WriteStatusLine(EventType.Progress, "Document for batch downloaded.", true);
 		}
 
 		private bool UpdateDownloadedCount(int artifactId)
@@ -125,9 +126,19 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			return true;
 		}
 
-		public int DownloadedDocumentsCount()
+		private int DownloadedDocumentsCount()
 		{
 			return _artifactsDownloaded.Count(x => x.Value);
+		}
+
+		public void SaveState()
+		{
+			_savedDocumentsDownloadedCount = DownloadedDocumentsCount();
+		}
+
+		public void RestoreLastState()
+		{
+			_status.UpdateDocumentExportedCount(_savedDocumentsDownloadedCount);
 		}
 	}
 }

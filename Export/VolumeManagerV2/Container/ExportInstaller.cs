@@ -140,6 +140,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 		{
 			container.Register(Component.For<IStateful, IFileProcessingStatistics, FilesStatistics>().ImplementedBy<FilesStatistics>());
 			container.Register(Component.For<IStateful, IMetadataProcessingStatistics, MetadataStatistics>().ImplementedBy<MetadataStatistics>());
+			container.Register(Component.For<IStateful, IDownloadProgress, DownloadProgressManager>().ImplementedBy<DownloadProgressManager>());
 		}
 	}
 }
