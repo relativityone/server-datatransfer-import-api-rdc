@@ -26,7 +26,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		private void OnFileProgress(object sender, TapiProgressEventArgs e)
 		{
 			_logger.LogVerbose("Tapi progress event for {fileName} with status {status} ({lineNumber}).", e.FileName, e.Status, e.LineNumber);
-			MarkAsDownloaded(e.FileName);
+			if (e.Status)
+			{
+				MarkAsDownloaded(e.FileName);
+			}
 		}
 
 		protected abstract void MarkAsDownloaded(string id);
