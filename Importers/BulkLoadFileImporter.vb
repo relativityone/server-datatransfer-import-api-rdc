@@ -1027,7 +1027,7 @@ Namespace kCura.WinEDDS
 
 				Try
 					If ShouldImport AndAlso _copyFileToRepository AndAlso FileTapiBridge.TransfersPending Then
-						CompletePendingNativeFileTransfers()
+						CompletePendingNativeFileTransfers("Waiting for all native files to upload...", "Native file uploads completed.", "Failed to complete all pending native file transfers.")
 						_jobCounter += 1
 
 						' The sync progress addresses an issue with TAPI clients that fail to raise progress when a failure occurs but successfully transfer all files via job retry (Aspera).

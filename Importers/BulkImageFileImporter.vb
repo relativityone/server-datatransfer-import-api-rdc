@@ -377,7 +377,7 @@ Namespace kCura.WinEDDS
 			_fileIdentifierLookup.Clear()
 			Try
 				If ShouldImport AndAlso _copyFilesToRepository AndAlso Me.FileTapiBridge.TransfersPending Then
-					CompletePendingNativeFileTransfers()
+					CompletePendingPhysicalFileTransfers("Waiting for all image files to upload...", "Image file uploads completed.", "Failed to complete all pending image file transfers.")
 					Me.JobCounter += 1
 
 					PushImageBatch(bulkLoadFilePath, dataGridFilePath)
