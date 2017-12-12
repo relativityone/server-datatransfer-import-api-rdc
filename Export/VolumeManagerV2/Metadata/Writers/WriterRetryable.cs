@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using kCura.WinEDDS.Exceptions;
@@ -13,7 +12,7 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 {
-	public class WriterRetryable : IStateful, IDisposable
+	public class WriterRetryable : IDisposable
 	{
 		private StreamWriter _streamWriter;
 		private long _streamWriterLastPosition;

@@ -13,5 +13,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 		public void Write(IList<KeyValuePair<string, string>> linesToWrite, ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
 		}
+
+		public void SaveState()
+		{
+		}
+
+		public void RestoreLastState()
+		{
+		}
 	}
 }

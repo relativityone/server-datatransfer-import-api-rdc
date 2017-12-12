@@ -90,7 +90,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			container.Register(Component.For<IErrorFile>().UsingFactoryMethod(k => k.Resolve<ErrorFileDestinationPath>()));
 			container.Register(Component.For<IFilePathTransformer>().UsingFactoryMethod(k => k.Resolve<FilePathTransformerFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<IBatchValidator>().UsingFactoryMethod(k => k.Resolve<BatchValidatorFactory>().Create(ExportSettings, container)));
-			container.Register(Component.For<IImageLoadFileWriter>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileWriterFactory>().Create(ExportSettings, container)));
 		}
 
 		private void InstallFieldService(IWindsorContainer container)
@@ -119,6 +118,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 
 			container.Register(Component.For<IRepository, ImageRepository>().ImplementedBy<ImageRepository>());
 			container.Register(Component.For<ImageRepositoryBuilder>().UsingFactoryMethod(k => k.Resolve<ImageRepositoryBuilderFactory>().Create(ExportSettings, container)));
+			container.Register(Component.For<IImageLoadFileWriter>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileWriterFactory>().Create(ExportSettings, container)));
 		}
 
 		private void InstallLongText(IWindsorContainer container)
@@ -133,7 +133,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 		private void InstallStatefulComponents(IWindsorContainer container)
 		{
 			container.Register(Component.For<IStateful, ILoadFileWriter>().ImplementedBy<LoadFileWriterRetryable>(),
-				Component.For<IStateful, IImageLoadFileWriter>().ImplementedBy<ImageLoadFileWriterRetryable>());
+				Component.For<IStateful>().UsingFactoryMethod(k => k.Resolve<IImageLoadFileWriter>()));
 		}
 
 		private void InstallStatistics(IWindsorContainer container)

@@ -7,7 +7,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 	{
 		public IImageLoadFileWriter Create(ExportFile exportSettings, IWindsorContainer container)
 		{
-			if (exportSettings.ArtifactTypeID != (int) ArtifactType.Document)
+			if (exportSettings.ArtifactTypeID != (int) ArtifactType.Document || !exportSettings.ExportImages)
 			{
 				return new EmptyImageLoadFileWriter();
 			}
