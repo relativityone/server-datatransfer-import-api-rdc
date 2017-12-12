@@ -130,13 +130,13 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
-		Protected Sub CompletePendingNativeFileTransfers(waitingMessage As String, completedMessage As String)
+		Protected Sub CompletePendingPhysicalFileTransfers(waitingMessage As String, completedMessage As String, errorMessage As String)
 			Try
 				Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, waitingMessage, 0, 0)
 				Me.FileTapiBridge.WaitForTransferJob()
 				Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, completedMessage, 0, 0)
 			Catch ex As Exception
-				Me.LogError(ex, "Failed to complete all pending native file transfers.")
+				Me.LogError(ex, errorMessage)
 				Throw
 			End Try
 		End Sub
