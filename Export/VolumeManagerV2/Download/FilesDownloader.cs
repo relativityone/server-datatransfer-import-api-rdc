@@ -98,7 +98,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 					_logger.LogWarning(ex, "Operation canceled during transfer.");
 					return;
 				}
-				_logger.LogError(ex, "Operation canceled, but cancellation hasn't been requested.");
+				_logger.LogError(ex, "Operation canceled, but cancellation has NOT been requested.");
 				throw;
 			}
 			catch (TransferException ex)

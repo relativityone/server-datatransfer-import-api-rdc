@@ -51,21 +51,34 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 
 			IEnumerator<ObjectExportInfo> enumerator = new ArtifactEnumerator(artifacts, context);
 
-			_retryPolicy.Execute((c, t) =>
+			try
 			{
-				CreateStreamIfNeeded();
-				try
+				_retryPolicy.Execute((c, t) =>
 				{
-					write(enumerator, _streamWriter);
-				}
-				catch (IOException ex)
+					CreateStreamIfNeeded();
+					try
+					{
+						write(enumerator, _streamWriter);
+					}
+					catch (IOException ex)
+					{
+						_logger.LogError(ex, "Error occurred during writing to file {type}.", _destinationPath.DestinationFileType);
+						throw new FileWriteException(_destinationPath.DestinationFileType, ex);
+					}
+					SaveStreamPosition();
+					UpdateStatistics();
+				}, context, cancellationToken);
+			}
+			catch (OperationCanceledException ex)
+			{
+				if (cancellationToken.IsCancellationRequested)
 				{
-					_logger.LogError(ex, "Error occurred during writing to file {type}.", _destinationPath.DestinationFileType);
-					throw new FileWriteException(_destinationPath.DestinationFileType, ex);
+					_logger.LogWarning(ex, "Operation canceled when retrying writing to load file.");
+					return;
 				}
-				SaveStreamPosition();
-				UpdateStatistics();
-			}, context, cancellationToken);
+				_logger.LogError(ex, "Operation canceled, but cancellation has NOT been requested.");
+				throw;
+			}
 		}
 
 		private void OnRetry(Exception exception, TimeSpan timeBetweenRetries, int retryCount, Context context)
