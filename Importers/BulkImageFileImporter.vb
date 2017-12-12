@@ -55,6 +55,7 @@ Namespace kCura.WinEDDS
 		Public Property MaxNumberOfErrorsInGrid As Int32 = Config.DefaultMaximumErrorCount
 		Private _totalValidated As Long
 		Private _totalProcessed As Long
+		Private _totalTransferred As Long
 		Private _startLineNumber As Int64
 		Private _enforceDocumentLimit As Boolean
 
@@ -381,6 +382,8 @@ Namespace kCura.WinEDDS
 					Me.JobCounter += 1
 
 					PushImageBatch(bulkLoadFilePath, dataGridFilePath)
+
+					_totalTransferred = Me.FileTapiProgressCount
 				End If
 			Catch ex As Exception
 				If BatchResizeEnabled AndAlso IsTimeoutException(ex) AndAlso ShouldImport Then
@@ -558,6 +561,7 @@ Namespace kCura.WinEDDS
 			_fileIdentifierLookup = New System.Collections.Hashtable
 			_totalProcessed = 0
 			_totalValidated = 0
+			_totalTransferred = 0
 			Me.JobCounter = 1
 			Me.FileTapiProgressCount = 0
 			DeleteFiles(bulkLoadFilePath, dataGridFilePath)
@@ -766,6 +770,9 @@ Namespace kCura.WinEDDS
 			Dim documentId As String = record.BatesNumber
 			Dim offset As Int64 = 0
 			For i As Int32 = 0 To lines.Count - 1
+				If Not ShouldImport Then 
+					Exit For
+				End If
 				record = lines(i)
 				Me.GetImageForDocument(BulkImageFileImporter.GetFileLocation(record), record.BatesNumber, documentId, i, offset, textFileList, i < lines.Count - 1, Convert.ToInt32(record.OriginalIndex), status, lines.Count, i = 0)
 			Next
@@ -879,7 +886,7 @@ Namespace kCura.WinEDDS
 					fileGuid = Me.FileTapiBridge.AddPath(imageFile, Guid.NewGuid().ToString(), originalLineNumber)
 					fileLocation = Me.FileTapiBridge.TargetPath.TrimEnd("\"c) & "\" & Me.FileTapiBridge.TargetFolderName & "\" & fileGuid
 				Else
-					RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, String.Format("Processing image '{0}'.", batesNumber), CType((_totalValidated + _totalProcessed) / 2, Int64), originalLineNumber)
+					RaiseStatusEvent(kCura.Windows.Process.EventType.Status, String.Format("Processing image '{0}'.", batesNumber), CType((_totalValidated + _totalProcessed) / 2, Int64), originalLineNumber)
 					fileGuid = System.Guid.NewGuid.ToString
 					Me.FileTapiProgressCount = Me.FileTapiProgressCount + 1
 				End If
@@ -973,6 +980,7 @@ Namespace kCura.WinEDDS
 			If Not _imageReader Is Nothing Then
 				_imageReader.Cancel()
 			End If
+			RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "Job stoped - only documents to the latest batch transferred.", _totalTransferred, Me.CurrentLineNumber)
 		End Sub
 
 		Protected Overrides Sub OnTapiClientChanged()
