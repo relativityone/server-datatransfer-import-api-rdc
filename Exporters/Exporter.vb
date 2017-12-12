@@ -94,11 +94,7 @@ Namespace kCura.WinEDDS
 		Public ReadOnly Property ErrorLogFileName() As String
 			Get
 				If UseOldExport Then
-					If Not _volumeManager Is Nothing Then
-						Return _volumeManager.ErrorLogFileName
-					Else 
-						Return Nothing
-					End If
+					Return _volumeManager?.ErrorLogFileName
 				End If
 				If _errorFile.IsErrorFileCreated() Then
 					Return _errorFile.Path()
@@ -344,7 +340,7 @@ Namespace kCura.WinEDDS
 				End If
 
 				Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
-				Me.WriteUpdate("Data retrieved. Beginning " & typeOfExportDisplayString & " export...")
+				Me.WriteUpdate($"Data retrieved. Beginning {typeOfExportDisplayString} export...")
 
 				RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType.ToString)
 				
@@ -371,13 +367,13 @@ Namespace kCura.WinEDDS
 					lastRecordCount = records.Length
 					_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 					_timekeeper.MarkEnd("Exporter_GetDocumentBlock")
-					Dim artifactIDs As New ArrayList
+					Dim artifactIDs As New List(Of Int32)
 					Dim artifactIdOrdinal As Int32 = FieldLookupService.GetOrdinalIndex("ArtifactID")
 					If records.Length > 0 Then
 						For Each artifactMetadata As Object() In records
-							artifactIDs.Add(artifactMetadata(artifactIdOrdinal))
+							artifactIDs.Add(CType(artifactMetadata(artifactIdOrdinal), Int32))
 						Next
-						ExportChunk(DirectCast(artifactIDs.ToArray(GetType(Int32)), Int32()), records, objectExportableSize, batch)
+						ExportChunk(artifactIDs.ToArray(), records, objectExportableSize, batch)
 						artifactIDs.Clear()
 						records = Nothing
 					End If
