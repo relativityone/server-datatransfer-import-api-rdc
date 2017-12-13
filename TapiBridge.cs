@@ -36,10 +36,10 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         private readonly FileSharePathManager pathManager;
 
-		/// <summary>
-		/// The manager used to limit the maximum number of files per folder.
-		/// </summary>
-		protected FileSharePathManager PathManager { get; }
+	    /// <summary>
+	    /// The manager used to limit the maximum number of files per folder.
+	    /// </summary>
+	    protected FileSharePathManager PathManager => pathManager;
 
         /// <summary>
         /// The cancellation token source.
@@ -56,10 +56,10 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         private readonly TapiBridgeParameters parameters;
 
-		/// <summary>
-		/// The native file transfer parameters.
-		/// </summary>
-		protected TapiBridgeParameters Parameters => parameters;
+        /// <summary>
+        /// The native file transfer parameters.
+        /// </summary>
+        protected TapiBridgeParameters Parameters => parameters;
 
         /// <summary>
         /// The Relativity transfer log.
