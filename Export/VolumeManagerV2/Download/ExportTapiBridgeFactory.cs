@@ -6,9 +6,6 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	/// <summary>
-	///     TODO refactor!
-	/// </summary>
 	public class ExportTapiBridgeFactory
 	{
 		private readonly ExportFile _exportSettings;
@@ -35,86 +32,47 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		public IDownloadTapiBridge CreateForNatives(CancellationToken token)
 		{
-			//TODO probably we should create parameters for download first (in tapi bridge)
-			TapiBridgeParameters parameters = new TapiBridgeParameters
-			{
-				BcpFileTransfer = false,
-				AsperaBcpRootFolder = string.Empty,
-				ClientRequestId = Guid.NewGuid(),
-				Credentials = _exportSettings.Credential,
-				AsperaDocRootLevels = Config.TapiAsperaNativeDocRootLevels,
-				FileShare = _exportSettings.CaseInfo.DocumentPath,
-				ForceAsperaClient = Config.TapiForceAsperaClient,
-				ForceClientCandidates = Config.TapiForceClientCandidates,
-				ForceFileShareClient = Config.TapiForceFileShareClient,
-				ForceHttpClient = Config.TapiForceHttpClient,
-				LargeFileProgressEnabled = Config.TapiLargeFileProgressEnabled,
-				LogConfigFile = Config.LogConfigFile,
-				MaxFilesPerFolder = 0,
-				MaxJobParallelism = kCura.Utility.Config.IOErrorNumberOfRetries,
-				MinDataRateMbps = Config.TapiMinDataRateMbps,
-				TargetPath = string.Empty, /*TODO*/
-				TargetDataRateMbps = Config.TapiTargetDataRateMbps,
-				TransferLogDirectory = Config.TapiTransferLogDirectory,
-				WaitTimeBetweenRetryAttempts = kCura.Utility.Config.IOErrorWaitTimeInSeconds,
-				WebCookieContainer = _exportSettings.CookieContainer,
-				WebServiceUrl = Config.WebServiceURL,
-				WorkspaceId = _exportSettings.CaseInfo.ArtifactID
-			};
+			DownloadTapiBridge tapiBridge = CreateDownloadTapiBridge(token);
 
-			DownloadTapiBridge tapiBridge = TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, token);
-			
 			return new DownloadTapiBridgeForFiles(tapiBridge, new NativeFilesProgressHandler(_downloadProgressManager, _logger), _messageHandler, _filesStatistics, _transferClientHandler,
+				_logger);
+		}
+
+		public IDownloadTapiBridge CreateForImages(CancellationToken token)
+		{
+			DownloadTapiBridge tapiBridge = CreateDownloadTapiBridge(token);
+
+			return new DownloadTapiBridgeForFiles(tapiBridge, new ImageFilesProgressHandler(_downloadProgressManager, _logger), _messageHandler, _filesStatistics, _transferClientHandler,
 				_logger);
 		}
 
 		public IDownloadTapiBridge CreateForLongText(CancellationToken token)
 		{
-			//TODO probably we should create parameters for download first (in tapi bridge)
-			TapiBridgeParameters parameters = new TapiBridgeParameters
-			{
-				BcpFileTransfer = false,
-				AsperaBcpRootFolder = string.Empty,
-				ClientRequestId = Guid.NewGuid(),
-				Credentials = _exportSettings.Credential,
-				AsperaDocRootLevels = Config.TapiAsperaNativeDocRootLevels,
-				FileShare = _exportSettings.CaseInfo.DocumentPath,
-				ForceAsperaClient = false,
-				ForceClientCandidates = string.Empty,
-				ForceFileShareClient = false,
-				ForceHttpClient = true,
-				LargeFileProgressEnabled = Config.TapiLargeFileProgressEnabled,
-				LogConfigFile = Config.LogConfigFile,
-				MaxFilesPerFolder = 0,
-				MaxJobParallelism = kCura.Utility.Config.IOErrorNumberOfRetries,
-				MinDataRateMbps = Config.TapiMinDataRateMbps,
-				TargetPath = string.Empty, /*TODO*/
-				TargetDataRateMbps = Config.TapiTargetDataRateMbps,
-				TransferLogDirectory = Config.TapiTransferLogDirectory,
-				WaitTimeBetweenRetryAttempts = kCura.Utility.Config.IOErrorWaitTimeInSeconds,
-				WebCookieContainer = _exportSettings.CookieContainer,
-				WebServiceUrl = Config.WebServiceURL,
-				WorkspaceId = _exportSettings.CaseInfo.ArtifactID
-			};
+			TapiBridgeParameters parameters = CreateTapiBridgeParametersFromConfiguration();
 
-			return CreateTapiBridgeForLongText(parameters, token);
-		}
+			parameters.ForceAsperaClient = false;
+			parameters.ForceClientCandidates = string.Empty;
+			parameters.ForceFileShareClient = false;
+			parameters.ForceHttpClient = true;
 
-		private IDownloadTapiBridge CreateTapiBridgeForLongText(TapiBridgeParameters parameters, CancellationToken token)
-		{
-			LongTextEncodingConverter longTextEncodingConverter = _converterFactory.Create(token);
 			DownloadTapiBridge tapiBridge = TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, token);
+
+			LongTextEncodingConverter longTextEncodingConverter = _converterFactory.Create(token);
 			return new DownloadTapiBridgeWithEncodingConversion(tapiBridge, new LongTextProgressHandler(_downloadProgressManager, _logger), _messageHandler, _metadataStatistics,
 				longTextEncodingConverter, _logger);
 		}
 
-		public IDownloadTapiBridge CreateForImages(CancellationToken token)
+		private DownloadTapiBridge CreateDownloadTapiBridge(CancellationToken token)
 		{
-			//TODO probably we should create parameters for download first (in tapi bridge)
+			TapiBridgeParameters parameters = CreateTapiBridgeParametersFromConfiguration();
+			DownloadTapiBridge tapiBridge = TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, token);
+			return tapiBridge;
+		}
+
+		private TapiBridgeParameters CreateTapiBridgeParametersFromConfiguration()
+		{
 			TapiBridgeParameters parameters = new TapiBridgeParameters
 			{
-				BcpFileTransfer = false,
-				AsperaBcpRootFolder = string.Empty,
 				ClientRequestId = Guid.NewGuid(),
 				Credentials = _exportSettings.Credential,
 				AsperaDocRootLevels = Config.TapiAsperaNativeDocRootLevels,
@@ -125,10 +83,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				ForceHttpClient = Config.TapiForceHttpClient,
 				LargeFileProgressEnabled = Config.TapiLargeFileProgressEnabled,
 				LogConfigFile = Config.LogConfigFile,
-				MaxFilesPerFolder = 0,
 				MaxJobParallelism = kCura.Utility.Config.IOErrorNumberOfRetries,
 				MinDataRateMbps = Config.TapiMinDataRateMbps,
-				TargetPath = string.Empty, /*TODO*/
+				TargetPath = string.Empty,
 				TargetDataRateMbps = Config.TapiTargetDataRateMbps,
 				TransferLogDirectory = Config.TapiTransferLogDirectory,
 				WaitTimeBetweenRetryAttempts = kCura.Utility.Config.IOErrorWaitTimeInSeconds,
@@ -136,11 +93,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				WebServiceUrl = Config.WebServiceURL,
 				WorkspaceId = _exportSettings.CaseInfo.ArtifactID
 			};
-
-			DownloadTapiBridge tapiBridge = TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, token);
-			
-			return new DownloadTapiBridgeForFiles(tapiBridge, new ImageFilesProgressHandler(_downloadProgressManager, _logger), _messageHandler, _filesStatistics, _transferClientHandler,
-				_logger);
+			return parameters;
 		}
 	}
 }
