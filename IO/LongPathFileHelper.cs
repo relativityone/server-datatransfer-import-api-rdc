@@ -30,6 +30,21 @@ namespace kCura.WinEDDS.Core.IO
 			return fileStream;
 		}
 
+		public FileStream CreateAndTruncate(string filePath, long position)
+		{
+			CreationDisposition disposition = CreationDisposition.OpenExisting;
+			ZetaLongPaths.Native.FileAccess fileAccess = ZetaLongPaths.Native.FileAccess.GenericRead | ZetaLongPaths.Native.FileAccess.GenericWrite;
+
+			var fileHandle = ZlpIOHelper.CreateFileHandle(filePath, disposition, fileAccess, ZetaLongPaths.Native.FileShare.None);
+			FileStream fileStream = new FileStream(fileHandle, System.IO.FileAccess.ReadWrite);
+			SetFileName(fileStream, filePath);
+			
+			fileStream.SetLength(position);
+			fileStream.Seek(0L, SeekOrigin.End);
+
+			return fileStream;
+		}
+
 		public void Delete(string filePath)
 		{
 			if (ZlpIOHelper.FileExists(filePath))

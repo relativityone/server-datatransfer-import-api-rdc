@@ -32,7 +32,7 @@ namespace kCura.WinEDDS.Core.Export
 
 		protected override ObjectExportInfo CreateObjectExportInfo()
 		{
-			return new ExtendedObjectExportInfo(VolumeManager)
+			return new ExtendedObjectExportInfo(FieldLookupService)
 			{
 				SelectedNativeFileNameViewFields = ExportSettings.SelectedNativesNameViewFields.ToList()
 			};
