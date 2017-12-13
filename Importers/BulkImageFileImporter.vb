@@ -671,7 +671,7 @@ Namespace kCura.WinEDDS
 				RaiseEvent EndRun(True, _runId)
 			Catch
 			End Try
-			RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "End Image Upload", Me.CurrentLineNumber, Me.CurrentLineNumber)
+			RaiseStatusEvent(kCura.Windows.Process.EventType.Status, "End Image Upload", Me.CurrentLineNumber, Me.CurrentLineNumber)
 		End Sub
 
 		Private Sub CompleteError(ByVal exception As System.Exception)
@@ -980,7 +980,7 @@ Namespace kCura.WinEDDS
 			If Not _imageReader Is Nothing Then
 				_imageReader.Cancel()
 			End If
-			RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "Job stoped - only documents to the latest batch transferred.", _totalTransferred, Me.CurrentLineNumber)
+			RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, $"Job has been stopped - {_totalTransferred} images transferred.", _totalTransferred, Me.CurrentLineNumber)
 		End Sub
 
 		Protected Overrides Sub OnTapiClientChanged()
