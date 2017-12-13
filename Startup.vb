@@ -6,6 +6,8 @@ Imports kCura.WinEDDS.Credentials
 Imports Relativity
 Imports RelativityManager = kCura.WinEDDS.Service.RelativityManager
 Imports kCura.EDDS.WinForm.Exceptions
+Imports kCura.WinEDDS.Container
+Imports kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 
 Namespace kCura.EDDS.WinForm
 
@@ -41,6 +43,7 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 		Public Sub Main()
+			ContainerFactoryProvider.ContainerFactory = new ContainerFactory()
 			Dim handler As ThreadExceptionHandler = New ThreadExceptionHandler()
 			AddHandler System.Windows.Forms.Application.ThreadException, AddressOf handler.Application_ThreadException
 
