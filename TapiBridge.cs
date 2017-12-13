@@ -32,29 +32,24 @@ namespace kCura.WinEDDS.TApi
     public abstract class TapiBridge : IDisposable
     {
         /// <summary>
-        /// The manager used to limit the maximum number of files per folder.
-        /// </summary>
-        protected readonly FileSharePathManager pathManager;
-
-        /// <summary>
         /// The cancellation token source.
         /// </summary>
         private readonly CancellationToken cancellationToken;
 
-        /// <summary>
-        /// The context used for transfer events.
-        /// </summary>
-        private readonly TransferContext context;
+		/// <summary>
+		/// The context used for transfer events.
+		/// </summary>
+		private readonly TransferContext context;
 
-        /// <summary>
-        /// The native file transfer parameters.
-        /// </summary>
-        protected readonly TapiBridgeParameters parameters;
+		/// <summary>
+		/// The native file transfer parameters.
+		/// </summary>
+		private readonly TapiBridgeParameters parameters;
 
         /// <summary>
         /// The Relativity transfer log.
         /// </summary>
-        private readonly ITransferLog transferLog;
+        protected ITransferLog TransferLog { get; }
 
         /// <summary>
         /// The file system service used to wrap up all IO API's.
@@ -99,7 +94,7 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// The transfer job.
         /// </summary>
-        private ITransferJob transferJob;
+        protected ITransferJob TransferJob { get; private set; }
 
         /// <summary>
         /// The disposed backing.
@@ -161,8 +156,7 @@ namespace kCura.WinEDDS.TApi
             this.transferHost = new RelativityTransferHost(connectionInfo, log);
             this.TargetPath = parameters.TargetPath;
             this.cancellationToken = token;
-            this.transferLog = log;
-            this.pathManager = new FileSharePathManager(parameters.MaxFilesPerFolder);
+            this.TransferLog = log;
             this.currentJobNumber = 0;
             this.context = new TransferContext
                                {
@@ -214,23 +208,15 @@ namespace kCura.WinEDDS.TApi
         /// <value>
         /// The <see cref="Guid"/> value.
         /// </value>
-        public Guid ClientId => this.transferClient?.Id ?? Guid.Empty;
+        protected Guid ClientId => this.transferClient?.Id ?? Guid.Empty;
 
-        /// <summary>
-        /// Gets the current transfer client display name.
-        /// </summary>
-        /// <value>
-        /// The name.
-        /// </value>
-        public string ClientDisplayName => this.transferClient?.DisplayName ?? Strings.ClientInitializing;
-
-        /// <summary>
-        /// Gets a value indicating whether there are transfers pending.
-        /// </summary>
-        /// <remarks>
-        /// Be careful here. The PathCount property was added to avoid costly hits to the repository.
-        /// </remarks>
-        public bool TransfersPending => this.transferJob != null && this.transferJob.PathCount > 0;
+		/// <summary>
+		/// Gets the current transfer client display name.
+		/// </summary>
+		/// <value>
+		/// The name.
+		/// </value>
+		private string ClientDisplayName => this.transferClient?.DisplayName ?? Strings.ClientInitializing;
 
         /// <summary>
         /// Gets the current transfer client.
@@ -272,14 +258,6 @@ namespace kCura.WinEDDS.TApi
             set;
         }
 
-        /// <summary>
-        /// Gets or sets the target folder name.
-        /// </summary>
-        /// <value>
-        /// The folder name.
-        /// </value>
-        public string TargetFolderName => this.pathManager.CurrentTargetFolderName;
-
 		/// <summary>
 		/// Adds the path to a transfer job.
 		/// </summary>
@@ -289,11 +267,11 @@ namespace kCura.WinEDDS.TApi
 		/// <returns>
 		/// The file name.
 		/// </returns>
-		protected string AddPath(TransferPath transferPath)
+		public string AddPath(TransferPath transferPath)
         {
             this.CheckDispose();
             this.CreateTransferJob(false);
-            if (this.transferJob == null)
+            if (this.TransferJob == null)
             {
                 throw new InvalidOperationException(Strings.TransferJobNullExceptionMessage);
             }
@@ -308,7 +286,7 @@ namespace kCura.WinEDDS.TApi
                         {
                             // This will automatically add add paths.
                             transferException = exception;
-                            this.transferLog.LogError(exception, "Failed to add a path to the transfer job.");
+                            this.TransferLog.LogError(exception, "Failed to add a path to the transfer job.");
                             this.FallbackHttpClient(exception, transferPath);
                         }).Execute(
                         () =>
@@ -316,7 +294,7 @@ namespace kCura.WinEDDS.TApi
                             // Fallback automatically attempts to add paths. Make sure the path isn't added twice.
                             if (transferException == null || !this.GetIsTransferPathInJobQueue(transferPath))
                             {
-                                this.transferJob.AddPath(transferPath);
+                                this.TransferJob.AddPath(transferPath);
                             }
 
                             return !string.IsNullOrEmpty(transferPath.TargetFileName)
@@ -328,7 +306,7 @@ namespace kCura.WinEDDS.TApi
             catch (ArgumentException e)
             {
                 // Note: this exception is only thrown when ValidateSourcePaths is true.
-                this.transferLog.LogWarning(
+                this.TransferLog.LogWarning(
                     e,
                     "There was a problem adding the '{SourceFile}' source file to the transfer job.",
                     transferPath.SourcePath);
@@ -337,7 +315,7 @@ namespace kCura.WinEDDS.TApi
             catch (FileNotFoundException e)
             {
                 // Ensure this exception is accounted for.
-                this.transferLog.LogWarning(e, "The '{SourceFile}' source file doesn't exist.", transferPath.SourcePath);
+                this.TransferLog.LogWarning(e, "The '{SourceFile}' source file doesn't exist.", transferPath.SourcePath);
                 throw;
             }
             catch (OperationCanceledException)
@@ -359,30 +337,26 @@ namespace kCura.WinEDDS.TApi
         /// <summary>
         /// Dump the transfer bridge parameter.
         /// </summary>
-        public void DumpInfo()
+        public virtual void DumpInfo()
         {
             var windEddsVersion = this.GetType().Assembly.GetName().Version;
             var tapiVersion = typeof(ITransferClient).Assembly.GetName().Version;
 
-            this.transferLog.LogInformation("WinEDDS - System Info - Version: '{0}'.", windEddsVersion);
-            this.transferLog.LogInformation("TAPI - System Info - Version: '{0}'.", tapiVersion);
-            this.transferLog.LogInformation("BCP file transfer: '{0}'.", parameters.BcpFileTransfer);
-            this.transferLog.LogInformation("Aspera BCP root folder: '{0}'.", parameters.AsperaBcpRootFolder);
-            this.transferLog.LogInformation("Sort into volume: '{0}'.", parameters.SortIntoVolumes);
-            this.transferLog.LogInformation("Client request id: '{0}'.", parameters.ClientRequestId);
-            this.transferLog.LogInformation("Aspera doc root level: '{0}'.", parameters.AsperaDocRootLevels);
-            this.transferLog.LogInformation("File share: '{0}'.", parameters.FileShare);
-            this.transferLog.LogInformation("Force Aspera client: '{0}'.", parameters.ForceAsperaClient);
-            this.transferLog.LogInformation("Force Fileshare client: '{0}'.", parameters.ForceFileShareClient);
-            this.transferLog.LogInformation("Force HTTP client: '{0}'.", parameters.ForceHttpClient);
-            this.transferLog.LogInformation("Force client candidates: '{0}'.", parameters.ForceClientCandidates);
-            this.transferLog.LogInformation("Max file per folder: '{0}'.", parameters.MaxFilesPerFolder);
-            this.transferLog.LogInformation("Max job parallelism: '{0}'.", parameters.MaxJobParallelism);
-            this.transferLog.LogInformation("Max job retry attempts: '{0}'.", parameters.MaxJobRetryAttempts);
-            this.transferLog.LogInformation("Min data rate: '{0}' Mbps.", parameters.MinDataRateMbps);
-            this.transferLog.LogInformation("Target data rate: '{0}' Mbps.", parameters.TargetDataRateMbps);
-            this.transferLog.LogInformation("Wait time between retry attempts: '{0}'.", parameters.WaitTimeBetweenRetryAttempts);
-            this.transferLog.LogInformation("Workspace identifier: '{0}'.", parameters.WorkspaceId);
+            this.TransferLog.LogInformation("WinEDDS - System Info - Version: '{0}'.", windEddsVersion);
+            this.TransferLog.LogInformation("TAPI - System Info - Version: '{0}'.", tapiVersion);
+            this.TransferLog.LogInformation("Client request id: '{0}'.", parameters.ClientRequestId);
+            this.TransferLog.LogInformation("Aspera doc root level: '{0}'.", parameters.AsperaDocRootLevels);
+            this.TransferLog.LogInformation("File share: '{0}'.", parameters.FileShare);
+            this.TransferLog.LogInformation("Force Aspera client: '{0}'.", parameters.ForceAsperaClient);
+            this.TransferLog.LogInformation("Force Fileshare client: '{0}'.", parameters.ForceFileShareClient);
+            this.TransferLog.LogInformation("Force HTTP client: '{0}'.", parameters.ForceHttpClient);
+            this.TransferLog.LogInformation("Force client candidates: '{0}'.", parameters.ForceClientCandidates);
+            this.TransferLog.LogInformation("Max job parallelism: '{0}'.", parameters.MaxJobParallelism);
+            this.TransferLog.LogInformation("Max job retry attempts: '{0}'.", parameters.MaxJobRetryAttempts);
+            this.TransferLog.LogInformation("Min data rate: '{0}' Mbps.", parameters.MinDataRateMbps);
+            this.TransferLog.LogInformation("Target data rate: '{0}' Mbps.", parameters.TargetDataRateMbps);
+            this.TransferLog.LogInformation("Wait time between retry attempts: '{0}'.", parameters.WaitTimeBetweenRetryAttempts);
+            this.TransferLog.LogInformation("Workspace identifier: '{0}'.", parameters.WorkspaceId);
         }
 
         /// <summary>
@@ -391,7 +365,7 @@ namespace kCura.WinEDDS.TApi
         public void WaitForTransferJob()
         {
             this.CheckDispose();
-            if (this.transferJob == null)
+            if (this.TransferJob == null)
             {
                 throw new InvalidOperationException(Strings.TransferJobNullExceptionMessage);
             }
@@ -405,7 +379,7 @@ namespace kCura.WinEDDS.TApi
                     (exception, count) =>
                         {
                             handledException = exception;
-                            this.transferLog.LogWarning2(
+                            this.TransferLog.LogWarning2(
                                 exception,
                                 this.jobRequest,
                                 Strings.CompleteJobExceptionMessage);
@@ -413,15 +387,15 @@ namespace kCura.WinEDDS.TApi
                         }).Execute(
                     () =>
                         {
-                            var taskResult = this.transferJob.CompleteAsync(this.cancellationToken);
+                            var taskResult = this.TransferJob.CompleteAsync(this.cancellationToken);
                             var transferResult = taskResult.GetAwaiter().GetResult();
-                            this.transferLog.LogInformation(
+                            this.TransferLog.LogInformation(
                                 "{Name} transfer status: {Status}, elapsed time: {Elapsed}, data rate: {TransferRate:0.00} Mbps",
                                 this.ClientDisplayName,
                                 transferResult.Status,
                                 transferResult.Elapsed,
                                 transferResult.TransferRateMbps);
-                            this.transferLog.LogInformation(
+                            this.TransferLog.LogInformation(
                                 "{Name} total transferred files: {TotalTransferredFiles}, total failed files: {TotalFailedFiles}",
                                 this.ClientDisplayName,
                                 transferResult.TotalTransferredFiles,
@@ -438,11 +412,8 @@ namespace kCura.WinEDDS.TApi
                                         transferResult.Issues.OrderBy(x => x.Index).ToList()
                                             .FindLast(x => x.Path != null) ?? transferResult.TransferError;
                                     if (lastIssue != null && lastIssue.Path != null)
-                                    {
-                                        var formattedMessage =
-                                            transferResult.Request.Direction == TransferDirection.Download
-                                                ? Strings.TransferFileDownloadFatalMessage
-                                                : Strings.TransferFileUploadFatalMessage;
+									{
+										var formattedMessage = TransferFileFatalMessage();
                                         message = string.Format(
                                             CultureInfo.CurrentCulture,
                                             formattedMessage,
@@ -478,13 +449,19 @@ namespace kCura.WinEDDS.TApi
             }
         }
 
-        /// <summary>
-        /// Checks to see whether this instance has been disposed.
-        /// </summary>
-        /// <exception cref="System.ObjectDisposedException">
-        /// Thrown when this instance has been disposed.
-        /// </exception>
-        private void CheckDispose()
+		/// <summary>
+		/// Specifies the fatal error message
+		/// </summary>
+		/// <returns></returns>
+		protected abstract string TransferFileFatalMessage();
+
+		/// <summary>
+		/// Checks to see whether this instance has been disposed.
+		/// </summary>
+		/// <exception cref="System.ObjectDisposedException">
+		/// Thrown when this instance has been disposed.
+		/// </exception>
+		private void CheckDispose()
         {
             if (!this.disposed)
             {
@@ -544,14 +521,14 @@ namespace kCura.WinEDDS.TApi
                     if (!string.IsNullOrEmpty(this.parameters.ForceClientCandidates))
                     {
                         clientStrategy = new TransferClientStrategy(this.parameters.ForceClientCandidates);
-                        this.transferLog.LogInformation(
+                        this.TransferLog.LogInformation(
                             "Override the default transfer client strategy. Candidates={ForceClientCandidates}",
                             this.parameters.ForceClientCandidates);
                     }
                     else
                     {
                         clientStrategy = new TransferClientStrategy();
-                        this.transferLog.LogInformation("Using the default default transfer client strategy.");
+                        this.TransferLog.LogInformation("Using the default default transfer client strategy.");
                     }
 
                     this.transferClient = this.transferHost
@@ -563,7 +540,7 @@ namespace kCura.WinEDDS.TApi
             }
             catch (Exception e)
             {
-                this.transferLog.LogError(e, "The transfer client construction failed.");
+                this.TransferLog.LogError(e, "The transfer client construction failed.");
                 configuration.ClientId = new Guid(TransferClientConstants.HttpClientId);
                 this.CreateTransferClient(configuration);
                 this.RaiseClientChanged(ClientChangeReason.HttpFallback);
@@ -595,18 +572,16 @@ namespace kCura.WinEDDS.TApi
         private void CreateTransferJob(bool httpFallback)
         {
             this.CheckDispose();
-            if (this.transferJob != null)
+            if (this.TransferJob != null)
             {
                 return;
             }
 
-            this.transferLog.LogInformation("Create job started...");
+            this.TransferLog.LogInformation("Create job started...");
             this.CreateTransferClient();
             this.currentJobNumber++;
             this.currentJobId = Guid.NewGuid();
-            this.jobRequest = this.currentDirection == TransferDirection.Upload
-                                  ? TransferRequest.ForUploadJob(this.TargetPath, this.context)
-                                  : TransferRequest.ForDownloadJob(this.TargetPath, this.context);
+            this.jobRequest = CreateTransferRequestForJob(this.context);
             this.jobRequest.ClientRequestId = this.parameters.ClientRequestId;
             this.jobRequest.JobId = this.currentJobId;
             this.jobRequest.Tag = this.currentJobNumber;
@@ -617,13 +592,13 @@ namespace kCura.WinEDDS.TApi
             // Note: avoid exponential backoff since that number will be excessive given the default max retry period.
             this.jobRequest.RetryStrategy =
                 RetryStrategies.CreateFixedTimeStrategy(this.parameters.WaitTimeBetweenRetryAttempts);
-            this.SetupRemotePathResolvers();
+            this.SetupRemotePathResolvers(this.jobRequest);
 
             try
             {
                 var task = this.transferClient.CreateJobAsync(this.jobRequest, this.cancellationToken);
-                this.transferJob = task.GetAwaiter().GetResult();
-                this.transferLog.LogInformation("Create job ended.");
+                this.TransferJob = task.GetAwaiter().GetResult();
+                this.TransferLog.LogInformation("Create job ended.");
             }
             catch (OperationCanceledException)
             {
@@ -632,7 +607,7 @@ namespace kCura.WinEDDS.TApi
             }
             catch (Exception e)
             {
-                this.transferLog.LogError(e, "Failed to create the transfer job.");
+                this.TransferLog.LogError(e, "Failed to create the transfer job.");
                 if (httpFallback)
                 {
                     // Nothing more can be done.
@@ -643,10 +618,24 @@ namespace kCura.WinEDDS.TApi
             }
         }
 
-        /// <summary>
-        /// Creates the HTTP client.
-        /// </summary>
-        private void CreateHttpClient()
+		/// <summary>
+		/// Setup the customer resolvers for both source and target paths.
+		/// </summary>
+		/// <remarks>
+		/// This provides backwards compatibility with IAPI.
+		/// </remarks>
+		protected abstract void SetupRemotePathResolvers(ITransferRequest jobRequest);
+
+		/// <summary>
+		/// Creates transfer request for job
+		/// </summary>
+		/// <returns></returns>
+		protected abstract TransferRequest CreateTransferRequestForJob(TransferContext context);
+
+		/// <summary>
+		/// Creates the HTTP client.
+		/// </summary>
+		private void CreateHttpClient()
         {
             this.CreateTransferClient(
                 new HttpClientConfiguration { CookieContainer = this.parameters.WebCookieContainer });
@@ -658,7 +647,7 @@ namespace kCura.WinEDDS.TApi
         private void CreateJobRetryListener()
         {
             this.transferListeners.Add(
-                new TransferJobRetryListener(this.transferLog, this.parameters.MaxJobRetryAttempts, this.context));
+                new TransferJobRetryListener(this.TransferLog, this.parameters.MaxJobRetryAttempts, this.context));
         }
 
         /// <summary>
@@ -668,7 +657,7 @@ namespace kCura.WinEDDS.TApi
         {
             this.transferListeners.Add(
                 new TransferPathIssueListener(
-                    this.transferLog,
+                    this.TransferLog,
                     this.currentDirection,
                     this.ClientDisplayName,
                     this.context));
@@ -679,7 +668,7 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         private void CreatePathProgressListener()
         {
-            var listener = new TransferPathProgressListener(this.transferLog, this.context);
+            var listener = new TransferPathProgressListener(this.TransferLog, this.context);
             listener.ProgressEvent += (sender, args) =>
                 {
                     this.TapiProgress.Invoke(sender, args);
@@ -692,7 +681,7 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         private void CreateRequestListener()
         {
-            this.transferListeners.Add(new TransferRequestListener(this.transferLog, this.context));
+            this.transferListeners.Add(new TransferRequestListener(this.TransferLog, this.context));
         }
 
         /// <summary>
@@ -700,7 +689,7 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         private void CreateStatisticsListener()
         {
-            var listener = new TransferStatisticsListener(this.transferLog, this.context);
+            var listener = new TransferStatisticsListener(this.TransferLog, this.context);
             listener.StatisticsEvent += (sender, args) => this.TapiStatistics.Invoke(sender, args);
             this.transferListeners.Add(listener);
         }
@@ -739,13 +728,13 @@ namespace kCura.WinEDDS.TApi
         private void DestroyTransferJob()
         {
             this.currentJobId = null;
-            if (this.transferJob == null)
+            if (this.TransferJob == null)
             {
                 return;
             }
 
-            this.transferJob.Dispose();
-            this.transferJob = null;
+            this.TransferJob.Dispose();
+            this.TransferJob = null;
         }
 
         /// <summary>
@@ -807,7 +796,7 @@ namespace kCura.WinEDDS.TApi
                 throw new TransferException(Strings.HttpFallbackExceptionMessage);
             }
 
-            this.transferLog.LogInformation(exception, "Preparing to fallback to the HTTP client due to an unexpected error.");
+            this.TransferLog.LogInformation(exception, "Preparing to fallback to the HTTP client due to an unexpected error.");
 
             // Ensure the fallback mode is acknowledged via Warning message.
             var message = string.Format(
@@ -833,10 +822,10 @@ namespace kCura.WinEDDS.TApi
             foreach (var path in retryablePaths)
             {
                 path.RevertPaths();
-                this.transferJob.AddPath(path);
+                this.TransferJob.AddPath(path);
             }
 
-            this.transferLog.LogInformation(exception, "Successfully switched the transfer client to HTTP.");
+            this.TransferLog.LogInformation(exception, "Successfully switched the transfer client to HTTP.");
         }
 
         /// <summary>
@@ -850,7 +839,7 @@ namespace kCura.WinEDDS.TApi
         /// </returns>
         private bool GetIsTransferPathInJobQueue(TransferPath path)
         {
-            var queuedTransferPaths = this.transferJob.ReadAllJobPaths().Select(jobPath => jobPath.Path);
+            var queuedTransferPaths = this.TransferJob.ReadAllJobPaths().Select(jobPath => jobPath.Path);
             return queuedTransferPaths.Any(x => x.Equals(path));
         }
 
@@ -863,10 +852,10 @@ namespace kCura.WinEDDS.TApi
         private IEnumerable<TransferPath> GetRetryableTransferPaths()
         {
             var paths = new List<TransferPath>();
-            if (this.transferJob != null)
+            if (this.TransferJob != null)
             {
                 paths.AddRange(
-                    this.transferJob.ReadAllJobPaths().Where(x => x.Status != TransferPathStatus.Successful)
+                    this.TransferJob.ReadAllJobPaths().Where(x => x.Status != TransferPathStatus.Successful)
                         .Select(jobPath => jobPath.Path));
             }
 
@@ -878,7 +867,7 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         private void LogCancelRequest()
         {
-            this.transferLog.LogInformation(
+            this.TransferLog.LogInformation(
                 "The file transfer has been cancelled. ClientId={ClientId}, JobId={JobId} ",
                 this.parameters.ClientRequestId,
                 this.currentJobId);
@@ -1002,44 +991,6 @@ namespace kCura.WinEDDS.TApi
         {
             this.CheckDispose();
             this.TapiWarningMessage.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
-        }
-
-        /// <summary>
-        /// Setup the customer resolvers for both source and target paths.
-        /// </summary>
-        /// <remarks>
-        /// This provides backwards compatibility with IAPI.
-        /// </remarks>
-        private void SetupRemotePathResolvers()
-        {
-            switch (this.ClientId.ToString().ToUpperInvariant())
-            {
-                case TransferClientConstants.AsperaClientId:
-                    IRemotePathResolver resolver;
-                    if (this.parameters.BcpFileTransfer)
-                    {
-                        resolver = new AsperaUncBcpPathResolver(
-                            this.parameters.FileShare,
-                            this.parameters.AsperaBcpRootFolder);
-                    }
-                    else
-                    {
-                        resolver = new AsperaUncPathResolver(
-                            this.parameters.FileShare,
-                            this.parameters.AsperaDocRootLevels);
-                    }
-
-                    if (this.currentDirection == TransferDirection.Upload)
-                    {
-                        this.jobRequest.TargetPathResolver = resolver;
-                    }
-                    else
-                    {
-                        this.jobRequest.SourcePathResolver = resolver;
-                    }
-
-                    break;
-            }
         }
 
         /// <summary>

@@ -1,13 +1,26 @@
-﻿namespace kCura.WinEDDS.TApi
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="DownloadTapiBridge.cs" company="kCura Corp">
+//   kCura Corp (C) 2017 All Rights Reserved.
+// </copyright>
+// <summary>
+//   Represents a class object to provide a Transfer API bridge to existing WinEDDS code for downloading.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace kCura.WinEDDS.TApi
 {
 	using System.Threading;
 	using Relativity.Transfer;
+	using kCura.WinEDDS.TApi.Resources;
+	using Relativity.Transfer.Aspera;
 
 	/// <summary>
 	///     Represents a class object to provide a download bridge from the Transfer API to existing WinEDDS code.
 	/// </summary>
 	public class DownloadTapiBridge : TapiBridge
 	{
+		private readonly TapiBridgeParameters parameters;
+
 		/// <summary>
 		///     Initializes a new instance of the <see cref="DownloadTapiBridge" /> class.
 		/// </summary>
@@ -25,18 +38,48 @@
 		/// </remarks>
 		public DownloadTapiBridge(TapiBridgeParameters parameters, ITransferLog log, CancellationToken token) : base(parameters, TransferDirection.Download, log, token)
 		{
+			this.parameters = parameters;
 		}
 
 		/// <summary>
-		/// Adds the path to a transfer job.
+		/// Fatal error message for downloading files
 		/// </summary>
-		/// <param name="transferPath">
-		/// The path to add to the job.
-		/// </param>
 		/// <returns></returns>
-		public new string AddPath(TransferPath transferPath)
+		protected override string TransferFileFatalMessage()
 		{
-			return base.AddPath(transferPath);
+			return Strings.TransferFileDownloadFatalMessage;
+		}
+
+		/// <summary>
+		/// Creates transfer request for download job
+		/// </summary>
+		/// <returns></returns>
+		protected override TransferRequest CreateTransferRequestForJob(TransferContext context)
+		{
+			return TransferRequest.ForDownloadJob(this.TargetPath, context);
+		}
+
+		/// <summary>
+		/// Setup the customer resolvers for both source and target paths for upload job.
+		/// </summary>
+		/// <remarks>
+		/// This provides backwards compatibility with IAPI.
+		/// </remarks>
+		protected override void SetupRemotePathResolvers(ITransferRequest jobRequest)
+		{
+			IRemotePathResolver resolver = null;
+			switch (this.ClientId.ToString().ToUpperInvariant())
+			{
+				case TransferClientConstants.AsperaClientId:
+					resolver = new AsperaUncPathResolver(
+							this.parameters.FileShare,
+							this.parameters.AsperaDocRootLevels);
+					break;
+				case TransferClientConstants.HttpClientId:
+					resolver = new HttpClientDownloadPathResolver();
+					break;
+			}
+			jobRequest.SourcePathResolver = resolver;
 		}
 	}
 }

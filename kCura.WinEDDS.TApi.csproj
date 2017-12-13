@@ -91,6 +91,7 @@
     </Compile>
     <Compile Include="ClientChangeReason.cs" />
     <Compile Include="DownloadTapiBridge.cs" />
+    <Compile Include="HttpClientDownloadPathResolver.cs" />
     <Compile Include="TapiBridgeFactory.cs" />
     <Compile Include="TapiBridgeParameters.cs" />
     <Compile Include="Properties\AssemblyInfoLocal.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="TapiProgressEventArgs.cs" />
     <Compile Include="TapiStatisticsEventArgs.cs" />
     <Compile Include="UploadTapiBridge.cs" />
+    <Compile Include="UploadTapiBridgeParameters.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Strings.resx">
