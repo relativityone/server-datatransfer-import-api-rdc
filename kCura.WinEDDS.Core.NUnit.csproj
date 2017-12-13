@@ -77,6 +77,20 @@
     <Compile Include="Export\Natives\Name\Factories\FileNamePartProviderContainerTest.cs" />
     <Compile Include="Export\Natives\Name\FieldFileNamePartProviderTests.cs" />
     <Compile Include="Export\Natives\Name\SeparatorFileNamePartProviderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\DataSize\ImageExportableSizeTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\DataSize\TextExportableSizeTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\RelativeFilePathProviderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\DestinationPathTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Validation\ExportPermissionCheckTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Validation\FilesOverwriteValidatorTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\ImagesRollup\ImagesRollupFactoryTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\ImagesRollup\SinglePageImagesRollupTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\LabelManagerTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\DataSize\NativeExportableSizeTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\ErrorFileDestinationPathTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\SubdirectoryManagerTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Validation\VolumeAndSubdirectoryValidatorTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\VolumeManagerTests.cs" />
     <Compile Include="Helpers\ViewFieldInfoMockFactory.cs" />
   </ItemGroup>
   <ItemGroup>
