@@ -5,11 +5,11 @@ using Relativity.Transfer.UnitTestFramework;
 
 namespace kCura.WinEDDS.TApi.NUnit.Integration
 {
-	public class UploadTapiBridgeTests : TapiBridgeTests
+	public class UploadTapiBridgeTests : TapiBridgeTestsBase
 	{
 		private UploadTapiBridge tapiBridge;
 
-		protected override TapiBridge NativeFileTransfer => tapiBridge;
+		protected override TapiBridgeBase NativeFileTransfer => tapiBridge;
 		
 		/// <summary>
 		/// Tests an upload.

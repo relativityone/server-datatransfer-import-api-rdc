@@ -18,9 +18,9 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
     using global::Relativity.Transfer.UnitTestFramework;
 
     /// <summary>
-    /// Base class for the tests for the <see cref="TapiBridge"/> class.
+    /// Base class for the tests for the <see cref="TapiBridgeBase"/> class.
     /// </summary>
-    public abstract class TapiBridgeTests
+    public abstract class TapiBridgeTestsBase
     {
         /// <summary>
         /// The minimum test file length [1KB]
@@ -50,7 +50,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         /// <summary>
         /// The native file transfer class.
         /// </summary>
-        protected abstract TapiBridge NativeFileTransfer { get; }
+        protected abstract TapiBridgeBase NativeFileTransfer { get; }
 
 		/// <summary>
 		/// The target path.
@@ -238,7 +238,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         }
 
 		/// <summary>
-		/// Given the <see cref="TapiBridge"/> class.
+		/// Given the <see cref="TapiBridgeBase"/> class.
 		/// </summary>
 		protected void GivenTheNativeFileTransfer(TransferDirection direction)
         {

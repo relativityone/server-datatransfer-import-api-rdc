@@ -121,7 +121,7 @@
     <Compile Include="FileNotFoundImportJobTests.cs" />
     <Compile Include="PositiveImportJobTests.cs" />
     <Compile Include="ImportJobTestBase.cs" />
-    <Compile Include="TapiBridgeTests.cs" />
+    <Compile Include="TapiBridgeTestsBase.cs" />
     <Compile Include="Properties\AssemblyInfoLocal.cs" />
     <Compile Include="UploadTapiBridgeTests.cs" />
   </ItemGroup>
