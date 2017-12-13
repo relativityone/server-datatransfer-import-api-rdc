@@ -4,7 +4,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 {
 	public interface IMessagesHandler
 	{
-		void Attach(TapiBridge tapiBridge);
+		void Attach(TapiBridgeBase tapiBridge);
 		void Detach();
 	}
 }

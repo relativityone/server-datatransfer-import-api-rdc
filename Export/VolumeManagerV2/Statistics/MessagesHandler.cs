@@ -6,7 +6,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 {
 	public class MessagesHandler : IMessagesHandler
 	{
-		private TapiBridge _tapiBridge;
+		private TapiBridgeBase _tapiBridge;
 
 		private readonly IStatus _status;
 		private readonly ILog _logger;
@@ -17,7 +17,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			_logger = logger;
 		}
 
-		public void Attach(TapiBridge tapiBridge)
+		public void Attach(TapiBridgeBase tapiBridge)
 		{
 			_tapiBridge = tapiBridge;
 			_tapiBridge.TapiErrorMessage += OnErrorMessage;

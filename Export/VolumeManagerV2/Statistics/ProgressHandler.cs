@@ -5,7 +5,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 {
 	public abstract class ProgressHandler : IProgressHandler
 	{
-		private TapiBridge _tapiBridge;
+		private TapiBridgeBase _tapiBridge;
 
 		private readonly ILog _logger;
 
@@ -17,7 +17,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			_logger = logger;
 		}
 
-		public void Attach(TapiBridge tapiBridge)
+		public void Attach(TapiBridgeBase tapiBridge)
 		{
 			_tapiBridge = tapiBridge;
 			_tapiBridge.TapiProgress += OnFileProgress;

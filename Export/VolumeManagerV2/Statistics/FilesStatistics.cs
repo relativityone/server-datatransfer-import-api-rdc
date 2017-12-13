@@ -5,7 +5,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 {
 	public class FilesStatistics : ITransferStatistics, IFileProcessingStatistics
 	{
-		private TapiBridge _tapiBridge;
+		private TapiBridgeBase _tapiBridge;
 
 		private long _savedFileBytes;
 		private long _savedFileTime;
@@ -23,7 +23,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			_logger = logger;
 		}
 
-		public void Attach(TapiBridge tapiBridge)
+		public void Attach(TapiBridgeBase tapiBridge)
 		{
 			_tapiBridge = tapiBridge;
 			_tapiBridge.TapiProgress += OnProgress;
