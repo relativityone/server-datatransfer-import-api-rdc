@@ -39,7 +39,7 @@ namespace kCura.WinEDDS.TApi
         protected override void OnLargeFileProgress(object sender, LargeFileProgressEventArgs e)
         {
             base.OnLargeFileProgress(sender, e);
-            this.RaiseStatusMessage($"Trip {e.ChunkNumber} of {e.TotalChunks}", e.Path.Order);
+            this.RaiseStatusMessage($"Large file transfer progress: {(int)(((double)e.ChunkNumber / (double)e.TotalChunks) * 100)} %.", e.Path.Order);
         }
 
         /// <inheritdoc />
