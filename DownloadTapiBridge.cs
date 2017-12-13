@@ -17,7 +17,7 @@ namespace kCura.WinEDDS.TApi
 	/// <summary>
 	///     Represents a class object to provide a download bridge from the Transfer API to existing WinEDDS code.
 	/// </summary>
-	public class DownloadTapiBridge : TapiBridge
+	public sealed class DownloadTapiBridge : TapiBridgeBase
 	{
 		private readonly TapiBridgeParameters parameters;
 

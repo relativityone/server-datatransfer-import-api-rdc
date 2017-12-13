@@ -16,7 +16,7 @@ namespace kCura.WinEDDS.TApi
     using Relativity.Transfer;
 
     /// <summary>
-    /// Represents a class to create <see cref="TapiBridge"/> instances.
+    /// Represents a class to create <see cref="TapiBridgeBase"/> instances.
     /// </summary>
     public static class TapiBridgeFactory
     {

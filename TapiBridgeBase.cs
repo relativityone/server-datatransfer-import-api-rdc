@@ -29,7 +29,7 @@ namespace kCura.WinEDDS.TApi
     /// Represents a class object to provide a bridge from the Transfer API to existing WinEDDS code.
     /// </summary>
     /// <seealso cref="System.IDisposable" />
-    public abstract class TapiBridge : IDisposable
+    public abstract class TapiBridgeBase : IDisposable
     {
         /// <summary>
         /// The cancellation token source.
@@ -102,7 +102,7 @@ namespace kCura.WinEDDS.TApi
         private bool disposed;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TapiBridge"/> class.
+        /// Initializes a new instance of the <see cref="TapiBridgeBase"/> class.
         /// </summary>
         /// <param name="parameters">
         /// The native file transfer parameters.
@@ -119,7 +119,7 @@ namespace kCura.WinEDDS.TApi
         /// <remarks>
         /// Don't expose TAPI objects to WinEDDS - at least not yet. This is reserved for integration tests.
         /// </remarks>
-        internal TapiBridge(
+        internal TapiBridgeBase(
             TapiBridgeParameters parameters,
             TransferDirection direction,
             ITransferLog log,

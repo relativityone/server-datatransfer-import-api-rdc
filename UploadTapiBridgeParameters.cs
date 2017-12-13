@@ -12,7 +12,7 @@ namespace kCura.WinEDDS.TApi
 	/// <summary>
 	/// Represents the generic parameters to setup a Transfer API bridge for upload.
 	/// </summary>
-	public class UploadTapiBridgeParameters : TapiBridgeParameters
+	public sealed class UploadTapiBridgeParameters : TapiBridgeParameters
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UploadTapiBridgeParameters"/> class.

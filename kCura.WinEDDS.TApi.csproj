@@ -96,7 +96,7 @@
     <Compile Include="TapiBridgeParameters.cs" />
     <Compile Include="Properties\AssemblyInfoLocal.cs" />
     <Compile Include="FileSharePathManager.cs" />
-    <Compile Include="TapiBridge.cs" />
+    <Compile Include="TapiBridgeBase.cs" />
     <Compile Include="Resources\Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -17,7 +17,7 @@ namespace kCura.WinEDDS.TApi
 	/// <summary>
 	///     Represents a class object to provide a upload bridge from the Transfer API to existing WinEDDS code.
 	/// </summary>
-	public class UploadTapiBridge : TapiBridge
+	public sealed class UploadTapiBridge : TapiBridgeBase
 	{
 		/// <summary>
 		/// The manager used to limit the maximum number of files per folder.

@@ -3,7 +3,7 @@ using Relativity.Transfer;
 
 namespace kCura.WinEDDS.TApi
 {
-	internal class HttpClientDownloadPathResolver : RemotePathResolverBase
+	internal sealed class HttpClientDownloadPathResolver : RemotePathResolverBase
 	{
 		protected override string OnResolvePath(string path)
 		{
