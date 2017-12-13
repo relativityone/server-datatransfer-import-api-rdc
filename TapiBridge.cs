@@ -29,12 +29,17 @@ namespace kCura.WinEDDS.TApi
     /// Represents a class object to provide a bridge from the Transfer API to existing WinEDDS code.
     /// </summary>
     /// <seealso cref="System.IDisposable" />
-    public sealed class TapiBridge : IDisposable
+    public abstract class TapiBridge : IDisposable
     {
         /// <summary>
         /// The manager used to limit the maximum number of files per folder.
         /// </summary>
         private readonly FileSharePathManager pathManager;
+
+		/// <summary>
+		/// The manager used to limit the maximum number of files per folder.
+		/// </summary>
+		protected FileSharePathManager PathManager { get; }
 
         /// <summary>
         /// The cancellation token source.
@@ -50,6 +55,11 @@ namespace kCura.WinEDDS.TApi
         /// The native file transfer parameters.
         /// </summary>
         private readonly TapiBridgeParameters parameters;
+
+		/// <summary>
+		/// The native file transfer parameters.
+		/// </summary>
+		protected TapiBridgeParameters Parameters => parameters;
 
         /// <summary>
         /// The Relativity transfer log.
@@ -288,22 +298,16 @@ namespace kCura.WinEDDS.TApi
         /// </value>
         public int WorkspaceId => this.parameters.WorkspaceId;
 
-        /// <summary>
-        /// Adds the path to a transfer job.
-        /// </summary>
-        /// <param name="sourceFile">
-        /// The full path to the source file.
-        /// </param>
-        /// <param name="targetFileName">
-        /// The optional target filename.
-        /// </param>
-        /// <param name="order">
-        /// The order the path is added to the transfer job.
-        /// </param>
-        /// <returns>
-        /// The file name.
-        /// </returns>
-        public string AddPath(string sourceFile, string targetFileName, int order)
+		/// <summary>
+		/// Adds the path to a transfer job.
+		/// </summary>
+		/// <param name="transferPath">
+		/// The path to add to the job.
+		/// </param>
+		/// <returns>
+		/// The file name.
+		/// </returns>
+		protected string AddPath(TransferPath transferPath)
         {
             this.CheckDispose();
             this.CreateTransferJob(false);
@@ -311,17 +315,6 @@ namespace kCura.WinEDDS.TApi
             {
                 throw new InvalidOperationException(Strings.TransferJobNullExceptionMessage);
             }
-
-            var transferPath = new TransferPath
-                                   {
-                                       SourcePath = sourceFile,
-                                       TargetPath =
-                                           this.parameters.SortIntoVolumes
-                                               ? this.pathManager.GetNextTargetPath(this.TargetPath)
-                                               : this.TargetPath,
-                                       TargetFileName = targetFileName,
-                                       Order = order
-                                   };
 
             try
             {
@@ -576,7 +569,7 @@ namespace kCura.WinEDDS.TApi
                     else
                     {
                         clientStrategy = new TransferClientStrategy();
-                        this.transferLog.LogInformation("Using the default transfer client strategy.");
+                        this.transferLog.LogInformation("Using the default default transfer client strategy.");
                     }
 
                     this.transferClient = this.transferHost

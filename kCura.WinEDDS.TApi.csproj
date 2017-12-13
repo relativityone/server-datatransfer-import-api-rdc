@@ -91,6 +91,7 @@
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ClientChangeReason.cs" />
+    <Compile Include="DownloadTapiBridge.cs" />
     <Compile Include="FileInfoInvalidPathException.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IIoReporter.cs" />
@@ -122,6 +123,7 @@
     <Compile Include="EventListeners\TransferStatisticsListener.cs" />
     <Compile Include="TapiProgressEventArgs.cs" />
     <Compile Include="TapiStatisticsEventArgs.cs" />
+    <Compile Include="UploadTapiBridge.cs" />
     <Compile Include="WaitAndRetryPolicy.cs" />
   </ItemGroup>
   <ItemGroup>
