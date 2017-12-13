@@ -70,6 +70,10 @@ Namespace kCura.WinEDDS.NUnit
 			PauseCalled += 1
 		End Sub
 
+		Protected Overrides Sub RaiseWarningAndPause(ByVal exception As Exception, ByVal timeoutSeconds As Int32, ByVal retryCount As Int32, ByVal totalRetryCount As Int32)
+			PauseCalled += 1
+		End Sub
+
 		Public Property MinimumBatch As Integer
 			Get
 				Return MyBase.MinimumBatchSize
