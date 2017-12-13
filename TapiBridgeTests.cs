@@ -51,7 +51,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         /// <summary>
         /// The native file transfer class.
         /// </summary>
-        private TapiBridge nativeFileTransfer;
+        private UploadTapiBridge nativeFileTransfer;
 
         /// <summary>
         /// The target path.
@@ -288,7 +288,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
                 WorkspaceId = this.workspaceId
             };
 
-            this.nativeFileTransfer = new TapiBridge(parameters, direction, this.transferLog?.Object, CancellationToken.None);
+            this.nativeFileTransfer = new UploadTapiBridge(parameters, this.transferLog?.Object, CancellationToken.None);
             this.nativeFileTransfer.TapiFatalError += (sender, args) =>
             {
                 lock (SyncRoot)
