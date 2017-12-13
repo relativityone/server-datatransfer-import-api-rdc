@@ -20,8 +20,8 @@ Namespace kCura.WinEDDS
 		Private ReadOnly _syncRoot As Object = New Object
 		Private ReadOnly _cancellationToken As CancellationTokenSource
 		Private ReadOnly _statistics As New Statistics
-		Private WithEvents _bulkLoadTapiBridge As TapiBridge
-		Private WithEvents _fileTapiBridge As TapiBridge
+		Private WithEvents _bulkLoadTapiBridge As UploadTapiBridge
+		Private WithEvents _fileTapiBridge As UploadTapiBridge
 		Private _bulkLoadTapiClientName As String
 		Private _fileTapiClient As TapiClient = TapiClient.None
 		Private _fileTapiClientName As String
@@ -52,7 +52,7 @@ Namespace kCura.WinEDDS
 
 		Protected MustOverride ReadOnly Property CurrentLineNumber() As Integer
 
-		Protected ReadOnly Property BulkLoadTapiBridge As TapiBridge
+		Protected ReadOnly Property BulkLoadTapiBridge As UploadTapiBridge
 			Get
 				Return _bulkLoadTapiBridge
 			End Get
@@ -80,7 +80,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Protected ReadOnly Property FileTapiBridge As TapiBridge
+		Protected ReadOnly Property FileTapiBridge As UploadTapiBridge
 			Get
 				Return _fileTapiBridge
 			End Get

@@ -10,6 +10,7 @@ Imports kCura.WinEDDS.IO
 Namespace kCura.WinEDDS
 	Public Class VolumeManager
 		Implements IFieldLookupService
+		Implements ILongTextEntryWriter
 
 #Region "Members"
 
@@ -1249,7 +1250,7 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
-		Public Sub WriteLongTextFileToDatFile(ByRef fileWriter As System.IO.StreamWriter, ByVal longTextPath As String, ByVal encoding As System.Text.Encoding)
+		Public Sub WriteLongTextFileToDatFile(fileWriter As System.IO.StreamWriter, ByVal longTextPath As String, ByVal encoding As System.Text.Encoding) Implements  ILongTextEntryWriter.WriteLongTextFileToDatFile
 			Dim source As System.IO.TextReader = New System.IO.StreamReader(longTextPath, encoding)
 			If String.IsNullOrEmpty(longTextPath) AndAlso Not source Is Nothing AndAlso TypeOf source Is System.IO.StreamReader AndAlso TypeOf DirectCast(source, System.IO.StreamReader).BaseStream Is System.IO.FileStream Then
 				longTextPath = DirectCast(DirectCast(source, System.IO.StreamReader).BaseStream, System.IO.FileStream).Name
@@ -1400,6 +1401,10 @@ Namespace kCura.WinEDDS
 
 		Public Function GetOrdinalIndex(fieldName As String) As Int32 Implements IFieldLookupService.GetOrdinalIndex
 			Return _ordinalLookup(fieldName)
+		End Function
+
+		Public Function ContainsFieldName(fieldName As String) As Boolean Implements IFieldLookupService.ContainsFieldName
+			Return _ordinalLookup.ContainsKey(fieldName)
 		End Function
 	End Class
 End Namespace

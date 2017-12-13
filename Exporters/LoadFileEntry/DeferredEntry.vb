@@ -26,9 +26,9 @@ Namespace kCura.WinEDDS.LoadFileEntry
 		Implements IPartialEntry
 		Private ReadOnly _longTextPath As String
 		Private ReadOnly _encoding As System.Text.Encoding
-		Private ReadOnly _volumeManager As VolumeManager
+		Private ReadOnly _volumeManager As ILongTextEntryWriter
 
-		Public Sub New(ByVal longTextPath As String, ByVal encoding As System.Text.Encoding, ByVal volumeManager As VolumeManager)
+		Public Sub New(ByVal longTextPath As String, ByVal encoding As System.Text.Encoding, ByVal volumeManager As ILongTextEntryWriter)
 			_longTextPath = longTextPath
 			_encoding = encoding
 			_volumeManager = volumeManager
