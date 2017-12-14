@@ -25,6 +25,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 {
 	public class ExportInstaller : IWindsorInstaller
 	{
+		private const string _EXPORT_SUB_SYSTEM_NAME = "Export";
+
 		private readonly Exporter _exporter;
 		private readonly string _columnHeader;
 		private readonly string[] _columnNamesInOrder;
@@ -42,7 +44,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 		{
 			InstallFromWinEdds(container);
 			InstallConnectionToWinEdds(container);
-			InstallTemporary(container);
 			InstallCustom(container);
 
 			//TODO extract interfaces and then remove Self()
@@ -67,15 +68,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			container.Register(Component.For<IUserNotification>().Instance(_exporter.InteractionManager));
 		}
 
-		/// <summary>
-		///     TODO remove
-		/// </summary>
-		/// <param name="container"></param>
-		private void InstallTemporary(IWindsorContainer container)
-		{
-			container.Register(Component.For<ILog>().Instance(new NullLogger()).LifestyleSingleton());
-		}
-
 		private void InstallCustom(IWindsorContainer container)
 		{
 			InstallFieldService(container);
@@ -90,6 +82,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			container.Register(Component.For<IErrorFile>().UsingFactoryMethod(k => k.Resolve<ErrorFileDestinationPath>()));
 			container.Register(Component.For<IFilePathTransformer>().UsingFactoryMethod(k => k.Resolve<FilePathTransformerFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<IBatchValidator>().UsingFactoryMethod(k => k.Resolve<BatchValidatorFactory>().Create(ExportSettings, container)));
+			container.Register(Component.For<ILog>().UsingFactoryMethod(k => RelativityLogFactory.CreateLog(_EXPORT_SUB_SYSTEM_NAME)));
 		}
 
 		private void InstallFieldService(IWindsorContainer container)
