@@ -28,15 +28,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 		private const string _EXPORT_SUB_SYSTEM_NAME = "Export";
 
 		private readonly Exporter _exporter;
-		private readonly string _columnHeader;
 		private readonly string[] _columnNamesInOrder;
 
 		protected ExportFile ExportSettings => _exporter.Settings;
 
-		public ExportInstaller(Exporter exporter, string columnHeader, string[] columnNamesInOrder)
+		public ExportInstaller(Exporter exporter, string[] columnNamesInOrder)
 		{
 			_exporter = exporter;
-			_columnHeader = columnHeader;
 			_columnNamesInOrder = columnNamesInOrder;
 		}
 
@@ -53,6 +51,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 		private void InstallFromWinEdds(IWindsorContainer container)
 		{
 			container.Register(Component.For<PaddingWarningValidator>().ImplementedBy<PaddingWarningValidator>());
+			container.Register(Component.For<ILoadFileHeaderFormatterFactory>().ImplementedBy<ExportFileFormatterFactory>());
 			container.Register(Component.For<IFileStreamFactory>().ImplementedBy<FileStreamFactory>());
 			container.Register(Component.For<ITransferClientHandler, IExportFileDownloaderStatus, ExportFileDownloaderStatus>().ImplementedBy<ExportFileDownloaderStatus>());
 			container.Register(Component.For<ILoadFileCellFormatter>().UsingFactoryMethod(k => k.Resolve<LoadFileCellFormatterFactory>().Create(ExportSettings)));
@@ -87,8 +86,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 
 		private void InstallFieldService(IWindsorContainer container)
 		{
+			container.Register(Component.For<ILoadFileHeaderFormatter>().UsingFactoryMethod(k => k.Resolve<ILoadFileHeaderFormatterFactory>().Create(ExportSettings)));
 			container.Register(Component.For<IFieldLookupService, IFieldService, FieldService>()
-				.UsingFactoryMethod(k => k.Resolve<FieldServiceFactory>().Create(ExportSettings, _exporter.Columns, _columnHeader, _columnNamesInOrder)));
+				.UsingFactoryMethod(k => k.Resolve<FieldServiceFactory>().Create(ExportSettings, _exporter.Columns, _columnNamesInOrder)));
 		}
 
 		private void InstallDirectory(IWindsorContainer container)
