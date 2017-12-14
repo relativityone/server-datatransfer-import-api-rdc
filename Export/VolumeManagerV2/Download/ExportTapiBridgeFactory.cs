@@ -66,6 +66,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		{
 			TapiBridgeParameters parameters = CreateTapiBridgeParametersFromConfiguration();
 			DownloadTapiBridge tapiBridge = TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, token);
+			tapiBridge.DumpInfo();
 			return tapiBridge;
 		}
 

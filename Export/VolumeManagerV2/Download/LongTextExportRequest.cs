@@ -1,4 +1,5 @@
-﻿using kCura.WinEDDS.Exporters;
+﻿using System;
+using kCura.WinEDDS.Exporters;
 using Relativity.Transfer;
 using Relativity.Transfer.Http;
 
@@ -52,7 +53,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			var fileInfo = new System.IO.FileInfo(DestinationLocation);
 			var transferPath = new TransferPath
 			{
-				SourcePath = "LongText",
+				SourcePath = Guid.NewGuid().ToString(),
 				TargetPath = fileInfo.Directory?.FullName,
 				TargetFileName = fileInfo.Name
 			};

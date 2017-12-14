@@ -85,6 +85,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			Native native = _nativeRepository.GetNative(artifactId);
 			if (documentCountUpdated && native != null)
 			{
+				_logger.LogVerbose("Document {identifierValue} downloaded.", native.Artifact.IdentifierValue);
 				_status.WriteStatusLine(EventType.Progress, $"Document {native.Artifact.IdentifierValue} downloaded.", true);
 			}
 		}
