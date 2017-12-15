@@ -69,7 +69,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private void DownloadRequests(CancellationToken cancellationToken)
 		{
-			//TODO we need three tapi bridges until I figure out how to identify files in TAPI without file name (which can be duplicated in case of native being an image)
+			//TODO REL-187625 we need three tapi bridges until I figure out how to identify files in TAPI without file name (which can be duplicated in case of native being an image)
 			IDownloadTapiBridge nativeFilesDownloader = null;
 			IDownloadTapiBridge imageFilesDownloader = null;
 			IDownloadTapiBridge longTextDownloader = null;

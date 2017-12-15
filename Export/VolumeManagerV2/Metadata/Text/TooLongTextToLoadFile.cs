@@ -24,7 +24,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 		public void HandleLongText(ObjectExportInfo artifact, ViewFieldInfo field, DeferredEntry lineEntry)
 		{
 			ViewFieldInfo fieldToGetValueFrom;
-			//TODO yyy? maybe field.AvfColumnName == TextPrecedence ? or maybe if we have field named TextPrecedence in Relativity then it will fail?
 			if (field is CoalescedTextViewField)
 			{
 				fieldToGetValueFrom = _longTextHelper.GetTextPrecedenceTrueField(artifact, field);

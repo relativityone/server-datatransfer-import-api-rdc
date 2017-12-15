@@ -101,7 +101,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 
 		private bool UpdateDownloadedCount(int artifactId)
 		{
-			//TODO race condition may occur, but we should be good for now
+			//race condition may occur here, but after batch is downloaded we're refreshing 
+			//the whole list, so final number of documents will be valid
 
 			Native native = _nativeRepository.GetNative(artifactId);
 			if (_artifactsDownloaded.ContainsKey(native.Artifact.ArtifactID) && _artifactsDownloaded[native.Artifact.ArtifactID])

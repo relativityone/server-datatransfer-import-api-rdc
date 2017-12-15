@@ -44,8 +44,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 				{
 					_nonTextFieldHandler.AddNonTextField(field, loadFileEntry, artifact);
 				}
-
-				//TODO maybe we can do something with this
+				
 				if (i != fields.Count - 1 && !_exportSettings.LoadFileIsHtml)
 				{
 					loadFileEntry.AddStringEntry(_exportSettings.RecordDelimiter.ToString());
