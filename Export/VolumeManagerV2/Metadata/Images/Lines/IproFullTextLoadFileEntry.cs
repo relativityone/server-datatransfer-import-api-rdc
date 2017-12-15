@@ -48,6 +48,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 		private string BuildLineToWrite(string batesNumber, long pageOffset)
 		{
 			//TODO REL-185532 This is an issue. We're putting whole ExtractedText into memory
+			//we should be able to write to file directly instead of storing metadata in memory
 			StringBuilder lineToWrite = new StringBuilder();
 
 			lineToWrite.Append("FT,");

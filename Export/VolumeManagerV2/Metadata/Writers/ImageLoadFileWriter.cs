@@ -29,7 +29,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 
 		private void WriteArtifacts(StreamWriter streamWriter, IList<KeyValuePair<string, string>> linesToWrite, IEnumerator<ObjectExportInfo> artifacts, CancellationToken cancellationToken)
 		{
-			//TODO this "sorting" was introduced after changing ConcurrentDictionary to ConcurrentBag - is it needed?
+			//TODO REL-185532 this sorting is not needed, as we no longer use multi-threading when creating metadata
+			//when fixing REL-185532 write to file directly instead of creating list
 			while (artifacts.MoveNext())
 			{
 				if (cancellationToken.IsCancellationRequested)
