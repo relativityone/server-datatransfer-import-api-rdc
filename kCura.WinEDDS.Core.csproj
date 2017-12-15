@@ -234,6 +234,7 @@
     <Compile Include="Export\VolumeManagerV2\Batches\BatchCleanUp.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchExporter.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchInitialization.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\BatchInitializationFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchState.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchValidatorFactory.cs" />
@@ -263,6 +264,7 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\ILoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LoadFile.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\IRepositoryBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\DownloadProgressManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\DownloadTapiBridgeAdapter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\DownloadTapiBridgeForFiles.cs" />

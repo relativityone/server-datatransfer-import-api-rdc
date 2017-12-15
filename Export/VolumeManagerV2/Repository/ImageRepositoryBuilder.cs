@@ -7,7 +7,7 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 {
-	public class ImageRepositoryBuilder
+	public class ImageRepositoryBuilder : IRepositoryBuilder
 	{
 		private readonly IFileExportRequestBuilder _imageExportRequestBuilder;
 		private readonly ImageRepository _imageRepository;

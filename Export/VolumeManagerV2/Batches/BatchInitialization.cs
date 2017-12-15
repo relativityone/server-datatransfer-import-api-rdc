@@ -1,6 +1,6 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
@@ -9,19 +9,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 {
 	public class BatchInitialization : IBatchInitialization
 	{
-		//TODO maybe extract common interface and use list injection. order of execution should matter
-		private readonly LongTextRepositoryBuilder _longTextRepositoryBuilder;
-		private readonly NativeRepositoryBuilder _nativeRepositoryBuilder;
-		private readonly ImageRepositoryBuilder _imageRepositoryBuilder;
+		private readonly IList<IRepositoryBuilder> _repositoryBuilders;
 		private readonly IDirectoryManager _directoryManager;
 		private readonly ILog _logger;
 
-		public BatchInitialization(LongTextRepositoryBuilder longTextRepositoryBuilder, NativeRepositoryBuilder nativeRepositoryBuilder, ImageRepositoryBuilder imageRepositoryBuilder,
-			IDirectoryManager directoryManager,ILog logger)
+		public BatchInitialization(IList<IRepositoryBuilder> repositoryBuilders, IDirectoryManager directoryManager, ILog logger)
 		{
-			_longTextRepositoryBuilder = longTextRepositoryBuilder;
-			_nativeRepositoryBuilder = nativeRepositoryBuilder;
-			_imageRepositoryBuilder = imageRepositoryBuilder;
+			_repositoryBuilders = repositoryBuilders;
 			_directoryManager = directoryManager;
 			_logger = logger;
 		}
@@ -43,27 +37,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 
 		private void PrepareArtifact(ObjectExportInfo artifact, CancellationToken cancellationToken)
 		{
-			FillNativeRepository(artifact, cancellationToken);
-			FillImageRepository(artifact, cancellationToken);
-			FillLongTextRepository(artifact, cancellationToken);
-		}
-
-		private void FillNativeRepository(ObjectExportInfo artifact, CancellationToken cancellationToken)
-		{
-			_logger.LogVerbose("Adding artifact {artifactId} to NativeRepository.", artifact.ArtifactID);
-			_nativeRepositoryBuilder.AddToRepository(artifact, cancellationToken);
-		}
-
-		private void FillImageRepository(ObjectExportInfo artifact, CancellationToken cancellationToken)
-		{
-			_logger.LogVerbose("Adding artifact {artifactId} to ImageRepository.", artifact.ArtifactID);
-			_imageRepositoryBuilder.AddToRepository(artifact, cancellationToken);
-		}
-
-		private void FillLongTextRepository(ObjectExportInfo artifact, CancellationToken cancellationToken)
-		{
-			_logger.LogVerbose("Adding artifact {artifactId} to LongTextRepository.", artifact.ArtifactID);
-			_longTextRepositoryBuilder.AddToRepository(artifact, cancellationToken);
+			foreach (IRepositoryBuilder repositoryBuilder in _repositoryBuilders)
+			{
+				_logger.LogVerbose("Adding artifact {artifactId} to repository {type}.", repositoryBuilder.GetType().ToString());
+				repositoryBuilder.AddToRepository(artifact, cancellationToken);
+			}
 		}
 	}
 }
