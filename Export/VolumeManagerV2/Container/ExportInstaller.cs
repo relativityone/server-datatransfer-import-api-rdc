@@ -43,9 +43,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			InstallFromWinEdds(container);
 			InstallConnectionToWinEdds(container);
 			InstallCustom(container);
-
-			//TODO extract interfaces and then remove Self()
-			container.Register(Classes.FromThisAssembly().Pick().WithService.DefaultInterfaces().WithService.Self());
+			
+			container.Register(Classes.FromThisAssembly().InNamespace("kCura.WinEDDS.Core.Export", true).WithService.DefaultInterfaces().WithService.Self());
 		}
 
 		private void InstallFromWinEdds(IWindsorContainer container)
@@ -65,6 +64,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			container.Register(Component.For<IStatus>().Instance(_exporter));
 			container.Register(Component.For<IFileNameProvider>().Instance(_exporter.FileNameProvider));
 			container.Register(Component.For<IUserNotification>().Instance(_exporter.InteractionManager));
+			container.Register(Component.For<IFileHelper>().Instance(_exporter.FileHelper));
+			container.Register(Component.For<IDirectoryHelper>().Instance(_exporter.DirectoryHelper));
 		}
 
 		private void InstallCustom(IWindsorContainer container)
