@@ -8,10 +8,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 {
 	public class FromFileToLoadFileWriter : ToLoadFileWriter
 	{
-		private readonly LongTextStreamFormatterFactory _formatterFactory;
+		private readonly ILongTextStreamFormatterFactory _formatterFactory;
 		private readonly ILog _logger;
 
-		public FromFileToLoadFileWriter(ILog logger, LongTextStreamFormatterFactory formatterFactory)
+		public FromFileToLoadFileWriter(ILog logger, ILongTextStreamFormatterFactory formatterFactory)
 		{
 			_logger = logger;
 			_formatterFactory = formatterFactory;

@@ -43,7 +43,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			InstallFromWinEdds(container);
 			InstallConnectionToWinEdds(container);
 			InstallCustom(container);
-			
+
 			container.Register(Classes.FromThisAssembly().InNamespace("kCura.WinEDDS.Core.Export", true).WithService.DefaultInterfaces().WithService.Self());
 		}
 
@@ -120,6 +120,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			container.Register(Component.For<IFullTextLoadFileEntry>().UsingFactoryMethod(k => k.Resolve<FullTextLoadFileEntryFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<ILongTextHandler>().UsingFactoryMethod(k => k.Resolve<LongTextHandlerFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<IDelimiter>().UsingFactoryMethod(k => k.Resolve<DelimiterFactory>().Create(ExportSettings)));
+			container.Register(Component.For<ILongTextStreamFormatterFactory>().UsingFactoryMethod(k => k.Resolve<LongTextStreamFormatterFactoryFactory>().Create(ExportSettings)));
 		}
 
 		private void InstallStatefulComponents(IWindsorContainer container)

@@ -264,6 +264,9 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\ILoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LoadFile.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\ILongTextStreamFormatterFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\DelimitedFileLongTextStreamFormatterFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextStreamFormatterFactoryFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\IRepositoryBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\DownloadProgressManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\DownloadTapiBridgeAdapter.cs" />
@@ -333,7 +336,7 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\LongTextPrecedenceBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\LongTextRepository.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\LongTextRepositoryBuilder.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextStreamFormatterFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\HtmlFileLongTextStreamFormatterFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextToLoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextHelper.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\NotTooLongTextToLoadFile.cs" />
