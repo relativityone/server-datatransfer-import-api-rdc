@@ -111,7 +111,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 
 			container.Register(Component.For<IRepository, ImageRepository>().ImplementedBy<ImageRepository>());
 			container.Register(Component.For<ImageRepositoryBuilder>().UsingFactoryMethod(k => k.Resolve<ImageRepositoryBuilderFactory>().Create(ExportSettings, container)));
-			container.Register(Component.For<IImageLoadFileWriter>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileWriterFactory>().Create(ExportSettings, container)));
+			container.Register(Component.For<IImageLoadFile>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileFactory>().Create(ExportSettings, container)));
 		}
 
 		private void InstallLongText(IWindsorContainer container)

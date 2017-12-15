@@ -19,23 +19,23 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 		{
 			IFileExportRequestBuilder nativeExportRequestBuilder;
 
-			if (exportSettings.ArtifactTypeID != (int) ArtifactType.Document)
+			if (exportSettings.ExportNative && exportSettings.VolumeInfo.CopyNativeFilesFromRepository)
 			{
-				_logger.LogVerbose("Creating {requestBuilder} for natives.", nameof(FieldFileExportRequestBuilder));
-				nativeExportRequestBuilder = container.Resolve<FieldFileExportRequestBuilder>();
-			}
-			else
-			{
-				if (exportSettings.ExportNative && exportSettings.VolumeInfo.CopyNativeFilesFromRepository)
+				if (exportSettings.ArtifactTypeID != (int) ArtifactType.Document)
+				{
+					_logger.LogVerbose("Creating {requestBuilder} for natives.", nameof(FieldFileExportRequestBuilder));
+					nativeExportRequestBuilder = container.Resolve<FieldFileExportRequestBuilder>();
+				}
+				else
 				{
 					_logger.LogVerbose("Creating {requestBuilder} for natives.", nameof(NativeFileExportRequestBuilder));
 					nativeExportRequestBuilder = container.Resolve<NativeFileExportRequestBuilder>();
 				}
-				else
-				{
-					_logger.LogVerbose("Creating {requestBuilder} for natives.", nameof(EmptyExportRequestBuilder));
-					nativeExportRequestBuilder = container.Resolve<EmptyExportRequestBuilder>();
-				}
+			}
+			else
+			{
+				_logger.LogVerbose("Creating {requestBuilder} for natives.", nameof(EmptyExportRequestBuilder));
+				nativeExportRequestBuilder = container.Resolve<EmptyExportRequestBuilder>();
 			}
 
 			return new NativeRepositoryBuilder(container.Resolve<NativeRepository>(), container.Resolve<LabelManager>(), nativeExportRequestBuilder, _logger);

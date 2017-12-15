@@ -258,6 +258,11 @@
     <Compile Include="Export\VolumeManagerV2\Directories\NativeFilePathProvider.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\PrefixFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\RelativeFilePathTransformer.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\EmptyImageLoadFile.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\IImageLoadFile.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFile.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Natives\ILoadFile.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\DownloadProgressManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\DownloadTapiBridgeAdapter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\DownloadTapiBridgeForFiles.cs" />
@@ -289,7 +294,6 @@
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\IImagesRollupManager.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\ImagesRollupManager.cs" />
     <Compile Include="Export\VolumeManagerV2\ListHelper.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\Images\EmptyImageLoadFileMetadataBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\IImageLoadFileMetadataBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\IImageLoadFileMetadataForArtifactBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFileMetadataBuilder.cs" />
@@ -333,7 +337,6 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\NotTooLongTextToLoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\LongTextRepositoryBuilderFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\TooLongTextToLoadFile.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\EmptyImageLoadFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\FromFieldToLoadFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\IImageLoadFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\IproFullTextWithoutPrecedenceLoadFileEntry.cs" />
@@ -348,7 +351,7 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\SinglePageMetadataForArtifactBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LoadFileMetadataBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ILoadFileWriter.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ImageLoadFileWriterFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFileFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ImageLoadFileWriterRetryable.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\FromFileToLoadFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ExportRequest.cs" />
