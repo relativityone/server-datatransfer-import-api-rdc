@@ -90,7 +90,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 		{
 			container.Register(Component.For<ILoadFileHeaderFormatter>().UsingFactoryMethod(k => k.Resolve<ILoadFileHeaderFormatterFactory>().Create(ExportSettings)));
 			container.Register(Component.For<IFieldLookupService, IFieldService, FieldService>()
-				.UsingFactoryMethod(k => k.Resolve<FieldServiceFactory>().Create(ExportSettings, _exporter.Columns, _columnNamesInOrder)));
+				.UsingFactoryMethod(k => k.Resolve<FieldServiceFactory>().Create(ExportSettings, _columnNamesInOrder)));
 		}
 
 		private void InstallDirectory(IWindsorContainer container)

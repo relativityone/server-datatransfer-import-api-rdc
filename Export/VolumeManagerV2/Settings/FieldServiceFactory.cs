@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.WinEDDS.Exporters;
+using Relativity;
 using Relativity.Logging;
 using Constants = Relativity.Export.Constants;
 
@@ -18,16 +18,27 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings
 			_logger = logger;
 		}
 
+		public FieldService Create(ExportFile exportSettings, string[] columnNamesInOrder)
+		{
+			DecideIfExportingFullText(exportSettings);
 
-		/// <summary>
-		///     TODO creating columns is in LoadColumns methods in Exporter - extract
-		/// </summary>
-		/// <param name="exportSettings"></param>
-		/// <param name="columns"></param>
-		/// <param name="columnsHeader"></param>
-		/// <param name="columnNamesInOrder"></param>
-		/// <returns></returns>
-		public FieldService Create(ExportFile exportSettings, ArrayList columns, string[] columnNamesInOrder)
+			ViewFieldInfo[] columns = CreateColumns(exportSettings);
+
+			string columnsHeader = _formatter.GetHeader(columns.ToList());
+
+			Dictionary<string, int> ordinalLookup = CreateOrdinalLookup(exportSettings, columnNamesInOrder);
+
+			_logger.LogVerbose("Creating FieldService with {columnsCount} columns. Load file header {columnsHeader}.", columns.Length, columnsHeader);
+			return new FieldService(columns, columnsHeader, ordinalLookup);
+		}
+
+		private void DecideIfExportingFullText(ExportFile exportSettings)
+		{
+			exportSettings.ExportFullText = exportSettings.ExportFullText || exportSettings.SelectedViewFields.Any(x => x.Category == FieldCategory.FullText);
+			_logger.LogVerbose("Exporting full text: {value}.", exportSettings.ExportFullText);
+		}
+
+		private Dictionary<string, int> CreateOrdinalLookup(ExportFile exportSettings, string[] columnNamesInOrder)
 		{
 			var ordinalLookup = new Dictionary<string, int>();
 			for (int i = 0; i < columnNamesInOrder.Length; i++)
@@ -42,11 +53,47 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings
 				ordinalLookup.Add(Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME, newIndex);
 				ordinalLookup.Add(Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME, newIndex + 1);
 			}
+			return ordinalLookup;
+		}
 
-			string columnsHeader = _formatter.GetHeader(columns.Cast<ViewFieldInfo>().ToList());
+		private ViewFieldInfo[] CreateColumns(ExportFile exportSettings)
+		{
+			_logger.LogVerbose("Creating column list for export.");
+			ViewFieldInfo[] viewFields = exportSettings.SelectedViewFields;
+			ViewFieldInfo[] textFields = exportSettings.SelectedTextFields;
+			
+			if (textFields == null || textFields.Length == 0)
+			{
+				_logger.LogVerbose("No long text fields selected. Continuing with provided column list.");
+				return viewFields.ToArray();
+			}
 
-			_logger.LogVerbose("Creating FieldService with {columnsCount} columns. Load file header {columnsHeader}.", columns.Count, columnsHeader);
-			return new FieldService(columns, columnsHeader, ordinalLookup);
+			List<ViewFieldInfo> columns = viewFields.ToList();
+
+			ViewFieldInfo[] longTextViewFields = viewFields.Where(x => x.FieldType == FieldTypeHelper.FieldType.Text || x.FieldType == FieldTypeHelper.FieldType.OffTableText).ToArray();
+
+			if (longTextViewFields.Length == 1 && longTextViewFields.Any(x => x == textFields.First()))
+			{
+				ViewFieldInfo fieldToRemove = longTextViewFields.FirstOrDefault(x => x == textFields.First());
+				if (fieldToRemove != null)
+				{
+					int index = columns.IndexOf(fieldToRemove);
+					_logger.LogVerbose("Found field {fieldToReplace} at index {index} to replace with long text field {longTextField}.", fieldToRemove.AvfColumnName, index, textFields.First().AvfColumnName);
+					columns[index] = new CoalescedTextViewField(textFields.First(), true);
+				}
+				else
+				{
+					_logger.LogVerbose("Adding missing CoalescedTextViewField for selected long text field {field}.", textFields.First().AvfColumnName);
+					columns.Add(new CoalescedTextViewField(textFields.First(), false));
+				}
+			}
+			else
+			{
+				_logger.LogVerbose("Adding missing CoalescedTextViewField for selected long text field {field}.", textFields.First().AvfColumnName);
+				columns.Add(new CoalescedTextViewField(textFields.First(), false));
+			}
+
+			return columns.ToArray();
 		}
 	}
 }
