@@ -37,7 +37,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 				if (append)
 				{
 					_logger.LogVerbose("Opening file in append mode with given position, so truncating file.");
-					fileStream = _fileHelper.CreateAndTruncate(path, lastStreamWriterPosition);
+					fileStream = _fileHelper.ReopenAndTruncate(path, lastStreamWriterPosition);
 				}
 				else
 				{
