@@ -1,5 +1,6 @@
 Imports System.Collections.Concurrent
 Imports System.Collections.Generic
+Imports System.IO
 Imports System.Threading
 Imports kCura.Utility.Extensions
 Imports kCura.WinEDDS.Exporters
@@ -1157,6 +1158,17 @@ Namespace kCura.WinEDDS
 		Private Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
 			_cancellationTokenSource.Cancel()
 			If Not _volumeManager Is Nothing Then _volumeManager.Halt = True
+		End Sub
+
+		Private Sub _processController_OnExportServerErrors(destinationDirectory As String) Handles _processController.ExportServerErrorsEvent
+			Dim sourcePath As String
+			If UseOldExport Then
+				sourcePath = _volumeManager.ErrorDestinationPath
+			Else 
+				sourcePath = _errorFile.Path()
+			End If
+			Dim destinationPath As String = Path.Combine(destinationDirectory, $"{Settings.LoadFilesPrefix}_errors.csv")
+			FileHelper.Move(sourcePath, destinationPath)
 		End Sub
 
 		Public Event UploadModeChangeEvent(ByVal mode As String)

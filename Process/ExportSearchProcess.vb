@@ -35,7 +35,7 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 			If Not _searchExporter.ExportSearch() Then
-				Me.ProcessObserver.RaiseProcessCompleteEvent(False, _searchExporter.ErrorLogFileName)
+				Me.ProcessObserver.RaiseProcessCompleteEvent(False, _searchExporter.ErrorLogFileName, True)
 			Else
 				Me.ProcessObserver.RaiseStatusEvent("", "Export completed")
 				Me.ProcessObserver.RaiseProcessCompleteEvent()
