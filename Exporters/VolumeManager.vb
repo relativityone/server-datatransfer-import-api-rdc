@@ -403,7 +403,7 @@ Namespace kCura.WinEDDS
 			Catch ex As Exception
 			End Try
 			Try
-				Dim newFileStream As FileStream = _fileStreamFactory.Create(filepath, True)
+				Dim newFileStream As FileStream = _fileHelper.ReopenAndTruncate(filepath, position)
 				Dim retval As New System.IO.StreamWriter(newFileStream, encoding)
 				retval.BaseStream.Position = position
 				Return retval
