@@ -16,7 +16,7 @@ namespace kCura.WinEDDS.TApi
     using Relativity.Transfer;
 
     /// <summary>
-    /// Represents a class to create <see cref="TapiBridge"/> instances.
+    /// Represents a class to create <see cref="TapiBridgeBase"/> instances.
     /// </summary>
     public static class TapiBridgeFactory
     {
@@ -35,7 +35,7 @@ namespace kCura.WinEDDS.TApi
 		/// <returns>
 		/// The <see cref="UploadTapiBridge"/> instance.
 		/// </returns>
-		public static UploadTapiBridge CreateUploadBridge(TapiBridgeParameters parameters, ILog log, CancellationToken token)
+		public static UploadTapiBridge CreateUploadBridge(UploadTapiBridgeParameters parameters, ILog log, CancellationToken token)
         {
             var transferLog = GetTransferLog(log);
             return new UploadTapiBridge(parameters, transferLog, token);

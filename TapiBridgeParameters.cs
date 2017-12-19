@@ -22,8 +22,6 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         public TapiBridgeParameters()
         {
-            this.BcpFileTransfer = false;
-            this.AsperaBcpRootFolder = "BCPPath";
             this.AsperaDocRootLevels = 1;
             this.ClientRequestId = Guid.NewGuid();
             this.Credentials = null;
@@ -34,11 +32,9 @@ namespace kCura.WinEDDS.TApi
             this.ForceFileShareClient = false;
             this.LargeFileProgressEnabled = false;
             this.LogConfigFile = null;
-            this.MaxFilesPerFolder = 1000;
             this.MaxJobParallelism = 10;
             this.MaxJobRetryAttempts = 3;
             this.MinDataRateMbps = 0;
-            this.SortIntoVolumes = true;
             this.TargetDataRateMbps = 100;
             this.TargetPath = null;
             this.TransferLogDirectory = null;
@@ -62,9 +58,7 @@ namespace kCura.WinEDDS.TApi
                 throw new ArgumentNullException(nameof(copy));
             }
 
-            this.AsperaBcpRootFolder = copy.AsperaBcpRootFolder;
             this.AsperaDocRootLevels = copy.AsperaDocRootLevels;
-            this.BcpFileTransfer = copy.BcpFileTransfer;
             this.ClientRequestId = copy.ClientRequestId;
             this.Credentials = copy.Credentials;
             this.FileShare = copy.FileShare;
@@ -75,11 +69,9 @@ namespace kCura.WinEDDS.TApi
             this.LargeFileProgressEnabled = copy.LargeFileProgressEnabled;
             this.TargetDataRateMbps = copy.TargetDataRateMbps;
             this.LogConfigFile = copy.LogConfigFile;
-            this.MaxFilesPerFolder = copy.MaxFilesPerFolder;
             this.MaxJobParallelism = copy.MaxJobParallelism;
             this.MaxJobRetryAttempts = copy.MaxJobRetryAttempts;
             this.MinDataRateMbps = copy.MinDataRateMbps;
-            this.SortIntoVolumes = copy.SortIntoVolumes;
             this.TargetPath = copy.TargetPath;
             this.TimeoutSeconds = copy.TimeoutSeconds;
             this.TransferLogDirectory = copy.TransferLogDirectory;
@@ -90,36 +82,12 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Gets or sets the Aspera BCP root folder.
-        /// </summary>
-        /// <value>
-        /// The folder.
-        /// </value>
-        public string AsperaBcpRootFolder
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Gets or sets the number of levels the Aspera doc root folder is relative to the file share.
         /// </summary>
         /// <value>
         /// The number of levels.
         /// </value>
         public int AsperaDocRootLevels
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the file transfer is BCP based.
-        /// </summary>
-        /// <value>
-        /// <see langword="true" /> if the file transfer is BCP based; otherwise, <see langword="false" />.
-        /// </value>
-        public bool BcpFileTransfer
         {
             get;
             set;
@@ -234,18 +202,6 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Gets or sets the maximum files per folder setting.
-        /// </summary>
-        /// <value>
-        /// The maximum files per folder.
-        /// </value>
-        public int MaxFilesPerFolder
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Gets or sets the max degree of parallelism when creating a job.
         /// </summary>
         /// <value>
@@ -276,21 +232,6 @@ namespace kCura.WinEDDS.TApi
         /// The minimum data rate.
         /// </value>
         public int MinDataRateMbps
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to sort all transfers into a volumes folder. This is a native file specific parameter.
-        /// </summary>
-        /// <value>
-        /// <see langword="true" /> to sort all transfers into a volumes folder; otherwise, <see langword="false" />.
-        /// </value>
-        /// <remarks>
-        /// This is always <see langword="true" /> unless transferring BCP files.
-        /// </remarks>
-        public bool SortIntoVolumes
         {
             get;
             set;
@@ -390,17 +331,6 @@ namespace kCura.WinEDDS.TApi
         {
             get;
             set;
-        }
-
-        /// <summary>
-        /// Performs a shallow copy of this instance.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="TapiBridgeParameters"/> instance.
-        /// </returns>
-        public TapiBridgeParameters ShallowCopy()
-        {
-            return new TapiBridgeParameters(this);
         }
     }
 }

@@ -92,6 +92,7 @@
     </Compile>
     <Compile Include="ClientChangeReason.cs" />
     <Compile Include="DownloadTapiBridge.cs" />
+    <Compile Include="HttpClientDownloadPathResolver.cs" />
     <Compile Include="FileInfoInvalidPathException.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IIoReporter.cs" />
@@ -104,7 +105,7 @@
     <Compile Include="TapiBridgeParameters.cs" />
     <Compile Include="Properties\AssemblyInfoLocal.cs" />
     <Compile Include="FileSharePathManager.cs" />
-    <Compile Include="TapiBridge.cs" />
+    <Compile Include="TapiBridgeBase.cs" />
     <Compile Include="Resources\Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -125,6 +126,7 @@
     <Compile Include="TapiStatisticsEventArgs.cs" />
     <Compile Include="UploadTapiBridge.cs" />
     <Compile Include="WaitAndRetryPolicy.cs" />
+    <Compile Include="UploadTapiBridgeParameters.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Strings.resx">
