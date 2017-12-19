@@ -124,6 +124,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DownloadTapiBridgeTests.cs" />
     <Compile Include="TestRelativityLogFactory.cs" />
     <Compile Include="FileLockedImportJobTests.cs" />
     <Compile Include="FileNotFoundImportJobTests.cs" />
@@ -132,9 +133,10 @@
     <Compile Include="PositiveImportJobTests.cs" />
     <Compile Include="ImportJobTestBase.cs" />
     <Compile Include="TestRelativityLog.cs" />
-    <Compile Include="TapiBridgeTests.cs" />
+    <Compile Include="TapiBridgeTestsBase.cs" />
     <Compile Include="Properties\AssemblyInfoLocal.cs" />
     <Compile Include="WaitAndRetryPolicyTests.cs" />
+    <Compile Include="UploadTapiBridgeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
