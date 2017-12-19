@@ -13,24 +13,20 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 {
 	public class BatchExporter : IBatchExporter
 	{
-		private readonly LoadFileMetadataBuilder _loadFileMetadataBuilder;
-		private readonly IImageLoadFileMetadataBuilder _imageLoadFileMetadataBuilder;
-		private readonly ILoadFileWriter _loadFileWriter;
-		private readonly IImageLoadFileWriter _imageLoadFileWriter;
 		private readonly FilesDownloader _filesDownloader;
 		private readonly IImagesRollupManager _imagesRollupManager;
 		private readonly IMessenger _messenger;
+		private readonly IImageLoadFile _imageLoadFile;
+		private readonly ILoadFile _loadFile;
 
-		public BatchExporter(LoadFileMetadataBuilder loadFileMetadataBuilder, IImageLoadFileMetadataBuilder imageLoadFileMetadataBuilder, ILoadFileWriter loadFileWriter,
-			IImageLoadFileWriter imageLoadFileWriter, FilesDownloader filesDownloader, IImagesRollupManager imagesRollupManager, IMessenger messenger)
+		public BatchExporter(FilesDownloader filesDownloader, IImagesRollupManager imagesRollupManager,
+			IMessenger messenger, IImageLoadFile imageLoadFile, ILoadFile loadFile)
 		{
-			_loadFileMetadataBuilder = loadFileMetadataBuilder;
-			_imageLoadFileMetadataBuilder = imageLoadFileMetadataBuilder;
-			_loadFileWriter = loadFileWriter;
-			_imageLoadFileWriter = imageLoadFileWriter;
 			_filesDownloader = filesDownloader;
 			_imagesRollupManager = imagesRollupManager;
 			_messenger = messenger;
+			_imageLoadFile = imageLoadFile;
+			_loadFile = loadFile;
 		}
 
 		public void Export(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
@@ -55,14 +51,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 
 			_messenger.CreatingImageLoadFileMetadata();
 
-			IList<KeyValuePair<string, string>> entries = _imageLoadFileMetadataBuilder.CreateLoadFileEntries(artifacts, cancellationToken);
-
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return;
-			}
-
-			_imageLoadFileWriter.Write(entries, artifacts, cancellationToken);
+			_imageLoadFile.Create(artifacts, cancellationToken);
 
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -71,14 +60,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 
 			_messenger.CreatingLoadFileMetadata();
 
-			IDictionary<int, ILoadFileEntry> loadFileEntries = _loadFileMetadataBuilder.AddLines(artifacts, cancellationToken);
-
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return;
-			}
-
-			_loadFileWriter.Write(loadFileEntries, artifacts, cancellationToken);
+			_loadFile.Create(artifacts, cancellationToken);
 		}
 	}
 }

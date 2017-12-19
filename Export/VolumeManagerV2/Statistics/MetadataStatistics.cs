@@ -5,7 +5,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 {
 	public class MetadataStatistics : ITransferStatistics, IMetadataProcessingStatistics
 	{
-		private TapiBridge _tapiBridge;
+		private TapiBridgeBase _tapiBridge;
 
 		private long _savedMetadataBytes;
 		private long _savedMetadataTime;
@@ -23,7 +23,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			_logger = logger;
 		}
 
-		public void Attach(TapiBridge tapiBridge)
+		public void Attach(TapiBridgeBase tapiBridge)
 		{
 			_tapiBridge = tapiBridge;
 			_tapiBridge.TapiProgress += OnProgress;
@@ -31,6 +31,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 
 		private void OnProgress(object sender, TapiProgressEventArgs e)
 		{
+			_logger.LogVerbose("Progress event for file {fileName} with status {status}.", e.FileName, e.Status);
 			if (e.Status)
 			{
 				lock (_lock)

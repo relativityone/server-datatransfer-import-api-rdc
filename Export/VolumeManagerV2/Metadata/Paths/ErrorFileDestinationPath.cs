@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using kCura.WinEDDS.Exceptions;
+using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths
 {
@@ -7,10 +8,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths
 	{
 		private string _errorFilePath;
 		private readonly ExportFile _exportSettings;
+		private readonly ILog _logger;
 
-		public ErrorFileDestinationPath(ExportFile exportSettings)
+		public ErrorFileDestinationPath(ExportFile exportSettings, ILog logger)
 		{
 			_exportSettings = exportSettings;
+			_logger = logger;
 		}
 
 		public string Path
@@ -20,6 +23,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths
 				if (string.IsNullOrEmpty(_errorFilePath))
 				{
 					_errorFilePath = System.IO.Path.GetTempFileName();
+					_logger.LogVerbose("Creating new path {path} for error file.", _errorFilePath);
 				}
 				return _errorFilePath;
 			}

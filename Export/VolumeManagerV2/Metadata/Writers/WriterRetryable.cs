@@ -105,6 +105,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 		{
 			if (_isBroken || _initialCreation)
 			{
+				_logger.LogVerbose("Stream broken or hasn't been initialized. Creating.");
 				bool append = !_initialCreation;
 				_streamWriter = _streamFactory.Create(_streamWriter, _streamWriterLastPosition, _destinationPath.Path, _destinationPath.Encoding, append);
 				_isBroken = false;
@@ -118,6 +119,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			{
 				FlushStream();
 				_streamWriterLastPosition = _streamWriter.BaseStream.Position;
+				_logger.LogVerbose("Stream position {position} saved.", _streamWriterLastPosition);
 			}
 		}
 

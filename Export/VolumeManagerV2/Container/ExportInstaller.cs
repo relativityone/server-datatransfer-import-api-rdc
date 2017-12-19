@@ -25,16 +25,16 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 {
 	public class ExportInstaller : IWindsorInstaller
 	{
+		private const string _EXPORT_SUB_SYSTEM_NAME = "Export";
+
 		private readonly Exporter _exporter;
-		private readonly string _columnHeader;
 		private readonly string[] _columnNamesInOrder;
 
 		protected ExportFile ExportSettings => _exporter.Settings;
 
-		public ExportInstaller(Exporter exporter, string columnHeader, string[] columnNamesInOrder)
+		public ExportInstaller(Exporter exporter, string[] columnNamesInOrder)
 		{
 			_exporter = exporter;
-			_columnHeader = columnHeader;
 			_columnNamesInOrder = columnNamesInOrder;
 		}
 
@@ -42,16 +42,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 		{
 			InstallFromWinEdds(container);
 			InstallConnectionToWinEdds(container);
-			InstallTemporary(container);
 			InstallCustom(container);
 
-			//TODO extract interfaces and then remove Self()
-			container.Register(Classes.FromThisAssembly().Pick().WithService.DefaultInterfaces().WithService.Self());
+			container.Register(Classes.FromThisAssembly().InNamespace("kCura.WinEDDS.Core.Export", true).WithService.DefaultInterfaces().WithService.Self());
 		}
 
 		private void InstallFromWinEdds(IWindsorContainer container)
 		{
 			container.Register(Component.For<PaddingWarningValidator>().ImplementedBy<PaddingWarningValidator>());
+			container.Register(Component.For<ILoadFileHeaderFormatterFactory>().ImplementedBy<ExportFileFormatterFactory>());
 			container.Register(Component.For<IFileStreamFactory>().ImplementedBy<FileStreamFactory>());
 			container.Register(Component.For<ITransferClientHandler, IExportFileDownloaderStatus, ExportFileDownloaderStatus>().ImplementedBy<ExportFileDownloaderStatus>());
 			container.Register(Component.For<ILoadFileCellFormatter>().UsingFactoryMethod(k => k.Resolve<LoadFileCellFormatterFactory>().Create(ExportSettings)));
@@ -65,15 +64,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			container.Register(Component.For<IStatus>().Instance(_exporter));
 			container.Register(Component.For<IFileNameProvider>().Instance(_exporter.FileNameProvider));
 			container.Register(Component.For<IUserNotification>().Instance(_exporter.InteractionManager));
-		}
-
-		/// <summary>
-		///     TODO remove
-		/// </summary>
-		/// <param name="container"></param>
-		private void InstallTemporary(IWindsorContainer container)
-		{
-			container.Register(Component.For<ILog>().Instance(new NullLogger()).LifestyleSingleton());
+			container.Register(Component.For<IFileHelper>().Instance(_exporter.FileHelper));
+			container.Register(Component.For<IDirectoryHelper>().Instance(_exporter.DirectoryHelper));
 		}
 
 		private void InstallCustom(IWindsorContainer container)
@@ -90,12 +82,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			container.Register(Component.For<IErrorFile>().UsingFactoryMethod(k => k.Resolve<ErrorFileDestinationPath>()));
 			container.Register(Component.For<IFilePathTransformer>().UsingFactoryMethod(k => k.Resolve<FilePathTransformerFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<IBatchValidator>().UsingFactoryMethod(k => k.Resolve<BatchValidatorFactory>().Create(ExportSettings, container)));
+			container.Register(Component.For<IBatchInitialization>().UsingFactoryMethod(k => k.Resolve<BatchInitializationFactory>().Create(ExportSettings, container)));
+			container.Register(Component.For<ILog>().UsingFactoryMethod(k => RelativityLogFactory.CreateLog(_EXPORT_SUB_SYSTEM_NAME)));
 		}
 
 		private void InstallFieldService(IWindsorContainer container)
 		{
+			container.Register(Component.For<ILoadFileHeaderFormatter>().UsingFactoryMethod(k => k.Resolve<ILoadFileHeaderFormatterFactory>().Create(ExportSettings)));
 			container.Register(Component.For<IFieldLookupService, IFieldService, FieldService>()
-				.UsingFactoryMethod(k => k.Resolve<FieldServiceFactory>().Create(ExportSettings, _exporter.Columns, _columnHeader, _columnNamesInOrder)));
+				.UsingFactoryMethod(k => k.Resolve<FieldServiceFactory>().Create(ExportSettings, _columnNamesInOrder)));
 		}
 
 		private void InstallDirectory(IWindsorContainer container)
@@ -107,7 +102,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 		private void InstallNatives(IWindsorContainer container)
 		{
 			container.Register(Component.For<IRepository, NativeRepository>().ImplementedBy<NativeRepository>());
-			container.Register(Component.For<NativeRepositoryBuilder>().UsingFactoryMethod(k => k.Resolve<NativeRepositoryBuilderFactory>().Create(ExportSettings, container)));
 		}
 
 		private void InstallImages(IWindsorContainer container)
@@ -117,17 +111,16 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			container.Register(Component.For<IImageLoadFileEntry>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileEntryFactory>().Create(ExportSettings, container)));
 
 			container.Register(Component.For<IRepository, ImageRepository>().ImplementedBy<ImageRepository>());
-			container.Register(Component.For<ImageRepositoryBuilder>().UsingFactoryMethod(k => k.Resolve<ImageRepositoryBuilderFactory>().Create(ExportSettings, container)));
-			container.Register(Component.For<IImageLoadFileWriter>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileWriterFactory>().Create(ExportSettings, container)));
+			container.Register(Component.For<IImageLoadFile>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileFactory>().Create(ExportSettings, container)));
 		}
 
 		private void InstallLongText(IWindsorContainer container)
 		{
 			container.Register(Component.For<IRepository, LongTextRepository>().ImplementedBy<LongTextRepository>());
-			container.Register(Component.For<LongTextRepositoryBuilder>().UsingFactoryMethod(k => k.Resolve<LongTextRepositoryBuilderFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<IFullTextLoadFileEntry>().UsingFactoryMethod(k => k.Resolve<FullTextLoadFileEntryFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<ILongTextHandler>().UsingFactoryMethod(k => k.Resolve<LongTextHandlerFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<IDelimiter>().UsingFactoryMethod(k => k.Resolve<DelimiterFactory>().Create(ExportSettings)));
+			container.Register(Component.For<ILongTextStreamFormatterFactory>().UsingFactoryMethod(k => k.Resolve<LongTextStreamFormatterFactoryFactory>().Create(ExportSettings)));
 		}
 
 		private void InstallStatefulComponents(IWindsorContainer container)

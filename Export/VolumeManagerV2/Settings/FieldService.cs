@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings
 {
@@ -9,9 +7,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings
 		private readonly ViewFieldInfo[] _columns;
 		private readonly string _columnsHeader;
 
-		public FieldService(ArrayList columns, string columnsHeader, Dictionary<string, int> ordinalLookup) : base(ordinalLookup)
+		public FieldService(ViewFieldInfo[] columns, string columnsHeader, Dictionary<string, int> ordinalLookup) : base(ordinalLookup)
 		{
-			_columns = columns.Cast<ViewFieldInfo>().ToArray();
+			_columns = columns;
 			_columnsHeader = columnsHeader;
 		}
 

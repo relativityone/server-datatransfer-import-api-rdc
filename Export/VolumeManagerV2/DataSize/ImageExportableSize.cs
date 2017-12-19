@@ -20,10 +20,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize
 														(_exportSettings.TypeOfImage == ExportFile.ImageType.MultiPageTiff || _exportSettings.TypeOfImage == ExportFile.ImageType.Pdf);
 				if (areImagesBeingMergedIntoMultiPage)
 				{
-					//TODO image size will probably be changed after merging - another issue with size calculations? REL-185531
+					//TODO REL-185531 image size will probably be changed after merging - another issue with size calculations? REL-185531
 					//After merging size will be probably smaller, so calculation isn't precise, but we can live with that
 					//What about changing format from tif to i.e. pdf?
-					
+
 					volumeSize.ImageFileCount = 1;
 				}
 			}

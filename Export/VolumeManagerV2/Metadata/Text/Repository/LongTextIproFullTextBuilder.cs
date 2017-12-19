@@ -42,7 +42,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			string tempLocation = Path.GetTempFileName();
 			int extractedTextFieldId = _longTextHelper.GetFieldArtifactId(LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME);
 			LongTextExportRequest longTextExportRequest = LongTextExportRequest.CreateRequestForFullText(artifact, extractedTextFieldId, tempLocation);
-			//TODO we're assuming Unicode for missing Extracted Text (the same assumption is in VolumeManager), but it can be wrong assumption
+			//TODO REL-188481 we're assuming Unicode for missing Extracted Text (the same assumption is in VolumeManager), but it can be wrong assumption
 			LongText longText = LongText.CreateFromMissingValue(artifact.ArtifactID, extractedTextFieldId, longTextExportRequest, Encoding.Unicode);
 			return longText;
 		}

@@ -7,7 +7,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 {
 	public class ExportFileDownloaderStatus : IExportFileDownloaderStatus, ITransferClientHandler
 	{
-		private TapiBridge _tapiBridge;
+		private TapiBridgeBase _tapiBridge;
 		private readonly ILog _logger;
 
 		public event IExportFileDownloaderStatus.UploadModeChangeEventEventHandler UploadModeChangeEvent;
@@ -20,7 +20,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			UploaderType = FileDownloader.FileAccessType.Initializing;
 		}
 
-		public void Attach(TapiBridge tapiBridge)
+		public void Attach(TapiBridgeBase tapiBridge)
 		{
 			_tapiBridge = tapiBridge;
 			_tapiBridge.TapiClientChanged += OnTapiClientChanged;

@@ -39,8 +39,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize
 							string textValue = fieldValue.ToString();
 							if (textValue == Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN)
 							{
-								//TODO
-								//This is defect, fix that!!! REL-181870
+								//TODO REL-181870 This is defect, fix that!!! 
 								volumeSize.TextFilesSize += 2 * 1048576; //This is the naive approach - assume the final text will be twice as long as the max length limit
 							}
 							else

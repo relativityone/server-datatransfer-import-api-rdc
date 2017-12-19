@@ -8,7 +8,7 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 {
-	public class NativeRepositoryBuilder
+	public class NativeRepositoryBuilder : IRepositoryBuilder
 	{
 		private readonly NativeRepository _nativeRepository;
 		private readonly LabelManager _labelManager;
