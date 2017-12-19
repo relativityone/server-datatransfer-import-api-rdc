@@ -153,7 +153,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 
-		Protected Sub CreateTapiBridges(ByVal fileParameters As TapiBridgeParameters, ByVal bulkLoadParameters As TapiBridgeParameters)
+		Protected Sub CreateTapiBridges(ByVal fileParameters As UploadTapiBridgeParameters, ByVal bulkLoadParameters As UploadTapiBridgeParameters)
 			_fileTapiBridge = TapiBridgeFactory.CreateUploadBridge(fileParameters, Me.Logger, Me.CancellationToken)
 			AddHandler _fileTapiBridge.TapiClientChanged, AddressOf FileOnTapiClientChanged
 			AddHandler _fileTapiBridge.TapiFatalError, AddressOf OnTapiFatalError
