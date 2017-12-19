@@ -2,6 +2,7 @@
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
 
@@ -27,7 +28,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 
 		protected abstract List<ImageExportInfo> GetImagesToProcess(ObjectExportInfo artifact);
 
-		public void CreateLoadFileEntry(ObjectExportInfo artifact, IList<KeyValuePair<string, string>> lines, CancellationToken cancellationToken)
+		public void WriteLoadFileEntry(ObjectExportInfo artifact, IRetryableStreamWriter writer, CancellationToken cancellationToken)
 		{
 			int numberOfPages = artifact.Images.Count;
 			List<ImageExportInfo> images = GetImagesToProcess(artifact);
@@ -57,21 +58,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 				}
 
 				_logger.LogVerbose("Attempting to create full text entry for image.");
-				KeyValuePair<string, string> fullTextEntry;
-				if (_fullTextLoadFileEntry.TryCreateFullTextLine(artifact, image.BatesNumber, i, pageOffset, out fullTextEntry))
-				{
-					_logger.LogVerbose("Full text entry for image created.");
-					lines.Add(fullTextEntry);
-				}
-				else
-				{
-					_logger.LogVerbose("Full text entry not required for this image.");
-				}
+				_fullTextLoadFileEntry.WriteFullTextLine(artifact, image.BatesNumber, i, pageOffset, writer, cancellationToken);
 
 				string localFilePath = GetLocalFilePath(images, i);
 				_logger.LogVerbose("Creating image load file entry using image file path {path}.", localFilePath);
-				KeyValuePair<string, string> loadFileEntry = _imageLoadFileEntry.Create(image.BatesNumber, localFilePath, artifact.DestinationVolume, i + 1, pageOffset, numberOfPages);
-				lines.Add(loadFileEntry);
+				string loadFileEntry = _imageLoadFileEntry.Create(image.BatesNumber, localFilePath, artifact.DestinationVolume, i + 1, numberOfPages);
+				writer.WriteEntry(loadFileEntry, cancellationToken);
 			}
 		}
 
