@@ -32,14 +32,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 
 		public void RollupImages(ObjectExportInfo artifact)
 		{
-			var destinationImage = (ImageExportInfo)artifact.Images[0];
-
 			if (artifact.Images.Count == 0)
 			{
 				_logger.LogVerbose("No images found for artifact {artifactId}. Skipping rollup.", artifact.ArtifactID);
-				destinationImage.SuccessfulRollup = false;
+				return;
 			}
 
+			var destinationImage = (ImageExportInfo)artifact.Images[0];
+			
 			IList<string> imagesLocations = artifact.Images.Cast<ImageExportInfo>().Select(x => x.TempLocation).ToList();
 			
 			string rollupTempLocation = GetTempLocation();
