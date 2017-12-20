@@ -1726,7 +1726,7 @@ Namespace kCura.EDDS.WinForm
 
             'Go to appropriate documentation site
             If cloudIsEnabled Then
-                Process.Start(urlPrefix & "relativityone/Content/Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
+                Process.Start(urlPrefix & "RelativityOne/Content/Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
             Else
                 Dim v As System.Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
                 Dim majMin As String = String.Format("{0}.{1}", v.Major, v.Minor)
