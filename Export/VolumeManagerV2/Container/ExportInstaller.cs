@@ -20,6 +20,7 @@ using kCura.WinEDDS.Exporters.Validator;
 using kCura.WinEDDS.IO;
 using kCura.WinEDDS.Service.Export;
 using Relativity.Logging;
+using Image = kCura.Utility.Image;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 {
@@ -50,6 +51,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 		private void InstallFromWinEdds(IWindsorContainer container)
 		{
 			container.Register(Component.For<PaddingWarningValidator>().ImplementedBy<PaddingWarningValidator>());
+			container.Register(Component.For<Image>().ImplementedBy<Image>());
 			container.Register(Component.For<ILoadFileHeaderFormatterFactory>().ImplementedBy<ExportFileFormatterFactory>());
 			container.Register(Component.For<IFileStreamFactory>().ImplementedBy<FileStreamFactory>());
 			container.Register(Component.For<ITransferClientHandler, IExportFileDownloaderStatus, ExportFileDownloaderStatus>().ImplementedBy<ExportFileDownloaderStatus>());
