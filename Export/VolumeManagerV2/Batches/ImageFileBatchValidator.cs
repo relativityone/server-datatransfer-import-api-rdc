@@ -9,12 +9,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 {
 	public class ImageFileBatchValidator : IBatchValidator
 	{
-		private readonly ErrorFileWriter _errorFileWriter;
+		private readonly IErrorFileWriter _errorFileWriter;
 		private readonly IFileHelper _fileHelper;
 		private readonly IStatus _status;
 		private readonly ILog _logger;
 
-		public ImageFileBatchValidator(ErrorFileWriter errorFileWriter, IFileHelper fileHelper, IStatus status, ILog logger)
+		public ImageFileBatchValidator(IErrorFileWriter errorFileWriter, IFileHelper fileHelper, IStatus status, ILog logger)
 		{
 			_errorFileWriter = errorFileWriter;
 			_fileHelper = fileHelper;
@@ -36,11 +36,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 
 		private void ValidateImagesForArtifact(ObjectExportInfo artifact, VolumePredictions volumePredictions)
 		{
-			List<ImageExportInfo> images = artifact.Images.Cast<ImageExportInfo>().ToList();
-			if (images.Count == 0)
+			if (artifact.ImageCount == 0)
 			{
 				return;
 			}
+
+			List<ImageExportInfo> images = artifact.Images.Cast<ImageExportInfo>().ToList();
 
 			if (images[0].SuccessfulRollup)
 			{
@@ -74,7 +75,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 				if (actualFileSize > 0 && actualFileSize < predictions.ImageFilesSize)
 				{
 					_status.WriteUpdate(
-						$"Image file {image.TempLocation} size {actualFileSize} is different from expected {predictions.ImageFilesSize} for image {image.BatesNumber} in artifact {artifact.ArtifactID}, but images have been merged into multipage format.");
+						$"Image file {image.TempLocation} size {actualFileSize} is different from expected {predictions.ImageFilesSize} for image {image.BatesNumber} in artifact {artifact.ArtifactID}, but images have been merged into multipage format.", true);
 				}
 				else
 				{
@@ -89,6 +90,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 			bool imageMissing = false;
 			for (int i = 0; i < images.Count; i++)
 			{
+				if (string.IsNullOrWhiteSpace(images[i].FileGuid))
+				{
+					continue;
+				}
 				if (!_fileHelper.Exists(images[i].TempLocation) || _fileHelper.GetFileSize(images[i].TempLocation) == 0)
 				{
 					_logger.LogWarning("Image file {file} missing or empty for image {image.BatesNumber} in artifact {artifactId}.", images[i].TempLocation, images[i].BatesNumber,
@@ -104,7 +109,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 			}
 			else
 			{
-				long imagesSize = images.Sum(x => _fileHelper.GetFileSize(x.TempLocation));
+				long imagesSize = images.Where(x => !string.IsNullOrWhiteSpace(x.TempLocation)).Sum(x => _fileHelper.GetFileSize(x.TempLocation));
 				if (imagesSize != predictions.ImageFilesSize)
 				{
 					_logger.LogWarning("Image files total size {actualSize} is different from expected {expectedSize} for images in artifact {artifactId}.", imagesSize,

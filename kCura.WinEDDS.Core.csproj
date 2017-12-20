@@ -259,6 +259,7 @@
     <Compile Include="Export\VolumeManagerV2\Directories\NativeFilePathProvider.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\PrefixFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\RelativeFilePathTransformer.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\IDownloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\EmptyImageLoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\IImageLoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFile.cs" />
@@ -267,6 +268,8 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\ILongTextStreamFormatterFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\DelimitedFileLongTextStreamFormatterFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextStreamFormatterFactoryFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\ILongTextRepository.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\IErrorFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\IRepositoryBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\DownloadProgressManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\DownloadTapiBridgeAdapter.cs" />
@@ -281,7 +284,7 @@
     <Compile Include="Export\VolumeManagerV2\Download\FileEncodingConverter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\FileExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\NativeFileExportRequest.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\FilesDownloader.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\Downloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\IDownloadTapiBridge.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\IFileExportRequestBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\LongTextEncodingConverter.cs" />

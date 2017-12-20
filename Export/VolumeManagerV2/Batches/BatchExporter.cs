@@ -13,16 +13,16 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 {
 	public class BatchExporter : IBatchExporter
 	{
-		private readonly FilesDownloader _filesDownloader;
+		private readonly IDownloader _downloader;
 		private readonly IImagesRollupManager _imagesRollupManager;
 		private readonly IMessenger _messenger;
 		private readonly IImageLoadFile _imageLoadFile;
 		private readonly ILoadFile _loadFile;
 
-		public BatchExporter(FilesDownloader filesDownloader, IImagesRollupManager imagesRollupManager,
+		public BatchExporter(IDownloader downloader, IImagesRollupManager imagesRollupManager,
 			IMessenger messenger, IImageLoadFile imageLoadFile, ILoadFile loadFile)
 		{
-			_filesDownloader = filesDownloader;
+			_downloader = downloader;
 			_imagesRollupManager = imagesRollupManager;
 			_messenger = messenger;
 			_imageLoadFile = imageLoadFile;
@@ -31,7 +31,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 
 		public void Export(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
 		{
-			_filesDownloader.DownloadFilesForArtifacts(artifacts, volumePredictions, cancellationToken);
+			_downloader.DownloadFilesForArtifacts(artifacts, volumePredictions, cancellationToken);
 
 			_messenger.FilesDownloadCompleted();
 

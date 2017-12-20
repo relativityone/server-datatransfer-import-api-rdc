@@ -9,7 +9,7 @@ using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public class FilesDownloader
+	public class Downloader : IDownloader
 	{
 		private List<ExportRequest> _nativeFileExportRequests;
 		private List<ExportRequest> _imageFileExprotRequests;
@@ -23,7 +23,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private readonly ILog _logger;
 
-		public FilesDownloader(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, ExportTapiBridgeFactory exportTapiBridgeFactory,
+		public Downloader(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, ExportTapiBridgeFactory exportTapiBridgeFactory,
 			ILog logger)
 		{
 			_nativeRepository = nativeRepository;

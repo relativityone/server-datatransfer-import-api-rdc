@@ -11,15 +11,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 		private readonly IList<IBatchValidator> _validators;
 		private readonly ILog _logger;
 
-		public BatchValidator(ILog logger)
+		public BatchValidator(IList<IBatchValidator> validators, ILog logger)
 		{
+			_validators = validators;
 			_logger = logger;
-			_validators = new List<IBatchValidator>();
-		}
-
-		public void AddBatchValidator(IBatchValidator validator)
-		{
-			_validators.Add(validator);
 		}
 
 		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions, CancellationToken cancellationToken)
