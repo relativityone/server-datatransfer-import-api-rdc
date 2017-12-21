@@ -1756,13 +1756,8 @@ Namespace kCura.WinEDDS
 			Select Case eventType
 				Case eventType.Error
 					WriteError(progressLineNumber, message)
-				Case eventType.Warning
-				Case eventType.Status
-				Case eventType.Progress
+				Case eventType.Warning, eventType.Status, eventType.Progress
 					WriteStatusLine(eventType, message, progressLineNumber)
-				
-				Case Else
-
 			End Select
 		End Sub
 
@@ -1806,7 +1801,7 @@ Namespace kCura.WinEDDS
 			If Not _artifactReader Is Nothing Then
 				_artifactReader.Halt()
 			End If
-			WriteStatusLine(EventType.Progress, $"Job has been stopped by the user - {Me.TotalTransferredFilesCount} documents has been transferred.", CType(Me.TotalTransferredFilesCount + 1, Integer))
+			WriteStatusLine(EventType.Progress, $"Job has been stopped by the user - {Me.TotalTransferredFilesCount} documents have been transferred.", CType(Me.TotalTransferredFilesCount + 1, Integer))
 			WriteStatusLine(EventType.Status, "Finalizing job...", TapiConstants.NoLineNumber)
 		End Sub
 

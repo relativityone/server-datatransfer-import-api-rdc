@@ -670,7 +670,11 @@ Namespace kCura.WinEDDS
 				RaiseEvent EndRun(True, _runId)
 			Catch
 			End Try
-			RaiseStatusEvent(kCura.Windows.Process.EventType.Status, "End Image Upload", Me.CurrentLineNumber, Me.CurrentLineNumber)
+			If CancellationToken.IsCancellationRequested Then
+				OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "Job has been finalized", TapiConstants.NoLineNumber, TapiConstants.NoLineNumber)
+			Else
+				OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "End Image Upload")
+			End If
 		End Sub
 
 		Private Sub CompleteError(ByVal exception As System.Exception)
@@ -965,8 +969,8 @@ Namespace kCura.WinEDDS
 			RaiseEvent FatalErrorEvent($"Error processing line: {CurrentLineNumber}", ex)
 		End Sub
 
-		Private Sub RaiseStatusEvent(ByVal et As kCura.Windows.Process.EventType, ByVal line As String, ByVal progressLineNumber As Int64, ByVal physicalLineNumber As Int64)
-			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(et, progressLineNumber, _recordCount, line & String.Format(" [line {0}]", physicalLineNumber), et = Windows.Process.EventType.Warning, Me.CurrentStatisticsSnapshot))
+		Private Sub RaiseStatusEvent(ByVal et As kCura.Windows.Process.EventType, ByVal message As String, ByVal progressLineNumber As Int64, ByVal physicalLineNumber As Int64)
+			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(et, progressLineNumber, _recordCount, message, et = Windows.Process.EventType.Warning, Me.CurrentStatisticsSnapshot))
 		End Sub
 
 		Private Sub _processObserver_CancelImport(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
@@ -979,7 +983,8 @@ Namespace kCura.WinEDDS
 			If Not _imageReader Is Nothing Then
 				_imageReader.Cancel()
 			End If
-			RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, $"Job has been stopped by the user - {Me.TotalTransferredFilesCount} images has been transferred.", Me.TotalTransferredFilesCount, Me.CurrentLineNumber)
+			RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, $"Job has been stopped by the user - {Me.TotalTransferredFilesCount} images have been transferred.", Me.TotalTransferredFilesCount, Me.CurrentLineNumber)
+			OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "Finalizing job…", TapiConstants.NoLineNumber, TapiConstants.NoLineNumber)
 		End Sub
 
 		Protected Overrides Sub OnTapiClientChanged()
@@ -991,6 +996,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overrides Sub OnWriteStatusMessage(ByVal eventType As kCura.Windows.Process.EventType, ByVal message As String, ByVal progressLineNumber As Int32, ByVal physicalLineNumber As Int32)
+			message = GetLineMessage(message, physicalLineNumber)
 			Me.RaiseStatusEvent(eventType, message, progressLineNumber, physicalLineNumber)
 		End Sub
 

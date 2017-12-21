@@ -366,7 +366,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub WriteTapiProgressMessage(ByVal message As String, ByVal lineNumber As Int32)
-			message = GetLineMessage(message, lineNumber)
 			Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Progress, message, FileTapiProgressCount, lineNumber)
 		End Sub
 
