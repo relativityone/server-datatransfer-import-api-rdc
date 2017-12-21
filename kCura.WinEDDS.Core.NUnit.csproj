@@ -77,6 +77,7 @@
     <Compile Include="Export\Natives\Name\Factories\FileNamePartProviderContainerTest.cs" />
     <Compile Include="Export\Natives\Name\FieldFileNamePartProviderTests.cs" />
     <Compile Include="Export\Natives\Name\SeparatorFileNamePartProviderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\DataSize\FieldStub.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\ImageExportableSizeTests.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\TextExportableSizeTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\RelativeFilePathProviderTests.cs" />
@@ -112,6 +113,10 @@
     <ProjectReference Include="..\kCura.WinEDDS.Core\kCura.WinEDDS.Core.csproj">
       <Project>{c5eb5351-3f27-4716-a7da-163f0400bcef}</Project>
       <Name>kCura.WinEDDS.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.WinEDDS.NUnit\kCura.WinEDDS.NUnit.vbproj">
+      <Project>{1fc8e047-4f98-48e7-9192-b15869c5c402}</Project>
+      <Name>kCura.WinEDDS.NUnit</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.WinEDDS\kCura.WinEDDS.vbproj">
       <Project>{f16a2219-5dac-4f2b-89b0-6bd1243cbf8f}</Project>
