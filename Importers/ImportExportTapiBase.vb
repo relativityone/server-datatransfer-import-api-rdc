@@ -370,7 +370,7 @@ Namespace kCura.WinEDDS
 			Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Progress, message, FileTapiProgressCount, lineNumber)
 		End Sub
 
-		Private Function GetLineMessage(ByVal line As String, ByVal lineNumber As Int32) As String
+		Protected Function GetLineMessage(ByVal line As String, ByVal lineNumber As Int32) As String
 			If lineNumber = TapiConstants.NoLineNumber Then
 				line = line & $" [job {Me.JobCounter}]"
 			Else

@@ -66,7 +66,6 @@ Namespace kCura.WinEDDS
 		Protected OutputObjectFilePath As String = System.IO.Path.GetTempFileName
 		Private _filePath As String
 		Private _batchCounter As Int32 = 0
-		Private _jobCounter As Int32 = 0
 		Private _errorMessageFileLocation As String = String.Empty
 		Private _errorLinesFileLocation As String = String.Empty
 
@@ -503,7 +502,7 @@ Namespace kCura.WinEDDS
 				_columnHeaders = _artifactReader.GetColumnNames(_settings)
 				If _firstLineContainsColumnNames Then Offset = -1
 				Statistics.BatchSize = Me.ImportBatchSize
-				_jobCounter = 1
+				JobCounter = 1
 				Me.TotalTransferredFilesCount = 0
 				Using fileService As kCura.OI.FileID.FileIDService = New kCura.OI.FileID.FileIDService()
 					While ShouldImport AndAlso _artifactReader.HasMoreRecords
@@ -923,12 +922,12 @@ Namespace kCura.WinEDDS
 			' Let TAPI handle progress as long as we're transferring the native. See the TAPI progress event below.
 			If _copyFileToRepository AndAlso metaDoc.IndexFileInDB Then
 				_timekeeper.MarkStart("ManageDocumentMetadata_StatusEvent")
-				WriteStatusLine(Windows.Process.EventType.Status, String.Format("Item '{0}' processed.", metaDoc.IdentityValue), metaDoc.LineNumber)
+				WriteStatusLine(Windows.Process.EventType.Status, $"Item '{metaDoc.IdentityValue}' file '{metaDoc.FileGuid}' processed.", metaDoc.LineNumber)
 				_timekeeper.MarkEnd("ManageDocumentMetadata_StatusEvent")
 			Else
 				_timekeeper.MarkStart("ManageDocumentMetadata_ProgressEvent")
 				FileTapiProgressCount += 1
-				WriteStatusLine(Windows.Process.EventType.Progress, String.Format("Item '{0}' processed.", metaDoc.IdentityValue), metaDoc.LineNumber)
+				WriteStatusLine(Windows.Process.EventType.Progress, $"Item '{metaDoc.IdentityValue}' file '{metaDoc.FileGuid}'  processed.", metaDoc.LineNumber)
 				_timekeeper.MarkEnd("ManageDocumentMetadata_ProgressEvent")
 			End If
 		End Sub
@@ -1029,7 +1028,7 @@ Namespace kCura.WinEDDS
 				Try
 					If ShouldImport AndAlso _copyFileToRepository AndAlso FileTapiBridge.TransfersPending Then
 						CompletePendingPhysicalFileTransfers("Waiting for all native files to upload...", "Native file uploads completed.", "Failed to complete all pending native file transfers.")
-						_jobCounter += 1
+						JobCounter += 1
 
 						' The sync progress addresses an issue with TAPI clients that fail to raise progress when a failure occurs but successfully transfer all files via job retry (Aspera).
 						Dim expectedProcessCount as Int32 =  Me.CurrentLineNumber + Offset
@@ -1661,16 +1660,7 @@ Namespace kCura.WinEDDS
 
 
 #Region "Status Window"
-
-		Private Function GetLineMessage(ByVal line As String, ByVal lineNumber As Int32) As String
-			If lineNumber = TApi.TapiConstants.NoLineNumber Then
-				line = line & $" [job {_jobCounter}]"
-			Else
-				line = line & $" [line {lineNumber}]"
-			End If
-			Return line
-		End Function
-
+		
 		Private Sub WriteTapiProgressMessage(ByVal message As String, ByVal lineNumber As Int32)
 			message = GetLineMessage(message, lineNumber)
 			Dim lineProgress As Int32 = FileTapiProgressCount
@@ -1756,7 +1746,7 @@ Namespace kCura.WinEDDS
 			If ShouldImport Then
 				WriteStatusLine(EventType.End, line)
 			Else If CancellationToken.IsCancellationRequested
-				WriteStatusLine(EventType.Progress, $"Job has been stopped - {Me.TotalTransferredFilesCount} documents transferred.", CType(Me.TotalTransferredFilesCount, Integer))
+				WriteStatusLine(EventType.Status, "Job has been finalized.", TapiConstants.NoLineNumber)
 			Else
 				WriteStatusLine(EventType.End, line, FileTapiProgressCount)
 			End If
@@ -1816,6 +1806,8 @@ Namespace kCura.WinEDDS
 			If Not _artifactReader Is Nothing Then
 				_artifactReader.Halt()
 			End If
+			WriteStatusLine(EventType.Progress, $"Job has been stopped by the user - {Me.TotalTransferredFilesCount} documents has been transferred.", CType(Me.TotalTransferredFilesCount + 1, Integer))
+			WriteStatusLine(EventType.Status, "Finalizing job...", TapiConstants.NoLineNumber)
 		End Sub
 
 		Protected Overridable Sub _processController_ExportServerErrors(ByVal exportLocation As String) Handles ProcessController.ExportServerErrorsEvent
