@@ -504,6 +504,7 @@ Namespace kCura.WinEDDS
 				If _firstLineContainsColumnNames Then Offset = -1
 				Statistics.BatchSize = Me.ImportBatchSize
 				_jobCounter = 1
+				Me.TotalTransferredFilesCount = 0
 				Using fileService As kCura.OI.FileID.FileIDService = New kCura.OI.FileID.FileIDService()
 					While ShouldImport AndAlso _artifactReader.HasMoreRecords
 						Try
@@ -1204,6 +1205,7 @@ Namespace kCura.WinEDDS
 				makeServiceCalls()
 			End If
 
+			Me.TotalTransferredFilesCount = Me.FileTapiProgressCount
 		End Sub
 
 		Private Sub WaitOnPushBatchTask()
@@ -1753,6 +1755,8 @@ Namespace kCura.WinEDDS
 			' When a fatal error occurs or the user stops, provide an accurate count due to async nature of TAPI.
 			If ShouldImport Then
 				WriteStatusLine(EventType.End, line)
+			Else If CancellationToken.IsCancellationRequested
+				WriteStatusLine(EventType.Progress, $"Job has been stopped - {Me.TotalTransferredFilesCount} documents transferred.", CType(Me.TotalTransferredFilesCount, Integer))
 			Else
 				WriteStatusLine(EventType.End, line, FileTapiProgressCount)
 			End If

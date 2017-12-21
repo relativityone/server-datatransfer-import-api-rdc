@@ -5,6 +5,7 @@
 ' ----------------------------------------------------------------------------
 
 Imports System.Threading
+Imports kCura.Windows.Process
 Imports kCura.WinEDDS.TApi
 Imports Relativity.Logging
 
@@ -99,6 +100,8 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Protected Property FileTapiProgressCount As Int32
+        
+		Protected Property TotalTransferredFilesCount As Long
 
 		Protected Property ShouldImport As Boolean
 
@@ -331,7 +334,6 @@ Namespace kCura.WinEDDS
 		Private Sub OnTapiErrorMessage(ByVal sender As Object, ByVal e As TapiMessageEventArgs)
 			SyncLock _syncRoot
 				If ShouldImport Then
-					' TODO: verify raising errors.
 					Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Error, e.Message, e.LineNumber, e.LineNumber)
 					Me.LogError(e.Message)
 				End If
@@ -341,7 +343,6 @@ Namespace kCura.WinEDDS
 		Private Sub OnTapiWarningMessage(ByVal sender As Object, ByVal e As TapiMessageEventArgs)
 			SyncLock _syncRoot
 				If ShouldImport Then
-					' TODO: verify raising warnings.
 					Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Warning, e.Message, e.LineNumber, e.LineNumber)
 					Me.LogWarning(e.Message)
 				End If
@@ -350,7 +351,6 @@ Namespace kCura.WinEDDS
 
 		Private Sub OnTapiFatalError(ByVal sender As Object, ByVal e As TapiMessageEventArgs)
 			SyncLock _syncRoot
-				' TODO: verify raising fatal errors.
 				Dim exception As Exception = New Exception(e.Message)
 				OnWriteFatalError(exception)
 				Me.LogFatal(exception, "A fatal error has occurred transferring files.")
@@ -360,7 +360,6 @@ Namespace kCura.WinEDDS
 		Private Sub OnTapiStatusEvent(ByVal sender As Object, ByVal e As TapiMessageEventArgs)
 			SyncLock _syncRoot
 				If ShouldImport Then
-					' TODO: verify progress vs physical line number.
 					Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, e.Message, e.LineNumber, e.LineNumber)
 				End If
 			End SyncLock

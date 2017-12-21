@@ -55,7 +55,6 @@ Namespace kCura.WinEDDS
 		Public Property MaxNumberOfErrorsInGrid As Int32 = Config.DefaultMaximumErrorCount
 		Private _totalValidated As Long
 		Private _totalProcessed As Long
-		Private _totalTransferred As Long
 		Private _startLineNumber As Int64
 		Private _enforceDocumentLimit As Boolean
 
@@ -382,8 +381,6 @@ Namespace kCura.WinEDDS
 					Me.JobCounter += 1
 
 					PushImageBatch(bulkLoadFilePath, dataGridFilePath)
-
-					_totalTransferred = Me.FileTapiProgressCount
 				End If
 			Catch ex As Exception
 				If BatchResizeEnabled AndAlso IsTimeoutException(ex) AndAlso ShouldImport Then
@@ -543,6 +540,8 @@ Namespace kCura.WinEDDS
 				Me.Statistics.SqlTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 				PublishUploadModeEvent()
 				ManageErrors()
+
+				Me.TotalTransferredFilesCount = Me.FileTapiProgressCount
 			End If
 		End Sub
 
@@ -561,7 +560,7 @@ Namespace kCura.WinEDDS
 			_fileIdentifierLookup = New System.Collections.Hashtable
 			_totalProcessed = 0
 			_totalValidated = 0
-			_totalTransferred = 0
+			Me.TotalTransferredFilesCount = 0
 			Me.JobCounter = 1
 			Me.FileTapiProgressCount = 0
 			DeleteFiles(bulkLoadFilePath, dataGridFilePath)
@@ -980,7 +979,7 @@ Namespace kCura.WinEDDS
 			If Not _imageReader Is Nothing Then
 				_imageReader.Cancel()
 			End If
-			RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, $"Job has been stopped - {_totalTransferred} images transferred.", _totalTransferred, Me.CurrentLineNumber)
+			RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, $"Job has been stopped - {Me.TotalTransferredFilesCount} images transferred.", Me.TotalTransferredFilesCount, Me.CurrentLineNumber)
 		End Sub
 
 		Protected Overrides Sub OnTapiClientChanged()
