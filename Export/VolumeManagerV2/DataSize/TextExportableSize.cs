@@ -23,13 +23,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize
 				for (int count = 0; count <= _fieldService.GetColumns().Length - 1; count++)
 				{
 					ViewFieldInfo field = _fieldService.GetColumns()[count];
-					string columnName = field.AvfColumnName;
-					int columnIndex = _fieldService.GetOrdinalIndex(columnName);
-					object fieldValue = artifact.Metadata[columnIndex];
 					if (field.FieldType == FieldTypeHelper.FieldType.Text || field.FieldType == FieldTypeHelper.FieldType.OffTableText)
 					{
 						if (_exportSettings.SelectedTextFields != null && field is CoalescedTextViewField)
 						{
+							string columnName = field.AvfColumnName;
+							int columnIndex = _fieldService.GetOrdinalIndex(columnName);
+							object fieldValue = artifact.Metadata[columnIndex];
+
 							volumeSize.TextFileCount += 1;
 							if (fieldValue is byte[])
 							{

@@ -73,7 +73,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings
 
 			ViewFieldInfo[] longTextViewFields = viewFields.Where(x => x.FieldType == FieldTypeHelper.FieldType.Text || x.FieldType == FieldTypeHelper.FieldType.OffTableText).ToArray();
 
-			if (longTextViewFields.Length == 1 && longTextViewFields.Any(x => x == textFields.First()))
+			if (textFields.Length == 1 && longTextViewFields.Any(x => x == textFields.First()))
 			{
 				ViewFieldInfo fieldToRemove = longTextViewFields.FirstOrDefault(x => x == textFields.First());
 				if (fieldToRemove != null)
