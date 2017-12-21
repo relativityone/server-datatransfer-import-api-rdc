@@ -1,4 +1,5 @@
-﻿using kCura.WinEDDS.Exporters;
+﻿using System;
+using kCura.WinEDDS.Exporters;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 {
@@ -11,6 +12,16 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 
 		public VolumeManager(ExportFile exportSettings, ISubdirectoryManager subdirectoryManager)
 		{
+			if (exportSettings.VolumeInfo.VolumeStartNumber < 1)
+			{
+				throw new ArgumentException("Volume Start Number must be greater than zero.");
+			}
+
+			if (exportSettings.VolumeInfo.VolumeMaxSize < 1)
+			{
+				throw new ArgumentException("Volume Max Size must be greater than zero.");
+			}
+
 			_subdirectoryManager = subdirectoryManager;
 
 			const int bytesInKB = 1024;
@@ -29,6 +40,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 			{
 				MoveToNextVolume();
 			}
+
 			_currentVolumeSize += volumePredictions.TotalFileSize;
 		}
 

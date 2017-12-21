@@ -254,6 +254,7 @@
     <Compile Include="Export\VolumeManagerV2\Directories\FilePathTransformerFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\IFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\IFilePathProvider.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\ILabelManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\ImageFilePathProvider.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\LongTextFilePathProvider.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\NativeFilePathProvider.cs" />

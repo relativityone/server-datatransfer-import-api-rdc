@@ -11,11 +11,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 	public class NativeRepositoryBuilder : IRepositoryBuilder
 	{
 		private readonly NativeRepository _nativeRepository;
-		private readonly LabelManager _labelManager;
+		private readonly ILabelManager _labelManager;
 		private readonly IFileExportRequestBuilder _fileExportRequestBuilder;
 		private readonly ILog _logger;
 
-		public NativeRepositoryBuilder(NativeRepository nativeRepository, LabelManager labelManager, IFileExportRequestBuilder fileExportRequestBuilder, ILog logger)
+		public NativeRepositoryBuilder(NativeRepository nativeRepository, ILabelManager labelManager, IFileExportRequestBuilder fileExportRequestBuilder, ILog logger)
 		{
 			_nativeRepository = nativeRepository;
 			_labelManager = labelManager;

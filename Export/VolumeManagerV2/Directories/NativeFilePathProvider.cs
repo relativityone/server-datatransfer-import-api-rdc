@@ -4,7 +4,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 {
 	public class NativeFilePathProvider : FilePathProvider
 	{
-		public NativeFilePathProvider(LabelManager labelManager, ExportFile exportSettings, IDirectoryHelper directoryHelper, ILog logger) : base(labelManager, exportSettings,
+		public NativeFilePathProvider(ILabelManager labelManager, ExportFile exportSettings, IDirectoryHelper directoryHelper, ILog logger) : base(labelManager, exportSettings,
 			directoryHelper, logger)
 		{
 		}

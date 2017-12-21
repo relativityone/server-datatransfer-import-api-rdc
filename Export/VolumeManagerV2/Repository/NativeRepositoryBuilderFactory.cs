@@ -38,7 +38,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 				nativeExportRequestBuilder = container.Resolve<EmptyExportRequestBuilder>();
 			}
 
-			return new NativeRepositoryBuilder(container.Resolve<NativeRepository>(), container.Resolve<LabelManager>(), nativeExportRequestBuilder, _logger);
+			return new NativeRepositoryBuilder(container.Resolve<NativeRepository>(), container.Resolve<ILabelManager>(), nativeExportRequestBuilder, _logger);
 		}
 	}
 }

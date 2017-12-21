@@ -9,9 +9,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 		private readonly IDirectoryHelper _directoryHelper;
 		private readonly ILog _logger;
 
-		protected LabelManager LabelManager { get; }
+		protected ILabelManager LabelManager { get; }
 
-		protected FilePathProvider(LabelManager labelManager, ExportFile exportSettings, IDirectoryHelper directoryHelper, ILog logger)
+		protected FilePathProvider(ILabelManager labelManager, ExportFile exportSettings, IDirectoryHelper directoryHelper, ILog logger)
 		{
 			LabelManager = labelManager;
 			_exportSettings = exportSettings;
