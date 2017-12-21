@@ -16,7 +16,7 @@ Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
 Imports Relativity.Services.ServiceProxy
-Imports Relativity.Services.StagingManager
+Imports Relativity.StagingExplorer.Services.StagingManager
 
 Namespace kCura.EDDS.WinForm
     Public Class Application
