@@ -1469,7 +1469,7 @@ Namespace kCura.EDDS.WinForm
             UserHasImportPermission = New kCura.WinEDDS.Service.BulkImportManager(Await GetCredentialsAsync(), CookieContainer).HasImportPermissions(SelectedCaseInfo.ArtifactID)
 
             'additionally load config and permissions for staging explorer
-            UserHasStagingPermission = True ''Await Me.CanUserAccessStagingExplorer(Await GetCredentialsAsync())
+            UserHasStagingPermission = Await Me.CanUserAccessStagingExplorer(Await GetCredentialsAsync())
         End Function
 
         Private Sub CertificatePromptForm_Deny_Click() Handles _certificatePromptForm.DenyUntrustedCertificates
