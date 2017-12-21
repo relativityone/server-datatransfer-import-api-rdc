@@ -5,7 +5,6 @@
 ' ----------------------------------------------------------------------------
 
 Imports System.Threading
-Imports kCura.Windows.Process
 Imports kCura.WinEDDS.TApi
 Imports Relativity.Logging
 
