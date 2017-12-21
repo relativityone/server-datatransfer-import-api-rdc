@@ -89,18 +89,24 @@
     <Compile Include="Export\VolumeManagerV2\Batches\NativeFileBatchValidatorTests.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\ImageExportableSizeTests.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\TextExportableSizeTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\FilePathHelperTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\FilePathProviderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\ImageFilePathProviderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\LongTextFilePathProviderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\NativeFilePathProviderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\PrefixFilePathTransformerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\RelativeFilePathProviderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\VolumeManagerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\DestinationPathTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\ExportPermissionCheckTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\FilesOverwriteValidatorTests.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\ImagesRollupFactoryTests.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\SinglePageImagesRollupTests.cs" />
-    <Compile Include="Export\VolumeManagerV2\LabelManagerTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\LabelManagerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\NativeExportableSizeTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\ErrorFileDestinationPathTests.cs" />
-    <Compile Include="Export\VolumeManagerV2\SubdirectoryManagerTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\SubdirectoryManagerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\VolumeAndSubdirectoryValidatorTests.cs" />
-    <Compile Include="Export\VolumeManagerV2\VolumeManagerTests.cs" />
     <Compile Include="Helpers\ViewFieldInfoMockFactory.cs" />
   </ItemGroup>
   <ItemGroup>
