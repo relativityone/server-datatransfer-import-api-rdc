@@ -87,6 +87,7 @@
     <Compile Include="Export\VolumeManagerV2\Batches\LoadFileBatchValidatorTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\LongTextBatchValidatorTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\NativeFileBatchValidatorTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\BatchTests.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\ImageExportableSizeTests.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\TextExportableSizeTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\FilePathHelperTests.cs" />
