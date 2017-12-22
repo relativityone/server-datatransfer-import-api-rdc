@@ -99,6 +99,9 @@
     <Compile Include="Export\VolumeManagerV2\Directories\RelativeFilePathProviderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\VolumeManagerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\DestinationPathTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Settings\ColumnsFactoryTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Settings\ColumnsOrdinalLookupFactoryTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Settings\FieldServiceFactoryTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\ExportPermissionCheckTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\FilesOverwriteValidatorTests.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\ImagesRollupFactoryTests.cs" />
@@ -129,6 +132,10 @@
     <ProjectReference Include="..\kCura.WinEDDS.Core\kCura.WinEDDS.Core.csproj">
       <Project>{c5eb5351-3f27-4716-a7da-163f0400bcef}</Project>
       <Name>kCura.WinEDDS.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.WinEDDS.NUnit\kCura.WinEDDS.NUnit.vbproj">
+      <Project>{1fc8e047-4f98-48e7-9192-b15869c5c402}</Project>
+      <Name>kCura.WinEDDS.NUnit</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.WinEDDS\kCura.WinEDDS.vbproj">
       <Project>{f16a2219-5dac-4f2b-89b0-6bd1243cbf8f}</Project>
