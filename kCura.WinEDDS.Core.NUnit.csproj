@@ -98,6 +98,10 @@
     <Compile Include="Export\VolumeManagerV2\Directories\PrefixFilePathTransformerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\RelativeFilePathProviderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\VolumeManagerTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\ImagesRollup\ImageException.cs" />
+    <Compile Include="Export\VolumeManagerV2\ImagesRollup\MultiPageImagesRollupTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\ImagesRollup\MultiPageTiffImagesRollupTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\ImagesRollup\PdfImagesRollupTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\DestinationPathTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Settings\ColumnsFactoryTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Settings\ColumnsOrdinalLookupFactoryTests.cs" />
