@@ -11,11 +11,12 @@ Imports kCura.Windows.Forms
 Imports kCura.WinEDDS.Core.Export
 Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Service
+Imports Relativity
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
 Imports Relativity.Services.ServiceProxy
-Imports Relativity.Services.StagingManager
+Imports Relativity.StagingExplorer.Services.StagingManager
 
 Namespace kCura.EDDS.WinForm
     Public Class Application
@@ -48,7 +49,9 @@ Namespace kCura.EDDS.WinForm
 
         Public Const ACCESS_DISABLED_MESSAGE As String = "Your Relativity account has been disabled.  Please contact your Relativity Administrator to activate your account."
         Public Const ROSE_STARTUP_PERMISSIONS_FAILURE As String = "The RelativityOne Staging Explorer failed to run due to insufficient permissions. Please contact you Relativity Administrator."
+        Public Const ROSE_STARTUP_ALREADY_RUNNING As String = "Only one Staging Explorer session is allowed per one logged in user."
         Public Const RDC_ERROR_TITLE As String = "Relativity Desktop Client Error"
+        Public Const RDC_TITLE As String = "Relativity Desktop Client"
 
         Private _caseSelected As Boolean = True
         Private _processPool As kCura.Windows.Process.ProcessPool
@@ -444,7 +447,7 @@ Namespace kCura.EDDS.WinForm
             Return Nothing
         End Function
 
-        Public Sub SelectCaseFolder(ByVal folderInfo As FolderInfo)
+        Public Sub SelectCaseFolder(ByVal folderInfo As WinEDDS.FolderInfo)
             _selectedCaseFolderID = folderInfo.ArtifactID
             _selectedCaseFolderPath = folderInfo.Path
             _caseSelected = True
@@ -586,7 +589,7 @@ Namespace kCura.EDDS.WinForm
 
         Public Function GetColumnHeadersFromLoadFile(ByVal loadfile As kCura.WinEDDS.LoadFile, ByVal firstLineContainsColumnHeaders As Boolean) As String()
             loadfile.CookieContainer = Me.CookieContainer
-            Dim parser As New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, _timeZoneOffset, False, Nothing, False, Config.BulkLoadFileFieldDelimiter, Config.EnforceDocumentLimit)
+            Dim parser As New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, _timeZoneOffset, False, Nothing, False, Config.BulkLoadFileFieldDelimiter, Config.EnforceDocumentLimit, ExecutionSource.Rdc)
             Return parser.GetColumnNames(loadfile)
         End Function
 
@@ -831,15 +834,15 @@ Namespace kCura.EDDS.WinForm
             End Try
         End Function
 
-        Public Async Sub NewFileTransfer()
+        Public Async Sub NewFileTransfer(mainForm As MainForm)
             Await NewLoginAsync()
             
             Dim credentials = Await Me.GetCredentialsAsync()
 
-            StartStagingExplorer(credentials)
+            StartStagingExplorer(credentials, mainForm)
         End Sub
 
-        Private Sub StartStagingExplorer(credentials As NetworkCredential)
+        Private Sub StartStagingExplorer(credentials As NetworkCredential, mainForm As MainForm)
             Dim filename = GetApplicationFilePath()
             Dim arguments = $"-t {credentials.Password} -w {Me.SelectedCaseInfo.ArtifactID}  -u {kCura.WinEDDS.Config.WebServiceURL}"
 
@@ -848,15 +851,30 @@ Namespace kCura.EDDS.WinForm
             appProcess.StartInfo.Arguments = arguments
             appProcess.EnableRaisingEvents = True
 
-            AddHandler appProcess.Exited, Sub(s, e) OnStagingExplorerProcessExited(s, e)
+            AddHandler appProcess.Exited, Sub(s, e) OnStagingExplorerProcessExited(s, mainForm)
 
             appProcess.Start()
         End Sub
 
-        Private Sub OnStagingExplorerProcessExited(sender As Object, e As EventArgs)
+        Private Sub OnStagingExplorerProcessExited(sender As Object, mainForm As MainForm)
             Dim appProcess = TryCast(sender, Process)
-            If appProcess IsNot Nothing And appProcess.ExitCode = 403 Then
-                MessageBox.Show(ROSE_STARTUP_PERMISSIONS_FAILURE, RDC_ERROR_TITLE)
+            If appProcess Is Nothing Then
+                Return
+            End If
+
+            Dim handleStagingExplorerProcessExited =
+                    Sub(exitCode As Integer)
+                        If exitCode = 403 Then
+                            MessageBox.Show(ROSE_STARTUP_PERMISSIONS_FAILURE, RDC_ERROR_TITLE)
+                        ElseIf exitCode = 423 Then
+                            MessageBox.Show(ROSE_STARTUP_ALREADY_RUNNING, RDC_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information)
+                        End If
+                    End Sub
+
+            If mainForm.InvokeRequired Then
+                mainForm.Invoke(handleStagingExplorerProcessExited, appProcess.ExitCode)
+            Else 
+                handleStagingExplorerProcessExited(appProcess.ExitCode)
             End If
         End Sub
 
@@ -1717,7 +1735,7 @@ Namespace kCura.EDDS.WinForm
 
             'Go to appropriate documentation site
             If cloudIsEnabled Then
-                Process.Start(urlPrefix & "relativityone/Content/Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
+                Process.Start(urlPrefix & "RelativityOne/Content/Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
             Else
                 Dim v As System.Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
                 Dim majMin As String = String.Format("{0}.{1}", v.Major, v.Minor)
