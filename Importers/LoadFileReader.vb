@@ -1,7 +1,9 @@
 Imports System.Collections.Generic
+Imports System.Diagnostics.Eventing.Reader
 Imports Relativity.MassImport
 Imports kCura.WinEDDS.Api
 Imports kCura.Utility
+Imports Relativity
 
 Namespace kCura.WinEDDS
 	Public Class LoadFileReader
@@ -50,11 +52,12 @@ Namespace kCura.WinEDDS
 		Private _recordCount As Int64 = -1
 		Private _genericTimestamp As System.DateTime
 		Private _trackErrorsInFieldValues As Boolean
+		Protected _executionSource As Relativity.ExecutionSource
 #End Region
 
 #Region " Constructors "
 
-		Public Sub New(ByVal args As LoadFile, ByVal trackErrorsAsFieldValues As Boolean)
+		Public Sub New(ByVal args As LoadFile, ByVal trackErrorsAsFieldValues As Boolean, ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
 			MyBase.New(args.RecordDelimiter, args.QuoteDelimiter, args.NewlineDelimiter, True)
 			_settings = args
 			_trackErrorsInFieldValues = trackErrorsAsFieldValues
@@ -78,6 +81,7 @@ Namespace kCura.WinEDDS
 			_hierarchicalMultiValueFieldDelmiter = args.HierarchicalValueDelimiter
 			_previewCodeCount = args.PreviewCodeCount
 			_startLineNumber = args.StartLineNumber
+			_executionSource = executionSource
 			MulticodeMatrix = New System.Collections.Hashtable
 			If _keyFieldID > 0 AndAlso args.OverwriteDestination.ToLower <> Relativity.ImportOverwriteType.Overlay.ToString.ToLower Then
 				_keyFieldID = -1
@@ -291,6 +295,15 @@ Namespace kCura.WinEDDS
 				Return Me.Reader.BaseStream.Position
 			End Get
 		End Property
+
+
+		Protected Overrides Function ParseNullableDecimal(ByVal value As String) As Nullable(Of Decimal)
+			If _executionSource = ExecutionSource.Rdc
+				Return NullableTypesHelper.ToNullableDecimalUsingCurrentCulture(value)
+			Else
+				Return NullableTypesHelper.ToNullableDecimal(value) 
+			End If
+		End Function
 
 		Public Sub OnFatalErrorState() Implements Api.IArtifactReader.OnFatalErrorState
 			Me.DoRetryLogic = False
