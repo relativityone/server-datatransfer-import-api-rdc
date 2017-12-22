@@ -272,6 +272,10 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\ILongTextRepository.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\IErrorFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\IRepositoryBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Settings\ColumnsFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Settings\ColumnsOrdinalLookupFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Settings\IColumnsFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Settings\IColumnsOrdinalLookupFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\DownloadProgressManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\DownloadTapiBridgeAdapter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\DownloadTapiBridgeForFiles.cs" />
