@@ -207,6 +207,7 @@ Namespace kCura.WinEDDS
 				Dim newindex As Int32 = _ordinalLookup.Count
 				_ordinalLookup.Add(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME, newindex)
 				_ordinalLookup.Add(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME, newindex + 1)
+				_ordinalLookup.Add(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE, newindex + 2)
 			End If
 
 		End Sub
@@ -262,7 +263,8 @@ Namespace kCura.WinEDDS
 							If fieldValue Is Nothing Then fieldValue = String.Empty
 							Dim textValue As String = fieldValue.ToString
 							If textValue = Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
-								prediction.TextFilesSize += 2 * 1048576 'This is the naive approach - assume the final text will be twice as long as the max length limit
+								'This isn't ideal, because encoding can be different than Unicode - this is fixed in new export
+								prediction.TextFilesSize += CType(artifact.Metadata(_ordinalLookup(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)), long)
 							Else
 								prediction.TextFilesSize += Me.Settings.TextFileEncoding.GetByteCount(textValue)
 							End If
