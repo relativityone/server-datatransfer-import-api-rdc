@@ -1,4 +1,5 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize;
+﻿using System;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize;
 using kCura.WinEDDS.Exporters;
 using NUnit.Framework;
 
@@ -14,6 +15,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
 
 		private const long _IMAGE_FILE_SIZE = 505718;
 		private const long _IMAGE_FILE_COUNT = 959625;
+		private const double _PDF_MERGE_SIZE_ERROR_THRESHOLD = 1.03;
 
 		[SetUp]
 		public void SetUp()
@@ -62,9 +64,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
 
 		[Test]
 		[TestCase(ExportFile.ImageType.MultiPageTiff)]
-		[TestCase(ExportFile.ImageType.Pdf)]
 		[TestCase(ExportFile.ImageType.SinglePage)]
-		public void ItShouldNotChangeSizeWhenExportingFiles(ExportFile.ImageType imageType)
+		public void ItShouldNotChangeSizeWhenExportingTiffFiles(ExportFile.ImageType imageType)
 		{
 			_exportSettings.ExportImages = true;
 			_exportSettings.VolumeInfo.CopyImageFilesFromRepository = true;
@@ -75,6 +76,20 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
 
 			//ASSERT
 			Assert.That(_volumePredictions.ImageFilesSize, Is.EqualTo(_IMAGE_FILE_SIZE));
+		}
+
+		[Test]
+		public void ItShouldIncreaseSizeWhenExportingImagesAsPdf()
+		{
+			_exportSettings.ExportImages = true;
+			_exportSettings.VolumeInfo.CopyImageFilesFromRepository = true;
+			_exportSettings.TypeOfImage = ExportFile.ImageType.Pdf;
+
+			//ACT
+			_instance.CalculateImagesSize(_volumePredictions);
+
+			//ASSERT
+			Assert.That(_volumePredictions.ImageFilesSize, Is.EqualTo(Math.Ceiling(_IMAGE_FILE_SIZE * _PDF_MERGE_SIZE_ERROR_THRESHOLD)));
 		}
 
 		[Test]
