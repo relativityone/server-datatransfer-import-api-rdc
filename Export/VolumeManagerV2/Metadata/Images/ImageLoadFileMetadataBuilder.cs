@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+﻿using System.Threading;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
 
@@ -10,27 +9,27 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 	{
 		private readonly IImageLoadFileMetadataForArtifactBuilder _forArtifactBuilder;
 		private readonly IImageLoadFileMetadataForArtifactBuilder _unsuccessfulRollupForArtifactBuilder;
+		private readonly IRetryableStreamWriter _writer;
 		private readonly ILog _logger;
 
 		public ImageLoadFileMetadataBuilder(IImageLoadFileMetadataForArtifactBuilder forArtifactBuilder, IImageLoadFileMetadataForArtifactBuilder unsuccessfulRollupForArtifactBuilder,
-			ILog logger)
+			IRetryableStreamWriter writer, ILog logger)
 		{
 			_forArtifactBuilder = forArtifactBuilder;
 			_unsuccessfulRollupForArtifactBuilder = unsuccessfulRollupForArtifactBuilder;
 			_logger = logger;
+			_writer = writer;
 		}
 
-		public IList<KeyValuePair<string, string>> CreateLoadFileEntries(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
+		public void CreateLoadFileEntries(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
 			_logger.LogVerbose("Creating metadata for image load file for current batch.");
-
-			var lines = new List<KeyValuePair<string, string>>();
-
+			
 			foreach (var artifact in artifacts)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{
-					return Enumerable.Empty<KeyValuePair<string, string>>().ToList();
+					return;
 				}
 
 				_logger.LogVerbose("Creating image load file entry for artifact {artifactId}.", artifact.ArtifactID);
@@ -41,12 +40,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 					if (image.SuccessfulRollup)
 					{
 						_logger.LogVerbose("Rollup successful for image {batesNumber}. Continuing with default metadata builder.", image.BatesNumber);
-						_forArtifactBuilder.CreateLoadFileEntry(artifact, lines, cancellationToken);
+						_forArtifactBuilder.WriteLoadFileEntry(artifact, _writer, cancellationToken);
 					}
 					else
 					{
 						_logger.LogVerbose("Rollup unsuccessful for image {batesNumber}. Continuing with metadata builder for unsuccessful rollup.", image.BatesNumber);
-						_unsuccessfulRollupForArtifactBuilder.CreateLoadFileEntry(artifact, lines, cancellationToken);
+						_unsuccessfulRollupForArtifactBuilder.WriteLoadFileEntry(artifact, _writer, cancellationToken);
 					}
 				}
 				else
@@ -56,7 +55,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 			}
 
 			_logger.LogVerbose("Successfully create metadata for images.");
-			return lines;
 		}
 	}
 }

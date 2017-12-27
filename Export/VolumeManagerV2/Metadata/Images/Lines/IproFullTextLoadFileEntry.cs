@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
 
@@ -26,7 +26,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 			_logger = logger;
 		}
 
-		public bool TryCreateFullTextLine(ObjectExportInfo artifact, string batesNumber, int pageNumber, long pageOffset, out KeyValuePair<string, string> fullTextEntry)
+		public void WriteFullTextLine(ObjectExportInfo artifact, string batesNumber, int pageNumber, long pageOffset, IRetryableStreamWriter writer, CancellationToken token)
 		{
 			_logger.LogVerbose("Attempting to create Full text entry for image {batesNumber}.", batesNumber);
 			if (pageNumber == 0)
@@ -36,30 +36,22 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 				_textReader = GetTextStream(artifact);
 			}
 
-			string lineToWrite = BuildLineToWrite(batesNumber, pageOffset);
-
-			fullTextEntry = new KeyValuePair<string, string>($"FT{batesNumber}", lineToWrite);
+			WriteLine(batesNumber, pageOffset, writer, token);
 
 			_logger.LogVerbose("Successfully create Full text entry for image.");
-
-			return true;
 		}
 
-		private string BuildLineToWrite(string batesNumber, long pageOffset)
+		private void WriteLine(string batesNumber, long pageOffset, IRetryableStreamWriter writer, CancellationToken token)
 		{
-			//TODO REL-185532 This is an issue. We're putting whole ExtractedText into memory
-			//we should be able to write to file directly instead of storing metadata in memory
-			StringBuilder lineToWrite = new StringBuilder();
-
-			lineToWrite.Append("FT,");
-			lineToWrite.Append(batesNumber);
-			lineToWrite.Append(",1,1,");
+			writer.WriteChunk("FT,", token);
+			writer.WriteChunk(batesNumber, token);
+			writer.WriteChunk(",1,1,", token);
 			if (pageOffset == long.MinValue)
 			{
 				int c = _textReader.Read();
 				while (c != -1)
 				{
-					lineToWrite.Append(GetLfpFullTextTransform(c));
+					writer.WriteChunk(GetLfpFullTextTransform(c), token);
 					c = _textReader.Read();
 				}
 			}
@@ -69,14 +61,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 				int c = _textReader.Read();
 				while (i < pageOffset && c != -1)
 				{
-					lineToWrite.Append(GetLfpFullTextTransform(c));
+					writer.WriteChunk(GetLfpFullTextTransform(c), token);
 					c = _textReader.Read();
 					i++;
 				}
 			}
-			lineToWrite.Append(Environment.NewLine);
-
-			return lineToWrite.ToString();
+			writer.WriteChunk(Environment.NewLine, token);
+			writer.FlushChunks(token);
 		}
 
 		private TextReader GetTextStream(ObjectExportInfo artifact)

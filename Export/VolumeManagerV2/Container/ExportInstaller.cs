@@ -127,7 +127,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 		private void InstallStatefulComponents(IWindsorContainer container)
 		{
 			container.Register(Component.For<IStateful, ILoadFileWriter>().ImplementedBy<LoadFileWriterRetryable>(),
-				Component.For<IStateful>().UsingFactoryMethod(k => k.Resolve<IImageLoadFileWriter>()));
+				Component.For<IStateful>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileRetryableStreamWriter>()));
 		}
 
 		private void InstallStatistics(IWindsorContainer container)

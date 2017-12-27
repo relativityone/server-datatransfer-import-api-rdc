@@ -13,7 +13,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 	public class FilesDownloader
 	{
 		private List<ExportRequest> _nativeFileExportRequests;
-		private List<ExportRequest> _imageFileExprotRequests;
+		private List<ExportRequest> _imageFileExportRequests;
 		private List<LongTextExportRequest> _longTextExportRequests;
 
 		private readonly NativeRepository _nativeRepository;
@@ -62,8 +62,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_nativeFileExportRequests.AddRange(nativeExportRequests);
 
 			IList<ExportRequest> imageExportRequests = _imageRepository.GetExportRequests();
-			_imageFileExprotRequests = new List<ExportRequest>();
-			_imageFileExprotRequests.AddRange(imageExportRequests);
+			_imageFileExportRequests = new List<ExportRequest>();
+			_imageFileExportRequests.AddRange(imageExportRequests);
 
 			IList<LongTextExportRequest> longTextExportRequests = _longTextRepository.GetExportRequests();
 			_longTextExportRequests = new List<LongTextExportRequest>();
@@ -179,10 +179,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private IDownloadTapiBridge DownloadImageFiles(CancellationToken cancellationToken)
 		{
-			_logger.LogVerbose("Creating TAPI bridge for image file export. Adding {count} requests to it.", _imageFileExprotRequests.Count);
+			_logger.LogVerbose("Creating TAPI bridge for image file export. Adding {count} requests to it.", _imageFileExportRequests.Count);
 			IDownloadTapiBridge tapiBridge = _exportTapiBridgeFactory.CreateForImages(cancellationToken);
 
-			foreach (var fileExportRequest in _imageFileExprotRequests)
+			foreach (var fileExportRequest in _imageFileExportRequests)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{

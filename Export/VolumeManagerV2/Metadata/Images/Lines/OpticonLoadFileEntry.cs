@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using Relativity.Logging;
 
@@ -14,7 +13,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 			_logger = logger;
 		}
 
-		public KeyValuePair<string, string> Create(string batesNumber, string filePath, string volume, int pageNumber, long pageOffset, int numberOfImages)
+		public string Create(string batesNumber, string filePath, string volume, int pageNumber, int numberOfImages)
 		{
 			_logger.LogVerbose("Creating Opticon load file entry for image {batesNumber}.", batesNumber);
 			StringBuilder line = new StringBuilder();
@@ -30,7 +29,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 			}
 			line.Append(Environment.NewLine);
 
-			return new KeyValuePair<string, string>(batesNumber, line.ToString());
+			return line.ToString();
 		}
 	}
 }

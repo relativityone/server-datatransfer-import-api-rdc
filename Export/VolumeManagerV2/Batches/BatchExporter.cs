@@ -1,13 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.LoadFileEntry;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 {

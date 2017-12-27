@@ -74,7 +74,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 				if (actualFileSize > 0 && actualFileSize < predictions.ImageFilesSize)
 				{
 					_status.WriteUpdate(
-						$"Image file {image.TempLocation} size {actualFileSize} is different from expected {predictions.ImageFilesSize} for image {image.BatesNumber} in artifact {artifact.ArtifactID}, but images have been merged into multipage format.");
+						$"Image file {image.TempLocation} size {actualFileSize} is different from expected {predictions.ImageFilesSize} for image {image.BatesNumber} in artifact {artifact.ArtifactID}, but images have been merged into multi-page format.");
 				}
 				else
 				{
@@ -87,14 +87,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 		private void ValidateAllImages(ObjectExportInfo artifact, List<ImageExportInfo> images, VolumePredictions predictions)
 		{
 			bool imageMissing = false;
-			for (int i = 0; i < images.Count; i++)
+			foreach (ImageExportInfo image in images)
 			{
-				if (!_fileHelper.Exists(images[i].TempLocation) || _fileHelper.GetFileSize(images[i].TempLocation) == 0)
+				if (!_fileHelper.Exists(image.TempLocation) || _fileHelper.GetFileSize(image.TempLocation) == 0)
 				{
-					_logger.LogWarning("Image file {file} missing or empty for image {image.BatesNumber} in artifact {artifactId}.", images[i].TempLocation, images[i].BatesNumber,
+					_logger.LogWarning("Image file {file} missing or empty for image {image.BatesNumber} in artifact {artifactId}.", image.TempLocation, image.BatesNumber,
 						artifact.ArtifactID);
-					string errorMessage = _fileHelper.Exists(images[i].TempLocation) ? "File empty." : "File missing.";
-					_errorFileWriter.Write(ErrorFileWriter.ExportFileType.Image, artifact.IdentifierValue, images[i].FileGuid, errorMessage);
+					string errorMessage = _fileHelper.Exists(image.TempLocation) ? "File empty." : "File missing.";
+					_errorFileWriter.Write(ErrorFileWriter.ExportFileType.Image, artifact.IdentifierValue, image.FileGuid, errorMessage);
 					imageMissing = true;
 				}
 			}

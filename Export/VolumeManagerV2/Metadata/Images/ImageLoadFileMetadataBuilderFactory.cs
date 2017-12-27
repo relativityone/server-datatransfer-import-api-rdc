@@ -1,4 +1,5 @@
 ﻿using Castle.Windsor;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
@@ -17,8 +18,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 			ImageLoadFileMetadataForArtifactBuilderFactory factory = container.Resolve<ImageLoadFileMetadataForArtifactBuilderFactory>();
 			IImageLoadFileMetadataForArtifactBuilder defaultMetadataBuilder = factory.Create(exportSettings);
 			IImageLoadFileMetadataForArtifactBuilder unsuccessfulRollupMetadataBuilder = factory.CreateForUnsuccessfulRollup(exportSettings);
+			IRetryableStreamWriter streamWriter = container.Resolve<ImageLoadFileRetryableStreamWriter>();
 
-			return new ImageLoadFileMetadataBuilder(defaultMetadataBuilder, unsuccessfulRollupMetadataBuilder, _logger);
+			return new ImageLoadFileMetadataBuilder(defaultMetadataBuilder, unsuccessfulRollupMetadataBuilder, streamWriter, _logger);
 		}
 	}
 }

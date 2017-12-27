@@ -267,6 +267,9 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\ILongTextStreamFormatterFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\DelimitedFileLongTextStreamFormatterFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextStreamFormatterFactoryFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ImageLoadFileRetryableStreamWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\IRetryableStreamWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\RetryableStreamWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\IRepositoryBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\DownloadProgressManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\DownloadTapiBridgeAdapter.cs" />
@@ -357,7 +360,6 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LoadFileMetadataBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ILoadFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFileFactory.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ImageLoadFileWriterRetryable.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\FromFileToLoadFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ImageExportRequestBuilder.cs" />
@@ -415,7 +417,6 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Paths\LoadFileDestinationPath.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\NativeExportableSize.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\ObjectExportableSize.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ImageLoadFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\LoadFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\SinglePageImagesRollup.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\StreamFactory.cs" />

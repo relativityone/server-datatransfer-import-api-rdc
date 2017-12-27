@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Text;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 {
