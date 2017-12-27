@@ -1,10 +1,9 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Exporters;
 using Moq;
 using NUnit.Framework;
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2
+namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Directories
 {
 	[TestFixture]
 	public class LabelManagerTests

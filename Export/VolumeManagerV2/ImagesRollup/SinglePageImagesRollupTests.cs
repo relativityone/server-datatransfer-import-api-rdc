@@ -9,12 +9,14 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.ImagesRollup
 	public class SinglePageImagesRollupTests
 	{
 		[Test]
-		public void ItShouldReturnFalse()
+		public void ItShouldAlwaysReturnFalseForRollupResult()
 		{
 			var instance = new SinglePageImagesRollup();
 
-			var artifact = new ObjectExportInfo();
-			artifact.Images = new ArrayList();
+			var artifact = new ObjectExportInfo
+			{
+				Images = new ArrayList()
+			};
 
 			var image = new ImageExportInfo();
 			artifact.Images.Add(image);
@@ -24,6 +26,20 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.ImagesRollup
 
 			//ASSERT
 			Assert.That(image.SuccessfulRollup, Is.False);
+		}
+
+		[Test]
+		public void ItShouldHandleEmptyImagesListWithoutException()
+		{
+			var instance = new SinglePageImagesRollup();
+
+			var artifact = new ObjectExportInfo
+			{
+				Images = new ArrayList()
+			};
+
+			//ACT
+			Assert.DoesNotThrow(() => instance.RollupImages(artifact));
 		}
 	}
 }
