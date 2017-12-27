@@ -75,7 +75,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 			if (LongTextHelper.IsTextTooLong(artifact, GetTextColumnName()))
 			{
 				string fileLocation = LongTextHelper.GetLongTextFileLocation(artifact, GetTextSourceFieldId(artifact));
-				return new StreamReader(fileLocation, _exportSettings.LoadFileEncoding);
+				return new StreamReader(fileLocation);
 			}
 			string text = LongTextHelper.GetTextFromField(artifact, GetTextColumnName());
 			return new StringReader(text);
