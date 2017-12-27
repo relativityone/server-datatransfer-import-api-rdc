@@ -52,6 +52,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings
 				int newIndex = ordinalLookup.Count;
 				ordinalLookup.Add(Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME, newIndex);
 				ordinalLookup.Add(Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME, newIndex + 1);
+				ordinalLookup.Add(Constants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE, newIndex + 2);
 			}
 			return ordinalLookup;
 		}

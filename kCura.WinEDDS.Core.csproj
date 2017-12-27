@@ -247,6 +247,7 @@
     <Compile Include="Export\VolumeManagerV2\Batches\LongTextBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\NativeFileBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batch.cs" />
+    <Compile Include="Export\VolumeManagerV2\DataSize\EncodingFileSize.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\AbsoluteFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\DirectoryManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\FilePathHelper.cs" />
