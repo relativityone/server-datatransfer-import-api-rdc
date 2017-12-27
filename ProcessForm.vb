@@ -593,7 +593,10 @@ Namespace kCura.Windows.Process
 			Else
 				If _cancelled Then Me.Close()
 				_currentRecordLabel.Text = "All records have been processed"
-				If _hasReceivedFatalError Then _currentRecordLabel.Text = "Fatal Exception Encountered"
+				If _hasReceivedFatalError Then
+					ShowWarningPopup = False
+					_currentRecordLabel.Text = "Fatal Exception Encountered"
+				End If
 				If _hasClickedStop Then _currentRecordLabel.Text = "Process stopped by user"
 				_currentMessageStatus.Text = ""
 				_stopImportButton.Text = "Close"
