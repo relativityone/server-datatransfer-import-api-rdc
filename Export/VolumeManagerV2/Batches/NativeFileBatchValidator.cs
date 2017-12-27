@@ -7,12 +7,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 {
 	public class NativeFileBatchValidator : IBatchValidator
 	{
-		private readonly ErrorFileWriter _errorFileWriter;
+		private readonly IErrorFileWriter _errorFileWriter;
 		private readonly IFileHelper _fileHelper;
 		private readonly IStatus _status;
 		private readonly ILog _logger;
 
-		public NativeFileBatchValidator(ErrorFileWriter errorFileWriter, IFileHelper fileHelper, IStatus status, ILog logger)
+		public NativeFileBatchValidator(IErrorFileWriter errorFileWriter, IFileHelper fileHelper, IStatus status, ILog logger)
 		{
 			_errorFileWriter = errorFileWriter;
 			_fileHelper = fileHelper;

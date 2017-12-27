@@ -7,7 +7,7 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 {
-	public class ErrorFileWriter : IDisposable
+	public class ErrorFileWriter : IErrorFileWriter
 	{
 		private StreamWriter _streamWriter;
 

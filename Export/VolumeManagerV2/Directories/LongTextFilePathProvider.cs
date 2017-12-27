@@ -4,7 +4,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 {
 	public class LongTextFilePathProvider : FilePathProvider
 	{
-		public LongTextFilePathProvider(LabelManager labelManager, ExportFile exportSettings, IDirectoryHelper directoryHelper, ILog logger) : base(labelManager, exportSettings,
+		public LongTextFilePathProvider(ILabelManager labelManager, ExportFile exportSettings, IDirectoryHelper directoryHelper, ILog logger) : base(labelManager, exportSettings,
 			directoryHelper, logger)
 		{
 		}

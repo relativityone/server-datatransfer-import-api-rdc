@@ -10,13 +10,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 {
 	public class LongTextBatchValidator : IBatchValidator
 	{
-		private readonly LongTextRepository _longTextRepository;
+		private readonly ILongTextRepository _longTextRepository;
 
 		private readonly IFileHelper _fileHelper;
 		private readonly IStatus _status;
 		private readonly ILog _logger;
 
-		public LongTextBatchValidator(LongTextRepository longTextRepository, IFileHelper fileHelper, IStatus status, ILog logger)
+		public LongTextBatchValidator(ILongTextRepository longTextRepository, IFileHelper fileHelper, IStatus status, ILog logger)
 		{
 			_longTextRepository = longTextRepository;
 			_fileHelper = fileHelper;
@@ -35,8 +35,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 				}
 				if (!_fileHelper.Exists(longText.Location))
 				{
-					_logger.LogWarning("File {file} for LongText {fieldId} for artifact {artifactId} missing.", longText.Location, longText.FieldArtifactId, longText.ArtifactId);
-					_status.WriteWarning($"File {longText.Location} for LongText {longText.FieldArtifactId} for artifact {longText.ArtifactId} missing.");
+					_logger.LogError("File {file} for LongText {fieldId} for artifact {artifactId} missing.", longText.Location, longText.FieldArtifactId, longText.ArtifactId);
+					_status.WriteError($"File {longText.Location} for LongText {longText.FieldArtifactId} for artifact {longText.ArtifactId} missing.");
 				}
 				else if (_fileHelper.GetFileSize(longText.Location) == 0)
 				{

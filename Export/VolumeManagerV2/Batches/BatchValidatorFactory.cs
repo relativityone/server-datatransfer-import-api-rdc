@@ -1,4 +1,5 @@
-﻿using Castle.Windsor;
+﻿using System.Collections.Generic;
+using Castle.Windsor;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
@@ -15,35 +16,39 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 		public IBatchValidator Create(ExportFile exportSettings, IWindsorContainer container)
 		{
 			_logger.LogVerbose("Creating BatchValidator.");
-			BatchValidator batchValidator = new BatchValidator(_logger);
+			List<IBatchValidator> batchValidators = new List<IBatchValidator>();
 
 			if (exportSettings.ExportFullTextAsFile)
 			{
 				_logger.LogVerbose("Adding {validator}.", nameof(LongTextBatchValidator));
-				batchValidator.AddBatchValidator(container.Resolve<LongTextBatchValidator>());
+				batchValidators.Add(container.Resolve<LongTextBatchValidator>());
 			}
+
 			if (exportSettings.ExportNative && exportSettings.VolumeInfo.CopyNativeFilesFromRepository)
 			{
 				_logger.LogVerbose("Adding {validator}.", nameof(NativeFileBatchValidator));
-				batchValidator.AddBatchValidator(container.Resolve<NativeFileBatchValidator>());
+				batchValidators.Add(container.Resolve<NativeFileBatchValidator>());
 			}
+
 			if (exportSettings.ExportImages && exportSettings.VolumeInfo.CopyImageFilesFromRepository)
 			{
 				_logger.LogVerbose("Adding {validator}.", nameof(ImageFileBatchValidator));
-				batchValidator.AddBatchValidator(container.Resolve<ImageFileBatchValidator>());
+				batchValidators.Add(container.Resolve<ImageFileBatchValidator>());
 			}
+
 			if (exportSettings.ExportImages)
 			{
 				_logger.LogVerbose("Adding {validator}.", nameof(ImageLoadFileBatchValidator));
-				batchValidator.AddBatchValidator(container.Resolve<ImageLoadFileBatchValidator>());
+				batchValidators.Add(container.Resolve<ImageLoadFileBatchValidator>());
 			}
+
 			if (exportSettings.ExportNative)
 			{
 				_logger.LogVerbose("Adding {validator}.", nameof(LoadFileBatchValidator));
-				batchValidator.AddBatchValidator(container.Resolve<LoadFileBatchValidator>());
+				batchValidators.Add(container.Resolve<LoadFileBatchValidator>());
 			}
 
-			return batchValidator;
+			return new BatchValidator(batchValidators, _logger);
 		}
 	}
 }

@@ -19,9 +19,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 		private readonly IStatus _status;
 		private readonly ILog _logger;
 
-		protected readonly Image ImageConverter;
+		protected readonly IImage ImageConverter;
 
-		protected MultiPageImagesRollup(ExportFile exportSettings, IFileHelper fileHelper, IStatus status, ILog logger, Image imageConverter)
+		protected MultiPageImagesRollup(ExportFile exportSettings, IFileHelper fileHelper, IStatus status, ILog logger, IImage imageConverter)
 		{
 			_exportSettings = exportSettings;
 			_fileHelper = fileHelper;
@@ -62,6 +62,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 			{
 				HandleImageRollupException(artifact, ex, rollupTempLocation);
 				destinationImage.SuccessfulRollup = false;
+				return;
 			}
 
 			_logger.LogVerbose("Images rollup finished.");
@@ -108,8 +109,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 				}
 				else
 				{
-					_logger.LogWarning("File {file} exists - skipping.", image.TempLocation);
+					_logger.LogWarning("File {file} exists - skipping. Removing temp file.", image.TempLocation);
 					_status.WriteWarning($"File exists - file copy skipped: {image.TempLocation}");
+					_fileHelper.Delete(rollupTempLocation);
 				}
 			}
 			else

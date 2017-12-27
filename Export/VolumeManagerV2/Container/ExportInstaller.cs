@@ -117,7 +117,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 
 		private void InstallLongText(IWindsorContainer container)
 		{
-			container.Register(Component.For<IRepository, LongTextRepository>().ImplementedBy<LongTextRepository>());
+			container.Register(Component.For<IRepository, ILongTextRepository, LongTextRepository>().ImplementedBy<LongTextRepository>());
 			container.Register(Component.For<IFullTextLoadFileEntry>().UsingFactoryMethod(k => k.Resolve<FullTextLoadFileEntryFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<ILongTextHandler>().UsingFactoryMethod(k => k.Resolve<LongTextHandlerFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<IDelimiter>().UsingFactoryMethod(k => k.Resolve<DelimiterFactory>().Create(ExportSettings)));

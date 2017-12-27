@@ -1,6 +1,6 @@
 ﻿namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 {
-	public class LabelManager
+	public class LabelManager : ILabelManager
 	{
 		private readonly string _volumePrefix;
 		private readonly string _subdirectoryImagePrefix;

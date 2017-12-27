@@ -10,23 +10,23 @@ using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public class FilesDownloader
+	public class Downloader : IDownloader
 	{
 		private List<ExportRequest> _nativeFileExportRequests;
-		private List<ExportRequest> _imageFileExportRequests;
+		private List<ExportRequest> _imageFileExprotRequests;
 		private List<LongTextExportRequest> _longTextExportRequests;
 
 		private readonly NativeRepository _nativeRepository;
 		private readonly ImageRepository _imageRepository;
 		private readonly LongTextRepository _longTextRepository;
-		private readonly ErrorFileWriter _errorFileWriter;
+		private readonly IErrorFileWriter _errorFileWriter;
 
 		private readonly ExportTapiBridgeFactory _exportTapiBridgeFactory;
 
 		private readonly ILog _logger;
 
-		public FilesDownloader(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, ExportTapiBridgeFactory exportTapiBridgeFactory,
-			ErrorFileWriter errorFileWriter, ILog logger)
+		public Downloader(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, ExportTapiBridgeFactory exportTapiBridgeFactory,
+			IErrorFileWriter errorFileWriter, ILog logger)
 		{
 			_nativeRepository = nativeRepository;
 			_imageRepository = imageRepository;
@@ -62,8 +62,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_nativeFileExportRequests.AddRange(nativeExportRequests);
 
 			IList<ExportRequest> imageExportRequests = _imageRepository.GetExportRequests();
-			_imageFileExportRequests = new List<ExportRequest>();
-			_imageFileExportRequests.AddRange(imageExportRequests);
+			_imageFileExprotRequests = new List<ExportRequest>();
+			_imageFileExprotRequests.AddRange(imageExportRequests);
 
 			IList<LongTextExportRequest> longTextExportRequests = _longTextRepository.GetExportRequests();
 			_longTextExportRequests = new List<LongTextExportRequest>();
@@ -179,10 +179,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private IDownloadTapiBridge DownloadImageFiles(CancellationToken cancellationToken)
 		{
-			_logger.LogVerbose("Creating TAPI bridge for image file export. Adding {count} requests to it.", _imageFileExportRequests.Count);
+			_logger.LogVerbose("Creating TAPI bridge for image file export. Adding {count} requests to it.", _imageFileExprotRequests.Count);
 			IDownloadTapiBridge tapiBridge = _exportTapiBridgeFactory.CreateForImages(cancellationToken);
 
-			foreach (var fileExportRequest in _imageFileExportRequests)
+			foreach (var fileExportRequest in _imageFileExprotRequests)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{
