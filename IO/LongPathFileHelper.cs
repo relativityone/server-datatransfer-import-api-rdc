@@ -30,7 +30,7 @@ namespace kCura.WinEDDS.Core.IO
 			return fileStream;
 		}
 
-		public FileStream CreateAndTruncate(string filePath, long position)
+		public FileStream ReopenAndTruncate(string filePath, long position)
 		{
 			CreationDisposition disposition = CreationDisposition.OpenExisting;
 			ZetaLongPaths.Native.FileAccess fileAccess = ZetaLongPaths.Native.FileAccess.GenericRead | ZetaLongPaths.Native.FileAccess.GenericWrite;
