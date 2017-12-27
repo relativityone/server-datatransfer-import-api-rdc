@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
 using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
@@ -18,19 +19,21 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private readonly NativeRepository _nativeRepository;
 		private readonly ImageRepository _imageRepository;
 		private readonly LongTextRepository _longTextRepository;
+		private readonly ErrorFileWriter _errorFileWriter;
 
 		private readonly ExportTapiBridgeFactory _exportTapiBridgeFactory;
 
 		private readonly ILog _logger;
 
 		public FilesDownloader(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, ExportTapiBridgeFactory exportTapiBridgeFactory,
-			ILog logger)
+			ErrorFileWriter errorFileWriter, ILog logger)
 		{
 			_nativeRepository = nativeRepository;
 			_imageRepository = imageRepository;
 			_longTextRepository = longTextRepository;
 			_exportTapiBridgeFactory = exportTapiBridgeFactory;
 			_logger = logger;
+			_errorFileWriter = errorFileWriter;
 		}
 
 		public void DownloadFilesForArtifacts(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
@@ -109,6 +112,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 					_logger.LogWarning(ex, "TransferException occurred during transfer, but cancellation has been requested.");
 					return;
 				}
+				_errorFileWriter.Write(ErrorFileWriter.ExportFileType.Generic, string.Empty, string.Empty, $"Fatal exception occurred during transfer. Failed to download files for batch {ex.Message}");
 				_logger.LogError(ex, "TransferException occurred during transfer and cancellation has NOT been requested.");
 				throw;
 			}

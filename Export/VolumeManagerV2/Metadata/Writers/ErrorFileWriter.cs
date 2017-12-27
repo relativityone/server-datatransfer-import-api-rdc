@@ -76,7 +76,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 		public enum ExportFileType
 		{
 			Image,
-			Native
+			Native,
+			Generic
 		}
 	}
 }
