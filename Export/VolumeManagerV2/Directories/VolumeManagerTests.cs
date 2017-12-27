@@ -103,12 +103,12 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Directories
 
 			VolumePredictions predictionsNative = new VolumePredictions
 			{
-				NativeFilesSize = sizeInMBs * _MBS_TO_BYTES  + 1
+				NativeFilesSize = sizeInMBs * _MBS_TO_BYTES + 1
 			};
 
 			VolumePredictions predictionsImage = new VolumePredictions
 			{
-				ImageFilesSize = sizeInMBs * _MBS_TO_BYTES  + 1
+				ImageFilesSize = sizeInMBs * _MBS_TO_BYTES + 1
 			};
 
 			VolumePredictions predictionsText = new VolumePredictions
@@ -122,7 +122,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Directories
 
 			_instance.MoveNext(predictionsImage);
 			Assert.That(_instance.CurrentVolumeNumber, Is.EqualTo(startNumber + 1));
-			
+
 			_instance.MoveNext(predictionsText);
 			Assert.That(_instance.CurrentVolumeNumber, Is.EqualTo(startNumber + 2));
 		}

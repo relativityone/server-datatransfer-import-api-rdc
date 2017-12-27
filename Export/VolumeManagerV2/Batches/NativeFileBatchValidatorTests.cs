@@ -36,13 +36,13 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 				NativeTempLocation = string.Empty,
 				IdentifierValue = "id"
 			};
-			ObjectExportInfo[] aritfacts =
+			ObjectExportInfo[] artifacts =
 			{
 				artifact
 			};
 
 			//ACT
-			_instance.ValidateExportedBatch(aritfacts, new VolumePredictions[1], CancellationToken.None);
+			_instance.ValidateExportedBatch(artifacts, new VolumePredictions[1], CancellationToken.None);
 
 			//ASSERT
 			_errorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), artifact.IdentifierValue, artifact.NativeTempLocation, It.IsAny<string>()), Times.Never);
@@ -56,7 +56,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 			{
 				NativeTempLocation = "file_path"
 			};
-			ObjectExportInfo[] aritfacts =
+			ObjectExportInfo[] artifacts =
 			{
 				artifact
 			};
@@ -71,7 +71,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 			_fileHelper.Setup(x => x.GetFileSize(artifact.NativeTempLocation)).Returns(_FILE_SIZE);
 
 			//ACT
-			_instance.ValidateExportedBatch(aritfacts, predictions, CancellationToken.None);
+			_instance.ValidateExportedBatch(artifacts, predictions, CancellationToken.None);
 
 			//ASSERT
 			_errorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), artifact.IdentifierValue, artifact.NativeTempLocation, It.IsAny<string>()), Times.Never);
@@ -85,7 +85,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 			{
 				NativeTempLocation = "file_path"
 			};
-			ObjectExportInfo[] aritfacts =
+			ObjectExportInfo[] artifacts =
 			{
 				artifact
 			};
@@ -94,13 +94,13 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 			{
 				NativeFilesSize = _FILE_SIZE
 			};
-			VolumePredictions[] predictions = { prediction };
+			VolumePredictions[] predictions = {prediction};
 
 			_fileHelper.Setup(x => x.Exists(artifact.NativeTempLocation)).Returns(true);
 			_fileHelper.Setup(x => x.GetFileSize(artifact.NativeTempLocation)).Returns(_FILE_SIZE - 1);
 
 			//ACT
-			_instance.ValidateExportedBatch(aritfacts, predictions, CancellationToken.None);
+			_instance.ValidateExportedBatch(artifacts, predictions, CancellationToken.None);
 
 			//ASSERT
 			_errorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), artifact.IdentifierValue, artifact.NativeTempLocation, It.IsAny<string>()), Times.Never);
@@ -116,7 +116,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 			{
 				NativeTempLocation = "file_path"
 			};
-			ObjectExportInfo[] aritfacts =
+			ObjectExportInfo[] artifacts =
 			{
 				artifact
 			};
@@ -125,7 +125,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 			_fileHelper.Setup(x => x.GetFileSize(artifact.NativeTempLocation)).Returns(size);
 
 			//ACT
-			_instance.ValidateExportedBatch(aritfacts, new VolumePredictions[1], CancellationToken.None);
+			_instance.ValidateExportedBatch(artifacts, new VolumePredictions[1], CancellationToken.None);
 
 			//ASSERT
 			_errorFileWriter.Verify(x => x.Write(ErrorFileWriter.ExportFileType.Native, artifact.IdentifierValue, artifact.NativeTempLocation, It.IsAny<string>()), Times.Once);

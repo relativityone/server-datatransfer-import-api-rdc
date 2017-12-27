@@ -84,10 +84,13 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 			const int fileSize = 407612;
 
 			ObjectExportInfo[] artifacts = {CreateSingleWithLocation(location)};
-			VolumePredictions[] volumePredictions = {new VolumePredictions
+			VolumePredictions[] volumePredictions =
 			{
-				ImageFilesSize = fileSize
-			}};
+				new VolumePredictions
+				{
+					ImageFilesSize = fileSize
+				}
+			};
 
 			_fileHelper.Setup(x => x.Exists(location)).Returns(true);
 			_fileHelper.Setup(x => x.GetFileSize(location)).Returns(fileSize - 1);
@@ -106,11 +109,14 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 			string location = "file_location";
 			const int fileSize = 407612;
 
-			ObjectExportInfo[] artifacts = { CreateSingleWithLocation(location) };
-			VolumePredictions[] volumePredictions = {new VolumePredictions
+			ObjectExportInfo[] artifacts = {CreateSingleWithLocation(location)};
+			VolumePredictions[] volumePredictions =
 			{
-				ImageFilesSize = fileSize
-			}};
+				new VolumePredictions
+				{
+					ImageFilesSize = fileSize
+				}
+			};
 
 			_fileHelper.Setup(x => x.Exists(location)).Returns(true);
 			_fileHelper.Setup(x => x.GetFileSize(location)).Returns(fileSize + 1);
@@ -131,8 +137,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 			string location1 = "file_location_1";
 			string location2 = "file_location_2";
 
-			ObjectExportInfo[] artifacts = { CreateTwoImagesWithLocations(location1, location2) };
-			
+			ObjectExportInfo[] artifacts = {CreateTwoImagesWithLocations(location1, location2)};
+
 			_fileHelper.Setup(x => x.Exists(location1)).Returns(true);
 			_fileHelper.Setup(x => x.GetFileSize(location1)).Returns(1);
 
@@ -141,7 +147,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 
 			//ACT
 			_instance.ValidateExportedBatch(artifacts, new VolumePredictions[1], CancellationToken.None);
-			
+
 			//ASSERT
 			_errorFileWriter.Verify(x => x.Write(ErrorFileWriter.ExportFileType.Image, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 			_status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
@@ -156,11 +162,14 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 			const long size1 = 680296;
 			const long size2 = 134113;
 
-			ObjectExportInfo[] artifacts = { CreateTwoImagesWithLocations(location1, location2) };
-			VolumePredictions[] volumePredictions = {new VolumePredictions
+			ObjectExportInfo[] artifacts = {CreateTwoImagesWithLocations(location1, location2)};
+			VolumePredictions[] volumePredictions =
 			{
-				ImageFilesSize = size1 + size2 + 1
-			}};
+				new VolumePredictions
+				{
+					ImageFilesSize = size1 + size2 + 1
+				}
+			};
 
 			_fileHelper.Setup(x => x.Exists(location1)).Returns(true);
 			_fileHelper.Setup(x => x.GetFileSize(location1)).Returns(size1);
@@ -194,7 +203,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 			};
 			ArrayList images = new ArrayList
 			{
-				image1, image2
+				image1,
+				image2
 			};
 			return new ObjectExportInfo
 			{

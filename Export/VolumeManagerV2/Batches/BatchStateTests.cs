@@ -54,7 +54,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 
 			//ACT & ASSERT
 			Assert.Throws<Exception>(() => _instance.SaveState());
-			
+
 			_statefulComponentMocks[0].Verify(x => x.SaveState());
 			_statefulComponentMocks[2].Verify(x => x.SaveState(), Times.Never);
 		}

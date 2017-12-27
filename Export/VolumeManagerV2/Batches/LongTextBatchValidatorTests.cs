@@ -48,7 +48,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		public void ItShouldPassForFileWithoutExportRequest()
 		{
 			LongText longText = Create("location", true, false);
-			_longTextRepository.Setup(x => x.GetLongTexts()).Returns(new List<LongText> { longText });
+			_longTextRepository.Setup(x => x.GetLongTexts()).Returns(new List<LongText> {longText});
 
 			//ACT
 			_instance.ValidateExportedBatch(null, null, CancellationToken.None);
@@ -63,7 +63,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		{
 			string location = "location";
 			LongText longText = Create(location, false, true);
-			_longTextRepository.Setup(x => x.GetLongTexts()).Returns(new List<LongText> { longText });
+			_longTextRepository.Setup(x => x.GetLongTexts()).Returns(new List<LongText> {longText});
 
 			_fileHelper.Setup(x => x.Exists(location)).Returns(false);
 
@@ -80,7 +80,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		{
 			string location = "location";
 			LongText longText = Create(location, false, true);
-			_longTextRepository.Setup(x => x.GetLongTexts()).Returns(new List<LongText> { longText });
+			_longTextRepository.Setup(x => x.GetLongTexts()).Returns(new List<LongText> {longText});
 
 			_fileHelper.Setup(x => x.Exists(location)).Returns(true);
 			_fileHelper.Setup(x => x.GetFileSize(location)).Returns(0);

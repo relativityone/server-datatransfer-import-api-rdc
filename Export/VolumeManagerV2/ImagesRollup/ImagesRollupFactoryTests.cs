@@ -3,6 +3,7 @@ using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
 using kCura.WinEDDS.Exporters;
 using Moq;
 using NUnit.Framework;
+using Relativity;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.ImagesRollup
@@ -16,7 +17,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.ImagesRollup
 		[TestCase(true, false)]
 		public void ItShouldReturnSinglePageRollupWhenNotExportingImages(bool exportImages, bool copyFiles)
 		{
-			ExportFile exportSettings = new ExportFile((int) Relativity.ArtifactType.Document)
+			ExportFile exportSettings = new ExportFile((int) ArtifactType.Document)
 			{
 				ExportImages = exportImages,
 				VolumeInfo = new VolumeInfo

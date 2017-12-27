@@ -18,7 +18,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Directories
 				FolderPath = root,
 				FilePrefix = prefix
 			};
-			
+
 			var instance = new PrefixFilePathTransformer(exportSettings, new FilePathHelper(new NullLogger()));
 
 			//ACT

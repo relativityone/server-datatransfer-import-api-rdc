@@ -28,7 +28,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
 			_volumePredictions = new VolumePredictions
 			{
 				ImageFileCount = _IMAGE_FILE_COUNT,
-				ImageFilesSize= _IMAGE_FILE_SIZE
+				ImageFilesSize = _IMAGE_FILE_SIZE
 			};
 
 			_instance = new ImageExportableSize(_exportSettings);
