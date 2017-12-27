@@ -19,6 +19,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 			{
 				return new List<ImageExportInfo>();
 			}
+
 			//Opticon file should have only one entry for all pages
 			return new List<ImageExportInfo> {(ImageExportInfo) artifact.Images[0]};
 		}

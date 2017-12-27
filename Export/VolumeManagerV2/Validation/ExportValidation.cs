@@ -22,12 +22,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation
 			{
 				return false;
 			}
+
 			_permissionCheck.CheckPermissions(exportFile.CaseArtifactID);
 			if (!_filesOverwriteValidator.ValidateLoadFilesOverwriting(exportFile.Overwrite, exportFile.ExportImages, new LoadFileDestinationPath(exportFile),
 				new ImageLoadFileDestinationPath(exportFile)))
 			{
 				return false;
 			}
+
 			return true;
 		}
 	}

@@ -30,6 +30,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 			{
 				MoveToNextSubdirectory();
 			}
+
 			_currentNativeSubdirectoryFileCount += _currentVolumePredictions.NativeFileCount;
 			_currentImageSubdirectoryFileCount += _currentVolumePredictions.ImageFileCount;
 			_currentTextSubdirectoryFileCount += _currentVolumePredictions.TextFileCount;

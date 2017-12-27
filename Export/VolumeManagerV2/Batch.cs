@@ -88,6 +88,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 					_batchState.RestoreState();
 					_messenger.StateRestored();
 				}
+
 				_batchCleanUp.CleanUp();
 			}
 		}

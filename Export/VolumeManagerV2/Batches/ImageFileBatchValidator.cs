@@ -30,6 +30,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 				{
 					return;
 				}
+
 				ValidateImagesForArtifact(artifacts[i], predictions[i]);
 			}
 		}
@@ -61,6 +62,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 			{
 				return;
 			}
+
 			if (!_fileHelper.Exists(image.TempLocation) || _fileHelper.GetFileSize(image.TempLocation) == 0)
 			{
 				_logger.LogError("Image file {file} missing or empty for image {image.BatesNumber} in artifact {artifactId}.", image.TempLocation, image.BatesNumber, artifact.ArtifactID);
@@ -94,6 +96,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 				{
 					continue;
 				}
+
 				if (!_fileHelper.Exists(images[i].TempLocation) || _fileHelper.GetFileSize(images[i].TempLocation) == 0)
 				{
 					_logger.LogWarning("Image file {file} missing or empty for image {image.BatesNumber} in artifact {artifactId}.", images[i].TempLocation, images[i].BatesNumber,
@@ -103,6 +106,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 					imageMissing = true;
 				}
 			}
+
 			if (imageMissing)
 			{
 				_logger.LogWarning("One or more images missing - skipping size validation.");

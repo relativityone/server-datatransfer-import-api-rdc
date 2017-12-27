@@ -43,7 +43,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			}
 		}
 
-		private void WriteArtifacts(StreamWriter streamWriter, IDictionary<int, ILoadFileEntry> linesToWrite, IEnumerator<ObjectExportInfo> artifacts, CancellationToken cancellationToken)
+		private void WriteArtifacts(StreamWriter streamWriter, IDictionary<int, ILoadFileEntry> linesToWrite, IEnumerator<ObjectExportInfo> artifacts,
+			CancellationToken cancellationToken)
 		{
 			while (artifacts.MoveNext())
 			{

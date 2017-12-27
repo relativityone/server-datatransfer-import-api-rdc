@@ -3,7 +3,6 @@ using System.Linq;
 using kCura.WinEDDS.Exporters;
 using Relativity;
 using Relativity.Logging;
-using Constants = Relativity.Export.Constants;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings
 {

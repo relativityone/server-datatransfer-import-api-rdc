@@ -23,6 +23,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 				{
 					return;
 				}
+
 				_logger.LogVerbose("Attempting to rollup images for artifact {artifactId}.", artifact.ArtifactID);
 				_imagesRollup.RollupImages(artifact);
 			}

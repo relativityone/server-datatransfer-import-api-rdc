@@ -24,7 +24,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize
 				{
 					//TODO REL-185531 image size will probably be changed after merging - another issue with size calculations? REL-185531
 					//After merging size will be probably smaller, so calculation isn't precise, but we can live with that
-					
+
 					volumeSize.ImageFileCount = 1;
 
 					if (_exportSettings.TypeOfImage == ExportFile.ImageType.Pdf)

@@ -30,6 +30,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 			{
 				return TimeSpan.FromSeconds(_waitTimeBetweenRetryAttempts);
 			}
+
 			return TimeSpan.Zero;
 		}
 	}

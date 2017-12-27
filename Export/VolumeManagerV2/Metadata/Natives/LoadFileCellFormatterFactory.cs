@@ -10,6 +10,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 			{
 				return new HtmlCellFormatter(exportSettings);
 			}
+
 			return new DelimitedCellFormatter(exportSettings);
 		}
 	}

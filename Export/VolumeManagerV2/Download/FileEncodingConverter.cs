@@ -35,6 +35,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 							{
 								return;
 							}
+
 							int count = reader.Read(buf, 0, buf.Length);
 							if (count == 0)
 							{
@@ -45,6 +46,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 						}
 					}
 				}
+
 				_logger.LogVerbose("Removing source file {filePath}.", filePath);
 				_fileHelper.Delete(filePath);
 				_logger.LogVerbose("Moving temporary file from {tmpFile} to {dstFile}.", tmpFilePath, filePath);

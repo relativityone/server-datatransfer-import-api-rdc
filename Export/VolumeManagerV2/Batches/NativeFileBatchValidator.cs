@@ -28,6 +28,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 				{
 					return;
 				}
+
 				ValidateNativesForArtifact(artifacts[i], predictions[i]);
 			}
 		}
@@ -38,6 +39,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 			{
 				return;
 			}
+
 			if (!_fileHelper.Exists(artifact.NativeTempLocation) || _fileHelper.GetFileSize(artifact.NativeTempLocation) == 0)
 			{
 				_logger.LogError("Native file {file} missing or empty for artifact {artifactId}.", artifact.NativeTempLocation, artifact.ArtifactID);

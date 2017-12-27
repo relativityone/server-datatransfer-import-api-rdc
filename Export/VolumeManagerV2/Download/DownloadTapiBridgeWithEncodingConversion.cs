@@ -15,7 +15,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private readonly ILog _logger;
 
-		public DownloadTapiBridgeWithEncodingConversion(DownloadTapiBridge downloadTapiBridge, IProgressHandler progressHandler, IMessagesHandler messagesHandler, ITransferStatistics transferStatistics,
+		public DownloadTapiBridgeWithEncodingConversion(DownloadTapiBridge downloadTapiBridge, IProgressHandler progressHandler, IMessagesHandler messagesHandler,
+			ITransferStatistics transferStatistics,
 			LongTextEncodingConverter longTextEncodingConverter, ILog logger) : base(downloadTapiBridge, progressHandler, messagesHandler, transferStatistics)
 		{
 			_longTextEncodingConverter = longTextEncodingConverter;
@@ -34,6 +35,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				_longTextEncodingConverter.StartListening();
 				TapiBridge.TapiProgress += _longTextEncodingConverter.OnTapiProgress;
 			}
+
 			return TapiBridge.AddPath(transferPath);
 		}
 
@@ -44,6 +46,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				_logger.LogVerbose("Long text encoding conversion bridge hasn't been initialized, so skipping waiting.");
 				return;
 			}
+
 			try
 			{
 				TapiBridge.WaitForTransferJob();
@@ -60,6 +63,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 					_logger.LogError(e, "Error occurred when trying to stop LongText encoding conversion after TAPI client failure.");
 				}
 			}
+
 			_longTextEncodingConverter.WaitForConversionCompletion();
 		}
 	}

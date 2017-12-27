@@ -28,6 +28,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 				{
 					return;
 				}
+
 				_directoryManager.MoveNext(volumePredictions[i]);
 
 				_logger.LogVerbose("Adding artifact {artifactId} to repositories.", artifacts[i].ArtifactID);

@@ -28,6 +28,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 					{
 						return;
 					}
+
 					batchValidator.ValidateExportedBatch(artifacts, predictions, cancellationToken);
 				}
 			}
@@ -36,6 +37,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 				_logger.LogError(ex, "Error occurred during checking batch correctness.");
 				throw;
 			}
+
 			_logger.LogVerbose("Batch verified.");
 		}
 	}

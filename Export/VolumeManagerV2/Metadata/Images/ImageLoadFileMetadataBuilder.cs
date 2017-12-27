@@ -24,7 +24,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 		public void CreateLoadFileEntries(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
 			_logger.LogVerbose("Creating metadata for image load file for current batch.");
-			
+
 			foreach (var artifact in artifacts)
 			{
 				if (cancellationToken.IsCancellationRequested)

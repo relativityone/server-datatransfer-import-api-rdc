@@ -22,11 +22,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 			{
 				line.Append("Y");
 			}
+
 			line.Append(",,,");
 			if (pageNumber == 1)
 			{
 				line.Append(numberOfImages);
 			}
+
 			line.Append(Environment.NewLine);
 
 			return line.ToString();

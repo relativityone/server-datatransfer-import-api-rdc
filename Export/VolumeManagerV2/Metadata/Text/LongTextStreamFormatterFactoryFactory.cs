@@ -8,6 +8,7 @@
 			{
 				return new HtmlFileLongTextStreamFormatterFactory(exportSettings);
 			}
+
 			return new DelimitedFileLongTextStreamFormatterFactory(exportSettings);
 		}
 	}

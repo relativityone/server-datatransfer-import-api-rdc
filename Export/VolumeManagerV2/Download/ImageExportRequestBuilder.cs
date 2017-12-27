@@ -33,12 +33,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				{
 					return Enumerable.Empty<FileExportRequest>().ToList();
 				}
+
 				FileExportRequest exportRequest;
 				if (TryCreate(image, out exportRequest))
 				{
 					fileExportRequests.Add(exportRequest);
 				}
 			}
+
 			return fileExportRequests;
 		}
 

@@ -73,6 +73,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 					}
 				}
 			}
+
 			_longTexts = new List<LongText>();
 		}
 	}

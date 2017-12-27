@@ -33,6 +33,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				_logger.LogVerbose("No native file to export for artifact {artifactId}.", artifact.ArtifactID);
 				return Enumerable.Empty<FileExportRequest>().ToList();
 			}
+
 			_logger.LogVerbose("Creating native file ExportRequest for artifact {artifactId}.", artifact.ArtifactID);
 
 			if (cancellationToken.IsCancellationRequested)

@@ -13,7 +13,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings
 		{
 			_logger = logger;
 		}
-		
+
 		public ViewFieldInfo[] CreateColumns(ExportFile exportSettings)
 		{
 			_logger.LogVerbose("Creating column list for export.");

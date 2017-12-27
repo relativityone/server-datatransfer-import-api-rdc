@@ -31,6 +31,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation
 				_logger.LogError("Load file exists. Canceling the export.");
 				return false;
 			}
+
 			_logger.LogVerbose("Load file doesn't exist or overwrite selected.");
 			return true;
 		}
@@ -43,6 +44,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation
 				_logger.LogError("Image load file exists. Canceling the export.");
 				return false;
 			}
+
 			_logger.LogVerbose("Image load file doesn't exist, overwrite selected or exporting images skipped.");
 			return true;
 		}

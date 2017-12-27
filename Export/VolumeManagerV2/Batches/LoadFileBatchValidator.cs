@@ -20,7 +20,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 		}
 
 		/// <summary>
-		/// For testing
+		///     For testing
 		/// </summary>
 		/// <param name="destinationPath"></param>
 		/// <param name="fileHelper"></param>

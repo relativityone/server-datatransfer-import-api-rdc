@@ -64,6 +64,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 						_logger.LogError(ex, "Error occurred during writing to file {type}.", _destinationPath.DestinationFileType);
 						throw new FileWriteException(_destinationPath.DestinationFileType, ex);
 					}
+
 					SaveStreamPosition();
 					UpdateStatistics();
 				}, context, cancellationToken);
@@ -75,6 +76,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 					_logger.LogWarning(ex, "Operation canceled when retrying writing to load file.");
 					return;
 				}
+
 				_logger.LogError(ex, "Operation canceled, but cancellation has NOT been requested.");
 				throw;
 			}
@@ -152,6 +154,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			{
 				_logger.LogWarning("Failed to retrieve artifactId from retry context. Continuing with -1.");
 			}
+
 			return lastArtifactId;
 		}
 
@@ -172,6 +175,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 				_logger.LogVerbose("StreamWriter hasn't been initialized. Nothing to restore.");
 				return;
 			}
+
 			_streamWriter = _streamFactory.Create(_streamWriter, _lastBatchSavedState, _destinationPath.Path, _destinationPath.Encoding, true);
 			_streamWriterLastPosition = _lastBatchSavedState;
 		}

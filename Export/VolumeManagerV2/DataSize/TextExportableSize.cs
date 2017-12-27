@@ -33,7 +33,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize
 
 					string columnName = field.AvfColumnName;
 					string textValue = _longTextHelper.GetTextFromField(artifact, columnName);
-					
+
 					if (textValue == Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN)
 					{
 						int columnWithSizeIndex = _fieldService.GetOrdinalIndex(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE);

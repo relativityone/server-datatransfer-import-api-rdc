@@ -28,6 +28,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 				_logger.LogVerbose("Storing full text in load file - creating {type}.", nameof(LongTextToLoadFile));
 				textPrecedenceHandler = container.Resolve<LongTextToLoadFile>();
 			}
+
 			LongTextToLoadFile longTextToLoadFile = container.Resolve<LongTextToLoadFile>();
 			return new LongTextHandler(textPrecedenceHandler, longTextToLoadFile, _delimiter, _logger);
 		}

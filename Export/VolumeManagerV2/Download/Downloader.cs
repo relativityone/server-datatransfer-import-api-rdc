@@ -13,7 +13,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 	public class Downloader : IDownloader
 	{
 		private List<ExportRequest> _nativeFileExportRequests;
-		private List<ExportRequest> _imageFileExprotRequests;
+		private List<ExportRequest> _imageFileExportRequests;
 		private List<LongTextExportRequest> _longTextExportRequests;
 
 		private readonly NativeRepository _nativeRepository;
@@ -62,8 +62,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_nativeFileExportRequests.AddRange(nativeExportRequests);
 
 			IList<ExportRequest> imageExportRequests = _imageRepository.GetExportRequests();
-			_imageFileExprotRequests = new List<ExportRequest>();
-			_imageFileExprotRequests.AddRange(imageExportRequests);
+			_imageFileExportRequests = new List<ExportRequest>();
+			_imageFileExportRequests.AddRange(imageExportRequests);
 
 			IList<LongTextExportRequest> longTextExportRequests = _longTextRepository.GetExportRequests();
 			_longTextExportRequests = new List<LongTextExportRequest>();
@@ -101,6 +101,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 					_logger.LogWarning(ex, "Operation canceled during transfer.");
 					return;
 				}
+
 				_logger.LogError(ex, "Operation canceled, but cancellation has NOT been requested.");
 				throw;
 			}
@@ -112,7 +113,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 					_logger.LogWarning(ex, "TransferException occurred during transfer, but cancellation has been requested.");
 					return;
 				}
-				_errorFileWriter.Write(ErrorFileWriter.ExportFileType.Generic, string.Empty, string.Empty, $"Fatal exception occurred during transfer. Failed to download files for batch {ex.Message}");
+
+				_errorFileWriter.Write(ErrorFileWriter.ExportFileType.Generic, string.Empty, string.Empty,
+					$"Fatal exception occurred during transfer. Failed to download files for batch {ex.Message}");
 				_logger.LogError(ex, "TransferException occurred during transfer and cancellation has NOT been requested.");
 				throw;
 			}
@@ -131,6 +134,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				{
 					_logger.LogError(ex, "Failed to dispose DownloadTapiBridge for native files.");
 				}
+
 				try
 				{
 					imageFilesDownloader?.Dispose();
@@ -139,6 +143,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				{
 					_logger.LogError(ex, "Failed to dispose DownloadTapiBridge for image files.");
 				}
+
 				try
 				{
 					longTextDownloader?.Dispose();
@@ -161,6 +166,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				{
 					return tapiBridge;
 				}
+
 				try
 				{
 					_logger.LogVerbose("Adding export request for downloading native file for artifact {artifactId} to {destination}.", fileExportRequest.ArtifactId,
@@ -179,15 +185,16 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private IDownloadTapiBridge DownloadImageFiles(CancellationToken cancellationToken)
 		{
-			_logger.LogVerbose("Creating TAPI bridge for image file export. Adding {count} requests to it.", _imageFileExprotRequests.Count);
+			_logger.LogVerbose("Creating TAPI bridge for image file export. Adding {count} requests to it.", _imageFileExportRequests.Count);
 			IDownloadTapiBridge tapiBridge = _exportTapiBridgeFactory.CreateForImages(cancellationToken);
 
-			foreach (var fileExportRequest in _imageFileExprotRequests)
+			foreach (var fileExportRequest in _imageFileExportRequests)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{
 					return tapiBridge;
 				}
+
 				try
 				{
 					_logger.LogVerbose("Adding export request for downloading image file for artifact {artifactId} to {destination}.", fileExportRequest.ArtifactId,
@@ -215,6 +222,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				{
 					return tapiBridge;
 				}
+
 				try
 				{
 					_logger.LogVerbose("Adding export request for downloading long text {fieldId} to {destination}.", textExportRequest.FieldArtifactId, textExportRequest.DestinationLocation);

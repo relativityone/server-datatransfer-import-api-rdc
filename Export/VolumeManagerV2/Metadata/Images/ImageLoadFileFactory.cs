@@ -11,6 +11,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 			{
 				return new EmptyImageLoadFile();
 			}
+
 			return container.Resolve<ImageLoadFile>();
 		}
 	}

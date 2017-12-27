@@ -19,10 +19,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 			{
 				return container.Resolve<OpticonLoadFileEntry>();
 			}
+
 			if (exportSettings.LogFileFormat == LoadFileType.FileFormat.IPRO || exportSettings.LogFileFormat == LoadFileType.FileFormat.IPRO_FullText)
 			{
 				return container.Resolve<IproLoadFileEntry>();
 			}
+
 			_logger.LogError("Unknown image load file format {type}. Cannot create load file entry builder.", exportSettings.LogFileFormat);
 			throw new ArgumentException($"Unknown image load file format {exportSettings.LogFileFormat}.");
 		}

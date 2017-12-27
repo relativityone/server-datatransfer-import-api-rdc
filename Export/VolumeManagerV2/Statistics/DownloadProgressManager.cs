@@ -109,20 +109,24 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			{
 				return false;
 			}
+
 			if (!native.HasBeenDownloaded)
 			{
 				return false;
 			}
+
 			IList<Image> images = _imageRepository.GetArtifactImages(native.Artifact.ArtifactID);
 			if (images.Any(x => !x.HasBeenDownloaded))
 			{
 				return false;
 			}
+
 			IList<LongText> longTexts = _longTextRepository.GetArtifactLongTexts(native.Artifact.ArtifactID);
 			if (longTexts.Any(x => !x.HasBeenDownloaded))
 			{
 				return false;
 			}
+
 			_artifactsDownloaded.AddOrUpdate(native.Artifact.ArtifactID, true, (i, b) => true);
 			_status.UpdateDocumentExportedCount(DownloadedDocumentsCount());
 			return true;

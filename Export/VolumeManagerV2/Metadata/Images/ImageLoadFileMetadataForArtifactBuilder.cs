@@ -77,6 +77,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 					? images[baseImageIndex].TempLocation
 					: _filePathTransformer.TransformPath(images[baseImageIndex].TempLocation);
 			}
+
 			return localFilePath;
 		}
 

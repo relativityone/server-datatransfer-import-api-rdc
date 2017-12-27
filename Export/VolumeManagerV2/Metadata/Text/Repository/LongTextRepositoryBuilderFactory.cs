@@ -39,6 +39,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 				_logger.LogVerbose("Text precedence is set, IPRO Full Text format is not selected selected or ExtractedText column is mapped - creating {type}.", nameof(EmptyLongTextBuilder));
 				longTextIproFullTextBuilder = container.Resolve<EmptyLongTextBuilder>();
 			}
+
 			return longTextIproFullTextBuilder;
 		}
 
@@ -55,6 +56,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 				_logger.LogVerbose("Text precedence is not set - creating {type}.", nameof(EmptyLongTextBuilder));
 				longTextPrecedenceBuilder = container.Resolve<EmptyLongTextBuilder>();
 			}
+
 			return longTextPrecedenceBuilder;
 		}
 	}

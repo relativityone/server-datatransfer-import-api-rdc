@@ -31,6 +31,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 					_logger.LogError(ex, "Error occurred during repository cleanup. Continuing to the next repository.");
 				}
 			}
+
 			_logger.LogVerbose("Repositories cleared.");
 		}
 	}

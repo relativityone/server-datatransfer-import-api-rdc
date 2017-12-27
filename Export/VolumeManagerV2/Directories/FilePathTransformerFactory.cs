@@ -19,14 +19,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 			{
 				return container.Resolve<AbsoluteFilePathTransformer>();
 			}
+
 			if (exportSettings.TypeOfExportedFilePath == ExportFile.ExportedFilePathType.Relative)
 			{
 				return container.Resolve<RelativeFilePathTransformer>();
 			}
+
 			if (exportSettings.TypeOfExportedFilePath == ExportFile.ExportedFilePathType.Prefix)
 			{
 				return container.Resolve<PrefixFilePathTransformer>();
 			}
+
 			_logger.LogError("Unknown file path type {type}. Unable to create IFilePathTransformer.", exportSettings.TypeOfExportedFilePath);
 			throw new ArgumentException($"Unknown file path type {exportSettings.TypeOfExportedFilePath}.");
 		}

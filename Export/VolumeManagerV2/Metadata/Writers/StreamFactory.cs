@@ -30,6 +30,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 					_logger.LogWarning(ex, "Failed to close broken stream.");
 				}
 			}
+
 			try
 			{
 				_logger.LogVerbose("Creating new file stream {path}.", path);
@@ -43,6 +44,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 				{
 					fileStream = _fileHelper.Create(path, false);
 				}
+
 				StreamWriter newWriter = new StreamWriter(fileStream, encoding);
 				newWriter.BaseStream.Position = lastStreamWriterPosition;
 				return newWriter;

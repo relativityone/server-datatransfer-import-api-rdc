@@ -54,6 +54,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			{
 				return CreateForTooLongText(artifact, field).InList();
 			}
+
 			return CreateForLongText(artifact, field).InList();
 		}
 
@@ -67,15 +68,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 				if (CanExport(destinationLocation))
 				{
 					_logger.LogVerbose("LongText file missing - creating ExportRequest to destination file.");
-					
+
 					return LongText.CreateFromMissingFile(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, longTextExportRequest, sourceEncoding, _exportSettings.TextFileEncoding);
 				}
+
 				_logger.LogVerbose("File {file} exists and won't be overwritten - updating statistics.", destinationLocation);
 				_metadataProcessingStatistics.AddStatisticsForFile(destinationLocation);
 
 				_logger.LogWarning("LongText file already exists and cannot overwrite - creating ExportRequest from existing file. Assuming that file encoding is the same as selected.");
 				return LongText.CreateFromExistingFile(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, destinationLocation, _exportSettings.TextFileEncoding);
 			}
+
 			_logger.LogVerbose("LongText file missing - creating ExportRequest to temporary file.");
 			return LongText.CreateFromMissingValue(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, longTextExportRequest, sourceEncoding);
 		}
@@ -100,10 +103,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 				{
 					_logger.LogVerbose("LongText file already exists and cannot overwrite - using existing file {location}.", destinationLocation);
 				}
+
 				_logger.LogVerbose("File {file} exists or has been created from metadata - updating statistics.", destinationLocation);
 				_metadataProcessingStatistics.AddStatisticsForFile(destinationLocation);
 				return LongText.CreateFromExistingFile(artifact.ArtifactID, fieldForPrecedence.FieldArtifactId, destinationLocation, _exportSettings.TextFileEncoding);
 			}
+
 			_logger.LogVerbose("LongText value exists - storing it into memory.");
 			return LongText.CreateFromExistingValue(artifact.ArtifactID, fieldForPrecedence.FieldArtifactId, longTextValue);
 		}
@@ -114,6 +119,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			{
 				return LongTextExportRequest.CreateRequestForFullText(artifact, field.FieldArtifactId, destinationLocation);
 			}
+
 			ViewFieldInfo fieldToExport = GetFieldForLongTextPrecedenceDownload(artifact, field);
 			return LongTextExportRequest.CreateRequestForLongText(artifact, fieldToExport.FieldArtifactId, destinationLocation);
 		}
@@ -125,6 +131,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 				int fieldArtifactId = (int) artifact.Metadata[_fieldService.GetOrdinalIndex(Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)];
 				return _exportSettings.SelectedTextFields.FirstOrDefault(x => x.FieldArtifactId == fieldArtifactId);
 			}
+
 			return null;
 		}
 
@@ -134,6 +141,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			{
 				return GetFieldForLongTextPrecedenceDownload(artifact);
 			}
+
 			return field;
 		}
 
@@ -144,6 +152,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 				string fileName = _fileNameProvider.GetTextName(artifact);
 				return _filePathProvider.GetPathForFile(fileName);
 			}
+
 			return Path.GetTempFileName();
 		}
 

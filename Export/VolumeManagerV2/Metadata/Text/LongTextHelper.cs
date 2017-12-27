@@ -42,10 +42,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 			{
 				rawText = Encoding.Unicode.GetString((byte[]) rawText);
 			}
+
 			if (rawText != null)
 			{
 				return rawText.ToString();
 			}
+
 			return string.Empty;
 		}
 
@@ -75,8 +77,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 				{
 					return _MISSING_EXTRACTED_TEXT_FIELD_ID;
 				}
+
 				throw new ArgumentException($"Field {fieldName} not found.");
 			}
+
 			return _fieldService.GetColumns()[fieldIndex].FieldArtifactId;
 		}
 
@@ -86,6 +90,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 			{
 				return false;
 			}
+
 			return _exportSettings.SelectedTextFields.Any(x => x != null);
 		}
 
@@ -96,6 +101,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 				int fieldArtifactId = (int) artifact.Metadata[_fieldService.GetOrdinalIndex(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)];
 				return _exportSettings.SelectedTextFields.FirstOrDefault(x => x.FieldArtifactId == fieldArtifactId);
 			}
+
 			return null;
 		}
 
@@ -105,6 +111,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 			{
 				return GetTextPrecedenceField(artifact);
 			}
+
 			return field;
 		}
 
@@ -124,6 +131,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 			{
 				return Encoding.Unicode;
 			}
+
 			return Encoding.Default;
 		}
 

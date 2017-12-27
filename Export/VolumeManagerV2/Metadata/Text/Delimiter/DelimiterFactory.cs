@@ -8,6 +8,7 @@
 			{
 				return new HtmlDelimiter();
 			}
+
 			return new ConfigurableDelimiter(exportSettings.QuoteDelimiter.ToString(), exportSettings.QuoteDelimiter.ToString());
 		}
 	}

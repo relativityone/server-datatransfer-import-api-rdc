@@ -20,6 +20,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 			{
 				throw new ArgumentNullException(nameof(fromPath));
 			}
+
 			if (string.IsNullOrEmpty(toPath))
 			{
 				throw new ArgumentNullException(nameof(toPath));

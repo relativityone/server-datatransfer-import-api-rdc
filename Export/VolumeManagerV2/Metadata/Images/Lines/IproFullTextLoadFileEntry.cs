@@ -12,15 +12,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 	{
 		private TextReader _textReader;
 
-		private readonly ExportFile _exportSettings;
 		private readonly ILog _logger;
 
 		protected readonly IFieldService FieldService;
 		protected readonly LongTextHelper LongTextHelper;
 
-		protected IproFullTextLoadFileEntry(ExportFile exportSettings, IFieldService fieldService, LongTextHelper longTextHelper, ILog logger)
+		protected IproFullTextLoadFileEntry(IFieldService fieldService, LongTextHelper longTextHelper, ILog logger)
 		{
-			_exportSettings = exportSettings;
 			FieldService = fieldService;
 			LongTextHelper = longTextHelper;
 			_logger = logger;
@@ -66,6 +64,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 					i++;
 				}
 			}
+
 			writer.WriteChunk(Environment.NewLine, token);
 			writer.FlushChunks(token);
 		}
@@ -77,6 +76,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 				string fileLocation = LongTextHelper.GetLongTextFileLocation(artifact, GetTextSourceFieldId(artifact));
 				return new StreamReader(fileLocation);
 			}
+
 			string text = LongTextHelper.GetTextFromField(artifact, GetTextColumnName());
 			return new StringReader(text);
 		}
@@ -92,10 +92,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 			{
 				return "|0|0|0|0^";
 			}
+
 			if (c == ',')
 			{
 				return "";
 			}
+
 			return Convert.ToChar(c).ToString();
 		}
 

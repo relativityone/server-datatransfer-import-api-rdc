@@ -20,21 +20,25 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 			{
 				return container.Resolve<EmptyImagesRollup>();
 			}
+
 			if (!exportSettings.ExportImages || !exportSettings.VolumeInfo.CopyImageFilesFromRepository || exportSettings.TypeOfImage == ExportFile.ImageType.SinglePage)
 			{
 				_logger.LogVerbose("Creating SinglePage rollup.");
 				return container.Resolve<SinglePageImagesRollup>();
 			}
+
 			if (exportSettings.TypeOfImage == ExportFile.ImageType.MultiPageTiff)
 			{
 				_logger.LogVerbose("Creating MultiPageTiff rollup.");
 				return container.Resolve<MultiPageTiffImagesRollup>();
 			}
+
 			if (exportSettings.TypeOfImage == ExportFile.ImageType.Pdf)
 			{
 				_logger.LogVerbose("Creating PDF rollup.");
 				return container.Resolve<PdfImagesRollup>();
 			}
+
 			_logger.LogError("Exporting images, but image type {type} is unknown.", exportSettings.TypeOfImage);
 			throw new ArgumentException($"Unknown image type {exportSettings.TypeOfImage}.");
 		}

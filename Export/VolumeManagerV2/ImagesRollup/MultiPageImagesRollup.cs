@@ -38,10 +38,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 				return;
 			}
 
-			var destinationImage = (ImageExportInfo)artifact.Images[0];
-			
+			var destinationImage = (ImageExportInfo) artifact.Images[0];
+
 			IList<string> imagesLocations = artifact.Images.Cast<ImageExportInfo>().Select(x => x.TempLocation).ToList();
-			
+
 			string rollupTempLocation = GetTempLocation();
 
 			try
@@ -131,6 +131,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 					_logger.LogVerbose("Removing unfinished image {image}.", rollupTempLocation);
 					_fileHelper.Delete(rollupTempLocation);
 				}
+
 				_status.WriteImgProgressError(artifact, ex.ImageIndex, ex, "Document exported in single-page image mode.");
 			}
 			catch (IOException ioEx)

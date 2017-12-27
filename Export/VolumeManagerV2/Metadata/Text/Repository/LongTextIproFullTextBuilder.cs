@@ -33,6 +33,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			{
 				return CreateTooLongTextForIpro(artifact).InList();
 			}
+
 			return CreateLongTextForIpro(artifact).InList();
 		}
 

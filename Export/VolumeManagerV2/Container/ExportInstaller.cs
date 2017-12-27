@@ -17,7 +17,6 @@ using kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.Exporters.Validator;
-using kCura.WinEDDS.IO;
 using kCura.WinEDDS.Service.Export;
 using Relativity.Logging;
 using Image = kCura.Utility.Image;

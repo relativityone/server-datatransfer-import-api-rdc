@@ -166,6 +166,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 				_logger.LogVerbose("StreamWriter hasn't been initialized. Nothing to restore.");
 				return;
 			}
+
 			_streamWriter = _streamFactory.Create(_streamWriter, _lastBatchSavedState, _destinationPath.Path, _destinationPath.Encoding, true);
 			_streamWriterLastPosition = _lastBatchSavedState;
 		}

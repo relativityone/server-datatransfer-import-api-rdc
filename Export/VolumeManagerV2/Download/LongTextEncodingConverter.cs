@@ -97,6 +97,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 					return longText;
 				}
 			}
+
 			_logger.LogError("Could not found LongText for file {file}.", longTextFile);
 			throw new ArgumentException($"Could not found LongText for file {longTextFile}.");
 		}

@@ -22,6 +22,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation
 				_logger.LogVerbose("User has export permissions.");
 				return;
 			}
+
 			_logger.LogWarning("User doesn't have export permissions.");
 			throw new ExportManager.InsufficientPermissionsForExportException("Export permissions revoked!  Please contact your system administrator to re-instate export permissions.");
 		}

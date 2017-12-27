@@ -32,6 +32,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 				{
 					return longTexts;
 				}
+
 				ViewFieldInfo field = _fieldService.GetColumns()[i];
 				if (_longTextHelper.IsLongTextField(field))
 				{

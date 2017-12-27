@@ -30,6 +30,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 				_logger.LogError(ex, "Error occurred during batch state saving.");
 				throw;
 			}
+
 			_logger.LogVerbose("Batch state saved.");
 		}
 
@@ -48,6 +49,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 				_logger.LogError(ex, "Error occurred during batch state restoring.");
 				throw;
 			}
+
 			_logger.LogVerbose("Batch state restored.");
 		}
 	}

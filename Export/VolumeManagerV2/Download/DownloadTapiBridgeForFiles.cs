@@ -13,7 +13,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private readonly ITransferClientHandler _transferClientHandler;
 		private readonly ILog _logger;
 
-		public DownloadTapiBridgeForFiles(DownloadTapiBridge downloadTapiBridge, IProgressHandler progressHandler, IMessagesHandler messagesHandler, ITransferStatistics transferStatistics,
+		public DownloadTapiBridgeForFiles(DownloadTapiBridge downloadTapiBridge, IProgressHandler progressHandler, IMessagesHandler messagesHandler,
+			ITransferStatistics transferStatistics,
 			ITransferClientHandler transferClientHandler, ILog logger) : base(downloadTapiBridge, progressHandler, messagesHandler, transferStatistics)
 		{
 			_transferClientHandler = transferClientHandler;
@@ -35,6 +36,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				_logger.LogVerbose("Files transfer bridge is empty, so skipping waiting.");
 				return;
 			}
+
 			TapiBridge.WaitForTransferJob();
 		}
 

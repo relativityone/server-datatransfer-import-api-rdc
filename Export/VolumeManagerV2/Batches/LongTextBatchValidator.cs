@@ -33,6 +33,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 				{
 					return;
 				}
+
 				if (!_fileHelper.Exists(longText.Location))
 				{
 					_logger.LogError("File {file} for LongText {fieldId} for artifact {artifactId} missing.", longText.Location, longText.FieldArtifactId, longText.ArtifactId);

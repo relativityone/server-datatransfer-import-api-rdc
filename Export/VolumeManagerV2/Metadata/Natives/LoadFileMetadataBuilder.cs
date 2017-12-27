@@ -33,6 +33,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 				{
 					return new Dictionary<int, ILoadFileEntry>();
 				}
+
 				_logger.LogVerbose("Adding line for artifact {artifactId}.", artifact.ArtifactID);
 				ILoadFileEntry line = _loadFileLine.CreateLine(artifact);
 				loadFileEntries.Add(artifact.ArtifactID, line);

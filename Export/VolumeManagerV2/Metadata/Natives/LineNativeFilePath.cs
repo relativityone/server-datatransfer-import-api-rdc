@@ -37,6 +37,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 					_logger.LogVerbose("Not copying natives, so path is remote {path}.", artifact.NativeSourceLocation);
 					nativeLocationCell = _loadFileCellFormatter.CreateNativeCell(artifact.NativeSourceLocation, artifact);
 				}
+
 				loadFileEntry.AddStringEntry(nativeLocationCell);
 			}
 		}

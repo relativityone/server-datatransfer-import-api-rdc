@@ -37,6 +37,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 				_logger.LogError(ex, "Failed to create or use Error file stream.");
 				throw new FileWriteException(FileWriteException.DestinationFile.Errors, ex);
 			}
+
 			_status.WriteError($"{type} - Document [{recordIdentifier}] - File [{fileLocation}] - Error: {Environment.NewLine}{errorText}");
 		}
 

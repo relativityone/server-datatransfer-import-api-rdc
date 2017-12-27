@@ -39,6 +39,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			{
 				UploaderType = uploaderType;
 			}
+
 			UploadModeChangeEvent?.Invoke(UploaderType.ToString());
 		}
 	}

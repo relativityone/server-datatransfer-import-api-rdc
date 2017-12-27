@@ -61,7 +61,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			IList<LongText> iproFullTexts = _longTextIproFullTextBuilder.CreateLongText(artifact, cancellationToken);
 			_logger.LogVerbose("{count} LongText entries created.", iproFullTexts.Count);
 			Add(iproFullTexts);
-			
+
 			_longTextRepository.Add(_longTexts);
 		}
 

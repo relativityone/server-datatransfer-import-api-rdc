@@ -30,6 +30,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths
 					logFileExtension = "_FULLTEXT_.lfp";
 					break;
 			}
+
 			return logFileExtension;
 		}
 
@@ -44,6 +45,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths
 					encoding = Encoding.UTF8;
 				}
 			}
+
 			return encoding;
 		}
 	}

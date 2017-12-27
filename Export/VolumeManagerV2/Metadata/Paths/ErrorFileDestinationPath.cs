@@ -25,6 +25,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths
 					_errorFilePath = System.IO.Path.GetTempFileName();
 					_logger.LogVerbose("Creating new path {path} for error file.", _errorFilePath);
 				}
+
 				return _errorFilePath;
 			}
 		}

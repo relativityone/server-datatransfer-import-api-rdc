@@ -29,6 +29,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			{
 				UpdateContext();
 			}
+
 			return moveNext;
 		}
 
