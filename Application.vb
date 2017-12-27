@@ -16,7 +16,7 @@ Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
 Imports Relativity.Services.ServiceProxy
-Imports Relativity.Services.StagingManager
+Imports Relativity.StagingExplorer.Services.StagingManager
 
 Namespace kCura.EDDS.WinForm
     Public Class Application
@@ -835,15 +835,15 @@ Namespace kCura.EDDS.WinForm
             End Try
         End Function
 
-        Public Async Sub NewFileTransfer()
+        Public Async Sub NewFileTransfer(mainForm As MainForm)
             Await NewLoginAsync()
             
             Dim credentials = Await Me.GetCredentialsAsync()
 
-            StartStagingExplorer(credentials)
+            StartStagingExplorer(credentials, mainForm)
         End Sub
 
-        Private Sub StartStagingExplorer(credentials As NetworkCredential)
+        Private Sub StartStagingExplorer(credentials As NetworkCredential, mainForm As MainForm)
             Dim filename = GetApplicationFilePath()
             Dim arguments = $"-t {credentials.Password} -w {Me.SelectedCaseInfo.ArtifactID}  -u {kCura.WinEDDS.Config.WebServiceURL}"
 
@@ -852,21 +852,30 @@ Namespace kCura.EDDS.WinForm
             appProcess.StartInfo.Arguments = arguments
             appProcess.EnableRaisingEvents = True
 
-            AddHandler appProcess.Exited, Sub(s, e) OnStagingExplorerProcessExited(s, e)
+            AddHandler appProcess.Exited, Sub(s, e) OnStagingExplorerProcessExited(s, mainForm)
 
             appProcess.Start()
         End Sub
 
-        Private Sub OnStagingExplorerProcessExited(sender As Object, e As EventArgs)
+        Private Sub OnStagingExplorerProcessExited(sender As Object, mainForm As MainForm)
             Dim appProcess = TryCast(sender, Process)
             If appProcess Is Nothing Then
                 Return
             End If
 
-            If appProcess.ExitCode = 403 Then
-                MessageBox.Show(ROSE_STARTUP_PERMISSIONS_FAILURE, RDC_ERROR_TITLE)
-            ElseIf appProcess.ExitCode = 423 Then
-                MessageBox.Show(ROSE_STARTUP_ALREADY_RUNNING, RDC_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Dim handleStagingExplorerProcessExited =
+                    Sub(exitCode As Integer)
+                        If exitCode = 403 Then
+                            MessageBox.Show(ROSE_STARTUP_PERMISSIONS_FAILURE, RDC_ERROR_TITLE)
+                        ElseIf exitCode = 423 Then
+                            MessageBox.Show(ROSE_STARTUP_ALREADY_RUNNING, RDC_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information)
+                        End If
+                    End Sub
+
+            If mainForm.InvokeRequired Then
+                mainForm.Invoke(handleStagingExplorerProcessExited, appProcess.ExitCode)
+            Else 
+                handleStagingExplorerProcessExited(appProcess.ExitCode)
             End If
         End Sub
 

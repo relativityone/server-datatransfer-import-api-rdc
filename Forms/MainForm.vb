@@ -508,7 +508,7 @@ End Sub
 
 		Private Sub ToolsTransferFileMenu_Click(sender As Object, e As EventArgs) Handles TransferMenu.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_application.NewFileTransfer()
+			_application.NewFileTransfer(Me)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
