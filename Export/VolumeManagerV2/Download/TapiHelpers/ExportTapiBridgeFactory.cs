@@ -4,7 +4,7 @@ using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using kCura.WinEDDS.TApi;
 using Relativity.Logging;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 {
 	public class ExportTapiBridgeFactory
 	{
@@ -32,7 +32,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		public IDownloadTapiBridge CreateForNatives(CancellationToken token)
 		{
-			DownloadTapiBridge tapiBridge = CreateDownloadTapiBridge(token);
+			ITapiBridge tapiBridge = CreateDownloadTapiBridge(token);
 
 			return new DownloadTapiBridgeForFiles(tapiBridge, new NativeFilesProgressHandler(_downloadProgressManager, _logger), _messageHandler, _filesStatistics, _transferClientHandler,
 				_logger);
@@ -40,7 +40,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		public IDownloadTapiBridge CreateForImages(CancellationToken token)
 		{
-			DownloadTapiBridge tapiBridge = CreateDownloadTapiBridge(token);
+			ITapiBridge tapiBridge = CreateDownloadTapiBridge(token);
 
 			return new DownloadTapiBridgeForFiles(tapiBridge, new ImageFilesProgressHandler(_downloadProgressManager, _logger), _messageHandler, _filesStatistics, _transferClientHandler,
 				_logger);
@@ -55,19 +55,20 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			parameters.ForceFileShareClient = false;
 			parameters.ForceHttpClient = true;
 
-			DownloadTapiBridge tapiBridge = TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, token);
+			DownloadTapiBridge downloadTapiBridge = TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, token);
+			ITapiBridge tapiBridge = new TapiBridgeWrapper(downloadTapiBridge);
 
 			LongTextEncodingConverter longTextEncodingConverter = _converterFactory.Create(token);
 			return new DownloadTapiBridgeWithEncodingConversion(tapiBridge, new LongTextProgressHandler(_downloadProgressManager, _logger), _messageHandler, _metadataStatistics,
 				longTextEncodingConverter, _logger);
 		}
 
-		private DownloadTapiBridge CreateDownloadTapiBridge(CancellationToken token)
+		private ITapiBridge CreateDownloadTapiBridge(CancellationToken token)
 		{
 			TapiBridgeParameters parameters = CreateTapiBridgeParametersFromConfiguration();
 			DownloadTapiBridge tapiBridge = TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, token);
 			tapiBridge.DumpInfo();
-			return tapiBridge;
+			return new TapiBridgeWrapper(tapiBridge);
 		}
 
 		private TapiBridgeParameters CreateTapiBridgeParametersFromConfiguration()

@@ -4,7 +4,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 {
 	public class LongTextProgressHandler : ProgressHandler
 	{
-		public LongTextProgressHandler(DownloadProgressManager downloadProgressManager, ILog logger) : base(downloadProgressManager, logger)
+		public LongTextProgressHandler(IDownloadProgressManager downloadProgressManager, ILog logger) : base(downloadProgressManager, logger)
 		{
 		}
 

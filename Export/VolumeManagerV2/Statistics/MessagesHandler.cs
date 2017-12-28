@@ -1,4 +1,5 @@
 ﻿using kCura.Windows.Process;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 using kCura.WinEDDS.TApi;
 using Relativity.Logging;
 
@@ -6,7 +7,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 {
 	public class MessagesHandler : IMessagesHandler
 	{
-		private TapiBridgeBase _tapiBridge;
+		private ITapiBridge _tapiBridge;
 
 		private readonly IStatus _status;
 		private readonly ILog _logger;
@@ -17,7 +18,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			_logger = logger;
 		}
 
-		public void Attach(TapiBridgeBase tapiBridge)
+		public void Attach(ITapiBridge tapiBridge)
 		{
 			_tapiBridge = tapiBridge;
 			_tapiBridge.TapiErrorMessage += OnErrorMessage;

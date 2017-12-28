@@ -9,7 +9,7 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 {
-	public class DownloadProgressManager : IDownloadProgress
+	public class DownloadProgressManager : IDownloadProgress, IDownloadProgressManager
 	{
 		private int _savedDocumentsDownloadedCount;
 

@@ -1,11 +1,10 @@
 ﻿using System;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using kCura.WinEDDS.TApi;
 using Relativity.Logging;
 using Relativity.Transfer;
 using ITransferStatistics = kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics.ITransferStatistics;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 {
 	public class DownloadTapiBridgeWithEncodingConversion : DownloadTapiBridgeAdapter
 	{
@@ -15,7 +14,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private readonly ILog _logger;
 
-		public DownloadTapiBridgeWithEncodingConversion(DownloadTapiBridge downloadTapiBridge, IProgressHandler progressHandler, IMessagesHandler messagesHandler,
+		public DownloadTapiBridgeWithEncodingConversion(ITapiBridge downloadTapiBridge, IProgressHandler progressHandler, IMessagesHandler messagesHandler,
 			ITransferStatistics transferStatistics,
 			LongTextEncodingConverter longTextEncodingConverter, ILog logger) : base(downloadTapiBridge, progressHandler, messagesHandler, transferStatistics)
 		{

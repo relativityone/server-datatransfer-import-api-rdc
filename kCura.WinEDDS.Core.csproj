@@ -262,6 +262,8 @@
     <Compile Include="Export\VolumeManagerV2\Directories\PrefixFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\RelativeFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\IDownloader.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ITapiBridge.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\TapiBridgeWrapper.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\IImage.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\ImageWrapper.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\EmptyImageLoadFile.cs" />
@@ -283,9 +285,9 @@
     <Compile Include="Export\VolumeManagerV2\Settings\IColumnsFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Settings\IColumnsOrdinalLookupFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\DownloadProgressManager.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\DownloadTapiBridgeAdapter.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\DownloadTapiBridgeForFiles.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\DownloadTapiBridgeWithEncodingConversion.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeAdapter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeForFiles.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeWithEncodingConversion.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EmptyExportRequestBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\ExportFileDownloaderStatus.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ExportFileValidator.cs" />
@@ -296,13 +298,13 @@
     <Compile Include="Export\VolumeManagerV2\Download\FileExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\NativeFileExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\Downloader.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\IDownloadTapiBridge.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\IDownloadTapiBridge.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\IFileExportRequestBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\LongTextEncodingConverter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\LongTextEncodingConverterFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\LongTextExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\NativeFileExportRequestBuilder.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\ExportTapiBridgeFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ExportTapiBridgeFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\ISubdirectory.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\IVolume.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\IDirectoryManager.cs" />
@@ -400,6 +402,7 @@
     <Compile Include="Export\VolumeManagerV2\Settings\FieldServiceFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\FilesStatistics.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\IDownloadProgress.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\IDownloadProgressManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\ImageFilesProgressHandler.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\IMessagesHandler.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\IFileProcessingStatistics.cs" />

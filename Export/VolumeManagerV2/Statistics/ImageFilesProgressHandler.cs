@@ -4,7 +4,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 {
 	public class ImageFilesProgressHandler : ProgressHandler
 	{
-		public ImageFilesProgressHandler(DownloadProgressManager downloadProgressManager, ILog logger) : base(downloadProgressManager, logger)
+		public ImageFilesProgressHandler(IDownloadProgressManager downloadProgressManager, ILog logger) : base(downloadProgressManager, logger)
 		{
 		}
 
