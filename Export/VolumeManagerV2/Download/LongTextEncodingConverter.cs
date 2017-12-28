@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
 using kCura.WinEDDS.TApi;
@@ -10,7 +11,7 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public class LongTextEncodingConverter : IDisposable
+	public class LongTextEncodingConverter : IDisposable, ILongTextEncodingConverter
 	{
 		private Task _conversionTask;
 
@@ -33,20 +34,22 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_longTextFilesToConvert = new BlockingCollection<string>();
 		}
 
-		public void OnTapiProgress(object sender, TapiProgressEventArgs e)
+		private void OnTapiProgress(object sender, TapiProgressEventArgs e)
 		{
 			_longTextFilesToConvert.Add(e.FileName);
 		}
 
-		public void StartListening()
+		public void StartListening(ITapiBridge tapiBridge)
 		{
 			_logger.LogVerbose("Start conversion task.");
 			_conversionTask = Task.Run(() => ConvertLongTextFiles(), _cancellationToken);
+			tapiBridge.TapiProgress += OnTapiProgress;
 		}
 
-		public void StopListening()
+		public void StopListening(ITapiBridge tapiBridge)
 		{
 			_logger.LogVerbose("Stop listening for new files to convert.");
+			tapiBridge.TapiProgress -= OnTapiProgress;
 			_longTextFilesToConvert.CompleteAdding();
 		}
 

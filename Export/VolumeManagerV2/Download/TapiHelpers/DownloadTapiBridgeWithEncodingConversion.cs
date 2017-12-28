@@ -10,19 +10,18 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 	{
 		private bool _initialized;
 
-		private readonly LongTextEncodingConverter _longTextEncodingConverter;
+		private readonly ILongTextEncodingConverter _longTextEncodingConverter;
 
 		private readonly ILog _logger;
 
 		public DownloadTapiBridgeWithEncodingConversion(ITapiBridge downloadTapiBridge, IProgressHandler progressHandler, IMessagesHandler messagesHandler,
-			ITransferStatistics transferStatistics,
-			LongTextEncodingConverter longTextEncodingConverter, ILog logger) : base(downloadTapiBridge, progressHandler, messagesHandler, transferStatistics)
+			ITransferStatistics transferStatistics, ILongTextEncodingConverter longTextEncodingConverter, ILog logger) : base(downloadTapiBridge, progressHandler, messagesHandler,
+			transferStatistics)
 		{
 			_longTextEncodingConverter = longTextEncodingConverter;
 			_logger = logger;
 
 			_initialized = false;
-			progressHandler.Attach(downloadTapiBridge);
 		}
 
 		public override string AddPath(TransferPath transferPath)
@@ -31,8 +30,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			{
 				_logger.LogVerbose("Initializing long text encoding converter.");
 				_initialized = true;
-				_longTextEncodingConverter.StartListening();
-				TapiBridge.TapiProgress += _longTextEncodingConverter.OnTapiProgress;
+				_longTextEncodingConverter.StartListening(TapiBridge);
 			}
 
 			return TapiBridge.AddPath(transferPath);
@@ -54,8 +52,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			{
 				try
 				{
-					TapiBridge.TapiProgress -= _longTextEncodingConverter.OnTapiProgress;
-					_longTextEncodingConverter.StopListening();
+					_longTextEncodingConverter.StopListening(TapiBridge);
 				}
 				catch (Exception e)
 				{
