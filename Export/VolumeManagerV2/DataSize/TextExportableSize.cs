@@ -9,6 +9,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize
 {
 	public class TextExportableSize
 	{
+		private const long _EXTRACTED_TEXT_SIZE_NAIVE = 2097152;
+
 		private readonly ExportFile _exportSettings;
 		private readonly LongTextHelper _longTextHelper;
 		private readonly IFieldService _fieldService;
@@ -36,16 +38,24 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize
 
 					if (textValue == Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN)
 					{
-						int columnWithSizeIndex = _fieldService.GetOrdinalIndex(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE);
-						long sizeInUnicode = (long) artifact.Metadata[columnWithSizeIndex];
-						if (_exportSettings.TextFileEncoding.Equals(Encoding.Unicode))
+						if (!_fieldService.ContainsFieldName(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE))
 						{
-							volumeSize.TextFilesSize += sizeInUnicode;
+							//This is just for backward compatibility
+							volumeSize.TextFilesSize += _EXTRACTED_TEXT_SIZE_NAIVE;
 						}
 						else
 						{
-							long maxBytesForCharacters = EncodingFileSize.CalculateLongTextFileSize(sizeInUnicode, _exportSettings.TextFileEncoding);
-							volumeSize.TextFilesSize += maxBytesForCharacters;
+							int columnWithSizeIndex = _fieldService.GetOrdinalIndex(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE);
+							long sizeInUnicode = (long) artifact.Metadata[columnWithSizeIndex];
+							if (_exportSettings.TextFileEncoding.Equals(Encoding.Unicode))
+							{
+								volumeSize.TextFilesSize += sizeInUnicode;
+							}
+							else
+							{
+								long maxBytesForCharacters = EncodingFileSize.CalculateLongTextFileSize(sizeInUnicode, _exportSettings.TextFileEncoding);
+								volumeSize.TextFilesSize += maxBytesForCharacters;
+							}
 						}
 					}
 					else
