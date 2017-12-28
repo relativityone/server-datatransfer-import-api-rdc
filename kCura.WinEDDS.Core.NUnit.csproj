@@ -107,6 +107,15 @@
     <Compile Include="Export\VolumeManagerV2\Settings\ColumnsFactoryTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Settings\ColumnsOrdinalLookupFactoryTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Settings\FieldServiceFactoryTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\DownloadProgressManagerTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\ExportFileDownloaderStatusTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\FilesStatisticsTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\ImageFilesProgressHandlerTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\LongTextProgressHandlerTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\MessagesHandlerTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\MetadataStatisticsTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\NativeFilesProgressHandlerTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\ProgressHandlerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\ExportPermissionCheckTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\FilesOverwriteValidatorTests.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\ImagesRollupFactoryTests.cs" />
@@ -142,6 +151,10 @@
       <Project>{1fc8e047-4f98-48e7-9192-b15869c5c402}</Project>
       <Name>kCura.WinEDDS.NUnit</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.WinEDDS.TApi\kCura.WinEDDS.TApi.csproj">
+      <Project>{896f332d-f38d-4bf9-8977-fd04e577eef5}</Project>
+      <Name>kCura.WinEDDS.TApi</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.WinEDDS\kCura.WinEDDS.vbproj">
       <Project>{f16a2219-5dac-4f2b-89b0-6bd1243cbf8f}</Project>
       <Name>kCura.WinEDDS</Name>
@@ -157,6 +170,7 @@
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
