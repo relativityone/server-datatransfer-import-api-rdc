@@ -126,6 +126,15 @@
     <Compile Include="Export\VolumeManagerV2\Directories\PrefixFilePathTransformerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\RelativeFilePathProviderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\VolumeManagerTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\DownloaderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\FileEncodingConverterTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\LongTextEncodingConverterTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\ExportFileValidatorTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\FieldFileExportRequestBuilderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\FileExportRequestBuilderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\ImageExportRequestBuilderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\ModelFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\NativeFileExportRequestBuilderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeAdapterTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeForFilesTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeWithEncodingConversionTests.cs" />

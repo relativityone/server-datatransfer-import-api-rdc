@@ -45,7 +45,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2
 
 			//ASSERT
 			_batchInitialization.Verify(x => x.PrepareBatch(artifacts, volumePredictions, CancellationToken.None), Times.Once);
-			_batchExporter.Verify(x => x.Export(artifacts, volumePredictions, CancellationToken.None), Times.Once);
+			_batchExporter.Verify(x => x.Export(artifacts, CancellationToken.None), Times.Once);
 			_batchValidator.Verify(x => x.ValidateExportedBatch(artifacts, volumePredictions, CancellationToken.None), Times.Once);
 			_batchState.Verify(x => x.SaveState(), Times.Once);
 			_batchCleanUp.Verify(x => x.CleanUp(), Times.Once);
@@ -59,7 +59,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2
 			ObjectExportInfo[] artifacts = new ObjectExportInfo[1];
 			VolumePredictions[] volumePredictions = new VolumePredictions[1];
 
-			_batchExporter.Setup(x => x.Export(artifacts, volumePredictions, CancellationToken.None)).Throws<Exception>();
+			_batchExporter.Setup(x => x.Export(artifacts, CancellationToken.None)).Throws<Exception>();
 
 			//ACT & ASSERT
 			Assert.Throws<Exception>(() => _instance.Export(artifacts, volumePredictions, CancellationToken.None));
@@ -75,7 +75,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2
 
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
 
-			_batchExporter.Setup(x => x.Export(artifacts, volumePredictions, tokenSource.Token)).Callback(() => tokenSource.Cancel());
+			_batchExporter.Setup(x => x.Export(artifacts, tokenSource.Token)).Callback(() => tokenSource.Cancel());
 
 			//ACT
 			_instance.Export(artifacts, volumePredictions, tokenSource.Token);

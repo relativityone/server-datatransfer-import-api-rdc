@@ -35,13 +35,12 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		public void GoldWorkflow()
 		{
 			ObjectExportInfo[] artifacts = new ObjectExportInfo[1];
-			VolumePredictions[] volumePredictions = new VolumePredictions[1];
 
 			//ACT
-			_instance.Export(artifacts, volumePredictions, CancellationToken.None);
+			_instance.Export(artifacts, CancellationToken.None);
 
 			//ASSERT
-			_downloader.Verify(x => x.DownloadFilesForArtifacts(artifacts, volumePredictions, CancellationToken.None), Times.Once);
+			_downloader.Verify(x => x.DownloadFilesForArtifacts(CancellationToken.None), Times.Once);
 			_imagesRollupManager.Verify(x => x.RollupImagesForArtifacts(artifacts, CancellationToken.None), Times.Once);
 			_imageLoadFile.Verify(x => x.Create(artifacts, CancellationToken.None), Times.Once);
 			_loadFile.Verify(x => x.Create(artifacts, CancellationToken.None), Times.Once);
