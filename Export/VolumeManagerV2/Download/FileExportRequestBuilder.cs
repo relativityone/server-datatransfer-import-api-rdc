@@ -12,11 +12,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 	{
 		private readonly IFilePathProvider _filePathProvider;
 		private readonly IFileNameProvider _fileNameProvider;
-		private readonly ExportFileValidator _validator;
+		private readonly IExportFileValidator _validator;
 		private readonly IFileProcessingStatistics _fileProcessingStatistics;
 		private readonly ILog _logger;
 
-		protected FileExportRequestBuilder(IFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, ExportFileValidator validator,
+		protected FileExportRequestBuilder(IFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, IExportFileValidator validator,
 			IFileProcessingStatistics fileProcessingStatistics, ILog logger)
 		{
 			_filePathProvider = filePathProvider;

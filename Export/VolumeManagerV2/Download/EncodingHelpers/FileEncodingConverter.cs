@@ -1,19 +1,18 @@
-﻿using System.IO;
-using System.Text;
+﻿using System.Text;
 using System.Threading;
 using Relativity.Logging;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers
 {
-	public class FileEncodingConverter
+	public class FileEncodingConverter : IFileEncodingConverter
 	{
-		private const int _BUFFER_SIZE = 4096;
-
+		private readonly IFileEncodingRewrite _encodingRewrite;
 		private readonly IFileHelper _fileHelper;
 		private readonly ILog _logger;
 
-		public FileEncodingConverter(IFileHelper fileHelper, ILog logger)
+		public FileEncodingConverter(IFileEncodingRewrite encodingRewrite, IFileHelper fileHelper, ILog logger)
 		{
+			_encodingRewrite = encodingRewrite;
 			_fileHelper = fileHelper;
 			_logger = logger;
 		}
@@ -24,28 +23,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_logger.LogVerbose("Converting file {filePath} from {srcEnc} to {dstEnc}. Using temporary file {tmpFile}.", filePath, sourceEncoding, destinationEncoding, tmpFilePath);
 			try
 			{
-				using (StreamReader reader = new StreamReader(filePath, sourceEncoding))
-				{
-					using (StreamWriter writer = new StreamWriter(tmpFilePath, false, destinationEncoding))
-					{
-						char[] buf = new char[_BUFFER_SIZE];
-						while (true)
-						{
-							if (cancellationToken.IsCancellationRequested)
-							{
-								return;
-							}
-
-							int count = reader.Read(buf, 0, buf.Length);
-							if (count == 0)
-							{
-								break;
-							}
-
-							writer.Write(buf, 0, count);
-						}
-					}
-				}
+				_encodingRewrite.RewriteFile(filePath, tmpFilePath, sourceEncoding, destinationEncoding, cancellationToken);
 
 				_logger.LogVerbose("Removing source file {filePath}.", filePath);
 				_fileHelper.Delete(filePath);

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Castle.Core;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using kCura.WinEDDS.Exporters;
@@ -11,11 +12,24 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 	public class ImageExportRequestBuilder : IFileExportRequestBuilder
 	{
 		private readonly IFilePathProvider _filePathProvider;
-		private readonly ExportFileValidator _validator;
+		private readonly IExportFileValidator _validator;
 		private readonly IFileProcessingStatistics _fileProcessingStatistics;
 		private readonly ILog _logger;
 
-		public ImageExportRequestBuilder(ImageFilePathProvider filePathProvider, ExportFileValidator validator, ILog logger, IFileProcessingStatistics fileProcessingStatistics)
+		public ImageExportRequestBuilder(ImageFilePathProvider filePathProvider, IExportFileValidator validator, ILog logger, IFileProcessingStatistics fileProcessingStatistics) : this(
+			(IFilePathProvider) filePathProvider, validator, logger, fileProcessingStatistics)
+		{
+		}
+
+		/// <summary>
+		///     Used for testing
+		/// </summary>
+		/// <param name="filePathProvider"></param>
+		/// <param name="validator"></param>
+		/// <param name="logger"></param>
+		/// <param name="fileProcessingStatistics"></param>
+		[DoNotSelect]
+		public ImageExportRequestBuilder(IFilePathProvider filePathProvider, IExportFileValidator validator, ILog logger, IFileProcessingStatistics fileProcessingStatistics)
 		{
 			_filePathProvider = filePathProvider;
 			_validator = validator;
@@ -49,6 +63,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			if (string.IsNullOrWhiteSpace(image.FileGuid))
 			{
 				_logger.LogInformation("Image {imageId} has no GUID so assuming there is nothing to download.", image.ArtifactID);
+				exportRequest = null;
+				return false;
 			}
 
 			_logger.LogVerbose("Creating image file ExportRequest for image {image}.", image.FileName);

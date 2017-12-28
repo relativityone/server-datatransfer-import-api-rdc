@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Threading;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using kCura.WinEDDS.TApi;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 {
-	public class ExportTapiBridgeFactory
+	public class ExportTapiBridgeFactory : IExportTapiBridgeFactory
 	{
 		private readonly ExportFile _exportSettings;
 		private readonly ILog _logger;

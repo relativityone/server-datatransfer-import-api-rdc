@@ -21,11 +21,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 		private readonly LongTextHelper _longTextHelper;
 		private readonly IFileNameProvider _fileNameProvider;
 		private readonly ILog _logger;
-		private readonly ExportFileValidator _exportFileValidator;
+		private readonly IExportFileValidator _exportFileValidator;
 		private readonly IMetadataProcessingStatistics _metadataProcessingStatistics;
 
 		public LongTextPrecedenceBuilder(ExportFile exportSettings, LongTextFilePathProvider filePathProvider, IFieldService fieldService, LongTextHelper longTextHelper,
-			IFileNameProvider fileNameProvider, ILog logger, ExportFileValidator exportFileValidator, IMetadataProcessingStatistics metadataProcessingStatistics)
+			IFileNameProvider fileNameProvider, ILog logger, IExportFileValidator exportFileValidator, IMetadataProcessingStatistics metadataProcessingStatistics)
 		{
 			_exportSettings = exportSettings;
 			_filePathProvider = filePathProvider;

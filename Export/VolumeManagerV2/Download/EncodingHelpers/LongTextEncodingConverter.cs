@@ -9,34 +9,27 @@ using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
 using kCura.WinEDDS.TApi;
 using Relativity.Logging;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers
 {
 	public class LongTextEncodingConverter : IDisposable, ILongTextEncodingConverter
 	{
 		private Task _conversionTask;
 
 		private readonly BlockingCollection<string> _longTextFilesToConvert;
-		private readonly ExportFile _exportSettings;
 		private readonly LongTextRepository _longTextRepository;
-		private readonly FileEncodingConverter _fileEncodingConverter;
+		private readonly IFileEncodingConverter _fileEncodingConverter;
 		private readonly ILog _logger;
 		private readonly CancellationToken _cancellationToken;
 
-		public LongTextEncodingConverter(ExportFile exportSettings, LongTextRepository longTextRepository, FileEncodingConverter fileEncodingConverter, ILog logger,
+		public LongTextEncodingConverter(LongTextRepository longTextRepository, IFileEncodingConverter fileEncodingConverter, ILog logger,
 			CancellationToken cancellationToken)
 		{
-			_exportSettings = exportSettings;
 			_longTextRepository = longTextRepository;
 			_fileEncodingConverter = fileEncodingConverter;
 			_logger = logger;
 			_cancellationToken = cancellationToken;
 
 			_longTextFilesToConvert = new BlockingCollection<string>();
-		}
-
-		private void OnTapiProgress(object sender, TapiProgressEventArgs e)
-		{
-			_longTextFilesToConvert.Add(e.FileName);
 		}
 
 		public void StartListening(ITapiBridge tapiBridge)
@@ -51,6 +44,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_logger.LogVerbose("Stop listening for new files to convert.");
 			tapiBridge.TapiProgress -= OnTapiProgress;
 			_longTextFilesToConvert.CompleteAdding();
+		}
+
+		private void OnTapiProgress(object sender, TapiProgressEventArgs e)
+		{
+			_longTextFilesToConvert.Add(e.FileName);
 		}
 
 		public void WaitForConversionCompletion()
@@ -114,12 +112,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		{
 			_logger.LogVerbose("Converting LongText file {file} from {sourceEncoding} to {destinationEncoding}.", longText.Location, longText.SourceEncoding, longText.DestinationEncoding);
 
-			_fileEncodingConverter.Convert(longText.Location, longText.SourceEncoding, _exportSettings.TextFileEncoding, _cancellationToken);
-
-			if (_cancellationToken.IsCancellationRequested)
-			{
-				return;
-			}
+			_fileEncodingConverter.Convert(longText.Location, longText.SourceEncoding, longText.DestinationEncoding, _cancellationToken);
 
 			longText.SourceEncoding = longText.DestinationEncoding;
 		}

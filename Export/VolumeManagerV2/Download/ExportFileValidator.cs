@@ -3,7 +3,7 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public class ExportFileValidator
+	public class ExportFileValidator : IExportFileValidator
 	{
 		private readonly ExportFile _exportSettings;
 		private readonly IStatus _status;

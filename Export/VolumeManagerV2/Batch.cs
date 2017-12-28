@@ -50,7 +50,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 
 				_messenger.DownloadingBatch();
 
-				_batchExporter.Export(artifacts, volumePredictions, cancellationToken);
+				_batchExporter.Export(artifacts, cancellationToken);
 
 				if (cancellationToken.IsCancellationRequested)
 				{

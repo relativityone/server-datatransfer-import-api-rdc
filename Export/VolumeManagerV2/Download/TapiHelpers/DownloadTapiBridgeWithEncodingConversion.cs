@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using Relativity.Logging;
 using Relativity.Transfer;

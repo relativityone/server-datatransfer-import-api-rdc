@@ -1,6 +1,6 @@
 ﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers
 {
 	public interface ILongTextEncodingConverter
 	{

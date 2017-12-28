@@ -5,6 +5,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 {
 	public interface IBatchExporter
 	{
-		void Export(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken);
+		void Export(ObjectExportInfo[] artifacts, CancellationToken cancellationToken);
 	}
 }

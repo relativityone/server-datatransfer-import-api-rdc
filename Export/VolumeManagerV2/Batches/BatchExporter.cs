@@ -26,9 +26,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 			_loadFile = loadFile;
 		}
 
-		public void Export(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
+		public void Export(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
-			_downloader.DownloadFilesForArtifacts(artifacts, volumePredictions, cancellationToken);
+			_downloader.DownloadFilesForArtifacts(cancellationToken);
 
 			_messenger.FilesDownloadCompleted();
 

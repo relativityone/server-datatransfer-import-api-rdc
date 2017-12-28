@@ -5,7 +5,6 @@ using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using kCura.WinEDDS.Exporters;
 using Relativity.Logging;
 using Relativity.Transfer;
 
@@ -22,11 +21,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private readonly LongTextRepository _longTextRepository;
 		private readonly IErrorFileWriter _errorFileWriter;
 
-		private readonly ExportTapiBridgeFactory _exportTapiBridgeFactory;
+		private readonly IExportTapiBridgeFactory _exportTapiBridgeFactory;
 
 		private readonly ILog _logger;
 
-		public Downloader(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, ExportTapiBridgeFactory exportTapiBridgeFactory,
+		public Downloader(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, IExportTapiBridgeFactory exportTapiBridgeFactory,
 			IErrorFileWriter errorFileWriter, ILog logger)
 		{
 			_nativeRepository = nativeRepository;
@@ -37,7 +36,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_errorFileWriter = errorFileWriter;
 		}
 
-		public void DownloadFilesForArtifacts(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
+		public void DownloadFilesForArtifacts(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
