@@ -1801,7 +1801,7 @@ Namespace kCura.WinEDDS
 			If Not _artifactReader Is Nothing Then
 				_artifactReader.Halt()
 			End If
-			WriteStatusLine(EventType.Progress, $"Job has been stopped by the user - {Me.TotalTransferredFilesCount} documents have been transferred.", CType(Me.TotalTransferredFilesCount + 1, Integer))
+			WriteStatusLine(EventType.Progress, $"Job has been stopped - {Me.TotalTransferredFilesCount} documents have been transferred.", CType(Me.TotalTransferredFilesCount + 1, Integer))
 			WriteStatusLine(EventType.Status, "Finalizing job...", TapiConstants.NoLineNumber)
 		End Sub
 

@@ -256,7 +256,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub OnStopImport()
-			Logger.LogWarning("Import has been stopped")
+			Logger.LogWarning("Import has been stopped.")
 		End Sub
 
 		Protected Overridable Sub OnTapiClientChanged()
