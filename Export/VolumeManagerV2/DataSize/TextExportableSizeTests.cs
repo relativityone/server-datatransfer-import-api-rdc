@@ -177,6 +177,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
 			SetUpMocksForField(FieldTypeHelper.FieldType.Text, Encoding.Unicode);
 
 			_fieldService.Setup(x => x.GetOrdinalIndex(Constants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(1);
+			_fieldService.Setup(x => x.ContainsFieldName(Constants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(true);
 
 			VolumePredictions predictions = new VolumePredictions
 			{
@@ -210,6 +211,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
 			SetUpMocksForField(FieldTypeHelper.FieldType.Text, encoding);
 
 			_fieldService.Setup(x => x.GetOrdinalIndex(Constants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(1);
+			_fieldService.Setup(x => x.ContainsFieldName(Constants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(true);
 
 			VolumePredictions predictions = new VolumePredictions
 			{
@@ -233,6 +235,35 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
 			Assert.That(predictions.TextFileCount, Is.EqualTo(1));
 			long expectedFileSize = EncodingFileSize.CalculateLongTextFileSize(textSize, encoding);
 			Assert.That(predictions.TextFilesSize, Is.EqualTo(expectedFileSize));
+		}
+
+		[Test]
+		public void ItShouldKeepBackwardCompatibility()
+		{
+			const long extractedTextSizeNaive = 2097152;
+
+			SetUpMocksForField(FieldTypeHelper.FieldType.Text, Encoding.Unicode);
+
+			_fieldService.Setup(x => x.ContainsFieldName(Constants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(false);
+
+			VolumePredictions predictions = new VolumePredictions
+			{
+				TextFileCount = 0,
+				TextFilesSize = 0
+			};
+
+			ObjectExportInfo artifact = new ObjectExportInfo
+			{
+				Metadata = new object[]
+				{
+					Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN
+				}
+			};
+
+			//ACT & ASSERT
+			Assert.DoesNotThrow(() => _instance.CalculateTextSize(predictions, artifact));
+			
+			Assert.That(predictions.TextFilesSize, Is.EqualTo(extractedTextSizeNaive));
 		}
 
 		#region Helpers
