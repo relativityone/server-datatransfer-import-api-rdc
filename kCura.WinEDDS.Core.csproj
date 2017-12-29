@@ -275,6 +275,8 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\EmptyImageLoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\IImageLoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFile.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\FullTextLineWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\IFullTextLineWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\ILineFieldsValue.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\ILineNativeFilePath.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\ILoadFile.cs" />

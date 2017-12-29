@@ -70,7 +70,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 
 		public int GetFieldArtifactId(string fieldName)
 		{
-			int fieldIndex = _fieldService.GetOrdinalIndex(fieldName);
 			if (fieldName == EXTRACTED_TEXT_COLUMN_NAME && IsExtractedTextMissing())
 			{
 				if (_exportSettings.LogFileFormat == LoadFileType.FileFormat.IPRO_FullText)
@@ -81,6 +80,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 				throw new ArgumentException($"Field {fieldName} not found.");
 			}
 
+			int fieldIndex = _fieldService.GetOrdinalIndex(fieldName);
 			return _fieldService.GetColumns()[fieldIndex].FieldArtifactId;
 		}
 

@@ -6,8 +6,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 {
 	public class IproFullTextWithoutPrecedenceLoadFileEntry : IproFullTextLoadFileEntry
 	{
-		public IproFullTextWithoutPrecedenceLoadFileEntry(IFieldService fieldService, LongTextHelper longTextHelper, ILog logger)
-			: base(fieldService, longTextHelper, logger)
+		public IproFullTextWithoutPrecedenceLoadFileEntry(IFieldService fieldService, LongTextHelper longTextHelper, ILog logger, IFullTextLineWriter fullTextLineWriter)
+			: base(fieldService, longTextHelper, logger, fullTextLineWriter)
 		{
 		}
 

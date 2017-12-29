@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
@@ -14,14 +13,16 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 
 		private readonly ILog _logger;
 
+		private readonly IFullTextLineWriter _fullTextLineWriter;
 		protected readonly IFieldService FieldService;
 		protected readonly LongTextHelper LongTextHelper;
 
-		protected IproFullTextLoadFileEntry(IFieldService fieldService, LongTextHelper longTextHelper, ILog logger)
+		protected IproFullTextLoadFileEntry(IFieldService fieldService, LongTextHelper longTextHelper, ILog logger, IFullTextLineWriter fullTextLineWriter)
 		{
 			FieldService = fieldService;
 			LongTextHelper = longTextHelper;
 			_logger = logger;
+			_fullTextLineWriter = fullTextLineWriter;
 		}
 
 		public void WriteFullTextLine(ObjectExportInfo artifact, string batesNumber, int pageNumber, long pageOffset, IRetryableStreamWriter writer, CancellationToken token)
@@ -34,39 +35,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 				_textReader = GetTextStream(artifact);
 			}
 
-			WriteLine(batesNumber, pageOffset, writer, token);
+			_fullTextLineWriter.WriteLine(batesNumber, pageOffset, writer, _textReader, token);
 
 			_logger.LogVerbose("Successfully create Full text entry for image.");
-		}
-
-		private void WriteLine(string batesNumber, long pageOffset, IRetryableStreamWriter writer, CancellationToken token)
-		{
-			writer.WriteChunk("FT,", token);
-			writer.WriteChunk(batesNumber, token);
-			writer.WriteChunk(",1,1,", token);
-			if (pageOffset == long.MinValue)
-			{
-				int c = _textReader.Read();
-				while (c != -1)
-				{
-					writer.WriteChunk(GetLfpFullTextTransform(c), token);
-					c = _textReader.Read();
-				}
-			}
-			else
-			{
-				int i = 0;
-				int c = _textReader.Read();
-				while (i < pageOffset && c != -1)
-				{
-					writer.WriteChunk(GetLfpFullTextTransform(c), token);
-					c = _textReader.Read();
-					i++;
-				}
-			}
-
-			writer.WriteChunk(Environment.NewLine, token);
-			writer.FlushChunks(token);
 		}
 
 		private TextReader GetTextStream(ObjectExportInfo artifact)
@@ -84,22 +55,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 		protected abstract int GetTextSourceFieldId(ObjectExportInfo artifact);
 
 		protected abstract string GetTextColumnName();
-
-		private string GetLfpFullTextTransform(int c)
-		{
-			const int lineFeed = 10;
-			if (c == lineFeed || c == ' ')
-			{
-				return "|0|0|0|0^";
-			}
-
-			if (c == ',')
-			{
-				return "";
-			}
-
-			return Convert.ToChar(c).ToString();
-		}
 
 		public void Dispose()
 		{
