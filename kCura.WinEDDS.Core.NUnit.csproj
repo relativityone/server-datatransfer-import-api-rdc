@@ -143,6 +143,10 @@
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\MultiPageTiffImagesRollupTests.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\PdfImagesRollupTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\DestinationPathTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\ImageRepositoryBuilderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\ImageRepositoryTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\NativeRepositoryBuilderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\NativeRepositoryTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Settings\ColumnsFactoryTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Settings\ColumnsOrdinalLookupFactoryTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Settings\FieldServiceFactoryTests.cs" />
