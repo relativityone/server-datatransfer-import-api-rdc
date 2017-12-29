@@ -4,7 +4,6 @@ Imports kCura.WinEDDS.TApi
 Imports Microsoft.VisualBasic.Logging
 Imports Relativity.Logging
 Imports Relativity.Logging.Factory
-Imports Relativity.Transfer
 
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderImporterProcess
