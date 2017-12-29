@@ -4,17 +4,17 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 {
-	public class LoadFileLine
+	public class LoadFileLine : ILoadFileLine
 	{
 		private readonly LinePrefix _prefix;
-		private readonly LineFieldsValue _fieldsValue;
+		private readonly ILineFieldsValue _fieldsValue;
 		private readonly LineImageField _imageField;
-		private readonly LineNativeFilePath _nativeFilePath;
+		private readonly ILineNativeFilePath _nativeFilePath;
 		private readonly LineSuffix _suffix;
 		private readonly LineNewLine _newLine;
 		private readonly ILog _logger;
 
-		public LoadFileLine(LinePrefix prefix, LineFieldsValue fieldsValue, LineImageField imageField, LineNativeFilePath nativeFilePath, LineSuffix suffix, LineNewLine newLine,
+		public LoadFileLine(LinePrefix prefix, ILineFieldsValue fieldsValue, LineImageField imageField, ILineNativeFilePath nativeFilePath, LineSuffix suffix, LineNewLine newLine,
 			ILog logger)
 		{
 			_prefix = prefix;

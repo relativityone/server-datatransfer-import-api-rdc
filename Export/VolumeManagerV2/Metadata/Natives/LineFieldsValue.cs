@@ -7,7 +7,7 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 {
-	public class LineFieldsValue
+	public class LineFieldsValue : ILineFieldsValue
 	{
 		private readonly IFieldService _fieldLookupService;
 		private readonly ILongTextHandler _longTextHandler;

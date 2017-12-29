@@ -9,10 +9,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 	public class LoadFileMetadataBuilder
 	{
 		private readonly LoadFileHeader _loadFileHeader;
-		private readonly LoadFileLine _loadFileLine;
+		private readonly ILoadFileLine _loadFileLine;
 		private readonly ILog _logger;
 
-		public LoadFileMetadataBuilder(LoadFileHeader loadFileHeader, LoadFileLine loadFileLine, ILog logger)
+		public LoadFileMetadataBuilder(LoadFileHeader loadFileHeader, ILoadFileLine loadFileLine, ILog logger)
 		{
 			_loadFileHeader = loadFileHeader;
 			_loadFileLine = loadFileLine;

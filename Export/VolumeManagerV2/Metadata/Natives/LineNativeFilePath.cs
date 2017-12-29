@@ -5,7 +5,7 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 {
-	public class LineNativeFilePath
+	public class LineNativeFilePath : ILineNativeFilePath
 	{
 		private readonly ILoadFileCellFormatter _loadFileCellFormatter;
 		private readonly ExportFile _exportSettings;
