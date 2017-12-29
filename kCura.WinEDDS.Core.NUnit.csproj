@@ -142,6 +142,14 @@
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\MultiPageImagesRollupTests.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\MultiPageTiffImagesRollupTests.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\PdfImagesRollupTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\FullTextLineWriterTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\ImageLoadFileEntryDataSet.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\IproFullTextLoadFileEntryTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\IproFullTextWithoutPrecedenceLoadFileEntryTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\IproFullTextWithPrecedenceLoadFileEntryTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\IproLoadFileEntryTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\OpticonLoadFileEntryTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\WriterStub.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LineFieldsValueTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LineNativeFilePathTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LoadFileLineTests.cs" />
