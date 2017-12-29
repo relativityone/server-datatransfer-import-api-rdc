@@ -379,7 +379,9 @@ Namespace kCura.WinEDDS
 				If ShouldImport AndAlso _copyFilesToRepository AndAlso Me.FileTapiBridge.TransfersPending Then
 					CompletePendingPhysicalFileTransfers("Waiting for all image files to upload...", "Image file uploads completed.", "Failed to complete all pending image file transfers.")
 					Me.JobCounter += 1
+				End If
 
+				If ShouldImport
 					PushImageBatch(bulkLoadFilePath, dataGridFilePath)
 				End If
 			Catch ex As Exception
@@ -983,7 +985,7 @@ Namespace kCura.WinEDDS
 			If Not _imageReader Is Nothing Then
 				_imageReader.Cancel()
 			End If
-			RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, $"Job has been stopped - {Me.TotalTransferredFilesCount} images have been transferred.", Me.TotalTransferredFilesCount, Me.CurrentLineNumber)
+			RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, $"Job has been stopped by the user - {Me.TotalTransferredFilesCount} images have been transferred.", Me.TotalTransferredFilesCount, Me.CurrentLineNumber)
 			OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "Finalizing job…", TapiConstants.NoLineNumber, TapiConstants.NoLineNumber)
 		End Sub
 
