@@ -3,7 +3,7 @@ using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
 using kCura.WinEDDS.Exceptions;
 using NUnit.Framework;
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata
+namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Paths
 {
 	[TestFixture]
 	public class DestinationPathTests

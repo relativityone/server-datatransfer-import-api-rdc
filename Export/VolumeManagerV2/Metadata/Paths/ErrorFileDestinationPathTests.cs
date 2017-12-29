@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using Relativity.Logging;
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata
+namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Paths
 {
 	[TestFixture]
 	public class ErrorFileDestinationPathTests

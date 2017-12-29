@@ -142,7 +142,7 @@
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\MultiPageImagesRollupTests.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\MultiPageTiffImagesRollupTests.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\PdfImagesRollupTests.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\DestinationPathTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Paths\DestinationPathTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\ImageRepositoryBuilderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\ImageRepositoryTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\NativeRepositoryBuilderTests.cs" />
@@ -165,7 +165,7 @@
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\SinglePageImagesRollupTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\LabelManagerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\NativeExportableSizeTests.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\ErrorFileDestinationPathTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Paths\ErrorFileDestinationPathTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\SubdirectoryManagerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\VolumeAndSubdirectoryValidatorTests.cs" />
     <Compile Include="Helpers\ViewFieldInfoMockFactory.cs" />
