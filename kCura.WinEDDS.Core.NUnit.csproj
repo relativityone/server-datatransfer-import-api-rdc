@@ -142,6 +142,8 @@
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\MultiPageImagesRollupTests.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\MultiPageTiffImagesRollupTests.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\PdfImagesRollupTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFileMetadataBuilderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFileMetadataForArtifactBuilderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\FullTextLineWriterTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\ImageLoadFileEntryDataSet.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\IproFullTextLoadFileEntryTests.cs" />
@@ -150,6 +152,10 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\IproLoadFileEntryTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\OpticonLoadFileEntryTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\WriterStub.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\MultiPageMetadataForArtifactBuilderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\MultiPageNotOpticonMetadataForArtifactBuilderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\MultiPageOpticonMetadataForArtifactBuilderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\SinglePageMetadataForArtifactBuilderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LineFieldsValueTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LineNativeFilePathTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LoadFileLineTests.cs" />
