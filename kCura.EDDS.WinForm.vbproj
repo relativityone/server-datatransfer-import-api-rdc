@@ -236,8 +236,8 @@
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="oi, Version=2017.6.1.32, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32.2017.6.1\lib\net40\oi.dll</HintPath>
+    <Reference Include="oi, Version=2017.7.0.277, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32.2017.7.0\lib\net40\oi.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PCLWebUtility, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -703,9 +703,9 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2017.6.1\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\kCura.OutsideIn.FI.Win32.2017.6.1\build\kCura.OutsideIn.FI.Win32.targets'))" />
     <Error Condition="!Exists('..\..\packages\Relativity.StagingExplorer.1.0.38\build\Relativity.StagingExplorer.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Relativity.StagingExplorer.1.0.38\build\Relativity.StagingExplorer.targets'))" />
+    <Error Condition="!Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2017.7.0\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\kCura.OutsideIn.FI.Win32.2017.7.0\build\kCura.OutsideIn.FI.Win32.targets'))" />
   </Target>
-  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32.2017.6.1\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2017.6.1\build\kCura.OutsideIn.FI.Win32.targets')" />
   <Import Project="..\..\packages\Relativity.StagingExplorer.1.0.38\build\Relativity.StagingExplorer.targets" Condition="Exists('..\..\packages\Relativity.StagingExplorer.1.0.38\build\Relativity.StagingExplorer.targets')" />
+  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32.2017.7.0\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2017.7.0\build\kCura.OutsideIn.FI.Win32.targets')" />
 </Project>
