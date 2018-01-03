@@ -6,7 +6,7 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 {
-	public class StreamFactory
+	public class StreamFactory : IStreamFactory
 	{
 		private readonly IFileHelper _fileHelper;
 		private readonly ILog _logger;

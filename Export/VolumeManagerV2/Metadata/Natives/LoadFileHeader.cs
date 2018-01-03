@@ -11,6 +11,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 		private readonly IFieldService _fieldLookupService;
 		private readonly ILog _logger;
 
+		public const int HEADER_KEY = -1;
+
 		public LoadFileHeader(IFieldService fieldLookupService, ILog logger)
 		{
 			_fieldLookupService = fieldLookupService;
@@ -25,7 +27,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
 			{
 				_logger.LogVerbose("Adding header to load file.");
 				ILoadFileEntry header = CreateHeader();
-				loadFileEntries.Add(-1, header);
+				loadFileEntries.Add(HEADER_KEY, header);
 			}
 		}
 

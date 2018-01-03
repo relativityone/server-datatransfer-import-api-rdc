@@ -48,7 +48,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			_tapiBridge.TapiProgress -= OnProgress;
 		}
 
-		public void AddStatisticsForFile(string path)
+		public void UpdateStatisticsForFile(string path)
 		{
 			lock (_lock)
 			{

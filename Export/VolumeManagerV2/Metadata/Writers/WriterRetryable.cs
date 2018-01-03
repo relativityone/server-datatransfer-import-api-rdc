@@ -7,7 +7,6 @@ using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using kCura.WinEDDS.Exceptions;
 using kCura.WinEDDS.Exporters;
 using Polly;
-using Polly.Retry;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
@@ -21,14 +20,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 
 		private long _lastBatchSavedState;
 
-		private readonly RetryPolicy _retryPolicy;
-		private readonly StreamFactory _streamFactory;
+		private readonly Policy _retryPolicy;
+		private readonly IStreamFactory _streamFactory;
 		private readonly ILog _logger;
 		private readonly IStatus _status;
 		private readonly IDestinationPath _destinationPath;
 		private readonly IProcessingStatistics _processingStatistics;
 
-		public WriterRetryable(WritersRetryPolicy writersRetryPolicy, StreamFactory streamFactory, ILog logger, IStatus status, IDestinationPath destinationPath,
+		public WriterRetryable(IWritersRetryPolicy writersRetryPolicy, IStreamFactory streamFactory, ILog logger, IStatus status, IDestinationPath destinationPath,
 			IProcessingStatistics processingStatistics)
 		{
 			_streamFactory = streamFactory;
@@ -127,7 +126,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 
 		private void UpdateStatistics()
 		{
-			_processingStatistics.AddStatisticsForFile(_destinationPath.Path);
+			_processingStatistics.UpdateStatisticsForFile(_destinationPath.Path);
 		}
 
 		private void FlushStream()

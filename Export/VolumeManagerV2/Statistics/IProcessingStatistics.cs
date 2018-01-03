@@ -4,6 +4,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 {
 	public interface IProcessingStatistics : IStateful
 	{
-		void AddStatisticsForFile(string filePath);
+		void UpdateStatisticsForFile(string filePath);
 	}
 }

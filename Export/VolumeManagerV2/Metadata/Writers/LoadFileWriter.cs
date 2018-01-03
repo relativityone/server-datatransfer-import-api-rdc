@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.LoadFileEntry;
 using Relativity.Logging;
@@ -33,10 +34,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 
 		private void WriteHeaderIfNeeded(StreamWriter streamWriter, IDictionary<int, ILoadFileEntry> linesToWrite)
 		{
-			const int headerArtifactID = -1;
-
 			ILoadFileEntry loadFileEntry;
-			if (linesToWrite.TryGetValue(headerArtifactID, out loadFileEntry))
+			if (linesToWrite.TryGetValue(LoadFileHeader.HEADER_KEY, out loadFileEntry))
 			{
 				_logger.LogVerbose("Writing header to load file.");
 				loadFileEntry?.Write(ref streamWriter);

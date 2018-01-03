@@ -277,6 +277,7 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\FullTextLineWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\IFullTextLineWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\IWritersRetryPolicy.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\ILineFieldsValue.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\ILineNativeFilePath.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\ILoadFile.cs" />
@@ -287,6 +288,7 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextStreamFormatterFactoryFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ImageLoadFileRetryableStreamWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\IRetryableStreamWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\IStreamFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\RetryableStreamWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\ILongTextRepository.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\IErrorFileWriter.cs" />

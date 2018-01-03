@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Castle.Core;
 using kCura.Utility;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
 using kCura.WinEDDS.Exceptions;
@@ -11,12 +12,25 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 	{
 		private StreamWriter _streamWriter;
 
-		private readonly StreamFactory _streamFactory;
-		private readonly ErrorFileDestinationPath _errorFileDestinationPath;
+		private readonly IStreamFactory _streamFactory;
+		private readonly IDestinationPath _errorFileDestinationPath;
 		private readonly IStatus _status;
 		private readonly ILog _logger;
 
-		public ErrorFileWriter(StreamFactory streamFactory, ErrorFileDestinationPath errorFileDestinationPath, IStatus status, ILog logger)
+		public ErrorFileWriter(IStreamFactory streamFactory, ErrorFileDestinationPath errorFileDestinationPath, IStatus status, ILog logger) : this(streamFactory,
+			(IDestinationPath) errorFileDestinationPath, status, logger)
+		{
+		}
+
+		/// <summary>
+		///     Used for testing
+		/// </summary>
+		/// <param name="streamFactory"></param>
+		/// <param name="errorFileDestinationPath"></param>
+		/// <param name="status"></param>
+		/// <param name="logger"></param>
+		[DoNotSelect]
+		public ErrorFileWriter(IStreamFactory streamFactory, IDestinationPath errorFileDestinationPath, IStatus status, ILog logger)
 		{
 			_streamFactory = streamFactory;
 			_errorFileDestinationPath = errorFileDestinationPath;

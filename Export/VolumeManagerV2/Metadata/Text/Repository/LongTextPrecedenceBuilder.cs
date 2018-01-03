@@ -73,7 +73,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 				}
 
 				_logger.LogVerbose("File {file} exists and won't be overwritten - updating statistics.", destinationLocation);
-				_metadataProcessingStatistics.AddStatisticsForFile(destinationLocation);
+				_metadataProcessingStatistics.UpdateStatisticsForFile(destinationLocation);
 
 				_logger.LogWarning("LongText file already exists and cannot overwrite - creating ExportRequest from existing file. Assuming that file encoding is the same as selected.");
 				return LongText.CreateFromExistingFile(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, destinationLocation, _exportSettings.TextFileEncoding);
@@ -105,7 +105,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 				}
 
 				_logger.LogVerbose("File {file} exists or has been created from metadata - updating statistics.", destinationLocation);
-				_metadataProcessingStatistics.AddStatisticsForFile(destinationLocation);
+				_metadataProcessingStatistics.UpdateStatisticsForFile(destinationLocation);
 				return LongText.CreateFromExistingFile(artifact.ArtifactID, fieldForPrecedence.FieldArtifactId, destinationLocation, _exportSettings.TextFileEncoding);
 			}
 

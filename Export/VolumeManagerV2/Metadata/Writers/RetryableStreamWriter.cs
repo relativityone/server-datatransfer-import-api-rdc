@@ -5,12 +5,11 @@ using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using kCura.WinEDDS.Exceptions;
 using Polly;
-using Polly.Retry;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 {
-	public abstract class RetryableStreamWriter : IRetryableStreamWriter
+	public class RetryableStreamWriter : IRetryableStreamWriter
 	{
 		private StreamWriter _streamWriter;
 		private long _streamWriterLastPosition;
@@ -18,14 +17,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 		private bool _initialCreation;
 		private long _lastBatchSavedState;
 
-		private readonly RetryPolicy _retryPolicy;
-		private readonly StreamFactory _streamFactory;
+		private readonly Policy _retryPolicy;
+		private readonly IStreamFactory _streamFactory;
 		private readonly IDestinationPath _destinationPath;
 		private readonly IProcessingStatistics _processingStatistics;
 		private readonly IStatus _status;
 		private readonly ILog _logger;
 
-		protected RetryableStreamWriter(WritersRetryPolicy writersRetryPolicy, StreamFactory streamFactory, IDestinationPath destinationPath, IProcessingStatistics processingStatistics,
+		public RetryableStreamWriter(IWritersRetryPolicy writersRetryPolicy, IStreamFactory streamFactory, IDestinationPath destinationPath, IProcessingStatistics processingStatistics,
 			IStatus status, ILog logger)
 		{
 			_streamFactory = streamFactory;
@@ -64,11 +63,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 		{
 			_retryPolicy.Execute(t =>
 			{
-				CreateStreamIfNeeded();
-
 				try
 				{
+					CreateStreamIfNeeded();
 					_streamWriter.Write(loadFileEntry);
+					SaveStreamPosition();
 				}
 				catch (IOException ex)
 				{
@@ -76,7 +75,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 					throw new FileWriteException(_destinationPath.DestinationFileType, ex);
 				}
 
-				SaveStreamPosition();
 				UpdateStatistics();
 			}, token);
 		}
@@ -85,10 +83,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 		{
 			_retryPolicy.Execute(t =>
 			{
-				CreateStreamIfNeeded();
-
 				try
 				{
+					CreateStreamIfNeeded();
 					_streamWriter.Write(chunk);
 				}
 				catch (IOException ex)
@@ -103,8 +100,16 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 		{
 			_retryPolicy.Execute(t =>
 			{
-				CreateStreamIfNeeded();
-				SaveStreamPosition();
+				try
+				{
+					CreateStreamIfNeeded();
+					SaveStreamPosition();
+				}
+				catch (IOException ex)
+				{
+					_logger.LogError(ex, "Error occurred during writing to file {type}.", _destinationPath.DestinationFileType);
+					throw new FileWriteException(_destinationPath.DestinationFileType, ex);
+				}
 				UpdateStatistics();
 			}, token);
 		}
@@ -146,7 +151,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 
 		private void UpdateStatistics()
 		{
-			_processingStatistics.AddStatisticsForFile(_destinationPath.Path);
+			_processingStatistics.UpdateStatisticsForFile(_destinationPath.Path);
 		}
 
 		public void Dispose()

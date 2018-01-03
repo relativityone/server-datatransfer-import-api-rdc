@@ -1,11 +1,10 @@
 ﻿using System;
 using kCura.WinEDDS.Exceptions;
 using Polly;
-using Polly.Retry;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 {
-	public class WritersRetryPolicy
+	public class WritersRetryPolicy : IWritersRetryPolicy
 	{
 		private readonly int _numberOfRetries;
 		private readonly int _waitTimeBetweenRetryAttempts;
@@ -18,7 +17,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 			_waitTimeBetweenRetryAttempts = config.WaitTimeBetweenIORetryAttempts;
 		}
 
-		public RetryPolicy CreateRetryPolicy(Action<Exception, TimeSpan, int, Context> onRetry)
+		public Policy CreateRetryPolicy(Action<Exception, TimeSpan, int, Context> onRetry)
 		{
 			PolicyBuilder handler = Policy.Handle<ExportBaseException>();
 			return handler.WaitAndRetry(_numberOfRetries, SleepDurationProvider, onRetry);

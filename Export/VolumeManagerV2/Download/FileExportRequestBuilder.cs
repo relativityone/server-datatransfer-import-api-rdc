@@ -48,7 +48,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			if (!_validator.CanExport(destinationLocation, warningInCaseOfOverwriting))
 			{
 				_logger.LogVerbose("File {file} already exists - updating statistics.", destinationLocation);
-				_fileProcessingStatistics.AddStatisticsForFile(destinationLocation);
+				_fileProcessingStatistics.UpdateStatisticsForFile(destinationLocation);
 				return new List<FileExportRequest>();
 			}
 

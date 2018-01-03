@@ -1,4 +1,6 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
+﻿using System.Collections.Generic;
+using DevExpress.Xpf.Core.Native;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 using kCura.WinEDDS.TApi;
 using Relativity.Logging;
 
@@ -10,6 +12,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 
 		private long _savedMetadataBytes;
 		private long _savedMetadataTime;
+		private Dictionary<string, long> _savedFilesSize;
 
 		private readonly WinEDDS.Statistics _statistics;
 		private readonly IFileHelper _fileHelper;
@@ -17,8 +20,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 
 		private readonly object _lock = new object();
 
+		private readonly Dictionary<string, long> _filesSize;
+
 		public MetadataStatistics(WinEDDS.Statistics statistics, IFileHelper fileHelper, ILog logger)
 		{
+			_filesSize = new Dictionary<string, long>();
+
 			_statistics = statistics;
 			_fileHelper = fileHelper;
 			_logger = logger;
@@ -48,13 +55,20 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			_tapiBridge.TapiProgress -= OnProgress;
 		}
 
-		public void AddStatisticsForFile(string path)
+		public void UpdateStatisticsForFile(string path)
 		{
 			lock (_lock)
 			{
 				if (_fileHelper.Exists(path))
 				{
-					_statistics.MetadataBytes += _fileHelper.GetFileSize(path);
+					long oldSize = 0;
+					if (_filesSize.ContainsKey(path))
+					{
+						oldSize = _filesSize[path];
+					}
+					long newSize = _fileHelper.GetFileSize(path);
+					_statistics.MetadataBytes += newSize - oldSize;
+					_filesSize[path] = newSize;
 				}
 				else
 				{
@@ -69,6 +83,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			{
 				_savedMetadataBytes = _statistics.MetadataBytes;
 				_savedMetadataTime = _statistics.MetadataTime;
+				_savedFilesSize = new Dictionary<string, long>(_filesSize);
 			}
 		}
 
@@ -78,6 +93,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			{
 				_statistics.MetadataBytes = _savedMetadataBytes;
 				_statistics.MetadataTime = _savedMetadataTime;
+				_filesSize.Clear();
+				_filesSize.AddRange(_savedFilesSize);
 			}
 		}
 	}
