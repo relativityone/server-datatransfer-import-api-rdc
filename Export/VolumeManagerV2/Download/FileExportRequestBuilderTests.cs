@@ -55,7 +55,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 
 			//ASSERT
 			CollectionAssert.IsEmpty(requests);
-			_fileProcessingStatistics.Verify(x => x.AddStatisticsForFile(exportPath));
+			_fileProcessingStatistics.Verify(x => x.UpdateStatisticsForFile(exportPath));
 		}
 
 		[Test]

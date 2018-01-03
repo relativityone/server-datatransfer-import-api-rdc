@@ -107,7 +107,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 			_fileHelper.Setup(x => x.GetFileSize(fileName)).Returns(fileSize);
 
 			//ACT
-			_instance.AddStatisticsForFile(fileName);
+			_instance.UpdateStatisticsForFile(fileName);
 
 			//ASSERT
 			Assert.That(_statistics.FileBytes, Is.EqualTo(fileSize));
@@ -121,7 +121,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 			_fileHelper.Setup(x => x.Exists(fileName)).Returns(false);
 
 			//ACT & ASSERT
-			Assert.DoesNotThrow(() => _instance.AddStatisticsForFile(fileName));
+			Assert.DoesNotThrow(() => _instance.UpdateStatisticsForFile(fileName));
 		}
 	}
 }

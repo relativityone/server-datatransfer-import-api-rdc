@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using kCura.WinEDDS.TApi;
@@ -98,19 +99,21 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 		}
 
 		[Test]
-		public void ItShouldAddSizeForFile()
+		public void ItShouldUpdateSizeForFile()
 		{
 			const string fileName = "file_name";
 			const long fileSize = 101437;
+			const long newFileSize = 803761;
 
 			_fileHelper.Setup(x => x.Exists(fileName)).Returns(true);
-			_fileHelper.Setup(x => x.GetFileSize(fileName)).Returns(fileSize);
+			_fileHelper.Setup(x => x.GetFileSize(fileName)).Returns(new Queue<long>(new[] {fileSize, newFileSize}).Dequeue);
 
 			//ACT
-			_instance.AddStatisticsForFile(fileName);
+			_instance.UpdateStatisticsForFile(fileName);
+			_instance.UpdateStatisticsForFile(fileName);
 
 			//ASSERT
-			Assert.That(_statistics.MetadataBytes, Is.EqualTo(fileSize));
+			Assert.That(_statistics.MetadataBytes, Is.EqualTo(newFileSize));
 		}
 
 		[Test]
@@ -121,7 +124,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 			_fileHelper.Setup(x => x.Exists(fileName)).Returns(false);
 
 			//ACT & ASSERT
-			Assert.DoesNotThrow(() => _instance.AddStatisticsForFile(fileName));
+			Assert.DoesNotThrow(() => _instance.UpdateStatisticsForFile(fileName));
 		}
 	}
 }

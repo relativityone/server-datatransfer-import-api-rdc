@@ -162,6 +162,13 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LoadFileMetadataBuilderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LoadFileTestHelpers.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Paths\DestinationPathTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ErrorFileWriterTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\FromFieldToLoadFileWriterTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\FromFileToLoadFileWriterTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\LoadFileWriterTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\RetryableStreamWriterTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\RetryableStreamWriterTestsRetries.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\StreamStub.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\ImageRepositoryBuilderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\ImageRepositoryTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\NativeRepositoryBuilderTests.cs" />
