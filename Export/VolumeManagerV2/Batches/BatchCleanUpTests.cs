@@ -14,16 +14,16 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 	{
 		private BatchCleanUp _instance;
 
-		private IList<Mock<IRepository>> _repositoryMocks;
+		private IList<Mock<IClearable>> _repositoryMocks;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_repositoryMocks = new List<Mock<IRepository>>
+			_repositoryMocks = new List<Mock<IClearable>>
 			{
-				new Mock<IRepository>(),
-				new Mock<IRepository>(),
-				new Mock<IRepository>()
+				new Mock<IClearable>(),
+				new Mock<IClearable>(),
+				new Mock<IClearable>()
 			};
 
 			_instance = new BatchCleanUp(_repositoryMocks.Select(x => x.Object).ToList(), new NullLogger());
