@@ -18,6 +18,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
 				ArtifactID = _artifactId++,
+				NativeSourceLocation = "location"
 			};
 			ExportRequest exportRequest = new NativeFileExportRequest(artifact, "location")
 			{
@@ -36,7 +37,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 		{
 			ImageExportInfo artifact = new ImageExportInfo
 			{
-				ArtifactID = artifactId
+				ArtifactID = artifactId,
+				SourceLocation = "sourceLocation"
 			};
 			ExportRequest exportRequest = new NativeFileExportRequest(artifact, "location")
 			{
