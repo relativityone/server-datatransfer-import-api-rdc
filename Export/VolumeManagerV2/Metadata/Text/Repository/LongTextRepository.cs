@@ -7,7 +7,7 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 {
-	public class LongTextRepository : IRepository, ILongTextRepository
+	public class LongTextRepository : IClearable, ILongTextRepository
 	{
 		private List<LongText> _longTexts;
 

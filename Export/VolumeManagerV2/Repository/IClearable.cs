@@ -1,6 +1,6 @@
 ﻿namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 {
-	public interface IRepository
+	public interface IClearable
 	{
 		void Clear();
 	}

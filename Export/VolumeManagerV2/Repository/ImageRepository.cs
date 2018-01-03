@@ -4,7 +4,7 @@ using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 {
-	public class ImageRepository : IRepository
+	public class ImageRepository : IClearable
 	{
 		private List<Image> _images;
 

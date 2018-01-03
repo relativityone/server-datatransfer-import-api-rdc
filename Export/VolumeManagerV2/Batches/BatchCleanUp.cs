@@ -7,11 +7,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 {
 	public class BatchCleanUp : IBatchCleanUp
 	{
-		private readonly IList<IRepository> _repositories;
+		private readonly IList<IClearable> _repositories;
 
 		private readonly ILog _logger;
 
-		public BatchCleanUp(IList<IRepository> repositories, ILog logger)
+		public BatchCleanUp(IList<IClearable> repositories, ILog logger)
 		{
 			_repositories = repositories;
 			_logger = logger;

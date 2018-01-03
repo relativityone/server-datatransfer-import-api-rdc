@@ -398,7 +398,7 @@
     <Compile Include="Export\VolumeManagerV2\Repository\ImageRepository.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\ImageRepositoryBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\ImageRepositoryBuilderFactory.cs" />
-    <Compile Include="Export\VolumeManagerV2\Repository\IRepository.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\IClearable.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\Native.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\NativeRepository.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\NativeRepositoryBuilder.cs" />

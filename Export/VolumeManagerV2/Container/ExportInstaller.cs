@@ -3,6 +3,7 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
@@ -84,6 +85,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			container.Register(Component.For<IBatchValidator>().UsingFactoryMethod(k => k.Resolve<BatchValidatorFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<IBatchInitialization>().UsingFactoryMethod(k => k.Resolve<BatchInitializationFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<ILog>().UsingFactoryMethod(k => RelativityLogFactory.CreateLog(_EXPORT_SUB_SYSTEM_NAME)));
+			container.Register(Component.For<IClearable, IDownloader>().ImplementedBy<Downloader>());
 		}
 
 		private void InstallFieldService(IWindsorContainer container)
@@ -101,7 +103,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 
 		private void InstallNatives(IWindsorContainer container)
 		{
-			container.Register(Component.For<IRepository, NativeRepository>().ImplementedBy<NativeRepository>());
+			container.Register(Component.For<IClearable, NativeRepository>().ImplementedBy<NativeRepository>());
 		}
 
 		private void InstallImages(IWindsorContainer container)
@@ -110,13 +112,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			container.Register(Component.For<IImageLoadFileMetadataBuilder>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileMetadataBuilderFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<IImageLoadFileEntry>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileEntryFactory>().Create(ExportSettings, container)));
 
-			container.Register(Component.For<IRepository, ImageRepository>().ImplementedBy<ImageRepository>());
+			container.Register(Component.For<IClearable, ImageRepository>().ImplementedBy<ImageRepository>());
 			container.Register(Component.For<IImageLoadFile>().UsingFactoryMethod(k => k.Resolve<ImageLoadFileFactory>().Create(ExportSettings, container)));
 		}
 
 		private void InstallLongText(IWindsorContainer container)
 		{
-			container.Register(Component.For<IRepository, ILongTextRepository, LongTextRepository>().ImplementedBy<LongTextRepository>());
+			container.Register(Component.For<IClearable, ILongTextRepository, LongTextRepository>().ImplementedBy<LongTextRepository>());
 			container.Register(Component.For<IFullTextLoadFileEntry>().UsingFactoryMethod(k => k.Resolve<FullTextLoadFileEntryFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<ILongTextHandler>().UsingFactoryMethod(k => k.Resolve<LongTextHandlerFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<IDelimiter>().UsingFactoryMethod(k => k.Resolve<DelimiterFactory>().Create(ExportSettings)));

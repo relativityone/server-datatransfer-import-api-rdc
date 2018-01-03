@@ -4,7 +4,7 @@ using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 {
-	public class NativeRepository : IRepository
+	public class NativeRepository : IClearable
 	{
 		private List<Native> _natives;
 
