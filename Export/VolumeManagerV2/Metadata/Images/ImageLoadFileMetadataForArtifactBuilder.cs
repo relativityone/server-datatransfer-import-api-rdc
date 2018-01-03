@@ -26,8 +26,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 			_logger = logger;
 		}
 
-		protected abstract List<ImageExportInfo> GetImagesToProcess(ObjectExportInfo artifact);
-
 		public void WriteLoadFileEntry(ObjectExportInfo artifact, IRetryableStreamWriter writer, CancellationToken cancellationToken)
 		{
 			int numberOfPages = artifact.Images.Count;
@@ -66,6 +64,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
 				writer.WriteEntry(loadFileEntry, cancellationToken);
 			}
 		}
+
+		protected abstract List<ImageExportInfo> GetImagesToProcess(ObjectExportInfo artifact);
 
 		private string GetLocalFilePath(List<ImageExportInfo> images, int i)
 		{
