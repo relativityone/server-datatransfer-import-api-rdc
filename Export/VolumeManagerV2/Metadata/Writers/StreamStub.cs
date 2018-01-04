@@ -19,6 +19,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Writers
 				_counter++;
 				throw new IOException();
 			}
+
 			base.Write(buffer, offset, count);
 			_counter++;
 		}

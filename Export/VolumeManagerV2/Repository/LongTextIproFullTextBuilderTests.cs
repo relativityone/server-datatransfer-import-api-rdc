@@ -56,7 +56,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
-				Metadata = new object[] { tooLongText }
+				Metadata = new object[] {tooLongText}
 			};
 
 			_fieldService.Setup(x => x.GetOrdinalIndex(LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME)).Returns(0);

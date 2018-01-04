@@ -62,7 +62,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			FieldStub longTextField2 = new FieldStub(_queryFieldFactory.GetExtractedTextField());
 			longTextField1.SetFieldArtifactId(111);
 			longTextField2.SetFieldArtifactId(222);
-			_fieldService.Setup(x => x.GetColumns()).Returns(new ViewFieldInfo[]{longTextField1, longTextField2});
+			_fieldService.Setup(x => x.GetColumns()).Returns(new ViewFieldInfo[] {longTextField1, longTextField2});
 			_fieldService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns(0);
 
 			ObjectExportInfo artifact = new ObjectExportInfo
@@ -83,14 +83,14 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 		public void ItShouldHandleNotTooLongText()
 		{
 			ViewFieldInfo longTextField = _queryFieldFactory.GetExtractedTextField();
-			_fieldService.Setup(x => x.GetColumns()).Returns(new[] { longTextField });
+			_fieldService.Setup(x => x.GetColumns()).Returns(new[] {longTextField});
 			_fieldService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns(0);
 
 			const string notTooLongText = "not too long text";
 
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
-				Metadata = new object[] { notTooLongText }
+				Metadata = new object[] {notTooLongText}
 			};
 
 			//ACT
@@ -107,14 +107,14 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 		public void ItShouldHandleTooLongText()
 		{
 			ViewFieldInfo longTextField = _queryFieldFactory.GetExtractedTextField();
-			_fieldService.Setup(x => x.GetColumns()).Returns(new[] { longTextField });
+			_fieldService.Setup(x => x.GetColumns()).Returns(new[] {longTextField});
 			_fieldService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns(0);
 
 			const string tooLongText = Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
-				Metadata = new object[] { tooLongText }
+				Metadata = new object[] {tooLongText}
 			};
 
 			//ACT
@@ -132,14 +132,14 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 		{
 			CoalescedTextViewField longTextField = new CoalescedTextViewField(_queryFieldFactory.GetExtractedTextField(), true);
 
-			_fieldService.Setup(x => x.GetColumns()).Returns(new ViewFieldInfo[] { longTextField });
+			_fieldService.Setup(x => x.GetColumns()).Returns(new ViewFieldInfo[] {longTextField});
 			_fieldService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns(0);
 
 			const string tooLongText = Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
-				Metadata = new object[] { tooLongText }
+				Metadata = new object[] {tooLongText}
 			};
 
 			//ACT

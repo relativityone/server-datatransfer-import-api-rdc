@@ -106,6 +106,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Images.Lines
 			{
 				yield return imageLoadFileEntryDataSet;
 			}
+
 			foreach (var imageLoadFileEntryDataSet in MultiPageDataSets(ExportFile.ImageType.Pdf))
 			{
 				yield return imageLoadFileEntryDataSet;

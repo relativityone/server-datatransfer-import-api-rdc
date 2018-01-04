@@ -120,7 +120,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 				ArtifactID = 1
 			};
 
-			LongText longText1 = LongText.CreateFromMissingValue(artifact1.ArtifactID, 10, LongTextExportRequest.CreateRequestForLongText(artifact1, 10, "require_deletion"), Encoding.Default);
+			LongText longText1 =
+				LongText.CreateFromMissingValue(artifact1.ArtifactID, 10, LongTextExportRequest.CreateRequestForLongText(artifact1, 10, "require_deletion"), Encoding.Default);
 			longText1.ExportRequest.UniqueId = "unique_1";
 
 			LongText longText2 = LongText.CreateFromExistingValue(artifact1.ArtifactID, 20, "text");
@@ -131,7 +132,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			};
 
 			LongText longText3 =
-				LongText.CreateFromMissingFile(artifact2.ArtifactID, 30, LongTextExportRequest.CreateRequestForFullText(artifact2, 30, "do_not_require_deletion"), Encoding.Default, Encoding.Default);
+				LongText.CreateFromMissingFile(artifact2.ArtifactID, 30, LongTextExportRequest.CreateRequestForFullText(artifact2, 30, "do_not_require_deletion"), Encoding.Default,
+					Encoding.Default);
 			longText3.ExportRequest.UniqueId = "unique_3";
 
 			return new List<LongText> {longText1, longText2, longText3};

@@ -16,7 +16,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 		{
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
-				ArtifactID = _artifactId++,
+				ArtifactID = _artifactId++
 			};
 			ExportRequest exportRequest = new NativeFileExportRequest(artifact, "location")
 			{

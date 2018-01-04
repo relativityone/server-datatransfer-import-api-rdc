@@ -74,7 +74,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			const string notTooLongText = "not too long text";
 
 			_exportSettings.ExportFullTextAsFile = false;
-			
+
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
 				Metadata = new object[]
@@ -109,7 +109,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 					notTooLongText
 				}
 			};
-			
+
 			_exportFileValidator.Setup(x => x.CanExport(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
 			_filePathProvider.Setup(x => x.GetPathForFile(It.IsAny<string>())).Returns(_fileToDelete);
 

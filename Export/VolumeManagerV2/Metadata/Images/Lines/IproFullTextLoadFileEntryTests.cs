@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;

@@ -12,17 +12,14 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Images.Lines
 
 		public void Dispose()
 		{
-			
 		}
 
 		public void SaveState()
 		{
-			
 		}
 
 		public void RestoreLastState()
 		{
-			
 		}
 
 		public void WriteEntry(string loadFileEntry, CancellationToken token)
@@ -37,7 +34,6 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Images.Lines
 
 		public void FlushChunks(CancellationToken token)
 		{
-			
 		}
 	}
 }
