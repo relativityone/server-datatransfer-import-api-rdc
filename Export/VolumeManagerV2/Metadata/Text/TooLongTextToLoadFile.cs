@@ -1,5 +1,5 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
+﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.LoadFileEntry;
 using Relativity.Logging;

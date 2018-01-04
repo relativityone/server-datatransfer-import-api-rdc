@@ -25,6 +25,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		public MetadataStatistics(WinEDDS.Statistics statistics, IFileHelper fileHelper, ILog logger)
 		{
 			_filesSize = new Dictionary<string, long>();
+			_savedFilesSize = new Dictionary<string, long>();
 
 			_statistics = statistics;
 			_fileHelper = fileHelper;
@@ -66,6 +67,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 					{
 						oldSize = _filesSize[path];
 					}
+
 					long newSize = _fileHelper.GetFileSize(path);
 					_statistics.MetadataBytes += newSize - oldSize;
 					_filesSize[path] = newSize;

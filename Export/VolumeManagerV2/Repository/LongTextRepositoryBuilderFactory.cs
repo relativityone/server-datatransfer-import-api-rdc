@@ -1,7 +1,8 @@
 ﻿using Castle.Windsor;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using Relativity.Logging;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 {
 	public class LongTextRepositoryBuilderFactory
 	{

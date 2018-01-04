@@ -31,6 +31,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
 					{
 						break;
 					}
+
 					writer.WriteChunk(GetLfpFullTextTransform(c), token);
 					i++;
 				}
