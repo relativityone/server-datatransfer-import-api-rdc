@@ -30,10 +30,42 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Images.Lines
 
 		private static IEnumerable<ImageLoadFileEntryDataSet> DataSets()
 		{
-			yield return new ImageLoadFileEntryDataSet {BatesNumber = "B", FilePath = "F", Volume = "V", PageNumber = 1, NumberOfImages = 1, ExpectedResult = $"B,V,F,Y,,,1{Environment.NewLine}"};
-			yield return new ImageLoadFileEntryDataSet {BatesNumber = "B", FilePath = "F", Volume = "V", PageNumber = 1, NumberOfImages = 999, ExpectedResult = $"B,V,F,Y,,,999{Environment.NewLine}"};
-			yield return new ImageLoadFileEntryDataSet {BatesNumber = "B", FilePath = "F", Volume = "V", PageNumber = 2, NumberOfImages = 1, ExpectedResult = $"B,V,F,,,,{Environment.NewLine}"};
-			yield return new ImageLoadFileEntryDataSet {BatesNumber = "B", FilePath = "F", Volume = "V", PageNumber = 2, NumberOfImages = 999, ExpectedResult = $"B,V,F,,,,{Environment.NewLine}"};
+			yield return new ImageLoadFileEntryDataSet
+			{
+				BatesNumber = "B",
+				FilePath = "F",
+				Volume = "V",
+				PageNumber = 1,
+				NumberOfImages = 1,
+				ExpectedResult = $"B,V,F,Y,,,1{Environment.NewLine}"
+			};
+			yield return new ImageLoadFileEntryDataSet
+			{
+				BatesNumber = "B",
+				FilePath = "F",
+				Volume = "V",
+				PageNumber = 1,
+				NumberOfImages = 999,
+				ExpectedResult = $"B,V,F,Y,,,999{Environment.NewLine}"
+			};
+			yield return new ImageLoadFileEntryDataSet
+			{
+				BatesNumber = "B",
+				FilePath = "F",
+				Volume = "V",
+				PageNumber = 2,
+				NumberOfImages = 1,
+				ExpectedResult = $"B,V,F,,,,{Environment.NewLine}"
+			};
+			yield return new ImageLoadFileEntryDataSet
+			{
+				BatesNumber = "B",
+				FilePath = "F",
+				Volume = "V",
+				PageNumber = 2,
+				NumberOfImages = 999,
+				ExpectedResult = $"B,V,F,,,,{Environment.NewLine}"
+			};
 			yield return new ImageLoadFileEntryDataSet
 			{
 				BatesNumber = "veeeery_loooong_bates_number",

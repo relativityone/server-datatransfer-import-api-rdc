@@ -17,5 +17,10 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
 		{
 			FieldType = fieldType;
 		}
+
+		public void SetFieldArtifactId(int fieldArtifactId)
+		{
+			FieldArtifactId = fieldArtifactId;
+		}
 	}
 }

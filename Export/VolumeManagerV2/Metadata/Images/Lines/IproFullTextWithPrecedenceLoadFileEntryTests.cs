@@ -5,6 +5,7 @@ using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using kCura.WinEDDS.Exporters;
 using NUnit.Framework;
 using Relativity.Logging;
+using Constants = Relativity.Export.Constants;
 
 namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Images.Lines
 {
@@ -18,8 +19,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Images.Lines
 
 		protected override void PrepareDataSet(ObjectExportInfo artifact, string textToWrite)
 		{
-			FieldService.Setup(x => x.GetOrdinalIndex(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(0);
-			artifact.Metadata = new object[] { textToWrite };
+			FieldService.Setup(x => x.GetOrdinalIndex(Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(0);
+			artifact.Metadata = new object[] {textToWrite};
 		}
 
 		protected override void PrepareDataSetForTooLongText(ObjectExportInfo artifact, string textToWrite, string fileLocation)
@@ -27,12 +28,12 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Images.Lines
 			const int fieldArtifactId = 998687;
 			const int artifactId = 817225;
 
-			FieldService.Setup(x => x.GetOrdinalIndex(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(0);
+			FieldService.Setup(x => x.GetOrdinalIndex(Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(0);
 
-			FieldService.Setup(x => x.GetOrdinalIndex(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(1);
+			FieldService.Setup(x => x.GetOrdinalIndex(Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(1);
 
 			artifact.ArtifactID = artifactId;
-			artifact.Metadata = new object[] { textToWrite, fieldArtifactId };
+			artifact.Metadata = new object[] {textToWrite, fieldArtifactId};
 
 			LongText longText = LongText.CreateFromExistingFile(artifactId, fieldArtifactId, fileLocation, Encoding.Default);
 			LongTextRepository.Add(longText.InList());

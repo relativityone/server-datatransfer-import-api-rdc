@@ -262,7 +262,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
 
 			//ACT & ASSERT
 			Assert.DoesNotThrow(() => _instance.CalculateTextSize(predictions, artifact));
-			
+
 			Assert.That(predictions.TextFilesSize, Is.EqualTo(extractedTextSizeNaive));
 		}
 

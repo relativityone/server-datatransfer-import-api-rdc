@@ -53,7 +53,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Images
 
 			//ASSERT
 			FullTextLoadFileEntry.Verify(x => x.WriteFullTextLine(artifact, image1.BatesNumber, 0, long.MinValue, Writer.Object, CancellationToken.None), Times.Once);
-			FullTextLoadFileEntry.Verify(x => x.WriteFullTextLine(artifact, image2.BatesNumber, 1, (long)image3.PageOffset, Writer.Object, CancellationToken.None), Times.Never());
+			FullTextLoadFileEntry.Verify(x => x.WriteFullTextLine(artifact, image2.BatesNumber, 1, (long) image3.PageOffset, Writer.Object, CancellationToken.None), Times.Never());
 			FullTextLoadFileEntry.Verify(x => x.WriteFullTextLine(artifact, image3.BatesNumber, 2, long.MinValue, Writer.Object, CancellationToken.None), Times.Never());
 		}
 
@@ -72,7 +72,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Images
 			};
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
-				Images = new ArrayList { image1, image2 }
+				Images = new ArrayList {image1, image2}
 			};
 
 			//ACT
