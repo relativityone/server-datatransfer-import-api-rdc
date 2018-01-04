@@ -67,6 +67,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 					{
 						oldSize = _filesSize[path];
 					}
+
 					long newSize = _fileHelper.GetFileSize(path);
 					_statistics.MetadataBytes += newSize - oldSize;
 					_filesSize[path] = newSize;

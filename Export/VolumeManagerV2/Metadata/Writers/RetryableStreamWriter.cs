@@ -110,6 +110,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 					_logger.LogError(ex, "Error occurred during writing to file {type}.", _destinationPath.DestinationFileType);
 					throw new FileWriteException(_destinationPath.DestinationFileType, ex);
 				}
+
 				UpdateStatistics();
 			}, token);
 		}
