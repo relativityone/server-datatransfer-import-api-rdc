@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Castle.Core;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
@@ -25,6 +26,24 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 		private readonly IMetadataProcessingStatistics _metadataProcessingStatistics;
 
 		public LongTextPrecedenceBuilder(ExportFile exportSettings, LongTextFilePathProvider filePathProvider, IFieldService fieldService, LongTextHelper longTextHelper,
+			IFileNameProvider fileNameProvider, ILog logger, IExportFileValidator exportFileValidator, IMetadataProcessingStatistics metadataProcessingStatistics) : this(exportSettings,
+			(IFilePathProvider) filePathProvider, fieldService, longTextHelper, fileNameProvider, logger, exportFileValidator, metadataProcessingStatistics)
+		{
+		}
+
+		/// <summary>
+		///     Used for testing
+		/// </summary>
+		/// <param name="exportSettings"></param>
+		/// <param name="filePathProvider"></param>
+		/// <param name="fieldService"></param>
+		/// <param name="longTextHelper"></param>
+		/// <param name="fileNameProvider"></param>
+		/// <param name="logger"></param>
+		/// <param name="exportFileValidator"></param>
+		/// <param name="metadataProcessingStatistics"></param>
+		[DoNotSelect]
+		public LongTextPrecedenceBuilder(ExportFile exportSettings, IFilePathProvider filePathProvider, IFieldService fieldService, LongTextHelper longTextHelper,
 			IFileNameProvider fileNameProvider, ILog logger, IExportFileValidator exportFileValidator, IMetadataProcessingStatistics metadataProcessingStatistics)
 		{
 			_exportSettings = exportSettings;
@@ -85,7 +104,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 
 		private LongText CreateForLongText(ObjectExportInfo artifact, ViewFieldInfo field)
 		{
-			ViewFieldInfo fieldForPrecedence = GetFieldForLongTextPrecedenceDownload(artifact, field);
 			string longTextValue = _longTextHelper.GetTextFromField(artifact, Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME);
 
 			if (_exportSettings.ExportFullTextAsFile)
@@ -106,11 +124,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 
 				_logger.LogVerbose("File {file} exists or has been created from metadata - updating statistics.", destinationLocation);
 				_metadataProcessingStatistics.UpdateStatisticsForFile(destinationLocation);
-				return LongText.CreateFromExistingFile(artifact.ArtifactID, fieldForPrecedence.FieldArtifactId, destinationLocation, _exportSettings.TextFileEncoding);
+				return LongText.CreateFromExistingFile(artifact.ArtifactID, field.FieldArtifactId, destinationLocation, _exportSettings.TextFileEncoding);
 			}
 
 			_logger.LogVerbose("LongText value exists - storing it into memory.");
-			return LongText.CreateFromExistingValue(artifact.ArtifactID, fieldForPrecedence.FieldArtifactId, longTextValue);
+			return LongText.CreateFromExistingValue(artifact.ArtifactID, field.FieldArtifactId, longTextValue);
 		}
 
 		private LongTextExportRequest CreateExportRequest(ObjectExportInfo artifact, ViewFieldInfo field, string destinationLocation)
@@ -126,13 +144,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 
 		private ViewFieldInfo GetFieldForLongTextPrecedenceDownload(ObjectExportInfo artifact)
 		{
-			if (_exportSettings.SelectedTextFields != null)
-			{
-				int fieldArtifactId = (int) artifact.Metadata[_fieldService.GetOrdinalIndex(Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)];
-				return _exportSettings.SelectedTextFields.FirstOrDefault(x => x.FieldArtifactId == fieldArtifactId);
-			}
-
-			return null;
+			int fieldArtifactId = (int) artifact.Metadata[_fieldService.GetOrdinalIndex(Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)];
+			return _exportSettings.SelectedTextFields.First(x => x.FieldArtifactId == fieldArtifactId);
 		}
 
 		private ViewFieldInfo GetFieldForLongTextPrecedenceDownload(ObjectExportInfo artifact, ViewFieldInfo field)

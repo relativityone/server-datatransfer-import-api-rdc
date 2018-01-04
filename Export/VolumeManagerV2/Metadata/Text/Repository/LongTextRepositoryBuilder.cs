@@ -40,7 +40,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			_logger.LogVerbose("Creating LongText entries for text precedence.");
 			IList<LongText> precedenceLongTexts = _longTextPrecedenceBuilder.CreateLongText(artifact, cancellationToken);
 			_logger.LogVerbose("{count} LongText entries created.", precedenceLongTexts.Count);
-			Add(precedenceLongTexts);
+			AddDistinct(precedenceLongTexts);
 
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -50,7 +50,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			_logger.LogVerbose("Creating LongText entries for fields.");
 			IList<LongText> fieldLongTexts = _longTextFieldBuilder.CreateLongText(artifact, cancellationToken);
 			_logger.LogVerbose("{count} LongText entries created.", fieldLongTexts.Count);
-			Add(fieldLongTexts);
+			AddDistinct(fieldLongTexts);
 
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -60,13 +60,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
 			_logger.LogVerbose("Creating LongText entries for missing Extracted Text.");
 			IList<LongText> iproFullTexts = _longTextIproFullTextBuilder.CreateLongText(artifact, cancellationToken);
 			_logger.LogVerbose("{count} LongText entries created.", iproFullTexts.Count);
-			Add(iproFullTexts);
+			AddDistinct(iproFullTexts);
 
 			_longTextRepository.Add(_longTexts);
 		}
 
 
-		private void Add(IList<LongText> longTexts)
+		private void AddDistinct(IList<LongText> longTexts)
 		{
 			foreach (var longText in longTexts)
 			{
