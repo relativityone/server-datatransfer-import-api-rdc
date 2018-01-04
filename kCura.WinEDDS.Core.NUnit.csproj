@@ -162,11 +162,11 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LoadFileMetadataBuilderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LoadFileTestHelpers.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Paths\DestinationPathTests.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\LongTextFromFieldBuilderTests.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\LongTextIproFullTextBuilderTests.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\LongTextPrecedenceBuilderTests.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\LongTextRepositoryBuilderTests.cs" />
-    <Compile Include="Export\VolumeManagerV2\Metadata\Text\Repository\LongTextRepositoryTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\LongTextFromFieldBuilderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\LongTextIproFullTextBuilderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\LongTextPrecedenceBuilderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\LongTextRepositoryBuilderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\LongTextRepositoryTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ErrorFileWriterTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\FromFieldToLoadFileWriterTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\FromFileToLoadFileWriterTests.cs" />
@@ -244,7 +244,9 @@
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Export\VolumeManagerV2\Metadata\Text\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

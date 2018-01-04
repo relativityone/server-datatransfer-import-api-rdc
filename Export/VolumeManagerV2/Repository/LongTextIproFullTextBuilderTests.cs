@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
 using kCura.WinEDDS.Exporters;
 using Moq;
 using NUnit.Framework;
 using Relativity.Logging;
 using Constants = Relativity.Constants;
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Text.Repository
+namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 {
 	[TestFixture]
 	public class LongTextIproFullTextBuilderTests

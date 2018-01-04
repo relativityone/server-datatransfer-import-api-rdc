@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
 using kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.NUnit.TestObjectFactories;
@@ -12,7 +12,7 @@ using Relativity;
 using Relativity.Logging;
 using Constants = Relativity.Constants;
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Text.Repository
+namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 {
 	[TestFixture]
 	public class LongTextFromFieldBuilderTests
