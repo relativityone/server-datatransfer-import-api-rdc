@@ -6,13 +6,14 @@ using System.Threading;
 using Castle.Core;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using kCura.WinEDDS.Exporters;
 using Relativity;
 using Relativity.Logging;
 using Constants = Relativity.Export.Constants;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 {
 	public class LongTextPrecedenceBuilder : ILongTextBuilder
 	{

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using Relativity.Logging;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 {
 	public class LongTextRepository : IRepository, ILongTextRepository
 	{

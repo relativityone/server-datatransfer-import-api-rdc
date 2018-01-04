@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Castle.Windsor;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Repository;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
 using Relativity.Logging;
 
