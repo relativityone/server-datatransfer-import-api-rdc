@@ -1,5 +1,6 @@
 Imports System.Collections.Concurrent
 Imports System.Collections.Generic
+Imports System.Diagnostics
 Imports System.IO
 Imports System.Text
 Imports kCura.WinEDDS.Exporters
@@ -690,9 +691,11 @@ Namespace kCura.WinEDDS
 			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			Dim start As Int64 = System.DateTime.Now.Ticks
+			Dim webServiceRequestTime As Stopwatch = New Stopwatch()
 			While tries < maxTries AndAlso Not Me.Halt
 				tries += 1
 				Try
+					webServiceRequestTime = Stopwatch.StartNew()
 					If Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document AndAlso field.Category = Relativity.FieldCategory.FullText AndAlso Not TypeOf field Is CoalescedTextViewField Then
 						_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, artifact.ArtifactID, _settings.CaseInfo.ArtifactID.ToString)
 					Else
@@ -701,11 +704,16 @@ Namespace kCura.WinEDDS
 					End If
 					Exit While
 				Catch ex As System.Exception
+					webServiceRequestTime.Stop()
+					Dim secs As Double = Math.Round(webServiceRequestTime.ElapsedMilliseconds / 1000, 2)
+
 					If tries = 1 Then
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & artifact.IdentifierValue, True)
+						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & 
+							artifact.IdentifierValue & ". Previous request took " & secs & " (secs)", True)
 					ElseIf tries < maxTries Then
 						Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
+						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds. " &
+							"Previous request took " & secs & " (secs)", True)
 						System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 					Else
 						Throw
