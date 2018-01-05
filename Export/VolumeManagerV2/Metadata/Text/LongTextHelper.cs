@@ -115,11 +115,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 			return field;
 		}
 
-		public string GetLongTextFileLocation(ObjectExportInfo artifact, ViewFieldInfo field)
-		{
-			return GetLongTextFileLocation(artifact, field.FieldArtifactId);
-		}
-
 		public string GetLongTextFileLocation(ObjectExportInfo artifact, int fieldArtifactId)
 		{
 			return _longTextRepository.GetTextFileLocation(artifact.ArtifactID, fieldArtifactId);
@@ -133,12 +128,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 			}
 
 			return Encoding.Default;
-		}
-
-		public Encoding GetLongTextFieldFileEncoding(int fieldId)
-		{
-			ViewFieldInfo field = _fieldService.GetColumns().First(x => x.FieldArtifactId == fieldId);
-			return GetLongTextFieldFileEncoding(field);
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Delimiter;
+﻿using Castle.Core;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Delimiter;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.LoadFileEntry;
 using Relativity.Logging;
@@ -8,11 +9,24 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 	public class LongTextHandler : ILongTextHandler
 	{
 		private readonly ILongTextHandler _textPrecedenceHandler;
-		private readonly LongTextToLoadFile _textToLoadFile;
+		private readonly ILongTextHandler _textToLoadFile;
 		private readonly IDelimiter _delimiter;
 		private readonly ILog _logger;
 
 		public LongTextHandler(ILongTextHandler textPrecedenceHandler, LongTextToLoadFile textToLoadFile, IDelimiter delimiter, ILog logger)
+			: this(textPrecedenceHandler, (ILongTextHandler) textToLoadFile, delimiter, logger)
+		{
+		}
+
+		/// <summary>
+		///     Used for testing
+		/// </summary>
+		/// <param name="textPrecedenceHandler"></param>
+		/// <param name="textToLoadFile"></param>
+		/// <param name="delimiter"></param>
+		/// <param name="logger"></param>
+		[DoNotSelect]
+		public LongTextHandler(ILongTextHandler textPrecedenceHandler, ILongTextHandler textToLoadFile, IDelimiter delimiter, ILog logger)
 		{
 			_textPrecedenceHandler = textPrecedenceHandler;
 			_textToLoadFile = textToLoadFile;

@@ -8,15 +8,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 {
 	public class LongTextToFile : ILongTextHandler
 	{
-		private readonly ExportFile _exportFile;
+		private readonly ExportFile _exportSettings;
 		private readonly LongTextHelper _longTextHelper;
 		private readonly IFilePathTransformer _filePathTransformer;
 		private readonly LongTextRepository _longTextRepository;
 		private readonly ILog _logger;
 
-		public LongTextToFile(ExportFile exportFile, IFilePathTransformer filePathTransformer, LongTextRepository longTextRepository, LongTextHelper longTextHelper, ILog logger)
+		public LongTextToFile(ExportFile exportSettings, IFilePathTransformer filePathTransformer, LongTextRepository longTextRepository, LongTextHelper longTextHelper, ILog logger)
 		{
-			_exportFile = exportFile;
+			_exportSettings = exportSettings;
 			_filePathTransformer = filePathTransformer;
 			_longTextRepository = longTextRepository;
 			_longTextHelper = longTextHelper;
@@ -29,7 +29,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 			ViewFieldInfo fieldForPrecedence = _longTextHelper.GetTextPrecedenceTrueField(artifact, field);
 			string destinationLocation = _longTextRepository.GetTextFileLocation(artifact.ArtifactID, fieldForPrecedence.FieldArtifactId);
 			string textLocation = _filePathTransformer.TransformPath(destinationLocation);
-			if (_exportFile.LoadFileIsHtml)
+			if (_exportSettings.LoadFileIsHtml)
 			{
 				lineEntry.AddStringEntry($"<a href='{textLocation}' target='_textwindow'>{textLocation}</a>");
 			}
