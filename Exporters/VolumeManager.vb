@@ -14,6 +14,7 @@ Namespace kCura.WinEDDS
 #Region "Members"
 
 		Private _settings As ExportFile
+		Private _exportConfig As IExportConfig
 		Private _imageFileWriter As System.IO.StreamWriter
 		Private _nativeFileWriter As System.IO.StreamWriter
 		Private _errorWriter As System.IO.StreamWriter
@@ -113,13 +114,13 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable ReadOnly Property NumberOfRetries() As Int32
 			Get
-				Return kCura.Utility.Config.IOErrorNumberOfRetries
+				Return _exportConfig.ExportIOErrorNumberOfRetries
 			End Get
 		End Property
 
 		Protected Overridable ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
 			Get
-				Return kCura.Utility.Config.IOErrorWaitTimeInSeconds
+				Return _exportConfig.ExportIOErrorWaitTime
 			End Get
 		End Property
 
@@ -136,7 +137,7 @@ Namespace kCura.WinEDDS
 			_settings = settings
 			_statistics = statistics
 			_parent = parent
-
+			_exportConfig = _parent.ExportConfig
 			_fileHelper = fileHelper
 			_fileStreamFactory = New FileStreamFactory(_fileHelper)
 			_directoryHelper = directoryHelper

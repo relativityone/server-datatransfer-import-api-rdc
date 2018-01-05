@@ -64,6 +64,12 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public ReadOnly Property ExportConfig() As IExportConfig
+			Get
+				Return _exportConfig
+			End Get
+		End Property
+
 		Public Property Columns() As System.Collections.ArrayList
 			Get
 				Return _columns
@@ -94,13 +100,13 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable ReadOnly Property NumberOfRetries() As Int32
 			Get
-				Return kCura.Utility.Config.ExportErrorNumberOfRetries
+				Return _exportConfig.ExportErrorNumberOfRetries
 			End Get
 		End Property
 
 		Protected Overridable ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
 			Get
-				Return kCura.Utility.Config.ExportErrorWaitTimeInSeconds
+				Return _exportConfig.ExportErrorWaitTime
 			End Get
 		End Property
 
