@@ -22,5 +22,15 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
 		{
 			FieldArtifactId = fieldArtifactId;
 		}
+
+		public void SetIsUnicodeEnabled(bool isUnicodeEnabled)
+		{
+			IsUnicodeEnabled = isUnicodeEnabled;
+		}
+
+		public void SetAvfColumnName(string avfColumnName)
+		{
+			AvfColumnName = avfColumnName;
+		}
 	}
 }
