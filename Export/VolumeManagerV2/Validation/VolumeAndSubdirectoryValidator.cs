@@ -25,13 +25,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation
 
 		private bool Validate(ExportFile exportSettings, int volumeStartNumber, int subdirectoryStartNumber, long totalFiles)
 		{
-			int volumeNumberPaddingWidth = (int) Math.Floor(Math.Log10(volumeStartNumber + 1) + 1);
-			int subdirectoryNumberPaddingWidth = (int) Math.Floor(Math.Log10(subdirectoryStartNumber + 1) + 1);
-			int totalFilesNumberPaddingWidth = (int) Math.Floor(Math.Log10(totalFiles + volumeStartNumber + 1) + 1);
-
-			int volumeLabelPaddingWidth = Math.Max(totalFilesNumberPaddingWidth, volumeNumberPaddingWidth);
-			totalFilesNumberPaddingWidth = (int) Math.Floor(Math.Log10(totalFiles + subdirectoryStartNumber) + 1);
-			int subdirectoryLabelPaddingWidth = Math.Max(totalFilesNumberPaddingWidth, subdirectoryNumberPaddingWidth);
+			int volumeLabelPaddingWidth = CalculatePaddingWidth(volumeStartNumber, totalFiles);
+			int subdirectoryLabelPaddingWidth = CalculatePaddingWidth(subdirectoryStartNumber, totalFiles);
 
 			if (!_validator.IsValid(exportSettings, volumeLabelPaddingWidth, subdirectoryLabelPaddingWidth))
 			{
@@ -43,6 +38,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation
 			}
 
 			return true;
+		}
+
+		private static int CalculatePaddingWidth(int startNumber, long totalFiles)
+		{
+			long maxPossibleNumber = totalFiles + startNumber;
+			return maxPossibleNumber > 0 
+				? (int) Math.Floor(Math.Log10(maxPossibleNumber) + 1) 
+				: 1;
 		}
 	}
 }
