@@ -35,5 +35,9 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Images.Lines
 		public void FlushChunks(CancellationToken token)
 		{
 		}
+
+		public void InitializeFile(CancellationToken token)
+		{
+		}
 	}
 }
