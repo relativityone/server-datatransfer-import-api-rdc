@@ -27,15 +27,19 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 			_logger.LogVerbose("Writing text from memory to memory stream for formatting. Passing value to line entry. Field {fieldName}.", field.AvfColumnName);
 			using (var memoryStream = new MemoryStream())
 			{
-				using (var streamWriter = new StreamWriter(memoryStream))
+				using (var streamWriter = new StreamWriter(memoryStream, _exportSettings.LoadFileEncoding))
 				{
 					string unformattedString = _longTextHelper.GetTextFromField(artifact, field.AvfColumnName);
 
 					_fileWriter.WriteLongTextFileToDatFile(streamWriter, unformattedString, Encoding.Default);
 
 					streamWriter.Flush();
-					string text = _exportSettings.LoadFileEncoding.GetString(memoryStream.ToArray());
-					lineEntry.AddStringEntry(text);
+					memoryStream.Position = 0;
+					using (var streamReader = new StreamReader(memoryStream, _exportSettings.LoadFileEncoding))
+					{
+						string text = streamReader.ReadToEnd();
+						lineEntry.AddStringEntry(text);
+					}
 				}
 			}
 		}
