@@ -11,5 +11,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 		void WriteChunk(string chunk, CancellationToken token);
 
 		void FlushChunks(CancellationToken token);
+
+		void InitializeFile(CancellationToken token);
 	}
 }

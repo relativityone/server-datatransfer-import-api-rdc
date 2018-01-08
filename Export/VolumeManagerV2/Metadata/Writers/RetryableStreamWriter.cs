@@ -115,6 +115,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 			}, token);
 		}
 
+		public void InitializeFile(CancellationToken token)
+		{
+			if (_initialCreation)
+			{
+				FlushChunks(token);
+			}
+		}
+
 		private void CreateStreamIfNeeded()
 		{
 			if (_isBroken || _initialCreation)
