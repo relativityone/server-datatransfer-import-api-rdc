@@ -1618,6 +1618,15 @@ Namespace kCura.WinEDDS
 						Dim d As String = CDec(field.Value).ToString(System.Globalization.CultureInfo.InvariantCulture)
 						outputWriter.Write(d)
 					End If
+				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Text OrElse
+						field.Type = Relativity.FieldTypeHelper.FieldType.OffTableText Then
+					If TypeOf field.Value Is System.IO.Stream
+						Dim stream As System.IO.Stream = CType(field.Value, System.IO.Stream)
+						outputWriter.Flush()
+						stream.CopyTo(outputWriter.BaseStream)
+					Else 
+						outputWriter.Write(field.Value)
+					End If
 				Else
 					outputWriter.Write(field.Value)
 				End If
