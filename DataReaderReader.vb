@@ -474,7 +474,11 @@ Namespace kCura.WinEDDS.ImportExtension
 				Case Relativity.FieldTypeHelper.FieldType.Code
 					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
 				Case Relativity.FieldTypeHelper.FieldType.Text, Relativity.FieldTypeHelper.FieldType.OffTableText
-					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
+					If TypeOf value Is System.IO.Stream
+						field.Value = value
+					Else
+						field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
+					End If
 				Case Relativity.FieldTypeHelper.FieldType.User
 					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
 				Case Relativity.FieldTypeHelper.FieldType.Varchar
