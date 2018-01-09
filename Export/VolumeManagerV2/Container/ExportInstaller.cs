@@ -84,7 +84,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			container.Register(Component.For<IBatchValidator>().UsingFactoryMethod(k => k.Resolve<BatchValidatorFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<IBatchInitialization>().UsingFactoryMethod(k => k.Resolve<BatchInitializationFactory>().Create(ExportSettings, container)));
 			container.Register(Component.For<ILog>().UsingFactoryMethod(k => RelativityLogFactory.CreateLog(_EXPORT_SUB_SYSTEM_NAME)));
-			container.Register(Component.For<IClearable, IDownloader>().ImplementedBy<Downloader>());
 		}
 
 		private void InstallFieldService(IWindsorContainer container)

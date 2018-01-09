@@ -1,5 +1,4 @@
 ﻿using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.TApi;
 using Relativity.Transfer;
 using Relativity.Transfer.Http;
 
@@ -29,9 +28,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			var httpTransferPathData = new HttpTransferPathData
 			{
 				ArtifactId = ArtifactId,
-				ExportType = ExportType.NativeFile
+				ExportType = ExportType.NativeFile,
+				RemoteGuid = RemoteFileGuid
 			};
-			HttpClientDownloadPathResolver.AddPathTranslation(SourceLocation, RemoteFileGuid); 
+
 			var fileInfo = new System.IO.FileInfo(DestinationLocation);
 			var transferPath = new TransferPath
 			{

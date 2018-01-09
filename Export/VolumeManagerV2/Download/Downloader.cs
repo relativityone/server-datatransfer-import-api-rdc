@@ -4,13 +4,12 @@ using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using kCura.WinEDDS.TApi;
 using Relativity.Logging;
 using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public class Downloader : IDownloader, IClearable
+	public class Downloader : IDownloader
 	{
 		private List<ExportRequest> _nativeFileExportRequests;
 		private List<ExportRequest> _imageFileExportRequests;
@@ -236,11 +235,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			}
 
 			return tapiBridge;
-		}
-
-		public void Clear()
-		{
-			HttpClientDownloadPathResolver.ClearPathTranslations();
 		}
 	}
 }
