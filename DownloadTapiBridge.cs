@@ -81,9 +81,6 @@ namespace kCura.WinEDDS.TApi
 							this.parameters.FileShare,
 							this.parameters.AsperaDocRootLevels);
 					break;
-				case TransferClientConstants.HttpClientId:
-					resolver = new HttpClientDownloadPathResolver();
-					break;
 			}
 			jobTransferRequest.SourcePathResolver = resolver;
 		}
