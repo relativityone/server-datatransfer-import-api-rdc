@@ -51,6 +51,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="EventLogEntries.wxs" />
+    <Compile Include="FirewallDlg.wxs" />
     <Compile Include="kCura.WinEDDS.Setup.wxs" />
     <Compile Include="WixUI_MondoNoLicense.wxs" />
   </ItemGroup>
