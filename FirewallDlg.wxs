@@ -5,9 +5,18 @@
       <Dialog Id="FirewallDlg" Width="370" Height="270" Title="Firewall Settings" NoMinimize="yes">
 	      <Control Id="FirewallCheckbox" Type="CheckBox" X="10" Y="50" Width="150" Height="17"
 	               Property='SETFIREWALL' CheckBoxValue='1'>
-		      <Text>Add firewall rules for RDC and ROSE</Text>
+		      <Text>Enable firewall rules on this computer.</Text>
 	      </Control>
-	      <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
+				<Control Id="Description1" Type="Text" X="10" Y="70" Width="370" Height="17" Transparent="yes" NoPrefix="yes">
+					<Text>The Enable firewall rules on this computer check box enables you to indicate whether</Text>
+				</Control>
+				<Control Id="Description2" Type="Text" X="10" Y="85" Width="370" Height="17" Transparent="yes" NoPrefix="yes">
+					<Text>you want to allow the configuration wizard to create firewall rules.</Text>
+				</Control>
+				<Control Id="Description3" Type="Text" X="10" Y="100" Width="370" Height="17" Transparent="yes" NoPrefix="yes">
+					<Text>Keep this box checked if RDC will run for RelativityOne Staging Explorer file transfers.</Text>
+				</Control>
+					<Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
 		      <Publish Event="NewDialog" Value="WelcomeDlg">1</Publish>
 	      </Control>
 	      <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Next">
