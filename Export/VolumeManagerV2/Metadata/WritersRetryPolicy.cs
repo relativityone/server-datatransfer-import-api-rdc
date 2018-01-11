@@ -11,10 +11,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 
 		public const string CONTEXT_LAST_ARTIFACT_ID_KEY = "LastArtifactId";
 
-		public WritersRetryPolicy(Settings.Config config)
+		public WritersRetryPolicy(IExportConfig exportConfig)
 		{
-			_numberOfRetries = config.NumberOfIORetries;
-			_waitTimeBetweenRetryAttempts = config.WaitTimeBetweenIORetryAttempts;
+			_numberOfRetries = exportConfig.ExportErrorNumberOfRetries;
+			_waitTimeBetweenRetryAttempts = exportConfig.ExportIOErrorNumberOfRetries;
 		}
 
 		public Policy CreateRetryPolicy(Action<Exception, TimeSpan, int, Context> onRetry)
