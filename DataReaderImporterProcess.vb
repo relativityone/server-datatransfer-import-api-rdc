@@ -1,3 +1,10 @@
+Imports System.Threading
+Imports kCura.WinEDDS.Helpers
+Imports kCura.WinEDDS.TApi
+Imports Microsoft.VisualBasic.Logging
+Imports Relativity.Logging
+Imports Relativity.Logging.Factory
+
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderImporterProcess
 		Inherits kCura.WinEDDS.ImportLoadFileProcess
@@ -32,14 +39,22 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Function
 
 		Public Overrides Function GetImporter() As kCura.WinEDDS.BulkLoadFileImporter
-			LoadFile.OIFileIdColumnName = OIFileIdColumnName
+			Dim tokenSource As CancellationTokenSource = New CancellationTokenSource()
+		    _ioWarningPublisher = New IoWarningPublisher()
+			
+		    Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog("WinEDDS")
+		    Dim ioReporter As IIoReporter = IoReporterFactory.CreateIoReporter(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds, 
+		                                                                       WinEDDS.Config.DisableNativeLocationValidation,  logger, _ioWarningPublisher, tokenSource.Token)
+
+            LoadFile.OIFileIdColumnName = OIFileIdColumnName
 			LoadFile.OIFileIdMapped = OIFileIdMapped
 			LoadFile.OIFileTypeColumnName = OIFileTypeColumnName
 			LoadFile.FileSizeColumn = FileSizeColumn
 			LoadFile.FileSizeMapped = FileSizeMapped
 			LoadFile.FileNameColumn = FileNameColumn
-			'Avoid initializing the Artifact Reader in the constructor because it calls back to a virtual method (GetArtifactReader).  
-			Dim importer As DataReaderImporter = New DataReaderImporter(DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile), ProcessController, BulkLoadFileFieldDelimiter, _temporaryLocalDirectory, initializeArtifactReader:=False,
+			
+            'Avoid initializing the Artifact Reader in the constructor because it calls back to a virtual method (GetArtifactReader).  
+			Dim importer As DataReaderImporter = New DataReaderImporter(DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile), ProcessController, ioReporter, logger, BulkLoadFileFieldDelimiter, _temporaryLocalDirectory, tokenSource, initializeArtifactReader:=False,
 																		executionSource := ExecutionSource) With {.OnBehalfOfUserToken = Me.OnBehalfOfUserToken}
 			importer.Initialize()
 

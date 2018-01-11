@@ -1,7 +1,9 @@
 Imports System.Collections.Generic
 Imports System.Data
 Imports System.Runtime.InteropServices
+Imports System.Threading
 Imports kCura.Windows.Process
+Imports kCura.WinEDDS.TApi
 Imports Relativity
 
 Namespace kCura.WinEDDS.ImportExtension
@@ -10,9 +12,10 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Private _sourceTable As System.Data.DataTable
 
-		Public Sub New(ByVal folderId As Int32, ByVal imageLoadFile As kCura.WinEDDS.ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As System.Guid, ByVal sourceDataReader As System.Data.DataTable, ByVal enforceDocumentLimit As Boolean,
+		Public Sub New(ByVal folderId As Int32, ByVal imageLoadFile As kCura.WinEDDS.ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal ioReporterInstance As IIoReporter, 
+					   ByVal logger As Logging.ILog, ByVal processID As System.Guid, ByVal sourceDataReader As System.Data.DataTable, ByVal enforceDocumentLimit As Boolean, ByVal tokenSource As CancellationTokenSource,
 					   Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			MyBase.New(folderId, imageLoadFile, controller, processID, False, enforceDocumentLimit, executionSource)
+			MyBase.New(folderId, imageLoadFile, controller, ioReporterInstance, logger, processID, False, enforceDocumentLimit, tokenSource, executionSource)
 			_sourceTable = sourceDataReader
 		End Sub
 
