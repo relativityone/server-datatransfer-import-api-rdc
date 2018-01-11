@@ -1,26 +1,14 @@
 Imports System.IO
 Imports kCura.Utility
+Imports kCura.Windows.Process
 
 Namespace kCura.WinEDDS
 	Public Class ImageFilePreviewer
 		Inherits kCura.Utility.DelimitedFileImporter
-
-		Protected _docManager As kCura.WinEDDS.Service.DocumentManager
-		Protected _fieldQuery As kCura.WinEDDS.Service.FieldQuery
-		Protected _folderManager As kCura.WinEDDS.Service.FolderManager
-		Private _fileUploader As kCura.WinEDDS.FileUploader
-		Protected _fileManager As kCura.WinEDDS.Service.FileManager
-		Private _folderID As Int32
-		Private _overwrite As String
+		
 		Private _filePath As String
-		Private _selectedIdentifierField As String
 		Private _fileLineCount As Int32
 		Private _continue As Boolean
-		Private _overwriteOK As Boolean
-		Private _replaceFullText As Boolean
-		Private _order As Int32
-		Private _csvwriter As System.Text.StringBuilder
-		Private _nextLine As String()
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 
 		Private Enum Columns
@@ -47,25 +35,13 @@ Namespace kCura.WinEDDS
 
 		Public Event StatusMessage(ByVal args As kCura.Windows.Process.StatusEventArgs)
 
-		Public Sub New(ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal doRetryLogic As Boolean)
+		Public Sub New(ByVal controller As kCura.Windows.Process.Controller, ByVal doRetryLogic As Boolean)
 			MyBase.New(New Char() {","c}, doRetryLogic)
-
-			_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
-			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
-			_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer)
-			InitializeUploaders(args)
-
-			_overwrite = args.Overwrite
-			_replaceFullText = args.ReplaceFullText
-			_selectedIdentifierField = args.ControlKeyField
+			
 			_processController = controller
 			_continue = True
 		End Sub
 
-		Protected Overridable Sub InitializeUploaders(ByVal args As ImageLoadFile)
-			_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _docManager.GetDocumentDirectoryByCaseArtifactID(args.CaseInfo.ArtifactID) & "\", args.CookieContainer)
-		End Sub
 
 		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
 			Try
@@ -109,9 +85,9 @@ Namespace kCura.WinEDDS
 				If record.BatesNumber = "" Then
 					Me.RaiseStatusEvent(Windows.Process.EventType.Progress, "Line improperly formatted.")
 				ElseIf filePath = "" Then
-					Me.RaiseStatusEvent(Windows.Process.EventType.Progress, String.Format("Record '{0}' processed - file info error.", record.BatesNumber))
+					Me.RaiseStatusEvent(Windows.Process.EventType.Progress, $"Record '{record.BatesNumber}' processed - file info error.")
 				Else
-					Me.RaiseStatusEvent(Windows.Process.EventType.Progress, String.Format("Record '{0}' processed.", record.BatesNumber))
+					Me.RaiseStatusEvent(Windows.Process.EventType.Progress, $"Record '{record.BatesNumber}' processed.")
 				End If
 				If MyBase.HasReachedEOF Then
 					valuearray = Nothing
@@ -144,19 +120,11 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Function CheckFile(ByVal path As String) As String
-			'See if exists
 			If Not System.IO.File.Exists(path) Then
-				Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("File '{0}' does not exist.", path))
+				Me.RaiseStatusEvent(Windows.Process.EventType.Error, $"File '{path}' does not exist.")
 				Return ""
 			End If
 
-			Dim validator As New kCura.ImageValidator.ImageValidator
-			Try
-				'validator.ValidateImage(path)
-			Catch ex As System.Exception
-				Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Error in '{0}': {1}", path, ex.Message))
-				Return ""
-			End Try
 			Return path
 		End Function
 

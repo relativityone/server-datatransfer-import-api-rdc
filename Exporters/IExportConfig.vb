@@ -6,6 +6,8 @@ Public Interface IExportConfig
 
 	ReadOnly Property ExportThreadCount() As Int32
 
+	ReadOnly Property UseOldExport() As Boolean
+
 	ReadOnly Property ExportIOErrorWaitTime() As Int32
 
 	ReadOnly Property ExportIOErrorNumberOfRetries() As Int32

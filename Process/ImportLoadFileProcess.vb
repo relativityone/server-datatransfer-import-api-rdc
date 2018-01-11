@@ -1,3 +1,10 @@
+Imports System.Threading
+Imports kCura.WinEDDS.Helpers
+Imports kCura.WinEDDS.TApi
+Imports Relativity.Logging
+Imports Relativity.Logging.Factory
+Imports Relativity.Transfer
+
 Namespace kCura.WinEDDS
 
 	Public Class ImportLoadFileProcess
@@ -5,11 +12,11 @@ Namespace kCura.WinEDDS
 
 		Public LoadFile As LoadFile
 		Protected WithEvents _loadFileImporter As BulkLoadFileImporter
+		Protected WithEvents _ioWarningPublisher As IoWarningPublisher
 		Private _startTime As System.DateTime
 		Private _errorCount As Int32
 		Private _warningCount As Int32
 		Private _timeZoneOffset As Int32
-		Private WithEvents _newlineCounter As kCura.Utility.File.LineCounter
 		Private _hasRunProcessComplete As Boolean = False
 		Private _uploadModeText As String = Nothing
 
@@ -78,7 +85,15 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Overridable Function GetImporter() As kCura.WinEDDS.BulkLoadFileImporter
-			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, _timeZoneOffset, True, Me.ProcessID, True, BulkLoadFileFieldDelimiter, EnforceDocumentLimit, ExecutionSource)
+			Dim tokenSource As CancellationTokenSource = New CancellationTokenSource()
+		    _ioWarningPublisher = New IoWarningPublisher()
+            
+		    Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog("WinEDDS")
+            Dim ioReporter As IIoReporter = IoReporterFactory.CreateIoReporter(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds, 
+                                                                               WinEDDS.Config.DisableNativeLocationValidation, logger, _ioWarningPublisher, tokenSource.Token)
+
+			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, ioReporter, logger, _timeZoneOffset, True, Me.ProcessID, True, 
+                                                                                                BulkLoadFileFieldDelimiter, EnforceDocumentLimit, tokenSource,  ExecutionSource)
 
 			Return returnImporter
 		End Function
@@ -114,8 +129,6 @@ Namespace kCura.WinEDDS
 			_loadFileImporter.FileSizeMapped = FileSizeMapped
 			_loadFileImporter.FileNameColumn = FileNameColumn
 			_loadFileImporter.LoadImportedFullTextFromServer = (Me.LoadImportedFullTextFromServer OrElse Config.LoadImportedFullTextFromServer)
-			'_newlineCounter = New kCura.Utility.File.Instance.LineCounter
-			'_newlineCounter.Path = LoadFile.FilePath
 			Me.ProcessObserver.InputArgs = LoadFile.FilePath
 
 			If (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) AndAlso Not _hasRunProcessComplete Then
@@ -309,21 +322,11 @@ Namespace kCura.WinEDDS
 		Private Sub _loadFileImporter_ReportErrorEvent(ByVal row As System.Collections.IDictionary) Handles _loadFileImporter.ReportErrorEvent
 			Me.ProcessObserver.RaiseReportErrorEvent(row)
 		End Sub
-
-		Private Sub _imageFileImporter_IoErrorEvent(ByVal e As kCura.Utility.DelimitedFileImporter.IoWarningEventArgs) Handles _loadFileImporter.IoWarningEvent
-			System.Threading.Monitor.Enter(Me.ProcessObserver)
-			Dim message As New System.Text.StringBuilder
-			Select Case e.Type
-				Case kCura.Utility.DelimitedFileImporter.IoWarningEventArgs.TypeEnum.Message
-					message.Append(e.Message)
-				Case Else
-					message.Append("Error accessing load file - retrying")
-					If e.WaitTime > 0 Then message.Append(" in " & e.WaitTime & " seconds")
-					message.Append(vbNewLine)
-					message.Append("Actual error: " & e.Exception.Message)
-			End Select
-			Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, message.ToString)
-			System.Threading.Monitor.Exit(Me.ProcessObserver)
+		
+		Private Sub _loadFileImporter_IoErrorEvent(ByVal sender As Object, ByVal e As IoWarningEventArgs) Handles _ioWarningPublisher.IoWarningEvent
+		    System.Threading.Monitor.Enter(Me.ProcessObserver)
+		    Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, e.Message)
+		    System.Threading.Monitor.Exit(Me.ProcessObserver)
 		End Sub
 
 		Private Sub _loadFileImporter_EndFileImport(ByVal runID As String) Handles _loadFileImporter.EndFileImport
