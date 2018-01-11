@@ -17,9 +17,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		private readonly ITransferClientHandler _transferClientHandler;
 		private readonly FilesStatistics _filesStatistics;
 		private readonly MetadataStatistics _metadataStatistics;
+		private readonly IExportConfig _exportConfig;
 
 		public ExportTapiBridgeFactory(ExportFile exportSettings, ILog logger, LongTextEncodingConverterFactory converterFactory, DownloadProgressManager downloadProgressManager,
-			IMessagesHandler messageHandler, ITransferClientHandler transferClientHandler, FilesStatistics filesStatistics, MetadataStatistics metadataStatistics)
+			IMessagesHandler messageHandler, ITransferClientHandler transferClientHandler, FilesStatistics filesStatistics, MetadataStatistics metadataStatistics, IExportConfig exportConfig)
 		{
 			_exportSettings = exportSettings;
 			_logger = logger;
@@ -29,6 +30,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			_transferClientHandler = transferClientHandler;
 			_filesStatistics = filesStatistics;
 			_metadataStatistics = metadataStatistics;
+			_exportConfig = exportConfig;
 		}
 
 		public IDownloadTapiBridge CreateForNatives(CancellationToken token)
@@ -86,12 +88,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 				ForceHttpClient = Config.TapiForceHttpClient,
 				LargeFileProgressEnabled = Config.TapiLargeFileProgressEnabled,
 				LogConfigFile = Config.LogConfigFile,
-				MaxJobParallelism = kCura.Utility.Config.IOErrorNumberOfRetries,
+				MaxJobParallelism = Config.TapiMaxJobParallelism,
+				MaxJobRetryAttempts = _exportConfig.ExportErrorNumberOfRetries,
 				MinDataRateMbps = Config.TapiMinDataRateMbps,
 				TargetPath = string.Empty,
 				TargetDataRateMbps = Config.TapiTargetDataRateMbps,
 				TransferLogDirectory = Config.TapiTransferLogDirectory,
-				WaitTimeBetweenRetryAttempts = kCura.Utility.Config.IOErrorWaitTimeInSeconds,
+				WaitTimeBetweenRetryAttempts = _exportConfig.ExportErrorWaitTime,
 				WebCookieContainer = _exportSettings.CookieContainer,
 				WebServiceUrl = Config.WebServiceURL,
 				WorkspaceId = _exportSettings.CaseInfo.ArtifactID

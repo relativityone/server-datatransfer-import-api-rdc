@@ -3,7 +3,6 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
@@ -66,6 +65,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			container.Register(Component.For<IUserNotification>().Instance(_exporter.InteractionManager));
 			container.Register(Component.For<IFileHelper>().Instance(_exporter.FileHelper));
 			container.Register(Component.For<IDirectoryHelper>().Instance(_exporter.DirectoryHelper));
+			container.Register(Component.For<IExportConfig>().Instance(_exporter.ExportConfig));
 		}
 
 		private void InstallCustom(IWindsorContainer container)
