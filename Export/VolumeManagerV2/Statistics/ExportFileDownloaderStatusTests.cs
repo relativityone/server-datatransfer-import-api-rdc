@@ -29,10 +29,6 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 		[TestCase("direct", FileDownloader.FileAccessType.Direct)]
 		[TestCase("Web", FileDownloader.FileAccessType.Web)]
 		[TestCase("web", FileDownloader.FileAccessType.Web)]
-		[TestCase("Initializing", FileDownloader.FileAccessType.Initializing)]
-		[TestCase("initializing", FileDownloader.FileAccessType.Initializing)]
-		[TestCase("", FileDownloader.FileAccessType.Initializing)]
-		[TestCase("Unknown", FileDownloader.FileAccessType.Initializing)]
 		public void ItShouldUpdateUploaderType(string clientName, FileDownloader.FileAccessType type)
 		{
 			string mode = string.Empty;
