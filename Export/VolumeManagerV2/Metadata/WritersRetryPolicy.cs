@@ -13,8 +13,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
 
 		public WritersRetryPolicy(IExportConfig exportConfig)
 		{
-			_numberOfRetries = exportConfig.ExportErrorNumberOfRetries;
-			_waitTimeBetweenRetryAttempts = exportConfig.ExportIOErrorNumberOfRetries;
+			_numberOfRetries = exportConfig.ExportIOErrorNumberOfRetries;
+			_waitTimeBetweenRetryAttempts = exportConfig.ExportIOErrorWaitTime;
 		}
 
 		public Policy CreateRetryPolicy(Action<Exception, TimeSpan, int, Context> onRetry)
