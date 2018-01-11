@@ -18,7 +18,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		public ExportFileDownloaderStatus(ILog logger)
 		{
 			_logger = logger;
-			UploaderType = FileDownloader.FileAccessType.Initializing;
+			UploaderType = FileDownloader.FileAccessType.Web;
 		}
 
 		public void Attach(ITapiBridge tapiBridge)
