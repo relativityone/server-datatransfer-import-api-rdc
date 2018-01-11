@@ -21,7 +21,7 @@
 		<Icon Id="relativity_1.exe" SourceFile="$(var.ProjectDir)..\Images\relativity-icon.ICO" />
 		<Property Id="ARPPRODUCTICON" Value="relativity_1.exe" />
 		<Property Id="ALLUSERS" Value="1" />
-		<Property Id="SETFIREWALL">1</Property>
+		<Property Id="SETFIREWALL" Value="1" />
 		<!-- Perform the proper upgrade checks -->
 		<Property Id="NEWERPRODUCTFOUND" Secure="yes" />
 		<Upgrade Id="$(var.UpgradeCode)">
