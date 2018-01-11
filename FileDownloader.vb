@@ -8,7 +8,6 @@ Namespace kCura.WinEDDS
 			Web
 			Direct
 			Aspera
-			Initializing
 		End Enum
 
 		Private _gateway As kCura.WinEDDS.Service.FileIO
