@@ -29,7 +29,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 
 		private void OnErrorMessage(object sender, TapiMessageEventArgs e)
 		{
-			//TODO waiting for REL-187625 and REL-187623
 			_logger.LogError(e.Message);
 			_status.WriteError(e.Message);
 		}
@@ -48,7 +47,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 
 		private void OnFatalError(object sender, TapiMessageEventArgs e)
 		{
-			//TODO waiting for REL-187625 and REL-187623
 			_logger.LogError(e.Message);
 			_status.WriteError(e.Message);
 		}
