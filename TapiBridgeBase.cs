@@ -482,28 +482,9 @@ namespace kCura.WinEDDS.TApi
                 return;
             }
 
-            // Due to FileNotFoundException expectations, do NOT enable this setting.
-            const bool ValidateSourcePaths = false;
+            var configuration = CreateClientConfiguration();
 
-            // Intentionally limiting resiliency here; otherwise, status messages don't make it to IAPI.
-            const int MaxHttpRetryAttempts = 1;
-            var configuration =
-                new ClientConfiguration
-                    {
-                        CookieContainer = this.parameters.WebCookieContainer,
-                        MaxJobParallelism = this.parameters.MaxJobParallelism,
-                        MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
-                        MaxHttpRetryAttempts = MaxHttpRetryAttempts,
-                        MinDataRateMbps = this.parameters.MinDataRateMbps,
-                        PreCalculateJobSize = false,
-                        PreserveDates = false,
-                        TargetDataRateMbps = this.parameters.TargetDataRateMbps,
-                        TimeoutSeconds = this.parameters.TimeoutSeconds,
-                        TransferLogDirectory = this.parameters.TransferLogDirectory,
-                        ValidateSourcePaths = ValidateSourcePaths
-                    };
-
-            try
+			try
             {
                 var clientId = TapiWinEddsHelper.GetClientId(this.parameters);
                 if (clientId != Guid.Empty)
@@ -554,7 +535,36 @@ namespace kCura.WinEDDS.TApi
             }
         }
 
-        /// <summary>
+		/// <summary>
+		/// Creates client configuration
+		/// </summary>
+		/// <returns></returns>
+		protected virtual ClientConfiguration CreateClientConfiguration()
+		{
+			// Due to FileNotFoundException expectations, do NOT enable this setting.
+			const bool ValidateSourcePaths = false;
+
+			// Intentionally limiting resiliency here; otherwise, status messages don't make it to IAPI.
+			const int MaxHttpRetryAttempts = 1;
+			var configuration =
+				new ClientConfiguration
+				{
+					CookieContainer = this.parameters.WebCookieContainer,
+					MaxJobParallelism = this.parameters.MaxJobParallelism,
+					MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
+					MaxHttpRetryAttempts = MaxHttpRetryAttempts,
+					MinDataRateMbps = this.parameters.MinDataRateMbps,
+					PreCalculateJobSize = false,
+					PreserveDates = false,
+					TargetDataRateMbps = this.parameters.TargetDataRateMbps,
+					TimeoutSeconds = this.parameters.TimeoutSeconds,
+					TransferLogDirectory = this.parameters.TransferLogDirectory,
+					ValidateSourcePaths = ValidateSourcePaths
+				};
+			return configuration;
+		}
+
+		/// <summary>
         /// Creates the client using only the specified configuration object.
         /// </summary>
         /// <param name="configuration">

@@ -84,5 +84,14 @@ namespace kCura.WinEDDS.TApi
 			}
 			jobTransferRequest.SourcePathResolver = resolver;
 		}
+
+		/// <inheritdoc />
+		protected override ClientConfiguration CreateClientConfiguration()
+		{
+			var clientConfiguration = base.CreateClientConfiguration();
+			clientConfiguration.FileNotFoundErrorsDisabled = true;
+			clientConfiguration.FileNotFoundErrorsRetry = false;
+			return clientConfiguration;
+		}
 	}
 }
