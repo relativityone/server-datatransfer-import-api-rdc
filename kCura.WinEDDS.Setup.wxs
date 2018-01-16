@@ -21,6 +21,7 @@
 		<Icon Id="relativity_1.exe" SourceFile="$(var.ProjectDir)..\Images\relativity-icon.ICO" />
 		<Property Id="ARPPRODUCTICON" Value="relativity_1.exe" />
 		<Property Id="ALLUSERS" Value="1" />
+		<Property Id="SETFIREWALL" Value="1" />
 		<!-- Perform the proper upgrade checks -->
 		<Property Id="NEWERPRODUCTFOUND" Secure="yes" />
 		<Upgrade Id="$(var.UpgradeCode)">
@@ -41,25 +42,30 @@
 							<File Id="kCuraEDDSWinFormEXE" Name="kCura.EDDS.WinForm.exe" DiskId="1" Source="$(var.kCura.EDDS.WinForm.TargetPath)" KeyPath="yes">
 								<Shortcut Id="startmenuRelativity" Directory="ProgramMenuFolder" Name="$(var.ProductName)" WorkingDirectory="INSTALLDIR" Icon="relativity_1.exe" IconIndex="0" Advertise="yes" />
 								<Shortcut Id="desktopRelativity" Directory="DesktopFolder" Name="$(var.ProductName)" WorkingDirectory="INSTALLDIR" Icon="relativity_1.exe" IconIndex="0" Advertise="yes" />
-								<!--Adding firewall exceptions to support Aspera. -->
-								<fw:FirewallException
-									Id="RdcClientTCPInbound"
-									Protocol="tcp"
-									Name="Relativity Desktop Client TCP"
-									Port="*"
-									Scope="any"
-									IgnoreFailure="no"
-									Profile="all"/>
-								<fw:FirewallException
-									Id="RdcClientUDPInbound"
-									Protocol="udp"
-									Name="Relativity Desktop Client UDP"
-									Port="*"
-									Scope="any"
-									IgnoreFailure="no"
-									Profile="all"/>
 							</File>
-						    <File Id="kCuraEDDSWinFormEXEConfig" Name="kCura.EDDS.WinForm.exe.config" DiskId="1" Source="$(var.kCura.EDDS.WinForm.TargetDir)\kCura.EDDS.WinForm.exe.config" />
+							<File Id="kCuraEDDSWinFormEXEConfig" Name="kCura.EDDS.WinForm.exe.config" DiskId="1" Source="$(var.kCura.EDDS.WinForm.TargetDir)\kCura.EDDS.WinForm.exe.config" />
+						</Component>
+						<Component Id="RDCFirewall" Guid="{31BF5FEF-EAC6-4554-B397-16BCD75B6B94}" KeyPath="yes">
+							<Condition>SETFIREWALL</Condition>
+							<!--Adding firewall exceptions to support Aspera. -->
+							<fw:FirewallException
+								Id="RdcClientTCPInbound"
+								File="kCuraEDDSWinFormEXE"
+								Protocol="tcp"
+								Name="Relativity Desktop Client TCP"
+								Port="*"
+								Scope="any"
+								IgnoreFailure="no"
+								Profile="all"/>
+							<fw:FirewallException
+								Id="RdcClientUDPInbound"
+								File="kCuraEDDSWinFormEXE"
+								Protocol="udp"
+								Name="Relativity Desktop Client UDP"
+								Port="*"
+								Scope="any"
+								IgnoreFailure="no"
+								Profile="all"/>
 						</Component>
 						<Component Id="NativeDependencies" Guid="{7C02F4C7-9DC9-403E-9242-124F71C39CEB}" KeyPath="yes">
 						  <File Id='Primary.itextsharp' Name='itextsharp.dll' DiskId='1' Source='..\..\Vendor\iTextSharp\5.1.2_bin\$(var.Platform)\itextsharp.dll' />
@@ -67,26 +73,30 @@
 						  <File Id='Primary.FreeImage' Name='FreeImage.dll' DiskId='1' Source='..\..\Vendor\FreeImage\3.151\FreeImage\Release\$(var.Platform)\FreeImage.dll' />
 						</Component>
 						<Component Id="StagingExplorer" Guid="{BC3FC5EE-B4B3-4A88-A7CA-1297D2C3DB52}" KeyPath="yes">
-							<File Id='Relativity.StagingExplorer' Name='Relativity.StagingExplorer.exe' DiskId='1' Source='$(var.kCura.EDDS.WinForm.TargetDir)\Relativity.StagingExplorer.exe'>
-								<!--Adding firewall exceptions to support Aspera. -->
-								<fw:FirewallException
-									Id="RoseClientTCPInbound"
-									Protocol="tcp"
-									Name="Relativity Staging Explorer TCP"
-									Port="*"
-									Scope="any"
-									IgnoreFailure="no"
-									Profile="all"/>
-								<fw:FirewallException
-									Id="RoseClientUDPInbound"
-									Protocol="udp"
-									Name="Relativity Staging Explorer UDP"
-									Port="*"
-									Scope="any"
-									IgnoreFailure="no"
-									Profile="all"/>
-							</File>
-						    <File Id='Relativity.StagingExplorerConfig' Name='Relativity.StagingExplorer.exe.config' DiskId='1' Source='$(var.kCura.EDDS.WinForm.TargetDir)\Relativity.StagingExplorer.exe.config' />
+							<File Id='Relativity.StagingExplorer' Name='Relativity.StagingExplorer.exe' DiskId='1' Source='$(var.kCura.EDDS.WinForm.TargetDir)\Relativity.StagingExplorer.exe' />
+							<File Id='Relativity.StagingExplorerConfig' Name='Relativity.StagingExplorer.exe.config' DiskId='1' Source='$(var.kCura.EDDS.WinForm.TargetDir)\Relativity.StagingExplorer.exe.config' />
+						</Component>
+						<Component Id="ROSEFirewall" Guid="{22F5B99D-7066-4145-B341-3F9529A7B041}" KeyPath="yes">
+							<Condition>SETFIREWALL</Condition>
+							<!--Adding firewall exceptions to support Aspera. -->
+							<fw:FirewallException
+								Id="RoseClientTCPInbound"
+								File="Relativity.StagingExplorer"
+								Protocol="tcp"
+								Name="Relativity Staging Explorer TCP"
+								Port="*"
+								Scope="any"
+								IgnoreFailure="no"
+								Profile="all"/>
+							<fw:FirewallException
+								Id="RoseClientUDPInbound"
+								File="Relativity.StagingExplorer"
+								Protocol="udp"
+								Name="Relativity Staging Explorer UDP"
+								Port="*"
+								Scope="any"
+								IgnoreFailure="no"
+								Profile="all"/>
 						</Component>
 						<Component Id="RegistryEntries" Guid="{A20005D6-52D7-485B-9A2D-D0C335B0302B}">
 							<RegistryKey Root="HKLM" Key="$(var.RegistryKey)" ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
@@ -122,8 +132,10 @@
 				<ComponentRef Id="ProgramMenuDir" />
 				<ComponentRef Id="ImagesComponent" />
 				<ComponentRef Id="StagingExplorer" />
-        <ComponentGroupRef Id="EventLogEntries"/>
+				<ComponentGroupRef Id="EventLogEntries"/>
 				<ComponentGroupRef Id="PrimaryComponentGroup" />
+				<ComponentRef Id="RDCFirewall" />
+				<ComponentRef Id="ROSEFirewall" />
 			</Feature>
 			<Feature Id="Licensing3rdPartyFeature" Title="Licensing_3rdParty" Description="Licensing and attribution for 3rd party libraries." Level="1">
 				<ComponentGroupRef Id="LicensingFor3rdPartyGroup" />

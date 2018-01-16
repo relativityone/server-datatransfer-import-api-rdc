@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="en-us" xmlns="http://schemas.microsoft.com/wix/2006/localization">
+	<String Id="FirewallDlg_CheckboxTitle" Overridable="yes">Enable firewall rules on this computer.</String>
+	<String Id="FirewallDlg_Description" Overridable="yes">
+		This option enables you to indicate whether you want to allow the configuration wizard to create firewall rules. Keep this box checked if RDC will run for RelativityOne Staging Explorer file transfers.</String>
+</WixLocalization>
