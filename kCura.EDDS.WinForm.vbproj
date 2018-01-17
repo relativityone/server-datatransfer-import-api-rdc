@@ -177,48 +177,37 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Data.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.38\lib\net462\DevExpress.Data.v17.1.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.41\lib\net462\DevExpress.Data.v17.1.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Images.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.38\lib\net462\DevExpress.Images.v17.1.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.41\lib\net462\DevExpress.Images.v17.1.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Mvvm.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.38\lib\net462\DevExpress.Mvvm.v17.1.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.41\lib\net462\DevExpress.Mvvm.v17.1.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Printing.v17.1.Core, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.38\lib\net462\DevExpress.Printing.v17.1.Core.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.41\lib\net462\DevExpress.Printing.v17.1.Core.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Utils.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.38\lib\net462\DevExpress.Utils.v17.1.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.41\lib\net462\DevExpress.Utils.v17.1.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Xpf.Core.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.38\lib\net462\DevExpress.Xpf.Core.v17.1.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.41\lib\net462\DevExpress.Xpf.Core.v17.1.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Xpf.Grid.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.38\lib\net462\DevExpress.Xpf.Grid.v17.1.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.41\lib\net462\DevExpress.Xpf.Grid.v17.1.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Xpf.Grid.v17.1.Core, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.38\lib\net462\DevExpress.Xpf.Grid.v17.1.Core.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.41\lib\net462\DevExpress.Xpf.Grid.v17.1.Core.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Xpf.NavBar.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.38\lib\net462\DevExpress.Xpf.NavBar.v17.1.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.41\lib\net462\DevExpress.Xpf.NavBar.v17.1.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Xpf.Themes.Office2013.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.38\lib\net462\DevExpress.Xpf.Themes.Office2013.v17.1.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.41\lib\net462\DevExpress.Xpf.Themes.Office2013.v17.1.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Xpf.Themes.Office2016White.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.38\lib\net462\DevExpress.Xpf.Themes.Office2016White.v17.1.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.41\lib\net462\DevExpress.Xpf.Themes.Office2016White.v17.1.dll</HintPath>
     </Reference>
     <Reference Include="FaspManager, Version=3.7.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\relativity.faspmanager.3.7.2.0\lib\net40\FaspManager.dll</HintPath>
@@ -307,17 +296,14 @@
     <Reference Include="Relativity.Services.ServiceProxy">
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.431\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.StagingExplorer, Version=1.0.38.24, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.38\lib\net462\Relativity.StagingExplorer.exe</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.StagingExplorer, Version=1.0.41.88, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.41\lib\net462\Relativity.StagingExplorer.exe</HintPath>
     </Reference>
-    <Reference Include="Relativity.StagingExplorer.Interfaces, Version=1.0.38.24, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.38\lib\net462\Relativity.StagingExplorer.Interfaces.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.StagingExplorer.Interfaces, Version=1.0.41.88, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.41\lib\net462\Relativity.StagingExplorer.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.StagingExplorer.Services.Interfaces, Version=1.0.38.24, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.38\lib\net462\Relativity.StagingExplorer.Services.Interfaces.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.StagingExplorer.Services.Interfaces, Version=1.0.41.88, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.41\lib\net462\Relativity.StagingExplorer.Services.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared">
       <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.159\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
@@ -325,25 +311,20 @@
     <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.5.372.12, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface.9.5.372.12\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client, Version=1.2.18014.6, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\relativity.transfer.client.1.2.20\lib\net462\Relativity.Transfer.Client.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.Transfer.Client, Version=1.2.18016.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.1.2.21\lib\net462\Relativity.Transfer.Client.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Aspera, Version=1.2.18014.6, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\relativity.transfer.client.1.2.20\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.Transfer.Client.Aspera, Version=1.2.18016.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.1.2.21\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Core, Version=1.2.18014.6, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\relativity.transfer.client.1.2.20\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.Transfer.Client.Core, Version=1.2.18016.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.1.2.21\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.FileShare, Version=1.2.18014.6, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\relativity.transfer.client.1.2.20\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.Transfer.Client.FileShare, Version=1.2.18016.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.1.2.21\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Http, Version=1.2.18014.6, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\relativity.transfer.client.1.2.20\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.Transfer.Client.Http, Version=1.2.18016.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.1.2.21\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
     </Reference>
     <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
       <HintPath>..\..\packages\SSH.NET.2016.0.0\lib\net40\Renci.SshNet.dll</HintPath>
@@ -703,9 +684,9 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\Relativity.StagingExplorer.1.0.38\build\Relativity.StagingExplorer.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Relativity.StagingExplorer.1.0.38\build\Relativity.StagingExplorer.targets'))" />
     <Error Condition="!Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2017.7.0\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\kCura.OutsideIn.FI.Win32.2017.7.0\build\kCura.OutsideIn.FI.Win32.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Relativity.StagingExplorer.1.0.41\build\Relativity.StagingExplorer.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Relativity.StagingExplorer.1.0.41\build\Relativity.StagingExplorer.targets'))" />
   </Target>
-  <Import Project="..\..\packages\Relativity.StagingExplorer.1.0.38\build\Relativity.StagingExplorer.targets" Condition="Exists('..\..\packages\Relativity.StagingExplorer.1.0.38\build\Relativity.StagingExplorer.targets')" />
   <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32.2017.7.0\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2017.7.0\build\kCura.OutsideIn.FI.Win32.targets')" />
+  <Import Project="..\..\packages\Relativity.StagingExplorer.1.0.41\build\Relativity.StagingExplorer.targets" Condition="Exists('..\..\packages\Relativity.StagingExplorer.1.0.41\build\Relativity.StagingExplorer.targets')" />
 </Project>
