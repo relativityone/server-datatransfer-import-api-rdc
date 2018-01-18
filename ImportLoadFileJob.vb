@@ -1,4 +1,5 @@
 Imports System.Net
+Imports kCura.WinEDDS
 Imports Relativity
 
 Namespace kCura.Relativity.DataReaderClient
@@ -267,8 +268,11 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.OverlayBehavior = loadFileTemp.OverlayBehavior
 			tempLoadFile.Billable = loadFileTemp.Billable
 
+			ValidateIdentifierMapping()
+
 			Return tempLoadFile
 		End Function
+
 
 		Private Function AllowNonIdentifierKeyField(clientSettings As Settings) As Boolean
 			Dim retval As Boolean = (clientSettings.IdentityFieldId > 0)
@@ -342,7 +346,6 @@ Namespace kCura.Relativity.DataReaderClient
 			Try
 				ValidateRelativitySettings()
 				ValidateDelimiterSettings()
-				'ValidateOverwriteModeSettings()
 				ValidateNativeFileSettings()
 				ValidateExtractedTextSettings()
 			Catch ex As Exception
@@ -355,6 +358,21 @@ Namespace kCura.Relativity.DataReaderClient
 			Return True
 		End Function
 
+		Private Sub ValidateIdentifierMapping()
+			If Not Me._nativeSettings.OverwriteMode = OverwriteModeEnum.Overlay Then
+				Return
+			End If
+			Dim idField As DocumentField = Nothing
+			For Each item As DocumentField In _docIDFieldCollection
+				If Not item Is Nothing AndAlso item.FieldCategory = FieldCategory.Identifier Then
+					idField = item
+					Exit For
+				End If
+			Next
+			If Not idField Is Nothing AndAlso idField.FieldID <> Me._nativeSettings.IdentityFieldId Then
+				Throw New ImportSettingsException("The field marked [identifier] cannot be part of a field map when it's not the Overlay Identifier field")
+			End If
+		End Sub
 
 
 		Private Function MapInputToSettingsFactory(ByVal clientSettings As Settings) As WinEDDS.DynamicObjectSettingsFactory
