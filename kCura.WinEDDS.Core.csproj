@@ -53,39 +53,6 @@
     <Reference Include="CommonServiceLocator.WindsorAdapter.Unofficial, Version=3.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\CommonServiceLocator.WindsorAdapter.Unofficial.3.3.0.0\lib\Net40\CommonServiceLocator.WindsorAdapter.Unofficial.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Data.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.25\lib\net462\DevExpress.Data.v17.1.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Images.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.25\lib\net462\DevExpress.Images.v17.1.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Mvvm.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.25\lib\net462\DevExpress.Mvvm.v17.1.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Printing.v17.1.Core, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.25\lib\net462\DevExpress.Printing.v17.1.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Utils.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.25\lib\net462\DevExpress.Utils.v17.1.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Xpf.Core.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.25\lib\net462\DevExpress.Xpf.Core.v17.1.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Xpf.Grid.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.25\lib\net462\DevExpress.Xpf.Grid.v17.1.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Xpf.Grid.v17.1.Core, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.25\lib\net462\DevExpress.Xpf.Grid.v17.1.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Xpf.NavBar.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.25\lib\net462\DevExpress.Xpf.NavBar.v17.1.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.Office2013.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.25\lib\net462\DevExpress.Xpf.Themes.Office2013.v17.1.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.Office2016White.v17.1, Version=17.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.25\lib\net462\DevExpress.Xpf.Themes.Office2016White.v17.1.dll</HintPath>
-    </Reference>
     <Reference Include="FaspManager, Version=3.7.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\relativity.faspmanager.3.7.2.0\lib\net40\FaspManager.dll</HintPath>
     </Reference>
@@ -149,12 +116,6 @@
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.429, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.429\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
-    </Reference>
-    <Reference Include="Relativity.StagingExplorer, Version=1.0.25.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.25\lib\net462\Relativity.StagingExplorer.exe</HintPath>
-    </Reference>
-    <Reference Include="Relativity.StagingExplorer.Interfaces, Version=1.0.25.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.1.0.25\lib\net462\Relativity.StagingExplorer.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.158.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.158\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
@@ -509,13 +470,6 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\packages\Relativity.StagingExplorer.1.0.25\Build\Relativity.StagingExplorer.targets" Condition="Exists('..\..\packages\Relativity.StagingExplorer.1.0.25\Build\Relativity.StagingExplorer.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\Relativity.StagingExplorer.1.0.25\Build\Relativity.StagingExplorer.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Relativity.StagingExplorer.1.0.25\Build\Relativity.StagingExplorer.targets'))" />
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

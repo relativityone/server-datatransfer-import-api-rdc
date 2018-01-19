@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using DevExpress.Xpf.Core.Native;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 using kCura.WinEDDS.TApi;
 using Relativity.Logging;
@@ -96,7 +95,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 				_statistics.MetadataBytes = _savedMetadataBytes;
 				_statistics.MetadataTime = _savedMetadataTime;
 				_filesSize.Clear();
-				_filesSize.AddRange(_savedFilesSize);
+				foreach (KeyValuePair<string, long> keyValuePair in _savedFilesSize)
+				{
+					_filesSize.Add(keyValuePair.Key, keyValuePair.Value);
+				}
 			}
 		}
 	}
