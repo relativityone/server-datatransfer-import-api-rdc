@@ -369,8 +369,12 @@ Namespace kCura.Relativity.DataReaderClient
 					Exit For
 				End If
 			Next
-			If Not idField Is Nothing AndAlso idField.FieldID <> Me._nativeSettings.IdentityFieldId Then
-				Throw New ImportSettingsException("The field marked [identifier] cannot be part of a field map when it's not the Overlay Identifier field")
+			If Not idField Is Nothing Then
+				For i As Integer = 0 To _nativeDataReader.SourceData.FieldCount - 1
+					If _nativeDataReader.SourceData.GetName(i) = idField.FieldName AndAlso idField.FieldID <> Me._nativeSettings.IdentityFieldId Then
+						Throw New ImportSettingsException("The field marked [identifier] cannot be part of a field map when it's not the Overlay Identifier field")
+					End If
+				Next
 			End If
 		End Sub
 
