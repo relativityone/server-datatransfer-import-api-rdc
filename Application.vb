@@ -1671,7 +1671,7 @@ Namespace kCura.EDDS.WinForm
                 End If
             Next
             If Not match Then
-                MsgBox(String.Format("Your version of the Relativity Desktop Client is out of date. You are running version {0}, but version {1} is required.", Me.GetDisplayAssemblyVersion(), relVersionString), MsgBoxStyle.Critical, "WinRelativity Version Mismatch")
+                MsgBox(String.Format("Your version of the Relativity Desktop Client ({0}) is out of date. Please make sure you are running correct RDC version ({1}) or specified correct WebService URL for Relativity.", Me.GetDisplayAssemblyVersion(), relVersionString), MsgBoxStyle.Critical, "WinRelativity Version Mismatch")
                 ExitApplication()
             Else
                 Exit Sub
