@@ -65,13 +65,14 @@ namespace kCura.WinEDDS.TApi
 		/// </value>
 		public string TargetFolderName => this.pathManager.CurrentTargetFolderName;
 
-		/// <summary>
-		/// Gets a value indicating whether there are transfers pending.
-		/// </summary>
-		/// <remarks>
-		/// Be careful here. The PathCount property was added to avoid costly hits to the repository.
-		/// </remarks>
-		public bool TransfersPending => this.TransferJob != null && this.TransferJob.PathCount > 0;
+        /// <summary>
+        /// Gets a value indicating whether there are transfers pending.
+        /// </summary>
+        /// <remarks>
+        /// The RequestTransferPathCount property was added to avoid costly hits to the repository.
+        /// </remarks>
+        public bool TransfersPending => this.TransferJob != null
+	                                    && this.TransferJob.JobService.RequestTransferPathCount > 0;
 
 		/// <summary>
 		/// Adds the path to a transfer job.
