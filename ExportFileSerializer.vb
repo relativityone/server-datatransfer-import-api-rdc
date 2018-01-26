@@ -163,6 +163,13 @@ Namespace kCura.WinEDDS.NUnit
 		End Sub
 
 		<Category("SeparateDomain")>
+		<Test()> Public Sub AdditionalViewFieldInfoProperties()
+			Dim test As kCura.WinEDDS.ExportFile = _serializer.DeserializeExportFile(XDocument.Parse(AdditionalViewFieldInfoProperties_9_5))
+			Assert.Pass()
+		End Sub
+
+
+		<Category("SeparateDomain")>
 		<Test()> Public Sub DeserializeExportFile_EverythingSet_7_2()
 			Dim test As kCura.WinEDDS.ExportFile = _serializer.DeserializeExportFile(XDocument.Parse(EverythingSet_7_2))
 			Compare(test)
