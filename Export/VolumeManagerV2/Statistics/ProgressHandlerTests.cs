@@ -34,7 +34,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, true, 1, 1, DateTime.Now, DateTime.Now));
 
 			//ASSERT
-			VerifyFileMarkedAsDownloaded(_downloadProgressManager, id);
+			VerifyFileMarkedAsDownloaded(_downloadProgressManager, id, 1);
 		}
 
 		[Test]
@@ -47,7 +47,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, false, 1, 1, DateTime.Now, DateTime.Now));
 
 			//ASSERT
-			VerifyFileNotMarkedAsDownloaded(_downloadProgressManager, id);
+			VerifyFileNotMarkedAsDownloaded(_downloadProgressManager, id, 1);
 		}
 
 		[Test]
@@ -65,12 +65,12 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 
 
 			//ASSERT
-			VerifyFileMarkedAsDownloaded(_downloadProgressManager, id1);
-			VerifyFileNotMarkedAsDownloaded(_downloadProgressManager, id2);
+			VerifyFileMarkedAsDownloaded(_downloadProgressManager, id1, 1);
+			VerifyFileNotMarkedAsDownloaded(_downloadProgressManager, id2, 2);
 		}
 
 		protected abstract ProgressHandler CreateInstance(IDownloadProgressManager downloadProgressManager);
-		protected abstract void VerifyFileMarkedAsDownloaded(Mock<IDownloadProgressManager> downloadProgressManager, string id);
-		protected abstract void VerifyFileNotMarkedAsDownloaded(Mock<IDownloadProgressManager> downloadProgressManager, string id);
+		protected abstract void VerifyFileMarkedAsDownloaded(Mock<IDownloadProgressManager> downloadProgressManager, string id, int lineNumber);
+		protected abstract void VerifyFileNotMarkedAsDownloaded(Mock<IDownloadProgressManager> downloadProgressManager, string id, int lineNumber);
 	}
 }

@@ -1,4 +1,5 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+﻿using kCura.Windows.Process;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download;
@@ -44,11 +45,11 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 			_status.Setup(x => x.UpdateDocumentExportedCount(It.IsAny<int>())).Callback((int x) => actualDocumentExportedCount = x);
 
 			//ACT
-			_instance.MarkNativeAsDownloaded(native1.ExportRequest.UniqueId);
+			_instance.MarkNativeAsDownloaded(native1.ExportRequest.UniqueId, 1);
 
 			_instance.SaveState();
 
-			_instance.MarkNativeAsDownloaded(native2.ExportRequest.UniqueId);
+			_instance.MarkNativeAsDownloaded(native2.ExportRequest.UniqueId, 2);
 
 			_instance.RestoreLastState();
 
@@ -75,40 +76,52 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 			//********
 
 			int actualDocumentExportedCount = 0;
+			string actualLine = string.Empty;
 			_status.Setup(x => x.UpdateDocumentExportedCount(It.IsAny<int>())).Callback((int docs) => actualDocumentExportedCount = docs);
+			_status.Setup(x => x.WriteStatusLine(It.IsAny<EventType>(), It.IsAny<string>(), It.IsAny<bool>()))
+				.Callback((EventType eventType, string line, bool isEssential) => actualLine = line);
 
 			//ACT
 
-			_instance.MarkImageAsDownloaded(image1_B.ExportRequest.UniqueId);
+			_instance.MarkImageAsDownloaded(image1_B.ExportRequest.UniqueId, 1);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(0));
+			Assert.That(actualLine, Does.Contain(string.Empty));
 
 			// 1 downloaded (A)
-			_instance.MarkNativeAsDownloaded(nativeWithoutImagesOrText_A.ExportRequest.UniqueId);
+			_instance.MarkNativeAsDownloaded(nativeWithoutImagesOrText_A.ExportRequest.UniqueId, 1);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(1));
+			Assert.That(actualLine, Does.Contain("line number: 1"));
 
-			_instance.MarkNativeAsDownloaded(nativeWithText_C.ExportRequest.UniqueId);
+			_instance.MarkNativeAsDownloaded(nativeWithText_C.ExportRequest.UniqueId, 2);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(1));
+			Assert.That(actualLine, Does.Contain("line number: 1"));
 
 			// 2 downloaded (A, C)
-			_instance.MarkLongTextAsDownloaded(text_C.ExportRequest.UniqueId);
+			_instance.MarkLongTextAsDownloaded(text_C.ExportRequest.UniqueId, 3);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(2));
+			Assert.That(actualLine, Does.Contain("line number: 3"));
 
-			_instance.MarkNativeAsDownloaded(nativeWithTwoImages_B.ExportRequest.UniqueId);
+			_instance.MarkNativeAsDownloaded(nativeWithTwoImages_B.ExportRequest.UniqueId, 4);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(2));
+			Assert.That(actualLine, Does.Contain("line number: 3"));
 
 			// 3 downloaded (A, C, B)
-			_instance.MarkImageAsDownloaded(image2_B.ExportRequest.UniqueId);
+			_instance.MarkImageAsDownloaded(image2_B.ExportRequest.UniqueId, 5);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
+			Assert.That(actualLine, Does.Contain("line number: 5"));
 
-			_instance.MarkLongTextAsDownloaded(text_D.ExportRequest.UniqueId);
+			_instance.MarkLongTextAsDownloaded(text_D.ExportRequest.UniqueId, 6);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
+			Assert.That(actualLine, Does.Contain("line number: 5"));
 
-			_instance.MarkImageAsDownloaded(image_D.ExportRequest.UniqueId);
+			_instance.MarkImageAsDownloaded(image_D.ExportRequest.UniqueId, 7);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
+			Assert.That(actualLine, Does.Contain("line number: 5"));
 
 			// 4 download (A, C, B, D)
-			_instance.MarkNativeAsDownloaded(nativeWithImageAndText_D.ExportRequest.UniqueId);
+			_instance.MarkNativeAsDownloaded(nativeWithImageAndText_D.ExportRequest.UniqueId, 8);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(4));
+			Assert.That(actualLine, Does.Contain("line number: 8"));
 		}
 	}
 }
