@@ -29,11 +29,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			_logger.LogVerbose("Tapi progress event for {fileName} with status {status} ({lineNumber}).", e.FileName, e.Status, e.LineNumber);
 			if (e.Status)
 			{
-				MarkAsDownloaded(e.FileName);
+				MarkAsDownloaded(e.FileName, e.LineNumber);
 			}
 		}
-
-		protected abstract void MarkAsDownloaded(string id);
+		protected abstract void MarkAsDownloaded(string id, int lineNumber);
 
 		public void Detach()
 		{

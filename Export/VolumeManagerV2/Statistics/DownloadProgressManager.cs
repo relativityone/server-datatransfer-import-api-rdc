@@ -32,14 +32,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			_artifactsDownloaded = new ConcurrentDictionary<int, bool>();
 		}
 
-		public void MarkNativeAsDownloaded(string id)
+		public void MarkNativeAsDownloaded(string id, int lineNumber)
 		{
 			_logger.LogVerbose("Marking {id} native as downloaded.", id);
 			Native native = _nativeRepository.GetByUniqueId(id);
 			if (native != null)
 			{
 				native.HasBeenDownloaded = true;
-				UpdateDownloadedCountAndNotify(native.Artifact.ArtifactID);
+				UpdateDownloadedCountAndNotify(native.Artifact.ArtifactID, lineNumber);
 			}
 			else
 			{
@@ -47,14 +47,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			}
 		}
 
-		public void MarkImageAsDownloaded(string id)
+		public void MarkImageAsDownloaded(string id, int lineNumber)
 		{
 			_logger.LogVerbose("Marking {id} image as downloaded.", id);
 			Image image = _imageRepository.GetByUniqueId(id);
 			if (image != null)
 			{
 				image.HasBeenDownloaded = true;
-				UpdateDownloadedCountAndNotify(image.Artifact.ArtifactID);
+				UpdateDownloadedCountAndNotify(image.Artifact.ArtifactID, lineNumber);
 			}
 			else
 			{
@@ -62,14 +62,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			}
 		}
 
-		public void MarkLongTextAsDownloaded(string id)
+		public void MarkLongTextAsDownloaded(string id, int lineNumber)
 		{
 			_logger.LogVerbose("Marking {id} long text as downloaded.", id);
 			LongText longText = _longTextRepository.GetByUniqueId(id);
 			if (longText != null)
 			{
 				longText.HasBeenDownloaded = true;
-				UpdateDownloadedCountAndNotify(longText.ArtifactId);
+				UpdateDownloadedCountAndNotify(longText.ArtifactId, lineNumber);
 			}
 			else
 			{
@@ -77,7 +77,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			}
 		}
 
-		private void UpdateDownloadedCountAndNotify(int artifactId)
+		private void UpdateDownloadedCountAndNotify(int artifactId, int lineNumber)
 		{
 			_logger.LogVerbose("Updating downloaded document count after artifact {artifactId} has been downloaded.", artifactId);
 			bool documentCountUpdated = UpdateDownloadedCount(artifactId);
@@ -85,7 +85,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			if (documentCountUpdated && native != null)
 			{
 				_logger.LogVerbose("Document {identifierValue} downloaded.", native.Artifact.IdentifierValue);
-				_status.WriteStatusLine(EventType.Progress, $"Document {native.Artifact.IdentifierValue} downloaded.", true);
+				string suffixMessage = string.Empty;
+				if (lineNumber > 0)
+				{
+					suffixMessage = $" (line number: {lineNumber})";
+				}
+
+				_status.WriteStatusLine(EventType.Progress, $"Document {native.Artifact.IdentifierValue} downloaded{suffixMessage}.", true);
 			}
 		}
 
