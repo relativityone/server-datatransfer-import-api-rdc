@@ -48,11 +48,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 			}
 			else if (_fileHelper.GetFileSize(artifact.NativeTempLocation) != prediction.NativeFilesSize)
 			{
-				long actualFileSize = _fileHelper.GetFileSize(artifact.NativeTempLocation);
-				_logger.LogWarning("Native file {file} size {actualSize} is different from expected {expectedSize} for artifact {artifactId}.", artifact.NativeTempLocation, actualFileSize,
-					prediction.NativeFilesSize, artifact.ArtifactID);
-				_status.WriteWarning(
-					$"Native file {artifact.NativeTempLocation} size {actualFileSize} is different from expected {prediction.NativeFilesSize} for artifact {artifact.ArtifactID}.");
+				//long actualFileSize = _fileHelper.GetFileSize(artifact.NativeTempLocation);
+				//_logger.LogWarning("Native file {file} size {actualSize} is different from expected {expectedSize} for artifact {artifactId}.", artifact.NativeTempLocation, actualFileSize,
+				//	prediction.NativeFilesSize, artifact.ArtifactID);
+				//_status.WriteWarning(
+				//	$"Native file {artifact.NativeTempLocation} size {actualFileSize} is different from expected {prediction.NativeFilesSize} for artifact {artifact.ArtifactID}.");
 			}
 		}
 	}
