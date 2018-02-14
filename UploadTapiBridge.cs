@@ -71,7 +71,7 @@ namespace kCura.WinEDDS.TApi
 		/// <remarks>
 		/// Be careful here. The PathCount property was added to avoid costly hits to the repository.
 		/// </remarks>
-		public bool TransfersPending => this.TransferJob != null && this.TransferJob.PathCount > 0;
+		public bool TransfersPending => this.TransferJob != null && this.TransferJob.JobService.RequestTransferPathCount > 0;
 
 		/// <summary>
 		/// Adds the path to a transfer job.

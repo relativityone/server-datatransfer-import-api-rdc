@@ -557,7 +557,7 @@ namespace kCura.WinEDDS.TApi
 					PreCalculateJobSize = false,
 					PreserveDates = false,
 					TargetDataRateMbps = this.parameters.TargetDataRateMbps,
-					TimeoutSeconds = this.parameters.TimeoutSeconds,
+					HttpTimeoutSeconds = this.parameters.TimeoutSeconds,
 					TransferLogDirectory = this.parameters.TransferLogDirectory,
 					ValidateSourcePaths = ValidateSourcePaths
 				};
@@ -852,7 +852,7 @@ namespace kCura.WinEDDS.TApi
         /// </returns>
         private bool GetIsTransferPathInJobQueue(TransferPath path)
         {
-            var queuedTransferPaths = this.TransferJob.ReadAllJobPaths().Select(jobPath => jobPath.Path);
+            var queuedTransferPaths = this.TransferJob.JobService.GetJobTransferPaths().Select(jobPath => jobPath.Path);
             return queuedTransferPaths.Any(x => x.Equals(path));
         }
 
@@ -868,7 +868,7 @@ namespace kCura.WinEDDS.TApi
             if (this.TransferJob != null)
             {
                 paths.AddRange(
-                    this.TransferJob.ReadAllJobPaths().Where(x => x.Status != TransferPathStatus.Successful)
+                    this.TransferJob.JobService.GetJobTransferPaths().Where(x => x.Status != TransferPathStatus.Successful)
                         .Select(jobPath => jobPath.Path));
             }
 
