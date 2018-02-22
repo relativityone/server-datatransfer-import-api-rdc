@@ -34,6 +34,7 @@ Namespace kCura.EDDS.WinForm
 			Dim importer As New kCura.WinEDDS.ApplicationDeploymentProcess(New Int32() {}, Nothing, packageData, Await _application.GetCredentialsAsync(), _application.CookieContainer, New Relativity.CaseInfo() {importOptions.SelectedCaseInfo})
 			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, importOptions.ErrorLoadFileLocation, importOptions.ErrorReportFileLocation)
 			_application.StartProcess(importer)
+
 		End Function
 
 		Friend Sub RunDynamicObjectImport(ByVal importOptions As ImportOptions)
