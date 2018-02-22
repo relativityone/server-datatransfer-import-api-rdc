@@ -550,14 +550,14 @@ namespace kCura.WinEDDS.TApi
 				new ClientConfiguration
 				{
 					CookieContainer = this.parameters.WebCookieContainer,
-					MaxJobParallelism = this.parameters.MaxJobParallelism,
+                    HttpTimeoutSeconds = this.parameters.TimeoutSeconds,
+                    MaxJobParallelism = this.parameters.MaxJobParallelism,
 					MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
 					MaxHttpRetryAttempts = MaxHttpRetryAttempts,
 					MinDataRateMbps = this.parameters.MinDataRateMbps,
 					PreCalculateJobSize = false,
 					PreserveDates = false,
 					TargetDataRateMbps = this.parameters.TargetDataRateMbps,
-					HttpTimeoutSeconds = this.parameters.TimeoutSeconds,
 					TransferLogDirectory = this.parameters.TransferLogDirectory,
 					ValidateSourcePaths = ValidateSourcePaths
 				};
