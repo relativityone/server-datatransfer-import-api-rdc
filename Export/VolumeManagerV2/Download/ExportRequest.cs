@@ -19,6 +19,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			DestinationLocation = destinationLocation;
 		}
 
-		public abstract TransferPath CreateTransferPath();
+		public abstract TransferPath CreateTransferPath(int order);
 	}
 }

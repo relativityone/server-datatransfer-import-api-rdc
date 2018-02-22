@@ -46,13 +46,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 
 			if (images[0].SuccessfulRollup)
 			{
-				//_logger.LogVerbose("Image {image} successfully rollup, so checking single image.", images[0].BatesNumber);
-				//ValidateSingleImage(artifact, images[0], volumePredictions);
+				_logger.LogVerbose("Image {image} successfully rollup, so checking single image.", images[0].BatesNumber);
+				ValidateSingleImage(artifact, images[0], volumePredictions);
 			}
 			else
 			{
-				//_logger.LogVerbose("Image {image} wasn't rollup, so checking multiple images.", images[0].BatesNumber);
-				//ValidateAllImages(artifact, images, volumePredictions);
+				_logger.LogVerbose("Image {image} wasn't rollup, so checking multiple images.", images[0].BatesNumber);
+				ValidateAllImages(artifact, images, volumePredictions);
 			}
 		}
 
@@ -72,17 +72,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 			else if (_fileHelper.GetFileSize(image.TempLocation) != predictions.ImageFilesSize)
 			{
 				long actualFileSize = _fileHelper.GetFileSize(image.TempLocation);
-				//_logger.LogWarning("Image file {file} size {actualSize} is different from expected {expectedSize} for image {batesNumber} in artifact {artifactId}.", image.TempLocation,
-				//	actualFileSize, predictions.ImageFilesSize, image.BatesNumber, artifact.ArtifactID);
+				_logger.LogWarning("Image file {file} size {actualSize} is different from expected {expectedSize} for image {batesNumber} in artifact {artifactId}.", image.TempLocation,
+					actualFileSize, predictions.ImageFilesSize, image.BatesNumber, artifact.ArtifactID);
 				if (actualFileSize > 0 && actualFileSize < predictions.ImageFilesSize)
 				{
-					//_status.WriteUpdate(
-					//	$"Image file {image.TempLocation} size {actualFileSize} is different from expected {predictions.ImageFilesSize} for image {image.BatesNumber} in artifact {artifact.ArtifactID}, but images have been merged into multi-page format.");
+					_status.WriteUpdate(
+						$"Image file {image.TempLocation} size {actualFileSize} is different from expected {predictions.ImageFilesSize} for image {image.BatesNumber} in artifact {artifact.ArtifactID}, but images have been merged into multi-page format.");
 				}
 				else
 				{
-					//_status.WriteWarning(
-					//	$"Image file {image.TempLocation} size {actualFileSize} is different from expected {predictions.ImageFilesSize} for image {image.BatesNumber} in artifact {artifact.ArtifactID}.");
+					_status.WriteWarning(
+						$"Image file {image.TempLocation} size {actualFileSize} is different from expected {predictions.ImageFilesSize} for image {image.BatesNumber} in artifact {artifact.ArtifactID}.");
 				}
 			}
 		}
@@ -116,9 +116,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 				long imagesSize = images.Where(x => !string.IsNullOrWhiteSpace(x.TempLocation)).Sum(x => _fileHelper.GetFileSize(x.TempLocation));
 				if (imagesSize != predictions.ImageFilesSize)
 				{
-					//_logger.LogWarning("Image files total size {actualSize} is different from expected {expectedSize} for images in artifact {artifactId}.", imagesSize,
-					//	predictions.ImageFilesSize, artifact.ArtifactID);
-					//_status.WriteWarning($"Image files total size {imagesSize} is different from expected {predictions.ImageFilesSize} for images in artifact {artifact.ArtifactID}.");
+					_logger.LogWarning("Image files total size {actualSize} is different from expected {expectedSize} for images in artifact {artifactId}.", imagesSize,
+						predictions.ImageFilesSize, artifact.ArtifactID);
+					_status.WriteWarning($"Image files total size {imagesSize} is different from expected {predictions.ImageFilesSize} for images in artifact {artifact.ArtifactID}.");
 				}
 			}
 		}
