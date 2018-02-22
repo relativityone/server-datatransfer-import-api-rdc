@@ -31,7 +31,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		[Test]
 		public void ItShouldPassForEmptyImageList()
 		{
-			ObjectExportInfo[] artifacts = { new ObjectExportInfo() };
+			ObjectExportInfo[] artifacts = {new ObjectExportInfo()};
 
 			//ACT
 			_instance.ValidateExportedBatch(artifacts, new VolumePredictions[1], CancellationToken.None);
@@ -46,8 +46,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		[TestCase(false)]
 		public void ItShouldPassForEmptyImageWithEmptyGuid(bool successfulRollup)
 		{
-			ObjectExportInfo[] artifacts = { CreateWithEmptyGuid(successfulRollup) };
-			VolumePredictions[] volumePredictions = { new VolumePredictions() };
+			ObjectExportInfo[] artifacts = {CreateWithEmptyGuid(successfulRollup)};
+			VolumePredictions[] volumePredictions = {new VolumePredictions()};
 
 			//ACT
 			_instance.ValidateExportedBatch(artifacts, volumePredictions, CancellationToken.None);
@@ -58,14 +58,13 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		}
 
 		[Test]
-		[Ignore("Until File Size calculation is fixed by Production team REL-198994")]
 		[TestCase(false, 1)]
 		[TestCase(true, 0)]
 		public void ItShouldWriteErrorForMissingOrEmptySingleImage(bool exists, long size)
 		{
 			string location = "file_location";
 
-			ObjectExportInfo[] artifacts = { CreateSingleWithLocation(location) };
+			ObjectExportInfo[] artifacts = {CreateSingleWithLocation(location)};
 
 			_fileHelper.Setup(x => x.Exists(location)).Returns(exists);
 			_fileHelper.Setup(x => x.GetFileSize(location)).Returns(size);
@@ -79,13 +78,12 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		}
 
 		[Test]
-		[Ignore("Until File Size calculation is fixed by Production team REL-198994")]
 		public void ItShouldWriteUpdateForImageWithSmallerSize()
 		{
 			string location = "file_location";
 			const int fileSize = 407612;
 
-			ObjectExportInfo[] artifacts = { CreateSingleWithLocation(location) };
+			ObjectExportInfo[] artifacts = {CreateSingleWithLocation(location)};
 			VolumePredictions[] volumePredictions =
 			{
 				new VolumePredictions
@@ -106,13 +104,12 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		}
 
 		[Test]
-		[Ignore("Until File Size calculation is fixed by Production team REL-198994")]
 		public void ItShouldWriteWarningForImageWithBiggerSize()
 		{
 			string location = "file_location";
 			const int fileSize = 407612;
 
-			ObjectExportInfo[] artifacts = { CreateSingleWithLocation(location) };
+			ObjectExportInfo[] artifacts = {CreateSingleWithLocation(location)};
 			VolumePredictions[] volumePredictions =
 			{
 				new VolumePredictions
@@ -133,7 +130,6 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		}
 
 		[Test]
-		[Ignore("Until File Size calculation is fixed by Production team REL-198994")]
 		[TestCase(false, 1)]
 		[TestCase(true, 0)]
 		public void ItShouldWriteErrorForMissingOrEmptyOneOfImages(bool exists, long size)
@@ -141,7 +137,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 			string location1 = "file_location_1";
 			string location2 = "file_location_2";
 
-			ObjectExportInfo[] artifacts = { CreateTwoImagesWithLocations(location1, location2) };
+			ObjectExportInfo[] artifacts = {CreateTwoImagesWithLocations(location1, location2)};
 
 			_fileHelper.Setup(x => x.Exists(location1)).Returns(true);
 			_fileHelper.Setup(x => x.GetFileSize(location1)).Returns(1);
@@ -158,7 +154,6 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		}
 
 		[Test]
-		[Ignore("Until File Size calculation is fixed by Production team REL-198994 ")]
 		public void ItShouldWriteWarningForInvalidSize()
 		{
 			string location1 = "file_location_1";
@@ -167,7 +162,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 			const long size1 = 680296;
 			const long size2 = 134113;
 
-			ObjectExportInfo[] artifacts = { CreateTwoImagesWithLocations(location1, location2) };
+			ObjectExportInfo[] artifacts = {CreateTwoImagesWithLocations(location1, location2)};
 			VolumePredictions[] volumePredictions =
 			{
 				new VolumePredictions

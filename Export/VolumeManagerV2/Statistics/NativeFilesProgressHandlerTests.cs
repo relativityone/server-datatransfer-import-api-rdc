@@ -11,14 +11,14 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 			return new NativeFilesProgressHandler(downloadProgressManager, new NullLogger());
 		}
 
-		protected override void VerifyFileMarkedAsDownloaded(Mock<IDownloadProgressManager> downloadProgressManager, string id)
+		protected override void VerifyFileMarkedAsDownloaded(Mock<IDownloadProgressManager> downloadProgressManager, string id, int lineNumber)
 		{
-			downloadProgressManager.Verify(x => x.MarkNativeAsDownloaded(id), Times.Once);
+			downloadProgressManager.Verify(x => x.MarkNativeAsDownloaded(id, lineNumber), Times.Once);
 		}
 
-		protected override void VerifyFileNotMarkedAsDownloaded(Mock<IDownloadProgressManager> downloadProgressManager, string id)
+		protected override void VerifyFileNotMarkedAsDownloaded(Mock<IDownloadProgressManager> downloadProgressManager, string id, int lineNumber)
 		{
-			downloadProgressManager.Verify(x => x.MarkNativeAsDownloaded(id), Times.Never);
+			downloadProgressManager.Verify(x => x.MarkNativeAsDownloaded(id, lineNumber), Times.Never);
 		}
 	}
 }
