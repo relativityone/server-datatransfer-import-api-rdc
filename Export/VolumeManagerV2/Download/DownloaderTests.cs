@@ -21,8 +21,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 		private LongTextRepository _longTextRepository;
 
 		private Mock<IErrorFileWriter> _errorFileWriter;
-		private Mock<IDownloadTapiBridge> _nativeBridge;
-		private Mock<IDownloadTapiBridge> _imageBridge;
+		private Mock<IDownloadTapiBridge> _fileBridge;
 		private Mock<IDownloadTapiBridge> _textBridge;
 
 		[SetUp]
@@ -32,13 +31,11 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			_imageRepository = new ImageRepository();
 			_longTextRepository = new LongTextRepository(null, new NullLogger());
 
-			_nativeBridge = new Mock<IDownloadTapiBridge>();
-			_imageBridge = new Mock<IDownloadTapiBridge>();
+			_fileBridge = new Mock<IDownloadTapiBridge>();
 			_textBridge = new Mock<IDownloadTapiBridge>();
 
 			Mock<IExportTapiBridgeFactory> exportTapiBridgeFactory = new Mock<IExportTapiBridgeFactory>();
-			exportTapiBridgeFactory.Setup(x => x.CreateForNatives(CancellationToken.None)).Returns(_nativeBridge.Object);
-			exportTapiBridgeFactory.Setup(x => x.CreateForImages(CancellationToken.None)).Returns(_imageBridge.Object);
+			exportTapiBridgeFactory.Setup(x => x.CreateForFiles(CancellationToken.None)).Returns(_fileBridge.Object);
 			exportTapiBridgeFactory.Setup(x => x.CreateForLongText(CancellationToken.None)).Returns(_textBridge.Object);
 
 			_errorFileWriter = new Mock<IErrorFileWriter>();
@@ -57,24 +54,22 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			const string imageUniqueID = "image_unique_id";
 			const string textUniqueID = "text_unique_id";
 
-			_nativeBridge.Setup(x => x.AddPath(It.IsAny<TransferPath>())).Returns(nativeUniqueID);
-			_imageBridge.Setup(x => x.AddPath(It.IsAny<TransferPath>())).Returns(imageUniqueID);
+			_fileBridge.Setup(x => x.AddPath(It.Is<TransferPath>(y => y.Order == native.ExportRequest.Order))).Returns(nativeUniqueID);
+			_fileBridge.Setup(x => x.AddPath(It.Is<TransferPath>(y => y.Order == image1.ExportRequest.Order))).Returns(imageUniqueID);
+			_fileBridge.Setup(x => x.AddPath(It.Is<TransferPath>(y => y.Order == image2.ExportRequest.Order))).Returns(imageUniqueID);
 			_textBridge.Setup(x => x.AddPath(It.IsAny<TransferPath>())).Returns(textUniqueID);
 
 			//ACT
 			_instance.DownloadFilesForArtifacts(CancellationToken.None);
 
 			//ASSERT
-			_nativeBridge.Verify(x => x.AddPath(It.IsAny<TransferPath>()), Times.Once);
-			_imageBridge.Verify(x => x.AddPath(It.IsAny<TransferPath>()), Times.Exactly(2));
+			_fileBridge.Verify(x => x.AddPath(It.IsAny<TransferPath>()), Times.Exactly(3));
 			_textBridge.Verify(x => x.AddPath(It.IsAny<TransferPath>()), Times.Once);
 
-			_nativeBridge.Verify(x => x.WaitForTransferJob(), Times.Once);
-			_imageBridge.Verify(x => x.WaitForTransferJob(), Times.Once);
+			_fileBridge.Verify(x => x.WaitForTransferJob(), Times.Once);
 			_textBridge.Verify(x => x.WaitForTransferJob(), Times.Once);
 
-			_nativeBridge.Verify(x => x.Dispose(), Times.Once);
-			_imageBridge.Verify(x => x.Dispose(), Times.Once);
+			_fileBridge.Verify(x => x.Dispose(), Times.Once);
 			_textBridge.Verify(x => x.Dispose(), Times.Once);
 
 			Assert.That(native.ExportRequest.UniqueId, Is.EqualTo(nativeUniqueID));
@@ -86,7 +81,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 		[Test]
 		public void ItShouldWriteErrorWhenTransferExceptionOccurred()
 		{
-			_nativeBridge.Setup(x => x.WaitForTransferJob()).Throws<TransferException>();
+			_fileBridge.Setup(x => x.WaitForTransferJob()).Throws<TransferException>();
 
 			//ACT & ASSERT
 			Assert.Throws<TransferException>(() => _instance.DownloadFilesForArtifacts(CancellationToken.None));
@@ -97,16 +92,14 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 		[Test]
 		public void ItShouldAlwaysDisposeTapiBridges()
 		{
-			_nativeBridge.Setup(x => x.WaitForTransferJob()).Throws<Exception>();
-			_nativeBridge.Setup(x => x.Dispose()).Throws<Exception>();
-			_imageBridge.Setup(x => x.WaitForTransferJob()).Throws<Exception>();
+			_fileBridge.Setup(x => x.WaitForTransferJob()).Throws<Exception>();
+			_fileBridge.Setup(x => x.Dispose()).Throws<Exception>();
 			_textBridge.Setup(x => x.WaitForTransferJob()).Throws<Exception>();
 
 			//ACT & ASSERT
 			Assert.Throws<Exception>(() => _instance.DownloadFilesForArtifacts(CancellationToken.None));
 
-			_nativeBridge.Verify(x => x.Dispose(), Times.Once);
-			_imageBridge.Verify(x => x.Dispose(), Times.Once);
+			_fileBridge.Verify(x => x.Dispose(), Times.Once);
 			_textBridge.Verify(x => x.Dispose(), Times.Once);
 		}
 	}
