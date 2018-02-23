@@ -33,19 +33,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			_exportConfig = exportConfig;
 		}
 
-		public IDownloadTapiBridge CreateForNatives(CancellationToken token)
+		public IDownloadTapiBridge CreateForFiles(CancellationToken token)
 		{
 			ITapiBridge tapiBridge = CreateDownloadTapiBridge(token);
 
-			return new DownloadTapiBridgeForFiles(tapiBridge, new NativeFilesProgressHandler(_downloadProgressManager, _logger), _messageHandler, _filesStatistics, _transferClientHandler,
-				_logger);
-		}
-
-		public IDownloadTapiBridge CreateForImages(CancellationToken token)
-		{
-			ITapiBridge tapiBridge = CreateDownloadTapiBridge(token);
-
-			return new DownloadTapiBridgeForFiles(tapiBridge, new ImageFilesProgressHandler(_downloadProgressManager, _logger), _messageHandler, _filesStatistics, _transferClientHandler,
+			return new DownloadTapiBridgeForFiles(tapiBridge, new FileDownloadProgressHandler(_downloadProgressManager, _logger), _messageHandler, _filesStatistics, _transferClientHandler,
 				_logger);
 		}
 

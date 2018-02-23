@@ -38,9 +38,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 			return _images.Where(x => !x.HasBeenDownloaded).Select(x => x.ExportRequest).ToList();
 		}
 
-		public Image GetByUniqueId(string id)
+		public Image GetByLineNumber(int lineNumber)
 		{
-			return _images.FirstOrDefault(x => !x.HasBeenDownloaded && x.ExportRequest.UniqueId == id);
+			return _images.FirstOrDefault(x => !x.HasBeenDownloaded && x.ExportRequest.Order == lineNumber);
 		}
 
 		public void Clear()

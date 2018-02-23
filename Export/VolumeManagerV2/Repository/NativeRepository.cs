@@ -33,9 +33,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 			return _natives.Where(x => !x.HasBeenDownloaded).Select(x => x.ExportRequest).ToList();
 		}
 
-		public Native GetByUniqueId(string id)
+		public Native GetByLineNumber(int lineNumber)
 		{
-			return _natives.FirstOrDefault(x => !x.HasBeenDownloaded && x.ExportRequest.UniqueId == id);
+			return _natives.FirstOrDefault(x => !x.HasBeenDownloaded && x.ExportRequest.Order == lineNumber);
 		}
 
 		public void Clear()

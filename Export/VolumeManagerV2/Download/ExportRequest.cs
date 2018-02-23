@@ -13,12 +13,21 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		public string UniqueId { get; set; }
 
+		public int Order { get; set; }
+
 		protected ExportRequest(int artifactId, string destinationLocation)
 		{
 			ArtifactId = artifactId;
 			DestinationLocation = destinationLocation;
 		}
 
-		public abstract TransferPath CreateTransferPath(int order);
+		public TransferPath CreateTransferPath(int order)
+		{
+			Order = order;
+			return CreateTransferPath();
+		}
+
+
+		protected abstract TransferPath CreateTransferPath();
 	}
 }

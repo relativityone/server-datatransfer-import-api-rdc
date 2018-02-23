@@ -377,7 +377,6 @@
     <Compile Include="Export\VolumeManagerV2\Statistics\FilesStatistics.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\IDownloadProgress.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\IDownloadProgressManager.cs" />
-    <Compile Include="Export\VolumeManagerV2\Statistics\ImageFilesProgressHandler.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\IMessagesHandler.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\IFileProcessingStatistics.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\IMessenger.cs" />

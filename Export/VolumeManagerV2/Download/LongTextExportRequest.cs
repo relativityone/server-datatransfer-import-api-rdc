@@ -41,7 +41,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			return request;
 		}
 
-		public override TransferPath CreateTransferPath(int order)
+		protected override TransferPath CreateTransferPath()
 		{
 			var httpTransferPathData = new HttpTransferPathData
 			{
@@ -53,7 +53,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			var fileInfo = new System.IO.FileInfo(DestinationLocation);
 			var transferPath = new TransferPath
 			{
-				Order = order,
+				Order = Order,
 				SourcePath = Guid.NewGuid().ToString(),
 				TargetPath = fileInfo.Directory?.FullName,
 				TargetFileName = fileInfo.Name
