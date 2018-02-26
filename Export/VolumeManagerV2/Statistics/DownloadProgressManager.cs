@@ -32,9 +32,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			_artifactsDownloaded = new ConcurrentDictionary<int, bool>();
 		}
 
-		public void MarkFileAsDownloaded(string id, int lineNumber)
+		public void MarkFileAsDownloaded(string fileName, int lineNumber)
 		{
-			_logger.LogVerbose("Marking {id} file as downloaded.", id);
+			_logger.LogVerbose("Marking {fileName} file as downloaded.", fileName);
 			Native native = _nativeRepository.GetByLineNumber(lineNumber);
 			if (native != null)
 			{
@@ -51,15 +51,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 				}
 				else
 				{
-					_logger.LogWarning("Image for {id} not found.", id);
+					_logger.LogWarning("Image for {fileName} not found.", fileName);
 				}
-				_logger.LogWarning("File for {id} not found.", id);
+				_logger.LogWarning("File for {fileName} not found.", fileName);
 			}
 		}
 
-		public void MarkLongTextAsDownloaded(string id, int lineNumber)
+		public void MarkLongTextAsDownloaded(string fileName, int lineNumber)
 		{
-			_logger.LogVerbose("Marking {id} long text as downloaded.", id);
+			_logger.LogVerbose("Marking {fileName} long text as downloaded.", fileName);
 			LongText longText = _longTextRepository.GetByLineNumber(lineNumber);
 			if (longText != null)
 			{
@@ -68,7 +68,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			}
 			else
 			{
-				_logger.LogWarning("Long text for {id} not found.", id);
+				_logger.LogWarning("Long text for {fileName} not found.", fileName);
 			}
 		}
 

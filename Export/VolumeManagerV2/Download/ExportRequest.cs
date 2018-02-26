@@ -11,7 +11,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		public string DestinationLocation { get; }
 
-		public string UniqueId { get; set; }
+		public string FileName { get; set; }
 
 		public int Order { get; set; }
 
