@@ -231,6 +231,7 @@
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\IExportTapiBridgeFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ITapiBridge.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\TapiBridgeWrapper.cs" />
+    <Compile Include="Export\VolumeManagerV2\IAsperaCredentialsService.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\IImage.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\ImageWrapper.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\EmptyImageLoadFile.cs" />

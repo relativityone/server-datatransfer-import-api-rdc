@@ -22,16 +22,19 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private readonly IErrorFileWriter _errorFileWriter;
 
 		private readonly IExportTapiBridgeFactory _exportTapiBridgeFactory;
+		private readonly IAsperaCredentialsService _credentialsService;
 
 		private readonly ILog _logger;
 
-		public Downloader(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, IExportTapiBridgeFactory exportTapiBridgeFactory,
-			IErrorFileWriter errorFileWriter, ILog logger)
+		public Downloader(NativeRepository nativeRepository, ImageRepository imageRepository,
+			LongTextRepository longTextRepository, IExportTapiBridgeFactory exportTapiBridgeFactory,
+			IAsperaCredentialsService credentialsService, IErrorFileWriter errorFileWriter, ILog logger)
 		{
 			_nativeRepository = nativeRepository;
 			_imageRepository = imageRepository;
 			_longTextRepository = longTextRepository;
 			_exportTapiBridgeFactory = exportTapiBridgeFactory;
+			_credentialsService = credentialsService;
 			_logger = logger;
 			_errorFileWriter = errorFileWriter;
 		}
@@ -87,7 +90,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				_logger.LogVerbose("Waiting for files transfer to finish.");
 				filesDownloader.WaitForTransferJob();
 				_logger.LogVerbose("Files transfer finished.");
-				
+
 				_logger.LogVerbose("Waiting for long text transfer to finish.");
 				longTextDownloader.WaitForTransferJob();
 				_logger.LogVerbose("Long text transfer finished.");
