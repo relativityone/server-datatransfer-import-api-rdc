@@ -113,7 +113,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			var image1 = new Image(artifact1)
 			{
 				HasBeenDownloaded = false,
-				ExportRequest = new NativeFileExportRequest(artifact1, "a.txt")
+				ExportRequest = new PhysicalFileExportRequest(artifact1, "a.txt")
 				{
 					FileName = "filename_1",
 					Order = 1
@@ -139,7 +139,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			var image3 = new Image(artifact3)
 			{
 				HasBeenDownloaded = false,
-				ExportRequest = new NativeFileExportRequest(artifact3, "a.txt")
+				ExportRequest = new PhysicalFileExportRequest(artifact3, "a.txt")
 				{
 					FileName = "filename_3",
 					Order = 3

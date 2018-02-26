@@ -9,9 +9,9 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 {
-	public class NativeFileExportRequestBuilderTests : FileExportRequestBuilderTests
+	public class NativeFileExportRequestBuilderTests : ExportRequestBuilderTests
 	{
-		protected override FileExportRequestBuilder CreateInstance(IFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, IExportFileValidator exportFileValidator,
+		protected override ExportRequestBuilder CreateInstance(IFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, IExportFileValidator exportFileValidator,
 			IFileProcessingStatistics fileProcessingStatistics)
 		{
 			return new NativeFileExportRequestBuilder(filePathProvider, fileNameProvider, exportFileValidator, fileProcessingStatistics, new NullLogger());
@@ -26,7 +26,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			};
 
 			//ACT
-			IList<FileExportRequest> requests = Instance.Create(artifact, CancellationToken.None);
+			IList<ExportRequest> requests = Instance.Create(artifact, CancellationToken.None);
 
 			//ASSERT
 			CollectionAssert.IsEmpty(requests);

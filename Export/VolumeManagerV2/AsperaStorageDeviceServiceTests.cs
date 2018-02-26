@@ -14,7 +14,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2
 	[TestFixture]
 	public class AsperaStorageDeviceServiceTests
 	{
-		[Test]
+		//[Test]
 		public void Connect()
 		{
 			try
@@ -53,7 +53,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2
 			}
 		}
 
-		[Test]
+		//[Test]
 		public void CreateUri()
 		{
 			AsperaCredentialsServiceMock results = new AsperaCredentialsServiceMock();
