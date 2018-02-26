@@ -5,6 +5,7 @@ using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2;
 using Moq;
 using NUnit.Framework;
 using Relativity.Logging;
@@ -23,6 +24,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 		private Mock<IErrorFileWriter> _errorFileWriter;
 		private Mock<IDownloadTapiBridge> _fileBridge;
 		private Mock<IDownloadTapiBridge> _textBridge;
+		private Mock<IAsperaCredentialsService> _credentialsService;
 
 		[SetUp]
 		public void SetUp()
@@ -33,13 +35,14 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 
 			_fileBridge = new Mock<IDownloadTapiBridge>();
 			_textBridge = new Mock<IDownloadTapiBridge>();
+			_credentialsService = new Mock<IAsperaCredentialsService>();
 
 			Mock<IExportTapiBridgeFactory> exportTapiBridgeFactory = new Mock<IExportTapiBridgeFactory>();
 			exportTapiBridgeFactory.Setup(x => x.CreateForFiles(CancellationToken.None)).Returns(_fileBridge.Object);
 			exportTapiBridgeFactory.Setup(x => x.CreateForLongText(CancellationToken.None)).Returns(_textBridge.Object);
 
 			_errorFileWriter = new Mock<IErrorFileWriter>();
-			_instance = new Downloader(_nativeRepository, _imageRepository, _longTextRepository, exportTapiBridgeFactory.Object, _errorFileWriter.Object, new NullLogger());
+			_instance = new Downloader(_nativeRepository, _imageRepository, _longTextRepository, exportTapiBridgeFactory.Object, _credentialsService.Object, _errorFileWriter.Object, new NullLogger());
 		}
 
 		[Test]

@@ -104,6 +104,7 @@
     <Compile Include="Export\Natives\Name\Factories\FileNamePartProviderContainerTest.cs" />
     <Compile Include="Export\Natives\Name\FieldFileNamePartProviderTests.cs" />
     <Compile Include="Export\Natives\Name\SeparatorFileNamePartProviderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\AsperaStorageDeviceServiceTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchCleanUpTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchExporterTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchInitializationTests.cs" />
