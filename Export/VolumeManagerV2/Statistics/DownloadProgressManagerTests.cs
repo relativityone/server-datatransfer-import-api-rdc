@@ -20,8 +20,6 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 
 		private Mock<IStatus> _status;
 
-		private static int _artifactId = 1;
-
 		[SetUp]
 		public void SetUp()
 		{
@@ -45,11 +43,11 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 			_status.Setup(x => x.UpdateDocumentExportedCount(It.IsAny<int>())).Callback((int x) => actualDocumentExportedCount = x);
 
 			//ACT
-			_instance.MarkFileAsDownloaded(native1.ExportRequest.UniqueId, native1.ExportRequest.Order);
+			_instance.MarkFileAsDownloaded(native1.ExportRequest.FileName, native1.ExportRequest.Order);
 
 			_instance.SaveState();
 
-			_instance.MarkFileAsDownloaded(native2.ExportRequest.UniqueId, native2.ExportRequest.Order);
+			_instance.MarkFileAsDownloaded(native2.ExportRequest.FileName, native2.ExportRequest.Order);
 
 			_instance.RestoreLastState();
 
@@ -83,36 +81,36 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 
 			//ACT
 
-			_instance.MarkFileAsDownloaded(image1_B.ExportRequest.UniqueId, image1_B.ExportRequest.Order);
+			_instance.MarkFileAsDownloaded(image1_B.ExportRequest.FileName, image1_B.ExportRequest.Order);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(0));
 			Assert.That(actualLine, Does.Contain(string.Empty));
 
 			// 1 downloaded (A)
-			_instance.MarkFileAsDownloaded(nativeWithoutImagesOrText_A.ExportRequest.UniqueId, nativeWithoutImagesOrText_A.ExportRequest.Order);
+			_instance.MarkFileAsDownloaded(nativeWithoutImagesOrText_A.ExportRequest.FileName, nativeWithoutImagesOrText_A.ExportRequest.Order);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(1));
 
-			_instance.MarkFileAsDownloaded(nativeWithText_C.ExportRequest.UniqueId, nativeWithText_C.ExportRequest.Order);
+			_instance.MarkFileAsDownloaded(nativeWithText_C.ExportRequest.FileName, nativeWithText_C.ExportRequest.Order);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(1));
 
 			// 2 downloaded (A, C)
-			_instance.MarkLongTextAsDownloaded(text_C.ExportRequest.UniqueId, text_C.ExportRequest.Order);
+			_instance.MarkLongTextAsDownloaded(text_C.ExportRequest.FileName, text_C.ExportRequest.Order);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(2));
 
-			_instance.MarkFileAsDownloaded(nativeWithTwoImages_B.ExportRequest.UniqueId, nativeWithTwoImages_B.ExportRequest.Order);
+			_instance.MarkFileAsDownloaded(nativeWithTwoImages_B.ExportRequest.FileName, nativeWithTwoImages_B.ExportRequest.Order);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(2));
 
 			// 3 downloaded (A, C, B)
-			_instance.MarkFileAsDownloaded(image2_B.ExportRequest.UniqueId, image2_B.ExportRequest.Order);
+			_instance.MarkFileAsDownloaded(image2_B.ExportRequest.FileName, image2_B.ExportRequest.Order);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
 
-			_instance.MarkLongTextAsDownloaded(text_D.ExportRequest.UniqueId, text_D.ExportRequest.Order);
+			_instance.MarkLongTextAsDownloaded(text_D.ExportRequest.FileName, text_D.ExportRequest.Order);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
 
-			_instance.MarkFileAsDownloaded(image_D.ExportRequest.UniqueId, image_D.ExportRequest.Order);
+			_instance.MarkFileAsDownloaded(image_D.ExportRequest.FileName, image_D.ExportRequest.Order);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
 
 			// 4 download (A, C, B, D)
-			_instance.MarkFileAsDownloaded(nativeWithImageAndText_D.ExportRequest.UniqueId, nativeWithImageAndText_D.ExportRequest.Order);
+			_instance.MarkFileAsDownloaded(nativeWithImageAndText_D.ExportRequest.FileName, nativeWithImageAndText_D.ExportRequest.Order);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(4));
 		}
 	}

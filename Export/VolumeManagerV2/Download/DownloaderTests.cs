@@ -72,10 +72,10 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			_fileBridge.Verify(x => x.Dispose(), Times.Once);
 			_textBridge.Verify(x => x.Dispose(), Times.Once);
 
-			Assert.That(native.ExportRequest.UniqueId, Is.EqualTo(nativeUniqueID));
-			Assert.That(image1.ExportRequest.UniqueId, Is.EqualTo(imageUniqueID));
-			Assert.That(image2.ExportRequest.UniqueId, Is.EqualTo(imageUniqueID));
-			Assert.That(longText.ExportRequest.UniqueId, Is.EqualTo(textUniqueID));
+			Assert.That(native.ExportRequest.FileName, Is.EqualTo(nativeUniqueID));
+			Assert.That(image1.ExportRequest.FileName, Is.EqualTo(imageUniqueID));
+			Assert.That(image2.ExportRequest.FileName, Is.EqualTo(imageUniqueID));
+			Assert.That(longText.ExportRequest.FileName, Is.EqualTo(textUniqueID));
 		}
 
 		[Test]

@@ -100,7 +100,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 				HasBeenDownloaded = false,
 				ExportRequest = new NativeFileExportRequest(artifact1, "")
 				{
-					UniqueId = "unique_1",
+					FileName = "filename_1",
 					Order = 1
 				}
 			};
@@ -124,7 +124,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 				HasBeenDownloaded = false,
 				ExportRequest = new NativeFileExportRequest(artifact3, "")
 				{
-					UniqueId = "unique_3",
+					FileName = "filename_3",
 					Order = 3
 				}
 			};

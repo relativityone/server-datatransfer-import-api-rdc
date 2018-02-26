@@ -22,7 +22,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			};
 			ExportRequest exportRequest = new NativeFileExportRequest(artifact, "location")
 			{
-				UniqueId = Guid.NewGuid().ToString(),
+				FileName = Guid.NewGuid().ToString(),
 				Order = _order++
 			};
 			Native native = new Native(artifact)
@@ -43,7 +43,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			};
 			ExportRequest exportRequest = new NativeFileExportRequest(artifact, "location")
 			{
-				UniqueId = Guid.NewGuid().ToString(),
+				FileName = Guid.NewGuid().ToString(),
 				Order = _order++
 			};
 			Image image = new Image(artifact)
@@ -67,7 +67,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 				ArtifactID = artifactId
 			};
 			LongTextExportRequest exportRequest = LongTextExportRequest.CreateRequestForLongText(artifact, 1, location);
-			exportRequest.UniqueId = Guid.NewGuid().ToString();
+			exportRequest.FileName = Guid.NewGuid().ToString();
 			exportRequest.Order = _order++;
 			LongText longText = LongText.CreateFromMissingValue(artifactId, 1, exportRequest, encoding);
 			longTextRepository.Add(longText.InList());

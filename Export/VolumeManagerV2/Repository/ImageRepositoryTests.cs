@@ -105,43 +105,43 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 
 		private List<Image> CreateDataSet()
 		{
-			ImageExportInfo artifact1 = new ImageExportInfo
+			var artifact1 = new ImageExportInfo
 			{
 				ArtifactID = 1,
 				BatesNumber = "bates_1"
 			};
-			Image image1 = new Image(artifact1)
+			var image1 = new Image(artifact1)
 			{
 				HasBeenDownloaded = false,
 				ExportRequest = new NativeFileExportRequest(artifact1, "a.txt")
 				{
-					UniqueId = "unique_1",
+					FileName = "filename_1",
 					Order = 1
 				}
 			};
 			image1.ExportRequest.CreateTransferPath(1);
 
-			ImageExportInfo artifact2 = new ImageExportInfo
+			var artifact2 = new ImageExportInfo
 			{
 				ArtifactID = 1,
 				BatesNumber = "bates_2"
 			};
-			Image image2 = new Image(artifact2)
+			var image2 = new Image(artifact2)
 			{
 				HasBeenDownloaded = true,
 			};
 
-			ImageExportInfo artifact3 = new ImageExportInfo
+			var artifact3 = new ImageExportInfo
 			{
 				ArtifactID = 2,
 				BatesNumber = "bates_3"
 			};
-			Image image3 = new Image(artifact3)
+			var image3 = new Image(artifact3)
 			{
 				HasBeenDownloaded = false,
 				ExportRequest = new NativeFileExportRequest(artifact3, "a.txt")
 				{
-					UniqueId = "unique_3",
+					FileName = "filename_3",
 					Order = 3
 				}
 			};
