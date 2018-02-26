@@ -10,5 +10,6 @@ namespace kCura.Relativity.ImportAPI
 	{
 		void CleanUpAfterJobWithSpoofing(string onBehalfOfUserToken);
 		ImportBulkArtifactJob NewNativeDocumentImportJob(string token);
+		ImportBulkArtifactJob NewArtifactImportJob(string token, int artifactTypeID);
 	}
 }
