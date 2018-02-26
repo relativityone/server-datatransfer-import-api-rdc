@@ -270,11 +270,10 @@
     <Compile Include="Export\VolumeManagerV2\Download\FieldFileExportRequestBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\FieldFileExportRequestFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\FileEncodingConverter.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\FileExportRequest.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\NativeFileExportRequest.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\PhysicalFileExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\Downloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\IDownloadTapiBridge.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\IFileExportRequestBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\IExportRequestBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\LongTextEncodingConverter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\LongTextEncodingConverterFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\LongTextExportRequest.cs" />

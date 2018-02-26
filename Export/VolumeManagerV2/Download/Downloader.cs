@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
@@ -75,21 +76,29 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private void DownloadRequests(CancellationToken cancellationToken)
 		{
-			IDownloadTapiBridge filesDownloader = null;
+			var filesDownloaders = new List<IDownloadTapiBridge>();
 			IDownloadTapiBridge longTextDownloader = null;
 			try
 			{
 				_lineNumber = 1;
-				_logger.LogVerbose("Creating TAPI bridge for native and image files export.");
-				filesDownloader = _exportTapiBridgeFactory.CreateForFiles(cancellationToken);
-				DownloadFiles(filesDownloader, cancellationToken);
+
+				foreach (List<ExportRequest> fileExportRequestsByFileShare in new List<List<ExportRequest>>(new [] { _fileExportRequests})) //.ToLookup(n=>n.CreateTransferPath()))
+				{
+					_logger.LogVerbose("Creating TAPI bridge for native and image files export.");
+					IDownloadTapiBridge filesDownloader = _exportTapiBridgeFactory.CreateForFiles(cancellationToken);
+					DownloadFiles(filesDownloader, fileExportRequestsByFileShare, cancellationToken);
+					filesDownloaders.Add(filesDownloader);
+				}
 
 				longTextDownloader = _exportTapiBridgeFactory.CreateForLongText(cancellationToken);
 				DownloadLongTexts(longTextDownloader, cancellationToken);
 
-				_logger.LogVerbose("Waiting for files transfer to finish.");
-				filesDownloader.WaitForTransferJob();
-				_logger.LogVerbose("Files transfer finished.");
+				foreach (IDownloadTapiBridge filesDownloader in filesDownloaders)
+				{
+					_logger.LogVerbose("Waiting for files transfer to finish.");
+					filesDownloader.WaitForTransferJob();
+					_logger.LogVerbose("Files transfer finished.");
+				}
 
 				_logger.LogVerbose("Waiting for long text transfer to finish.");
 				longTextDownloader.WaitForTransferJob();
@@ -127,14 +136,18 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			}
 			finally
 			{
-				try
+				foreach (IDownloadTapiBridge filesDownloader in filesDownloaders)
 				{
-					filesDownloader?.Dispose();
+					try
+					{
+						filesDownloader?.Dispose();
+					}
+					catch (Exception ex)
+					{
+						_logger.LogError(ex, "Failed to dispose DownloadTapiBridge for files.");
+					}
 				}
-				catch (Exception ex)
-				{
-					_logger.LogError(ex, "Failed to dispose DownloadTapiBridge for files.");
-				}
+				
 
 				try
 				{
@@ -147,11 +160,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			}
 		}
 
-		private void DownloadFiles(IDownloadTapiBridge filesDownloader, CancellationToken cancellationToken)
+		private void DownloadFiles(IDownloadTapiBridge filesDownloader, List<ExportRequest> fileExportRequests, CancellationToken cancellationToken)
 		{
-			_logger.LogVerbose("Adding {count} requests for files to TAPI bridge.", _fileExportRequests.Count);
+			_logger.LogVerbose("Adding {count} requests for files to TAPI bridge.", fileExportRequests.Count);
 
-			foreach (ExportRequest fileExportRequest in _fileExportRequests)
+			foreach (ExportRequest fileExportRequest in fileExportRequests)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{

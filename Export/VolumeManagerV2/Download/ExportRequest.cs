@@ -4,6 +4,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
 	public abstract class ExportRequest
 	{
+		public string SourceLocation { get; }
+
 		/// <summary>
 		///     For Web mode
 		/// </summary>
@@ -15,9 +17,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		public int Order { get; set; }
 
-		protected ExportRequest(int artifactId, string destinationLocation)
+		protected ExportRequest(int artifactId, string sourceLocation, string destinationLocation)
 		{
 			ArtifactId = artifactId;
+			SourceLocation = sourceLocation;
 			DestinationLocation = destinationLocation;
 		}
 
