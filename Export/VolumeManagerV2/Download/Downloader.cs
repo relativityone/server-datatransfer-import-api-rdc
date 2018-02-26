@@ -78,6 +78,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			try
 			{
 				_lineNumber = 1;
+				_logger.LogVerbose("Creating TAPI bridge for native and image files export.");
 				filesDownloader = _exportTapiBridgeFactory.CreateForFiles(cancellationToken);
 				DownloadNativeFiles(filesDownloader, cancellationToken);
 				DownloadImageFiles(filesDownloader, cancellationToken);
