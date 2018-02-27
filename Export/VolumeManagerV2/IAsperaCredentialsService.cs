@@ -13,6 +13,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 	public class AsperaCredentialsServiceMock : IAsperaCredentialsService
 	{
 
+		private readonly Credential _credential = new Credential();
+
 		private readonly Dictionary<Uri, Credential> _uris = new Dictionary<Uri, Credential>
 		{
 			{ new Uri("\\\\files1.il1ddftasmfs001.kcura.corp\\T002\\files\\"), new Credential() },
@@ -22,7 +24,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 
 		public Credential GetAsperaCredentialsForFileshare(Uri fileUri)
 		{
-			return _uris.First(uriCredential => uriCredential.Key.IsBaseOf(fileUri)).Value;
+			//return _uris.First(uriCredential => uriCredential.Key.IsBaseOf(fileUri)).Value;
+			return _credential;
 		}
 	}
 }
