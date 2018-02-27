@@ -28,9 +28,9 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.TapiHelpers
 		public void ItShouldStartConverterAfterAddingFirstTransferPath()
 		{
 			//ACT
-			Instance.AddPath(new TransferPath());
-			Instance.AddPath(new TransferPath());
-			Instance.AddPath(new TransferPath());
+			Instance.QueueDownload(new TransferPath());
+			Instance.QueueDownload(new TransferPath());
+			Instance.QueueDownload(new TransferPath());
 
 			//ASSERT
 			_longTextEncodingConverter.Verify(x => x.StartListening(TapiBridge.Object), Times.Once);
@@ -42,7 +42,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.TapiHelpers
 			TapiBridge.Setup(x => x.WaitForTransferJob()).Throws<Exception>();
 
 			//ACT
-			Instance.AddPath(new TransferPath());
+			Instance.QueueDownload(new TransferPath());
 			Assert.Throws<Exception>(() => Instance.WaitForTransferJob());
 
 			//ASSERT
@@ -53,7 +53,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.TapiHelpers
 		public void ItShouldWaitForConversionToComplete()
 		{
 			//ACT
-			Instance.AddPath(new TransferPath());
+			Instance.QueueDownload(new TransferPath());
 			Instance.WaitForTransferJob();
 
 			//ASSERT

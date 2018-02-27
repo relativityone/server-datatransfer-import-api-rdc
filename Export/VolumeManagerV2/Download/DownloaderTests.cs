@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
@@ -24,7 +25,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 		private Mock<IErrorFileWriter> _errorFileWriter;
 		private Mock<IDownloadTapiBridge> _fileBridge;
 		private Mock<IDownloadTapiBridge> _textBridge;
-		private Mock<IAsperaCredentialsService> _credentialsService;
+		private Mock<PhysicalFilesDownloader> _physicalFilesDownloader;
 
 		[SetUp]
 		public void SetUp()
@@ -35,18 +36,20 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 
 			_fileBridge = new Mock<IDownloadTapiBridge>();
 			_textBridge = new Mock<IDownloadTapiBridge>();
-			_credentialsService = new Mock<IAsperaCredentialsService>();
+			_physicalFilesDownloader = new Mock<PhysicalFilesDownloader>();
 
 			Mock<IExportTapiBridgeFactory> exportTapiBridgeFactory = new Mock<IExportTapiBridgeFactory>();
-			exportTapiBridgeFactory.Setup(x => x.CreateForFiles(CancellationToken.None)).Returns(_fileBridge.Object);
+			exportTapiBridgeFactory.Setup(x => x.CreateForFiles(new Credential(), CancellationToken.None)).Returns(_fileBridge.Object);
 			exportTapiBridgeFactory.Setup(x => x.CreateForLongText(CancellationToken.None)).Returns(_textBridge.Object);
 
 			_errorFileWriter = new Mock<IErrorFileWriter>();
-			_instance = new Downloader(_nativeRepository, _imageRepository, _longTextRepository, exportTapiBridgeFactory.Object, _credentialsService.Object, _errorFileWriter.Object, new NullLogger());
+			_instance = new Downloader(_nativeRepository, _imageRepository, _longTextRepository, _physicalFilesDownloader.Object,
+				new SafeIncrement(), exportTapiBridgeFactory.Object, _errorFileWriter.Object,
+				new NullLogger());
 		}
 
 		[Test]
-		public void GoldWorkflow()
+		public async Task GoldWorkflow()
 		{
 			Native native = ModelFactory.GetNative(_nativeRepository);
 			Image image1 = ModelFactory.GetImage(native.Artifact.ArtifactID, _imageRepository);
@@ -57,17 +60,17 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			const string imageUniqueID = "image_unique_id";
 			const string textUniqueID = "text_unique_id";
 
-			_fileBridge.Setup(x => x.AddPath(It.Is<TransferPath>(y => y.Order == native.ExportRequest.Order))).Returns(nativeUniqueID);
-			_fileBridge.Setup(x => x.AddPath(It.Is<TransferPath>(y => y.Order == image1.ExportRequest.Order))).Returns(imageUniqueID);
-			_fileBridge.Setup(x => x.AddPath(It.Is<TransferPath>(y => y.Order == image2.ExportRequest.Order))).Returns(imageUniqueID);
-			_textBridge.Setup(x => x.AddPath(It.IsAny<TransferPath>())).Returns(textUniqueID);
+			_fileBridge.Setup(x => x.QueueDownload(It.Is<TransferPath>(y => y.Order == native.ExportRequest.Order))).Returns(nativeUniqueID);
+			_fileBridge.Setup(x => x.QueueDownload(It.Is<TransferPath>(y => y.Order == image1.ExportRequest.Order))).Returns(imageUniqueID);
+			_fileBridge.Setup(x => x.QueueDownload(It.Is<TransferPath>(y => y.Order == image2.ExportRequest.Order))).Returns(imageUniqueID);
+			_textBridge.Setup(x => x.QueueDownload(It.IsAny<TransferPath>())).Returns(textUniqueID);
 
 			//ACT
 			_instance.DownloadFilesForArtifacts(CancellationToken.None);
 
 			//ASSERT
-			_fileBridge.Verify(x => x.AddPath(It.IsAny<TransferPath>()), Times.Exactly(3));
-			_textBridge.Verify(x => x.AddPath(It.IsAny<TransferPath>()), Times.Once);
+			_fileBridge.Verify(x => x.QueueDownload(It.IsAny<TransferPath>()), Times.Exactly(3));
+			_textBridge.Verify(x => x.QueueDownload(It.IsAny<TransferPath>()), Times.Once);
 
 			_fileBridge.Verify(x => x.WaitForTransferJob(), Times.Once);
 			_textBridge.Verify(x => x.WaitForTransferJob(), Times.Once);
