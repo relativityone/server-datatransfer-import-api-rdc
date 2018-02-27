@@ -19,7 +19,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private readonly NativeRepository _nativeRepository;
 		private readonly ImageRepository _imageRepository;
 		private readonly LongTextRepository _longTextRepository;
-		private readonly PhysicalFilesDownloader _physicalFilesDownloader;
+		private readonly IPhysicalFilesDownloader _physicalFilesDownloader;
 		private readonly SafeIncrement _safeIncrement;
 		private readonly IErrorFileWriter _errorFileWriter;
 
@@ -28,7 +28,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private readonly ILog _logger;
 
 		public Downloader(NativeRepository nativeRepository, ImageRepository imageRepository,
-			LongTextRepository longTextRepository, PhysicalFilesDownloader physicalFilesDownloader, SafeIncrement safeIncrement, 
+			LongTextRepository longTextRepository, IPhysicalFilesDownloader physicalFilesDownloader, SafeIncrement safeIncrement, 
 			IExportTapiBridgeFactory exportTapiBridgeFactory, IErrorFileWriter errorFileWriter, ILog logger)
 		{
 			_nativeRepository = nativeRepository;

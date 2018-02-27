@@ -10,7 +10,7 @@ using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public class PhysicalFilesDownloader
+	public class PhysicalFilesDownloader : IPhysicalFilesDownloader
 	{
 		private CancellationToken _parentCancellationToken;
 		private const int _NUMBER_OF_TASKS = 2;
