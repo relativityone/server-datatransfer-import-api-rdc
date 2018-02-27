@@ -559,7 +559,8 @@ namespace kCura.WinEDDS.TApi
 					PreserveDates = false,
 					TargetDataRateMbps = this.parameters.TargetDataRateMbps,
 					TransferLogDirectory = this.parameters.TransferLogDirectory,
-					ValidateSourcePaths = ValidateSourcePaths
+					ValidateSourcePaths = ValidateSourcePaths,
+					//TODO AsperaCredentials = this.parameters.AsperaCredentials
 				};
 			return configuration;
 		}

@@ -7,6 +7,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using Relativity.Transfer;
+
 namespace kCura.WinEDDS.TApi
 {
     using System;
@@ -116,6 +118,18 @@ namespace kCura.WinEDDS.TApi
             get;
             set;
         }
+
+		/// <summary>
+		/// Gets or sets the Aspera credentials
+		/// </summary>
+		/// <value>
+		/// The <see cref="Credential"/> instance.
+		/// </value>
+		public Credential AsperaCredentials
+	    {
+		    get;
+		    set;
+	    }
 
         /// <summary>
         /// Gets or sets the file share UNC path. This value should come directly from the Workspace.
