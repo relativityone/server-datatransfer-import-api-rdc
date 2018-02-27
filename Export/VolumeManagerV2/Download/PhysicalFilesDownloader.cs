@@ -38,35 +38,34 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				_cancellationTokenSource.Cancel();
 			});
 
-			ConcurrentQueue<ExportRequestWithCredentials> queue = CreateTransferQueue(requests);
+			ConcurrentQueue<ExportRequestsWithCredentials> queue = CreateTransferQueue(requests);
 			_logger.LogVerbose("Adding {filesToExportCount} requests for files through {tapiBridgeCount} TAPI bridges.", requests.Count, queue.Count);
 			
 			IEnumerable<Task> tasks = Enumerable.Repeat(Task.Run(() => CreateJobTask(queue, _cancellationTokenSource.Token), _cancellationTokenSource.Token), _NUMBER_OF_TASKS);
 			await AwaitAllTasks(tasks);
 		}
 
-		private ConcurrentQueue<ExportRequestWithCredentials> CreateTransferQueue(List<ExportRequest> requests)
+		private ConcurrentQueue<ExportRequestsWithCredentials> CreateTransferQueue(List<ExportRequest> requests)
 		{
 			ILookup<Credential, ExportRequest> result = requests.ToLookup(
 				r => _credentialsService.GetAsperaCredentialsForFileshare(new Uri(r.SourceLocation)));
 
-			ConcurrentQueue<ExportRequestWithCredentials> queue =
-				new ConcurrentQueue<ExportRequestWithCredentials>(result.Select(r => new ExportRequestWithCredentials(r.Key, r)));
+			var queue = new ConcurrentQueue<ExportRequestsWithCredentials>(result.Select(r => new ExportRequestsWithCredentials(r.Key, r)));
 			return queue;
 		}
 
 		private async Task AwaitAllTasks(IEnumerable<Task> tasks)
 		{
-			foreach (var task in tasks)
+			foreach (Task task in tasks)
 			{
 				await task;
 			}
 		}
 
-		private void CreateJobTask(ConcurrentQueue<ExportRequestWithCredentials> queue, CancellationToken cancellationToken)
+		private void CreateJobTask(ConcurrentQueue<ExportRequestsWithCredentials> queue, CancellationToken cancellationToken)
 		{
 			IDownloadTapiBridge bridge = null;
-			ExportRequestWithCredentials exportRequestWithCredentials;
+			ExportRequestsWithCredentials exportRequestWithCredentials;
 
 			while (queue.TryDequeue(out exportRequestWithCredentials))
 			{
