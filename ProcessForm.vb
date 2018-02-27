@@ -547,6 +547,11 @@ Namespace kCura.Windows.Process
 					totalRecords = CType(evt.TotalRecords, Int32)
 					totalRecordsProcessed = CType(evt.TotalRecordsProcessed, Int32)
 				End If
+
+				if totalRecordsProcessed > totalRecords Or totalRecordsProcessed < 0 Then
+					Return
+				End If
+
 				_progressBar.Minimum = 0
 				_progressBar.Maximum = totalRecords
 				_progressBar.Value = totalRecordsProcessed
