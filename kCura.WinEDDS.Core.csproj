@@ -228,8 +228,11 @@
     <Compile Include="Export\VolumeManagerV2\Download\IExportFileValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\IFileEncodingConverter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\ILongTextEncodingConverter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ExportRequestWithCredentials.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\PhysicalFilesDownloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\IExportTapiBridgeFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ITapiBridge.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\SafeIncrement.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\TapiBridgeWrapper.cs" />
     <Compile Include="Export\VolumeManagerV2\IAsperaCredentialsService.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\IImage.cs" />
