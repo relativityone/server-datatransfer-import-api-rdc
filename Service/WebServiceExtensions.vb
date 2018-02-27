@@ -12,7 +12,7 @@ Namespace kCura.WinEDDS.Service
                 Catch ex As System.Exception
                     LogFailedServiceCall(ex, tries, retryOnFailure)
 
-                    If retryOnFailure AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+                    If retryOnFailure AndAlso TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
                         LogAttemptReLogin(ex)
 
                         Try
@@ -21,6 +21,7 @@ Namespace kCura.WinEDDS.Service
                             LogFailedAttemptRelogin(loginEx)
                         End Try
                     Else
+                        LogFailedExceptionCheck(ex)
                         Throw
                     End If
                 End Try
@@ -39,7 +40,7 @@ Namespace kCura.WinEDDS.Service
                 Catch ex As System.Exception
                     LogFailedServiceCall(ex, tries, retryOnFailure)
 
-                    If retryOnFailure AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+                    If retryOnFailure AndAlso TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
                         LogAttemptReLogin(ex)
 
                         Try
@@ -48,6 +49,7 @@ Namespace kCura.WinEDDS.Service
                             LogFailedAttemptRelogin(loginEx)
                         End Try
                     Else
+                        LogFailedExceptionCheck(ex)
                         Throw
                     End If
                 End Try
@@ -76,6 +78,10 @@ Namespace kCura.WinEDDS.Service
 
         Private Sub LogAttemptReLogin(exception As Exception)
             _logger.LogError(exception, "Attempting re-login")
+        End Sub
+
+        Private Sub LogFailedExceptionCheck(exception As Exception)
+            _logger.LogError(exception, "Will not attempt to retry")
         End Sub
 
         Private Sub LogFailedAttemptReLogin(exception As Exception)
