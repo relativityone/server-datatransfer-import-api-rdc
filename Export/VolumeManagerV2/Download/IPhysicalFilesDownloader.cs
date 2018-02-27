@@ -6,6 +6,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
 	public interface IPhysicalFilesDownloader
 	{
-		Task DownloadFilesAsync(List<ExportRequest> requests, CancellationToken cancellationToken);
+		Task DownloadFilesAsync(List<ExportRequest> requests, CancellationToken batchCancellationToken);
 	}
 }

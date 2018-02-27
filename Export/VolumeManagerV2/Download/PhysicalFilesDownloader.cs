@@ -12,9 +12,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
 	public class PhysicalFilesDownloader : IPhysicalFilesDownloader
 	{
-		private CancellationToken _parentCancellationToken;
 		private const int _NUMBER_OF_TASKS = 2;
-		private readonly CancellationTokenSource _cancellationTokenSource;
 
 		private readonly IAsperaCredentialsService _credentialsService;
 		private readonly IExportTapiBridgeFactory _exportTapiBridgeFactory;
@@ -27,22 +25,28 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_exportTapiBridgeFactory = exportTapiBridgeFactory;
 			_safeIncrement = safeIncrement;
 			_logger = logger;
-			_cancellationTokenSource = new CancellationTokenSource();
 		}
 
-		public async Task DownloadFilesAsync(List<ExportRequest> requests, CancellationToken cancellationToken)
+		public async Task DownloadFilesAsync(List<ExportRequest> requests, CancellationToken batchCancellationToken)
 		{
-			_parentCancellationToken = cancellationToken;
-			_parentCancellationToken.Register(() =>
-			{
-				_cancellationTokenSource.Cancel();
-			});
+			var taskCancellationTokenSource = Create(batchCancellationToken);
 
 			ConcurrentQueue<ExportRequestsWithCredentials> queue = CreateTransferQueue(requests);
 			_logger.LogVerbose("Adding {filesToExportCount} requests for files through {tapiBridgeCount} TAPI bridges.", requests.Count, queue.Count);
-			
-			IEnumerable<Task> tasks = Enumerable.Repeat(Task.Run(() => CreateJobTask(queue, _cancellationTokenSource.Token), _cancellationTokenSource.Token), _NUMBER_OF_TASKS);
+
+			IEnumerable<Task> tasks =
+				Enumerable.Repeat(
+					Task.Run(() => CreateJobTask(queue, taskCancellationTokenSource, batchCancellationToken), batchCancellationToken),
+					_NUMBER_OF_TASKS);
 			await AwaitAllTasks(tasks);
+		}
+
+		private static CancellationTokenSource Create(CancellationToken batchCancellationToken)
+		{
+			var taskCancellationTokenSource = new CancellationTokenSource();
+
+			batchCancellationToken.Register(() => taskCancellationTokenSource.Cancel());
+			return taskCancellationTokenSource;
 		}
 
 		private ConcurrentQueue<ExportRequestsWithCredentials> CreateTransferQueue(List<ExportRequest> requests)
@@ -62,7 +66,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			}
 		}
 
-		private void CreateJobTask(ConcurrentQueue<ExportRequestsWithCredentials> queue, CancellationToken cancellationToken)
+		private void CreateJobTask(ConcurrentQueue<ExportRequestsWithCredentials> queue, CancellationTokenSource taskCancellationTokenSource, CancellationToken batchCancellationToken)
 		{
 			IDownloadTapiBridge bridge = null;
 			ExportRequestsWithCredentials exportRequestWithCredentials;
@@ -71,20 +75,20 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			{
 				try
 				{
-					bridge = _exportTapiBridgeFactory.CreateForFiles(exportRequestWithCredentials.Credentials, cancellationToken);
-					DownloadFiles(bridge, exportRequestWithCredentials.Requests, cancellationToken);
+					bridge = _exportTapiBridgeFactory.CreateForFiles(exportRequestWithCredentials.Credentials, taskCancellationTokenSource.Token);
+					DownloadFiles(bridge, exportRequestWithCredentials.Requests, taskCancellationTokenSource.Token);
 					bridge.WaitForTransferJob();
 				}
 				catch (TaskCanceledException)
 				{
-					if (!_parentCancellationToken.IsCancellationRequested)
+					if (!batchCancellationToken.IsCancellationRequested)
 					{
 						throw;
 					}
 				}
 				catch (Exception)
 				{
-					_cancellationTokenSource.Cancel();
+					taskCancellationTokenSource.Cancel();
 					throw;
 				}
 				finally
