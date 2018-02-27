@@ -9,14 +9,14 @@ Namespace kCura.Windows.Process
 		Public Sub New()
 			MyBase.New()
 
-            'This call is required by the Windows Form Designer.
-            InitializeComponent()
+			'This call is required by the Windows Form Designer.
+			InitializeComponent()
 
-            'Add any initialization after the InitializeComponent() call
-        End Sub
+			'Add any initialization after the InitializeComponent() call
+		End Sub
 
-        'Form overrides dispose to clean up the component list.
-        Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
+		'Form overrides dispose to clean up the component list.
+		Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
 			If disposing Then
 				If Not (components Is Nothing) Then
 					components.Dispose()
@@ -25,13 +25,13 @@ Namespace kCura.Windows.Process
 			MyBase.Dispose(disposing)
 		End Sub
 
-        'Required by the Windows Form Designer
-        Private components As System.ComponentModel.IContainer
+		'Required by the Windows Form Designer
+		Private components As System.ComponentModel.IContainer
 
-        'NOTE: The following procedure is required by the Windows Form Designer
-        'It can be modified using the Windows Form Designer.  
-        'Do not modify it using the code editor.
-        Friend WithEvents _showDetailButton As System.Windows.Forms.Button
+		'NOTE: The following procedure is required by the Windows Form Designer
+		'It can be modified using the Windows Form Designer.  
+		'Do not modify it using the code editor.
+		Friend WithEvents _showDetailButton As System.Windows.Forms.Button
 		Friend WithEvents _progressBar As System.Windows.Forms.ProgressBar
 		Friend WithEvents _currentRecordLabel As System.Windows.Forms.Label
 		Friend WithEvents _overalProgressLabel As System.Windows.Forms.Label
@@ -92,53 +92,53 @@ Namespace kCura.Windows.Process
 			Me.ErrorReportTab.SuspendLayout()
 			CType(Me._reportDataGrid, System.ComponentModel.ISupportInitialize).BeginInit()
 			Me.SuspendLayout()
-            '
-            '_stopImportButton
-            '
-            Me._stopImportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			'
+			'_stopImportButton
+			'
+			Me._stopImportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._stopImportButton.Location = New System.Drawing.Point(384, 56)
 			Me._stopImportButton.Name = "_stopImportButton"
 			Me._stopImportButton.Size = New System.Drawing.Size(84, 23)
 			Me._stopImportButton.TabIndex = 0
 			Me._stopImportButton.Text = "Stop"
-            '
-            '_showDetailButton
-            '
-            Me._showDetailButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			'
+			'_showDetailButton
+			'
+			Me._showDetailButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._showDetailButton.Location = New System.Drawing.Point(384, 80)
 			Me._showDetailButton.Name = "_showDetailButton"
 			Me._showDetailButton.Size = New System.Drawing.Size(84, 23)
 			Me._showDetailButton.TabIndex = 1
 			Me._showDetailButton.Text = "Hide Detail"
-            '
-            '_progressBar
-            '
-            Me._progressBar.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+			'
+			'_progressBar
+			'
+			Me._progressBar.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
 			   Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._progressBar.Location = New System.Drawing.Point(4, 56)
 			Me._progressBar.Name = "_progressBar"
 			Me._progressBar.Size = New System.Drawing.Size(372, 23)
 			Me._progressBar.TabIndex = 2
-            '
-            '_currentRecordLabel
-            '
-            Me._currentRecordLabel.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+			'
+			'_currentRecordLabel
+			'
+			Me._currentRecordLabel.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
 			   Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._currentRecordLabel.Location = New System.Drawing.Point(4, 4)
 			Me._currentRecordLabel.Name = "_currentRecordLabel"
 			Me._currentRecordLabel.Size = New System.Drawing.Size(460, 16)
 			Me._currentRecordLabel.TabIndex = 4
-            '
-            '_overalProgressLabel
-            '
-            Me._overalProgressLabel.Location = New System.Drawing.Point(4, 84)
+			'
+			'_overalProgressLabel
+			'
+			Me._overalProgressLabel.Location = New System.Drawing.Point(4, 84)
 			Me._overalProgressLabel.Name = "_overalProgressLabel"
 			Me._overalProgressLabel.Size = New System.Drawing.Size(368, 16)
 			Me._overalProgressLabel.TabIndex = 5
-            '
-            '_saveOutputButton
-            '
-            Me._saveOutputButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			'
+			'_saveOutputButton
+			'
+			Me._saveOutputButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._saveOutputButton.Enabled = False
 			Me._saveOutputButton.Location = New System.Drawing.Point(360, 332)
 			Me._saveOutputButton.Name = "_saveOutputButton"
@@ -146,15 +146,15 @@ Namespace kCura.Windows.Process
 			Me._saveOutputButton.TabIndex = 10
 			Me._saveOutputButton.Text = "Save Progress Log"
 			Me._saveOutputButton.Visible = False
-            '
-            '_saveFileDialog
-            '
-            Me._saveFileDialog.DefaultExt = "log"
+			'
+			'_saveFileDialog
+			'
+			Me._saveFileDialog.DefaultExt = "log"
 			Me._saveFileDialog.Filter = "XML Log Files (*.log)|*.log"
-            '
-            '_Tabs
-            '
-            Me._Tabs.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+			'
+			'_Tabs
+			'
+			Me._Tabs.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
 			   Or System.Windows.Forms.AnchorStyles.Left) _
 			   Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._Tabs.Controls.Add(Me.SummaryTab)
@@ -167,19 +167,19 @@ Namespace kCura.Windows.Process
 			Me._Tabs.SelectedIndex = 0
 			Me._Tabs.Size = New System.Drawing.Size(464, 228)
 			Me._Tabs.TabIndex = 11
-            '
-            'SummaryTab
-            '
-            Me.SummaryTab.Controls.Add(Me._summaryOutput)
+			'
+			'SummaryTab
+			'
+			Me.SummaryTab.Controls.Add(Me._summaryOutput)
 			Me.SummaryTab.Location = New System.Drawing.Point(4, 22)
 			Me.SummaryTab.Name = "SummaryTab"
 			Me.SummaryTab.Size = New System.Drawing.Size(456, 202)
 			Me.SummaryTab.TabIndex = 1
 			Me.SummaryTab.Text = "Summary"
-            '
-            '_summaryOutput
-            '
-            Me._summaryOutput.Dock = System.Windows.Forms.DockStyle.Fill
+			'
+			'_summaryOutput
+			'
+			Me._summaryOutput.Dock = System.Windows.Forms.DockStyle.Fill
 			Me._summaryOutput.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
 			Me._summaryOutput.Location = New System.Drawing.Point(0, 0)
 			Me._summaryOutput.Multiline = True
@@ -190,64 +190,64 @@ Namespace kCura.Windows.Process
 			Me._summaryOutput.Size = New System.Drawing.Size(456, 202)
 			Me._summaryOutput.TabIndex = 12
 			Me._summaryOutput.Text = ""
-            '
-            'ErrorsTab
-            '
-            Me.ErrorsTab.Controls.Add(Me._errorsOutputTextBox)
+			'
+			'ErrorsTab
+			'
+			Me.ErrorsTab.Controls.Add(Me._errorsOutputTextBox)
 			Me.ErrorsTab.Location = New System.Drawing.Point(4, 22)
 			Me.ErrorsTab.Name = "ErrorsTab"
 			Me.ErrorsTab.Size = New System.Drawing.Size(456, 202)
 			Me.ErrorsTab.TabIndex = 2
 			Me.ErrorsTab.Text = "Errors"
-            '
-            '_errorsOutputTextBox
-            '
-            Me._errorsOutputTextBox.Dock = System.Windows.Forms.DockStyle.Fill
+			'
+			'_errorsOutputTextBox
+			'
+			Me._errorsOutputTextBox.Dock = System.Windows.Forms.DockStyle.Fill
 			Me._errorsOutputTextBox.InSafeMode = False
 			Me._errorsOutputTextBox.Location = New System.Drawing.Point(0, 0)
 			Me._errorsOutputTextBox.Name = "_errorsOutputTextBox"
 			Me._errorsOutputTextBox.Size = New System.Drawing.Size(456, 202)
 			Me._errorsOutputTextBox.TabIndex = 11
-            '
-            'ProgressTab
-            '
-            Me.ProgressTab.Controls.Add(Me._outputTextBox)
+			'
+			'ProgressTab
+			'
+			Me.ProgressTab.Controls.Add(Me._outputTextBox)
 			Me.ProgressTab.Location = New System.Drawing.Point(4, 22)
 			Me.ProgressTab.Name = "ProgressTab"
 			Me.ProgressTab.Size = New System.Drawing.Size(456, 202)
 			Me.ProgressTab.TabIndex = 0
 			Me.ProgressTab.Text = "Progress"
-            '
-            '_outputTextBox
-            '
-            Me._outputTextBox.Dock = System.Windows.Forms.DockStyle.Fill
+			'
+			'_outputTextBox
+			'
+			Me._outputTextBox.Dock = System.Windows.Forms.DockStyle.Fill
 			Me._outputTextBox.InSafeMode = False
 			Me._outputTextBox.Location = New System.Drawing.Point(0, 0)
 			Me._outputTextBox.Name = "_outputTextBox"
 			Me._outputTextBox.Size = New System.Drawing.Size(456, 202)
 			Me._outputTextBox.TabIndex = 10
-            '
-            'WarningsTab
-            '
-            Me.WarningsTab.Controls.Add(Me._warningsOutputTextBox)
+			'
+			'WarningsTab
+			'
+			Me.WarningsTab.Controls.Add(Me._warningsOutputTextBox)
 			Me.WarningsTab.Location = New System.Drawing.Point(4, 22)
 			Me.WarningsTab.Name = "WarningsTab"
 			Me.WarningsTab.Size = New System.Drawing.Size(456, 202)
 			Me.WarningsTab.TabIndex = 3
 			Me.WarningsTab.Text = "Warnings"
-            '
-            '_warningsOutputTextBox
-            '
-            Me._warningsOutputTextBox.Dock = System.Windows.Forms.DockStyle.Fill
+			'
+			'_warningsOutputTextBox
+			'
+			Me._warningsOutputTextBox.Dock = System.Windows.Forms.DockStyle.Fill
 			Me._warningsOutputTextBox.InSafeMode = False
 			Me._warningsOutputTextBox.Location = New System.Drawing.Point(0, 0)
 			Me._warningsOutputTextBox.Name = "_warningsOutputTextBox"
 			Me._warningsOutputTextBox.Size = New System.Drawing.Size(456, 202)
 			Me._warningsOutputTextBox.TabIndex = 11
-            '
-            'ErrorReportTab
-            '
-            Me.ErrorReportTab.Controls.Add(Me._exportErrorFileButton)
+			'
+			'ErrorReportTab
+			'
+			Me.ErrorReportTab.Controls.Add(Me._exportErrorFileButton)
 			Me.ErrorReportTab.Controls.Add(Me._exportErrorReportBtn)
 			Me.ErrorReportTab.Controls.Add(Me._reportDataGrid)
 			Me.ErrorReportTab.Location = New System.Drawing.Point(4, 22)
@@ -255,26 +255,26 @@ Namespace kCura.Windows.Process
 			Me.ErrorReportTab.Size = New System.Drawing.Size(456, 202)
 			Me.ErrorReportTab.TabIndex = 4
 			Me.ErrorReportTab.Text = "Report"
-            '
-            '_exportErrorFileButton
-            '
-            Me._exportErrorFileButton.Location = New System.Drawing.Point(134, 2)
+			'
+			'_exportErrorFileButton
+			'
+			Me._exportErrorFileButton.Location = New System.Drawing.Point(134, 2)
 			Me._exportErrorFileButton.Name = "_exportErrorFileButton"
 			Me._exportErrorFileButton.Size = New System.Drawing.Size(114, 20)
 			Me._exportErrorFileButton.TabIndex = 3
 			Me._exportErrorFileButton.Text = "Export Error File"
-            '
-            '_exportErrorReportBtn
-            '
-            Me._exportErrorReportBtn.Location = New System.Drawing.Point(0, 2)
+			'
+			'_exportErrorReportBtn
+			'
+			Me._exportErrorReportBtn.Location = New System.Drawing.Point(0, 2)
 			Me._exportErrorReportBtn.Name = "_exportErrorReportBtn"
 			Me._exportErrorReportBtn.Size = New System.Drawing.Size(132, 20)
 			Me._exportErrorReportBtn.TabIndex = 2
 			Me._exportErrorReportBtn.Text = "Export Error Report"
-            '
-            '_reportDataGrid
-            '
-            Me._reportDataGrid.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+			'
+			'_reportDataGrid
+			'
+			Me._reportDataGrid.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
 			   Or System.Windows.Forms.AnchorStyles.Left) _
 			   Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._reportDataGrid.DataMember = ""
@@ -283,32 +283,32 @@ Namespace kCura.Windows.Process
 			Me._reportDataGrid.Name = "_reportDataGrid"
 			Me._reportDataGrid.Size = New System.Drawing.Size(480, 176)
 			Me._reportDataGrid.TabIndex = 0
-            '
-            '_currentMessageStatus
-            '
-            Me._currentMessageStatus.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+			'
+			'_currentMessageStatus
+			'
+			Me._currentMessageStatus.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
 			   Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._currentMessageStatus.Location = New System.Drawing.Point(4, 24)
 			Me._currentMessageStatus.Name = "_currentMessageStatus"
 			Me._currentMessageStatus.Size = New System.Drawing.Size(460, 28)
 			Me._currentMessageStatus.TabIndex = 12
-            '
-            '_statusBar
-            '
-            Me._statusBar.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+			'
+			'_statusBar
+			'
+			Me._statusBar.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
 			Me._statusBar.Location = New System.Drawing.Point(8, 336)
 			Me._statusBar.Name = "_statusBar"
 			Me._statusBar.Size = New System.Drawing.Size(352, 20)
 			Me._statusBar.TabIndex = 13
 			Me._statusBar.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-            '
-            '_exportErrorsDialog
-            '
-            Me._exportErrorsDialog.Filter = "CSV Files|*.csv|All Files|*.*"
-            '
-            'ProgressForm
-            '
-            Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
+			'
+			'_exportErrorsDialog
+			'
+			Me._exportErrorsDialog.Filter = "CSV Files|*.csv|All Files|*.*"
+			'
+			'ProgressForm
+			'
+			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 			Me.ClientSize = New System.Drawing.Size(468, 357)
 			Me.Controls.Add(Me._statusBar)
 			Me.Controls.Add(Me._currentMessageStatus)
@@ -423,8 +423,8 @@ Namespace kCura.Windows.Process
 					_stopImportButton.Enabled = False
 					_currentRecordLabel.Text = "Process halting"
 					_hasClickedStop = True
-                Else
-                    Me.Close()
+				Else
+					Me.Close()
 				End If
 			Catch
 			End Try
@@ -469,8 +469,8 @@ Namespace kCura.Windows.Process
 
 		Private Sub ImportProgressForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			CheckForIllegalCrossThreadCalls = False
-            'Me.HideDetail()
-        End Sub
+			'Me.HideDetail()
+		End Sub
 
 		Private Sub _saveOutputButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _saveOutputButton.Click
 			_saveFileDialog.ShowDialog()
@@ -536,7 +536,7 @@ Namespace kCura.Windows.Process
 		End Sub
 
 		Private Sub BuildOutSummary(evt As kCura.Windows.Process.ProcessProgressEvent)
-			SyncLock(_summaryLock)
+			SyncLock (_summaryLock)
 				If evt Is Nothing Then evt = _lastEvent
 				Dim stubDate As DateTime
 				Dim totalRecords, totalRecordsProcessed As Int32
@@ -548,7 +548,7 @@ Namespace kCura.Windows.Process
 					totalRecordsProcessed = CType(evt.TotalRecordsProcessed, Int32)
 				End If
 
-				if totalRecordsProcessed > totalRecords Or totalRecordsProcessed < 0 Then
+				If totalRecordsProcessed > totalRecords Or totalRecordsProcessed < 0 Then
 					Return
 				End If
 
@@ -559,8 +559,8 @@ Namespace kCura.Windows.Process
 
 				NumberOfWarnings = evt.TotalRecordsProcessedWithWarnings
 
-							'_summaryOutput.Text = ""
-							WriteSummaryLine("Start Time: " + evt.StartTime.ToLongTimeString)
+				'_summaryOutput.Text = ""
+				WriteSummaryLine("Start Time: " + evt.StartTime.ToLongTimeString)
 				If evt.EndTime <> stubDate Then
 					WriteSummaryLine("Finish Time: " + evt.EndTime.ToLongTimeString)
 					WriteSummaryLine("Duration: " + (Me.GetTimeSpanString(evt.EndTime.Subtract(evt.StartTime))))
@@ -665,8 +665,8 @@ Namespace kCura.Windows.Process
 			_currentRecordLabel.Text = "Fatal Exception Encountered"
 			ShowWarningPopup = False
 			_hasReceivedFatalError = True
-            '_stopImportButton.Text = "Stop"
-            _stopImportButton.Text = "Close"
+			'_stopImportButton.Text = "Stop"
+			_stopImportButton.Text = "Close"
 			_saveOutputButton.Enabled = Config.LogAllEvents
 			_summaryOutput.ForeColor = System.Drawing.Color.Red
 			Me.ShowDetail()
