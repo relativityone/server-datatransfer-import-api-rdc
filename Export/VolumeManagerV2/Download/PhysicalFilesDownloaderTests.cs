@@ -1,6 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
+using kCura.WinEDDS.Exporters;
 using Moq;
 using NUnit.Framework;
 using Relativity.Logging;
@@ -11,35 +17,65 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 	[TestFixture]
 	public class PhysicalFilesDownloaderTests
 	{
-		private Mock<IAsperaCredentialsService> _credentialsService;
+		private Mock<IDownloadTapiBridge> _tapiBridge;
 		private Mock<IExportTapiBridgeFactory> _exportTapiBridgeFactory;
-		private Mock<ILog> _logger;
+		private ILog _logger;
 		private SafeIncrement _safeIncrement;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_credentialsService = new Mock<IAsperaCredentialsService>();
+			_tapiBridge = new Mock<IDownloadTapiBridge>();
 			_exportTapiBridgeFactory = new Mock<IExportTapiBridgeFactory>();
-			_logger = new Mock<ILog>();
+			_exportTapiBridgeFactory.Setup(f => f.CreateForFiles(It.IsAny<Credential>(), It.IsAny<CancellationToken>()))
+				.Returns(() => _tapiBridge.Object);
+			_logger = new NullLogger();
 			_safeIncrement = new SafeIncrement();
 		}
 
-		public void ItShouldCreateTapiBridgesAccordinglyAndGroupFilesCorrectly()
+		[Test]
+		public async Task ItShouldCreateTapiBridgesAccordinglyAndGroupFilesCorrectly()
 		{
-			string fileshareOne = "fileshare.one";
-			string fileshareTwo = "fileshare.one";
-			string fileshareThree = "fileshare.one";
+			string[] fileshares = {@"\\fileshare.one", @"\\fileshare.two", @"\\fileshare.three" };
+			var asperaCredentialsService = new AsperaCredentialsServiceStub(fileshares);
 
-			Credential credentialOne = new Credential();
-			Credential credentialTwo = new Credential();
-			Credential credentialThree = new Credential();
-
-			_credentialsService.Setup(s => s.GetAsperaCredentialsForFileshare(It.Is<Uri>(u => new Uri(fileshareOne).IsBaseOf(u)))).Returns(credentialOne);
-			_credentialsService.Setup(s => s.GetAsperaCredentialsForFileshare(It.Is<Uri>(u => new Uri(fileshareTwo).IsBaseOf(u)))).Returns(credentialTwo);
-			_credentialsService.Setup(s => s.GetAsperaCredentialsForFileshare(It.Is<Uri>(u => new Uri(fileshareThree).IsBaseOf(u)))).Returns(credentialThree);
-
+			List<ExportRequest> requests = CreateThreeExportRequestsPerFileshares(fileshares).ToList();
 			
+			var downloader = new PhysicalFilesDownloader(asperaCredentialsService, _exportTapiBridgeFactory.Object, _safeIncrement, _logger);
+
+			await downloader.DownloadFilesAsync(requests, CancellationToken.None);
+
+			_exportTapiBridgeFactory.Verify(f => f.CreateForFiles(It.IsAny<Credential>(), It.IsAny<CancellationToken>()), Times.Exactly(fileshares.Length));
+		}
+
+		private IEnumerable<ExportRequest> CreateThreeExportRequestsPerFileshares(IEnumerable<string> fileshares)
+		{
+			const int filesPerFileshare = 3;
+			return fileshares.SelectMany(f => Enumerable.Repeat(f, filesPerFileshare)).Select(CreatePhysicalFileExportRequest);
+		}
+
+		private PhysicalFileExportRequest CreatePhysicalFileExportRequest(string fileshareAddress)
+		{
+			return new PhysicalFileExportRequest(
+				new ObjectExportInfo
+				{
+					NativeSourceLocation = new UriBuilder(fileshareAddress) {Path = Guid.NewGuid().ToString()}.ToString()
+				}, "whatever.txt");
+		}
+	}
+
+	public class AsperaCredentialsServiceStub : IAsperaCredentialsService
+	{
+		private readonly Dictionary<Uri, Credential> _fileshares;
+
+		public AsperaCredentialsServiceStub(IEnumerable<string> fileshares)
+		{
+			_fileshares = fileshares.ToDictionary(f => new Uri(f), _ => new Credential());
+		}
+
+		public Credential GetAsperaCredentialsForFileshare(Uri fileUri)
+		{
+			return _fileshares.FirstOrDefault(kvp => kvp.Key.IsBaseOf(fileUri)).Value;
 		}
 	}
 }
