@@ -77,7 +77,7 @@
       <HintPath>..\..\packages\Prism.Wpf.6.3.0\lib\net45\Prism.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Kepler">
-      <HintPath>..\..\packages\Relativity.Kepler.1.0.1.440\lib\net462\Relativity.Kepler.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Kepler.1.0.1.445\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging, Version=9.4.308.17, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Logging.9.4.308\lib\net462\Relativity.Logging.dll</HintPath>
@@ -115,7 +115,7 @@
       <HintPath>..\..\packages\Relativity.Services.Interfaces.Private.9.6.40.7\lib\net462\Relativity.Services.Interfaces.Private.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy">
-      <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.440\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.445\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.158.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.158\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
