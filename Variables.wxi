@@ -4,4 +4,8 @@
   <?define TapiEventLogEntryName="Logging_TAPI" ?>
   <?define RdcEventLogEntryName="Logging_RDC" ?>
   <?define Logname="kCura"?>
+  <?define ProductName="Relativity Desktop Client" ?>
+  <?define UpgradeCode="{E32BA6D3-7C36-4D52-B93B-302E360B20B3}" ?>
+  <?define RegistryKey="Software\kCura\RelativityDesktopClient" ?>
+  <?define RoseProductName="RelativityOne Staging Explorer"?>
 </Include>

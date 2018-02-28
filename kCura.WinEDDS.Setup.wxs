@@ -2,11 +2,11 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
 		 xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension"
 		 xmlns:fw="http://schemas.microsoft.com/wix/FirewallExtension">
-	<?define ProductName="Relativity Desktop Client" ?>
-	<?define UpgradeCode="{E32BA6D3-7C36-4D52-B93B-302E360B20B3}" ?>
-	<?define RegistryKey="Software\kCura\RelativityDesktopClient" ?>
+  <?include $(sys.CURRENTDIR)\Variables.wxi ?>
 	<Product Id="*" Name="$(var.ProductName)" Codepage="1252" Language="1033" Version="$(var.ProductVersion)" Manufacturer="Relativity ODA LLC" UpgradeCode="$(var.UpgradeCode)">
-		<Package Id="*" Description="$(var.ProductName) Installer package" Comments="$(var.ProductName) Windows Installer database" Manufacturer="Relativity ODA LLC" InstallerVersion="300" Compressed="yes" Platform="$(var.Platform)" />
+		<Package Id="*" Description="$(var.ProductName) Installer package" Comments="$(var.ProductName) Windows Installer database" 
+             Manufacturer="Relativity ODA LLC" InstallerVersion="300" Compressed="yes" Platform="$(var.Platform)" 
+		         InstallScope="perMachine"  />
 		<!-- UI Extensions -->
 		<UIRef Id="WixUI_MondoNoLicense" />
 		<UIRef Id="WixUI_ErrorProgressText" />
@@ -20,8 +20,8 @@
 		<!-- Set the icon for the msi and Add/Remove programs -->
 		<Icon Id="relativity_1.exe" SourceFile="$(var.ProjectDir)..\Images\relativity-icon.ICO" />
 		<Property Id="ARPPRODUCTICON" Value="relativity_1.exe" />
-		<Property Id="ALLUSERS" Value="1" />
-		<Property Id="SETFIREWALL" Value="1" />
+	
+    <Property Id="SETFIREWALL" Value="1" />
 		<!-- Perform the proper upgrade checks -->
 		<Property Id="NEWERPRODUCTFOUND" Secure="yes" />
 		<Upgrade Id="$(var.UpgradeCode)">
@@ -30,106 +30,132 @@
 		</Upgrade>
 		<Media Id="1" Cabinet="WinEDDS.cab" EmbedCab="yes" />
 		<Property Id="DiskPrompt" Value="kCura $(var.ProductName) $(var.ProductVersion) Installation [1]" />
-		<Directory Id="TARGETDIR" Name="SourceDir">
-			<Directory Id="ProgramFilesFolder" Name="PFiles">
-				<?if $(var.Platform) = "x64" ?>
-			</Directory>
-			<Directory Id="ProgramFiles64Folder" Name="PFiles">
-				<?endif ?>
-				<Directory Id="kCuraCorp" Name="kCura Corporation">
-					<Directory Id="INSTALLDIR" Name="$(var.ProductName)">
-						<Component Id="MainExecutable" Guid="{878031B1-50D3-48DD-9856-AE3DA2C43463}">
-							<File Id="kCuraEDDSWinFormEXE" Name="kCura.EDDS.WinForm.exe" DiskId="1" Source="$(var.kCura.EDDS.WinForm.TargetPath)" KeyPath="yes">
-								<Shortcut Id="startmenuRelativity" Directory="ProgramMenuFolder" Name="$(var.ProductName)" WorkingDirectory="INSTALLDIR" Icon="relativity_1.exe" IconIndex="0" Advertise="yes" />
-								<Shortcut Id="desktopRelativity" Directory="DesktopFolder" Name="$(var.ProductName)" WorkingDirectory="INSTALLDIR" Icon="relativity_1.exe" IconIndex="0" Advertise="yes" />
-							</File>
-							<File Id="kCuraEDDSWinFormEXEConfig" Name="kCura.EDDS.WinForm.exe.config" DiskId="1" Source="$(var.kCura.EDDS.WinForm.TargetDir)\kCura.EDDS.WinForm.exe.config" />
-						</Component>
-						<Component Id="RDCFirewall" Guid="{31BF5FEF-EAC6-4554-B397-16BCD75B6B94}" KeyPath="yes">
-							<Condition>SETFIREWALL</Condition>
-							<!--Adding firewall exceptions to support Aspera. -->
-							<fw:FirewallException
-								Id="RdcClientTCPInbound"
-								File="kCuraEDDSWinFormEXE"
-								Protocol="tcp"
-								Name="Relativity Desktop Client TCP"
-								Port="*"
-								Scope="any"
-								IgnoreFailure="no"
-								Profile="all"/>
-							<fw:FirewallException
-								Id="RdcClientUDPInbound"
-								File="kCuraEDDSWinFormEXE"
-								Protocol="udp"
-								Name="Relativity Desktop Client UDP"
-								Port="*"
-								Scope="any"
-								IgnoreFailure="no"
-								Profile="all"/>
-						</Component>
-						<Component Id="NativeDependencies" Guid="{7C02F4C7-9DC9-403E-9242-124F71C39CEB}" KeyPath="yes">
-						  <File Id='Primary.itextsharp' Name='itextsharp.dll' DiskId='1' Source='..\..\Vendor\iTextSharp\5.1.2_bin\$(var.Platform)\itextsharp.dll' />
-						  <File Id='Primary.FreeImageNET' Name='FreeImageNET.dll' DiskId='1' Source='..\..\Vendor\FreeImage\3.151\FreeImage\Wrapper\FreeImage.NET\cs\Deploy\$(var.Platform)\FreeImageNET.dll' />
-						  <File Id='Primary.FreeImage' Name='FreeImage.dll' DiskId='1' Source='..\..\Vendor\FreeImage\3.151\FreeImage\Release\$(var.Platform)\FreeImage.dll' />
-						</Component>
-						<Component Id="StagingExplorer" Guid="{BC3FC5EE-B4B3-4A88-A7CA-1297D2C3DB52}" KeyPath="yes">
-							<File Id='Relativity.StagingExplorer' Name='Relativity.StagingExplorer.exe' DiskId='1' Source='$(var.kCura.EDDS.WinForm.TargetDir)\Relativity.StagingExplorer.exe' />
-							<File Id='Relativity.StagingExplorerConfig' Name='Relativity.StagingExplorer.exe.config' DiskId='1' Source='$(var.kCura.EDDS.WinForm.TargetDir)\Relativity.StagingExplorer.exe.config' />
-						</Component>
-						<Component Id="ROSEFirewall" Guid="{22F5B99D-7066-4145-B341-3F9529A7B041}" KeyPath="yes">
-							<Condition>SETFIREWALL</Condition>
-							<!--Adding firewall exceptions to support Aspera. -->
-							<fw:FirewallException
-								Id="RoseClientTCPInbound"
-								File="Relativity.StagingExplorer"
-								Protocol="tcp"
-								Name="Relativity Staging Explorer TCP"
-								Port="*"
-								Scope="any"
-								IgnoreFailure="no"
-								Profile="all"/>
-							<fw:FirewallException
-								Id="RoseClientUDPInbound"
-								File="Relativity.StagingExplorer"
-								Protocol="udp"
-								Name="Relativity Staging Explorer UDP"
-								Port="*"
-								Scope="any"
-								IgnoreFailure="no"
-								Profile="all"/>
-						</Component>
-						<Component Id="RegistryEntries" Guid="{A20005D6-52D7-485B-9A2D-D0C335B0302B}">
-							<RegistryKey Root="HKLM" Key="$(var.RegistryKey)" ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
-								<RegistryValue Type="string" Name="Path" Value="[INSTALLDIR]kCura.EDDS.WinForm.exe" KeyPath="yes" />
-							</RegistryKey>
-						</Component>
-						<Directory Id="Images" Name="Images">
-							<Component Id="ImagesComponent" Guid="{F1A3AE41-6B1C-4C3F-804D-03AA128CB748}" KeyPath="yes">
-								<File Id="folderclosed" Name="folderclosed.ICO" DiskId="1" Source="$(var.kCura.EDDS.WinForm.ProjectDir)\images\folderclosed.ICO" />
-								<File Id="relativity" Name="relativity.ICO" DiskId="1" Source="$(var.ProjectDir)..\Images\relativity-icon.ICO" />
-							</Component>
-						</Directory>
-						<Directory Id="ProgramMenuFolder" Name="Programs">
-							<Directory Id="ProgramMenuDir" Name="$(var.ProductName) $(var.ProductVersion)">
-								<Component Id="ProgramMenuDir" Guid="81799B65-8424-4083-B39C-A5A45E40AE6E">
-									<RemoveFolder Id="ProgramMenuDir" On="uninstall" />
-									<RegistryValue Root="HKCU" Key="$(var.RegistryKey)" Type="string" Value="" KeyPath="yes" />
-								</Component>
-							</Directory>
-						</Directory>
-						<Directory Id="DesktopFolder" Name="Desktop" />
-						<Directory Id="Licensing3rdPartyFolder" Name="Licenses" />
-					</Directory>
-				</Directory>
-			</Directory>
-		</Directory>
+
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="DesktopFolder" />
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ProgramMenuDir" Name="$(var.ProductName) $(var.ProductVersion)"/>
+      </Directory>
+      <Directory Id="ProgramFilesFolder" Name="PFiles">
+        <?if $(var.Platform) = "x64" ?>
+      </Directory>
+      <Directory Id="ProgramFiles64Folder" Name="PFiles">
+        <?endif ?>
+        <Directory Id="kCuraCorp" Name="kCura Corporation">
+          <Directory Id="INSTALLDIR" Name="$(var.ProductName)">
+            <Directory Id="Images" Name="Images"/>
+            <Directory Id="Licensing3rdPartyFolder" Name="Licenses" />
+          </Directory>
+          <Directory Id="ROSE_INSTALLDIR" Name="Staging Explorer"/>
+        </Directory>
+      </Directory>
+    </Directory>
+            
+    
+    <Component Id="AppDesktopShortcut" Directory="DesktopFolder" Guid="{A0009955-253F-4C27-B904-846DBD3681B3}">
+      <Shortcut Id="RdcDesktop" 
+                Directory="DesktopFolder" 
+                Name="$(var.ProductName)" 
+                Target="[#kCuraEDDSWinFormEXE]"
+                Icon="relativity_1.exe" 
+                Description="desktop"
+                IconIndex="0" />
+      <RemoveFolder Id="DesktopFolder" On="uninstall"/>
+      <RegistryValue Root="HKCU"  Key="$(var.RegistryKey)" Name="DesktopShortcut" Type="integer" Value="1" KeyPath="yes"/>
+    </Component>
+      
+	  <Component Id="AppStartMenuShortcut" Directory="ProgramMenuDir" Guid="{D2A7F341-1DE6-40A0-AC26-8DE59892001F}">
+	    <Shortcut Id="RdcStartMenu" 
+                Directory="ProgramMenuFolder" 
+                Target="[#kCuraEDDSWinFormEXE]"          
+                Name="$(var.ProductName)" 
+                Icon="relativity_1.exe" IconIndex="0" />
+			<RemoveFolder Id="ProgramMenuDir" On="uninstall" />
+	    <RegistryValue Root="HKCU" Key="$(var.RegistryKey)" Name="AppMenuShortcut" Type="integer" Value="1" KeyPath="yes" />
+	  </Component>
+    <Component Id="MainExecutable" Directory="INSTALLDIR" Guid="{878031B1-50D3-48DD-9856-AE3DA2C43463}">
+			<File Id="kCuraEDDSWinFormEXE" Name="kCura.EDDS.WinForm.exe" DiskId="1" Source="$(var.kCura.EDDS.WinForm.TargetPath)" KeyPath="yes"/>
+			<File Id="kCuraEDDSWinFormEXEConfig" Name="kCura.EDDS.WinForm.exe.config" DiskId="1" Source="$(var.kCura.EDDS.WinForm.TargetDir)\kCura.EDDS.WinForm.exe.config" />
+		</Component>
+		<Component Id="RDCFirewall" Directory="INSTALLDIR" Guid="{31BF5FEF-EAC6-4554-B397-16BCD75B6B94}" KeyPath="yes">
+			<Condition>SETFIREWALL</Condition>
+			<!--Adding firewall exceptions to support Aspera. -->
+			<fw:FirewallException
+				Id="RdcClientTCPInbound"
+				File="kCuraEDDSWinFormEXE"
+				Protocol="tcp"
+				Name="Relativity Desktop Client TCP"
+				Port="*"
+				Scope="any"
+				IgnoreFailure="no"
+				Profile="all"/>
+			<fw:FirewallException
+				Id="RdcClientUDPInbound"
+				File="kCuraEDDSWinFormEXE"
+				Protocol="udp"
+				Name="Relativity Desktop Client UDP"
+				Port="*"
+				Scope="any"
+				IgnoreFailure="no"
+				Profile="all"/>
+		</Component>
+		<Component Id="NativeDependencies" Directory="INSTALLDIR" Guid="{7C02F4C7-9DC9-403E-9242-124F71C39CEB}" KeyPath="yes">
+			<File Id='Primary.itextsharp' Name='itextsharp.dll' DiskId='1' Source='..\..\Vendor\iTextSharp\5.1.2_bin\$(var.Platform)\itextsharp.dll' />
+			<File Id='Primary.FreeImageNET' Name='FreeImageNET.dll' DiskId='1' Source='..\..\Vendor\FreeImage\3.151\FreeImage\Wrapper\FreeImage.NET\cs\Deploy\$(var.Platform)\FreeImageNET.dll' />
+			<File Id='Primary.FreeImage' Name='FreeImage.dll' DiskId='1' Source='..\..\Vendor\FreeImage\3.151\FreeImage\Release\$(var.Platform)\FreeImage.dll' />
+		</Component>
+		<Component Id="StagingExplorer" Directory="ROSE_INSTALLDIR" Guid="{BC3FC5EE-B4B3-4A88-A7CA-1297D2C3DB52}" KeyPath="yes">
+			<File Id='Relativity.StagingExplorer' Name='Relativity.StagingExplorer.exe' DiskId='1' Source='$(var.kCura.EDDS.WinForm.TargetDir)\Relativity.StagingExplorer.exe' />
+			<File Id='Relativity.StagingExplorerConfig' Name='Relativity.StagingExplorer.exe.config' DiskId='1' Source='$(var.kCura.EDDS.WinForm.TargetDir)\Relativity.StagingExplorer.exe.config' />
+		</Component>
+		<Component Id="ROSEFirewall" Directory="INSTALLDIR" Guid="{22F5B99D-7066-4145-B341-3F9529A7B041}" KeyPath="yes">
+			<Condition>SETFIREWALL</Condition>
+			<!--Adding firewall exceptions to support Aspera. -->
+			<fw:FirewallException
+				Id="RoseClientTCPInbound"
+				File="Relativity.StagingExplorer"
+				Protocol="tcp"
+				Name="Relativity Staging Explorer TCP"
+				Port="*"
+				Scope="any"
+				IgnoreFailure="no"
+				Profile="all"/>
+			<fw:FirewallException
+				Id="RoseClientUDPInbound"
+				File="Relativity.StagingExplorer"
+				Protocol="udp"
+				Name="Relativity Staging Explorer UDP"
+				Port="*"
+				Scope="any"
+				IgnoreFailure="no"
+				Profile="all"/>
+		</Component>
+		<Component Id="RegistryEntries"  Directory="INSTALLDIR" Guid="{A20005D6-52D7-485B-9A2D-D0C335B0302B}">
+			<RegistryKey Root="HKLM" Key="$(var.RegistryKey)" ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
+				<RegistryValue Type="string" Name="Path" Value="[INSTALLDIR]kCura.EDDS.WinForm.exe" KeyPath="yes" />
+			</RegistryKey>
+		</Component>
+		<Component Id="RoseRegistryEntries" Directory="ROSE_INSTALLDIR" Guid="{8D3B6998-C6B2-472B-9A3A-AD1ADFB845B7}">
+      <RegistryKey Root="HKLM" Key="SOFTWARE\kCura\$(var.RoseProductName)" 
+        ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
+        <RegistryValue Type="string" Name="Path" Value="[#Relativity.StagingExplorer]" KeyPath="yes" />
+      </RegistryKey>
+    </Component>
+    <Component Id="ImagesComponent" Directory="Images" Guid="{F1A3AE41-6B1C-4C3F-804D-03AA128CB748}" KeyPath="yes">
+			<File Id="folderclosed" Name="folderclosed.ICO" DiskId="1" Source="$(var.kCura.EDDS.WinForm.ProjectDir)\images\folderclosed.ICO" />
+			<File Id="relativity" Name="relativity.ICO" DiskId="1" Source="$(var.ProjectDir)..\Images\relativity-icon.ICO" />
+		</Component>
+						
 		<!-- Features -->
 		<Feature Id="Complete" Title="$(var.ProductName) $(var.ProductVersion)" Description="The complete package." Display="expand" Level="1" ConfigurableDirectory="INSTALLDIR">
 			<Feature Id="MainProgram" Title="Program Files" Description="Main Relativity executable files." Level="1" Absent="disallow">
 				<ComponentRef Id="NativeDependencies" />
 				<ComponentRef Id="RegistryEntries" />
+        <ComponentRef Id="RoseRegistryEntries"/>
 				<ComponentRef Id="MainExecutable" />
-				<ComponentRef Id="ProgramMenuDir" />
+				<ComponentRef Id="AppStartMenuShortcut" />
+        <ComponentRef Id="AppDesktopShortcut"/>
 				<ComponentRef Id="ImagesComponent" />
 				<ComponentRef Id="StagingExplorer" />
 				<ComponentGroupRef Id="EventLogEntries"/>

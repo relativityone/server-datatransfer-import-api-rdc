@@ -110,6 +110,9 @@
   <ItemGroup>
     <EmbeddedResource Include="FirewallDlg.en-us.wxl" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Components" />
+  </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <Target Name="SignMsi">
     <Exec Command="&quot;$(SignScriptPath)&quot; &quot;@(SignMsi)&quot; &quot;$(SignToolPath)&quot;" />
