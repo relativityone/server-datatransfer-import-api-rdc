@@ -887,7 +887,7 @@ Namespace kCura.EDDS.WinForm
             If regKey Is Nothing Then
                 Return _STAGINGEXPLORER_DEFAULT_EXE_PATH
             Else 
-                Dim value = CType(regKey.GetValue(_STAGING_EXPLORER_PATH_REGISTRY_KEY_NAME, ""), String)
+                Dim value = CType(regKey.GetValue(_STAGING_EXPLORER_PATH_REGISTRY_KEY_NAME, _STAGINGEXPLORER_DEFAULT_EXE_PATH), String)
                 return value
             End If
         End Function
