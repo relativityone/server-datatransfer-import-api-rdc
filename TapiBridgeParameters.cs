@@ -125,7 +125,7 @@ namespace kCura.WinEDDS.TApi
 		/// <value>
 		/// The <see cref="Credential"/> instance.
 		/// </value>
-		public Credential AsperaCredentials
+		public Credential FileshareCredentials
 	    {
 		    get;
 		    set;
