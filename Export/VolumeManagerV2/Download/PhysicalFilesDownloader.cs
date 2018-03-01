@@ -12,17 +12,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
 	public class PhysicalFilesDownloader : IPhysicalFilesDownloader
 	{
-		private const int _NUMBER_OF_TASKS = 2;
-
 		private readonly IAsperaCredentialsService _credentialsService;
 		private readonly IExportTapiBridgeFactory _exportTapiBridgeFactory;
+		private readonly IExportConfig _exportConfig;
 		private readonly ILog _logger;
 		private readonly SafeIncrement _safeIncrement;
 
-		public PhysicalFilesDownloader(IAsperaCredentialsService credentialsService, IExportTapiBridgeFactory exportTapiBridgeFactory, SafeIncrement safeIncrement, ILog logger)
+		public PhysicalFilesDownloader(IAsperaCredentialsService credentialsService, IExportTapiBridgeFactory exportTapiBridgeFactory, IExportConfig exportConfig, SafeIncrement safeIncrement, ILog logger)
 		{
 			_credentialsService = credentialsService;
 			_exportTapiBridgeFactory = exportTapiBridgeFactory;
+			_exportConfig = exportConfig;
 			_safeIncrement = safeIncrement;
 			_logger = logger;
 		}
@@ -34,7 +34,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			ConcurrentQueue<ExportRequestsWithCredentials> queue = CreateTransferQueue(requests);
 			_logger.LogVerbose("Adding {filesToExportCount} requests for files through {tapiBridgeCount} TAPI bridges.", requests.Count, queue.Count);
 
-			IEnumerable<Task> tasks = Enumerable.Repeat(Task.Run(() => CreateJobTask(queue, taskCancellationTokenSource), taskCancellationTokenSource.Token), _NUMBER_OF_TASKS);
+			IEnumerable<Task> tasks = Enumerable.Repeat(Task.Run(() => CreateJobTask(queue, taskCancellationTokenSource), taskCancellationTokenSource.Token), _exportConfig.MaxNumberOfFileExportTasks);
 			await AwaitAllTasks(tasks);
 		}
 
