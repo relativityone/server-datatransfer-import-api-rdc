@@ -29,7 +29,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		public async Task DownloadFilesAsync(List<ExportRequest> requests, CancellationToken batchCancellationToken)
 		{
-			DownloadCancellationTokenSource taskCancellationTokenSource = new DownloadCancellationTokenSource(batchCancellationToken);
+			var taskCancellationTokenSource = new DownloadCancellationTokenSource(batchCancellationToken);
 
 			ConcurrentQueue<ExportRequestsWithCredentials> queue = CreateTransferQueue(requests);
 			_logger.LogVerbose("Adding {filesToExportCount} requests for files through {tapiBridgeCount} TAPI bridges.", requests.Count, queue.Count);
