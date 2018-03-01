@@ -1,4 +1,4 @@
-Imports System.Configuration
+
 Imports System.Web.Services.Protocols
 Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
@@ -52,6 +52,9 @@ Namespace kCura.EDDS.WinForm
         Public Const ROSE_STARTUP_ALREADY_RUNNING As String = "Only one Staging Explorer session is allowed per one logged in user."
         Public Const RDC_ERROR_TITLE As String = "Relativity Desktop Client Error"
         Public Const RDC_TITLE As String = "Relativity Desktop Client"
+        Private const _STAGING_EXPLORER_REGISTRY_KEY as String = "SOFTWARE\WOW6432Node\kCura\RelativityOne Staging Explorer"
+        Private const _STAGINGEXPLORER_DEFAULT_EXE_PATH as String = "Relativity.StagingExplorer.exe"
+        Private const _STAGING_EXPLORER_PATH_REGISTRY_KEY_NAME as String = "Path"
 
         Private _caseSelected As Boolean = True
         Private _processPool As kCura.Windows.Process.ProcessPool
@@ -844,7 +847,7 @@ Namespace kCura.EDDS.WinForm
         End Sub
 
         Private Sub StartStagingExplorer(credentials As NetworkCredential, mainForm As MainForm)
-            Dim filename = GetApplicationFilePath()
+            Dim filename = GetStagingExplorerApplicationFilePath()
             Dim arguments = $"-t {credentials.Password} -w {Me.SelectedCaseInfo.ArtifactID}  -u {kCura.WinEDDS.Config.WebServiceURL}"
 
             Dim appProcess = New Process()
@@ -879,12 +882,13 @@ Namespace kCura.EDDS.WinForm
             End If
         End Sub
 
-        Private Function GetApplicationFilePath() As String
-            Dim appPath = ConfigurationManager.AppSettings("Relativity.StagingExplorer.ApplicationFile")
-            If String.IsNullOrEmpty(appPath) Then
-                Return "Relativity.StagingExplorer.exe"
-            Else
-                Return appPath
+        Private Function GetStagingExplorerApplicationFilePath() As String
+            Dim regKey As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(_STAGING_EXPLORER_REGISTRY_KEY)
+            If regKey Is Nothing Then
+                Return _STAGINGEXPLORER_DEFAULT_EXE_PATH
+            Else 
+                Dim value = CType(regKey.GetValue(_STAGING_EXPLORER_PATH_REGISTRY_KEY_NAME, ""), String)
+                return value
             End If
         End Function
 
