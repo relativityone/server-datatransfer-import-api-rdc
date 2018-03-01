@@ -64,7 +64,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		{
 			TapiBridgeParameters parameters = CreateTapiBridgeParametersFromConfiguration();
 
-			parameters.AsperaCredentials = asperaCredentials;
+			parameters.FileshareCredentials = asperaCredentials;
 
 			DownloadTapiBridge tapiBridge = TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, token);
 			tapiBridge.DumpInfo();
@@ -94,7 +94,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 				WaitTimeBetweenRetryAttempts = _exportConfig.ExportIOErrorWaitTime,
 				WebCookieContainer = _exportSettings.CookieContainer,
 				WebServiceUrl = Config.WebServiceURL,
-				WorkspaceId = _exportSettings.CaseInfo.ArtifactID
+				WorkspaceId = _exportSettings.CaseInfo.ArtifactID,
 			};
 			return parameters;
 		}
