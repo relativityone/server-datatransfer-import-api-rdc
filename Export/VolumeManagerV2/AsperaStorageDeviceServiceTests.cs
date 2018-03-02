@@ -29,13 +29,13 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2
 					new BasicAuthenticationCredential("serviceaccount@relativity.com", "Test1234!"),
 					WorkspaceId);
 				using (ITransferLog transferLog = new SerilogTransferLog())
-				using (RelativityTransferHost transferHost = new RelativityTransferHost(connectionInfo, transferLog))
+				using (var transferHost = new RelativityTransferHost(connectionInfo, transferLog))
 				{
 					// The storage search API is obtained through the transfer host.
 					IFileStorageSearch service = transferHost.CreateFileStorageSearch();
 
 					// Note: until the Kepler API changes have been made, you must be an admin and supply the resource pool.
-					FileStorageSearchResults results = await service.GetResourcePoolFileSharesAsync("RelativityOne Pool");
+					FileStorageSearchResults results = await service.GetWorkspaceFileSharesAsync(WorkspaceId);
 					var str = JsonConvert.SerializeObject(results);
 				foreach (RelativityFileShare fileShare in results.InvalidFileShares)
 					{
