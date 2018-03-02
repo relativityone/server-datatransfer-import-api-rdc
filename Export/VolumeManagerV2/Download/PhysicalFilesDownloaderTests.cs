@@ -25,7 +25,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 		private ILog _logger;
 		private SafeIncrement _safeIncrement;
 		private string[] _availableFileshares;
-		private AsperaCredentialsServiceStub _asperaCredentialsServiceStub;
+		private FileshareCredentialsServiceStub _fileshareCredentialsServiceStub;
 
 		[SetUp]
 		public void SetUp()
@@ -33,7 +33,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			_logger = new NullLogger();
 			_safeIncrement = new SafeIncrement();
 			_availableFileshares = new[] { @"\\fileshare.one", @"\\fileshare.two", @"\\fileshare.three" };
-			_asperaCredentialsServiceStub = new AsperaCredentialsServiceStub(_availableFileshares);
+			_fileshareCredentialsServiceStub = new FileshareCredentialsServiceStub(_availableFileshares);
 			_exportTapiBridgeFactoryStub = new ExportTapyBridgeFactoryStub();
 			_mockTapiBridge = new Mock<IDownloadTapiBridge>();
 			_mockExportConfig = new Mock<IExportConfig>();
@@ -48,7 +48,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 				.Returns(_mockTapiBridge.Object);
 			List<ExportRequest> requests = CreateThreeExportRequestsPerFileshares(_availableFileshares).ToList();
 
-			var downloader = new PhysicalFilesDownloader(_asperaCredentialsServiceStub, mockExportTapiBridgeFactory.Object, _mockExportConfig.Object, _safeIncrement, _logger);
+			var downloader = new PhysicalFilesDownloader(_fileshareCredentialsServiceStub, mockExportTapiBridgeFactory.Object, _mockExportConfig.Object, _safeIncrement, _logger);
 
 			await downloader.DownloadFilesAsync(requests, CancellationToken.None);
 
@@ -60,7 +60,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 		{
 			List<ExportRequest> requests = CreateThreeExportRequestsPerFileshares(_availableFileshares).ToList();
 
-			var downloader = new PhysicalFilesDownloader(_asperaCredentialsServiceStub, _exportTapiBridgeFactoryStub, _mockExportConfig.Object, _safeIncrement, _logger);
+			var downloader = new PhysicalFilesDownloader(_fileshareCredentialsServiceStub, _exportTapiBridgeFactoryStub, _mockExportConfig.Object, _safeIncrement, _logger);
 
 			await downloader.DownloadFilesAsync(requests, CancellationToken.None);
 
@@ -81,7 +81,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 
 			List<ExportRequest> requests = CreateThreeExportRequestsPerFileshares(_availableFileshares).ToList();
 
-			var downloader = new PhysicalFilesDownloader(_asperaCredentialsServiceStub, mockExportTapiBridgeFactory.Object, _mockExportConfig.Object, _safeIncrement, _logger);
+			var downloader = new PhysicalFilesDownloader(_fileshareCredentialsServiceStub, mockExportTapiBridgeFactory.Object, _mockExportConfig.Object, _safeIncrement, _logger);
 
 			Assert.ThrowsAsync<TaskCanceledException>(async () => await downloader.DownloadFilesAsync(requests, CancellationToken.None));
 		}
@@ -101,16 +101,16 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 		}
 	}
 
-	public class AsperaCredentialsServiceStub : IAsperaCredentialsService
+	public class FileshareCredentialsServiceStub : IFileshareCredentialsService
 	{
 		private readonly Dictionary<Uri, Credential> _fileshares;
 
-		public AsperaCredentialsServiceStub(IEnumerable<string> fileshares)
+		public FileshareCredentialsServiceStub(IEnumerable<string> fileshares)
 		{
 			_fileshares = fileshares.ToDictionary(f => new Uri(f), _ => new Credential());
 		}
 
-		public Credential GetAsperaCredentialsForFileshare(Uri fileUri)
+		public Credential GetCredentialsForFileshare(Uri fileUri)
 		{
 			return _fileshares.FirstOrDefault(kvp => kvp.Key.IsBaseOf(fileUri)).Value;
 		}

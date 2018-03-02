@@ -64,7 +64,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2
 		//[Test]
 		public void CreateUri()
 		{
-			AsperaCredentialsServiceMock results = new AsperaCredentialsServiceMock();
+			FileshareCredentialsServiceMock results = new FileshareCredentialsServiceMock();
 
 			var uri = new Uri("\\\\files1.il1ddftasmfs001.kcura.corp\\T002\\files\\workspaceId\\dupa.txt");
 			
