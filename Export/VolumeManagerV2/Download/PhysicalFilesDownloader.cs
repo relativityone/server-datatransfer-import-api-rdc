@@ -12,13 +12,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
 	public class PhysicalFilesDownloader : IPhysicalFilesDownloader
 	{
-		private readonly IAsperaCredentialsService _credentialsService;
+		private readonly IFileshareCredentialsService _credentialsService;
 		private readonly IExportTapiBridgeFactory _exportTapiBridgeFactory;
 		private readonly IExportConfig _exportConfig;
 		private readonly ILog _logger;
 		private readonly SafeIncrement _safeIncrement;
 
-		public PhysicalFilesDownloader(IAsperaCredentialsService credentialsService, IExportTapiBridgeFactory exportTapiBridgeFactory, IExportConfig exportConfig, SafeIncrement safeIncrement, ILog logger)
+		public PhysicalFilesDownloader(IFileshareCredentialsService credentialsService, IExportTapiBridgeFactory exportTapiBridgeFactory, IExportConfig exportConfig, SafeIncrement safeIncrement, ILog logger)
 		{
 			_credentialsService = credentialsService;
 			_exportTapiBridgeFactory = exportTapiBridgeFactory;
@@ -40,7 +40,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private ConcurrentQueue<ExportRequestsWithCredentials> CreateTransferQueue(List<ExportRequest> requests)
 		{
-			ILookup<Credential, ExportRequest> result = requests.ToLookup(r => _credentialsService.GetAsperaCredentialsForFileshare(new Uri(r.SourceLocation)));
+			ILookup<Credential, ExportRequest> result = requests.ToLookup(r => _credentialsService.GetCredentialsForFileshare(new Uri(r.SourceLocation)));
 
 			return new ConcurrentQueue<ExportRequestsWithCredentials>(result.Select(r => new ExportRequestsWithCredentials(r.Key, r)));
 		}
