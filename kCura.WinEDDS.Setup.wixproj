@@ -106,6 +106,14 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
+    <ProjectReference Include="..\..\EDDS\kCura.WinEDDS.StagingExplorer.Setup\kCura.WinEDDS.StagingExplorer.Setup.csproj">
+      <Name>kCura.WinEDDS.StagingExplorer.Setup</Name>
+      <Project>{bcb7694b-6d10-441d-840f-898300b2a240}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="FirewallDlg.en-us.wxl" />
