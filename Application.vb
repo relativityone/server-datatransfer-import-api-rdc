@@ -52,7 +52,7 @@ Namespace kCura.EDDS.WinForm
         Public Const ROSE_STARTUP_ALREADY_RUNNING As String = "Only one Staging Explorer session is allowed per one logged in user."
         Public Const RDC_ERROR_TITLE As String = "Relativity Desktop Client Error"
         Public Const RDC_TITLE As String = "Relativity Desktop Client"
-        Private const _STAGING_EXPLORER_REGISTRY_KEY as String = "SOFTWARE\WOW6432Node\kCura\RelativityOne Staging Explorer"
+        Private const _STAGING_EXPLORER_REGISTRY_KEY as String = "SOFTWARE\kCura\RelativityOne Staging Explorer"
         Private const _STAGINGEXPLORER_DEFAULT_EXE_PATH as String = "Relativity.StagingExplorer.exe"
         Private const _STAGING_EXPLORER_PATH_REGISTRY_KEY_NAME as String = "Path"
 
@@ -883,13 +883,14 @@ Namespace kCura.EDDS.WinForm
         End Sub
 
         Private Function GetStagingExplorerApplicationFilePath() As String
-            Dim regKey As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(_STAGING_EXPLORER_REGISTRY_KEY)
-            If regKey Is Nothing Then
-                Return _STAGINGEXPLORER_DEFAULT_EXE_PATH
-            Else 
-                Dim value = CType(regKey.GetValue(_STAGING_EXPLORER_PATH_REGISTRY_KEY_NAME, _STAGINGEXPLORER_DEFAULT_EXE_PATH), String)
-                return value
-            End If
+            Using regKey As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(_STAGING_EXPLORER_REGISTRY_KEY) 
+                If regKey Is Nothing Then
+                    Return _STAGINGEXPLORER_DEFAULT_EXE_PATH
+                Else 
+                    Dim value = CType(regKey.GetValue(_STAGING_EXPLORER_PATH_REGISTRY_KEY_NAME, _STAGINGEXPLORER_DEFAULT_EXE_PATH), String)
+                    return value
+                End If
+            End Using
         End Function
 
         Public Async Function GetListOfProductionsForCase(ByVal caseInfo As Relativity.CaseInfo) As Task(Of System.Data.DataTable)
