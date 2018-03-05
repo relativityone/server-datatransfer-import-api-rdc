@@ -51,7 +51,6 @@
         </Directory>
       </Directory>
     </Directory>
-            
     
     <Component Id="AppDesktopShortcut" Directory="DesktopFolder" Guid="{A0009955-253F-4C27-B904-846DBD3681B3}">
       <Shortcut Id="RdcDesktop" 
@@ -64,8 +63,7 @@
       <RemoveFolder Id="DesktopFolder" On="uninstall"/>
       <RegistryValue Root="HKCU"  Key="$(var.RegistryKey)" Name="DesktopShortcut" Type="integer" Value="1" KeyPath="yes"/>
     </Component>
-      
-	  <Component Id="AppStartMenuShortcut" Directory="ProgramMenuDir" Guid="{D2A7F341-1DE6-40A0-AC26-8DE59892001F}">
+    <Component Id="AppStartMenuShortcut" Directory="ProgramMenuDir" Guid="{D2A7F341-1DE6-40A0-AC26-8DE59892001F}">
 	    <Shortcut Id="RdcStartMenu" 
                 Directory="ProgramMenuFolder" 
                 Target="[#kCuraEDDSWinFormEXE]"          
@@ -105,43 +103,12 @@
 			<File Id='Primary.FreeImageNET' Name='FreeImageNET.dll' DiskId='1' Source='..\..\Vendor\FreeImage\3.151\FreeImage\Wrapper\FreeImage.NET\cs\Deploy\$(var.Platform)\FreeImageNET.dll' />
 			<File Id='Primary.FreeImage' Name='FreeImage.dll' DiskId='1' Source='..\..\Vendor\FreeImage\3.151\FreeImage\Release\$(var.Platform)\FreeImage.dll' />
 		</Component>
-		<Component Id="StagingExplorer" Directory="ROSE_INSTALLDIR" Guid="{BC3FC5EE-B4B3-4A88-A7CA-1297D2C3DB52}" KeyPath="yes">
-			<File Id='Relativity.StagingExplorer' Name='Relativity.StagingExplorer.exe' DiskId='1' Source='$(var.kCura.EDDS.WinForm.TargetDir)\Relativity.StagingExplorer.exe' />
-			<File Id='Relativity.StagingExplorerConfig' Name='Relativity.StagingExplorer.exe.config' DiskId='1' Source='$(var.kCura.EDDS.WinForm.TargetDir)\Relativity.StagingExplorer.exe.config' />
-		</Component>
-		<Component Id="ROSEFirewall" Directory="INSTALLDIR" Guid="{22F5B99D-7066-4145-B341-3F9529A7B041}" KeyPath="yes">
-			<Condition>SETFIREWALL</Condition>
-			<!--Adding firewall exceptions to support Aspera. -->
-			<fw:FirewallException
-				Id="RoseClientTCPInbound"
-				File="Relativity.StagingExplorer"
-				Protocol="tcp"
-				Name="Relativity Staging Explorer TCP"
-				Port="*"
-				Scope="any"
-				IgnoreFailure="no"
-				Profile="all"/>
-			<fw:FirewallException
-				Id="RoseClientUDPInbound"
-				File="Relativity.StagingExplorer"
-				Protocol="udp"
-				Name="Relativity Staging Explorer UDP"
-				Port="*"
-				Scope="any"
-				IgnoreFailure="no"
-				Profile="all"/>
-		</Component>
-		<Component Id="RegistryEntries"  Directory="INSTALLDIR" Guid="{A20005D6-52D7-485B-9A2D-D0C335B0302B}">
+	  <Component Id="RegistryEntries"  Directory="INSTALLDIR" Guid="{A20005D6-52D7-485B-9A2D-D0C335B0302B}">
 			<RegistryKey Root="HKLM" Key="$(var.RegistryKey)" ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
 				<RegistryValue Type="string" Name="Path" Value="[INSTALLDIR]kCura.EDDS.WinForm.exe" KeyPath="yes" />
 			</RegistryKey>
 		</Component>
-		<Component Id="RoseRegistryEntries" Directory="ROSE_INSTALLDIR" Guid="{8D3B6998-C6B2-472B-9A3A-AD1ADFB845B7}">
-      <RegistryKey Root="HKLM" Key="SOFTWARE\kCura\$(var.RoseProductName)" 
-        ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
-        <RegistryValue Type="string" Name="Path" Value="[#Relativity.StagingExplorer]" KeyPath="yes" />
-      </RegistryKey>
-    </Component>
+	
     <Component Id="ImagesComponent" Directory="Images" Guid="{F1A3AE41-6B1C-4C3F-804D-03AA128CB748}" KeyPath="yes">
 			<File Id="folderclosed" Name="folderclosed.ICO" DiskId="1" Source="$(var.kCura.EDDS.WinForm.ProjectDir)\images\folderclosed.ICO" />
 			<File Id="relativity" Name="relativity.ICO" DiskId="1" Source="$(var.ProjectDir)..\Images\relativity-icon.ICO" />
@@ -152,16 +119,15 @@
 			<Feature Id="MainProgram" Title="Program Files" Description="Main Relativity executable files." Level="1" Absent="disallow">
 				<ComponentRef Id="NativeDependencies" />
 				<ComponentRef Id="RegistryEntries" />
-        <ComponentRef Id="RoseRegistryEntries"/>
-				<ComponentRef Id="MainExecutable" />
+    		<ComponentRef Id="MainExecutable" />
 				<ComponentRef Id="AppStartMenuShortcut" />
         <ComponentRef Id="AppDesktopShortcut"/>
 				<ComponentRef Id="ImagesComponent" />
-				<ComponentRef Id="StagingExplorer" />
+        <ComponentGroupRef Id="RoseComponents"/>
 				<ComponentGroupRef Id="EventLogEntries"/>
 				<ComponentGroupRef Id="PrimaryComponentGroup" />
 				<ComponentRef Id="RDCFirewall" />
-				<ComponentRef Id="ROSEFirewall" />
+		
 			</Feature>
 			<Feature Id="Licensing3rdPartyFeature" Title="Licensing_3rdParty" Description="Licensing and attribution for 3rd party libraries." Level="1">
 				<ComponentGroupRef Id="LicensingFor3rdPartyGroup" />
