@@ -5,10 +5,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 {
 	public class ExportRequestsWithCredentials
 	{
-		public Credential Credentials { get; }
+		public AsperaCredential Credentials { get; }
 		public IEnumerable<ExportRequest> Requests { get; }
 
-		public ExportRequestsWithCredentials(Credential credentials, IEnumerable<ExportRequest> requests)
+		public ExportRequestsWithCredentials(AsperaCredential credentials, IEnumerable<ExportRequest> requests)
 		{
 			Credentials = credentials;
 			Requests = requests;

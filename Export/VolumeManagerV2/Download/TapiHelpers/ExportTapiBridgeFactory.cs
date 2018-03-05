@@ -35,7 +35,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			_exportConfig = exportConfig;
 		}
 
-		public IDownloadTapiBridge CreateForFiles(Credential asperaCredentials, CancellationToken token)
+		public IDownloadTapiBridge CreateForFiles(AsperaCredential asperaCredentials, CancellationToken token)
 		{
 			ITapiBridge tapiBridge = CreateDownloadTapiBridge(asperaCredentials, token);
 
@@ -60,7 +60,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 				longTextEncodingConverter, _logger);
 		}
 
-		private ITapiBridge CreateDownloadTapiBridge(Credential asperaCredentials, CancellationToken token)
+		private ITapiBridge CreateDownloadTapiBridge(AsperaCredential asperaCredentials, CancellationToken token)
 		{
 			TapiBridgeParameters parameters = CreateTapiBridgeParametersFromConfiguration();
 
