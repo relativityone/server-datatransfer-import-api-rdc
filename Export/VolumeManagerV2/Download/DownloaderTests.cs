@@ -39,7 +39,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			_physicalFilesDownloader = new Mock<IPhysicalFilesDownloader>();
 
 			Mock<IExportTapiBridgeFactory> exportTapiBridgeFactory = new Mock<IExportTapiBridgeFactory>();
-			exportTapiBridgeFactory.Setup(x => x.CreateForFiles(It.IsAny<Credential>(), CancellationToken.None)).Returns(_fileBridge.Object);
+			exportTapiBridgeFactory.Setup(x => x.CreateForFiles(It.IsAny<AsperaCredential>(), CancellationToken.None)).Returns(_fileBridge.Object);
 			exportTapiBridgeFactory.Setup(x => x.CreateForLongText(CancellationToken.None)).Returns(_textBridge.Object);
 
 			_errorFileWriter = new Mock<IErrorFileWriter>();
