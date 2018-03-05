@@ -123,9 +123,9 @@ namespace kCura.WinEDDS.TApi
 		/// Gets or sets the Aspera credentials
 		/// </summary>
 		/// <value>
-		/// The <see cref="Credential"/> instance.
+		/// The <see cref="AsperaCredential"/> instance.
 		/// </value>
-		public Credential FileshareCredentials
+		public AsperaCredential FileshareCredentials
 	    {
 		    get;
 		    set;
