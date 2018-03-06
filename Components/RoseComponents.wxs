@@ -33,13 +33,6 @@
 	        IgnoreFailure="no"
 	        Profile="all"/>
 	    </Component>
-
-	    <Component Id="RoseRegistryEntries" Guid="{8D3B6998-C6B2-472B-9A3A-AD1ADFB845B7}">
-	      <RegistryKey Root="HKLM" Key="SOFTWARE\kCura\$(var.RoseProductName)"
-	                   ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
-	        <RegistryValue Type="string" Name="Path" Value="[#Relativity.StagingExplorer]" KeyPath="yes" />
-	      </RegistryKey>
-	    </Component>
-	  </ComponentGroup>
+    </ComponentGroup>
   </Fragment>
 </Wix>
