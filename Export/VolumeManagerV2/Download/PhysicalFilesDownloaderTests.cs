@@ -103,16 +103,16 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 
 	public class FileshareCredentialsServiceStub : IFileshareCredentialsService
 	{
-		private readonly Dictionary<Uri, AsperaCredential> _fileshares;
+		private readonly Dictionary<string, AsperaCredential> _fileshares;
 
 		public FileshareCredentialsServiceStub(IEnumerable<string> fileshares)
 		{
-			_fileshares = fileshares.ToDictionary(f => new Uri(f), _ => new AsperaCredential());
+			_fileshares = fileshares.ToDictionary(f => f, _ => new AsperaCredential());
 		}
 
-		public AsperaCredential GetCredentialsForFileshare(Uri fileUri)
+		public AsperaCredential GetCredentialsForFileshare(string fileUri)
 		{
-			return _fileshares.FirstOrDefault(kvp => kvp.Key.IsBaseOf(fileUri)).Value;
+			return _fileshares.FirstOrDefault(kvp => kvp.Key == fileUri).Value;
 		}
 	}
 
