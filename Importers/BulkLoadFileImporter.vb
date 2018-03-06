@@ -1,5 +1,6 @@
 Imports System.Collections.Generic
 Imports System.IO
+Imports System.Text
 Imports System.Threading
 Imports System.Threading.Tasks
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
@@ -1137,11 +1138,13 @@ Namespace kCura.WinEDDS
 			Dim objectFileUploadKey As String
 			Dim dataGridFileUploadKey As String
 
+			Dim dataGridBulkFileName As String = $"DataGrid_{RunId}_{Guid.NewGuid()}"
+
 			try
 				nativeFileUploadKey = BulkLoadTapiBridge.AddPath(outputNativePath, Guid.NewGuid().ToString(), 1)
 				codeFileUploadKey = BulkLoadTapiBridge.AddPath(OutputCodeFilePath, Guid.NewGuid().ToString(), 2)
 				objectFileUploadKey = BulkLoadTapiBridge.AddPath(OutputObjectFilePath, Guid.NewGuid().ToString(), 3)
-				dataGridFileUploadKey = BulkLoadTapiBridge.AddPath(OutputFileWriter.OutputDataGridFilePath, Guid.NewGuid().ToString(), 4)
+				dataGridFileUploadKey = BulkLoadTapiBridge.AddPath(OutputFileWriter.OutputDataGridFilePath, dataGridBulkFileName, 4)
 				CompletePendingBulkLoadFileTransfers()
 			Catch ex As Exception
 				' Note: Retry and potential HTTP fallback automatically kick in. Throwing a similar exception if a failure occurs.
