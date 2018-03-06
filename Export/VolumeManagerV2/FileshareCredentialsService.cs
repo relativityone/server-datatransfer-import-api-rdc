@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using kCura.WinEDDS.TApi;
 using Relativity.Logging;
 using Relativity.Transfer;
 
@@ -10,47 +12,42 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 	public class FileshareCredentialsService : IFileshareCredentialsService
 	{
 		private readonly ILog _logger;
-		private readonly ExportFile _exportSettings;
+		private readonly int _workspaceId;
+		private readonly NetworkCredential _currentUserCredential;
 
 		public FileshareCredentialsService(ILog logger, ExportFile exportSettings)
 		{
 			_logger = logger;
-			_exportSettings = exportSettings;
+			_workspaceId = exportSettings.CaseInfo.ArtifactID;
+			_currentUserCredential = exportSettings.Credential;
 			CachedCredentials = new Dictionary<string, AsperaCredential>();
 		}
 
 		public Dictionary<string, AsperaCredential> CachedCredentials { get; set; }
 
-		public AsperaCredential GetCredentialsForFileshare(Uri fileUri)
+		public AsperaCredential GetCredentialsForFileshare(string fileUrl)
 		{
 			if (CachedCredentials.Count == 0)
 			{
-				GetAndStoreCredentialsForCurrentWorskpace();
+				GetAndStoreCredentialsForWorskpace(Config.WebServiceURL, _workspaceId, _currentUserCredential.UserName, _currentUserCredential.Password);
 			}
 
-			return CachedCredentials.FirstOrDefault(n => n.Key == fileUri.ToString()).Value;
+			return CachedCredentials.FirstOrDefault(n => n.Key == fileUrl).Value;
 		}
 
-		private void GetAndStoreCredentialsForCurrentWorskpace()
+		private void GetAndStoreCredentialsForWorskpace(string hostUrl, int workspaceId, string userName, string password )
 		{
 			try
 			{
-				Uri host = GetHostBasedOneWebServiceUrl();
-				var connectionInfo = new RelativityConnectionInfo(
-					host, 
-					new BearerTokenCredential(_exportSettings.Credential.Password), 
-					_exportSettings.CaseArtifactID);
+				RelativityConnectionInfo connectionInfo = TapiWinEddsHelper.CreateRelativityConnectionInfo(hostUrl, workspaceId, userName, password);
+
 				using (ITransferLog transferLog = new RelativityTransferLog(_logger, false))
 				{
 					using (var transferHost = new RelativityTransferHost(connectionInfo, transferLog))
 					{
-						// The storage search API is obtained through the transfer host.
 						IFileStorageSearch service = transferHost.CreateFileStorageSearch();
-
-						// Note: until the Kepler API changes have been made, you must be an admin and supply the resource pool.
-
-						//TODO:Remove below comment once Certificate issue is resolved - to be confirmed and tested when Scott says so. Worskpace method should work as good as the ResPool One.
-						FileStorageSearchResults results = service.GetWorkspaceFileSharesAsync(_exportSettings.CaseArtifactID).ConfigureAwait(false).GetAwaiter().GetResult();
+						
+						FileStorageSearchResults results = service.GetWorkspaceFileSharesAsync(_workspaceId).ConfigureAwait(false).GetAwaiter().GetResult();
 
 						foreach (RelativityFileShare fileShare in results.FileShares)
 						{
@@ -61,16 +58,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 			}
 			catch (Exception e)
 			{
-				_logger.LogError(e, $"{nameof(GetAndStoreCredentialsForCurrentWorskpace)}() failed with following error message {0} and stack trace {1}", e.Message, e.StackTrace);
+				_logger.LogError(e, $"{nameof(GetAndStoreCredentialsForWorskpace)}() failed with following error message {0} and stack trace {1}", e.Message, e.StackTrace);
 				throw;
 			}
-		}
-
-		private Uri GetHostBasedOneWebServiceUrl()
-		{
-			string webServiceUrl = Config.WebServiceURL;
-			var baseUri = new Uri(webServiceUrl);
-			return new Uri(baseUri.GetLeftPart(UriPartial.Authority));
 		}
 	}
 }

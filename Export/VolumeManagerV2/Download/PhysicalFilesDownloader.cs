@@ -40,7 +40,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private ConcurrentQueue<ExportRequestsWithCredentials> CreateTransferQueue(List<ExportRequest> requests)
 		{
-			ILookup<AsperaCredential, ExportRequest> result = requests.ToLookup(r => _credentialsService.GetCredentialsForFileshare(new Uri(r.SourceLocation)));
+			ILookup<AsperaCredential, ExportRequest> result = requests.ToLookup(r => _credentialsService.GetCredentialsForFileshare(r.SourceLocation));
 
 			return new ConcurrentQueue<ExportRequestsWithCredentials>(result.Select(r => new ExportRequestsWithCredentials(r.Key, r)));
 		}

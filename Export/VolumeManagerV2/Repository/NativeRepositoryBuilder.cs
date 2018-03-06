@@ -34,7 +34,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 
 			_logger.LogVerbose("{count} export request for natives found.", exportRequests.Count);
 
-			Native native = new Native(artifact)
+			var native = new Native(artifact)
 			{
 				ExportRequest = exportRequests.FirstOrDefault(),
 				HasBeenDownloaded = exportRequests.Count == 0

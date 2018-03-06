@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
@@ -38,6 +39,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_exportTapiBridgeFactory = exportTapiBridgeFactory;
 			_logger = logger;
 			_errorFileWriter = errorFileWriter;
+
+			//todo: Adrian - remove when Scott provides fix on his end related to validation of certificates - GetWorkspaceFileSharesAsync.
+			ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, errors) => true;
 		}
 
 		public void DownloadFilesForArtifacts(CancellationToken cancellationToken)
@@ -79,7 +83,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			IDownloadTapiBridge longTextDownloader = null;
 			try
 			{
-				Task filesDonwloadTask = _physicalFilesDownloader.DownloadFilesAsync(_fileExportRequests, cancellationToken);
+				Task filesDownloadTask = _physicalFilesDownloader.DownloadFilesAsync(_fileExportRequests, cancellationToken);
 
 				longTextDownloader = _exportTapiBridgeFactory.CreateForLongText(cancellationToken);
 				DownloadLongTexts(longTextDownloader, cancellationToken);
@@ -89,7 +93,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				_logger.LogVerbose("Long text transfer finished.");
 
 				_logger.LogVerbose("Waiting for files transfer to finish.");
-				await filesDonwloadTask;
+				await filesDownloadTask;
 				_logger.LogVerbose("Files transfer finished.");
 			}
 			catch (OperationCanceledException ex)

@@ -8,6 +8,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 {
 	public interface IFileshareCredentialsService
 	{
-		AsperaCredential GetCredentialsForFileshare(Uri fileUri);
+		AsperaCredential GetCredentialsForFileshare(string fileUrl);
 	}
 }
