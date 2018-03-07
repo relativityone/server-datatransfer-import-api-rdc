@@ -40,7 +40,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_logger = logger;
 			_errorFileWriter = errorFileWriter;
 
-			//todo: Adrian - remove when Scott provides fix on his end related to validation of certificates - GetWorkspaceFileSharesAsync.
+			//todo: Adrian - remove below line when validation is confirmed to be working on environment with properly signed certificates.
 			ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, errors) => true;
 		}
 
