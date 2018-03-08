@@ -263,8 +263,7 @@
     <Reference Include="Relativity.Services.ServiceProxy">
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.445\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.StagingExplorer.Services.Interfaces, Version=1.1.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Relativity.StagingExplorer.Services.Interfaces">
       <HintPath>..\..\packages\Relativity.StagingExplorer.Services.Interfaces.1.1.6\lib\net462\Relativity.StagingExplorer.Services.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
