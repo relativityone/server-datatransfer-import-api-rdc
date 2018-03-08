@@ -403,6 +403,7 @@ Namespace kCura.WinEDDS
 			bcpParameters.BcpFileTransfer = True
 			bcpParameters.AsperaBcpRootFolder = Config.TapiAsperaBcpRootFolder
 			bcpParameters.FileShare = gateway.GetBcpSharePath(args.CaseInfo.ArtifactID)
+		    bcpParameters.SupportCheckPath = bcpParameters.FileShare
 			bcpParameters.SortIntoVolumes = False
 			bcpParameters.ForceHttpClient = bcpParameters.ForceHttpClient Or Config.TapiForceBcpHttpClient
 
