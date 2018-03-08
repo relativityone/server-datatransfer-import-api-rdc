@@ -1636,17 +1636,17 @@ Namespace kCura.EDDS.WinForm
             Dim relVersionString As String = relativityManager.RetrieveRelativityVersion
             Dim relativityWebVersion As String() = relVersionString.Split("."c)
             Dim match As Boolean = True
-            'Dim i As Int32
-            'For i = 0 To System.Math.Max(winRelativityVersion.Length - 1, relativityWebVersion.Length - 1)
-            '    Dim winv As String = "*"
-            '    Dim relv As String = "*"
-            '    If i <= winRelativityVersion.Length - 1 Then winv = winRelativityVersion(i)
-            '    If i <= relativityWebVersion.Length - 1 Then relv = relativityWebVersion(i)
-            '    If Not (relv = "*" OrElse winv = "*" OrElse relv.ToLower = winv.ToLower) Then
-            '        match = False
-            '        Exit For
-            '    End If
-            'Next
+            Dim i As Int32
+            For i = 0 To System.Math.Max(winRelativityVersion.Length - 1, relativityWebVersion.Length - 1)
+                Dim winv As String = "*"
+                Dim relv As String = "*"
+                If i <= winRelativityVersion.Length - 1 Then winv = winRelativityVersion(i)
+                If i <= relativityWebVersion.Length - 1 Then relv = relativityWebVersion(i)
+                If Not (relv = "*" OrElse winv = "*" OrElse relv.ToLower = winv.ToLower) Then
+                    match = False
+                    Exit For
+                End If
+            Next
             If Not match Then
                 MsgBox(String.Format("Your version of the Relativity Desktop Client is out of date. You are running version {0}, but version {1} is required.", Me.GetDisplayAssemblyVersion(), relVersionString), MsgBoxStyle.Critical, "WinRelativity Version Mismatch")
                 ExitApplication()
