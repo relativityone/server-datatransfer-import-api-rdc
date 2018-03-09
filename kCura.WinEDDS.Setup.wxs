@@ -20,7 +20,7 @@
 		<!-- Set the icon for the msi and Add/Remove programs -->
 		<Icon Id="relativity_1.exe" SourceFile="$(var.ProjectDir)..\Images\relativity-icon.ICO" />
 		<Property Id="ARPPRODUCTICON" Value="relativity_1.exe" />
-	
+	  <Property Id="REINSTALLMODE" Value="amus"/>
     <Property Id="SETFIREWALL" Value="1" />
 		<!-- Perform the proper upgrade checks -->
 		<Property Id="NEWERPRODUCTFOUND" Secure="yes" />
@@ -159,7 +159,7 @@
 		<CustomAction Id="PreventDowngrading" Error="Unable to install because a newer version of this product is already installed." />
 		<!-- Sequences -->
 		<InstallExecuteSequence>
-			<Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWERPRODUCTFOUND</Custom>
+      <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWERPRODUCTFOUND</Custom>
 			<RemoveExistingProducts After="InstallInitialize" />
 		</InstallExecuteSequence>
 	</Product>
