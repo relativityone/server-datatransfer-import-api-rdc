@@ -144,7 +144,6 @@
     <Compile Include="CommandList.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Exception\CreateDummyProcessFauxException.vb" />
     <Compile Include="Exception\InvalidArgumentException.vb">
       <SubType>Code</SubType>
     </Compile>
