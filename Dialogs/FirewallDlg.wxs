@@ -2,26 +2,26 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Fragment>
 		<UI>
-      <Dialog Id="FirewallDlg" Width="370" Height="270" Title="Firewall Settings" NoMinimize="yes">
-	      <Control Id="FirewallCheckbox" Type="CheckBox" X="10" Y="50" Width="150" Height="17"
-	               Property='SETFIREWALL' CheckBoxValue='1' Text='!(loc.FirewallDlg_CheckboxTitle)'>
-	      </Control>
+	  <Dialog Id="FirewallDlg" Width="370" Height="270" Title="Firewall Settings" NoMinimize="yes">
+		  <Control Id="FirewallCheckbox" Type="CheckBox" X="10" Y="50" Width="150" Height="17"
+				   Property='SETFIREWALL' CheckBoxValue='1' Text='!(loc.FirewallDlg_CheckboxTitle)'>
+		  </Control>
 				<Control Id="FirewallDescription" Type="Text" X="30" Y="60" Width="270" Height="100" Transparent="yes" NoPrefix="yes" 
 								 Text='!(loc.FirewallDlg_Description)'>
 				</Control>
 					<Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
-		      <Publish Event="NewDialog" Value="WelcomeDlg">1</Publish>
-	      </Control>
-	      <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Next">
-		      <Publish Event="NewDialog" Value="SetupTypeDlg">1</Publish>
-	      </Control>
-	      <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel">
-		      <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
-	      </Control>
+			  <Publish Event="NewDialog" Value="WelcomeDlg">1</Publish>
+		  </Control>
+		  <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Next">
+			  <Publish Event="NewDialog" Value="SetupTypeDlg">1</Publish>
+		  </Control>
+		  <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel">
+			  <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+		  </Control>
 				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="WixUI_Bmp_Banner" />
-        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
-        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
-      </Dialog>
-    </UI>
+		<Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+		<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+	  </Dialog>
+	</UI>
   </Fragment>
 </Wix>
