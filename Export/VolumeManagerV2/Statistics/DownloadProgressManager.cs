@@ -65,7 +65,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 					}
 				}
 
-				_logger.LogWarning("File for {fileName} not found.", fileName);
+				_logger.LogWarning("File or Image for {fileName} not found.", fileName);
 			}
 		}
 

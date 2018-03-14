@@ -4,7 +4,7 @@ using Relativity.Transfer.Http;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public class FieldFileExportRequest : FileExportRequest
+	public class FieldFileExportRequest : ExportRequest
 	{
 		/// <summary>
 		///     For Web mode

@@ -4,20 +4,20 @@ using Relativity.Transfer.Http;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public class NativeFileExportRequest : FileExportRequest
+	public class PhysicalFileExportRequest : ExportRequest
 	{
 		/// <summary>
 		///     For Web mode
 		/// </summary>
 		public string RemoteFileGuid { get; }
 
-		public NativeFileExportRequest(ImageExportInfo image, string destinationLocation)
+		public PhysicalFileExportRequest(ImageExportInfo image, string destinationLocation)
 			: base(image.ArtifactID, image.SourceLocation, destinationLocation)
 		{
 			RemoteFileGuid = image.FileGuid;
-		}
+		} 
 
-		public NativeFileExportRequest(ObjectExportInfo artifact, string destinationLocation)
+		public PhysicalFileExportRequest(ObjectExportInfo artifact, string destinationLocation)
 			: base(artifact.ArtifactID, artifact.NativeSourceLocation, destinationLocation)
 		{
 			RemoteFileGuid = artifact.NativeFileGuid;

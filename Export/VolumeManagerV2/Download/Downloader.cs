@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
@@ -11,29 +13,35 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
 	public class Downloader : IDownloader
 	{
-		private int _lineNumber;
-
 		private List<ExportRequest> _fileExportRequests;
 		private List<LongTextExportRequest> _longTextExportRequests;
 
 		private readonly NativeRepository _nativeRepository;
 		private readonly ImageRepository _imageRepository;
 		private readonly LongTextRepository _longTextRepository;
+		private readonly IPhysicalFilesDownloader _physicalFilesDownloader;
+		private readonly SafeIncrement _safeIncrement;
 		private readonly IErrorFileWriter _errorFileWriter;
 
 		private readonly IExportTapiBridgeFactory _exportTapiBridgeFactory;
 
 		private readonly ILog _logger;
 
-		public Downloader(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, IExportTapiBridgeFactory exportTapiBridgeFactory,
-			IErrorFileWriter errorFileWriter, ILog logger)
+		public Downloader(NativeRepository nativeRepository, ImageRepository imageRepository,
+			LongTextRepository longTextRepository, IPhysicalFilesDownloader physicalFilesDownloader, SafeIncrement safeIncrement, 
+			IExportTapiBridgeFactory exportTapiBridgeFactory, IErrorFileWriter errorFileWriter, ILog logger)
 		{
 			_nativeRepository = nativeRepository;
 			_imageRepository = imageRepository;
 			_longTextRepository = longTextRepository;
+			_physicalFilesDownloader = physicalFilesDownloader;
+			_safeIncrement = safeIncrement;
 			_exportTapiBridgeFactory = exportTapiBridgeFactory;
 			_logger = logger;
 			_errorFileWriter = errorFileWriter;
+
+			//todo: Adrian - remove below line when validation is confirmed to be working on environment with properly signed certificates.
+			ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, errors) => true;
 		}
 
 		public void DownloadFilesForArtifacts(CancellationToken cancellationToken)
@@ -52,7 +60,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			}
 
 			_logger.LogVerbose("Attempting to download files.");
-			DownloadRequests(cancellationToken);
+			DownloadRequests(cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		private void RetrieveExportRequests()
@@ -70,27 +78,23 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_longTextExportRequests.AddRange(longTextExportRequests);
 		}
 
-		private void DownloadRequests(CancellationToken cancellationToken)
+		private async Task DownloadRequests(CancellationToken cancellationToken)
 		{
-			IDownloadTapiBridge filesDownloader = null;
 			IDownloadTapiBridge longTextDownloader = null;
 			try
 			{
-				_lineNumber = 1;
-				_logger.LogVerbose("Creating TAPI bridge for native and image files export.");
-				filesDownloader = _exportTapiBridgeFactory.CreateForFiles(cancellationToken);
-				DownloadFiles(filesDownloader, cancellationToken);
+				Task filesDownloadTask = _physicalFilesDownloader.DownloadFilesAsync(_fileExportRequests, cancellationToken);
 
 				longTextDownloader = _exportTapiBridgeFactory.CreateForLongText(cancellationToken);
 				DownloadLongTexts(longTextDownloader, cancellationToken);
 
-				_logger.LogVerbose("Waiting for files transfer to finish.");
-				filesDownloader.WaitForTransferJob();
-				_logger.LogVerbose("Files transfer finished.");
-				
 				_logger.LogVerbose("Waiting for long text transfer to finish.");
 				longTextDownloader.WaitForTransferJob();
 				_logger.LogVerbose("Long text transfer finished.");
+
+				_logger.LogVerbose("Waiting for files transfer to finish.");
+				await filesDownloadTask;
+				_logger.LogVerbose("Files transfer finished.");
 			}
 			catch (OperationCanceledException ex)
 			{
@@ -126,46 +130,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			{
 				try
 				{
-					filesDownloader?.Dispose();
-				}
-				catch (Exception ex)
-				{
-					_logger.LogError(ex, "Failed to dispose DownloadTapiBridge for files.");
-				}
-
-				try
-				{
 					longTextDownloader?.Dispose();
 				}
 				catch (Exception ex)
 				{
 					_logger.LogError(ex, "Failed to dispose DownloadTapiBridge for long text.");
-				}
-			}
-		}
-
-		private void DownloadFiles(IDownloadTapiBridge filesDownloader, CancellationToken cancellationToken)
-		{
-			_logger.LogVerbose("Adding {count} requests for files to TAPI bridge.", _fileExportRequests.Count);
-
-			foreach (ExportRequest fileExportRequest in _fileExportRequests)
-			{
-				if (cancellationToken.IsCancellationRequested)
-				{
-					return;
-				}
-
-				try
-				{
-					_logger.LogVerbose("Adding export request for downloading file for artifact {artifactId} to {destination}.", fileExportRequest.ArtifactId,
-						fileExportRequest.DestinationLocation);
-					TransferPath path = fileExportRequest.CreateTransferPath(_lineNumber++);
-					fileExportRequest.FileName = filesDownloader.AddPath(path);
-				}
-				catch (Exception ex)
-				{
-					_logger.LogError(ex, "Error occurred during adding file export request to TAPI bridge. Skipping.");
-					throw;
 				}
 			}
 		}
@@ -184,8 +153,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				try
 				{
 					_logger.LogVerbose("Adding export request for downloading long text {fieldId} to {destination}.", textExportRequest.FieldArtifactId, textExportRequest.DestinationLocation);
-					TransferPath path = textExportRequest.CreateTransferPath(_lineNumber++);
-					textExportRequest.FileName = longTextDownloader.AddPath(path);
+					TransferPath path = textExportRequest.CreateTransferPath(_safeIncrement.GetNext());
+					textExportRequest.FileName = longTextDownloader.QueueDownload(path);
 				}
 				catch (Exception ex)
 				{

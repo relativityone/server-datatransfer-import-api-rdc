@@ -7,7 +7,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 	{
 		public ImageExportInfo Artifact { get; }
 
-		public FileExportRequest ExportRequest { get; set; }
+		public ExportRequest ExportRequest { get; set; }
 
 		public bool HasBeenDownloaded { get; set; }
 

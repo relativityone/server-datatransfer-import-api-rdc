@@ -17,7 +17,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		/// </summary>
 		public int FieldArtifactId { get; private set; }
 
-		private LongTextExportRequest(ObjectExportInfo artifact, string destinationLocation) : base(artifact.ArtifactID, destinationLocation)
+		private LongTextExportRequest(ObjectExportInfo artifact, string destinationLocation) : base(artifact.ArtifactID, Guid.NewGuid().ToString(), destinationLocation)
 		{
 		}
 
@@ -54,7 +54,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			var transferPath = new TransferPath
 			{
 				Order = Order,
-				SourcePath = Guid.NewGuid().ToString(),
 				TargetPath = fileInfo.Directory?.FullName,
 				TargetFileName = fileInfo.Name
 			};
