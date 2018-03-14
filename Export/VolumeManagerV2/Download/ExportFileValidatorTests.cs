@@ -83,7 +83,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 		{
 			const string filePath = "file_path";
 
-			_exportRequestRepository.ExportRequests.Add(new NativeFileExportRequest(new ObjectExportInfo(), filePath));
+			_exportRequestRepository.ExportRequests.Add(new PhysicalFileExportRequest(new ObjectExportInfo(), filePath));
 			_exportSettings.Overwrite = false;
 
 			//ACT
@@ -99,7 +99,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 		{
 			const string filePath = "file_path";
 
-			_exportRequestRepository.ExportRequests.Add(new NativeFileExportRequest(new ObjectExportInfo(), filePath));
+			_exportRequestRepository.ExportRequests.Add(new PhysicalFileExportRequest(new ObjectExportInfo(), filePath));
 			_exportSettings.Overwrite = true;
 
 			//ACT
