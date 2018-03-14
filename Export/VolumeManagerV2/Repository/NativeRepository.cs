@@ -30,12 +30,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 
 		public IList<ExportRequest> GetExportRequests()
 		{
-			return _natives.Where(x => !x.HasBeenDownloaded).Select(x => x.ExportRequest).ToList();
+			return _natives.Where(x => !x.HasBeenDownloaded).Select(x => (ExportRequest) x.ExportRequest).ToList();
 		}
 
 		public Native GetByLineNumber(int lineNumber)
 		{
-			return _natives.FirstOrDefault(x => !x.HasBeenDownloaded && x.ExportRequest.Order == lineNumber);
+			return _natives.FirstOrDefault(x => x.ExportRequest?.Order == lineNumber);
 		}
 
 		public void Clear()
