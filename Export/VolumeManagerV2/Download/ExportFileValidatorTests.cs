@@ -1,5 +1,6 @@
 ﻿using kCura.Windows.Process;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
+using kCura.WinEDDS.Exporters;
 using Moq;
 using NUnit.Framework;
 using Relativity.Logging;
@@ -16,6 +17,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 		private Mock<IStatus> _status;
 		private Mock<IFileHelper> _fileHelper;
 
+		private ExportRequestRepositoryStub _exportRequestRepository;
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -24,7 +27,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			_status = new Mock<IStatus>();
 			_fileHelper = new Mock<IFileHelper>();
 
-			_instance = new ExportFileValidator(_exportSettings, _status.Object, _fileHelper.Object, new NullLogger());
+			_exportRequestRepository = new ExportRequestRepositoryStub();
+			_instance = new ExportFileValidator(_exportSettings, _exportRequestRepository, _status.Object, _fileHelper.Object, new NullLogger());
 		}
 
 		[Test]
@@ -72,6 +76,39 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			//ASSERT
 			_status.Verify(x => x.WriteStatusLine(EventType.Status, It.IsAny<string>(), false));
 			_fileHelper.Verify(x => x.Delete(filePath));
+		}
+
+		[Test]
+		public void ItShouldWriteWarningWhenExportRequestExistsAndNotOverwriting()
+		{
+			const string filePath = "file_path";
+
+			_exportRequestRepository.ExportRequests.Add(new NativeFileExportRequest(new ObjectExportInfo(), filePath));
+			_exportSettings.Overwrite = false;
+
+			//ACT
+			bool canExport = _instance.CanExport(filePath, string.Empty);
+
+			//ASSERT
+			Assert.That(canExport, Is.False);
+			_status.Verify(x => x.WriteWarning(It.IsAny<string>()));
+		}
+
+		[Test]
+		public void ItShouldWriteStatusWhenExportRequestExistsAndOverwriting()
+		{
+			const string filePath = "file_path";
+
+			_exportRequestRepository.ExportRequests.Add(new NativeFileExportRequest(new ObjectExportInfo(), filePath));
+			_exportSettings.Overwrite = true;
+
+			//ACT
+			bool canExport = _instance.CanExport(filePath, string.Empty);
+
+			//ASSERT
+			Assert.That(canExport, Is.False);
+			_status.Verify(x => x.WriteStatusLine(EventType.Status, It.IsAny<string>(), false));
+			_fileHelper.Verify(x => x.Delete(filePath), Times.Never);
 		}
 	}
 }
