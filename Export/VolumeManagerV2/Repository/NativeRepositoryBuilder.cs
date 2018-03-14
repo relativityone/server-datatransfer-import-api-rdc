@@ -40,6 +40,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 				HasBeenDownloaded = exportRequests.Count == 0
 			};
 
+			if (_nativeRepository.GetExportRequests().Any(x => x.DestinationLocation == native.ExportRequest.DestinationLocation))
+			{
+
+			}
+
 			_nativeRepository.Add(native.InList());
 		}
 	}

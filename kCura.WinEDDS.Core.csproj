@@ -251,6 +251,8 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\IRetryableStreamWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\IStreamFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\RetryableStreamWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\ExportRequestRepository.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\IExportRequestRepository.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\ILongTextRepository.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\IErrorFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\IRepositoryBuilder.cs" />
