@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
@@ -39,7 +40,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			_physicalFilesDownloader = new Mock<IPhysicalFilesDownloader>();
 
 			Mock<IExportTapiBridgeFactory> exportTapiBridgeFactory = new Mock<IExportTapiBridgeFactory>();
-			exportTapiBridgeFactory.Setup(x => x.CreateForFiles(It.IsAny<AsperaCredential>(), CancellationToken.None)).Returns(_fileBridge.Object);
+			exportTapiBridgeFactory.Setup(x => x.CreateForFiles(It.IsAny<RelativityFileShareSettings>(), CancellationToken.None)).Returns(_fileBridge.Object);
 			exportTapiBridgeFactory.Setup(x => x.CreateForLongText(CancellationToken.None)).Returns(_textBridge.Object);
 
 			_errorFileWriter = new Mock<IErrorFileWriter>();

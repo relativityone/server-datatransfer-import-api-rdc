@@ -17,15 +17,15 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 	[TestFixture]
 	public class PhysicalFilesDownloaderTests
 	{
-		private const int _DEFAULT_FILES_PER_FILESHARE = 3;
-		private const int _DEFAULT_TASK_COUNT = 2;
-		private Mock<IExportConfig> _mockExportConfig;
-		private Mock<IDownloadTapiBridge> _mockTapiBridge;
 		private ExportTapyBridgeFactoryStub _exportTapiBridgeFactoryStub;
+		private FileshareSettingsServiceStub _fileshareSettingsServiceStub;
 		private ILog _logger;
+		private Mock<IDownloadTapiBridge> _mockTapiBridge;
+		private Mock<IExportConfig> _mockExportConfig;
 		private SafeIncrement _safeIncrement;
 		private string[] _availableFileshares;
-		private FileshareCredentialsServiceStub _fileshareCredentialsServiceStub;
+		private const int _DEFAULT_FILES_PER_FILESHARE = 3;
+		private const int _DEFAULT_TASK_COUNT = 2;
 
 		[SetUp]
 		public void SetUp()
@@ -33,7 +33,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			_logger = new NullLogger();
 			_safeIncrement = new SafeIncrement();
 			_availableFileshares = new[] { @"\\fileshare.one", @"\\fileshare.two", @"\\fileshare.three" };
-			_fileshareCredentialsServiceStub = new FileshareCredentialsServiceStub(_availableFileshares);
+			_fileshareSettingsServiceStub = new FileshareSettingsServiceStub(_availableFileshares);
 			_exportTapiBridgeFactoryStub = new ExportTapyBridgeFactoryStub();
 			_mockTapiBridge = new Mock<IDownloadTapiBridge>();
 			_mockExportConfig = new Mock<IExportConfig>();
@@ -44,15 +44,15 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 		public async Task ItShouldCreateTapiBridgesAccordingly()
 		{
 			Mock<IExportTapiBridgeFactory> mockExportTapiBridgeFactory = new Mock<IExportTapiBridgeFactory>();
-			mockExportTapiBridgeFactory.Setup(f => f.CreateForFiles(It.IsAny<AsperaCredential>(), It.IsAny<CancellationToken>()))
+			mockExportTapiBridgeFactory.Setup(f => f.CreateForFiles(It.IsAny<RelativityFileShareSettings>(), It.IsAny<CancellationToken>()))
 				.Returns(_mockTapiBridge.Object);
 			List<ExportRequest> requests = CreateThreeExportRequestsPerFileshares(_availableFileshares).ToList();
 
-			var downloader = new PhysicalFilesDownloader(_fileshareCredentialsServiceStub, mockExportTapiBridgeFactory.Object, _mockExportConfig.Object, _safeIncrement, _logger);
+			var downloader = new PhysicalFilesDownloader(_fileshareSettingsServiceStub, mockExportTapiBridgeFactory.Object, _mockExportConfig.Object, _safeIncrement, _logger);
 
 			await downloader.DownloadFilesAsync(requests, CancellationToken.None);
 
-			mockExportTapiBridgeFactory.Verify(f => f.CreateForFiles(It.IsAny<AsperaCredential>(), It.IsAny<CancellationToken>()), Times.Exactly(_availableFileshares.Length));
+			mockExportTapiBridgeFactory.Verify(f => f.CreateForFiles(It.IsAny<RelativityFileShareSettings>(), It.IsAny<CancellationToken>()), Times.Exactly(_availableFileshares.Length));
 		}
 
 		[Test]
@@ -60,7 +60,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 		{
 			List<ExportRequest> requests = CreateThreeExportRequestsPerFileshares(_availableFileshares).ToList();
 
-			var downloader = new PhysicalFilesDownloader(_fileshareCredentialsServiceStub, _exportTapiBridgeFactoryStub, _mockExportConfig.Object, _safeIncrement, _logger);
+			var downloader = new PhysicalFilesDownloader(_fileshareSettingsServiceStub, _exportTapiBridgeFactoryStub, _mockExportConfig.Object, _safeIncrement, _logger);
 
 			await downloader.DownloadFilesAsync(requests, CancellationToken.None);
 
@@ -75,13 +75,13 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			_mockTapiBridge.Setup(b => b.WaitForTransferJob()).Throws<TaskCanceledException>();
 
 			Mock<IExportTapiBridgeFactory> mockExportTapiBridgeFactory = new Mock<IExportTapiBridgeFactory>();
-			mockExportTapiBridgeFactory.Setup(f => f.CreateForFiles(It.IsAny<AsperaCredential>(), It.IsAny<CancellationToken>()))
+			mockExportTapiBridgeFactory.Setup(f => f.CreateForFiles(It.IsAny<RelativityFileShareSettings>(), It.IsAny<CancellationToken>()))
 				.Returns(_mockTapiBridge.Object);
 
 
 			List<ExportRequest> requests = CreateThreeExportRequestsPerFileshares(_availableFileshares).ToList();
 
-			var downloader = new PhysicalFilesDownloader(_fileshareCredentialsServiceStub, mockExportTapiBridgeFactory.Object, _mockExportConfig.Object, _safeIncrement, _logger);
+			var downloader = new PhysicalFilesDownloader(_fileshareSettingsServiceStub, mockExportTapiBridgeFactory.Object, _mockExportConfig.Object, _safeIncrement, _logger);
 
 			Assert.ThrowsAsync<TaskCanceledException>(async () => await downloader.DownloadFilesAsync(requests, CancellationToken.None));
 		}
@@ -98,50 +98,6 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 				{
 					NativeSourceLocation = new UriBuilder(fileshareAddress) {Path = Guid.NewGuid().ToString()}.ToString()
 				}, "whatever.txt");
-		}
-	}
-
-	public class FileshareCredentialsServiceStub : IFileshareCredentialsService
-	{
-		private readonly Dictionary<string, AsperaCredential> _fileshares;
-
-		public FileshareCredentialsServiceStub(IEnumerable<string> fileshares)
-		{
-			_fileshares = fileshares.ToDictionary(f => f, _ => new AsperaCredential());
-		}
-
-		public AsperaCredential GetCredentialsForFileshare(string fileUri)
-		{
-			return _fileshares.FirstOrDefault(kvp => kvp.Key == fileUri).Value;
-		}
-	}
-
-	public class ExportTapyBridgeFactoryStub : IExportTapiBridgeFactory
-	{
-		private Dictionary<AsperaCredential, Mock<IDownloadTapiBridge>> _tapiBridges;
-
-		public ExportTapyBridgeFactoryStub()
-		{
-			_tapiBridges = new Dictionary<AsperaCredential, Mock<IDownloadTapiBridge>>();
-		}
-
-		public IDownloadTapiBridge CreateForLongText(CancellationToken token)
-		{
-			throw new NotImplementedException();
-		}
-
-		public IDownloadTapiBridge CreateForFiles(AsperaCredential asperaCredentials, CancellationToken token)
-		{
-			_tapiBridges[asperaCredentials] = new Mock<IDownloadTapiBridge>();
-			return _tapiBridges[asperaCredentials].Object;
-		}
-
-		public void VerifyBridges(Action<Mock<IDownloadTapiBridge>> verifyAction)
-		{
-			foreach (var tapiBridge in _tapiBridges.Values)
-			{
-				verifyAction(tapiBridge);
-			}
 		}
 	}
 }
