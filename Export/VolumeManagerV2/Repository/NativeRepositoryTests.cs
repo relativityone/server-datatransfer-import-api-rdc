@@ -98,7 +98,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			Native native1 = new Native(artifact1)
 			{
 				HasBeenDownloaded = false,
-				ExportRequest = new NativeFileExportRequest(artifact1, "")
+				ExportRequest = new PhysicalFileExportRequest(artifact1, "")
 				{
 					FileName = "filename_1",
 					Order = 1
@@ -122,7 +122,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			Native native3 = new Native(artifact3)
 			{
 				HasBeenDownloaded = false,
-				ExportRequest = new NativeFileExportRequest(artifact3, "")
+				ExportRequest = new PhysicalFileExportRequest(artifact3, "")
 				{
 					FileName = "filename_3",
 					Order = 3

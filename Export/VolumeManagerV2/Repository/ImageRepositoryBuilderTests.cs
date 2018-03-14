@@ -17,14 +17,14 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 
 		private ImageRepository _imageRepository;
 
-		private Mock<IFileExportRequestBuilder> _imageExportRequestBuilder;
+		private Mock<IExportRequestBuilder> _imageExportRequestBuilder;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_imageRepository = new ImageRepository();
 
-			_imageExportRequestBuilder = new Mock<IFileExportRequestBuilder>();
+			_imageExportRequestBuilder = new Mock<IExportRequestBuilder>();
 
 			_instance = new ImageRepositoryBuilder(_imageRepository, _imageExportRequestBuilder.Object, new NullLogger());
 		}
@@ -48,7 +48,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 				}
 			};
 
-			_imageExportRequestBuilder.Setup(x => x.Create(artifact, CancellationToken.None)).Returns(new List<FileExportRequest>());
+			_imageExportRequestBuilder.Setup(x => x.Create(artifact, CancellationToken.None)).Returns(new List<ExportRequest>());
 
 			//ACT
 			_instance.AddToRepository(artifact, CancellationToken.None);
@@ -78,9 +78,9 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 				}
 			};
 
-			_imageExportRequestBuilder.Setup(x => x.Create(artifact, CancellationToken.None)).Returns(new List<FileExportRequest>
+			_imageExportRequestBuilder.Setup(x => x.Create(artifact, CancellationToken.None)).Returns(new List<ExportRequest>
 			{
-				new NativeFileExportRequest(artifact, tempLocation)
+				new PhysicalFileExportRequest(artifact, tempLocation)
 			});
 
 			//ACT
@@ -139,15 +139,15 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 				}
 			};
 
-			IList<FileExportRequest> exportRequests1 = new List<FileExportRequest>
+			IList<ExportRequest> exportRequests1 = new List<ExportRequest>
 			{
-				new NativeFileExportRequest(artifact1, "invalid_path"),
-				new NativeFileExportRequest(artifact1, tempLocation2)
+				new PhysicalFileExportRequest(artifact1, "invalid_path"),
+				new PhysicalFileExportRequest(artifact1, tempLocation2)
 			};
 			_imageExportRequestBuilder.Setup(x => x.Create(artifact1, CancellationToken.None)).Returns(exportRequests1);
-			IList<FileExportRequest> exportRequests2 = new List<FileExportRequest>
+			IList<ExportRequest> exportRequests2 = new List<ExportRequest>
 			{
-				new NativeFileExportRequest(artifact2, tempLocation3)
+				new PhysicalFileExportRequest(artifact2, tempLocation3)
 			};
 			_imageExportRequestBuilder.Setup(x => x.Create(artifact2, CancellationToken.None)).Returns(exportRequests2);
 

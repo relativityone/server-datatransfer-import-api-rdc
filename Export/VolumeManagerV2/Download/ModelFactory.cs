@@ -20,7 +20,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 				ArtifactID = _artifactId++,
 				NativeSourceLocation = "location"
 			};
-			FileExportRequest exportRequest = new NativeFileExportRequest(artifact, "location")
+			ExportRequest exportRequest = new PhysicalFileExportRequest(artifact, "location")
 			{
 				FileName = Guid.NewGuid().ToString(),
 				Order = _order++
@@ -41,7 +41,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 				ArtifactID = artifactId,
 				SourceLocation = "sourceLocation"
 			};
-			FileExportRequest exportRequest = new NativeFileExportRequest(artifact, "location")
+			ExportRequest exportRequest = new PhysicalFileExportRequest(artifact, "location")
 			{
 				FileName = Guid.NewGuid().ToString(),
 				Order = _order++
