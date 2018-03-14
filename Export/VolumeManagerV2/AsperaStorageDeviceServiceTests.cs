@@ -24,6 +24,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2
 		[Test]
 		public void ShouldCacheCredentialsForFileshareTest()
 		{
+			//TODO!!!!!
 			ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, errors) => true;
 			
 			const int workspaceId = 1049950;
