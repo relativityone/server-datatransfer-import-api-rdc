@@ -8,32 +8,32 @@ using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 {
-	public class FileshareCredentialsService : IFileshareCredentialsService
+	public class FileshareSettingsService : IFileshareSettingsService
 	{
-		private Dictionary<string, AsperaCredential> _cachedCredentials;
+		private List<RelativityFileShareSettings> _cachedSettings;
 		private readonly ILog _logger;
 		private readonly int _workspaceId;
 		private readonly NetworkCredential _currentUserCredential;
 
-		public FileshareCredentialsService(ILog logger, ExportFile exportSettings)
+		public FileshareSettingsService(ILog logger, ExportFile exportSettings)
 		{
 			_logger = logger;
 			_workspaceId = exportSettings.CaseInfo.ArtifactID;
 			_currentUserCredential = exportSettings.Credential;
 		}
 
-		public AsperaCredential GetCredentialsForFileshare(string fileUrl)
+		public RelativityFileShareSettings GetSettingsForFileshare(string fileUrl)
 		{
-			if (_cachedCredentials == null)
+			if (_cachedSettings == null)
 			{
-				_cachedCredentials = new Dictionary<string, AsperaCredential>();
-				GetCredentialsForWorskpace(Config.WebServiceURL, _workspaceId, _currentUserCredential.UserName, _currentUserCredential.Password);
+				_cachedSettings = new List<RelativityFileShareSettings>();
+				GetFileshareSettingsForWorskpace(Config.WebServiceURL, _workspaceId, _currentUserCredential.UserName, _currentUserCredential.Password);
 			}
 
-			return _cachedCredentials.FirstOrDefault(n => n.Key == fileUrl).Value;
+			return _cachedSettings.FirstOrDefault(n => n.FileshareUri.IsBaseOf(new Uri(fileUrl)));
 		}
 
-		private void GetCredentialsForWorskpace(string hostUrl, int workspaceId, string userName, string password )
+		private void GetFileshareSettingsForWorskpace(string hostUrl, int workspaceId, string userName, string password )
 		{
 			try
 			{
@@ -46,16 +46,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 						
 					FileStorageSearchResults results = service.GetWorkspaceFileSharesAsync(_workspaceId).ConfigureAwait(false).GetAwaiter().GetResult();
 
-					foreach (RelativityFileShare fileShare in results.FileShares)
-					{
-						_cachedCredentials[fileShare.Url] = fileShare.TransferCredential;
-					}
+					_cachedSettings = results.FileShares.Select(f => new RelativityFileShareSettings(f)).ToList();
 				}
 				
 			}
 			catch (Exception e)
 			{
-				_logger.LogError(e, $"{nameof(GetCredentialsForWorskpace)}() failed with following error message {0} and stack trace {1}", e.Message, e.StackTrace);
+				_logger.LogError(e, $"{nameof(GetFileshareSettingsForWorskpace)}() failed with following error message {0} and stack trace {1}", e.Message, e.StackTrace);
 				throw;
 			}
 		}
