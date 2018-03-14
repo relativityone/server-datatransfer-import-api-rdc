@@ -1,9 +1,11 @@
-Imports System.Configuration
+
+Imports System.IO
 Imports System.Web.Services.Protocols
 Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
 Imports System.Net.Security
 Imports System.Linq
+Imports System.Reflection
 Imports System.Threading.Tasks
 
 Imports kCura.EDDS.WinForm.Forms
@@ -52,7 +54,8 @@ Namespace kCura.EDDS.WinForm
         Public Const ROSE_STARTUP_ALREADY_RUNNING As String = "Only one Staging Explorer session is allowed per one logged in user."
         Public Const RDC_ERROR_TITLE As String = "Relativity Desktop Client Error"
         Public Const RDC_TITLE As String = "Relativity Desktop Client"
-
+        Private const _STAGINGEXPLORER_DEFAULT_EXE_PATH as String = "..\Staging Explorer\Relativity.StagingExplorer.exe"
+    
         Private _caseSelected As Boolean = True
         Private _processPool As kCura.Windows.Process.ProcessPool
         Private _selectedCaseInfo As Relativity.CaseInfo
@@ -844,11 +847,10 @@ Namespace kCura.EDDS.WinForm
         End Sub
 
         Private Sub StartStagingExplorer(credentials As NetworkCredential, mainForm As MainForm)
-            Dim filename = GetApplicationFilePath()
             Dim arguments = $"-t {credentials.Password} -w {Me.SelectedCaseInfo.ArtifactID}  -u {kCura.WinEDDS.Config.WebServiceURL}"
 
             Dim appProcess = New Process()
-            appProcess.StartInfo.FileName = filename
+            appProcess.StartInfo.FileName = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),  _STAGINGEXPLORER_DEFAULT_EXE_PATH)
             appProcess.StartInfo.Arguments = arguments
             appProcess.EnableRaisingEvents = True
 
@@ -878,15 +880,6 @@ Namespace kCura.EDDS.WinForm
                 handleStagingExplorerProcessExited(appProcess.ExitCode)
             End If
         End Sub
-
-        Private Function GetApplicationFilePath() As String
-            Dim appPath = ConfigurationManager.AppSettings("Relativity.StagingExplorer.ApplicationFile")
-            If String.IsNullOrEmpty(appPath) Then
-                Return "Relativity.StagingExplorer.exe"
-            Else
-                Return appPath
-            End If
-        End Function
 
         Public Async Function GetListOfProductionsForCase(ByVal caseInfo As Relativity.CaseInfo) As Task(Of System.Data.DataTable)
             Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Await Me.GetCredentialsAsync(), _CookieContainer)
