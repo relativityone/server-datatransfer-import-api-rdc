@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using kCura.Windows.Process;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
@@ -38,22 +39,73 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			Native native = _nativeRepository.GetByLineNumber(lineNumber);
 			if (native != null)
 			{
-				native.HasBeenDownloaded = true;
-				UpdateDownloadedCountAndNotify(native.Artifact.ArtifactID, lineNumber);
+				if (native.HasBeenDownloaded)
+				{
+					NativeAlreadyDownloaded(native);
+				}
+				else
+				{
+					native.HasBeenDownloaded = true;
+					UpdateDownloadedCountAndNotify(native.Artifact.ArtifactID, lineNumber);
+				}
 			}
 			else
 			{
 				Image image = _imageRepository.GetByLineNumber(lineNumber);
 				if (image != null)
 				{
-					image.HasBeenDownloaded = true;
-					UpdateDownloadedCountAndNotify(image.Artifact.ArtifactID, lineNumber);
+					if (image.HasBeenDownloaded)
+					{
+						ImageAlreadyDownloaded(image);
+					}
+					else
+					{
+						image.HasBeenDownloaded = true;
+						UpdateDownloadedCountAndNotify(image.Artifact.ArtifactID, lineNumber);
+					}
 				}
-				else
-				{
-					_logger.LogWarning("Image for {fileName} not found.", fileName);
-				}
+
 				_logger.LogWarning("File for {fileName} not found.", fileName);
+			}
+		}
+
+		/// <summary>
+		///     TODO remove it after REL-206933 is fixed
+		/// </summary>
+		private void NativeAlreadyDownloaded(Native native)
+		{
+			IList<Native> duplicatedNatives = _nativeRepository.GetNatives()
+				.Where(x => x.ExportRequest.SourceLocation == native.ExportRequest.SourceLocation)
+				.Where(x => x.ExportRequest.Order != native.ExportRequest.Order)
+				.Where(x => !x.HasBeenDownloaded).ToList();
+
+			foreach (Native duplicatedNative in duplicatedNatives)
+			{
+				if (File.Exists(duplicatedNative.ExportRequest.DestinationLocation))
+				{
+					duplicatedNative.HasBeenDownloaded = true;
+					UpdateDownloadedCountAndNotify(duplicatedNative.Artifact.ArtifactID, duplicatedNative.ExportRequest.Order);
+				}
+			}
+		}
+
+		/// <summary>
+		///     TODO remove it after REL-206933 is fixed
+		/// </summary>
+		private void ImageAlreadyDownloaded(Image image)
+		{
+			IList<Image> duplicatedImages = _imageRepository.GetImages()
+				.Where(x => x.ExportRequest.SourceLocation == image.ExportRequest.SourceLocation)
+				.Where(x => x.ExportRequest.Order != image.ExportRequest.Order)
+				.Where(x => !x.HasBeenDownloaded).ToList();
+
+			foreach (Image duplicatedImage in duplicatedImages)
+			{
+				if (File.Exists(duplicatedImage.ExportRequest.DestinationLocation))
+				{
+					duplicatedImage.HasBeenDownloaded = true;
+					UpdateDownloadedCountAndNotify(duplicatedImage.Artifact.ArtifactID, duplicatedImage.ExportRequest.Order);
+				}
 			}
 		}
 
