@@ -65,10 +65,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			TapiBridgeParameters parameters = CreateTapiBridgeParametersFromConfiguration();
 
 			parameters.FileshareCredentials = fileshareSettings.TransferCredential;
-			//parameters.FileShare = fileshareSettings.DocRoot;
-			//parameters.FileShare = parameters.FileShare.Replace('/', '\\') + "files";
 			parameters.FileShare = fileshareSettings.FileshareName;
-			
+
 			DownloadTapiBridge tapiBridge = TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, token);
 			tapiBridge.DumpInfo();
 			return new TapiBridgeWrapper(tapiBridge);

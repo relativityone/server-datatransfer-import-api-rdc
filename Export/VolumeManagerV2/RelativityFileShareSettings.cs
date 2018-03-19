@@ -16,12 +16,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 
 		public RelativityFileShareSettings(string fileshareName, AsperaCredential credential)
 		{
-			FileshareName = fileshareName;
-			FileshareUri = new Uri(FileshareName);
+			//todo Adrian: this is a hack because of tapirap env do not stick to naming conventions.
+			FileshareName = fileshareName.Replace('/', '\\') + "files";
+			FileshareUri = new Uri(fileshareName);
 			TransferCredential = credential;
 		}
 
-		public RelativityFileShareSettings(RelativityFileShare fileShare) : this(fileShare.Name, fileShare.TransferCredential)
+		//todo Adrian: this is a hack because of tapirap env do not stick to naming conventions. Use RelativityFileShare.Url instead of RelativityFileShare.DocRoot!
+		public RelativityFileShareSettings(RelativityFileShare fileShare) : this(fileShare.DocRoot, fileShare.TransferCredential)
 		{
 
 		}
