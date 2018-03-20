@@ -111,9 +111,6 @@
     <Reference Include="Relativity.Services.Interfaces, Version=9.6.40.7, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Services.Interfaces.9.6.40.7\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.Interfaces.Private, Version=9.6.40.7, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Services.Interfaces.Private.9.6.40.7\lib\net462\Relativity.Services.Interfaces.Private.dll</HintPath>
-    </Reference>
     <Reference Include="Relativity.Services.ServiceProxy">
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.445\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
@@ -450,6 +447,10 @@
     <ProjectReference Include="..\kCura.WinEDDS\kCura.WinEDDS.vbproj">
       <Project>{f16a2219-5dac-4f2b-89b0-6bd1243cbf8f}</Project>
       <Name>kCura.WinEDDS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Relativity.Services.Interfaces.Private\Relativity.Services.Interfaces.Private.csproj">
+      <Project>{c7b944ce-f8fd-4699-b4a9-0127746b30c1}</Project>
+      <Name>Relativity.Services.Interfaces.Private</Name>
     </ProjectReference>
     <ProjectReference Include="..\Relativity\Relativity.vbproj">
       <Project>{044a6424-bc90-46ce-8805-0053a44afcab}</Project>
