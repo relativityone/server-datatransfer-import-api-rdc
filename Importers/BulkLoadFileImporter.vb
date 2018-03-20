@@ -3,6 +3,7 @@ Imports System.IO
 Imports System.Threading
 Imports System.Threading.Tasks
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
+Imports kCura.OI.FileID
 Imports kCura.Utility.Extensions
 Imports kCura.Windows.Process
 Imports kCura.WinEDDS.TApi
@@ -554,6 +555,9 @@ Namespace kCura.WinEDDS
 						Catch ex As System.IO.FileNotFoundException
 							WriteError(Me.CurrentLineNumber, ex.Message)
 							Me.LogError(ex, "A file not found error has occurred managing an import document.")
+						Catch ex As FileIDIdentificationException
+							WriteError(Me.CurrentLineNumber, ex.Message)
+							Me.LogError(ex, "An error occured identifying type of native file.")
 						Catch ex As System.Exception
 							WriteFatalError(Me.CurrentLineNumber, ex)
 							Me.LogFatal(ex, "A serious unexpected error has occurred managing an import document.")
