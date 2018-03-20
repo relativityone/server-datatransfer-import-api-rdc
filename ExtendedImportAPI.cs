@@ -36,5 +36,15 @@ namespace kCura.Relativity.ImportAPI {
 
 			return returnJob;
 		}
+
+		public ImportBulkArtifactJob NewArtifactImportJob(string token, int artifactTypeID)
+		{
+			var returnJob =   NewObjectImportJob(artifactTypeID);
+
+			returnJob.Settings.OnBehalfOfUserToken = token;
+
+			return returnJob;
+		}
+
 	}
 }
