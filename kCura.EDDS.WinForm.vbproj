@@ -144,6 +144,10 @@
       <Project>{c7b944ce-f8fd-4699-b4a9-0127746b30c1}</Project>
       <Name>Relativity.Services.Interfaces.Private</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Relativity.Services.Interfaces\Relativity.Services.Interfaces.csproj">
+      <Project>{494965f5-2ac5-4fcb-9eb8-2436a0d5dcc0}</Project>
+      <Name>Relativity.Services.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Relativity\Relativity.vbproj">
       <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
       <Name>Relativity</Name>
@@ -252,9 +256,6 @@
     </Reference>
     <Reference Include="Relativity.Services.DataContracts, Version=9.6.40.7, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Services.DataContracts.9.6.40.7\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
-    </Reference>
-    <Reference Include="Relativity.Services.Interfaces, Version=9.6.40.7, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Services.Interfaces.9.6.40.7\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy">
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.445\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
