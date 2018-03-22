@@ -140,6 +140,10 @@
       <Project>{E621897E-45AF-4FBD-ADA4-EEE787E5233F}</Project>
       <Name>Relativity.Applications.Serialization</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Relativity.Services.DataContracts\Relativity.Services.DataContracts.csproj">
+      <Project>{63555847-0a7e-45a5-823d-76bde671649f}</Project>
+      <Name>Relativity.Services.DataContracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Relativity.Services.Interfaces.Private\Relativity.Services.Interfaces.Private.csproj">
       <Project>{c7b944ce-f8fd-4699-b4a9-0127746b30c1}</Project>
       <Name>Relativity.Services.Interfaces.Private</Name>
@@ -253,9 +257,6 @@
     <Reference Include="Relativity.SecretCatalog, Version=1.0.18.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.SecretCatalog.1.0.18\lib\Relativity.SecretCatalog.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.Services.DataContracts, Version=9.6.40.7, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Services.DataContracts.9.6.40.7\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy">
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.445\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
