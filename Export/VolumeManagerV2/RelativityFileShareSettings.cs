@@ -16,12 +16,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 
 		public RelativityFileShareSettings(string fileshareName, AsperaCredential credential)
 		{
-			FileshareName = fileshareName;
+			FileshareName = fileshareName.Replace('/', '\\') + "files";
 			FileshareUri = new Uri(fileshareName);
 			TransferCredential = credential;
 		}
 
-		public RelativityFileShareSettings(RelativityFileShare fileShare) : this(fileShare.Url, fileShare.TransferCredential)
+		public RelativityFileShareSettings(RelativityFileShare fileShare) : this(fileShare.DocRoot, fileShare.TransferCredential)
 		{
 
 		}
