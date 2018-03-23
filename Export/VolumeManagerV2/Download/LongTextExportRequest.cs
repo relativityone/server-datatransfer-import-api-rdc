@@ -54,6 +54,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			var transferPath = new TransferPath
 			{
 				Order = Order,
+				SourcePath = Guid.NewGuid().ToString(), //<- required by TAPI validators
 				TargetPath = fileInfo.Directory?.FullName,
 				TargetFileName = fileInfo.Name
 			};
