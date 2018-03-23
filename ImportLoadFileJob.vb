@@ -359,7 +359,7 @@ Namespace kCura.Relativity.DataReaderClient
 		End Function
 
 		Private Sub ValidateIdentifierMapping()
-			If Not Me._nativeSettings.OverwriteMode = OverwriteModeEnum.Overlay Then
+			If Me._nativeSettings.OverwriteMode <> OverwriteModeEnum.Overlay OrElse Me._nativeSettings.IdentityFieldId <= 0 Then
 				Return
 			End If
 			Dim idField As DocumentField = Nothing
