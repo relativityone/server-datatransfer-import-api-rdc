@@ -103,7 +103,7 @@ Namespace kCura.WinEDDS
 				If UseOldExport Then
 					Return _volumeManager?.ErrorLogFileName
 				End If
-				If _errorFile.IsErrorFileCreated() Then
+				If _errorFile?.IsErrorFileCreated() Then
 					Return _errorFile.Path()
 				Else
 					Return Nothing
