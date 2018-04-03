@@ -34,7 +34,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			ConcurrentQueue<ExportRequestsWithFileshareSettings> queue = CreateTransferQueue(requests);
 			_logger.LogVerbose("Adding {filesToExportCount} requests for files through {tapiBridgeCount} TAPI bridges.", requests.Count, queue.Count);
 
-			IEnumerable<Task> tasks = Enumerable.Repeat(Task.Run(() => CreateJobTask(queue, taskCancellationTokenSource), taskCancellationTokenSource.Token), _exportConfig.MaxNumberOfFileExportTasks);
+			var tasks = new List<Task>();
+
+			for (var i = 0; i < _exportConfig.MaxNumberOfFileExportTasks; i++)
+			{
+				tasks.Add(Task.Run(() => CreateJobTask(queue, taskCancellationTokenSource), taskCancellationTokenSource.Token));
+			}
+
 			await AwaitAllTasks(tasks);
 		}
 

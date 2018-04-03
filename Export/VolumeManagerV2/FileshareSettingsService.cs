@@ -29,8 +29,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 				_cachedSettings = new List<RelativityFileShareSettings>();
 				GetFileshareSettingsForWorskpace(Config.WebServiceURL, _workspaceId, _currentUserCredential.UserName, _currentUserCredential.Password);
 			}
-
-			//todo Adrian: Consider using FileStorageSearchResults.GetRelativityFileShare instead of manually parsing uris
+			
 			return _cachedSettings.FirstOrDefault(n => n.FileshareUri.IsBaseOf(new Uri(fileUrl)));
 		}
 
