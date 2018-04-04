@@ -1213,12 +1213,16 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub WaitOnPushBatchTask()
-			If _task Is Nothing Then Return
-			Try
-				Task.WaitAll(_task)
-			Catch ex As AggregateException
-				Throw ex.InnerExceptions.First()
-			End Try
+		    If _task Is Nothing Then Return
+		    Try
+		        Task.WaitAll(_task)
+		    Catch ex As AggregateException
+		        Me.LogFatal(ex, "A fatal error occurred while waiting on the batch task")
+
+		        ex.Handle(Function(e)
+		                Throw e
+		            End Function)
+		    End Try
 		End Sub
 
 		Private _task As System.Threading.Tasks.Task = Nothing
