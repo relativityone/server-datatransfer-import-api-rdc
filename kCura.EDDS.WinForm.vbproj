@@ -124,6 +124,10 @@
     <DefineConstants>EnableInjections</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Applications\Telemetry\Relativity.Telemetry.Services.Interface\Relativity.Telemetry.Services.Interface.csproj">
+      <Project>{7344356e-2f00-469a-94dc-efcbdaa866c5}</Project>
+      <Name>Relativity.Telemetry.Services.Interface</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura\kCura.vbproj">
       <Project>{535d782a-2388-416f-ab46-10347e44eec9}</Project>
       <Name>kCura</Name>
@@ -266,9 +270,6 @@
     </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared">
       <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.159\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
-    </Reference>
-    <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.5.372.12, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface.9.5.372.12\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Transfer.Client, Version=2.0.18051.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\relativity.transfer.client.2.1.1\lib\net462\Relativity.Transfer.Client.dll</HintPath>
