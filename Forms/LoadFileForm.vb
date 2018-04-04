@@ -69,7 +69,10 @@ Namespace kCura.EDDS.WinForm
                 If Me.IsChildObject Then
                     Me.GroupBoxFolderInfo.Enabled = True
                     _buildFolderStructure.Checked = True
-                End If
+                Else 
+                    Me.GroupBoxFolderInfo.Enabled = False
+                    _buildFolderStructure.Checked = False
+                End If 
                 Me.GroupBoxNativeFileBehavior.Enabled = False
                 If Await _application.HasFileField(Me.LoadFile.ArtifactTypeID, True) Then
                     Me.GroupBoxNativeFileBehavior.Enabled = True

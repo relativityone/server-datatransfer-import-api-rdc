@@ -6,6 +6,8 @@ Imports kCura.WinEDDS.Credentials
 Imports Relativity
 Imports RelativityManager = kCura.WinEDDS.Service.RelativityManager
 Imports kCura.EDDS.WinForm.Exceptions
+Imports kCura.WinEDDS.Container
+Imports kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 
 Namespace kCura.EDDS.WinForm
 
@@ -35,11 +37,13 @@ Namespace kCura.EDDS.WinForm
 			Native
 			DynamicObject
 			Application
+			Export
 		End Enum
 
 #End Region
 
 		Public Sub Main()
+			ContainerFactoryProvider.ContainerFactory = new ContainerFactory()
 			Dim handler As ThreadExceptionHandler = New ThreadExceptionHandler()
 			AddHandler System.Windows.Forms.Application.ThreadException, AddressOf handler.Application_ThreadException
 
@@ -54,8 +58,8 @@ Namespace kCura.EDDS.WinForm
 				System.Windows.Forms.Application.Run()
 			Else
 				Task.Run(Async Function() As Task
-				             Await RunInConsoleMode().ConfigureAwait(false)
-				         End Function).Wait()
+							 Await RunInConsoleMode().ConfigureAwait(False)
+						 End Function).Wait()
 			End If
 		End Sub
 
@@ -130,9 +134,9 @@ Namespace kCura.EDDS.WinForm
 						Console.WriteLine(Application.ACCESS_DISABLED_MESSAGE)
 						Return
 					ElseIf loginResult = Application.CredentialCheckResult.InvalidClientCredentials Then
-						throw new ClientCrendentialsException
+						Throw New ClientCrendentialsException
 					ElseIf loginResult = Application.CredentialCheckResult.FailToConnectToIdentityServer Then
-						throw new ConnectToIdentityServerException
+						Throw New ConnectToIdentityServerException
 					ElseIf Not loginResult = Application.CredentialCheckResult.Success Then
 						Throw New CredentialsException
 					End If
@@ -150,6 +154,8 @@ Namespace kCura.EDDS.WinForm
 						_import.RunDynamicObjectImport(_importOptions)
 					Case LoadMode.Application
 						Await _import.RunApplicationImport(_importOptions)
+					Case LoadMode.Export
+						Await _import.RunExport(_importOptions.SelectedExportSettings)
 				End Select
 
 				Await _application.Logout()

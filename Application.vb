@@ -1,9 +1,11 @@
-Imports System.Configuration
+
+Imports System.IO
 Imports System.Web.Services.Protocols
 Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
 Imports System.Net.Security
 Imports System.Linq
+Imports System.Reflection
 Imports System.Threading.Tasks
 
 Imports kCura.EDDS.WinForm.Forms
@@ -16,7 +18,7 @@ Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
 Imports Relativity.Services.ServiceProxy
-Imports Relativity.Services.StagingManager
+Imports Relativity.StagingExplorer.Services.StagingManager
 
 Namespace kCura.EDDS.WinForm
     Public Class Application
@@ -49,8 +51,11 @@ Namespace kCura.EDDS.WinForm
 
         Public Const ACCESS_DISABLED_MESSAGE As String = "Your Relativity account has been disabled.  Please contact your Relativity Administrator to activate your account."
         Public Const ROSE_STARTUP_PERMISSIONS_FAILURE As String = "The RelativityOne Staging Explorer failed to run due to insufficient permissions. Please contact you Relativity Administrator."
+        Public Const ROSE_STARTUP_ALREADY_RUNNING As String = "Only one Staging Explorer session is allowed per one logged in user."
         Public Const RDC_ERROR_TITLE As String = "Relativity Desktop Client Error"
-
+        Public Const RDC_TITLE As String = "Relativity Desktop Client"
+        Private const _STAGINGEXPLORER_DEFAULT_EXE_PATH as String = "..\Staging Explorer\Relativity.StagingExplorer.exe"
+    
         Private _caseSelected As Boolean = True
         Private _processPool As kCura.Windows.Process.ProcessPool
         Private _selectedCaseInfo As Relativity.CaseInfo
@@ -587,7 +592,8 @@ Namespace kCura.EDDS.WinForm
 
         Public Function GetColumnHeadersFromLoadFile(ByVal loadfile As kCura.WinEDDS.LoadFile, ByVal firstLineContainsColumnHeaders As Boolean) As String()
             loadfile.CookieContainer = Me.CookieContainer
-            Dim parser As New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, _timeZoneOffset, False, Nothing, False, Config.BulkLoadFileFieldDelimiter, Config.EnforceDocumentLimit, ExecutionSource.Rdc)
+            Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog("WinEDDS")
+            Dim parser As New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, Nothing, logger, _timeZoneOffset, False, Nothing, False, Config.BulkLoadFileFieldDelimiter, Config.EnforceDocumentLimit, Nothing, ExecutionSource.Rdc)
             Return parser.GetColumnNames(loadfile)
         End Function
 
@@ -832,43 +838,48 @@ Namespace kCura.EDDS.WinForm
             End Try
         End Function
 
-        Public Async Sub NewFileTransfer()
+        Public Async Sub NewFileTransfer(mainForm As MainForm)
             Await NewLoginAsync()
             
             Dim credentials = Await Me.GetCredentialsAsync()
 
-            StartStagingExplorer(credentials)
+            StartStagingExplorer(credentials, mainForm)
         End Sub
 
-        Private Sub StartStagingExplorer(credentials As NetworkCredential)
-            Dim filename = GetApplicationFilePath()
+        Private Sub StartStagingExplorer(credentials As NetworkCredential, mainForm As MainForm)
             Dim arguments = $"-t {credentials.Password} -w {Me.SelectedCaseInfo.ArtifactID}  -u {kCura.WinEDDS.Config.WebServiceURL}"
 
             Dim appProcess = New Process()
-            appProcess.StartInfo.FileName = filename
+            appProcess.StartInfo.FileName = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),  _STAGINGEXPLORER_DEFAULT_EXE_PATH)
             appProcess.StartInfo.Arguments = arguments
             appProcess.EnableRaisingEvents = True
 
-            AddHandler appProcess.Exited, Sub(s, e) OnStagingExplorerProcessExited(s, e)
+            AddHandler appProcess.Exited, Sub(s, e) OnStagingExplorerProcessExited(s, mainForm)
 
             appProcess.Start()
         End Sub
 
-        Private Sub OnStagingExplorerProcessExited(sender As Object, e As EventArgs)
+        Private Sub OnStagingExplorerProcessExited(sender As Object, mainForm As MainForm)
             Dim appProcess = TryCast(sender, Process)
-            If appProcess IsNot Nothing And appProcess.ExitCode = 403 Then
-                MessageBox.Show(ROSE_STARTUP_PERMISSIONS_FAILURE, RDC_ERROR_TITLE)
+            If appProcess Is Nothing Then
+                Return
+            End If
+
+            Dim handleStagingExplorerProcessExited =
+                    Sub(exitCode As Integer)
+                        If exitCode = 403 Then
+                            MessageBox.Show(ROSE_STARTUP_PERMISSIONS_FAILURE, RDC_ERROR_TITLE)
+                        ElseIf exitCode = 423 Then
+                            MessageBox.Show(ROSE_STARTUP_ALREADY_RUNNING, RDC_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information)
+                        End If
+                    End Sub
+
+            If mainForm.InvokeRequired Then
+                mainForm.Invoke(handleStagingExplorerProcessExited, appProcess.ExitCode)
+            Else 
+                handleStagingExplorerProcessExited(appProcess.ExitCode)
             End If
         End Sub
-
-        Private Function GetApplicationFilePath() As String
-            Dim appPath = ConfigurationManager.AppSettings("Relativity.StagingExplorer.ApplicationFile")
-            If String.IsNullOrEmpty(appPath) Then
-                Return "Relativity.StagingExplorer.exe"
-            Else
-                Return appPath
-            End If
-        End Function
 
         Public Async Function GetListOfProductionsForCase(ByVal caseInfo As Relativity.CaseInfo) As Task(Of System.Data.DataTable)
             Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Await Me.GetCredentialsAsync(), _CookieContainer)
@@ -1452,7 +1463,12 @@ Namespace kCura.EDDS.WinForm
             UserHasImportPermission = New kCura.WinEDDS.Service.BulkImportManager(Await GetCredentialsAsync(), CookieContainer).HasImportPermissions(SelectedCaseInfo.ArtifactID)
 
             'additionally load config and permissions for staging explorer
-            UserHasStagingPermission = Await Me.CanUserAccessStagingExplorer(Await GetCredentialsAsync())
+			Try
+				UserHasStagingPermission = Await Me.CanUserAccessStagingExplorer(Await GetCredentialsAsync())
+			Catch ex As Exception
+				UserHasStagingPermission = False
+			End Try
+            
         End Function
 
         Private Sub CertificatePromptForm_Deny_Click() Handles _certificatePromptForm.DenyUntrustedCertificates
@@ -1648,7 +1664,7 @@ Namespace kCura.EDDS.WinForm
                 End If
             Next
             If Not match Then
-                MsgBox(String.Format("Your version of the Relativity Desktop Client is out of date. You are running version {0}, but version {1} is required.", Me.GetDisplayAssemblyVersion(), relVersionString), MsgBoxStyle.Critical, "WinRelativity Version Mismatch")
+                MsgBox(String.Format("Your version of the Relativity Desktop Client ({0}) is out of date. Please make sure you are running correct RDC version ({1}) or specified correct WebService URL for Relativity.", Me.GetDisplayAssemblyVersion(), relVersionString), MsgBoxStyle.Critical, "WinRelativity Version Mismatch")
                 ExitApplication()
             Else
                 Exit Sub

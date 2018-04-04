@@ -1174,8 +1174,8 @@ Public Class ExportForm
 		End If
 
 		_layoutRatioList.ForEach(Sub(x)
-															 x.InitalizeRatioValues()
-														 End Sub)
+									 x.InitalizeRatioValues()
+								 End Sub)
 
 		'Layout properties which are directly based on another layout property.  These are all properties with a 1-1 ration
 		If _layoutDifferenceList Is Nothing Then
@@ -1203,8 +1203,8 @@ Public Class ExportForm
 		End If
 
 		_layoutDifferenceList.ForEach(Sub(x)
-																		x.InitializeDifference()
-																	End Sub)
+										  x.InitializeDifference()
+									  End Sub)
 
 		_layoutReferenceDistance = CalcReferenceDistance()
 
@@ -1266,14 +1266,14 @@ Public Class ExportForm
 	End Property
 
 	Public Async Function GetObjectTypeName() As Task(Of String)
-			If _objectTypeName = "" Then
-				For Each row As System.Data.DataRow In New kCura.WinEDDS.Service.ObjectTypeManager(Await _application.GetCredentialsAsync(), _application.CookieContainer).RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
-					If CType(row("DescriptorArtifactTypeID"), Int32) = Me.ExportFile.ArtifactTypeID Then
-						_objectTypeName = row("Name").ToString
-					End If
-				Next
-			End If
-			Return _objectTypeName
+		If _objectTypeName = "" Then
+			For Each row As System.Data.DataRow In New kCura.WinEDDS.Service.ObjectTypeManager(Await _application.GetCredentialsAsync(), _application.CookieContainer).RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
+				If CType(row("DescriptorArtifactTypeID"), Int32) = Me.ExportFile.ArtifactTypeID Then
+					_objectTypeName = row("Name").ToString
+				End If
+			Next
+		End If
+		Return _objectTypeName
 	End Function
 
 	Private Sub AppendErrorMessage(ByVal msg As System.Text.StringBuilder, ByVal errorText As String)
@@ -1574,31 +1574,31 @@ Public Class ExportForm
 					End If
 				Next
 			Next
-			
+
 			If ef.AllExportableFields IsNot Nothing Then
 				Dim defaultSelectedIds As New System.Collections.ArrayList
-			If _columnSelector.RightListBoxItems.Count = 0 Then
-				_metadataGroupBox.Enabled = False
-				If Not _filters.SelectedItem Is Nothing Then defaultSelectedIds = DirectCast(Me.ExportFile.ArtifactAvfLookup(CType(_filters.SelectedValue, Int32)), ArrayList)
+				If _columnSelector.RightListBoxItems.Count = 0 Then
+					_metadataGroupBox.Enabled = False
+					If Not _filters.SelectedItem Is Nothing Then defaultSelectedIds = DirectCast(Me.ExportFile.ArtifactAvfLookup(CType(_filters.SelectedValue, Int32)), ArrayList)
 
-				For Each defaultSelectedId As Int32 In defaultSelectedIds
-					For Each field As ViewFieldInfo In ef.AllExportableFields
-						If field.AvfId = defaultSelectedId Then
-							Dim avfNumber = field.AvfId
-							Dim found As Boolean = ef.SelectedViewFields.Any(Function(addedItem) avfNumber = addedItem.AvfId)
-							If Not found Then
-								If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
+					For Each defaultSelectedId As Int32 In defaultSelectedIds
+						For Each field As ViewFieldInfo In ef.AllExportableFields
+							If field.AvfId = defaultSelectedId Then
+								Dim avfNumber = field.AvfId
+								Dim found As Boolean = ef.SelectedViewFields.Any(Function(addedItem) avfNumber = addedItem.AvfId)
+								If Not found Then
+									If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
 										_columnSelector.RightListBoxItems.Add(New ViewFieldInfo(field))
-									Exit For
-								ElseIf field.FieldType <> Relativity.FieldTypeHelper.FieldType.File Then
+										Exit For
+									ElseIf field.FieldType <> Relativity.FieldTypeHelper.FieldType.File Then
 										_columnSelector.RightListBoxItems.Add(New ViewFieldInfo(field))
-									Exit For
+										Exit For
+									End If
 								End If
 							End If
-						End If
+						Next
 					Next
-				Next
-			End If
+				End If
 			End If
 
 			For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
@@ -1912,13 +1912,6 @@ Public Class ExportForm
 				_newLineDelimiter.SelectedValue = ChrW(10)
 				_multiRecordDelimiter.SelectedValue = ChrW(59)
 				_nestedValueDelimiter.SelectedValue = "\"c
-				'Case "Tab-delimited (.txt)"
-				'	Me.ToggleLoadFileCharacterInformation(False)
-				'	_recordDelimiter.SelectedValue = ChrW(9)
-				'	_quoteDelimiter.SelectedValue = ChrW(34)
-				'	_newLineDelimiter.SelectedValue = ChrW(10)
-				'	_multiRecordDelimiter.SelectedValue = ChrW(59)
-				'	_nestedValueDelimiter.SelectedValue = "\"c
 			Case "Concordance (.dat)"
 				Me.ToggleLoadFileCharacterInformation(False)
 				_recordDelimiter.SelectedValue = ChrW(20)
