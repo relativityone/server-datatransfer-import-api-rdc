@@ -76,24 +76,23 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Transfer.Client">
-      <HintPath>..\..\packages\relativity.transfer.client.3.0.0-alpha000190\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+      <HintPath>..\..\packages\relativity.transfer.client.3.0.0-alpha000210\lib\net462\Relativity.Transfer.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Aspera, Version=2.0.18080.12, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\relativity.transfer.client.3.0.0-alpha000190\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Aspera">
+      <HintPath>..\..\packages\relativity.transfer.client.3.0.0-alpha000210\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Transfer.Client.Core">
-      <HintPath>..\..\packages\relativity.transfer.client.3.0.0-alpha000190\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+      <HintPath>..\..\packages\relativity.transfer.client.3.0.0-alpha000210\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Transfer.Client.FileShare">
-      <HintPath>..\..\packages\relativity.transfer.client.3.0.0-alpha000190\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+      <HintPath>..\..\packages\relativity.transfer.client.3.0.0-alpha000210\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Transfer.Client.Http">
-      <HintPath>..\..\packages\relativity.transfer.client.3.0.0-alpha000190\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+      <HintPath>..\..\packages\relativity.transfer.client.3.0.0-alpha000210\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Transfer.UnitTestFramework">
