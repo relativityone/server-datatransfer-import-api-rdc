@@ -4,49 +4,24 @@ Namespace kCura.WinEDDS
 		Inherits kCura.Windows.Process.ProcessBase
 
 		Public LoadFile As ImageLoadFile
+		Public ReturnValueCollection As Hashtable
+		Public ReturnValueKey As Guid
 		Protected WithEvents _imageFilePreviewer As ImageFilePreviewer
 		Private _startTime As System.DateTime
 		Private _errorCount As Int32
-		Private _errorsOnly As Boolean
 		Private _warningCount As Int32
-		Private _timeZoneOffset As Int32
-		Private StartTime As System.DateTime
-		Private WithEvents _valueThrower As ValueThrower
-		Public ReturnValueCollection As Hashtable
-		Public ReturnValueKey As Guid
 
-		Public Property TimeZoneOffset() As Int32
-			Get
-				Return _timeZoneOffset
-			End Get
-			Set(ByVal value As Int32)
-				_timeZoneOffset = value
-			End Set
-		End Property
+		Public Property TimeZoneOffset As Int32
 
-		Public Property ErrorsOnly() As Boolean
-			Get
-				Return _errorsOnly
-			End Get
-			Set(ByVal value As Boolean)
-				_errorsOnly = value
-			End Set
-		End Property
+		Public Property ErrorsOnly As Boolean
 
-		Public Property Thrower() As ValueThrower
-			Get
-				Return _valueThrower
-			End Get
-			Set(ByVal value As ValueThrower)
-				_valueThrower = value
-			End Set
-		End Property
+		Public Property Thrower As ValueThrower
 
 		Protected Overrides Sub Execute()
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
-			_imageFilePreviewer = New kCura.WinEDDS.ImageFilePreviewer(LoadFile, ProcessController, True)
+			_imageFilePreviewer = New kCura.WinEDDS.ImageFilePreviewer(ProcessController, True)
 
 			_imageFilePreviewer.ReadFile(LoadFile.FileName)
 			Me.ProcessObserver.RaiseProcessCompleteEvent()

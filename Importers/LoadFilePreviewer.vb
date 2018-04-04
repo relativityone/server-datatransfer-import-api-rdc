@@ -1,7 +1,10 @@
 'Imports kCura.EDDS.DynamicFields
 Imports System.IO
+Imports System.Threading
 Imports kCura.WinEDDS.Api
 Imports kCura.Utility
+Imports kCura.WinEDDS.TApi
+Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
 	Public Class LoadFilePreviewer
@@ -12,7 +15,6 @@ Namespace kCura.WinEDDS
 		Private _errorsOnly As Boolean
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 		Private _continue As Boolean = True
-		Private _columnCount As Int32 = 0
 		Private _nativeFileCheckColumnName As String = ""
 		Private _selectedCaseArtifactID As Int32
 		Public Shared extractedTextEncodingFieldName As String = "Extracted Text Encoding"
@@ -23,8 +25,9 @@ Namespace kCura.WinEDDS
 #Region "Constructors"
 
 
-		Public Sub New(ByVal args As LoadFile, ByVal timeZoneOffset As Int32, ByVal errorsOnly As Boolean, ByVal doRetryLogic As Boolean, Optional ByVal processController As kCura.Windows.Process.Controller = Nothing)
-			MyBase.New(args, timeZoneOffset, doRetryLogic, True)
+		Public Sub New(ByVal args As LoadFile, ByVal logger As ILog, ByVal timeZoneOffset As Int32, ByVal errorsOnly As Boolean, ByVal doRetryLogic As Boolean, ByVal tokenSource As CancellationTokenSource,
+					   Optional ByVal processController As kCura.Windows.Process.Controller = Nothing)
+			MyBase.New(args, Nothing, logger, timeZoneOffset, doRetryLogic, True, tokenSource)
 			_selectedCaseArtifactID = args.CaseInfo.ArtifactID
 			_errorsOnly = errorsOnly
 			_processController = processController
@@ -105,14 +108,12 @@ Namespace kCura.WinEDDS
 			ProcessStart(0, filesize, stepsize)
 			Dim fieldArrays As New System.Collections.ArrayList
 			_columnHeaders = _artifactReader.GetColumnNames(_settings)
-			_columnCount = _columnHeaders.Length
 			If _firstLineContainsColumnNames Then
 				If _uploadFiles Then
 					Dim openParenIndex As Int32 = _filePathColumn.LastIndexOf("("c) + 1
 					Dim closeParenIndex As Int32 = _filePathColumn.LastIndexOf(")"c)
 					_filePathColumnIndex = Int32.Parse(_filePathColumn.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
 				End If
-				'_filePathColumnIndex = Array.IndexOf(_columnHeaders, _filePathColumn)
 				If _artifactReader.HasMoreRecords Then _artifactReader.AdvanceRecord()
 			Else
 				If _uploadFiles Then
@@ -125,11 +126,7 @@ Namespace kCura.WinEDDS
 				If fieldArrays.Count < kCura.WinEDDS.Config.PREVIEW_THRESHOLD Then
 					Try
 						Dim record As Api.ArtifactFieldCollection = _artifactReader.ReadArtifact
-						If Not _firstLineContainsColumnNames AndAlso fieldArrays.Count = 0 Then
-							_columnCount = record.Count
-						End If
 						Dim x As Api.ArtifactField() = CheckLine(record, formType)
-						'If Not x Is Nothing AndAlso Not (_firstLineContainsColumnNames AndAlso i = 0) Then fieldArrays.Add(x)
 						If Not x Is Nothing Then fieldArrays.Add(x)
 					Catch ex As ImporterExceptionBase
 						fieldArrays.Add(ex)
@@ -203,7 +200,6 @@ Namespace kCura.WinEDDS
 				If _processedIdentifiers(identifierField.Value.ToString) Is Nothing Then
 					_processedIdentifiers(identifierField.Value.ToString) = Me.CurrentLineNumber.ToString
 				Else
-					'Throw New IdentifierOverlapException(identifierField.Value, _processedIdentifiers(identifierField.Value))
 					identifierField.Value = New Exceptions.ErrorMessage(String.Format("Error: The identifier '{0}' has been previously proccessed on line {1}.", identifierField.Value.ToString, _processedIdentifiers(identifierField.Value.ToString)))
 					lineContainsErrors = True
 				End If
@@ -338,6 +334,6 @@ Namespace kCura.WinEDDS
 			Return New LoadFileReader(_settings, True)
 		End Function
 
-	End Class
+    End Class
 End Namespace
 

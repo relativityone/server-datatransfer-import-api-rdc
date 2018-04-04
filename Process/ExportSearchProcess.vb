@@ -14,6 +14,7 @@ Namespace kCura.WinEDDS
 		Private _uploadModeText As String = Nothing
 
 		Public Property UserNotification As Exporters.IUserNotification
+		Public Property UserNotificationFactory As Func(Of Exporter, IUserNotification)
 
 		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
 			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory
@@ -26,9 +27,15 @@ Namespace kCura.WinEDDS
 			_errorCount = 0
 			_searchExporter = New Exporter(Me.ExportFile, Me.ProcessController, New Service.Export.WebApiServiceFactory(Me.ExportFile), 
 											_loadFileHeaderFormatterFactory, _exportConfig) With {.InteractionManager = UserNotification}
-
+			If Not UserNotificationFactory Is Nothing Then
+				Dim un As IUserNotification = UserNotificationFactory(_searchExporter)
+				If Not un Is Nothing Then
+					_searchExporter.InteractionManager = un
+					UserNotification = un
+				End If
+			End If
 			If Not _searchExporter.ExportSearch() Then
-				Me.ProcessObserver.RaiseProcessCompleteEvent(False, _searchExporter.ErrorLogFileName)
+				Me.ProcessObserver.RaiseProcessCompleteEvent(False, _searchExporter.ErrorLogFileName, True)
 			Else
 				Me.ProcessObserver.RaiseStatusEvent("", "Export completed")
 				Me.ProcessObserver.RaiseProcessCompleteEvent()

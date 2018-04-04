@@ -1,9 +1,12 @@
+Imports System.Threading
 Imports kCura.Utility.Extensions.Enumerable
+Imports kCura.WinEDDS.TApi
 Imports Relativity
+Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
 	Public MustInherit Class LoadFileBase
-		Inherits kCura.Utility.RobustIoReporter
+		Inherits ImportExportTapiBase
 
 #Region "Members"
 
@@ -49,8 +52,6 @@ Namespace kCura.WinEDDS
 		Protected _keyFieldID As Int32
 		Protected _settings As kCura.WinEDDS.LoadFile
 		Private _codeValidator As CodeValidator.Base
-		Private _codesCreated As Int32 = 0
-		Private _logger As Relativity.Logging.ILog
 		Protected WithEvents _artifactReader As Api.IArtifactReader
 		Protected _executionSource As Relativity.ExecutionSource
 		Public Property SkipExtractedTextEncodingCheck As Boolean
@@ -128,14 +129,13 @@ Namespace kCura.WinEDDS
 			_artifactReader.AdvanceRecord()
 		End Sub
 
-		Protected Sub New(ByVal args As LoadFile, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean, ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
-			Me.New(args, timezoneoffset, doRetryLogic, autoDetect, initializeArtifactReader:=True, executionSource := executionSource)
+		Protected Sub New(ByVal args As LoadFile, ioReporterInstance As IIoReporter, ByVal logger As ILog, ByVal timezoneoffset As Int32, ByVal doRetryLogic As Boolean, ByVal autoDetect As Boolean, cancellationToken As CancellationTokenSource, ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
+			Me.New(args, ioReporterInstance, logger, timezoneoffset, doRetryLogic, autoDetect, cancellationToken,  initializeArtifactReader:=True, executionSource := executionSource)
 		End Sub
 
-		Protected Sub New(args As LoadFile, timezoneoffset As Int32, doRetryLogic As Boolean, autoDetect As Boolean, initializeArtifactReader As Boolean, ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
+		Protected Sub New(args As LoadFile, ByVal ioReporterInstance As IIoReporter, ByVal logger As ILog, timezoneoffset As Int32, doRetryLogic As Boolean, autoDetect As Boolean, cancellationToken As CancellationTokenSource, initializeArtifactReader As Boolean, ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
+            MyBase.New(ioReporterInstance, logger, cancellationToken)
 
-			' This must be constructed early. Do NOT arbitrarily move this call!
-			_logger = RelativityLogFactory.CreateLog("WinEDDS")
 			_settings = args
 			OIFileIdColumnName = args.OIFileIdColumnName
 			OIFileIdMapped = args.OIFileIdMapped
@@ -203,44 +203,6 @@ Namespace kCura.WinEDDS
 			_objectManager = New kCura.WinEDDS.Service.ObjectManager(args.Credentials, args.CookieContainer)
 		End Sub
 
-		Protected Sub LogInformation(ByVal exception As System.Exception, ByVal messageTemplate As String, ParamArray propertyValues As Object())
-			_logger.LogInformation(exception, messageTemplate, propertyValues)
-		End Sub
-
-		Protected Sub LogInformation(ByVal messageTemplate As String, ParamArray propertyValues As Object())
-			_logger.LogInformation(messageTemplate, propertyValues)
-		End Sub
-
-		Protected Sub LogError(ByVal exception As System.Exception, ByVal messageTemplate As String, ParamArray propertyValues As Object())
-			_logger.LogError(exception, messageTemplate, propertyValues)
-		End Sub
-
-		Protected Sub LogError(ByVal messageTemplate As String, ParamArray propertyValues As Object())
-			_logger.LogError(messageTemplate, propertyValues)
-		End Sub
-
-		Protected Sub LogFatal(ByVal exception As System.Exception, ByVal messageTemplate As String, ParamArray propertyValues As Object())
-			_logger.LogFatal(exception, messageTemplate, propertyValues)
-		End Sub
-
-		Protected Sub LogFatal(ByVal messageTemplate As String, ParamArray propertyValues As Object())
-			_logger.LogFatal(messageTemplate, propertyValues)
-		End Sub
-
-		Protected Sub LogWarning(ByVal exception As System.Exception, ByVal messageTemplate As String, ParamArray propertyValues As Object())
-			_logger.LogWarning(exception, messageTemplate, propertyValues)
-		End Sub
-
-		Protected Sub LogWarning(ByVal messageTemplate As String, ParamArray propertyValues As Object())
-			_logger.LogWarning(messageTemplate, propertyValues)
-		End Sub
-
-		Protected ReadOnly Property Logger As Relativity.Logging.ILog
-			Get
-				Return _logger
-			End Get
-		End Property
-
 #Region "Code Parsing"
 
 		Private Sub InitializeCodeTables()
@@ -259,20 +221,6 @@ Namespace kCura.WinEDDS
 			Catch ex As CodeValidator.CodeCreationException
 				Throw New CodeCreationException(Me.CurrentLineNumber, column, ex.IsFatal, ex.Message)
 			End Try
-		End Function
-
-		Private Function FindCodeByDisplayValue(ByVal value As String, ByVal codeTypeID As Int32) As Int32
-			Dim i As Int32
-			For i = 0 To _allCodes.Count - 1
-				If _allCodes(i)("Name").ToString.ToLower = value.ToLower AndAlso (DirectCast(_allCodes(i)("CodeTypeID"), Int32)) = codeTypeID Then
-					Return i
-				End If
-			Next
-			Return -1
-		End Function
-
-		Private Function GetNewCodeOrderValue(ByVal codeTypeID As Int32) As Int32
-			Return 0
 		End Function
 
 		Private Function CheckNestedChoicesNameLength(ByVal codeStr As String) As Boolean
@@ -835,11 +783,13 @@ Namespace kCura.WinEDDS
 
 #End Region
 
+
 		Private Sub _artifactReader_OnIoWarning(ByVal e As Api.IoWarningEventArgs) Handles _artifactReader.OnIoWarning
 			If e.Exception Is Nothing Then
-				Me.RaiseIoWarning(New kCura.Utility.RobustIoReporter.IoWarningEventArgs(e.Message, e.CurrentLineNumber))
+				IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(new IoWarningEventArgs(e.Message, e.CurrentLineNumber))
 			Else
-				Me.RaiseIoWarning(New kCura.Utility.RobustIoReporter.IoWarningEventArgs(e.WaitTime, e.Exception, e.CurrentLineNumber))
+				Dim message As String = IoReporter.BuildIoReporterWarningMessage(e.Exception, e.WaitTime)
+				IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(new IoWarningEventArgs(message, e.CurrentLineNumber))
 			End If
 		End Sub
 

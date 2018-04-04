@@ -1,9 +1,14 @@
+Imports System.Threading
+Imports kCura.WinEDDS.Helpers
+Imports kCura.WinEDDS.TApi
+
 Namespace kCura.WinEDDS
 	Public Class ImportImageFileProcess
 		Inherits kCura.Windows.Process.ProcessBase
 
 		Public ImageLoadFile As ImageLoadFile
 		Private WithEvents _imageFileImporter As kCura.WinEDDS.BulkImageFileImporter
+		Protected WithEvents _ioWarningPublisher As IoWarningPublisher
 		Private _startTime As DateTime
 		Private _errorCount As Int32
 		Private _warningCount As Int32
@@ -15,7 +20,11 @@ Namespace kCura.WinEDDS
 		Private _disableImageTypeValidation As Boolean?
 		Private _disableImageLocationValidation As Boolean?
 
-		Public WriteOnly Property DisableImageTypeValidation As Boolean
+        Public Sub New()
+
+        End Sub
+
+        Public WriteOnly Property DisableImageTypeValidation As Boolean
 			Set(value As Boolean)
 				_disableImageTypeValidation = value
 			End Set
@@ -79,7 +88,13 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Function GetImageFileImporter() As kCura.WinEDDS.BulkImageFileImporter
-			Dim returnImporter As BulkImageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController, Me.ProcessID, True, EnforceDocumentLimit, ExecutionSource)
+			Dim tokenSource As CancellationTokenSource = New CancellationTokenSource()
+		    _ioWarningPublisher = New IoWarningPublisher()
+		    Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog("WinEDDS")
+		    Dim ioReporter As IIoReporter = IoReporterFactory.CreateIoReporter(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds, 
+		                                                                       WinEDDS.Config.DisableNativeLocationValidation, logger, _ioWarningPublisher, tokenSource.Token)
+
+            Dim returnImporter As BulkImageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController, ioReporter, logger, Me.ProcessID, True, EnforceDocumentLimit, tokenSource, ExecutionSource)
 			Return returnImporter
 		End Function
 
@@ -176,20 +191,10 @@ Namespace kCura.WinEDDS
 			Me.ProcessObserver.RaiseStatusBarEvent(statusBarMessage, _uploadModeText)
 		End Sub
 
-		Private Sub _imageFileImporter_IoErrorEvent(ByVal e As kCura.Utility.DelimitedFileImporter.IoWarningEventArgs) Handles _imageFileImporter.IoWarningEvent
-			System.Threading.Monitor.Enter(Me.ProcessObserver)
-			Dim message As New System.Text.StringBuilder
-			Select Case e.Type
-				Case kCura.Utility.DelimitedFileImporter.IoWarningEventArgs.TypeEnum.Message
-					message.Append(e.Message)
-				Case Else
-					message.Append("Error accessing opticon file - retrying")
-					If e.WaitTime > 0 Then message.Append(" in " & e.WaitTime & " seconds")
-					message.Append(vbNewLine)
-					message.Append("Actual error: " & e.Exception.ToString)
-			End Select
-			Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, message.ToString)
-			System.Threading.Monitor.Exit(Me.ProcessObserver)
+		Private Sub _imageFileImporter_IoErrorEvent(ByVal sender As Object, ByVal e As IoWarningEventArgs) Handles _ioWarningPublisher.IoWarningEvent
+		    System.Threading.Monitor.Enter(Me.ProcessObserver)
+		    Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, e.Message)
+		    System.Threading.Monitor.Exit(Me.ProcessObserver)
 		End Sub
 
 		Private Sub _imageFileImporter_EndRun(ByVal success As Boolean, ByVal runID As String) Handles _imageFileImporter.EndRun

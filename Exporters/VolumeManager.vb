@@ -1,5 +1,6 @@
 Imports System.Collections.Concurrent
 Imports System.Collections.Generic
+Imports System.Diagnostics
 Imports System.IO
 Imports System.Text
 Imports kCura.WinEDDS.Exporters
@@ -10,10 +11,12 @@ Imports kCura.WinEDDS.IO
 Namespace kCura.WinEDDS
 	Public Class VolumeManager
 		Implements IFieldLookupService
+		Implements ILongTextEntryWriter
 
 #Region "Members"
 
 		Private _settings As ExportFile
+		Private _exportConfig As IExportConfig
 		Private _imageFileWriter As System.IO.StreamWriter
 		Private _nativeFileWriter As System.IO.StreamWriter
 		Private _errorWriter As System.IO.StreamWriter
@@ -113,13 +116,13 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable ReadOnly Property NumberOfRetries() As Int32
 			Get
-				Return kCura.Utility.Config.IOErrorNumberOfRetries
+				Return _exportConfig.ExportIOErrorNumberOfRetries
 			End Get
 		End Property
 
 		Protected Overridable ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
 			Get
-				Return kCura.Utility.Config.IOErrorWaitTimeInSeconds
+				Return _exportConfig.ExportIOErrorWaitTime
 			End Get
 		End Property
 
@@ -136,7 +139,7 @@ Namespace kCura.WinEDDS
 			_settings = settings
 			_statistics = statistics
 			_parent = parent
-
+			_exportConfig = _parent.ExportConfig
 			_fileHelper = fileHelper
 			_fileStreamFactory = New FileStreamFactory(_fileHelper)
 			_directoryHelper = directoryHelper
@@ -206,6 +209,7 @@ Namespace kCura.WinEDDS
 				Dim newindex As Int32 = _ordinalLookup.Count
 				_ordinalLookup.Add(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME, newindex)
 				_ordinalLookup.Add(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME, newindex + 1)
+				_ordinalLookup.Add(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE, newindex + 2)
 			End If
 
 		End Sub
@@ -261,7 +265,8 @@ Namespace kCura.WinEDDS
 							If fieldValue Is Nothing Then fieldValue = String.Empty
 							Dim textValue As String = fieldValue.ToString
 							If textValue = Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN Then
-								prediction.TextFilesSize += 2 * 1048576 'This is the naive approach - assume the final text will be twice as long as the max length limit
+								'This isn't ideal, because encoding can be different than Unicode - this is fixed in new export
+								prediction.TextFilesSize += CType(artifact.Metadata(_ordinalLookup(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)), long)
 							Else
 								prediction.TextFilesSize += Me.Settings.TextFileEncoding.GetByteCount(textValue)
 							End If
@@ -402,7 +407,7 @@ Namespace kCura.WinEDDS
 			Catch ex As Exception
 			End Try
 			Try
-				Dim newFileStream As FileStream = _fileStreamFactory.Create(filepath, True)
+				Dim newFileStream As FileStream = _fileHelper.ReopenAndTruncate(filepath, position)
 				Dim retval As New System.IO.StreamWriter(newFileStream, encoding)
 				retval.BaseStream.Position = position
 				Return retval
@@ -689,9 +694,11 @@ Namespace kCura.WinEDDS
 			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			Dim start As Int64 = System.DateTime.Now.Ticks
+			Dim webServiceRequestTime As Stopwatch = New Stopwatch()
 			While tries < maxTries AndAlso Not Me.Halt
 				tries += 1
 				Try
+					webServiceRequestTime = Stopwatch.StartNew()
 					If Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document AndAlso field.Category = Relativity.FieldCategory.FullText AndAlso Not TypeOf field Is CoalescedTextViewField Then
 						_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, artifact.ArtifactID, _settings.CaseInfo.ArtifactID.ToString)
 					Else
@@ -700,11 +707,16 @@ Namespace kCura.WinEDDS
 					End If
 					Exit While
 				Catch ex As System.Exception
+					webServiceRequestTime.Stop()
+					Dim secs As Double = Math.Round(webServiceRequestTime.ElapsedMilliseconds / 1000, 2)
+
 					If tries = 1 Then
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & artifact.IdentifierValue, True)
+						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & 
+							artifact.IdentifierValue & ". Previous request took " & secs & " (secs)", True)
 					ElseIf tries < maxTries Then
 						Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
+						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds. " &
+							"Previous request took " & secs & " (secs)", True)
 						System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 					Else
 						Throw
@@ -1249,7 +1261,7 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
-		Public Sub WriteLongTextFileToDatFile(ByRef fileWriter As System.IO.StreamWriter, ByVal longTextPath As String, ByVal encoding As System.Text.Encoding)
+		Public Sub WriteLongTextFileToDatFile(fileWriter As System.IO.StreamWriter, ByVal longTextPath As String, ByVal encoding As System.Text.Encoding) Implements  ILongTextEntryWriter.WriteLongTextFileToDatFile
 			Dim source As System.IO.TextReader = New System.IO.StreamReader(longTextPath, encoding)
 			If String.IsNullOrEmpty(longTextPath) AndAlso Not source Is Nothing AndAlso TypeOf source Is System.IO.StreamReader AndAlso TypeOf DirectCast(source, System.IO.StreamReader).BaseStream Is System.IO.FileStream Then
 				longTextPath = DirectCast(DirectCast(source, System.IO.StreamReader).BaseStream, System.IO.FileStream).Name
@@ -1400,6 +1412,10 @@ Namespace kCura.WinEDDS
 
 		Public Function GetOrdinalIndex(fieldName As String) As Int32 Implements IFieldLookupService.GetOrdinalIndex
 			Return _ordinalLookup(fieldName)
+		End Function
+
+		Public Function ContainsFieldName(fieldName As String) As Boolean Implements IFieldLookupService.ContainsFieldName
+			Return _ordinalLookup.ContainsKey(fieldName)
 		End Function
 	End Class
 End Namespace

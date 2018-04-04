@@ -37,6 +37,7 @@ Namespace kCura.WinEDDS
                             If Not tempDict.Contains("ImportBatchMaxVolume") Then tempDict.Add("ImportBatchMaxVolume", "10485760") '10(2^20) - don't know what 10MB standard is
                             If Not tempDict.Contains("ExportBatchSize") Then tempDict.Add("ExportBatchSize", "1000")
                             If Not tempDict.Contains("ExportThreadCount") Then tempDict.Add("ExportThreadCount", "2")
+                            If Not tempDict.Contains("UseOldExport") Then tempDict.Add("UseOldExport", "False")
                             If Not tempDict.Contains("EnableSingleModeImport") Then tempDict.Add("EnableSingleModeImport", "False")
                             If Not tempDict.Contains("CreateErrorForEmptyNativeFile") Then tempDict.Add("CreateErrorForEmptyNativeFile", "False")
                             If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")
@@ -60,6 +61,7 @@ Namespace kCura.WinEDDS
                             If Not tempDict.Contains("AsperaBcpPathRootFolder") Then tempDict.Add("AsperaBcpPathRootFolder", "BCPPath")
                             If Not tempDict.Contains("AsperaNativeFilesRootFolder") Then tempDict.Add("AsperaNativeFilesRootFolder", "Files")
                             If Not tempDict.Contains("LogConfigFile") Then tempDict.Add("LogConfigFile", "LogConfig.xml")
+	                        If Not tempDict.Contains("SuppressCertificateCheckOnClient") Then tempDict.Add("SuppressCertificateCheckOnClient", "False")
                             If Not tempDict.Contains(NameOf(LoadImportedFullTextFromServer)) Then tempDict.Add(NameOf(LoadImportedFullTextFromServer), "False")
                             If Not tempDict.Contains(NameOf(UsePipeliningForNativeAndObjectImports)) Then tempDict.Add(NameOf(UsePipeliningForNativeAndObjectImports), "True")
                             If Not tempDict.Contains(NameOf(ProcessFormRefreshRate)) Then tempDict.Add(NameOf(ProcessFormRefreshRate), "0")
@@ -284,6 +286,12 @@ Namespace kCura.WinEDDS
             End Get
         End Property
 
+		Public Shared ReadOnly Property UseOldExport() As Boolean
+			Get
+				Return CType(ConfigSettings("UseOldExport"), Boolean)
+			End Get
+		End Property
+
         Public Shared ReadOnly Property DisableImageTypeValidation() As Boolean
             Get
                 Return CType(ConfigSettings("DisableImageTypeValidation"), Boolean)
@@ -410,6 +418,13 @@ Namespace kCura.WinEDDS
                 Return CType(ConfigSettings("TapiAsperaNativeDocRootLevels"), Int32)
             End Get
         End Property
+
+		'This is used to disable certificates check of destiantion server on client. It should be enabled only when dealing with invalid certificates on test environments.
+		Public Shared ReadOnly Property SuppressCertificateCheckOnClient() As Boolean
+			Get
+				Return CType(ConfigSettings("SuppressCertificateCheckOnClient"), Boolean)
+			End Get
+		End Property
 
         Public Shared ReadOnly Property LogConfigFile() As String
             Get

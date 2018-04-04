@@ -17,12 +17,15 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Overridable Function DeserializeExportFile(ByVal currentExportFile As kCura.WinEDDS.ExportFile, ByVal xml As String) As kCura.WinEDDS.ExportFile
-			Dim retval As New kCura.WinEDDS.ExportFile(currentExportFile.ArtifactTypeID)
 			Dim deserialized As kCura.WinEDDS.ExportFile = Me.DeserializeExportFile(XDocument.Parse(xml))
+			Return PopulateDeserializedExportFile(currentExportFile, deserialized)
+		End Function
+
+		Public Overridable Function PopulateDeserializedExportFile(ByVal currentExportFile As kCura.WinEDDS.ExportFile, deserialized As ExportFile) As kCura.WinEDDS.ExportFile
+			Dim retval As New kCura.WinEDDS.ExportFile(currentExportFile.ArtifactTypeID)
 			For Each p As System.Reflection.PropertyInfo In (From prop As System.Reflection.PropertyInfo In retval.GetType.GetProperties Where prop.CanWrite)
 				p.SetValue(retval, p.GetValue(If(PropertyIsReadFromExisting(p), currentExportFile, deserialized), Nothing), Nothing)
 			Next
-			'TODO: test
 			Select Case retval.TypeOfExport
 				Case ExportFile.ExportType.AncestorSearch, ExportFile.ExportType.ParentSearch
 					retval.ArtifactID = currentExportFile.ArtifactID

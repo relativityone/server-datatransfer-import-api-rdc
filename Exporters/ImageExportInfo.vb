@@ -81,5 +81,7 @@ Namespace kCura.WinEDDS.Exporters
 			End Set
 		End Property
 
+		Public Property SuccessfulRollup() As Boolean
+
 	End Class
 End Namespace
