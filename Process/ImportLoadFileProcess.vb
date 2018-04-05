@@ -316,7 +316,7 @@ Namespace kCura.WinEDDS
 			End If
 			Dim statusBarMessage As String = String.Format("{0} - SQL Insert Mode: {1}", mode, If(isBulkEnabled, "Bulk", "Single"))
 
-			MessageService.Send(New TransferJobStartedMessage With {.JobType = "Import", .TransferMode = mode})
+			MessageService.Send(New TransferJobStartedMessage With {.JobType = "Import", .TransferMode = "Direct"})
 
 			Me.ProcessObserver.RaiseStatusBarEvent(statusBarMessage, _uploadModeText)
 		End Sub
