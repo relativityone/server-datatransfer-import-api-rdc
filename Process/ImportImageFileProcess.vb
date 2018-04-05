@@ -1,10 +1,11 @@
 Imports System.Threading
 Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.TApi
+Imports Relativity.DataTransfer.MessageService
 
 Namespace kCura.WinEDDS
 	Public Class ImportImageFileProcess
-		Inherits kCura.Windows.Process.ProcessBase
+		Inherits MonitoredProcessBase
 
 		Public ImageLoadFile As ImageLoadFile
 		Private WithEvents _imageFileImporter As kCura.WinEDDS.BulkImageFileImporter
@@ -20,9 +21,13 @@ Namespace kCura.WinEDDS
 		Private _disableImageTypeValidation As Boolean?
 		Private _disableImageLocationValidation As Boolean?
 
-        Public Sub New()
+		Public Sub New ()
+			MyBase.New(new MessageService())
+		End Sub
 
-        End Sub
+		Public Sub New (messageService As MessageService)
+			MyBase.New(messageService)
+		End Sub
 
         Public WriteOnly Property DisableImageTypeValidation As Boolean
 			Set(value As Boolean)
@@ -58,7 +63,30 @@ Namespace kCura.WinEDDS
 
 		Public Property ExecutionSource As Relativity.ExecutionSource
 
-		Protected Overrides Sub Execute()
+		Protected Overrides Function Run() As Boolean
+
+			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
+			Return Not _hasRunProcessComplete
+		End Function
+
+		Protected Overrides Function HasErrors() As Boolean
+
+			Return _imageFileImporter.HasErrors
+		End Function
+
+
+		Protected Overrides Sub OnSuccess()
+
+			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
+		End Sub
+
+		Protected Overrides Sub OnHasErrors()
+
+			Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
+		End Sub
+
+		Protected Overrides Sub Initialize()
+
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
@@ -79,12 +107,6 @@ Namespace kCura.WinEDDS
 			End If
 
 			_imageFileImporter.SkipExtractedTextEncodingCheck = SkipExtractedTextEncodingCheck.GetValueOrDefault(False)
-			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
-			If Not _hasRunProcessComplete Then
-				Dim exportFilePath As String = ""
-				If _imageFileImporter.HasErrors Then exportFilePath = System.Guid.NewGuid.ToString
-				Me.ProcessObserver.RaiseProcessCompleteEvent(False, exportFilePath, True)
-			End If
 		End Sub
 
 		Protected Overridable Function GetImageFileImporter() As kCura.WinEDDS.BulkImageFileImporter

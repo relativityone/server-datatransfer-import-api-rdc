@@ -1,14 +1,17 @@
 Imports System.Threading
 Imports kCura.WinEDDS.Helpers
+Imports kCura.WinEDDS.Monitoring
 Imports kCura.WinEDDS.TApi
+Imports Relativity.DataTransfer.MessageService
 Imports Relativity.Logging
 Imports Relativity.Logging.Factory
+Imports Relativity.Services.ServiceProxy
 Imports Relativity.Transfer
 
 Namespace kCura.WinEDDS
 
 	Public Class ImportLoadFileProcess
-		Inherits kCura.Windows.Process.ProcessBase
+		Inherits MonitoredProcessBase
 
 		Public LoadFile As LoadFile
 		Protected WithEvents _loadFileImporter As BulkLoadFileImporter
@@ -24,6 +27,14 @@ Namespace kCura.WinEDDS
 		Private _disableNativeValidation As Boolean?
 		Private _disableNativeLocationValidation As Boolean?
 		Private _auditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = Config.AuditLevel
+
+		Public Sub New ()
+			MyBase.New(new MessageService())
+		End Sub
+
+		Public Sub New (messageService As IMessageService)
+			MyBase.New(messageService)
+		End Sub
 
 		Public WriteOnly Property DisableNativeValidation As Boolean
 			Set(ByVal value As Boolean)
@@ -98,7 +109,33 @@ Namespace kCura.WinEDDS
 			Return returnImporter
 		End Function
 
-		Protected Overrides Sub Execute()
+		Protected Overrides Sub OnFatalError()
+
+			Me.ProcessObserver.RaiseStatusEvent("", "Import aborted")
+		End Sub
+
+		Protected Overrides Sub OnSuccess()
+
+			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
+		End Sub
+
+		Protected Overrides Sub OnHasErrors()
+
+			Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
+		End Sub
+
+		Protected Overrides Function HasErrors() As Boolean
+
+			Return _loadFileImporter.HasErrors
+		End Function
+
+		Protected Overrides Function Run() As Boolean
+
+			Return (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) AndAlso Not _hasRunProcessComplete
+		End Function
+
+		Protected Overrides Sub Initialize()
+
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
@@ -130,19 +167,8 @@ Namespace kCura.WinEDDS
 			_loadFileImporter.FileNameColumn = FileNameColumn
 			_loadFileImporter.LoadImportedFullTextFromServer = (Me.LoadImportedFullTextFromServer OrElse Config.LoadImportedFullTextFromServer)
 			Me.ProcessObserver.InputArgs = LoadFile.FilePath
-
-			If (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) AndAlso Not _hasRunProcessComplete Then
-				If _loadFileImporter.HasErrors Then
-					Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
-				Else
-					Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
-				End If
-			Else
-				Me.ProcessObserver.RaiseStatusEvent("", "Import aborted")
-			End If
-
 		End Sub
-
+		
 		Private Sub AuditRun(ByVal success As Boolean, ByVal runID As String)
 			Try
 				Dim retval As New kCura.EDDS.WebAPI.AuditManagerBase.ObjectImportStatistics
@@ -289,6 +315,9 @@ Namespace kCura.WinEDDS
 				_uploadModeText = Config.FileTransferModeExplanationText(True)
 			End If
 			Dim statusBarMessage As String = String.Format("{0} - SQL Insert Mode: {1}", mode, If(isBulkEnabled, "Bulk", "Single"))
+
+			MessageService.Send(New TransferJobStartedMessage With {.JobType = "Import", .TransferMode = mode})
+
 			Me.ProcessObserver.RaiseStatusBarEvent(statusBarMessage, _uploadModeText)
 		End Sub
 
