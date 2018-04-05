@@ -7,11 +7,11 @@ Imports System.Net.Security
 Imports System.Linq
 Imports System.Reflection
 Imports System.Threading.Tasks
-
 Imports kCura.EDDS.WinForm.Forms
 Imports kCura.Windows.Forms
 Imports kCura.WinEDDS.Core.Export
 Imports kCura.WinEDDS.Credentials
+Imports kCura.WinEDDS.Monitoring
 Imports kCura.WinEDDS.Service
 Imports Relativity
 Imports Relativity.OAuth2Client.Exceptions
@@ -1129,7 +1129,8 @@ Namespace kCura.EDDS.WinForm
             If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
                 If CheckFieldMap(loadFile) Then
                     Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
-                    Dim importer As New kCura.WinEDDS.ImportLoadFileProcess
+					'
+                    Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(MessageServiceFactory.SetupMessageService(ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync())))
                     importer.LoadFile = loadFile
                     importer.TimeZoneOffset = _timeZoneOffset
                     importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
@@ -1774,11 +1775,7 @@ Namespace kCura.EDDS.WinForm
         End Function
 
         Private Async Function CanUserAccessStagingExplorer(credentials As NetworkCredential) As Task(Of System.Boolean)
-            Dim relativityCredentials = New BearerTokenCredentials(credentials.Password)
-
-            Dim baseUri = New Uri(WinEDDS.Config.WebServiceURL)
-            Dim settings = New ServiceFactorySettings(New Uri($"https://{baseUri.Host}/Relativity.Services"), New Uri($"https://{baseUri.Host}/Relativity.Rest/api"), relativityCredentials)
-            Dim factory = New ServiceFactory(settings)
+            Dim factory = ServiceFactoryFactory.Create(credentials)
 
             Using manager As IStagingPermissionsService = factory.CreateProxy(Of IStagingPermissionsService)
                 Dim userCanRunStagingExplorer = Await manager.UserCanRunStagingExplorer()
