@@ -47,9 +47,9 @@ Public Class RelativityLogFactory
 			Return log
 		Catch e As Exception
 			Try
-				Relativity.Logging.Tools.InternalLogger.WriteTokCuraEventLog(
+				Relativity.Logging.Tools.InternalLogger.WriteFromExternal(
 					$"Failed to setup WinEDDS logging. Exception: {e.ToString()}",
-					"WinEDDS")
+					New Relativity.Logging.LoggerOptions With {.System = "WinEDDS"})
 			Catch
 				' Being overly cautious to ensure no fatal errors occur due to logging.
 			End Try
