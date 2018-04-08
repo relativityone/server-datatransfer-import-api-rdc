@@ -43,8 +43,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 				using (var transferHost = new RelativityTransferHost(connectionInfo, transferLog))
 				{
 					IFileStorageSearch service = transferHost.CreateFileStorageSearch();
-						
-					FileStorageSearchResults results = service.GetWorkspaceFileSharesAsync(_workspaceId).ConfigureAwait(false).GetAwaiter().GetResult();
+                    FileStorageSearchContext context = new FileStorageSearchContext { WorkspaceId = _workspaceId };
+
+                    FileStorageSearchResults results = service.SearchAsync(context).ConfigureAwait(false).GetAwaiter().GetResult();
 					_cachedSettings = results.FileShares.Select(f => new RelativityFileShareSettings(f)).ToList();
 				}
 				
