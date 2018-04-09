@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
@@ -10,6 +11,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 
 		public ExportRequestsWithFileshareSettings(RelativityFileShareSettings fileshareSettings, IEnumerable<ExportRequest> requests)
 		{
+			if (requests == null)
+			{
+				throw new ArgumentNullException($"Argument name {nameof(requests)} cannot be null.");
+			}
+
 			FileshareSettings = fileshareSettings;
 			Requests = requests;
 		}
