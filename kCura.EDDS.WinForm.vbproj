@@ -244,19 +244,19 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.26\lib\net462\Relativity.OAuth2Client.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.27\lib\net462\Relativity.OAuth2Client.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.OAuth2Client.IdentityModel">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.26\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.27\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.26\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.27\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.OAuth2Client.Implicit">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit.1.0.26\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit.1.0.27\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.OAuth2Client.Interfaces">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.26\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.27\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.SecretCatalog, Version=1.0.18.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.SecretCatalog.1.0.18\lib\Relativity.SecretCatalog.dll</HintPath>
