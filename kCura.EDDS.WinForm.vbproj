@@ -235,27 +235,27 @@
       <HintPath>..\..\packages\Relativity.Kepler.1.0.1.445\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging">
-      <HintPath>..\..\packages\Relativity.Logging.9.4.310\lib\net462\Relativity.Logging.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Logging.9.4.311\lib\net462\Relativity.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces">
-      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.310\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.311\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.26\lib\net462\Relativity.OAuth2Client.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.27\lib\net462\Relativity.OAuth2Client.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.OAuth2Client.IdentityModel">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.26\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.27\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.26\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.27\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.OAuth2Client.Implicit">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit.1.0.26\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit.1.0.27\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.OAuth2Client.Interfaces">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.26\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.27\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.SecretCatalog, Version=1.0.18.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.SecretCatalog.1.0.18\lib\Relativity.SecretCatalog.dll</HintPath>
@@ -269,9 +269,6 @@
     </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared">
       <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.159\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
-    </Reference>
-    <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.6.88.61, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface.9.6.88.61\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Transfer.Client, Version=2.0.18051.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\relativity.transfer.client.2.1.1\lib\net462\Relativity.Transfer.Client.dll</HintPath>
