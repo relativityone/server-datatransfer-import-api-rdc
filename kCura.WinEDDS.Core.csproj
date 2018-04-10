@@ -125,29 +125,29 @@
     <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.5.281.29, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface.9.5.281.29\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client, Version=2.0.18097.2, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Transfer.Client, Version=3.0.18100.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\relativity.transfer.client.3.0.0-alpha000221\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+      <HintPath>..\..\packages\relativity.transfer.client.3.0.2\lib\net462\Relativity.Transfer.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Aspera, Version=2.0.18097.2, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Transfer.Client.Aspera, Version=3.0.18100.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\relativity.transfer.client.3.0.0-alpha000221\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+      <HintPath>..\..\packages\relativity.transfer.client.3.0.2\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Core, Version=2.0.18097.2, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Transfer.Client.Core, Version=3.0.18100.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\relativity.transfer.client.3.0.0-alpha000221\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+      <HintPath>..\..\packages\relativity.transfer.client.3.0.2\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.FileShare, Version=2.0.18097.2, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Transfer.Client.FileShare, Version=3.0.18100.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\relativity.transfer.client.3.0.0-alpha000221\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+      <HintPath>..\..\packages\relativity.transfer.client.3.0.2\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Http, Version=2.0.18097.2, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Transfer.Client.Http, Version=3.0.18100.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\relativity.transfer.client.3.0.0-alpha000221\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+      <HintPath>..\..\packages\relativity.transfer.client.3.0.2\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
