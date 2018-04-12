@@ -25,7 +25,7 @@ Namespace kCura.WinEDDS
 			MyBase.New(new MessageService())
 		End Sub
 
-		Public Sub New (messageService As MessageService)
+		Public Sub New (messageService As IMessageService)
 			MyBase.New(messageService)
 		End Sub
 
@@ -53,6 +53,8 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Protected Overrides ReadOnly Property JobType As String = "Import"
+
 		Public Property MaximumErrorCount As Int32?
 
 		Public Property SkipExtractedTextEncodingCheck As Boolean?
@@ -70,18 +72,21 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Overrides Function HasErrors() As Boolean
-
 			Return _imageFileImporter.HasErrors
 		End Function
 
+		Protected Overrides Sub OnFatalError()
+			SendTransferJobFailedMessage(_imageFileImporter.TapiClientName)
+			MyBase.OnFatalError()
+		End Sub
 
 		Protected Overrides Sub OnSuccess()
-
+			SendTransferJobCompletedMessage(_imageFileImporter.TapiClientName)
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
-
+			SendTransferJobCompletedMessage(_imageFileImporter.TapiClientName)
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
 		End Sub
 
@@ -195,6 +200,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub _imageFileImporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Handles _imageFileImporter.FatalErrorEvent
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
+			SendTransferJobFailedMessage(_imageFileImporter.TapiClientName)
 			Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, _imageFileImporter.ErrorLogFileName, True)
 			_hasRunProcessComplete = True
@@ -205,11 +211,14 @@ Namespace kCura.WinEDDS
 			Me.ProcessObserver.RaiseReportErrorEvent(row)
 		End Sub
 
-		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _imageFileImporter.UploadModeChangeEvent
+		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal statusBarText As String, ByVal tapiClientName As String, ByVal isBulkEnabled As Boolean) Handles _imageFileImporter.UploadModeChangeEvent
 			If _uploadModeText Is Nothing Then
 				_uploadModeText = Config.FileTransferModeExplanationText(True)
 			End If
-			Dim statusBarMessage As String = String.Format("{0} - SQL Insert Mode: {1}", mode, If(isBulkEnabled, "Bulk", "Single"))
+			Dim statusBarMessage As String = $"{statusBarText} - SQL Insert Mode: {If(isBulkEnabled, "Bulk", "Single")}"
+
+			SendTransferJobStartedMessage(tapiClientName)
+
 			Me.ProcessObserver.RaiseStatusBarEvent(statusBarMessage, _uploadModeText)
 		End Sub
 

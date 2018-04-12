@@ -508,7 +508,6 @@ Namespace kCura.WinEDDS
 
 		Public Sub PushImageBatch(ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String)
 			If _batchCount = 0 Then Return
-			PublishUploadModeEvent()
 			_batchCount = 0
 			Me.Statistics.MetadataBytes += (IoReporterInstance.GetFileLength(bulkLoadFilePath, Me.CurrentLineNumber) + IoReporterInstance.GetFileLength(dataGridFilePath, Me.CurrentLineNumber))
 			Dim start As Int64 = System.DateTime.Now.Ticks
@@ -540,7 +539,6 @@ Namespace kCura.WinEDDS
 				Me.Statistics.ProcessRunResults(runResults)
 				_runId = runResults.RunID
 				Me.Statistics.SqlTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
-				PublishUploadModeEvent()
 				ManageErrors()
 
 				Me.TotalTransferredFilesCount = Me.FileTapiProgressCount
@@ -939,7 +937,6 @@ Namespace kCura.WinEDDS
 		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception)
 		Public Event StatusMessage(ByVal args As kCura.Windows.Process.StatusEventArgs)
 		Public Event ReportErrorEvent(ByVal row As System.Collections.IDictionary)
-		Public Event UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean)
 
 		Private Sub PublishUploadModeEvent()
 			Dim retval As New List(Of String)
@@ -961,11 +958,6 @@ Namespace kCura.WinEDDS
 				OnUploadModeChangeEvent(uploadStatus, true)
 			End If
 		End Sub
-
-		Protected Sub OnUploadModeChangeEvent(mode As String, isBulkEnabled As Boolean)
-			RaiseEvent UploadModeChangeEvent(mode, isBulkEnabled)
-		End Sub
-
 
 		Private Sub RaiseFatalError(ByVal ex As System.Exception)
 			RaiseEvent FatalErrorEvent($"Error processing line: {CurrentLineNumber}", ex)

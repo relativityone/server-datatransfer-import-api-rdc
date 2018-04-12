@@ -476,7 +476,6 @@ Namespace kCura.WinEDDS
 			Try
 				OnStartFileImport()
 				_timekeeper.MarkStart("ReadFile_InitializeMembers")
-				PublishUploadModeEvent()
 				If Not InitializeMembers(path) Then
 					Return False
 				End If
@@ -1789,7 +1788,6 @@ Namespace kCura.WinEDDS
 		Public Event StatusMessage(ByVal args As StatusEventArgs)
 		Public Event EndFileImport(ByVal runID As String)
 		Public Event StartFileImport()
-		Public Event UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean)
 
 		Public Event ReportErrorEvent(ByVal row As System.Collections.IDictionary)
 		Public Event DataSourcePrepEvent(ByVal e As Api.DataSourcePrepEventArgs)
@@ -2092,10 +2090,6 @@ Namespace kCura.WinEDDS
 
 		Protected Sub OnStartFileImport()
 			RaiseEvent StartFileImport()
-		End Sub
-
-		Protected Sub OnUploadModeChangeEvent(mode As String, isBulkEnabled As Boolean)
-			RaiseEvent UploadModeChangeEvent(mode, isBulkEnabled)
 		End Sub
 
 		Protected Sub OnDataSourcePrepEvent(args As Api.DataSourcePrepEventArgs)

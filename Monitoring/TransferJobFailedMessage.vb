@@ -1,7 +1,8 @@
 ﻿Imports Relativity.DataTransfer.MessageService
 
 Namespace kCura.WinEDDS.Monitoring
-	Public Class TransferJobCompletedMessage
+	Public Class TransferJobStartedMessage
 		Inherits TransferJobMessageBase
 	End Class
+
 End Namespace

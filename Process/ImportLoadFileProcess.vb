@@ -48,6 +48,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Protected Overrides ReadOnly Property JobType As String = "Import"
 		Public Property OIFileIdMapped As Boolean
 		Public Property OIFileIdColumnName As String
 		Public Property OIFileTypeColumnName As String
@@ -110,17 +111,17 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Overrides Sub OnFatalError()
-
-			Me.ProcessObserver.RaiseStatusEvent("", "Import aborted")
+			SendTransferJobFailedMessage(_loadFileImporter.TapiClientName)
+			MyBase.OnFatalError()
 		End Sub
 
 		Protected Overrides Sub OnSuccess()
-
+			SendTransferJobCompletedMessage(_loadFileImporter.TapiClientName)
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
-
+			SendTransferJobCompletedMessage(_loadFileImporter.TapiClientName)
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
 		End Sub
 
@@ -310,16 +311,18 @@ Namespace kCura.WinEDDS
 			Me.AuditRun(False, runID)
 		End Sub
 
-		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _loadFileImporter.UploadModeChangeEvent
+		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal statusBarText As String, ByVal tapiClientName As String, ByVal isBulkEnabled As Boolean) Handles _loadFileImporter.UploadModeChangeEvent
 			If _uploadModeText Is Nothing Then
 				_uploadModeText = Config.FileTransferModeExplanationText(True)
 			End If
-			Dim statusBarMessage As String = String.Format("{0} - SQL Insert Mode: {1}", mode, If(isBulkEnabled, "Bulk", "Single"))
+			Dim statusBarMessage As String = $"{statusBarText} - SQL Insert Mode: {If(isBulkEnabled, "Bulk", "Single")}"
 
-			MessageService.Send(New TransferJobStartedMessage With {.JobType = "Import", .TransferMode = "Direct"})
+			SendTransferJobStartedMessage(tapiClientName)
 
 			Me.ProcessObserver.RaiseStatusBarEvent(statusBarMessage, _uploadModeText)
 		End Sub
+
+		
 
 		Private Sub _loadFileImporter_DataSourcePrepEvent(ByVal e As Api.DataSourcePrepEventArgs) Handles _loadFileImporter.DataSourcePrepEvent
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
