@@ -1182,7 +1182,7 @@ Namespace kCura.EDDS.WinForm
                 Return
             End If
             Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
-            Dim importer As New kCura.WinEDDS.ImportImageFileProcess
+            Dim importer As New kCura.WinEDDS.ImportImageFileProcess(MessageServiceFactory.SetupMessageService(ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync())))
             ImageLoadFile.CookieContainer = Me.CookieContainer
             importer.ImageLoadFile = ImageLoadFile
             importer.CloudInstance = Config.CloudInstance
