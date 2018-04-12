@@ -570,8 +570,7 @@ Namespace kCura.WinEDDS
 					Me.LogInformation("Version: '{0}'.", fileIdInfo.Version)
 					Me.LogInformation("Idle worker timeout: '{0}'.", fileIdInfo.IdleWorkerTimeout)
 					Me.LogInformation("Install location: '{0}'.", fileIdInfo.InstallLocation)
-					Me.LogInformation("Minimum worker count: '{0}'.", fileIdInfo.MinimumWorkerCount)
-
+					
 					If fileIdInfo.HasError Then
 						Me.LogWarning("Error: {0}", fileIdInfo.Exception)
 					End If
