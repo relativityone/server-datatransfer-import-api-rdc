@@ -1129,7 +1129,6 @@ Namespace kCura.EDDS.WinForm
             If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
                 If CheckFieldMap(loadFile) Then
                     Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
-					'
                     Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(MessageServiceFactory.SetupMessageService(ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync())))
                     importer.LoadFile = loadFile
                     importer.TimeZoneOffset = _timeZoneOffset
@@ -1206,7 +1205,7 @@ Namespace kCura.EDDS.WinForm
             End If
             Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
             frm.StatusRefreshRate = 0
-            Dim exporter As New kCura.WinEDDS.ExportSearchProcess(new ExportFileFormatterFactory(), New ExportConfig)
+            Dim exporter As New kCura.WinEDDS.ExportSearchProcess(new ExportFileFormatterFactory(), New ExportConfig, MessageServiceFactory.SetupMessageService(ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync())))
             exporter.UserNotification = New FormsUserNotification()
             exporter.ExportFile = exportFile
             frm.ProcessObserver = exporter.ProcessObserver
