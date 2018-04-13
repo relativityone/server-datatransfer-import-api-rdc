@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/SearchManager" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.kCura.com/EDDS/SearchManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/SearchManager" xmlns:s1="http://www.kCura.com/EDDS/SearchManager/AbstractTypes" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.kCura.com/EDDS/SearchManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/SearchManager">
       <s:element name="IsAssociatedSearchProviderAccessible">
@@ -122,6 +122,28 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="RetrieveImagesForSearchResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveProducedImagesForDocument">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="documentArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveProducedImagesForDocumentResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveProducedImagesForDocumentResult">
               <s:complexType>
                 <s:sequence>
                   <s:element ref="s:schema" />
@@ -291,6 +313,28 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="ArrayOfBoolean" nillable="true" type="tns:ArrayOfBoolean" />
+      <s:element name="string" nillable="true" type="s:string" />
+      <s:element name="DataSet" nillable="true">
+        <s:complexType>
+          <s:sequence>
+            <s:element ref="s:schema" />
+            <s:any />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+    <s:schema targetNamespace="http://www.kCura.com/EDDS/SearchManager/AbstractTypes">
+      <s:import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
+      <s:complexType name="StringArray">
+        <s:complexContent mixed="false">
+          <s:restriction base="soapenc:Array">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="unbounded" name="String" type="s:string" />
+            </s:sequence>
+          </s:restriction>
+        </s:complexContent>
+      </s:complexType>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="IsAssociatedSearchProviderAccessibleSoapIn">
@@ -328,6 +372,12 @@
   </wsdl:message>
   <wsdl:message name="RetrieveImagesForSearchSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveImagesForSearchResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveProducedImagesForDocumentSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveProducedImagesForDocument" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveProducedImagesForDocumentSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveProducedImagesForDocumentResponse" />
   </wsdl:message>
   <wsdl:message name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetSoapIn">
     <wsdl:part name="parameters" element="tns:RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet" />
@@ -371,6 +421,111 @@
   <wsdl:message name="RetrieveAllExportableViewFieldsSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveAllExportableViewFieldsResponse" />
   </wsdl:message>
+  <wsdl:message name="IsAssociatedSearchProviderAccessibleHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="searchArtifactID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="IsAssociatedSearchProviderAccessibleHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfBoolean" />
+  </wsdl:message>
+  <wsdl:message name="GetSearchSQLHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="searchArtifactID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetSearchSQLHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveNativesForSearchHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="documentArtifactIDs" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveNativesForSearchHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveFilesForDynamicObjectsHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="fileFieldArtifactID" type="s:string" />
+    <wsdl:part name="objectIds" type="s1:StringArray" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveFilesForDynamicObjectsHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveNativesForProductionHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="productionArtifactID" type="s:string" />
+    <wsdl:part name="documentArtifactIDs" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveNativesForProductionHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveImagesForSearchHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="documentArtifactIDs" type="s1:StringArray" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveImagesForSearchHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveProducedImagesForDocumentHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="documentArtifactID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveProducedImagesForDocumentHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="productionArtifactID" type="s:string" />
+    <wsdl:part name="documentArtifactIDs" type="s1:StringArray" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveImagesByProductionIDsAndDocumentIDsForExportHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="productionArtifactIDs" type="s1:StringArray" />
+    <wsdl:part name="documentArtifactIDs" type="s1:StringArray" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveImagesByProductionIDsAndDocumentIDsForExportHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveViewsByContextArtifactIDHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="artifactTypeID" type="s:string" />
+    <wsdl:part name="isSearch" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveViewsByContextArtifactIDHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveSearchFieldsHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="viewArtifactID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveSearchFieldsHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveSearchFieldsForProductionHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="productionArtifactID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveSearchFieldsForProductionHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveDefaultViewFieldsForIdListHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="artifactTypeID" type="s:string" />
+    <wsdl:part name="artifactIdList" type="s1:StringArray" />
+    <wsdl:part name="isProductionList" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveDefaultViewFieldsForIdListHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveAllExportableViewFieldsHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="artifactTypeID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveAllExportableViewFieldsHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
   <wsdl:portType name="SearchManagerSoap">
     <wsdl:operation name="IsAssociatedSearchProviderAccessible">
       <wsdl:input message="tns:IsAssociatedSearchProviderAccessibleSoapIn" />
@@ -395,6 +550,10 @@
     <wsdl:operation name="RetrieveImagesForSearch">
       <wsdl:input message="tns:RetrieveImagesForSearchSoapIn" />
       <wsdl:output message="tns:RetrieveImagesForSearchSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveProducedImagesForDocument">
+      <wsdl:input message="tns:RetrieveProducedImagesForDocumentSoapIn" />
+      <wsdl:output message="tns:RetrieveProducedImagesForDocumentSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet">
       <wsdl:input message="tns:RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetSoapIn" />
@@ -423,6 +582,64 @@
     <wsdl:operation name="RetrieveAllExportableViewFields">
       <wsdl:input message="tns:RetrieveAllExportableViewFieldsSoapIn" />
       <wsdl:output message="tns:RetrieveAllExportableViewFieldsSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="SearchManagerHttpPost">
+    <wsdl:operation name="IsAssociatedSearchProviderAccessible">
+      <wsdl:input message="tns:IsAssociatedSearchProviderAccessibleHttpPostIn" />
+      <wsdl:output message="tns:IsAssociatedSearchProviderAccessibleHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetSearchSQL">
+      <wsdl:input message="tns:GetSearchSQLHttpPostIn" />
+      <wsdl:output message="tns:GetSearchSQLHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveNativesForSearch">
+      <wsdl:input message="tns:RetrieveNativesForSearchHttpPostIn" />
+      <wsdl:output message="tns:RetrieveNativesForSearchHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveFilesForDynamicObjects">
+      <wsdl:input message="tns:RetrieveFilesForDynamicObjectsHttpPostIn" />
+      <wsdl:output message="tns:RetrieveFilesForDynamicObjectsHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveNativesForProduction">
+      <wsdl:input message="tns:RetrieveNativesForProductionHttpPostIn" />
+      <wsdl:output message="tns:RetrieveNativesForProductionHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveImagesForSearch">
+      <wsdl:input message="tns:RetrieveImagesForSearchHttpPostIn" />
+      <wsdl:output message="tns:RetrieveImagesForSearchHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveProducedImagesForDocument">
+      <wsdl:input message="tns:RetrieveProducedImagesForDocumentHttpPostIn" />
+      <wsdl:output message="tns:RetrieveProducedImagesForDocumentHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet">
+      <wsdl:input message="tns:RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetHttpPostIn" />
+      <wsdl:output message="tns:RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveImagesByProductionIDsAndDocumentIDsForExport">
+      <wsdl:input message="tns:RetrieveImagesByProductionIDsAndDocumentIDsForExportHttpPostIn" />
+      <wsdl:output message="tns:RetrieveImagesByProductionIDsAndDocumentIDsForExportHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveViewsByContextArtifactID">
+      <wsdl:input message="tns:RetrieveViewsByContextArtifactIDHttpPostIn" />
+      <wsdl:output message="tns:RetrieveViewsByContextArtifactIDHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveSearchFields">
+      <wsdl:input message="tns:RetrieveSearchFieldsHttpPostIn" />
+      <wsdl:output message="tns:RetrieveSearchFieldsHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveSearchFieldsForProduction">
+      <wsdl:input message="tns:RetrieveSearchFieldsForProductionHttpPostIn" />
+      <wsdl:output message="tns:RetrieveSearchFieldsForProductionHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveDefaultViewFieldsForIdList">
+      <wsdl:input message="tns:RetrieveDefaultViewFieldsForIdListHttpPostIn" />
+      <wsdl:output message="tns:RetrieveDefaultViewFieldsForIdListHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveAllExportableViewFields">
+      <wsdl:input message="tns:RetrieveAllExportableViewFieldsHttpPostIn" />
+      <wsdl:output message="tns:RetrieveAllExportableViewFieldsHttpPostOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="SearchManagerSoap" type="tns:SearchManagerSoap">
@@ -474,6 +691,15 @@
     </wsdl:operation>
     <wsdl:operation name="RetrieveImagesForSearch">
       <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveImagesForSearch" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveProducedImagesForDocument">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveProducedImagesForDocument" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -601,6 +827,15 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="RetrieveProducedImagesForDocument">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveProducedImagesForDocument" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/SearchManager/RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet" style="document" />
       <wsdl:input>
@@ -665,12 +900,144 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
+  <wsdl:binding name="SearchManagerHttpPost" type="tns:SearchManagerHttpPost">
+    <http:binding verb="POST" />
+    <wsdl:operation name="IsAssociatedSearchProviderAccessible">
+      <http:operation location="/IsAssociatedSearchProviderAccessible" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSearchSQL">
+      <http:operation location="/GetSearchSQL" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveNativesForSearch">
+      <http:operation location="/RetrieveNativesForSearch" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveFilesForDynamicObjects">
+      <http:operation location="/RetrieveFilesForDynamicObjects" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveNativesForProduction">
+      <http:operation location="/RetrieveNativesForProduction" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveImagesForSearch">
+      <http:operation location="/RetrieveImagesForSearch" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveProducedImagesForDocument">
+      <http:operation location="/RetrieveProducedImagesForDocument" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet">
+      <http:operation location="/RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveImagesByProductionIDsAndDocumentIDsForExport">
+      <http:operation location="/RetrieveImagesByProductionIDsAndDocumentIDsForExport" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveViewsByContextArtifactID">
+      <http:operation location="/RetrieveViewsByContextArtifactID" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveSearchFields">
+      <http:operation location="/RetrieveSearchFields" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveSearchFieldsForProduction">
+      <http:operation location="/RetrieveSearchFieldsForProduction" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveDefaultViewFieldsForIdList">
+      <http:operation location="/RetrieveDefaultViewFieldsForIdList" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveAllExportableViewFields">
+      <http:operation location="/RetrieveAllExportableViewFields" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
   <wsdl:service name="SearchManager">
     <wsdl:port name="SearchManagerSoap" binding="tns:SearchManagerSoap">
-      <soap:address location="http://localhost/RelativityWebApi/SearchManager.asmx" />
+      <soap:address location="https://p-dv-vm-481oi2y.kcura.corp/RelativityWebApi/SearchManager.asmx" />
     </wsdl:port>
     <wsdl:port name="SearchManagerSoap12" binding="tns:SearchManagerSoap12">
-      <soap12:address location="http://localhost/RelativityWebApi/SearchManager.asmx" />
+      <soap12:address location="https://p-dv-vm-481oi2y.kcura.corp/RelativityWebApi/SearchManager.asmx" />
+    </wsdl:port>
+    <wsdl:port name="SearchManagerHttpPost" binding="tns:SearchManagerHttpPost">
+      <http:address location="https://p-dv-vm-481oi2y.kcura.corp/RelativityWebApi/SearchManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
