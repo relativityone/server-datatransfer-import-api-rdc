@@ -508,6 +508,7 @@ Namespace kCura.WinEDDS
 
 		Public Sub PushImageBatch(ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String)
 			If _batchCount = 0 Then Return
+			PublishUploadModeEvent()
 			_batchCount = 0
 			Me.Statistics.MetadataBytes += (IoReporterInstance.GetFileLength(bulkLoadFilePath, Me.CurrentLineNumber) + IoReporterInstance.GetFileLength(dataGridFilePath, Me.CurrentLineNumber))
 			Dim start As Int64 = System.DateTime.Now.Ticks
@@ -539,6 +540,7 @@ Namespace kCura.WinEDDS
 				Me.Statistics.ProcessRunResults(runResults)
 				_runId = runResults.RunID
 				Me.Statistics.SqlTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
+				PublishUploadModeEvent()
 				ManageErrors()
 
 				Me.TotalTransferredFilesCount = Me.FileTapiProgressCount

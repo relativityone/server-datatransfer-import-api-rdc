@@ -9,6 +9,7 @@ Public MustInherit Class MonitoredProcessBase
 	Protected Property InitialTapiClientName As String
 	Protected MustOverride ReadOnly Property JobType As String
 	Protected ReadOnly Property MessageService As IMessageService
+	Protected _hasFatalErrorOccured As Boolean
 
 	Public Sub New (messageService As IMessageService)
 		Me.MessageService = messageService

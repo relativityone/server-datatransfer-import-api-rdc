@@ -13,7 +13,6 @@ Namespace kCura.WinEDDS
 		Private _startTime As DateTime
 		Private _errorCount As Int32
 		Private _warningCount As Int32
-		Private _hasRunProcessComplete As Boolean = False
 		Private _uploadModeText As String = Nothing
 
 		Private _disableUserSecurityCheck As Boolean
@@ -66,9 +65,8 @@ Namespace kCura.WinEDDS
 		Public Property ExecutionSource As Relativity.ExecutionSource
 
 		Protected Overrides Function Run() As Boolean
-
 			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
-			Return Not _hasRunProcessComplete
+			Return Not _hasFatalErrorOccured
 		End Function
 
 		Protected Overrides Function HasErrors() As Boolean
@@ -200,10 +198,9 @@ Namespace kCura.WinEDDS
 
 		Private Sub _imageFileImporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Handles _imageFileImporter.FatalErrorEvent
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
-			SendTransferJobFailedMessage(_imageFileImporter.TapiClientName)
 			Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, _imageFileImporter.ErrorLogFileName, True)
-			_hasRunProcessComplete = True
+			_hasFatalErrorOccured = True
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
 		End Sub
 

@@ -20,7 +20,7 @@ Namespace kCura.WinEDDS
 		Private _errorCount As Int32
 		Private _warningCount As Int32
 		Private _timeZoneOffset As Int32
-		Private _hasRunProcessComplete As Boolean = False
+		
 		Private _uploadModeText As String = Nothing
 
 		Private _disableUserSecutityCheck As Boolean
@@ -132,7 +132,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Function Run() As Boolean
 
-			Return (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) AndAlso Not _hasRunProcessComplete
+			Return (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) AndAlso Not _hasFatalErrorOccured
 		End Function
 
 		Protected Overrides Sub Initialize()
@@ -306,7 +306,7 @@ Namespace kCura.WinEDDS
 			Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
 			'TODO: _loadFileImporter.ErrorLogFileName
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
-			_hasRunProcessComplete = True
+			_hasFatalErrorOccured = True
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
 			Me.AuditRun(False, runID)
 		End Sub

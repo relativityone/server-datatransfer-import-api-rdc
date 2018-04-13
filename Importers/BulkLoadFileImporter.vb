@@ -476,6 +476,7 @@ Namespace kCura.WinEDDS
 			Try
 				OnStartFileImport()
 				_timekeeper.MarkStart("ReadFile_InitializeMembers")
+				PublishUploadModeEvent()
 				If Not InitializeMembers(path) Then
 					Return False
 				End If
