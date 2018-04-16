@@ -148,14 +148,16 @@ End Sub
 		End Sub
 
 		Private Sub SearchQuery_KeyDown(sender As Object, e As KeyEventArgs) Handles SearchQuery.KeyDown
-			If (ItemListView.Items.Count > 0 And e.KeyCode = Keys.Return)
+			If (e.KeyCode = Keys.Return And ItemListView.Items.Count > 0)
 				SelectFirstItem()
 				ConfirmSelection()
 			End If
 		End Sub
 		
 		Private Sub ItemListView_KeyDown(sender As Object, e As KeyEventArgs) Handles ItemListView.KeyDown
-			SearchQuery_KeyDown(sender,e)
+			If (e.KeyCode = Keys.Return And ItemListView.Items.Count > 0)
+				ConfirmSelection()
+			End If
 		End Sub
 
 		Private Sub SelectFirstItem()
