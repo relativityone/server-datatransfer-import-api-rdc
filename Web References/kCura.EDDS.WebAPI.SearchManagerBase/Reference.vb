@@ -858,12 +858,12 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.34209")>  _
     Public Delegate Sub RetrieveProducedImagesForDocumentCompletedEventHandler(ByVal sender As Object, ByVal e As RetrieveProducedImagesForDocumentCompletedEventArgs)
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0"),  _
-     System.Diagnostics.DebuggerStepThroughAttribute(),  _
-     System.ComponentModel.DesignerCategoryAttribute("code")>  _
-    Partial Public Class RetrieveProducedImagesForDocumentCompletedEventArgs
+
+	'''<remarks/>
+	<System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.34209"),
+	 System.Diagnostics.DebuggerStepThroughAttribute(),
+	 System.ComponentModel.DesignerCategoryAttribute("code")>
+	Partial Public Class RetrieveProducedImagesForDocumentCompletedEventArgs
         Inherits System.ComponentModel.AsyncCompletedEventArgs
         
         Private results() As Object
@@ -881,10 +881,10 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
             End Get
         End Property
     End Class
-    
-    '''<remarks/>
-    <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.2558.0")>  _
-    Public Delegate Sub RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetCompletedEventHandler(ByVal sender As Object, ByVal e As RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetCompletedEventArgs)
+
+	'''<remarks/>
+	<System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.34209")>
+	Public Delegate Sub RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetCompletedEventHandler(ByVal sender As Object, ByVal e As RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetCompletedEventArgs)
     
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.34209"),  _

@@ -1171,5 +1171,8 @@
   <ItemGroup>
     <None Include="Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\BulkImportManager.disco" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Web References\kCura.EDDS.WebAPI.SearchManagerBase\SearchManager.disco" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
 </Project>
