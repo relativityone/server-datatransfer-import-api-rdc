@@ -14,6 +14,7 @@ Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Monitoring
 Imports kCura.WinEDDS.Service
 Imports Relativity
+Imports Relativity.DataTransfer.MessageService
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
@@ -1129,7 +1130,7 @@ Namespace kCura.EDDS.WinForm
             If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
                 If CheckFieldMap(loadFile) Then
                     Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
-                    Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(MessageServiceFactory.SetupMessageService(ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync())))
+                    Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(Await SetupMessageService())
                     importer.LoadFile = loadFile
                     importer.TimeZoneOffset = _timeZoneOffset
                     importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
@@ -1181,7 +1182,7 @@ Namespace kCura.EDDS.WinForm
                 Return
             End If
             Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
-            Dim importer As New kCura.WinEDDS.ImportImageFileProcess(MessageServiceFactory.SetupMessageService(ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync())))
+            Dim importer As New kCura.WinEDDS.ImportImageFileProcess(Await SetupMessageService())
             ImageLoadFile.CookieContainer = Me.CookieContainer
             importer.ImageLoadFile = ImageLoadFile
             importer.CloudInstance = Config.CloudInstance
@@ -1205,7 +1206,7 @@ Namespace kCura.EDDS.WinForm
             End If
             Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
             frm.StatusRefreshRate = 0
-            Dim exporter As New kCura.WinEDDS.ExportSearchProcess(new ExportFileFormatterFactory(), New ExportConfig, MessageServiceFactory.SetupMessageService(ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync())))
+            Dim exporter As New kCura.WinEDDS.ExportSearchProcess(new ExportFileFormatterFactory(), New ExportConfig, Await SetupMessageService())
             exporter.UserNotification = New FormsUserNotification()
             exporter.ExportFile = exportFile
             frm.ProcessObserver = exporter.ProcessObserver
@@ -1773,6 +1774,10 @@ Namespace kCura.EDDS.WinForm
             Return loginResult
         End Function
 
+		Public Async Function SetupMessageService() As Task(Of IMessageService)
+			Return MessageServiceFactory.SetupMessageService(ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync()))
+		End Function
+
         Private Async Function CanUserAccessStagingExplorer(credentials As NetworkCredential) As Task(Of System.Boolean)
             Dim factory = ServiceFactoryFactory.Create(credentials)
 
@@ -1781,6 +1786,7 @@ Namespace kCura.EDDS.WinForm
                 Return userCanRunStagingExplorer
             End Using
         End Function
+
     End Class
 End Namespace
 
