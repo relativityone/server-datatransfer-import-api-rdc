@@ -68,6 +68,7 @@ Namespace kCura.WinEDDS
         Protected OutputObjectFilePath As String = System.IO.Path.GetTempFileName
         Private _filePath As String
         Private _batchCounter As Int32 = 0
+        Private _jobCompleteBatchCount As Int32 = 0
         Private _errorMessageFileLocation As String = String.Empty
         Private _errorLinesFileLocation As String = String.Empty
 
@@ -919,7 +920,7 @@ Namespace kCura.WinEDDS
                 _timekeeper.MarkStart("ManageDocumentMetadata_WserviceCall")
 
                 If OutputFileWriter.CombinedStreamLength > ImportBatchVolume OrElse _batchCounter > ImportBatchSize - 1 Then
-                    Me.TryPushNativeBatch(False, True)
+                    Me.TryPushNativeBatch(False, _jobCompleteBatchCount > JobCompleteBatchSize)
                 End If
                 _timekeeper.MarkEnd("ManageDocumentMetadata_WserviceCall")
             Catch ex As kCura.Utility.ImporterExceptionBase
@@ -1035,6 +1036,10 @@ Namespace kCura.WinEDDS
         Private Sub TryPushNativeBatch(ByVal lastRun As Boolean, ByVal shouldCompleteJob As Boolean)
             CloseFileWriters()
             Dim outputNativePath As String = OutputFileWriter.OutputNativeFilePath
+
+            If shouldCompleteJob Then
+                _jobCompleteBatchCount = 0
+            End If
 
             ' REL-157042: Prevent importing bad data into Relativity or honor stoppage.
             If ShouldImport Then
@@ -1164,6 +1169,8 @@ Namespace kCura.WinEDDS
                 codeFileUploadKey = BulkLoadTapiBridge.AddPath(OutputCodeFilePath, Guid.NewGuid().ToString(), 2)
                 objectFileUploadKey = BulkLoadTapiBridge.AddPath(OutputObjectFilePath, Guid.NewGuid().ToString(), 3)
                 dataGridFileUploadKey = BulkLoadTapiBridge.AddPath(OutputFileWriter.OutputDataGridFilePath, Guid.NewGuid().ToString(), 4)
+
+                _jobCompleteBatchCount += 4
 
                 If shouldCompleteJob Then
                     CompletePendingBulkLoadFileTransfers()

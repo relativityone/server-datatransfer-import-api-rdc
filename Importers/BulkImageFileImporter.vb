@@ -47,6 +47,7 @@ Namespace kCura.WinEDDS
         Private _runId As String = ""
         Private _settings As ImageLoadFile
         Private _batchCount As Int32 = 0
+        Private _jobCompleteBatchCount As Int32 = 0
         Private _errorCount As Int32 = 0
         Private _errorMessageFileLocation As String = ""
         Private _errorRowsFileLocation As String = ""
@@ -299,7 +300,7 @@ Namespace kCura.WinEDDS
             al.Clear()
             status = 0
             If (_bulkLoadFileWriter.BaseStream.Length + _dataGridFileWriter.BaseStream.Length > ImportBatchVolume) OrElse _batchCount > ImportBatchSize - 1 Then
-                Me.TryPushImageBatch(bulkLoadFilePath, dataGridFilePath, False, True)
+                Me.TryPushImageBatch(bulkLoadFilePath, dataGridFilePath, False, _jobCompleteBatchCount > JobCompleteBatchSize)
             End If
         End Sub
 
@@ -387,11 +388,16 @@ Namespace kCura.WinEDDS
             _dataGridFileWriter.Close()
             _fileIdentifierLookup.Clear()
             Try
+                If shouldCompleteJob Then
+                    _jobCompleteBatchCount = 0
+                End If
+
                 If ShouldImport AndAlso _copyFilesToRepository AndAlso Me.FileTapiBridge.TransfersPending Then
                     If shouldCompleteJob Then
                         CompletePendingPhysicalFileTransfers("Waiting for all image files to upload...", "Image file uploads completed.", "Failed to complete all pending image file transfers.")
                     End If
                     Me.JobCounter += 1
+                    _jobCompleteBatchCount += 1
                 End If
 
                 If ShouldImport
