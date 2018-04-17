@@ -4,6 +4,7 @@
 ' </copyright>
 ' ----------------------------------------------------------------------------
 
+Imports System.Collections.Generic
 Imports System.Threading
 Imports kCura.WinEDDS.TApi
 Imports Relativity.Logging
@@ -104,6 +105,8 @@ Namespace kCura.WinEDDS
 
 		Protected Property ShouldImport As Boolean
 
+		Protected Property MetadataFiles As IDictionary(Of String, Boolean)
+
 #End Region
 
 		Protected Shared Function IsTimeoutException(ByVal ex As Exception) As Boolean
@@ -173,6 +176,7 @@ Namespace kCura.WinEDDS
 			AddHandler _bulkLoadTapiBridge.TapiStatusMessage, AddressOf OnTapiStatusEvent
 			AddHandler _bulkLoadTapiBridge.TapiErrorMessage, AddressOf OnTapiErrorMessage
 			AddHandler _bulkLoadTapiBridge.TapiWarningMessage, AddressOf OnTapiWarningMessage
+		    AddHandler _bulkLoadTapiBridge.TapiProgress, AddressOf BulkLoadOnTapiProgress
 
 			' Dump native and bcp upload bridge
 			Me.LogInformation("Begin dumping native parameters.")
@@ -202,6 +206,7 @@ Namespace kCura.WinEDDS
 				RemoveHandler _bulkLoadTapiBridge.TapiStatusMessage, AddressOf OnTapiStatusEvent
 				RemoveHandler _bulkLoadTapiBridge.TapiErrorMessage, AddressOf OnTapiErrorMessage
 				RemoveHandler _bulkLoadTapiBridge.TapiWarningMessage, AddressOf OnTapiWarningMessage
+			    RemoveHandler _bulkLoadTapiBridge.TapiProgress, AddressOf BulkLoadOnTapiProgress
 				_bulkLoadTapiBridge.Dispose()
 				_bulkLoadTapiBridge = Nothing
 			End If
@@ -322,6 +327,14 @@ Namespace kCura.WinEDDS
 			End SyncLock
 		End Sub
 
+		Private Sub BulkLoadOnTapiProgress(ByVal sender As Object, ByVal e As TapiProgressEventArgs)
+		    SyncLock _syncRoot
+		        If ShouldImport AndAlso e.Status Then
+		            Me.MetadataFiles.Item(e.FilePath) = True
+		        End If
+		    End SyncLock
+		End Sub
+
 		Private Sub FileOnTapiStatistics(ByVal sender As Object, ByVal e As TapiStatisticsEventArgs)
 			SyncLock _syncRoot
 				_statistics.FileTime = e.TotalTransferTicks
@@ -385,6 +398,24 @@ Namespace kCura.WinEDDS
 			Dim message As String = TApi.IoReporter.BuildIoReporterWarningMessage(exception, timeoutSeconds, retryCount, totalRetryCount)
 			IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(New IoWarningEventArgs(message, CurrentLineNumber))
 			System.Threading.Thread.CurrentThread.Join(1000 * timeoutSeconds)
+		End Sub
+
+		Protected Sub WaitForPendingMetadataUploads()
+		    Dim isComplete As Boolean = False
+		    While isComplete = False
+		        isComplete = True
+
+		        Dim dictPair As KeyValuePair(Of String, Boolean)
+		        For Each dictPair In Me.MetadataFiles
+		            If dictPair.Value = False Then
+		                isComplete = False
+		            End If
+		        Next
+
+		        System.Threading.Thread.Sleep(10)
+		    End While
+
+		    Me.MetadataFiles = New Dictionary(Of String, Boolean)
 		End Sub
 	End Class
 End Namespace
