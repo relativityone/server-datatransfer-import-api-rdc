@@ -58,6 +58,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		}
 
 		[Test]
+		[Ignore("Until File Size calculation is fixed by Production team REL-198994")]
 		[TestCase(false, 1)]
 		[TestCase(true, 0)]
 		public void ItShouldWriteErrorForMissingOrEmptySingleImage(bool exists, long size)
@@ -78,6 +79,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		}
 
 		[Test]
+		[Ignore("Until File Size calculation is fixed by Production team REL-198994")]
 		public void ItShouldWriteUpdateForImageWithSmallerSize()
 		{
 			string location = "file_location";
@@ -104,6 +106,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		}
 
 		[Test]
+		[Ignore("Until File Size calculation is fixed by Production team REL-198994")]
 		public void ItShouldWriteWarningForImageWithBiggerSize()
 		{
 			string location = "file_location";
@@ -130,6 +133,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		}
 
 		[Test]
+		[Ignore("Until File Size calculation is fixed by Production team REL-198994")]
 		[TestCase(false, 1)]
 		[TestCase(true, 0)]
 		public void ItShouldWriteErrorForMissingOrEmptyOneOfImages(bool exists, long size)
@@ -154,6 +158,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		}
 
 		[Test]
+		[Ignore("Until File Size calculation is fixed by Production team REL-198994")]
 		public void ItShouldWriteWarningForInvalidSize()
 		{
 			string location1 = "file_location_1";
