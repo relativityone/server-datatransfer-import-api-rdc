@@ -206,7 +206,7 @@
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="oi, Version=2018.3.1.42, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="oi, Version=2018.3.1.43, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32.2018.3.1\lib\net40\oi.dll</HintPath>
       <Private>True</Private>
     </Reference>
