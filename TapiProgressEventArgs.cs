@@ -104,5 +104,10 @@ namespace kCura.WinEDDS.TApi
         {
             get;
         }
+
+        /// <summary>
+        /// Gets or sets the file path
+        /// </summary>
+        public string FilePath { get; set; }
     }
 }
