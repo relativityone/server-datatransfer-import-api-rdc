@@ -8,9 +8,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		{
 		}
 
-		protected override void MarkAsDownloaded(string id)
+		protected override void MarkAsDownloaded(string id, int lineNumber)
 		{
-			DownloadProgressManager.MarkNativeAsDownloaded(id);
+			DownloadProgressManager.MarkNativeAsDownloaded(id, lineNumber);
 		}
 	}
 }

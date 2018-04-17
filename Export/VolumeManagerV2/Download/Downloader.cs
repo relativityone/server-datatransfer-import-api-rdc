@@ -24,6 +24,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private readonly ILog _logger;
 
+		private int _lineNumber;
+
 		public Downloader(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, IExportTapiBridgeFactory exportTapiBridgeFactory,
 			IErrorFileWriter errorFileWriter, ILog logger)
 		{
@@ -77,6 +79,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			IDownloadTapiBridge longTextDownloader = null;
 			try
 			{
+				_lineNumber = 1;
 				nativeFilesDownloader = DownloadNativeFiles(cancellationToken);
 				imageFilesDownloader = DownloadImageFiles(cancellationToken);
 				longTextDownloader = DownloadLongTexts(cancellationToken);
@@ -170,7 +173,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				{
 					_logger.LogVerbose("Adding export request for downloading native file for artifact {artifactId} to {destination}.", fileExportRequest.ArtifactId,
 						fileExportRequest.DestinationLocation);
-					fileExportRequest.UniqueId = tapiBridge.AddPath(fileExportRequest.CreateTransferPath());
+					TransferPath path = fileExportRequest.CreateTransferPath(_lineNumber++);
+					fileExportRequest.UniqueId = tapiBridge.AddPath(path);
 				}
 				catch (Exception ex)
 				{
@@ -198,7 +202,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				{
 					_logger.LogVerbose("Adding export request for downloading image file for artifact {artifactId} to {destination}.", fileExportRequest.ArtifactId,
 						fileExportRequest.DestinationLocation);
-					fileExportRequest.UniqueId = tapiBridge.AddPath(fileExportRequest.CreateTransferPath());
+					TransferPath path = fileExportRequest.CreateTransferPath(_lineNumber++);
+					fileExportRequest.UniqueId = tapiBridge.AddPath(path);
 				}
 				catch (Exception ex)
 				{
@@ -225,7 +230,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				try
 				{
 					_logger.LogVerbose("Adding export request for downloading long text {fieldId} to {destination}.", textExportRequest.FieldArtifactId, textExportRequest.DestinationLocation);
-					textExportRequest.UniqueId = tapiBridge.AddPath(textExportRequest.CreateTransferPath());
+					TransferPath path = textExportRequest.CreateTransferPath(_lineNumber++);
+					textExportRequest.UniqueId = tapiBridge.AddPath(path);
 				}
 				catch (Exception ex)
 				{
