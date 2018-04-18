@@ -23,6 +23,9 @@ namespace kCura.WinEDDS.TApi
         /// <param name="fileName">
         /// The transferred filename.
         /// </param>
+        /// <param name="filePath">
+        /// The transferred file path.
+        /// </param>
         /// <param name="status">
         /// Specify whether the file is successfully transferred.
         /// </param>
@@ -40,6 +43,7 @@ namespace kCura.WinEDDS.TApi
         /// </param>
         public TapiProgressEventArgs(
             string fileName,
+            string filePath,
             bool status,
             int lineNumber,
             long fileBytes,
@@ -49,6 +53,7 @@ namespace kCura.WinEDDS.TApi
             this.EndTime = endTime;
             this.FileBytes = fileBytes;
             this.FileName = fileName;
+            this.FilePath = filePath;
             this.LineNumber = lineNumber;
             this.StartTime = startTime;
             this.Status = status;
@@ -106,8 +111,11 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Gets or sets the file path
+        /// Gets the file path
         /// </summary>
-        public string FilePath { get; set; }
+        public string FilePath
+        {
+            get; 
+        }
     }
 }

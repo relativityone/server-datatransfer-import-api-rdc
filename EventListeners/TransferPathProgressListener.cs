@@ -60,12 +60,12 @@ namespace kCura.WinEDDS.TApi
                 !string.IsNullOrEmpty(e.Path.TargetFileName)
                     ? e.Path.TargetFileName
                     : Path.GetFileName(e.Path.SourcePath),
+                e.Path.SourcePath,
                 e.Status == TransferPathStatus.Successful,
                 e.Path.Order,
                 e.BytesTransferred,
                 e.StartTime ?? DateTime.Now,
                 e.EndTime ?? DateTime.Now);
-            args.FilePath = e.Path.SourcePath;
 
             this.ProgressEvent.Invoke(this, args);
         }
