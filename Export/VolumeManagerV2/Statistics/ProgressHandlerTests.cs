@@ -31,7 +31,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 
 			//ACT
 			_instance.Attach(_tapiBridge.Object);
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, true, 1, 1, DateTime.Now, DateTime.Now));
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, null, true, 1, 1, DateTime.Now, DateTime.Now));
 
 			//ASSERT
 			VerifyFileMarkedAsDownloaded(_downloadProgressManager, id, 1);
@@ -44,7 +44,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 
 			//ACT
 			_instance.Attach(_tapiBridge.Object);
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, false, 1, 1, DateTime.Now, DateTime.Now));
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, null, false, 1, 1, DateTime.Now, DateTime.Now));
 
 			//ASSERT
 			VerifyFileNotMarkedAsDownloaded(_downloadProgressManager, id, 1);
@@ -58,10 +58,10 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 
 			//ACT
 			_instance.Attach(_tapiBridge.Object);
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id1, true, 1, 1, DateTime.Now, DateTime.Now));
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id1, null, true, 1, 1, DateTime.Now, DateTime.Now));
 
 			_instance.Detach();
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id2, true, 1, 1, DateTime.Now, DateTime.Now));
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id2, null, true, 1, 1, DateTime.Now, DateTime.Now));
 
 
 			//ASSERT
