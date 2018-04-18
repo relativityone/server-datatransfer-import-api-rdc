@@ -7,6 +7,7 @@
 Imports System.Collections.Generic
 Imports System.Threading
 Imports kCura.WinEDDS.TApi
+Imports Polly
 Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
@@ -401,21 +402,42 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Sub WaitForPendingMetadataUploads()
-		    Dim isComplete As Boolean = False
-		    While isComplete = False
-		        isComplete = True
+            ' all wait values are in milliseconds
+            Dim totalWaitTime As Int32 = 60000
+            Dim waitBetweenRetries As Int32 = 10
 
-		        Dim dictPair As KeyValuePair(Of String, Boolean)
-		        For Each dictPair In Me.MetadataFiles
-		            If dictPair.Value = False Then
-		                isComplete = False
-		            End If
-		        Next
+            Dim numberOfRetries As Int32 = Convert.ToInt32(totalWaitTime / waitBetweenRetries)
 
-		        System.Threading.Thread.Sleep(10)
-		    End While
+            Dim waitSuccess As Boolean = False
+
+		    Dim retryPolicy As Retry.RetryPolicy(Of Boolean) = Policy.HandleResult(False).WaitAndRetry(
+                                numberOfRetries,
+                                Function(count) As TimeSpan
+                                    Return TimeSpan.FromMilliseconds(waitBetweenRetries)
+                                End Function)
+
+            retryPolicy.Execute(Function()
+                                    Dim files As Dictionary(Of String, Boolean) = New Dictionary(Of String, Boolean)(Me.MetadataFiles)
+                                    Dim dictPair As KeyValuePair(Of String, Boolean)
+                                    For Each dictPair In files
+                                        If dictPair.Value = False Then
+                                            Return False
+                                        End If
+                                    Next
+
+                                    waitSuccess = True
+                                    Return True
+                                End Function)
+
+            If Not waitSuccess Then
+                Me.LogWarning("Unable to successfully wait for pending metadata uploads")
+            End If
 
 		    Me.MetadataFiles = New Dictionary(Of String, Boolean)
 		End Sub
+
+        Private Sub HandlePolicyRetry(ByVal isComplete As Boolean)
+
+        End Sub
 	End Class
 End Namespace

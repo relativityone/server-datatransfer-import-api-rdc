@@ -26,7 +26,6 @@ Namespace kCura.WinEDDS
         Private _recordCount As Int64
         Private _replaceFullText As Boolean
         Private _importBatchSize As Int32?
-        Private _jobCompleteBatchSize As Int32?
         Private _importBatchVolume As Int32?
         Private _minimumBatchSize As Int32?
         Private _batchSizeHistoryList As System.Collections.Generic.List(Of Int32)
@@ -47,7 +46,6 @@ Namespace kCura.WinEDDS
         Private _runId As String = ""
         Private _settings As ImageLoadFile
         Private _batchCount As Int32 = 0
-        Private _jobCompleteBatchCount As Int32 = 0
         Private _errorCount As Int32 = 0
         Private _errorMessageFileLocation As String = ""
         Private _errorRowsFileLocation As String = ""
@@ -136,16 +134,6 @@ Namespace kCura.WinEDDS
             End Get
             Set(ByVal value As Int32)
                 _importBatchSize = If(value > MinimumBatchSize, value, MinimumBatchSize)
-            End Set
-        End Property
-
-        Protected Overridable Property JobCompleteBatchSize As Int32
-            Get
-                If Not _jobCompleteBatchSize.HasValue Then _jobCompleteBatchSize = Config.JobCompleteBatchSize
-                Return _jobCompleteBatchSize.Value
-            End Get
-            Set(ByVal value As Int32)
-                _jobCompleteBatchSize = If(value > MinimumBatchSize, value, MinimumBatchSize)
             End Set
         End Property
 
@@ -300,7 +288,7 @@ Namespace kCura.WinEDDS
             al.Clear()
             status = 0
             If (_bulkLoadFileWriter.BaseStream.Length + _dataGridFileWriter.BaseStream.Length > ImportBatchVolume) OrElse _batchCount > ImportBatchSize - 1 Then
-                Me.TryPushImageBatch(bulkLoadFilePath, dataGridFilePath, False, _jobCompleteBatchCount > JobCompleteBatchSize)
+                Me.TryPushImageBatch(bulkLoadFilePath, dataGridFilePath, False)
             End If
         End Sub
 
@@ -383,25 +371,18 @@ Namespace kCura.WinEDDS
             Return settings
         End Function
 
-        Private Sub TryPushImageBatch(ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String, ByVal isFinal As Boolean, ByVal shouldCompleteJob As Boolean)
+        Private Sub TryPushImageBatch(ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String, ByVal isFinal As Boolean)
             _bulkLoadFileWriter.Close()
             _dataGridFileWriter.Close()
             _fileIdentifierLookup.Clear()
             Try
-                If shouldCompleteJob Then
-                    _jobCompleteBatchCount = 0
-                End If
-
                 If ShouldImport AndAlso _copyFilesToRepository AndAlso Me.FileTapiBridge.TransfersPending Then
-                    If shouldCompleteJob Then
-                        CompletePendingPhysicalFileTransfers("Waiting for all image files to upload...", "Image file uploads completed.", "Failed to complete all pending image file transfers.")
-                    End If
+                    CompletePendingPhysicalFileTransfers("Waiting for all image files to upload...", "Image file uploads completed.", "Failed to complete all pending image file transfers.")
                     Me.JobCounter += 1
-                    _jobCompleteBatchCount += 1
                 End If
 
                 If ShouldImport
-                    PushImageBatch(bulkLoadFilePath, dataGridFilePath, shouldCompleteJob)
+                    PushImageBatch(bulkLoadFilePath, dataGridFilePath)
                 End If
             Catch ex As Exception
                 If BatchResizeEnabled AndAlso IsTimeoutException(ex) AndAlso ShouldImport Then
@@ -496,7 +477,7 @@ Namespace kCura.WinEDDS
         Protected Overridable Function DoLogicAndPushImageBatch(ByVal totalRecords As Integer, ByVal recordsProcessed As Integer, ByVal bulkLocation As String, ByVal dataGridLocation As String, ByRef charactersSuccessfullyProcessed As Long, ByVal i As Integer, ByVal charactersProcessed As Long) As Integer
             _batchCount = i
             RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, "Begin processing sub-batch of size " & i & ".", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
-            Me.PushImageBatch(bulkLocation, dataGridLocation, True)
+            Me.PushImageBatch(bulkLocation, dataGridLocation)
             RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, "End processing sub-batch of size " & i & ".  " & recordsProcessed & " of " & totalRecords & " in the original batch processed", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
             recordsProcessed += i
             charactersSuccessfullyProcessed += charactersProcessed
@@ -525,7 +506,7 @@ Namespace kCura.WinEDDS
             End If
         End Sub
 
-        Public Sub PushImageBatch(ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String, ByVal shouldCompleteJob As Boolean)
+        Public Sub PushImageBatch(ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String)
             If _batchCount = 0 Then Return
             PublishUploadModeEvent()
             _batchCount = 0
@@ -535,12 +516,7 @@ Namespace kCura.WinEDDS
             try
                 _uploadKey = Me.BulkLoadTapiBridge.AddPath(bulkLoadFilePath, Guid.NewGuid().ToString(), 1)
                 _uploadDataGridKey = Me.BulkLoadTapiBridge.AddPath(dataGridFilePath, Guid.NewGuid().ToString(), 2)
-
-                If shouldCompleteJob Then
-                    CompletePendingBulkLoadFileTransfers()
-                Else 
-                    WaitForPendingMetadataUploads()
-                End If
+                CompletePendingBulkLoadFileTransfers()
             Catch ex As Exception
                 ' Note: Retry and potential HTTP fallback automatically kick in. Throwing a similar exception if a failure occurs.
                 Throw New kCura.WinEDDS.LoadFilebase.BcpPathAccessException("Error accessing BCP Path, could be caused by network connectivity issues: " & ex.Message)
@@ -668,7 +644,7 @@ Namespace kCura.WinEDDS
                 End While
                 _timekeeper.MarkEnd("ReadFile_Main")
                 _timekeeper.MarkStart("ReadFile_Cleanup")
-                Me.TryPushImageBatch(bulkLoadFilePath, dataGridFilePath, True, True)
+                Me.TryPushImageBatch(bulkLoadFilePath, dataGridFilePath, True)
                 Me.LogInformation("Successfully imported {ImportCount} images via WinEDDS.", Me.FileTapiProgressCount)
                 Me.DumpStatisticsInfo()
                 Me.CompleteSuccess()

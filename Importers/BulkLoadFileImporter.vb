@@ -68,7 +68,8 @@ Namespace kCura.WinEDDS
         Protected OutputObjectFilePath As String = System.IO.Path.GetTempFileName
         Private _filePath As String
         Private _batchCounter As Int32 = 0
-        Private _jobCompleteBatchCount As Int32 = 0
+        Private _jobCompleteNativeCount As Int32 = 0
+        Private _jobCompleteMetadataCount As Int32 = 0
         Private _errorMessageFileLocation As String = String.Empty
         Private _errorLinesFileLocation As String = String.Empty
 
@@ -236,7 +237,7 @@ Namespace kCura.WinEDDS
 
         Protected Property JobCompleteBatchSize As Int32
             Get
-                If Not _jobCompleteBatchSize.HasValue Then _jobCompleteBatchSize = Config.ImportBatchSize
+                If Not _jobCompleteBatchSize.HasValue Then _jobCompleteBatchSize = Config.JobCompleteBatchSize
                 Return _jobCompleteBatchSize.Value
             End Get
             Set(ByVal value As Int32)
@@ -597,7 +598,7 @@ Namespace kCura.WinEDDS
                 End If
                 _timekeeper.MarkEnd("ReadFile_ProcessDocuments")
                 _timekeeper.MarkStart("ReadFile_OtherFinalization")
-                Me.TryPushNativeBatch(True, True)
+                Me.TryPushNativeBatch(True, True, True)
                 WaitOnPushBatchTask()
                 RaiseEvent EndFileImport(RunId)
                 WriteEndImport("Finish")
@@ -917,10 +918,11 @@ Namespace kCura.WinEDDS
                 ManageDocumentLine(metaDoc)
                 _timekeeper.MarkEnd("ManageDocumentMetadata_ManageDocumentLine")
                 _batchCounter += 1
+                _jobCompleteNativeCount += 1
                 _timekeeper.MarkStart("ManageDocumentMetadata_WserviceCall")
 
                 If OutputFileWriter.CombinedStreamLength > ImportBatchVolume OrElse _batchCounter > ImportBatchSize - 1 Then
-                    Me.TryPushNativeBatch(False, _jobCompleteBatchCount > JobCompleteBatchSize)
+                    Me.TryPushNativeBatch(False, _jobCompleteNativeCount >= JobCompleteBatchSize, _jobCompleteMetadataCount >= JobCompleteBatchSize)
                 End If
                 _timekeeper.MarkEnd("ManageDocumentMetadata_WserviceCall")
             Catch ex As kCura.Utility.ImporterExceptionBase
@@ -1033,12 +1035,13 @@ Namespace kCura.WinEDDS
             'Do Nothing
         End Sub
 
-        Private Sub TryPushNativeBatch(ByVal lastRun As Boolean, ByVal shouldCompleteJob As Boolean)
+        Private Sub TryPushNativeBatch(ByVal lastRun As Boolean, ByVal shouldCompleteNativeJob As Boolean, ByVal shouldCompleteMetadataJob As Boolean)
             CloseFileWriters()
             Dim outputNativePath As String = OutputFileWriter.OutputNativeFilePath
 
-            If shouldCompleteJob Then
-                _jobCompleteBatchCount = 0
+            If shouldCompleteNativeJob Or (lastRun And _jobCompleteNativeCount > 0) Then
+                _jobCompleteNativeCount = 0
+                CompletePendingPhysicalFileTransfers("Waiting for all native files to upload...", "Native file uploads completed.", "Failed to complete all pending native file transfers.")
             End If
 
             ' REL-157042: Prevent importing bad data into Relativity or honor stoppage.
@@ -1046,9 +1049,6 @@ Namespace kCura.WinEDDS
 
                 Try
                     If ShouldImport AndAlso _copyFileToRepository AndAlso FileTapiBridge.TransfersPending Then
-                        If shouldCompleteJob Then
-                            CompletePendingPhysicalFileTransfers("Waiting for all native files to upload...", "Native file uploads completed.", "Failed to complete all pending native file transfers.")
-                        End If
                         JobCounter += 1
 
                         ' The sync progress addresses an issue with TAPI clients that fail to raise progress when a failure occurs but successfully transfer all files via job retry (Aspera).
@@ -1060,7 +1060,7 @@ Namespace kCura.WinEDDS
                     End If
 					
                     If ShouldImport Then
-                        Me.PushNativeBatch(outputNativePath, shouldCompleteJob)
+                        Me.PushNativeBatch(outputNativePath, shouldCompleteMetadataJob, lastRun)
                     End If
                 Catch ex As Exception
                     If BatchResizeEnabled AndAlso IsTimeoutException(ex) AndAlso ShouldImport Then
@@ -1118,7 +1118,7 @@ Namespace kCura.WinEDDS
                 Try
                     _batchCounter = i
                     Me.WriteWarning("Processing sub-batch of size " & Me.ImportBatchSize & ".  " & recordsProcessed & " of " & totalRecords & " in the original batch processed")
-                    Me.PushNativeBatch(newNativeFilePath, True)
+                    Me.PushNativeBatch(newNativeFilePath, False, True)
                     recordsProcessed += i
                     charactersSuccessfullyProcessed += charactersProcessed
                 Catch ex As Exception
@@ -1147,10 +1147,22 @@ Namespace kCura.WinEDDS
             End If
         End Sub
 
-        Private Sub PushNativeBatch(ByVal outputNativePath As String, ByVal shouldCompleteJob As Boolean)
+        Private Sub PushNativeBatch(ByVal outputNativePath As String, ByVal shouldCompleteJob As Boolean, ByVal lastRun As Boolean)
             Dim start As Int64 = System.DateTime.Now.Ticks
-            If _batchCounter = 0 OrElse Not ShouldImport Then Exit Sub
+            If _batchCounter = 0 OrElse Not ShouldImport Then
+                If _jobCompleteMetadataCount > 0 Then
+                    _jobCompleteMetadataCount = 0
+                    CompletePendingBulkLoadFileTransfers()
+                End If
+                Exit Sub
+            End If
             _batchCounter = 0
+
+            If shouldCompleteJob Then
+                _jobCompleteMetadataCount = 0
+                CompletePendingBulkLoadFileTransfers()
+            End If
+
             Dim settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Me.GetSettingsObject
             settings.UseBulkDataImport = True
             Dim nativeFileUploadKey As String
@@ -1170,11 +1182,11 @@ Namespace kCura.WinEDDS
                 objectFileUploadKey = BulkLoadTapiBridge.AddPath(OutputObjectFilePath, Guid.NewGuid().ToString(), 3)
                 dataGridFileUploadKey = BulkLoadTapiBridge.AddPath(OutputFileWriter.OutputDataGridFilePath, Guid.NewGuid().ToString(), 4)
 
-                _jobCompleteBatchCount += 4
+                _jobCompleteMetadataCount += 4
 
-                If shouldCompleteJob Then
+                If lastRun Then
                     CompletePendingBulkLoadFileTransfers()
-                Else 
+                Else
                     WaitForPendingMetadataUploads()
                 End If
             Catch ex As Exception
