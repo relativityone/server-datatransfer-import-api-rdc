@@ -760,7 +760,9 @@ Namespace kCura.WinEDDS
                         End If
 
                         If _copyFileToRepository Then
-                            fileGuid = FileTapiBridge.AddPath(filename, Guid.NewGuid().ToString(), Me.CurrentLineNumber)
+                            Dim guid As String = System.Guid.NewGuid().ToString()
+                            Me.NativeFilesCount += 1
+                            fileGuid = FileTapiBridge.AddPath(filename, guid, Me.CurrentLineNumber)
                             destinationVolume = FileTapiBridge.TargetFolderName
                         Else
                             fileGuid = System.Guid.NewGuid.ToString
@@ -1041,14 +1043,14 @@ Namespace kCura.WinEDDS
 
             If shouldCompleteNativeJob Or (lastRun And _jobCompleteNativeCount > 0) Then
                 _jobCompleteNativeCount = 0
-                CompletePendingPhysicalFileTransfers("Waiting for all native files to upload...", "Native file uploads completed.", "Failed to complete all pending native file transfers.")
+                CompletePendingPhysicalFileTransfers("Waiting for the native file job to complete...", "Native file job completed.", "Failed to complete all pending native file transfers.")
             End If
 
             ' REL-157042: Prevent importing bad data into Relativity or honor stoppage.
             If ShouldImport Then
-
                 Try
                     If ShouldImport AndAlso _copyFileToRepository AndAlso FileTapiBridge.TransfersPending Then
+                        WaitForPendingFileUploads()
                         JobCounter += 1
 
                         ' The sync progress addresses an issue with TAPI clients that fail to raise progress when a failure occurs but successfully transfer all files via job retry (Aspera).
