@@ -435,9 +435,5 @@ Namespace kCura.WinEDDS
 
 		    Me.MetadataFiles = New Dictionary(Of String, Boolean)
 		End Sub
-
-        Private Sub HandlePolicyRetry(ByVal isComplete As Boolean)
-
-        End Sub
 	End Class
 End Namespace
