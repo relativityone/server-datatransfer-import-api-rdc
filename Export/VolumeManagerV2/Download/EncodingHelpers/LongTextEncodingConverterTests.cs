@@ -9,6 +9,7 @@ using kCura.WinEDDS.TApi;
 using Moq;
 using NUnit.Framework;
 using Relativity.Logging;
+using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.EncodingHelpers
 {
@@ -44,7 +45,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.EncodingHelpe
 			_instance.StartListening(_tapiBridge.Object);
 			_instance.StopListening(_tapiBridge.Object);
 
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, null, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, TransferPathStatus.Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
 
 			_instance.WaitForConversionCompletion();
 
@@ -63,7 +64,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.EncodingHelpe
 			//ACT
 			_instance.StartListening(_tapiBridge.Object);
 
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, null, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, TransferPathStatus.Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
 
 			_instance.StopListening(_tapiBridge.Object);
 
@@ -84,7 +85,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.EncodingHelpe
 			//ACT
 			_instance.StartListening(_tapiBridge.Object);
 
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, null, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, TransferPathStatus.Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
 
 			_instance.StopListening(_tapiBridge.Object);
 
@@ -114,7 +115,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.EncodingHelpe
 			//ACT
 			_instance.StartListening(_tapiBridge.Object);
 
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, null, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, TransferPathStatus.Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
 
 			_instance.StopListening(_tapiBridge.Object);
 

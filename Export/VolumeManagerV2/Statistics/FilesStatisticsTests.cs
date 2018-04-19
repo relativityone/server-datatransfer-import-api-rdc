@@ -5,6 +5,7 @@ using kCura.WinEDDS.TApi;
 using Moq;
 using NUnit.Framework;
 using Relativity.Logging;
+using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 {
@@ -39,11 +40,11 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 			_instance.Attach(_tapiBridge.Object);
 
 			//ACT
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs("", null, true, 0, size1, start, end));
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs("", true, TransferPathStatus.Successful, 0, size1, start, end));
 
 			_instance.SaveState();
 
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs("", null, true, 0, size2, start, end));
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs("", true, TransferPathStatus.Successful, 0, size2, start, end));
 
 			_instance.RestoreLastState();
 
@@ -65,9 +66,9 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 			_instance.Attach(_tapiBridge.Object);
 
 			//ACT
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs("", null, true, 0, sizeDownload1, start, end));
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs("", null, false, 0, sizeNotDownload1, start, end));
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs("", null, true, 0, sizeDownload2, start, end));
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs("", true, TransferPathStatus.Successful, 0, sizeDownload1, start, end));
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs("", false, TransferPathStatus.Failed, 0, sizeNotDownload1, start, end));
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs("", true, TransferPathStatus.Successful, 0, sizeDownload2, start, end));
 
 			//ASSERT
 			Assert.That(_statistics.FileBytes, Is.EqualTo(sizeDownload1 + sizeDownload2));
@@ -86,11 +87,11 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 			_instance.Attach(_tapiBridge.Object);
 
 			//ACT
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs("", null, true, 0, size1, start, end));
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs("", true, TransferPathStatus.Successful, 0, size1, start, end));
 
 			_instance.Detach();
 
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs("", null, true, 0, size2, start, end));
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs("", true, TransferPathStatus.Successful, 0, size2, start, end));
 
 			//ASSERT
 			Assert.That(_statistics.FileBytes, Is.EqualTo(size1));
