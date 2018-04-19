@@ -79,6 +79,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		}
 
 		[Test]
+		[Ignore("Until File Size calculation is fixed by Production team REL-198994")]
 		public void ItShouldWriteWarningForFileWithInvalidSize()
 		{
 			var artifact = new ObjectExportInfo
@@ -108,6 +109,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		}
 
 		[Test]
+		[Ignore("Until File Size calculation is fixed by Production team REL-198994")]
 		[TestCase(true, 0)]
 		[TestCase(false, 1)]
 		public void ItShouldWriteErrorForMissingOrEmptyFile(bool exists, long size)
