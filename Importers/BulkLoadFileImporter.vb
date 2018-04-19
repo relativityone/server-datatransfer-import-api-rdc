@@ -1825,11 +1825,10 @@ Namespace kCura.WinEDDS
 
 #Region "Public Events"
 
-        Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception, ByVal runID As String)
-        Public Event StatusMessage(ByVal args As StatusEventArgs)
-        Public Event EndFileImport(ByVal runID As String)
-        Public Event StartFileImport()
-        Public Event UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean)
+		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception, ByVal runID As String)
+		Public Event StatusMessage(ByVal args As StatusEventArgs)
+		Public Event EndFileImport(ByVal runID As String)
+		Public Event StartFileImport()
 
         Public Event ReportErrorEvent(ByVal row As System.Collections.IDictionary)
         Public Event DataSourcePrepEvent(ByVal e As Api.DataSourcePrepEventArgs)
@@ -2014,17 +2013,17 @@ Namespace kCura.WinEDDS
             IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(ioWarningEventArgs)
         End Sub
 
-        Private Sub ManageErrors(ByVal artifactTypeID As Int32)
-            If Not Me.BulkImportManager.NativeRunHasErrors(_caseInfo.ArtifactID, RunId) Then Exit Sub
-            Dim sr As kCura.Utility.GenericCsvReader = Nothing
-            Dim downloader As FileDownloader = Nothing
-            Try
-                With Me.BulkImportManager.GenerateNonImageErrorFiles(_caseInfo.ArtifactID, RunId, artifactTypeID, True, _keyFieldID)
-                    Me.WriteStatusLine(Windows.Process.EventType.Status, "Retrieving errors from server")
-                    downloader = New FileDownloader(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer, Service.Settings.AuthenticationToken)
-                    AddHandler downloader.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
-                    Dim errorsLocation As String = System.IO.Path.GetTempFileName
-                    sr = AttemptErrorFileDownload(downloader, errorsLocation, .LogKey, _caseInfo)
+		Private Sub ManageErrors(ByVal artifactTypeID As Int32)
+			If Not Me.BulkImportManager.NativeRunHasErrors(_caseInfo.ArtifactID, RunId) Then Exit Sub
+			Dim sr As kCura.Utility.GenericCsvReader = Nothing
+			Dim downloader As FileDownloader = Nothing
+			Try
+				With Me.BulkImportManager.GenerateNonImageErrorFiles(_caseInfo.ArtifactID, RunId, artifactTypeID, True, _keyFieldID)
+					Me.WriteStatusLine(Windows.Process.EventType.Status, "Retrieving errors from server")
+					downloader = New FileDownloader(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer)
+					AddHandler downloader.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
+					Dim errorsLocation As String = System.IO.Path.GetTempFileName
+					sr = AttemptErrorFileDownload(downloader, errorsLocation, .LogKey, _caseInfo)
 
                     If sr Is Nothing Then
                         'If we're here and still have an empty response, we can at least notify
@@ -2134,13 +2133,9 @@ Namespace kCura.WinEDDS
             RaiseEvent StartFileImport()
         End Sub
 
-        Protected Sub OnUploadModeChangeEvent(mode As String, isBulkEnabled As Boolean)
-            RaiseEvent UploadModeChangeEvent(mode, isBulkEnabled)
-        End Sub
-
-        Protected Sub OnDataSourcePrepEvent(args As Api.DataSourcePrepEventArgs)
-            RaiseEvent DataSourcePrepEvent(args)
-        End Sub
+		Protected Sub OnDataSourcePrepEvent(args As Api.DataSourcePrepEventArgs)
+			RaiseEvent DataSourcePrepEvent(args)
+		End Sub
 
         Protected Sub OnReportErrorEvent(row As IDictionary)
             RaiseEvent ReportErrorEvent(row)

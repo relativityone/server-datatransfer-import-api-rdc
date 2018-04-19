@@ -44,6 +44,8 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         
         Private RetrieveImagesForSearchOperationCompleted As System.Threading.SendOrPostCallback
         
+        Private RetrieveProducedImagesForDocumentOperationCompleted As System.Threading.SendOrPostCallback
+        
         Private RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetOperationCompleted As System.Threading.SendOrPostCallback
         
         Private RetrieveImagesByProductionIDsAndDocumentIDsForExportOperationCompleted As System.Threading.SendOrPostCallback
@@ -113,6 +115,9 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
         
         '''<remarks/>
         Public Event RetrieveImagesForSearchCompleted As RetrieveImagesForSearchCompletedEventHandler
+        
+        '''<remarks/>
+        Public Event RetrieveProducedImagesForDocumentCompleted As RetrieveProducedImagesForDocumentCompletedEventHandler
         
         '''<remarks/>
         Public Event RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetCompleted As RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetCompletedEventHandler
@@ -360,6 +365,44 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
             If (Not (Me.RetrieveImagesForSearchCompletedEvent) Is Nothing) Then
                 Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
                 RaiseEvent RetrieveImagesForSearchCompleted(Me, New RetrieveImagesForSearchCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
+            End If
+        End Sub
+        
+        '''<remarks/>
+        <System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.kCura.com/EDDS/SearchManager/RetrieveProducedImagesForDocument", RequestNamespace:="http://www.kCura.com/EDDS/SearchManager", ResponseNamespace:="http://www.kCura.com/EDDS/SearchManager", Use:=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle:=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)>  _
+        Public Function RetrieveProducedImagesForDocument(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer) As System.Data.DataSet
+            Dim results() As Object = Me.Invoke("RetrieveProducedImagesForDocument", New Object() {caseContextArtifactID, documentArtifactID})
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '''<remarks/>
+        Public Function BeginRetrieveProducedImagesForDocument(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal callback As System.AsyncCallback, ByVal asyncState As Object) As System.IAsyncResult
+            Return Me.BeginInvoke("RetrieveProducedImagesForDocument", New Object() {caseContextArtifactID, documentArtifactID}, callback, asyncState)
+        End Function
+        
+        '''<remarks/>
+        Public Function EndRetrieveProducedImagesForDocument(ByVal asyncResult As System.IAsyncResult) As System.Data.DataSet
+            Dim results() As Object = Me.EndInvoke(asyncResult)
+            Return CType(results(0),System.Data.DataSet)
+        End Function
+        
+        '''<remarks/>
+        Public Overloads Sub RetrieveProducedImagesForDocumentAsync(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer)
+            Me.RetrieveProducedImagesForDocumentAsync(caseContextArtifactID, documentArtifactID, Nothing)
+        End Sub
+        
+        '''<remarks/>
+        Public Overloads Sub RetrieveProducedImagesForDocumentAsync(ByVal caseContextArtifactID As Integer, ByVal documentArtifactID As Integer, ByVal userState As Object)
+            If (Me.RetrieveProducedImagesForDocumentOperationCompleted Is Nothing) Then
+                Me.RetrieveProducedImagesForDocumentOperationCompleted = AddressOf Me.OnRetrieveProducedImagesForDocumentOperationCompleted
+            End If
+            Me.InvokeAsync("RetrieveProducedImagesForDocument", New Object() {caseContextArtifactID, documentArtifactID}, Me.RetrieveProducedImagesForDocumentOperationCompleted, userState)
+        End Sub
+        
+        Private Sub OnRetrieveProducedImagesForDocumentOperationCompleted(ByVal arg As Object)
+            If (Not (Me.RetrieveProducedImagesForDocumentCompletedEvent) Is Nothing) Then
+                Dim invokeArgs As System.Web.Services.Protocols.InvokeCompletedEventArgs = CType(arg,System.Web.Services.Protocols.InvokeCompletedEventArgs)
+                RaiseEvent RetrieveProducedImagesForDocumentCompleted(Me, New RetrieveProducedImagesForDocumentCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState))
             End If
         End Sub
         
@@ -814,7 +857,34 @@ Namespace kCura.EDDS.WebAPI.SearchManagerBase
     
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.34209")>  _
-    Public Delegate Sub RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetCompletedEventHandler(ByVal sender As Object, ByVal e As RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetCompletedEventArgs)
+    Public Delegate Sub RetrieveProducedImagesForDocumentCompletedEventHandler(ByVal sender As Object, ByVal e As RetrieveProducedImagesForDocumentCompletedEventArgs)
+
+	'''<remarks/>
+	<System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.34209"),
+	 System.Diagnostics.DebuggerStepThroughAttribute(),
+	 System.ComponentModel.DesignerCategoryAttribute("code")>
+	Partial Public Class RetrieveProducedImagesForDocumentCompletedEventArgs
+        Inherits System.ComponentModel.AsyncCompletedEventArgs
+        
+        Private results() As Object
+        
+        Friend Sub New(ByVal results() As Object, ByVal exception As System.Exception, ByVal cancelled As Boolean, ByVal userState As Object)
+            MyBase.New(exception, cancelled, userState)
+            Me.results = results
+        End Sub
+        
+        '''<remarks/>
+        Public ReadOnly Property Result() As System.Data.DataSet
+            Get
+                Me.RaiseExceptionIfNecessary
+                Return CType(Me.results(0),System.Data.DataSet)
+            End Get
+        End Property
+    End Class
+
+	'''<remarks/>
+	<System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.34209")>
+	Public Delegate Sub RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetCompletedEventHandler(ByVal sender As Object, ByVal e As RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetCompletedEventArgs)
     
     '''<remarks/>
     <System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.0.30319.34209"),  _

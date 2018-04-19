@@ -1,8 +1,10 @@
 Imports kCura.WinEDDS.Exporters
+Imports kCura.WinEDDS.TApi
+Imports Relativity.DataTransfer.MessageService
 
 Namespace kCura.WinEDDS
 	Public Class ExportSearchProcess
-		Inherits kCura.Windows.Process.ProcessBase
+		Inherits MonitoredProcessBase
 
 		Private ReadOnly _loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory
 		Private ReadOnly _exportConfig As IExportConfig
@@ -12,16 +14,45 @@ Namespace kCura.WinEDDS
 		Private _errorCount As Int32
 		Private _warningCount As Int32
 		Private _uploadModeText As String = Nothing
-
+		Private _hasErrors As Boolean
+		Private _tapiClientName As String = TapiClient.None.ToString()
+		Protected Overrides ReadOnly Property JobType As String = "Export"
 		Public Property UserNotification As Exporters.IUserNotification
 		Public Property UserNotificationFactory As Func(Of Exporter, IUserNotification)
 
 		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
+			MyBase.New(new MessageService())
 			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory
 			_exportConfig = exportConfig
 		End Sub
 
-		Protected Overrides Sub Execute()
+		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, messageService As IMessageService)
+			MyBase.New(messageService)
+			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory
+			_exportConfig = exportConfig
+		End Sub
+
+		Protected Overrides Sub OnSuccess()
+			SendTransferJobCompletedMessage(_tapiClientName)
+			Me.ProcessObserver.RaiseStatusEvent("", "Export completed")
+			Me.ProcessObserver.RaiseProcessCompleteEvent()
+		End Sub
+
+		Protected Overrides Sub OnFatalError()
+			SendTransferJobFailedMessage(_tapiClientName)
+			MyBase.OnFatalError()
+		End Sub
+		
+		Protected Overrides Sub OnHasErrors()
+			SendTransferJobCompletedMessage(_tapiClientName)
+			Me.ProcessObserver.RaiseProcessCompleteEvent(False, _searchExporter.ErrorLogFileName, True)
+		End Sub
+
+		Protected Overrides Function HasErrors() As Boolean
+			Return _hasErrors
+		End Function
+
+		Protected Overrides Sub Initialize()
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
@@ -34,18 +65,19 @@ Namespace kCura.WinEDDS
 					UserNotification = un
 				End If
 			End If
-			If Not _searchExporter.ExportSearch() Then
-				Me.ProcessObserver.RaiseProcessCompleteEvent(False, _searchExporter.ErrorLogFileName, True)
-			Else
-				Me.ProcessObserver.RaiseStatusEvent("", "Export completed")
-				Me.ProcessObserver.RaiseProcessCompleteEvent()
-			End If
 		End Sub
+
+		Protected Overrides Function Run() As Boolean
+			_hasErrors = Not _searchExporter.ExportSearch() 
+			Return Not _hasFatalErrorOccured
+		End Function
 
 		Private Sub _searchExporter_FileTransferModeChangeEvent(ByVal mode As String) Handles _searchExporter.FileTransferModeChangeEvent
 			If _uploadModeText Is Nothing Then
 				_uploadModeText = Config.FileTransferModeExplanationText(False)
 			End If
+			_tapiClientName = mode
+			SendTransferJobStartedMessage(_tapiClientName)
 			Me.ProcessObserver.RaiseStatusBarEvent("File Transfer Mode: " & mode, _uploadModeText)
 		End Sub
 
@@ -72,6 +104,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub _productionExporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Handles _searchExporter.FatalErrorEvent
 			Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
+			_hasFatalErrorOccured = True
 		End Sub
 
 		Private Sub _searchExporter_ShutdownEvent() Handles _searchExporter.ShutdownEvent

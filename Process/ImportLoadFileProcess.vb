@@ -1,14 +1,17 @@
 Imports System.Threading
 Imports kCura.WinEDDS.Helpers
+Imports kCura.WinEDDS.Monitoring
 Imports kCura.WinEDDS.TApi
+Imports Relativity.DataTransfer.MessageService
 Imports Relativity.Logging
 Imports Relativity.Logging.Factory
+Imports Relativity.Services.ServiceProxy
 Imports Relativity.Transfer
 
 Namespace kCura.WinEDDS
 
 	Public Class ImportLoadFileProcess
-		Inherits kCura.Windows.Process.ProcessBase
+		Inherits MonitoredProcessBase
 
 		Public LoadFile As LoadFile
 		Protected WithEvents _loadFileImporter As BulkLoadFileImporter
@@ -17,13 +20,21 @@ Namespace kCura.WinEDDS
 		Private _errorCount As Int32
 		Private _warningCount As Int32
 		Private _timeZoneOffset As Int32
-		Private _hasRunProcessComplete As Boolean = False
+		
 		Private _uploadModeText As String = Nothing
 
 		Private _disableUserSecutityCheck As Boolean
 		Private _disableNativeValidation As Boolean?
 		Private _disableNativeLocationValidation As Boolean?
 		Private _auditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = Config.AuditLevel
+
+		Public Sub New ()
+			MyBase.New(new MessageService())
+		End Sub
+
+		Public Sub New (messageService As IMessageService)
+			MyBase.New(messageService)
+		End Sub
 
 		Public WriteOnly Property DisableNativeValidation As Boolean
 			Set(ByVal value As Boolean)
@@ -37,6 +48,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Protected Overrides ReadOnly Property JobType As String = "Import"
 		Public Property OIFileIdMapped As Boolean
 		Public Property OIFileIdColumnName As String
 		Public Property OIFileTypeColumnName As String
@@ -98,7 +110,33 @@ Namespace kCura.WinEDDS
 			Return returnImporter
 		End Function
 
-		Protected Overrides Sub Execute()
+		Protected Overrides Sub OnFatalError()
+			SendTransferJobFailedMessage(_loadFileImporter.TapiClientName)
+			MyBase.OnFatalError()
+		End Sub
+
+		Protected Overrides Sub OnSuccess()
+			SendTransferJobCompletedMessage(_loadFileImporter.TapiClientName)
+			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
+		End Sub
+
+		Protected Overrides Sub OnHasErrors()
+			SendTransferJobCompletedMessage(_loadFileImporter.TapiClientName)
+			Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
+		End Sub
+
+		Protected Overrides Function HasErrors() As Boolean
+
+			Return _loadFileImporter.HasErrors
+		End Function
+
+		Protected Overrides Function Run() As Boolean
+
+			Return (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) AndAlso Not _hasFatalErrorOccured
+		End Function
+
+		Protected Overrides Sub Initialize()
+
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
@@ -130,19 +168,8 @@ Namespace kCura.WinEDDS
 			_loadFileImporter.FileNameColumn = FileNameColumn
 			_loadFileImporter.LoadImportedFullTextFromServer = (Me.LoadImportedFullTextFromServer OrElse Config.LoadImportedFullTextFromServer)
 			Me.ProcessObserver.InputArgs = LoadFile.FilePath
-
-			If (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) AndAlso Not _hasRunProcessComplete Then
-				If _loadFileImporter.HasErrors Then
-					Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
-				Else
-					Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
-				End If
-			Else
-				Me.ProcessObserver.RaiseStatusEvent("", "Import aborted")
-			End If
-
 		End Sub
-
+		
 		Private Sub AuditRun(ByVal success As Boolean, ByVal runID As String)
 			Try
 				Dim retval As New kCura.EDDS.WebAPI.AuditManagerBase.ObjectImportStatistics
@@ -279,18 +306,23 @@ Namespace kCura.WinEDDS
 			Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
 			'TODO: _loadFileImporter.ErrorLogFileName
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
-			_hasRunProcessComplete = True
+			_hasFatalErrorOccured = True
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
 			Me.AuditRun(False, runID)
 		End Sub
 
-		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _loadFileImporter.UploadModeChangeEvent
+		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal statusBarText As String, ByVal tapiClientName As String, ByVal isBulkEnabled As Boolean) Handles _loadFileImporter.UploadModeChangeEvent
 			If _uploadModeText Is Nothing Then
 				_uploadModeText = Config.FileTransferModeExplanationText(True)
 			End If
-			Dim statusBarMessage As String = String.Format("{0} - SQL Insert Mode: {1}", mode, If(isBulkEnabled, "Bulk", "Single"))
+			Dim statusBarMessage As String = $"{statusBarText} - SQL Insert Mode: {If(isBulkEnabled, "Bulk", "Single")}"
+
+			SendTransferJobStartedMessage(tapiClientName)
+
 			Me.ProcessObserver.RaiseStatusBarEvent(statusBarMessage, _uploadModeText)
 		End Sub
+
+		
 
 		Private Sub _loadFileImporter_DataSourcePrepEvent(ByVal e As Api.DataSourcePrepEventArgs) Handles _loadFileImporter.DataSourcePrepEvent
 			System.Threading.Monitor.Enter(Me.ProcessObserver)

@@ -36,6 +36,8 @@ Namespace kCura.WinEDDS
         Private ReadOnly _logger As ILog
 #End Region
 
+		Public Event UploadModeChangeEvent(ByVal statusBarText As String, ByVal tapiClientName As String, ByVal isBulkEnabled As Boolean)
+		
 #Region "Constructor"
         Public Sub New(ByVal ioReporterInstance As IIoReporter, ByVal logger As ILog, cancellationToken As CancellationTokenSource)
             'There is no argument checks for ioReporterInstance and cancellationToken here as both of these are not used when the constructor is called in Application.vb for previewing the content of load file.
@@ -105,9 +107,16 @@ Namespace kCura.WinEDDS
             End Get
         End Property
 
-        Protected Property FileTapiProgressCount As Int32
+		Public ReadOnly Property TapiClientName As String
+			Get
+				Return If(If(FileTapiClientName, BulkLoadTapiClientName), TapiClient.None.ToString())
+			End Get
+		End Property
+		
 
-        Protected Property TotalTransferredFilesCount As Long
+		Protected Property FileTapiProgressCount As Int32
+        
+		Protected Property TotalTransferredFilesCount As Long
 
         Protected Property ShouldImport As Boolean
 
