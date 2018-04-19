@@ -1,10 +1,11 @@
 Imports System.Threading
 Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.TApi
+Imports Relativity.DataTransfer.MessageService
 
 Namespace kCura.WinEDDS
 	Public Class ImportImageFileProcess
-		Inherits kCura.Windows.Process.ProcessBase
+		Inherits MonitoredProcessBase
 
 		Public ImageLoadFile As ImageLoadFile
 		Private WithEvents _imageFileImporter As kCura.WinEDDS.BulkImageFileImporter
@@ -12,7 +13,6 @@ Namespace kCura.WinEDDS
 		Private _startTime As DateTime
 		Private _errorCount As Int32
 		Private _warningCount As Int32
-		Private _hasRunProcessComplete As Boolean = False
 		Private _uploadModeText As String = Nothing
 
 		Private _disableUserSecurityCheck As Boolean
@@ -20,9 +20,13 @@ Namespace kCura.WinEDDS
 		Private _disableImageTypeValidation As Boolean?
 		Private _disableImageLocationValidation As Boolean?
 
-        Public Sub New()
+		Public Sub New ()
+			MyBase.New(new MessageService())
+		End Sub
 
-        End Sub
+		Public Sub New (messageService As IMessageService)
+			MyBase.New(messageService)
+		End Sub
 
         Public WriteOnly Property DisableImageTypeValidation As Boolean
 			Set(value As Boolean)
@@ -48,6 +52,8 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Protected Overrides ReadOnly Property JobType As String = "Import"
+
 		Public Property MaximumErrorCount As Int32?
 
 		Public Property SkipExtractedTextEncodingCheck As Boolean?
@@ -58,7 +64,32 @@ Namespace kCura.WinEDDS
 
 		Public Property ExecutionSource As Relativity.ExecutionSource
 
-		Protected Overrides Sub Execute()
+		Protected Overrides Function Run() As Boolean
+			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
+			Return Not _hasFatalErrorOccured
+		End Function
+
+		Protected Overrides Function HasErrors() As Boolean
+			Return _imageFileImporter.HasErrors
+		End Function
+
+		Protected Overrides Sub OnFatalError()
+			SendTransferJobFailedMessage(_imageFileImporter.TapiClientName)
+			MyBase.OnFatalError()
+		End Sub
+
+		Protected Overrides Sub OnSuccess()
+			SendTransferJobCompletedMessage(_imageFileImporter.TapiClientName)
+			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
+		End Sub
+
+		Protected Overrides Sub OnHasErrors()
+			SendTransferJobCompletedMessage(_imageFileImporter.TapiClientName)
+			Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
+		End Sub
+
+		Protected Overrides Sub Initialize()
+
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
@@ -79,12 +110,6 @@ Namespace kCura.WinEDDS
 			End If
 
 			_imageFileImporter.SkipExtractedTextEncodingCheck = SkipExtractedTextEncodingCheck.GetValueOrDefault(False)
-			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
-			If Not _hasRunProcessComplete Then
-				Dim exportFilePath As String = ""
-				If _imageFileImporter.HasErrors Then exportFilePath = System.Guid.NewGuid.ToString
-				Me.ProcessObserver.RaiseProcessCompleteEvent(False, exportFilePath, True)
-			End If
 		End Sub
 
 		Protected Overridable Function GetImageFileImporter() As kCura.WinEDDS.BulkImageFileImporter
@@ -175,7 +200,7 @@ Namespace kCura.WinEDDS
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
 			Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, _imageFileImporter.ErrorLogFileName, True)
-			_hasRunProcessComplete = True
+			_hasFatalErrorOccured = True
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
 		End Sub
 
@@ -183,11 +208,14 @@ Namespace kCura.WinEDDS
 			Me.ProcessObserver.RaiseReportErrorEvent(row)
 		End Sub
 
-		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean) Handles _imageFileImporter.UploadModeChangeEvent
+		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal statusBarText As String, ByVal tapiClientName As String, ByVal isBulkEnabled As Boolean) Handles _imageFileImporter.UploadModeChangeEvent
 			If _uploadModeText Is Nothing Then
 				_uploadModeText = Config.FileTransferModeExplanationText(True)
 			End If
-			Dim statusBarMessage As String = String.Format("{0} - SQL Insert Mode: {1}", mode, If(isBulkEnabled, "Bulk", "Single"))
+			Dim statusBarMessage As String = $"{statusBarText} - SQL Insert Mode: {If(isBulkEnabled, "Bulk", "Single")}"
+
+			SendTransferJobStartedMessage(tapiClientName)
+
 			Me.ProcessObserver.RaiseStatusBarEvent(statusBarMessage, _uploadModeText)
 		End Sub
 

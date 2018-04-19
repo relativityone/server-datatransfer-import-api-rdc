@@ -939,7 +939,6 @@ Namespace kCura.WinEDDS
 		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception)
 		Public Event StatusMessage(ByVal args As kCura.Windows.Process.StatusEventArgs)
 		Public Event ReportErrorEvent(ByVal row As System.Collections.IDictionary)
-		Public Event UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean)
 
 		Private Sub PublishUploadModeEvent()
 			Dim retval As New List(Of String)
@@ -961,11 +960,6 @@ Namespace kCura.WinEDDS
 				OnUploadModeChangeEvent(uploadStatus, true)
 			End If
 		End Sub
-
-		Protected Sub OnUploadModeChangeEvent(mode As String, isBulkEnabled As Boolean)
-			RaiseEvent UploadModeChangeEvent(mode, isBulkEnabled)
-		End Sub
-
 
 		Private Sub RaiseFatalError(ByVal ex As System.Exception)
 			RaiseEvent FatalErrorEvent($"Error processing line: {CurrentLineNumber}", ex)
