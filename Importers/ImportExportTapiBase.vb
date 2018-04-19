@@ -420,6 +420,10 @@ Namespace kCura.WinEDDS
             System.Threading.Thread.CurrentThread.Join(1000 * timeoutSeconds)
         End Sub
 
+        Protected Sub OnUploadModeChangeEvent(statusBarText As String, isBulkEnabled As Boolean)
+            RaiseEvent UploadModeChangeEvent(statusBarText, TapiClientName, isBulkEnabled)
+        End Sub
+
         Protected Sub WaitForPendingMetadataUploads()
             WaitForRetry(Function()
                              Return _batchMetadataTapiProgressCount >= Me.MetadataFilesCount
