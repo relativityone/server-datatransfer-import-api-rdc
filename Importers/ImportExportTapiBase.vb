@@ -9,6 +9,7 @@ Imports System.Threading
 Imports kCura.WinEDDS.TApi
 Imports Polly
 Imports Relativity.Logging
+Imports Relativity.Transfer
 
 Namespace kCura.WinEDDS
 
@@ -326,9 +327,12 @@ Namespace kCura.WinEDDS
 
         Private Sub FileOnTapiProgress(ByVal sender As Object, ByVal e As TapiProgressEventArgs)
             SyncLock _syncRoot
-                If ShouldImport AndAlso e.Status Then
-                    Me.FileTapiProgressCount += 1
+                If DidFileComplete(e.TransferStatus) Then
                     _batchFileTapiProgressCount += 1
+                End If
+
+                If ShouldImport AndAlso e.DidTransferSucceed Then
+                    Me.FileTapiProgressCount += 1
                     WriteTapiProgressMessage($"End upload '{e.FileName}' file. ({System.DateTime.op_Subtraction(e.EndTime, e.StartTime).Milliseconds}ms)", e.LineNumber)
                 End If
             End SyncLock
@@ -336,7 +340,7 @@ Namespace kCura.WinEDDS
 
         Private Sub BulkLoadOnTapiProgress(ByVal sender As Object, ByVal e As TapiProgressEventArgs)
             SyncLock _syncRoot
-                If ShouldImport AndAlso e.Status Then
+                If DidFileComplete(e.TransferStatus) Then
                     _batchMetadataTapiProgressCount += 1
                 End If
             End SyncLock
@@ -459,6 +463,18 @@ Namespace kCura.WinEDDS
                 Function(count) As TimeSpan
                     Return TimeSpan.FromMilliseconds(_fileCheckWaitBetweenRetries)
                 End Function)
+        End Function
+
+        Private Function DidFileComplete(ByVal status As TransferPathStatus) As Boolean
+            If status = TransferPathStatus.Failed Or
+                status = TransferPathStatus.FileNotFound Or
+                status = TransferPathStatus.Skipped Or
+                status = TransferPathStatus.Successful Or
+                status = TransferPathStatus.Failed Then
+                Return True
+            End If
+
+            Return False
         End Function
     End Class
 End Namespace
