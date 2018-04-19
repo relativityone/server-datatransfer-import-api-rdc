@@ -46,7 +46,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			};
 
 			//ACT
-			IList<FileExportRequest> requests = _instance.Create(artifact, CancellationToken.None);
+			IList<ExportRequest> requests = _instance.Create(artifact, CancellationToken.None);
 
 			//ASSERT
 			CollectionAssert.IsEmpty(requests);
@@ -73,7 +73,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			_validator.Setup(x => x.CanExport(exportPath, It.IsAny<string>())).Returns(false);
 
 			//ACT
-			IList<FileExportRequest> requests = _instance.Create(artifact, CancellationToken.None);
+			IList<ExportRequest> requests = _instance.Create(artifact, CancellationToken.None);
 
 			//ASSERT
 			CollectionAssert.IsEmpty(requests);
@@ -104,7 +104,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			_validator.Setup(x => x.CanExport(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
 
 			//ACT
-			IList<FileExportRequest> requests = _instance.Create(artifact, CancellationToken.None);
+			IList<ExportRequest> requests = _instance.Create(artifact, CancellationToken.None);
 
 			//ASSERT
 			Assert.That(requests.Count, Is.EqualTo(2));
