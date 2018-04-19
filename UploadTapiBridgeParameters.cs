@@ -20,7 +20,6 @@ namespace kCura.WinEDDS.TApi
 		public UploadTapiBridgeParameters()
 		{
 			this.BcpFileTransfer = false;
-			this.AsperaBcpRootFolder = "BCPPath";
 			this.MaxFilesPerFolder = 1000;
 			this.SortIntoVolumes = true;
 		}
@@ -33,22 +32,9 @@ namespace kCura.WinEDDS.TApi
 		/// </param>
 		public UploadTapiBridgeParameters(UploadTapiBridgeParameters copy) : base(copy)
 		{
-			this.AsperaBcpRootFolder = copy.AsperaBcpRootFolder;
 			this.BcpFileTransfer = copy.BcpFileTransfer;
 			this.MaxFilesPerFolder = copy.MaxFilesPerFolder;
 			this.SortIntoVolumes = copy.SortIntoVolumes;
-		}
-
-		/// <summary>
-		/// Gets or sets the Aspera BCP root folder.
-		/// </summary>
-		/// <value>
-		/// The folder.
-		/// </value>
-		public string AsperaBcpRootFolder
-		{
-			get;
-			set;
 		}
 
 		/// <summary>

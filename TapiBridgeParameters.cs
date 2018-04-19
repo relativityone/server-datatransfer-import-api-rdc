@@ -7,6 +7,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using Relativity.Transfer;
+
 namespace kCura.WinEDDS.TApi
 {
     using System;
@@ -22,6 +24,7 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         public TapiBridgeParameters()
         {
+            this.AsperaBcpRootFolder = "BCPPath";
             this.AsperaDocRootLevels = 1;
             this.ClientRequestId = Guid.NewGuid();
             this.Credentials = null;
@@ -35,6 +38,7 @@ namespace kCura.WinEDDS.TApi
             this.MaxJobParallelism = 10;
             this.MaxJobRetryAttempts = 3;
             this.MinDataRateMbps = 0;
+            this.SupportCheckPath = null;
             this.TargetDataRateMbps = 100;
             this.TargetPath = null;
             this.TransferLogDirectory = null;
@@ -58,6 +62,7 @@ namespace kCura.WinEDDS.TApi
                 throw new ArgumentNullException(nameof(copy));
             }
 
+            this.AsperaBcpRootFolder = copy.AsperaBcpRootFolder;
             this.AsperaDocRootLevels = copy.AsperaDocRootLevels;
             this.ClientRequestId = copy.ClientRequestId;
             this.Credentials = copy.Credentials;
@@ -72,6 +77,7 @@ namespace kCura.WinEDDS.TApi
             this.MaxJobParallelism = copy.MaxJobParallelism;
             this.MaxJobRetryAttempts = copy.MaxJobRetryAttempts;
             this.MinDataRateMbps = copy.MinDataRateMbps;
+            this.SupportCheckPath = copy.SupportCheckPath;
             this.TargetPath = copy.TargetPath;
             this.TimeoutSeconds = copy.TimeoutSeconds;
             this.TransferLogDirectory = copy.TransferLogDirectory;
@@ -79,6 +85,18 @@ namespace kCura.WinEDDS.TApi
             this.WebServiceUrl = copy.WebServiceUrl;
             this.WebCookieContainer = copy.WebCookieContainer;
             this.WorkspaceId = copy.WorkspaceId;
+        }
+
+        /// <summary>
+        /// Gets or sets the Aspera BCP root folder.
+        /// </summary>
+        /// <value>
+        /// The folder.
+        /// </value>
+        public string AsperaBcpRootFolder
+        {
+            get;
+            set;
         }
 
         /// <summary>
@@ -116,6 +134,18 @@ namespace kCura.WinEDDS.TApi
             get;
             set;
         }
+
+		/// <summary>
+		/// Gets or sets the Aspera credentials
+		/// </summary>
+		/// <value>
+		/// The <see cref="AsperaCredential"/> instance.
+		/// </value>
+		public AsperaCredential FileshareCredentials
+	    {
+		    get;
+		    set;
+	    }
 
         /// <summary>
         /// Gets or sets the file share UNC path. This value should come directly from the Workspace.
@@ -232,6 +262,18 @@ namespace kCura.WinEDDS.TApi
         /// The minimum data rate.
         /// </value>
         public int MinDataRateMbps
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the support check path.
+        /// </summary>
+        /// <value>
+        /// The support check path.
+        /// </value>
+        public string SupportCheckPath
         {
             get;
             set;

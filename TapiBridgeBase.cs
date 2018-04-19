@@ -549,7 +549,8 @@ namespace kCura.WinEDDS.TApi
 			var configuration =
 				new ClientConfiguration
 				{
-					CookieContainer = this.parameters.WebCookieContainer,
+				    BcpRootFolder = this.parameters.AsperaBcpRootFolder,
+                    CookieContainer = this.parameters.WebCookieContainer,
                     HttpTimeoutSeconds = this.parameters.TimeoutSeconds,
                     MaxJobParallelism = this.parameters.MaxJobParallelism,
 					MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
@@ -559,8 +560,10 @@ namespace kCura.WinEDDS.TApi
 					PreserveDates = false,
 					TargetDataRateMbps = this.parameters.TargetDataRateMbps,
 					TransferLogDirectory = this.parameters.TransferLogDirectory,
-					ValidateSourcePaths = ValidateSourcePaths
-				};
+					ValidateSourcePaths = ValidateSourcePaths,
+					Credential = this.parameters.FileshareCredentials?.CreateCredential(),
+				    SupportCheckPath = this.parameters.SupportCheckPath
+                };
 			return configuration;
 		}
 
