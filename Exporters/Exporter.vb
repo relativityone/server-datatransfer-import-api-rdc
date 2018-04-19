@@ -64,7 +64,6 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		''' <returns></returns>
 		Public Property NameTextAndNativesAfterBegBates() As Boolean = False
-
 		Public Property Settings() As kCura.WinEDDS.ExportFile
 			Get
 				Return _exportFile
@@ -199,7 +198,7 @@ Namespace kCura.WinEDDS
 				_start = System.DateTime.Now
 				Me.Search()
 			Catch ex As System.Exception
-				Me.WriteFatalError(String.Format("A fatal error occurred on document #{0}", Me.DocumentsExported), ex)
+				Me.WriteFatalError($"A fatal error occurred on document #{Me.DocumentsExported}", ex)
 				If Not _volumeManager Is Nothing Then
 					_volumeManager.Close()
 				End If
@@ -1182,6 +1181,8 @@ Namespace kCura.WinEDDS
 		Private Sub _downloadModeStatus_UploadModeChangeEvent(ByVal mode As String) Handles _downloadModeStatus.UploadModeChangeEvent
 			RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType.ToString)
 		End Sub
+
+
 
 		Private Function BuildFileNameProvider() As IFileNameProvider
 			Dim identifierExportFileNameProvider As IFileNameProvider = New IdentifierExportFileNameProvider(Settings)
