@@ -10,6 +10,7 @@
 namespace kCura.WinEDDS.TApi
 {
     using System;
+    using Relativity.Transfer;
 
     /// <summary>
     /// Represents TAPI progress event arguments data.
@@ -23,11 +24,11 @@ namespace kCura.WinEDDS.TApi
         /// <param name="fileName">
         /// The transferred filename.
         /// </param>
-        /// <param name="filePath">
-        /// The transferred file path.
-        /// </param>
-        /// <param name="status">
+        /// <param name="didTransferSucceed">
         /// Specify whether the file is successfully transferred.
+        /// </param>
+        /// <param name="transferStatus">
+        /// The transfer status
         /// </param>
         /// <param name="lineNumber">
         /// The line number.
@@ -43,8 +44,8 @@ namespace kCura.WinEDDS.TApi
         /// </param>
         public TapiProgressEventArgs(
             string fileName,
-            string filePath,
-            bool status,
+            bool didTransferSucceed,
+            TransferPathStatus transferStatus,
             int lineNumber,
             long fileBytes,
             DateTime startTime,
@@ -53,10 +54,10 @@ namespace kCura.WinEDDS.TApi
             this.EndTime = endTime;
             this.FileBytes = fileBytes;
             this.FileName = fileName;
-            this.FilePath = filePath;
             this.LineNumber = lineNumber;
             this.StartTime = startTime;
-            this.Status = status;
+            this.DidTransferSucceed = didTransferSucceed;
+            this.TransferStatus = transferStatus;
         }
 
         /// <summary>
@@ -105,17 +106,17 @@ namespace kCura.WinEDDS.TApi
         /// <value>
         /// <see langword="true"/> if successfully transferred; otherwise, /// <see langword="false"/>.
         /// </value>
-        public bool Status
+        public bool DidTransferSucceed
         {
             get;
         }
 
         /// <summary>
-        /// Gets the file path
+        /// Gets the transfer status
         /// </summary>
-        public string FilePath
+        public TransferPathStatus TransferStatus
         {
-            get; 
+            get;
         }
     }
 }
