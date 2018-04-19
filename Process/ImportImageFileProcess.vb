@@ -10,7 +10,6 @@ Namespace kCura.WinEDDS
 		Public ImageLoadFile As ImageLoadFile
 		Private WithEvents _imageFileImporter As kCura.WinEDDS.BulkImageFileImporter
 		Protected WithEvents _ioWarningPublisher As IoWarningPublisher
-		Private _startTime As DateTime
 		Private _errorCount As Int32
 		Private _warningCount As Int32
 		Private _uploadModeText As String = Nothing
@@ -76,21 +75,26 @@ Namespace kCura.WinEDDS
 		Protected Overrides Sub OnFatalError()
 			SendTransferJobFailedMessage(_imageFileImporter.TapiClientName)
 			MyBase.OnFatalError()
+			SendThroughputMessage(_imageFileImporter.TapiClientName)
 		End Sub
 
 		Protected Overrides Sub OnSuccess()
+			MyBase.OnFatalError()
+			SendThroughputMessage(_imageFileImporter.TapiClientName)
 			SendTransferJobCompletedMessage(_imageFileImporter.TapiClientName)
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
+			MyBase.OnFatalError()
+			SendThroughputMessage(_imageFileImporter.TapiClientName)
 			SendTransferJobCompletedMessage(_imageFileImporter.TapiClientName)
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
 		End Sub
 
 		Protected Overrides Sub Initialize()
 
-			_startTime = DateTime.Now
+			StartTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
 			Me.ProcessObserver.InputArgs = ImageLoadFile.FileName
@@ -160,7 +164,7 @@ Namespace kCura.WinEDDS
 					Case TApi.TapiClient.Direct
 						retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Direct
 				End Select
-				retval.RunTimeInMilliseconds = CType(System.DateTime.Now.Subtract(_startTime).TotalMilliseconds, Int32)
+				retval.RunTimeInMilliseconds = CType(System.DateTime.Now.Subtract(StartTime).TotalMilliseconds, Int32)
 				retval.SupportImageAutoNumbering = ImageLoadFile.AutoNumberImages
 				retval.StartLine = CType(System.Math.Min(ImageLoadFile.StartLineNumber, Int32.MaxValue), Int32)
 				retval.TotalFileSize = _imageFileImporter.Statistics.FileBytes
@@ -182,8 +186,9 @@ Namespace kCura.WinEDDS
 					If e.CountsTowardsTotal Then _errorCount += 1
 					Me.ProcessObserver.RaiseErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Progress
+					TotalRecords = e.TotalRecords
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, _startTime, New System.DateTime, Me.ProcessID, Nothing, Nothing, additionalInfo)
+					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, Me.ProcessID, Nothing, Nothing, additionalInfo)
 					Me.ProcessObserver.RaiseRecordProcessed(e.CurrentRecordIndex)
 				Case kCura.Windows.Process.EventType.Status
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)

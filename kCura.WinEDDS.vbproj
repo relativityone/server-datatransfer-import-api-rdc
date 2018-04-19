@@ -465,6 +465,7 @@
     <Compile Include="Monitoring\TransferJobMessageBase.vb" />
     <Compile Include="Monitoring\TransferJobCompletedMessage.vb" />
     <Compile Include="Monitoring\TransferJobStartedMessage.vb" />
+    <Compile Include="Monitoring\TransferJobThroughputMessage.vb" />
     <Compile Include="Process\MonitoredProcessBase.vb" />
     <Compile Include="RelativityLogFactory.vb" />
     <Compile Include="My Project\Settings.Designer.vb">

@@ -16,7 +16,6 @@ Namespace kCura.WinEDDS
 		Public LoadFile As LoadFile
 		Protected WithEvents _loadFileImporter As BulkLoadFileImporter
 		Protected WithEvents _ioWarningPublisher As IoWarningPublisher
-		Private _startTime As System.DateTime
 		Private _errorCount As Int32
 		Private _warningCount As Int32
 		Private _timeZoneOffset As Int32
@@ -111,16 +110,21 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Overrides Sub OnFatalError()
-			SendTransferJobFailedMessage(_loadFileImporter.TapiClientName)
 			MyBase.OnFatalError()
+			SendThroughputMessage(_loadFileImporter.TapiClientName)
+			SendTransferJobFailedMessage(_loadFileImporter.TapiClientName)
 		End Sub
 
 		Protected Overrides Sub OnSuccess()
+			MyBase.OnSuccess()
+			SendThroughputMessage(_loadFileImporter.TapiClientName)
 			SendTransferJobCompletedMessage(_loadFileImporter.TapiClientName)
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
+			MyBase.OnHasErrors()
+			SendThroughputMessage(_loadFileImporter.TapiClientName)
 			SendTransferJobCompletedMessage(_loadFileImporter.TapiClientName)
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
 		End Sub
@@ -137,7 +141,6 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub Initialize()
 
-			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
 			_loadFileImporter = Me.GetImporter()
@@ -252,7 +255,7 @@ Namespace kCura.WinEDDS
 					End Select
 					retval.TotalFileSize = _loadFileImporter.Statistics.FileBytes
 				End If
-				retval.RunTimeInMilliseconds = CType(System.DateTime.Now.Subtract(_startTime).TotalMilliseconds, Int32)
+				retval.RunTimeInMilliseconds = CType(System.DateTime.Now.Subtract(StartTime).TotalMilliseconds, Int32)
 				retval.StartLine = CType(System.Math.Min(LoadFile.StartLineNumber, Int32.MaxValue), Int32)
 				retval.TotalMetadataBytes = _loadFileImporter.Statistics.MetadataBytes
 				retval.SendNotification = LoadFile.SendEmailOnLoadCompletion
@@ -273,19 +276,20 @@ Namespace kCura.WinEDDS
 			If Not e.AdditionalInfo Is Nothing Then statisticsDictionary = DirectCast(e.AdditionalInfo, IDictionary)
 			Select Case e.EventType
 				Case kCura.Windows.Process.EventType.End
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, _startTime, System.DateTime.Now, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, System.DateTime.Now, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Error
 					_errorCount += 1
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, _startTime, New DateTime, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 					Me.ProcessObserver.RaiseErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Progress
+					TotalRecords = e.TotalRecords
 					Me.ProcessObserver.RaiseRecordProcessed(e.CurrentRecordIndex)
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, _startTime, New DateTime, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.ResetProgress
 					' Do NOT raise RaiseRecordProcessed for this event. 
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, _startTime, New DateTime, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Status
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
@@ -293,7 +297,7 @@ Namespace kCura.WinEDDS
 					_warningCount += 1
 					Me.ProcessObserver.RaiseWarningEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case Windows.Process.EventType.ResetStartTime
-					_startTime = System.DateTime.Now
+					StartTime = System.DateTime.Now
 				Case Windows.Process.EventType.Count
 					Me.ProcessObserver.RaiseCountEvent()
 			End Select
