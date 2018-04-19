@@ -29,15 +29,15 @@ Namespace kCura.WinEDDS
         Private _fileTapiClient As TapiClient = TapiClient.None
         Private _fileTapiClientName As String
         Private _statisticsLastUpdated As DateTime = DateTime.Now
-        Private _fileCheckTotalWaitTime As Int32 = 60000
+        Private _fileCheckRetryCount As Int32 = 6000
         Private _fileCheckWaitBetweenRetries As Int32 = 10
         Private _batchFileTapiProgressCount As Int32 = 0
         Private _batchMetadataTapiProgressCount As Int32 = 0
         Private ReadOnly _logger As ILog
 #End Region
 
-		Public Event UploadModeChangeEvent(ByVal statusBarText As String, ByVal tapiClientName As String, ByVal isBulkEnabled As Boolean)
-		
+        Public Event UploadModeChangeEvent(ByVal statusBarText As String, ByVal tapiClientName As String, ByVal isBulkEnabled As Boolean)
+
 #Region "Constructor"
         Public Sub New(ByVal ioReporterInstance As IIoReporter, ByVal logger As ILog, cancellationToken As CancellationTokenSource)
             'There is no argument checks for ioReporterInstance and cancellationToken here as both of these are not used when the constructor is called in Application.vb for previewing the content of load file.
@@ -107,16 +107,16 @@ Namespace kCura.WinEDDS
             End Get
         End Property
 
-		Public ReadOnly Property TapiClientName As String
-			Get
-				Return If(If(FileTapiClientName, BulkLoadTapiClientName), TapiClient.None.ToString())
-			End Get
-		End Property
-		
+        Public ReadOnly Property TapiClientName As String
+            Get
+                Return If(If(FileTapiClientName, BulkLoadTapiClientName), TapiClient.None.ToString())
+            End Get
+        End Property
 
-		Protected Property FileTapiProgressCount As Int32
-        
-		Protected Property TotalTransferredFilesCount As Long
+
+        Protected Property FileTapiProgressCount As Int32
+
+        Protected Property TotalTransferredFilesCount As Long
 
         Protected Property ShouldImport As Boolean
 
@@ -424,34 +424,47 @@ Namespace kCura.WinEDDS
             RaiseEvent UploadModeChangeEvent(statusBarText, TapiClientName, isBulkEnabled)
         End Sub
 
-        Protected Sub WaitForPendingMetadataUploads()
+        Public Sub WaitForPendingMetadataUploads()
             WaitForRetry(Function()
                              Return _batchMetadataTapiProgressCount >= Me.MetadataFilesCount
                          End Function,
                          "Waiting for all metadata files to upload...",
                          "Metadata file uploads completed.",
-                         "Unable to successfully wait for pending metadata uploads")
+                         "Unable to successfully wait for pending metadata uploads",
+                         _fileCheckRetryCount,
+                         _fileCheckWaitBetweenRetries)
 
             _batchMetadataTapiProgressCount = 0
             Me.MetadataFilesCount = 0
         End Sub
 
-        Protected Sub WaitForPendingFileUploads()
+        Public Sub WaitForPendingFileUploads()
             WaitForRetry(Function()
                              Return _batchFileTapiProgressCount >= Me.NativeFilesCount
                          End Function,
                          "Waiting for all native files to upload...",
                          "Native file uploads completed.",
-                         "Unable to successfully wait for pending native uploads")
+                         "Unable to successfully wait for pending native uploads",
+                         _fileCheckRetryCount,
+                         _fileCheckWaitBetweenRetries)
 
             _batchFileTapiProgressCount = 0
             Me.NativeFilesCount = 0
         End Sub
 
-        Private Sub WaitForRetry(ByVal retryFunction As Func(Of Boolean), ByVal startMessage As String, ByVal stopMessage As String, ByVal errorMessage As String)
+        Public Sub WaitForRetry(ByVal retryFunction As Func(Of Boolean),
+                                ByVal startMessage As String,
+                                ByVal stopMessage As String,
+                                ByVal errorMessage As String,
+                                ByVal retryCount As Int32,
+                                ByVal waitBetweenRetries As Int32)
             Dim waitSuccess As Boolean = False
 
-            Dim retryPolicy As Retry.RetryPolicy(Of Boolean) = GetRetryPolicy()
+            Dim retryPolicy As Retry.RetryPolicy(Of Boolean) = Policy.HandleResult(False).WaitAndRetry(
+                retryCount,
+                Function(count) As TimeSpan
+                    Return TimeSpan.FromMilliseconds(waitBetweenRetries)
+                End Function)
 
             Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, startMessage, 0, 0)
 
@@ -467,16 +480,6 @@ Namespace kCura.WinEDDS
                 Me.LogWarning(errorMessage)
             End If
         End Sub
-
-        Private Function GetRetryPolicy() As Retry.RetryPolicy(Of Boolean)
-            Dim numberOfRetries As Int32 = Convert.ToInt32(_fileCheckTotalWaitTime / _fileCheckWaitBetweenRetries)
-
-            Return Policy.HandleResult(False).WaitAndRetry(
-                numberOfRetries,
-                Function(count) As TimeSpan
-                    Return TimeSpan.FromMilliseconds(_fileCheckWaitBetweenRetries)
-                End Function)
-        End Function
 
         Private Function DidFileComplete(ByVal status As TransferPathStatus) As Boolean
             If status = TransferPathStatus.Failed Or
