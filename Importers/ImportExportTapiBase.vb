@@ -405,54 +405,50 @@ Namespace kCura.WinEDDS
         End Sub
 
         Protected Sub WaitForPendingMetadataUploads()
-            Dim waitSuccess As Boolean = False
+            WaitForRetry(Function()
+                             Dim files As Dictionary(Of String, Boolean) = New Dictionary(Of String, Boolean)(Me.MetadataFiles)
+                             Dim dictPair As KeyValuePair(Of String, Boolean)
+                             For Each dictPair In files
+                                 If dictPair.Value = False Then
+                                     Return False
+                                 End If
+                             Next
 
-            Dim retryPolicy As Retry.RetryPolicy(Of Boolean) = GetRetryPolicy()
-
-            Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "Waiting for all metadata files to upload...", 0, 0)
-
-            retryPolicy.Execute(Function()
-                                    Dim files As Dictionary(Of String, Boolean) = New Dictionary(Of String, Boolean)(Me.MetadataFiles)
-                                    Dim dictPair As KeyValuePair(Of String, Boolean)
-                                    For Each dictPair In files
-                                        If dictPair.Value = False Then
-                                            Return False
-                                        End If
-                                    Next
-
-                                    waitSuccess = True
-                                    Return True
-                                End Function)
-
-            Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "Metadata file uploads completed.", 0, 0)
-
-            If Not waitSuccess Then
-                Me.LogWarning("Unable to successfully wait for pending metadata uploads")
-            End If
+                             Return True
+                         End Function,
+                         "Waiting for all metadata files to upload...",
+                         "Metadata file uploads completed.",
+                         "Unable to successfully wait for pending metadata uploads")
 
             Me.MetadataFiles = New Dictionary(Of String, Boolean)
         End Sub
 
         Protected Sub WaitForPendingFileUploads()
+            WaitForRetry(Function()
+                             Return Me.FileTapiProgressCount >= Me.NativeFilesCount
+                         End Function,
+                         "Waiting for all native files to upload...",
+                         "Native file uploads completed.",
+                         "Unable to successfully wait for pending native uploads")
+        End Sub
+
+        Private Sub WaitForRetry(ByVal retryFunction As Func(Of Boolean), ByVal startMessage As String, ByVal stopMessage As String, ByVal errorMessage As String)
             Dim waitSuccess As Boolean = False
 
             Dim retryPolicy As Retry.RetryPolicy(Of Boolean) = GetRetryPolicy()
 
-            Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "Waiting for all native files to upload...", 0, 0)
+            Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, startMessage, 0, 0)
 
             retryPolicy.Execute(Function()
-                                    If Me.FileTapiProgressCount >= Me.NativeFilesCount Then
-                                        waitSuccess = True
-                                        Return True
-                                    End If
+                                    waitSuccess = retryFunction()
 
-                                    Return False
-                                End Function)
+                                    Return waitSuccess
+                                End Function, _cancellationToken.Token)
 
-            Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "Native file uploads completed.", 0, 0)
+            Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, stopMessage, 0, 0)
 
             If Not waitSuccess Then
-                Me.LogWarning("Unable to successfully wait for pending native uploads")
+                Me.LogWarning(errorMessage)
             End If
         End Sub
 
