@@ -30,6 +30,8 @@ Namespace kCura.WinEDDS
         Private _statisticsLastUpdated As DateTime = DateTime.Now
         Private _fileCheckTotalWaitTime As Int32 = 60000
         Private _fileCheckWaitBetweenRetries As Int32 = 10
+        Private _batchFileTapiProgressCount As Int32 = 0
+        Private _batchMetadataTapiProgressCount As Int32 = 0
         Private ReadOnly _logger As ILog
 #End Region
 
@@ -108,9 +110,9 @@ Namespace kCura.WinEDDS
 
         Protected Property ShouldImport As Boolean
 
-        Protected Property MetadataFiles As IDictionary(Of String, Boolean) = New Dictionary(Of String, Boolean)
-
         Protected Property NativeFilesCount As Int32 = 0
+
+        Protected Property MetadataFilesCount As Int32 = 0
 #End Region
 
         Protected Shared Function IsTimeoutException(ByVal ex As Exception) As Boolean
@@ -326,6 +328,7 @@ Namespace kCura.WinEDDS
             SyncLock _syncRoot
                 If ShouldImport AndAlso e.Status Then
                     Me.FileTapiProgressCount += 1
+                    _batchFileTapiProgressCount += 1
                     WriteTapiProgressMessage($"End upload '{e.FileName}' file. ({System.DateTime.op_Subtraction(e.EndTime, e.StartTime).Milliseconds}ms)", e.LineNumber)
                 End If
             End SyncLock
@@ -334,7 +337,7 @@ Namespace kCura.WinEDDS
         Private Sub BulkLoadOnTapiProgress(ByVal sender As Object, ByVal e As TapiProgressEventArgs)
             SyncLock _syncRoot
                 If ShouldImport AndAlso e.Status Then
-                    Me.MetadataFiles.Item(e.FilePath) = True
+                    _batchMetadataTapiProgressCount += 1
                 End If
             End SyncLock
         End Sub
@@ -406,30 +409,26 @@ Namespace kCura.WinEDDS
 
         Protected Sub WaitForPendingMetadataUploads()
             WaitForRetry(Function()
-                             Dim files As Dictionary(Of String, Boolean) = New Dictionary(Of String, Boolean)(Me.MetadataFiles)
-                             Dim dictPair As KeyValuePair(Of String, Boolean)
-                             For Each dictPair In files
-                                 If dictPair.Value = False Then
-                                     Return False
-                                 End If
-                             Next
-
-                             Return True
+                             Return _batchMetadataTapiProgressCount >= Me.MetadataFilesCount
                          End Function,
                          "Waiting for all metadata files to upload...",
                          "Metadata file uploads completed.",
                          "Unable to successfully wait for pending metadata uploads")
 
-            Me.MetadataFiles = New Dictionary(Of String, Boolean)
+            _batchMetadataTapiProgressCount = 0
+            Me.MetadataFilesCount = 0
         End Sub
 
         Protected Sub WaitForPendingFileUploads()
             WaitForRetry(Function()
-                             Return Me.FileTapiProgressCount >= Me.NativeFilesCount
+                             Return _batchFileTapiProgressCount >= Me.NativeFilesCount
                          End Function,
                          "Waiting for all native files to upload...",
                          "Native file uploads completed.",
                          "Unable to successfully wait for pending native uploads")
+
+            _batchFileTapiProgressCount = 0
+            Me.NativeFilesCount = 0
         End Sub
 
         Private Sub WaitForRetry(ByVal retryFunction As Func(Of Boolean), ByVal startMessage As String, ByVal stopMessage As String, ByVal errorMessage As String)

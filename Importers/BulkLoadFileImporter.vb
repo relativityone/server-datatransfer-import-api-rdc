@@ -1173,17 +1173,13 @@ Namespace kCura.WinEDDS
             Dim dataGridFileUploadKey As String
 
             try
-                Me.MetadataFiles = new Dictionary(Of String, Boolean)
-                Me.MetadataFiles.Add(outputNativePath, False)
-                Me.MetadataFiles.Add(OutputCodeFilePath, False)
-                Me.MetadataFiles.Add(OutputObjectFilePath, False)
-                Me.MetadataFiles.Add(OutputFileWriter.OutputDataGridFilePath, False)
-
                 nativeFileUploadKey = BulkLoadTapiBridge.AddPath(outputNativePath, Guid.NewGuid().ToString(), 1)
                 codeFileUploadKey = BulkLoadTapiBridge.AddPath(OutputCodeFilePath, Guid.NewGuid().ToString(), 2)
                 objectFileUploadKey = BulkLoadTapiBridge.AddPath(OutputObjectFilePath, Guid.NewGuid().ToString(), 3)
                 dataGridFileUploadKey = BulkLoadTapiBridge.AddPath(OutputFileWriter.OutputDataGridFilePath, Guid.NewGuid().ToString(), 4)
 
+                ' keep track of the total count of added files
+                MetadataFilesCount += 4
                 _jobCompleteMetadataCount += 4
 
                 If lastRun Then
