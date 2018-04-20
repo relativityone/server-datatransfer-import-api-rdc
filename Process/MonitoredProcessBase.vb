@@ -10,6 +10,7 @@ Public MustInherit Class MonitoredProcessBase
 	Protected Property StartTime As System.DateTime
 	Protected Property EndTime As System.DateTime
 	Protected Property TotalRecords As Long
+	Protected Property CompletedRecordsCount As Long
 	Protected Property InitialTapiClientName As String
 	Protected MustOverride ReadOnly Property JobType As String
 	Protected MustOverride ReadOnly Property TapiClientName As String
@@ -34,27 +35,36 @@ Public MustInherit Class MonitoredProcessBase
 
 	End Sub
 
+	Protected Overridable Sub SetEndTime()
+		EndTime = DateTime.Now
+	End Sub
+
+	Protected Overridable Sub SetStartTime()
+		StartTime = DateTime.Now
+	End Sub
+
 	Protected Overridable Sub OnFatalError()
-		EndTime = System.DateTime.Now
+		SetEndTime()
 		Me.ProcessObserver.RaiseStatusEvent("", $"{JobType} aborted")
 	End Sub
 
 	Protected Overridable Sub OnSuccess()
-		EndTime = System.DateTime.Now
+		SetEndTime()
 	End Sub
 
 	Protected Overridable Sub OnHasErrors()
-		EndTime = System.DateTime.Now
+		SetEndTime()
 	End Sub
 
 	Protected MustOverride Function HasErrors() As Boolean
 
-	Protected MustOverride Sub Initialize()
+	Protected Overridable Sub Initialize()
+		SetStartTime()
+	End Sub
 
 	Protected MustOverride Function Run() As Boolean
 
 	Protected Sub SendTransferJobStartedMessage()
-
 		If InitialTapiClientName Is Nothing Then
 			MessageService.Send(New TransferJobStartedMessage With {.JobType = JobType, .TransferMode = TapiClientName})
 		End If
@@ -70,7 +80,7 @@ Public MustInherit Class MonitoredProcessBase
 
 	Protected Sub SendThroughputMessage()
 		Dim duration As System.TimeSpan = EndTime - StartTime
-		Dim recordsPerSecond As Double = TotalRecords / duration.TotalSeconds
+		Dim recordsPerSecond As Double = CompletedRecordsCount / duration.TotalSeconds
 		MessageService.Send(New TransferJobThroughputMessage With {.JobType = JobType, .TransferMode = TapiClientName, .RecordsPerSecond = recordsPerSecond})
 	End Sub
 

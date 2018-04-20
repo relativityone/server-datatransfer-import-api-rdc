@@ -64,7 +64,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Overrides Sub Initialize()
-			StartTime = DateTime.Now
+			MyBase.Initialize()
 			_warningCount = 0
 			_errorCount = 0
 			_searchExporter = New Exporter(Me.ExportFile, Me.ProcessController, New Service.Export.WebApiServiceFactory(Me.ExportFile), 
@@ -104,8 +104,11 @@ Namespace kCura.WinEDDS
 				Case kCura.Windows.Process.EventType.Warning
 					_warningCount += 1
 					Me.ProcessObserver.RaiseWarningEvent(e.DocumentsExported.ToString, e.Message)
+				Case kCura.Windows.Process.EventType.ResetStartTime
+					SetStartTime()
 			End Select
 			TotalRecords = e.TotalDocuments
+			CompletedRecordsCount = e.DocumentsExported
 			Dim statDict As IDictionary = Nothing
 			If Not e.AdditionalInfo Is Nothing AndAlso TypeOf e.AdditionalInfo Is IDictionary Then
 				statDict = DirectCast(e.AdditionalInfo, IDictionary)

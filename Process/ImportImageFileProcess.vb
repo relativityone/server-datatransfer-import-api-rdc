@@ -103,7 +103,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub Initialize()
 
-			StartTime = DateTime.Now
+			MyBase.Initialize()
 			_warningCount = 0
 			_errorCount = 0
 			Me.ProcessObserver.InputArgs = ImageLoadFile.FileName
@@ -193,9 +193,11 @@ Namespace kCura.WinEDDS
 			Select Case e.EventType
 				Case kCura.Windows.Process.EventType.Error
 					If e.CountsTowardsTotal Then _errorCount += 1
+					CompletedRecordsCount += 1
 					Me.ProcessObserver.RaiseErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Progress
 					TotalRecords = e.TotalRecords
+					CompletedRecordsCount += 1
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, Me.ProcessID, Nothing, Nothing, additionalInfo)
 					Me.ProcessObserver.RaiseRecordProcessed(e.CurrentRecordIndex)
@@ -203,9 +205,12 @@ Namespace kCura.WinEDDS
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Warning
 					If e.CountsTowardsTotal Then _warningCount += 1
+					CompletedRecordsCount += 1
 					Me.ProcessObserver.RaiseWarningEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case Windows.Process.EventType.Count
 					Me.ProcessObserver.RaiseCountEvent()
+				Case Windows.Process.EventType.ResetStartTime
+					SetStartTime()
 			End Select
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
 		End Sub

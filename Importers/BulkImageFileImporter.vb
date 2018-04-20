@@ -609,6 +609,7 @@ Namespace kCura.WinEDDS
 				End If
 
 				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "Begin Image Upload", 0, 0)
+				RaiseStatusEvent(kCura.Windows.Process.EventType.ResetStartTime, "", 0, 0)
 				Dim al As New System.Collections.Generic.List(Of Api.ImageRecord)
 				Dim status As Int64 = 0
 				_timekeeper.MarkEnd("ReadFile_Init")
