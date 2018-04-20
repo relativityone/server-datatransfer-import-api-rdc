@@ -1,3 +1,4 @@
+Imports System.Diagnostics.Eventing.Reader
 Imports System.Threading
 Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.Monitoring
@@ -19,7 +20,7 @@ Namespace kCura.WinEDDS
 		Private _errorCount As Int32
 		Private _warningCount As Int32
 		Private _timeZoneOffset As Int32
-		
+
 		Private _uploadModeText As String = Nothing
 
 		Private _disableUserSecutityCheck As Boolean
@@ -27,11 +28,11 @@ Namespace kCura.WinEDDS
 		Private _disableNativeLocationValidation As Boolean?
 		Private _auditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = Config.AuditLevel
 
-		Public Sub New ()
-			MyBase.New(new MessageService())
+		Public Sub New()
+			MyBase.New(New MessageService())
 		End Sub
 
-		Public Sub New (messageService As IMessageService)
+		Public Sub New(messageService As IMessageService)
 			MyBase.New(messageService)
 		End Sub
 
@@ -48,6 +49,17 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Protected Overrides ReadOnly Property JobType As String = "Import"
+
+		Protected Overrides ReadOnly Property TapiClientName As String
+			Get
+				If _loadFileImporter Is Nothing Then
+					Return TapiClient.None.ToString()
+				Else
+					Return _loadFileImporter.TapiClientName
+				End If
+			End Get
+		End Property
+
 		Public Property OIFileIdMapped As Boolean
 		Public Property OIFileIdColumnName As String
 		Public Property OIFileTypeColumnName As String
@@ -97,35 +109,35 @@ Namespace kCura.WinEDDS
 
 		Public Overridable Function GetImporter() As kCura.WinEDDS.BulkLoadFileImporter
 			Dim tokenSource As CancellationTokenSource = New CancellationTokenSource()
-		    _ioWarningPublisher = New IoWarningPublisher()
-            
-		    Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog("WinEDDS")
-            Dim ioReporter As IIoReporter = IoReporterFactory.CreateIoReporter(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds, 
-                                                                               WinEDDS.Config.DisableNativeLocationValidation, logger, _ioWarningPublisher, tokenSource.Token)
+			_ioWarningPublisher = New IoWarningPublisher()
 
-			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, ioReporter, logger, _timeZoneOffset, True, Me.ProcessID, True, 
-                                                                                                BulkLoadFileFieldDelimiter, EnforceDocumentLimit, tokenSource,  ExecutionSource)
+			Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog("WinEDDS")
+			Dim ioReporter As IIoReporter = IoReporterFactory.CreateIoReporter(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds,
+																			   WinEDDS.Config.DisableNativeLocationValidation, logger, _ioWarningPublisher, tokenSource.Token)
+
+			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(LoadFile, ProcessController, ioReporter, logger, _timeZoneOffset, True, Me.ProcessID, True,
+																								BulkLoadFileFieldDelimiter, EnforceDocumentLimit, tokenSource, ExecutionSource)
 
 			Return returnImporter
 		End Function
 
 		Protected Overrides Sub OnFatalError()
 			MyBase.OnFatalError()
-			SendThroughputMessage(_loadFileImporter.TapiClientName)
-			SendTransferJobFailedMessage(_loadFileImporter.TapiClientName)
+			SendThroughputMessage()
+			SendTransferJobFailedMessage()
 		End Sub
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
-			SendThroughputMessage(_loadFileImporter.TapiClientName)
-			SendTransferJobCompletedMessage(_loadFileImporter.TapiClientName)
+			SendThroughputMessage()
+			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
-			SendThroughputMessage(_loadFileImporter.TapiClientName)
-			SendTransferJobCompletedMessage(_loadFileImporter.TapiClientName)
+			SendThroughputMessage()
+			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
 		End Sub
 
@@ -172,7 +184,7 @@ Namespace kCura.WinEDDS
 			_loadFileImporter.LoadImportedFullTextFromServer = (Me.LoadImportedFullTextFromServer OrElse Config.LoadImportedFullTextFromServer)
 			Me.ProcessObserver.InputArgs = LoadFile.FilePath
 		End Sub
-		
+
 		Private Sub AuditRun(ByVal success As Boolean, ByVal runID As String)
 			Try
 				Dim retval As New kCura.EDDS.WebAPI.AuditManagerBase.ObjectImportStatistics
@@ -321,12 +333,12 @@ Namespace kCura.WinEDDS
 			End If
 			Dim statusBarMessage As String = $"{statusBarText} - SQL Insert Mode: {If(isBulkEnabled, "Bulk", "Single")}"
 
-			SendTransferJobStartedMessage(tapiClientName)
+			SendTransferJobStartedMessage()
 
 			Me.ProcessObserver.RaiseStatusBarEvent(statusBarMessage, _uploadModeText)
 		End Sub
 
-		
+
 
 		Private Sub _loadFileImporter_DataSourcePrepEvent(ByVal e As Api.DataSourcePrepEventArgs) Handles _loadFileImporter.DataSourcePrepEvent
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
@@ -358,11 +370,11 @@ Namespace kCura.WinEDDS
 		Private Sub _loadFileImporter_ReportErrorEvent(ByVal row As System.Collections.IDictionary) Handles _loadFileImporter.ReportErrorEvent
 			Me.ProcessObserver.RaiseReportErrorEvent(row)
 		End Sub
-		
+
 		Private Sub _loadFileImporter_IoErrorEvent(ByVal sender As Object, ByVal e As IoWarningEventArgs) Handles _ioWarningPublisher.IoWarningEvent
-		    System.Threading.Monitor.Enter(Me.ProcessObserver)
-		    Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, e.Message)
-		    System.Threading.Monitor.Exit(Me.ProcessObserver)
+			System.Threading.Monitor.Enter(Me.ProcessObserver)
+			Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, e.Message)
+			System.Threading.Monitor.Exit(Me.ProcessObserver)
 		End Sub
 
 		Private Sub _loadFileImporter_EndFileImport(ByVal runID As String) Handles _loadFileImporter.EndFileImport

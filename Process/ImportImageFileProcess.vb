@@ -52,6 +52,15 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Protected Overrides ReadOnly Property JobType As String = "Import"
+		Protected Overrides ReadOnly Property TapiClientName As String
+			Get
+				If _imageFileImporter Is Nothing Then
+					Return TapiClient.None.ToString()
+				Else
+					Return _imageFileImporter.TapiClientName
+				End If
+			End Get
+		End Property
 
 		Public Property MaximumErrorCount As Int32?
 
@@ -73,22 +82,22 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Overrides Sub OnFatalError()
-			SendTransferJobFailedMessage(_imageFileImporter.TapiClientName)
+			SendTransferJobFailedMessage()
 			MyBase.OnFatalError()
-			SendThroughputMessage(_imageFileImporter.TapiClientName)
+			SendThroughputMessage()
 		End Sub
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnFatalError()
-			SendThroughputMessage(_imageFileImporter.TapiClientName)
-			SendTransferJobCompletedMessage(_imageFileImporter.TapiClientName)
+			SendThroughputMessage()
+			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnFatalError()
-			SendThroughputMessage(_imageFileImporter.TapiClientName)
-			SendTransferJobCompletedMessage(_imageFileImporter.TapiClientName)
+			SendThroughputMessage()
+			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
 		End Sub
 
@@ -219,7 +228,7 @@ Namespace kCura.WinEDDS
 			End If
 			Dim statusBarMessage As String = $"{statusBarText} - SQL Insert Mode: {If(isBulkEnabled, "Bulk", "Single")}"
 
-			SendTransferJobStartedMessage(tapiClientName)
+			SendTransferJobStartedMessage()
 
 			Me.ProcessObserver.RaiseStatusBarEvent(statusBarMessage, _uploadModeText)
 		End Sub

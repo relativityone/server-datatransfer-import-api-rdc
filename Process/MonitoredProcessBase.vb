@@ -12,6 +12,7 @@ Public MustInherit Class MonitoredProcessBase
 	Protected Property TotalRecords As Long
 	Protected Property InitialTapiClientName As String
 	Protected MustOverride ReadOnly Property JobType As String
+	Protected MustOverride ReadOnly Property TapiClientName As String
 	Protected ReadOnly Property MessageService As IMessageService
 	Protected _hasFatalErrorOccured As Boolean
 
@@ -52,26 +53,25 @@ Public MustInherit Class MonitoredProcessBase
 
 	Protected MustOverride Function Run() As Boolean
 
-	Protected Sub SendTransferJobStartedMessage(tapiClientName As String)
+	Protected Sub SendTransferJobStartedMessage()
 
 		If InitialTapiClientName Is Nothing Then
-			MessageService.Send(New TransferJobStartedMessage With {.JobType = JobType, .TransferMode = tapiClientName})
-			InitialTapiClientName = tapiClientName
+			MessageService.Send(New TransferJobStartedMessage With {.JobType = JobType, .TransferMode = TapiClientName})
 		End If
 	End Sub
 
-	Protected Sub SendTransferJobFailedMessage(tapiClientName As String)
-		MessageService.Send(New TransferJobFailedMessage With {.JobType = JobType, .TransferMode = tapiClientName})
+	Protected Sub SendTransferJobFailedMessage()
+		MessageService.Send(New TransferJobFailedMessage With {.JobType = JobType, .TransferMode = TapiClientName})
 	End Sub
 
-	Protected Sub SendTransferJobCompletedMessage(tapiClientName As String)
-		MessageService.Send(New TransferJobCompletedMessage With {.JobType = JobType, .TransferMode = tapiClientName})
+	Protected Sub SendTransferJobCompletedMessage()
+		MessageService.Send(New TransferJobCompletedMessage With {.JobType = JobType, .TransferMode = TapiClientName})
 	End Sub
 
-	Protected Sub SendThroughputMessage(tapiClientName As String)
+	Protected Sub SendThroughputMessage()
 		Dim duration As System.TimeSpan = EndTime - StartTime
 		Dim recordsPerSecond As Double = TotalRecords / duration.TotalSeconds
-		MessageService.Send(New TransferJobThroughputMessage With {.JobType = JobType, .TransferMode = tapiClientName, .RecordsPerSecond = recordsPerSecond})
+		MessageService.Send(New TransferJobThroughputMessage With {.JobType = JobType, .TransferMode = TapiClientName, .RecordsPerSecond = recordsPerSecond})
 	End Sub
 
 End Class
