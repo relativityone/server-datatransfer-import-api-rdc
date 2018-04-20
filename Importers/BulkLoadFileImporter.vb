@@ -583,7 +583,7 @@ Namespace kCura.WinEDDS
 					Me.LogInformation("Version: '{0}'.", fileIdInfo.Version)
 					Me.LogInformation("Idle worker timeout: '{0}'.", fileIdInfo.IdleWorkerTimeout)
 					Me.LogInformation("Install location: '{0}'.", fileIdInfo.InstallLocation)
-
+                    
 					If fileIdInfo.HasError Then
 						Me.LogWarning("Error: {0}", fileIdInfo.Exception)
 					End If
@@ -744,16 +744,16 @@ Namespace kCura.WinEDDS
 										' Force OI to get reinitialized in the event the runtime configuration is invalid.
 										If count > 1 Then
 											fileService.Reinitialize()
-																																		 End If
+										End If
 										Return TimeSpan.FromSeconds(Me.WaitTimeBetweenRetryAttempts)
-																																		 End Function,
+									End Function,
 									Sub(exception, span, context)
 										LogError(exception, "Retry - {span} - OI failed to identify the '{fullFilePath}' source file.", span, fullFilePath)
-																																		 End Sub)
+									End Sub)
 								oixFileIdData = retryPolicy.Execute(
 									function()
 										Return fileService.Identify(fullFilePath)
-																	   End Function)
+									End Function)
 							Else
 								oixFileIdData = idDataExtractor.GetFileIDData()
 							End If

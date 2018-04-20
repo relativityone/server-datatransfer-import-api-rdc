@@ -233,7 +233,7 @@ Namespace kCura.WinEDDS
                 Try
                     Return CType(ConfigSettings("JobCompleteBatchSize"), Int32)
                 Catch ex As Exception
-                    Return 100000
+                    Return 50000
                 End Try
             End Get
         End Property
