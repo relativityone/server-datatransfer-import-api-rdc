@@ -1160,7 +1160,7 @@ Namespace kCura.WinEDDS
             End If
             _batchCounter = 0
 
-            If shouldCompleteJob Then
+            If shouldCompleteJob And _jobCompleteMetadataCount > 0 Then
                 _jobCompleteMetadataCount = 0
                 CompletePendingBulkLoadFileTransfers()
             End If
