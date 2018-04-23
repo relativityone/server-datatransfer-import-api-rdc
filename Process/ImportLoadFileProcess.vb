@@ -53,7 +53,7 @@ Namespace kCura.WinEDDS
 		Protected Overrides ReadOnly Property TapiClientName As String
 			Get
 				If _loadFileImporter Is Nothing Then
-					Return TapiClient.None.ToString()
+					Return _tapiClientName
 				Else
 					Return _loadFileImporter.TapiClientName
 				End If

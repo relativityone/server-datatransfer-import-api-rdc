@@ -55,7 +55,7 @@ Namespace kCura.WinEDDS
 		Protected Overrides ReadOnly Property TapiClientName As String
 			Get
 				If _imageFileImporter Is Nothing Then
-					Return TapiClient.None.ToString()
+					Return _tapiClientName
 				Else
 					Return _imageFileImporter.TapiClientName
 				End If

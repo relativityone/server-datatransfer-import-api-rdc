@@ -2,6 +2,7 @@
 Imports System.Threading.Tasks
 Imports kCura.Windows.Process
 Imports kCura.WinEDDS.Monitoring
+Imports kCura.WinEDDS.TApi
 Imports Relativity.DataTransfer.MessageService
 
 Public MustInherit Class MonitoredProcessBase
@@ -16,6 +17,7 @@ Public MustInherit Class MonitoredProcessBase
 	Protected MustOverride ReadOnly Property TapiClientName As String
 	Protected ReadOnly Property MessageService As IMessageService
 	Protected _hasFatalErrorOccured As Boolean
+	Protected _tapiClientName As String = TapiClient.None.ToString()
 
 	Public Sub New(messageService As IMessageService)
 		Me.MessageService = messageService

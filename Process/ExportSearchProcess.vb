@@ -16,7 +16,6 @@ Namespace kCura.WinEDDS
 		Private _hasErrors As Boolean
 		Protected Overrides ReadOnly Property JobType As String = "Export"
 
-		Dim _tapiClientName As String = TapiClient.None.ToString()
 		Protected Overrides ReadOnly Property TapiClientName As String
 			Get
 				Return _tapiClientName
@@ -47,9 +46,9 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overrides Sub OnFatalError()
-			SendTransferJobFailedMessage()
 			MyBase.OnFatalError()
 			SendThroughputMessage()
+			SendTransferJobFailedMessage()
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
