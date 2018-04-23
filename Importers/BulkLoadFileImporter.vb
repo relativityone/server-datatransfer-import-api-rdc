@@ -762,6 +762,7 @@ Namespace kCura.WinEDDS
 						If _copyFileToRepository Then
 							Dim guid As String = System.Guid.NewGuid().ToString()
 							Me.NativeFilesCount += 1
+                            _jobCompleteNativeCount += 1
 							fileGuid = FileTapiBridge.AddPath(filename, guid, Me.CurrentLineNumber)
 							destinationVolume = FileTapiBridge.TargetFolderName
 						Else
@@ -920,7 +921,6 @@ Namespace kCura.WinEDDS
 				ManageDocumentLine(metaDoc)
 				_timekeeper.MarkEnd("ManageDocumentMetadata_ManageDocumentLine")
 				_batchCounter += 1
-				_jobCompleteNativeCount += 1
 				_timekeeper.MarkStart("ManageDocumentMetadata_WserviceCall")
 
 				If OutputFileWriter.CombinedStreamLength > ImportBatchVolume OrElse _batchCounter > ImportBatchSize - 1 Then
@@ -1041,7 +1041,7 @@ Namespace kCura.WinEDDS
 			CloseFileWriters()
 			Dim outputNativePath As String = OutputFileWriter.OutputNativeFilePath
 
-			If shouldCompleteNativeJob Or (lastRun And _jobCompleteNativeCount > 0) Then
+			If (shouldCompleteNativeJob Or lastRun) And _jobCompleteNativeCount > 0 Then
 				_jobCompleteNativeCount = 0
 				CompletePendingPhysicalFileTransfers("Waiting for the native file job to complete...", "Native file job completed.", "Failed to complete all pending native file transfers.")
 			End If
