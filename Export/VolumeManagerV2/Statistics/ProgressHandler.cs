@@ -4,39 +4,39 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 {
-	public abstract class ProgressHandler : IProgressHandler
-	{
-		private ITapiBridge _tapiBridge;
+    public abstract class ProgressHandler : IProgressHandler
+    {
+        private ITapiBridge _tapiBridge;
 
-		private readonly ILog _logger;
+        private readonly ILog _logger;
 
-		protected IDownloadProgressManager DownloadProgressManager { get; }
+        protected IDownloadProgressManager DownloadProgressManager { get; }
 
-		protected ProgressHandler(IDownloadProgressManager downloadProgressManager, ILog logger)
-		{
-			DownloadProgressManager = downloadProgressManager;
-			_logger = logger;
-		}
+        protected ProgressHandler(IDownloadProgressManager downloadProgressManager, ILog logger)
+        {
+            DownloadProgressManager = downloadProgressManager;
+            _logger = logger;
+        }
 
-		public void Attach(ITapiBridge tapiBridge)
-		{
-			_tapiBridge = tapiBridge;
-			_tapiBridge.TapiProgress += OnFileProgress;
-		}
+        public void Attach(ITapiBridge tapiBridge)
+        {
+            _tapiBridge = tapiBridge;
+            _tapiBridge.TapiProgress += OnFileProgress;
+        }
 
-		private void OnFileProgress(object sender, TapiProgressEventArgs e)
-		{
-			_logger.LogVerbose("Tapi progress event for {fileName} with status {didTransferSucceed} ({lineNumber}).", e.FileName, e.DidTransferSucceed, e.LineNumber);
-			if (e.DidTransferSucceed)
-			{
-				MarkAsDownloaded(e.FileName, e.LineNumber);
-			}
-		}
-		protected abstract void MarkAsDownloaded(string id, int lineNumber);
+        private void OnFileProgress(object sender, TapiProgressEventArgs e)
+        {
+            _logger.LogVerbose("Tapi progress event for {FileName} with status {DidTransferSucceed} ({LineNumber}).", e.FileName, e.DidTransferSucceed, e.LineNumber);
+            if (e.DidTransferSucceed)
+            {
+                MarkAsDownloaded(e.FileName, e.LineNumber);
+            }
+        }
+        protected abstract void MarkAsDownloaded(string id, int lineNumber);
 
-		public void Detach()
-		{
-			_tapiBridge.TapiProgress -= OnFileProgress;
-		}
-	}
+        public void Detach()
+        {
+            _tapiBridge.TapiProgress -= OnFileProgress;
+        }
+    }
 }
