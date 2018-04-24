@@ -12,13 +12,10 @@ Namespace kCura.WinEDDS
 
 		Private _gateway As kCura.WinEDDS.Service.FileIO
 		Private _credentials As Net.NetworkCredential
-		Private _type As FileAccessType
-		Private _destinationFolderPath As String
+		Private _type As FileAccessType?
 		Private _downloadUrl As String
 		Private _cookieContainer As System.Net.CookieContainer
-		Private _authenticationToken As String
 		Private _userManager As kCura.WinEDDS.Service.UserManager
-		Private _isBcpEnabled As Boolean = True
 		Private Shared _locationAccessMatrix As New ConcurrentDictionary(Of String, Object)
 
 		Private _fileHelper As IFileHelper
@@ -37,10 +34,10 @@ Namespace kCura.WinEDDS
 		
 
 		Public Sub SetDesintationFolderName(ByVal value As String)
-			_destinationFolderPath = value
+			DestinationFolderPath = value
 		End Sub
 
-		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal destinationFolderPath As String, ByVal downloadHandlerUrl As String, ByVal cookieContainer As System.Net.CookieContainer, ByVal authenticationToken As String)
+		Public Sub New(ByVal credentials As Net.NetworkCredential, ByVal destinationFolderPath As String, ByVal downloadHandlerUrl As String, ByVal cookieContainer As System.Net.CookieContainer)
 			_gateway = New kCura.WinEDDS.Service.FileIO(credentials, cookieContainer)
 
 			_cookieContainer = cookieContainer
@@ -50,16 +47,14 @@ Namespace kCura.WinEDDS
 			If destinationFolderPath.Chars(destinationFolderPath.Length - 1) <> "\"c Then
 				destinationFolderPath &= "\"
 			End If
-			_destinationFolderPath = destinationFolderPath
+			Me.DestinationFolderPath = destinationFolderPath
 			_downloadUrl = kCura.Utility.URI.GetFullyQualifiedPath(downloadHandlerUrl, New System.Uri(kCura.WinEDDS.Config.WebServiceURL))
-			SetType(_destinationFolderPath)
-			_authenticationToken = authenticationToken
 			_userManager = New kCura.WinEDDS.Service.UserManager(credentials, cookieContainer)
 
 			If _locationAccessMatrix Is Nothing Then _locationAccessMatrix = New ConcurrentDictionary(Of String, Object)
 		End Sub
 
-		Private Sub SetType(ByVal destFolderPath As String)
+		Private Function SetType(ByVal destFolderPath As String) As FileAccessType
 			Try
 				Dim dummyText As String = System.Guid.NewGuid().ToString().Replace("-", String.Empty).Substring(0, 5)
 				FileHelper.Create(destFolderPath & dummyText).Close()
@@ -68,23 +63,17 @@ Namespace kCura.WinEDDS
 			Catch ex As System.Exception
 				Me.UploaderType = FileAccessType.Web
 			End Try
-		End Sub
+			Return Me.UploaderType
+		End Function
 
 		Public Property DestinationFolderPath() As String
-			Get
-				Return _destinationFolderPath
-			End Get
-			Set(ByVal value As String)
-				_destinationFolderPath = value
-			End Set
-		End Property
 
 		Public Property UploaderType() As FileAccessType Implements IExportFileDownloader.UploaderType
 			Get
-				Return _type
+				Return If(_type, SetType(DestinationFolderPath))
 			End Get
 			Set(ByVal value As FileAccessType)
-				Dim doevent As Boolean = _type <> value
+				Dim doevent As Boolean = Not _type.HasValue OrElse _type.Value <> value
 				_type = value
 				If doevent Then RaiseEvent UploadModeChangeEvent(value.ToString)
 			End Set
@@ -118,7 +107,6 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function DownloadFile(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal remoteLocation As String, ByVal artifactID As Int32, ByVal appID As String, ByVal fileFieldArtifactID As Int32, ByVal fileID As Int32) As Boolean
-			'If Me.UploaderType = Type.Web Then
 			If remoteLocation.Length > 7 Then
 				If remoteLocation.Substring(0, 7).ToLower = "file://" Then
 					remoteLocation = remoteLocation.Substring(7)
@@ -191,7 +179,6 @@ Namespace kCura.WinEDDS
 					tries += 1
 					RaiseEvent UploadStatusEvent(String.Format("Download Manager credentials failed.  Attempting to re-login ({0} of {1})", tries, Config.MaxReloginTries))
 					_userManager.AttemptReLogin()
-					_authenticationToken = kCura.WinEDDS.Service.Settings.AuthenticationToken
 				End Try
 			End While
 			RaiseEvent UploadStatusEvent("Error Downloading File")
