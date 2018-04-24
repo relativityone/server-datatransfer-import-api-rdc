@@ -120,7 +120,7 @@ Namespace kCura.WinEDDS
 
 		Protected Property ShouldImport As Boolean
 
-		Protected Property NativeFilesCount As Int32 = 0
+		Protected Property ImportFilesCount As Int32 = 0
 
 		Protected Property MetadataFilesCount As Int32 = 0
 #End Region
@@ -440,16 +440,16 @@ Namespace kCura.WinEDDS
 
 		Public Sub WaitForPendingFileUploads()
 			WaitForRetry(Function()
-							 Return _batchFileTapiProgressCount >= Me.NativeFilesCount
+							 Return _batchFileTapiProgressCount >= Me.ImportFilesCount
 						 End Function,
-						 "Waiting for all native files to upload...",
-						 "Native file uploads completed.",
-						 "Unable to successfully wait for pending native uploads",
+						 "Waiting for all files to upload...",
+						 "File uploads completed.",
+						 "Unable to successfully wait for pending uploads",
 						 _fileCheckRetryCount,
 						 _fileCheckWaitBetweenRetries)
 
 			_batchFileTapiProgressCount = 0
-			Me.NativeFilesCount = 0
+			Me.ImportFilesCount = 0
 		End Sub
 
 		Public Sub WaitForRetry(ByVal retryFunction As Func(Of Boolean),

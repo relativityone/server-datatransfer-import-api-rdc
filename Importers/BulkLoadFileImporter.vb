@@ -760,7 +760,7 @@ Namespace kCura.WinEDDS
 
 						If _copyFileToRepository Then
 							Dim guid As String = System.Guid.NewGuid().ToString()
-							Me.NativeFilesCount += 1
+							Me.ImportFilesCount += 1
                             _jobCompleteNativeCount += 1
 							fileGuid = FileTapiBridge.AddPath(filename, guid, Me.CurrentLineNumber)
 							destinationVolume = FileTapiBridge.TargetFolderName
