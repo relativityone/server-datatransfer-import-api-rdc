@@ -35,6 +35,7 @@ namespace kCura.WinEDDS.TApi
             this.MaxJobParallelism = 10;
             this.MaxJobRetryAttempts = 3;
             this.MinDataRateMbps = 0;
+            this.PermissionErrorsRetry = false;
             this.TargetDataRateMbps = 100;
             this.TargetPath = null;
             this.TransferLogDirectory = null;
@@ -72,6 +73,7 @@ namespace kCura.WinEDDS.TApi
             this.MaxJobParallelism = copy.MaxJobParallelism;
             this.MaxJobRetryAttempts = copy.MaxJobRetryAttempts;
             this.MinDataRateMbps = copy.MinDataRateMbps;
+            this.PermissionErrorsRetry = copy.PermissionErrorsRetry;
             this.TargetPath = copy.TargetPath;
             this.TimeoutSeconds = copy.TimeoutSeconds;
             this.TransferLogDirectory = copy.TransferLogDirectory;
@@ -232,6 +234,18 @@ namespace kCura.WinEDDS.TApi
         /// The minimum data rate.
         /// </value>
         public int MinDataRateMbps
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether TAPI should retry on file permission errors
+        /// </summary>
+        /// <value>
+        /// <see langword="true" /> if TAPI should retry; otherwise, <see langword="false" />.
+        /// </value>
+        public bool PermissionErrorsRetry
         {
             get;
             set;
