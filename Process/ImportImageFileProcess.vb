@@ -10,7 +10,6 @@ Namespace kCura.WinEDDS
 		Public ImageLoadFile As ImageLoadFile
 		Private WithEvents _imageFileImporter As kCura.WinEDDS.BulkImageFileImporter
 		Protected WithEvents _ioWarningPublisher As IoWarningPublisher
-		Private _startTime As DateTime
 		Private _errorCount As Int32
 		Private _warningCount As Int32
 		Private _uploadModeText As String = Nothing
@@ -53,6 +52,15 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Protected Overrides ReadOnly Property JobType As String = "Import"
+		Protected Overrides ReadOnly Property TapiClientName As String
+			Get
+				If _imageFileImporter Is Nothing Then
+					Return _tapiClientName
+				Else
+					Return _imageFileImporter.TapiClientName
+				End If
+			End Get
+		End Property
 
 		Public Property MaximumErrorCount As Int32?
 
@@ -74,23 +82,28 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Overrides Sub OnFatalError()
-			SendTransferJobFailedMessage(_imageFileImporter.TapiClientName)
+			SendTransferJobFailedMessage()
 			MyBase.OnFatalError()
+			SendThroughputMessage()
 		End Sub
 
 		Protected Overrides Sub OnSuccess()
-			SendTransferJobCompletedMessage(_imageFileImporter.TapiClientName)
+			MyBase.OnFatalError()
+			SendThroughputMessage()
+			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
-			SendTransferJobCompletedMessage(_imageFileImporter.TapiClientName)
+			MyBase.OnFatalError()
+			SendThroughputMessage()
+			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
 		End Sub
 
 		Protected Overrides Sub Initialize()
 
-			_startTime = DateTime.Now
+			MyBase.Initialize()
 			_warningCount = 0
 			_errorCount = 0
 			Me.ProcessObserver.InputArgs = ImageLoadFile.FileName
@@ -160,7 +173,7 @@ Namespace kCura.WinEDDS
 					Case TApi.TapiClient.Direct
 						retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Direct
 				End Select
-				retval.RunTimeInMilliseconds = CType(System.DateTime.Now.Subtract(_startTime).TotalMilliseconds, Int32)
+				retval.RunTimeInMilliseconds = CType(System.DateTime.Now.Subtract(StartTime).TotalMilliseconds, Int32)
 				retval.SupportImageAutoNumbering = ImageLoadFile.AutoNumberImages
 				retval.StartLine = CType(System.Math.Min(ImageLoadFile.StartLineNumber, Int32.MaxValue), Int32)
 				retval.TotalFileSize = _imageFileImporter.Statistics.FileBytes
@@ -180,18 +193,24 @@ Namespace kCura.WinEDDS
 			Select Case e.EventType
 				Case kCura.Windows.Process.EventType.Error
 					If e.CountsTowardsTotal Then _errorCount += 1
+					CompletedRecordsCount += 1
 					Me.ProcessObserver.RaiseErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Progress
+					TotalRecords = e.TotalRecords
+					CompletedRecordsCount += 1
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, _startTime, New System.DateTime, Me.ProcessID, Nothing, Nothing, additionalInfo)
+					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, Me.ProcessID, Nothing, Nothing, additionalInfo)
 					Me.ProcessObserver.RaiseRecordProcessed(e.CurrentRecordIndex)
 				Case kCura.Windows.Process.EventType.Status
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Warning
 					If e.CountsTowardsTotal Then _warningCount += 1
+					CompletedRecordsCount += 1
 					Me.ProcessObserver.RaiseWarningEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case Windows.Process.EventType.Count
 					Me.ProcessObserver.RaiseCountEvent()
+				Case Windows.Process.EventType.ResetStartTime
+					SetStartTime()
 			End Select
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
 		End Sub
@@ -214,7 +233,7 @@ Namespace kCura.WinEDDS
 			End If
 			Dim statusBarMessage As String = $"{statusBarText} - SQL Insert Mode: {If(isBulkEnabled, "Bulk", "Single")}"
 
-			SendTransferJobStartedMessage(tapiClientName)
+			SendTransferJobStartedMessage()
 
 			Me.ProcessObserver.RaiseStatusBarEvent(statusBarMessage, _uploadModeText)
 		End Sub
