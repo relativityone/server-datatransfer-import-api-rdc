@@ -185,6 +185,10 @@ Namespace kCura.WinEDDS
 					   ByVal logger As Logging.ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean,  ByVal enforceDocumentLimit As Boolean, ByVal tokenSource As CancellationTokenSource,
 					   Optional ByVal executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
 			MyBase.New(ioReporterInstance, logger, tokenSource)
+
+			ManuallyCalculateFileTime = True
+			ManuallyCalculateMetadataTime = True
+
 			_executionSource = executionSource
 			_enforceDocumentLimit = enforceDocumentLimit
 			_doRetryLogic = doRetryLogic
@@ -389,6 +393,8 @@ Namespace kCura.WinEDDS
 			_dataGridFileWriter.Close()
 			_fileIdentifierLookup.Clear()
 
+			Dim start As Int64 = System.DateTime.Now.Ticks
+
 			If (shouldCompleteImageJob Or isFinal) And _jobCompleteImageCount > 0 Then
 				_jobCompleteImageCount = 0
 				CompletePendingPhysicalFileTransfers("Waiting for the image file job to complete...", "Image file job completed.", "Failed to complete all pending image file transfers.")
@@ -399,6 +405,8 @@ Namespace kCura.WinEDDS
 					WaitForPendingFileUploads()
 					Me.JobCounter += 1
 				End If
+
+				Me.Statistics.FileTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
 
 				If ShouldImport
 					PushImageBatch(bulkLoadFilePath, dataGridFilePath, shouldCompleteMetadataJob, isFinal)
@@ -526,6 +534,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Sub PushImageBatch(ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String, ByVal shouldCompleteJob As Boolean, ByVal lastRun As Boolean)
+			Dim start As Int64 = System.DateTime.Now.Ticks
 			If _batchCount = 0 Then
 				If _jobCompleteMetadataCount > 0 Then
 					_jobCompleteMetadataCount = 0
@@ -541,7 +550,6 @@ Namespace kCura.WinEDDS
 
 			_batchCount = 0
 			Me.Statistics.MetadataBytes += (IoReporterInstance.GetFileLength(bulkLoadFilePath, Me.CurrentLineNumber) + IoReporterInstance.GetFileLength(dataGridFilePath, Me.CurrentLineNumber))
-			Dim start As Int64 = System.DateTime.Now.Ticks
 
 			try
 				_uploadKey = Me.BulkLoadTapiBridge.AddPath(bulkLoadFilePath, Guid.NewGuid().ToString(), 1)

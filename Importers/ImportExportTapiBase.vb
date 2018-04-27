@@ -123,6 +123,10 @@ Namespace kCura.WinEDDS
 		Protected Property ImportFilesCount As Int32 = 0
 
 		Protected Property MetadataFilesCount As Int32 = 0
+
+		Protected Property ManuallyCalculateFileTime As Boolean = False
+
+		Protected Property ManuallyCalculateMetadataTime As Boolean = False
 #End Region
 
 		Protected Shared Function IsTimeoutException(ByVal ex As Exception) As Boolean
@@ -322,7 +326,10 @@ Namespace kCura.WinEDDS
 
 		Private Sub BulkLoadOnTapiStatistics(ByVal sender As Object, ByVal e As TapiStatisticsEventArgs)
 			SyncLock _syncRoot
-				_statistics.MetadataTime = e.TotalTransferTicks
+				If Not ManuallyCalculateMetadataTime Then
+					_statistics.MetadataTime = e.TotalTransferTicks
+				End If
+
 				_statistics.MetadataBytes = e.TotalBytes
 				Me.UpdateStatisticsSnapshot(System.DateTime.Now)
 			End SyncLock
@@ -357,7 +364,10 @@ Namespace kCura.WinEDDS
 
 		Private Sub FileOnTapiStatistics(ByVal sender As Object, ByVal e As TapiStatisticsEventArgs)
 			SyncLock _syncRoot
-				_statistics.FileTime = e.TotalTransferTicks
+				If Not ManuallyCalculateFileTime Then
+					_statistics.FileTime = e.TotalTransferTicks
+				End If
+
 				_statistics.FileBytes = e.TotalBytes
 				Me.UpdateStatisticsSnapshot(System.DateTime.Now)
 			End SyncLock

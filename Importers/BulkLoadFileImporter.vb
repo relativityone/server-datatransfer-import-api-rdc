@@ -329,6 +329,9 @@ Namespace kCura.WinEDDS
 					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
 			MyBase.New(args, ioReporterInstance, logger, timeZoneOffset, doRetryLogic, autoDetect, tokenSource, initializeArtifactReader, executionSource := executionSource)
 
+			ManuallyCalculateFileTime = True
+			ManuallyCalculateMetadataTime = True
+
 			' Avoid excessive concurrent dictionary hits by caching frequently used config settings.
 			_usePipeliningForNativeAndObjectImports = Config.UsePipeliningForNativeAndObjectImports
 			_createFoldersInWebApi = Config.CreateFoldersInWebAPI
@@ -1040,6 +1043,8 @@ Namespace kCura.WinEDDS
 			CloseFileWriters()
 			Dim outputNativePath As String = OutputFileWriter.OutputNativeFilePath
 
+			Dim start As Int64 = System.DateTime.Now.Ticks
+
 			If (shouldCompleteNativeJob Or lastRun) And _jobCompleteNativeCount > 0 Then
 				_jobCompleteNativeCount = 0
 				CompletePendingPhysicalFileTransfers("Waiting for the native file job to complete...", "Native file job completed.", "Failed to complete all pending native file transfers.")
@@ -1060,6 +1065,8 @@ Namespace kCura.WinEDDS
 						End If
 					End If
 					
+					Me.Statistics.FileTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
+
 					If ShouldImport Then
 						Me.PushNativeBatch(outputNativePath, shouldCompleteMetadataJob, lastRun)
 					End If
@@ -1190,6 +1197,8 @@ Namespace kCura.WinEDDS
 				' Note: Retry and potential HTTP fallback automatically kick in. Throwing a similar exception if a failure occurs.
 				Throw New BcpPathAccessException("Error accessing BCP Path, could be caused by network connectivity issues: " & ex.Message)
 			End Try
+
+			Me.Statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
 
 			' Account for possible cancellation during the BCP transfers.
 			If Not ShouldImport Then
