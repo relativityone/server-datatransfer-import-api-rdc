@@ -36,6 +36,7 @@ Namespace kCura.WinEDDS
 		Private _caseInfo As Relativity.CaseInfo
 		Private _overlayArtifactID As Int32
 		Private _executionSource As Relativity.ExecutionSource
+		Private _lastRunMetadataImport As Int64 = 0
 
 		Private WithEvents _processController As kCura.Windows.Process.Controller
 		Protected _keyFieldDto As kCura.EDDS.WebAPI.FieldManagerBase.Field
@@ -185,9 +186,6 @@ Namespace kCura.WinEDDS
 					   ByVal logger As Logging.ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean,  ByVal enforceDocumentLimit As Boolean, ByVal tokenSource As CancellationTokenSource,
 					   Optional ByVal executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
 			MyBase.New(ioReporterInstance, logger, tokenSource)
-
-			ManuallyCalculateFileTime = True
-			ManuallyCalculateMetadataTime = True
 
 			_executionSource = executionSource
 			_enforceDocumentLimit = enforceDocumentLimit
@@ -393,8 +391,6 @@ Namespace kCura.WinEDDS
 			_dataGridFileWriter.Close()
 			_fileIdentifierLookup.Clear()
 
-			Dim start As Int64 = System.DateTime.Now.Ticks
-
 			If (shouldCompleteImageJob Or isFinal) And _jobCompleteImageCount > 0 Then
 				_jobCompleteImageCount = 0
 				CompletePendingPhysicalFileTransfers("Waiting for the image file job to complete...", "Image file job completed.", "Failed to complete all pending image file transfers.")
@@ -406,11 +402,13 @@ Namespace kCura.WinEDDS
 					Me.JobCounter += 1
 				End If
 
-				Me.Statistics.FileTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
+				Dim start As Int64 = System.DateTime.Now.Ticks
 
 				If ShouldImport
 					PushImageBatch(bulkLoadFilePath, dataGridFilePath, shouldCompleteMetadataJob, isFinal)
 				End If
+
+				Me.Statistics.FileWaitTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
 			Catch ex As Exception
 				If BatchResizeEnabled AndAlso IsTimeoutException(ex) AndAlso ShouldImport Then
 					Me.LogWarning(ex, "A SQL or HTTP timeout error has occurred bulk importing the image batch and the batch will be resized.")
@@ -534,7 +532,10 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Public Sub PushImageBatch(ByVal bulkLoadFilePath As String, ByVal dataGridFilePath As String, ByVal shouldCompleteJob As Boolean, ByVal lastRun As Boolean)
-			Dim start As Int64 = System.DateTime.Now.Ticks
+			If _lastRunMetadataImport > 0 Then
+				Me.Statistics.MetadataWaitTime += System.DateTime.Now.Ticks - _lastRunMetadataImport
+			End If
+
 			If _batchCount = 0 Then
 				If _jobCompleteMetadataCount > 0 Then
 					_jobCompleteMetadataCount = 0
@@ -569,7 +570,7 @@ Namespace kCura.WinEDDS
 				Throw New kCura.WinEDDS.LoadFilebase.BcpPathAccessException("Error accessing BCP Path, could be caused by network connectivity issues: " & ex.Message)
 			End Try
 
-			Me.Statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
+			_lastRunMetadataImport = System.DateTime.Now.Ticks
 
 			Dim overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType
 			Select Case _overwrite
@@ -582,7 +583,7 @@ Namespace kCura.WinEDDS
 			End Select
 
 			If ShouldImport Then
-				start = System.DateTime.Now.Ticks
+				Dim start As Int64 = System.DateTime.Now.Ticks
 				Dim runResults As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = Me.RunBulkImport(overwrite, True)
 				Me.Statistics.ProcessRunResults(runResults)
 				_runId = runResults.RunID

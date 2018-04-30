@@ -63,6 +63,7 @@ Namespace kCura.WinEDDS
 		Private _outputObjectFileWriter As System.IO.StreamWriter
 		Protected OverlayArtifactId As Int32
 		Protected RunId As String = System.Guid.NewGuid.ToString.Replace("-", "_")
+		Private _lastRunMetadataImport As Int64 = 0
 
 		Protected OutputCodeFilePath As String = System.IO.Path.GetTempFileName
 		Protected OutputObjectFilePath As String = System.IO.Path.GetTempFileName
@@ -328,9 +329,6 @@ Namespace kCura.WinEDDS
 					   initializeArtifactReader As Boolean, 
 					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
 			MyBase.New(args, ioReporterInstance, logger, timeZoneOffset, doRetryLogic, autoDetect, tokenSource, initializeArtifactReader, executionSource := executionSource)
-
-			ManuallyCalculateFileTime = True
-			ManuallyCalculateMetadataTime = True
 
 			' Avoid excessive concurrent dictionary hits by caching frequently used config settings.
 			_usePipeliningForNativeAndObjectImports = Config.UsePipeliningForNativeAndObjectImports
@@ -1043,8 +1041,6 @@ Namespace kCura.WinEDDS
 			CloseFileWriters()
 			Dim outputNativePath As String = OutputFileWriter.OutputNativeFilePath
 
-			Dim start As Int64 = System.DateTime.Now.Ticks
-
 			If (shouldCompleteNativeJob Or lastRun) And _jobCompleteNativeCount > 0 Then
 				_jobCompleteNativeCount = 0
 				CompletePendingPhysicalFileTransfers("Waiting for the native file job to complete...", "Native file job completed.", "Failed to complete all pending native file transfers.")
@@ -1065,11 +1061,13 @@ Namespace kCura.WinEDDS
 						End If
 					End If
 					
-					Me.Statistics.FileTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
+					Dim start As Int64 = System.DateTime.Now.Ticks
 
 					If ShouldImport Then
 						Me.PushNativeBatch(outputNativePath, shouldCompleteMetadataJob, lastRun)
 					End If
+
+					Me.Statistics.FileWaitTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
 				Catch ex As Exception
 					If BatchResizeEnabled AndAlso IsTimeoutException(ex) AndAlso ShouldImport Then
 						Me.LogWarning(ex, "A SQL or HTTP timeout error has occurred bulk importing the native batch and the batch will be resized.")
@@ -1156,7 +1154,10 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub PushNativeBatch(ByVal outputNativePath As String, ByVal shouldCompleteJob As Boolean, ByVal lastRun As Boolean)
-			Dim start As Int64 = System.DateTime.Now.Ticks
+			If _lastRunMetadataImport > 0 Then
+				Me.Statistics.MetadataWaitTime += System.DateTime.Now.Ticks - _lastRunMetadataImport
+			End If
+
 			If _batchCounter = 0 OrElse Not ShouldImport Then
 				If _jobCompleteMetadataCount > 0 Then
 					_jobCompleteMetadataCount = 0
@@ -1198,7 +1199,7 @@ Namespace kCura.WinEDDS
 				Throw New BcpPathAccessException("Error accessing BCP Path, could be caused by network connectivity issues: " & ex.Message)
 			End Try
 
-			Me.Statistics.MetadataTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
+			_lastRunMetadataImport = System.DateTime.Now.Ticks
 
 			' Account for possible cancellation during the BCP transfers.
 			If Not ShouldImport Then
@@ -1240,7 +1241,7 @@ Namespace kCura.WinEDDS
 			End If
 			Dim makeServiceCalls As Action =
 					Sub()
-						start = DateTime.Now.Ticks
+						Dim start As Int64 = DateTime.Now.Ticks
 						Dim runResults As MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
 
 						Statistics.ProcessRunResults(runResults)
