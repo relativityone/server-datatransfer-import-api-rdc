@@ -404,6 +404,7 @@ Namespace kCura.WinEDDS
 			bcpParameters.BcpFileTransfer = True
 			bcpParameters.AsperaBcpRootFolder = Config.TapiAsperaBcpRootFolder
 			bcpParameters.FileShare = gateway.GetBcpSharePath(args.CaseInfo.ArtifactID)
+		    bcpParameters.SupportCheckPath = bcpParameters.FileShare
 			bcpParameters.SortIntoVolumes = False
 			bcpParameters.ForceHttpClient = bcpParameters.ForceHttpClient Or Config.TapiForceBcpHttpClient
 
@@ -1212,12 +1213,16 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub WaitOnPushBatchTask()
-			If _task Is Nothing Then Return
-			Try
-				Task.WaitAll(_task)
-			Catch ex As AggregateException
-				Throw ex.InnerExceptions.First()
-			End Try
+		    If _task Is Nothing Then Return
+		    Try
+		        Task.WaitAll(_task)
+		    Catch ex As AggregateException
+		        Me.LogFatal(ex, "A fatal error occurred while waiting on the batch task")
+
+		        ex.Handle(Function(e)
+		                Throw e
+		            End Function)
+		    End Try
 		End Sub
 
 		Private _task As System.Threading.Tasks.Task = Nothing
