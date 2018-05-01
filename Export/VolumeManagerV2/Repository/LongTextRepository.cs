@@ -46,9 +46,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 			return _longTexts.Select(x => x.ExportRequest).Where(x => x != null).ToList();
 		}
 
-		public LongText GetByUniqueId(string id)
+		public LongText GetByLineNumber(int lineNumber)
 		{
-			return _longTexts.FirstOrDefault(x => x.ExportRequest != null && x.ExportRequest.UniqueId == id);
+			return _longTexts.FirstOrDefault(x => x.ExportRequest != null && x.ExportRequest.Order == lineNumber);
 		}
 
 		public IList<LongText> GetArtifactLongTexts(int artifactId)
