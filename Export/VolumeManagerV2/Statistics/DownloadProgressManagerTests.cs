@@ -18,6 +18,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 		private ImageRepository _imageRepository;
 		private LongTextRepository _longTextRepository;
 
+	    private Mock<IFileHelper> _fileHelper;
 		private Mock<IStatus> _status;
 
 		[SetUp]
@@ -27,9 +28,10 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 			_imageRepository = new ImageRepository();
 			_longTextRepository = new LongTextRepository(null, new NullLogger());
 
+            _fileHelper = new Mock<IFileHelper>();
 			_status = new Mock<IStatus>();
 
-			_instance = new DownloadProgressManager(_nativeRepository, _imageRepository, _longTextRepository, _status.Object, new NullLogger());
+			_instance = new DownloadProgressManager(_nativeRepository, _imageRepository, _longTextRepository, _fileHelper.Object, _status.Object, new NullLogger());
 		}
 
 		[Test]
