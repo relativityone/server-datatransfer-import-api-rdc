@@ -325,8 +325,6 @@ Namespace kCura.WinEDDS
 			End If
 			_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 
-			'todo pobrać z FileShare'ów
-
 			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, exportInitializationArgs.ColumnNames, UseOldExport)
 				Dim batch As IBatch = Nothing
 				Dim objectExportableSize As IObjectExportableSize = Nothing
