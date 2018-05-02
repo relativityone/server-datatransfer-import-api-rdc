@@ -63,6 +63,7 @@ Namespace kCura.WinEDDS
 		Private _outputObjectFileWriter As System.IO.StreamWriter
 		Protected OverlayArtifactId As Int32
 		Protected RunId As String = System.Guid.NewGuid.ToString.Replace("-", "_")
+		Private _lastRunMetadataImport As Int64 = 0
 
 		Protected OutputCodeFilePath As String = System.IO.Path.GetTempFileName
 		Protected OutputObjectFilePath As String = System.IO.Path.GetTempFileName
@@ -760,7 +761,7 @@ Namespace kCura.WinEDDS
 
 						If _copyFileToRepository Then
 							Dim guid As String = System.Guid.NewGuid().ToString()
-							Me.NativeFilesCount += 1
+							Me.ImportFilesCount += 1
                             _jobCompleteNativeCount += 1
 							fileGuid = FileTapiBridge.AddPath(filename, guid, Me.CurrentLineNumber)
 							destinationVolume = FileTapiBridge.TargetFolderName
@@ -1060,9 +1061,13 @@ Namespace kCura.WinEDDS
 						End If
 					End If
 					
+					Dim start As Int64 = System.DateTime.Now.Ticks
+
 					If ShouldImport Then
 						Me.PushNativeBatch(outputNativePath, shouldCompleteMetadataJob, lastRun)
 					End If
+
+					Me.Statistics.FileWaitTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
 				Catch ex As Exception
 					If BatchResizeEnabled AndAlso IsTimeoutException(ex) AndAlso ShouldImport Then
 						Me.LogWarning(ex, "A SQL or HTTP timeout error has occurred bulk importing the native batch and the batch will be resized.")
@@ -1149,7 +1154,10 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub PushNativeBatch(ByVal outputNativePath As String, ByVal shouldCompleteJob As Boolean, ByVal lastRun As Boolean)
-			Dim start As Int64 = System.DateTime.Now.Ticks
+			If _lastRunMetadataImport > 0 Then
+				Me.Statistics.MetadataWaitTime += System.DateTime.Now.Ticks - _lastRunMetadataImport
+			End If
+
 			If _batchCounter = 0 OrElse Not ShouldImport Then
 				If _jobCompleteMetadataCount > 0 Then
 					_jobCompleteMetadataCount = 0
@@ -1191,6 +1199,8 @@ Namespace kCura.WinEDDS
 				Throw New BcpPathAccessException("Error accessing BCP Path, could be caused by network connectivity issues: " & ex.Message)
 			End Try
 
+			_lastRunMetadataImport = System.DateTime.Now.Ticks
+
 			' Account for possible cancellation during the BCP transfers.
 			If Not ShouldImport Then
 				Return
@@ -1231,7 +1241,7 @@ Namespace kCura.WinEDDS
 			End If
 			Dim makeServiceCalls As Action =
 					Sub()
-						start = DateTime.Now.Ticks
+						Dim start As Int64 = DateTime.Now.Ticks
 						Dim runResults As MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
 
 						Statistics.ProcessRunResults(runResults)
