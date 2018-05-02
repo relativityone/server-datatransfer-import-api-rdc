@@ -41,7 +41,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				tasks.Add(Task.Run(() => CreateJobTask(queue, taskCancellationTokenSource), taskCancellationTokenSource.Token));
 			}
 
-			await AwaitAllTasks(tasks);
+		    await Task.WhenAll(tasks);
 		}
 
 		private ConcurrentQueue<ExportRequestsWithFileshareSettings> CreateTransferQueue(List<ExportRequest> requests)
@@ -49,14 +49,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			ILookup<RelativityFileShareSettings, ExportRequest> result = requests.ToLookup(r => _settingsService.GetSettingsForFileshare(r.SourceLocation));
 
 			return new ConcurrentQueue<ExportRequestsWithFileshareSettings>(result.Select(r => new ExportRequestsWithFileshareSettings(r.Key, r)));
-		}
-
-		private async Task AwaitAllTasks(IEnumerable<Task> tasks)
-		{
-			foreach (Task task in tasks)
-			{
-				await task;
-			}
 		}
 
 		private void CreateJobTask(ConcurrentQueue<ExportRequestsWithFileshareSettings> queue, DownloadCancellationTokenSource downloadCancellationTokenSourceSource)
