@@ -23,6 +23,7 @@ namespace kCura.WinEDDS.TApi
         public TapiBridgeParameters()
         {
             this.AsperaDocRootLevels = 1;
+            this.BadPathErrorsRetry = false;
             this.ClientRequestId = Guid.NewGuid();
             this.Credentials = null;
             this.FileShare = null;
@@ -60,6 +61,7 @@ namespace kCura.WinEDDS.TApi
             }
 
             this.AsperaDocRootLevels = copy.AsperaDocRootLevels;
+            this.BadPathErrorsRetry = copy.BadPathErrorsRetry;
             this.ClientRequestId = copy.ClientRequestId;
             this.Credentials = copy.Credentials;
             this.FileShare = copy.FileShare;
@@ -90,6 +92,18 @@ namespace kCura.WinEDDS.TApi
         /// The number of levels.
         /// </value>
         public int AsperaDocRootLevels
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether TAPI should retry on bad path errors
+        /// </summary>
+        /// <value>
+        /// <see langword="true" /> if TAPI should retry; otherwise, <see langword="false" />.
+        /// </value>
+        public bool BadPathErrorsRetry
         {
             get;
             set;
