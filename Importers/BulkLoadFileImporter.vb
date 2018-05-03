@@ -399,6 +399,7 @@ Namespace kCura.WinEDDS
 			nativeParameters.WebServiceUrl = Config.WebServiceURL
 			nativeParameters.WorkspaceId = args.CaseInfo.ArtifactID
 			nativeParameters.PermissionErrorsRetry = Config.PermissionErrorsRetry
+			nativeParameters.BadPathErrorsRetry = Config.BadPathErrorsRetry
 
 			' Copying the parameters and tweaking just a few BCP specific parameters.
 			Dim bcpParameters As TApi.UploadTapiBridgeParameters = nativeParameters.ShallowCopy()
