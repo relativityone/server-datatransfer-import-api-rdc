@@ -355,6 +355,7 @@ namespace kCura.WinEDDS.TApi
 			this.TransferLog.LogInformation("Max job retry attempts: {MaxJobRetryAttempts}", parameters.MaxJobRetryAttempts);
 			this.TransferLog.LogInformation("Min data rate: {MinDataRateMbps} Mbps", parameters.MinDataRateMbps);
             this.TransferLog.LogInformation("Retry on file permission error: {PermissionErrorsRetry}", parameters.PermissionErrorsRetry);
+            this.TransferLog.LogInformation("Retry on bad path error: {BadPathErrorsRetry}", parameters.BadPathErrorsRetry);
             this.TransferLog.LogInformation("Target data rate: {TargetDataRateMbps} Mbps", parameters.TargetDataRateMbps);
 			this.TransferLog.LogInformation("Wait time between retry attempts: {WaitTimeBetweenRetryAttempts}", parameters.WaitTimeBetweenRetryAttempts);
 			this.TransferLog.LogInformation("Workspace identifier: {WorkspaceId}", parameters.WorkspaceId);
@@ -561,8 +562,9 @@ namespace kCura.WinEDDS.TApi
 					TargetDataRateMbps = this.parameters.TargetDataRateMbps,
 					TransferLogDirectory = this.parameters.TransferLogDirectory,
 					ValidateSourcePaths = ValidateSourcePaths,
-                    PermissionErrorsRetry = this.parameters.PermissionErrorsRetry
-				};
+                    PermissionErrorsRetry = this.parameters.PermissionErrorsRetry,
+				    BadPathErrorsRetry = this.parameters.BadPathErrorsRetry
+                };
 			return configuration;
 		}
 
