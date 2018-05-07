@@ -3,6 +3,12 @@
 Public Class ExportConfig
 		Implements IExportConfig
 
+    Private ReadOnly _relativityVersion As Version
+
+    Public Sub New(relativityVersion As Version)
+        _relativityVersion = relativityVersion
+    End Sub
+
 	Public ReadOnly Property ExportBatchSize As Integer Implements IExportConfig.ExportBatchSize
 		Get
 			return Config.ExportBatchSize
@@ -17,7 +23,7 @@ Public Class ExportConfig
 
 	Public ReadOnly Property UseOldExport As Boolean Implements IExportConfig.UseOldExport
 		Get
-			Return Config.UseOldExport
+			Return _relativityVersion < New Version("9.6.112.108") Or Config.UseOldExport
 		End Get
 	End Property
 	

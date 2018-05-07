@@ -154,11 +154,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 #Region "Constructors"
-
-		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory)
-			Me.New(exportFile, processController, New Service.Export.WebApiServiceFactory(exportFile), loadFileFormatterFactory, New ExportConfig)
-		End Sub
-
 		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller, serviceFactory As Service.Export.IServiceFactory,
 					   loadFileFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
 			_searchManager = serviceFactory.CreateSearchManager()
