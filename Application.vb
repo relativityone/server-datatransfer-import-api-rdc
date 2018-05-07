@@ -139,6 +139,18 @@ Namespace kCura.EDDS.WinForm
             End Get
         End Property
 
+        Public Readonly Property RelativityVersion() As Version
+            Get 
+                If _relativityVersion = Nothing 
+                    Dim task As Task(Of NetworkCredential) = GetCredentialsAsync()
+                    task.Wait()
+                    Dim credential As NetworkCredential = Task.Result
+                    _relativityVersion = New Version(New RelativityManager(credential, Me.CookieContainer).RetrieveRelativityVersion())
+                End If
+                Return _relativityVersion
+            End Get
+        End Property
+
         Public Async Function GetSendLoadNotificationEmailEnabledAsync() As Task(Of Boolean)
             Return New kCura.WinEDDS.Service.RelativityManager(Await Me.GetCredentialsAsync, Me.CookieContainer).IsImportEmailNotificationEnabled
         End Function
@@ -1205,7 +1217,7 @@ Namespace kCura.EDDS.WinForm
             End If
             Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
             frm.StatusRefreshRate = 0
-            Dim exporter As New kCura.WinEDDS.ExportSearchProcess(new ExportFileFormatterFactory(), New ExportConfig)
+            Dim exporter As New kCura.WinEDDS.ExportSearchProcess(new ExportFileFormatterFactory(), New ExportConfig(_application.RelativityVersion))
             exporter.UserNotification = New FormsUserNotification()
             exporter.ExportFile = exportFile
             frm.ProcessObserver = exporter.ProcessObserver
@@ -1386,6 +1398,7 @@ Namespace kCura.EDDS.WinForm
         End Enum
 
         Private _lastCredentialCheckResult As CredentialCheckResult = CredentialCheckResult.NotSet
+        Private _relativityVersion As Version
 
         Public ReadOnly Property LastCredentialCheckResult As CredentialCheckResult
             Get

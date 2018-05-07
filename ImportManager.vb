@@ -1,11 +1,17 @@
 ﻿Imports System.Threading.Tasks
 Imports kCura.WinEDDS.Core.Export
 Imports kCura.WinEDDS.Exporters
+Imports kCura.WinEDDS.Service
 Imports Relativity
 
 Namespace kCura.EDDS.WinForm
 
 	Public Class ImportManager
+	    Private ReadOnly _exportConfig As IExportConfig
+
+	    Public Sub New(exportConfig As ExportConfig)
+            _exportConfig = exportConfig
+        End Sub
 
 #Region " Input Validation "
 
@@ -21,7 +27,7 @@ Namespace kCura.EDDS.WinForm
 
 		Friend Async Function RunExport(options As ExportFile) As Task
 			Dim credentials As Net.NetworkCredential = Await _application.GetCredentialsAsync()
-			Dim exporter As New ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig())
+			Dim exporter As New ExportSearchProcess(New ExportFileFormatterFactory(), _exportConfig)
 			exporter.UserNotificationFactory = Function(e) New EventBackedUserNotification(e)
 			exporter.ExportFile = options
 			Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(exporter.ProcessObserver, exporter.ProcessController, Nothing, Nothing)
