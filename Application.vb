@@ -139,13 +139,17 @@ Namespace kCura.EDDS.WinForm
             End Get
         End Property
 
-        Public Readonly Property RelativityVersion() As Version
-            Get 
-                If _relativityVersion = Nothing 
-                    Dim task As Task(Of NetworkCredential) = GetCredentialsAsync()
-                    task.Wait()
-                    Dim credential As NetworkCredential = Task.Result
-                    _relativityVersion = New Version(New RelativityManager(credential, Me.CookieContainer).RetrieveRelativityVersion())
+        Public ReadOnly Property RelativityVersion() As Version
+            Get
+                If _relativityVersion = Nothing Then
+                    Try
+                        Dim task As Task(Of NetworkCredential) = GetCredentialsAsync()
+                        task.Wait()
+                        Dim credential As NetworkCredential = task.Result
+                        _relativityVersion = New Version(New RelativityManager(credential, Me.CookieContainer).RetrieveRelativityVersion())
+                    Catch
+                        _relativityVersion = New Version("0.0.0.0")
+                    End Try
                 End If
                 Return _relativityVersion
             End Get
