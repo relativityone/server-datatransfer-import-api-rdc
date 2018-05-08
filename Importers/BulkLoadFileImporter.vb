@@ -760,11 +760,13 @@ Namespace kCura.WinEDDS
 						End If
 
 						If _copyFileToRepository Then
-							Dim guid As String = System.Guid.NewGuid().ToString()
-							Me.ImportFilesCount += 1
-                            _jobCompleteNativeCount += 1
-							fileGuid = FileTapiBridge.AddPath(filename, guid, Me.CurrentLineNumber)
-							destinationVolume = FileTapiBridge.TargetFolderName
+							If File.Exists(filename) Then
+								Dim guid As String = System.Guid.NewGuid().ToString()
+								Me.ImportFilesCount += 1
+								_jobCompleteNativeCount += 1
+								fileGuid = FileTapiBridge.AddPath(filename, guid, Me.CurrentLineNumber)
+								destinationVolume = FileTapiBridge.TargetFolderName
+							End If
 						Else
 							fileGuid = System.Guid.NewGuid.ToString
 						End If
