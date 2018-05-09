@@ -766,6 +766,8 @@ Namespace kCura.WinEDDS
 								_jobCompleteNativeCount += 1
 								fileGuid = FileTapiBridge.AddPath(filename, guid, Me.CurrentLineNumber)
 								destinationVolume = FileTapiBridge.TargetFolderName
+							Else
+								WriteWarning("File " & filename & " does not exist and will be not uploaded")
 							End If
 						Else
 							fileGuid = System.Guid.NewGuid.ToString
