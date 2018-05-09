@@ -4,6 +4,8 @@ Namespace kCura.WinEDDS
 		Private _metadataTime As Int64 = 0
 		Private _fileBytes As Int64 = 0
 		Private _fileTime As Int64 = 0
+		Private _fileWaitTime As Int64 = 0
+		Private _metadataWaitTime As Int64 = 0
 		Private _sqlTime As Int64 = 0
 		Private _docCount As Int64 = 0
 		Private _lastAccessed As System.DateTime
@@ -50,6 +52,26 @@ Namespace kCura.WinEDDS
 			Set(ByVal value As Int64)
 				_lastAccessed = System.DateTime.Now
 				_fileTime = value
+			End Set
+		End Property
+
+		Public Property FileWaitTime() As Int64
+			Get
+				Return _fileWaitTime
+			End Get
+			Set(ByVal value As Int64)
+				_lastAccessed = System.DateTime.Now
+				_fileWaitTime = value
+			End Set
+		End Property
+
+		Public Property MetadataWaitTime() As Int64
+			Get
+				Return _metadataWaitTime
+			End Get
+			Set(ByVal value As Int64)
+				_lastAccessed = System.DateTime.Now
+				_metadataWaitTime = value
 			End Set
 		End Property
 
@@ -137,8 +159,22 @@ Namespace kCura.WinEDDS
 
 		Public Overridable Function ToDictionary() As IDictionary
 			Dim retval As New System.Collections.Specialized.HybridDictionary
-			If Not Me.FileTime = 0 Then retval.Add("Average file transfer rate", ToFileSizeSpecification(Me.FileBytes / (Me.FileTime / 10000000)) & "/sec")
-			If Not Me.MetadataTime = 0 Then retval.Add("Average metadata transfer rate", ToFileSizeSpecification(Me.MetadataBytes / (Me.MetadataTime / 10000000)) & "/sec")
+			If Not Me.FileTime = 0 Then
+				Dim fileTime As Int64 = Me.FileTime - Me.FileWaitTime
+				If fileTime < 0 Then
+					fileTime = Me.FileTime
+				End If
+
+				retval.Add("Average file transfer rate", ToFileSizeSpecification(Me.FileBytes / (fileTime / 10000000)) & "/sec")
+			End If
+			If Not Me.MetadataTime = 0 Then
+				Dim metadataTime As Int64 = Me.MetadataTime - Me.MetadataWaitTime
+				If metadataTime < 0 Then
+					metadataTime = Me.MetadataTime
+				End If
+
+				retval.Add("Average metadata transfer rate", ToFileSizeSpecification(Me.MetadataBytes / (metadataTime / 10000000)) & "/sec")
+			End If
 			If Not Me.SqlTime = 0 Then retval.Add("Average SQL process rate", (Me.DocCount / (Me.SqlTime / 10000000)).ToString("N0") & " Documents/sec")
 			If Not Me.BatchSize = 0 Then retval.Add("Current batch size", (Me.BatchSize).ToString("N0"))
 			Return retval
