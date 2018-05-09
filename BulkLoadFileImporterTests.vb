@@ -15,8 +15,8 @@ Namespace kCura.WinEDDS.NUnit
 		Dim _args As LoadFile
 		Dim _guid As System.Guid
 		Dim _controller As Controller
-        Dim _ioReporter As IIoReporter
-        Dim _logger As Relativity.Logging.ILog
+		Dim _ioReporter As IIoReporter
+		Dim _logger As Relativity.Logging.ILog
 		Dim _keyPathExistsAlready As Boolean
 		Dim _keyValExistsAlready As Boolean
 		Dim tokenSource As CancellationTokenSource
@@ -30,13 +30,13 @@ Namespace kCura.WinEDDS.NUnit
 			_args.CaseInfo.RootArtifactID = 1
 			_guid = New Guid("E09E18F3-D0C8-4CFC-96D1-FBB350FAB3E1")
 			_controller = New Controller()
-            
-            _logger = New NullLogger()
+
+			_logger = New NullLogger()
 			tokenSource = New CancellationTokenSource()
-            Dim ioWarningPublisher As New IoWarningPublisher()
-		    _ioReporter = IoReporterFactory.CreateIoReporter(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds, 
-		                                                                       WinEDDS.Config.DisableNativeLocationValidation, _logger, ioWarningPublisher, tokenSource.Token)
-            
+			Dim ioWarningPublisher As New IoWarningPublisher()
+			_ioReporter = IoReporterFactory.CreateIoReporter(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds,
+																			   WinEDDS.Config.DisableNativeLocationValidation, _logger, ioWarningPublisher, tokenSource.Token)
+
 			_keyPathExistsAlready = RegKeyHelper.SubKeyPathExists(RegKeyHelper.RelativityKeyPath)
 			_keyValExistsAlready = False
 			If _keyPathExistsAlready = True Then
@@ -364,6 +364,55 @@ Namespace kCura.WinEDDS.NUnit
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerSqlExceptions(True), tokenSource)
 			Dim encoding As System.Text.Encoding = System.Text.Encoding.UTF32
 			Assert.AreEqual(2147483647, bulkImporter.GetMaxExtractedTextLength(encoding))
+		End Sub
+#End Region
+
+#Region "WaitForRetry"
+		<Test()>
+		Public Sub WaitForRetry_TestRetryCountOnFail()
+			Dim retryMax As Int32 = 10
+			Dim attemptCount As Int32 = 0
+			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True), tokenSource)
+			Dim retryFunction As Func(Of Boolean) = Function()
+														attemptCount += 1
+														Return False
+													End Function
+
+			bulkImporter.WaitForRetry(retryFunction, "", "", "", retryMax, 0)
+
+			Assert.AreEqual(retryMax + 1, attemptCount)
+		End Sub
+
+		<Test()>
+		Public Sub WaitForRetry_TestRetryNotExecuted()
+			Dim attemptCount As Int32 = 0
+			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True), tokenSource)
+			Dim retryFunction As Func(Of Boolean) = Function()
+														attemptCount += 1
+														Return True
+													End Function
+
+			bulkImporter.WaitForRetry(retryFunction, "", "", "", 10, 0)
+
+			Assert.AreEqual(1, attemptCount)
+		End Sub
+
+		<Test()>
+		Public Sub WaitForRetry_TestEventuallySucceeds()
+			Dim attemptCount As Int32 = 0
+			Dim succeedCount As Int32 = 6
+			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True), tokenSource)
+			Dim retryFunction As Func(Of Boolean) = Function()
+														attemptCount += 1
+														If attemptCount = succeedCount Then
+															Return True
+														End If
+														Return False
+													End Function
+
+			bulkImporter.WaitForRetry(retryFunction, "", "", "", 10, 0)
+
+			Assert.AreEqual(succeedCount, attemptCount)
 		End Sub
 #End Region
 	End Class
