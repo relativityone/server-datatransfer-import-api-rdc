@@ -10,6 +10,7 @@
 namespace kCura.WinEDDS.TApi
 {
     using System;
+    using Relativity.Transfer;
 
     /// <summary>
     /// Represents TAPI progress event arguments data.
@@ -23,8 +24,11 @@ namespace kCura.WinEDDS.TApi
         /// <param name="fileName">
         /// The transferred filename.
         /// </param>
-        /// <param name="status">
+        /// <param name="didTransferSucceed">
         /// Specify whether the file is successfully transferred.
+        /// </param>
+        /// <param name="transferStatus">
+        /// The transfer status
         /// </param>
         /// <param name="lineNumber">
         /// The line number.
@@ -40,7 +44,8 @@ namespace kCura.WinEDDS.TApi
         /// </param>
         public TapiProgressEventArgs(
             string fileName,
-            bool status,
+            bool didTransferSucceed,
+            TransferPathStatus transferStatus,
             int lineNumber,
             long fileBytes,
             DateTime startTime,
@@ -51,7 +56,8 @@ namespace kCura.WinEDDS.TApi
             this.FileName = fileName;
             this.LineNumber = lineNumber;
             this.StartTime = startTime;
-            this.Status = status;
+            this.DidTransferSucceed = didTransferSucceed;
+            this.TransferStatus = transferStatus;
         }
 
         /// <summary>
@@ -100,7 +106,15 @@ namespace kCura.WinEDDS.TApi
         /// <value>
         /// <see langword="true"/> if successfully transferred; otherwise, /// <see langword="false"/>.
         /// </value>
-        public bool Status
+        public bool DidTransferSucceed
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Gets the transfer status
+        /// </summary>
+        public TransferPathStatus TransferStatus
         {
             get;
         }
