@@ -39,8 +39,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 
 		private void OnProgress(object sender, TapiProgressEventArgs e)
 		{
-			_logger.LogVerbose("Progress event for file {fileName} with status {status}.", e.FileName, e.Status);
-			if (e.Status)
+			_logger.LogVerbose("Progress event for file {FileName} with status {DidTransferSucceed}.", e.FileName, e.DidTransferSucceed);
+			if (e.DidTransferSucceed)
 			{
 				lock (_lock)
 				{
