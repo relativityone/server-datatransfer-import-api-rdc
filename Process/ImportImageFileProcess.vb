@@ -84,19 +84,19 @@ Namespace kCura.WinEDDS
 		Protected Overrides Sub OnFatalError()
 			SendTransferJobFailedMessage()
 			MyBase.OnFatalError()
-			SendThroughputMessage()
+			SendMessages()
 		End Sub
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnFatalError()
-			SendThroughputMessage()
+			SendMessages()
 			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnFatalError()
-			SendThroughputMessage()
+			SendMessages()
 			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
 		End Sub
@@ -193,11 +193,10 @@ Namespace kCura.WinEDDS
 			Select Case e.EventType
 				Case kCura.Windows.Process.EventType.Error
 					If e.CountsTowardsTotal Then _errorCount += 1
-					CompletedRecordsCount += 1
 					Me.ProcessObserver.RaiseErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Progress
 					TotalRecords = e.TotalRecords
-					CompletedRecordsCount += 1
+					CompletedRecordsCount = e.CurrentRecordIndex
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, Me.ProcessID, Nothing, Nothing, additionalInfo)
 					Me.ProcessObserver.RaiseRecordProcessed(e.CurrentRecordIndex)
@@ -205,7 +204,6 @@ Namespace kCura.WinEDDS
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Warning
 					If e.CountsTowardsTotal Then _warningCount += 1
-					CompletedRecordsCount += 1
 					Me.ProcessObserver.RaiseWarningEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case Windows.Process.EventType.Count
 					Me.ProcessObserver.RaiseCountEvent()

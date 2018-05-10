@@ -80,13 +80,27 @@ Public MustInherit Class MonitoredProcessBase
 		MessageService.Send(New TransferJobCompletedMessage With {.JobType = JobType, .TransferMode = TapiClientName})
 	End Sub
 
-	Protected Sub SendThroughputMessage()
+	Protected Sub SendMessages()
+		SendJobThroughputMessage()
+		SendJobTotalRecordsCountMessage()
+		SendJobCompletedRecordsCountMessage()
+	End Sub
+
+	Protected Sub SendJobThroughputMessage()
 		If CompletedRecordsCount = 0 Then
 			Return
 		End If
 		Dim duration As System.TimeSpan = EndTime - StartTime
 		Dim recordsPerSecond As Double = CompletedRecordsCount / duration.TotalSeconds
 		MessageService.Send(New TransferJobThroughputMessage With {.JobType = JobType, .TransferMode = TapiClientName, .RecordsPerSecond = recordsPerSecond})
+	End Sub
+
+	Protected Sub SendJobTotalRecordsCountMessage()
+		MessageService.Send(New TransferJobTotalRecordsCountMessage With {.JobType = JobType, .TransferMode = TapiClientName, .TotalRecords = TotalRecords})
+	End Sub
+
+	Protected Sub SendJobCompletedRecordsCountMessage()
+		MessageService.Send(New TransferJobCompletedRecordsCountMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CompletedRecords = CompletedRecordsCount})
 	End Sub
 
 End Class
