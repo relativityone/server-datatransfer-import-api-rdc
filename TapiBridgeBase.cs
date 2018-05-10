@@ -354,7 +354,9 @@ namespace kCura.WinEDDS.TApi
 			this.TransferLog.LogInformation("Max job parallelism: {MaxJobParallelism}", parameters.MaxJobParallelism);
 			this.TransferLog.LogInformation("Max job retry attempts: {MaxJobRetryAttempts}", parameters.MaxJobRetryAttempts);
 			this.TransferLog.LogInformation("Min data rate: {MinDataRateMbps} Mbps", parameters.MinDataRateMbps);
-			this.TransferLog.LogInformation("Target data rate: {TargetDataRateMbps} Mbps", parameters.TargetDataRateMbps);
+            this.TransferLog.LogInformation("Retry on file permission error: {PermissionErrorsRetry}", parameters.PermissionErrorsRetry);
+            this.TransferLog.LogInformation("Retry on bad path error: {BadPathErrorsRetry}", parameters.BadPathErrorsRetry);
+            this.TransferLog.LogInformation("Target data rate: {TargetDataRateMbps} Mbps", parameters.TargetDataRateMbps);
 			this.TransferLog.LogInformation("Wait time between retry attempts: {WaitTimeBetweenRetryAttempts}", parameters.WaitTimeBetweenRetryAttempts);
 			this.TransferLog.LogInformation("Workspace identifier: {WorkspaceId}", parameters.WorkspaceId);
 		}
@@ -561,7 +563,8 @@ namespace kCura.WinEDDS.TApi
 					TargetDataRateMbps = this.parameters.TargetDataRateMbps,
 					TransferLogDirectory = this.parameters.TransferLogDirectory,
 					ValidateSourcePaths = ValidateSourcePaths,
-					Credential = this.parameters.FileshareCredentials?.CreateCredential(),
+                    PermissionErrorsRetry = this.parameters.PermissionErrorsRetry,
+				    BadPathErrorsRetry = this.parameters.BadPathErrorsRetry,
 				    SupportCheckPath = this.parameters.SupportCheckPath
                 };
 			return configuration;
@@ -867,15 +870,12 @@ namespace kCura.WinEDDS.TApi
         /// </returns>
         private IEnumerable<TransferPath> GetRetryableTransferPaths()
         {
-            var paths = new List<TransferPath>();
             if (this.TransferJob != null)
             {
-                paths.AddRange(
-                    this.TransferJob.JobService.GetJobTransferPaths().Where(x => x.Status != TransferPathStatus.Successful)
-                        .Select(jobPath => jobPath.Path));
+                return this.TransferJob.JobService.GetRetryableRequestTransferPaths();
             }
 
-            return paths;
+            return new List<TransferPath>();
         }
 
         /// <summary>
