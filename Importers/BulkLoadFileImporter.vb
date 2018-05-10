@@ -50,6 +50,7 @@ Namespace kCura.WinEDDS
 		Protected Offset As Int32 = 0
 		Protected FirstTimeThrough As Boolean
 		Private _importBatchSize As Int32?
+		Private _jobCompleteBatchSize As Int32?
 		Private _importBatchVolume As Int32?
 		Private _minimumBatchSize As Int32?
 		Protected DestinationFolderColumnIndex As Int32 = -1
@@ -62,11 +63,14 @@ Namespace kCura.WinEDDS
 		Private _outputObjectFileWriter As System.IO.StreamWriter
 		Protected OverlayArtifactId As Int32
 		Protected RunId As String = System.Guid.NewGuid.ToString.Replace("-", "_")
+		Private _lastRunMetadataImport As Int64 = 0
 
 		Protected OutputCodeFilePath As String = System.IO.Path.GetTempFileName
 		Protected OutputObjectFilePath As String = System.IO.Path.GetTempFileName
 		Private _filePath As String
 		Private _batchCounter As Int32 = 0
+		Private _jobCompleteNativeCount As Int32 = 0
+		Private _jobCompleteMetadataCount As Int32 = 0
 		Private _errorMessageFileLocation As String = String.Empty
 		Private _errorLinesFileLocation As String = String.Empty
 
@@ -232,6 +236,16 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Protected Property JobCompleteBatchSize As Int32
+			Get
+				If Not _jobCompleteBatchSize.HasValue Then _jobCompleteBatchSize = Config.JobCompleteBatchSize
+				Return _jobCompleteBatchSize.Value
+			End Get
+			Set(ByVal value As Int32)
+				_jobCompleteBatchSize = If(value > MinimumBatchSize, value, MinimumBatchSize)
+			End Set
+		End Property
+
 		Protected Property ImportBatchVolume As Int32
 			Get
 				If Not _importBatchVolume.HasValue Then _importBatchVolume = Config.ImportBatchMaxVolume
@@ -291,7 +305,7 @@ Namespace kCura.WinEDDS
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
 		Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByVal ioReporterInstance As IIoReporter, ByVal logger As Relativity.Logging.ILog, 
 					   ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean, ByVal tokenSource As CancellationTokenSource,
-						ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
+					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
 			Me.New(args, processController, ioReporterInstance, logger, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit, tokenSource,  initializeArtifactReader:=True, executionSource:=executionSource)
 		End Sub
 
@@ -398,6 +412,8 @@ Namespace kCura.WinEDDS
 			nativeParameters.WebCookieContainer = args.CookieContainer
 			nativeParameters.WebServiceUrl = Config.WebServiceURL
 			nativeParameters.WorkspaceId = args.CaseInfo.ArtifactID
+			nativeParameters.PermissionErrorsRetry = Config.PermissionErrorsRetry
+			nativeParameters.BadPathErrorsRetry = Config.BadPathErrorsRetry
 
 			' Copying the parameters and tweaking just a few BCP specific parameters.
 			Dim bcpParameters As TApi.UploadTapiBridgeParameters = nativeParameters.ShallowCopy()
@@ -477,7 +493,6 @@ Namespace kCura.WinEDDS
 			Try
 				OnStartFileImport()
 				_timekeeper.MarkStart("ReadFile_InitializeMembers")
-				PublishUploadModeEvent()
 				If Not InitializeMembers(path) Then
 					Return False
 				End If
@@ -571,8 +586,7 @@ Namespace kCura.WinEDDS
 					Me.LogInformation("Version: '{0}'.", fileIdInfo.Version)
 					Me.LogInformation("Idle worker timeout: '{0}'.", fileIdInfo.IdleWorkerTimeout)
 					Me.LogInformation("Install location: '{0}'.", fileIdInfo.InstallLocation)
-					Me.LogInformation("Minimum worker count: '{0}'.", fileIdInfo.MinimumWorkerCount)
-
+                    
 					If fileIdInfo.HasError Then
 						Me.LogWarning("Error: {0}", fileIdInfo.Exception)
 					End If
@@ -587,7 +601,7 @@ Namespace kCura.WinEDDS
 				End If
 				_timekeeper.MarkEnd("ReadFile_ProcessDocuments")
 				_timekeeper.MarkStart("ReadFile_OtherFinalization")
-				Me.TryPushNativeBatch(True)
+				Me.TryPushNativeBatch(True, True, True)
 				WaitOnPushBatchTask()
 				RaiseEvent EndFileImport(RunId)
 				WriteEndImport("Finish")
@@ -749,8 +763,15 @@ Namespace kCura.WinEDDS
 						End If
 
 						If _copyFileToRepository Then
-							fileGuid = FileTapiBridge.AddPath(filename, Guid.NewGuid().ToString(), Me.CurrentLineNumber)
-							destinationVolume = FileTapiBridge.TargetFolderName
+							If File.Exists(filename) Then
+								Dim guid As String = System.Guid.NewGuid().ToString()
+								Me.ImportFilesCount += 1
+								_jobCompleteNativeCount += 1
+								fileGuid = FileTapiBridge.AddPath(filename, guid, Me.CurrentLineNumber)
+								destinationVolume = FileTapiBridge.TargetFolderName
+							Else
+								WriteWarning("File " & filename & " does not exist and will be not uploaded")
+							End If
 						Else
 							fileGuid = System.Guid.NewGuid.ToString
 						End If
@@ -910,7 +931,7 @@ Namespace kCura.WinEDDS
 				_timekeeper.MarkStart("ManageDocumentMetadata_WserviceCall")
 
 				If OutputFileWriter.CombinedStreamLength > ImportBatchVolume OrElse _batchCounter > ImportBatchSize - 1 Then
-					Me.TryPushNativeBatch()
+					Me.TryPushNativeBatch(False, _jobCompleteNativeCount >= JobCompleteBatchSize, _jobCompleteMetadataCount >= JobCompleteBatchSize)
 				End If
 				_timekeeper.MarkEnd("ManageDocumentMetadata_WserviceCall")
 			Catch ex As kCura.Utility.ImporterExceptionBase
@@ -1023,16 +1044,20 @@ Namespace kCura.WinEDDS
 			'Do Nothing
 		End Sub
 
-		Private Sub TryPushNativeBatch(Optional ByVal lastRun As Boolean = False)
+		Private Sub TryPushNativeBatch(ByVal lastRun As Boolean, ByVal shouldCompleteNativeJob As Boolean, ByVal shouldCompleteMetadataJob As Boolean)
 			CloseFileWriters()
 			Dim outputNativePath As String = OutputFileWriter.OutputNativeFilePath
 
+			If (shouldCompleteNativeJob Or lastRun) And _jobCompleteNativeCount > 0 Then
+				_jobCompleteNativeCount = 0
+				CompletePendingPhysicalFileTransfers("Waiting for the native file job to complete...", "Native file job completed.", "Failed to complete all pending native file transfers.")
+			End If
+
 			' REL-157042: Prevent importing bad data into Relativity or honor stoppage.
 			If ShouldImport Then
-
 				Try
 					If ShouldImport AndAlso _copyFileToRepository AndAlso FileTapiBridge.TransfersPending Then
-						CompletePendingPhysicalFileTransfers("Waiting for all native files to upload...", "Native file uploads completed.", "Failed to complete all pending native file transfers.")
+						WaitForPendingFileUploads()
 						JobCounter += 1
 
 						' The sync progress addresses an issue with TAPI clients that fail to raise progress when a failure occurs but successfully transfer all files via job retry (Aspera).
@@ -1043,9 +1068,13 @@ Namespace kCura.WinEDDS
 						End If
 					End If
 					
+					Dim start As Int64 = System.DateTime.Now.Ticks
+
 					If ShouldImport Then
-						Me.PushNativeBatch(outputNativePath)
+						Me.PushNativeBatch(outputNativePath, shouldCompleteMetadataJob, lastRun)
 					End If
+
+					Me.Statistics.FileWaitTime += System.Math.Max((System.DateTime.Now.Ticks - start), 1)
 				Catch ex As Exception
 					If BatchResizeEnabled AndAlso IsTimeoutException(ex) AndAlso ShouldImport Then
 						Me.LogWarning(ex, "A SQL or HTTP timeout error has occurred bulk importing the native batch and the batch will be resized.")
@@ -1102,7 +1131,7 @@ Namespace kCura.WinEDDS
 				Try
 					_batchCounter = i
 					Me.WriteWarning("Processing sub-batch of size " & Me.ImportBatchSize & ".  " & recordsProcessed & " of " & totalRecords & " in the original batch processed")
-					Me.PushNativeBatch(newNativeFilePath)
+					Me.PushNativeBatch(newNativeFilePath, False, True)
 					recordsProcessed += i
 					charactersSuccessfullyProcessed += charactersProcessed
 				Catch ex As Exception
@@ -1131,10 +1160,25 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Private Sub PushNativeBatch(ByVal outputNativePath As String)
-			Dim start As Int64 = System.DateTime.Now.Ticks
-			If _batchCounter = 0 OrElse Not ShouldImport Then Exit Sub
+		Private Sub PushNativeBatch(ByVal outputNativePath As String, ByVal shouldCompleteJob As Boolean, ByVal lastRun As Boolean)
+			If _lastRunMetadataImport > 0 Then
+				Me.Statistics.MetadataWaitTime += System.DateTime.Now.Ticks - _lastRunMetadataImport
+			End If
+
+			If _batchCounter = 0 OrElse Not ShouldImport Then
+				If _jobCompleteMetadataCount > 0 Then
+					_jobCompleteMetadataCount = 0
+					CompletePendingBulkLoadFileTransfers()
+				End If
+				Exit Sub
+			End If
 			_batchCounter = 0
+
+			If shouldCompleteJob And _jobCompleteMetadataCount > 0 Then
+				_jobCompleteMetadataCount = 0
+				CompletePendingBulkLoadFileTransfers()
+			End If
+
 			Dim settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Me.GetSettingsObject
 			settings.UseBulkDataImport = True
 			Dim nativeFileUploadKey As String
@@ -1147,11 +1191,22 @@ Namespace kCura.WinEDDS
 				codeFileUploadKey = BulkLoadTapiBridge.AddPath(OutputCodeFilePath, Guid.NewGuid().ToString(), 2)
 				objectFileUploadKey = BulkLoadTapiBridge.AddPath(OutputObjectFilePath, Guid.NewGuid().ToString(), 3)
 				dataGridFileUploadKey = BulkLoadTapiBridge.AddPath(OutputFileWriter.OutputDataGridFilePath, Guid.NewGuid().ToString(), 4)
-				CompletePendingBulkLoadFileTransfers()
+
+				' keep track of the total count of added files
+				MetadataFilesCount += 4
+				_jobCompleteMetadataCount += 4
+
+				If lastRun Then
+					CompletePendingBulkLoadFileTransfers()
+				Else
+					WaitForPendingMetadataUploads()
+				End If
 			Catch ex As Exception
 				' Note: Retry and potential HTTP fallback automatically kick in. Throwing a similar exception if a failure occurs.
 				Throw New BcpPathAccessException("Error accessing BCP Path, could be caused by network connectivity issues: " & ex.Message)
 			End Try
+
+			_lastRunMetadataImport = System.DateTime.Now.Ticks
 
 			' Account for possible cancellation during the BCP transfers.
 			If Not ShouldImport Then
@@ -1193,7 +1248,7 @@ Namespace kCura.WinEDDS
 			End If
 			Dim makeServiceCalls As Action =
 					Sub()
-						start = DateTime.Now.Ticks
+						Dim start As Int64 = DateTime.Now.Ticks
 						Dim runResults As MassImportResults = Me.BulkImport(settings, _fullTextColumnMapsToFileLocation)
 
 						Statistics.ProcessRunResults(runResults)
@@ -1512,7 +1567,7 @@ Namespace kCura.WinEDDS
 						outputWriter.Write(d)
 					End If
 				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Text OrElse
-						field.Type = Relativity.FieldTypeHelper.FieldType.OffTableText Then
+					   field.Type = Relativity.FieldTypeHelper.FieldType.OffTableText Then
 					If TypeOf field.Value Is System.IO.Stream
 						Dim stream As System.IO.Stream = CType(field.Value, System.IO.Stream)
 						outputWriter.Flush()
@@ -1794,7 +1849,6 @@ Namespace kCura.WinEDDS
 		Public Event StatusMessage(ByVal args As StatusEventArgs)
 		Public Event EndFileImport(ByVal runID As String)
 		Public Event StartFileImport()
-		Public Event UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean)
 
 		Public Event ReportErrorEvent(ByVal row As System.Collections.IDictionary)
 		Public Event DataSourcePrepEvent(ByVal e As Api.DataSourcePrepEventArgs)
@@ -1986,7 +2040,7 @@ Namespace kCura.WinEDDS
 			Try
 				With Me.BulkImportManager.GenerateNonImageErrorFiles(_caseInfo.ArtifactID, RunId, artifactTypeID, True, _keyFieldID)
 					Me.WriteStatusLine(Windows.Process.EventType.Status, "Retrieving errors from server")
-					downloader = New FileDownloader(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer, Service.Settings.AuthenticationToken)
+					downloader = New FileDownloader(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer)
 					AddHandler downloader.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
 					Dim errorsLocation As String = System.IO.Path.GetTempFileName
 					sr = AttemptErrorFileDownload(downloader, errorsLocation, .LogKey, _caseInfo)
@@ -2097,10 +2151,6 @@ Namespace kCura.WinEDDS
 
 		Protected Sub OnStartFileImport()
 			RaiseEvent StartFileImport()
-		End Sub
-
-		Protected Sub OnUploadModeChangeEvent(mode As String, isBulkEnabled As Boolean)
-			RaiseEvent UploadModeChangeEvent(mode, isBulkEnabled)
 		End Sub
 
 		Protected Sub OnDataSourcePrepEvent(args As Api.DataSourcePrepEventArgs)

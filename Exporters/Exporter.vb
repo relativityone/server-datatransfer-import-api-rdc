@@ -64,7 +64,6 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		''' <returns></returns>
 		Public Property NameTextAndNativesAfterBegBates() As Boolean = False
-
 		Public Property Settings() As kCura.WinEDDS.ExportFile
 			Get
 				Return _exportFile
@@ -199,7 +198,7 @@ Namespace kCura.WinEDDS
 				_start = System.DateTime.Now
 				Me.Search()
 			Catch ex As System.Exception
-				Me.WriteFatalError(String.Format("A fatal error occurred on document #{0}", Me.DocumentsExported), ex)
+				Me.WriteFatalError($"A fatal error occurred on document #{Me.DocumentsExported}", ex)
 				If Not _volumeManager Is Nothing Then
 					_volumeManager.Close()
 				End If
@@ -337,7 +336,7 @@ Namespace kCura.WinEDDS
 					_volumeManager.ColumnHeaderString = columnHeaderString
 				Else
 					Dim validator As IExportValidation = container.Resolve(Of IExportValidation)
-					if(Not validator.ValidateExport(Settings, TotalExportArtifactCount))
+					If (Not validator.ValidateExport(Settings, TotalExportArtifactCount)) Then
 						Shutdown()
 						Return False
 					End If
@@ -351,6 +350,7 @@ Namespace kCura.WinEDDS
 				Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
 				Me.WriteUpdate($"Data retrieved. Beginning {typeOfExportDisplayString} export...")
 
+				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", kCura.Windows.Process.EventType.ResetStartTime, _lastStatisticsSnapshot))
 				RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType.ToString)
 				
 				Dim records As Object() = Nothing
@@ -614,16 +614,16 @@ Namespace kCura.WinEDDS
 			Await Task.Run(
 				Sub()
 					_fileCount += CallServerWithRetry(Function()
-						Dim retval As Long
-						retval = _volumeManager.ExportArtifact(artifact, _linesToWriteDat, _linesToWriteOpt, threadNumber, volumeNumber, subDirectoryNumber)
-						If retval >= 0 Then
-							WriteUpdate("Exported document " & docNum + 1, docNum = numDocs - 1)
-							_lastStatisticsSnapshot = _statistics.ToDictionary
-							Return retval
-						Else
-							Return 0
-						End If
-					End Function, maxTries)
+														  Dim retval As Long
+														  retval = _volumeManager.ExportArtifact(artifact, _linesToWriteDat, _linesToWriteOpt, threadNumber, volumeNumber, subDirectoryNumber)
+														  If retval >= 0 Then
+															  WriteUpdate("Exported document " & docNum + 1, docNum = numDocs - 1)
+															  _lastStatisticsSnapshot = _statistics.ToDictionary
+															  Return retval
+														  Else
+															  Return 0
+														  End If
+													  End Function, maxTries)
 				End Sub
 				)
 		End Function
@@ -1172,7 +1172,7 @@ Namespace kCura.WinEDDS
 			Dim sourcePath As String
 			If UseOldExport Then
 				sourcePath = _volumeManager.ErrorDestinationPath
-			Else 
+			Else
 				sourcePath = _errorFile.Path()
 			End If
 			Dim destinationPath As String = Path.Combine(destinationDirectory, $"{Settings.LoadFilesPrefix}_errors.csv")
@@ -1184,6 +1184,8 @@ Namespace kCura.WinEDDS
 		Private Sub _downloadModeStatus_UploadModeChangeEvent(ByVal mode As String) Handles _downloadModeStatus.UploadModeChangeEvent
 			RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType.ToString)
 		End Sub
+
+
 
 		Private Function BuildFileNameProvider() As IFileNameProvider
 			Dim identifierExportFileNameProvider As IFileNameProvider = New IdentifierExportFileNameProvider(Settings)

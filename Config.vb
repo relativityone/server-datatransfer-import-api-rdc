@@ -31,6 +31,7 @@ Namespace kCura.WinEDDS
                             tempDict = DirectCast(System.Configuration.ConfigurationManager.GetSection("kCura.WinEDDS"), System.Collections.IDictionary)
                             If tempDict Is Nothing Then tempDict = New System.Collections.Hashtable
                             If Not tempDict.Contains("ImportBatchSize") Then tempDict.Add("ImportBatchSize", "1000")
+                            If Not tempDict.Contains("JobCompleteBatchSize") Then tempDict.Add("JobCompleteBatchSize", "50000")
                             If Not tempDict.Contains("WebAPIOperationTimeout") Then tempDict.Add("WebAPIOperationTimeout", "600000")
                             If Not tempDict.Contains("DynamicBatchResizingOn") Then tempDict.Add("DynamicBatchResizingOn", "True")
                             If Not tempDict.Contains("MinimumBatchSize") Then tempDict.Add("MinimumBatchSize", "100")
@@ -38,6 +39,8 @@ Namespace kCura.WinEDDS
                             If Not tempDict.Contains("ExportBatchSize") Then tempDict.Add("ExportBatchSize", "1000")
                             If Not tempDict.Contains("ExportThreadCount") Then tempDict.Add("ExportThreadCount", "2")
                             If Not tempDict.Contains("UseOldExport") Then tempDict.Add("UseOldExport", "False")
+	                        If Not tempDict.Contains("PermissionErrorsRetry") Then tempDict.Add("PermissionErrorsRetry", "False")
+	                        If Not tempDict.Contains("BadPathErrorsRetry") Then tempDict.Add("BadPathErrorsRetry", "False")
                             If Not tempDict.Contains("EnableSingleModeImport") Then tempDict.Add("EnableSingleModeImport", "False")
                             If Not tempDict.Contains("CreateErrorForEmptyNativeFile") Then tempDict.Add("CreateErrorForEmptyNativeFile", "False")
                             If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")
@@ -228,6 +231,16 @@ Namespace kCura.WinEDDS
             End Get
         End Property
 
+        Public Shared ReadOnly Property JobCompleteBatchSize() As Int32		'Number of records
+            Get
+                Try
+                    Return CType(ConfigSettings("JobCompleteBatchSize"), Int32)
+                Catch ex As Exception
+                    Return 50000
+                End Try
+            End Get
+        End Property
+
         Public Shared ReadOnly Property WebAPIOperationTimeout() As Int32
             Get
                 Try
@@ -236,6 +249,26 @@ Namespace kCura.WinEDDS
                     Return 600000
                 End Try
             End Get
+        End Property
+
+        Public Shared ReadOnly Property PermissionErrorsRetry() As Boolean
+	        Get
+		        Try
+			        Return CType(ConfigSettings("PermissionErrorsRetry"), Boolean)
+		        Catch ex As Exception
+			        Return False
+		        End Try
+	        End Get
+        End Property
+
+        Public Shared ReadOnly Property BadPathErrorsRetry() As Boolean
+	        Get
+		        Try
+			        Return CType(ConfigSettings("BadPathErrorsRetry"), Boolean)
+		        Catch ex As Exception
+			        Return False
+		        End Try
+	        End Get
         End Property
 
         ''' <summary>
