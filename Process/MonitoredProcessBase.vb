@@ -81,6 +81,9 @@ Public MustInherit Class MonitoredProcessBase
 	End Sub
 
 	Protected Sub SendThroughputMessage()
+		If CompletedRecordsCount = 0 Then
+			Return
+		End If
 		Dim duration As System.TimeSpan = EndTime - StartTime
 		Dim recordsPerSecond As Double = CompletedRecordsCount / duration.TotalSeconds
 		MessageService.Send(New TransferJobThroughputMessage With {.JobType = JobType, .TransferMode = TapiClientName, .RecordsPerSecond = recordsPerSecond})
