@@ -1437,6 +1437,7 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 			OutputFileWriter.OutputNativeFileWriter.Write(BulkLoadFileFieldDelimiter)   'kCura_DataGrid_Exception
+			OutputFileWriter.OutputNativeFileWriter.Write(BulkLoadFileFieldDelimiter)   'kCura_Import_ErrorData
 			OutputFileWriter.OutputNativeFileWriter.Write(vbCrLf)
 			If foundDataGridField Then
 				OutputFileWriter.OutputDataGridFileWriter.Write(vbCrLf)
