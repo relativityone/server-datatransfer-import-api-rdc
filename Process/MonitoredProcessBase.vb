@@ -80,7 +80,7 @@ Public MustInherit Class MonitoredProcessBase
 		MessageService.Send(New TransferJobCompletedMessage With {.JobType = JobType, .TransferMode = TapiClientName})
 	End Sub
 
-	Protected Sub SendMessages()
+	Protected Sub SendJobStatistics()
 		SendJobThroughputMessage()
 		SendJobTotalRecordsCountMessage()
 		SendJobCompletedRecordsCountMessage()

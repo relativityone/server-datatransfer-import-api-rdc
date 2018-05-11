@@ -84,19 +84,19 @@ Namespace kCura.WinEDDS
 		Protected Overrides Sub OnFatalError()
 			SendTransferJobFailedMessage()
 			MyBase.OnFatalError()
-			SendMessages()
+			SendJobStatistics()
 		End Sub
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnFatalError()
-			SendMessages()
+			SendJobStatistics()
 			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnFatalError()
-			SendMessages()
+			SendJobStatistics()
 			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
 		End Sub

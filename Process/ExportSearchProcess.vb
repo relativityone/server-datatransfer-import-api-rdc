@@ -39,7 +39,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
-			SendMessages()
+			SendJobStatistics()
 			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseStatusEvent("", "Export completed")
 			Me.ProcessObserver.RaiseProcessCompleteEvent()
@@ -47,13 +47,13 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub OnFatalError()
 			MyBase.OnFatalError()
-			SendMessages()
+			SendJobStatistics()
 			SendTransferJobFailedMessage()
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
-			SendMessages()
+			SendJobStatistics()
 			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, _searchExporter.ErrorLogFileName, True)
 		End Sub
