@@ -82,7 +82,7 @@ Namespace kCura.EDDS.WinForm
 		Private Async Function RunInConsoleMode() As Task
 			Try
 				_application = kCura.EDDS.WinForm.Application.Instance
-			    Dim _import As ImportManager = New ImportManager(new ExportConfig(_application.RelativityVersion))
+			    Dim _import As ImportManager = New ImportManager(new ExportConfig())
 
 				Dim commandList As kCura.CommandLine.CommandList = kCura.CommandLine.CommandLineParser.Parse
 				For Each command As kCura.CommandLine.Command In commandList

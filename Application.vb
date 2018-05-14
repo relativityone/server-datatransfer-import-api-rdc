@@ -17,6 +17,7 @@ Imports Relativity
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
+Imports Relativity.Services.InstanceDetails
 Imports Relativity.Services.ServiceProxy
 Imports Relativity.StagingExplorer.Services.StagingManager
 
@@ -136,22 +137,6 @@ Namespace kCura.EDDS.WinForm
             Get
                 Dim winIdent As System.Security.Principal.WindowsIdentity = System.Security.Principal.WindowsIdentity.GetCurrent
                 Return winIdent.Name
-            End Get
-        End Property
-
-        Public ReadOnly Property RelativityVersion() As Version
-            Get
-                If _relativityVersion = Nothing Then
-                    Try
-                        Dim task As Task(Of NetworkCredential) = GetCredentialsAsync()
-                        task.Wait()
-                        Dim credential As NetworkCredential = task.Result
-                        _relativityVersion = New Version(New RelativityManager(credential, Me.CookieContainer).RetrieveRelativityVersion())
-                    Catch
-                        _relativityVersion = New Version("0.0.0.0")
-                    End Try
-                End If
-                Return _relativityVersion
             End Get
         End Property
 
@@ -1221,7 +1206,7 @@ Namespace kCura.EDDS.WinForm
             End If
             Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
             frm.StatusRefreshRate = 0
-            Dim exporter As New ExportSearchProcess(new ExportFileFormatterFactory(), New ExportConfig(RelativityVersion))
+            Dim exporter As New ExportSearchProcess(new ExportFileFormatterFactory(), New ExportConfig())
             exporter.UserNotification = New FormsUserNotification()
             exporter.ExportFile = exportFile
             frm.ProcessObserver = exporter.ProcessObserver
