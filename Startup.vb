@@ -21,7 +21,6 @@ Namespace kCura.EDDS.WinForm
 		Friend HasSetUsername As Boolean = False
 		Friend HasSetPassword As Boolean = False
 		Private _importOptions As ImportOptions = New ImportOptions()
-		Private _import As ImportManager = New ImportManager(new ExportConfig(_application.RelativityVersion))
 		Private _authOptions As AuthenticationOptions = new AuthenticationOptions()
 #End Region
 
@@ -83,6 +82,7 @@ Namespace kCura.EDDS.WinForm
 		Private Async Function RunInConsoleMode() As Task
 			Try
 				_application = kCura.EDDS.WinForm.Application.Instance
+			    Dim _import As ImportManager = New ImportManager(new ExportConfig(_application.RelativityVersion))
 
 				Dim commandList As kCura.CommandLine.CommandList = kCura.CommandLine.CommandLineParser.Parse
 				For Each command As kCura.CommandLine.Command In commandList

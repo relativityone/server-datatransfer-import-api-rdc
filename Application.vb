@@ -1221,7 +1221,7 @@ Namespace kCura.EDDS.WinForm
             End If
             Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
             frm.StatusRefreshRate = 0
-            Dim exporter As New kCura.WinEDDS.ExportSearchProcess(new ExportFileFormatterFactory(), New ExportConfig(_application.RelativityVersion))
+            Dim exporter As New ExportSearchProcess(new ExportFileFormatterFactory(), New ExportConfig(RelativityVersion))
             exporter.UserNotification = New FormsUserNotification()
             exporter.ExportFile = exportFile
             frm.ProcessObserver = exporter.ProcessObserver
