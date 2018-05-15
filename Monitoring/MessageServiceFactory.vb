@@ -27,10 +27,9 @@ Namespace kCura.WinEDDS.Monitoring
 					LogCount(serviceFactory, FormatPerformanceBucketName("JobFailedCount", message.JobType, message.TransferMode), 1)
 				End Sub)
 
-
 			MessageService.Subscribe(Of TransferJobThroughputMessage)(
 				Sub(message)
-					LogDouble(serviceFactory, FormatUsageBucketName("Throughput", message.JobType, message.TransferMode), message.RecordsPerSecond)
+					LogDouble(serviceFactory, FormatPerformanceBucketName("Throughput", message.JobType, message.TransferMode), message.RecordsPerSecond)
 				End Sub)
 
 			MessageService.Subscribe(Of TransferJobTotalRecordsCountMessage)(
