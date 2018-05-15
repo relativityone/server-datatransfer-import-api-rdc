@@ -6,49 +6,57 @@ Namespace kCura.WinEDDS.Monitoring
 	Public Class MessageServiceFactory
 
 		Private Shared ReadOnly UsagePrefix As String = "RDC.Usage"
+		Private Shared ReadOnly MessageService As New MessageService()
+		Private Shared ReadOnly MessageManagerFactory As New MetricsManagerFactory()
 
 		Public Shared Function SetupMessageService(serviceFactory As IServiceFactory) As IMessageService
 
-			Dim messageService As New MessageService()
-			Dim messageManagerFactory As New MetricsManagerFactory()
-
-			messageService.Subscribe(Of TransferJobStartedMessage)(
+			MessageService.Subscribe(Of TransferJobStartedMessage)(
 				Sub(message)
-					Dim keplerManager As IMetricsManager = messageManagerFactory.CreateSUMKeplerManager(serviceFactory)
-					keplerManager.LogCount($"{UsagePrefix}.JobStartedCount.{message.JobType}.{message.TransferMode}", 1)
+					LogCount(serviceFactory, FormatBucketName("JobStartedCount", message.JobType, message.TransferMode), 1)
 				End Sub)
 
-			messageService.Subscribe(Of TransferJobCompletedMessage)(
+			MessageService.Subscribe(Of TransferJobCompletedMessage)(
 				Sub(message)
-					Dim keplerManager As IMetricsManager = messageManagerFactory.CreateSUMKeplerManager(serviceFactory)
-					keplerManager.LogCount($"{UsagePrefix}.JobCompletedCount.{message.JobType}.{message.TransferMode}", 1)
+					LogCount(serviceFactory, FormatBucketName("JobCompletedCount", message.JobType, message.TransferMode), 1)
 				End Sub)
 
-			messageService.Subscribe(Of TransferJobFailedMessage)(
+			MessageService.Subscribe(Of TransferJobFailedMessage)(
 				Sub(message)
-					Dim keplerManager As IMetricsManager = messageManagerFactory.CreateSUMKeplerManager(serviceFactory)
-					keplerManager.LogCount($"{UsagePrefix}.JobFailedCount.{message.JobType}.{message.TransferMode}", 1)
+					LogCount(serviceFactory, FormatBucketName("JobFailedCount", message.JobType, message.TransferMode), 1)
 				End Sub)
 
-			messageService.Subscribe(Of TransferJobThroughputMessage)(
+			MessageService.Subscribe(Of TransferJobThroughputMessage)(
 				Sub(message)
-					Dim keplerManager As IMetricsManager = messageManagerFactory.CreateSUMKeplerManager(serviceFactory)
-					keplerManager.LogDouble($"{UsagePrefix}.Throughput.{message.JobType}.{message.TransferMode}", message.RecordsPerSecond)
+					LogDouble(serviceFactory, FormatBucketName("Throughput", message.JobType, message.TransferMode), message.RecordsPerSecond)
 				End Sub)
 
-			messageService.Subscribe(Of TransferJobTotalRecordsCountMessage)(
+			MessageService.Subscribe(Of TransferJobTotalRecordsCountMessage)(
 				Sub(message)
-					Dim keplerManager As IMetricsManager = messageManagerFactory.CreateSUMKeplerManager(serviceFactory)
-					keplerManager.LogDouble($"{UsagePrefix}.TotalRecordsCount.{message.JobType}.{message.TransferMode}", message.TotalRecords)
+					LogDouble(serviceFactory, FormatBucketName("TotalRecordsCount", message.JobType, message.TransferMode), message.TotalRecords)
 				End Sub)
 
-			messageService.Subscribe(Of TransferJobCompletedRecordsCountMessage)(
+			MessageService.Subscribe(Of TransferJobCompletedRecordsCountMessage)(
 				Sub(message)
-					Dim keplerManager As IMetricsManager = messageManagerFactory.CreateSUMKeplerManager(serviceFactory)
-					keplerManager.LogDouble($"{UsagePrefix}.CompletedRecordsCount.{message.JobType}.{message.TransferMode}", message.CompletedRecords)
+					LogDouble(serviceFactory, FormatBucketName("CompletedRecordsCount", message.JobType, message.TransferMode), message.CompletedRecords)
 				End Sub)
 
 			Return messageService
 		End Function
+
+		Private Shared Function FormatBucketName(metricName As String, jobType As String, transferMode As String) As String
+			Return $"{UsagePrefix}.{metricName}.{jobType}.{transferMode}"
+		End Function
+
+		Private Shared Sub LogCount(serviceFactory As IServiceFactory, bucketName As String, value As Long)
+			Dim keplerManager As IMetricsManager = MessageManagerFactory.CreateSUMKeplerManager(serviceFactory)
+			keplerManager.LogCount(bucketName, value)
+		End Sub
+
+		Private Shared Sub LogDouble(serviceFactory As IServiceFactory, bucketName As String, value As Double)
+			Dim keplerManager As IMetricsManager = MessageManagerFactory.CreateSUMKeplerManager(serviceFactory)
+			keplerManager.LogDouble(bucketName, value)
+		End Sub
+
 	End Class
 End Namespace
