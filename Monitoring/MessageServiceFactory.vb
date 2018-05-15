@@ -34,12 +34,12 @@ Namespace kCura.WinEDDS.Monitoring
 
 			MessageService.Subscribe(Of TransferJobTotalRecordsCountMessage)(
 				Sub(message)
-					LogDouble(serviceFactory, FormatUsageBucketName("TotalRecordsCount", message.JobType, message.TransferMode), message.TotalRecords)
+					LogDouble(serviceFactory, FormatUsageBucketName("TotalRecords", message.JobType, message.TransferMode), message.TotalRecords)
 				End Sub)
 
 			MessageService.Subscribe(Of TransferJobCompletedRecordsCountMessage)(
 				Sub(message)
-					LogDouble(serviceFactory, FormatUsageBucketName("CompletedRecordsCount", message.JobType, message.TransferMode), message.CompletedRecords)
+					LogDouble(serviceFactory, FormatUsageBucketName("CompletedRecords", message.JobType, message.TransferMode), message.CompletedRecords)
 				End Sub)
 
 			Return MessageService
