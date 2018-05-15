@@ -553,6 +553,7 @@ namespace kCura.WinEDDS.TApi
 				{
 				    BcpRootFolder = this.parameters.AsperaBcpRootFolder,
                     CookieContainer = this.parameters.WebCookieContainer,
+				    FileTransferHint = FileTransferHint.Natives,
                     HttpTimeoutSeconds = this.parameters.TimeoutSeconds,
                     MaxJobParallelism = this.parameters.MaxJobParallelism,
 					MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,

@@ -24,7 +24,7 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         public TapiBridgeParameters()
         {
-            this.AsperaBcpRootFolder = "BCPPath";
+            this.AsperaBcpRootFolder = null;
             this.AsperaDocRootLevels = 1;
             this.BadPathErrorsRetry = false;
             this.ClientRequestId = Guid.NewGuid();

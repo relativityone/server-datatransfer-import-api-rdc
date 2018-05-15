@@ -26,6 +26,9 @@ namespace kCura.WinEDDS.TApi
 		/// </summary>
 		private readonly FileSharePathManager pathManager;
 
+		/// <summary>
+		/// The upload specific parameters.
+		/// </summary>
 		private readonly UploadTapiBridgeParameters parameters;
 
 		/// <summary>
@@ -166,6 +169,16 @@ namespace kCura.WinEDDS.TApi
 					jobTransferRequest.TargetPathResolver = resolver;
 					break;
 			}
+		}
+
+		/// <inheritdoc />
+		protected override ClientConfiguration CreateClientConfiguration()
+		{
+			// Note: providing this hint is enough to choose the appropriate credential.
+			var clientConfiguration = base.CreateClientConfiguration();
+			clientConfiguration.FileTransferHint =
+				this.parameters.BcpFileTransfer ? FileTransferHint.BulkLoad : FileTransferHint.Natives;
+			return clientConfiguration;
 		}
 	}
 }
