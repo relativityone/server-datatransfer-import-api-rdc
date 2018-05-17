@@ -2,18 +2,12 @@ Namespace kCura.Windows.Process
 	Public Class ProcessPool
 		Private _threadCollection As Hashtable
 
-		Public Function StartProcess(ByVal process As IRunable) As System.Guid
-			Dim key As Guid = Guid.NewGuid
-			Dim thread As System.Threading.Thread
-			process.ProcessID = key
-			thread = New System.Threading.Thread(AddressOf process.StartProcess)
-			thread.SetApartmentState(Threading.ApartmentState.STA)
-			thread.Start()
-			_threadCollection.Add(key, thread)
-			Return key
-		End Function
+        Public Function StartProcess(ByVal process As IRunable) As System.Guid
+            process.StartProcess()
+            Return New Guid()
+        End Function
 
-		Public Sub AbortProcess(ByVal processGuid As System.Guid)
+        Public Sub AbortProcess(ByVal processGuid As System.Guid)
 			Dim thread As System.Threading.Thread = CType(_threadCollection(processGuid), System.Threading.Thread)
 			thread.Abort()
 			' TODO: this will not work, need to use hashtable instead
