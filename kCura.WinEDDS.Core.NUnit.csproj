@@ -57,35 +57,30 @@
       <HintPath>..\..\packages\Polly.5.3.1\lib\net45\Polly.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging">
-      <HintPath>..\..\packages\Relativity.Logging.9.4.310\lib\net462\Relativity.Logging.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Logging.9.4.311\lib\net462\Relativity.Logging.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces">
-      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.310\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.311\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client, Version=3.0.18109.8, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\relativity.transfer.client.3.0.6\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client, Version=3.0.18127.17, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.3.1.1\lib\net462\Relativity.Transfer.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Aspera, Version=3.0.18109.8, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\relativity.transfer.client.3.0.6\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Aspera, Version=3.0.18127.17, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.3.1.1\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Core, Version=3.0.18109.8, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\relativity.transfer.client.3.0.6\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Core, Version=3.0.18127.17, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.3.1.1\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.FileShare, Version=3.0.18109.8, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\relativity.transfer.client.3.0.6\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.FileShare, Version=3.0.18127.17, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.3.1.1\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Http, Version=3.0.18109.8, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\relativity.transfer.client.3.0.6\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Http, Version=3.0.18127.17, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.3.1.1\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
@@ -114,7 +109,6 @@
     <Compile Include="Export\Natives\Name\Factories\FileNamePartProviderContainerTest.cs" />
     <Compile Include="Export\Natives\Name\FieldFileNamePartProviderTests.cs" />
     <Compile Include="Export\Natives\Name\SeparatorFileNamePartProviderTests.cs" />
-    <Compile Include="Export\VolumeManagerV2\AsperaStorageDeviceServiceTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchCleanUpTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchExporterTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchInitializationTests.cs" />
@@ -141,15 +135,11 @@
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\FileEncodingConverterTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\LongTextEncodingConverterTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ExportFileValidatorTests.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\ExportRequestRepositoryStub.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\ExportTapyBridgeFactoryStub.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\FieldFileExportRequestBuilderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\FileExportRequestBuilderTests.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\FileshareSettingsServiceStub.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ImageExportRequestBuilderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ModelFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\NativeFileExportRequestBuilderTests.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\PhysicalFilesDownloaderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeAdapterTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeForFilesTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeWithEncodingConversionTests.cs" />
@@ -206,10 +196,11 @@
     <Compile Include="Export\VolumeManagerV2\Statistics\DownloadProgressManagerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\ExportFileDownloaderStatusTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\FilesStatisticsTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\ImageFilesProgressHandlerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\LongTextProgressHandlerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\MessagesHandlerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\MetadataStatisticsTests.cs" />
-    <Compile Include="Export\VolumeManagerV2\Statistics\FileDownloadProgressHandlerTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\NativeFilesProgressHandlerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\ProgressHandlerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\ExportPermissionCheckTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\FilesOverwriteValidatorTests.cs" />
@@ -223,7 +214,6 @@
     <Compile Include="Helpers\ViewFieldInfoMockFactory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

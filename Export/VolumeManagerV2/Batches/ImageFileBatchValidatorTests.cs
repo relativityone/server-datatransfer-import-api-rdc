@@ -158,7 +158,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		}
 
 		[Test]
-		[Ignore("Until File Size calculation is fixed by Production team REL-198994 ")]
+		[Ignore("Until File Size calculation is fixed by Production team REL-198994")]
 		public void ItShouldWriteWarningForInvalidSize()
 		{
 			string location1 = "file_location_1";
