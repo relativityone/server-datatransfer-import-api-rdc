@@ -57,10 +57,10 @@ Namespace kCura.EDDS.WinForm
 				mainForm.Refresh()
 				System.Windows.Forms.Application.Run()
 			Else
-				Task.Run(Async Function() As Task
-							 Await RunInConsoleMode().ConfigureAwait(False)
-						 End Function).Wait()
-			End If
+
+                RunInConsoleMode().ConfigureAwait(False).GetAwaiter().GetResult()
+
+            End If
 		End Sub
 
 		Private Function GetValueFromCommandListByFlag(ByVal commandList As kCura.CommandLine.CommandList, ByVal flag As String) As String
@@ -155,11 +155,11 @@ Namespace kCura.EDDS.WinForm
 					Case LoadMode.Application
 						Await _import.RunApplicationImport(_importOptions)
 					Case LoadMode.Export
-						Await _import.RunExport(_importOptions.SelectedExportSettings)
-				End Select
+                        _import.RunExport(_importOptions.SelectedExportSettings).ConfigureAwait(False).GetAwaiter().GetResult()
+                End Select
 
-				Await _application.Logout()
-			Catch ex As RdcBaseException
+                _application.Logout()
+            Catch ex As RdcBaseException
 				Console.WriteLine("--------------------------")
 				Console.WriteLine("ERROR: " & ex.Message)
 				Console.WriteLine("")

@@ -85,7 +85,7 @@ Namespace kCura.EDDS.WinForm
             If Not RelativityWebApiCredentialsProvider.Instance().CredentialsSet() Then
                 SetImplicitCredentialProvider()
             End If
-            Return Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
+            Return Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync().ConfigureAwait(False)
         End Function
 
         Private Async Function GetFieldProviderCacheAsync() As Task(Of IFieldProviderCache)
@@ -1674,15 +1674,15 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Logout"
-        Public Async Function Logout() As Task
+        Public Sub Logout()
             Try
-                Dim userManager As New kCura.WinEDDS.Service.UserManager(Await GetCredentialsAsync(), _CookieContainer)
+                Dim userManager As New kCura.WinEDDS.Service.UserManager(GetCredentialsAsync().ConfigureAwait(False).GetAwaiter().GetResult(), _CookieContainer)
                 userManager.Logout()
             Catch ex As Exception
 
             End Try
 
-        End Function
+        End Sub
 #End Region
 
 #Region "System Configuration"
