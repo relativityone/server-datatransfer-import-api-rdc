@@ -83,9 +83,9 @@ namespace kCura.WinEDDS.TApi
             {
                 try
                 {
-                    Relativity.Logging.Tools.InternalLogger.WriteTokCuraEventLog(
+                    Relativity.Logging.Tools.InternalLogger.WriteFromExternal(
                         "Failed to setup TAPI logging. Exception: " + e,
-                        "WinEDDS");
+                        new LoggerOptions() { System = "WinEDDS" });
                 }
                 catch (Exception)
                 {
