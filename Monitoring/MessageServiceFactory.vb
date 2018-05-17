@@ -12,13 +12,18 @@ Namespace kCura.WinEDDS.Monitoring
 			Dim messageService As New MessageService()
 			Dim messageManagerFactory As New MetricsManagerFactory()
 
-			messageService.Subscribe(Of TransferJobStartedMessage)(
-				Sub(message)
-					Dim keplerManager As IMetricsManager = messageManagerFactory.CreateSUMKeplerManager(serviceFactory)
-					keplerManager.LogCount($"{PerformancePrefix}.JobStartedCount.{message.JobType}.{message.TransferMode}", 1)
-				End Sub)
+            messageService.Subscribe(Of TransferJobStartedMessage)(
+                Sub(message)
+                    Try
+                        Dim keplerManager As IMetricsManager = messageManagerFactory.CreateSUMKeplerManager(serviceFactory)
+                        keplerManager.LogCount($"{PerformancePrefix}.JobStartedCount.{message.JobType}.{message.TransferMode}", 1)
 
-			messageService.Subscribe(Of TransferJobCompletedMessage)(
+                    Catch ex As Exception
+                        ' Console.WriteLine(ex.)
+                    End Try
+                End Sub)
+
+            messageService.Subscribe(Of TransferJobCompletedMessage)(
 				Sub(message)
 					Dim keplerManager As IMetricsManager = messageManagerFactory.CreateSUMKeplerManager(serviceFactory)
 					keplerManager.LogCount($"{PerformancePrefix}.JobCompletedCount.{message.JobType}.{message.TransferMode}", 1)
