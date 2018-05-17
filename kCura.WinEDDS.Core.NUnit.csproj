@@ -135,6 +135,7 @@
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\FileEncodingConverterTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\LongTextEncodingConverterTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ExportFileValidatorTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\ExportRequestRepositoryStub.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\FieldFileExportRequestBuilderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\FileExportRequestBuilderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ImageExportRequestBuilderTests.cs" />
@@ -195,12 +196,11 @@
     <Compile Include="Export\VolumeManagerV2\Settings\FieldServiceFactoryTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\DownloadProgressManagerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\ExportFileDownloaderStatusTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\FileDownloadProgressHandlerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\FilesStatisticsTests.cs" />
-    <Compile Include="Export\VolumeManagerV2\Statistics\ImageFilesProgressHandlerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\LongTextProgressHandlerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\MessagesHandlerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\MetadataStatisticsTests.cs" />
-    <Compile Include="Export\VolumeManagerV2\Statistics\NativeFilesProgressHandlerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\ProgressHandlerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\ExportPermissionCheckTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\FilesOverwriteValidatorTests.cs" />
