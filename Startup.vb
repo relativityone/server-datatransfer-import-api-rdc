@@ -82,9 +82,9 @@ Namespace kCura.EDDS.WinForm
 		Private Async Function RunInConsoleMode() As Task
 			Try
 				_application = kCura.EDDS.WinForm.Application.Instance
-			    Dim _import As ImportManager = New ImportManager(new ExportConfig())
+                Dim _import As ImportManager = New ImportManager()
 
-				Dim commandList As kCura.CommandLine.CommandList = kCura.CommandLine.CommandLineParser.Parse
+                Dim commandList As kCura.CommandLine.CommandList = kCura.CommandLine.CommandLineParser.Parse
 				For Each command As kCura.CommandLine.Command In commandList
 					If command.Directive.ToLower.Replace("-", "").Replace("/", "") = "h" Then
 						If command.Value Is Nothing OrElse command.Value = "" Then
