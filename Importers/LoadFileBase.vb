@@ -786,10 +786,10 @@ Namespace kCura.WinEDDS
 
 		Private Sub _artifactReader_OnIoWarning(ByVal e As Api.IoWarningEventArgs) Handles _artifactReader.OnIoWarning
 			If e.Exception Is Nothing Then
-				IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(new IoWarningEventArgs(e.Message, e.CurrentLineNumber))
+				IoReporterInstance?.IOWarningPublisher?.PublishIoWarningEvent(new IoWarningEventArgs(e.Message, e.CurrentLineNumber))
 			Else
 				Dim message As String = IoReporter.BuildIoReporterWarningMessage(e.Exception, e.WaitTime)
-				IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(new IoWarningEventArgs(message, e.CurrentLineNumber))
+				IoReporterInstance?.IOWarningPublisher?.PublishIoWarningEvent(new IoWarningEventArgs(message, e.CurrentLineNumber))
 			End If
 		End Sub
 

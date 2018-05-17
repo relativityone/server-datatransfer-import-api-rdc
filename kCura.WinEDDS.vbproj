@@ -147,7 +147,7 @@
       <Name>Relativity</Name>
     </ProjectReference>
     <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Castle.Core.3.3.1\lib\net45\Castle.Core.dll</HintPath>
+      <HintPath>..\..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
     </Reference>
     <Reference Include="Castle.Windsor, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
@@ -171,57 +171,62 @@
       <HintPath>..\..\packages\Polly.5.3.1\lib\net45\Polly.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.4.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.1.0.4\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Kepler, Version=1.0.1.445, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Kepler.1.0.1.445\lib\net462\Relativity.Kepler.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Logging">
-      <HintPath>..\..\packages\Relativity.Logging.9.4.310\lib\net462\Relativity.Logging.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Logging.9.4.311\lib\net462\Relativity.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces">
-      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.310\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.311\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client, Version=1.0.24.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.24\lib\net462\Relativity.OAuth2Client.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client">
+      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.27\lib\net462\Relativity.OAuth2Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel">
+      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.27\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces">
+      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.27\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.Implicit">
+      <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit.1.0.27\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.Interfaces">
+      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.27\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.445, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.445\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.159.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.159\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.6.88.61, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface.9.6.88.61\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client, Version=3.0.18127.17, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.3.1.1\lib\net462\Relativity.Transfer.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.IdentityModel, Version=1.0.24.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.24\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Aspera, Version=3.0.18127.17, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.3.1.1\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces, Version=1.0.24.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.24\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Core, Version=3.0.18127.17, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.3.1.1\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.Implicit, Version=1.0.24.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit.1.0.24\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.FileShare, Version=3.0.18127.17, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.3.1.1\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.24.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.24\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.Transfer.Client, Version=3.0.18109.8, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\relativity.transfer.client.3.0.6\lib\net462\Relativity.Transfer.Client.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.Transfer.Client.Aspera, Version=3.0.18109.8, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\relativity.transfer.client.3.0.6\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.Transfer.Client.Core, Version=3.0.18109.8, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\relativity.transfer.client.3.0.6\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.Transfer.Client.FileShare, Version=3.0.18109.8, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\relativity.transfer.client.3.0.6\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.Transfer.Client.Http, Version=3.0.18109.8, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\relativity.transfer.client.3.0.6\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Http, Version=3.0.18127.17, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.3.1.1\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
@@ -460,6 +465,12 @@
     <Compile Include="Importers\OutputFileWriter.vb" />
     <Compile Include="IO\FileStreamFactory.vb" />
     <Compile Include="IO\IFileStreamFactory.vb" />
+    <Compile Include="Monitoring\MessageServiceFactory.vb" />
+    <Compile Include="Monitoring\TransferJobFailedMessage.vb" />
+    <Compile Include="Monitoring\TransferJobMessageBase.vb" />
+    <Compile Include="Monitoring\TransferJobCompletedMessage.vb" />
+    <Compile Include="Monitoring\TransferJobStartedMessage.vb" />
+    <Compile Include="Process\MonitoredProcessBase.vb" />
     <Compile Include="RelativityLogFactory.vb" />
     <Compile Include="My Project\Settings.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -504,6 +515,7 @@
     </Compile>
     <Compile Include="ProxyClasses\TargetField.vb" />
     <Compile Include="ReadFromExisting.vb" />
+    <Compile Include="ServiceFactoryFactory.vb" />
     <Compile Include="Service\AuditManager.vb">
       <SubType>Code</SubType>
     </Compile>

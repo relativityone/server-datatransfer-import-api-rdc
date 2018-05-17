@@ -38,6 +38,8 @@ Namespace kCura.WinEDDS
                             If Not tempDict.Contains("ExportBatchSize") Then tempDict.Add("ExportBatchSize", "1000")
                             If Not tempDict.Contains("ExportThreadCount") Then tempDict.Add("ExportThreadCount", "2")
                             If Not tempDict.Contains("UseOldExport") Then tempDict.Add("UseOldExport", "False")
+	                        If Not tempDict.Contains("PermissionErrorsRetry") Then tempDict.Add("PermissionErrorsRetry", "False")
+	                        If Not tempDict.Contains("BadPathErrorsRetry") Then tempDict.Add("BadPathErrorsRetry", "False")
                             If Not tempDict.Contains("EnableSingleModeImport") Then tempDict.Add("EnableSingleModeImport", "False")
                             If Not tempDict.Contains("CreateErrorForEmptyNativeFile") Then tempDict.Add("CreateErrorForEmptyNativeFile", "False")
                             If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")
@@ -236,6 +238,26 @@ Namespace kCura.WinEDDS
                     Return 600000
                 End Try
             End Get
+        End Property
+
+        Public Shared ReadOnly Property PermissionErrorsRetry() As Boolean
+	        Get
+		        Try
+			        Return CType(ConfigSettings("PermissionErrorsRetry"), Boolean)
+		        Catch ex As Exception
+			        Return False
+		        End Try
+	        End Get
+        End Property
+
+        Public Shared ReadOnly Property BadPathErrorsRetry() As Boolean
+	        Get
+		        Try
+			        Return CType(ConfigSettings("BadPathErrorsRetry"), Boolean)
+		        Catch ex As Exception
+			        Return False
+		        End Try
+	        End Get
         End Property
 
         ''' <summary>

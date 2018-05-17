@@ -398,6 +398,8 @@ Namespace kCura.WinEDDS
 			nativeParameters.WebCookieContainer = args.CookieContainer
 			nativeParameters.WebServiceUrl = Config.WebServiceURL
 			nativeParameters.WorkspaceId = args.CaseInfo.ArtifactID
+			nativeParameters.PermissionErrorsRetry = Config.PermissionErrorsRetry
+			nativeParameters.BadPathErrorsRetry = Config.BadPathErrorsRetry
 
 			' Copying the parameters and tweaking just a few BCP specific parameters.
 			Dim bcpParameters As TApi.UploadTapiBridgeParameters = nativeParameters.ShallowCopy()
@@ -477,7 +479,6 @@ Namespace kCura.WinEDDS
 			Try
 				OnStartFileImport()
 				_timekeeper.MarkStart("ReadFile_InitializeMembers")
-				PublishUploadModeEvent()
 				If Not InitializeMembers(path) Then
 					Return False
 				End If
@@ -571,8 +572,7 @@ Namespace kCura.WinEDDS
 					Me.LogInformation("Version: '{0}'.", fileIdInfo.Version)
 					Me.LogInformation("Idle worker timeout: '{0}'.", fileIdInfo.IdleWorkerTimeout)
 					Me.LogInformation("Install location: '{0}'.", fileIdInfo.InstallLocation)
-					Me.LogInformation("Minimum worker count: '{0}'.", fileIdInfo.MinimumWorkerCount)
-
+					
 					If fileIdInfo.HasError Then
 						Me.LogWarning("Error: {0}", fileIdInfo.Exception)
 					End If
@@ -1794,7 +1794,6 @@ Namespace kCura.WinEDDS
 		Public Event StatusMessage(ByVal args As StatusEventArgs)
 		Public Event EndFileImport(ByVal runID As String)
 		Public Event StartFileImport()
-		Public Event UploadModeChangeEvent(ByVal mode As String, ByVal isBulkEnabled As Boolean)
 
 		Public Event ReportErrorEvent(ByVal row As System.Collections.IDictionary)
 		Public Event DataSourcePrepEvent(ByVal e As Api.DataSourcePrepEventArgs)
@@ -1986,7 +1985,7 @@ Namespace kCura.WinEDDS
 			Try
 				With Me.BulkImportManager.GenerateNonImageErrorFiles(_caseInfo.ArtifactID, RunId, artifactTypeID, True, _keyFieldID)
 					Me.WriteStatusLine(Windows.Process.EventType.Status, "Retrieving errors from server")
-					downloader = New FileDownloader(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer, Service.Settings.AuthenticationToken)
+					downloader = New FileDownloader(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer)
 					AddHandler downloader.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
 					Dim errorsLocation As String = System.IO.Path.GetTempFileName
 					sr = AttemptErrorFileDownload(downloader, errorsLocation, .LogKey, _caseInfo)
@@ -2097,10 +2096,6 @@ Namespace kCura.WinEDDS
 
 		Protected Sub OnStartFileImport()
 			RaiseEvent StartFileImport()
-		End Sub
-
-		Protected Sub OnUploadModeChangeEvent(mode As String, isBulkEnabled As Boolean)
-			RaiseEvent UploadModeChangeEvent(mode, isBulkEnabled)
 		End Sub
 
 		Protected Sub OnDataSourcePrepEvent(args As Api.DataSourcePrepEventArgs)
