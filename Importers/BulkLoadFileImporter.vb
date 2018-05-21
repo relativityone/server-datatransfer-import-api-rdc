@@ -1351,10 +1351,14 @@ Namespace kCura.WinEDDS
 					OutputFileWriter.OutputNativeFileWriter.Write(mdoc.FullFilePath & BulkLoadFileFieldDelimiter) 'kCura_Import_OriginalFileLocation
 				End If
 				Dim fileSizeExtractor As Api.IHasFileSize = TryCast(mdoc, Api.IHasFileSize)
-				If (fileSizeExtractor Is Nothing) Then
-					OutputFileWriter.OutputNativeFileWriter.Write(IoReporterInstance.GetFileLength(mdoc.FullFilePath, Me.CurrentLineNumber) & BulkLoadFileFieldDelimiter) 'kCura_Import_FileSize
+				 If (fileSizeExtractor Is Nothing) Then
+					 If File.Exists(mdoc.FullFilePath) Then
+						OutputFileWriter.OutputNativeFileWriter.Write(IoReporterInstance.GetFileLength(mdoc.FullFilePath, Me.CurrentLineNumber) & BulkLoadFileFieldDelimiter) 'kCura_Import_FileSize
+					 Else
+						 OutputFileWriter.OutputNativeFileWriter.Write(0 & BulkLoadFileFieldDelimiter)
+					 End If
 				Else
-					OutputFileWriter.OutputNativeFileWriter.Write(fileSizeExtractor.GetFileSize() & BulkLoadFileFieldDelimiter) 'kCura_Import_FileSize
+						OutputFileWriter.OutputNativeFileWriter.Write(fileSizeExtractor.GetFileSize() & BulkLoadFileFieldDelimiter) 'kCura_Import_FileSize
 				End If
 
 			Else
