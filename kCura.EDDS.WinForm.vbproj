@@ -262,7 +262,7 @@
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.445\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.StagingExplorer.Services.Interfaces">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.Services.Interfaces.1.3.2\lib\net462\Relativity.StagingExplorer.Services.Interfaces.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.Services.Interfaces.1.4.1\lib\net462\Relativity.StagingExplorer.Services.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared">
       <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.160\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
