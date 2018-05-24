@@ -36,6 +36,18 @@ Namespace kCura.WinEDDS.Monitoring
 					keplerManager.LogDouble($"{PerformancePrefix}.Throughput.{message.JobType}.{message.TransferMode}", message.RecordsPerSecond)
 				End Sub)
 
+			messageService.Subscribe(Of TransferJobTotalRecordsCountMessage)(
+				Sub(message)
+					Dim keplerManager As IMetricsManager = messageManagerFactory.CreateSUMKeplerManager(serviceFactory)
+					keplerManager.LogDouble($"{PerformancePrefix}.TotalRecordsCount.{message.JobType}.{message.TransferMode}", message.TotalRecords)
+				End Sub)
+
+			messageService.Subscribe(Of TransferJobCompletedRecordsCountMessage)(
+				Sub(message)
+					Dim keplerManager As IMetricsManager = messageManagerFactory.CreateSUMKeplerManager(serviceFactory)
+					keplerManager.LogDouble($"{PerformancePrefix}.CompletedRecordsCount.{message.JobType}.{message.TransferMode}", message.CompletedRecords)
+				End Sub)
+
 			Return messageService
 		End Function
 	End Class
