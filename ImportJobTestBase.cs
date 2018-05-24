@@ -323,8 +323,8 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
             this.GivenTheDisableNativeLocationValidationSetting(disableNativeLocationValidation);
             this.GivenTheDisableNativeValidationSetting(disableNativeValidation);
 
-            // Note: by default, the file/BCP shares are 1 level from the root. These are Aspera and R1 specific parameters.
-            this.GivenTheAsperaBcpRootFolder("BCPPath");
+            // Note: there's no longer a BCP sub-folder.
+            this.GivenTheAsperaBcpRootFolder(string.Empty);
             this.GivenTheAsperaNativeDocRootLevels(1);
         }
 
