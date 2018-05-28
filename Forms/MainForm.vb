@@ -451,15 +451,17 @@ End Sub
 		End Sub
 
 		Public Async Function CheckCertificate() As Task
-			try
-				If (_application.CertificateTrusted()) Then
-					Await _application.AttemptLogin(Me)
-				Else
-					_application.CertificateCheckPrompt()
-				End If
-			Catch ex As WebException
-				_application.HandleWebException(ex)
-			End Try
+            Try
+                If (_application.CertificateTrusted()) Then
+                    Await _application.AttemptLogin(Me)
+                Else
+                    _application.CertificateCheckPrompt()
+                End If
+            Catch ex As WebException
+                _application.HandleWebException(ex)
+            Catch ex As RelativityVersionMismatchException
+                _application.ChangeWebServiceUrl(ex.Message + " Try a new URL?")
+            End Try
 			
 		End Function
 
