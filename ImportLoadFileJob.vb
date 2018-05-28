@@ -69,7 +69,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <summary>
 		''' Occurs when a status message needs to be presented to the user related to the Process.
 		''' </summary>
-		Public Event OnProcessProgress(ByVal processStatus As FullStatus)
+		Public Event OnProcessProgress(ByVal processStatus As FullStatus) Implements IImportNotifier.OnProcessProgress
 		''' <summary>
 		''' Occurs when a call is made to the Execute method. This event contains a status message.
 		''' </summary>
