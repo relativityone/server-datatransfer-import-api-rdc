@@ -421,9 +421,12 @@ End Sub
                     'disable staging explorer menu if no permission
 					TransferMenu.Enabled = _application.UserHasStagingPermission
                     TransferMenu.Visible = _application.UserHasStagingPermission
-				Case appEvent.AppEventType.LogOnRequested
-					Await _application.AttemptLogin(me)
-			End Select
+                Case appEvent.AppEventType.LogOnRequested
+                    '' please note that url input and connection loop retry takes place on the stack
+                    '' if in doubt what it means please try to input several times invalid web api url from main form settings and check call stack while having breakpoint on the following line
+                    '' TODO: this shloud be rewritten to use simple while-like loop
+                    Await CheckCertificate()
+            End Select
 		End Function
 
 		Private Sub UpdateStatus(ByVal text As String)
@@ -434,23 +437,23 @@ End Sub
 			LoggedInUserPanel.Text = text
 		End Sub
 
-		Private Async Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        Private Async Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 
-			ServicePointManager.DefaultConnectionLimit = Environment.ProcessorCount * 12
+            ServicePointManager.DefaultConnectionLimit = Environment.ProcessorCount * 12
 
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_application.TemporaryForceFolderPreview = kCura.WinEDDS.Config.ForceFolderPreview
-			If kCura.WinEDDS.Config.WebServiceURL = String.Empty Then
-				_application.SetWebServiceURL()
-			End If
+            Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+            _application.TemporaryForceFolderPreview = kCura.WinEDDS.Config.ForceFolderPreview
+            If kCura.WinEDDS.Config.WebServiceURL = String.Empty Then
+                _application.SetWebServiceURL()
+            End If
 
-			'' Can't do this in Application.vb without refactoring AttemptLogin (which needs this form as a parameter)
-			Await CheckCertificate()
+            '' Can't do this in Application.vb without refactoring AttemptLogin (which needs this form as a parameter)
+            Await CheckCertificate()
 
-			Me.Cursor = System.Windows.Forms.Cursors.Default
-		End Sub
+            Me.Cursor = System.Windows.Forms.Cursors.Default
+        End Sub
 
-		Public Async Function CheckCertificate() As Task
+        Public Async Function CheckCertificate() As Task
             Try
                 If (_application.CertificateTrusted()) Then
                     Await _application.AttemptLogin(Me)
