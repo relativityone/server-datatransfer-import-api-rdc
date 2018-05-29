@@ -1,7 +1,4 @@
-﻿Imports System.Diagnostics.Eventing.Reader
-Imports System.Threading.Tasks
-Imports kCura.Windows.Process
-Imports kCura.WinEDDS.Monitoring
+﻿Imports kCura.WinEDDS.Monitoring
 Imports kCura.WinEDDS.TApi
 Imports Relativity.DataTransfer.MessageService
 
