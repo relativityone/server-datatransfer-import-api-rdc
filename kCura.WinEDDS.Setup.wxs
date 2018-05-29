@@ -11,7 +11,9 @@
 		<UIRef Id="WixUI_MondoNoLicense" />
 		<UIRef Id="WixUI_ErrorProgressText" />
 		
-		<!-- The following condition blocks installation if .NET Framework 4.6.2 is not present on the machine -->
+    <!-- The following condition blocks installation if .NET Framework 4.6.2 is not present on the machine -->
+    <!-- NETFRAMEWORK45 >= "#394802" checks for .NET 4.6.2. Check https://docs.microsoft.com/en-gb/dotnet/framework/migration-guide/how-to-determine-which-versions-are-installed for version numbers -->
+    <!-- TODO: after WIX update to 3.11 version please use WIX_IS_NETFRAMEWORK_462_OR_LATER_INSTALLED property -->
 		<PropertyRef Id="NETFRAMEWORK45" />
 		<Condition Message="This application requires .NET Framework 4.6.2. Please install the .NET Framework then run this installer again.">
 			<![CDATA[Installed OR (NETFRAMEWORK45 AND NETFRAMEWORK45 >= "#394802")]]>
