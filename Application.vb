@@ -66,6 +66,7 @@ Namespace kCura.EDDS.WinForm
         Private _timeZoneOffset As Int32
         Private WithEvents _certificatePromptForm As CertificatePromptForm
         Private WithEvents _optionsForm As OptionsForm
+        Private _messageService As IMessageService
         Private _documentRepositoryList As String()
 #End Region
 
@@ -1131,6 +1132,7 @@ Namespace kCura.EDDS.WinForm
                 If CheckFieldMap(loadFile) Then
                     Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
                     Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(Await SetupMessageService())
+					importer.CaseInfo = SelectedCaseInfo
                     importer.LoadFile = loadFile
                     importer.TimeZoneOffset = _timeZoneOffset
                     importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
@@ -1184,6 +1186,7 @@ Namespace kCura.EDDS.WinForm
             Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
             Dim importer As New kCura.WinEDDS.ImportImageFileProcess(Await SetupMessageService())
             ImageLoadFile.CookieContainer = Me.CookieContainer
+			importer.CaseInfo = SelectedCaseInfo
             importer.ImageLoadFile = ImageLoadFile
             importer.CloudInstance = Config.CloudInstance
 			importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
@@ -1208,6 +1211,7 @@ Namespace kCura.EDDS.WinForm
             frm.StatusRefreshRate = 0
             Dim exporter As New kCura.WinEDDS.ExportSearchProcess(new ExportFileFormatterFactory(), New ExportConfig, Await SetupMessageService())
             exporter.UserNotification = New FormsUserNotification()
+			exporter.CaseInfo = SelectedCaseInfo
             exporter.ExportFile = exportFile
             frm.ProcessObserver = exporter.ProcessObserver
             frm.ProcessController = exporter.ProcessController
@@ -1775,7 +1779,10 @@ Namespace kCura.EDDS.WinForm
         End Function
 
 		Public Async Function SetupMessageService() As Task(Of IMessageService)
-			Return MessageServiceFactory.SetupMessageService(ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync()))
+			If _messageService Is Nothing
+				_messageService = MessageServiceFactory.SetupMessageService(ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync()))
+			End If
+			return _messageService
 		End Function
 
         Private Async Function CanUserAccessStagingExplorer(credentials As NetworkCredential) As Task(Of System.Boolean)
