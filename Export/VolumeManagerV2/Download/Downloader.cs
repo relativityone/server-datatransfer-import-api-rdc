@@ -5,20 +5,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
 using Relativity.Logging;
 using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public class Downloader : IDownloader
+    public class Downloader : IDownloader
 	{
 		private List<ExportRequest> _fileExportRequests;
 		private List<LongTextExportRequest> _longTextExportRequests;
 
-		private readonly NativeRepository _nativeRepository;
-		private readonly ImageRepository _imageRepository;
-		private readonly LongTextRepository _longTextRepository;
 		private readonly IPhysicalFilesDownloader _physicalFilesDownloader;
 		private readonly SafeIncrement _safeIncrement;
 		private readonly IErrorFileWriter _errorFileWriter;
@@ -26,19 +22,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private readonly IExportTapiBridgeFactory _exportTapiBridgeFactory;
 
 		private readonly ILog _logger;
+	    private readonly IExportRequestRetriever _exportRequestRetriever;
 
-		public Downloader(NativeRepository nativeRepository, ImageRepository imageRepository,
-			LongTextRepository longTextRepository, IPhysicalFilesDownloader physicalFilesDownloader, SafeIncrement safeIncrement, 
+	    public Downloader(IExportRequestRetriever exportRequestRetriever, IPhysicalFilesDownloader physicalFilesDownloader, SafeIncrement safeIncrement, 
 			IExportTapiBridgeFactory exportTapiBridgeFactory, IErrorFileWriter errorFileWriter, ILog logger)
 		{
-			_nativeRepository = nativeRepository;
-			_imageRepository = imageRepository;
-			_longTextRepository = longTextRepository;
 			_physicalFilesDownloader = physicalFilesDownloader;
 			_safeIncrement = safeIncrement;
 			_exportTapiBridgeFactory = exportTapiBridgeFactory;
 			_logger = logger;
-			_errorFileWriter = errorFileWriter;
+		    _exportRequestRetriever = exportRequestRetriever;
+		    _errorFileWriter = errorFileWriter;
 
 			if (Config.SuppressCertificateCheckOnClient)
 			{
@@ -67,20 +61,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private void RetrieveExportRequests()
 		{
-			_fileExportRequests = new List<ExportRequest>();
-
-			IList<ExportRequest> nativeExportRequests = _nativeRepository.GetExportRequests();
-			_fileExportRequests.AddRange(nativeExportRequests);
-
-			IList<ExportRequest> imageExportRequests = _imageRepository.GetExportRequests();
-			_fileExportRequests.AddRange(imageExportRequests);
-
-			IList<LongTextExportRequest> longTextExportRequests = _longTextRepository.GetExportRequests();
-			_longTextExportRequests = new List<LongTextExportRequest>();
-			_longTextExportRequests.AddRange(longTextExportRequests);
+			_fileExportRequests = _exportRequestRetriever.RetrieveFileExportRequests();
+		    _longTextExportRequests = _exportRequestRetriever.RetrieveLongTextExportRequests();
 		}
 
-		private async Task DownloadRequests(CancellationToken cancellationToken)
+	    private async Task DownloadRequests(CancellationToken cancellationToken)
 		{
 			IDownloadTapiBridge longTextDownloader = null;
 			try

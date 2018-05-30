@@ -220,10 +220,12 @@
     <Compile Include="Export\VolumeManagerV2\Download\DownloadCancellationTokenSource.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\FileEncodingRewrite.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\IFileEncodingRewrite.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\ExportRequestRetriever.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\IDownloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\IExportFileValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\IFileEncodingConverter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\ILongTextEncodingConverter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\IExportRequestRetriever.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\IPhysicalFilesDownloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ExportRequestsWithFileshareSettings.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\PhysicalFilesDownloader.cs" />

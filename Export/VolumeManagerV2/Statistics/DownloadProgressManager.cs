@@ -18,16 +18,18 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		private readonly NativeRepository _nativeRepository;
 		private readonly ImageRepository _imageRepository;
 		private readonly LongTextRepository _longTextRepository;
+	    private readonly IFileHelper _fileHelper;
 
-		private readonly IStatus _status;
+	    private readonly IStatus _status;
 		private readonly ILog _logger;
 
-		public DownloadProgressManager(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, IStatus status, ILog logger)
+		public DownloadProgressManager(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, IFileHelper fileHelper, IStatus status, ILog logger)
 		{
 			_nativeRepository = nativeRepository;
 			_imageRepository = imageRepository;
 			_longTextRepository = longTextRepository;
-			_status = status;
+		    _fileHelper = fileHelper;
+		    _status = status;
 			_logger = logger;
 
 			_artifactsDownloaded = new ConcurrentDictionary<int, bool>();
@@ -39,37 +41,46 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			Native native = _nativeRepository.GetByLineNumber(lineNumber);
 			if (native != null)
 			{
-				if (native.HasBeenDownloaded)
-				{
-					NativeAlreadyDownloaded(native);
-				}
-				else
-				{
-					native.HasBeenDownloaded = true;
-					UpdateDownloadedCountAndNotify(native.Artifact.ArtifactID, lineNumber);
-				}
+			    MarkNativeAsDownloaded(lineNumber, native);
 			}
 			else
 			{
-				Image image = _imageRepository.GetByLineNumber(lineNumber);
-				if (image != null)
-				{
-					if (image.HasBeenDownloaded)
-					{
-						ImageAlreadyDownloaded(image);
-					}
-					else
-					{
-						image.HasBeenDownloaded = true;
-						UpdateDownloadedCountAndNotify(image.Artifact.ArtifactID, lineNumber);
-					}
-				}
-
-				_logger.LogWarning("File or Image for {fileName} not found.", fileName);
+			    MarkImageAsDownloaded(fileName, lineNumber);
 			}
 		}
+        private void MarkNativeAsDownloaded(int lineNumber, Native native)
+	    {
+	        if (native.HasBeenDownloaded)
+	        {
+	            NativeAlreadyDownloaded(native);
+	        }
+	        else
+	        {
+	            native.HasBeenDownloaded = true;
+	            UpdateDownloadedCountAndNotify(native.Artifact.ArtifactID, lineNumber);
+	        }
+	    }
 
-		/// <summary>
+        private void MarkImageAsDownloaded(string fileName, int lineNumber)
+	    {
+	        Image image = _imageRepository.GetByLineNumber(lineNumber);
+	        if (image != null)
+	        {
+	            if (image.HasBeenDownloaded)
+	            {
+	                ImageAlreadyDownloaded(image);
+	            }
+	            else
+	            {
+	                image.HasBeenDownloaded = true;
+	                UpdateDownloadedCountAndNotify(image.Artifact.ArtifactID, lineNumber);
+	            }
+	        }
+
+	        _logger.LogWarning("File or Image for {fileName} not found.", fileName);
+	    }
+
+	    /// <summary>
 		///     TODO remove it after REL-206933 is fixed
 		/// </summary>
 		private void NativeAlreadyDownloaded(Native native)
@@ -81,7 +92,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 
 			foreach (Native duplicatedNative in duplicatedNatives)
 			{
-				if (File.Exists(duplicatedNative.ExportRequest.DestinationLocation))
+				if (_fileHelper.Exists(duplicatedNative.ExportRequest.DestinationLocation))
 				{
 					duplicatedNative.HasBeenDownloaded = true;
 					UpdateDownloadedCountAndNotify(duplicatedNative.Artifact.ArtifactID, duplicatedNative.ExportRequest.Order);
@@ -101,7 +112,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 
 			foreach (Image duplicatedImage in duplicatedImages)
 			{
-				if (File.Exists(duplicatedImage.ExportRequest.DestinationLocation))
+				if (_fileHelper.Exists(duplicatedImage.ExportRequest.DestinationLocation))
 				{
 					duplicatedImage.HasBeenDownloaded = true;
 					UpdateDownloadedCountAndNotify(duplicatedImage.Artifact.ArtifactID, duplicatedImage.ExportRequest.Order);
