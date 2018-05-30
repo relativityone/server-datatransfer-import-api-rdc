@@ -1,11 +1,13 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.Collections.Generic
+Imports System.Diagnostics
 Imports System.IO
 Imports System.Threading
 Imports kCura.Utility.Extensions
 Imports kCura.WinEDDS.Exporters
 Imports System.Threading.Tasks
 Imports Castle.Windsor
+Imports kCura.Windows.Process
 Imports kCura.WinEDDS.Container
 Imports kCura.WinEDDS.Exporters.Validator
 Imports kCura.WinEDDS.LoadFileEntry
@@ -616,7 +618,7 @@ Namespace kCura.WinEDDS
 														  retval = _volumeManager.ExportArtifact(artifact, _linesToWriteDat, _linesToWriteOpt, threadNumber, volumeNumber, subDirectoryNumber)
 														  If retval >= 0 Then
 															  WriteUpdate("Exported document " & docNum + 1, docNum = numDocs - 1)
-															  _lastStatisticsSnapshot = _statistics.ToDictionary
+															  UpdateStatisticsSnapshot(DateTime.Now)
 															  Return retval
 														  Else
 															  Return 0
@@ -1144,9 +1146,19 @@ Namespace kCura.WinEDDS
 			WriteStatusLine(kCura.Windows.Process.EventType.Progress, line, isEssential)
 		End Sub
 
+		Dim _statisticsLastUpdated As Date
+		Protected Sub UpdateStatisticsSnapshot(time As System.DateTime)
+			Dim updateCurrentStats As Boolean = (time.Ticks - _statisticsLastUpdated.Ticks) > 10000000
+			If updateCurrentStats Then
+				_lastStatisticsSnapshot = _statistics.ToDictionary()
+				_statisticsLastUpdated = time
+				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", EventType.Statistics, _lastStatisticsSnapshot, _statistics))
+			End If
+		End Sub
+
 		Sub UpdateDocumentExportedCount(count As Int32) Implements IStatus.UpdateDocumentExportedCount
 			DocumentsExported = count
-			_lastStatisticsSnapshot = _statistics.ToDictionary()
+			UpdateStatisticsSnapshot(DateTime.Now)
 		End Sub
 
 #End Region

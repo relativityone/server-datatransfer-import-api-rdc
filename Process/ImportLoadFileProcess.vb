@@ -293,8 +293,9 @@ Namespace kCura.WinEDDS
 					CompletedRecordsCount = e.CurrentRecordIndex
 					Me.ProcessObserver.RaiseRecordProcessed(e.CurrentRecordIndex)
 					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
-					SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
+				Case kCura.Windows.Process.EventType.Statistics
+					SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
 				Case kCura.Windows.Process.EventType.ResetProgress
 					' Do NOT raise RaiseRecordProcessed for this event. 
 					CompletedRecordsCount = 0
