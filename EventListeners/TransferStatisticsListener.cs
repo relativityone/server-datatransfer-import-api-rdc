@@ -96,7 +96,8 @@ namespace kCura.WinEDDS.TApi
             var totalTransferredFiles = this.totalStatistics.Sum(x => x.Value.Statistics.TotalTransferredFiles);
             var totalTransferTicks = TimeSpan
                 .FromSeconds(this.totalStatistics.Sum(x => x.Value.Statistics.TransferTimeSeconds)).Ticks;
-            var args = new TapiStatisticsEventArgs(totalTransferredBytes, totalTransferredFiles, totalTransferTicks);
+			var transferRateBytes = (e.Statistics.TransferRateMbps * 1000000) / 8.0;
+            var args = new TapiStatisticsEventArgs(totalTransferredBytes, totalTransferredFiles, totalTransferTicks, transferRateBytes);
             this.StatisticsEvent.Invoke(this, args);
 
             // Be careful with overly agressive statistics logging.
@@ -127,7 +128,7 @@ namespace kCura.WinEDDS.TApi
                 e.Statistics.TotalTransferredFiles,
                 e.Statistics.TotalRequestFiles,
                 e.Statistics.Progress,
-                ToFileSize((e.Statistics.TransferRateMbps * 1000000) / 8.0));
+                ToFileSize(transferRateBytes));
             this.TransferLog.LogInformation2(e.Request, jobMessage);
             this.LogTimestamp = DateTime.Now;
         }
