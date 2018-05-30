@@ -109,7 +109,6 @@
     <Compile Include="Export\Natives\Name\Factories\FileNamePartProviderContainerTest.cs" />
     <Compile Include="Export\Natives\Name\FieldFileNamePartProviderTests.cs" />
     <Compile Include="Export\Natives\Name\SeparatorFileNamePartProviderTests.cs" />
-    <Compile Include="Export\VolumeManagerV2\AsperaStorageDeviceServiceTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchCleanUpTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchExporterTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchInitializationTests.cs" />
@@ -137,14 +136,11 @@
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\LongTextEncodingConverterTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ExportFileValidatorTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ExportRequestRepositoryStub.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\ExportTapyBridgeFactoryStub.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\FieldFileExportRequestBuilderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\FileExportRequestBuilderTests.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\FileshareSettingsServiceStub.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ImageExportRequestBuilderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ModelFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\NativeFileExportRequestBuilderTests.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\PhysicalFilesDownloaderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeAdapterTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeForFilesTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeWithEncodingConversionTests.cs" />
@@ -200,11 +196,11 @@
     <Compile Include="Export\VolumeManagerV2\Settings\FieldServiceFactoryTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\DownloadProgressManagerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\ExportFileDownloaderStatusTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\FileDownloadProgressHandlerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\FilesStatisticsTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\LongTextProgressHandlerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\MessagesHandlerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\MetadataStatisticsTests.cs" />
-    <Compile Include="Export\VolumeManagerV2\Statistics\FileDownloadProgressHandlerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\ProgressHandlerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\ExportPermissionCheckTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\FilesOverwriteValidatorTests.cs" />
@@ -218,7 +214,6 @@
     <Compile Include="Helpers\ViewFieldInfoMockFactory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
