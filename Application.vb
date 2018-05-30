@@ -18,6 +18,7 @@ Imports Relativity.DataTransfer.MessageService
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
+Imports Relativity.Services.InstanceDetails
 Imports Relativity.Services.ServiceProxy
 Imports Relativity.StagingExplorer.Services.StagingManager
 
@@ -1387,6 +1388,7 @@ Namespace kCura.EDDS.WinForm
         End Enum
 
         Private _lastCredentialCheckResult As CredentialCheckResult = CredentialCheckResult.NotSet
+        Private _relativityVersion As Version
 
         Public ReadOnly Property LastCredentialCheckResult As CredentialCheckResult
             Get
@@ -1633,7 +1635,7 @@ Namespace kCura.EDDS.WinForm
 
         Public Sub ChangeWebServiceUrl(ByVal message As String)
             If MsgBox(message, MsgBoxStyle.YesNo, "Relativity Desktop Client") = MsgBoxResult.Yes Then
-                Dim url As String = InputBox("Enter New URL:", DefaultResponse:=kCura.WinEDDS.Config.WebServiceURL)
+                Dim url As String = InputBox("Enter New URL:", Title:="Set Relativity URL", DefaultResponse:=kCura.WinEDDS.Config.WebServiceURL)
                 If url <> String.Empty Then
                     kCura.WinEDDS.Config.WebServiceURL = url
                     OpenCaseSelector = True
@@ -1665,8 +1667,7 @@ Namespace kCura.EDDS.WinForm
                 End If
             Next
             If Not match Then
-                MsgBox(String.Format("Your version of the Relativity Desktop Client ({0}) is out of date. Please make sure you are running correct RDC version ({1}) or specified correct WebService URL for Relativity.", Me.GetDisplayAssemblyVersion(), relVersionString), MsgBoxStyle.Critical, "WinRelativity Version Mismatch")
-                ExitApplication()
+                Throw New RelativityVersionMismatchException(relVersionString)
             Else
                 Exit Sub
             End If
