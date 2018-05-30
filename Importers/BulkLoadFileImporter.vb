@@ -628,7 +628,7 @@ Namespace kCura.WinEDDS
 		Private Function InitializeMembers(ByVal path As String) As Boolean
 			RecordCount = _artifactReader.CountRecords
 			If RecordCount = -1 Then
-				OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.Progress, CurrentLineNumber, CurrentLineNumber, CancelEventMsg, CurrentStatisticsSnapshot))
+				OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.Progress, CurrentLineNumber, CurrentLineNumber, CancelEventMsg, CurrentStatisticsSnapshot, Statistics))
 				Return False
 			End If
 
@@ -636,11 +636,11 @@ Namespace kCura.WinEDDS
 			Me.InitializeFieldIdList()
 			DeleteFiles()
 			OpenFileWriters()
-			OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, RecordCount, RestartTimeEventMsg, Nothing))
+			OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, RecordCount, RestartTimeEventMsg, Nothing, Statistics))
 
 			' Counting all lines increments progress to 100%.
 			' This will reset progress back to zero instead of waiting for the first transfer to complete.
-			OnStatusMessage(new StatusEventArgs(Windows.Process.EventType.ResetProgress, 0, RecordCount, "Starting import...", Nothing))
+			OnStatusMessage(new StatusEventArgs(Windows.Process.EventType.ResetProgress, 0, RecordCount, "Starting import...", Nothing, Statistics))
 			Return True
 		End Function
 
@@ -1738,7 +1738,7 @@ Namespace kCura.WinEDDS
 		Private Sub WriteTapiProgressMessage(ByVal message As String, ByVal lineNumber As Int32)
 			message = GetLineMessage(message, lineNumber)
 			Dim lineProgress As Int32 = FileTapiProgressCount
-			OnStatusMessage(New StatusEventArgs(EventType.Progress, lineProgress, RecordCount, message, CurrentStatisticsSnapshot))
+			OnStatusMessage(New StatusEventArgs(EventType.Progress, lineProgress, RecordCount, message, CurrentStatisticsSnapshot, Statistics))
 		End Sub
 
 		Protected Sub WriteStatusLine(ByVal et As EventType, ByVal line As String)
@@ -1758,7 +1758,7 @@ Namespace kCura.WinEDDS
 			End If
 
 			line = GetLineMessage(line, lineNumber)
-			OnStatusMessage(New StatusEventArgs(et, recordNumber, RecordCount, line, CurrentStatisticsSnapshot))
+			OnStatusMessage(New StatusEventArgs(et, recordNumber, RecordCount, line, CurrentStatisticsSnapshot, Statistics))
 		End Sub
 
 		Private Sub WriteFatalError(ByVal lineNumber As Int32, ByVal ex As System.Exception)
@@ -2022,7 +2022,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _artifactReader_StatusMessage(ByVal message As String) Handles _artifactReader.StatusMessage
-			OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.Status, _artifactReader.CurrentLineNumber, RecordCount, message, False, CurrentStatisticsSnapshot))
+			OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.Status, _artifactReader.CurrentLineNumber, RecordCount, message, False, CurrentStatisticsSnapshot, Statistics))
 		End Sub
 
 		Private Sub _artifactReader_FieldMapped(ByVal sourceField As String, ByVal workspaceField As String) Handles _artifactReader.FieldMapped
@@ -2064,7 +2064,7 @@ Namespace kCura.WinEDDS
 							ht.Add("Identifier", line(2))
 							ht.Add("Line Number", Int32.Parse(line(0)))
 							RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
-							OnStatusMessage(New StatusEventArgs(EventType.Error, Int32.Parse(line(0)) - 1, RecordCount, "[Line " & line(0) & "]" & line(1), CurrentStatisticsSnapshot))
+							OnStatusMessage(New StatusEventArgs(EventType.Error, Int32.Parse(line(0)) - 1, RecordCount, "[Line " & line(0) & "]" & line(1), CurrentStatisticsSnapshot, Statistics))
 							line = sr.ReadLine
 						End While
 						RemoveHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler

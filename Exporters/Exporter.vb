@@ -343,7 +343,7 @@ Namespace kCura.WinEDDS
 				Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
 				Me.WriteUpdate($"Data retrieved. Beginning {typeOfExportDisplayString} export...")
 
-				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", kCura.Windows.Process.EventType.ResetStartTime, _lastStatisticsSnapshot))
+				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", kCura.Windows.Process.EventType.ResetStartTime, _lastStatisticsSnapshot, _statistics))
 				RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType.ToString)
 				
 				Dim records As Object() = Nothing
@@ -1096,7 +1096,7 @@ Namespace kCura.WinEDDS
 				_lastStatusMessageTs = now
 				Dim appendString As String = " ... " & Me.DocumentsExported - _lastDocumentsExportedCountReported & " document(s) exported."
 				_lastDocumentsExportedCountReported = Me.DocumentsExported
-				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line & appendString, e, _lastStatisticsSnapshot))
+				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line & appendString, e, _lastStatisticsSnapshot, _statistics))
 			End If
 		End Sub
 
@@ -1105,7 +1105,7 @@ Namespace kCura.WinEDDS
 			If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
 				_lastStatusMessageTs = now
 				_lastDocumentsExportedCountReported = Me.DocumentsExported
-				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line, e, _lastStatisticsSnapshot))
+				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line, e, _lastStatisticsSnapshot, _statistics))
 			End If
 		End Sub
 

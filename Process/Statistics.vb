@@ -2,8 +2,10 @@ Namespace kCura.WinEDDS
 	Public Class Statistics
 		Private _metadataBytes As Int64 = 0
 		Private _metadataTime As Int64 = 0
+		Private _metadataThroughput As Double = 0
 		Private _fileBytes As Int64 = 0
 		Private _fileTime As Int64 = 0
+		Private _fileThroughput As Double = 0
 		Private _fileWaitTime As Int64 = 0
 		Private _metadataWaitTime As Int64 = 0
 		Private _sqlTime As Int64 = 0
@@ -35,6 +37,16 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
+		Public Property MetadataThroughput() As Double
+			Get
+				Return _metadataThroughput
+			End Get
+			Set(ByVal value As Double)
+				_lastAccessed = System.DateTime.Now
+				_metadataThroughput = value
+			End Set
+		End Property
+
 		Public Property FileBytes() As Int64
 			Get
 				Return _fileBytes
@@ -52,6 +64,16 @@ Namespace kCura.WinEDDS
 			Set(ByVal value As Int64)
 				_lastAccessed = System.DateTime.Now
 				_fileTime = value
+			End Set
+		End Property
+
+		Public Property FileThroughput() As Double
+			Get
+				Return _fileThroughput
+			End Get
+			Set(ByVal value As Double)
+				_lastAccessed = System.DateTime.Now
+				_fileThroughput = value
 			End Set
 		End Property
 

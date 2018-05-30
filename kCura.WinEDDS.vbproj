@@ -474,6 +474,7 @@
     <Compile Include="Monitoring\TransferJobThroughputMessage.vb" />
     <Compile Include="Monitoring\TransferJobTotalRecordsCountMessage.vb" />
     <Compile Include="Process\MonitoredProcessBase.vb" />
+    <Compile Include="Process\StatusEventArgs.vb" />
     <Compile Include="RelativityLogFactory.vb" />
     <Compile Include="My Project\Settings.Designer.vb">
       <AutoGen>True</AutoGen>
