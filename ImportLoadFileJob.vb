@@ -69,7 +69,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <summary>
 		''' Occurs when a status message needs to be presented to the user related to the Process.
 		''' </summary>
-		Public Event OnProcessProgress(ByVal processStatus As FullStatus)
+		Public Event OnProcessProgress(ByVal processStatus As FullStatus) Implements IImportNotifier.OnProcessProgress
 		''' <summary>
 		''' Occurs when a call is made to the Execute method. This event contains a status message.
 		''' </summary>
@@ -574,7 +574,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub _observer_OnProcessProgressEvent(ByVal evt As kCura.Windows.Process.ProcessProgressEvent) Handles _observer.OnProcessProgressEvent
 			RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Progress Info: {1} ]", System.DateTime.Now, evt.TotalRecordsProcessedDisplay)))
-			RaiseEvent OnProcessProgress(New FullStatus(evt.TotalRecords, evt.TotalRecordsProcessed, evt.TotalRecordsProcessedWithWarnings, evt.TotalRecordsProcessedWithErrors, evt.StartTime, evt.EndTime, evt.TotalRecordsDisplay, evt.TotalRecordsProcessedDisplay, evt.ProcessID, evt.StatusSuffixEntries))
+			RaiseEvent OnProcessProgress(New FullStatus(evt.TotalRecords, evt.TotalRecordsProcessed, evt.TotalRecordsProcessedWithWarnings, evt.TotalRecordsProcessedWithErrors, evt.StartTime, evt.EndTime, evt.TotalRecordsDisplay, evt.TotalRecordsProcessedDisplay, evt.MetadataThroughput, evt.FilesThroughput, evt.ProcessID, evt.StatusSuffixEntries))
 		End Sub
 
 		Private Sub _observer_RecordProcessedEvent(ByVal recordNumber As Long) Handles _observer.RecordProcessed
