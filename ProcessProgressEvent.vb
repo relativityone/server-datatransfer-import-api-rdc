@@ -11,8 +11,6 @@ Namespace kCura.Windows.Process
 		Private _totalRecordsProcessedWithErrors As Int64
 		Private _totalRecordsDisplay As String
 		Private _totalRecordsProcessedDisplay As String
-		Private _metadataThroughput As Double
-		Private _filesThroughput As Double
 		Private _statusSuffixEntries As IDictionary
 
 #End Region
@@ -99,24 +97,6 @@ Namespace kCura.Windows.Process
 			End Set
 		End Property
 
-		Public Property MetadataThroughput() As Double
-			Get
-				Return _metadataThroughput
-			End Get
-			Set(ByVal value As Double)
-				_metadataThroughput = value
-			End Set
-		End Property
-
-		Public Property FilesThroughput() As Double
-			Get
-				Return _metadataThroughput
-			End Get
-			Set(ByVal value As Double)
-				_metadataThroughput = value
-			End Set
-		End Property
-
 		Public ReadOnly Property StatusSuffixEntries() As IDictionary
 			Get
 				Return _statusSuffixEntries
@@ -124,8 +104,7 @@ Namespace kCura.Windows.Process
 		End Property
 
 #End Region
-		Public Sub New(ByVal totRecs As Int64, ByVal totRecsProc As Int64, ByVal totRecsProcWarn As Int64, ByVal totRecsProcErr As Int64, ByVal sTime As DateTime, ByVal eTime As DateTime, ByVal totRecsDisplay As String, ByVal totRecsProcDisplay As String, 
-		               ByVal metadataThroughput As Double, ByVal filesThroughput As Double, ByVal theProcessID As Guid, ByVal statusSuffixEntries As IDictionary)
+		Public Sub New(ByVal totRecs As Int64, ByVal totRecsProc As Int64, ByVal totRecsProcWarn As Int64, ByVal totRecsProcErr As Int64, ByVal sTime As DateTime, ByVal eTime As DateTime, ByVal totRecsDisplay As String, ByVal totRecsProcDisplay As String, ByVal theProcessID As Guid, ByVal statusSuffixEntries As IDictionary)
 			Me.TotalRecords = totRecs
 			Me.TotalRecordsProcessed = totRecsProc
 			If Not totRecsDisplay Is Nothing Then
@@ -141,21 +120,17 @@ Namespace kCura.Windows.Process
 			Me.ProcessID = theProcessID
 			Me.TotalRecordsProcessedWithWarnings = totRecsProcWarn
 			Me.TotalRecordsProcessedWithErrors = totRecsProcErr
-			Me.MetadataThroughput = metadataThroughput
-			Me.FilesThroughput = filesThroughput
 			Me.StartTime = sTime
 			Me.EndTime = eTime
 			_statusSuffixEntries = statusSuffixEntries
 		End Sub
 
-		Public Sub New(ByVal totRecs As Int64, ByVal totRecsProc As Int64, ByVal totRecsProcWarn As Int64, ByVal totRecsProcErr As Int64, ByVal sTime As DateTime, ByVal eTime As DateTime, ByVal totRecsDisplay As String, ByVal totRecsProcDisplay As String, 
-		               ByVal metadataThroughput As Double, ByVal filesThroughput As Double, ByVal statusSuffixEntries As IDictionary)
-			: Me.New(totRecs, totRecsProc, totRecsProcWarn, totRecsProcErr, sTime, eTime, totRecsDisplay, totRecsProcDisplay, metadataThroughput, filesThroughput, Nothing, statusSuffixEntries)
+		Public Sub New(ByVal totRecs As Int64, ByVal totRecsProc As Int64, ByVal totRecsProcWarn As Int64, ByVal totRecsProcErr As Int64, ByVal sTime As DateTime, ByVal eTime As DateTime, ByVal totRecsDisplay As String, ByVal totRecsProcDisplay As String, ByVal statusSuffixEntries As IDictionary)
+			: Me.New(totRecs, totRecsProc, totRecsProcWarn, totRecsProcErr, sTime, eTime, totRecsDisplay, totRecsProcDisplay, Nothing, statusSuffixEntries)
 		End Sub
 
-		Public Sub New(ByVal totRecs As Int64, ByVal totRecsProc As Int64, ByVal totRecsProcWarn As Int64, ByVal totRecsProcErr As Int64, ByVal sTime As DateTime, ByVal eTime As DateTime, ByVal totRecsDisplay As String, ByVal totRecsProcDisplay As String,
-		               ByVal metadataThroughput As Double, ByVal filesThroughput As Double)
-			Me.New(totRecs, totRecsProc, totRecsProcWarn, totRecsProcErr, sTime, eTime, totRecsDisplay, totRecsProcDisplay, metadataThroughput, filesThroughput, Nothing)
+		Public Sub New(ByVal totRecs As Int64, ByVal totRecsProc As Int64, ByVal totRecsProcWarn As Int64, ByVal totRecsProcErr As Int64, ByVal sTime As DateTime, ByVal eTime As DateTime, ByVal totRecsDisplay As String, ByVal totRecsProcDisplay As String)
+			Me.New(totRecs, totRecsProc, totRecsProcWarn, totRecsProcErr, sTime, eTime, totRecsDisplay, totRecsProcDisplay, Nothing)
 		End Sub
 
 	End Class

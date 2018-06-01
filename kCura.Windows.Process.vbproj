@@ -196,6 +196,9 @@
     <Compile Include="ProcessProgressEvent.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="StatusEventArgs.vb">
+      <SubType>Code</SubType>
+    </Compile>
     <EmbeddedResource Include="MessageBoxForm.resx">
       <DependentUpon>MessageBoxForm.vb</DependentUpon>
     </EmbeddedResource>
