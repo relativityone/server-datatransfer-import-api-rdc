@@ -653,7 +653,7 @@ Namespace kCura.WinEDDS
 					Dim countAfterJob As Long = currentDocCount + newDocCount
 					Me.LogInformation("Successfully calculated the number of images to import: {ImageCount}, Doc limit: {DocLimit}", countAfterJob, docLimit)
 					If (docLimit <> 0 And countAfterJob > docLimit) Then
-						Dim errorMessage As String = String.Format("The document import was canceled.  It would have exceeded the workspace's document limit of {1} by {0} documents.", countAfterJob - docLimit, docLimit)
+						Dim errorMessage As String = $"The document import was canceled.  It would have exceeded the workspace's document limit of {docLimit} by {(countAfterJob - docLimit)} documents."
 						Throw New Exception(errorMessage)
 					End If
 				End If
@@ -772,10 +772,10 @@ Namespace kCura.WinEDDS
 			Dim retval As Relativity.MassImport.ImportStatus = Relativity.MassImport.ImportStatus.Pending
 			'check for existence
 			If imageRecord.BatesNumber.Trim = "" Then
-				Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("No image file or identifier specified on line."), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+				Me.RaiseStatusEvent(Windows.Process.EventType.Error, "No image file or identifier specified on line.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 				retval = Relativity.MassImport.ImportStatus.NoImageSpecifiedOnLine
 			ElseIf Not Me.DisableImageLocationValidation AndAlso Not System.IO.File.Exists(BulkImageFileImporter.GetFileLocation(imageRecord)) Then
-				Me.RaiseStatusEvent(Windows.Process.EventType.Error, String.Format("Image file specified ( {0} ) does not exist.", imageRecord.FileLocation), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+				Me.RaiseStatusEvent(Windows.Process.EventType.Error, $"Image file specified ( {imageRecord.FileLocation} ) does not exist.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 				retval = Relativity.MassImport.ImportStatus.FileSpecifiedDne
 			Else
 				Dim validator As New kCura.ImageValidator.ImageValidator
@@ -785,7 +785,7 @@ Namespace kCura.WinEDDS
 						validator.ValidateImage(path)
 					End If
 
-					Me.RaiseStatusEvent(Windows.Process.EventType.Status, String.Format("Image file ( {0} ) validated.", imageRecord.FileLocation), CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+					Me.RaiseStatusEvent(Windows.Process.EventType.Status, $"Image file ( {imageRecord.FileLocation} ) validated.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 				Catch ex As Exception
 					If TypeOf ex Is kCura.ImageValidator.Exception.Base Then
 						Me.LogError(ex, "Failed to validate the {Path} image.", path)
@@ -843,7 +843,7 @@ Namespace kCura.WinEDDS
 
 				If textFileList.Count = 0 Then
 					'no extracted text encodings, write "-1"
-					_bulkLoadFileWriter.Write(String.Format("{0}{1}", -1, lastDivider))
+					_bulkLoadFileWriter.Write($"{(-1)}{lastDivider}")
 				ElseIf textFileList.Count > 0 Then
 					_bulkLoadFileWriter.Write("{0}{1}", Me.GetextractedTextEncodings(textFileList).ToDelimitedString("|"), lastDivider)
 				End If
@@ -882,7 +882,7 @@ Namespace kCura.WinEDDS
 				Next
 			Else
 				'no extracted text encodings, write "-1"
-				_bulkLoadFileWriter.Write(String.Format("{0}{1}", -1, lastDivider))
+				_bulkLoadFileWriter.Write($"{(-1)}{lastDivider}")
 			End If
 				
 			_bulkLoadFileWriter.Write(Relativity.Constants.ENDLINETERMSTRING)
@@ -928,7 +928,6 @@ Namespace kCura.WinEDDS
 			Next
 		End Sub
 
-
 		Private Sub GetImageForDocument(ByVal imageFile As String, ByVal batesNumber As String, ByVal documentIdentifier As String, ByVal order As Int32, ByRef offset As Int64, ByVal fullTextFiles As System.Collections.ArrayList, ByVal writeLineTermination As Boolean, ByVal originalLineNumber As Int32, ByVal status As Int64, ByVal totalForDocument As Int32, ByVal isStartRecord As Boolean)
 			_totalProcessed += 1
 			Dim filename As String = imageFile.Substring(imageFile.LastIndexOf("\") + 1)
@@ -944,7 +943,7 @@ Namespace kCura.WinEDDS
 					fileGuid = Me.FileTapiBridge.AddPath(imageFile, Guid.NewGuid().ToString(), originalLineNumber)
 					fileLocation = Me.FileTapiBridge.TargetPath.TrimEnd("\"c) & "\" & Me.FileTapiBridge.TargetFolderName & "\" & fileGuid
 				Else
-					RaiseStatusEvent(kCura.Windows.Process.EventType.Status, String.Format("Processing image '{0}'.", batesNumber), CType((_totalValidated + _totalProcessed) / 2, Int64), originalLineNumber)
+					WriteStatusLine(Windows.Process.EventType.Progress, $"Processing image '{batesNumber}'.", originalLineNumber)
 					fileGuid = System.Guid.NewGuid.ToString
 					Me.FileTapiProgressCount = Me.FileTapiProgressCount + 1
 				End If
@@ -956,7 +955,7 @@ Namespace kCura.WinEDDS
 					fullTextFiles.Add(extractedTextFileName)
 				Else
 					If _replaceFullText AndAlso Not System.IO.File.Exists(extractedTextFileName) Then
-						RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, String.Format("File '{0}' not found.  No text updated.", extractedTextFileName), CType((_totalValidated + _totalProcessed) / 2, Int64), originalLineNumber)
+						RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, $"File '{extractedTextFileName}' not found.  No text updated.", CType((_totalValidated + _totalProcessed) / 2, Int64), originalLineNumber)
 					End If
 				End If
 			End If
@@ -1027,6 +1026,9 @@ Namespace kCura.WinEDDS
 				StopImport()
 			End If
 		End Sub
+		Protected Sub OnStatusMessage(args As StatusEventArgs)
+			RaiseEvent StatusMessage(args)
+		End Sub
 
 		Protected Overrides Sub OnStopImport()
 			If Not _imageReader Is Nothing Then
@@ -1049,6 +1051,22 @@ Namespace kCura.WinEDDS
 			Me.RaiseStatusEvent(eventType, message, progressLineNumber, physicalLineNumber)
 		End Sub
 
+		Private Sub WriteStatusLine(ByVal et As Windows.Process.EventType, ByVal line As String, ByVal lineNumber As Int32)
+			' Avoid displaying potential negative numbers.
+			Dim recordNumber As Int32 = lineNumber
+			If recordNumber <> TApi.TapiConstants.NoLineNumber Then
+				recordNumber = recordNumber
+			End If
+
+			' Prevent unnecessary crashes due to to ArgumentException (IE progress).
+			If recordNumber < 0 Then
+				recordNumber = 0
+			End If
+
+			line = GetLineMessage(line, lineNumber)
+			OnStatusMessage(New StatusEventArgs(et, recordNumber, _recordCount, line, CurrentStatisticsSnapshot, Statistics))
+		End Sub
+
 		Protected Overrides Sub OnWriteFatalError(ByVal exception As Exception)
 			Me.RaiseFatalError(exception)
 		End Sub
@@ -1064,7 +1082,11 @@ Namespace kCura.WinEDDS
 				moretobefoundMessage.Add("Message", "Maximum number of errors for display reached.  Export errors to view full list.")
 				RaiseEvent ReportErrorEvent(moretobefoundMessage)
 			End If
-			errorMessageFileWriter.WriteLine(String.Format("{0},{1},{2},{3}", CSVFormat(row("Line Number").ToString), CSVFormat(row("DocumentID").ToString), CSVFormat(row("FileID").ToString), CSVFormat(row("Message").ToString)))
+			errorMessageFileWriter.WriteLine(String.Format("{0},{1},{2},{3}",
+														   CSVFormat(row("Line Number").ToString),
+														   CSVFormat(row("DocumentID").ToString),
+														   CSVFormat(row("FileID").ToString),
+														   CSVFormat(row("Message").ToString)))
 			errorMessageFileWriter.Close()
 		End Sub
 
@@ -1100,14 +1122,14 @@ Namespace kCura.WinEDDS
 		Public Class OverwriteNoneException
 			Inherits ImporterExceptionBase
 			Public Sub New(ByVal docIdentifier As String)
-				MyBase.New(String.Format("Document '{0}' exists - upload aborted.", docIdentifier))
+				MyBase.New($"Document '{docIdentifier}' exists - upload aborted.")
 			End Sub
 		End Class
 
 		Public Class OverwriteStrictException
 			Inherits ImporterExceptionBase
 			Public Sub New(ByVal docIdentifier As String)
-				MyBase.New(String.Format("Document '{0}' does not exist - upload aborted.", docIdentifier))
+				MyBase.New($"Document '{docIdentifier}' does not exist - upload aborted.")
 			End Sub
 		End Class
 
@@ -1128,21 +1150,21 @@ Namespace kCura.WinEDDS
 		Public Class ProductionOverwriteException
 			Inherits ImporterExceptionBase
 			Public Sub New(ByVal identifier As String)
-				MyBase.New(String.Format("Document '{0}' belongs to one or more productions.  Document skipped.", identifier))
+				MyBase.New($"Document '{identifier}' belongs to one or more productions.  Document skipped.")
 			End Sub
 		End Class
 
 		Public Class RedactionOverwriteException
 			Inherits ImporterExceptionBase
 			Public Sub New(ByVal identifier As String)
-				MyBase.New(String.Format("The one or more images for document '{0}' have redactions.  Document skipped.", identifier))
+				MyBase.New($"The one or more images for document '{identifier}' have redactions.  Document skipped.")
 			End Sub
 		End Class
 
 		Public Class InvalidIdentifierKeyException
 			Inherits ImporterExceptionBase
 			Public Sub New(ByVal identifier As String, ByVal fieldName As String)
-				MyBase.New(String.Format("More than one document contains '{0}' as its '{1}' value.  Document skipped.", identifier, fieldName))
+				MyBase.New($"More than one document contains '{identifier}' as its '{fieldName}' value.  Document skipped.")
 			End Sub
 		End Class
 
@@ -1153,7 +1175,10 @@ Namespace kCura.WinEDDS
 		Public Class InvalidBatesFormatException
 			Inherits System.Exception
 			Public Sub New(ByVal batesNumber As String, ByVal productionName As String, ByVal batesPrefix As String, ByVal batesSuffix As String, ByVal batesFormat As String)
-				MyBase.New(String.Format("The image with production number {0} cannot be imported into production '{1}' because the prefix and/or suffix do not match the values specified in the production. Expected prefix: '{2}'. Expected suffix: '{3}'. Expected format: '{4}'.", batesNumber, productionName, batesPrefix, batesSuffix, batesFormat))
+				MyBase.New(
+					$"The image with production number {batesNumber} cannot be imported into production '{productionName _
+					          }' because the prefix and/or suffix do not match the values specified in the production. Expected prefix: '{ _
+					          batesPrefix}'. Expected suffix: '{batesSuffix}'. Expected format: '{batesFormat}'.")
 			End Sub
 		End Class
 
