@@ -45,12 +45,6 @@ Public Class ExportConfig
 		End Get
 	End Property
 
-	Public ReadOnly Property MaxNumberOfFileExportTasks As Integer Implements IExportConfig.MaxNumberOfFileExportTasks
-	    Get
-	        Return kCura.Utility.Config.MaxNumberOfFileExportTasks
-	    End Get
-	End Property
-
 End Class
 
 End Namespace

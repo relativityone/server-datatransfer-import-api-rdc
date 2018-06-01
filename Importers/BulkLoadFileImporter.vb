@@ -420,7 +420,6 @@ Namespace kCura.WinEDDS
 			bcpParameters.BcpFileTransfer = True
 			bcpParameters.AsperaBcpRootFolder = Config.TapiAsperaBcpRootFolder
 			bcpParameters.FileShare = gateway.GetBcpSharePath(args.CaseInfo.ArtifactID)
-		    bcpParameters.SupportCheckPath = bcpParameters.FileShare
 			bcpParameters.SortIntoVolumes = False
 			bcpParameters.ForceHttpClient = bcpParameters.ForceHttpClient Or Config.TapiForceBcpHttpClient
 
@@ -628,7 +627,7 @@ Namespace kCura.WinEDDS
 		Private Function InitializeMembers(ByVal path As String) As Boolean
 			RecordCount = _artifactReader.CountRecords
 			If RecordCount = -1 Then
-				OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.Progress, CurrentLineNumber, CurrentLineNumber, CancelEventMsg, CurrentStatisticsSnapshot, Statistics))
+				OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.Progress, CurrentLineNumber, CurrentLineNumber, CancelEventMsg, CurrentStatisticsSnapshot))
 				Return False
 			End If
 
@@ -636,11 +635,11 @@ Namespace kCura.WinEDDS
 			Me.InitializeFieldIdList()
 			DeleteFiles()
 			OpenFileWriters()
-			OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, RecordCount, RestartTimeEventMsg, Nothing, Statistics))
+			OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, RecordCount, RestartTimeEventMsg, Nothing))
 
 			' Counting all lines increments progress to 100%.
 			' This will reset progress back to zero instead of waiting for the first transfer to complete.
-			OnStatusMessage(new StatusEventArgs(Windows.Process.EventType.ResetProgress, 0, RecordCount, "Starting import...", Nothing, Statistics))
+			OnStatusMessage(new StatusEventArgs(Windows.Process.EventType.ResetProgress, 0, RecordCount, "Starting import...", Nothing))
 			Return True
 		End Function
 
@@ -1268,16 +1267,12 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub WaitOnPushBatchTask()
-		    If _task Is Nothing Then Return
-		    Try
-		        Task.WaitAll(_task)
-		    Catch ex As AggregateException
-		        Me.LogFatal(ex, "A fatal error occurred while waiting on the batch task")
-
-		        ex.Handle(Function(e)
-		                Throw e
-		            End Function)
-		    End Try
+			If _task Is Nothing Then Return
+			Try
+				Task.WaitAll(_task)
+			Catch ex As AggregateException
+				Throw ex.InnerExceptions.First()
+			End Try
 		End Sub
 
 		Private _task As System.Threading.Tasks.Task = Nothing
@@ -1738,7 +1733,7 @@ Namespace kCura.WinEDDS
 		Private Sub WriteTapiProgressMessage(ByVal message As String, ByVal lineNumber As Int32)
 			message = GetLineMessage(message, lineNumber)
 			Dim lineProgress As Int32 = FileTapiProgressCount
-			OnStatusMessage(New StatusEventArgs(EventType.Progress, lineProgress, RecordCount, message, CurrentStatisticsSnapshot, Statistics))
+			OnStatusMessage(New StatusEventArgs(EventType.Progress, lineProgress, RecordCount, message, CurrentStatisticsSnapshot))
 		End Sub
 
 		Protected Sub WriteStatusLine(ByVal et As EventType, ByVal line As String)
@@ -1758,7 +1753,7 @@ Namespace kCura.WinEDDS
 			End If
 
 			line = GetLineMessage(line, lineNumber)
-			OnStatusMessage(New StatusEventArgs(et, recordNumber, RecordCount, line, CurrentStatisticsSnapshot, Statistics))
+			OnStatusMessage(New StatusEventArgs(et, recordNumber, RecordCount, line, CurrentStatisticsSnapshot))
 		End Sub
 
 		Private Sub WriteFatalError(ByVal lineNumber As Int32, ByVal ex As System.Exception)
@@ -2022,7 +2017,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _artifactReader_StatusMessage(ByVal message As String) Handles _artifactReader.StatusMessage
-			OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.Status, _artifactReader.CurrentLineNumber, RecordCount, message, False, CurrentStatisticsSnapshot, Statistics))
+			OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.Status, _artifactReader.CurrentLineNumber, RecordCount, message, False, CurrentStatisticsSnapshot))
 		End Sub
 
 		Private Sub _artifactReader_FieldMapped(ByVal sourceField As String, ByVal workspaceField As String) Handles _artifactReader.FieldMapped
@@ -2064,7 +2059,7 @@ Namespace kCura.WinEDDS
 							ht.Add("Identifier", line(2))
 							ht.Add("Line Number", Int32.Parse(line(0)))
 							RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
-							OnStatusMessage(New StatusEventArgs(EventType.Error, Int32.Parse(line(0)) - 1, RecordCount, "[Line " & line(0) & "]" & line(1), CurrentStatisticsSnapshot, Statistics))
+							OnStatusMessage(New StatusEventArgs(EventType.Error, Int32.Parse(line(0)) - 1, RecordCount, "[Line " & line(0) & "]" & line(1), CurrentStatisticsSnapshot))
 							line = sr.ReadLine
 						End While
 						RemoveHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler

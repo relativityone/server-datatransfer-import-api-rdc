@@ -33,7 +33,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Event StatusMessage(ByVal args As StatusEventArgs)
+		Public Event StatusMessage(ByVal args As kCura.Windows.Process.StatusEventArgs)
 
 		Public Sub New(ByVal controller As kCura.Windows.Process.Controller, ByVal doRetryLogic As Boolean)
 			MyBase.New(New Char() {","c}, doRetryLogic)
@@ -138,7 +138,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub RaiseStatusEvent(ByVal et As kCura.Windows.Process.EventType, ByVal line As String)
 			'TODO: track stats
-			RaiseEvent StatusMessage(New StatusEventArgs(et, Me.CurrentLineNumber, _fileLineCount, line, Nothing, Nothing))
+			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(et, Me.CurrentLineNumber, _fileLineCount, line, Nothing))
 		End Sub
 
 #End Region
