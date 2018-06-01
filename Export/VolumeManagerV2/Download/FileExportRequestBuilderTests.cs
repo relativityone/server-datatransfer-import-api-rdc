@@ -11,14 +11,14 @@ using NUnit.Framework;
 namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 {
 	[TestFixture]
-	public abstract class FileExportRequestBuilderTests
+	public abstract class ExportRequestBuilderTests
 	{
 		private Mock<IFilePathProvider> _filePathProvider;
 		private Mock<IFileNameProvider> _fileNameProvider;
 		private Mock<IExportFileValidator> _validator;
 		private Mock<IFileProcessingStatistics> _fileProcessingStatistics;
 
-		protected FileExportRequestBuilder Instance { get; private set; }
+		protected ExportRequestBuilder Instance { get; private set; }
 
 		[SetUp]
 		public void SetUp()
@@ -30,7 +30,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			Instance = CreateInstance(_filePathProvider.Object, _fileNameProvider.Object, _validator.Object, _fileProcessingStatistics.Object);
 		}
 
-		protected abstract FileExportRequestBuilder CreateInstance(IFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, IExportFileValidator exportFileValidator,
+		protected abstract ExportRequestBuilder CreateInstance(IFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, IExportFileValidator exportFileValidator,
 			IFileProcessingStatistics fileProcessingStatistics);
 
 		[Test]
@@ -51,7 +51,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			_validator.Setup(x => x.CanExport(exportPath, It.IsAny<string>())).Returns(false);
 
 			//ACT
-			IList<FileExportRequest> requests = Instance.Create(artifact, CancellationToken.None);
+			IList<ExportRequest> requests = Instance.Create(artifact, CancellationToken.None);
 
 			//ASSERT
 			CollectionAssert.IsEmpty(requests);
@@ -76,7 +76,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			_validator.Setup(x => x.CanExport(exportPath, It.IsAny<string>())).Returns(true);
 
 			//ACT
-			IList<FileExportRequest> requests = Instance.Create(artifact, CancellationToken.None);
+			IList<ExportRequest> requests = Instance.Create(artifact, CancellationToken.None);
 
 			//ASSERT
 			Assert.That(requests.Count, Is.EqualTo(1));

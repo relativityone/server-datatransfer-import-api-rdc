@@ -66,9 +66,9 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 		public void ItShouldGetNativeByUniqueId()
 		{
 			//ACT
-			Native native1 = _instance.GetByUniqueId("unique_1");
-			Native native2 = _instance.GetByUniqueId("unique_2");
-			Native native3 = _instance.GetByUniqueId("unique_3");
+			Native native1 = _instance.GetByLineNumber(1);
+			Native native2 = _instance.GetByLineNumber(2);
+			Native native3 = _instance.GetByLineNumber(3);
 
 			//ASSERT
 			Assert.That(native1, Is.EqualTo(_natives[0]));
@@ -98,9 +98,10 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			Native native1 = new Native(artifact1)
 			{
 				HasBeenDownloaded = false,
-				ExportRequest = new NativeFileExportRequest(artifact1, "")
+				ExportRequest = new PhysicalFileExportRequest(artifact1, "")
 				{
-					UniqueId = "unique_1"
+					FileName = "filename_1",
+					Order = 1
 				}
 			};
 
@@ -113,6 +114,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 				HasBeenDownloaded = true
 			};
 
+
 			ObjectExportInfo artifact3 = new ObjectExportInfo
 			{
 				ArtifactID = 3
@@ -120,11 +122,13 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			Native native3 = new Native(artifact3)
 			{
 				HasBeenDownloaded = false,
-				ExportRequest = new NativeFileExportRequest(artifact3, "")
+				ExportRequest = new PhysicalFileExportRequest(artifact3, "")
 				{
-					UniqueId = "unique_3"
+					FileName = "filename_3",
+					Order = 3
 				}
 			};
+
 
 			return new List<Native> {native1, native2, native3};
 		}
