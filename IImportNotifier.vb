@@ -19,10 +19,6 @@
 		''' </summary>
 		''' <param name="completedRow">The processed record.</param>
 		Event OnProgress(ByVal completedRow As Long)
-		''' <summary>
-		''' Occurs when a status message needs to be presented to the user related to the Process.
-		''' </summary>
-		Event OnProcessProgress(ByVal processStatus As FullStatus)
 
 	End Interface
 End Namespace
