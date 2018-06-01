@@ -32,7 +32,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			TapiBridge.Dispose();
 		}
 
-		public abstract string QueueDownload(TransferPath transferPath);
+		public abstract string AddPath(TransferPath transferPath);
 		public abstract void WaitForTransferJob();
 	}
 }

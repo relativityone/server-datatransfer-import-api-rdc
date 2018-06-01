@@ -22,7 +22,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			_isEmpty = true;
 		}
 
-		public override string QueueDownload(TransferPath transferPath)
+		public override string AddPath(TransferPath transferPath)
 		{
 			_isEmpty = false;
 			return TapiBridge.AddPath(transferPath);

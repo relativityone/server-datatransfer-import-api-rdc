@@ -5,11 +5,11 @@ using kCura.WinEDDS.Exporters;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public class EmptyExportRequestBuilder : IExportRequestBuilder
+	public class EmptyExportRequestBuilder : IFileExportRequestBuilder
 	{
-		public IList<ExportRequest> Create(ObjectExportInfo artifact, CancellationToken cancellationToken)
+		public IList<FileExportRequest> Create(ObjectExportInfo artifact, CancellationToken cancellationToken)
 		{
-			return Enumerable.Empty<ExportRequest>().ToList();
+			return Enumerable.Empty<FileExportRequest>().ToList();
 		}
 	}
 }

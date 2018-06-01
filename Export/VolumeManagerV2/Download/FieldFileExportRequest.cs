@@ -4,7 +4,7 @@ using Relativity.Transfer.Http;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public class FieldFileExportRequest : ExportRequest
+	public class FieldFileExportRequest : FileExportRequest
 	{
 		/// <summary>
 		///     For Web mode
@@ -23,7 +23,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			FileFieldArtifactId = fileFieldArtifactId;
 		}
 
-		protected override TransferPath CreateTransferPath()
+		public override TransferPath CreateTransferPath(int order)
 		{
 			var httpTransferPathData = new HttpTransferPathData
 			{
@@ -36,7 +36,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			var fileInfo = new System.IO.FileInfo(DestinationLocation);
 			var transferPath = new TransferPath
 			{
-				Order = Order,
+				Order = order,
 				SourcePath = SourceLocation,
 				TargetPath = fileInfo.Directory?.FullName,
 				TargetFileName = fileInfo.Name

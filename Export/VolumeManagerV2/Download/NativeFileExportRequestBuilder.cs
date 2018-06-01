@@ -6,7 +6,7 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public class NativeFileExportRequestBuilder : ExportRequestBuilder
+	public class NativeFileExportRequestBuilder : FileExportRequestBuilder
 	{
 		public NativeFileExportRequestBuilder(NativeFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, IExportFileValidator validator,
 			IFileProcessingStatistics fileProcessingStatistics, ILog logger) : base(filePathProvider, fileNameProvider, validator, fileProcessingStatistics, logger)
@@ -27,9 +27,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		{
 		}
 
-		protected override ExportRequest CreateExportRequest(ObjectExportInfo artifact, string destinationLocation)
+		protected override FileExportRequest CreateExportRequest(ObjectExportInfo artifact, string destinationLocation)
 		{
-			return new PhysicalFileExportRequest(artifact, destinationLocation);
+			return new NativeFileExportRequest(artifact, destinationLocation);
 		}
 
 		protected override bool IsFileToExport(ObjectExportInfo artifact)

@@ -9,11 +9,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 {
 	public class ImageRepositoryBuilder : IRepositoryBuilder
 	{
-		private readonly IExportRequestBuilder _imageExportRequestBuilder;
+		private readonly IFileExportRequestBuilder _imageExportRequestBuilder;
 		private readonly ImageRepository _imageRepository;
 		private readonly ILog _logger;
 
-		public ImageRepositoryBuilder(ImageRepository imageRepository, IExportRequestBuilder imageExportRequestBuilder, ILog logger)
+		public ImageRepositoryBuilder(ImageRepository imageRepository, IFileExportRequestBuilder imageExportRequestBuilder, ILog logger)
 		{
 			_imageExportRequestBuilder = imageExportRequestBuilder;
 			_logger = logger;
@@ -24,7 +24,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 		{
 			_logger.LogVerbose("Adding {count} images to repository for artifact {artifactId}.", artifact.Images.Count, artifact.ArtifactID);
 
-			IList<ExportRequest> exportRequests = _imageExportRequestBuilder.Create(artifact, cancellationToken);
+			IList<FileExportRequest> exportRequests = _imageExportRequestBuilder.Create(artifact, cancellationToken);
 
 			_logger.LogVerbose("{count} export request for images found.", exportRequests.Count);
 
@@ -32,7 +32,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 
 			foreach (var imageExportInfo in artifact.Images.Cast<ImageExportInfo>())
 			{
-				ExportRequest imageExportRequest = exportRequests.FirstOrDefault(x => x.DestinationLocation == imageExportInfo.TempLocation);
+				FileExportRequest imageExportRequest = exportRequests.FirstOrDefault(x => x.DestinationLocation == imageExportInfo.TempLocation);
 
 				_logger.LogVerbose("For image {batesNumber} export request has been found: {result}.", imageExportInfo.BatesNumber, imageExportRequest != null);
 

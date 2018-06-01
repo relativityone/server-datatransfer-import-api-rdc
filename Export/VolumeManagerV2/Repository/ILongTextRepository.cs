@@ -8,7 +8,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 	{
 		void Add(IList<LongText> longTexts);
 		IList<LongText> GetArtifactLongTexts(int artifactId);
-		LongText GetByLineNumber(int lineNumber);
+		LongText GetByUniqueId(string id);
 		IList<LongTextExportRequest> GetExportRequests();
 		LongText GetLongText(int artifactId, int fieldArtifactId);
 		IList<LongText> GetLongTexts();

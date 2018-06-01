@@ -17,7 +17,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 
 		public NativeRepositoryBuilder Create(ExportFile exportSettings, IWindsorContainer container)
 		{
-			IExportRequestBuilder nativeExportRequestBuilder;
+			IFileExportRequestBuilder nativeExportRequestBuilder;
 
 			if (exportSettings.ExportNative && exportSettings.VolumeInfo.CopyNativeFilesFromRepository)
 			{

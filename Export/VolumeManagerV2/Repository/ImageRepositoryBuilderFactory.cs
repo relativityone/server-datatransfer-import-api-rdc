@@ -16,7 +16,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 
 		public ImageRepositoryBuilder Create(ExportFile exportSettings, IWindsorContainer container)
 		{
-			IExportRequestBuilder imageExportRequestBuilder;
+			IFileExportRequestBuilder imageExportRequestBuilder;
 
 			if (exportSettings.ArtifactTypeID != (int) ArtifactType.Document)
 			{

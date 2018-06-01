@@ -25,7 +25,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			_initialized = false;
 		}
 
-		public override string QueueDownload(TransferPath transferPath)
+		public override string AddPath(TransferPath transferPath)
 		{
 			if (!_initialized)
 			{

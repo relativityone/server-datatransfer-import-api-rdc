@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using kCura.Windows.Process;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
@@ -18,112 +17,55 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		private readonly NativeRepository _nativeRepository;
 		private readonly ImageRepository _imageRepository;
 		private readonly LongTextRepository _longTextRepository;
-	    private readonly IFileHelper _fileHelper;
 
-	    private readonly IStatus _status;
+		private readonly IStatus _status;
 		private readonly ILog _logger;
 
-		public DownloadProgressManager(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, IFileHelper fileHelper, IStatus status, ILog logger)
+		public DownloadProgressManager(NativeRepository nativeRepository, ImageRepository imageRepository, LongTextRepository longTextRepository, IStatus status, ILog logger)
 		{
 			_nativeRepository = nativeRepository;
 			_imageRepository = imageRepository;
 			_longTextRepository = longTextRepository;
-		    _fileHelper = fileHelper;
-		    _status = status;
+			_status = status;
 			_logger = logger;
 
 			_artifactsDownloaded = new ConcurrentDictionary<int, bool>();
 		}
 
-		public void MarkFileAsDownloaded(string fileName, int lineNumber)
+		public void MarkNativeAsDownloaded(string id, int lineNumber)
 		{
-			_logger.LogVerbose("Marking {fileName} file as downloaded.", fileName);
-			Native native = _nativeRepository.GetByLineNumber(lineNumber);
+			_logger.LogVerbose("Marking {id} native as downloaded.", id);
+			Native native = _nativeRepository.GetByUniqueId(id);
 			if (native != null)
 			{
-			    MarkNativeAsDownloaded(lineNumber, native);
+				native.HasBeenDownloaded = true;
+				UpdateDownloadedCountAndNotify(native.Artifact.ArtifactID, lineNumber);
 			}
 			else
 			{
-			    MarkImageAsDownloaded(fileName, lineNumber);
+				_logger.LogWarning("Native for {id} not found.", id);
 			}
 		}
-        private void MarkNativeAsDownloaded(int lineNumber, Native native)
-	    {
-	        if (native.HasBeenDownloaded)
-	        {
-	            NativeAlreadyDownloaded(native);
-	        }
-	        else
-	        {
-	            native.HasBeenDownloaded = true;
-	            UpdateDownloadedCountAndNotify(native.Artifact.ArtifactID, lineNumber);
-	        }
-	    }
 
-        private void MarkImageAsDownloaded(string fileName, int lineNumber)
-	    {
-	        Image image = _imageRepository.GetByLineNumber(lineNumber);
-	        if (image != null)
-	        {
-	            if (image.HasBeenDownloaded)
-	            {
-	                ImageAlreadyDownloaded(image);
-	            }
-	            else
-	            {
-	                image.HasBeenDownloaded = true;
-	                UpdateDownloadedCountAndNotify(image.Artifact.ArtifactID, lineNumber);
-	            }
-	        }
-
-	        _logger.LogWarning("File or Image for {fileName} not found.", fileName);
-	    }
-
-	    /// <summary>
-		///     TODO remove it after REL-206933 is fixed
-		/// </summary>
-		private void NativeAlreadyDownloaded(Native native)
+		public void MarkImageAsDownloaded(string id, int lineNumber)
 		{
-			IList<Native> duplicatedNatives = _nativeRepository.GetNatives()
-				.Where(x => x.ExportRequest.SourceLocation == native.ExportRequest.SourceLocation)
-				.Where(x => x.ExportRequest.Order != native.ExportRequest.Order)
-				.Where(x => !x.HasBeenDownloaded).ToList();
-
-			foreach (Native duplicatedNative in duplicatedNatives)
+			_logger.LogVerbose("Marking {id} image as downloaded.", id);
+			Image image = _imageRepository.GetByUniqueId(id);
+			if (image != null)
 			{
-				if (_fileHelper.Exists(duplicatedNative.ExportRequest.DestinationLocation))
-				{
-					duplicatedNative.HasBeenDownloaded = true;
-					UpdateDownloadedCountAndNotify(duplicatedNative.Artifact.ArtifactID, duplicatedNative.ExportRequest.Order);
-				}
+				image.HasBeenDownloaded = true;
+				UpdateDownloadedCountAndNotify(image.Artifact.ArtifactID, lineNumber);
 			}
-		}
-
-		/// <summary>
-		///     TODO remove it after REL-206933 is fixed
-		/// </summary>
-		private void ImageAlreadyDownloaded(Image image)
-		{
-			IList<Image> duplicatedImages = _imageRepository.GetImages()
-				.Where(x => x.ExportRequest.SourceLocation == image.ExportRequest.SourceLocation)
-				.Where(x => x.ExportRequest.Order != image.ExportRequest.Order)
-				.Where(x => !x.HasBeenDownloaded).ToList();
-
-			foreach (Image duplicatedImage in duplicatedImages)
+			else
 			{
-				if (_fileHelper.Exists(duplicatedImage.ExportRequest.DestinationLocation))
-				{
-					duplicatedImage.HasBeenDownloaded = true;
-					UpdateDownloadedCountAndNotify(duplicatedImage.Artifact.ArtifactID, duplicatedImage.ExportRequest.Order);
-				}
+				_logger.LogWarning("Image for {id} not found.", id);
 			}
 		}
 
-		public void MarkLongTextAsDownloaded(string fileName, int lineNumber)
+		public void MarkLongTextAsDownloaded(string id, int lineNumber)
 		{
-			_logger.LogVerbose("Marking {fileName} long text as downloaded.", fileName);
-			LongText longText = _longTextRepository.GetByLineNumber(lineNumber);
+			_logger.LogVerbose("Marking {id} long text as downloaded.", id);
+			LongText longText = _longTextRepository.GetByUniqueId(id);
 			if (longText != null)
 			{
 				longText.HasBeenDownloaded = true;
@@ -131,7 +73,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			}
 			else
 			{
-				_logger.LogWarning("Long text for {fileName} not found.", fileName);
+				_logger.LogWarning("Long text for {id} not found.", id);
 			}
 		}
 

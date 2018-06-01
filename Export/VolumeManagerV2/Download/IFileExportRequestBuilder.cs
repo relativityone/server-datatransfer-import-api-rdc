@@ -4,8 +4,8 @@ using kCura.WinEDDS.Exporters;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public interface IExportRequestBuilder
+	public interface IFileExportRequestBuilder
 	{
-		IList<ExportRequest> Create(ObjectExportInfo artifact, CancellationToken cancellationToken);
+		IList<FileExportRequest> Create(ObjectExportInfo artifact, CancellationToken cancellationToken);
 	}
 }
