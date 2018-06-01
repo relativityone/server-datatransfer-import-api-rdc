@@ -474,6 +474,7 @@
     <Compile Include="Monitoring\TransferJobThroughputMessage.vb" />
     <Compile Include="Monitoring\TransferJobTotalRecordsCountMessage.vb" />
     <Compile Include="Process\MonitoredProcessBase.vb" />
+    <Compile Include="Process\StatusEventArgs.vb" />
     <Compile Include="RelativityLogFactory.vb" />
     <Compile Include="My Project\Settings.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -769,7 +770,9 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Resources\oldkwx.kwx" />
     <None Include="Web References\kCura.EDDS.WebAPI.AuditManagerBase\AuditManager.disco" />
     <None Include="Web References\kCura.EDDS.WebAPI.AuditManagerBase\AuditManager.wsdl">

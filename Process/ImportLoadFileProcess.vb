@@ -283,28 +283,28 @@ Namespace kCura.WinEDDS
 			Me.ProcessObserver.RaiseFieldMapped(sourceField, workspaceField)
 		End Sub
 
-		Private Sub _loadFileImporter_StatusMessage(ByVal e As kCura.Windows.Process.StatusEventArgs) Handles _loadFileImporter.StatusMessage
+		Private Sub _loadFileImporter_StatusMessage(ByVal e As StatusEventArgs) Handles _loadFileImporter.StatusMessage
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
 			Dim statisticsDictionary As IDictionary = Nothing
 			If Not e.AdditionalInfo Is Nothing Then statisticsDictionary = DirectCast(e.AdditionalInfo, IDictionary)
 			Select Case e.EventType
 				Case kCura.Windows.Process.EventType.End
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, System.DateTime.Now, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, System.DateTime.Now, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Error
 					_errorCount += 1
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 					Me.ProcessObserver.RaiseErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Progress
 					TotalRecords = e.TotalRecords
 					CompletedRecordsCount = e.CurrentRecordIndex
 					Me.ProcessObserver.RaiseRecordProcessed(e.CurrentRecordIndex)
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.ResetProgress
 					' Do NOT raise RaiseRecordProcessed for this event. 
 					CompletedRecordsCount = 0
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Status
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
@@ -359,12 +359,12 @@ Namespace kCura.WinEDDS
 			End If
 			Select Case e.Type
 				Case Api.DataSourcePrepEventArgs.EventType.Close
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.TotalBytes, 0, 0, e.StartTime, System.DateTime.Now, Me.ProcessID, totaldisplay, processeddisplay)
+					Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.TotalBytes, 0, 0, e.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
 				Case Api.DataSourcePrepEventArgs.EventType.Open
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, Me.ProcessID, totaldisplay, processeddisplay)
+					Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
 					Me.ProcessObserver.RaiseStatusEvent("", "Preparing file for import")
 				Case Api.DataSourcePrepEventArgs.EventType.ReadEvent
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, Me.ProcessID, totaldisplay, processeddisplay)
+					Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
 					Me.ProcessObserver.RaiseStatusEvent("", "Preparing file for import")
 			End Select
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
