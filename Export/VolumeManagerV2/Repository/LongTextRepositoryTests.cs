@@ -88,9 +88,9 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 		public void ItShouldGetLongTextByUniqueId()
 		{
 			//ACT
-			LongText image1 = _instance.GetByLineNumber(1);
-			LongText image2 = _instance.GetByLineNumber(2);
-			LongText image3 = _instance.GetByLineNumber(3);
+			LongText image1 = _instance.GetByUniqueId("unique_1");
+			LongText image2 = _instance.GetByUniqueId("unique_2");
+			LongText image3 = _instance.GetByUniqueId("unique_3");
 
 			//ASSERT
 			Assert.That(image1, Is.EqualTo(_longTexts[0]));
@@ -122,7 +122,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 
 			LongText longText1 =
 				LongText.CreateFromMissingValue(artifact1.ArtifactID, 10, LongTextExportRequest.CreateRequestForLongText(artifact1, 10, "require_deletion"), Encoding.Default);
-			longText1.ExportRequest.Order = 1;
+			longText1.ExportRequest.UniqueId = "unique_1";
 
 			LongText longText2 = LongText.CreateFromExistingValue(artifact1.ArtifactID, 20, "text");
 
@@ -134,7 +134,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			LongText longText3 =
 				LongText.CreateFromMissingFile(artifact2.ArtifactID, 30, LongTextExportRequest.CreateRequestForFullText(artifact2, 30, "do_not_require_deletion"), Encoding.Default,
 					Encoding.Default);
-			longText3.ExportRequest.Order = 3;
+			longText3.ExportRequest.UniqueId = "unique_3";
 
 			return new List<LongText> {longText1, longText2, longText3};
 		}

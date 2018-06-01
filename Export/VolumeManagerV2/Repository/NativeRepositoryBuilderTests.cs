@@ -18,7 +18,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 		private NativeRepository _nativeRepository;
 
 		private Mock<ILabelManager> _labelManager;
-		private Mock<IExportRequestBuilder> _ExportRequestBuilder;
+		private Mock<IFileExportRequestBuilder> _fileExportRequestBuilder;
 
 		[SetUp]
 		public void SetUp()
@@ -26,9 +26,9 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			_nativeRepository = new NativeRepository();
 
 			_labelManager = new Mock<ILabelManager>();
-			_ExportRequestBuilder = new Mock<IExportRequestBuilder>();
+			_fileExportRequestBuilder = new Mock<IFileExportRequestBuilder>();
 
-			_instance = new NativeRepositoryBuilder(_nativeRepository, _labelManager.Object, _ExportRequestBuilder.Object, new NullLogger());
+			_instance = new NativeRepositoryBuilder(_nativeRepository, _labelManager.Object, _fileExportRequestBuilder.Object, new NullLogger());
 		}
 
 		[Test]
@@ -37,7 +37,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			const string volumeLabel = "volume_label";
 
 			_labelManager.Setup(x => x.GetCurrentVolumeLabel()).Returns(volumeLabel);
-			_ExportRequestBuilder.Setup(x => x.Create(It.IsAny<ObjectExportInfo>(), CancellationToken.None)).Returns(new List<ExportRequest>());
+			_fileExportRequestBuilder.Setup(x => x.Create(It.IsAny<ObjectExportInfo>(), CancellationToken.None)).Returns(new List<FileExportRequest>());
 
 			ObjectExportInfo artifact = new ObjectExportInfo();
 
@@ -57,7 +57,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 				ArtifactID = artifactId1
 			};
 
-			_ExportRequestBuilder.Setup(x => x.Create(artifact, CancellationToken.None)).Returns(new List<ExportRequest>());
+			_fileExportRequestBuilder.Setup(x => x.Create(artifact, CancellationToken.None)).Returns(new List<FileExportRequest>());
 
 			//ACT
 			_instance.AddToRepository(artifact, CancellationToken.None);
@@ -75,9 +75,9 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 				ArtifactID = artifactId1
 			};
 
-			_ExportRequestBuilder.Setup(x => x.Create(artifact, CancellationToken.None)).Returns(new List<ExportRequest>
+			_fileExportRequestBuilder.Setup(x => x.Create(artifact, CancellationToken.None)).Returns(new List<FileExportRequest>
 			{
-				new PhysicalFileExportRequest(artifact, "")
+				new NativeFileExportRequest(artifact, "")
 			});
 
 			//ACT
@@ -103,11 +103,11 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 				ArtifactID = artifactId2
 			};
 
-			_ExportRequestBuilder.Setup(x => x.Create(artifact1, CancellationToken.None)).Returns(new List<ExportRequest>
+			_fileExportRequestBuilder.Setup(x => x.Create(artifact1, CancellationToken.None)).Returns(new List<FileExportRequest>
 			{
-				new PhysicalFileExportRequest(artifact1, "")
+				new NativeFileExportRequest(artifact1, "")
 			});
-			_ExportRequestBuilder.Setup(x => x.Create(artifact2, CancellationToken.None)).Returns(new List<ExportRequest>());
+			_fileExportRequestBuilder.Setup(x => x.Create(artifact2, CancellationToken.None)).Returns(new List<FileExportRequest>());
 
 			//ACT
 			_instance.AddToRepository(artifact1, CancellationToken.None);

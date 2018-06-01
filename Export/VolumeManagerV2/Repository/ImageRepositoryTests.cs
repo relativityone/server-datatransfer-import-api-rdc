@@ -80,9 +80,9 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 		public void ItShouldGetImageByUniqueId()
 		{
 			//ACT
-			Image image1 = _instance.GetByLineNumber(1);
-			Image image2 = _instance.GetByLineNumber(2);
-			Image image3 = _instance.GetByLineNumber(3);
+			Image image1 = _instance.GetByUniqueId("unique_1");
+			Image image2 = _instance.GetByUniqueId("unique_2");
+			Image image3 = _instance.GetByUniqueId("unique_3");
 
 			//ASSERT
 			Assert.That(image1, Is.EqualTo(_images[0]));
@@ -105,47 +105,43 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 
 		private List<Image> CreateDataSet()
 		{
-			var artifact1 = new ImageExportInfo
+			ImageExportInfo artifact1 = new ImageExportInfo
 			{
 				ArtifactID = 1,
 				BatesNumber = "bates_1"
 			};
-			var image1 = new Image(artifact1)
+			Image image1 = new Image(artifact1)
 			{
 				HasBeenDownloaded = false,
-				ExportRequest = new PhysicalFileExportRequest(artifact1, "a.txt")
+				ExportRequest = new NativeFileExportRequest(artifact1, "")
 				{
-					FileName = "filename_1",
-					Order = 1
+					UniqueId = "unique_1"
 				}
 			};
-			image1.ExportRequest.CreateTransferPath(1);
 
-			var artifact2 = new ImageExportInfo
+			ImageExportInfo artifact2 = new ImageExportInfo
 			{
 				ArtifactID = 1,
 				BatesNumber = "bates_2"
 			};
-			var image2 = new Image(artifact2)
+			Image image2 = new Image(artifact2)
 			{
-				HasBeenDownloaded = true,
+				HasBeenDownloaded = true
 			};
 
-			var artifact3 = new ImageExportInfo
+			ImageExportInfo artifact3 = new ImageExportInfo
 			{
 				ArtifactID = 2,
 				BatesNumber = "bates_3"
 			};
-			var image3 = new Image(artifact3)
+			Image image3 = new Image(artifact3)
 			{
 				HasBeenDownloaded = false,
-				ExportRequest = new PhysicalFileExportRequest(artifact3, "a.txt")
+				ExportRequest = new NativeFileExportRequest(artifact3, "")
 				{
-					FileName = "filename_3",
-					Order = 3
+					UniqueId = "unique_3"
 				}
 			};
-			image3.ExportRequest.CreateTransferPath(3);
 
 			return new List<Image> {image1, image2, image3};
 		}

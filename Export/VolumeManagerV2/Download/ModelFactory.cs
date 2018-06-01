@@ -11,7 +11,6 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 	public class ModelFactory
 	{
 		private static int _artifactId = 1;
-		private static int _order = 1;
 
 		public static Native GetNative(NativeRepository nativeRepository)
 		{
@@ -20,10 +19,9 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 				ArtifactID = _artifactId++,
 				NativeSourceLocation = "location"
 			};
-			ExportRequest exportRequest = new PhysicalFileExportRequest(artifact, "location")
+			ExportRequest exportRequest = new NativeFileExportRequest(artifact, "location")
 			{
-				FileName = Guid.NewGuid().ToString(),
-				Order = _order++
+				UniqueId = Guid.NewGuid().ToString()
 			};
 			Native native = new Native(artifact)
 			{
@@ -41,10 +39,9 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 				ArtifactID = artifactId,
 				SourceLocation = "sourceLocation"
 			};
-			ExportRequest exportRequest = new PhysicalFileExportRequest(artifact, "location")
+			ExportRequest exportRequest = new NativeFileExportRequest(artifact, "location")
 			{
-				FileName = Guid.NewGuid().ToString(),
-				Order = _order++
+				UniqueId = Guid.NewGuid().ToString()
 			};
 			Image image = new Image(artifact)
 			{
@@ -67,8 +64,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 				ArtifactID = artifactId
 			};
 			LongTextExportRequest exportRequest = LongTextExportRequest.CreateRequestForLongText(artifact, 1, location);
-			exportRequest.FileName = Guid.NewGuid().ToString();
-			exportRequest.Order = _order++;
+			exportRequest.UniqueId = Guid.NewGuid().ToString();
 			LongText longText = LongText.CreateFromMissingValue(artifactId, 1, exportRequest, encoding);
 			longTextRepository.Add(longText.InList());
 			return longText;

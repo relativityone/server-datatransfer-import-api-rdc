@@ -18,8 +18,9 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 		private ImageRepository _imageRepository;
 		private LongTextRepository _longTextRepository;
 
-	    private Mock<IFileHelper> _fileHelper;
 		private Mock<IStatus> _status;
+
+		private static int _artifactId = 1;
 
 		[SetUp]
 		public void SetUp()
@@ -28,10 +29,9 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 			_imageRepository = new ImageRepository();
 			_longTextRepository = new LongTextRepository(null, new NullLogger());
 
-            _fileHelper = new Mock<IFileHelper>();
 			_status = new Mock<IStatus>();
 
-			_instance = new DownloadProgressManager(_nativeRepository, _imageRepository, _longTextRepository, _fileHelper.Object, _status.Object, new NullLogger());
+			_instance = new DownloadProgressManager(_nativeRepository, _imageRepository, _longTextRepository, _status.Object, new NullLogger());
 		}
 
 		[Test]
@@ -45,11 +45,11 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 			_status.Setup(x => x.UpdateDocumentExportedCount(It.IsAny<int>())).Callback((int x) => actualDocumentExportedCount = x);
 
 			//ACT
-			_instance.MarkFileAsDownloaded(native1.ExportRequest.FileName, native1.ExportRequest.Order);
+			_instance.MarkNativeAsDownloaded(native1.ExportRequest.UniqueId, 1);
 
 			_instance.SaveState();
 
-			_instance.MarkFileAsDownloaded(native2.ExportRequest.FileName, native2.ExportRequest.Order);
+			_instance.MarkNativeAsDownloaded(native2.ExportRequest.UniqueId, 2);
 
 			_instance.RestoreLastState();
 
@@ -83,37 +83,45 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 
 			//ACT
 
-			_instance.MarkFileAsDownloaded(image1_B.ExportRequest.FileName, image1_B.ExportRequest.Order);
+			_instance.MarkImageAsDownloaded(image1_B.ExportRequest.UniqueId, 1);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(0));
 			Assert.That(actualLine, Does.Contain(string.Empty));
 
 			// 1 downloaded (A)
-			_instance.MarkFileAsDownloaded(nativeWithoutImagesOrText_A.ExportRequest.FileName, nativeWithoutImagesOrText_A.ExportRequest.Order);
+			_instance.MarkNativeAsDownloaded(nativeWithoutImagesOrText_A.ExportRequest.UniqueId, 1);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(1));
+			Assert.That(actualLine, Does.Contain("line number: 1"));
 
-			_instance.MarkFileAsDownloaded(nativeWithText_C.ExportRequest.FileName, nativeWithText_C.ExportRequest.Order);
+			_instance.MarkNativeAsDownloaded(nativeWithText_C.ExportRequest.UniqueId, 2);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(1));
+			Assert.That(actualLine, Does.Contain("line number: 1"));
 
 			// 2 downloaded (A, C)
-			_instance.MarkLongTextAsDownloaded(text_C.ExportRequest.FileName, text_C.ExportRequest.Order);
+			_instance.MarkLongTextAsDownloaded(text_C.ExportRequest.UniqueId, 3);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(2));
+			Assert.That(actualLine, Does.Contain("line number: 3"));
 
-			_instance.MarkFileAsDownloaded(nativeWithTwoImages_B.ExportRequest.FileName, nativeWithTwoImages_B.ExportRequest.Order);
+			_instance.MarkNativeAsDownloaded(nativeWithTwoImages_B.ExportRequest.UniqueId, 4);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(2));
+			Assert.That(actualLine, Does.Contain("line number: 3"));
 
 			// 3 downloaded (A, C, B)
-			_instance.MarkFileAsDownloaded(image2_B.ExportRequest.FileName, image2_B.ExportRequest.Order);
+			_instance.MarkImageAsDownloaded(image2_B.ExportRequest.UniqueId, 5);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
+			Assert.That(actualLine, Does.Contain("line number: 5"));
 
-			_instance.MarkLongTextAsDownloaded(text_D.ExportRequest.FileName, text_D.ExportRequest.Order);
+			_instance.MarkLongTextAsDownloaded(text_D.ExportRequest.UniqueId, 6);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
+			Assert.That(actualLine, Does.Contain("line number: 5"));
 
-			_instance.MarkFileAsDownloaded(image_D.ExportRequest.FileName, image_D.ExportRequest.Order);
+			_instance.MarkImageAsDownloaded(image_D.ExportRequest.UniqueId, 7);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(3));
+			Assert.That(actualLine, Does.Contain("line number: 5"));
 
 			// 4 download (A, C, B, D)
-			_instance.MarkFileAsDownloaded(nativeWithImageAndText_D.ExportRequest.FileName, nativeWithImageAndText_D.ExportRequest.Order);
+			_instance.MarkNativeAsDownloaded(nativeWithImageAndText_D.ExportRequest.UniqueId, 8);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(4));
+			Assert.That(actualLine, Does.Contain("line number: 8"));
 		}
 	}
 }
