@@ -8,7 +8,7 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public abstract class FileExportRequestBuilder : IFileExportRequestBuilder
+	public abstract class ExportRequestBuilder : IExportRequestBuilder
 	{
 		private readonly IFilePathProvider _filePathProvider;
 		private readonly IFileNameProvider _fileNameProvider;
@@ -16,7 +16,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private readonly IFileProcessingStatistics _fileProcessingStatistics;
 		private readonly ILog _logger;
 
-		protected FileExportRequestBuilder(IFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, IExportFileValidator validator,
+		protected ExportRequestBuilder(IFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, IExportFileValidator validator,
 			IFileProcessingStatistics fileProcessingStatistics, ILog logger)
 		{
 			_filePathProvider = filePathProvider;
@@ -26,19 +26,19 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_logger = logger;
 		}
 
-		public IList<FileExportRequest> Create(ObjectExportInfo artifact, CancellationToken cancellationToken)
+		public IList<ExportRequest> Create(ObjectExportInfo artifact, CancellationToken cancellationToken)
 		{
 			if (!IsFileToExport(artifact))
 			{
 				_logger.LogVerbose("No native file to export for artifact {artifactId}.", artifact.ArtifactID);
-				return Enumerable.Empty<FileExportRequest>().ToList();
+				return Enumerable.Empty<ExportRequest>().ToList();
 			}
 
 			_logger.LogVerbose("Creating native file ExportRequest for artifact {artifactId}.", artifact.ArtifactID);
 
 			if (cancellationToken.IsCancellationRequested)
 			{
-				return Enumerable.Empty<FileExportRequest>().ToList();
+				return Enumerable.Empty<ExportRequest>().ToList();
 			}
 
 			string destinationLocation = GetExportDestinationLocation(artifact);
@@ -49,16 +49,16 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			{
 				_logger.LogVerbose("File {file} already exists - updating statistics.", destinationLocation);
 				_fileProcessingStatistics.UpdateStatisticsForFile(destinationLocation);
-				return new List<FileExportRequest>();
+				return new List<ExportRequest>();
 			}
 
 			_logger.LogVerbose("Native file for artifact {artifactId} will be export to {destinationLocation}.", artifact.ArtifactID, destinationLocation);
 
-			FileExportRequest exportRequest = CreateExportRequest(artifact, destinationLocation);
+			ExportRequest exportRequest = CreateExportRequest(artifact, destinationLocation);
 			return exportRequest.InList();
 		}
 
-		protected abstract FileExportRequest CreateExportRequest(ObjectExportInfo artifact, string destinationLocation);
+		protected abstract ExportRequest CreateExportRequest(ObjectExportInfo artifact, string destinationLocation);
 
 		protected abstract bool IsFileToExport(ObjectExportInfo artifact);
 

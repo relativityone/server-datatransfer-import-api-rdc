@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Net;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using kCura.WinEDDS.TApi;
 using Relativity.Logging;
+using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 {
@@ -33,20 +35,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			_exportConfig = exportConfig;
 		}
 
-		public IDownloadTapiBridge CreateForNatives(CancellationToken token)
+		public IDownloadTapiBridge CreateForFiles(RelativityFileShareSettings fileshareSettings, CancellationToken token)
 		{
-			ITapiBridge tapiBridge = CreateDownloadTapiBridge(token);
+			ITapiBridge tapiBridge = CreateDownloadTapiBridge(fileshareSettings, token);
 
-			return new DownloadTapiBridgeForFiles(tapiBridge, new NativeFilesProgressHandler(_downloadProgressManager, _logger), _messageHandler, _filesStatistics, _transferClientHandler,
-				_logger);
-		}
-
-		public IDownloadTapiBridge CreateForImages(CancellationToken token)
-		{
-			ITapiBridge tapiBridge = CreateDownloadTapiBridge(token);
-
-			return new DownloadTapiBridgeForFiles(tapiBridge, new ImageFilesProgressHandler(_downloadProgressManager, _logger), _messageHandler, _filesStatistics, _transferClientHandler,
-				_logger);
+			return new DownloadTapiBridgeForFiles(tapiBridge, new FileDownloadProgressHandler(_downloadProgressManager, _logger),
+				_messageHandler, _filesStatistics, _transferClientHandler, _logger);
 		}
 
 		public IDownloadTapiBridge CreateForLongText(CancellationToken token)
@@ -66,12 +60,21 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 				longTextEncodingConverter, _logger);
 		}
 
-		private ITapiBridge CreateDownloadTapiBridge(CancellationToken token)
+		private ITapiBridge CreateDownloadTapiBridge(RelativityFileShareSettings fileshareSettings, CancellationToken token)
 		{
 			TapiBridgeParameters parameters = CreateTapiBridgeParametersFromConfiguration();
+
+			parameters.FileshareCredentials = fileshareSettings?.TransferCredential ?? GetEmptyAsperaCredential();
+			parameters.FileShare = fileshareSettings?.FileshareName;
+
 			DownloadTapiBridge tapiBridge = TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, token);
 			tapiBridge.DumpInfo();
 			return new TapiBridgeWrapper(tapiBridge);
+		}
+
+		private AsperaCredential GetEmptyAsperaCredential()
+		{
+			return new AsperaCredential(){Host = new Uri("http://EmptyUri/")};
 		}
 
 		private TapiBridgeParameters CreateTapiBridgeParametersFromConfiguration()
@@ -97,7 +100,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 				WaitTimeBetweenRetryAttempts = _exportConfig.ExportIOErrorWaitTime,
 				WebCookieContainer = _exportSettings.CookieContainer,
 				WebServiceUrl = Config.WebServiceURL,
-				WorkspaceId = _exportSettings.CaseInfo.ArtifactID
+				WorkspaceId = _exportSettings.CaseInfo.ArtifactID,
 			};
 			return parameters;
 		}

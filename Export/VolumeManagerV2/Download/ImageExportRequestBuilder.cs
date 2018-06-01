@@ -9,7 +9,7 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-	public class ImageExportRequestBuilder : IFileExportRequestBuilder
+	public class ImageExportRequestBuilder : IExportRequestBuilder
 	{
 		private readonly IFilePathProvider _filePathProvider;
 		private readonly IExportFileValidator _validator;
@@ -37,18 +37,18 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_fileProcessingStatistics = fileProcessingStatistics;
 		}
 
-		public IList<FileExportRequest> Create(ObjectExportInfo artifact, CancellationToken cancellationToken)
+		public IList<ExportRequest> Create(ObjectExportInfo artifact, CancellationToken cancellationToken)
 		{
-			var fileExportRequests = new List<FileExportRequest>();
+			var fileExportRequests = new List<ExportRequest>();
 			_logger.LogVerbose("Creating image files ExportRequests for artifact {artifactId}.", artifact.ArtifactID);
 			foreach (var image in artifact.Images.Cast<ImageExportInfo>())
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{
-					return Enumerable.Empty<FileExportRequest>().ToList();
+					return Enumerable.Empty<ExportRequest>().ToList();
 				}
 
-				FileExportRequest exportRequest;
+				ExportRequest exportRequest;
 				if (TryCreate(image, out exportRequest))
 				{
 					fileExportRequests.Add(exportRequest);
@@ -58,7 +58,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			return fileExportRequests;
 		}
 
-		private bool TryCreate(ImageExportInfo image, out FileExportRequest exportRequest)
+		private bool TryCreate(ImageExportInfo image, out ExportRequest exportRequest)
 		{
 			if (string.IsNullOrWhiteSpace(image.FileGuid))
 			{
@@ -83,7 +83,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 			_logger.LogVerbose("Image file will be export to {destinationLocation}.", destinationLocation);
 
-			exportRequest = new NativeFileExportRequest(image, destinationLocation);
+			exportRequest = new PhysicalFileExportRequest(image, destinationLocation);
 			return true;
 		}
 
