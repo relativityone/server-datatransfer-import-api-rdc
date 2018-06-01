@@ -77,12 +77,12 @@ Namespace kCura.Windows.Process
 			WriteError(recordInfo, message)
 		End Sub
 		
-		Public Sub RaiseProgressEvent(ByVal totalRecords As Int64, ByVal totalRecordsProcessed As Int64, ByVal totalRecordsProccessedWithWarnings As Int64, ByVal totalRecordsProcessedWithErrors As Int64, ByVal startTime As DateTime, ByVal endTime As DateTime, Optional ByVal totalRecordsDisplay As String = Nothing, Optional ByVal totalRecordsProcessedDisplay As String = Nothing, Optional ByVal args As IDictionary = Nothing)
-			RaiseEvent OnProcessProgressEvent(New ProcessProgressEvent(totalRecords, totalRecordsProcessed, totalRecordsProccessedWithWarnings, totalRecordsProcessedWithErrors, startTime, endTime, totalRecordsDisplay, totalRecordsProcessedDisplay, args))
+		Public Sub RaiseProgressEvent(ByVal totalRecords As Int64, ByVal totalRecordsProcessed As Int64, ByVal totalRecordsProccessedWithWarnings As Int64, ByVal totalRecordsProcessedWithErrors As Int64, ByVal startTime As DateTime, ByVal endTime As DateTime, ByVal metadataThroughput As Double, ByVal filesThroughput As Double, Optional ByVal totalRecordsDisplay As String = Nothing, Optional ByVal totalRecordsProcessedDisplay As String = Nothing, Optional ByVal args As IDictionary = Nothing)
+			RaiseEvent OnProcessProgressEvent(New ProcessProgressEvent(totalRecords, totalRecordsProcessed, totalRecordsProccessedWithWarnings, totalRecordsProcessedWithErrors, startTime, endTime, totalRecordsDisplay, totalRecordsProcessedDisplay, metadataThroughput, filesThroughput, args))
 		End Sub
 		
-		Public Sub RaiseProgressEvent(ByVal totalRecords As Int64, ByVal totalRecordsProcessed As Int64, ByVal totalRecordsProccessedWithWarnings As Int64, ByVal totalRecordsProcessedWithErrors As Int64, ByVal startTime As DateTime, ByVal endTime As DateTime, ByVal processID As Guid, Optional ByVal totalRecordsDisplay As String = Nothing, Optional ByVal totalRecordsProcessedDisplay As String = Nothing, Optional ByVal args As IDictionary = Nothing)
-			RaiseEvent OnProcessProgressEvent(New ProcessProgressEvent(totalRecords, totalRecordsProcessed, totalRecordsProccessedWithWarnings, totalRecordsProcessedWithErrors, startTime, endTime, totalRecordsDisplay, totalRecordsProcessedDisplay, processID, args))
+		Public Sub RaiseProgressEvent(ByVal totalRecords As Int64, ByVal totalRecordsProcessed As Int64, ByVal totalRecordsProccessedWithWarnings As Int64, ByVal totalRecordsProcessedWithErrors As Int64, ByVal startTime As DateTime, ByVal endTime As DateTime, ByVal metadataThroughput As Double, ByVal filesThroughput As Double, ByVal processID As Guid, Optional ByVal totalRecordsDisplay As String = Nothing, Optional ByVal totalRecordsProcessedDisplay As String = Nothing, Optional ByVal args As IDictionary = Nothing)
+			RaiseEvent OnProcessProgressEvent(New ProcessProgressEvent(totalRecords, totalRecordsProcessed, totalRecordsProccessedWithWarnings, totalRecordsProcessedWithErrors, startTime, endTime, totalRecordsDisplay, totalRecordsProcessedDisplay, metadataThroughput, filesThroughput, processID, args))
 		End Sub
 
 		Public Sub RaiseProcessCompleteEvent(Optional ByVal closeForm As Boolean = False, Optional ByVal exportFilePath As String = "", Optional ByVal exportLogs As Boolean = False)
