@@ -1,5 +1,10 @@
-
+Imports System.Security.AccessControl
 Imports System.Threading.Tasks
+Imports kCura.EDDS.WebAPI.RelativityManagerBase
+Imports kCura.Utility
+Imports kCura.WinEDDS.Credentials
+Imports Relativity
+Imports RelativityManager = kCura.WinEDDS.Service.RelativityManager
 Imports kCura.EDDS.WinForm.Exceptions
 Imports kCura.WinEDDS.Container
 Imports kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
@@ -21,6 +26,7 @@ Namespace kCura.EDDS.WinForm
 		Friend HasSetUsername As Boolean = False
 		Friend HasSetPassword As Boolean = False
 		Private _importOptions As ImportOptions = New ImportOptions()
+		Private _import As ImportManager = New ImportManager()
 		Private _authOptions As AuthenticationOptions = new AuthenticationOptions()
 #End Region
 
@@ -82,9 +88,8 @@ Namespace kCura.EDDS.WinForm
 		Private Async Function RunInConsoleMode() As Task
 			Try
 				_application = kCura.EDDS.WinForm.Application.Instance
-                Dim _import As ImportManager = New ImportManager()
 
-                Dim commandList As kCura.CommandLine.CommandList = kCura.CommandLine.CommandLineParser.Parse
+				Dim commandList As kCura.CommandLine.CommandList = kCura.CommandLine.CommandLineParser.Parse
 				For Each command As kCura.CommandLine.Command In commandList
 					If command.Directive.ToLower.Replace("-", "").Replace("/", "") = "h" Then
 						If command.Value Is Nothing OrElse command.Value = "" Then

@@ -2022,6 +2022,14 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Private Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
+			Dim clientTransferGuid As Guid = _application.GetConnectionMode().ConfigureAwait(False).GetAwaiter().GetResult()
+			If clientTransferGuid = Guid.Parse(TransferClientConstants.AsperaClientId) Then
+				MsgBox("Repository settings can not be changed when RDC runs in Aspera transfer mode. Aspera Server is " &
+					"configured to upload native files to the default workspace fileshare location. " &
+					"If you want to switch Repository in RDC you need to first change RDC settings in application configuration file to force Web transfer mode. " &
+					"Please note that Web transfer is considerably slower than Aspera", MsgBoxStyle.Information And MsgBoxStyle.OkOnly, "Relativity Desktop Client")
+				Return
+			End If
 			_advancedFileForm = New AdvancedFileLocation
 			_advancedFileForm._copyNativeFiles.Checked = Me.LoadFile.CopyFilesToDocumentRepository
 			_advancedFileForm._keepNativeFiles.Checked = Not Me.LoadFile.CopyFilesToDocumentRepository
