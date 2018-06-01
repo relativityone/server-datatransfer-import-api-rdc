@@ -47,7 +47,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.TapiHelpers
 		public void ItShouldWaitForTransferJob()
 		{
 			//ACT
-			Instance.AddPath(new TransferPath());
+			Instance.QueueDownload(new TransferPath());
 			Instance.WaitForTransferJob();
 
 			//ASSERT
@@ -70,7 +70,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.TapiHelpers
 			TransferPath transferPath = new TransferPath();
 
 			//ACT
-			Instance.AddPath(transferPath);
+			Instance.QueueDownload(transferPath);
 
 			//ASSERT
 			TapiBridge.Verify(x => x.AddPath(transferPath), Times.Once);

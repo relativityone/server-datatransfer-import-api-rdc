@@ -4,21 +4,21 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
 {
-	public class NativeFilesProgressHandlerTests : ProgressHandlerTests
+	public class FileDownloadProgressHandlerTests : ProgressHandlerTests
 	{
 		protected override ProgressHandler CreateInstance(IDownloadProgressManager downloadProgressManager)
 		{
-			return new NativeFilesProgressHandler(downloadProgressManager, new NullLogger());
+			return new FileDownloadProgressHandler(downloadProgressManager, new NullLogger());
 		}
 
 		protected override void VerifyFileMarkedAsDownloaded(Mock<IDownloadProgressManager> downloadProgressManager, string id, int lineNumber)
 		{
-			downloadProgressManager.Verify(x => x.MarkNativeAsDownloaded(id, lineNumber), Times.Once);
+			downloadProgressManager.Verify(x => x.MarkFileAsDownloaded(id, lineNumber), Times.Once);
 		}
 
 		protected override void VerifyFileNotMarkedAsDownloaded(Mock<IDownloadProgressManager> downloadProgressManager, string id, int lineNumber)
 		{
-			downloadProgressManager.Verify(x => x.MarkNativeAsDownloaded(id, lineNumber), Times.Never);
+			downloadProgressManager.Verify(x => x.MarkFileAsDownloaded(id, lineNumber), Times.Never);
 		}
 	}
 }
