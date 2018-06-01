@@ -81,12 +81,12 @@ Namespace kCura.WinEDDS
 					Me.StartTime = System.DateTime.Now
 				Case LoadFilePreviewer.EventType.Complete
 					If e.TotalBytes = -1 Then
-						Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.TotalBytes, 0, 0, Me.StartTime, System.DateTime.Now, Me.ProcessID, "First " & kCura.WinEDDS.Config.PREVIEW_THRESHOLD & " records", totaldisplay)
+						Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.TotalBytes, 0, 0, Me.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, "First " & kCura.WinEDDS.Config.PREVIEW_THRESHOLD & " records", totaldisplay)
 					Else
-						Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.TotalBytes, 0, 0, Me.StartTime, System.DateTime.Now, Me.ProcessID, totaldisplay, processeddisplay)
+						Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.TotalBytes, 0, 0, Me.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
 					End If
 				Case LoadFilePreviewer.EventType.Progress
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.BytesRead, 0, 0, Me.StartTime, System.DateTime.Now, Me.ProcessID, totaldisplay, processeddisplay)
+					Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.BytesRead, 0, 0, Me.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
 					Me.ProcessObserver.RaiseStatusEvent("", "Preparing file for preview")
 			End Select
 			System.Threading.Monitor.Exit(Me.ProcessObserver)
