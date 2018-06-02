@@ -871,12 +871,15 @@ namespace kCura.WinEDDS.TApi
         /// </returns>
         private IEnumerable<TransferPath> GetRetryableTransferPaths()
         {
+            var paths = new List<TransferPath>();
             if (this.TransferJob != null)
             {
-                return this.TransferJob.JobService.GetRetryableRequestTransferPaths();
+                paths.AddRange(
+                    this.TransferJob.JobService.GetJobTransferPaths().Where(x => x.Status != TransferPathStatus.Successful)
+                        .Select(jobPath => jobPath.Path));
             }
 
-            return new List<TransferPath>();
+            return paths;
         }
 
         /// <summary>
