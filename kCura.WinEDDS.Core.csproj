@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,6 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ByteSize, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -215,15 +217,24 @@
     <Compile Include="Export\VolumeManagerV2\Directories\NativeFilePathProvider.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\PrefixFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\RelativeFilePathTransformer.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\DownloadCancellationTokenSource.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\FileEncodingRewrite.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\IFileEncodingRewrite.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\ExportRequestRetriever.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\IDownloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\IExportFileValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\IFileEncodingConverter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\ILongTextEncodingConverter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\IExportRequestRetriever.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\IPhysicalFilesDownloader.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ExportRequestsWithFileshareSettings.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\PhysicalFilesDownloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\IExportTapiBridgeFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ITapiBridge.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\SafeIncrement.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\TapiBridgeWrapper.cs" />
+    <Compile Include="Export\VolumeManagerV2\FileshareSettingsService.cs" />
+    <Compile Include="Export\VolumeManagerV2\IFileshareSettingsService.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\IImage.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\ImageWrapper.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\EmptyImageLoadFile.cs" />
@@ -244,6 +255,9 @@
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\IRetryableStreamWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\IStreamFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\RetryableStreamWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\ExportRequestRepository.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\IExportRequestRepository.cs" />
+    <Compile Include="Export\VolumeManagerV2\RelativityFileShareSettings.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\ILongTextRepository.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Writers\IErrorFileWriter.cs" />
     <Compile Include="Export\VolumeManagerV2\Repository\IRepositoryBuilder.cs" />
@@ -262,11 +276,10 @@
     <Compile Include="Export\VolumeManagerV2\Download\FieldFileExportRequestBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\FieldFileExportRequestFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\FileEncodingConverter.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\FileExportRequest.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\NativeFileExportRequest.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\PhysicalFileExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\Downloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\IDownloadTapiBridge.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\IFileExportRequestBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\IExportRequestBuilder.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\LongTextEncodingConverter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\LongTextEncodingConverterFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\LongTextExportRequest.cs" />
@@ -370,7 +383,6 @@
     <Compile Include="Export\VolumeManagerV2\Statistics\FilesStatistics.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\IDownloadProgress.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\IDownloadProgressManager.cs" />
-    <Compile Include="Export\VolumeManagerV2\Statistics\ImageFilesProgressHandler.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\IMessagesHandler.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\IFileProcessingStatistics.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\IMessenger.cs" />
@@ -383,7 +395,7 @@
     <Compile Include="Export\VolumeManagerV2\Statistics\MessagesHandler.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\Messenger.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\MetadataStatistics.cs" />
-    <Compile Include="Export\VolumeManagerV2\Statistics\NativeFilesProgressHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\FileDownloadProgressHandler.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\ProgressHandler.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\ExportPermissionCheck.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\ExportValidation.cs" />
@@ -466,6 +478,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

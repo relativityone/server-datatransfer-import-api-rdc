@@ -5,7 +5,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 {
 	public interface IDownloadTapiBridge : IDisposable
 	{
-		string AddPath(TransferPath transferPath);
+		string QueueDownload(TransferPath transferPath);
 		void WaitForTransferJob();
 	}
 }
