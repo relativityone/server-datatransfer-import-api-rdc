@@ -155,11 +155,6 @@ Namespace kCura.WinEDDS
 		End Sub
 
 #Region "Constructors"
-
-		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory)
-			Me.New(exportFile, processController, New Service.Export.WebApiServiceFactory(exportFile), loadFileFormatterFactory, New ExportConfig)
-		End Sub
-
 		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller, serviceFactory As Service.Export.IServiceFactory,
 					   loadFileFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
 			_searchManager = serviceFactory.CreateSearchManager()
@@ -325,7 +320,7 @@ Namespace kCura.WinEDDS
 				Me.TotalExportArtifactCount -= Me.Settings.StartAtDocumentNumber
 			End If
 			_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
-			
+
 			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, exportInitializationArgs.ColumnNames, UseOldExport)
 				Dim batch As IBatch = Nothing
 				Dim objectExportableSize As IObjectExportableSize = Nothing
