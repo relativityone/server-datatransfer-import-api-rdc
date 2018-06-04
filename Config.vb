@@ -64,6 +64,7 @@ Namespace kCura.WinEDDS
                             If Not tempDict.Contains("AsperaBcpPathRootFolder") Then tempDict.Add("AsperaBcpPathRootFolder", "BCPPath")
                             If Not tempDict.Contains("AsperaNativeFilesRootFolder") Then tempDict.Add("AsperaNativeFilesRootFolder", "Files")
                             If Not tempDict.Contains("LogConfigFile") Then tempDict.Add("LogConfigFile", "LogConfig.xml")
+	                        If Not tempDict.Contains("SuppressCertificateCheckOnClient") Then tempDict.Add("SuppressCertificateCheckOnClient", "False")
                             If Not tempDict.Contains(NameOf(LoadImportedFullTextFromServer)) Then tempDict.Add(NameOf(LoadImportedFullTextFromServer), "False")
                             If Not tempDict.Contains(NameOf(UsePipeliningForNativeAndObjectImports)) Then tempDict.Add(NameOf(UsePipeliningForNativeAndObjectImports), "True")
                             If Not tempDict.Contains(NameOf(ProcessFormRefreshRate)) Then tempDict.Add(NameOf(ProcessFormRefreshRate), "0")
@@ -450,6 +451,13 @@ Namespace kCura.WinEDDS
                 Return CType(ConfigSettings("TapiAsperaNativeDocRootLevels"), Int32)
             End Get
         End Property
+
+		'This is used to disable certificates check of destiantion server on client. It should be enabled only when dealing with invalid certificates on test environments.
+		Public Shared ReadOnly Property SuppressCertificateCheckOnClient() As Boolean
+			Get
+				Return CType(ConfigSettings("SuppressCertificateCheckOnClient"), Boolean)
+			End Get
+		End Property
 
         Public Shared ReadOnly Property LogConfigFile() As String
             Get

@@ -16,6 +16,8 @@ Public Interface IExportConfig
 
 	ReadOnly Property ExportErrorWaitTime() As Int32
 
+	ReadOnly Property MaxNumberOfFileExportTasks() As Int32
+
 End Interface
 
 End Namespace
