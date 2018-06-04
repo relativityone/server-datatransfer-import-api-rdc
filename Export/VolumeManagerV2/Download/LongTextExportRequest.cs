@@ -17,7 +17,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		/// </summary>
 		public int FieldArtifactId { get; private set; }
 
-		private LongTextExportRequest(ObjectExportInfo artifact, string destinationLocation) : base(artifact.ArtifactID, destinationLocation)
+		private LongTextExportRequest(ObjectExportInfo artifact, string destinationLocation) : base(artifact.ArtifactID, Guid.NewGuid().ToString(), destinationLocation)
 		{
 		}
 
@@ -41,7 +41,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			return request;
 		}
 
-		public override TransferPath CreateTransferPath(int order)
+		protected override TransferPath CreateTransferPath()
 		{
 			var httpTransferPathData = new HttpTransferPathData
 			{
@@ -53,8 +53,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			var fileInfo = new System.IO.FileInfo(DestinationLocation);
 			var transferPath = new TransferPath
 			{
-				Order = order,
-				SourcePath = Guid.NewGuid().ToString(),
+				Order = Order,
+				SourcePath = Guid.NewGuid().ToString(), //<- required by TAPI validators
 				TargetPath = fileInfo.Directory?.FullName,
 				TargetFileName = fileInfo.Name
 			};

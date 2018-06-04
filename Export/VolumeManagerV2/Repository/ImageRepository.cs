@@ -35,12 +35,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 
 		public IList<ExportRequest> GetExportRequests()
 		{
-			return _images.Where(x => !x.HasBeenDownloaded).Select(x => x.ExportRequest).ToList();
+			return _images.Where(x => !x.HasBeenDownloaded).Select(x => (ExportRequest) x.ExportRequest).ToList();
 		}
 
-		public Image GetByUniqueId(string id)
+		public Image GetByLineNumber(int lineNumber)
 		{
-			return _images.FirstOrDefault(x => !x.HasBeenDownloaded && x.ExportRequest.UniqueId == id);
+			return _images.FirstOrDefault(x => x.ExportRequest?.Order == lineNumber);
 		}
 
 		public void Clear()
