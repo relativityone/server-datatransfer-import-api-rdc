@@ -71,7 +71,7 @@ Namespace kCura.WinEDDS.Monitoring
 
 		Private Shared Sub LogApmDouble(serviceFactory As IServiceFactory, bucketName As String, metadata As IMetricMetadata)
 			Dim keplerManager As IMetricsManager = MessageManagerFactory.CreateAPMKeplerManager(serviceFactory)
-			keplerManager.LogDouble(bucketName, 0, metadata)
+			keplerManager.LogDouble(bucketName, 1, metadata)
 		End Sub
 
 	End Class
