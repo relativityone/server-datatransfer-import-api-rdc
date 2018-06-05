@@ -312,6 +312,7 @@ Namespace kCura.WinEDDS
 			If updateCurrentStats OrElse force Then
 				CurrentStatisticsSnapshot = Me.Statistics.ToDictionary()
 				_statisticsLastUpdated = time
+				Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Statistics, "", 0, 0)
 			End If
 		End Sub
 

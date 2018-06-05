@@ -5,6 +5,7 @@ Imports Relativity.DataTransfer.MessageService
 Public MustInherit Class MonitoredProcessBase
 	Inherits kCura.Windows.Process.ProcessBase
 
+	Protected Property JobGuid As System.Guid = System.Guid.NewGuid()
 	Protected Property StartTime As System.DateTime
 	Protected Property EndTime As System.DateTime
 	Protected Property TotalRecords As Long
@@ -15,6 +16,8 @@ Public MustInherit Class MonitoredProcessBase
 	Protected ReadOnly Property MessageService As IMessageService
 	Protected _hasFatalErrorOccured As Boolean
 	Protected _tapiClientName As String = TapiClient.None.ToString()
+
+	Public Property CaseInfo As Relativity.CaseInfo
 
 	Public Sub New(messageService As IMessageService)
 		Me.MessageService = messageService
@@ -75,6 +78,20 @@ Public MustInherit Class MonitoredProcessBase
 
 	Protected Sub SendTransferJobCompletedMessage()
 		MessageService.Send(New TransferJobCompletedMessage With {.JobType = JobType, .TransferMode = TapiClientName})
+	End Sub
+
+	Protected Sub SendThroughputStatistics(metadataThroughput As Double, fileThroughput As Double)
+		Dim message As TransferJobApmThroughputMessage = New TransferJobApmThroughputMessage()
+		message.JobType = JobType
+		message.TransferMode = TapiClientName
+		message.CorellationID = JobGuid.ToString()
+		message.UnitOfMeasure = "Bytes(s)"
+		message.CustomData.Add("MetadataThroughput", metadataThroughput)
+		message.CustomData.Add("FileThroughput", fileThroughput)
+		If Not (CaseInfo Is Nothing) Then
+			message.WorkspaceID = CaseInfo.ArtifactID
+		End If
+		MessageService.Send(message)
 	End Sub
 
 	Protected Sub SendJobStatistics()

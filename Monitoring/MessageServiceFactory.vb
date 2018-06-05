@@ -1,5 +1,5 @@
-﻿
-Imports Relativity.DataTransfer.MessageService
+﻿Imports Relativity.DataTransfer.MessageService
+Imports Relativity.DataTransfer.MessageService.MetricsManager.APM
 Imports Relativity.Services.ServiceProxy
 
 Namespace kCura.WinEDDS.Monitoring
@@ -42,6 +42,12 @@ Namespace kCura.WinEDDS.Monitoring
 					LogDouble(serviceFactory, FormatUsageBucketName("CompletedRecords", message.JobType, message.TransferMode), message.CompletedRecords)
 				End Sub)
 
+			MessageService.Subscribe(Of TransferJobApmThroughputMessage) (
+				Sub(message)
+					LogApmDouble(serviceFactory, FormatPerformanceBucketName("ThroughputBytes", message.JobType, message.TransferMode), message)
+				End Sub
+			)
+
 			Return MessageService
 		End Function
 
@@ -61,6 +67,11 @@ Namespace kCura.WinEDDS.Monitoring
 		Private Shared Sub LogDouble(serviceFactory As IServiceFactory, bucketName As String, value As Double)
 			Dim keplerManager As IMetricsManager = MessageManagerFactory.CreateSUMKeplerManager(serviceFactory)
 			keplerManager.LogDouble(bucketName, value)
+		End Sub
+
+		Private Shared Sub LogApmDouble(serviceFactory As IServiceFactory, bucketName As String, metadata As IMetricMetadata)
+			Dim keplerManager As IMetricsManager = MessageManagerFactory.CreateAPMKeplerManager(serviceFactory)
+			keplerManager.LogDouble(bucketName, 1, metadata)
 		End Sub
 
 	End Class
