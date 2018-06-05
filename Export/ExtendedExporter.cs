@@ -19,6 +19,11 @@ namespace kCura.WinEDDS.Core.Export
 
 		#region Constructors
 
+		public ExtendedExporter(ExtendedExportFile exportFile, Controller processController,ILoadFileHeaderFormatterFactory loadFileFormatterFactory) :
+			base(exportFile, processController, loadFileFormatterFactory)
+		{
+		}
+
 		public ExtendedExporter(ExtendedExportFile exportFile, Controller processController, IServiceFactory serviceFactory, ILoadFileHeaderFormatterFactory loadFileFormatterFactory,
 			IExportConfig exportConfig) : base(exportFile, processController, serviceFactory, loadFileFormatterFactory, exportConfig)
 		{
