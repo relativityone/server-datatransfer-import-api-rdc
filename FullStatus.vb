@@ -114,10 +114,10 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Public Property FilesThroughput() As Double
 			Get
-				Return _metadataThroughput
+				Return _filesThroughput
 			End Get
 			Set(ByVal value As Double)
-				_metadataThroughput = value
+				_filesThroughput = value
 			End Set
 		End Property
 
