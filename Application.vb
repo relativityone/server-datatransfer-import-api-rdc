@@ -20,7 +20,6 @@ Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
 Imports Relativity.Services.InstanceDetails
 Imports Relativity.Services.ServiceProxy
-Imports Relativity.StagingExplorer.Services.StagingManager
 
 Namespace kCura.EDDS.WinForm
     Public Class Application
@@ -184,10 +183,8 @@ Namespace kCura.EDDS.WinForm
 
         Public Property UserHasExportPermission() As Boolean
 
-        Public Property UserHasStagingPermission() As Boolean
-
 #End Region
- 
+
 #Region "Event Throwers"
         Public Sub LogOn()
             RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOn))
@@ -841,49 +838,6 @@ Namespace kCura.EDDS.WinForm
             End Try
         End Function
 
-        Public Async Sub NewFileTransfer(mainForm As MainForm)
-            Await NewLoginAsync()
-            
-            Dim credentials = Await Me.GetCredentialsAsync()
-
-            StartStagingExplorer(credentials, mainForm)
-        End Sub
-
-        Private Sub StartStagingExplorer(credentials As NetworkCredential, mainForm As MainForm)
-            Dim arguments = $"-t {credentials.Password} -w {Me.SelectedCaseInfo.ArtifactID}  -u {kCura.WinEDDS.Config.WebServiceURL}"
-
-            Dim appProcess = New Process()
-            appProcess.StartInfo.FileName = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),  _STAGINGEXPLORER_DEFAULT_EXE_PATH)
-            appProcess.StartInfo.Arguments = arguments
-            appProcess.EnableRaisingEvents = True
-
-            AddHandler appProcess.Exited, Sub(s, e) OnStagingExplorerProcessExited(s, mainForm)
-
-            appProcess.Start()
-        End Sub
-
-        Private Sub OnStagingExplorerProcessExited(sender As Object, mainForm As MainForm)
-            Dim appProcess = TryCast(sender, Process)
-            If appProcess Is Nothing Then
-                Return
-            End If
-
-            Dim handleStagingExplorerProcessExited =
-                    Sub(exitCode As Integer)
-                        If exitCode = 403 Then
-                            MessageBox.Show(ROSE_STARTUP_PERMISSIONS_FAILURE, RDC_ERROR_TITLE)
-                        ElseIf exitCode = 423 Then
-                            MessageBox.Show(ROSE_STARTUP_ALREADY_RUNNING, RDC_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information)
-                        End If
-                    End Sub
-
-            If mainForm.InvokeRequired Then
-                mainForm.Invoke(handleStagingExplorerProcessExited, appProcess.ExitCode)
-            Else 
-                handleStagingExplorerProcessExited(appProcess.ExitCode)
-            End If
-        End Sub
-
         Public Async Function GetListOfProductionsForCase(ByVal caseInfo As Relativity.CaseInfo) As Task(Of System.Data.DataTable)
             Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Await Me.GetCredentialsAsync(), _CookieContainer)
             Return productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
@@ -1468,14 +1422,6 @@ Namespace kCura.EDDS.WinForm
         Public Async Function LoadWorkspacePermissions() As Task
             UserHasExportPermission = New kCura.WinEDDS.Service.ExportManager(Await GetCredentialsAsync(), CookieContainer).HasExportPermissions(SelectedCaseInfo.ArtifactID)
             UserHasImportPermission = New kCura.WinEDDS.Service.BulkImportManager(Await GetCredentialsAsync(), CookieContainer).HasImportPermissions(SelectedCaseInfo.ArtifactID)
-
-            'additionally load config and permissions for staging explorer
-			Try
-				UserHasStagingPermission = Await Me.CanUserAccessStagingExplorer(Await GetCredentialsAsync())
-			Catch ex As Exception
-				UserHasStagingPermission = False
-			End Try
-            
         End Function
 
         Private Sub CertificatePromptForm_Deny_Click() Handles _certificatePromptForm.DenyUntrustedCertificates
@@ -1779,20 +1725,11 @@ Namespace kCura.EDDS.WinForm
             Return loginResult
         End Function
 
-		Public Async Function SetupMessageService() As Task(Of IMessageService)
-			If _messageService Is Nothing
-				_messageService = MessageServiceFactory.SetupMessageService(ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync()))
-			End If
-			return _messageService
-		End Function
-
-        Private Async Function CanUserAccessStagingExplorer(credentials As NetworkCredential) As Task(Of System.Boolean)
-            Dim factory = ServiceFactoryFactory.Create(credentials)
-
-            Using manager As IStagingPermissionsService = factory.CreateProxy(Of IStagingPermissionsService)
-                Dim userCanRunStagingExplorer = Await manager.UserCanRunStagingExplorer()
-                Return userCanRunStagingExplorer
-            End Using
+        Public Async Function SetupMessageService() As Task(Of IMessageService)
+            If _messageService Is Nothing Then
+                _messageService = MessageServiceFactory.SetupMessageService(ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync()))
+            End If
+            Return _messageService
         End Function
 
     End Class

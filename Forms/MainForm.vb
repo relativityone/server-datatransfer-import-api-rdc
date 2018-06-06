@@ -61,9 +61,8 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _exportFoldersAndSubfoldersMenuItem As System.Windows.Forms.MenuItem
 		Friend WithEvents ToolsImportProductionFileMenu As System.Windows.Forms.MenuItem
 		Friend WithEvents _objectTypeDropDown As System.Windows.Forms.ComboBox
-		Friend WithEvents _optionsMenuCheckConnectivityItem As System.Windows.Forms.MenuItem
-		Friend WithEvents TransferMenu As MenuItem
-		Friend WithEvents _exportObjectsMenuItem As System.Windows.Forms.MenuItem
+        Friend WithEvents _optionsMenuCheckConnectivityItem As System.Windows.Forms.MenuItem
+        Friend WithEvents _exportObjectsMenuItem As System.Windows.Forms.MenuItem
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
 		Me.components = New System.ComponentModel.Container()
 		Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(MainForm))
@@ -83,9 +82,8 @@ Namespace kCura.EDDS.WinForm
 		Me.ToolsExportSearchMenu = New System.Windows.Forms.MenuItem()
 		Me._exportFoldersMenuItem = New System.Windows.Forms.MenuItem()
 		Me._exportFoldersAndSubfoldersMenuItem = New System.Windows.Forms.MenuItem()
-		Me._exportObjectsMenuItem = New System.Windows.Forms.MenuItem()
-		Me.TransferMenu = New System.Windows.Forms.MenuItem()
-		Me._toolsMenu = New System.Windows.Forms.MenuItem()
+            Me._exportObjectsMenuItem = New System.Windows.Forms.MenuItem()
+            Me._toolsMenu = New System.Windows.Forms.MenuItem()
 		Me._toolsMenuSettingsItem = New System.Windows.Forms.MenuItem()
 		Me._optionsMenuCheckConnectivityItem = New System.Windows.Forms.MenuItem()
 		Me.MenuItem4 = New System.Windows.Forms.MenuItem()
@@ -147,8 +145,8 @@ Namespace kCura.EDDS.WinForm
 			'
 			Me.EnhancedMenuProvider.SetImageIndex(Me.MenuItem2, -1)
 			Me.MenuItem2.Index = 1
-			Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ImportMenu, Me.ExportMenu, Me.TransferMenu})
-			Me.MenuItem2.OwnerDraw = True
+            Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ImportMenu, Me.ExportMenu})
+            Me.MenuItem2.OwnerDraw = True
 			Me.MenuItem2.Text = "&Tools"
 			'
 			'ImportMenu
@@ -227,20 +225,11 @@ Namespace kCura.EDDS.WinForm
 			Me._exportObjectsMenuItem.Index = 4
 			Me._exportObjectsMenuItem.OwnerDraw = True
 			Me._exportObjectsMenuItem.Text = "Objects"
-			Me._exportObjectsMenuItem.Visible = False
-			'
-			'TransferMenu
-			'
-			Me.TransferMenu.Enabled = False
-			Me.EnhancedMenuProvider.SetImageIndex(Me.TransferMenu, -1)
-			Me.TransferMenu.Index = 2
-			Me.TransferMenu.OwnerDraw = True
-			Me.TransferMenu.Text = "Staging Explorer..."
-			Me.TransferMenu.Visible = False
-			'
-			'_toolsMenu
-			'
-			Me.EnhancedMenuProvider.SetImageIndex(Me._toolsMenu, -1)
+            Me._exportObjectsMenuItem.Visible = False
+            '
+            '_toolsMenu
+            '
+            Me.EnhancedMenuProvider.SetImageIndex(Me._toolsMenu, -1)
 			Me._toolsMenu.Index = 2
 			Me._toolsMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._toolsMenuSettingsItem, Me._optionsMenuCheckConnectivityItem})
 			Me._toolsMenu.OwnerDraw = True
@@ -415,12 +404,7 @@ End Sub
 					ImportMenu.Enabled = _application.UserHasImportPermission
 					ExportMenu.Enabled = _application.UserHasExportPermission
 					ImportMenu.Visible = _application.UserHasImportPermission
-					ExportMenu.Visible = _application.UserHasExportPermission
-					'UpdateStatus("Case Folder Load: " + _application.SelectedCaseInfo.RootFolderID.ToString)
-                    
-                    'disable staging explorer menu if no permission
-					TransferMenu.Enabled = _application.UserHasStagingPermission
-                    TransferMenu.Visible = _application.UserHasStagingPermission
+                    ExportMenu.Visible = _application.UserHasExportPermission
                 Case appEvent.AppEventType.LogOnRequested
                     '' please note that url input and connection loop retry takes place on the stack
                     '' if in doubt what it means please try to input several times invalid web api url from main form settings and check call stack while having breakpoint on the following line
@@ -505,19 +489,13 @@ End Sub
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
-		Private Async Sub ToolsExportSearchMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsExportSearchMenu.Click
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			Await _application.NewSearchExport(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo, kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
-			Me.Cursor = System.Windows.Forms.Cursors.Default
-		End Sub
+        Private Async Sub ToolsExportSearchMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsExportSearchMenu.Click
+            Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+            Await _application.NewSearchExport(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo, kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
+            Me.Cursor = System.Windows.Forms.Cursors.Default
+        End Sub
 
-		Private Sub ToolsTransferFileMenu_Click(sender As Object, e As EventArgs) Handles TransferMenu.Click
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_application.NewFileTransfer(Me)
-			Me.Cursor = System.Windows.Forms.Cursors.Default
-		End Sub
-
-		Private Async Sub _exportObjectsMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportObjectsMenuItem.Click
+        Private Async Sub _exportObjectsMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportObjectsMenuItem.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			Await _application.NewSearchExport(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo, kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
