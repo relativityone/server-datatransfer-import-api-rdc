@@ -51,11 +51,8 @@ Namespace kCura.EDDS.WinForm
         Public OpenCaseSelector As Boolean = True
 
         Public Const ACCESS_DISABLED_MESSAGE As String = "Your Relativity account has been disabled.  Please contact your Relativity Administrator to activate your account."
-        Public Const ROSE_STARTUP_PERMISSIONS_FAILURE As String = "The RelativityOne Staging Explorer failed to run due to insufficient permissions. Please contact you Relativity Administrator."
-        Public Const ROSE_STARTUP_ALREADY_RUNNING As String = "Only one Staging Explorer session is allowed per one logged in user."
         Public Const RDC_ERROR_TITLE As String = "Relativity Desktop Client Error"
         Public Const RDC_TITLE As String = "Relativity Desktop Client"
-        Private const _STAGINGEXPLORER_DEFAULT_EXE_PATH as String = "..\Staging Explorer\Relativity.StagingExplorer.exe"
     
         Private _caseSelected As Boolean = True
         Private _processPool As kCura.Windows.Process.ProcessPool
