@@ -11,7 +11,6 @@ Namespace kCura.WinEDDS.Monitoring
 
 		Public Property CorellationID As String Implements IMetricMetadata.CorellationID
 		Public Property CustomData As Dictionary(Of String,Object) Implements IMetricMetadata.CustomData
-		Public Property WorkspaceGuid As Guid Implements IMetricMetadata.WorkspaceGuid
 		Public Property WorkspaceID As Integer Implements IMetricMetadata.WorkspaceID
 		Public Property UnitOfMeasure As String Implements IMetricMetadata.UnitOfMeasure
 
