@@ -1834,7 +1834,7 @@ Namespace kCura.WinEDDS
 			Select Case eventType
 				Case eventType.Error
 					WriteError(progressLineNumber, message)
-				Case eventType.Warning, eventType.Status, eventType.Progress
+				Case eventType.Warning, eventType.Status, eventType.Progress, eventType.Statistics
 					WriteStatusLine(eventType, message, progressLineNumber)
 			End Select
 		End Sub

@@ -26,7 +26,7 @@ Namespace kCura.WinEDDS
 		Public Property UserNotificationFactory As Func(Of Exporter, IUserNotification)
 
 		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
-			MyBase.New(new MessageService())
+			MyBase.New(New MessageService())
 			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory
 			_exportConfig = exportConfig
 		End Sub
@@ -66,7 +66,7 @@ Namespace kCura.WinEDDS
 			MyBase.Initialize()
 			_warningCount = 0
 			_errorCount = 0
-			_searchExporter = New Exporter(Me.ExportFile, Me.ProcessController, New Service.Export.WebApiServiceFactory(Me.ExportFile), 
+			_searchExporter = New Exporter(Me.ExportFile, Me.ProcessController, New Service.Export.WebApiServiceFactory(Me.ExportFile),
 											_loadFileHeaderFormatterFactory, _exportConfig) With {.InteractionManager = UserNotification}
 			If Not UserNotificationFactory Is Nothing Then
 				Dim un As IUserNotification = UserNotificationFactory(_searchExporter)
@@ -78,7 +78,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overrides Function Run() As Boolean
-			_hasErrors = Not _searchExporter.ExportSearch() 
+			_hasErrors = Not _searchExporter.ExportSearch()
 			Return Not _hasFatalErrorOccured
 		End Function
 
@@ -98,6 +98,8 @@ Namespace kCura.WinEDDS
 					Me.ProcessObserver.RaiseErrorEvent(e.DocumentsExported.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Progress
 					Me.ProcessObserver.RaiseStatusEvent("", e.Message)
+				Case kCura.Windows.Process.EventType.Statistics
+					SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
 				Case kCura.Windows.Process.EventType.Status
 					Me.ProcessObserver.RaiseStatusEvent(e.DocumentsExported.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Warning
