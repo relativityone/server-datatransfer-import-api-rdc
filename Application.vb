@@ -12,7 +12,6 @@ Imports kCura.Windows.Forms
 Imports kCura.WinEDDS.Core.Export
 Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Monitoring
-Imports kCura.WinEDDS.Service
 Imports Relativity
 Imports Relativity.DataTransfer.MessageService
 Imports Relativity.OAuth2Client.Exceptions
@@ -21,6 +20,7 @@ Imports Relativity.OAuth2Client.Interfaces.Events
 Imports Relativity.Services.InstanceDetails
 Imports Relativity.Services.ServiceProxy
 Imports Relativity.StagingExplorer.Services.StagingManager
+Imports Relativity.Transfer
 
 Namespace kCura.EDDS.WinForm
     Public Class Application
@@ -61,6 +61,8 @@ Namespace kCura.EDDS.WinForm
         Private _caseSelected As Boolean = True
         Private _processPool As kCura.Windows.Process.ProcessPool
         Private _selectedCaseInfo As Relativity.CaseInfo
+        Private _selectedTransferClientId as Guid = Guid.Empty
+        Private _selectedTransferClientName as String
         Private _selectedCaseFolderID As Int32
         Private _fieldProviderCache As IFieldProviderCache
         Private _selectedCaseFolderPath As String
@@ -107,7 +109,21 @@ Namespace kCura.EDDS.WinForm
             End Set
         End Property
 
-        Public ReadOnly Property SelectedCaseInfo() As Relativity.CaseInfo
+		Public ReadOnly Property SelectedTransferClientId() As Guid
+			Get
+				Return _selectedTransferClientId
+			End Get
+		End Property
+
+		Public ReadOnly Property SelectedTransferClientName() As String
+			Get
+				Return _selectedTransferClientName
+			End Get
+		End Property
+
+
+
+		Public ReadOnly Property SelectedCaseInfo() As Relativity.CaseInfo
             Get
                 Return _selectedCaseInfo
             End Get
@@ -121,6 +137,7 @@ Namespace kCura.EDDS.WinForm
                 _selectedCaseInfo = caseManager.Read(caseInfo.ArtifactID)
             End If
             _documentRepositoryList = caseManager.GetAllDocumentFolderPathsForCase(_selectedCaseInfo.ArtifactID)
+			Await SetTapiClientInfo().ConfigureAwait(False)
         End Function
 
         Public ReadOnly Property SelectedCaseFolderID() As Int32
@@ -498,16 +515,11 @@ Namespace kCura.EDDS.WinForm
             End If
         End Function
 
-        Public Async Function GetConnectionStatus() As Task(Of String)
-            Dim parameters = CreateTapiParametersAsync()
-            Dim clientName = Await kCura.WinEDDS.TApi.TapiWinEddsHelper.GetWorkspaceClientDisplayNameAsync(await parameters)
-            Return clientName
-        End Function
-
-        Public Async Function GetConnectionMode() As Task(Of Guid)
-            Dim parameters = CreateTapiParametersAsync()
-            Dim clientName = Await kCura.WinEDDS.TApi.TapiWinEddsHelper.GetWorkspaceClientIdAsync(await parameters)
-            Return clientName
+        Private Async Function SetTapiClientInfo() As Task
+	        Dim parameters = CreateTapiParametersAsync()
+	        Dim client = Await TApi.TapiWinEddsHelper.GetWorkspaceClientAsync(Await parameters).ConfigureAwait(False)
+			_selectedTransferClientId = client.Id
+			_selectedTransferClientName = client.DisplayName
         End Function
 
         Private Async Function CreateTapiParametersAsync() As Task(Of TApi.TapiBridgeParameters)
@@ -1623,7 +1635,7 @@ Namespace kCura.EDDS.WinForm
 
         Public Function GetIdentityServerLocation() As String
             Dim tempCred As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
-            Dim relManager As Service.RelativityManager = New RelativityManager(tempCred, _CookieContainer)
+            Dim relManager As Service.RelativityManager = New Service.RelativityManager(tempCred, _CookieContainer)
             Dim urlString As String = String.Format("{0}/{1}", relManager.GetRelativityUrl(), "Identity")
             Return urlString
         End Function

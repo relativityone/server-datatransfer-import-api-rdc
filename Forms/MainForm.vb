@@ -392,8 +392,7 @@ End Sub
 				Case appEvent.AppEventType.LoadCase
 					_fileMenuRefresh.Enabled = True
 					UpdateStatus("Workspace Loaded - File Transfer Mode: Connecting...")
-					Dim mode = Await _application.GetConnectionStatus
-					UpdateStatus($"Workspace Loaded - File Transfer Mode: {mode}")
+					UpdateStatus($"Workspace Loaded - File Transfer Mode: {_application.SelectedTransferClientName}")
 					Await PopulateObjectTypeDropDown()
 					_optionsMenuCheckConnectivityItem.Enabled = True
 					ImportMenu.Enabled = _application.UserHasImportPermission
