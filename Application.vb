@@ -494,7 +494,7 @@ Namespace kCura.EDDS.WinForm
             _caseSelected = True
         End Sub
 
-        Public Async Function OpenCase() As Task
+        Public Async Function OpenCaseAsync() As Task
             Try
                 Dim caseInfo As CaseInfo = Me.GetCase
                 If Not caseInfo Is Nothing Then
@@ -1453,7 +1453,7 @@ Namespace kCura.EDDS.WinForm
                 Case Application.CredentialCheckResult.Success
                     LogOn()
                     If (Not _caseSelected) Then
-                        Await OpenCase()
+                        Await OpenCaseAsync().ConfigureAwait(False)
                     End If
                     EnhancedMenuProvider.Hook(callingForm)
             End Select
@@ -1547,7 +1547,7 @@ Namespace kCura.EDDS.WinForm
                     System.Threading.Thread.CurrentThread.CurrentCulture = locale
 
                     kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-                    If OpenCaseSelector Then Await OpenCase()
+                    If OpenCaseSelector Then Await OpenCaseAsync().ConfigureAwait(False)
                     _timeZoneOffset = 0                                                         'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
                     _lastCredentialCheckResult = CredentialCheckResult.Success
                     'This was created specifically for raising an event after login success for RDC forms authentication 

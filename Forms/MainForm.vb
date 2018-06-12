@@ -364,13 +364,13 @@ End Sub
 						_application.OpenCaseSelector = False
 						Await _application.GetCredentialsAsync()
 						_application.LogOn()
-						Await _application.OpenCase()
+						Await _application.OpenCaseAsync().ConfigureAwait(False)
 						kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
 					End If
 				Else
 					_application.OpenCaseSelector = False
 					Await _application.GetCredentialsAsync()
-					Await _application.OpenCase()
+					Await _application.OpenCaseAsync().ConfigureAwait(False)
 				End If
 			Catch ex As LoginCanceledException
 				'user close the login window, do nothing
@@ -383,10 +383,10 @@ End Sub
 		End Sub
 
 		Private Sub _application_OnEvent(ByVal appEvent As AppEvent) Handles _application.OnEvent
-			ME.Invoke(Async Sub() Await HandleEventOnUiThread(appEvent))
+			ME.Invoke(Async Sub() Await HandleEventOnUiThreadAsync(appEvent))
 		End Sub
 
-		Private Async Function HandleEventOnUiThread(appEvent As AppEvent) As Task
+		Private Async Function HandleEventOnUiThreadAsync(appEvent As AppEvent) As Task
 
 			Select Case appEvent.EventType
 				Case appEvent.AppEventType.LoadCase
@@ -424,7 +424,7 @@ End Sub
                     '' please note that url input and connection loop retry takes place on the stack
                     '' if in doubt what it means please try to input several times invalid web api url from main form settings and check call stack while having breakpoint on the following line
                     '' TODO: this shloud be rewritten to use simple while-like loop
-                    Await CheckCertificate()
+                    Await CheckCertificateAsync()
             End Select
 		End Function
 
@@ -447,12 +447,12 @@ End Sub
             End If
 
             '' Can't do this in Application.vb without refactoring AttemptLogin (which needs this form as a parameter)
-            Await CheckCertificate()
+            Await CheckCertificateAsync()
 
             Me.Cursor = System.Windows.Forms.Cursors.Default
         End Sub
 
-		Private Async Function CheckCertificate() As Task
+		Private Async Function CheckCertificateAsync() As Task
 			Try
 				If (_application.CertificateTrusted()) Then
 					Await _application.AttemptLogin(Me)
@@ -467,10 +467,10 @@ End Sub
 
 		End Function
 
-		Private Async Sub WebServiceURLChanged() Handles _application.ReCheckCertificate
+		Private Async Sub WebServiceURLChangedAsync() Handles _application.ReCheckCertificate
 			'Disable help since user will be asked to login again
 			Me._helpMenuItem.Enabled = False
-			Await CheckCertificate()
+			Await CheckCertificateAsync()
 		End Sub
 
 		Private Async Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
@@ -531,8 +531,8 @@ End Sub
 		Private Async Sub _fileMenuRefresh_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileMenuRefresh.Click
 			_application.UpdateWebServiceURL(False)
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			Await _application.RefreshCaseFolders()
-			Await _application.RefreshSelectedCaseInfoAsync()
+			Await _application.RefreshCaseFolders().ConfigureAwait(False)
+			Await _application.RefreshSelectedCaseInfoAsync().ConfigureAwait(False)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 

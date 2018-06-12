@@ -1988,7 +1988,7 @@ Namespace kCura.EDDS.WinForm
 			For Each fieldName In itemsToRemove
 				_fieldMap.FieldColumns.RightListBoxItems.Remove(fieldName)
 			Next
-			Await _application.RefreshSelectedCaseInfoAsync()
+			Await _application.RefreshSelectedCaseInfoAsync().ConfigureAwait(False)
 			Me.LoadFile.CaseInfo = _application.SelectedCaseInfo
 			Dim id As Int32 = DirectCast(_overlayIdentifier.SelectedItem, DocumentField).FieldID
 			_overlayIdentifier.Items.Clear()
