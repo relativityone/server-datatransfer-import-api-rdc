@@ -1825,6 +1825,7 @@ Namespace kCura.WinEDDS
 				WriteStatusLine(EventType.End, line)
 			Else If CancellationToken.IsCancellationRequested
 				WriteStatusLine(EventType.Status, "Job has been finalized.", TapiConstants.NoLineNumber)
+				WriteStatusLine(EventType.End, line)
 			Else
 				WriteStatusLine(EventType.End, line, FileTapiProgressCount)
 			End If

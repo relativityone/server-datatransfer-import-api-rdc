@@ -1,4 +1,5 @@
 Imports System.Threading
+Imports kCura.Windows.Process
 Imports kCura.WinEDDS.TApi
 Imports Relativity.DataTransfer.MessageService
 
@@ -83,19 +84,19 @@ Namespace kCura.WinEDDS
 		Protected Overrides Sub OnFatalError()
 			SendTransferJobFailedMessage()
 			MyBase.OnFatalError()
-			SendJobStatistics()
+			SendJobStatistics(_imageFileImporter.Statistics)
 		End Sub
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnFatalError()
-			SendJobStatistics()
+			SendJobStatistics(_imageFileImporter.Statistics)
 			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnFatalError()
-			SendJobStatistics()
+			SendJobStatistics(_imageFileImporter.Statistics)
 			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
 		End Sub

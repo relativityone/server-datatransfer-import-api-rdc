@@ -42,11 +42,15 @@ Namespace kCura.WinEDDS.Monitoring
 					LogDouble(serviceFactory, FormatUsageBucketName("CompletedRecords", message.JobType, message.TransferMode), message.CompletedRecords)
 				End Sub)
 
-			MessageService.Subscribe(Of TransferJobApmThroughputMessage) (
+			MessageService.Subscribe(Of TransferJobApmThroughputMessage)(
 				Sub(message)
-					LogApmDouble(serviceFactory, FormatPerformanceBucketName("ThroughputBytes", message.JobType, message.TransferMode), message)
-				End Sub
-			)
+					LogApmDouble(serviceFactory, FormatPerformanceBucketName("ThroughputBytes", message.JobType, message.TransferMode), 1, message)
+				End Sub)
+
+			MessageService.Subscribe(Of TransferJobSizeMessage)(
+				Sub(message)
+					LogApmDouble(serviceFactory, FormatPerformanceBucketName("JobSize", message.JobType, message.TransferMode), message.JobSize, message)
+				End Sub)
 
 			Return MessageService
 		End Function
@@ -69,9 +73,9 @@ Namespace kCura.WinEDDS.Monitoring
 			keplerManager.LogDouble(bucketName, value)
 		End Sub
 
-		Private Shared Sub LogApmDouble(serviceFactory As IServiceFactory, bucketName As String, metadata As IMetricMetadata)
+		Private Shared Sub LogApmDouble(serviceFactory As IServiceFactory, bucketName As String, value As Double, metadata As IMetricMetadata)
 			Dim keplerManager As IMetricsManager = MessageManagerFactory.CreateAPMKeplerManager(serviceFactory)
-			keplerManager.LogDouble(bucketName, 1, metadata)
+			keplerManager.LogDouble(bucketName, value, metadata)
 		End Sub
 
 	End Class
