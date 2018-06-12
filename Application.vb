@@ -129,7 +129,7 @@ Namespace kCura.EDDS.WinForm
             End Get
         End Property
 
-        Public Async Function RefreshSelectedCaseInfo(Optional ByVal caseInfo As Relativity.CaseInfo = Nothing) As Task
+        Public Async Function RefreshSelectedCaseInfoAsync(Optional ByVal caseInfo As Relativity.CaseInfo = Nothing) As Task
             Dim caseManager As New kCura.WinEDDS.Service.CaseManager(Await Me.GetCredentialsAsync(), _CookieContainer)
             If caseInfo Is Nothing Then
                 _selectedCaseInfo = caseManager.Read(_selectedCaseInfo.ArtifactID)
@@ -496,13 +496,13 @@ Namespace kCura.EDDS.WinForm
 
         Public Async Function OpenCase() As Task
             Try
-                Dim caseInfo As Relativity.CaseInfo = Me.GetCase
+                Dim caseInfo As CaseInfo = Me.GetCase
                 If Not caseInfo Is Nothing Then
                     _selectedCaseInfo = caseInfo
 					Try
 						CursorWaitWhichWorks()
-						Await Me.RefreshSelectedCaseInfo()
-						Await SetTapiClientInfo().ConfigureAwait(False)
+						Await RefreshSelectedCaseInfoAsync().ConfigureAwait(False)
+						Await SetTapiClientInfoAsync().ConfigureAwait(False)
 					Finally
 						CursorDefaultWhichWorks()
 					End Try
@@ -537,7 +537,7 @@ Namespace kCura.EDDS.WinForm
             End If
         End Function
 
-        Private Async Function SetTapiClientInfo() As Task
+        Private Async Function SetTapiClientInfoAsync() As Task
 	        Dim parameters = CreateTapiParametersAsync()
 	        Dim client = Await TApi.TapiWinEddsHelper.GetWorkspaceClientAsync(Await parameters).ConfigureAwait(False)
 			_selectedTransferClientId = client.Id

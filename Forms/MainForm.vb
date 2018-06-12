@@ -532,7 +532,7 @@ End Sub
 			_application.UpdateWebServiceURL(False)
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			Await _application.RefreshCaseFolders()
-			Await _application.RefreshSelectedCaseInfo()
+			Await _application.RefreshSelectedCaseInfoAsync()
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
