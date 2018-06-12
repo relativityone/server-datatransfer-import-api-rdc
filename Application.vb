@@ -137,7 +137,6 @@ Namespace kCura.EDDS.WinForm
                 _selectedCaseInfo = caseManager.Read(caseInfo.ArtifactID)
             End If
             _documentRepositoryList = caseManager.GetAllDocumentFolderPathsForCase(_selectedCaseInfo.ArtifactID)
-			Await SetTapiClientInfo().ConfigureAwait(False)
         End Function
 
         Public ReadOnly Property SelectedCaseFolderID() As Int32
@@ -234,13 +233,30 @@ Namespace kCura.EDDS.WinForm
             End If
         End Sub
 
+		''' <summary>
+		''' This method doesn't work! Use CursorDefaultWhichWorks instead.
+		''' </summary>
         Public Sub CursorDefault()
             RaiseEvent ChangeCursor(System.Windows.Forms.Cursors.Default)
         End Sub
 
+        ''' <summary>
+        ''' This method doesn't work! Use CursorWaitWhichWorks instead.
+		''' </summary>
         Public Sub CursorWait()
             RaiseEvent ChangeCursor(System.Windows.Forms.Cursors.WaitCursor)
         End Sub
+
+        Public Sub CursorDefaultWhichWorks()
+	        'Name of this method should be changed after cleaning every usage of CursorDefault method will be replaced with this one
+	        System.Windows.Forms.Application.UseWaitCursor = false
+        End Sub
+
+		Public Sub CursorWaitWhichWorks()
+			'Name of this method should be changed after cleaning every usage of CursorWait method will be replaced with this one
+			System.Windows.Forms.Application.UseWaitCursor = true
+		End Sub
+
 #End Region
 
 #Region "Document Field Collection"
@@ -483,7 +499,13 @@ Namespace kCura.EDDS.WinForm
                 Dim caseInfo As Relativity.CaseInfo = Me.GetCase
                 If Not caseInfo Is Nothing Then
                     _selectedCaseInfo = caseInfo
-                    Await Me.RefreshSelectedCaseInfo()
+					Try
+						CursorWaitWhichWorks()
+						Await Me.RefreshSelectedCaseInfo()
+						Await SetTapiClientInfo().ConfigureAwait(False)
+					Finally
+						CursorDefaultWhichWorks()
+					End Try
                     RaiseEvent OnEvent(New LoadCaseEvent(caseInfo))
                 End If
             Catch MrSoapy As SoapException
