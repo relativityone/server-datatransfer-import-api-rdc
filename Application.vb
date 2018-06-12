@@ -1781,7 +1781,16 @@ Namespace kCura.EDDS.WinForm
 
 		Public Async Function SetupMessageService() As Task(Of IMessageService)
 			If _messageService Is Nothing
-				_messageService = MessageServiceFactory.SetupMessageService(ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync()))
+				_messageService = New MessageService()
+				Dim serviceFactory  = ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync())
+
+				Dim jobLifetimeSink = New JobLifetimeSink(serviceFactory)
+				Dim jobLiveSink = New JobLiveMetricSink(serviceFactory)
+				Dim jobEolSink = New JobEndOfLifeSink(serviceFactory)
+
+				jobLifetimeSink.Subscribe(_messageService)
+				jobLiveSink.Subscribe(_messageService)
+				jobEolSink.Subscribe(_messageService)
 			End If
 			return _messageService
 		End Function
