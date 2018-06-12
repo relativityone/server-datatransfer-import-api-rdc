@@ -704,7 +704,6 @@ Namespace kCura.WinEDDS
 				End If
 
 				If Me.DisableNativeLocationValidation Then
-					'assuming that file exists and not validating it
 					fileExists = True
 				Else
 					fileExists = System.IO.File.Exists(filename)
@@ -714,15 +713,13 @@ Namespace kCura.WinEDDS
 					fileExists = False
 				End If
 
-				If filename <> String.Empty AndAlso Not fileExists Then lineStatus += Relativity.MassImport.ImportStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
+				If filename <> String.Empty AndAlso Not fileExists Then lineStatus += Relativity.MassImport.ImportStatus.FileSpecifiedDne
 				If fileExists AndAlso Not Me.DisableNativeLocationValidation Then
 					If IoReporterInstance.GetFileLength(filename, Me.CurrentLineNumber) = 0 Then
 						If _createErrorForEmptyNativeFile Then
-							lineStatus += Relativity.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
+							lineStatus += Relativity.MassImport.ImportStatus.EmptyFile
 						Else
-							WriteWarning("The file " & filename & " is empty; only metadata will be loaded for this record.")
-							fileExists = False
-							filename = String.Empty
+							WriteWarning("Note that file " & filename & " has been detected as empty, metadata and the native file will be loaded.")
 						End If
 					End If
 				End If
