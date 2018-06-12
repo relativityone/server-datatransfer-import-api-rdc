@@ -1,4 +1,5 @@
-﻿Imports kCura.WinEDDS.Monitoring
+﻿Imports kCura.WinEDDS
+Imports kCura.WinEDDS.Monitoring
 Imports kCura.WinEDDS.TApi
 Imports Relativity.DataTransfer.MessageService
 
@@ -82,22 +83,17 @@ Public MustInherit Class MonitoredProcessBase
 
 	Protected Sub SendThroughputStatistics(metadataThroughput As Double, fileThroughput As Double)
 		Dim message As TransferJobApmThroughputMessage = New TransferJobApmThroughputMessage()
-		message.JobType = JobType
-		message.TransferMode = TapiClientName
-		message.CorellationID = JobGuid.ToString()
-		message.UnitOfMeasure = "Bytes(s)"
+		BuildApmBaseMessage(message)
 		message.CustomData.Add("MetadataThroughput", metadataThroughput)
 		message.CustomData.Add("FileThroughput", fileThroughput)
-		If Not (CaseInfo Is Nothing) Then
-			message.WorkspaceID = CaseInfo.ArtifactID
-		End If
 		MessageService.Send(message)
 	End Sub
 
-	Protected Sub SendJobStatistics()
+	Protected Sub SendJobStatistics(statistics As Statistics)
 		SendJobThroughputMessage()
 		SendJobTotalRecordsCountMessage()
 		SendJobCompletedRecordsCountMessage()
+		SendJobSize(statistics)
 	End Sub
 
 	Protected Sub SendJobThroughputMessage()
@@ -115,6 +111,28 @@ Public MustInherit Class MonitoredProcessBase
 
 	Protected Sub SendJobCompletedRecordsCountMessage()
 		MessageService.Send(New TransferJobCompletedRecordsCountMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CompletedRecords = CompletedRecordsCount})
+	End Sub
+
+	Private Sub SendJobSize(statistics As Statistics)
+		Dim message As TransferJobSizeMessage = New TransferJobSizeMessage() With {
+			    .JobType = JobType, 
+			    .TransferMode = TapiClientName, 
+			    .JobSize = statistics.MetadataBytes + statistics.FileBytes }
+
+		message.CustomData.Add("MetadataBytes", statistics.MetadataBytes)
+		message.CustomData.Add("FileBytes", statistics.FileBytes)
+		BuildApmBaseMessage(message)
+		MessageService.Send(message)
+	End Sub
+	
+	Private Sub BuildApmBaseMessage(message As TransferJobMessageBase)
+		message.JobType = JobType
+		message.TransferMode = TapiClientName
+		message.CorellationID = JobGuid.ToString()
+		message.UnitOfMeasure = "Bytes(s)"
+		If Not (CaseInfo Is Nothing) Then
+			message.WorkspaceID = CaseInfo.ArtifactID
+		End If
 	End Sub
 
 End Class
