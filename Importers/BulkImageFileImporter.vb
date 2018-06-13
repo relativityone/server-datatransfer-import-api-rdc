@@ -1218,7 +1218,7 @@ Namespace kCura.WinEDDS
 							_errorCount += 1
 							Dim originalIndex As Int64 = Int64.Parse(line(0))
 							Dim ht As New System.Collections.Hashtable
-							ht.Add("Line Number", Int32.Parse(line(0)))
+							ht.Add("Line Number", originalIndex)
 							ht.Add("DocumentID", line(1))
 							ht.Add("FileID", line(2))
 							Dim errorMessages As String = line(3)
@@ -1230,9 +1230,10 @@ Namespace kCura.WinEDDS
 								errorMessages = sb.ToString.TrimEnd(ChrW(10))
 							End If
 							ht.Add("Message", errorMessages)
-							RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
+							RaiseReportError(ht, CType(originalIndex, Integer), line(2), "server")
 							'TODO: track stats
-							RaiseEvent StatusMessage(New StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _recordCount, "[Line " & line(0) & "]" & errorMessages, Nothing, Statistics))
+							Dim recordNumber As Long = originalIndex + ImportFilesCount
+							RaiseEvent StatusMessage(New StatusEventArgs(Windows.Process.EventType.Error, recordNumber - 1, _recordCount, "[Line " & line(0) & "]" & errorMessages, Nothing, Statistics))
 							line = sr.ReadLine
 						End While
 						sr.Close()
