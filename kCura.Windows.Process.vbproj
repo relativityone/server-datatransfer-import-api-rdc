@@ -180,6 +180,7 @@
     <Compile Include="ProcessBase.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ProcessEndEventArgs.vb" />
     <Compile Include="ProcessEvent.vb">
       <SubType>Code</SubType>
     </Compile>
