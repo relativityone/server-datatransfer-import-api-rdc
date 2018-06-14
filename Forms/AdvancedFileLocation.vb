@@ -170,6 +170,8 @@ End Sub
 
 		Friend SelectDefaultPath As Boolean = True
 
+		Public Property IsUsingAsperaConnectionMode() As Boolean
+
 		Private Sub AdvancedFileLocation_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			SetRepositoriesComboBoxAccessibility()
 			_asperaModeWarningLinkLabel.Visible = IsUsingAsperaConnectionMode()
@@ -219,10 +221,6 @@ End Sub
                 _repositories.Enabled = _copyNativeFiles.Checked
             End If
         End Sub
-
-		Private Function IsUsingAsperaConnectionMode() As Boolean
-			Return Application.Instance.SelectedTransferClientId = Guid.Parse(TransferClientConstants.AsperaClientId)
-		End Function
 
 		Private Sub _defaultButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _defaultButton.Click
 			Me.SelectPath(kCura.EDDS.WinForm.Application.Instance.SelectedCaseInfo.DocumentPath)

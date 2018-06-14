@@ -61,8 +61,6 @@ Namespace kCura.EDDS.WinForm
         Private _caseSelected As Boolean = True
         Private _processPool As kCura.Windows.Process.ProcessPool
         Private _selectedCaseInfo As Relativity.CaseInfo
-        Private _selectedTransferClientId as Guid = Guid.Empty
-        Private _selectedTransferClientName as String
         Private _selectedCaseFolderID As Int32
         Private _fieldProviderCache As IFieldProviderCache
         Private _selectedCaseFolderPath As String
@@ -108,20 +106,6 @@ Namespace kCura.EDDS.WinForm
                 _timeZoneOffset = value
             End Set
         End Property
-
-		Public ReadOnly Property SelectedTransferClientId() As Guid
-			Get
-				Return _selectedTransferClientId
-			End Get
-		End Property
-
-		Public ReadOnly Property SelectedTransferClientName() As String
-			Get
-				Return _selectedTransferClientName
-			End Get
-		End Property
-
-
 
 		Public ReadOnly Property SelectedCaseInfo() As Relativity.CaseInfo
             Get
@@ -502,7 +486,6 @@ Namespace kCura.EDDS.WinForm
 					Try
 						CursorWaitWhichWorks()
 						Await RefreshSelectedCaseInfoAsync().ConfigureAwait(False)
-						Await SetTapiClientInfoAsync().ConfigureAwait(False)
 					Finally
 						CursorDefaultWhichWorks()
 					End Try
@@ -537,11 +520,20 @@ Namespace kCura.EDDS.WinForm
             End If
         End Function
 
-        Private Async Function SetTapiClientInfoAsync() As Task
+        Public Async Function GetConnectionStatus() As Task(Of String)
 	        Dim parameters = CreateTapiParametersAsync()
-	        Dim client = Await TApi.TapiWinEddsHelper.GetWorkspaceClientAsync(Await parameters).ConfigureAwait(False)
-			_selectedTransferClientId = client.Id
-			_selectedTransferClientName = client.DisplayName
+	        Dim clientName = Await TApi.TapiWinEddsHelper.GetWorkspaceClientDisplayNameAsync(await parameters)
+			Return clientName
+		End Function
+
+		Public Async Function GetConnectionMode() As Task(Of Guid)
+	        Dim parameters = CreateTapiParametersAsync()
+	        Dim clientName = Await TApi.TapiWinEddsHelper.GetWorkspaceClientIdAsync(await parameters)
+	        Return clientName
+        End Function
+
+        Public Async Function IsUsingAsperaConnectionMode() As Task(Of Boolean)
+	        Return (Await GetConnectionMode().ConfigureAwait(False)) = Guid.Parse(TransferClientConstants.AsperaClientId)
         End Function
 
         Private Async Function CreateTapiParametersAsync() As Task(Of TApi.TapiBridgeParameters)
