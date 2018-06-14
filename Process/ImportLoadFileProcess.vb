@@ -283,7 +283,7 @@ Namespace kCura.WinEDDS
 				Case kCura.Windows.Process.EventType.End
 					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, System.DateTime.Now, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-
+					Me.ProcessObserver.RaiseEndEvent(e.Statistics.FileBytes, e.Statistics.MetadataBytes)
 				Case kCura.Windows.Process.EventType.Error
 					_errorCount += 1
 					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
