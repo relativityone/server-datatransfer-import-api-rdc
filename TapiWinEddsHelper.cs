@@ -167,6 +167,36 @@ namespace kCura.WinEDDS.TApi
 		}
 
 		/// <summary>
+		/// Asynchronously gets the TAPI client display name that will be used for the given workspace.
+		/// </summary>
+		/// <param name="parameters">
+		/// The bridge connection parameters.
+		/// </param>
+		/// <returns>
+		/// The client display name.
+		/// </returns>
+		public static async Task<string> GetWorkspaceClientDisplayNameAsync(TapiBridgeParameters parameters)
+		{
+			ITransferClient transferClient = await GetWorkspaceClientAsync(parameters).ConfigureAwait(false);
+			return transferClient.DisplayName;
+		}
+
+		/// <summary>
+		/// Asynchronously gets the TAPI client Id that will be used for the given workspace.
+		/// </summary>
+		/// <param name="parameters">
+		/// The bridge connection parameters.
+		/// </param>
+		/// <returns>
+		/// The client display name.
+		/// </returns>
+		public static async Task<Guid> GetWorkspaceClientIdAsync(TapiBridgeParameters parameters)
+		{
+			ITransferClient transferClient = await GetWorkspaceClientAsync(parameters).ConfigureAwait(false);
+			return transferClient.Id;
+		}
+
+		/// <summary>
 		/// Asynchronously gets the TAPI client that will be used for the given workspace.
 		/// </summary>
 		/// <param name="parameters">
@@ -175,7 +205,7 @@ namespace kCura.WinEDDS.TApi
 		/// <returns>
 		/// The <see cref="ITransferClient"/> instance.
 		/// </returns>
-		public static async Task<ITransferClient> GetWorkspaceClientAsync(TapiBridgeParameters parameters)
+		private static async Task<ITransferClient> GetWorkspaceClientAsync(TapiBridgeParameters parameters)
 		{
 			var configuration = new ClientConfiguration
 			{
