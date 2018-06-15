@@ -392,8 +392,10 @@ End Sub
 				Case appEvent.AppEventType.LoadCase
 					_fileMenuRefresh.Enabled = True
 					UpdateStatus("Workspace Loaded - File Transfer Mode: Connecting...")
-					UpdateStatus($"Workspace Loaded - File Transfer Mode: {_application.SelectedTransferClientName}")
+					Dim modeTask = Task.Run( Async Function() Await _application.GetConnectionStatus().ConfigureAwait(False)).ConfigureAwait(True)
 					Await PopulateObjectTypeDropDown()
+					Dim mode As String = Await modeTask
+					UpdateStatus($"Workspace Loaded - File Transfer Mode: {mode}")
 					_optionsMenuCheckConnectivityItem.Enabled = True
 					ImportMenu.Enabled = _application.UserHasImportPermission
 					ExportMenu.Enabled = _application.UserHasExportPermission
@@ -557,7 +559,7 @@ End Sub
 		End Sub
 
 		Private Async Function PopulateObjectTypeDropDown() As Task
-			Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(Await _application.GetCredentialsAsync(), _application.CookieContainer)
+			Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(Await _application.GetCredentialsAsync().ConfigureAwait(True), _application.CookieContainer)
 			Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
 			Dim selectedObjectTypeID As Int32 = Relativity.ArtifactType.Document
 			If _objectTypeDropDown.Items.Count > 0 Then
