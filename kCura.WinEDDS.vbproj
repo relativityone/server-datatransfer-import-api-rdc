@@ -465,12 +465,16 @@
     <Compile Include="Importers\OutputFileWriter.vb" />
     <Compile Include="IO\FileStreamFactory.vb" />
     <Compile Include="IO\IFileStreamFactory.vb" />
-    <Compile Include="Monitoring\MessageServiceFactory.vb" />
+    <Compile Include="Monitoring\Sinks\JobEndOfLifeSink.vb" />
+    <Compile Include="Monitoring\Sinks\JobLifetimeSink.vb" />
+    <Compile Include="Monitoring\Sinks\JobLiveMetricSink.vb" />
+    <Compile Include="Monitoring\Sinks\MetricSinkBase.vb" />
     <Compile Include="Monitoring\TransferJobApmThroughputMessage.vb" />
     <Compile Include="Monitoring\TransferJobCompletedRecordsCountMessage.vb" />
     <Compile Include="Monitoring\TransferJobFailedMessage.vb" />
     <Compile Include="Monitoring\TransferJobMessageBase.vb" />
     <Compile Include="Monitoring\TransferJobCompletedMessage.vb" />
+    <Compile Include="Monitoring\TransferJobSizeMessage.vb" />
     <Compile Include="Monitoring\TransferJobStartedMessage.vb" />
     <Compile Include="Monitoring\TransferJobThroughputMessage.vb" />
     <Compile Include="Monitoring\TransferJobTotalRecordsCountMessage.vb" />
