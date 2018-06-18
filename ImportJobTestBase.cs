@@ -315,17 +315,18 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
             this.GivenTheTapiForceAsperaClientSetting(forceClient == TapiClient.Aspera);
             this.GivenTheTapiForceFileShareClientSetting(forceClient == TapiClient.Direct);
             this.GivenTheTapiForceHttpClientSetting(forceClient == TapiClient.Web);
-            this.GivenTheMaxJobRetryAttemptsSetting(1);
-            this.GivenTheMaxJobParallelismSetting(1);
-            this.GivenTheLogEnabledSetting(true);
-            this.GivenTheIoErrorWaitTimeInSeconds(0);
+            this.GivenTheTapiMaxJobRetryAttemptsSetting(1);
+            this.GivenTheTapiMaxJobParallelismSetting(1);
+            this.GivenTheTapiLogEnabledSetting(true);
+	        this.GivenTheTapiSubmitApmMetricsSetting(false);
+			this.GivenTheIoErrorWaitTimeInSeconds(0);
             this.GivenTheUsePipeliningForFileIdAndCopySetting(false);
             this.GivenTheDisableNativeLocationValidationSetting(disableNativeLocationValidation);
             this.GivenTheDisableNativeValidationSetting(disableNativeValidation);
 
             // Note: there's no longer a BCP sub-folder.
-            this.GivenTheAsperaBcpRootFolder(string.Empty);
-            this.GivenTheAsperaNativeDocRootLevels(1);
+            this.GivenTheTapiAsperaBcpRootFolder(string.Empty);
+            this.GivenTheTapiAsperaNativeDocRootLevels(1);
         }
 
         /// <summary>
@@ -336,7 +337,6 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         /// </param>
         protected void GivenTheImportBatchSizeSetting(int value)
         {
-
             Config.ConfigSettings["ImportBatchSize"] = value;
         }
 
@@ -352,7 +352,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         }
 
         /// <summary>
-        /// Given the force Aspera client setting.
+        /// Given the TAPI force Aspera client setting.
         /// </summary>
         /// <param name="value">
         /// The force setting.
@@ -363,7 +363,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         }
 
         /// <summary>
-        /// Given the force file share client setting.
+        /// Given the TAPI force file share client setting.
         /// </summary>
         /// <param name="value">
         /// The force setting.
@@ -374,7 +374,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         }
 
         /// <summary>
-        /// Given the force HTTP client setting.
+        /// Given the TAPI force HTTP client setting.
         /// </summary>
         /// <param name="value">
         /// The force setting.
@@ -385,67 +385,78 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         }
 
         /// <summary>
-        /// Given the max job parallelism setting.
+        /// Given the TAPI max job parallelism setting.
         /// </summary>
         /// <param name="value">
         /// The setting value.
         /// </param>
-        protected void GivenTheMaxJobParallelismSetting(int value)
+        protected void GivenTheTapiMaxJobParallelismSetting(int value)
         {
             Config.ConfigSettings["TapiMaxJobParallelism"] = value;
         }
 
         /// <summary>
-        /// Given the log enabled setting.
+        /// Given the TAPI log enabled setting.
         /// </summary>
         /// <param name="value">
         /// The setting value.
         /// </param>
-        protected void GivenTheLogEnabledSetting(bool value)
+        protected void GivenTheTapiLogEnabledSetting(bool value)
         {
             Config.ConfigSettings["TapiLogEnabled"] = value;
         }
 
         /// <summary>
-        /// Given the Aspera native files doc-root levels.
+        /// Given the TAPI Aspera native files doc-root levels.
         /// </summary>
         /// <param name="value">
         /// The setting value.
         /// </param>
-        protected void GivenTheAsperaNativeDocRootLevels(int value)
+        protected void GivenTheTapiAsperaNativeDocRootLevels(int value)
         {
             Config.ConfigSettings["TapiAsperaNativeDocRootLevels"] = value;
         }
 
         /// <summary>
-        /// Given the Aspera BCP root folder.
+        /// Given the TAPI Aspera BCP root folder.
         /// </summary>
         /// <param name="value">
         /// The setting value.
         /// </param>
-        protected void GivenTheAsperaBcpRootFolder(string value)
+        protected void GivenTheTapiAsperaBcpRootFolder(string value)
         {
             Config.ConfigSettings["TapiAsperaBcpRootFolder"] = value;
         }
 
         /// <summary>
-        /// Given the max job retry attempts setting.
+        /// Given the TAPI max job retry attempts setting.
         /// </summary>
         /// <param name="value">
         /// The setting value.
         /// </param>
-        protected void GivenTheMaxJobRetryAttemptsSetting(int value)
+        protected void GivenTheTapiMaxJobRetryAttemptsSetting(int value)
         {
             Config.ConfigSettings["TapiMaxJobRetryAttempts"] = value;
         }
 
-        /// <summary>
-        /// Given the disable native location validation setting.
-        /// </summary>
-        /// <param name="value">
-        /// The setting value.
-        /// </param>
-        protected void GivenTheDisableNativeLocationValidationSetting(bool value)
+	    /// <summary>
+	    /// Given the TAPI submit APM setting.
+	    /// </summary>
+	    /// <param name="value">
+	    /// The setting value.
+	    /// </param>
+		protected void GivenTheTapiSubmitApmMetricsSetting(bool value)
+	    {
+		    Config.ConfigSettings["TapiSubmitApmMetrics"] = value;
+	    }
+
+		/// <summary>
+		/// Given the disable native location validation setting.
+		/// </summary>
+		/// <param name="value">
+		/// The setting value.
+		/// </param>
+		protected void GivenTheDisableNativeLocationValidationSetting(bool value)
         {
             Config.ConfigSettings["DisableNativeLocationValidation"] = value;
         }
