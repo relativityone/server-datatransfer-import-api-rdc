@@ -24,7 +24,7 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         public TapiBridgeParameters()
         {
-            this.AsperaBcpRootFolder = "BCPPath";
+            this.AsperaBcpRootFolder = null;
             this.AsperaDocRootLevels = 1;
             this.BadPathErrorsRetry = false;
             this.ClientRequestId = Guid.NewGuid();
@@ -39,7 +39,7 @@ namespace kCura.WinEDDS.TApi
             this.MaxJobParallelism = 10;
             this.MaxJobRetryAttempts = 3;
             this.MinDataRateMbps = 0;
- 			this.PermissionErrorsRetry = false;
+            this.PermissionErrorsRetry = false;
             this.SupportCheckPath = null;
             this.TargetDataRateMbps = 100;
             this.TargetPath = null;
@@ -294,8 +294,8 @@ namespace kCura.WinEDDS.TApi
             get;
             set;
         }
-		
-		/// <summary>
+
+        /// <summary>
         /// Gets or sets the support check path.
         /// </summary>
         /// <value>

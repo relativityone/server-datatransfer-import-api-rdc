@@ -177,7 +177,7 @@ namespace kCura.WinEDDS.TApi
 		/// </returns>
 		public static async Task<string> GetWorkspaceClientDisplayNameAsync(TapiBridgeParameters parameters)
 		{
-			ITransferClient transferClient = await GetWorkspaceClientAsync(parameters);
+			ITransferClient transferClient = await GetWorkspaceClientAsync(parameters).ConfigureAwait(false);
 			return transferClient.DisplayName;
 		}
 
@@ -192,7 +192,7 @@ namespace kCura.WinEDDS.TApi
 		/// </returns>
 		public static async Task<Guid> GetWorkspaceClientIdAsync(TapiBridgeParameters parameters)
 		{
-			ITransferClient transferClient = await GetWorkspaceClientAsync(parameters);
+			ITransferClient transferClient = await GetWorkspaceClientAsync(parameters).ConfigureAwait(false);
 			return transferClient.Id;
 		}
 
@@ -221,7 +221,7 @@ namespace kCura.WinEDDS.TApi
 					{
 						using (var client = transferHost.CreateClient(configuration))
 						{
-							var supportCheck = await client.SupportCheckAsync();
+							var supportCheck = await client.SupportCheckAsync().ConfigureAwait(false);
 							if (supportCheck.IsSupported)
 							{
 								return client;
