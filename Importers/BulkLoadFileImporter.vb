@@ -387,6 +387,7 @@ Namespace kCura.WinEDDS
 		Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)
 			Dim gateway As Service.FileIO = New Service.FileIO(args.Credentials, args.CookieContainer)
 			Dim nativeParameters As TApi.UploadTapiBridgeParameters = New TApi.UploadTapiBridgeParameters
+			nativeParameters.Application = Config.ApplicationName
 			nativeParameters.BcpFileTransfer = False
 			nativeParameters.AsperaBcpRootFolder = String.Empty
 
@@ -405,6 +406,7 @@ Namespace kCura.WinEDDS
 			nativeParameters.MaxJobParallelism = Config.TapiMaxJobParallelism
 			nativeParameters.MaxJobRetryAttempts = Me.NumberOfRetries
 			nativeParameters.MinDataRateMbps = Config.TapiMinDataRateMbps
+			nativeParameters.SubmitApmMetrics = Config.TapiSubmitApmMetrics
 			nativeParameters.TargetPath = Me._defaultDestinationFolderPath
 			nativeParameters.TargetDataRateMbps = Config.TapiTargetDataRateMbps
 			nativeParameters.TransferLogDirectory = Config.TapiTransferLogDirectory
