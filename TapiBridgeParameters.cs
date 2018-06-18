@@ -24,6 +24,7 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         public TapiBridgeParameters()
         {
+	        this.Application = null;
             this.AsperaBcpRootFolder = null;
             this.AsperaDocRootLevels = 1;
             this.BadPathErrorsRetry = false;
@@ -40,6 +41,7 @@ namespace kCura.WinEDDS.TApi
             this.MaxJobRetryAttempts = 3;
             this.MinDataRateMbps = 0;
             this.PermissionErrorsRetry = false;
+            this.SubmitApmMetrics = false;
             this.SupportCheckPath = null;
             this.TargetDataRateMbps = 100;
             this.TargetPath = null;
@@ -64,6 +66,7 @@ namespace kCura.WinEDDS.TApi
                 throw new ArgumentNullException(nameof(copy));
             }
 
+	        this.Application = copy.Application;
             this.AsperaBcpRootFolder = copy.AsperaBcpRootFolder;
             this.AsperaDocRootLevels = copy.AsperaDocRootLevels;
             this.BadPathErrorsRetry = copy.BadPathErrorsRetry;
@@ -81,6 +84,7 @@ namespace kCura.WinEDDS.TApi
             this.MaxJobRetryAttempts = copy.MaxJobRetryAttempts;
             this.MinDataRateMbps = copy.MinDataRateMbps;
             this.PermissionErrorsRetry = copy.PermissionErrorsRetry;
+            this.SubmitApmMetrics = copy.SubmitApmMetrics;
             this.SupportCheckPath = copy.SupportCheckPath;
             this.TargetPath = copy.TargetPath;
             this.TimeoutSeconds = copy.TimeoutSeconds;
@@ -91,13 +95,25 @@ namespace kCura.WinEDDS.TApi
             this.WorkspaceId = copy.WorkspaceId;
         }
 
-        /// <summary>
-        /// Gets or sets the Aspera BCP root folder.
-        /// </summary>
-        /// <value>
-        /// The folder.
-        /// </value>
-        public string AsperaBcpRootFolder
+	    /// <summary>
+	    /// Gets or sets the optional application name for this request. When specified, this value is attached to the APM metrics and other reporting features for added insight.
+	    /// </summary>
+	    /// <value>
+	    /// The application.
+	    /// </value>
+	    public string Application
+	    {
+		    get;
+		    set;
+	    }
+
+		/// <summary>
+		/// Gets or sets the Aspera BCP root folder.
+		/// </summary>
+		/// <value>
+		/// The folder.
+		/// </value>
+		public string AsperaBcpRootFolder
         {
             get;
             set;
@@ -290,6 +306,18 @@ namespace kCura.WinEDDS.TApi
         /// <see langword="true" /> if TAPI should retry; otherwise, <see langword="false" />.
         /// </value>
         public bool PermissionErrorsRetry
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to submit APM metrics to Relativity once the transfer job completes. This is <see langword="false" /> by default.
+        /// </summary>
+        /// <value>
+        /// <see langword="true" /> to submit APM metrics; otherwise, <see langword="false" />.
+        /// </value>
+        public bool SubmitApmMetrics
         {
             get;
             set;
