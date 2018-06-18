@@ -552,23 +552,26 @@ namespace kCura.WinEDDS.TApi
 			var configuration =
 				new ClientConfiguration
 				{
-				    BcpRootFolder = this.parameters.AsperaBcpRootFolder,
-                    CookieContainer = this.parameters.WebCookieContainer,
-				    FileTransferHint = FileTransferHint.Natives,
-                    HttpTimeoutSeconds = this.parameters.TimeoutSeconds,
-                    MaxJobParallelism = this.parameters.MaxJobParallelism,
+					BadPathErrorsRetry = this.parameters.BadPathErrorsRetry,
+					BcpRootFolder = this.parameters.AsperaBcpRootFolder,
+					CookieContainer = this.parameters.WebCookieContainer,
+					Credential = this.parameters.FileshareCredentials != null
+						? this.parameters.FileshareCredentials.CreateCredential()
+						: null,
+					FileTransferHint = FileTransferHint.Natives,
+					HttpTimeoutSeconds = this.parameters.TimeoutSeconds,
+					MaxJobParallelism = this.parameters.MaxJobParallelism,
 					MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
 					MaxHttpRetryAttempts = MaxHttpRetryAttempts,
 					MinDataRateMbps = this.parameters.MinDataRateMbps,
+					PermissionErrorsRetry = this.parameters.PermissionErrorsRetry,
 					PreCalculateJobSize = false,
 					PreserveDates = false,
+					SupportCheckPath = this.parameters.SupportCheckPath,
 					TargetDataRateMbps = this.parameters.TargetDataRateMbps,
 					TransferLogDirectory = this.parameters.TransferLogDirectory,
-					ValidateSourcePaths = ValidateSourcePaths,
-                    PermissionErrorsRetry = this.parameters.PermissionErrorsRetry,
-				    BadPathErrorsRetry = this.parameters.BadPathErrorsRetry,
-				    SupportCheckPath = this.parameters.SupportCheckPath
-                };
+					ValidateSourcePaths = ValidateSourcePaths
+				};
 			return configuration;
 		}
 
