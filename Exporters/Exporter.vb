@@ -15,7 +15,6 @@ Imports kCura.WinEDDS.Service.Export
 
 Namespace kCura.WinEDDS
 	Public Class Exporter
-		Implements IExporterStatusNotification
 		Implements IExporter
 		Implements IStatus
 
@@ -146,7 +145,7 @@ Namespace kCura.WinEDDS
 				_fileNameProvider = Value
 			End Set
 		End Property
-		
+
 #End Region
 
 		Public Event ShutdownEvent()
@@ -196,6 +195,8 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Function ExportSearch() As Boolean Implements IExporter.ExportSearch
+			RaiseEvent ExportStarted()
+
 			Try
 				_start = System.DateTime.Now
 				Me.Search()
@@ -204,6 +205,8 @@ Namespace kCura.WinEDDS
 				If Not _volumeManager Is Nothing Then
 					_volumeManager.Close()
 				End If
+			Finally
+				'RaiseEvent ExportFinished(new ExportEventArgs(Me.DocumentsExported, 0, ))
 			End Try
 			Return Me.ErrorLogFileName = ""
 		End Function
@@ -352,7 +355,7 @@ Namespace kCura.WinEDDS
 
 				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", kCura.Windows.Process.EventType.ResetStartTime, _lastStatisticsSnapshot, Statistics))
 				RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType.ToString)
-				
+
 				Dim records As Object() = Nothing
 				Dim start, realStart As Int32
 				Dim lastRecordCount As Int32 = -1
@@ -388,7 +391,7 @@ Namespace kCura.WinEDDS
 					End If
 					If _cancellationTokenSource.IsCancellationRequested Then Exit While
 				End While
-				
+
 				Me.WriteStatusLine(Windows.Process.EventType.Status, kCura.WinEDDS.FileDownloader.TotalWebTime.ToString, True)
 				_timekeeper.GenerateCsvReportItemsAsRows()
 
@@ -502,7 +505,7 @@ Namespace kCura.WinEDDS
 
 			Dim artifacts(documentArtifactIDs.Length - 1) As Exporters.ObjectExportInfo
 			Dim volumePredictions(documentArtifactIDs.Length - 1) As VolumePredictions
-			
+
 			Dim threads As Task() = Nothing
 			If UseOldExport Then
 				Dim threadCount As Integer = _exportConfig.ExportThreadCount - 1
@@ -523,7 +526,7 @@ Namespace kCura.WinEDDS
 				Else
 					objectExportableSize.FinalizeSizeCalculations(artifact, prediction)
 				End If
-				
+
 				volumePredictions(i) = prediction
 
 				artifacts(i) = artifact
@@ -1168,6 +1171,8 @@ Namespace kCura.WinEDDS
 		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Implements IExporterStatusNotification.FatalErrorEvent
 		Public Event StatusMessage(ByVal exportArgs As ExportEventArgs) Implements IExporterStatusNotification.StatusMessage
 		Public Event FileTransferModeChangeEvent(ByVal mode As String) Implements IExporterStatusNotification.FileTransferModeChangeEvent
+		Public Event ExportStarted() Implements IExporterStatusNotification.ExportStarted
+		Public Event ExportFinished(exportArgs As ExportEventArgs) Implements IExporterStatusNotification.ExportFinished
 		Public Event DisableCloseButton()
 		Public Event EnableCloseButton()
 
