@@ -31,6 +31,7 @@ namespace kCura.WinEDDS.TApi
             this.ClientRequestId = Guid.NewGuid();
             this.Credentials = null;
             this.FileShare = null;
+            this.FileshareCredentials = null;
             this.ForceAsperaClient = false;
             this.ForceClientCandidates = null;
             this.ForceHttpClient = false;
@@ -73,6 +74,7 @@ namespace kCura.WinEDDS.TApi
             this.ClientRequestId = copy.ClientRequestId;
             this.Credentials = copy.Credentials;
             this.FileShare = copy.FileShare;
+            this.FileshareCredentials = copy.FileshareCredentials;
             this.ForceAsperaClient = copy.ForceAsperaClient;
             this.ForceClientCandidates = copy.ForceClientCandidates;
             this.ForceHttpClient = copy.ForceHttpClient;
