@@ -15,7 +15,7 @@
 			relativityManager = New kCura.WinEDDS.Service.RelativityManager(cred, cookieContainer)
 
 			If relativityManager.ValidateSuccesfulLogin Then
-				CheckVersion(cred, cookieContainer)
+				CheckVersion(relativityManager)
 				Initialize(relativityManager, kCura.WinEDDS.Config.WebServiceURL)
 				Return cred
 			End If
@@ -33,7 +33,7 @@
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(credential, cookieContainer, webServiceUrl)
 			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(credential, cookieContainer, webServiceUrl)
 
-			CheckVersion(credential, cookieContainer)
+			CheckVersion(relativityManager)
 			If userManager.Login(username, password) Then
 				Initialize(relativityManager, webServiceUrl)
 				Return credential
@@ -51,9 +51,7 @@
 			kCura.WinEDDS.Service.Settings.AuthenticationToken = userMan.GenerateDistributedAuthenticationToken()
 		End Sub
 
-		Private Shared Sub CheckVersion(ByVal credential As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
-			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(credential, cookieContainer)
-
+		Private Shared Sub CheckVersion(relativityManager As Service.RelativityManager)
 			Dim winVersionString As String = System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1)
 			Dim winRelativityVersion As String() = winVersionString.Split("."c)
 			Dim relVersionString As String = relativityManager.RetrieveRelativityVersion
