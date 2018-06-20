@@ -226,8 +226,8 @@
       <HintPath>..\..\packages\Prism.Wpf.6.3.0\lib\net45\Prism.Wpf.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.7.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.1.0.7\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
+    <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.8.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.1.0.8\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Fileshare.Client, Version=1.1.5.8, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.FileshareAPI.1.1.5\lib\net462\Relativity.Fileshare.Client.dll</HintPath>
