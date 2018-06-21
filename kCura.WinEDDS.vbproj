@@ -205,6 +205,9 @@
     <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.445, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.445\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.Telemetry.APM, Version=9.4.162.14, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Telemetry.APM.9.4.162\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared">
       <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.162\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
     </Reference>
@@ -467,10 +470,12 @@
     <Compile Include="Importers\OutputFileWriter.vb" />
     <Compile Include="IO\FileStreamFactory.vb" />
     <Compile Include="IO\IFileStreamFactory.vb" />
+    <Compile Include="Monitoring\Sinks\IMetricsConfig.vb" />
     <Compile Include="Monitoring\Sinks\JobEndOfLifeSink.vb" />
     <Compile Include="Monitoring\Sinks\JobLifetimeSink.vb" />
     <Compile Include="Monitoring\Sinks\JobLiveMetricSink.vb" />
     <Compile Include="Monitoring\Sinks\MetricSinkBase.vb" />
+    <Compile Include="Monitoring\Sinks\ThrottledMetricSink.vb" />
     <Compile Include="Monitoring\TransferJobApmThroughputMessage.vb" />
     <Compile Include="Monitoring\TransferJobCompletedRecordsCountMessage.vb" />
     <Compile Include="Monitoring\TransferJobFailedMessage.vb" />

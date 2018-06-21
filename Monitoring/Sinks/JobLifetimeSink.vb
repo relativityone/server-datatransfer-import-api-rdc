@@ -6,8 +6,8 @@ Namespace kCura.WinEDDS
 	Public Class JobLifetimeSink
 		Inherits MetricSinkBase
 
-		Public Sub New(serviceFactory As IServiceFactory)
-			MyBase.New(serviceFactory)
+		Public Sub New(serviceFactory As IServiceFactory, metricsManagerFactory As IMetricsManagerFactory)
+			MyBase.New(serviceFactory, metricsManagerFactory)
 		End Sub
 
 		Public Overrides Sub Subscribe(messageService As IMessageService)

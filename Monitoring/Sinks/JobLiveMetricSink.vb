@@ -6,8 +6,8 @@ Namespace kCura.WinEDDS
 	Public Class JobLiveMetricSink
 		Inherits MetricSinkBase
 
-		Public Sub New(serviceFactory As IServiceFactory)
-			MyBase.New(serviceFactory)
+		Public Sub New(serviceFactory As IServiceFactory, metricsManagerFactory As IMetricsManagerFactory)
+			MyBase.New(serviceFactory, metricsManagerFactory)
 		End Sub
 		
 		Public Overrides Sub Subscribe(messageService As IMessageService)
@@ -16,6 +16,5 @@ Namespace kCura.WinEDDS
 					LogApmDouble(FormatPerformanceBucketName("ThroughputBytes", message.JobType, message.TransferMode), 1, message)
 				End Sub)
 		End Sub
-
 	End Class
 End Namespace
