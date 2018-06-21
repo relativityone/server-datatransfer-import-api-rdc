@@ -114,14 +114,10 @@ Public MustInherit Class MonitoredProcessBase
 	End Sub
 
 	Private Sub SendJobSize(statistics As Statistics)
-		Dim message As TransferJobSizeMessage = New TransferJobSizeMessage() With {
-				.JobType = JobType,
-				.TransferMode = TapiClientName,
-				.JobSize = statistics.MetadataBytes + statistics.FileBytes}
-
+		Dim message As TransferJobSizeMessage = New TransferJobSizeMessage() With {.JobSize = statistics.MetadataBytes + statistics.FileBytes}
+		BuildApmBaseMessage(message)
 		message.CustomData.Add("MetadataBytes", statistics.MetadataBytes)
 		message.CustomData.Add("FileBytes", statistics.FileBytes)
-		BuildApmBaseMessage(message)
 		MessageService.Send(message)
 	End Sub
 

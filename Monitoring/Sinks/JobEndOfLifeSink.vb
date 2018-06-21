@@ -28,9 +28,10 @@ Namespace kCura.WinEDDS
 
 			messageService.Subscribe(Of TransferJobSizeMessage)(
 				Sub(message)
-					LogApmDouble(FormatPerformanceBucketName("JobSize", message.JobType, message.TransferMode), message.JobSize, message)
+					Dim bucket As String = FormatPerformanceBucketName("JobSize", message.JobType, message.TransferMode)
+					LogApmDouble(bucket, message.JobSize, message)
+					LogDouble(bucket, message.JobSize)
 				End Sub)
-
 		End Sub
 	End Class
 End Namespace
