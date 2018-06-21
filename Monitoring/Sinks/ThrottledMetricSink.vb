@@ -16,7 +16,7 @@ Namespace kCura.WinEDDS.Monitoring
 
 		Public Sub OnMessage(message As T) Implements IMetricSink(Of T).OnMessage
 			Dim currentTime As DateTime = DateTime.Now
-			If currentTime - _lastSendTime > _throttleTimeoutProvider() Then
+			If currentTime - _lastSendTime >= _throttleTimeoutProvider() Then
 				_baseSink.OnMessage(message)
 				_lastSendTime = currentTime
 			End If
