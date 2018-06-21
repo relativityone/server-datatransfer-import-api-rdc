@@ -14,8 +14,8 @@ Namespace kCura.WinEDDS
 		Implements IMetricSink
 		Private ReadOnly _serviceFactory As IServiceFactory
 
-		Private ReadOnly _usagePrefix As String = "RDC.Usage"
-		Private ReadOnly _performancePrefix As String = "RDC.Performance"
+		Protected ReadOnly UsagePrefix As String = "RDC.Usage"
+		Protected ReadOnly PerformancePrefix As String = "RDC.Performance"
 		Private ReadOnly _metricsManagerFactory As IMetricsManagerFactory
 
 		Protected Sub New (serviceFactory As IServiceFactory, metricsManagerFactory As IMetricsManagerFactory)
@@ -26,11 +26,11 @@ Namespace kCura.WinEDDS
 		Public MustOverride Sub Subscribe(messageService As IMessageService) Implements IMetricSink.Subscribe
 
 		Protected Function FormatUsageBucketName(metricName As String, jobType As String, transferMode As String) As String
-			Return $"{_usagePrefix}.{metricName}.{jobType}.{transferMode}"
+			Return $"{UsagePrefix}.{metricName}.{jobType}.{transferMode}"
 		End Function
 
 		Protected Function FormatPerformanceBucketName(metricName As String, jobType As String, transferMode As String) As String
-			Return $"{_performancePrefix}.{metricName}.{jobType}.{transferMode}"
+			Return $"{PerformancePrefix}.{metricName}.{jobType}.{transferMode}"
 		End Function
 
 		Public Sub LogCount(bucketName As String, value As Long) Implements IMetricSink.LogCount

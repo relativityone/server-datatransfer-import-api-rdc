@@ -13,7 +13,7 @@ Namespace kCura.WinEDDS
 		Public Overrides Sub Subscribe(messageService As IMessageService)
 			messageService.Subscribe(Of TransferJobApmThroughputMessage)(
 				Sub(message)
-					LogApmDouble(FormatPerformanceBucketName("ThroughputBytes", message.JobType, message.TransferMode), 1, message)
+					LogApmDouble($"{PerformancePrefix}.Progress", 1, message)
 				End Sub)
 		End Sub
 	End Class
