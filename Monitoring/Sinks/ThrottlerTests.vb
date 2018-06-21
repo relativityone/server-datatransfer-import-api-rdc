@@ -1,6 +1,4 @@
-﻿
-
-Imports System.Threading
+﻿Imports System.Threading
 Imports kCura.WinEDDS.Monitoring
 Imports NSubstitute
 Imports NUnit.Framework

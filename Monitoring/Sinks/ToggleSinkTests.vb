@@ -1,11 +1,7 @@
-﻿Imports System.Threading.Tasks
-Imports kCura.WinEDDS
-Imports kCura.WinEDDS.Monitoring
+﻿Imports kCura.WinEDDS.Monitoring
 Imports NSubstitute
 Imports NUnit.Framework
 Imports Relativity.DataTransfer.MessageService
-Imports Relativity.DataTransfer.MessageService.MetricsManager.APM
-Imports Relativity.Services.ServiceProxy
 
 Namespace Monitoring.Sinks
 	<TestFixture>
