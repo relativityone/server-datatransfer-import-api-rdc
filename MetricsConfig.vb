@@ -1,4 +1,6 @@
-﻿Namespace kCura.WinEDDS.NUnit.Monitoring.Sinks
+﻿Imports kCura.WinEDDS.Monitoring
+
+Namespace kCura.WinEDDS.NUnit.Monitoring.Sinks
 	Public Class MetricsSinkConfig
 		Implements IMetricsSinkConfig
 
