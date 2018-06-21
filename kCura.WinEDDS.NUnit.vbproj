@@ -202,6 +202,7 @@
     <Compile Include="MockBulkImportManagerWebExceptions.vb" />
     <Compile Include="MockBulkLoadFileImporter.vb" />
     <Compile Include="Monitoring\Sinks\ThrottlerTests.vb" />
+    <Compile Include="Monitoring\Sinks\ToggleSinkTests.vb" />
     <Compile Include="OutputFileWriterTests.vb" />
     <Compile Include="PreviewChoicesHelperTests.vb" />
     <Compile Include="RegKeyHelper.vb" />
