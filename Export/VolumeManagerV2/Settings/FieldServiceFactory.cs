@@ -21,13 +21,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings
 			_logger = logger;
 		}
 
-		public FieldService Create(ExportFile exportSettings, string[] columnNamesInOrder)
+		public FieldService Create(ExportFile exportSettings, string[] columnNamesInOrder, string columnsHeader)
 		{
 			DecideIfExportingFullText(exportSettings);
 
 			ViewFieldInfo[] columns = _columnsFactory.CreateColumns(exportSettings);
 
-			string columnsHeader = _formatter.GetHeader(columns.ToList());
+//			string columnsHeader = _formatter.GetHeader(columns.ToList());
 
 			Dictionary<string, int> ordinalLookup = _ordinalLookupFactory.CreateOrdinalLookup(exportSettings, columnNamesInOrder);
 

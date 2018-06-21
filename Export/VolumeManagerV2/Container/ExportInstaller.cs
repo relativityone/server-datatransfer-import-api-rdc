@@ -28,13 +28,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 
 		private readonly Exporter _exporter;
 		private readonly string[] _columnNamesInOrder;
+		private readonly string _columnHeaderString;
 
 		protected ExportFile ExportSettings => _exporter.Settings;
 
-		public ExportInstaller(Exporter exporter, string[] columnNamesInOrder)
+		public ExportInstaller(Exporter exporter, string[] columnNamesInOrder, string columnHeaderString)
 		{
 			_exporter = exporter;
 			_columnNamesInOrder = columnNamesInOrder;
+			_columnHeaderString = columnHeaderString;
 		}
 
 		public void Install(IWindsorContainer container, IConfigurationStore store)
@@ -90,7 +92,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 		{
 			container.Register(Component.For<ILoadFileHeaderFormatter>().UsingFactoryMethod(k => k.Resolve<ILoadFileHeaderFormatterFactory>().Create(ExportSettings)));
 			container.Register(Component.For<IFieldLookupService, IFieldService, FieldService>()
-				.UsingFactoryMethod(k => k.Resolve<FieldServiceFactory>().Create(ExportSettings, _columnNamesInOrder)));
+				.UsingFactoryMethod(k => k.Resolve<FieldServiceFactory>().Create(ExportSettings, _columnNamesInOrder, _columnHeaderString)));
 		}
 
 		private void InstallDirectory(IWindsorContainer container)
