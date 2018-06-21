@@ -1,4 +1,4 @@
-﻿Imports Relativity.DataTransfer.MessageService
+﻿Imports kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages
 
 Namespace kCura.WinEDDS.Monitoring
 	Public Class TransferJobApmThroughputMessage
@@ -9,11 +9,7 @@ Namespace kCura.WinEDDS.Monitoring
 
 		Public Property FileThroughput As Double
 			Get
-				If CustomData.ContainsKey(FileThroughputKeyName) Then
-					Return CType(CustomData.Item(FileThroughputKeyName), Double)
-				Else
-					Return 0
-				End If
+				Return GetValueOrDefault (Of Double)(FileThroughputKeyName)
 			End Get
 			Set
 				CustomData.Item(FileThroughputKeyName) = Value
@@ -22,11 +18,7 @@ Namespace kCura.WinEDDS.Monitoring
 
 		Public Property MetadataThroughput As Double
 			Get
-				If CustomData.ContainsKey(MetadataThroughputKeyName) Then
-					Return CType(CustomData.Item(MetadataThroughputKeyName), Double)
-				Else
-					Return 0
-				End If
+				Return GetValueOrDefault (Of Double)(MetadataThroughputKeyName)
 			End Get
 			Set
 				CustomData.Item(MetadataThroughputKeyName) = Value

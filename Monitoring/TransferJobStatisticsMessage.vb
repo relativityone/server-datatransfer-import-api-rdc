@@ -1,4 +1,6 @@
-﻿Namespace kCura.WinEDDS.Monitoring
+﻿Imports kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages
+
+Namespace kCura.WinEDDS.Monitoring
 	Public Class TransferJobStatisticsMessage
 		Inherits TransferJobMessageBase
 
@@ -8,11 +10,7 @@
 
 		Public Property JobSizeInBytes As Double
 			Get
-				If CustomData.ContainsKey(JobSizeInBytesKeyName) Then
-					Return CType(CustomData.Item(JobSizeInBytesKeyName), Double)
-				Else
-					Return 0
-				End If
+				Return GetValueOrDefault (Of Double)(JobSizeInBytesKeyName)
 			End Get
 			Set
 				CustomData.Item(JobSizeInBytesKeyName) = Value
@@ -21,11 +19,7 @@
 
 		Public Property MetadataBytes As Long
 			Get
-				If CustomData.ContainsKey(MetadataBytesKeyName) Then
-					Return CType(CustomData.Item(MetadataBytesKeyName), Long)
-				Else
-					Return 0
-				End If
+				Return GetValueOrDefault (Of Long)(MetadataBytesKeyName)
 			End Get
 			Set
 				CustomData.Item(MetadataBytesKeyName) = Value
@@ -34,11 +28,7 @@
 
 		Public Property FileBytes As Long
 			Get
-				If CustomData.ContainsKey(FileBytesKeyName) Then
-					Return CType(CustomData.Item(FileBytesKeyName), Long)
-				Else
-					Return 0
-				End If
+				Return GetValueOrDefault (Of Long)(FileBytesKeyName)
 			End Get
 			Set
 				CustomData.Item(FileBytesKeyName) = Value
