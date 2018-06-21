@@ -1,7 +1,7 @@
-﻿Imports Relativity.DataTransfer.MessageService.MetricsManager.APM
-Imports System.Runtime.CompilerServices
+﻿Imports System.Runtime.CompilerServices
+Imports Relativity.DataTransfer.MessageService.MetricsManager.APM
 
-Namespace kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages
+Namespace Monitoring
 	Module MetricMetadataExtensions
 		<Extension()>
 			Function GetValueOrDefault(Of T)(ByVal this As IMetricMetadata, ByVal key As String) As T

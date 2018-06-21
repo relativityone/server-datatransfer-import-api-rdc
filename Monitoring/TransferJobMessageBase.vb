@@ -1,5 +1,5 @@
 ﻿Imports System.Collections.Generic
-Imports kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages
+Imports Monitoring
 Imports Relativity.DataTransfer.MessageService
 Imports Relativity.DataTransfer.MessageService.MetricsManager.APM
 

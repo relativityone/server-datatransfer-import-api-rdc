@@ -1,4 +1,4 @@
-﻿Imports kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages
+﻿Imports Monitoring
 
 Namespace kCura.WinEDDS.Monitoring
 	Public Class TransferJobApmThroughputMessage
