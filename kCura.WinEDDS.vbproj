@@ -471,11 +471,14 @@
     <Compile Include="IO\FileStreamFactory.vb" />
     <Compile Include="IO\IFileStreamFactory.vb" />
     <Compile Include="Monitoring\Sinks\IMetricsConfig.vb" />
-    <Compile Include="Monitoring\Sinks\JobEndOfLifeSink.vb" />
+    <Compile Include="Monitoring\Sinks\JobApmEndOfLifeSink.vb" />
+    <Compile Include="Monitoring\Sinks\JobSumEndOfLifeSink.vb" />
     <Compile Include="Monitoring\Sinks\JobLifetimeSink.vb" />
     <Compile Include="Monitoring\Sinks\JobLiveMetricSink.vb" />
+    <Compile Include="Monitoring\Sinks\MessageObserver.vb" />
     <Compile Include="Monitoring\Sinks\MetricSinkBase.vb" />
     <Compile Include="Monitoring\Sinks\ThrottledMetricSink.vb" />
+    <Compile Include="Monitoring\Sinks\ToggledMetricSink.vb" />
     <Compile Include="Monitoring\TransferJobApmThroughputMessage.vb" />
     <Compile Include="Monitoring\TransferJobCompletedRecordsCountMessage.vb" />
     <Compile Include="Monitoring\TransferJobFailedMessage.vb" />

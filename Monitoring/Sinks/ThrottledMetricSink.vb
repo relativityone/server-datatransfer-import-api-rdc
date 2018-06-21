@@ -2,31 +2,24 @@
 Imports Relativity.DataTransfer.MessageService.MetricsManager.APM
 
 Namespace kCura.WinEDDS
-	Public Class ThrottledMetricSink
-		Implements IMetricSink
+	Public Class ThrottledMetricSink(Of T As {Class, IMessage})
+		Implements IMetricSink(Of T)
 
-		Private ReadOnly _jobLiveMetricSink As MetricSinkBase
-		Private ReadOnly _func As Func(Of TimeSpan)
+		Private ReadOnly _baseSink As IMetricSink(Of T)
+		Private ReadOnly _throttleTimeoutProvider As Func(Of TimeSpan)
+		Private _lastSendTime As DateTime = DateTime.MinValue
 
-		Public Sub New(jobLiveMetricSink As MetricSinkBase, func As Func(Of TimeSpan))
-			_jobLiveMetricSink = jobLiveMetricSink
-			_func = func
+		Public Sub New(sink As IMetricSink(Of T), throttleTimeoutProvider As Func(Of TimeSpan))
+			_baseSink = sink
+			_throttleTimeoutProvider = throttleTimeoutProvider
 		End Sub
 
-		Public Sub LogCount(bucketName As String, value As Long) Implements IMetricSink.LogCount
-			_jobLiveMetricSink.LogCount(bucketName, value)
-		End Sub
-
-		Public Sub LogDouble(bucketName As String, value As Double) Implements IMetricSink.LogDouble
-			_jobLiveMetricSink.LogDouble(bucketName, value)
-		End Sub
-
-		Public Sub LogApmDouble(bucketName As String, value As Double, metadata As IMetricMetadata) Implements IMetricSink.LogApmDouble
-			_jobLiveMetricSink.LogApmDouble(bucketName, value, metadata)
-		End Sub
-
-		Public Sub Subscribe(messageService As IMessageService) Implements IMetricSink.Subscribe
-			_jobLiveMetricSink.Subscribe(messageService)
+		Public Sub OnMessage(message As T) Implements IMetricSink(Of T).OnMessage
+			Dim currentTime As DateTime = DateTime.Now
+			If currentTime - _lastSendTime > _throttleTimeoutProvider() Then
+				_baseSink.OnMessage(message)
+				_lastSendTime = currentTime
+			End If
 		End Sub
 	End Class
-End NameSpace
+End Namespace
