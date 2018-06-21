@@ -40,12 +40,12 @@ Namespace Monitoring.Sinks
 		Public Sub WhenThrottlingIsSet_AndTimeouts_ThePassRemainingMessages
 			Dim aSink As IMetricSink(Of MockMessage) =  Substitute.For(Of IMetricSink(Of MockMessage))
 
-			Dim subject As IMetricSink(Of MockMessage) = New ThrottledMetricSink(Of MockMessage)(aSink, Function() TimeSpan.FromMilliseconds(200))
+			Dim subject As IMetricSink(Of MockMessage) = New ThrottledMetricSink(Of MockMessage)(aSink, Function() TimeSpan.FromMilliseconds(50))
 			subject.OnMessage(New MockMessage())
 			subject.OnMessage(New MockMessage())
 			subject.OnMessage(New MockMessage())
 			subject.OnMessage(New MockMessage())
-			Thread.Sleep(300)
+			Thread.Sleep(100)
 			subject.OnMessage(New MockMessage())
 			subject.OnMessage(New MockMessage())
 			subject.OnMessage(New MockMessage())
