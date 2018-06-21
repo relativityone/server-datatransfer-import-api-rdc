@@ -1,12 +1,11 @@
-﻿Imports System.Threading.Tasks
+﻿
+
 Imports kCura.WinEDDS.Monitoring
+Imports NSubstitute
 Imports NUnit.Framework
 Imports Relativity.DataTransfer.MessageService
-Imports Relativity.Services.ServiceProxy
-Imports NSubstitute
-Imports Relativity.DataTransfer.MessageService.MetricsManager.APM
 
-Namespace kCura.WinEDDS.NUnit.Monitoring.Sinks
+Namespace Monitoring.Sinks
 
 	<TestFixture>
 	Public Class ThrottlerTests
