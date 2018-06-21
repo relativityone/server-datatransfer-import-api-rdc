@@ -79,6 +79,8 @@ Namespace kCura.EDDS.WinForm
                 tempImplicitProvider.CloseLoginView()
             End If
             Dim authEndpoint As String = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/authorize")
+
+	        'Dim implicitProvider = New OAuth2ImplicitCredentials(New ThreadedLoginView(New Uri(authEndpoint), "Relativity Desktop Client"), AddressOf On_TokenRetrieved)
             Dim implicitProvider = New OAuth2ImplicitCredentials(New Uri(authEndpoint), "Relativity Desktop Client", AddressOf On_TokenRetrieved)
             RelativityWebApiCredentialsProvider.Instance().SetProvider(implicitProvider)
         End Sub
@@ -1808,11 +1810,12 @@ Namespace kCura.EDDS.WinForm
 		Public Async Function SetupMessageService() As Task(Of IMessageService)
 			If _messageService Is Nothing
 				_messageService = New MessageService()
+				Dim metricsManagerFactory As New MetricsManagerFactory()
 				Dim serviceFactory  = ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync())
 
-				Dim jobLifetimeSink = New JobLifetimeSink(serviceFactory)
-				Dim jobLiveSink = New JobLiveMetricSink(serviceFactory)
-				Dim jobEolSink = New JobEndOfLifeSink(serviceFactory)
+				Dim jobLifetimeSink = New JobLifetimeSink(serviceFactory, metricsManagerFactory)
+				Dim jobLiveSink = New JobLiveMetricSink(serviceFactory, metricsManagerFactory)
+				Dim jobEolSink = New JobEndOfLifeSink(serviceFactory, metricsManagerFactory)
 
 				jobLifetimeSink.Subscribe(_messageService)
 				jobLiveSink.Subscribe(_messageService)

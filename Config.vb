@@ -109,6 +109,12 @@ Namespace kCura.EDDS.WinForm
 				Return CType(ConfigSettings("SendNotificationOnImportCompletionByDefault"), Boolean)
 			End Get
 		End Property
+
+		Public Shared ReadOnly Property RdcMetricsThrottlingSeconds() As Int32
+			Get
+				Return CType(ConfigSettings("RdcMetricsThrottlingSeconds"), Int32)
+			End Get
+		End Property
 #If EnableInjections Then
 
 		Private Shared _config As IDictionary
