@@ -100,6 +100,9 @@ Public Class JobReport
 		End Get
 	End Property
 
+	Public Property FileBytes As Long
+	Public Property MetadataBytes As Long
+
 	''' <summary>
 	''' Provides information about an error in a specific row.
 	''' </summary>
