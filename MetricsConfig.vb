@@ -1,6 +1,6 @@
 ﻿Namespace kCura.WinEDDS.NUnit.Monitoring.Sinks
-	Public Class MetricsConfig
-		Implements IMetricsConfig
+	Public Class MetricsSinkConfig
+		Implements IMetricsSinkConfig
 
 		Private Shared _CONFIG_REFRESH_TIME As TimeSpan = TimeSpan.FromMinutes(1)
 		Private _lastRefresh As DateTime = DateTime.MinValue
@@ -13,7 +13,7 @@
 			End If
 		End Sub
 
-		Public ReadOnly Property ThrottleTimeout As TimeSpan Implements IMetricsConfig.ThrottleTimeout
+		Public ReadOnly Property ThrottleTimeout As TimeSpan Implements IMetricsSinkConfig.ThrottleTimeout
 			Get
 				RefreshIfNeeded()
 				Return _throttleTimeout
