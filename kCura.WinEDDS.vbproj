@@ -476,7 +476,7 @@
     <Compile Include="Monitoring\TransferJobFailedMessage.vb" />
     <Compile Include="Monitoring\TransferJobMessageBase.vb" />
     <Compile Include="Monitoring\TransferJobCompletedMessage.vb" />
-    <Compile Include="Monitoring\TransferJobSizeMessage.vb" />
+    <Compile Include="Monitoring\TransferJobStatisticsMessage.vb" />
     <Compile Include="Monitoring\TransferJobStartedMessage.vb" />
     <Compile Include="Monitoring\TransferJobThroughputMessage.vb" />
     <Compile Include="Monitoring\TransferJobTotalRecordsCountMessage.vb" />
