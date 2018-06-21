@@ -1,7 +1,7 @@
 ﻿Imports Relativity.DataTransfer.MessageService
 Imports Relativity.DataTransfer.MessageService.MetricsManager.APM
 
-Namespace kCura.WinEDDS
+Namespace kCura.WinEDDS.Monitoring
 	Public Class ToggledMetricSink(Of T As {Class, IMessage})
 		Implements IMetricSink(Of T)
 

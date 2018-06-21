@@ -1,7 +1,7 @@
 Imports kCura.WinEDDS
 Imports Relativity.DataTransfer.MessageService
 
-Namespace kCura.EDDS.WinForm
+Namespace kCura.WinEDDS.Monitoring
 	Public Class MessageObserver
 		Private ReadOnly _messageService As IMessageService
 

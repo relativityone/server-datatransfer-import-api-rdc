@@ -2,7 +2,7 @@
 Imports Relativity.DataTransfer.MessageService
 Imports Relativity.Services.ServiceProxy
 
-Namespace kCura.WinEDDS
+Namespace kCura.WinEDDS.Monitoring
 	Public Class JobLifetimeSink
 		Inherits MetricSinkBase
 		Implements IMetricSink(Of TransferJobStartedMessage)
