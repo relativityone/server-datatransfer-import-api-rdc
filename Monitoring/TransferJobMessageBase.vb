@@ -1,4 +1,5 @@
 ﻿Imports System.Collections.Generic
+Imports Monitoring
 Imports Relativity.DataTransfer.MessageService
 Imports Relativity.DataTransfer.MessageService.MetricsManager.APM
 
@@ -15,7 +16,7 @@ Namespace kCura.WinEDDS.Monitoring
 
 		Public Property JobType As String
 			Get
-				Return CustomData.Item(JobTypeKeyName).ToString()
+				Return GetValueOrDefault (Of String)(JobTypeKeyName)
 			End Get
 			Set
 				CustomData.Item(JobTypeKeyName) = Value
@@ -24,7 +25,7 @@ Namespace kCura.WinEDDS.Monitoring
 
 		Public Property TransferMode As String
 			Get
-				Return CustomData.Item(TransferModeKeyName).ToString()
+				Return GetValueOrDefault (Of String)(TransferModeKeyName)
 			End Get
 			Set
 				CustomData.Item(TransferModeKeyName) = Value

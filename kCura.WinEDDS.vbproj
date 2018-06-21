@@ -467,6 +467,7 @@
     <Compile Include="Importers\OutputFileWriter.vb" />
     <Compile Include="IO\FileStreamFactory.vb" />
     <Compile Include="IO\IFileStreamFactory.vb" />
+    <Compile Include="Monitoring\MetricMetadataExtensions.vb" />
     <Compile Include="Monitoring\Sinks\JobEndOfLifeSink.vb" />
     <Compile Include="Monitoring\Sinks\JobLifetimeSink.vb" />
     <Compile Include="Monitoring\Sinks\JobLiveMetricSink.vb" />
