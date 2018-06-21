@@ -18,9 +18,9 @@ Namespace kCura.WinEDDS.NUnit.Monitoring.Sinks
 					If DateTime.Now - _lastRefresh > _CONFIG_REFRESH_TIME Then
 						_lastRefresh = DateTime.Now
 						_throttleTimeout = TimeSpan.FromSeconds(EDDS.WinForm.Config.RdcMetricsThrottlingSeconds)
-						_sendLiveApmMetrics = WinEDDS.Config.SendLiveApmMetrics
-						_sendSumMetrics = WinEDDS.Config.SendSumMetrics
-						_sendSummaryApmMetrics = WinEDDS.Config.SendSummaryApmMetrics
+						_sendLiveApmMetrics = EDDS.WinForm.Config.SendLiveApmMetrics
+						_sendSumMetrics = EDDS.WinForm.Config.SendSumMetrics
+						_sendSummaryApmMetrics = EDDS.WinForm.Config.SendSummaryApmMetrics
 					End If
 				End SyncLock
 			End If

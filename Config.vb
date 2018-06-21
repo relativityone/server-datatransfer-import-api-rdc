@@ -115,6 +115,44 @@ Namespace kCura.EDDS.WinForm
 				Return CType(ConfigSettings("RdcMetricsThrottlingSeconds"), Int32)
 			End Get
 		End Property
+
+		Private Shared _rdcMetricsConfiguration As String = "RDCMetricsConfiguration"
+
+		Public Shared ReadOnly Property SendLiveApmMetrics As Boolean
+			Get
+				Dim metricsConfig As Integer = GetConfigWithDefault(_rdcMetricsConfiguration, Integer.MaxValue)
+				Return (metricsConfig And Metrics.LiveApmMetrics) > 0
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property SendSumMetrics As Boolean
+			Get
+				Dim metricsConfig As Integer = GetConfigWithDefault(_rdcMetricsConfiguration, Integer.MaxValue)
+				Return (metricsConfig And Metrics.SumMetrics) > 0
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property SendSummaryApmMetrics As Boolean
+			Get
+				Dim metricsConfig As Integer = GetConfigWithDefault(_rdcMetricsConfiguration, Integer.MaxValue)
+				Return (metricsConfig And Metrics.SummaryApmMetrics) > 0
+			End Get
+		End Property
+
+		Private Shared Function GetConfigWithDefault(Of T)(name As String, defaultValue As T) As T
+			If Not ConfigSettings.Contains(name) Then
+				ConfigSettings.Add(name, defaultValue)
+			End If
+			Return CType(ConfigSettings(name), T)
+		End Function
+
+		Private Enum Metrics
+			LiveApmMetrics = 1
+			SummaryApmMetrics = 2
+			SumMetrics = 4
+		End Enum
+
+
 #If EnableInjections Then
 
 		Private Shared _config As IDictionary
