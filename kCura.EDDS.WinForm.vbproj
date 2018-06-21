@@ -229,8 +229,9 @@
     <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.8.5, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.1.0.8\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Fileshare.Client, Version=1.1.5.8, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.FileshareAPI.1.1.5\lib\net462\Relativity.Fileshare.Client.dll</HintPath>
+    <Reference Include="Relativity.Fileshare.Client">
+      <HintPath>..\..\packages\Relativity.FileshareAPI.1.1.6\lib\net462\Relativity.Fileshare.Client.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Kepler">
       <HintPath>..\..\packages\Relativity.Kepler.1.0.1.445\lib\net462\Relativity.Kepler.dll</HintPath>
@@ -266,8 +267,10 @@
     <Reference Include="Relativity.Services.ServiceProxy">
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.445\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.StagingExplorer.Services.Interfaces, Version=1.4.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.Services.Interfaces.1.4.5\lib\net462\Relativity.StagingExplorer.Services.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.StagingExplorer.Services.Interfaces, Version=1.4.6.175, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Relativity.StagingExplorer.Services.Interfaces.1.4.6\lib\net462\Relativity.StagingExplorer.Services.Interfaces.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared">
       <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.162\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
