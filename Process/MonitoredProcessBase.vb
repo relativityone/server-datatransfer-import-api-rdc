@@ -6,6 +6,7 @@ Imports Relativity.DataTransfer.MessageService
 Public MustInherit Class MonitoredProcessBase
 	Inherits kCura.Windows.Process.ProcessBase
 
+	Private ReadOnly _messageThrottling As TimeSpan
 	Protected Property JobGuid As System.Guid = System.Guid.NewGuid()
 	Protected Property StartTime As System.DateTime
 	Protected Property EndTime As System.DateTime
