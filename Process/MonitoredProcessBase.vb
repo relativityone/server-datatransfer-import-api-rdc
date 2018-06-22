@@ -101,8 +101,14 @@ Public MustInherit Class MonitoredProcessBase
 			Return
 		End If
 		Dim duration As System.TimeSpan = EndTime - StartTime
-		Dim recordsPerSecond As Double = CompletedRecordsCount / duration.TotalSeconds
-		Dim bytesPerSecond As Double = (statistics.FileBytes + statistics.MetadataBytes) / duration.TotalSeconds
+		Dim durationSeconds As Double
+		If duration.TotalSeconds = 0 Then
+			durationSeconds = 0.0000001
+		Else
+			durationSeconds = duration.TotalSeconds
+		End If
+		Dim recordsPerSecond As Double = CompletedRecordsCount / durationSeconds
+		Dim bytesPerSecond As Double = (statistics.FileBytes + statistics.MetadataBytes) / durationSeconds
 		MessageService.Send(New TransferJobThroughputMessage With {.JobType = JobType, .TransferMode = TapiClientName, .RecordsPerSecond = recordsPerSecond, .BytesPerSecond = bytesPerSecond})
 	End Sub
 
