@@ -3,10 +3,6 @@ Imports Relativity.DataTransfer.MessageService.MetricsManager.APM
 Imports Relativity.Services.ServiceProxy
 
 Namespace kCura.WinEDDS.Monitoring
-	Public Interface IMetricSink(Of T As {Class, IMessage})
-		Sub OnMessage(message As T)
-	End Interface
-
 	Public MustInherit Class MetricSinkBase
 		Private ReadOnly _serviceFactory As IServiceFactory
 
