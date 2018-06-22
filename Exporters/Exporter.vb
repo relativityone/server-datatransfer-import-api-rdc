@@ -204,6 +204,8 @@ Namespace kCura.WinEDDS
 				If Not _volumeManager Is Nothing Then
 					_volumeManager.Close()
 				End If
+			Finally
+				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", EventType.End, _lastStatisticsSnapshot, Statistics))
 			End Try
 			Return Me.ErrorLogFileName = ""
 		End Function
