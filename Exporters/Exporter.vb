@@ -195,8 +195,6 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Function ExportSearch() As Boolean Implements IExporter.ExportSearch
-			RaiseEvent ExportStarted()
-
 			Try
 				_start = System.DateTime.Now
 				Me.Search()
@@ -206,7 +204,7 @@ Namespace kCura.WinEDDS
 					_volumeManager.Close()
 				End If
 			Finally
-				'RaiseEvent ExportFinished(new ExportEventArgs(Me.DocumentsExported, 0, ))
+				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", EventType.End, _lastStatisticsSnapshot, Statistics))
 			End Try
 			Return Me.ErrorLogFileName = ""
 		End Function
@@ -1171,8 +1169,6 @@ Namespace kCura.WinEDDS
 		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Implements IExporterStatusNotification.FatalErrorEvent
 		Public Event StatusMessage(ByVal exportArgs As ExportEventArgs) Implements IExporterStatusNotification.StatusMessage
 		Public Event FileTransferModeChangeEvent(ByVal mode As String) Implements IExporterStatusNotification.FileTransferModeChangeEvent
-		Public Event ExportStarted() Implements IExporterStatusNotification.ExportStarted
-		Public Event ExportFinished(exportArgs As ExportEventArgs) Implements IExporterStatusNotification.ExportFinished
 		Public Event DisableCloseButton()
 		Public Event EnableCloseButton()
 
