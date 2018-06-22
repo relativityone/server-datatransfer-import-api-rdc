@@ -2,11 +2,10 @@
 using System.Threading;
 using NUnit.Framework;
 using Relativity.Transfer;
-using Relativity.Transfer.UnitTestFramework;
 
 namespace kCura.WinEDDS.TApi.NUnit.Integration
 {
-	public class DownloadTapiBridgeTests : TapiBridgeTestsBase
+    public class DownloadTapiBridgeTests : TapiBridgeTestsBase
 	{
 		private DownloadTapiBridge tapiBridge;
 
