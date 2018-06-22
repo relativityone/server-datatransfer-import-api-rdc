@@ -1,6 +1,4 @@
-﻿
-Imports kCura.WinEDDS.NUnit.Monitoring.Sinks
-Imports NUnit.Framework
+﻿Imports NUnit.Framework
 
 Namespace Monitoring
 	<TestFixture>
