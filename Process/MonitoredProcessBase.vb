@@ -85,25 +85,34 @@ Public MustInherit Class MonitoredProcessBase
 	Protected Sub SendThroughputStatistics(metadataThroughput As Double, fileThroughput As Double)
 		Dim message As TransferJobApmThroughputMessage = New TransferJobApmThroughputMessage()
 		BuildApmBaseMessage(message)
-		message.CustomData.Add("MetadataThroughput", metadataThroughput)
-		message.CustomData.Add("FileThroughput", fileThroughput)
+		message.MetadataThroughput = metadataThroughput
+		message.FileThroughput = fileThroughput
 		MessageService.Send(message)
 	End Sub
 
 	Protected Sub SendJobStatistics(statistics As Statistics)
-		SendJobThroughputMessage()
+		SendJobThroughputMessage(statistics)
 		SendJobTotalRecordsCountMessage()
 		SendJobCompletedRecordsCountMessage()
 		SendJobSize(statistics)
 	End Sub
 
-	Protected Sub SendJobThroughputMessage()
+	Protected Sub SendJobThroughputMessage(statistics As Statistics)
 		If CompletedRecordsCount = 0 Then
 			Return
 		End If
 		Dim duration As System.TimeSpan = EndTime - StartTime
-		Dim recordsPerSecond As Double = CompletedRecordsCount / duration.TotalSeconds
-		MessageService.Send(New TransferJobThroughputMessage With {.JobType = JobType, .TransferMode = TapiClientName, .RecordsPerSecond = recordsPerSecond})
+		Dim recordsPerSecond As Double
+		Dim bytesPerSecond As Double
+		If duration.TotalSeconds = 0 Then
+			recordsPerSecond = 0
+			bytesPerSecond = 0
+		Else
+			recordsPerSecond = CompletedRecordsCount / duration.TotalSeconds
+			bytesPerSecond = (statistics.FileBytes + statistics.MetadataBytes) / duration.TotalSeconds
+		End If
+
+		MessageService.Send(New TransferJobThroughputMessage With {.JobType = JobType, .TransferMode = TapiClientName, .RecordsPerSecond = recordsPerSecond, .BytesPerSecond = bytesPerSecond})
 	End Sub
 
 	Protected Sub SendJobTotalRecordsCountMessage()
@@ -115,13 +124,11 @@ Public MustInherit Class MonitoredProcessBase
 	End Sub
 
 	Private Sub SendJobSize(statistics As Statistics)
-		Dim message As TransferJobSizeMessage = New TransferJobSizeMessage() With {
-				.JobType = JobType,
-				.TransferMode = TapiClientName,
-				.JobSize = statistics.MetadataBytes + statistics.FileBytes}
-
-		message.CustomData.Add("MetadataBytes", statistics.MetadataBytes)
-		message.CustomData.Add("FileBytes", statistics.FileBytes)
+		Dim message As TransferJobStatisticsMessage = New TransferJobStatisticsMessage() With {
+				.MetadataBytes = statistics.MetadataBytes,
+				.FileBytes = statistics.FileBytes,
+				.JobSizeInBytes = statistics.MetadataBytes + statistics.FileBytes
+			}
 		BuildApmBaseMessage(message)
 		MessageService.Send(message)
 	End Sub

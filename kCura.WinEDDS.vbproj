@@ -473,6 +473,8 @@
     <Compile Include="Monitoring\Sinks\IMetricsConfig.vb" />
     <Compile Include="Monitoring\Sinks\JobApmEndOfLifeSink.vb" />
     <Compile Include="Monitoring\Sinks\JobSumEndOfLifeSink.vb" />
+    <Compile Include="Monitoring\MetricMetadataExtensions.vb" />
+    <Compile Include="Monitoring\Sinks\JobEndOfLifeSink.vb" />
     <Compile Include="Monitoring\Sinks\JobLifetimeSink.vb" />
     <Compile Include="Monitoring\Sinks\JobLiveMetricSink.vb" />
     <Compile Include="Monitoring\Sinks\MetricSinkBase.vb" />
@@ -481,7 +483,7 @@
     <Compile Include="Monitoring\TransferJobFailedMessage.vb" />
     <Compile Include="Monitoring\TransferJobMessageBase.vb" />
     <Compile Include="Monitoring\TransferJobCompletedMessage.vb" />
-    <Compile Include="Monitoring\TransferJobSizeMessage.vb" />
+    <Compile Include="Monitoring\TransferJobStatisticsMessage.vb" />
     <Compile Include="Monitoring\TransferJobStartedMessage.vb" />
     <Compile Include="Monitoring\TransferJobThroughputMessage.vb" />
     <Compile Include="Monitoring\TransferJobTotalRecordsCountMessage.vb" />
