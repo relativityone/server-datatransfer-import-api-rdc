@@ -65,11 +65,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging">
-      <HintPath>..\..\packages\Relativity.Logging.9.4.314\lib\net462\Relativity.Logging.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Logging.9.4.315\lib\net462\Relativity.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces">
-      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.314\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.315\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Transfer.Client, Version=4.0.18164.8, Culture=neutral, PublicKeyToken=null">
