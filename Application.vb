@@ -1828,10 +1828,11 @@ Namespace kCura.EDDS.WinForm
 				_messageService.AddSink(New ToggledMessageSink(Of TransferJobThroughputMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
 				_messageService.AddSink(New ToggledMessageSink(Of TransferJobTotalRecordsCountMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
 				_messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedRecordsCountMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
 				
 				_messageService.AddSink(New ToggledMessageSink(Of TransferJobApmThroughputMessage)(jobLiveThrottledSink, function() configProvider.CurrentConfig.SendLiveAPMMetrics))
 
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobSizeMessage)(jobApmEolSink, function() configProvider.CurrentConfig.SendSummaryApmMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(jobApmEolSink, function() configProvider.CurrentConfig.SendSummaryApmMetrics))
 			End If
 			Return _messageService
 		End Function
