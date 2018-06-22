@@ -474,7 +474,6 @@
     <Compile Include="Monitoring\Sinks\JobApmEndOfLifeSink.vb" />
     <Compile Include="Monitoring\Sinks\JobSumEndOfLifeSink.vb" />
     <Compile Include="Monitoring\MetricMetadataExtensions.vb" />
-    <Compile Include="Monitoring\Sinks\JobEndOfLifeSink.vb" />
     <Compile Include="Monitoring\Sinks\JobLifetimeSink.vb" />
     <Compile Include="Monitoring\Sinks\JobLiveMetricSink.vb" />
     <Compile Include="Monitoring\Sinks\MetricSinkBase.vb" />
