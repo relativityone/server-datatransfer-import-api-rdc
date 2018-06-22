@@ -1,4 +1,3 @@
-Imports kCura.WinEDDS
 Imports Relativity.DataTransfer.MessageService
 
 Namespace kCura.WinEDDS.Monitoring
