@@ -14,6 +14,7 @@ Namespace kCura.WinEDDS
 			messageService.Subscribe(Of TransferJobThroughputMessage)(
 				Sub(message)
 					LogDouble(FormatPerformanceBucketName("Throughput", message.JobType, message.TransferMode), message.RecordsPerSecond)
+					LogDouble(FormatPerformanceBucketName("ThroughputBytes", message.JobType, message.TransferMode), message.BytesPerSecond)
 				End Sub)
 
 			messageService.Subscribe(Of TransferJobTotalRecordsCountMessage)(
