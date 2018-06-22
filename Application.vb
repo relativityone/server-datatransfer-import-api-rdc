@@ -14,6 +14,7 @@ Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Monitoring
 Imports Relativity
 Imports Relativity.DataTransfer.MessageService
+Imports Relativity.DataTransfer.MessageService.Tools
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
@@ -1816,24 +1817,21 @@ Namespace kCura.EDDS.WinForm
 				Dim jobLiveSink = New JobLiveMetricSink(serviceFactory, metricsManagerFactory)
 
 				Dim jobLifetimeSink = New JobLifetimeSink(serviceFactory, metricsManagerFactory)
-				Dim jobLiveThrottledSink = New ThrottledMetricSink(Of TransferJobApmThroughputMessage)(jobLiveSink, function() configProvider.CurrentConfig.ThrottleTimeout)
+				Dim jobLiveThrottledSink = New ThrottledMessageSink(Of TransferJobApmThroughputMessage)(jobLiveSink, function() configProvider.CurrentConfig.ThrottleTimeout)
 				Dim jobSumEolSink = New JobSumEndOfLifeSink(serviceFactory, metricsManagerFactory)
 				Dim jobApmEolSink = New JobApmEndOfLifeSink(serviceFactory, metricsManagerFactory)
 
-				Dim messageObserver As New MessageObserver(_messageService)
-
-				messageObserver.Add(New ToggledMetricSink(Of TransferJobStartedMessage)(jobLifetimeSink, function() configProvider.CurrentConfig.SendSumMetrics))
-				messageObserver.Add(New ToggledMetricSink(Of TransferJobCompletedMessage)(jobLifetimeSink, function() configProvider.CurrentConfig.SendSumMetrics))
-				messageObserver.Add(New ToggledMetricSink(Of TransferJobFailedMessage)(jobLifetimeSink, function() configProvider.CurrentConfig.SendSumMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStartedMessage)(jobLifetimeSink, function() configProvider.CurrentConfig.SendSumMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedMessage)(jobLifetimeSink, function() configProvider.CurrentConfig.SendSumMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobFailedMessage)(jobLifetimeSink, function() configProvider.CurrentConfig.SendSumMetrics))
 				
-				messageObserver.Add(New ToggledMetricSink(Of TransferJobThroughputMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
-				messageObserver.Add(New ToggledMetricSink(Of TransferJobTotalRecordsCountMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
-				messageObserver.Add(New ToggledMetricSink(Of TransferJobCompletedRecordsCountMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobThroughputMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobTotalRecordsCountMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedRecordsCountMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
 				
-				messageObserver.Add(New ToggledMetricSink(Of TransferJobApmThroughputMessage)(jobLiveThrottledSink, function() configProvider.CurrentConfig.SendLiveAPMMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobApmThroughputMessage)(jobLiveThrottledSink, function() configProvider.CurrentConfig.SendLiveAPMMetrics))
 
-				messageObserver.Add(New ToggledMetricSink(Of TransferJobSizeMessage)(jobApmEolSink, function() configProvider.CurrentConfig.SendSummaryApmMetrics))
-
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobSizeMessage)(jobApmEolSink, function() configProvider.CurrentConfig.SendSummaryApmMetrics))
 			End If
 			Return _messageService
 		End Function
