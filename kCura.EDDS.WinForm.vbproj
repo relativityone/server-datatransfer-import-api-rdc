@@ -503,7 +503,8 @@
     <Compile Include="FormsUserNotification.vb" />
     <Compile Include="ImportOptions.vb" />
     <Compile Include="ImportManager.vb" />
-    <Compile Include="MetricsConfig.vb" />
+    <Compile Include="MetricsSinkConfigProvider.vb" />
+    <Compile Include="MetricsSinkConfig.vb" />
     <Compile Include="My Project\Resources.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -12,14 +12,11 @@ Imports kCura.Windows.Forms
 Imports kCura.WinEDDS.Core.Export
 Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Monitoring
-Imports kCura.WinEDDS.NUnit.Monitoring.Sinks
 Imports Relativity
 Imports Relativity.DataTransfer.MessageService
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
-Imports Relativity.Services.InstanceDetails
-Imports Relativity.Services.ServiceProxy
 Imports Relativity.StagingExplorer.Services.StagingManager
 Imports Relativity.Transfer
 
@@ -1813,28 +1810,29 @@ Namespace kCura.EDDS.WinForm
 				_messageService = New MessageService()
 				Dim metricsManagerFactory As New MetricsManagerFactory()
 				Dim serviceFactory = ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync())
-				Dim config As IMetricsSinkConfig = New MetricsSinkConfig()
+				Dim configProvider As MetricsSinkConfigProvider = New MetricsSinkConfigProvider()
+				configProvider.Initialize()
 
 				Dim jobLiveSink = New JobLiveMetricSink(serviceFactory, metricsManagerFactory)
 
 				Dim jobLifetimeSink = New JobLifetimeSink(serviceFactory, metricsManagerFactory)
-				Dim jobLiveThrottledSink = New ThrottledMetricSink(Of TransferJobApmThroughputMessage)(jobLiveSink, function() config.ThrottleTimeout)
+				Dim jobLiveThrottledSink = New ThrottledMetricSink(Of TransferJobApmThroughputMessage)(jobLiveSink, function() configProvider.CurrentConfig.ThrottleTimeout)
 				Dim jobSumEolSink = New JobSumEndOfLifeSink(serviceFactory, metricsManagerFactory)
 				Dim jobApmEolSink = New JobApmEndOfLifeSink(serviceFactory, metricsManagerFactory)
 
 				Dim messageObserver As New MessageObserver(_messageService)
 
-				messageObserver.Add(New ToggledMetricSink(Of TransferJobStartedMessage)(jobLifetimeSink, function() config.SendSumMetrics))
-				messageObserver.Add(New ToggledMetricSink(Of TransferJobCompletedMessage)(jobLifetimeSink, function() config.SendSumMetrics))
-				messageObserver.Add(New ToggledMetricSink(Of TransferJobFailedMessage)(jobLifetimeSink, function() config.SendSumMetrics))
+				messageObserver.Add(New ToggledMetricSink(Of TransferJobStartedMessage)(jobLifetimeSink, function() configProvider.CurrentConfig.SendSumMetrics))
+				messageObserver.Add(New ToggledMetricSink(Of TransferJobCompletedMessage)(jobLifetimeSink, function() configProvider.CurrentConfig.SendSumMetrics))
+				messageObserver.Add(New ToggledMetricSink(Of TransferJobFailedMessage)(jobLifetimeSink, function() configProvider.CurrentConfig.SendSumMetrics))
 				
-				messageObserver.Add(New ToggledMetricSink(Of TransferJobThroughputMessage)(jobSumEolSink, function() config.SendSumMetrics))
-				messageObserver.Add(New ToggledMetricSink(Of TransferJobTotalRecordsCountMessage)(jobSumEolSink, function() config.SendSumMetrics))
-				messageObserver.Add(New ToggledMetricSink(Of TransferJobCompletedRecordsCountMessage)(jobSumEolSink, function() config.SendSumMetrics))
+				messageObserver.Add(New ToggledMetricSink(Of TransferJobThroughputMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
+				messageObserver.Add(New ToggledMetricSink(Of TransferJobTotalRecordsCountMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
+				messageObserver.Add(New ToggledMetricSink(Of TransferJobCompletedRecordsCountMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
 				
-				messageObserver.Add(New ToggledMetricSink(Of TransferJobApmThroughputMessage)(jobLiveThrottledSink, function() config.SendLiveAPMMetrics))
+				messageObserver.Add(New ToggledMetricSink(Of TransferJobApmThroughputMessage)(jobLiveThrottledSink, function() configProvider.CurrentConfig.SendLiveAPMMetrics))
 
-				messageObserver.Add(New ToggledMetricSink(Of TransferJobSizeMessage)(jobApmEolSink, function() config.SendSummaryApmMetrics))
+				messageObserver.Add(New ToggledMetricSink(Of TransferJobSizeMessage)(jobApmEolSink, function() configProvider.CurrentConfig.SendSummaryApmMetrics))
 
 			End If
 			Return _messageService
