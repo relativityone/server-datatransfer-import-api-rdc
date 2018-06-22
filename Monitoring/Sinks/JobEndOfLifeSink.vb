@@ -26,11 +26,11 @@ Namespace kCura.WinEDDS
 					LogDouble(FormatUsageBucketName("CompletedRecords", message.JobType, message.TransferMode), message.CompletedRecords)
 				End Sub)
 
-			messageService.Subscribe(Of TransferJobSizeMessage)(
+			messageService.Subscribe(Of TransferJobStatisticsMessage)(
 				Sub(message)
-					LogApmDouble(FormatPerformanceBucketName("JobSize", message.JobType, message.TransferMode), message.JobSize, message)
+					LogApmDouble($"{PerformancePrefix}.JobStatistics", message.JobSizeInBytes, message)
+					LogDouble(FormatPerformanceBucketName("JobSize", message.JobType, message.TransferMode), message.JobSizeInBytes)
 				End Sub)
-
 		End Sub
 	End Class
 End Namespace

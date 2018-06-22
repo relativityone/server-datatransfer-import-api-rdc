@@ -84,8 +84,8 @@ Public MustInherit Class MonitoredProcessBase
 	Protected Sub SendThroughputStatistics(metadataThroughput As Double, fileThroughput As Double)
 		Dim message As TransferJobApmThroughputMessage = New TransferJobApmThroughputMessage()
 		BuildApmBaseMessage(message)
-		message.CustomData.Add("MetadataThroughput", metadataThroughput)
-		message.CustomData.Add("FileThroughput", fileThroughput)
+		message.MetadataThroughput = metadataThroughput
+		message.FileThroughput = fileThroughput
 		MessageService.Send(message)
 	End Sub
 
@@ -114,13 +114,11 @@ Public MustInherit Class MonitoredProcessBase
 	End Sub
 
 	Private Sub SendJobSize(statistics As Statistics)
-		Dim message As TransferJobSizeMessage = New TransferJobSizeMessage() With {
-				.JobType = JobType,
-				.TransferMode = TapiClientName,
-				.JobSize = statistics.MetadataBytes + statistics.FileBytes}
-
-		message.CustomData.Add("MetadataBytes", statistics.MetadataBytes)
-		message.CustomData.Add("FileBytes", statistics.FileBytes)
+		Dim message As TransferJobStatisticsMessage = New TransferJobStatisticsMessage() With {
+				.MetadataBytes = statistics.MetadataBytes,
+				.FileBytes = statistics.FileBytes,
+				.JobSizeInBytes = statistics.MetadataBytes + statistics.FileBytes
+			}
 		BuildApmBaseMessage(message)
 		MessageService.Send(message)
 	End Sub
