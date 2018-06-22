@@ -171,8 +171,8 @@
       <HintPath>..\..\packages\Polly.5.3.1\lib\net45\Polly.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.7.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.1.0.7\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
+    <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.8.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.1.0.8\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Kepler, Version=1.0.1.445, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Kepler.1.0.1.445\lib\net462\Relativity.Kepler.dll</HintPath>
@@ -467,6 +467,7 @@
     <Compile Include="Importers\OutputFileWriter.vb" />
     <Compile Include="IO\FileStreamFactory.vb" />
     <Compile Include="IO\IFileStreamFactory.vb" />
+    <Compile Include="Monitoring\MetricMetadataExtensions.vb" />
     <Compile Include="Monitoring\Sinks\JobEndOfLifeSink.vb" />
     <Compile Include="Monitoring\Sinks\JobLifetimeSink.vb" />
     <Compile Include="Monitoring\Sinks\JobLiveMetricSink.vb" />
@@ -476,7 +477,7 @@
     <Compile Include="Monitoring\TransferJobFailedMessage.vb" />
     <Compile Include="Monitoring\TransferJobMessageBase.vb" />
     <Compile Include="Monitoring\TransferJobCompletedMessage.vb" />
-    <Compile Include="Monitoring\TransferJobSizeMessage.vb" />
+    <Compile Include="Monitoring\TransferJobStatisticsMessage.vb" />
     <Compile Include="Monitoring\TransferJobStartedMessage.vb" />
     <Compile Include="Monitoring\TransferJobThroughputMessage.vb" />
     <Compile Include="Monitoring\TransferJobTotalRecordsCountMessage.vb" />

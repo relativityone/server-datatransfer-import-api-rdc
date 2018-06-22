@@ -7,7 +7,7 @@ Namespace kCura.WinEDDS
 		Private ReadOnly _serviceFactory As IServiceFactory
 
 		Private ReadOnly _usagePrefix As String = "RDC.Usage"
-		Private ReadOnly _performancePrefix As String = "RDC.Performance"
+		Protected ReadOnly PerformancePrefix As String = "RDC.Performance"
 		Private ReadOnly _messageManagerFactory As New MetricsManagerFactory()
 
 		Protected Sub New (serviceFactory As IServiceFactory)
@@ -21,7 +21,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Function FormatPerformanceBucketName(metricName As String, jobType As String, transferMode As String) As String
-			Return $"{_performancePrefix}.{metricName}.{jobType}.{transferMode}"
+			Return $"{PerformancePrefix}.{metricName}.{jobType}.{transferMode}"
 		End Function
 
 		Protected Sub LogCount(bucketName As String, value As Long)
