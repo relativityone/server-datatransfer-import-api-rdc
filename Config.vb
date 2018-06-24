@@ -570,6 +570,6 @@ Namespace kCura.WinEDDS
                 Return System.Math.Max(CType(ConfigSettings("WebBasedFileDownloadChunkSize"), Int32), 1024)
             End Get
         End Property
-        
+
     End Class
 End Namespace

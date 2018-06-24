@@ -6,6 +6,7 @@ Imports Relativity.DataTransfer.MessageService
 Public MustInherit Class MonitoredProcessBase
 	Inherits kCura.Windows.Process.ProcessBase
 
+	Private ReadOnly _messageThrottling As TimeSpan
 	Protected Property JobGuid As System.Guid = System.Guid.NewGuid()
 	Protected Property StartTime As System.DateTime
 	Protected Property EndTime As System.DateTime
@@ -90,19 +91,28 @@ Public MustInherit Class MonitoredProcessBase
 	End Sub
 
 	Protected Sub SendJobStatistics(statistics As Statistics)
-		SendJobThroughputMessage()
+		SendJobThroughputMessage(statistics)
 		SendJobTotalRecordsCountMessage()
 		SendJobCompletedRecordsCountMessage()
 		SendJobSize(statistics)
 	End Sub
 
-	Protected Sub SendJobThroughputMessage()
+	Protected Sub SendJobThroughputMessage(statistics As Statistics)
 		If CompletedRecordsCount = 0 Then
 			Return
 		End If
 		Dim duration As System.TimeSpan = EndTime - StartTime
-		Dim recordsPerSecond As Double = CompletedRecordsCount / duration.TotalSeconds
-		MessageService.Send(New TransferJobThroughputMessage With {.JobType = JobType, .TransferMode = TapiClientName, .RecordsPerSecond = recordsPerSecond})
+		Dim recordsPerSecond As Double
+		Dim bytesPerSecond As Double
+		If duration.TotalSeconds = 0 Then
+			recordsPerSecond = 0
+			bytesPerSecond = 0
+		Else
+			recordsPerSecond = CompletedRecordsCount / duration.TotalSeconds
+			bytesPerSecond = (statistics.FileBytes + statistics.MetadataBytes) / duration.TotalSeconds
+		End If
+
+		MessageService.Send(New TransferJobThroughputMessage With {.JobType = JobType, .TransferMode = TapiClientName, .RecordsPerSecond = recordsPerSecond, .BytesPerSecond = bytesPerSecond})
 	End Sub
 
 	Protected Sub SendJobTotalRecordsCountMessage()

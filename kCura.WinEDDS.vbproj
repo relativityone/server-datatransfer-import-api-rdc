@@ -171,20 +171,20 @@
       <HintPath>..\..\packages\Polly.5.3.1\lib\net45\Polly.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.8.5, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.1.0.8\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
+    <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.12.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.1.0.12\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Kepler, Version=1.0.1.445, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Kepler.1.0.1.445\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Relativity.Logging.9.4.314\lib\net462\Relativity.Logging.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Logging.9.4.315\lib\net462\Relativity.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.314\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.315\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client">
@@ -204,6 +204,9 @@
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.445, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.445\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.APM, Version=9.4.162.14, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Telemetry.APM.9.4.162\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared">
       <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.162\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
@@ -467,8 +470,10 @@
     <Compile Include="Importers\OutputFileWriter.vb" />
     <Compile Include="IO\FileStreamFactory.vb" />
     <Compile Include="IO\IFileStreamFactory.vb" />
+    <Compile Include="Monitoring\Sinks\IMetricsConfig.vb" />
+    <Compile Include="Monitoring\Sinks\JobApmEndOfLifeSink.vb" />
+    <Compile Include="Monitoring\Sinks\JobSumEndOfLifeSink.vb" />
     <Compile Include="Monitoring\MetricMetadataExtensions.vb" />
-    <Compile Include="Monitoring\Sinks\JobEndOfLifeSink.vb" />
     <Compile Include="Monitoring\Sinks\JobLifetimeSink.vb" />
     <Compile Include="Monitoring\Sinks\JobLiveMetricSink.vb" />
     <Compile Include="Monitoring\Sinks\MetricSinkBase.vb" />
