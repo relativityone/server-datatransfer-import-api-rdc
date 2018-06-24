@@ -226,8 +226,8 @@
       <HintPath>..\..\packages\Prism.Wpf.6.3.0\lib\net45\Prism.Wpf.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.8.5, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.1.0.8\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
+    <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.12.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.1.0.12\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Fileshare.Client, Version=1.1.5.8, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.FileshareAPI.1.1.5\lib\net462\Relativity.Fileshare.Client.dll</HintPath>
@@ -237,12 +237,12 @@
     </Reference>
     <Reference Include="Relativity.Logging">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Relativity.Logging.9.4.314\lib\net462\Relativity.Logging.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Logging.9.4.315\lib\net462\Relativity.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.314\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.315\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client">
@@ -503,6 +503,8 @@
     <Compile Include="FormsUserNotification.vb" />
     <Compile Include="ImportOptions.vb" />
     <Compile Include="ImportManager.vb" />
+    <Compile Include="MetricsSinkConfigProvider.vb" />
+    <Compile Include="MetricsSinkConfig.vb" />
     <Compile Include="My Project\Resources.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
