@@ -326,7 +326,7 @@ Namespace kCura.WinEDDS
 			End If
 			Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 
-			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, exportInitializationArgs.ColumnNames, UseOldExport)
+			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, exportInitializationArgs.ColumnNames, UseOldExport, columnHeaderString)
 				Dim batch As IBatch = Nothing
 				Dim objectExportableSize As IObjectExportableSize = Nothing
 
@@ -352,7 +352,7 @@ Namespace kCura.WinEDDS
 
 				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", kCura.Windows.Process.EventType.ResetStartTime, _lastStatisticsSnapshot, Statistics))
 				RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType.ToString)
-				
+
 				Dim records As Object() = Nothing
 				Dim start, realStart As Int32
 				Dim lastRecordCount As Int32 = -1
@@ -388,7 +388,7 @@ Namespace kCura.WinEDDS
 					End If
 					If _cancellationTokenSource.IsCancellationRequested Then Exit While
 				End While
-				
+
 				Me.WriteStatusLine(Windows.Process.EventType.Status, kCura.WinEDDS.FileDownloader.TotalWebTime.ToString, True)
 				_timekeeper.GenerateCsvReportItemsAsRows()
 
