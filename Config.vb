@@ -110,12 +110,14 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 
+		Private Shared _rdcMetricsThrottlingSeconds As String = "RdcMetricsThrottlingSeconds"
+
 		Public Shared ReadOnly Property RdcMetricsThrottlingSeconds() As Int32
 			Get
-				Return CType(ConfigSettings("RdcMetricsThrottlingSeconds"), Int32)
+				Return GetConfigWithDefault(_RdcMetricsThrottlingSeconds, 30)
 			End Get
 		End Property
-
+		
 		Private Shared _rdcMetricsConfiguration As String = "RDCMetricsConfiguration"
 
 		Public Shared ReadOnly Property SendLiveApmMetrics As Boolean
