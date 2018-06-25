@@ -17,7 +17,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 
 		public FileshareSettingsService(ILog logger, ExportFile exportSettings)
 		{
-			_logger = logger;
+		    if (logger == null)
+		    {
+		        throw new ArgumentNullException(nameof(logger));
+		    }
+
+		    if (exportSettings == null)
+		    {
+		        throw new ArgumentNullException(nameof(exportSettings));
+		    }
+
+            _logger = logger;
 			_workspaceId = exportSettings.CaseInfo.ArtifactID;
 			_currentUserCredential = exportSettings.Credential;
 		}
@@ -26,14 +36,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 		{
 			if (_cachedSettings == null)
 			{
-				_cachedSettings = new List<RelativityFileShareSettings>();
-				GetFileshareSettingsForWorskpace(Config.WebServiceURL, _workspaceId, _currentUserCredential.UserName, _currentUserCredential.Password);
+				GetFileshareSettingsForWorkspace(Config.WebServiceURL, _workspaceId, _currentUserCredential.UserName, _currentUserCredential.Password);
 			}
-			
-			return _cachedSettings.FirstOrDefault(n => n.FileshareUri.IsBaseOf(new Uri(fileUrl)));
+
+			RelativityFileShareSettings settings = _cachedSettings.FirstOrDefault(n => n.IsBaseOf(fileUrl));
+			return settings;
 		}
 
-		private void GetFileshareSettingsForWorskpace(string hostUrl, int workspaceId, string userName, string password )
+		private void GetFileshareSettingsForWorkspace(string hostUrl, int workspaceId, string userName, string password)
 		{
 			try
 			{
@@ -43,16 +53,27 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 				using (var transferHost = new RelativityTransferHost(connectionInfo, transferLog))
 				{
 					IFileStorageSearch service = transferHost.CreateFileStorageSearch();
-                    FileStorageSearchContext context = new FileStorageSearchContext { WorkspaceId = _workspaceId };
+					FileStorageSearchContext context = new FileStorageSearchContext { WorkspaceId = _workspaceId };
 
-                    FileStorageSearchResults results = service.SearchAsync(context).ConfigureAwait(false).GetAwaiter().GetResult();
+					FileStorageSearchResults results = service.SearchAsync(context).ConfigureAwait(false).GetAwaiter().GetResult();
+					if (results.InvalidFileShares.Count > 0)
+					{
+						foreach (var fileShare in results.InvalidFileShares)
+						{
+							this._logger.LogWarning(
+								"The Relativity instance '{Url}' defines workspace '{WorkspaceId}' that references invalid fileshare '{FileShareName}' from the associated resource pool.",
+								hostUrl,
+								workspaceId,
+								fileShare.Name);
+						}
+					}
+
 					_cachedSettings = results.FileShares.Select(f => new RelativityFileShareSettings(f)).ToList();
 				}
-				
 			}
 			catch (Exception e)
 			{
-				_logger.LogError(e, $"{nameof(GetFileshareSettingsForWorskpace)}() failed with following error message {0} and stack trace {1}", e.Message, e.StackTrace);
+				_logger.LogError(e, $"{nameof(GetFileshareSettingsForWorkspace)}() failed with following error message {0} and stack trace {1}", e.Message, e.StackTrace);
 				throw;
 			}
 		}

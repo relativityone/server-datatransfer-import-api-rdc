@@ -5,25 +5,26 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 {
 	public class RelativityFileShareSettings
 	{
-		public AsperaCredential TransferCredential { get; set; }
+		private readonly RelativityFileShare _fileShare;
 
-		public string FileshareName { get; set; }
-
-		public Uri FileshareUri { get; set; }
-
-
-		public RelativityFileShareSettings() { }
-
-		public RelativityFileShareSettings(string fileshareName, AsperaCredential credential)
+		public RelativityFileShareSettings(RelativityFileShare fileShare)
 		{
-			FileshareName = fileshareName;
-			FileshareUri = new Uri(fileshareName);
-			TransferCredential = credential;
+			if (fileShare == null)
+			{
+				throw new ArgumentNullException(nameof(fileShare));
+			}
+
+			_fileShare = fileShare;
 		}
 
-		public RelativityFileShareSettings(RelativityFileShare fileShare) : this(fileShare.Url, fileShare.TransferCredential)
-		{
+		public AsperaCredential TransferCredential => _fileShare.TransferCredential;
 
+		public string UncPath => _fileShare.Url;
+
+		public bool IsBaseOf(string path)
+		{
+			bool result = _fileShare.IsBaseOf(path);
+			return result;
 		}
 	}
 }
