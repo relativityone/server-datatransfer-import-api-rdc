@@ -110,7 +110,7 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 
-		Private Shared _rdcMetricsThrottlingSeconds As String = "RdcMetricsThrottlingSeconds"
+		Private Shared _rdcMetricsThrottlingSeconds As String = "MetricsThrottlingSeconds"
 
 		Public Shared ReadOnly Property RdcMetricsThrottlingSeconds() As Int32
 			Get
@@ -118,7 +118,7 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 		
-		Private Shared _rdcMetricsConfiguration As String = "RDCMetricsConfiguration"
+		Private Shared _rdcMetricsConfiguration As String = "MetricsConfiguration"
 
 		Public Shared ReadOnly Property SendLiveApmMetrics As Boolean
 			Get
