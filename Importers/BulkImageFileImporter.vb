@@ -233,6 +233,7 @@ Namespace kCura.WinEDDS
 			nativeParameters.AsperaBcpRootFolder = String.Empty
 
 			' This will tie both native and BCP to a single unique identifier.
+			nativeParameters.Application = Config.ApplicationName
 			nativeParameters.ClientRequestId = Guid.NewGuid()
 			nativeParameters.Credentials = args.Credential
 			nativeParameters.AsperaDocRootLevels = Config.TapiAsperaNativeDocRootLevels
@@ -247,6 +248,7 @@ Namespace kCura.WinEDDS
 			nativeParameters.MaxJobParallelism = Config.TapiMaxJobParallelism
 			nativeParameters.MaxJobRetryAttempts = Me.NumberOfRetries
 			nativeParameters.MinDataRateMbps = Config.TapiMinDataRateMbps
+			nativeParameters.SubmitApmMetrics = Config.TapiSubmitApmMetrics
 			nativeParameters.TargetPath = Me._defaultDestinationFolderPath
 			nativeParameters.TargetDataRateMbps = Config.TapiTargetDataRateMbps
 			nativeParameters.TransferLogDirectory = Config.TapiTransferLogDirectory
