@@ -364,13 +364,13 @@ End Sub
 						_application.OpenCaseSelector = False
 						Await _application.GetCredentialsAsync()
 						_application.LogOn()
-						Await _application.OpenCase()
+						Await _application.OpenCaseAsync()
 						kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
 					End If
 				Else
 					_application.OpenCaseSelector = False
 					Await _application.GetCredentialsAsync()
-					Await _application.OpenCase()
+					Await _application.OpenCaseAsync()
 				End If
 			Catch ex As LoginCanceledException
 				'user close the login window, do nothing
@@ -528,7 +528,7 @@ End Sub
 			_application.UpdateWebServiceURL(False)
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 			Await _application.RefreshCaseFolders()
-			Await _application.RefreshSelectedCaseInfo()
+			Await _application.RefreshSelectedCaseInfoAsync()
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 

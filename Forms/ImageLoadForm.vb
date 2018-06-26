@@ -652,8 +652,10 @@ Namespace kCura.EDDS.WinForm
 			If Await Me.PopulateImageLoadFile(True) Then If Await _application.ReadyToLoad(Me.ImageLoadFile, True) Then Await _application.PreviewImageFile(Me.ImageLoadFile)
 		End Sub
 
-		Private Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
+		Private Async Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
+			Dim isUsingAsperaConnectionMode As Boolean = Await Task.Run(Async Function() Await Application.Instance.IsUsingAsperaConnectionMode().ConfigureAwait(False)).ConfigureAwait(True)
 			_advancedFileForm = New AdvancedFileLocation
+			_advancedFileForm.IsUsingAsperaConnectionMode = isUsingAsperaConnectionMode
 			_advancedFileForm._copyNativeFiles.Checked = Me.ImageLoadFile.CopyFilesToDocumentRepository
 			_advancedFileForm._keepNativeFiles.Checked = Not Me.ImageLoadFile.CopyFilesToDocumentRepository
 			If Not Me.ImageLoadFile.SelectedCasePath Is Nothing AndAlso Not Me.ImageLoadFile.SelectedCasePath = "" Then

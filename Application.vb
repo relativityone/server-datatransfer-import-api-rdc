@@ -21,6 +21,7 @@ Imports Relativity.OAuth2Client.Interfaces.Events
 Imports Relativity.Services.InstanceDetails
 Imports Relativity.Services.ServiceProxy
 Imports Relativity.StagingExplorer.Services.StagingManager
+Imports Relativity.Transfer
 
 Namespace kCura.EDDS.WinForm
     Public Class Application
@@ -106,13 +107,13 @@ Namespace kCura.EDDS.WinForm
             End Set
         End Property
 
-        Public ReadOnly Property SelectedCaseInfo() As Relativity.CaseInfo
+		Public ReadOnly Property SelectedCaseInfo() As Relativity.CaseInfo
             Get
                 Return _selectedCaseInfo
             End Get
         End Property
 
-        Public Async Function RefreshSelectedCaseInfo(Optional ByVal caseInfo As Relativity.CaseInfo = Nothing) As Task
+        Public Async Function RefreshSelectedCaseInfoAsync(Optional ByVal caseInfo As Relativity.CaseInfo = Nothing) As Task
             Dim caseManager As New kCura.WinEDDS.Service.CaseManager(Await Me.GetCredentialsAsync(), _CookieContainer)
             If caseInfo Is Nothing Then
                 _selectedCaseInfo = caseManager.Read(_selectedCaseInfo.ArtifactID)
@@ -216,13 +217,30 @@ Namespace kCura.EDDS.WinForm
             End If
         End Sub
 
+		''' <summary>
+		''' This method doesn't work! Use CursorDefaultWhichWorks instead.
+		''' </summary>
         Public Sub CursorDefault()
             RaiseEvent ChangeCursor(System.Windows.Forms.Cursors.Default)
         End Sub
 
+        ''' <summary>
+        ''' This method doesn't work! Use CursorWaitWhichWorks instead.
+		''' </summary>
         Public Sub CursorWait()
             RaiseEvent ChangeCursor(System.Windows.Forms.Cursors.WaitCursor)
         End Sub
+
+        Public Sub CursorDefaultWhichWorks()
+	        'Name of this method should be changed after cleaning every usage of CursorDefault method will be replaced with this one
+	        System.Windows.Forms.Application.UseWaitCursor = false
+        End Sub
+
+		Public Sub CursorWaitWhichWorks()
+			'Name of this method should be changed after cleaning every usage of CursorWait method will be replaced with this one
+			System.Windows.Forms.Application.UseWaitCursor = true
+		End Sub
+
 #End Region
 
 #Region "Document Field Collection"
@@ -460,12 +478,17 @@ Namespace kCura.EDDS.WinForm
             _caseSelected = True
         End Sub
 
-        Public Async Function OpenCase() As Task
+        Public Async Function OpenCaseAsync() As Task
             Try
-                Dim caseInfo As Relativity.CaseInfo = Me.GetCase
+                Dim caseInfo As CaseInfo = Me.GetCase
                 If Not caseInfo Is Nothing Then
                     _selectedCaseInfo = caseInfo
-                    Await Me.RefreshSelectedCaseInfo()
+					Try
+						CursorWaitWhichWorks()
+						Await RefreshSelectedCaseInfoAsync().ConfigureAwait(False)
+					Finally
+						CursorDefaultWhichWorks()
+					End Try
                     RaiseEvent OnEvent(New LoadCaseEvent(caseInfo))
                 End If
             Catch MrSoapy As SoapException
@@ -498,15 +521,19 @@ Namespace kCura.EDDS.WinForm
         End Function
 
         Public Async Function GetConnectionStatus() As Task(Of String)
-            Dim parameters = CreateTapiParametersAsync()
-            Dim clientName = Await kCura.WinEDDS.TApi.TapiWinEddsHelper.GetWorkspaceClientDisplayNameAsync(await parameters)
-            Return clientName
+	        Dim parameters = CreateTapiParametersAsync()
+	        Dim clientName = Await TApi.TapiWinEddsHelper.GetWorkspaceClientDisplayNameAsync(await parameters)
+			Return clientName
+		End Function
+
+		Public Async Function GetConnectionMode() As Task(Of Guid)
+	        Dim parameters = CreateTapiParametersAsync()
+	        Dim clientName = Await TApi.TapiWinEddsHelper.GetWorkspaceClientIdAsync(await parameters)
+	        Return clientName
         End Function
 
-        Public Async Function GetConnectionMode() As Task(Of Guid)
-            Dim parameters = CreateTapiParametersAsync()
-            Dim clientName = Await kCura.WinEDDS.TApi.TapiWinEddsHelper.GetWorkspaceClientIdAsync(await parameters)
-            Return clientName
+        Public Async Function IsUsingAsperaConnectionMode() As Task(Of Boolean)
+	        Return (Await GetConnectionMode().ConfigureAwait(False)) = Guid.Parse(TransferClientConstants.AsperaClientId)
         End Function
 
         Private Async Function CreateTapiParametersAsync() As Task(Of TApi.TapiBridgeParameters)
@@ -1415,7 +1442,7 @@ Namespace kCura.EDDS.WinForm
                 Case Application.CredentialCheckResult.Success
                     LogOn()
                     If (Not _caseSelected) Then
-                        Await OpenCase()
+                        Await OpenCaseAsync().ConfigureAwait(False)
                     End If
                     EnhancedMenuProvider.Hook(callingForm)
             End Select
@@ -1509,7 +1536,7 @@ Namespace kCura.EDDS.WinForm
                     System.Threading.Thread.CurrentThread.CurrentCulture = locale
 
                     kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-                    If OpenCaseSelector Then Await OpenCase()
+                    If OpenCaseSelector Then Await OpenCaseAsync().ConfigureAwait(False)
                     _timeZoneOffset = 0                                                         'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
                     _lastCredentialCheckResult = CredentialCheckResult.Success
                     'This was created specifically for raising an event after login success for RDC forms authentication 
@@ -1619,7 +1646,7 @@ Namespace kCura.EDDS.WinForm
 
         Public Function GetIdentityServerLocation() As String
             Dim tempCred As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
-            Dim relManager As Service.RelativityManager = New RelativityManager(tempCred, _CookieContainer)
+            Dim relManager As Service.RelativityManager = New Service.RelativityManager(tempCred, _CookieContainer)
             Dim urlString As String = String.Format("{0}/{1}", relManager.GetRelativityUrl(), "Identity")
             Return urlString
         End Function
