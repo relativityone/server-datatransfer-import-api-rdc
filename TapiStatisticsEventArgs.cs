@@ -17,26 +17,31 @@ namespace kCura.WinEDDS.TApi
     /// <seealso cref="System.EventArgs" />
     public class TapiStatisticsEventArgs : EventArgs
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TapiStatisticsEventArgs"/> class.
-        /// </summary>
-        /// <param name="totalBytes">
-        /// The total number of bytes.
-        /// </param>
-        /// <param name="totalFiles">
-        /// The total number of files.
-        /// </param>
-        /// <param name="totalTransferTicks">
-        /// The total transfer time in ticks.
-        /// </param>
-        public TapiStatisticsEventArgs(
+	    /// <summary>
+	    /// Initializes a new instance of the <see cref="TapiStatisticsEventArgs"/> class.
+	    /// </summary>
+	    /// <param name="totalBytes">
+	    /// The total number of bytes.
+	    /// </param>
+	    /// <param name="totalFiles">
+	    /// The total number of files.
+	    /// </param>
+	    /// <param name="totalTransferTicks">
+	    /// The total transfer time in ticks.
+	    /// </param>
+	    /// <param name="transferRateBytes">
+	    /// The active transfer rate.
+	    /// </param>
+	    public TapiStatisticsEventArgs(
             long totalBytes,
             long totalFiles,
-            long totalTransferTicks)
+            long totalTransferTicks,
+            double transferRateBytes)
         {
             this.TotalBytes = totalBytes;
             this.TotalFiles = totalFiles;
             this.TotalTransferTicks = totalTransferTicks;
+	        this.TransferRateBytes = transferRateBytes;
         }
 
         /// <summary>
@@ -71,5 +76,13 @@ namespace kCura.WinEDDS.TApi
         {
             get;
         }
+
+		/// <summary>
+		/// Gets active transfer rate.
+		/// </summary>
+	    public double TransferRateBytes
+	    {
+			get;
+	    }
     }
 }
