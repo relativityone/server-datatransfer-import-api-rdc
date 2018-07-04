@@ -392,9 +392,10 @@ End Sub
 				Case appEvent.AppEventType.LoadCase
 					_fileMenuRefresh.Enabled = True
 					UpdateStatus("Workspace Loaded - File Transfer Mode: Connecting...")
-					Dim mode = Await _application.GetConnectionStatus
-					UpdateStatus($"Workspace Loaded - File Transfer Mode: {mode}")
+					Dim modeTask = Task.Run( Async Function() Await _application.GetConnectionStatus().ConfigureAwait(False)).ConfigureAwait(True)
 					Await PopulateObjectTypeDropDown()
+					Dim mode As String = Await modeTask
+					UpdateStatus($"Workspace Loaded - File Transfer Mode: {mode}")
 					_optionsMenuCheckConnectivityItem.Enabled = True
 					ImportMenu.Enabled = _application.UserHasImportPermission
 					ExportMenu.Enabled = _application.UserHasExportPermission
@@ -451,15 +452,17 @@ End Sub
 		End Sub
 
 		Public Async Function CheckCertificate() As Task
-			try
-				If (_application.CertificateTrusted()) Then
-					Await _application.AttemptLogin(Me)
-				Else
-					_application.CertificateCheckPrompt()
-				End If
-			Catch ex As WebException
-				_application.HandleWebException(ex)
-			End Try
+            Try
+                If (_application.CertificateTrusted()) Then
+                    Await _application.AttemptLogin(Me)
+                Else
+                    _application.CertificateCheckPrompt()
+                End If
+            Catch ex As WebException
+                _application.HandleWebException(ex)
+            Catch ex As RelativityVersionMismatchException
+                _application.ChangeWebServiceUrl(ex.Message + " Try a new URL?")
+            End Try
 			
 		End Function
 
@@ -553,7 +556,7 @@ End Sub
 		End Sub
 
 		Private Async Function PopulateObjectTypeDropDown() As Task
-			Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(Await _application.GetCredentialsAsync(), _application.CookieContainer)
+			Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(Await _application.GetCredentialsAsync().ConfigureAwait(True), _application.CookieContainer)
 			Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
 			Dim selectedObjectTypeID As Int32 = Relativity.ArtifactType.Document
 			If _objectTypeDropDown.Items.Count > 0 Then
