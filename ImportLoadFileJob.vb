@@ -1,4 +1,5 @@
 Imports System.Net
+Imports kCura.Windows.Process
 Imports kCura.WinEDDS
 Imports Relativity
 
@@ -574,7 +575,12 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub _observer_OnProcessProgressEvent(ByVal evt As kCura.Windows.Process.ProcessProgressEvent) Handles _observer.OnProcessProgressEvent
 			RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Progress Info: {1} ]", System.DateTime.Now, evt.TotalRecordsProcessedDisplay)))
-			RaiseEvent OnProcessProgress(New FullStatus(evt.TotalRecords, evt.TotalRecordsProcessed, evt.TotalRecordsProcessedWithWarnings, evt.TotalRecordsProcessedWithErrors, evt.StartTime, evt.EndTime, evt.TotalRecordsDisplay, evt.TotalRecordsProcessedDisplay, evt.ProcessID, evt.StatusSuffixEntries))
+			RaiseEvent OnProcessProgress(New FullStatus(evt.TotalRecords, evt.TotalRecordsProcessed, evt.TotalRecordsProcessedWithWarnings, evt.TotalRecordsProcessedWithErrors, evt.StartTime, evt.EndTime, evt.TotalRecordsDisplay, evt.TotalRecordsProcessedDisplay, evt.MetadataThroughput, evt.FilesThroughput, evt.ProcessID, evt.StatusSuffixEntries))
+		End Sub
+
+		Private Sub _observer_OnOnProcessEnd(evt As ProcessEndEventArgs) Handles _observer.OnProcessEnd
+			_jobReport.FileBytes = evt.FileBytes
+			_jobReport.MetadataBytes = evt.MetaBytes
 		End Sub
 
 		Private Sub _observer_RecordProcessedEvent(ByVal recordNumber As Long) Handles _observer.RecordProcessed
