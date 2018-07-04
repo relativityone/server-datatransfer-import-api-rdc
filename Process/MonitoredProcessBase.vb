@@ -71,6 +71,7 @@ Public MustInherit Class MonitoredProcessBase
 	Protected Sub SendTransferJobStartedMessage()
 		If InitialTapiClientName Is Nothing Then
 			MessageService.Send(New TransferJobStartedMessage With {.JobType = JobType, .TransferMode = TapiClientName})
+			InitialTapiClientName = TapiClientName
 		End If
 	End Sub
 
