@@ -1,4 +1,5 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
+﻿using System;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 using kCura.WinEDDS.TApi;
 using Relativity.Logging;
 
@@ -8,6 +9,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 	{
 		private ITapiBridge _tapiBridge;
 
+		private double _savedThroughput;
 		private long _savedFileBytes;
 		private long _savedFileTime;
 
@@ -28,6 +30,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		{
 			_tapiBridge = tapiBridge;
 			_tapiBridge.TapiProgress += OnProgress;
+			_tapiBridge.TapiStatistics += TapiBridgeOnTapiStatistics;
+		}
+
+		private void TapiBridgeOnTapiStatistics(object sender, TapiStatisticsEventArgs e)
+		{
+			lock (_lock)
+			{
+				_statistics.FileThroughput = e.TransferRateBytes;
+			}
 		}
 
 		private void OnProgress(object sender, TapiProgressEventArgs e)
@@ -46,6 +57,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		public void Detach()
 		{
 			_tapiBridge.TapiProgress -= OnProgress;
+			_tapiBridge.TapiStatistics -= TapiBridgeOnTapiStatistics;
 		}
 
 		public void UpdateStatisticsForFile(string path)
@@ -67,6 +79,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		{
 			lock (_lock)
 			{
+				_savedThroughput = _statistics.FileThroughput;
 				_savedFileBytes = _statistics.FileBytes;
 				_savedFileTime = _statistics.FileTime;
 			}
@@ -76,6 +89,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		{
 			lock (_lock)
 			{
+				_statistics.FileThroughput = _savedThroughput;
 				_statistics.FileBytes = _savedFileBytes;
 				_statistics.FileTime = _savedFileTime;
 			}

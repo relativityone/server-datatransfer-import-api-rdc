@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 using kCura.WinEDDS.TApi;
 using Relativity.Logging;
@@ -9,6 +10,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 	{
 		private ITapiBridge _tapiBridge;
 
+		private double _savedThroughput;
 		private long _savedMetadataBytes;
 		private long _savedMetadataTime;
 		private Dictionary<string, long> _savedFilesSize;
@@ -35,6 +37,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		{
 			_tapiBridge = tapiBridge;
 			_tapiBridge.TapiProgress += OnProgress;
+			_tapiBridge.TapiStatistics += TapiBridgeOnTapiStatistics;
+		}
+
+		private void TapiBridgeOnTapiStatistics(object sender, TapiStatisticsEventArgs e)
+		{
+			lock (_lock)
+			{
+				_statistics.MetadataThroughput = e.TransferRateBytes;
+			}
 		}
 
 		private void OnProgress(object sender, TapiProgressEventArgs e)
@@ -53,6 +64,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		public void Detach()
 		{
 			_tapiBridge.TapiProgress -= OnProgress;
+			_tapiBridge.TapiStatistics -= TapiBridgeOnTapiStatistics;
 		}
 
 		public void UpdateStatisticsForFile(string path)
@@ -82,6 +94,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		{
 			lock (_lock)
 			{
+				_savedThroughput = _statistics.MetadataThroughput;
 				_savedMetadataBytes = _statistics.MetadataBytes;
 				_savedMetadataTime = _statistics.MetadataTime;
 				_savedFilesSize = new Dictionary<string, long>(_filesSize);
@@ -92,6 +105,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		{
 			lock (_lock)
 			{
+				_statistics.MetadataThroughput = _savedThroughput;
 				_statistics.MetadataBytes = _savedMetadataBytes;
 				_statistics.MetadataTime = _savedMetadataTime;
 				_filesSize.Clear();
