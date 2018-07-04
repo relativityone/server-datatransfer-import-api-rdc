@@ -101,6 +101,12 @@
     <Reference Include="Polly, Version=5.3.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Polly.5.3.1\lib\net45\Polly.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.DataTransfer.MessageService">
+      <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.1.0.12\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Kepler, Version=1.0.1.445">
+      <HintPath>..\..\packages\Relativity.Kepler.1.0.1.445\lib\net462\Relativity.Kepler.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Logging">
       <HintPath>..\..\packages\Relativity.Logging.9.4.311\lib\net462\Relativity.Logging.dll</HintPath>
     </Reference>
