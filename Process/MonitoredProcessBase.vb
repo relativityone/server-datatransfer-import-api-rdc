@@ -6,7 +6,6 @@ Imports Relativity.DataTransfer.MessageService
 Public MustInherit Class MonitoredProcessBase
 	Inherits kCura.Windows.Process.ProcessBase
 
-	Private ReadOnly _messageThrottling As TimeSpan
 	Protected Property JobGuid As System.Guid = System.Guid.NewGuid()
 	Protected Property StartTime As System.DateTime
 	Protected Property EndTime As System.DateTime
@@ -36,7 +35,6 @@ Public MustInherit Class MonitoredProcessBase
 		Else
 			OnFatalError()
 		End If
-
 	End Sub
 
 	Protected Overridable Sub SetEndTime()
@@ -129,7 +127,7 @@ Public MustInherit Class MonitoredProcessBase
 				.MetadataBytes = statistics.MetadataBytes,
 				.FileBytes = statistics.FileBytes,
 				.JobSizeInBytes = statistics.MetadataBytes + statistics.FileBytes
-			}
+				}
 		BuildApmBaseMessage(message)
 		MessageService.Send(message)
 	End Sub
@@ -144,5 +142,4 @@ Public MustInherit Class MonitoredProcessBase
 			message.WorkspaceID = CaseInfo.ArtifactID
 		End If
 	End Sub
-
 End Class
