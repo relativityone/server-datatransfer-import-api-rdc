@@ -24,14 +24,14 @@ Namespace kCura.WinEDDS.Monitoring
 			Return $"{PerformancePrefix}.{metricName}.{jobType}.{transferMode}"
 		End Function
 
-		Public Sub LogCount(bucketName As String, value As Long)
+		Public Sub LogCount(bucketName As String, value As Long, metadata As IMetricMetadata)
 			Dim keplerManager As IMetricsManager = _metricsManagerFactory.CreateSUMKeplerManager(_serviceFactory)
-			keplerManager.LogCount(bucketName, value)
+			keplerManager.LogCount(bucketName, value, metadata)
 		End Sub
 
-		Public Sub LogDouble(bucketName As String, value As Double)
+		Public Sub LogDouble(bucketName As String, value As Double, metadata As IMetricMetadata)
 			Dim keplerManager As IMetricsManager = _metricsManagerFactory.CreateSUMKeplerManager(_serviceFactory)
-			keplerManager.LogDouble(bucketName, value)
+			keplerManager.LogDouble(bucketName, value, metadata)
 		End Sub
 
 		Public Sub LogApmDouble(bucketName As String, value As Double, metadata As IMetricMetadata)
