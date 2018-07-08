@@ -392,10 +392,9 @@ End Sub
 				Case appEvent.AppEventType.LoadCase
 					_fileMenuRefresh.Enabled = True
 					UpdateStatus("Workspace Loaded - File Transfer Mode: Connecting...")
-					Dim modeTask = Task.Run( Async Function() Await _application.GetConnectionStatus().ConfigureAwait(False)).ConfigureAwait(True)
-					Await PopulateObjectTypeDropDown()
-					Dim mode As String = Await modeTask
+					Dim mode = Await _application.GetConnectionStatus
 					UpdateStatus($"Workspace Loaded - File Transfer Mode: {mode}")
+					Await PopulateObjectTypeDropDown()
 					_optionsMenuCheckConnectivityItem.Enabled = True
 					ImportMenu.Enabled = _application.UserHasImportPermission
 					ExportMenu.Enabled = _application.UserHasExportPermission
@@ -452,18 +451,15 @@ End Sub
 		End Sub
 
 		Public Async Function CheckCertificate() As Task
-            Try
-                If (_application.CertificateTrusted()) Then
-                    Await _application.AttemptLogin(Me)
-                Else
-                    _application.CertificateCheckPrompt()
-                End If
-            Catch ex As WebException
-                _application.HandleWebException(ex)
-            Catch ex As RelativityVersionMismatchException
-                _application.ChangeWebServiceUrl(ex.Message + " Try a new URL?")
-            End Try
-			
+			try
+				If (_application.CertificateTrusted()) Then
+					Await _application.AttemptLogin(Me)
+				Else
+					_application.CertificateCheckPrompt()
+				End If
+			Catch ex As WebException
+				_application.HandleWebException(ex)
+			End Try
 		End Function
 
 		Private Async Sub WebServiceURLChanged() Handles _application.ReCheckCertificate

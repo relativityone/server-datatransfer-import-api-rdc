@@ -78,9 +78,7 @@ Namespace kCura.EDDS.WinForm
                 tempImplicitProvider.CloseLoginView()
             End If
             Dim authEndpoint As String = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/authorize")
-
-	        'Dim implicitProvider = New OAuth2ImplicitCredentials(New ThreadedLoginView(New Uri(authEndpoint), "Relativity Desktop Client"), AddressOf On_TokenRetrieved)
-            Dim implicitProvider = New OAuth2ImplicitCredentials(New Uri(authEndpoint), "Relativity Desktop Client", AddressOf On_TokenRetrieved)
+	        Dim implicitProvider = New OAuth2ImplicitCredentials(New Uri(authEndpoint), "Relativity Desktop Client", AddressOf On_TokenRetrieved)
             RelativityWebApiCredentialsProvider.Instance().SetProvider(implicitProvider)
         End Sub
 
@@ -1666,7 +1664,7 @@ Namespace kCura.EDDS.WinForm
 
         Public Sub ChangeWebServiceUrl(ByVal message As String)
             If MsgBox(message, MsgBoxStyle.YesNo, "Relativity Desktop Client") = MsgBoxResult.Yes Then
-                Dim url As String = InputBox("Enter New URL:", Title:="Set Relativity URL", DefaultResponse:=kCura.WinEDDS.Config.WebServiceURL)
+	            Dim url As String = InputBox("Enter New URL:", DefaultResponse:=kCura.WinEDDS.Config.WebServiceURL)
                 If url <> String.Empty Then
                     kCura.WinEDDS.Config.WebServiceURL = url
                     OpenCaseSelector = True
@@ -1698,7 +1696,8 @@ Namespace kCura.EDDS.WinForm
                 End If
             Next
             If Not match Then
-                Throw New RelativityVersionMismatchException(relVersionString)
+	            MsgBox(String.Format("Your version of the Relativity Desktop Client ({0}) is out of date. Please make sure you are running correct RDC version ({1}) or specified correct WebService URL for Relativity.", Me.GetDisplayAssemblyVersion(), relVersionString), MsgBoxStyle.Critical, "WinRelativity Version Mismatch")
+	            ExitApplication()
             Else
                 Exit Sub
             End If
