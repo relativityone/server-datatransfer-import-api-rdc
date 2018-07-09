@@ -460,7 +460,6 @@ End Sub
 			Catch ex As WebException
 				_application.HandleWebException(ex)
 			End Try
-			
 		End Function
 
 		Private Async Sub WebServiceURLChanged() Handles _application.ReCheckCertificate
@@ -553,7 +552,7 @@ End Sub
 		End Sub
 
 		Private Async Function PopulateObjectTypeDropDown() As Task
-			Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(Await _application.GetCredentialsAsync(), _application.CookieContainer)
+			Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(Await _application.GetCredentialsAsync().ConfigureAwait(True), _application.CookieContainer)
 			Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
 			Dim selectedObjectTypeID As Int32 = Relativity.ArtifactType.Document
 			If _objectTypeDropDown.Items.Count > 0 Then
