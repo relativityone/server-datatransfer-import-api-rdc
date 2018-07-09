@@ -7,4 +7,3 @@
 
 	End Class
 End Namespace
-

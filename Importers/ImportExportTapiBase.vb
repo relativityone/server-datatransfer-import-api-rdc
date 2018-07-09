@@ -300,6 +300,7 @@ Namespace kCura.WinEDDS
 			If updateCurrentStats OrElse force Then
 				CurrentStatisticsSnapshot = Me.Statistics.ToDictionary()
 				_statisticsLastUpdated = time
+				Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Statistics, "", 0, 0)
 			End If
 		End Sub
 
@@ -312,6 +313,7 @@ Namespace kCura.WinEDDS
 			SyncLock _syncRoot
 				_statistics.MetadataTime = e.TotalTransferTicks
 				_statistics.MetadataBytes = e.TotalBytes
+				_statistics.MetadataThroughput = e.TransferRateBytes
 				Me.UpdateStatisticsSnapshot(System.DateTime.Now)
 			End SyncLock
 		End Sub
@@ -335,6 +337,7 @@ Namespace kCura.WinEDDS
 			SyncLock _syncRoot
 				_statistics.FileTime = e.TotalTransferTicks
 				_statistics.FileBytes = e.TotalBytes
+				_statistics.FileThroughput = e.TransferRateBytes
 				Me.UpdateStatisticsSnapshot(System.DateTime.Now)
 			End SyncLock
 		End Sub

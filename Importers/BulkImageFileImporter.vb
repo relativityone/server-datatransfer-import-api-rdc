@@ -610,6 +610,7 @@ Namespace kCura.WinEDDS
 				End If
 
 				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "Begin Image Upload", 0, 0)
+				RaiseStatusEvent(kCura.Windows.Process.EventType.ResetStartTime, "", 0, 0)
 				Dim al As New System.Collections.Generic.List(Of Api.ImageRecord)
 				Dim status As Int64 = 0
 				_timekeeper.MarkEnd("ReadFile_Init")
@@ -938,7 +939,7 @@ Namespace kCura.WinEDDS
 #Region "Events and Event Handling"
 
 		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception)
-		Public Event StatusMessage(ByVal args As kCura.Windows.Process.StatusEventArgs)
+		Public Event StatusMessage(ByVal args As StatusEventArgs)
 		Public Event ReportErrorEvent(ByVal row As System.Collections.IDictionary)
 
 		Private Sub PublishUploadModeEvent()
@@ -967,7 +968,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub RaiseStatusEvent(ByVal et As kCura.Windows.Process.EventType, ByVal message As String, ByVal progressLineNumber As Int64, ByVal physicalLineNumber As Int64)
-			RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(et, progressLineNumber, _recordCount, message, et = Windows.Process.EventType.Warning, Me.CurrentStatisticsSnapshot))
+			RaiseEvent StatusMessage(New StatusEventArgs(et, progressLineNumber, _recordCount, message, et = Windows.Process.EventType.Warning, Me.CurrentStatisticsSnapshot, Statistics))
 		End Sub
 
 		Private Sub _processObserver_CancelImport(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
@@ -1155,7 +1156,7 @@ Namespace kCura.WinEDDS
 							ht.Add("Message", errorMessages)
 							RaiseReportError(ht, Int32.Parse(line(0)), line(2), "server")
 							'TODO: track stats
-							RaiseEvent StatusMessage(New kCura.Windows.Process.StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _recordCount, "[Line " & line(0) & "]" & errorMessages, Nothing))
+							RaiseEvent StatusMessage(New StatusEventArgs(Windows.Process.EventType.Error, Int32.Parse(line(0)) - 1, _recordCount, "[Line " & line(0) & "]" & errorMessages, Nothing, Statistics))
 							line = sr.ReadLine
 						End While
 						sr.Close()
