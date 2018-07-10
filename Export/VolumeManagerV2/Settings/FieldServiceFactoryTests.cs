@@ -1,4 +1,6 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings;
+﻿using System.Collections.Generic;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings;
+using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.NUnit.TestObjectFactories;
 using Moq;
 using NUnit.Framework;
@@ -10,16 +12,18 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Settings
 	public class FieldServiceFactoryTests
 	{
 		private FieldServiceFactory _instance;
+		private Mock<ILoadFileHeaderFormatter> _formatter;
 		private Mock<IColumnsOrdinalLookupFactory> _columnsOrdinalLookup;
 		private Mock<IColumnsFactory> _columnsFactory;
 
 		[SetUp]
 		public void SetUp()
 		{
+			_formatter = new Mock<ILoadFileHeaderFormatter>();
 			_columnsOrdinalLookup = new Mock<IColumnsOrdinalLookupFactory>();
 			_columnsFactory = new Mock<IColumnsFactory>();
 
-			_instance = new FieldServiceFactory(_columnsOrdinalLookup.Object, _columnsFactory.Object, new NullLogger());
+			_instance = new FieldServiceFactory(_formatter.Object, _columnsOrdinalLookup.Object, _columnsFactory.Object, new NullLogger());
 		}
 
 		[Test]
@@ -47,7 +51,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Settings
 			};
 
 			//ACT
-			_instance.Create(exportSettings, null, string.Empty);
+			_instance.Create(exportSettings, null);
 
 			//ASSERT
 			return exportSettings.ExportFullText;
@@ -66,10 +70,11 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Settings
 			_columnsFactory.Setup(x => x.CreateColumns(exportSettings)).Returns(fields);
 
 			//ACT
-			_instance.Create(exportSettings, columnNamesInOrder, string.Empty);
+			_instance.Create(exportSettings, columnNamesInOrder);
 
 			//ASSERT
 			_columnsFactory.Verify(x => x.CreateColumns(exportSettings));
+			_formatter.Verify(x => x.GetHeader(It.IsAny<List<ViewFieldInfo>>()));
 			_columnsOrdinalLookup.Verify(x => x.CreateOrdinalLookup(exportSettings, columnNamesInOrder));
 		}
 	}
