@@ -1817,7 +1817,7 @@ Namespace kCura.EDDS.WinForm
 				Dim jobLiveSink = New JobLiveMetricSink(serviceFactory, metricsManagerFactory)
 
 				Dim jobLifetimeSink = New JobLifetimeSink(serviceFactory, metricsManagerFactory)
-				Dim jobLiveThrottledSink = New ThrottledMessageSink(Of TransferJobApmThroughputMessage)(jobLiveSink, function() configProvider.CurrentConfig.ThrottleTimeout)
+				Dim jobLiveThrottledSink = New ThrottledMessageSink(Of TransferJobProgressMessage)(jobLiveSink, function() configProvider.CurrentConfig.ThrottleTimeout)
 				Dim jobSumEolSink = New JobSumEndOfLifeSink(serviceFactory, metricsManagerFactory)
 				Dim jobApmEolSink = New JobApmEndOfLifeSink(serviceFactory, metricsManagerFactory)
 
@@ -1830,7 +1830,7 @@ Namespace kCura.EDDS.WinForm
 				_messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedRecordsCountMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
 				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
 				
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobApmThroughputMessage)(jobLiveThrottledSink, function() configProvider.CurrentConfig.SendLiveAPMMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobProgressMessage)(jobLiveThrottledSink, function() configProvider.CurrentConfig.SendLiveAPMMetrics))
 
 				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(jobApmEolSink, function() configProvider.CurrentConfig.SendSummaryApmMetrics))
 			End If
