@@ -70,20 +70,21 @@ Public MustInherit Class MonitoredProcessBase
 
 	Protected Sub SendTransferJobStartedMessage()
 		If InitialTapiClientName Is Nothing Then
-			MessageService.Send(New TransferJobStartedMessage With {.JobType = JobType, .TransferMode = TapiClientName})
+			MessageService.Send(New TransferJobStartedMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CorrelationID = JobGuid.ToString()})
+			InitialTapiClientName = TapiClientName
 		End If
 	End Sub
 
 	Protected Sub SendTransferJobFailedMessage()
-		MessageService.Send(New TransferJobFailedMessage With {.JobType = JobType, .TransferMode = TapiClientName})
+		MessageService.Send(New TransferJobFailedMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CorrelationID = JobGuid.ToString()})
 	End Sub
 
 	Protected Sub SendTransferJobCompletedMessage()
-		MessageService.Send(New TransferJobCompletedMessage With {.JobType = JobType, .TransferMode = TapiClientName})
+		MessageService.Send(New TransferJobCompletedMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CorrelationID = JobGuid.ToString()})
 	End Sub
 
 	Protected Sub SendThroughputStatistics(metadataThroughput As Double, fileThroughput As Double)
-		Dim message As TransferJobApmThroughputMessage = New TransferJobApmThroughputMessage()
+		Dim message As TransferJobProgressMessage = New TransferJobProgressMessage()
 		BuildApmBaseMessage(message)
 		message.MetadataThroughput = metadataThroughput
 		message.FileThroughput = fileThroughput
@@ -112,15 +113,15 @@ Public MustInherit Class MonitoredProcessBase
 			bytesPerSecond = (statistics.FileBytes + statistics.MetadataBytes) / duration.TotalSeconds
 		End If
 
-		MessageService.Send(New TransferJobThroughputMessage With {.JobType = JobType, .TransferMode = TapiClientName, .RecordsPerSecond = recordsPerSecond, .BytesPerSecond = bytesPerSecond})
+		MessageService.Send(New TransferJobThroughputMessage With {.JobType = JobType, .TransferMode = TapiClientName, .RecordsPerSecond = recordsPerSecond, .BytesPerSecond = bytesPerSecond, .CorrelationID = JobGuid.ToString()})
 	End Sub
 
 	Protected Sub SendJobTotalRecordsCountMessage()
-		MessageService.Send(New TransferJobTotalRecordsCountMessage With {.JobType = JobType, .TransferMode = TapiClientName, .TotalRecords = TotalRecords})
+		MessageService.Send(New TransferJobTotalRecordsCountMessage With {.JobType = JobType, .TransferMode = TapiClientName, .TotalRecords = TotalRecords, .CorrelationID = JobGuid.ToString()})
 	End Sub
 
 	Protected Sub SendJobCompletedRecordsCountMessage()
-		MessageService.Send(New TransferJobCompletedRecordsCountMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CompletedRecords = CompletedRecordsCount})
+		MessageService.Send(New TransferJobCompletedRecordsCountMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CompletedRecords = CompletedRecordsCount, .CorrelationID = JobGuid.ToString()})
 	End Sub
 
 	Private Sub SendJobSize(statistics As Statistics)
@@ -128,7 +129,7 @@ Public MustInherit Class MonitoredProcessBase
 				.MetadataBytes = statistics.MetadataBytes,
 				.FileBytes = statistics.FileBytes,
 				.JobSizeInBytes = statistics.MetadataBytes + statistics.FileBytes
-			}
+				}
 		BuildApmBaseMessage(message)
 		MessageService.Send(message)
 	End Sub
@@ -136,7 +137,7 @@ Public MustInherit Class MonitoredProcessBase
 	Private Sub BuildApmBaseMessage(message As TransferJobMessageBase)
 		message.JobType = JobType
 		message.TransferMode = TapiClientName
-		message.CorellationID = JobGuid.ToString()
+		message.CorrelationID = JobGuid.ToString()
 		message.CustomData.Add("UseOldExport", Config.UseOldExport)
 		message.UnitOfMeasure = "Bytes(s)"
 		If Not (CaseInfo Is Nothing) Then
