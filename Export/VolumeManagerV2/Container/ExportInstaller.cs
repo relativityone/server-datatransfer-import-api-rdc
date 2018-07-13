@@ -28,15 +28,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 
 		private readonly Exporter _exporter;
 		private readonly string[] _columnNamesInOrder;
-		private readonly string _columnHeaderString;
+		private readonly ILoadFileHeaderFormatterFactory _loadFileHeaderFormatterFactory;
 
 		protected ExportFile ExportSettings => _exporter.Settings;
 
-		public ExportInstaller(Exporter exporter, string[] columnNamesInOrder, string columnHeaderString)
+		public ExportInstaller(Exporter exporter, string[] columnNamesInOrder, ILoadFileHeaderFormatterFactory loadFileHeaderFormatterFactory)
 		{
 			_exporter = exporter;
 			_columnNamesInOrder = columnNamesInOrder;
-			_columnHeaderString = columnHeaderString;
+			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory;
 		}
 
 		public void Install(IWindsorContainer container, IConfigurationStore store)
@@ -52,7 +52,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 		{
 			container.Register(Component.For<PaddingWarningValidator>().ImplementedBy<PaddingWarningValidator>());
 			container.Register(Component.For<Image>().ImplementedBy<Image>());
-			container.Register(Component.For<ILoadFileHeaderFormatterFactory>().ImplementedBy<ExportFileFormatterFactory>());
+			container.Register(Component.For<ILoadFileHeaderFormatterFactory>().Instance(_loadFileHeaderFormatterFactory));
 			container.Register(Component.For<ITransferClientHandler, IExportFileDownloaderStatus, ExportFileDownloaderStatus>().ImplementedBy<ExportFileDownloaderStatus>());
 			container.Register(Component.For<ILoadFileCellFormatter>().UsingFactoryMethod(k => k.Resolve<LoadFileCellFormatterFactory>().Create(ExportSettings)));
 			container.Register(Component.For<ExportStatistics, WinEDDS.Statistics>().Instance(_exporter.Statistics));
@@ -92,7 +92,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 		{
 			container.Register(Component.For<ILoadFileHeaderFormatter>().UsingFactoryMethod(k => k.Resolve<ILoadFileHeaderFormatterFactory>().Create(ExportSettings)));
 			container.Register(Component.For<IFieldLookupService, IFieldService, FieldService>()
-				.UsingFactoryMethod(k => k.Resolve<FieldServiceFactory>().Create(ExportSettings, _columnNamesInOrder, _columnHeaderString)));
+				.UsingFactoryMethod(k => k.Resolve<FieldServiceFactory>().Create(ExportSettings, _columnNamesInOrder)));
 		}
 
 		private void InstallDirectory(IWindsorContainer container)
