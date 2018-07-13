@@ -1,7 +1,7 @@
 ﻿Imports Monitoring
 
 Namespace kCura.WinEDDS.Monitoring
-	Public Class TransferJobApmThroughputMessage
+	Public Class TransferJobProgressMessage
 		Inherits TransferJobMessageBase
 
 		Private Const FileThroughputKeyName As String = "FileThroughput"

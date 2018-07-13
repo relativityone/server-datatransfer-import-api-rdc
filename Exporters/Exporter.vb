@@ -327,7 +327,7 @@ Namespace kCura.WinEDDS
 			End If
 			Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 
-			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, exportInitializationArgs.ColumnNames, UseOldExport, columnHeaderString)
+			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, exportInitializationArgs.ColumnNames, UseOldExport, _loadFileFormatterFactory)
 				Dim batch As IBatch = Nothing
 				Dim objectExportableSize As IObjectExportableSize = Nothing
 

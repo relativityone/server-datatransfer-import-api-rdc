@@ -32,7 +32,7 @@ Namespace kCura.WinEDDS.Monitoring
 			End Set
 		End Property
 
-		Public Property CorellationID As String Implements IMetricMetadata.CorellationID
+		Public Property CorrelationID As String Implements IMetricMetadata.CorrelationID
 		Public Property CustomData As Dictionary(Of String, Object) Implements IMetricMetadata.CustomData
 		Public Property WorkspaceID As Integer Implements IMetricMetadata.WorkspaceID
 		Public Property UnitOfMeasure As String Implements IMetricMetadata.UnitOfMeasure
