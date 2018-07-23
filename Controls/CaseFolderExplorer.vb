@@ -88,7 +88,7 @@ Namespace kCura.EDDS.WinForm
 			Me.NewFolderMenu.Index = 0
 			Me.NewFolderMenu.Text = "&New Folder..."
 			'
-			'MenuItem2
+			'ToolsMenu
 			'
 			Me.MenuItem2.Index = 1
 			Me.MenuItem2.Text = "-"
@@ -144,6 +144,24 @@ Namespace kCura.EDDS.WinForm
 
 		Protected WithEvents _application As kCura.EDDS.WinForm.Application
 
+		Public Property ImportContextMenuEnabled() As Boolean
+			Get
+				Return Import.Enabled
+			End Get
+			Set
+				Import.Enabled = Value
+			End Set
+		End Property
+
+		Public Property ExportContextMenuEnabled() As Boolean
+			Get
+				Return Export.Enabled
+			End Get
+			Set
+				Export.Enabled = Value
+			End Set
+		End Property
+
 		Private _contextMenuTreeNode As System.Windows.Forms.TreeNode
 
 		Private Async Function LoadCase(ByVal caseInfo As Relativity.CaseInfo) As Task
@@ -194,10 +212,6 @@ Namespace kCura.EDDS.WinForm
 
 		End Function
 
-		Private Sub CleanseFoldersDataSet(ByVal ds As System.Data.DataSet)
-			Dim dt As System.Data.DataTable = ds.Tables(0)
-		End Sub
-
 		Private Sub RecursivelyPopulate(ByVal dataRow As System.Data.DataRow, ByVal node As System.Windows.Forms.TreeNode, ByVal currentPath As String)
 			Dim childDataRow As System.Data.DataRow
 			Dim childNode As System.Windows.Forms.TreeNode
@@ -220,8 +234,8 @@ Namespace kCura.EDDS.WinForm
 			Select Case appEvent.EventType
 				Case appEvent.AppEventType.LoadCase
 					_treeView.Invoke(Async Function() As Task
-					                     Await Me.LoadCase(CType(appEvent, LoadCaseEvent).Case) 
-					                 End Function)
+										 Await Me.LoadCase(CType(appEvent, LoadCaseEvent).Case)
+									 End Function)
 				Case appEvent.AppEventType.NewFolder
 					_treeView.Invoke(Sub() Me.AddNewFolder(CType(appEvent, NewFolderEvent)))
 			End Select
@@ -301,31 +315,6 @@ Namespace kCura.EDDS.WinForm
 		Private Async Sub ImportProduction_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportProduction.Click
 			Await _application.NewProductionFile(CType(_contextMenuTreeNode.Tag, FolderInfo).ArtifactID, _application.SelectedCaseInfo)
 		End Sub
-
-		Private Class DataSetCleanser
-			Public Sub CleanseDataset(ByVal ds As System.Data.DataSet)
-				Dim dt As System.Data.DataTable = ds.Tables(0)
-				Dim rowsToDelete As System.Collections.ArrayList = AllRowsMissingParent(dt)
-				While rowsToDelete.Count > 0
-					For Each row As System.Data.DataRow In rowsToDelete
-						dt.Rows.Remove(row)
-					Next
-					rowsToDelete = AllRowsMissingParent(dt)
-				End While
-			End Sub
-
-			Private Function AllRowsMissingParent(ByVal dt As System.Data.DataTable) As System.Collections.ArrayList
-				Dim allArtifactIds As New System.Collections.ArrayList
-				Dim retval As New System.Collections.ArrayList
-				For Each row As System.Data.DataRow In dt.Rows
-					allArtifactIds.Add(row("ArtifactID"))
-				Next
-				For Each row As System.Data.DataRow In dt.Rows
-					If Not row("ParentArtifactID") Is System.DBNull.Value AndAlso Not allArtifactIds.Contains(row("ParentArtifactID")) Then retval.Add(row)
-				Next
-				Return retval
-			End Function
-		End Class
 
 		Private Class FolderRowComparer
 			Implements IComparer
