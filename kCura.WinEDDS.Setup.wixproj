@@ -9,8 +9,8 @@
     <OutputName Condition="'$(Platform)' == 'x86'">kCura.WinEDDS.Setup</OutputName>
     <OutputName Condition="'$(Platform)' == 'x64'">kCura.WinEDDS64.Setup</OutputName>
     <OutputType>Package</OutputType>
-    <AssemblyVersion>9.7.0.0</AssemblyVersion>
-    <ProductVersion>9.7.00001</ProductVersion>
+    <AssemblyVersion>10.0.0.0</AssemblyVersion>
+    <ProductVersion>10.0.00001</ProductVersion>
     <SignOutput>false</SignOutput>
     <LicensesPath>$(MSBuildProjectDirectory)\..\..\Vendor\Licenses</LicensesPath>
     <WinEDDSPath>$(MSBuildProjectDirectory)\..\..\EDDS\kCura.EDDS.WinForm\bin</WinEDDSPath>
