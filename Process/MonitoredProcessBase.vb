@@ -6,7 +6,6 @@ Imports Relativity.DataTransfer.MessageService
 Public MustInherit Class MonitoredProcessBase
 	Inherits kCura.Windows.Process.ProcessBase
 
-	Private ReadOnly _messageThrottling As TimeSpan
 	Protected Property JobGuid As System.Guid = System.Guid.NewGuid()
 	Protected Property StartTime As System.DateTime
 	Protected Property EndTime As System.DateTime
@@ -70,17 +69,17 @@ Public MustInherit Class MonitoredProcessBase
 
 	Protected Sub SendTransferJobStartedMessage()
 		If InitialTapiClientName Is Nothing Then
-			MessageService.Send(New TransferJobStartedMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CorrelationID = JobGuid.ToString()})
+			Me.SendMessageAsync(New TransferJobStartedMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CorrelationID = JobGuid.ToString()})
 			InitialTapiClientName = TapiClientName
 		End If
 	End Sub
 
 	Protected Sub SendTransferJobFailedMessage()
-		MessageService.Send(New TransferJobFailedMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CorrelationID = JobGuid.ToString()})
+		Me.SendMessageAsync(New TransferJobFailedMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CorrelationID = JobGuid.ToString()})
 	End Sub
 
 	Protected Sub SendTransferJobCompletedMessage()
-		MessageService.Send(New TransferJobCompletedMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CorrelationID = JobGuid.ToString()})
+		Me.SendMessageAsync(New TransferJobCompletedMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CorrelationID = JobGuid.ToString()})
 	End Sub
 
 	Protected Sub SendThroughputStatistics(metadataThroughput As Double, fileThroughput As Double)
@@ -88,7 +87,7 @@ Public MustInherit Class MonitoredProcessBase
 		BuildApmBaseMessage(message)
 		message.MetadataThroughput = metadataThroughput
 		message.FileThroughput = fileThroughput
-		MessageService.Send(message)
+		Me.SendMessageAsync(message)
 	End Sub
 
 	Protected Sub SendJobStatistics(statistics As Statistics)
@@ -113,15 +112,15 @@ Public MustInherit Class MonitoredProcessBase
 			bytesPerSecond = (statistics.FileBytes + statistics.MetadataBytes) / duration.TotalSeconds
 		End If
 
-		MessageService.Send(New TransferJobThroughputMessage With {.JobType = JobType, .TransferMode = TapiClientName, .RecordsPerSecond = recordsPerSecond, .BytesPerSecond = bytesPerSecond, .CorrelationID = JobGuid.ToString()})
+		Me.SendMessageAsync(New TransferJobThroughputMessage With {.JobType = JobType, .TransferMode = TapiClientName, .RecordsPerSecond = recordsPerSecond, .BytesPerSecond = bytesPerSecond, .CorrelationID = JobGuid.ToString()})
 	End Sub
 
 	Protected Sub SendJobTotalRecordsCountMessage()
-		MessageService.Send(New TransferJobTotalRecordsCountMessage With {.JobType = JobType, .TransferMode = TapiClientName, .TotalRecords = TotalRecords, .CorrelationID = JobGuid.ToString()})
+		Me.SendMessageAsync(New TransferJobTotalRecordsCountMessage With {.JobType = JobType, .TransferMode = TapiClientName, .TotalRecords = TotalRecords, .CorrelationID = JobGuid.ToString()})
 	End Sub
 
 	Protected Sub SendJobCompletedRecordsCountMessage()
-		MessageService.Send(New TransferJobCompletedRecordsCountMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CompletedRecords = CompletedRecordsCount, .CorrelationID = JobGuid.ToString()})
+		Me.SendMessageAsync(New TransferJobCompletedRecordsCountMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CompletedRecords = CompletedRecordsCount, .CorrelationID = JobGuid.ToString()})
 	End Sub
 
 	Private Sub SendJobSize(statistics As Statistics)
@@ -131,7 +130,7 @@ Public MustInherit Class MonitoredProcessBase
 				.JobSizeInBytes = statistics.MetadataBytes + statistics.FileBytes
 				}
 		BuildApmBaseMessage(message)
-		MessageService.Send(message)
+		Me.SendMessageAsync(message)
 	End Sub
 
 	Private Sub BuildApmBaseMessage(message As TransferJobMessageBase)
@@ -143,6 +142,11 @@ Public MustInherit Class MonitoredProcessBase
 		If Not (CaseInfo Is Nothing) Then
 			message.WorkspaceID = CaseInfo.ArtifactID
 		End If
+	End Sub
+
+	Private Sub SendMessageAsync(message As IMessage)
+		' REL-242548: Disabling APM/SUM metrics until the deadlock is fixed.
+		' Me.MessageService.Send(message)
 	End Sub
 
 End Class
