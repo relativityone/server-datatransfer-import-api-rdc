@@ -37,7 +37,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
 		Friend WithEvents MenuItem3 As System.Windows.Forms.MenuItem
 		Friend WithEvents OpenRepositoryMenu As System.Windows.Forms.MenuItem
-		Friend WithEvents MenuItem2 As System.Windows.Forms.MenuItem
+		Friend WithEvents ToolsMenu As System.Windows.Forms.MenuItem
 		Friend WithEvents ToolsImportImageFileMenu As System.Windows.Forms.MenuItem
 		Friend WithEvents StatusBar As System.Windows.Forms.StatusBar
 		Friend WithEvents AppStatusPanel As System.Windows.Forms.StatusBarPanel
@@ -49,7 +49,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents ImportMenu As System.Windows.Forms.MenuItem
 		Friend WithEvents ToolsImportLoadFileMenu As System.Windows.Forms.MenuItem
 		Friend WithEvents ExportMenu As System.Windows.Forms.MenuItem
-		Friend WithEvents _toolsMenu As System.Windows.Forms.MenuItem
+		Friend WithEvents OptionsMenu As System.Windows.Forms.MenuItem
 		Friend WithEvents _toolsMenuSettingsItem As System.Windows.Forms.MenuItem
 		Friend WithEvents ToolsExportProductionMenu As System.Windows.Forms.MenuItem
 		Friend WithEvents ToolsExportSearchMenu As System.Windows.Forms.MenuItem
@@ -65,36 +65,36 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents TransferMenu As MenuItem
 		Friend WithEvents _exportObjectsMenuItem As System.Windows.Forms.MenuItem
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-		Me.components = New System.ComponentModel.Container()
-		Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(MainForm))
-		Me.MainMenu = New System.Windows.Forms.MainMenu(Me.components)
-		Me.MenuItem1 = New System.Windows.Forms.MenuItem()
-		Me.OpenRepositoryMenu = New System.Windows.Forms.MenuItem()
-		Me.MenuItem3 = New System.Windows.Forms.MenuItem()
-		Me.ExitMenu = New System.Windows.Forms.MenuItem()
-		Me._fileMenuRefresh = New System.Windows.Forms.MenuItem()
-		Me.MenuItem2 = New System.Windows.Forms.MenuItem()
-		Me.ImportMenu = New System.Windows.Forms.MenuItem()
-		Me.ToolsImportImageFileMenu = New System.Windows.Forms.MenuItem()
-		Me.ToolsImportLoadFileMenu = New System.Windows.Forms.MenuItem()
-		Me.ToolsImportProductionFileMenu = New System.Windows.Forms.MenuItem()
-		Me.ExportMenu = New System.Windows.Forms.MenuItem()
-		Me.ToolsExportProductionMenu = New System.Windows.Forms.MenuItem()
-		Me.ToolsExportSearchMenu = New System.Windows.Forms.MenuItem()
-		Me._exportFoldersMenuItem = New System.Windows.Forms.MenuItem()
-		Me._exportFoldersAndSubfoldersMenuItem = New System.Windows.Forms.MenuItem()
-		Me._exportObjectsMenuItem = New System.Windows.Forms.MenuItem()
-		Me.TransferMenu = New System.Windows.Forms.MenuItem()
-		Me._toolsMenu = New System.Windows.Forms.MenuItem()
-		Me._toolsMenuSettingsItem = New System.Windows.Forms.MenuItem()
-		Me._optionsMenuCheckConnectivityItem = New System.Windows.Forms.MenuItem()
-		Me.MenuItem4 = New System.Windows.Forms.MenuItem()
-		Me._aboutMenuItem = New System.Windows.Forms.MenuItem()
-		Me._helpMenuItem = New System.Windows.Forms.MenuItem()
-		Me.StatusBar = New System.Windows.Forms.StatusBar()
-		Me.AppStatusPanel = New System.Windows.Forms.StatusBarPanel()
-		Me.LoggedInUserPanel = New System.Windows.Forms.StatusBarPanel()
-		Me._objectTypeDropDown = New System.Windows.Forms.ComboBox()
+			Me.components = New System.ComponentModel.Container()
+			Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(MainForm))
+			Me.MainMenu = New System.Windows.Forms.MainMenu(Me.components)
+			Me.MenuItem1 = New System.Windows.Forms.MenuItem()
+			Me.OpenRepositoryMenu = New System.Windows.Forms.MenuItem()
+			Me.MenuItem3 = New System.Windows.Forms.MenuItem()
+			Me.ExitMenu = New System.Windows.Forms.MenuItem()
+			Me._fileMenuRefresh = New System.Windows.Forms.MenuItem()
+			Me.ToolsMenu = New System.Windows.Forms.MenuItem()
+			Me.ImportMenu = New System.Windows.Forms.MenuItem()
+			Me.ToolsImportImageFileMenu = New System.Windows.Forms.MenuItem()
+			Me.ToolsImportLoadFileMenu = New System.Windows.Forms.MenuItem()
+			Me.ToolsImportProductionFileMenu = New System.Windows.Forms.MenuItem()
+			Me.ExportMenu = New System.Windows.Forms.MenuItem()
+			Me.ToolsExportProductionMenu = New System.Windows.Forms.MenuItem()
+			Me.ToolsExportSearchMenu = New System.Windows.Forms.MenuItem()
+			Me._exportFoldersMenuItem = New System.Windows.Forms.MenuItem()
+			Me._exportFoldersAndSubfoldersMenuItem = New System.Windows.Forms.MenuItem()
+			Me._exportObjectsMenuItem = New System.Windows.Forms.MenuItem()
+			Me.TransferMenu = New System.Windows.Forms.MenuItem()
+			Me.OptionsMenu = New System.Windows.Forms.MenuItem()
+			Me._toolsMenuSettingsItem = New System.Windows.Forms.MenuItem()
+			Me._optionsMenuCheckConnectivityItem = New System.Windows.Forms.MenuItem()
+			Me.MenuItem4 = New System.Windows.Forms.MenuItem()
+			Me._aboutMenuItem = New System.Windows.Forms.MenuItem()
+			Me._helpMenuItem = New System.Windows.Forms.MenuItem()
+			Me.StatusBar = New System.Windows.Forms.StatusBar()
+			Me.AppStatusPanel = New System.Windows.Forms.StatusBarPanel()
+			Me.LoggedInUserPanel = New System.Windows.Forms.StatusBarPanel()
+			Me._objectTypeDropDown = New System.Windows.Forms.ComboBox()
 			Me.EnhancedMenuProvider = New kCura.Windows.Forms.EnhancedMenuProvider(Me.components)
 			Me._caseFolderExplorer = New kCura.EDDS.WinForm.CaseFolderExplorer()
 			CType(Me.AppStatusPanel, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -103,7 +103,7 @@ Namespace kCura.EDDS.WinForm
 			'
 			'MainMenu
 			'
-			Me.MainMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuItem1, Me.MenuItem2, Me._toolsMenu, Me.MenuItem4})
+			Me.MainMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuItem1, Me.ToolsMenu, Me.OptionsMenu, Me.MenuItem4})
 			'
 			'MenuItem1
 			'
@@ -143,13 +143,13 @@ Namespace kCura.EDDS.WinForm
 			Me._fileMenuRefresh.Shortcut = System.Windows.Forms.Shortcut.F5
 			Me._fileMenuRefresh.Text = "Refresh"
 			'
-			'MenuItem2
+			'ToolsMenu
 			'
-			Me.EnhancedMenuProvider.SetImageIndex(Me.MenuItem2, -1)
-			Me.MenuItem2.Index = 1
-			Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ImportMenu, Me.ExportMenu, Me.TransferMenu})
-			Me.MenuItem2.OwnerDraw = True
-			Me.MenuItem2.Text = "&Tools"
+			Me.EnhancedMenuProvider.SetImageIndex(Me.ToolsMenu, -1)
+			Me.ToolsMenu.Index = 1
+			Me.ToolsMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ImportMenu, Me.ExportMenu, Me.TransferMenu})
+			Me.ToolsMenu.OwnerDraw = True
+			Me.ToolsMenu.Text = "&Tools"
 			'
 			'ImportMenu
 			'
@@ -238,13 +238,13 @@ Namespace kCura.EDDS.WinForm
 			Me.TransferMenu.Text = "Staging Explorer..."
 			Me.TransferMenu.Visible = False
 			'
-			'_toolsMenu
+			'OptionsMenu
 			'
-			Me.EnhancedMenuProvider.SetImageIndex(Me._toolsMenu, -1)
-			Me._toolsMenu.Index = 2
-			Me._toolsMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._toolsMenuSettingsItem, Me._optionsMenuCheckConnectivityItem})
-			Me._toolsMenu.OwnerDraw = True
-			Me._toolsMenu.Text = "Options"
+			Me.EnhancedMenuProvider.SetImageIndex(Me.OptionsMenu, -1)
+			Me.OptionsMenu.Index = 2
+			Me.OptionsMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me._toolsMenuSettingsItem, Me._optionsMenuCheckConnectivityItem})
+			Me.OptionsMenu.OwnerDraw = True
+			Me.OptionsMenu.Text = "Options"
 			'
 			'_toolsMenuSettingsItem
 			'
@@ -332,33 +332,34 @@ Namespace kCura.EDDS.WinForm
 			Me.Controls.Add(Me._objectTypeDropDown)
 			Me.Controls.Add(Me._caseFolderExplorer)
 			Me.Controls.Add(Me.StatusBar)
-		Me.Icon = CType(resources.GetObject("$this.Icon"),System.Drawing.Icon)
-		Me.Menu = Me.MainMenu
-		Me.Name = "MainForm"
-		Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-		Me.Text = "Relativity Desktop Client"
-		CType(Me.AppStatusPanel,System.ComponentModel.ISupportInitialize).EndInit
-		CType(Me.LoggedInUserPanel,System.ComponentModel.ISupportInitialize).EndInit
-		Me.ResumeLayout(false)
+			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+			Me.Menu = Me.MainMenu
+			Me.Name = "MainForm"
+			Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
+			Me.Text = "Relativity Desktop Client"
+			CType(Me.AppStatusPanel, System.ComponentModel.ISupportInitialize).EndInit()
+			CType(Me.LoggedInUserPanel, System.ComponentModel.ISupportInitialize).EndInit()
+			Me.ResumeLayout(False)
 
-End Sub
+		End Sub
 
 #End Region
 
 		'' Private WithEvents _optionsForm As OptionsForm = Nothing
-		Private firstTime As Boolean = True
 		Friend WithEvents _application As kCura.EDDS.WinForm.Application
 		Public Const MAX_LENGTH_OF_OBJECT_NAME_BEFORE_TRUNCATION As Int32 = 25
+		
+		Private _isConnecting As Boolean = False
 
 		Private Async Sub OpenRepositoryMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OpenRepositoryMenu.Click
-			try
+			Try
 				If _application.LastCredentialCheckResult = Application.CredentialCheckResult.AccessDisabled Then
 					'The user could have changed the server, so we need to check default credentials again.
 					Dim defaultCredentialResult As Application.CredentialCheckResult = _application.AttemptWindowsAuthentication()
 					If defaultCredentialResult = Application.CredentialCheckResult.AccessDisabled Then
 						MessageBox.Show(Application.ACCESS_DISABLED_MESSAGE, Application.RDC_ERROR_TITLE)
 					ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
-					
+
 						_application.NewLogin()
 					Else
 						_application.OpenCaseSelector = False
@@ -375,7 +376,7 @@ End Sub
 			Catch ex As LoginCanceledException
 				'user close the login window, do nothing
 			End Try
-			
+
 		End Sub
 
 		Private Sub ExitMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ExitMenu.Click
@@ -383,52 +384,65 @@ End Sub
 		End Sub
 
 		Private Sub _application_OnEvent(ByVal appEvent As AppEvent) Handles _application.OnEvent
-			ME.Invoke(Async Sub() Await HandleEventOnUiThreadAsync(appEvent))
+			Me.Invoke(Async Sub() Await HandleEventOnUiThreadAsync(appEvent))
 		End Sub
 
 		Private Async Function HandleEventOnUiThreadAsync(appEvent As AppEvent) As Task
 
 			Select Case appEvent.EventType
-				Case appEvent.AppEventType.LoadCase
+				Case AppEvent.AppEventType.LoadCase
 					_fileMenuRefresh.Enabled = True
 					UpdateStatus("Workspace Loaded - File Transfer Mode: Connecting...")
-					Dim modeTask = Task.Run( Async Function() Await _application.GetConnectionStatus().ConfigureAwait(False)).ConfigureAwait(True)
+					_isConnecting = True
+					ToggleImportExportMenu()
+					Dim modeTask = Task.Run(Async Function() Await _application.GetConnectionStatus().ConfigureAwait(False)).ConfigureAwait(True)
 					Await PopulateObjectTypeDropDown()
 					Dim mode As String = Await modeTask
 					UpdateStatus($"Workspace Loaded - File Transfer Mode: {mode}")
+					_isConnecting = False
 					_optionsMenuCheckConnectivityItem.Enabled = True
-					ImportMenu.Enabled = _application.UserHasImportPermission
-					ExportMenu.Enabled = _application.UserHasExportPermission
-					ImportMenu.Visible = _application.UserHasImportPermission
-					ExportMenu.Visible = _application.UserHasExportPermission
-					_application.OpenCaseSelector = false
+					ToggleImportExportMenu()
+					_application.OpenCaseSelector = False
 				Case AppEvent.AppEventType.LogOnForm
 					'Enable help once logged into Relativity via RDC login form
 					Me._helpMenuItem.Enabled = True
-				Case appEvent.AppEventType.LogOn
+				Case AppEvent.AppEventType.LogOn
 					UpdateUserName(_application.LoggedInUser)
 					'Enable help once logged into Relativity via Windows Authentication
 					Me._helpMenuItem.Enabled = True
-				Case appEvent.AppEventType.ExitApplication
+				Case AppEvent.AppEventType.ExitApplication
 					Me.Close()
-				Case appEvent.AppEventType.WorkspaceFolderSelected
+				Case AppEvent.AppEventType.WorkspaceFolderSelected
 					'disable import and export menus if no permission
-					ImportMenu.Enabled = _application.UserHasImportPermission
-					ExportMenu.Enabled = _application.UserHasExportPermission
-					ImportMenu.Visible = _application.UserHasImportPermission
-					ExportMenu.Visible = _application.UserHasExportPermission
+					ToggleImportExportMenu()
 					'UpdateStatus("Case Folder Load: " + _application.SelectedCaseInfo.RootFolderID.ToString)
-                    
-                    'disable staging explorer menu if no permission
+
+					'disable staging explorer menu if no permission
 					TransferMenu.Enabled = _application.UserHasStagingPermission
-                    TransferMenu.Visible = _application.UserHasStagingPermission
-                Case appEvent.AppEventType.LogOnRequested
-                    '' please note that url input and connection loop retry takes place on the stack
-                    '' if in doubt what it means please try to input several times invalid web api url from main form settings and check call stack while having breakpoint on the following line
-                    '' TODO: this shloud be rewritten to use simple while-like loop
-                    Await CheckCertificateAsync()
-            End Select
+					TransferMenu.Visible = _application.UserHasStagingPermission
+				Case AppEvent.AppEventType.LogOnRequested
+					'' please note that url input and connection loop retry takes place on the stack
+					'' if in doubt what it means please try to input several times invalid web api url from main form settings and check call stack while having breakpoint on the following line
+					'' TODO: this shloud be rewritten to use simple while-like loop
+					Await CheckCertificateAsync()
+			End Select
 		End Function
+
+		Private Sub ToggleImportExportMenu()
+			Dim hasImportPermission = _application.UserHasImportPermission
+			Dim hasExportPermission = _application.UserHasExportPermission
+			Dim isImportEnabled = hasImportPermission And Not _isConnecting
+			Dim isExportEnabled = hasExportPermission And Not _isConnecting
+
+			ImportMenu.Enabled = isImportEnabled
+			_caseFolderExplorer.ImportContextMenuEnabled = isImportEnabled
+
+			ExportMenu.Enabled = isExportEnabled
+			_caseFolderExplorer.ExportContextMenuEnabled = isExportEnabled
+
+			ImportMenu.Visible = hasImportPermission
+			ExportMenu.Visible = hasExportPermission
+		End Sub
 
 		Private Sub UpdateStatus(ByVal text As String)
 			AppStatusPanel.Text = text
@@ -438,21 +452,21 @@ End Sub
 			LoggedInUserPanel.Text = text
 		End Sub
 
-        Private Async Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
+		Private Async Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 
-            ServicePointManager.DefaultConnectionLimit = Environment.ProcessorCount * 12
+			ServicePointManager.DefaultConnectionLimit = Environment.ProcessorCount * 12
 
-            Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-            _application.TemporaryForceFolderPreview = kCura.WinEDDS.Config.ForceFolderPreview
-            If kCura.WinEDDS.Config.WebServiceURL = String.Empty Then
-                _application.SetWebServiceURL()
-            End If
+			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+			_application.TemporaryForceFolderPreview = kCura.WinEDDS.Config.ForceFolderPreview
+			If kCura.WinEDDS.Config.WebServiceURL = String.Empty Then
+				_application.SetWebServiceURL()
+			End If
 
-            '' Can't do this in Application.vb without refactoring AttemptLogin (which needs this form as a parameter)
-            Await CheckCertificateAsync()
+			'' Can't do this in Application.vb without refactoring AttemptLogin (which needs this form as a parameter)
+			Await CheckCertificateAsync()
 
-            Me.Cursor = System.Windows.Forms.Cursors.Default
-        End Sub
+			Me.Cursor = System.Windows.Forms.Cursors.Default
+		End Sub
 
 		Private Async Function CheckCertificateAsync() As Task
 			Try
@@ -619,7 +633,7 @@ End Sub
 			Await _application.QueryConnectivity()
 		End Sub
 
-		
+
 	End Class
 
 End Namespace
