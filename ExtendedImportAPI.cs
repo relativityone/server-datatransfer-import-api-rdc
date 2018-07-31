@@ -1,6 +1,6 @@
 ﻿using System;
 using kCura.Relativity.DataReaderClient;
-using kCura.Relativity.ImportAPI.Enumeration;
+using kCura.WinEDDS;
 using kCura.WinEDDS.Service;
 
 namespace kCura.Relativity.ImportAPI {
@@ -33,6 +33,14 @@ namespace kCura.Relativity.ImportAPI {
 			var returnJob = NewNativeDocumentImportJob();
 
 			returnJob.Settings.OnBehalfOfUserToken = token;
+
+			return returnJob;
+		}
+
+		public ImportBulkArtifactJob NewNativeDocumentImportJob(string token, ITimeKeeperManager timeKeeper)
+		{
+			var returnJob = NewNativeDocumentImportJob(token);
+			returnJob.Settings.TimeKeeperManager = timeKeeper;
 
 			return returnJob;
 		}

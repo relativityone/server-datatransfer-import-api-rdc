@@ -3,6 +3,7 @@ using System.Net;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI.Data;
 using kCura.Relativity.ImportAPI.Enumeration;
+using kCura.WinEDDS;
 
 namespace kCura.Relativity.ImportAPI
 {
@@ -10,6 +11,7 @@ namespace kCura.Relativity.ImportAPI
 	{
 		void CleanUpAfterJobWithSpoofing(string onBehalfOfUserToken);
 		ImportBulkArtifactJob NewNativeDocumentImportJob(string token);
+		ImportBulkArtifactJob NewNativeDocumentImportJob(string token, ITimeKeeperManager timeKeeper);
 		ImportBulkArtifactJob NewArtifactImportJob(string token, int artifactTypeID);
 	}
 }
