@@ -37,14 +37,6 @@ namespace kCura.Relativity.ImportAPI {
 			return returnJob;
 		}
 
-		public ImportBulkArtifactJob NewNativeDocumentImportJob(string token, ITimeKeeperManager timeKeeper)
-		{
-			var returnJob = NewNativeDocumentImportJob(token);
-			returnJob.Settings.TimeKeeperManager = timeKeeper;
-
-			return returnJob;
-		}
-
 		public ImportBulkArtifactJob NewArtifactImportJob(string token, int artifactTypeID)
 		{
 			var returnJob =   NewObjectImportJob(artifactTypeID);
