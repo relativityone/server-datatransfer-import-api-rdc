@@ -1,3 +1,5 @@
+Imports kCura.WinEDDS
+
 Namespace kCura.Relativity.DataReaderClient
 
 	''' <summary>
@@ -151,6 +153,11 @@ Namespace kCura.Relativity.DataReaderClient
 		''' <returns></returns>
 		Public Property FileNameColumn As String
 
+		''' <summary>
+		''' To allow a custom time logging method through out the API
+		''' </summary>
+		''' <returns></returns>
+		Public Property TimeKeeperManager As ITimeKeeperManager
 
 #End Region
 
