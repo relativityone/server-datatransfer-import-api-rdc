@@ -10,7 +10,7 @@
 		''' </summary>
 		''' <param name="eventKey">The string that represents the capturing event.</param>
 		''' <returns>A time keeper object</returns>
-		Function CaptureTime(eventKey As String) As IImportTimeKeeper
+		Function CaptureTime(eventKey As String) As ImportTimeKeeperBase
 
 		''' <summary>
 		''' Generates a CSV report of files being imported to the specified directory, with individual items represented as columns.

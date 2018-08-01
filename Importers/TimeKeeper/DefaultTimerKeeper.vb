@@ -3,25 +3,21 @@
 Namespace kCura.WinEDDS
 
 	Public Class DefaultTimerKeeper
-		Implements IImportTimeKeeper
+		Inherits ImportTimeKeeperBase
 
-		Private _isDisposed As Boolean
-		Private ReadOnly _eventKey As String
 		Private ReadOnly _timeKeeper As Timekeeper
 
 		Public Sub New(timeKeeper As Timekeeper, eventKey As String)
-			_eventKey = eventKey
+			MyBase.New(eventKey)
 			_timeKeeper = timeKeeper
-			_isDisposed = False
-
-			_timeKeeper.MarkStart(eventKey)
 		End Sub
 
-		Public Sub Dispose() Implements IDisposable.Dispose
-			If(Not _isDisposed)
-				_timeKeeper.MarkEnd(_eventKey)
-				_isDisposed = True
-			End If
+		Protected Overrides Sub StartCapturing()
+			_timeKeeper.MarkStart(EventKey)
+		End Sub
+
+		Protected Overrides Sub FinishCapturing()
+			_timeKeeper.MarkEnd(EventKey)
 		End Sub
 
 	End Class

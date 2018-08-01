@@ -467,7 +467,7 @@
     <Compile Include="Importers\OutputFileWriter.vb" />
     <Compile Include="Importers\TimeKeeper\DefaultTimeKeeperManager.vb" />
     <Compile Include="Importers\TimeKeeper\DefaultTimerKeeper.vb" />
-    <Compile Include="Importers\TimeKeeper\IImportTimeKeeper.vb" />
+    <Compile Include="Importers\TimeKeeper\ImportTimeKeeperBase.vb" />
     <Compile Include="Importers\TimeKeeper\ITimeKeeperManager.vb" />
     <Compile Include="IO\FileStreamFactory.vb" />
     <Compile Include="IO\IFileStreamFactory.vb" />
