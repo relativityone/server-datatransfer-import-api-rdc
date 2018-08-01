@@ -1,9 +1,4 @@
-using System.Collections.Generic;
-using System.Net;
 using kCura.Relativity.DataReaderClient;
-using kCura.Relativity.ImportAPI.Data;
-using kCura.Relativity.ImportAPI.Enumeration;
-using kCura.WinEDDS;
 
 namespace kCura.Relativity.ImportAPI
 {

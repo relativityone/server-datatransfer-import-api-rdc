@@ -1,6 +1,5 @@
 ﻿using System;
 using kCura.Relativity.DataReaderClient;
-using kCura.WinEDDS;
 using kCura.WinEDDS.Service;
 
 namespace kCura.Relativity.ImportAPI {
