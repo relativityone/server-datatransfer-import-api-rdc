@@ -20,7 +20,7 @@
 
 		Private _isDisposed As Boolean
 
-		Public Sub New(eventKey As String)
+		Protected Sub New(eventKey As String)
 			Me.EventKey = eventKey
 			_isDisposed = False
 			StartCapturing()
