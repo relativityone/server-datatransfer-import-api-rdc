@@ -16,7 +16,7 @@
 		Private _isDisposed As Boolean
 
 		''' <summary>
-		''' Initialize the time capturing processing
+		''' Initialize the time capturing process.
 		''' </summary>
 		''' <param name="eventKey"></param>
 		Protected Sub New(eventKey As String)
