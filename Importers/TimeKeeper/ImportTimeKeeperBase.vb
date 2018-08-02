@@ -4,11 +4,6 @@
 		Implements IDisposable
 
 		''' <summary>
-		''' A method indicates the starting of time capturing. This method will be called during the initialization of the TimeKeeper.
-		''' </summary>
-		Protected MustOverride Sub StartCapturing()
-
-		''' <summary>
 		''' A method indicates the ending of time capturing. This method will be called during the disposal of the TimeKeeper.
 		''' </summary>
 		Protected MustOverride Sub FinishCapturing()
@@ -20,10 +15,13 @@
 
 		Private _isDisposed As Boolean
 
+		''' <summary>
+		''' Initialize the time capturing processing
+		''' </summary>
+		''' <param name="eventKey"></param>
 		Protected Sub New(eventKey As String)
 			Me.EventKey = eventKey
 			_isDisposed = False
-			StartCapturing()
 		End Sub
 
 		Public Sub Dispose() Implements IDisposable.Dispose

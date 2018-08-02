@@ -10,9 +10,6 @@ Namespace kCura.WinEDDS
 		Public Sub New(timeKeeper As Timekeeper, eventKey As String)
 			MyBase.New(eventKey)
 			_timeKeeper = timeKeeper
-		End Sub
-
-		Protected Overrides Sub StartCapturing()
 			_timeKeeper.MarkStart(EventKey)
 		End Sub
 
