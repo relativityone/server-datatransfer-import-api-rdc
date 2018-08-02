@@ -16,7 +16,7 @@
 		''' <summary>
 		''' A string representation of event being captured.
 		''' </summary>
-		Protected EventKey As String
+		Protected ReadOnly EventKey As String
 
 		Private _isDisposed As Boolean
 
