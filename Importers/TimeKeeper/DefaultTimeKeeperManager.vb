@@ -11,7 +11,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Sub GenerateCsvReportItemsAsRows(filenameSuffix As String, directory As String) Implements ITimeKeeperManager.GenerateCsvReportItemsAsRows
-			_timekeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
+			_timekeeper.GenerateCsvReportItemsAsRows(filenameSuffix, directory)
 		End Sub
 	End Class
 
