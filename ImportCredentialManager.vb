@@ -54,15 +54,18 @@ Friend Class ImportCredentialManager
 
 				' 2. credential in cache not found, so actually log in and create credentials
 
-				Dim creds As ICredentials = Nothing
+				Dim creds As NetworkCredential = Nothing
+				Dim credsTapi As NetworkCredential = Nothing
 				Dim cookieMonster As New CookieContainer
 
 				Try
 					If String.IsNullOrEmpty(UserName) Then	' use winAuth
 						creds = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuth(cookieMonster)
+						credsTapi = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuthTapi()
 					Else
 						' use supplied credentials
 						creds = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePassword(UserName.Trim(), Password.Trim(), cookieMonster)
+						credsTapi = creds
 					End If
 				Catch ex
 					Throw New System.Exception("Unknown failure during authentication", ex)
@@ -70,7 +73,7 @@ Friend Class ImportCredentialManager
 
 				' add credentials to cache and return session credentials to caller
 				If Not creds Is Nothing Then
-					retVal = AddCredentials(UserName, Password, creds, cookieMonster).SessionCredentials()
+					retVal = AddCredentials(UserName, Password, creds, cookieMonster, credsTapi).SessionCredentials()
 				End If
 				cachedCreds = False
 			End If
@@ -105,7 +108,7 @@ Friend Class ImportCredentialManager
 		Return Nothing
 	End Function
 
-	Private Shared Function AddCredentials(ByVal UserName As String, ByVal Password As String, ByVal creds As ICredentials, ByVal cookieMonster As CookieContainer) As CredentialEntry
+	Private Shared Function AddCredentials(ByVal UserName As String, ByVal Password As String, ByVal creds As ICredentials, ByVal cookieMonster As CookieContainer, ByVal tapiCreds As NetworkCredential) As CredentialEntry
 		If CredentialCache Is Nothing Then
 			CredentialCache = New List(Of CredentialEntry)
 		End If
@@ -115,6 +118,7 @@ Friend Class ImportCredentialManager
 		ce.UserName = UserName
 		ce.PassWord = Password
 		ce.Credentials = creds
+		ce.TapiCredential = tapiCreds
 		ce.CookieMonster = cookieMonster
 		ce.URL = WebServiceURL
 
@@ -125,6 +129,7 @@ Friend Class ImportCredentialManager
 	Public Class SessionCredentials
 		Public UserName As String
 		Public CookieMonster As CookieContainer
+		Public TapiCredential As NetworkCredential
 		Private _Credentials As ICredentials
 
 		Public Property Credentials As ICredentials
@@ -145,8 +150,9 @@ Friend Class ImportCredentialManager
 		Public PassWord As String
 		Public URL As String
 		Public CookieMonster As CookieContainer
+		Public TapiCredential As NetworkCredential
 		Private _Credentials As ICredentials
-
+		
 		Public Property Credentials As ICredentials
 			Get
 				Return _Credentials
@@ -163,6 +169,7 @@ Friend Class ImportCredentialManager
 			Dim sc As New SessionCredentials()
 			sc.UserName = UserName
 			sc.Credentials = Credentials
+			sc.TapiCredential = TapiCredential
 			sc.CookieMonster = CookieMonster
 			Return sc
 		End Function
