@@ -1947,25 +1947,6 @@ Namespace kCura.EDDS.WinForm
             ActionMenuEnabled = ReadyToRun
         End Sub
 
-        Private Async Function FullTextColumnIsMapped() As Task(Of Boolean)
-            Try
-                Dim docFieldObj As DocumentField = (Await _application.CurrentFields(Relativity.ArtifactType.Document)).FullText
-                'If the LoadFile form is being used to load an object instead of a document, then FullText will be Nothing.
-                If docFieldObj IsNot Nothing Then
-                    Dim ftfname As String = docFieldObj.FieldName
-                    Dim field As String
-                    For Each field In _fieldMap.FieldColumns.RightListBoxItems
-                        If field.ToLower = ftfname.ToLower Then
-                            Return True
-                        End If
-                    Next
-                End If
-                Return False
-            Catch
-                Return False
-            End Try
-		End Function
-
 		Private Async Sub _fileRefreshMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fileRefreshMenuItem.Click
 			_multiObjectMultiChoiceCache = Nothing
 			Dim caseFieldsCollection As DocumentFieldCollection = Await _application.CurrentNonFileFields(Me.LoadFile.ArtifactTypeID, refresh:=True)
