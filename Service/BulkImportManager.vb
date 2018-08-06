@@ -162,13 +162,10 @@ Namespace kCura.WinEDDS.Service
 		Public Class BulkImportSqlTimeoutException
 			Inherits BulkImportSqlException
 			Private _details As String()
-			Public Property Details As String()
+			Public ReadOnly Property Details As String()
 				Get
 					Return _details
 				End Get
-				Private Set
-					_details = Value
-				End Set
 			End Property
 
 			Public Sub New()
@@ -189,7 +186,7 @@ Namespace kCura.WinEDDS.Service
 
 			Public Sub New(ByVal exception As EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail)
 				MyBase.New(exception)
-				Details = exception.Details
+				_details = exception.Details
 			End Sub
 		End Class
 
