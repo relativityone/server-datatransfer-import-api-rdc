@@ -126,6 +126,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing">
       <Name>system.drawing</Name>
     </Reference>
@@ -163,6 +164,12 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Specialized\RelativeLayoutData.vb" />
+    <Compile Include="Specialized\SearchListSelector.Designer.vb">
+      <DependentUpon>SearchListSelector.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Specialized\SearchListSelector.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Specialized\TwoListBox.vb">
       <SubType>UserControl</SubType>
     </Compile>
@@ -177,6 +184,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Specialized\OutputRichTextBox.resx">
       <DependentUpon>OutputRichTextBox.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Specialized\SearchListSelector.resx">
+      <DependentUpon>SearchListSelector.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Specialized\TwoListBox.resx">
       <DependentUpon>TwoListBox.vb</DependentUpon>
