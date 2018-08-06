@@ -12,8 +12,6 @@ Namespace kCura.Relativity.DataReaderClient
 		Implements IImportNotifier
 		Implements IImportBulkArtifactJob
 
-
-
 #Region "Private Variables"
 
 		Private _jobReport As JobReport
@@ -21,16 +19,16 @@ Namespace kCura.Relativity.DataReaderClient
 		Private ReadOnly _controlNumberFieldName As String
 		Private _docIDFieldCollection As WinEDDS.DocumentField()
 
-		Private _hasErrors As Boolean
 		Private _controller As Windows.Process.Controller
 		Private _nativeDataReader As SourceIDataReader
 		Private _nativeSettings As ImportSettingsBase
 		Private WithEvents _observer As Windows.Process.ProcessObserver
 
 		Private _credentials As ICredentials
+		Private _tapiCredential As NetworkCredential = Nothing
 		Private _cookieMonster As Net.CookieContainer
 
-		Private _executionSource As ExecutionSource
+		Private ReadOnly _executionSource As ExecutionSource
 
 		Private Const _DOCUMENT_ARTIFACT_TYPE_ID As Int32 = 10 'TODO: make a reference to Relativity so we don't have to do this
 
@@ -46,22 +44,14 @@ Namespace kCura.Relativity.DataReaderClient
 			_nativeDataReader = New SourceIDataReader
 
 			_bulkLoadFileFieldDelimiter = Global.Relativity.Constants.DEFAULT_FIELD_DELIMITER
-			_hasErrors = False
 		End Sub
 
-		'Friend Sub New(ByVal relativityUserName As String, ByVal password As String)
-		'	Me.New()
-		'	Settings.RelativityUsername = relativityUserName
-		'	Settings.RelativityPassword = password
-		'End Sub
-
-		Friend Sub New(ByVal credentials As ICredentials, ByVal cookieMonster As Net.CookieContainer, ByVal relativityUserName As String, ByVal password As String, ByVal Optional executionSource As Integer = 0)
+		Friend Sub New(ByVal credentials As ICredentials, ByVal tapiCredentials As NetworkCredential, ByVal cookieMonster As Net.CookieContainer, ByVal Optional executionSource As Integer = 0)
 			Me.New()
 			_executionSource = CType(executionSource, ExecutionSource)
 			_credentials = credentials
+			_tapiCredential = tapiCredentials
 			_cookieMonster = cookieMonster
-			Settings.RelativityUsername = relativityUserName
-			Settings.RelativityPassword = password
 		End Sub
 
 #End Region
@@ -116,6 +106,7 @@ Namespace kCura.Relativity.DataReaderClient
 				ImportCredentialManager.WebServiceURL = Settings.WebServiceURL
 				Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword)
 				_credentials = creds.Credentials
+				_tapiCredential = creds.TapiCredential
 				_cookieMonster = creds.CookieMonster
 			End If
 
@@ -223,6 +214,7 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.CopyFilesToDocumentRepository = loadFileTemp.CopyFilesToDocumentRepository
 			tempLoadFile.CreateFolderStructure = loadFileTemp.CreateFolderStructure
 			tempLoadFile.Credentials = loadFileTemp.Credentials
+			tempLoadFile.TapiCredentials = loadFileTemp.TapiCredentials
 			tempLoadFile.DestinationFolderID = loadFileTemp.DestinationFolderID
 			tempLoadFile.ExtractedTextFileEncoding = loadFileTemp.ExtractedTextFileEncoding
 			tempLoadFile.ExtractedTextFileEncodingName = loadFileTemp.ExtractedTextFileEncodingName
@@ -230,9 +222,9 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.FilePath = loadFileTemp.FilePath
 			tempLoadFile.FirstLineContainsHeaders = loadFileTemp.FirstLineContainsHeaders
 			tempLoadFile.FolderStructureContainedInColumn = loadFileTemp.FolderStructureContainedInColumn
-            tempLoadFile.FullTextColumnContainsFileLocation = loadFileTemp.FullTextColumnContainsFileLocation
-            tempLoadFile.LongTextColumnThatContainsPathToFullText = loadFileTemp.LongTextColumnThatContainsPathToFullText
-            tempLoadFile.GroupIdentifierColumn = loadFileTemp.GroupIdentifierColumn
+			tempLoadFile.FullTextColumnContainsFileLocation = loadFileTemp.FullTextColumnContainsFileLocation
+			tempLoadFile.LongTextColumnThatContainsPathToFullText = loadFileTemp.LongTextColumnThatContainsPathToFullText
+			tempLoadFile.GroupIdentifierColumn = loadFileTemp.GroupIdentifierColumn
 			tempLoadFile.DataGridIDColumn = loadFileTemp.DataGridIDColumn
 			tempLoadFile.HierarchicalValueDelimiter = loadFileTemp.HierarchicalValueDelimiter
 			tempLoadFile.IdentityFieldId = loadFileTemp.IdentityFieldId
@@ -342,8 +334,6 @@ Namespace kCura.Relativity.DataReaderClient
 		''' </summary>
 		''' <returns></returns>
 		Protected Function IsSettingsValid() As Boolean
-
-
 			Try
 				ValidateRelativitySettings()
 				ValidateDelimiterSettings()
@@ -385,7 +375,7 @@ Namespace kCura.Relativity.DataReaderClient
 			'If clientSettings.Credential Is Nothing Then
 			'dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(clientSettings.RelativityUsername, clientSettings.RelativityPassword, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
 			'Else
-			dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(_credentials, _cookieMonster, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
+			dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(_credentials, _tapiCredential, _cookieMonster, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
 			'End If
 			_docIDFieldCollection = dosf_settings.DocumentIdentifierFields
 
@@ -439,8 +429,8 @@ Namespace kCura.Relativity.DataReaderClient
 						Throw New Exception("ERROR with NativeFileCopyMode")
 				End Select
 
-                .LongTextColumnThatContainsPathToFullText = clientSettings.LongTextColumnThatContainsPathToFullText
-                .FullTextColumnContainsFileLocation = clientSettings.ExtractedTextFieldContainsFilePath
+				.LongTextColumnThatContainsPathToFullText = clientSettings.LongTextColumnThatContainsPathToFullText
+				.FullTextColumnContainsFileLocation = clientSettings.ExtractedTextFieldContainsFilePath
 				If Not clientSettings.ExtractedTextEncoding Is Nothing Then
 					.ExtractedTextFileEncoding = clientSettings.ExtractedTextEncoding
 				Else
@@ -525,10 +515,9 @@ Namespace kCura.Relativity.DataReaderClient
 
 #Region "Event Handlers"
 		Private Sub _observer_ErrorReportEvent(ByVal row As System.Collections.IDictionary) Handles _observer.ErrorReportEvent
-			_hasErrors = True
 			RaiseEvent OnError(row)
 			Dim msg As String = row.Item("Message").ToString
-			Dim lineNumbObj As Object = row.Item("Line Number")	' or is it "Line Number" ????
+			Dim lineNumbObj As Object = row.Item("Line Number") ' or is it "Line Number" ????
 			Dim lineNum As Long = 0
 			If Not lineNumbObj Is Nothing Then
 				lineNum = DirectCast(lineNumbObj, Int32)
