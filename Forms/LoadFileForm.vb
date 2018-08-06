@@ -1201,7 +1201,7 @@ Namespace kCura.EDDS.WinForm
             End If
             RefreshNativeFilePathFieldAndFileColumnHeaders()
             If Not Await Me.EnsureConnection() Then Return
-            Dim caseFieldsCollection As DocumentFieldCollection = Await _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, _application.ArtifactTypeID, True)
+            Dim caseFieldsCollection As DocumentFieldCollection = Await _application.CurrentNonFileFields(_application.ArtifactTypeID, refresh:=True)
             Dim caseFields As String() = caseFieldsCollection.Names()
 
             If loadFileObjectUpdatedFromFile Then
@@ -1968,7 +1968,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Async Sub _fileRefreshMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fileRefreshMenuItem.Click
 			_multiObjectMultiChoiceCache = Nothing
-			Dim caseFieldsCollection As DocumentFieldCollection = Await _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, Me.LoadFile.ArtifactTypeID, True)
+			Dim caseFieldsCollection As DocumentFieldCollection = Await _application.CurrentNonFileFields(Me.LoadFile.ArtifactTypeID, refresh:=True)
 			Dim caseFields As String() = caseFieldsCollection.Names()
 			If caseFields Is Nothing Then Exit Sub
 			Await Me.MarkIdentifierField(caseFields)
