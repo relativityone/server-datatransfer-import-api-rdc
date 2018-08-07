@@ -152,6 +152,7 @@ Public Class ExportForm
         Me.TabControl1 = New System.Windows.Forms.TabControl()
         Me._dataSourceTabPage = New System.Windows.Forms.TabPage()
         Me._filtersBox = New System.Windows.Forms.GroupBox()
+        Me._selectFromListButton = New System.Windows.Forms.Button()
         Me._startExportAtDocumentNumber = New System.Windows.Forms.NumericUpDown()
         Me.LabelStartAtRecordNumber = New System.Windows.Forms.Label()
         Me.LabelSelectedColumns = New System.Windows.Forms.Label()
@@ -220,7 +221,6 @@ Public Class ExportForm
         Me._recordDelimiter = New System.Windows.Forms.ComboBox()
         Me._saveExportSettingsDialog = New System.Windows.Forms.SaveFileDialog()
         Me._loadExportSettingsDialog = New System.Windows.Forms.OpenFileDialog()
-        Me._selectFromListButton = New System.Windows.Forms.Button()
         Me._productionPrecedenceBox.SuspendLayout()
         Me.GroupBoxExportLocation.SuspendLayout()
         Me.TabControl1.SuspendLayout()
@@ -410,6 +410,16 @@ Public Class ExportForm
         Me._filtersBox.TabStop = False
         Me._filtersBox.Text = "Export"
         '
+        '_selectFromListButton
+        '
+        Me._selectFromListButton.Image = Global.My.Resources.Resources.IC818250
+        Me._selectFromListButton.Location = New System.Drawing.Point(12, 20)
+        Me._selectFromListButton.Name = "_selectFromListButton"
+        Me._selectFromListButton.Size = New System.Drawing.Size(21, 21)
+        Me._selectFromListButton.TabIndex = 22
+        Me._selectFromListButton.Text = " "
+        Me._selectFromListButton.UseVisualStyleBackColor = True
+        '
         '_startExportAtDocumentNumber
         '
         Me._startExportAtDocumentNumber.Location = New System.Drawing.Point(408, 64)
@@ -444,9 +454,9 @@ Public Class ExportForm
         '
         Me._filters.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me._filters.ItemHeight = 13
-        Me._filters.Location = New System.Drawing.Point(93, 20)
+        Me._filters.Location = New System.Drawing.Point(33, 20)
         Me._filters.Name = "_filters"
-        Me._filters.Size = New System.Drawing.Size(463, 21)
+        Me._filters.Size = New System.Drawing.Size(524, 21)
         Me._filters.TabIndex = 1
         '
         '_columnSelector
@@ -1094,15 +1104,6 @@ Public Class ExportForm
         Me._loadExportSettingsDialog.DefaultExt = "kwx"
         Me._loadExportSettingsDialog.Filter = "Relativity Desktop Client settings files (*.kwx)|*.kwx|All files (*.*)|*.*"
         Me._loadExportSettingsDialog.RestoreDirectory = True
-        '
-        '_selectFromListButton
-        '
-        Me._selectFromListButton.Location = New System.Drawing.Point(12, 18)
-        Me._selectFromListButton.Name = "_selectFromListButton"
-        Me._selectFromListButton.Size = New System.Drawing.Size(75, 23)
-        Me._selectFromListButton.TabIndex = 22
-        Me._selectFromListButton.Text = "Select"
-        Me._selectFromListButton.UseVisualStyleBackColor = True
         '
         'ExportForm
         '
