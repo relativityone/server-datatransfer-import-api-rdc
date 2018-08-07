@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 {
 	[TestFixture]
-	[Explicit("Relativity instance needs to be configured to work with integrated authentication")]
+	[Explicit("Relativity instance needs to be configured to work with integrated authentication. Please see readme.txt")]
 	public class NewImageImportJobTests : TestBase
 	{
 		private const string _BATES_NUMBER_COLUMN_NAME = "Bates Beg";
@@ -64,8 +64,8 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 			settings.BatesNumberField = _BATES_NUMBER_COLUMN_NAME;
 
 			settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
-			settings.ArtifactTypeId = 10;
-			settings.IdentityFieldId = 1003667; // Control Number
+			settings.ArtifactTypeId = Constants.DOCUMENT_ARTIFACT_TYPE_ID;
+			settings.IdentityFieldId = Constants.CONTROL_NUMBER_FIELD_ID;
 			settings.DisableImageTypeValidation = true;
 			settings.DisableImageLocationValidation = true;
 		}
