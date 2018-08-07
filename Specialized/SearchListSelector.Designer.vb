@@ -35,7 +35,7 @@
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
             Me.selectionSearchInput.Location = New System.Drawing.Point(12, 12)
             Me.selectionSearchInput.Name = "selectionSearchInput"
-            Me.selectionSearchInput.Size = New System.Drawing.Size(247, 20)
+            Me.selectionSearchInput.Size = New System.Drawing.Size(297, 20)
             Me.selectionSearchInput.TabIndex = 0
             '
             'selectionListBox
@@ -46,14 +46,14 @@
             Me.selectionListBox.FormattingEnabled = True
             Me.selectionListBox.Location = New System.Drawing.Point(12, 38)
             Me.selectionListBox.Name = "selectionListBox"
-            Me.selectionListBox.Size = New System.Drawing.Size(247, 212)
+            Me.selectionListBox.Size = New System.Drawing.Size(297, 264)
             Me.selectionListBox.TabIndex = 1
             '
             '_selectButton
             '
             Me._selectButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
             Me._selectButton.DialogResult = System.Windows.Forms.DialogResult.OK
-            Me._selectButton.Location = New System.Drawing.Point(103, 255)
+            Me._selectButton.Location = New System.Drawing.Point(153, 309)
             Me._selectButton.Name = "_selectButton"
             Me._selectButton.Size = New System.Drawing.Size(75, 23)
             Me._selectButton.TabIndex = 2
@@ -64,7 +64,7 @@
             '
             Me._cancelButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
             Me._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel
-            Me._cancelButton.Location = New System.Drawing.Point(184, 256)
+            Me._cancelButton.Location = New System.Drawing.Point(234, 310)
             Me._cancelButton.Name = "_cancelButton"
             Me._cancelButton.Size = New System.Drawing.Size(75, 23)
             Me._cancelButton.TabIndex = 3
@@ -75,7 +75,7 @@
             '
             Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
             Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-            Me.ClientSize = New System.Drawing.Size(271, 290)
+            Me.ClientSize = New System.Drawing.Size(321, 344)
             Me.Controls.Add(Me._cancelButton)
             Me.Controls.Add(Me._selectButton)
             Me.Controls.Add(Me.selectionListBox)
