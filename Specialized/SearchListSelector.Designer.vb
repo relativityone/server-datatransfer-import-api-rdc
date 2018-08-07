@@ -23,6 +23,7 @@
         'Do not modify it using the code editor.
         <System.Diagnostics.DebuggerStepThrough()>
         Private Sub InitializeComponent()
+            Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(SearchListSelector))
             Me.selectionSearchInput = New System.Windows.Forms.TextBox()
             Me.selectionListBox = New System.Windows.Forms.ListBox()
             Me._selectButton = New System.Windows.Forms.Button()
@@ -80,6 +81,7 @@
             Me.Controls.Add(Me._selectButton)
             Me.Controls.Add(Me.selectionListBox)
             Me.Controls.Add(Me.selectionSearchInput)
+            Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
             Me.Name = "SearchListSelector"
             Me.Text = "SearchListSelector"
             Me.ResumeLayout(False)

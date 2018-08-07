@@ -21,7 +21,6 @@ Namespace Specialized
             InitializeComponent()
             ' Add any initialization after the InitializeComponent() call.
             Text = formName
-            Icon = ParentForm.Icon
             _masterDt = dataTable
             SetupListBox()
         End Sub
