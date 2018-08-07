@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using System.IO;
-using System.Reflection;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI.IntegrationTests.Helpers;
 using NUnit.Framework;
@@ -9,7 +8,7 @@ using NUnit.Framework;
 namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 {
 	[TestFixture]
-	[Explicit("Relativity instance needs to be configured to work with integrated authentication")]
+	[Explicit("Relativity instance needs to be configured to work with integrated authentication. Please see readme.txt")]
 	public class NewNativeDocumentImportJobTests : TestBase
 	{
 		private const string _NATIVE_FILE_COLUMN_NAME = "Native";
@@ -70,8 +69,8 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 			settings.NativeFilePathSourceFieldName = _NATIVE_FILE_COLUMN_NAME;
 			
 			settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
-			settings.ArtifactTypeId = 10;
-			settings.IdentityFieldId = 1003667; // Control Number
+			settings.ArtifactTypeId = Constants.DOCUMENT_ARTIFACT_TYPE_ID;
+			settings.IdentityFieldId = Constants.CONTROL_NUMBER_FIELD_ID;
 			settings.BulkLoadFileFieldDelimiter = ";";
 			settings.DisableControlNumberCompatibilityMode = true;
 			settings.DisableExtractedTextFileLocationValidation = true;

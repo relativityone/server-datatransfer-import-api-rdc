@@ -73,6 +73,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AuthenticationTests\NewImageImportJobTests.cs" />
+    <Compile Include="Helpers\Constants.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="AuthenticationTests\NewNativeDocumentImportJobTests.cs" />
     <Compile Include="Helpers\ImportApiCreator.cs" />
@@ -87,6 +88,7 @@
     <Content Include="..\..\Version\ComVisibleFalse.vb">
       <Link>ComVisibleFalse.vb</Link>
     </Content>
+    <Content Include="AuthenticationTests\readme.txt" />
     <Content Include="TestData\Native\SBECK_0048460.docx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
