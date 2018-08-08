@@ -109,7 +109,7 @@
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.445\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared">
-      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.2018.8.0-DEV-4\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.2018.8.0\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Transfer.Client, Version=4.0.18176.4, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\packages\relativity.transfer.client.4.1.17\lib\net462\Relativity.Transfer.Client.dll</HintPath>
