@@ -123,6 +123,17 @@
   <metadata name="_destinationFolderDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>524, 17</value>
   </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="_selectFromListButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAD1SURBVDhPpZIhD8JADIVnlkwgMTMozDwaS5YsKAwWiwGJxCGw/IDJJagJDBqP5y+QoCcIvLdc
+        Q7k1ZAviS7r23Wt7t2Cyyv7CTHbBTAqD2SEFF1A5zmCsNV8HNBAuwQvcwA7sXfwEc9E1DhIIhoAdCxCq
+        fAROrhYzxyS7aChitwfoyWFlEgMabGoDQzAC3LX0awJqvJeCsTUBO7QxODK2ilPwa4U++KyAwJ+Al5QA
+        3nYO9CWGoATUJbWBFH0gWDvhFWwdfEZpRKPQmoDcAZ+S69BA8tydRpyO37nZ3QdCjh6p74UzqBrituAw
+        f/PULHbBTLYnC943J0VjMRzkWgAAAABJRU5ErkJggg==
+</value>
+  </data>
   <data name="_textFieldPrecedencePicker.SelectedFields" mimetype="application/x-microsoft.net.object.binary.base64">
     <value>
         AAEAAAD/////AQAAAAAAAAAMAgAAAJQBa0N1cmEuV2luRUREUywgVmVyc2lvbj0xMC4wLjAuMCwgQ3Vs
@@ -141,7 +152,6 @@
   <metadata name="_loadExportSettingsDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>212, 17</value>
   </metadata>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAEAEhIAAAEAIACABQAAFgAAACgAAAASAAAAJAAAAAEAIAAAAAAAAAAAABMLAAATCwAAAAAAAAAA
