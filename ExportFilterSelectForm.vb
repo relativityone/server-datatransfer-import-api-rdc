@@ -17,7 +17,7 @@ Namespace kCura.EDDS.WinForm.Tests
 
 		<Test()>
 		Public Sub NewFormAllItemsAreDisplayedNoneSelected()
-			Dim form As New MockExportFilterSelectForm("IDONOTEXIST", "DOESNOTMATTER", _filtersDataTable)
+			Dim form As New MockExportFilterSelectForm(999, "DOESNOTMATTER", _filtersDataTable)
 			form.FakeLoad()
 			Assert.AreEqual(4, form.ListOfItems.Items.Count)
 			Assert.AreEqual(Nothing, form.SelectedItemArtifactIDs)
@@ -26,7 +26,7 @@ Namespace kCura.EDDS.WinForm.Tests
 
 		<Test()>
 		Public Sub NewFormAllItemsAreDisplayedOneSelected()
-			Dim form As New MockExportFilterSelectForm("245", "DOESNOTMATTER", _filtersDataTable)
+			Dim form As New MockExportFilterSelectForm(245, "DOESNOTMATTER", _filtersDataTable)
 			form.Show()
 			Assert.AreEqual(4, form.ListOfItems.Items.Count)
 			Assert.AreEqual(1, form.SelectedItemArtifactIDs.Count)
@@ -36,7 +36,7 @@ Namespace kCura.EDDS.WinForm.Tests
 
 		<Test()>
 		Public Sub NewFormAllItemsAreDisplayedNoneSelectedOkButtonDisabled()
-			Dim form As New MockExportFilterSelectForm("DOESNOTCOMPUTE", "DOESNOTMATTER", _filtersDataTable)
+			Dim form As New MockExportFilterSelectForm(999, "DOESNOTMATTER", _filtersDataTable)
 			form.Show()
 			Assert.AreEqual(4, form.ListOfItems.Items.Count)
 			Assert.AreEqual(Nothing, form.SelectedItemArtifactIDs)
@@ -46,7 +46,7 @@ Namespace kCura.EDDS.WinForm.Tests
 
 		<Test()>
 		Public Sub NewFormAllItemsAreDisplayedOneSelectedOkButtonEnabled()
-			Dim form As New MockExportFilterSelectForm("245", "DOESNOTMATTER", _filtersDataTable)
+			Dim form As New MockExportFilterSelectForm(245, "DOESNOTMATTER", _filtersDataTable)
 			form.Show()
 			Assert.AreEqual(4, form.ListOfItems.Items.Count)
 			Assert.AreEqual(1, form.SelectedItemArtifactIDs.Count)
@@ -77,8 +77,8 @@ Namespace kCura.EDDS.WinForm.Tests
 
 			End Property
 
-			Public Sub New(ByVal savedItemNameToSelect As String, ByVal objectTypeName As String, ByVal listViewDataSource As DataTable)
-				MyBase.New(savedItemNameToSelect, objectTypeName, listViewDataSource)
+			Public Sub New(ByVal savedItemArtifactIdToSelect As Int32, ByVal objectTypeName As String, ByVal listViewDataSource As DataTable)
+				MyBase.New(savedItemArtifactIdToSelect, objectTypeName, listViewDataSource)
 			End Sub
 		End Class
 
