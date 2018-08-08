@@ -1454,7 +1454,7 @@ Public Class ExportForm
 			If TypeOf newFile Is kCura.WinEDDS.ErrorExportFile Then
 				MsgBox(DirectCast(newFile, kCura.WinEDDS.ErrorExportFile).ErrorMessage, MsgBoxStyle.Exclamation)
 			Else
-				Dim exportFilterSelectionForm As New kCura.EDDS.WinForm.ExportFilterSelectForm(newFile.LoadFilesPrefix, ExportTypeStringName, DirectCast(_filters.DataSource, DataTable))
+				Dim exportFilterSelectionForm As New kCura.EDDS.WinForm.ExportFilterSelectForm(newFile.ViewID, ExportTypeStringName, DirectCast(_filters.DataSource, DataTable))
 				exportFilterSelectionForm.ShowDialog()
 				If exportFilterSelectionForm.DialogResult = DialogResult.OK Then
 					If exportFilterSelectionForm.SelectedItemArtifactIDs IsNot Nothing Then
