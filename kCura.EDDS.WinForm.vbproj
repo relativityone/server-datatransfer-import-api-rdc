@@ -515,6 +515,11 @@
     <Compile Include="Startup.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="StringConstants.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>StringConstants.resx</DependentUpon>
+    </Compile>
     <Compile Include="ThreadExceptionHandler.vb" />
     <Compile Include="TrustAllCertificatePolicy.vb">
       <SubType>Code</SubType>
@@ -596,6 +601,8 @@
     </EmbeddedResource>
     <EmbeddedResource Include="StringConstants.resx">
       <SubType>Code</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>StringConstants.Designer.vb</LastGenOutput>
     </EmbeddedResource>
     <Content Include="images\folderclosed.ICO" />
     <Content Include="images\kcura.ICO" />

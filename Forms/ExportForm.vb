@@ -162,11 +162,8 @@ Public Class ExportForm
         Me.GroupBoxTextAndNativeFileNames = New System.Windows.Forms.GroupBox()
         Me._metadataGroupBox = New System.Windows.Forms.GroupBox()
         Me.LabelTextPrecedence = New System.Windows.Forms.Label()
-        Me._textFieldPrecedencePicker = New kCura.EDDS.WinForm.TextFieldPrecedencePicker()
-        Me._textFileEncoding = New kCura.EDDS.WinForm.EncodingPicker()
         Me.LabelTextFileEncoding = New System.Windows.Forms.Label()
         Me.LabelDataFileEncoding = New System.Windows.Forms.Label()
-        Me._dataFileEncoding = New kCura.EDDS.WinForm.EncodingPicker()
         Me.LabelMetadataDataFileFormat = New System.Windows.Forms.Label()
         Me._nativeFileFormat = New System.Windows.Forms.ComboBox()
         Me._exportMulticodeFieldsAsNested = New System.Windows.Forms.CheckBox()
@@ -221,6 +218,9 @@ Public Class ExportForm
         Me._recordDelimiter = New System.Windows.Forms.ComboBox()
         Me._saveExportSettingsDialog = New System.Windows.Forms.SaveFileDialog()
         Me._loadExportSettingsDialog = New System.Windows.Forms.OpenFileDialog()
+        Me._textFieldPrecedencePicker = New kCura.EDDS.WinForm.TextFieldPrecedencePicker()
+        Me._textFileEncoding = New kCura.EDDS.WinForm.EncodingPicker()
+        Me._dataFileEncoding = New kCura.EDDS.WinForm.EncodingPicker()
         Me._productionPrecedenceBox.SuspendLayout()
         Me.GroupBoxExportLocation.SuspendLayout()
         Me.TabControl1.SuspendLayout()
@@ -415,6 +415,7 @@ Public Class ExportForm
         Me._selectFromListButton.Image = Global.My.Resources.Resources.IC818250
         Me._selectFromListButton.Location = New System.Drawing.Point(12, 20)
         Me._selectFromListButton.Name = "_selectFromListButton"
+        Me._selectFromListButton.Padding = New System.Windows.Forms.Padding(0, 0, 2, 2)
         Me._selectFromListButton.Size = New System.Drawing.Size(21, 21)
         Me._selectFromListButton.TabIndex = 22
         Me._selectFromListButton.Text = " "
@@ -454,7 +455,7 @@ Public Class ExportForm
         '
         Me._filters.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me._filters.ItemHeight = 13
-        Me._filters.Location = New System.Drawing.Point(33, 20)
+        Me._filters.Location = New System.Drawing.Point(35, 20)
         Me._filters.Name = "_filters"
         Me._filters.Size = New System.Drawing.Size(524, 21)
         Me._filters.TabIndex = 1
@@ -529,22 +530,6 @@ Public Class ExportForm
         Me.LabelTextPrecedence.Text = "Text Precedence:"
         Me.LabelTextPrecedence.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        '_textFieldPrecedencePicker
-        '
-        Me._textFieldPrecedencePicker.Location = New System.Drawing.Point(116, 125)
-        Me._textFieldPrecedencePicker.Name = "_textFieldPrecedencePicker"
-        Me._textFieldPrecedencePicker.SelectedFields = CType(resources.GetObject("_textFieldPrecedencePicker.SelectedFields"), System.Collections.Generic.List(Of kCura.WinEDDS.ViewFieldInfo))
-        Me._textFieldPrecedencePicker.Size = New System.Drawing.Size(175, 21)
-        Me._textFieldPrecedencePicker.TabIndex = 44
-        '
-        '_textFileEncoding
-        '
-        Me._textFileEncoding.Location = New System.Drawing.Point(116, 100)
-        Me._textFileEncoding.Name = "_textFileEncoding"
-        Me._textFileEncoding.SelectedEncoding = Nothing
-        Me._textFileEncoding.Size = New System.Drawing.Size(200, 21)
-        Me._textFileEncoding.TabIndex = 43
-        '
         'LabelTextFileEncoding
         '
         Me.LabelTextFileEncoding.Location = New System.Drawing.Point(12, 100)
@@ -562,14 +547,6 @@ Public Class ExportForm
         Me.LabelDataFileEncoding.TabIndex = 41
         Me.LabelDataFileEncoding.Text = "Data File Encoding:"
         Me.LabelDataFileEncoding.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        '_dataFileEncoding
-        '
-        Me._dataFileEncoding.Location = New System.Drawing.Point(116, 48)
-        Me._dataFileEncoding.Name = "_dataFileEncoding"
-        Me._dataFileEncoding.SelectedEncoding = Nothing
-        Me._dataFileEncoding.Size = New System.Drawing.Size(200, 21)
-        Me._dataFileEncoding.TabIndex = 41
         '
         'LabelMetadataDataFileFormat
         '
@@ -1104,6 +1081,30 @@ Public Class ExportForm
         Me._loadExportSettingsDialog.DefaultExt = "kwx"
         Me._loadExportSettingsDialog.Filter = "Relativity Desktop Client settings files (*.kwx)|*.kwx|All files (*.*)|*.*"
         Me._loadExportSettingsDialog.RestoreDirectory = True
+        '
+        '_textFieldPrecedencePicker
+        '
+        Me._textFieldPrecedencePicker.Location = New System.Drawing.Point(116, 125)
+        Me._textFieldPrecedencePicker.Name = "_textFieldPrecedencePicker"
+        Me._textFieldPrecedencePicker.SelectedFields = CType(resources.GetObject("_textFieldPrecedencePicker.SelectedFields"), System.Collections.Generic.List(Of kCura.WinEDDS.ViewFieldInfo))
+        Me._textFieldPrecedencePicker.Size = New System.Drawing.Size(175, 21)
+        Me._textFieldPrecedencePicker.TabIndex = 44
+        '
+        '_textFileEncoding
+        '
+        Me._textFileEncoding.Location = New System.Drawing.Point(116, 100)
+        Me._textFileEncoding.Name = "_textFileEncoding"
+        Me._textFileEncoding.SelectedEncoding = Nothing
+        Me._textFileEncoding.Size = New System.Drawing.Size(200, 21)
+        Me._textFileEncoding.TabIndex = 43
+        '
+        '_dataFileEncoding
+        '
+        Me._dataFileEncoding.Location = New System.Drawing.Point(116, 48)
+        Me._dataFileEncoding.Name = "_dataFileEncoding"
+        Me._dataFileEncoding.SelectedEncoding = Nothing
+        Me._dataFileEncoding.Size = New System.Drawing.Size(200, 21)
+        Me._dataFileEncoding.TabIndex = 41
         '
         'ExportForm
         '
@@ -2179,10 +2180,16 @@ Public Class ExportForm
     End Sub
 
     Private Sub _selectFromListButton_Click(sender As Object, e As EventArgs) Handles _selectFromListButton.Click
+        Cursor = Cursors.WaitCursor
         Dim typeName As String = "Select " & ExportTypeStringName
         Dim searchListSelector As New SearchListSelector(_masterDT, typeName)
         If searchListSelector.ShowDialog() = Windows.Forms.DialogResult.OK Then
             _filters.SelectedValue = searchListSelector.GetSelectedVal()
         End If
+        Cursor = Cursors.Default
+    End Sub
+
+    Private Sub _columnSelecter_ItemsShifted(sender As Object, e As EventArgs) Handles _columnSelector.ItemsShifted
+
     End Sub
 End Class
