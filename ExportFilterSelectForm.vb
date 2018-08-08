@@ -3,6 +3,7 @@
 Namespace kCura.EDDS.WinForm.Tests
 	<TestFixture()>
 	Public Class ExportFilterSelectForm
+		Private Const _NON_EXISTENT_ID As Int32 = 999
 		Private _filtersDataTable As New DataTable()
 
 		<SetUp()> Public Sub SetUp()
@@ -17,7 +18,7 @@ Namespace kCura.EDDS.WinForm.Tests
 
 		<Test()>
 		Public Sub NewFormAllItemsAreDisplayedNoneSelected()
-			Dim form As New MockExportFilterSelectForm(999, "DOESNOTMATTER", _filtersDataTable)
+			Dim form As New MockExportFilterSelectForm(_NON_EXISTENT_ID, "DOESNOTMATTER", _filtersDataTable)
 			form.FakeLoad()
 			Assert.AreEqual(4, form.ListOfItems.Items.Count)
 			Assert.AreEqual(Nothing, form.SelectedItemArtifactIDs)
@@ -36,7 +37,7 @@ Namespace kCura.EDDS.WinForm.Tests
 
 		<Test()>
 		Public Sub NewFormAllItemsAreDisplayedNoneSelectedOkButtonDisabled()
-			Dim form As New MockExportFilterSelectForm(999, "DOESNOTMATTER", _filtersDataTable)
+			Dim form As New MockExportFilterSelectForm(_NON_EXISTENT_ID, "DOESNOTMATTER", _filtersDataTable)
 			form.Show()
 			Assert.AreEqual(4, form.ListOfItems.Items.Count)
 			Assert.AreEqual(Nothing, form.SelectedItemArtifactIDs)
