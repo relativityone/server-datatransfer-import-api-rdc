@@ -145,8 +145,7 @@ Public MustInherit Class MonitoredProcessBase
 	End Sub
 
 	Private Sub SendMessageAsync(message As IMessage)
-		' REL-242548: Disabling APM/SUM metrics until the deadlock is fixed.
-		' Me.MessageService.Send(message)
+		Me.MessageService.Send(message)
 	End Sub
 
 End Class
