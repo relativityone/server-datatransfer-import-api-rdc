@@ -147,8 +147,8 @@
       <HintPath>..\..\packages\Polly.5.3.1\lib\net45\Polly.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Logging, Version=9.4.320.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Logging.9.4.320-DEV-4\lib\net462\Relativity.Logging.dll</HintPath>
+    <Reference Include="Relativity.Logging, Version=9.4.320.7, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Logging.9.4.320-DEV-7\lib\net462\Relativity.Logging.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces, Version=9.4.320.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.320-DEV-4\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
