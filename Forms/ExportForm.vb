@@ -1754,7 +1754,7 @@ Public Class ExportForm
 		InitializeLayout()
 	End Sub
 
-	Public Sub HandleLoad(ByVal sender As Object, ByVal e As System.EventArgs, ByVal volumeDigitPadding As Int32, ByVal exportSubdirectoryDigitPadding As Int32)
+	Public Async Sub HandleLoad(ByVal sender As Object, ByVal e As System.EventArgs, ByVal volumeDigitPadding As Int32, ByVal exportSubdirectoryDigitPadding As Int32)
 		_dataSourceIsSet = False
 		_filters.DataSource = ExportFile.DataTable
 		_filters.DisplayMember = "Name"
@@ -1788,7 +1788,8 @@ Public Class ExportForm
 						Me.Text = "Relativity Desktop Client | Export Folder and Subfolders"
 					End If
 				Else
-					Me.Text = String.Format("Relativity Desktop Client | Export {0} Objects", Me.GetObjectTypeName)
+					Dim objectTypeName As String = Await Me.GetObjectTypeName()
+					Me.Text = String.Format("Relativity Desktop Client | Export {0} Objects", objectTypeName)
 				End If
 			Case ExportFile.ExportType.Production
 				LabelNamedAfter.Visible = True
