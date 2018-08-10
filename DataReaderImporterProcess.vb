@@ -21,6 +21,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Sub
 
 		Public Property OnBehalfOfUserToken As String
+		Public Property TimeKeeperManager As ITimeKeeperManager
 
 		Private Function AddColumnIndexToName(ByVal dr As System.Data.IDataReader, ByVal columnName As String) As String
 			'function: convert [columnName] to [columnName]([index]) if [columnName] is a column in DR.  Example: FileLocation -> FileLocation(3)
@@ -54,8 +55,11 @@ Namespace kCura.WinEDDS.ImportExtension
 			LoadFile.FileNameColumn = FileNameColumn
 			
             'Avoid initializing the Artifact Reader in the constructor because it calls back to a virtual method (GetArtifactReader).  
-			Dim importer As DataReaderImporter = New DataReaderImporter(DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile), ProcessController, ioReporter, logger, BulkLoadFileFieldDelimiter, _temporaryLocalDirectory, tokenSource, initializeArtifactReader:=False,
-																		executionSource := ExecutionSource) With {.OnBehalfOfUserToken = Me.OnBehalfOfUserToken}
+			Dim importer As DataReaderImporter = New DataReaderImporter(DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile), ProcessController, ioReporter, logger, BulkLoadFileFieldDelimiter,
+			                                                            _temporaryLocalDirectory, tokenSource, initializeArtifactReader:=False, executionSource := ExecutionSource) With { 
+																			.OnBehalfOfUserToken = Me.OnBehalfOfUserToken,
+																			.Timekeeper = Me.TimeKeeperManager
+																		}
 			importer.Initialize()
 
 			Dim dr As System.Data.IDataReader = importer.SourceData
