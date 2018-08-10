@@ -84,8 +84,8 @@
     <Reference Include="Relativity.Logging, Version=9.4.320.6, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Logging.9.4.320-DEV-6\lib\net462\Relativity.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Logging.Interfaces, Version=9.4.320.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.320-DEV-4\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Logging.Interfaces, Version=9.4.320.6, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.320-DEV-6\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.OAuth2Client">
       <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.27\lib\net462\Relativity.OAuth2Client.dll</HintPath>
