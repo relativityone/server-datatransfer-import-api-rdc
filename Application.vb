@@ -266,15 +266,6 @@ Namespace kCura.EDDS.WinForm
 			Return retval
 		End Function
 
-		Public Async Function GetNonFileCaseFields(ByVal caseID As Int32, ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As Task(Of String())
-			Dim retval As String() = Nothing
-			Dim fields As DocumentFieldCollection = Await CurrentNonFileFields(artifactTypeID, refresh)
-			If Not fields Is Nothing Then
-				retval = fields.Names()
-			End If
-			Return retval
-		End Function
-
 		Friend Async Function IsConnected() As Task(Of Boolean)
 			Dim retval = False
 			Try
