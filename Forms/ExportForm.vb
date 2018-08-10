@@ -1,6 +1,7 @@
 Imports System.Linq
 Imports System.Collections.Generic
 Imports System.Threading.Tasks
+Imports Castle.Core.Internal
 Imports kCura.Windows.Forms
 
 Public Class ExportForm
@@ -1469,6 +1470,16 @@ Public Class ExportForm
 		End If
 	End Sub
 
+	''' <summary>
+	''' Select view field.
+	''' Move view field from left listbox to right listbox.
+	''' </summary>
+	''' <param name="listboxViewField">listbox view field to be selected</param>
+	Public Sub SelectField(listboxViewField As ViewFieldInfo)
+		_columnSelector.RightListBoxItems.Add(listboxViewField)
+		_columnSelector.LeftListBoxItems.Remove(listboxViewField)
+	End Sub
+
 	Public Async Function LoadExportFile(ByVal ef As kCura.WinEDDS.ExportFile) As Task
 		_isLoadingExport = True
 		If _exportNativeFiles.Checked <> ef.ExportNative Then _exportNativeFiles.Checked = ef.ExportNative
@@ -1562,18 +1573,13 @@ Public Class ExportForm
 		If ef.SelectedViewFields IsNot Nothing Then
 
 
-
-			Dim itemsToRemoveFromLeftListBox As New System.Collections.Generic.List(Of kCura.WinEDDS.ViewFieldInfo)()
 			_columnSelector.ClearSelection(kCura.Windows.Forms.ListBoxLocation.Right)
 			_columnSelector.RightListBoxItems.Clear()
-			For Each viewFieldFromKwx As kCura.WinEDDS.ViewFieldInfo In ef.SelectedViewFields
-				For Each leftListBoxViewField As kCura.WinEDDS.ViewFieldInfo In _columnSelector.LeftListBoxItems
-					If leftListBoxViewField.DisplayName.Equals(viewFieldFromKwx.DisplayName, StringComparison.InvariantCulture) Then
-						itemsToRemoveFromLeftListBox.Add(leftListBoxViewField)
-						_columnSelector.RightListBoxItems.Add(leftListBoxViewField)
-					End If
-				Next
-			Next
+
+			ef.SelectedViewFields _
+				.SelectMany(Function (x) kCura.EDDS.WinForm.Utility.FindCounterpartField(_columnSelector.LeftListBoxItems, x)) _
+				.ForEach(AddressOf SelectField)
+
 
 			If ef.AllExportableFields IsNot Nothing Then
 				Dim defaultSelectedIds As New System.Collections.ArrayList
@@ -1601,9 +1607,6 @@ Public Class ExportForm
 				End If
 			End If
 
-			For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
-				_columnSelector.LeftListBoxItems.Remove(vfi)
-			Next
 		End If
 
 		ManagePotentialTextFields()
