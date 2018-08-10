@@ -1201,7 +1201,8 @@ Namespace kCura.EDDS.WinForm
             End If
             RefreshNativeFilePathFieldAndFileColumnHeaders()
             If Not Await Me.EnsureConnection() Then Return
-            Dim caseFields As String() = Await _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, _application.ArtifactTypeID, True)
+            Dim caseFieldsCollection As DocumentFieldCollection = Await _application.CurrentNonFileFields(_application.ArtifactTypeID, refresh:=True)
+            Dim caseFields As String() = caseFieldsCollection.Names()
 
             If loadFileObjectUpdatedFromFile Then
                 Dim columnHeaders As String()
@@ -1211,7 +1212,7 @@ Namespace kCura.EDDS.WinForm
                     MsgBox("The load file specified does not exist.", MsgBoxStyle.Exclamation, "Relativity Desktop Client Warning")
                     columnHeaders = New String() {}
                 End If
-                Await BuildMappingFromLoadFile(caseFields, columnHeaders)
+                Await BuildMappingFromLoadFile(caseFieldsCollection, columnHeaders)
                 If LoadFile.LoadNativeFiles Then
                     _loadNativeFiles.Checked = True
                     If LoadFile.NativeFilePathColumn <> String.Empty Then
@@ -1869,37 +1870,44 @@ Namespace kCura.EDDS.WinForm
             LoadFile.HierarchicalValueDelimiter = ChrW(CType(_hierarchicalValueDelimiter.SelectedValue, Int32))
         End Sub
 
-        Private Async Function BuildMappingFromLoadFile(ByVal casefields As String(), ByVal columnHeaders As String()) As Task
+        Private Async Function BuildMappingFromLoadFile(ByVal caseFieldsCollection As DocumentFieldCollection, ByVal columnHeaders As String()) As Task
             Dim selectedFieldNameList As New ArrayList
             Dim selectedColumnNameList As New ArrayList
             Dim item As LoadFileFieldMap.LoadFileFieldMapItem
+			Dim caseFields As String() = caseFieldsCollection.Names()
             _fieldMap.ClearAll()
             For Each item In _loadFile.FieldMap
                 If _
                  Not item.DocumentField Is Nothing AndAlso
                  item.NativeFileColumnIndex > -1 AndAlso
-                 Array.IndexOf(casefields, item.DocumentField.FieldName) > -1 AndAlso
-                 item.NativeFileColumnIndex < columnHeaders.Length _
-                 Then
-                    If item.DocumentField.FieldCategoryID = Relativity.FieldCategory.Identifier Then
-                        selectedFieldNameList.Add(item.DocumentField.FieldName & " [Identifier]")
-                    Else
-                        selectedFieldNameList.Add(item.DocumentField.FieldName)
-                    End If
-                    selectedColumnNameList.Add(columnHeaders(item.NativeFileColumnIndex))
+				 item.NativeFileColumnIndex < columnHeaders.Length Then
+					Dim documentField As DocumentField = caseFieldsCollection.FirstOrDefault(Function(x) x.FieldID = item.DocumentField.FieldID)
+					If Not documentField Is Nothing Then
+						If documentField.FieldCategoryID = Relativity.FieldCategory.Identifier Then
+							selectedFieldNameList.Add(documentField.FieldName & " [Identifier]")
+						Else
+							selectedFieldNameList.Add(documentField.FieldName)
+						End If
+						selectedColumnNameList.Add(columnHeaders(item.NativeFileColumnIndex))
+					End If
                 End If
             Next
             For Each item In _loadFile.FieldMap
-                If Not item.DocumentField Is Nothing AndAlso columnHeaders.Length = 0 AndAlso Array.IndexOf(casefields, item.DocumentField.FieldName) > -1 Then
-                    If item.DocumentField.FieldCategoryID = Relativity.FieldCategory.Identifier Then
-                        selectedFieldNameList.Add(item.DocumentField.FieldName & " [Identifier]")
-                    Else
-                        selectedFieldNameList.Add(item.DocumentField.FieldName)
-                    End If
+                If _ 
+					Not item.DocumentField Is Nothing AndAlso 
+					columnHeaders.Length = 0 Then
+						Dim documentField As DocumentField = caseFieldsCollection.FirstOrDefault(Function(x) x.FieldID = item.DocumentField.FieldID)
+						If Not documentField Is Nothing Then
+							If documentField.FieldCategoryID = Relativity.FieldCategory.Identifier Then
+								selectedFieldNameList.Add(documentField.FieldName & " [Identifier]")
+							Else
+								selectedFieldNameList.Add(documentField.FieldName)
+							End If
+						End If
                 End If
             Next
-            Await Me.MarkIdentifierField(casefields)
-            _fieldMap.MapCaseFieldsToLoadFileFields(casefields, columnHeaders, selectedFieldNameList, selectedColumnNameList)
+            Await Me.MarkIdentifierField(caseFields)
+            _fieldMap.MapCaseFieldsToLoadFileFields(caseFields, columnHeaders, selectedFieldNameList, selectedColumnNameList)
         End Function
 
         Private Sub _fileMenuCloseItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileMenuCloseItem.Click
@@ -1939,28 +1947,10 @@ Namespace kCura.EDDS.WinForm
             ActionMenuEnabled = ReadyToRun
         End Sub
 
-        Private Async Function FullTextColumnIsMapped() As Task(Of Boolean)
-            Try
-                Dim docFieldObj As DocumentField = (Await _application.CurrentFields(Relativity.ArtifactType.Document)).FullText
-                'If the LoadFile form is being used to load an object instead of a document, then FullText will be Nothing.
-                If docFieldObj IsNot Nothing Then
-                    Dim ftfname As String = docFieldObj.FieldName
-                    Dim field As String
-                    For Each field In _fieldMap.FieldColumns.RightListBoxItems
-                        If field.ToLower = ftfname.ToLower Then
-                            Return True
-                        End If
-                    Next
-                End If
-                Return False
-            Catch
-                Return False
-            End Try
-		End Function
-
 		Private Async Sub _fileRefreshMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fileRefreshMenuItem.Click
 			_multiObjectMultiChoiceCache = Nothing
-			Dim caseFields As String() = Await _application.GetNonFileCaseFields(LoadFile.CaseInfo.ArtifactID, Me.LoadFile.ArtifactTypeID, True)			'_application.GetCaseFields(LoadFile.CaseInfo.ArtifactID, _application.ArtifactTypeID, True)
+			Dim caseFieldsCollection As DocumentFieldCollection = Await _application.CurrentNonFileFields(Me.LoadFile.ArtifactTypeID, refresh:=True)
+			Dim caseFields As String() = caseFieldsCollection.Names()
 			If caseFields Is Nothing Then Exit Sub
 			Await Me.MarkIdentifierField(caseFields)
 			Dim fieldName As String
