@@ -11,7 +11,7 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 
-		Private Property PossibleItemNameToSelect() As String
+		Private Property PossibleItemArtifactIdToSelect() As Int32
 		Private _itemListTable As System.Data.DataTable
 #End Region
 
@@ -19,7 +19,7 @@ Namespace kCura.EDDS.WinForm
 		Protected Sub ItemSelectForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			Me.LoadItems(String.Empty)
 			Me.Focus()
-			SelectItemByName(PossibleItemNameToSelect)
+			SelectItemByTag(PossibleItemArtifactIdToSelect)
 		End Sub
 
 		Protected Overrides Sub ItemListView_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ItemListView.SelectedIndexChanged
@@ -61,9 +61,9 @@ Namespace kCura.EDDS.WinForm
 			Me.Cursor = Cursors.Default
 		End Sub
 
-		Private Sub SelectItemByName(ByVal itemName As String)
+		Private Sub SelectItem(ByVal predicate As Func(Of ListViewItem, Boolean))
 			For i As Int32 = 0 To ItemListView.Items.Count - 1
-				If ItemListView.Items(i).Text.Equals(itemName, StringComparison.InvariantCulture) Then
+				If predicate(ItemListView.Items(i)) Then
 					ItemListView.Items(i).Focused = True
 					ItemListView.Items(i).Selected = True
 					ItemListView.EnsureVisible(i)
@@ -73,10 +73,15 @@ Namespace kCura.EDDS.WinForm
 			Next
 		End Sub
 
-		Public Sub New(ByVal savedItemNameToSelect As String, ByVal objectTypeName As String, ByVal listViewDataSource As DataTable)
+		Private Sub SelectItemByTag(ByVal viewId As Int32)
+			Dim isTagEqual = Function(item As ListViewItem) CType(item.Tag, Int32) = viewId
+			SelectItem(isTagEqual)
+		End Sub
+
+		Public Sub New(ByVal savedItemArtifactIdToSelect As Int32, ByVal objectTypeName As String, ByVal listViewDataSource As DataTable)
 			MyBase.New()
 			Me.MultiSelect = False
-			Me.PossibleItemNameToSelect = savedItemNameToSelect
+			Me.PossibleItemArtifactIdToSelect = savedItemArtifactIdToSelect
 			_itemListTable = listViewDataSource
 			Me.Text = String.Format("Relativity Desktop Client | Select {0}", objectTypeName)
 		End Sub
