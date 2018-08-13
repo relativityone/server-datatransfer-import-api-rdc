@@ -57,6 +57,7 @@ Namespace kCura.WinEDDS
 		Protected FieldLookupService As IFieldLookupService
 		Private _errorFile As IErrorFile
 		Private ReadOnly _cancellationTokenSource As CancellationTokenSource
+		Private _syncLock As Object = New Object
 
 #End Region
 
@@ -1099,25 +1100,33 @@ Namespace kCura.WinEDDS
 
 		Friend Sub WriteStatusLine(ByVal e As kCura.Windows.Process.EventType, ByVal line As String, ByVal isEssential As Boolean) Implements IStatus.WriteStatusLine
 			Dim now As Long = System.DateTime.Now.Ticks
-			If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
-				_lastStatusMessageTs = now
-				Dim appendString As String = " ... " & Me.DocumentsExported - _lastDocumentsExportedCountReported & " document(s) exported."
-				_lastDocumentsExportedCountReported = Me.DocumentsExported
-				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line & appendString, e, _lastStatisticsSnapshot, Statistics))
-			End If
+
+			SyncLock _syncLock
+				If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
+					_lastStatusMessageTs = now
+					Dim appendString As String = " ... " & Me.DocumentsExported - _lastDocumentsExportedCountReported & " document(s) exported."
+					_lastDocumentsExportedCountReported = Me.DocumentsExported
+					RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line & appendString, e, _lastStatisticsSnapshot, Statistics))
+				End If
+			End SyncLock
+
 		End Sub
 
 		Friend Sub WriteStatusLineWithoutDocCount(ByVal e As kCura.Windows.Process.EventType, ByVal line As String, ByVal isEssential As Boolean)
 			Dim now As Long = System.DateTime.Now.Ticks
-			If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
-				_lastStatusMessageTs = now
-				_lastDocumentsExportedCountReported = Me.DocumentsExported
-				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line, e, _lastStatisticsSnapshot, Statistics))
-			End If
+
+			SyncLock _syncLock
+				If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then				
+					_lastStatusMessageTs = now
+					_lastDocumentsExportedCountReported = Me.DocumentsExported
+					RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line, e, _lastStatisticsSnapshot, Statistics))
+				End If
+			End SyncLock
+
 		End Sub
 
 		Friend Sub WriteError(ByVal line As String) Implements IStatus.WriteError
-			_errorCount += 1
+			Interlocked.Increment(_errorCount)
 			WriteStatusLine(kCura.Windows.Process.EventType.Error, line, True)
 		End Sub
 
@@ -1138,7 +1147,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Friend Sub WriteWarning(ByVal line As String) Implements IStatus.WriteWarning
-			_warningCount += 1
+			Interlocked.Increment(_warningCount)
 			WriteStatusLine(kCura.Windows.Process.EventType.Warning, line, True)
 		End Sub
 
