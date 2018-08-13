@@ -1,3 +1,4 @@
+Imports System.Threading
 Imports kCura.WinEDDS.Exporters
 Imports kCura.WinEDDS.TApi
 Imports Relativity.DataTransfer.MessageService
@@ -94,7 +95,7 @@ Namespace kCura.WinEDDS
 		Private Sub _productionExporter_StatusMessage(ByVal e As ExportEventArgs) Handles _searchExporter.StatusMessage
 			Select Case e.EventType
 				Case kCura.Windows.Process.EventType.Error
-					_errorCount += 1
+					Interlocked.Increment(_errorCount)
 					Me.ProcessObserver.RaiseErrorEvent(e.DocumentsExported.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Progress
 					Me.ProcessObserver.RaiseStatusEvent("", e.Message)
@@ -103,7 +104,7 @@ Namespace kCura.WinEDDS
 				Case kCura.Windows.Process.EventType.Status
 					Me.ProcessObserver.RaiseStatusEvent(e.DocumentsExported.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Warning
-					_warningCount += 1
+					Interlocked.Increment(_warningCount)
 					Me.ProcessObserver.RaiseWarningEvent(e.DocumentsExported.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.ResetStartTime
 					SetStartTime()

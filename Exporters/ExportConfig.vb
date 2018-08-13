@@ -20,6 +20,12 @@ Public Class ExportConfig
 			Return Config.UseOldExport
 		End Get
 	End Property
+
+	Public ReadOnly Property ForceParallelismInNewExport As Boolean Implements IExportConfig.ForceParallelismInNewExport
+		Get
+			Return Config.ForceParallelismInNewExport
+		End Get
+	End Property
 	
 	Public ReadOnly Property ExportIOErrorWaitTime As Integer Implements IExportConfig.ExportIOErrorWaitTime
 		Get
