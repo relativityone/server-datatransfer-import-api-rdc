@@ -114,6 +114,7 @@
     <Compile Include="Export\VolumeManagerV2\Batches\BatchInitializationTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchStateTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchValidatorTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\ImageFileParallelBatchValidatorTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\ImageFileBatchValidatorTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\ImageLoadFileBatchValidatorTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\LoadFileBatchValidatorTests.cs" />

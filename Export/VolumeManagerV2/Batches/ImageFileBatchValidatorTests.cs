@@ -13,9 +13,9 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 	[TestFixture]
 	public class ImageFileBatchValidatorTests
 	{
-		private ImageFileBatchValidator _instance;
-		private Mock<IErrorFileWriter> _errorFileWriter;
-		private Mock<IFileHelper> _fileHelper;
+		private IBatchValidator _instance;
+		protected Mock<IErrorFileWriter> _errorFileWriter;
+		protected Mock<IFileHelper> _fileHelper;
 		private Mock<IStatus> _status;
 
 		[SetUp]
@@ -25,7 +25,12 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 			_fileHelper = new Mock<IFileHelper>();
 			_status = new Mock<IStatus>();
 
-			_instance = new ImageFileBatchValidator(_errorFileWriter.Object, _fileHelper.Object, _status.Object, new NullLogger());
+			_instance = CreateSut();
+		}
+
+		protected virtual IBatchValidator CreateSut()
+		{
+			return new ImageFileBatchValidator(_errorFileWriter.Object, _fileHelper.Object, _status.Object, new NullLogger());
 		}
 
 		[Test]
@@ -58,7 +63,6 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		}
 
 		[Test]
-		[Ignore("Until File Size calculation is fixed by Production team REL-198994")]
 		[TestCase(false, 1)]
 		[TestCase(true, 0)]
 		public void ItShouldWriteErrorForMissingOrEmptySingleImage(bool exists, long size)
@@ -133,7 +137,6 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		}
 
 		[Test]
-		[Ignore("Until File Size calculation is fixed by Production team REL-198994")]
 		[TestCase(false, 1)]
 		[TestCase(true, 0)]
 		public void ItShouldWriteErrorForMissingOrEmptyOneOfImages(bool exists, long size)
