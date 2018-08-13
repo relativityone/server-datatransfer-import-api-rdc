@@ -49,7 +49,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				}
 
 				ExportRequest exportRequest;
-				if (TryCreate(image, out exportRequest))
+				if (TryCreate(artifact, image, out exportRequest))
 				{
 					fileExportRequests.Add(exportRequest);
 				}
@@ -58,7 +58,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			return fileExportRequests;
 		}
 
-		private bool TryCreate(ImageExportInfo image, out ExportRequest exportRequest)
+		private bool TryCreate(ObjectExportInfo artifact, ImageExportInfo image, out ExportRequest exportRequest)
 		{
 			if (string.IsNullOrWhiteSpace(image.FileGuid))
 			{
@@ -68,7 +68,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			}
 
 			_logger.LogVerbose("Creating image file ExportRequest for image {image}.", image.FileName);
-			string destinationLocation = GetExportDestinationLocation(image);
+			string destinationLocation = GetExportDestinationLocation(artifact, image);
 			image.TempLocation = destinationLocation;
 
 			string warningInCaseOfOverwriting = $"Overwriting image for {image.BatesNumber}.";
@@ -87,10 +87,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			return true;
 		}
 
-		private string GetExportDestinationLocation(ImageExportInfo image)
+		private string GetExportDestinationLocation(ObjectExportInfo artifact, ImageExportInfo image)
 		{
 			string fileName = image.FileName;
-			return _filePathProvider.GetPathForFile(fileName);
-		}
+			return _filePathProvider.GetPathForFile(fileName, artifact.ArtifactID);
+		}	
 	}
 }

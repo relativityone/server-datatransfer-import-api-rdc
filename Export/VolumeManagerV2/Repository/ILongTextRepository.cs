@@ -7,9 +7,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 	public interface ILongTextRepository
 	{
 		void Add(IList<LongText> longTexts);
-		IList<LongText> GetArtifactLongTexts(int artifactId);
+		IEnumerable<LongText> GetArtifactLongTexts(int artifactId);
 		LongText GetByLineNumber(int lineNumber);
-		IList<LongTextExportRequest> GetExportRequests();
+		IEnumerable<LongTextExportRequest> GetExportRequests();
 		LongText GetLongText(int artifactId, int fieldArtifactId);
 		IList<LongText> GetLongTexts();
 		string GetTextFileLocation(int artifactId, int fieldArtifactId);

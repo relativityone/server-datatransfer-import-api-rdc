@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
+﻿namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 {
 	public class ExportRequestRepository : IExportRequestRepository
 	{
@@ -17,9 +13,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 			_longTextRepository = longTextRepository;
 		}
 
-		public IList<ExportRequest> GetExportRequests()
+		public bool AnyRequestForLocation(string destinationLocation)
 		{
-			return _nativeRepository.GetExportRequests().Concat(_imageRepository.GetExportRequests()).Concat(_longTextRepository.GetExportRequests()).ToList();
+			return
+				_nativeRepository.AnyRequestForLocation(destinationLocation) ||
+				_imageRepository.AnyRequestForLocation(destinationLocation) ||
+				_longTextRepository.AnyRequestForLocation(destinationLocation);
 		}
+	
 	}
 }

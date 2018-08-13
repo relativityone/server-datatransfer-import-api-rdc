@@ -7,40 +7,73 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 	public class NativeRepository : IClearable
 	{
 		private List<Native> _natives;
+		private Dictionary<int, Native> _nativesByArtifactIdDictionary;
+
+		private readonly object _syncLock = new object();
 
 		public NativeRepository()
 		{
 			_natives = new List<Native>();
+			_nativesByArtifactIdDictionary = new Dictionary<int, Native>();
 		}
 
-		public void Add(IList<Native> natives)
+		public void Add(Native native)
 		{
-			_natives.AddRange(natives);
+			lock (_syncLock)
+			{
+				_natives.Add(native);
+				_nativesByArtifactIdDictionary[native.Artifact.ArtifactID] = native;
+			}
 		}
 
 		public Native GetNative(int artifactId)
 		{
-			return _natives.First(x => x.Artifact.ArtifactID == artifactId);
+			lock (_syncLock)
+			{
+				return _nativesByArtifactIdDictionary[artifactId];
+			}
 		}
 
 		public IList<Native> GetNatives()
 		{
-			return _natives;
+			lock (_syncLock)
+			{
+				return _natives;
+			}
 		}
 
-		public IList<ExportRequest> GetExportRequests()
+		public IEnumerable<ExportRequest> GetExportRequests()
 		{
-			return _natives.Where(x => !x.HasBeenDownloaded).Select(x => (ExportRequest) x.ExportRequest).ToList();
+			//Only to sync access to natives
+			lock (_syncLock)
+			{
+				return _natives.Where(x => !x.HasBeenDownloaded).Select(x => (ExportRequest) x.ExportRequest);
+			}
+		}
+
+		public bool AnyRequestForLocation(string destinationLocation)
+		{
+			lock (_syncLock)
+			{
+				return GetExportRequests().Any(x => x.DestinationLocation == destinationLocation);
+			}
 		}
 
 		public Native GetByLineNumber(int lineNumber)
 		{
-			return _natives.FirstOrDefault(x => x.ExportRequest?.Order == lineNumber);
+			lock (_syncLock)
+			{
+				return _natives.FirstOrDefault(x => x.ExportRequest?.Order == lineNumber);
+			}
 		}
 
 		public void Clear()
 		{
-			_natives = new List<Native>();
+			lock (_syncLock)
+			{
+				_natives = new List<Native>();
+				_nativesByArtifactIdDictionary = new Dictionary<int, Native>();
+			}
 		}
 	}
 }

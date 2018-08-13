@@ -66,7 +66,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		{
 			string fileName = _fileNameProvider.GetName(artifact);
 
-			return _filePathProvider.GetPathForFile(fileName);
+			return _filePathProvider.GetPathForFile(fileName, artifact.ArtifactID);
 		}
 	}
 }
