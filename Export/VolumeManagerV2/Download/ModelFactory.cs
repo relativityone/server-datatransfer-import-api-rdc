@@ -30,7 +30,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 				HasBeenDownloaded = false,
 				ExportRequest = exportRequest
 			};
-			nativeRepository.Add(native.InList());
+			nativeRepository.Add(native);
 			return native;
 		}
 

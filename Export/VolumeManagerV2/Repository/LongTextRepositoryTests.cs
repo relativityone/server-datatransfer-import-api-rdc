@@ -50,8 +50,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 		public void ItShouldGetLongTextsForArtifact()
 		{
 			//ACT
-			IList<LongText> images1 = _instance.GetArtifactLongTexts(1);
-			IList<LongText> images2 = _instance.GetArtifactLongTexts(2);
+			IEnumerable<LongText> images1 = _instance.GetArtifactLongTexts(1);
+			IEnumerable<LongText> images2 = _instance.GetArtifactLongTexts(2);
 
 			//ASSERT
 			CollectionAssert.AreEquivalent(_longTexts.GetRange(0, 2), images1);
@@ -78,7 +78,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			};
 
 			//ACT
-			IList<LongTextExportRequest> exportRequests = _instance.GetExportRequests();
+			IEnumerable<LongTextExportRequest> exportRequests = _instance.GetExportRequests();
 
 			//ASSERT
 			CollectionAssert.AreEquivalent(expectedExportRequests, exportRequests);

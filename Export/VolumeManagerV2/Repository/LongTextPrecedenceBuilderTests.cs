@@ -111,7 +111,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			};
 
 			_exportFileValidator.Setup(x => x.CanExport(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
-			_filePathProvider.Setup(x => x.GetPathForFile(It.IsAny<string>())).Returns(_fileToDelete);
+			_filePathProvider.Setup(x => x.GetPathForFile(It.IsAny<string>(), It.IsAny<int>())).Returns(_fileToDelete);
 
 			//ACT
 			IList<LongText> actualResult = _instance.CreateLongText(artifact, CancellationToken.None);
@@ -168,7 +168,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			};
 
 			_exportFileValidator.Setup(x => x.CanExport(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
-			_filePathProvider.Setup(x => x.GetPathForFile(It.IsAny<string>())).Returns(_fileToDelete);
+			_filePathProvider.Setup(x => x.GetPathForFile(It.IsAny<string>(), It.IsAny<int>())).Returns(_fileToDelete);
 
 			//ACT
 			IList<LongText> actualResult = _instance.CreateLongText(artifact, CancellationToken.None);
@@ -196,7 +196,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			};
 
 			_exportFileValidator.Setup(x => x.CanExport(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
-			_filePathProvider.Setup(x => x.GetPathForFile(It.IsAny<string>())).Returns(_fileToDelete);
+			_filePathProvider.Setup(x => x.GetPathForFile(It.IsAny<string>(), It.IsAny<int>())).Returns(_fileToDelete);
 
 			//ACT
 			IList<LongText> actualResult = _instance.CreateLongText(artifact, CancellationToken.None);

@@ -9,7 +9,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Directories
 	public abstract class FilePathProviderTests
 	{
 		private Mock<IDirectoryHelper> _directoryHelper;
-		private Mock<ILabelManager> _labelManager;
+		private Mock<ILabelManagerForArtifact> _labelManager;
 
 		private ExportFile _exportSettings;
 
@@ -23,11 +23,11 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Directories
 		{
 			_directoryHelper = new Mock<IDirectoryHelper>();
 
-			_labelManager = new Mock<ILabelManager>();
-			_labelManager.Setup(x => x.GetCurrentVolumeLabel()).Returns(_volumeLabel);
-			_labelManager.Setup(x => x.GetCurrentImageSubdirectoryLabel()).Returns(Subdirectory);
-			_labelManager.Setup(x => x.GetCurrentNativeSubdirectoryLabel()).Returns(Subdirectory);
-			_labelManager.Setup(x => x.GetCurrentTextSubdirectoryLabel()).Returns(Subdirectory);
+			_labelManager = new Mock<ILabelManagerForArtifact>();
+			_labelManager.Setup(x => x.GetVolumeLabel(It.IsAny<int>())).Returns(_volumeLabel);
+			_labelManager.Setup(x => x.GetImageSubdirectoryLabel(It.IsAny<int>())).Returns(Subdirectory);
+			_labelManager.Setup(x => x.GetNativeSubdirectoryLabel(It.IsAny<int>())).Returns(Subdirectory);
+			_labelManager.Setup(x => x.GetTextSubdirectoryLabel(It.IsAny<int>())).Returns(Subdirectory);
 
 			_exportSettings = new ExportFile(1)
 			{
@@ -37,7 +37,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Directories
 			_instance = CreateInstance(_directoryHelper.Object, _labelManager.Object, _exportSettings);
 		}
 
-		protected abstract FilePathProvider CreateInstance(IDirectoryHelper directoryHelper, ILabelManager labelManager, ExportFile exportSettings);
+		protected abstract FilePathProvider CreateInstance(IDirectoryHelper directoryHelper, ILabelManagerForArtifact labelManager, ExportFile exportSettings);
 
 		protected abstract string Subdirectory { get; }
 
@@ -49,7 +49,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Directories
 			_directoryHelper.Setup(x => x.Exists(It.IsAny<string>())).Returns(false);
 
 			//ACT
-			_instance.GetPathForFile(fileName);
+			_instance.GetPathForFile(fileName, 0);
 
 			//ASSERT
 			string expectedPath = Path.Combine(_folderPath, _volumeLabel, Subdirectory);
@@ -62,7 +62,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Directories
 			const string fileName = "file_name.txt";
 
 			//ACT
-			string result = _instance.GetPathForFile(fileName);
+			string result = _instance.GetPathForFile(fileName, 0);
 
 			//ASSERT
 			string expectedFilePath = Path.Combine(_folderPath, _volumeLabel, Subdirectory, fileName);
