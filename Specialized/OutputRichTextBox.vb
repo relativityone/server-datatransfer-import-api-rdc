@@ -113,6 +113,7 @@ Namespace kCura.Windows.Forms
 		Dim _visibleLineCount As Int32
 		Dim _totalOutput As New System.Collections.ArrayList
 		Dim _tmpFileName As String
+		Dim _syncLock As Object = New Object()
 
 		Public Sub Reset()
 			_totalOutput = New System.Collections.ArrayList
@@ -132,22 +133,24 @@ Namespace kCura.Windows.Forms
 		End Sub
 
 		Public Sub WriteLine(ByVal message As String, ByVal lineDelimiter As String)
-			_totalLineCount = _totalLineCount + 1
-			message = String.Format("{0}  {1}{2}", System.DateTime.Now.ToLongTimeString + " " + _totalLineCount.ToString("000000"), message.TrimEnd(vbCrLf.ToCharArray), lineDelimiter)
+			SyncLock _syncLock
+				_totalLineCount = _totalLineCount + 1
+				message = String.Format("{0}  {1}{2}", System.DateTime.Now.ToLongTimeString + " " + _totalLineCount.ToString("000000"), message.TrimEnd(vbCrLf.ToCharArray), lineDelimiter)
 
-			If AllowForSave Then
-				If _tmpFileName = "" Then
-					_tmpFileName = System.IO.Path.GetTempFileName()
+				If AllowForSave Then
+					If _tmpFileName = "" Then
+						_tmpFileName = System.IO.Path.GetTempFileName()
+					End If
+
+					Dim sw As New System.IO.StreamWriter(_tmpFileName, True)
+					sw.Write(message)
+					sw.Close()
 				End If
 
-				Dim sw As New System.IO.StreamWriter(_tmpFileName, True)
-				sw.Write(message)
-				sw.Close()
-			End If
-
-			If _totalOutput.Count = 100 Then _totalOutput.RemoveAt(0)
-			_totalOutput.Add(message)
-			DumpOutput()
+				If _totalOutput.Count = 100 Then _totalOutput.RemoveAt(0)
+				_totalOutput.Add(message)
+				DumpOutput()
+			End SyncLock
 		End Sub
 
 		Public Sub WriteErrorDetails()
@@ -180,7 +183,9 @@ Namespace kCura.Windows.Forms
 		End Sub
 
 		Public Sub PositionDetailsLink()
-			Me.DetailsLink.Location = Me.TextBox.GetPositionFromCharIndex(Me.TextBox.TextLength - 10)
+			If Not Me.TextBox.IsDisposed Then
+				Me.DetailsLink.Location = Me.TextBox.GetPositionFromCharIndex(Me.TextBox.TextLength - 10)
+			End If
 		End Sub
 	End Class
 End Namespace
