@@ -1,4 +1,5 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
+﻿using System;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 using kCura.WinEDDS.TApi;
 using Relativity.Logging;
 
@@ -29,7 +30,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			_logger.LogVerbose("Tapi progress event for {fileName} with status {status} ({lineNumber}).", e.FileName, e.Status, e.LineNumber);
 			if (e.Status)
 			{
-				MarkAsDownloaded(e.FileName, e.LineNumber);
+				try
+				{
+					MarkAsDownloaded(e.FileName, e.LineNumber);
+				}
+				catch (Exception ex)
+				{
+					_logger.LogError(ex, "Error while handling Tapi progress event for {fileName} with status {status} ({lineNumber}).", e.FileName, e.Status, e.LineNumber);
+				}
 			}
 		}
 		protected abstract void MarkAsDownloaded(string id, int lineNumber);

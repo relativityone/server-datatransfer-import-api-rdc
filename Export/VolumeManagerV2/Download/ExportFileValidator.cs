@@ -41,7 +41,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				}
 			}
 
-			if (_exportRequestRepository.GetExportRequests().Any(x => x.DestinationLocation == destinationLocation))
+			if (_exportRequestRepository.AnyRequestForLocation(destinationLocation))
 			{
 				if (_exportSettings.Overwrite)
 				{

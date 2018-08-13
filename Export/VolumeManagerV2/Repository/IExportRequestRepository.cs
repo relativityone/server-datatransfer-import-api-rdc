@@ -5,6 +5,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 {
 	public interface IExportRequestRepository
 	{
-		IList<ExportRequest> GetExportRequests();
+		bool AnyRequestForLocation(string destinationLocation);
 	}
 }

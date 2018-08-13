@@ -201,10 +201,14 @@
     <Compile Include="Export\VolumeManagerV2\Batches\IStateful.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\LoadFileBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\LongTextBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\LongTextParallelBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\NativeFileBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batch.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\NativeFileParallelBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\ParallelBatchInitialization.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\EncodingFileSize.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\AbsoluteFilePathTransformer.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\CachedLabelManagerForArtifact.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\DirectoryManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\FilePathHelper.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\FilePathProvider.cs" />
@@ -212,7 +216,9 @@
     <Compile Include="Export\VolumeManagerV2\Directories\IFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\IFilePathProvider.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\ILabelManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\ILabelManagerForArtifact.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\ImageFilePathProvider.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\LabelManagerForArtifact.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\LongTextFilePathProvider.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\NativeFilePathProvider.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\PrefixFilePathTransformer.cs" />
@@ -397,6 +403,7 @@
     <Compile Include="Export\VolumeManagerV2\Statistics\MetadataStatistics.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\FileDownloadProgressHandler.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\ProgressHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\ThreadSafeAddOnlyHashSet.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\ExportPermissionCheck.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\ExportValidation.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\FilesOverwriteValidator.cs" />

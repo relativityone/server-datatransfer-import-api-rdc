@@ -13,21 +13,37 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 			_logger = logger;
 		}
 
-		public IBatchValidator Create(ExportFile exportSettings, IWindsorContainer container)
+		public IBatchValidator Create(ExportFile exportSettings, IExportConfig exportConfig, IWindsorContainer container)
 		{
 			_logger.LogVerbose("Creating BatchValidator.");
 			List<IBatchValidator> batchValidators = new List<IBatchValidator>();
 
 			if (exportSettings.ExportFullTextAsFile)
 			{
-				_logger.LogVerbose("Adding {validator}.", nameof(LongTextBatchValidator));
-				batchValidators.Add(container.Resolve<LongTextBatchValidator>());
+				if (!exportConfig.ForceParallelismInNewExport)
+				{
+					_logger.LogVerbose("Adding {validator}.", nameof(LongTextBatchValidator));
+					batchValidators.Add(container.Resolve<LongTextBatchValidator>());
+				}
+				else
+				{
+					_logger.LogVerbose("Adding {validator}.", nameof(LongTextParallelBatchValidator));
+					batchValidators.Add(container.Resolve<LongTextParallelBatchValidator>());
+				}
 			}
 
 			if (exportSettings.ExportNative && exportSettings.VolumeInfo.CopyNativeFilesFromRepository)
 			{
-				_logger.LogVerbose("Adding {validator}.", nameof(NativeFileBatchValidator));
+				if (!exportConfig.ForceParallelismInNewExport)
+				{
+					_logger.LogVerbose("Adding {validator}.", nameof(NativeFileBatchValidator));
 				batchValidators.Add(container.Resolve<NativeFileBatchValidator>());
+				}
+				else
+				{
+					_logger.LogVerbose("Adding {validator}.", nameof(NativeFileParallelBatchValidator));
+					batchValidators.Add(container.Resolve<NativeFileParallelBatchValidator>());
+				}
 			}
 
 			if (exportSettings.ExportImages && exportSettings.VolumeInfo.CopyImageFilesFromRepository)

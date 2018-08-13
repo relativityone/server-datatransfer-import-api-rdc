@@ -24,15 +24,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 
 		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions, CancellationToken cancellationToken)
 		{
-			for (int i = 0; i < artifacts.Length; i++)
-			{
-				if (cancellationToken.IsCancellationRequested)
-				{
-					return;
-				}
-
-				ValidateImagesForArtifact(artifacts[i], predictions[i]);
-			}
+			// for (int i = 0; i < artifacts.Length; i++)
+			// {
+			// 	if (cancellationToken.IsCancellationRequested)
+			// 	{
+			// 		return;
+			// 	}
+   //
+			// 	ValidateImagesForArtifact(artifacts[i], predictions[i]);
+			// }
 		}
 
 		private void ValidateImagesForArtifact(ObjectExportInfo artifact, VolumePredictions volumePredictions)
