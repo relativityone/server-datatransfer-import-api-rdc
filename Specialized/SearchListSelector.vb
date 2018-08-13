@@ -7,7 +7,7 @@ Imports System.Windows.Forms
 Namespace Specialized
 	Public Class SearchListSelector
 		Inherits Form
-		ReadOnly _dataSource As DataTable
+		Private ReadOnly _dataSource As DataTable
 		Private _timer As Timer
 
 		Private Const _DELAYED_TEXT_CHANGED_TIMEOUT_IN_MILLISECONDS As Integer = 600
