@@ -166,6 +166,12 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Specialized\RelativeLayoutData.vb" />
+    <Compile Include="Specialized\SearchableList.Designer.vb">
+      <DependentUpon>SearchableList.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Specialized\SearchableList.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Specialized\SearchListSelector.Designer.vb">
       <DependentUpon>SearchListSelector.vb</DependentUpon>
     </Compile>
@@ -186,6 +192,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Specialized\OutputRichTextBox.resx">
       <DependentUpon>OutputRichTextBox.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Specialized\SearchableList.resx">
+      <DependentUpon>SearchableList.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Specialized\SearchListSelector.resx">
       <DependentUpon>SearchListSelector.vb</DependentUpon>
@@ -213,6 +222,19 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{94E38DFF-614B-4CBD-B67C-F211BB35CE8B}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\EDDS\Relativity.Core\Relativity.Core.vbproj">
+      <Project>{C13F3254-58A1-4515-BBA8-17DFAC919C24}</Project>
+      <Name>Relativity.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\EDDS\Relativity\Relativity.vbproj">
+      <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
+      <Name>Relativity</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <PropertyGroup>
