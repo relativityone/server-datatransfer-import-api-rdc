@@ -39,6 +39,7 @@ Namespace kCura.WinEDDS
                             If Not tempDict.Contains("ExportBatchSize") Then tempDict.Add("ExportBatchSize", "1000")
                             If Not tempDict.Contains("ExportThreadCount") Then tempDict.Add("ExportThreadCount", "2")
                             If Not tempDict.Contains("UseOldExport") Then tempDict.Add("UseOldExport", "False")
+	                        If Not tempDict.Contains("ForceParallelismInNewExport") Then tempDict.Add("ForceParallelismInNewExport", "False")
 	                        If Not tempDict.Contains("PermissionErrorsRetry") Then tempDict.Add("PermissionErrorsRetry", "False")
 	                        If Not tempDict.Contains("BadPathErrorsRetry") Then tempDict.Add("BadPathErrorsRetry", "False")
                             If Not tempDict.Contains("EnableSingleModeImport") Then tempDict.Add("EnableSingleModeImport", "False")
@@ -314,6 +315,12 @@ Namespace kCura.WinEDDS
 				Return CType(ConfigSettings("UseOldExport"), Boolean)
 			End Get
 		End Property
+
+        Public Shared ReadOnly Property ForceParallelismInNewExport() As Boolean
+	        Get
+		        Return CType(ConfigSettings("ForceParallelismInNewExport"), Boolean)
+	        End Get
+        End Property
 
         Public Shared ReadOnly Property DisableImageTypeValidation() As Boolean
             Get
