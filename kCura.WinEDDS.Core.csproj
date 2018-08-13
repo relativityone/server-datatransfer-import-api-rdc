@@ -197,6 +197,7 @@
     <Compile Include="Export\VolumeManagerV2\Batches\IBatchExporter.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\IBatchState.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\ImageFileBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\ImageFileParallelBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\ImageLoadFileBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\IStateful.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\LoadFileBatchValidator.cs" />

@@ -22,13 +22,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 			{
 				if (!exportConfig.ForceParallelismInNewExport)
 				{
-					_logger.LogVerbose("Adding {validator}.", nameof(LongTextBatchValidator));
-					batchValidators.Add(container.Resolve<LongTextBatchValidator>());
+					AddValidator<LongTextBatchValidator>(batchValidators, container);
 				}
 				else
 				{
-					_logger.LogVerbose("Adding {validator}.", nameof(LongTextParallelBatchValidator));
-					batchValidators.Add(container.Resolve<LongTextParallelBatchValidator>());
+					AddValidator<LongTextParallelBatchValidator>(batchValidators, container);
 				}
 			}
 
@@ -36,35 +34,43 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 			{
 				if (!exportConfig.ForceParallelismInNewExport)
 				{
-					_logger.LogVerbose("Adding {validator}.", nameof(NativeFileBatchValidator));
-				batchValidators.Add(container.Resolve<NativeFileBatchValidator>());
+					AddValidator<NativeFileBatchValidator>(batchValidators, container);
 				}
 				else
 				{
-					_logger.LogVerbose("Adding {validator}.", nameof(NativeFileParallelBatchValidator));
-					batchValidators.Add(container.Resolve<NativeFileParallelBatchValidator>());
+					AddValidator<NativeFileParallelBatchValidator>(batchValidators, container);
 				}
 			}
 
 			if (exportSettings.ExportImages && exportSettings.VolumeInfo.CopyImageFilesFromRepository)
 			{
-				_logger.LogVerbose("Adding {validator}.", nameof(ImageFileBatchValidator));
-				batchValidators.Add(container.Resolve<ImageFileBatchValidator>());
+				if (exportConfig.ForceParallelismInNewExport)
+				{
+					AddValidator<ImageFileParallelBatchValidator>(batchValidators, container);
+				}
+				else
+				{
+					AddValidator<ImageFileBatchValidator>(batchValidators, container);
+				}
 			}
 
 			if (exportSettings.ExportImages)
 			{
-				_logger.LogVerbose("Adding {validator}.", nameof(ImageLoadFileBatchValidator));
-				batchValidators.Add(container.Resolve<ImageLoadFileBatchValidator>());
+				AddValidator<ImageLoadFileBatchValidator>(batchValidators, container);
 			}
 
 			if (exportSettings.ExportNative)
 			{
-				_logger.LogVerbose("Adding {validator}.", nameof(LoadFileBatchValidator));
-				batchValidators.Add(container.Resolve<LoadFileBatchValidator>());
+				AddValidator<LoadFileBatchValidator>(batchValidators, container);
 			}
 
 			return new BatchValidator(batchValidators, _logger);
+		}
+
+		private void AddValidator<T>(List<IBatchValidator> batchValidators, IWindsorContainer container) where T : IBatchValidator
+		{
+			_logger.LogVerbose("Adding {validator}.", nameof(T));
+			batchValidators.Add(container.Resolve<T>());
 		}
 	}
 }
