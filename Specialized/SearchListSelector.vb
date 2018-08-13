@@ -51,7 +51,16 @@ Namespace Specialized
 			End If
 			Cursor = Cursors.WaitCursor
 			selectionListBox.DataSource = FilterRowsFromDataTable(_dataSource, selectionSearchInput.Text)
+			ValidateAcceptButtonStatus()
 			Cursor = Cursors.Default
+		End Sub
+
+		Private Sub ValidateAcceptButtonStatus()
+			If selectionListBox.Items.Count = 0 Then
+				_selectButton.Enabled = False
+			Else
+				_selectButton.Enabled = True
+			End If
 		End Sub
 
 		Protected Function FilterRowsFromDataTable(sourceDt As DataTable, substring As String) As DataTable
