@@ -19,7 +19,10 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			_natives = CreateDataSet();
 
 			_instance = new NativeRepository();
-			_instance.Add(_natives);
+			foreach (Native native in _natives)
+			{
+				_instance.Add(native);
+			}
 		}
 
 		[Test]
@@ -56,7 +59,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			};
 
 			//ACT
-			IList<ExportRequest> exportRequests = _instance.GetExportRequests();
+			IEnumerable<ExportRequest> exportRequests = _instance.GetExportRequests();
 
 			//ASSERT
 			CollectionAssert.AreEquivalent(expectedExportRequests, exportRequests);

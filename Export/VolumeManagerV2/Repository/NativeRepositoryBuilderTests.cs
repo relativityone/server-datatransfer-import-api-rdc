@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
@@ -17,7 +18,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 
 		private NativeRepository _nativeRepository;
 
-		private Mock<ILabelManager> _labelManager;
+		private Mock<ILabelManagerForArtifact> _labelManager;
 		private Mock<IExportRequestBuilder> _ExportRequestBuilder;
 
 		[SetUp]
@@ -25,7 +26,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 		{
 			_nativeRepository = new NativeRepository();
 
-			_labelManager = new Mock<ILabelManager>();
+			_labelManager = new Mock<ILabelManagerForArtifact>();
 			_ExportRequestBuilder = new Mock<IExportRequestBuilder>();
 
 			_instance = new NativeRepositoryBuilder(_nativeRepository, _labelManager.Object, _ExportRequestBuilder.Object, new NullLogger());
@@ -36,7 +37,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 		{
 			const string volumeLabel = "volume_label";
 
-			_labelManager.Setup(x => x.GetCurrentVolumeLabel()).Returns(volumeLabel);
+			_labelManager.Setup(x => x.GetVolumeLabel(It.IsAny<int>())).Returns(volumeLabel);
 			_ExportRequestBuilder.Setup(x => x.Create(It.IsAny<ObjectExportInfo>(), CancellationToken.None)).Returns(new List<ExportRequest>());
 
 			ObjectExportInfo artifact = new ObjectExportInfo();
@@ -86,7 +87,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			//ASSERT
 			Assert.That(_nativeRepository.GetNative(artifactId1).HasBeenDownloaded, Is.False);
 			CollectionAssert.IsNotEmpty(_nativeRepository.GetExportRequests());
-			Assert.That(_nativeRepository.GetExportRequests()[0].ArtifactId, Is.EqualTo(artifact.ArtifactID));
+			Assert.That(_nativeRepository.GetExportRequests().ToList()[0].ArtifactId, Is.EqualTo(artifact.ArtifactID));
 		}
 
 		[Test]

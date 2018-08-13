@@ -47,7 +47,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			};
 
 			_fileNameProvider.Setup(x => x.GetName(artifact)).Returns(fileName);
-			_filePathProvider.Setup(x => x.GetPathForFile(fileName)).Returns(exportPath);
+			_filePathProvider.Setup(x => x.GetPathForFile(fileName, It.IsAny<int>())).Returns(exportPath);
 			_validator.Setup(x => x.CanExport(exportPath, It.IsAny<string>())).Returns(false);
 
 			//ACT
@@ -72,7 +72,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			};
 
 			_fileNameProvider.Setup(x => x.GetName(artifact)).Returns(fileName);
-			_filePathProvider.Setup(x => x.GetPathForFile(fileName)).Returns(exportPath);
+			_filePathProvider.Setup(x => x.GetPathForFile(fileName, It.IsAny<int>())).Returns(exportPath);
 			_validator.Setup(x => x.CanExport(exportPath, It.IsAny<string>())).Returns(true);
 
 			//ACT
