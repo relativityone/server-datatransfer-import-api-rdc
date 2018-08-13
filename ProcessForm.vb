@@ -706,11 +706,6 @@ Namespace kCura.Windows.Process
 
 		Private Sub _processObserver_ShowReportEvent(ByVal datasource As System.Data.DataTable, ByVal maxlengthExceeded As Boolean) Handles _processObserver.ShowReportEvent
 			_errorsDataSource = datasource
-			Me.Invoke(New HandleDataSourceDelegate(AddressOf HandleDataSource))
-		End Sub
-
-		Delegate Sub HandleDataSourceDelegate()
-		Private Sub HandleDataSource()
 		End Sub
 
 		Private Sub _exportErrorReportBtn_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _exportErrorReportBtn.Click
