@@ -36,7 +36,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 				}
 				catch (Exception ex)
 				{
-					_logger.LogError(ex, "Error while handling Tapi progress event for {fileName} with status {status} ({lineNumber}).", e.FileName, e.Status, e.LineNumber);
+					_logger.LogError(ex, "Error while handling Tapi progress event for {FileName} with status {DidTransferSucceed} ({LineNumber})", e.FileName, e.DidTransferSucceed, e.LineNumber);
 				}
 			}
 		}
