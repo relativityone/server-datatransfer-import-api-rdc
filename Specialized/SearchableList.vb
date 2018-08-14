@@ -10,6 +10,12 @@ Namespace Specialized
 		Private _dataSource As New List(Of Object)
 		Private Const _DELAYED_TEXT_CHANGED_TIMEOUT_IN_MILLISECONDS As Integer = 600
 
+		Private Sub AddItemsToDataSourceFromList(source As List(Of Object))
+			Dim list As New List(Of Object)
+			list.AddRange(source)
+			_dataSource = list
+		End Sub
+
 		Private Function GetMaxTextLength() As Integer
 			Dim maxLength As Integer = 0
 			For Each element As Object In _dataSource
@@ -44,7 +50,7 @@ Namespace Specialized
 				_timer.Stop()
 			End If
 			Cursor = Cursors.WaitCursor
-			_listBox.DataSource = Filter(_dataSource, _textBox.Text)
+			FilterAndAssignDataSource()
 			ResizeScrollBar()
 			Cursor = Cursors.Default
 		End Sub
@@ -55,25 +61,65 @@ Namespace Specialized
 			End If
 			Dim filterTextLower As String = filterText.ToLower
 			Dim items As IEnumerable(Of Object) = From c In dataSource Where c.ToString().ToLower().Contains(filterTextLower) Select c
-			Return items.ToList()
+			Dim listOfItems As List(Of Object) = items.ToList()
+			listOfItems.Sort()
+			Return listOfItems
 		End Function
-		Public Sub Initialize(list As ArrayList)
-			_dataSource = list.Cast(Of Object)().ToList()
+		Public Sub Initialize(arrayList As ArrayList)
+			_dataSource = arrayList.Cast(Of Object)().ToList()
 			_listBox.DataSource = _dataSource
 			ResizeScrollBar()
+		End Sub
+		Public Sub ForceRefresh()
+			FilterAndAssignDataSource()
+		End Sub
+
+		Private Sub FilterAndAssignDataSource()
+			_listBox.DataSource = Filter(_dataSource, _textBox.Text)
 		End Sub
 
 		Private Sub RedrawListBox()
 			_listBox.Refresh()
 		End Sub
-		Private Sub _listBox_Scrolled(sender As Object, e As ScrollEventArgs) Handles _listBox.Scrolled
+
+		Public Sub RemoveSelection()
+			_listBox.SelectedIndex = -1
+		End Sub
+		Private Sub _listBox_Scrolled(sender As Object, e As ScrollEventArgs)
 			RedrawListBox()
 		End Sub
 
-		Private Sub _listBox_KeyDown(sender As Object, e As KeyEventArgs) Handles _listBox.KeyDown
+		Private Sub _listBox_KeyDown(sender As Object, e As KeyEventArgs)
 			If e.KeyCode = Keys.Left OrElse e.KeyCode = Keys.Right Then
 				RedrawListBox()
 			End If
 		End Sub
+
+#Region "Properties"
+
+		Public ReadOnly Property Listbox() As kCura.Windows.Forms.ListBox
+			Get
+				Return _listBox
+			End Get
+		End Property
+
+		Public Property DataSource As List(Of Object)
+			Get
+				Return _dataSource
+			End Get
+			Set
+				_dataSource = Value
+			End Set
+		End Property
+
+		Public ReadOnly Property CurrentItems() As List(Of Object)
+
+			Get
+				Return _listBox.Items.Cast(Of Object).ToList()
+			End Get
+		End Property
+
+#End Region
+
 	End Class
 End Namespace

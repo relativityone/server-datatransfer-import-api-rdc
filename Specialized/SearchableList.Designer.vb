@@ -29,6 +29,8 @@
 			'
 			'_textBox
 			'
+			Me._textBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+			Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._textBox.Location = New System.Drawing.Point(0, 0)
 			Me._textBox.Name = "_textBox"
 			Me._textBox.Size = New System.Drawing.Size(144, 20)
@@ -37,22 +39,19 @@
 			'_listBox
 			'
 			Me._listBox.AlternateColors = False
-			Me._listBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-			Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-			Me._listBox.ColumnWidth = 200
+			Me._listBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+			Or System.Windows.Forms.AnchorStyles.Left) _
+			Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
 			Me._listBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed
 			Me._listBox.FormattingEnabled = True
 			Me._listBox.HighlightIndex = -1
-			Me._listBox.HorizontalExtent = 700
 			Me._listBox.HorizontalScrollbar = True
 			Me._listBox.HorizontalScrollOffset = 0
-			Me._listBox.IntegralHeight = False
-			Me._listBox.ItemHeight = 16
 			Me._listBox.Location = New System.Drawing.Point(0, 26)
 			Me._listBox.Name = "_listBox"
 			Me._listBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
 			Me._listBox.Size = New System.Drawing.Size(144, 251)
-			Me._listBox.TabIndex = 16
+			Me._listBox.TabIndex = 17
 			Me._listBox.VerticalScrollOffset = 0
 			'
 			'SearchableList
