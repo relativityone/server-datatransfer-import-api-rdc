@@ -51,19 +51,19 @@ Namespace Specialized
 			End If
 			Cursor = Cursors.WaitCursor
 			selectionListBox.DataSource = FilterRowsFromDataTable(_dataSource, selectionSearchInput.Text)
-			ValidateAcceptButtonStatus()
-			Cursor = Cursors.Default
-		End Sub
+            UpdateAcceptButtonStatus()
+            Cursor = Cursors.Default
+        End Sub
 
-		Private Sub ValidateAcceptButtonStatus()
-			If selectionListBox.Items.Count = 0 Then
-				_selectButton.Enabled = False
-			Else
-				_selectButton.Enabled = True
-			End If
-		End Sub
+        Private Sub UpdateAcceptButtonStatus()
+            If selectionListBox.Items.Count = 0 Then
+                _selectButton.Enabled = False
+            Else
+                _selectButton.Enabled = True
+            End If
+        End Sub
 
-		Protected Function FilterRowsFromDataTable(sourceDt As DataTable, substring As String) As DataTable
+        Protected Function FilterRowsFromDataTable(sourceDt As DataTable, substring As String) As DataTable
 			If Not String.IsNullOrEmpty(substring) Then
 				Dim currentDt As DataTable = sourceDt.Clone()
 				Dim substringLowercase As String = substring.ToLower()
