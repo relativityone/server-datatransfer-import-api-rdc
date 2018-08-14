@@ -776,12 +776,12 @@ Namespace kCura.WinEDDS
 			If imageRecord.BatesNumber.Trim = "" Then
 				Me.RaiseStatusEvent(Windows.Process.EventType.Error, "No image file or identifier specified on line.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 				retval = Relativity.MassImport.ImportStatus.NoImageSpecifiedOnLine
-			ElseIf Not Me.DisableImageLocationValidation AndAlso Not System.IO.File.Exists(BulkImageFileImporter.GetFileLocation(imageRecord)) Then
+			ElseIf Not Me.DisableImageLocationValidation AndAlso Not System.IO.File.Exists(GetFileLocation(imageRecord)) Then
 				Me.RaiseStatusEvent(Windows.Process.EventType.Error, $"Image file specified ( {imageRecord.FileLocation} ) does not exist.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 				retval = Relativity.MassImport.ImportStatus.FileSpecifiedDne
 			Else
 				Dim validator As New kCura.ImageValidator.ImageValidator
-				Dim path As String = BulkImageFileImporter.GetFileLocation(imageRecord)
+				Dim path As String = GetFileLocation(imageRecord)
 				Try
 					If Not Me.DisableImageTypeValidation Then
 						validator.ValidateImage(path)
@@ -832,7 +832,7 @@ Namespace kCura.WinEDDS
 					Exit For
 				End If
 				record = lines(i)
-				Me.GetImageForDocument(BulkImageFileImporter.GetFileLocation(record), record.BatesNumber, documentId, i, offset, textFileList, i < lines.Count - 1, Convert.ToInt32(record.OriginalIndex), status, lines.Count, i = 0)
+				Me.GetImageForDocument(GetFileLocation(record), record.BatesNumber, documentId, i, offset, textFileList, i < lines.Count - 1, Convert.ToInt32(record.OriginalIndex), status, lines.Count, i = 0)
 			Next
 
 			Dim lastDivider As String = If(_fullTextStorageIsInSql, ",", String.Empty)
