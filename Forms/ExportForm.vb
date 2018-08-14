@@ -1867,7 +1867,7 @@ Public Class ExportForm
 			GroupBoxNative.Visible = False
 		End If
 	End Sub
-
+	Dim leftListBoxItemsDeleteMe As New System.Collections.ArrayList
 	Private Sub InitializeColumnSelecter()
 		_columnSelector.ClearAll()
 		Dim defaultSelectedIds As New System.Collections.ArrayList
@@ -1899,6 +1899,7 @@ Public Class ExportForm
 			Next
 		Next
 		leftListBoxItems.Sort()
+		_columnSelector.setDataSourceListBox(leftListBoxItems)
 		_columnSelector.LeftListBoxItems.AddRange(leftListBoxItems.ToArray())
 		Me.ManagePotentialTextFields()
 	End Sub
