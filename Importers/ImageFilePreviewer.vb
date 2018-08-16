@@ -7,6 +7,7 @@ Namespace kCura.WinEDDS
 	Public Class ImageFilePreviewer
 		Inherits DelimitedFileImporter
 		
+		Private ReadOnly _imageValidator As kCura.ImageValidator.IImageValidator
 		Private _fileLineCount As Int32
 		Private _continue As Boolean
 		Private WithEvents _processController As Controller
@@ -25,10 +26,11 @@ Namespace kCura.WinEDDS
 
 		Public Event StatusMessage(ByVal args As StatusEventArgs)
 
-		Public Sub New(ByVal controller As Controller, ByVal doRetryLogic As Boolean)
+		Public Sub New(ByVal controller As Controller, ByVal doRetryLogic As Boolean, imageValidator As kCura.ImageValidator.IImageValidator)
 			MyBase.New(New Char() {","c}, doRetryLogic)
 			
 			_processController = controller
+			_imageValidator = imageValidator
 			_continue = True
 		End Sub
 
@@ -106,7 +108,21 @@ Namespace kCura.WinEDDS
 				Return ""
 			End If
 
+			If Not ValidateImage(path) Then
+				Return ""
+			End If
+
 			Return path
+		End Function
+
+		Private Function ValidateImage(path As String) As Boolean
+			Try
+				_imageValidator.ValidateImage(path)
+				Return True
+			Catch ex As Exception
+				RaiseStatusEvent(EventType.Error, ex.Message)
+				Return False
+			End Try
 		End Function
 
 #Region "Events and Event Handling"

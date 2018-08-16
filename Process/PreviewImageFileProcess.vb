@@ -17,7 +17,7 @@ Namespace kCura.WinEDDS
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
-			_imageFilePreviewer = New ImageFilePreviewer(ProcessController, True)
+			_imageFilePreviewer = New ImageFilePreviewer(ProcessController, True, New ImageValidator.ImageValidator)
 
 			_imageFilePreviewer.ReadFile(LoadFile.FileName)
 			Me.ProcessObserver.RaiseProcessCompleteEvent()
