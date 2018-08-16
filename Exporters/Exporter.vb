@@ -1,11 +1,13 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.Collections.Generic
+Imports System.Diagnostics
 Imports System.IO
 Imports System.Threading
 Imports kCura.Utility.Extensions
 Imports kCura.WinEDDS.Exporters
 Imports System.Threading.Tasks
 Imports Castle.Windsor
+Imports kCura.Windows.Process
 Imports kCura.WinEDDS.Container
 Imports kCura.WinEDDS.Exporters.Validator
 Imports kCura.WinEDDS.LoadFileEntry
@@ -13,7 +15,6 @@ Imports kCura.WinEDDS.Service.Export
 
 Namespace kCura.WinEDDS
 	Public Class Exporter
-		Implements IExporterStatusNotification
 		Implements IExporter
 		Implements IStatus
 
@@ -40,7 +41,7 @@ Namespace kCura.WinEDDS
 		Private _productionArtifactIDs As Int32()
 		Private _lastStatusMessageTs As Long = System.DateTime.Now.Ticks
 		Private _lastDocumentsExportedCountReported As Int32 = 0
-		Public _statistics As New kCura.WinEDDS.ExportStatistics
+		Public Property Statistics As New kCura.WinEDDS.ExportStatistics
 		Private _lastStatisticsSnapshot As IDictionary
 		Private _start As System.DateTime
 		Private _warningCount As Int32 = 0
@@ -144,7 +145,7 @@ Namespace kCura.WinEDDS
 				_fileNameProvider = Value
 			End Set
 		End Property
-		
+
 #End Region
 
 		Public Event ShutdownEvent()
@@ -202,6 +203,8 @@ Namespace kCura.WinEDDS
 				If Not _volumeManager Is Nothing Then
 					_volumeManager.Close()
 				End If
+			Finally
+				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", EventType.End, _lastStatisticsSnapshot, Statistics))
 			End Try
 			Return Me.ErrorLogFileName = ""
 		End Function
@@ -322,14 +325,14 @@ Namespace kCura.WinEDDS
 			Else
 				Me.TotalExportArtifactCount -= Me.Settings.StartAtDocumentNumber
 			End If
-			_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
-			
-			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, exportInitializationArgs.ColumnNames, UseOldExport)
+			Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
+
+			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, exportInitializationArgs.ColumnNames, UseOldExport, _loadFileFormatterFactory)
 				Dim batch As IBatch = Nothing
 				Dim objectExportableSize As IObjectExportableSize = Nothing
 
 				If UseOldExport Then
-					_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, _statistics, FileHelper, DirectoryHelper, FileNameProvider)
+					_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, Statistics, FileHelper, DirectoryHelper, FileNameProvider)
 					FieldLookupService = _volumeManager
 					_volumeManager.ColumnHeaderString = columnHeaderString
 				Else
@@ -348,9 +351,9 @@ Namespace kCura.WinEDDS
 				Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
 				Me.WriteUpdate($"Data retrieved. Beginning {typeOfExportDisplayString} export...")
 
-				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", kCura.Windows.Process.EventType.ResetStartTime, _lastStatisticsSnapshot))
+				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", kCura.Windows.Process.EventType.ResetStartTime, _lastStatisticsSnapshot, Statistics))
 				RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType.ToString)
-				
+
 				Dim records As Object() = Nothing
 				Dim start, realStart As Int32
 				Dim lastRecordCount As Int32 = -1
@@ -372,7 +375,7 @@ Namespace kCura.WinEDDS
 						WriteStatusLineWithoutDocCount(kCura.Windows.Process.EventType.Warning, "Please Note - Documents in this production were produced with redactions applied.  Ensure that you have exported text that was generated via OCR of the redacted documents.", True)
 					End If
 					lastRecordCount = records.Length
-					_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
+					Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 					_timekeeper.MarkEnd("Exporter_GetDocumentBlock")
 					Dim artifactIDs As New List(Of Int32)
 					Dim artifactIdOrdinal As Int32 = FieldLookupService.GetOrdinalIndex("ArtifactID")
@@ -386,7 +389,7 @@ Namespace kCura.WinEDDS
 					End If
 					If _cancellationTokenSource.IsCancellationRequested Then Exit While
 				End While
-				
+
 				Me.WriteStatusLine(Windows.Process.EventType.Status, kCura.WinEDDS.FileDownloader.TotalWebTime.ToString, True)
 				_timekeeper.GenerateCsvReportItemsAsRows()
 
@@ -500,7 +503,7 @@ Namespace kCura.WinEDDS
 
 			Dim artifacts(documentArtifactIDs.Length - 1) As Exporters.ObjectExportInfo
 			Dim volumePredictions(documentArtifactIDs.Length - 1) As VolumePredictions
-			
+
 			Dim threads As Task() = Nothing
 			If UseOldExport Then
 				Dim threadCount As Integer = _exportConfig.ExportThreadCount - 1
@@ -521,7 +524,7 @@ Namespace kCura.WinEDDS
 				Else
 					objectExportableSize.FinalizeSizeCalculations(artifact, prediction)
 				End If
-				
+
 				volumePredictions(i) = prediction
 
 				artifacts(i) = artifact
@@ -564,7 +567,7 @@ Namespace kCura.WinEDDS
 									natives.Table = dt
 								End If
 							End If
-							_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
+							Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 							_timekeeper.MarkEnd("Exporter_GetNativesForDocumentBlock")
 						End If
 						Return natives
@@ -582,7 +585,7 @@ Namespace kCura.WinEDDS
 
 						images.Table = CallServerWithRetry(Function() Me.RetrieveImagesForDocuments(documentArtifactIDs, Me.Settings.ImagePrecedence), maxTries)
 
-						_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
+						Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 						_timekeeper.MarkEnd("Exporter_GetImagesForDocumentBlock")
 					End If
 					Return images
@@ -600,7 +603,7 @@ Namespace kCura.WinEDDS
 
 						productionImages.Table = CallServerWithRetry(Function() Me.RetrieveProductionImagesForDocuments(documentArtifactIDs, Me.Settings.ImagePrecedence), maxTries)
 
-						_statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
+						Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
 						_timekeeper.MarkEnd("Exporter_GetProductionsForDocumentBlock")
 					End If
 					Return productionImages
@@ -616,7 +619,7 @@ Namespace kCura.WinEDDS
 														  retval = _volumeManager.ExportArtifact(artifact, _linesToWriteDat, _linesToWriteOpt, threadNumber, volumeNumber, subDirectoryNumber)
 														  If retval >= 0 Then
 															  WriteUpdate("Exported document " & docNum + 1, docNum = numDocs - 1)
-															  _lastStatisticsSnapshot = _statistics.ToDictionary
+															  UpdateStatisticsSnapshot(DateTime.Now)
 															  Return retval
 														  Else
 															  Return 0
@@ -1066,8 +1069,8 @@ Namespace kCura.WinEDDS
 					End If
 				Next
 			End If
-			args.TotalFileBytesExported = _statistics.FileBytes
-			args.TotalMetadataBytesExported = _statistics.MetadataBytes
+			args.TotalFileBytesExported = Statistics.FileBytes
+			args.TotalMetadataBytesExported = Statistics.MetadataBytes
 			Select Case Me.Settings.TypeOfExport
 				Case ExportFile.ExportType.AncestorSearch
 					args.Type = "Folder and Subfolders"
@@ -1101,7 +1104,7 @@ Namespace kCura.WinEDDS
 				_lastStatusMessageTs = now
 				Dim appendString As String = " ... " & Me.DocumentsExported - _lastDocumentsExportedCountReported & " document(s) exported."
 				_lastDocumentsExportedCountReported = Me.DocumentsExported
-				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line & appendString, e, _lastStatisticsSnapshot))
+				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line & appendString, e, _lastStatisticsSnapshot, Statistics))
 			End If
 		End Sub
 
@@ -1110,7 +1113,7 @@ Namespace kCura.WinEDDS
 			If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
 				_lastStatusMessageTs = now
 				_lastDocumentsExportedCountReported = Me.DocumentsExported
-				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line, e, _lastStatisticsSnapshot))
+				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line, e, _lastStatisticsSnapshot, Statistics))
 			End If
 		End Sub
 
@@ -1144,9 +1147,19 @@ Namespace kCura.WinEDDS
 			WriteStatusLine(kCura.Windows.Process.EventType.Progress, line, isEssential)
 		End Sub
 
+		Dim _statisticsLastUpdated As Date
+		Protected Sub UpdateStatisticsSnapshot(time As System.DateTime)
+			Dim updateCurrentStats As Boolean = (time.Ticks - _statisticsLastUpdated.Ticks) > 10000000
+			If updateCurrentStats Then
+				_lastStatisticsSnapshot = Statistics.ToDictionary()
+				_statisticsLastUpdated = time
+				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", EventType.Statistics, _lastStatisticsSnapshot, Statistics))
+			End If
+		End Sub
+
 		Sub UpdateDocumentExportedCount(count As Int32) Implements IStatus.UpdateDocumentExportedCount
 			DocumentsExported = count
-			_lastStatisticsSnapshot = _statistics.ToDictionary()
+			UpdateStatisticsSnapshot(DateTime.Now)
 		End Sub
 
 #End Region

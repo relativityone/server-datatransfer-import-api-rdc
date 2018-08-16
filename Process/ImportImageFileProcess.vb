@@ -1,5 +1,5 @@
 Imports System.Threading
-Imports kCura.WinEDDS.Helpers
+Imports kCura.Windows.Process
 Imports kCura.WinEDDS.TApi
 Imports Relativity.DataTransfer.MessageService
 
@@ -84,19 +84,19 @@ Namespace kCura.WinEDDS
 		Protected Overrides Sub OnFatalError()
 			SendTransferJobFailedMessage()
 			MyBase.OnFatalError()
-			SendThroughputMessage()
+			SendJobStatistics(_imageFileImporter.Statistics)
 		End Sub
 
 		Protected Overrides Sub OnSuccess()
-			MyBase.OnFatalError()
-			SendThroughputMessage()
+			MyBase.OnSuccess()
+			SendJobStatistics(_imageFileImporter.Statistics)
 			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
-			MyBase.OnFatalError()
-			SendThroughputMessage()
+			MyBase.OnHasErrors()
+			SendJobStatistics(_imageFileImporter.Statistics)
 			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
 		End Sub
@@ -186,26 +186,27 @@ Namespace kCura.WinEDDS
 			End Try
 		End Sub
 
-		Private Sub _imageFileImporter_StatusMessage(ByVal e As kCura.Windows.Process.StatusEventArgs) Handles _imageFileImporter.StatusMessage
+		Private Sub _imageFileImporter_StatusMessage(ByVal e As StatusEventArgs) Handles _imageFileImporter.StatusMessage
 			System.Threading.Monitor.Enter(Me.ProcessObserver)
 			Dim additionalInfo As IDictionary = Nothing
 			If Not e.AdditionalInfo Is Nothing Then additionalInfo = DirectCast(e.AdditionalInfo, IDictionary)
 			Select Case e.EventType
 				Case kCura.Windows.Process.EventType.Error
 					If e.CountsTowardsTotal Then _errorCount += 1
-					CompletedRecordsCount += 1
+					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
 					Me.ProcessObserver.RaiseErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Progress
 					TotalRecords = e.TotalRecords
-					CompletedRecordsCount += 1
+					CompletedRecordsCount = e.CurrentRecordIndex
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, Me.ProcessID, Nothing, Nothing, additionalInfo)
+					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
 					Me.ProcessObserver.RaiseRecordProcessed(e.CurrentRecordIndex)
+				Case kCura.Windows.Process.EventType.Statistics
+					SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
 				Case kCura.Windows.Process.EventType.Status
 					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Warning
 					If e.CountsTowardsTotal Then _warningCount += 1
-					CompletedRecordsCount += 1
 					Me.ProcessObserver.RaiseWarningEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case Windows.Process.EventType.Count
 					Me.ProcessObserver.RaiseCountEvent()

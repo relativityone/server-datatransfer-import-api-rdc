@@ -1,6 +1,8 @@
 ﻿Imports Castle.Windsor
-NameSpace kCura.WinEDDS.Container
+Imports kCura.WinEDDS.Exporters
+
+Namespace kCura.WinEDDS.Container
 	Public Interface IContainerFactory
-		Function Create(exporter As Exporter, columnNamesInOrder As String(), useOldExport As Boolean) As IWindsorContainer
+		Function Create(exporter As Exporter, columnNamesInOrder As String(), useOldExport As Boolean, loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory) As IWindsorContainer
 	End Interface
-End NameSpace
+End Namespace
