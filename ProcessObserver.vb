@@ -35,6 +35,7 @@ Namespace kCura.Windows.Process
 		Public Event OnProcessEvent(ByVal evt As ProcessEvent)
 		Public Event OnProcessProgressEvent(ByVal evt As ProcessProgressEvent)
 		Public Event OnProcessComplete(ByVal closeForm As Boolean, ByVal exportFilePath As String, ByVal exportLogs As Boolean)
+		Public Event OnProcessEnd(evt As ProcessEndEventArgs)
 		Public Event StatusBarEvent(ByVal message As String, ByVal popupText As String)
 		Public Event ShowReportEvent(ByVal datasource As System.Data.DataTable, ByVal maxlengthExceeded As Boolean)
 		Public Event ErrorReportEvent(ByVal row As System.Collections.IDictionary)
@@ -76,13 +77,13 @@ Namespace kCura.Windows.Process
 			WriteToFile(evt)
 			WriteError(recordInfo, message)
 		End Sub
-		
-		Public Sub RaiseProgressEvent(ByVal totalRecords As Int64, ByVal totalRecordsProcessed As Int64, ByVal totalRecordsProccessedWithWarnings As Int64, ByVal totalRecordsProcessedWithErrors As Int64, ByVal startTime As DateTime, ByVal endTime As DateTime, Optional ByVal totalRecordsDisplay As String = Nothing, Optional ByVal totalRecordsProcessedDisplay As String = Nothing, Optional ByVal args As IDictionary = Nothing)
-			RaiseEvent OnProcessProgressEvent(New ProcessProgressEvent(totalRecords, totalRecordsProcessed, totalRecordsProccessedWithWarnings, totalRecordsProcessedWithErrors, startTime, endTime, totalRecordsDisplay, totalRecordsProcessedDisplay, args))
+
+		Public Sub RaiseProgressEvent(ByVal totalRecords As Int64, ByVal totalRecordsProcessed As Int64, ByVal totalRecordsProccessedWithWarnings As Int64, ByVal totalRecordsProcessedWithErrors As Int64, ByVal startTime As DateTime, ByVal endTime As DateTime, ByVal metadataThroughput As Double, ByVal filesThroughput As Double, Optional ByVal totalRecordsDisplay As String = Nothing, Optional ByVal totalRecordsProcessedDisplay As String = Nothing, Optional ByVal args As IDictionary = Nothing)
+			RaiseEvent OnProcessProgressEvent(New ProcessProgressEvent(totalRecords, totalRecordsProcessed, totalRecordsProccessedWithWarnings, totalRecordsProcessedWithErrors, startTime, endTime, totalRecordsDisplay, totalRecordsProcessedDisplay, metadataThroughput, filesThroughput, args))
 		End Sub
-		
-		Public Sub RaiseProgressEvent(ByVal totalRecords As Int64, ByVal totalRecordsProcessed As Int64, ByVal totalRecordsProccessedWithWarnings As Int64, ByVal totalRecordsProcessedWithErrors As Int64, ByVal startTime As DateTime, ByVal endTime As DateTime, ByVal processID As Guid, Optional ByVal totalRecordsDisplay As String = Nothing, Optional ByVal totalRecordsProcessedDisplay As String = Nothing, Optional ByVal args As IDictionary = Nothing)
-			RaiseEvent OnProcessProgressEvent(New ProcessProgressEvent(totalRecords, totalRecordsProcessed, totalRecordsProccessedWithWarnings, totalRecordsProcessedWithErrors, startTime, endTime, totalRecordsDisplay, totalRecordsProcessedDisplay, processID, args))
+
+		Public Sub RaiseProgressEvent(ByVal totalRecords As Int64, ByVal totalRecordsProcessed As Int64, ByVal totalRecordsProccessedWithWarnings As Int64, ByVal totalRecordsProcessedWithErrors As Int64, ByVal startTime As DateTime, ByVal endTime As DateTime, ByVal metadataThroughput As Double, ByVal filesThroughput As Double, ByVal processID As Guid, Optional ByVal totalRecordsDisplay As String = Nothing, Optional ByVal totalRecordsProcessedDisplay As String = Nothing, Optional ByVal args As IDictionary = Nothing)
+			RaiseEvent OnProcessProgressEvent(New ProcessProgressEvent(totalRecords, totalRecordsProcessed, totalRecordsProccessedWithWarnings, totalRecordsProcessedWithErrors, startTime, endTime, totalRecordsDisplay, totalRecordsProcessedDisplay, metadataThroughput, filesThroughput, processID, args))
 		End Sub
 
 		Public Sub RaiseProcessCompleteEvent(Optional ByVal closeForm As Boolean = False, Optional ByVal exportFilePath As String = "", Optional ByVal exportLogs As Boolean = False)
@@ -182,5 +183,8 @@ Namespace kCura.Windows.Process
 
 #End Region
 
+		Public Sub RaiseEndEvent(fileBytes As Long, metaBytes As Long)
+			RaiseEvent OnProcessEnd(New ProcessEndEventArgs With {.FileBytes = fileBytes, .MetaBytes = metaBytes})
+		End Sub
 	End Class
 End Namespace

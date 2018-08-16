@@ -180,6 +180,7 @@
     <Compile Include="ProcessBase.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ProcessEndEventArgs.vb" />
     <Compile Include="ProcessEvent.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -194,9 +195,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ProcessProgressEvent.vb">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="StatusEventArgs.vb">
       <SubType>Code</SubType>
     </Compile>
     <EmbeddedResource Include="MessageBoxForm.resx">

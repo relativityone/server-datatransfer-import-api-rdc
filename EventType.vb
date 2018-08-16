@@ -8,5 +8,6 @@ Namespace kCura.Windows.Process
 		ResetStartTime
 		Count
 		ResetProgress
+		Statistics
 	End Enum
 End Namespace
