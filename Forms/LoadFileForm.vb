@@ -1988,7 +1988,7 @@ Namespace kCura.EDDS.WinForm
 			For Each fieldName In itemsToRemove
 				_fieldMap.FieldColumns.RightListBoxItems.Remove(fieldName)
 			Next
-			Await _application.RefreshSelectedCaseInfo()
+			Await _application.RefreshSelectedCaseInfoAsync().ConfigureAwait(False)
 			Me.LoadFile.CaseInfo = _application.SelectedCaseInfo
 			Dim id As Int32 = DirectCast(_overlayIdentifier.SelectedItem, DocumentField).FieldID
 			_overlayIdentifier.Items.Clear()
@@ -2021,16 +2021,10 @@ Namespace kCura.EDDS.WinForm
 			Return retval
 		End Function
 
-		Private Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
-			Dim clientTransferGuid As Guid = _application.GetConnectionMode().ConfigureAwait(False).GetAwaiter().GetResult()
-			If clientTransferGuid = Guid.Parse(TransferClientConstants.AsperaClientId) Then
-				MsgBox("Repository settings can not be changed when RDC runs in Aspera transfer mode. Aspera Server is " &
-					"configured to upload native files to the default workspace fileshare location. " &
-					"If you want to switch Repository in RDC you need to first change RDC settings in application configuration file to force Web transfer mode. " &
-					"Please note that Web transfer is considerably slower than Aspera", MsgBoxStyle.Information And MsgBoxStyle.OkOnly, "Relativity Desktop Client")
-				Return
-			End If
+		Private Async Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
+			Dim isUsingAsperaConnectionMode As Boolean = Await Task.Run(Async Function() Await Application.Instance.IsUsingAsperaConnectionMode().ConfigureAwait(False)).ConfigureAwait(True)
 			_advancedFileForm = New AdvancedFileLocation
+			_advancedFileForm.IsUsingAsperaConnectionMode = isUsingAsperaConnectionMode
 			_advancedFileForm._copyNativeFiles.Checked = Me.LoadFile.CopyFilesToDocumentRepository
 			_advancedFileForm._keepNativeFiles.Checked = Not Me.LoadFile.CopyFilesToDocumentRepository
 			If Not Me.LoadFile.SelectedCasePath Is Nothing AndAlso Not Me.LoadFile.SelectedCasePath = "" Then

@@ -202,7 +202,7 @@ Public Class ImportOptions
 			Throw New CaseArtifactIdException(caseID, ex)
 		End Try
 		If SelectedCaseInfo Is Nothing Then Throw New CaseArtifactIdException(caseID)
-		Await Application.Instance.RefreshSelectedCaseInfo(SelectedCaseInfo)
+		Await Application.Instance.RefreshSelectedCaseInfoAsync(SelectedCaseInfo).ConfigureAwait(False)
 	End Function
 
 	Private Sub SetExportErrorReportLocation(ByVal commandLine As kCura.CommandLine.CommandList)
