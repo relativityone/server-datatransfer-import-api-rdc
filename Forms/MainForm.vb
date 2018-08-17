@@ -489,16 +489,16 @@ Namespace kCura.EDDS.WinForm
 			Await CheckCertificateAsync()
 		End Sub
 
-        Private Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
+        Private Async Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
             _application.UpdateForceFolderPreview()
             _application.UpdateWebServiceURL(False)
-            _application.Logout()
+            Await _application.Logout()
             kCura.Windows.Forms.EnhancedMenuProvider.Unhook()
         End Sub
 
         Private Async Sub ToolsImportImageFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportImageFileMenu.Click
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			Await _application.NewImageFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
+            Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+            Await _application.NewImageFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 

@@ -43,19 +43,19 @@ Namespace kCura.EDDS.WinForm
 
 			Dim args As String() = System.Environment.GetCommandLineArgs
 
-			If args.Length = 1 Then
-				CloseConsole()
-				Dim mainForm As New kCura.EDDS.WinForm.MainForm()
+            If args.Length = 1 Then
+                CloseConsole()
+                Dim mainForm As New kCura.EDDS.WinForm.MainForm()
 
-				mainForm.Show()
-				mainForm.Refresh()
-				System.Windows.Forms.Application.Run()
-			Else
-
-                RunInConsoleMode().ConfigureAwait(False).GetAwaiter().GetResult()
-
+                mainForm.Show()
+                mainForm.Refresh()
+                System.Windows.Forms.Application.Run()
+            Else
+                Task.Run(Async Function() As Task
+                             Await RunInConsoleMode().ConfigureAwait(False)
+                         End Function).Wait()
             End If
-		End Sub
+        End Sub
 
 		Private Function GetValueFromCommandListByFlag(ByVal commandList As kCura.CommandLine.CommandList, ByVal flag As String) As String
 			For Each command As kCura.CommandLine.Command In commandList

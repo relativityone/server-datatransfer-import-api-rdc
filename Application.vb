@@ -72,7 +72,6 @@ Namespace kCura.EDDS.WinForm
 
 #Region "Properties"
 
-<<<<<<< HEAD
         Public Sub SetImplicitCredentialProvider()
             If RelativityWebApiCredentialsProvider.Instance().CredentialsSet() AndAlso RelativityWebApiCredentialsProvider.Instance().ProviderType() = GetType(OAuth2ImplicitCredentials) Then
                 Dim tempImplicitProvider As OAuth2ImplicitCredentials = CType(RelativityWebApiCredentialsProvider.Instance().GetProvider(), OAuth2ImplicitCredentials)
@@ -84,121 +83,6 @@ Namespace kCura.EDDS.WinForm
         End Sub
 
         Friend Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential)
-            If Not RelativityWebApiCredentialsProvider.Instance().CredentialsSet() Then
-                SetImplicitCredentialProvider()
-            End If
-            Return Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync().ConfigureAwait(False)
-        End Function
-
-        Private Async Function GetFieldProviderCacheAsync() As Task(Of IFieldProviderCache)
-            If (_fieldProviderCache Is Nothing) Then
-                _fieldProviderCache = New FieldProviderCache(Await GetCredentialsAsync(), _CookieContainer)
-            End If
-            Return _fieldProviderCache
-        End Function
-
-        Public Property TimeZoneOffset() As Int32
-            Get
-                Return 0
-                Return _timeZoneOffset
-            End Get
-            Set(ByVal value As Int32)
-                _timeZoneOffset = value
-            End Set
-        End Property
-
-        Public ReadOnly Property SelectedCaseInfo() As Relativity.CaseInfo
-            Get
-                Return _selectedCaseInfo
-            End Get
-        End Property
-
-        Public Async Function RefreshSelectedCaseInfo(Optional ByVal caseInfo As Relativity.CaseInfo = Nothing) As Task
-            Dim caseManager As New kCura.WinEDDS.Service.CaseManager(Await Me.GetCredentialsAsync(), _CookieContainer)
-            If caseInfo Is Nothing Then
-                _selectedCaseInfo = caseManager.Read(_selectedCaseInfo.ArtifactID)
-            Else
-                _selectedCaseInfo = caseManager.Read(caseInfo.ArtifactID)
-            End If
-            _documentRepositoryList = caseManager.GetAllDocumentFolderPathsForCase(_selectedCaseInfo.ArtifactID)
-        End Function
-
-        Public ReadOnly Property SelectedCaseFolderID() As Int32
-            Get
-                Return _selectedCaseFolderID
-            End Get
-        End Property
-
-        Public ReadOnly Property DocumentRepositoryList() As String()
-            Get
-                Return _documentRepositoryList
-            End Get
-        End Property
-
-        Public ReadOnly Property LoggedInUser() As String
-            Get
-                Dim winIdent As System.Security.Principal.WindowsIdentity = System.Security.Principal.WindowsIdentity.GetCurrent
-                Return winIdent.Name
-            End Get
-        End Property
-
-        Public Async Function GetSendLoadNotificationEmailEnabledAsync() As Task(Of Boolean)
-            Return New kCura.WinEDDS.Service.RelativityManager(Await Me.GetCredentialsAsync, Me.CookieContainer).IsImportEmailNotificationEnabled
-        End Function
-
-        Public Async Function CurrentFields(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As Task(Of DocumentFieldCollection)
-            Try
-                Return (Await GetFieldProviderCacheAsync()).CurrentFields(artifactTypeID, SelectedCaseInfo.ArtifactID, refresh)
-            Catch ex As System.Exception
-                If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-                    NewLogin(False)
-                Else
-                    Throw
-                End If
-            End Try
-            Return Nothing
-        End Function
-
-        Public Async Function CurrentNonFileFields(ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As Task(Of DocumentFieldCollection)
-            Try
-                Return (Await GetFieldProviderCacheAsync()).CurrentNonFileFields(artifactTypeID, SelectedCaseInfo.ArtifactID, refresh)
-            Catch ex As System.Exception
-                If ex.Message.IndexOf("Need To Re Login") <> -1 Then
-                    NewLogin(False)
-                Else
-                    Throw
-                End If
-            End Try
-            Return Nothing
-        End Function
-
-        Public Property TemporaryWebServiceURL() As String
-
-        Public Property TemporaryForceFolderPreview() As Boolean
-
-        Public Property CookieContainer() As System.Net.CookieContainer
-
-        Public Property ArtifactTypeID() As Int32
-
-        Public Property UserHasImportPermission() As Boolean
-
-        Public Property UserHasExportPermission() As Boolean
-
-        Public Property UserHasStagingPermission() As Boolean
-=======
-		Public Sub SetImplicitCredentialProvider()
-			If RelativityWebApiCredentialsProvider.Instance().CredentialsSet() AndAlso RelativityWebApiCredentialsProvider.Instance().ProviderType() = GetType(OAuth2ImplicitCredentials) Then
-				Dim tempImplicitProvider As OAuth2ImplicitCredentials = CType(RelativityWebApiCredentialsProvider.Instance().GetProvider(), OAuth2ImplicitCredentials)
-				tempImplicitProvider.CloseLoginView()
-			End If
-			Dim authEndpoint As String = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/authorize")
-
-			'Dim implicitProvider = New OAuth2ImplicitCredentials(New ThreadedLoginView(New Uri(authEndpoint), "Relativity Desktop Client"), AddressOf On_TokenRetrieved)
-			Dim implicitProvider = New OAuth2ImplicitCredentials(New Uri(authEndpoint), "Relativity Desktop Client", AddressOf On_TokenRetrieved)
-			RelativityWebApiCredentialsProvider.Instance().SetProvider(implicitProvider)
-		End Sub
-
-		Friend Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential)
 			If Not RelativityWebApiCredentialsProvider.Instance().CredentialsSet() Then
 				SetImplicitCredentialProvider()
 			End If
@@ -300,12 +184,11 @@ Namespace kCura.EDDS.WinForm
 		Public Property UserHasExportPermission() As Boolean
 
 		Public Property UserHasStagingPermission() As Boolean
->>>>>>> develop
 
 #End Region
 
 #Region "Event Throwers"
-		Public Sub LogOn()
+        Public Sub LogOn()
 			RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOn))
 		End Sub
 
@@ -1821,31 +1704,19 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Logout"
-<<<<<<< HEAD
-        Public Sub Logout()
+
+        Public Async Function Logout() As Task
             Try
-                Dim userManager As New kCura.WinEDDS.Service.UserManager(GetCredentialsAsync().ConfigureAwait(False).GetAwaiter().GetResult(), _CookieContainer)
+                Dim userManager As New kCura.WinEDDS.Service.UserManager(Await GetCredentialsAsync(), _CookieContainer)
                 userManager.Logout()
             Catch ex As Exception
-=======
-		Public Async Function Logout() As Task
-			Try
-				Dim userManager As New kCura.WinEDDS.Service.UserManager(Await GetCredentialsAsync(), _CookieContainer)
-				userManager.Logout()
-			Catch ex As Exception
->>>>>>> develop
+            End Try
 
-			End Try
-
-<<<<<<< HEAD
-        End Sub
-=======
-		End Function
->>>>>>> develop
+        End Function
 #End Region
 
 #Region "System Configuration"
-		Public Function GetDisplayAssemblyVersion() As String
+        Public Function GetDisplayAssemblyVersion() As String
 			Return System.Reflection.Assembly.GetExecutingAssembly.GetName.Version.ToString
 		End Function
 
