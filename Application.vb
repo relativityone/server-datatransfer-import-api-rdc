@@ -1704,7 +1704,6 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Logout"
-
         Public Async Function Logout() As Task
             Try
                 Dim userManager As New kCura.WinEDDS.Service.UserManager(Await GetCredentialsAsync(), _CookieContainer)

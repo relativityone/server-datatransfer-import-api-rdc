@@ -149,11 +149,11 @@ Namespace kCura.EDDS.WinForm
 						_import.RunDynamicObjectImport(_importOptions)
 					Case LoadMode.Application
 						Await _import.RunApplicationImport(_importOptions)
-					Case LoadMode.Export
-                        _import.RunExport(_importOptions.SelectedExportSettings).ConfigureAwait(False).GetAwaiter().GetResult()
+                    Case LoadMode.Export
+                        Await _import.RunExport(_importOptions.SelectedExportSettings)
                 End Select
 
-                _application.Logout()
+                Await _application.Logout()
             Catch ex As RdcBaseException
 				Console.WriteLine("--------------------------")
 				Console.WriteLine("ERROR: " & ex.Message)
