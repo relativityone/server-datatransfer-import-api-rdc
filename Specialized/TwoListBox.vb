@@ -71,179 +71,179 @@ Namespace kCura.Windows.Forms
 		End Property
 
 		Private Sub InitializeComponent()
-            Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(TwoListBox))
-            Me._moveAllFieldsLeft = New System.Windows.Forms.Button()
-            Me._moveFieldLeft = New System.Windows.Forms.Button()
-            Me._moveFieldRight = New System.Windows.Forms.Button()
-            Me._moveAllFieldsRight = New System.Windows.Forms.Button()
-            Me._moveRightSelectedItemDown = New System.Windows.Forms.Button()
-            Me._moveRightSelectedItemUp = New System.Windows.Forms.Button()
-            Me._moveLeftSelectedItemDown = New System.Windows.Forms.Button()
-            Me._moveLeftSelectedItemUp = New System.Windows.Forms.Button()
-            Me._searchableListRight = New Specialized.SearchableList()
-            Me._searchableListLeft = New Specialized.SearchableList()
-            Me._rightListBox = New kCura.Windows.Forms.ListBox()
-            Me._leftListBox = New kCura.Windows.Forms.ListBox()
-            Me.SuspendLayout()
-            '
-            '_moveAllFieldsLeft
-            '
-            Me._moveAllFieldsLeft.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
-            Me._moveAllFieldsLeft.Location = New System.Drawing.Point(172, 172)
-            Me._moveAllFieldsLeft.Name = "_moveAllFieldsLeft"
-            Me._moveAllFieldsLeft.Size = New System.Drawing.Size(36, 24)
-            Me._moveAllFieldsLeft.TabIndex = 15
-            Me._moveAllFieldsLeft.Text = "çç"
-            '
-            '_moveFieldLeft
-            '
-            Me._moveFieldLeft.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
-            Me._moveFieldLeft.Location = New System.Drawing.Point(172, 140)
-            Me._moveFieldLeft.Name = "_moveFieldLeft"
-            Me._moveFieldLeft.Size = New System.Drawing.Size(36, 24)
-            Me._moveFieldLeft.TabIndex = 14
-            Me._moveFieldLeft.Text = "ß"
-            '
-            '_moveFieldRight
-            '
-            Me._moveFieldRight.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
-            Me._moveFieldRight.Location = New System.Drawing.Point(172, 108)
-            Me._moveFieldRight.Name = "_moveFieldRight"
-            Me._moveFieldRight.Size = New System.Drawing.Size(36, 24)
-            Me._moveFieldRight.TabIndex = 13
-            Me._moveFieldRight.Text = "à"
-            '
-            '_moveAllFieldsRight
-            '
-            Me._moveAllFieldsRight.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
-            Me._moveAllFieldsRight.Location = New System.Drawing.Point(172, 76)
-            Me._moveAllFieldsRight.Name = "_moveAllFieldsRight"
-            Me._moveAllFieldsRight.Size = New System.Drawing.Size(36, 24)
-            Me._moveAllFieldsRight.TabIndex = 12
-            Me._moveAllFieldsRight.Text = "èè"
-            '
-            '_moveRightSelectedItemDown
-            '
-            Me._moveRightSelectedItemDown.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
-            Me._moveRightSelectedItemDown.Location = New System.Drawing.Point(360, 132)
-            Me._moveRightSelectedItemDown.Name = "_moveRightSelectedItemDown"
-            Me._moveRightSelectedItemDown.RightToLeft = System.Windows.Forms.RightToLeft.No
-            Me._moveRightSelectedItemDown.Size = New System.Drawing.Size(20, 24)
-            Me._moveRightSelectedItemDown.TabIndex = 18
-            Me._moveRightSelectedItemDown.Text = "â"
-            '
-            '_moveRightSelectedItemUp
-            '
-            Me._moveRightSelectedItemUp.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
-            Me._moveRightSelectedItemUp.Location = New System.Drawing.Point(360, 108)
-            Me._moveRightSelectedItemUp.Name = "_moveRightSelectedItemUp"
-            Me._moveRightSelectedItemUp.Size = New System.Drawing.Size(20, 24)
-            Me._moveRightSelectedItemUp.TabIndex = 17
-            Me._moveRightSelectedItemUp.Text = "á"
-            '
-            '_moveLeftSelectedItemDown
-            '
-            Me._moveLeftSelectedItemDown.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
-            Me._moveLeftSelectedItemDown.Location = New System.Drawing.Point(0, 140)
-            Me._moveLeftSelectedItemDown.Name = "_moveLeftSelectedItemDown"
-            Me._moveLeftSelectedItemDown.RightToLeft = System.Windows.Forms.RightToLeft.No
-            Me._moveLeftSelectedItemDown.Size = New System.Drawing.Size(20, 24)
-            Me._moveLeftSelectedItemDown.TabIndex = 10
-            Me._moveLeftSelectedItemDown.Text = "â"
-            '
-            '_moveLeftSelectedItemUp
-            '
-            Me._moveLeftSelectedItemUp.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
-            Me._moveLeftSelectedItemUp.Location = New System.Drawing.Point(0, 108)
-            Me._moveLeftSelectedItemUp.Name = "_moveLeftSelectedItemUp"
-            Me._moveLeftSelectedItemUp.Size = New System.Drawing.Size(20, 24)
-            Me._moveLeftSelectedItemUp.TabIndex = 9
-            Me._moveLeftSelectedItemUp.Text = "á"
-            '
-            '_searchableListRight
-            '
-            Me._searchableListRight.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-            Me._searchableListRight.DataSource = CType(resources.GetObject("_searchableListRight.DataSource"), System.Collections.Generic.List(Of Object))
-            Me._searchableListRight.Location = New System.Drawing.Point(212, 0)
-            Me._searchableListRight.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
-            Me._searchableListRight.Name = "_searchableListRight"
-            Me._searchableListRight.Size = New System.Drawing.Size(144, 280)
-            Me._searchableListRight.TabIndex = 20
-            '
-            '_searchableListLeft
-            '
-            Me._searchableListLeft.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-            Me._searchableListLeft.DataSource = CType(resources.GetObject("_searchableListLeft.DataSource"), System.Collections.Generic.List(Of Object))
-            Me._searchableListLeft.Location = New System.Drawing.Point(24, 0)
-            Me._searchableListLeft.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
-            Me._searchableListLeft.Name = "_searchableListLeft"
-            Me._searchableListLeft.Size = New System.Drawing.Size(144, 280)
-            Me._searchableListLeft.TabIndex = 19
-            '
-            '_rightListBox
-            '
-            Me._rightListBox.AlternateColors = False
-            Me._rightListBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-            Me._rightListBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
-            Me._rightListBox.HighlightIndex = -1
-            Me._rightListBox.HorizontalScrollbar = True
-            Me._rightListBox.HorizontalScrollOffset = 0
-            Me._rightListBox.IntegralHeight = False
-            Me._rightListBox.Location = New System.Drawing.Point(212, 0)
-            Me._rightListBox.Name = "_rightListBox"
-            Me._rightListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
-            Me._rightListBox.Size = New System.Drawing.Size(144, 280)
-            Me._rightListBox.TabIndex = 16
-            Me._rightListBox.VerticalScrollOffset = 0
-            Me._rightListBox.Visible = False
-            '
-            '_leftListBox
-            '
-            Me._leftListBox.AlternateColors = False
-            Me._leftListBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-            Me._leftListBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
-            Me._leftListBox.HighlightIndex = -1
-            Me._leftListBox.HorizontalScrollbar = True
-            Me._leftListBox.HorizontalScrollOffset = 0
-            Me._leftListBox.IntegralHeight = False
-            Me._leftListBox.Location = New System.Drawing.Point(24, 0)
-            Me._leftListBox.Name = "_leftListBox"
-            Me._leftListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
-            Me._leftListBox.Size = New System.Drawing.Size(144, 280)
-            Me._leftListBox.TabIndex = 11
-            Me._leftListBox.VerticalScrollOffset = 0
-            Me._leftListBox.Visible = False
-            '
-            'TwoListBox
-            '
-            Me.Controls.Add(Me._searchableListRight)
-            Me.Controls.Add(Me._searchableListLeft)
-            Me.Controls.Add(Me._moveLeftSelectedItemDown)
-            Me.Controls.Add(Me._moveLeftSelectedItemUp)
-            Me.Controls.Add(Me._rightListBox)
-            Me.Controls.Add(Me._moveRightSelectedItemDown)
-            Me.Controls.Add(Me._moveRightSelectedItemUp)
-            Me.Controls.Add(Me._moveAllFieldsLeft)
-            Me.Controls.Add(Me._moveFieldLeft)
-            Me.Controls.Add(Me._moveFieldRight)
-            Me.Controls.Add(Me._moveAllFieldsRight)
-            Me.Controls.Add(Me._leftListBox)
-            Me.Name = "TwoListBox"
-            Me.Size = New System.Drawing.Size(380, 280)
-            Me.ResumeLayout(False)
+			Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(TwoListBox))
+			Me._moveAllFieldsLeft = New System.Windows.Forms.Button()
+			Me._moveFieldLeft = New System.Windows.Forms.Button()
+			Me._moveFieldRight = New System.Windows.Forms.Button()
+			Me._moveAllFieldsRight = New System.Windows.Forms.Button()
+			Me._moveRightSelectedItemDown = New System.Windows.Forms.Button()
+			Me._moveRightSelectedItemUp = New System.Windows.Forms.Button()
+			Me._moveLeftSelectedItemDown = New System.Windows.Forms.Button()
+			Me._moveLeftSelectedItemUp = New System.Windows.Forms.Button()
+			Me._searchableListRight = New Specialized.SearchableList()
+			Me._searchableListLeft = New Specialized.SearchableList()
+			Me._rightListBox = New kCura.Windows.Forms.ListBox()
+			Me._leftListBox = New kCura.Windows.Forms.ListBox()
+			Me.SuspendLayout()
+			'
+			'_moveAllFieldsLeft
+			'
+			Me._moveAllFieldsLeft.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
+			Me._moveAllFieldsLeft.Location = New System.Drawing.Point(172, 172)
+			Me._moveAllFieldsLeft.Name = "_moveAllFieldsLeft"
+			Me._moveAllFieldsLeft.Size = New System.Drawing.Size(36, 24)
+			Me._moveAllFieldsLeft.TabIndex = 15
+			Me._moveAllFieldsLeft.Text = "çç"
+			'
+			'_moveFieldLeft
+			'
+			Me._moveFieldLeft.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
+			Me._moveFieldLeft.Location = New System.Drawing.Point(172, 140)
+			Me._moveFieldLeft.Name = "_moveFieldLeft"
+			Me._moveFieldLeft.Size = New System.Drawing.Size(36, 24)
+			Me._moveFieldLeft.TabIndex = 14
+			Me._moveFieldLeft.Text = "ß"
+			'
+			'_moveFieldRight
+			'
+			Me._moveFieldRight.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
+			Me._moveFieldRight.Location = New System.Drawing.Point(172, 108)
+			Me._moveFieldRight.Name = "_moveFieldRight"
+			Me._moveFieldRight.Size = New System.Drawing.Size(36, 24)
+			Me._moveFieldRight.TabIndex = 13
+			Me._moveFieldRight.Text = "à"
+			'
+			'_moveAllFieldsRight
+			'
+			Me._moveAllFieldsRight.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
+			Me._moveAllFieldsRight.Location = New System.Drawing.Point(172, 76)
+			Me._moveAllFieldsRight.Name = "_moveAllFieldsRight"
+			Me._moveAllFieldsRight.Size = New System.Drawing.Size(36, 24)
+			Me._moveAllFieldsRight.TabIndex = 12
+			Me._moveAllFieldsRight.Text = "èè"
+			'
+			'_moveRightSelectedItemDown
+			'
+			Me._moveRightSelectedItemDown.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
+			Me._moveRightSelectedItemDown.Location = New System.Drawing.Point(360, 132)
+			Me._moveRightSelectedItemDown.Name = "_moveRightSelectedItemDown"
+			Me._moveRightSelectedItemDown.RightToLeft = System.Windows.Forms.RightToLeft.No
+			Me._moveRightSelectedItemDown.Size = New System.Drawing.Size(20, 24)
+			Me._moveRightSelectedItemDown.TabIndex = 18
+			Me._moveRightSelectedItemDown.Text = "â"
+			'
+			'_moveRightSelectedItemUp
+			'
+			Me._moveRightSelectedItemUp.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
+			Me._moveRightSelectedItemUp.Location = New System.Drawing.Point(360, 108)
+			Me._moveRightSelectedItemUp.Name = "_moveRightSelectedItemUp"
+			Me._moveRightSelectedItemUp.Size = New System.Drawing.Size(20, 24)
+			Me._moveRightSelectedItemUp.TabIndex = 17
+			Me._moveRightSelectedItemUp.Text = "á"
+			'
+			'_moveLeftSelectedItemDown
+			'
+			Me._moveLeftSelectedItemDown.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
+			Me._moveLeftSelectedItemDown.Location = New System.Drawing.Point(0, 140)
+			Me._moveLeftSelectedItemDown.Name = "_moveLeftSelectedItemDown"
+			Me._moveLeftSelectedItemDown.RightToLeft = System.Windows.Forms.RightToLeft.No
+			Me._moveLeftSelectedItemDown.Size = New System.Drawing.Size(20, 24)
+			Me._moveLeftSelectedItemDown.TabIndex = 10
+			Me._moveLeftSelectedItemDown.Text = "â"
+			'
+			'_moveLeftSelectedItemUp
+			'
+			Me._moveLeftSelectedItemUp.Font = New System.Drawing.Font("Wingdings", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(2, Byte))
+			Me._moveLeftSelectedItemUp.Location = New System.Drawing.Point(0, 108)
+			Me._moveLeftSelectedItemUp.Name = "_moveLeftSelectedItemUp"
+			Me._moveLeftSelectedItemUp.Size = New System.Drawing.Size(20, 24)
+			Me._moveLeftSelectedItemUp.TabIndex = 9
+			Me._moveLeftSelectedItemUp.Text = "á"
+			'
+			'_searchableListRight
+			'
+			Me._searchableListRight.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+			Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+			Me._searchableListRight.DataSource = CType(resources.GetObject("_searchableListRight.DataSource"), System.Collections.Generic.List(Of Object))
+			Me._searchableListRight.Location = New System.Drawing.Point(212, 0)
+			Me._searchableListRight.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+			Me._searchableListRight.Name = "_searchableListRight"
+			Me._searchableListRight.Size = New System.Drawing.Size(144, 280)
+			Me._searchableListRight.TabIndex = 20
+			'
+			'_searchableListLeft
+			'
+			Me._searchableListLeft.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+			Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+			Me._searchableListLeft.DataSource = CType(resources.GetObject("_searchableListLeft.DataSource"), System.Collections.Generic.List(Of Object))
+			Me._searchableListLeft.Location = New System.Drawing.Point(24, 0)
+			Me._searchableListLeft.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+			Me._searchableListLeft.Name = "_searchableListLeft"
+			Me._searchableListLeft.Size = New System.Drawing.Size(144, 280)
+			Me._searchableListLeft.TabIndex = 19
+			'
+			'_rightListBox
+			'
+			Me._rightListBox.AlternateColors = False
+			Me._rightListBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+			Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+			Me._rightListBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
+			Me._rightListBox.HighlightIndex = -1
+			Me._rightListBox.HorizontalScrollbar = True
+			Me._rightListBox.HorizontalScrollOffset = 0
+			Me._rightListBox.IntegralHeight = False
+			Me._rightListBox.Location = New System.Drawing.Point(212, 0)
+			Me._rightListBox.Name = "_rightListBox"
+			Me._rightListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
+			Me._rightListBox.Size = New System.Drawing.Size(144, 280)
+			Me._rightListBox.TabIndex = 16
+			Me._rightListBox.VerticalScrollOffset = 0
+			Me._rightListBox.Visible = False
+			'
+			'_leftListBox
+			'
+			Me._leftListBox.AlternateColors = False
+			Me._leftListBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+			Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+			Me._leftListBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
+			Me._leftListBox.HighlightIndex = -1
+			Me._leftListBox.HorizontalScrollbar = True
+			Me._leftListBox.HorizontalScrollOffset = 0
+			Me._leftListBox.IntegralHeight = False
+			Me._leftListBox.Location = New System.Drawing.Point(24, 0)
+			Me._leftListBox.Name = "_leftListBox"
+			Me._leftListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
+			Me._leftListBox.Size = New System.Drawing.Size(144, 280)
+			Me._leftListBox.TabIndex = 11
+			Me._leftListBox.VerticalScrollOffset = 0
+			Me._leftListBox.Visible = False
+			'
+			'TwoListBox
+			'
+			Me.Controls.Add(Me._searchableListRight)
+			Me.Controls.Add(Me._searchableListLeft)
+			Me.Controls.Add(Me._moveLeftSelectedItemDown)
+			Me.Controls.Add(Me._moveLeftSelectedItemUp)
+			Me.Controls.Add(Me._rightListBox)
+			Me.Controls.Add(Me._moveRightSelectedItemDown)
+			Me.Controls.Add(Me._moveRightSelectedItemUp)
+			Me.Controls.Add(Me._moveAllFieldsLeft)
+			Me.Controls.Add(Me._moveFieldLeft)
+			Me.Controls.Add(Me._moveFieldRight)
+			Me.Controls.Add(Me._moveAllFieldsRight)
+			Me.Controls.Add(Me._leftListBox)
+			Me.Name = "TwoListBox"
+			Me.Size = New System.Drawing.Size(380, 280)
+			Me.ResumeLayout(False)
 
-        End Sub
+		End Sub
 
 #End Region
 
 #Region "Resizing"
 
-        'MeasureItem fixes issues in Large DPI mode
-        Private Sub LeftListBox_MeasureItem(sender As Object, e As System.Windows.Forms.MeasureItemEventArgs) Handles _leftListBox.MeasureItem
+		'MeasureItem fixes issues in Large DPI mode
+		Private Sub LeftListBox_MeasureItem(sender As Object, e As System.Windows.Forms.MeasureItemEventArgs) Handles _leftListBox.MeasureItem
 			MeasureItemImpl(_leftListBox, e)
 		End Sub
 
@@ -492,11 +492,11 @@ Namespace kCura.Windows.Forms
 		End Sub
 
 		Private Sub RaiseItemsShifted()
-			Me.EnsureHorizontalScrollbars()
 			_searchableListLeft.ForceRefresh()
 			_searchableListRight.ForceRefresh()
 			_searchableListLeft.RemoveSelection()
 			_searchableListRight.RemoveSelection()
+			Me.EnsureHorizontalScrollbars()
 			RaiseEvent ItemsShifted(Me, New EventArgs)
 		End Sub
 
@@ -551,31 +551,28 @@ Namespace kCura.Windows.Forms
 		End Sub
 
 		Private Sub TwoListBox_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
-			_leftListBox.AlternateColors = _AlternateRowColors
-			_rightListBox.AlternateColors = _AlternateRowColors
+			_searchableListLeft.Listbox.AlternateColors = _AlternateRowColors
+			_searchableListRight.Listbox.AlternateColors = _AlternateRowColors
 		End Sub
 
-		Private Sub _leftListBox_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles _leftListBox.KeyUp
-			If e.KeyCode = Keys.Up OrElse e.KeyCode = Keys.Down Then
-				_leftListBox.Invalidate()
-			ElseIf e.KeyCode = Keys.Left OrElse e.KeyCode = Keys.Right Then
-				_leftListBox.Invalidate()
+		Private Sub _searchableListLeft_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles _searchableListLeft.KeyUpEvent
+			If e.KeyCode = Keys.Up OrElse e.KeyCode = Keys.Down OrElse e.KeyCode = Keys.Left OrElse e.KeyCode = Keys.Right Then
+				_searchableListLeft.Listbox.Invalidate()
 			End If
 		End Sub
 
-		Private Sub _rightListBox_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles _rightListBox.KeyUp
-			If e.KeyCode = Keys.Up OrElse e.KeyCode = Keys.Down Then
-				_rightListBox.Invalidate()
-			ElseIf e.KeyCode = Keys.Left OrElse e.KeyCode = Keys.Right Then
+		Private Sub _searchableListRight_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles _searchableListRight.KeyUpEvent
+			If e.KeyCode = Keys.Up OrElse e.KeyCode = Keys.Down OrElse e.KeyCode = Keys.Left OrElse e.KeyCode = Keys.Right Then
+				_searchableListRight.Listbox.Invalidate()
 			End If
 		End Sub
 
-		Private Sub _leftListBox_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles _searchableListLeft.DoubleClickEvent
+		Private Sub _searchableListLeft_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles _searchableListLeft.DoubleClickEvent
 			ShiftSelectedItems(_searchableListLeft, __searchableListRight)
 			EnsureHorizontalScrollbars()
 		End Sub
 
-		Private Sub _rightListBox_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles _searchableListRight.DoubleClickEvent
+		Private Sub _searchableListRight_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles _searchableListRight.DoubleClickEvent
 			ShiftSelectedItems(__searchableListRight, _searchableListLeft)
 			EnsureHorizontalScrollbars()
 		End Sub
@@ -588,14 +585,14 @@ Namespace kCura.Windows.Forms
 			_rightListBox.Invalidate()
 		End Sub
 
-		Private Sub _leftListBox_KeyPress(sender As Object, e As KeyPressEventArgs) Handles _searchableListLeft.KeyPressEvent
+		Private Sub _searchableListLeft_KeyPress(sender As Object, e As KeyPressEventArgs) Handles _searchableListLeft.KeyPressEvent
 			If e.KeyChar.Equals(Microsoft.VisualBasic.ControlChars.Cr) OrElse e.KeyChar.Equals(Microsoft.VisualBasic.ControlChars.Lf) Then
 				ShiftSelectedItems(_searchableListLeft, __searchableListRight)
 				EnsureHorizontalScrollbars()
 			End If
 		End Sub
 
-		Private Sub _rightListBox_KeyPress(sender As Object, e As KeyPressEventArgs) Handles _searchableListRight.KeyPressEvent
+		Private Sub _searchableListRight_KeyPress(sender As Object, e As KeyPressEventArgs) Handles _searchableListRight.KeyPressEvent
 			If e.KeyChar.Equals(Microsoft.VisualBasic.ControlChars.Cr) OrElse e.KeyChar.Equals(Microsoft.VisualBasic.ControlChars.Lf) Then
 				ShiftSelectedItems(__searchableListRight, _searchableListLeft)
 				EnsureHorizontalScrollbars()

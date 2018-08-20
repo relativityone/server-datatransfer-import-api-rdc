@@ -10,6 +10,7 @@ Namespace Specialized
 		Private Const _DELAYED_TEXT_CHANGED_TIMEOUT_IN_MILLISECONDS As Integer = 600
 		Public Event DoubleClickEvent(sender As Object, e As EventArgs)
 		Public Event KeyPressEvent(sender As Object, e As KeyPressEventArgs)
+		Public Event KeyUpEvent(sender As Object, e As KeyEventArgs)
 
 		Private Function GetMaxTextLength() As Integer
 			Dim maxLength As Integer = 0
@@ -131,5 +132,10 @@ Namespace Specialized
 		Private Sub _listBox_KeyPress(sender As Object, e As KeyPressEventArgs) Handles _listBox.KeyPress
 			RaiseEvent KeyPressEvent(sender, e)
 		End Sub
+
+		Private Sub _listBox_KeyUp(sender As Object, e As KeyEventArgs) Handles _listBox.KeyUp
+			RaiseEvent KeyUpEvent(sender, e)
+		End Sub
+
 	End Class
 End Namespace
