@@ -103,64 +103,64 @@ Public Class ExportForm
 	Public WithEvents _nestedValueDelimiter As System.Windows.Forms.ComboBox
 	Public WithEvents LabelSelectedColumns As System.Windows.Forms.Label
 	Public WithEvents _filters As System.Windows.Forms.ComboBox
-    Public WithEvents _columnSelector As kCura.Windows.Forms.TwoListBox
-    Public WithEvents _filtersBox As System.Windows.Forms.GroupBox
-    Public WithEvents _metadataGroupBox As System.Windows.Forms.GroupBox
-    Public WithEvents LabelMetadataDataFileFormat As System.Windows.Forms.Label
-    Public WithEvents _nativeFileFormat As System.Windows.Forms.ComboBox
-    Public WithEvents _dataFileEncoding As kCura.EDDS.WinForm.EncodingPicker
-    Public WithEvents LabelDataFileEncoding As System.Windows.Forms.Label
-    Public WithEvents LabelTextFileEncoding As System.Windows.Forms.Label
-    Public WithEvents _textFileEncoding As kCura.EDDS.WinForm.EncodingPicker
-    Public WithEvents _textFieldPrecedencePicker As kCura.EDDS.WinForm.TextFieldPrecedencePicker
-    Public WithEvents LabelTextPrecedence As System.Windows.Forms.Label
-    Public WithEvents RefreshMenu As System.Windows.Forms.MenuItem
-    Public WithEvents MenuItem3 As System.Windows.Forms.MenuItem
-    Public WithEvents SaveExportSettings As System.Windows.Forms.MenuItem
-    Public WithEvents LoadExportSettings As System.Windows.Forms.MenuItem
-    Public WithEvents _volumeDigitPadding As System.Windows.Forms.NumericUpDown
-    Public WithEvents LabelVolumeNumberOfDigits As System.Windows.Forms.Label
-    Public WithEvents _subdirectoryDigitPadding As System.Windows.Forms.NumericUpDown
-    Public WithEvents LabelSubdirectoryNumberOfDigits As System.Windows.Forms.Label
-    Public WithEvents LabelStartAtRecordNumber As System.Windows.Forms.Label
-    Public WithEvents _startExportAtDocumentNumber As System.Windows.Forms.NumericUpDown
-    Public WithEvents _saveExportSettingsDialog As System.Windows.Forms.SaveFileDialog
-    Friend WithEvents _selectFromListButton As Button
-    Public WithEvents _loadExportSettingsDialog As System.Windows.Forms.OpenFileDialog
+	Public WithEvents _columnSelector As kCura.Windows.Forms.TwoListBox
+	Public WithEvents _filtersBox As System.Windows.Forms.GroupBox
+	Public WithEvents _metadataGroupBox As System.Windows.Forms.GroupBox
+	Public WithEvents LabelMetadataDataFileFormat As System.Windows.Forms.Label
+	Public WithEvents _nativeFileFormat As System.Windows.Forms.ComboBox
+	Public WithEvents _dataFileEncoding As kCura.EDDS.WinForm.EncodingPicker
+	Public WithEvents LabelDataFileEncoding As System.Windows.Forms.Label
+	Public WithEvents LabelTextFileEncoding As System.Windows.Forms.Label
+	Public WithEvents _textFileEncoding As kCura.EDDS.WinForm.EncodingPicker
+	Public WithEvents _textFieldPrecedencePicker As kCura.EDDS.WinForm.TextFieldPrecedencePicker
+	Public WithEvents LabelTextPrecedence As System.Windows.Forms.Label
+	Public WithEvents RefreshMenu As System.Windows.Forms.MenuItem
+	Public WithEvents MenuItem3 As System.Windows.Forms.MenuItem
+	Public WithEvents SaveExportSettings As System.Windows.Forms.MenuItem
+	Public WithEvents LoadExportSettings As System.Windows.Forms.MenuItem
+	Public WithEvents _volumeDigitPadding As System.Windows.Forms.NumericUpDown
+	Public WithEvents LabelVolumeNumberOfDigits As System.Windows.Forms.Label
+	Public WithEvents _subdirectoryDigitPadding As System.Windows.Forms.NumericUpDown
+	Public WithEvents LabelSubdirectoryNumberOfDigits As System.Windows.Forms.Label
+	Public WithEvents LabelStartAtRecordNumber As System.Windows.Forms.Label
+	Public WithEvents _startExportAtDocumentNumber As System.Windows.Forms.NumericUpDown
+	Public WithEvents _saveExportSettingsDialog As System.Windows.Forms.SaveFileDialog
+	Friend WithEvents _selectFromListButton As Button
+	Public WithEvents _loadExportSettingsDialog As System.Windows.Forms.OpenFileDialog
 
-    Private Sub InitializeComponent()
-        Me.components = New System.ComponentModel.Container()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ExportForm))
-        Me.MainMenu1 = New System.Windows.Forms.MainMenu(Me.components)
-        Me.ExportMenu = New System.Windows.Forms.MenuItem()
-        Me.RunMenu = New System.Windows.Forms.MenuItem()
-        Me.SaveExportSettings = New System.Windows.Forms.MenuItem()
-        Me.LoadExportSettings = New System.Windows.Forms.MenuItem()
-        Me.MenuItem3 = New System.Windows.Forms.MenuItem()
-        Me.RefreshMenu = New System.Windows.Forms.MenuItem()
-        Me._destinationFolderDialog = New System.Windows.Forms.FolderBrowserDialog()
-        Me._productionPrecedenceBox = New System.Windows.Forms.GroupBox()
-        Me._productionPrecedenceList = New System.Windows.Forms.ListBox()
-        Me._pickPrecedenceButton = New System.Windows.Forms.Button()
-        Me.LabelNamedAfter = New System.Windows.Forms.Label()
-        Me._overwriteCheckBox = New System.Windows.Forms.CheckBox()
-        Me._browseButton = New System.Windows.Forms.Button()
-        Me._folderPath = New System.Windows.Forms.TextBox()
-        Me._appendOriginalFilenameCheckbox = New System.Windows.Forms.CheckBox()
-        Me.GroupBoxExportLocation = New System.Windows.Forms.GroupBox()
-        Me._nativeFileNameSourceCombo = New System.Windows.Forms.ComboBox()
-        Me.TabControl1 = New System.Windows.Forms.TabControl()
-        Me._dataSourceTabPage = New System.Windows.Forms.TabPage()
-        Me._filtersBox = New System.Windows.Forms.GroupBox()
-        Me._selectFromListButton = New System.Windows.Forms.Button()
-        Me._startExportAtDocumentNumber = New System.Windows.Forms.NumericUpDown()
-        Me.LabelStartAtRecordNumber = New System.Windows.Forms.Label()
-        Me.LabelSelectedColumns = New System.Windows.Forms.Label()
-        Me._filters = New System.Windows.Forms.ComboBox()
-        Me._columnSelector = New kCura.Windows.Forms.TwoListBox()
-        Me._destinationFileTabPage = New System.Windows.Forms.TabPage()
-        Me.GroupBoxTextAndNativeFileNames = New System.Windows.Forms.GroupBox()
-        Me._metadataGroupBox = New System.Windows.Forms.GroupBox()
+	Private Sub InitializeComponent()
+		Me.components = New System.ComponentModel.Container()
+		Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ExportForm))
+		Me.MainMenu1 = New System.Windows.Forms.MainMenu(Me.components)
+		Me.ExportMenu = New System.Windows.Forms.MenuItem()
+		Me.RunMenu = New System.Windows.Forms.MenuItem()
+		Me.SaveExportSettings = New System.Windows.Forms.MenuItem()
+		Me.LoadExportSettings = New System.Windows.Forms.MenuItem()
+		Me.MenuItem3 = New System.Windows.Forms.MenuItem()
+		Me.RefreshMenu = New System.Windows.Forms.MenuItem()
+		Me._destinationFolderDialog = New System.Windows.Forms.FolderBrowserDialog()
+		Me._productionPrecedenceBox = New System.Windows.Forms.GroupBox()
+		Me._productionPrecedenceList = New System.Windows.Forms.ListBox()
+		Me._pickPrecedenceButton = New System.Windows.Forms.Button()
+		Me.LabelNamedAfter = New System.Windows.Forms.Label()
+		Me._overwriteCheckBox = New System.Windows.Forms.CheckBox()
+		Me._browseButton = New System.Windows.Forms.Button()
+		Me._folderPath = New System.Windows.Forms.TextBox()
+		Me._appendOriginalFilenameCheckbox = New System.Windows.Forms.CheckBox()
+		Me.GroupBoxExportLocation = New System.Windows.Forms.GroupBox()
+		Me._nativeFileNameSourceCombo = New System.Windows.Forms.ComboBox()
+		Me.TabControl1 = New System.Windows.Forms.TabControl()
+		Me._dataSourceTabPage = New System.Windows.Forms.TabPage()
+		Me._filtersBox = New System.Windows.Forms.GroupBox()
+		Me._selectFromListButton = New System.Windows.Forms.Button()
+		Me._startExportAtDocumentNumber = New System.Windows.Forms.NumericUpDown()
+		Me.LabelStartAtRecordNumber = New System.Windows.Forms.Label()
+		Me.LabelSelectedColumns = New System.Windows.Forms.Label()
+		Me._filters = New System.Windows.Forms.ComboBox()
+		Me._columnSelector = New kCura.Windows.Forms.TwoListBox()
+		Me._destinationFileTabPage = New System.Windows.Forms.TabPage()
+		Me.GroupBoxTextAndNativeFileNames = New System.Windows.Forms.GroupBox()
+		Me._metadataGroupBox = New System.Windows.Forms.GroupBox()
 		Me.LabelTextPrecedence = New System.Windows.Forms.Label()
 		Me._textFieldPrecedencePicker = New kCura.EDDS.WinForm.TextFieldPrecedencePicker()
 		Me._textFileEncoding = New kCura.EDDS.WinForm.EncodingPicker()
@@ -1254,7 +1254,7 @@ Public Class ExportForm
 		'Adjust the location of the label to be aligned with the left side of the Right ListBox
 
 		'Get the absolute position of the Right ListBox of the TwoListBox in screen coordinates
-		Dim absoluteListBoxLoc As Point = _columnSelector.RightListBox.PointToScreen(New Point(0, 0))
+		Dim absoluteListBoxLoc As Point = _columnSelector.RightSearchableList.PointToScreen(New Point(0, 0))
 		'Convert to a location relative to the Views group (_filtersBox)
 		Dim relativeListBoxLoc As Point = Me.LabelSelectedColumns.Parent.PointToClient(absoluteListBoxLoc)
 		'Adjust the location of the label
@@ -1334,7 +1334,7 @@ Public Class ExportForm
 		If _filters.SelectedItem Is Nothing Then
 			msg.AppendFormat("No {0} selected", Me.ExportTypeStringName.ToLower)
 		End If
-		If _exportNativeFiles.Checked OrElse _columnSelector.RightListBoxItems.Count > 0 Then
+		If _exportNativeFiles.Checked OrElse _columnSelector.RightSearchableListItems.Count > 0 Then
 			If CType(_nativeFileFormat.SelectedItem, String) = "Select..." Then
 				AppendErrorMessage(msg, "No metadata data file format selected")
 			End If
@@ -1452,7 +1452,7 @@ Public Class ExportForm
 		_exportFile.ImagePrecedence = Me.GetImagePrecedence
 		_exportFile.TypeOfImage = Me.GetSelectedImageType
 		Dim selectedViewFields As New System.Collections.ArrayList
-		For Each field As ViewFieldInfo In _columnSelector.RightListBoxItems
+		For Each field As ViewFieldInfo In _columnSelector.RightSearchableListItems
 			selectedViewFields.Add(field)
 		Next
 		_exportFile.SelectedViewFields = DirectCast(selectedViewFields.ToArray(GetType(ViewFieldInfo)), ViewFieldInfo())
@@ -1579,9 +1579,9 @@ Public Class ExportForm
 
 		If ef.AllExportableFields IsNot Nothing Then
 			_columnSelector.ClearSelection(kCura.Windows.Forms.ListBoxLocation.Left)
-			_columnSelector.LeftListBoxItems.Clear()
+			_columnSelector.LeftSearchableList.ClearListBox()
 			Array.Sort(ef.AllExportableFields)
-			_columnSelector.LeftListBoxItems.AddRange(ef.AllExportableFields)
+			_columnSelector.LeftSearchableList.AddFields(ef.AllExportableFields)
 		End If
 
 		If ef.SelectedViewFields IsNot Nothing Then
@@ -1590,22 +1590,21 @@ Public Class ExportForm
 
 			Dim itemsToRemoveFromLeftListBox As New System.Collections.Generic.List(Of kCura.WinEDDS.ViewFieldInfo)()
 			_columnSelector.ClearSelection(kCura.Windows.Forms.ListBoxLocation.Right)
-			_columnSelector.RightListBoxItems.Clear()
+			_columnSelector.RightSearchableList.ClearListBox()
 			For Each viewFieldFromKwx As kCura.WinEDDS.ViewFieldInfo In ef.SelectedViewFields
-				For Each leftListBoxViewField As kCura.WinEDDS.ViewFieldInfo In _columnSelector.LeftListBoxItems
+				For Each leftListBoxViewField As kCura.WinEDDS.ViewFieldInfo In _columnSelector.LeftSearchableListItems
 					If leftListBoxViewField.DisplayName.Equals(viewFieldFromKwx.DisplayName, StringComparison.InvariantCulture) Then
 						itemsToRemoveFromLeftListBox.Add(leftListBoxViewField)
-						_columnSelector.RightListBoxItems.Add(leftListBoxViewField)
+						_columnSelector.RightSearchableList.AddField(leftListBoxViewField)
 					End If
 				Next
 			Next
 
 			If ef.AllExportableFields IsNot Nothing Then
 				Dim defaultSelectedIds As New System.Collections.ArrayList
-				If _columnSelector.RightListBoxItems.Count = 0 Then
+				If _columnSelector.RightSearchableListItems.Count = 0 Then
 					_metadataGroupBox.Enabled = False
 					If Not _filters.SelectedItem Is Nothing Then defaultSelectedIds = DirectCast(Me.ExportFile.ArtifactAvfLookup(CType(_filters.SelectedValue, Int32)), ArrayList)
-
 					For Each defaultSelectedId As Int32 In defaultSelectedIds
 						For Each field As ViewFieldInfo In ef.AllExportableFields
 							If field.AvfId = defaultSelectedId Then
@@ -1613,10 +1612,10 @@ Public Class ExportForm
 								Dim found As Boolean = ef.SelectedViewFields.Any(Function(addedItem) avfNumber = addedItem.AvfId)
 								If Not found Then
 									If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
-										_columnSelector.RightListBoxItems.Add(New ViewFieldInfo(field))
+										_columnSelector.RightSearchableList.AddField(New ViewFieldInfo(field))
 										Exit For
 									ElseIf field.FieldType <> Relativity.FieldTypeHelper.FieldType.File Then
-										_columnSelector.RightListBoxItems.Add(New ViewFieldInfo(field))
+										_columnSelector.RightSearchableList.AddField(New ViewFieldInfo(field))
 										Exit For
 									End If
 								End If
@@ -1627,7 +1626,7 @@ Public Class ExportForm
 			End If
 
 			For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
-				_columnSelector.LeftListBoxItems.Remove(vfi)
+				_columnSelector.LeftSearchableList.RemoveField(vfi)
 			Next
 		End If
 
@@ -1867,7 +1866,7 @@ Public Class ExportForm
 			GroupBoxNative.Visible = False
 		End If
 	End Sub
-	Dim leftListBoxItemsDeleteMe As New System.Collections.ArrayList
+
 	Private Sub InitializeColumnSelecter()
 		_columnSelector.ClearAll()
 		Dim defaultSelectedIds As New System.Collections.ArrayList
@@ -1889,18 +1888,17 @@ Public Class ExportForm
 			For Each field As ViewFieldInfo In Me.ExportFile.AllExportableFields
 				If field.AvfId = defaultSelectedId Then
 					If Me.ExportFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
-						_columnSelector.RightListBoxItems.Add(New ViewFieldInfo(field))
+						_columnSelector.RightSearchableList.AddField(New ViewFieldInfo(field))
 						Exit For
 					ElseIf field.FieldType <> Relativity.FieldTypeHelper.FieldType.File Then
-						_columnSelector.RightListBoxItems.Add(New ViewFieldInfo(field))
+						_columnSelector.RightSearchableList.AddField(New ViewFieldInfo(field))
 						Exit For
 					End If
 				End If
 			Next
 		Next
 		leftListBoxItems.Sort()
-		_columnSelector.setDataSourceListBox(leftListBoxItems)
-		_columnSelector.LeftListBoxItems.AddRange(leftListBoxItems.ToArray())
+		_columnSelector.LeftSearchableList.AddFields(leftListBoxItems.ToArray())
 		Me.ManagePotentialTextFields()
 	End Sub
 
@@ -1912,7 +1910,7 @@ Public Class ExportForm
 
 	Private Sub _exportNativeFiles_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportNativeFiles.CheckedChanged
 		_useAbsolutePaths.Enabled = True
-		_metadataGroupBox.Enabled = _columnSelector.RightListBoxItems.Count > 0 OrElse _exportNativeFiles.Checked
+		_metadataGroupBox.Enabled = _columnSelector.RightSearchableListItems.Count > 0 OrElse _exportNativeFiles.Checked
 		_nativeFileFormat.Enabled = True
 
 	End Sub
@@ -2052,7 +2050,7 @@ Public Class ExportForm
 
 
 	Private Sub _columnSelecter_ItemsShifted() Handles _columnSelector.ItemsShifted
-		_metadataGroupBox.Enabled = _columnSelector.RightListBoxItems.Count > 0 OrElse _exportNativeFiles.Checked
+		_metadataGroupBox.Enabled = _columnSelector.RightSearchableListItems.Count > 0 OrElse _exportNativeFiles.Checked
 		Me.ManagePotentialTextFields()
 	End Sub
 
@@ -2070,11 +2068,11 @@ Public Class ExportForm
 	End Function
 
 	Private Function GetRightColumnTextFields() As List(Of ViewFieldInfo)
-		Return GetTextFields(_columnSelector.RightListBoxItems.Cast(Of ViewFieldInfo)().ToList())
+		Return GetTextFields(_columnSelector.RightSearchableListItems.Cast(Of ViewFieldInfo).ToList())
 	End Function
 
 	Private Function GetLeftColumnTextFields() As List(Of ViewFieldInfo)
-		Return GetTextFields(_columnSelector.LeftListBoxItems.Cast(Of ViewFieldInfo)().ToList())
+		Return GetTextFields(_columnSelector.RightSearchableListItems.Cast(Of ViewFieldInfo)().ToList())
 	End Function
 
 	Private Function GetTextFields(ByVal unfilteredList As List(Of ViewFieldInfo)) As List(Of ViewFieldInfo)
@@ -2087,7 +2085,7 @@ Public Class ExportForm
 
 	Private Async Function RefreshRelativityInformation() As Task
 		Dim selectedColumns As New System.Collections.ArrayList
-		For Each field As kCura.WinEDDS.ViewFieldInfo In _columnSelector.RightListBoxItems
+		For Each field As kCura.WinEDDS.ViewFieldInfo In _columnSelector.RightSearchableListItems
 			selectedColumns.Add(New kCura.WinEDDS.ViewFieldInfo(field))
 		Next
 		Dim selectedDataSource As Int32 = CInt(_filters.SelectedValue)
@@ -2137,24 +2135,24 @@ Public Class ExportForm
 			_textFieldPrecedencePicker.AllAvailableLongTextFields = allLongTextFields
 		End If
 		'TODO: this will send -1 index to OnDraw during refresh on exports. Known defect. In backlog
-		_columnSelector.LeftListBoxItems.Clear()
-		_columnSelector.RightListBoxItems.Clear()
+		_columnSelector.LeftSearchableList.ClearListBox()
+		_columnSelector.RightSearchableList.ClearListBox()
 		Dim al As New System.Collections.ArrayList(_exportFile.AllExportableFields)
 		al.Sort()
-		_columnSelector.LeftListBoxItems.AddRange(al.ToArray())
+		_columnSelector.LeftSearchableList.AddFields(al.ToArray())
 		For Each field As ViewFieldInfo In selectedColumns
 			Dim itemToShiftIndex As Int32 = -1
-			For i As Int32 = 0 To _columnSelector.LeftListBoxItems.Count - 1
-				Dim item As ViewFieldInfo = DirectCast(_columnSelector.LeftListBoxItems(i), ViewFieldInfo)
+			For i As Int32 = 0 To _columnSelector.LeftSearchableListItems.Count - 1
+				Dim item As ViewFieldInfo = DirectCast(_columnSelector.LeftSearchableListItems(i), ViewFieldInfo)
 				If item.AvfId = field.AvfId Then
 					itemToShiftIndex = i
 					Exit For
 				End If
 			Next
 			If itemToShiftIndex >= 0 Then
-				Dim item As ViewFieldInfo = DirectCast(_columnSelector.LeftListBoxItems(itemToShiftIndex), ViewFieldInfo)
-				_columnSelector.LeftListBoxItems.Remove(item)
-				_columnSelector.RightListBoxItems.Add(item)
+				Dim item As ViewFieldInfo = DirectCast(_columnSelector.LeftSearchableListItems(itemToShiftIndex), ViewFieldInfo)
+				_columnSelector.LeftSearchableList.RemoveField(item)
+				_columnSelector.RightSearchableList.AddField(item)
 			End If
 		Next
 	End Function
@@ -2180,13 +2178,13 @@ Public Class ExportForm
 		End If
 	End Sub
 
-    Private Sub _selectFromListButton_Click(sender As Object, e As EventArgs) Handles _selectFromListButton.Click
-        Cursor = Cursors.WaitCursor
-        Dim selectorFormName As String = "Select " & ExportTypeStringName
-        Dim searchListSelector As New SearchListSelector(_masterDT, selectorFormName)
-        If searchListSelector.ShowDialog() = Windows.Forms.DialogResult.OK Then
-            _filters.SelectedValue = searchListSelector.SelectedValue
-        End If
-        Cursor = Cursors.Default
-    End Sub
+	Private Sub _selectFromListButton_Click(sender As Object, e As EventArgs) Handles _selectFromListButton.Click
+		Cursor = Cursors.WaitCursor
+		Dim selectorFormName As String = "Select " & ExportTypeStringName
+		Dim searchListSelector As New SearchListSelector(_masterDT, selectorFormName)
+		If searchListSelector.ShowDialog() = Windows.Forms.DialogResult.OK Then
+			_filters.SelectedValue = searchListSelector.SelectedValue
+		End If
+		Cursor = Cursors.Default
+	End Sub
 End Class
