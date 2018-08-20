@@ -570,12 +570,12 @@ Namespace kCura.Windows.Forms
 			End If
 		End Sub
 
-		Private Sub _leftListBox_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles _searchableListLeft.DoubleClick
+		Private Sub _leftListBox_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles _searchableListLeft.DoubleClickEvent
 			ShiftSelectedItems(_searchableListLeft, __searchableListRight)
 			EnsureHorizontalScrollbars()
 		End Sub
 
-		Private Sub _rightListBox_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles _searchableListRight.DoubleClick
+		Private Sub _rightListBox_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles _searchableListRight.DoubleClickEvent
 			ShiftSelectedItems(__searchableListRight, _searchableListLeft)
 			EnsureHorizontalScrollbars()
 		End Sub
@@ -588,26 +588,14 @@ Namespace kCura.Windows.Forms
 			_rightListBox.Invalidate()
 		End Sub
 
-		Private Sub _leftListBox_Scrolled(ByVal sender As Object, ByVal e As ScrollEventArgs) Handles _leftListBox.Scrolled
-			If e.ScrollOrientation = ScrollOrientation.HorizontalScroll Then
-				_leftListBox.Invalidate()
-			End If
-		End Sub
-
-		Private Sub _rightListBox_Scrolled(ByVal sender As Object, ByVal e As ScrollEventArgs) Handles _rightListBox.Scrolled
-			If e.ScrollOrientation = ScrollOrientation.HorizontalScroll Then
-				_rightListBox.Invalidate()
-			End If
-		End Sub
-
-		Private Sub _leftListBox_KeyPress(sender As Object, e As KeyPressEventArgs) Handles _leftListBox.KeyPress
+		Private Sub _leftListBox_KeyPress(sender As Object, e As KeyPressEventArgs) Handles _searchableListLeft.KeyPressEvent
 			If e.KeyChar.Equals(Microsoft.VisualBasic.ControlChars.Cr) OrElse e.KeyChar.Equals(Microsoft.VisualBasic.ControlChars.Lf) Then
 				ShiftSelectedItems(_searchableListLeft, __searchableListRight)
 				EnsureHorizontalScrollbars()
 			End If
 		End Sub
 
-		Private Sub _rightListBox_KeyPress(sender As Object, e As KeyPressEventArgs) Handles _rightListBox.KeyPress
+		Private Sub _rightListBox_KeyPress(sender As Object, e As KeyPressEventArgs) Handles _searchableListRight.KeyPressEvent
 			If e.KeyChar.Equals(Microsoft.VisualBasic.ControlChars.Cr) OrElse e.KeyChar.Equals(Microsoft.VisualBasic.ControlChars.Lf) Then
 				ShiftSelectedItems(__searchableListRight, _searchableListLeft)
 				EnsureHorizontalScrollbars()

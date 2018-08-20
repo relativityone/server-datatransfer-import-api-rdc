@@ -8,6 +8,8 @@ Namespace Specialized
 		Private _timer As Timer
 		Private _dataSource As New List(Of Object)
 		Private Const _DELAYED_TEXT_CHANGED_TIMEOUT_IN_MILLISECONDS As Integer = 600
+		Public Event DoubleClickEvent(sender As Object, e As EventArgs)
+		Public Event KeyPressEvent(sender As Object, e As KeyPressEventArgs)
 
 		Private Function GetMaxTextLength() As Integer
 			Dim maxLength As Integer = 0
@@ -113,7 +115,21 @@ Namespace Specialized
 			End Get
 		End Property
 
-#End Region
 
+
+
+#End Region
+		Private Sub _listBox_DoubleClick(sender As Object, e As EventArgs) Handles _listBox.DoubleClick
+			RaiseEvent DoubleClickEvent(sender, e)
+		End Sub
+		Private Sub _listBox_Scrolled(ByVal sender As Object, ByVal e As ScrollEventArgs) Handles _listBox.Scrolled
+			If e.ScrollOrientation = ScrollOrientation.HorizontalScroll Then
+				Listbox.Invalidate()
+			End If
+		End Sub
+
+		Private Sub _listBox_KeyPress(sender As Object, e As KeyPressEventArgs) Handles _listBox.KeyPress
+			RaiseEvent KeyPressEvent(sender, e)
+		End Sub
 	End Class
 End Namespace
