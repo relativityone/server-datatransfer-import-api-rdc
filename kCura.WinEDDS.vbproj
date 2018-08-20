@@ -179,14 +179,10 @@
       <HintPath>..\..\packages\Relativity.Kepler.1.0.1.445\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Relativity.Logging.9.4.317\lib\net462\Relativity.Logging.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\Relativity.Logging.9.4.320\lib\net462\Relativity.Logging.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.317\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.320\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.OAuth2Client">
       <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.27\lib\net462\Relativity.OAuth2Client.dll</HintPath>
@@ -206,33 +202,33 @@
     <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.445, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.445\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Telemetry.APM, Version=9.4.164.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Telemetry.APM.9.4.164\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.APM">
+      <HintPath>..\..\packages\Relativity.Telemetry.APM.2018.8.0\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.164.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.164\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared">
+      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.2018.8.0\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.6.88.61, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface.9.6.88.61\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client, Version=4.0.18176.4, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.4.1.17\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client, Version=4.2.3.32, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.4.2.3\lib\net462\Relativity.Transfer.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Aspera, Version=4.0.18176.4, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.4.1.17\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Aspera, Version=4.2.3.32, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.4.2.3\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Core, Version=4.0.18176.4, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.4.1.17\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Core, Version=4.2.3.32, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.4.2.3\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.FileShare, Version=4.0.18176.4, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.4.1.17\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.FileShare, Version=4.2.3.32, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.4.2.3\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Http, Version=4.0.18176.4, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.4.1.17\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Http, Version=4.2.3.32, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.4.2.3\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
@@ -471,6 +467,10 @@
     <Compile Include="Importers\OpticonFileReader.vb" />
     <Compile Include="Exceptions\InvalidPackageException.vb" />
     <Compile Include="Importers\OutputFileWriter.vb" />
+    <Compile Include="Importers\TimeKeeper\DefaultTimeKeeperManager.vb" />
+    <Compile Include="Importers\TimeKeeper\DefaultTimerKeeper.vb" />
+    <Compile Include="Importers\TimeKeeper\ImportTimeKeeperBase.vb" />
+    <Compile Include="Importers\TimeKeeper\ITimeKeeperManager.vb" />
     <Compile Include="IO\FileStreamFactory.vb" />
     <Compile Include="IO\IFileStreamFactory.vb" />
     <Compile Include="Monitoring\Sinks\IMetricsConfig.vb" />
