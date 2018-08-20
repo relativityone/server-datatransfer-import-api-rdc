@@ -18,7 +18,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
         public List<LongTextExportRequest> RetrieveLongTextExportRequests()
         {
-            IList<LongTextExportRequest> longTextExportRequests = _longTextRepository.GetExportRequests();
+	        IEnumerable<LongTextExportRequest> longTextExportRequests = _longTextRepository.GetExportRequests();
             return new List<LongTextExportRequest>(longTextExportRequests);
         }
 
@@ -26,10 +26,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
         {
             var fileExportRequests = new List<ExportRequest>();
 
-            IList<ExportRequest> nativeExportRequests = _nativeRepository.GetExportRequests();
+	        IEnumerable<ExportRequest> nativeExportRequests = _nativeRepository.GetExportRequests();
             fileExportRequests.AddRange(nativeExportRequests);
 
-            IList<ExportRequest> imageExportRequests = _imageRepository.GetExportRequests();
+	        IEnumerable<ExportRequest> imageExportRequests = _imageRepository.GetExportRequests();
             fileExportRequests.AddRange(imageExportRequests);
             return fileExportRequests;
         }

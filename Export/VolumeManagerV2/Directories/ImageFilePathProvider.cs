@@ -4,14 +4,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 {
 	public class ImageFilePathProvider : FilePathProvider
 	{
-		public ImageFilePathProvider(ILabelManager labelManager, ExportFile exportSettings, IDirectoryHelper directoryHelper, ILog logger) : base(labelManager, exportSettings,
+		public ImageFilePathProvider(ILabelManagerForArtifact labelManagerForArtifact,
+			ExportFile exportSettings, IDirectoryHelper directoryHelper, ILog logger) : base(labelManagerForArtifact, exportSettings,
 			directoryHelper, logger)
 		{
 		}
 
-		protected override string GetSubdirectoryLabel()
+		protected override string GetSubdirectoryLabel(int objectExportInfoArtifactId)
 		{
-			return LabelManager.GetCurrentImageSubdirectoryLabel();
+			return LabelManagerForArtifact.GetImageSubdirectoryLabel(objectExportInfoArtifactId);
 		}
 	}
 }

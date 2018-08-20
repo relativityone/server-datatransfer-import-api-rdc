@@ -7,6 +7,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 	public class ImageRepository : IClearable
 	{
 		private List<Image> _images;
+		private readonly object _syncLock = new object();
 
 		public ImageRepository()
 		{
@@ -15,37 +16,66 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 
 		public void Add(IList<Image> images)
 		{
-			_images.AddRange(images);
+			lock (_syncLock)
+			{
+				_images.AddRange(images);
+			}
 		}
 
 		public Image GetImage(int artifactId, string batesNumber)
 		{
-			return _images.First(x => x.Artifact.ArtifactID == artifactId && x.Artifact.BatesNumber == batesNumber);
+			lock (_syncLock)
+			{
+				return _images.First(x => x.Artifact.ArtifactID == artifactId && x.Artifact.BatesNumber == batesNumber);
+			}
 		}
 
 		public IList<Image> GetArtifactImages(int artifactId)
 		{
-			return _images.Where(x => x.Artifact.ArtifactID == artifactId).ToList();
+			lock (_syncLock)
+			{
+				return _images.Where(x => x.Artifact.ArtifactID == artifactId).ToList();
+			}
 		}
 
 		public IList<Image> GetImages()
 		{
-			return _images;
+			lock (_syncLock)
+			{
+				return _images;
+			}
 		}
 
-		public IList<ExportRequest> GetExportRequests()
+		public IEnumerable<ExportRequest> GetExportRequests()
 		{
-			return _images.Where(x => !x.HasBeenDownloaded).Select(x => (ExportRequest) x.ExportRequest).ToList();
+			lock (_syncLock)
+			{
+				return _images.Where(x => !x.HasBeenDownloaded).Select(x => (ExportRequest) x.ExportRequest);
+			}
+		}
+
+		public bool AnyRequestForLocation(string destinationLocation)
+		{
+			lock (_syncLock)
+			{
+				return GetExportRequests().Any(x => x.DestinationLocation == destinationLocation);
+			}
 		}
 
 		public Image GetByLineNumber(int lineNumber)
 		{
-			return _images.FirstOrDefault(x => x.ExportRequest?.Order == lineNumber);
+			lock (_syncLock)
+			{
+				return _images.FirstOrDefault(x => x.ExportRequest?.Order == lineNumber);
+			}
 		}
 
 		public void Clear()
 		{
-			_images = new List<Image>();
+			lock (_syncLock)
+			{
+				_images = new List<Image>();
+			}
 		}
 	}
 }

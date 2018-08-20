@@ -22,15 +22,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 
 		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions, CancellationToken cancellationToken)
 		{
-			for (int i = 0; i < artifacts.Length; i++)
-			{
-				if (cancellationToken.IsCancellationRequested)
-				{
-					return;
-				}
-
-				ValidateNativesForArtifact(artifacts[i], predictions[i]);
-			}
+			 for (int i = 0; i < artifacts.Length; i++)
+			 {
+			 	if (cancellationToken.IsCancellationRequested)
+			 	{
+			 		return;
+			 	}
+   
+			 	ValidateNativesForArtifact(artifacts[i], predictions[i]);
+			 }
 		}
 
 		private void ValidateNativesForArtifact(ObjectExportInfo artifact, VolumePredictions prediction)
@@ -40,20 +40,22 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 				return;
 			}
 
-			if (!_fileHelper.Exists(artifact.NativeTempLocation) || _fileHelper.GetFileSize(artifact.NativeTempLocation) == 0)
+			bool nativeFileExists = _fileHelper.Exists(artifact.NativeTempLocation);
+
+			if (!nativeFileExists || _fileHelper.GetFileSize(artifact.NativeTempLocation) == 0)
 			{
 				_logger.LogError("Native file {file} missing or empty for artifact {artifactId}.", artifact.NativeTempLocation, artifact.ArtifactID);
-				string errorMessage = _fileHelper.Exists(artifact.NativeTempLocation) ? "Empty file." : "File missing.";
+				string errorMessage = nativeFileExists ? "Empty file." : "File missing.";
 				_errorFileWriter.Write(ErrorFileWriter.ExportFileType.Native, artifact.IdentifierValue, artifact.NativeTempLocation, errorMessage);
 			}
-			else if (_fileHelper.GetFileSize(artifact.NativeTempLocation) != prediction.NativeFilesSize)
-			{
+			// else if (_fileHelper.GetFileSize(artifact.NativeTempLocation) != prediction.NativeFilesSize)
+			// {
 				//long actualFileSize = _fileHelper.GetFileSize(artifact.NativeTempLocation);
 				//_logger.LogWarning("Native file {file} size {actualSize} is different from expected {expectedSize} for artifact {artifactId}.", artifact.NativeTempLocation, actualFileSize,
 				//	prediction.NativeFilesSize, artifact.ArtifactID);
 				//_status.WriteWarning(
 				//	$"Native file {artifact.NativeTempLocation} size {actualFileSize} is different from expected {prediction.NativeFilesSize} for artifact {artifact.ArtifactID}.");
-			}
+			// }
 		}
 	}
 }

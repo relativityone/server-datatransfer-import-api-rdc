@@ -22,6 +22,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 
 		public void PrepareBatch(ObjectExportInfo[] artifacts, VolumePredictions[] volumePredictions, CancellationToken cancellationToken)
 		{
+			_logger.LogDebug("Preparing batch sequentially");
+
 			for (int i = 0; i < artifacts.Length; i++)
 			{
 				if (cancellationToken.IsCancellationRequested)

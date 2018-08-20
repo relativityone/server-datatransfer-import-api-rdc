@@ -11,14 +11,16 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 	public class NativeRepositoryBuilder : IRepositoryBuilder
 	{
 		private readonly NativeRepository _nativeRepository;
-		private readonly ILabelManager _labelManager;
+		private readonly ILabelManagerForArtifact _labelManagerForArtifact;
 		private readonly IExportRequestBuilder _fileExportRequestBuilder;
 		private readonly ILog _logger;
 
-		public NativeRepositoryBuilder(NativeRepository nativeRepository, ILabelManager labelManager, IExportRequestBuilder fileExportRequestBuilder, ILog logger)
+		public NativeRepositoryBuilder(NativeRepository nativeRepository,
+			ILabelManagerForArtifact labelManagerForArtifact, IExportRequestBuilder fileExportRequestBuilder,
+			ILog logger)
 		{
 			_nativeRepository = nativeRepository;
-			_labelManager = labelManager;
+			_labelManagerForArtifact = labelManagerForArtifact;
 			_fileExportRequestBuilder = fileExportRequestBuilder;
 			_logger = logger;
 		}
@@ -27,7 +29,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 		{
 			_logger.LogVerbose("Adding artifact {artifactId} to repository.", artifact.ArtifactID);
 
-			artifact.DestinationVolume = _labelManager.GetCurrentVolumeLabel();
+			artifact.DestinationVolume = _labelManagerForArtifact.GetVolumeLabel(artifact.ArtifactID);
 			_logger.LogVerbose("Current volume set to {volume}.", artifact.DestinationVolume);
 
 			IList<ExportRequest> exportRequests = _fileExportRequestBuilder.Create(artifact, cancellationToken);
@@ -40,7 +42,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 				HasBeenDownloaded = exportRequests.Count == 0
 			};
 
-			_nativeRepository.Add(native.InList());
+			_nativeRepository.Add(native);
 		}
 	}
 }

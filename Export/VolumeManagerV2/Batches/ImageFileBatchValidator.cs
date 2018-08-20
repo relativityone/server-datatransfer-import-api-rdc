@@ -46,13 +46,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 
 			if (images[0].SuccessfulRollup)
 			{
-				//_logger.LogVerbose("Image {image} successfully rollup, so checking single image.", images[0].BatesNumber);
-				//ValidateSingleImage(artifact, images[0], volumePredictions);
+				_logger.LogVerbose("Image {image} successfully rollup, so checking single image.", images[0].BatesNumber);
+				ValidateSingleImage(artifact, images[0], volumePredictions);
 			}
 			else
 			{
-				//_logger.LogVerbose("Image {image} wasn't rollup, so checking multiple images.", images[0].BatesNumber);
-				//ValidateAllImages(artifact, images, volumePredictions);
+				_logger.LogVerbose("Image {image} wasn't rollup, so checking multiple images.", images[0].BatesNumber);
+				ValidateAllImages(artifact, images, volumePredictions);
 			}
 		}
 
@@ -63,28 +63,29 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 				return;
 			}
 
-			if (!_fileHelper.Exists(image.TempLocation) || _fileHelper.GetFileSize(image.TempLocation) == 0)
+			bool fileExists = _fileHelper.Exists(image.TempLocation);
+			if (!fileExists || _fileHelper.GetFileSize(image.TempLocation) == 0)
 			{
 				_logger.LogError("Image file {file} missing or empty for image {image.BatesNumber} in artifact {artifactId}.", image.TempLocation, image.BatesNumber, artifact.ArtifactID);
-				string errorMessage = _fileHelper.Exists(image.TempLocation) ? "File empty." : "File missing.";
+				string errorMessage = fileExists ? "File empty." : "File missing.";
 				_errorFileWriter.Write(ErrorFileWriter.ExportFileType.Image, artifact.IdentifierValue, image.TempLocation, errorMessage);
 			}
-			else if (_fileHelper.GetFileSize(image.TempLocation) != predictions.ImageFilesSize)
-			{
-				long actualFileSize = _fileHelper.GetFileSize(image.TempLocation);
-				//_logger.LogWarning("Image file {file} size {actualSize} is different from expected {expectedSize} for image {batesNumber} in artifact {artifactId}.", image.TempLocation,
-				//	actualFileSize, predictions.ImageFilesSize, image.BatesNumber, artifact.ArtifactID);
-				if (actualFileSize > 0 && actualFileSize < predictions.ImageFilesSize)
-				{
-					//_status.WriteUpdate(
-					//	$"Image file {image.TempLocation} size {actualFileSize} is different from expected {predictions.ImageFilesSize} for image {image.BatesNumber} in artifact {artifact.ArtifactID}, but images have been merged into multi-page format.");
-				}
-				else
-				{
-					//_status.WriteWarning(
-					//	$"Image file {image.TempLocation} size {actualFileSize} is different from expected {predictions.ImageFilesSize} for image {image.BatesNumber} in artifact {artifact.ArtifactID}.");
-				}
-			}
+			//else if (_fileHelper.GetFileSize(image.TempLocation) != predictions.ImageFilesSize)
+			//{
+			//	long actualFileSize = _fileHelper.GetFileSize(image.TempLocation);
+			//	//_logger.LogWarning("Image file {file} size {actualSize} is different from expected {expectedSize} for image {batesNumber} in artifact {artifactId}.", image.TempLocation,
+			//	//	actualFileSize, predictions.ImageFilesSize, image.BatesNumber, artifact.ArtifactID);
+			//	if (actualFileSize > 0 && actualFileSize < predictions.ImageFilesSize)
+			//	{
+			//		//_status.WriteUpdate(
+			//		//	$"Image file {image.TempLocation} size {actualFileSize} is different from expected {predictions.ImageFilesSize} for image {image.BatesNumber} in artifact {artifact.ArtifactID}, but images have been merged into multi-page format.");
+			//	}
+			//	else
+			//	{
+			//		//_status.WriteWarning(
+			//		//	$"Image file {image.TempLocation} size {actualFileSize} is different from expected {predictions.ImageFilesSize} for image {image.BatesNumber} in artifact {artifact.ArtifactID}.");
+			//	}
+			//}
 		}
 
 		private void ValidateAllImages(ObjectExportInfo artifact, List<ImageExportInfo> images, VolumePredictions predictions)
@@ -97,30 +98,31 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 					continue;
 				}
 
-				if (!_fileHelper.Exists(images[i].TempLocation) || _fileHelper.GetFileSize(images[i].TempLocation) == 0)
+				bool fileExists = _fileHelper.Exists(images[i].TempLocation);
+				if (!fileExists || _fileHelper.GetFileSize(images[i].TempLocation) == 0)
 				{
 					_logger.LogWarning("Image file {file} missing or empty for image {image.BatesNumber} in artifact {artifactId}.", images[i].TempLocation, images[i].BatesNumber,
 						artifact.ArtifactID);
-					string errorMessage = _fileHelper.Exists(images[i].TempLocation) ? "File empty." : "File missing.";
+					string errorMessage = fileExists ? "File empty." : "File missing.";
 					_errorFileWriter.Write(ErrorFileWriter.ExportFileType.Image, artifact.IdentifierValue, images[i].TempLocation, errorMessage);
 					imageMissing = true;
 				}
 			}
 
-			if (imageMissing)
-			{
-				_logger.LogWarning("One or more images missing - skipping size validation.");
-			}
-			else
-			{
-				long imagesSize = images.Where(x => !string.IsNullOrWhiteSpace(x.TempLocation)).Sum(x => _fileHelper.GetFileSize(x.TempLocation));
-				if (imagesSize != predictions.ImageFilesSize)
-				{
-					//_logger.LogWarning("Image files total size {actualSize} is different from expected {expectedSize} for images in artifact {artifactId}.", imagesSize,
-					//	predictions.ImageFilesSize, artifact.ArtifactID);
-					//_status.WriteWarning($"Image files total size {imagesSize} is different from expected {predictions.ImageFilesSize} for images in artifact {artifact.ArtifactID}.");
-				}
-			}
+			//if (imageMissing)
+			//{
+			//	_logger.LogWarning("One or more images missing - skipping size validation.");
+			//}
+			//else
+			//{
+			//	long imagesSize = images.Where(x => !string.IsNullOrWhiteSpace(x.TempLocation)).Sum(x => _fileHelper.GetFileSize(x.TempLocation));
+			//	if (imagesSize != predictions.ImageFilesSize)
+			//	{
+			//		//_logger.LogWarning("Image files total size {actualSize} is different from expected {expectedSize} for images in artifact {artifactId}.", imagesSize,
+			//		//	predictions.ImageFilesSize, artifact.ArtifactID);
+			//		//_status.WriteWarning($"Image files total size {imagesSize} is different from expected {predictions.ImageFilesSize} for images in artifact {artifact.ArtifactID}.");
+			//	}
+			//}
 		}
 	}
 }
