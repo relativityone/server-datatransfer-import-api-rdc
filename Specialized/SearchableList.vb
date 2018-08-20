@@ -2,19 +2,12 @@
 Imports System.Collections.Generic
 Imports System.Linq
 Imports System.Windows.Forms
-Imports Relativity
 
 Namespace Specialized
 	Public Class SearchableList
 		Private _timer As Timer
 		Private _dataSource As New List(Of Object)
 		Private Const _DELAYED_TEXT_CHANGED_TIMEOUT_IN_MILLISECONDS As Integer = 600
-
-		Private Sub AddItemsToDataSourceFromList(source As List(Of Object))
-			Dim list As New List(Of Object)
-			list.AddRange(source)
-			_dataSource = list
-		End Sub
 
 		Private Function GetMaxTextLength() As Integer
 			Dim maxLength As Integer = 0
@@ -65,11 +58,7 @@ Namespace Specialized
 			listOfItems.Sort()
 			Return listOfItems
 		End Function
-		Public Sub Initialize(arrayList As ArrayList)
-			_dataSource = arrayList.Cast(Of Object)().ToList()
-			_listBox.DataSource = _dataSource
-			ResizeScrollBar()
-		End Sub
+
 		Public Sub ForceRefresh()
 			FilterAndAssignDataSource()
 		End Sub
@@ -78,21 +67,27 @@ Namespace Specialized
 			_listBox.DataSource = Filter(_dataSource, _textBox.Text)
 		End Sub
 
-		Private Sub RedrawListBox()
-			_listBox.Refresh()
-		End Sub
-
 		Public Sub RemoveSelection()
 			_listBox.SelectedIndex = -1
 		End Sub
-		Private Sub _listBox_Scrolled(sender As Object, e As ScrollEventArgs)
-			RedrawListBox()
+
+		Public Sub ClearListBox()
+			_dataSource = New List(Of Object)
+			ForceRefresh()
 		End Sub
 
-		Private Sub _listBox_KeyDown(sender As Object, e As KeyEventArgs)
-			If e.KeyCode = Keys.Left OrElse e.KeyCode = Keys.Right Then
-				RedrawListBox()
-			End If
+		Public Sub AddField(fieldInfo As Object)
+			_dataSource.Add(fieldInfo)
+			ForceRefresh()
+		End Sub
+
+		Public Sub AddFields(fields As Object())
+			_dataSource.AddRange(fields)
+			ForceRefresh()
+		End Sub
+
+		Public Sub RemoveField(field As Object)
+			_dataSource.Remove(field)
 		End Sub
 
 #Region "Properties"
@@ -113,7 +108,6 @@ Namespace Specialized
 		End Property
 
 		Public ReadOnly Property CurrentItems() As List(Of Object)
-
 			Get
 				Return _listBox.Items.Cast(Of Object).ToList()
 			End Get
