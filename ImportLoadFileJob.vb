@@ -138,6 +138,8 @@ Namespace kCura.Relativity.DataReaderClient
 				process.FileSizeMapped = Settings.FileSizeMapped
 				process.FileSizeColumn = Settings.FileSizeColumn
 				process.FileNameColumn = Settings.FileNameColumn
+				process.TimeKeeperManager = Settings.TimeKeeperManager
+
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.LoadFile = CreateLoadFile(Settings)
 
