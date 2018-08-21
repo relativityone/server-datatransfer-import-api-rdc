@@ -103,64 +103,64 @@ Public Class ExportForm
 	Public WithEvents _nestedValueDelimiter As System.Windows.Forms.ComboBox
 	Public WithEvents LabelSelectedColumns As System.Windows.Forms.Label
 	Public WithEvents _filters As System.Windows.Forms.ComboBox
-    Public WithEvents _columnSelector As kCura.Windows.Forms.TwoListBox
-    Public WithEvents _filtersBox As System.Windows.Forms.GroupBox
-    Public WithEvents _metadataGroupBox As System.Windows.Forms.GroupBox
-    Public WithEvents LabelMetadataDataFileFormat As System.Windows.Forms.Label
-    Public WithEvents _nativeFileFormat As System.Windows.Forms.ComboBox
-    Public WithEvents _dataFileEncoding As kCura.EDDS.WinForm.EncodingPicker
-    Public WithEvents LabelDataFileEncoding As System.Windows.Forms.Label
-    Public WithEvents LabelTextFileEncoding As System.Windows.Forms.Label
-    Public WithEvents _textFileEncoding As kCura.EDDS.WinForm.EncodingPicker
-    Public WithEvents _textFieldPrecedencePicker As kCura.EDDS.WinForm.TextFieldPrecedencePicker
-    Public WithEvents LabelTextPrecedence As System.Windows.Forms.Label
-    Public WithEvents RefreshMenu As System.Windows.Forms.MenuItem
-    Public WithEvents MenuItem3 As System.Windows.Forms.MenuItem
-    Public WithEvents SaveExportSettings As System.Windows.Forms.MenuItem
-    Public WithEvents LoadExportSettings As System.Windows.Forms.MenuItem
-    Public WithEvents _volumeDigitPadding As System.Windows.Forms.NumericUpDown
-    Public WithEvents LabelVolumeNumberOfDigits As System.Windows.Forms.Label
-    Public WithEvents _subdirectoryDigitPadding As System.Windows.Forms.NumericUpDown
-    Public WithEvents LabelSubdirectoryNumberOfDigits As System.Windows.Forms.Label
-    Public WithEvents LabelStartAtRecordNumber As System.Windows.Forms.Label
-    Public WithEvents _startExportAtDocumentNumber As System.Windows.Forms.NumericUpDown
-    Public WithEvents _saveExportSettingsDialog As System.Windows.Forms.SaveFileDialog
-    Friend WithEvents _selectFromListButton As Button
-    Public WithEvents _loadExportSettingsDialog As System.Windows.Forms.OpenFileDialog
+	Public WithEvents _columnSelector As kCura.Windows.Forms.TwoListBox
+	Public WithEvents _filtersBox As System.Windows.Forms.GroupBox
+	Public WithEvents _metadataGroupBox As System.Windows.Forms.GroupBox
+	Public WithEvents LabelMetadataDataFileFormat As System.Windows.Forms.Label
+	Public WithEvents _nativeFileFormat As System.Windows.Forms.ComboBox
+	Public WithEvents _dataFileEncoding As kCura.EDDS.WinForm.EncodingPicker
+	Public WithEvents LabelDataFileEncoding As System.Windows.Forms.Label
+	Public WithEvents LabelTextFileEncoding As System.Windows.Forms.Label
+	Public WithEvents _textFileEncoding As kCura.EDDS.WinForm.EncodingPicker
+	Public WithEvents _textFieldPrecedencePicker As kCura.EDDS.WinForm.TextFieldPrecedencePicker
+	Public WithEvents LabelTextPrecedence As System.Windows.Forms.Label
+	Public WithEvents RefreshMenu As System.Windows.Forms.MenuItem
+	Public WithEvents MenuItem3 As System.Windows.Forms.MenuItem
+	Public WithEvents SaveExportSettings As System.Windows.Forms.MenuItem
+	Public WithEvents LoadExportSettings As System.Windows.Forms.MenuItem
+	Public WithEvents _volumeDigitPadding As System.Windows.Forms.NumericUpDown
+	Public WithEvents LabelVolumeNumberOfDigits As System.Windows.Forms.Label
+	Public WithEvents _subdirectoryDigitPadding As System.Windows.Forms.NumericUpDown
+	Public WithEvents LabelSubdirectoryNumberOfDigits As System.Windows.Forms.Label
+	Public WithEvents LabelStartAtRecordNumber As System.Windows.Forms.Label
+	Public WithEvents _startExportAtDocumentNumber As System.Windows.Forms.NumericUpDown
+	Public WithEvents _saveExportSettingsDialog As System.Windows.Forms.SaveFileDialog
+	Friend WithEvents _selectFromListButton As Button
+	Public WithEvents _loadExportSettingsDialog As System.Windows.Forms.OpenFileDialog
 
-    Private Sub InitializeComponent()
-        Me.components = New System.ComponentModel.Container()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ExportForm))
-        Me.MainMenu1 = New System.Windows.Forms.MainMenu(Me.components)
-        Me.ExportMenu = New System.Windows.Forms.MenuItem()
-        Me.RunMenu = New System.Windows.Forms.MenuItem()
-        Me.SaveExportSettings = New System.Windows.Forms.MenuItem()
-        Me.LoadExportSettings = New System.Windows.Forms.MenuItem()
-        Me.MenuItem3 = New System.Windows.Forms.MenuItem()
-        Me.RefreshMenu = New System.Windows.Forms.MenuItem()
-        Me._destinationFolderDialog = New System.Windows.Forms.FolderBrowserDialog()
-        Me._productionPrecedenceBox = New System.Windows.Forms.GroupBox()
-        Me._productionPrecedenceList = New System.Windows.Forms.ListBox()
-        Me._pickPrecedenceButton = New System.Windows.Forms.Button()
-        Me.LabelNamedAfter = New System.Windows.Forms.Label()
-        Me._overwriteCheckBox = New System.Windows.Forms.CheckBox()
-        Me._browseButton = New System.Windows.Forms.Button()
-        Me._folderPath = New System.Windows.Forms.TextBox()
-        Me._appendOriginalFilenameCheckbox = New System.Windows.Forms.CheckBox()
-        Me.GroupBoxExportLocation = New System.Windows.Forms.GroupBox()
-        Me._nativeFileNameSourceCombo = New System.Windows.Forms.ComboBox()
-        Me.TabControl1 = New System.Windows.Forms.TabControl()
-        Me._dataSourceTabPage = New System.Windows.Forms.TabPage()
-        Me._filtersBox = New System.Windows.Forms.GroupBox()
-        Me._selectFromListButton = New System.Windows.Forms.Button()
-        Me._startExportAtDocumentNumber = New System.Windows.Forms.NumericUpDown()
-        Me.LabelStartAtRecordNumber = New System.Windows.Forms.Label()
-        Me.LabelSelectedColumns = New System.Windows.Forms.Label()
-        Me._filters = New System.Windows.Forms.ComboBox()
-        Me._columnSelector = New kCura.Windows.Forms.TwoListBox()
-        Me._destinationFileTabPage = New System.Windows.Forms.TabPage()
-        Me.GroupBoxTextAndNativeFileNames = New System.Windows.Forms.GroupBox()
-        Me._metadataGroupBox = New System.Windows.Forms.GroupBox()
+	Private Sub InitializeComponent()
+		Me.components = New System.ComponentModel.Container()
+		Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ExportForm))
+		Me.MainMenu1 = New System.Windows.Forms.MainMenu(Me.components)
+		Me.ExportMenu = New System.Windows.Forms.MenuItem()
+		Me.RunMenu = New System.Windows.Forms.MenuItem()
+		Me.SaveExportSettings = New System.Windows.Forms.MenuItem()
+		Me.LoadExportSettings = New System.Windows.Forms.MenuItem()
+		Me.MenuItem3 = New System.Windows.Forms.MenuItem()
+		Me.RefreshMenu = New System.Windows.Forms.MenuItem()
+		Me._destinationFolderDialog = New System.Windows.Forms.FolderBrowserDialog()
+		Me._productionPrecedenceBox = New System.Windows.Forms.GroupBox()
+		Me._productionPrecedenceList = New System.Windows.Forms.ListBox()
+		Me._pickPrecedenceButton = New System.Windows.Forms.Button()
+		Me.LabelNamedAfter = New System.Windows.Forms.Label()
+		Me._overwriteCheckBox = New System.Windows.Forms.CheckBox()
+		Me._browseButton = New System.Windows.Forms.Button()
+		Me._folderPath = New System.Windows.Forms.TextBox()
+		Me._appendOriginalFilenameCheckbox = New System.Windows.Forms.CheckBox()
+		Me.GroupBoxExportLocation = New System.Windows.Forms.GroupBox()
+		Me._nativeFileNameSourceCombo = New System.Windows.Forms.ComboBox()
+		Me.TabControl1 = New System.Windows.Forms.TabControl()
+		Me._dataSourceTabPage = New System.Windows.Forms.TabPage()
+		Me._filtersBox = New System.Windows.Forms.GroupBox()
+		Me._selectFromListButton = New System.Windows.Forms.Button()
+		Me._startExportAtDocumentNumber = New System.Windows.Forms.NumericUpDown()
+		Me.LabelStartAtRecordNumber = New System.Windows.Forms.Label()
+		Me.LabelSelectedColumns = New System.Windows.Forms.Label()
+		Me._filters = New System.Windows.Forms.ComboBox()
+		Me._columnSelector = New kCura.Windows.Forms.TwoListBox()
+		Me._destinationFileTabPage = New System.Windows.Forms.TabPage()
+		Me.GroupBoxTextAndNativeFileNames = New System.Windows.Forms.GroupBox()
+		Me._metadataGroupBox = New System.Windows.Forms.GroupBox()
 		Me.LabelTextPrecedence = New System.Windows.Forms.Label()
 		Me._textFieldPrecedencePicker = New kCura.EDDS.WinForm.TextFieldPrecedencePicker()
 		Me._textFileEncoding = New kCura.EDDS.WinForm.EncodingPicker()
@@ -415,8 +415,8 @@ Public Class ExportForm
 		Me._selectFromListButton.Image = CType(resources.GetObject("_selectFromListButton.Image"), System.Drawing.Image)
 		Me._selectFromListButton.Location = New System.Drawing.Point(12, 20)
 		Me._selectFromListButton.Name = "_selectFromListButton"
-        Me._selectFromListButton.Padding = New System.Windows.Forms.Padding(0, 0, 0, 2)
-        Me._selectFromListButton.Size = New System.Drawing.Size(21, 21)
+		Me._selectFromListButton.Padding = New System.Windows.Forms.Padding(0, 0, 0, 2)
+		Me._selectFromListButton.Size = New System.Drawing.Size(21, 21)
 		Me._selectFromListButton.TabIndex = 22
 		Me._selectFromListButton.Text = " "
 		Me._selectFromListButton.UseVisualStyleBackColor = True
@@ -2179,13 +2179,13 @@ Public Class ExportForm
 		End If
 	End Sub
 
-    Private Sub _selectFromListButton_Click(sender As Object, e As EventArgs) Handles _selectFromListButton.Click
-        Cursor = Cursors.WaitCursor
-        Dim selectorFormName As String = "Select " & ExportTypeStringName
-        Dim searchListSelector As New SearchListSelector(_masterDT, selectorFormName)
-        If searchListSelector.ShowDialog() = Windows.Forms.DialogResult.OK Then
-            _filters.SelectedValue = searchListSelector.SelectedValue
-        End If
-        Cursor = Cursors.Default
-    End Sub
+	Private Sub _selectFromListButton_Click(sender As Object, e As EventArgs) Handles _selectFromListButton.Click
+		Cursor = Cursors.WaitCursor
+		Dim selectorFormName As String = "Select " & ExportTypeStringName
+		Dim searchListSelector As New SearchListSelector(_masterDT, selectorFormName)
+		If searchListSelector.ShowDialog() = Windows.Forms.DialogResult.OK Then
+			_filters.SelectedValue = searchListSelector.SelectedValue
+		End If
+		Cursor = Cursors.Default
+	End Sub
 End Class
