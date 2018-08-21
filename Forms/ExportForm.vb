@@ -415,8 +415,8 @@ Public Class ExportForm
 		Me._selectFromListButton.Image = CType(resources.GetObject("_selectFromListButton.Image"), System.Drawing.Image)
 		Me._selectFromListButton.Location = New System.Drawing.Point(12, 20)
 		Me._selectFromListButton.Name = "_selectFromListButton"
-		Me._selectFromListButton.Padding = New System.Windows.Forms.Padding(0, 0, 2, 2)
-		Me._selectFromListButton.Size = New System.Drawing.Size(21, 21)
+        Me._selectFromListButton.Padding = New System.Windows.Forms.Padding(0, 0, 0, 2)
+        Me._selectFromListButton.Size = New System.Drawing.Size(21, 21)
 		Me._selectFromListButton.TabIndex = 22
 		Me._selectFromListButton.Text = " "
 		Me._selectFromListButton.UseVisualStyleBackColor = True
