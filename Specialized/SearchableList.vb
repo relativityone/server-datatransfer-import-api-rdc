@@ -1,5 +1,6 @@
 ﻿Imports System.Collections
 Imports System.Collections.Generic
+Imports System.Drawing
 Imports System.Linq
 Imports System.Windows.Forms
 
@@ -7,6 +8,8 @@ Namespace Specialized
 	Public Class SearchableList
 		Private _timer As Timer
 		Private _dataSource As New List(Of Object)
+		Private _isTextBoxPlaceholderUsed As Boolean = True
+		Private _isUserTyping As Boolean = False
 		Private Const _DELAYED_TEXT_CHANGED_TIMEOUT_IN_MILLISECONDS As Integer = 600
 		Public Event DoubleClickEvent(sender As Object, e As EventArgs)
 		Public Event KeyPressEvent(sender As Object, e As KeyPressEventArgs)
@@ -29,6 +32,7 @@ Namespace Specialized
 
 		Private Sub selectionSearchInput_TextChanged(sender As Object, e As EventArgs) _
 			Handles _textBox.TextChanged
+			If _isTextBoxPlaceholderUsed AndAlso Not _isUserTyping Then Return
 			If IsNothing(_timer) Then
 				_timer = New Timer()
 				AddHandler _timer.Tick, AddressOf Timer_Tick
@@ -137,5 +141,25 @@ Namespace Specialized
 			RaiseEvent KeyUpEvent(sender, e)
 		End Sub
 
+		Private Sub _textBox_Enter(sender As Object, e As EventArgs) Handles _textBox.Enter
+			_isUserTyping = True
+			If _isTextBoxPlaceholderUsed Then
+				_textBox.Text = ""
+				_textBox.ForeColor = Color.Black
+				_textBox.Font = New Font(_textBox.Font, FontStyle.Regular)
+			End If
+		End Sub
+
+		Private Sub _textBox_Leave(sender As Object, e As EventArgs) Handles _textBox.Leave
+			_isUserTyping = False
+			If _textBox.Text = "" Then
+				_isTextBoxPlaceholderUsed = True
+				_textBox.Text = "Filter"
+				_textBox.ForeColor = Color.Gray
+				_textBox.Font = New Font(_textBox.Font, FontStyle.Italic)
+			Else
+				_isTextBoxPlaceholderUsed = False
+			End If
+		End Sub
 	End Class
 End Namespace
