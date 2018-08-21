@@ -2072,7 +2072,7 @@ Public Class ExportForm
 	End Function
 
 	Private Function GetLeftColumnTextFields() As List(Of ViewFieldInfo)
-		Return GetTextFields(_columnSelector.RightSearchableListItems.Cast(Of ViewFieldInfo)().ToList())
+		Return GetTextFields(_columnSelector.LeftSearchableListItems.Cast(Of ViewFieldInfo)().ToList())
 	End Function
 
 	Private Function GetTextFields(ByVal unfilteredList As List(Of ViewFieldInfo)) As List(Of ViewFieldInfo)
