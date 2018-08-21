@@ -44,13 +44,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 
 			if (exportSettings.ExportImages && exportSettings.VolumeInfo.CopyImageFilesFromRepository)
 			{
-				if (exportConfig.ForceParallelismInNewExport)
+				if (!exportConfig.ForceParallelismInNewExport)
 				{
-					AddValidator<ImageFileParallelBatchValidator>(batchValidators, container);
+					AddValidator<ImageFileBatchValidator>(batchValidators, container);
 				}
 				else
 				{
-					AddValidator<ImageFileBatchValidator>(batchValidators, container);
+					AddValidator<ImageFileParallelBatchValidator>(batchValidators, container);
 				}
 			}
 
