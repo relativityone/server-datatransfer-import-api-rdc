@@ -404,7 +404,7 @@ Namespace kCura.WinEDDS
 
 			' This will tie both native and BCP to a single unique identifier.
 			nativeParameters.ClientRequestId = Guid.NewGuid()
-			nativeParameters.Credentials = args.Credentials
+			nativeParameters.Credentials = args.TapiCredentials
 			nativeParameters.AsperaDocRootLevels = Config.TapiAsperaNativeDocRootLevels
 			nativeParameters.FileShare = args.CaseInfo.DocumentPath
 			nativeParameters.ForceAsperaClient = Config.TapiForceAsperaClient

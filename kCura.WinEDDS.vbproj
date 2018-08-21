@@ -306,8 +306,10 @@
     </Compile>
     <Compile Include="Credentials\CredentialsNotSetException.vb" />
     <Compile Include="Credentials\ICredentialsProvider.vb" />
+    <Compile Include="Credentials\IntegratedAuthenticationOAuthCredentialsProvider.vb" />
     <Compile Include="Credentials\OAuth2ClientCredentials.vb" />
     <Compile Include="Credentials\OAuth2ImplicitCredentials.vb" />
+    <Compile Include="Credentials\OAuth2ImplicitCredentialsHelper.vb" />
     <Compile Include="Credentials\RelativityWebApiCredentialsProvider.vb" />
     <Compile Include="Credentials\UserCredentialsProvider.vb" />
     <Compile Include="Event\AppEvent.vb">
