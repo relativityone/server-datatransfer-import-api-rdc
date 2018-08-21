@@ -68,28 +68,22 @@ Namespace kCura.EDDS.WinForm
 		Private WithEvents _optionsForm As OptionsForm
 		Private _messageService As IMessageService
 		Private _documentRepositoryList As String()
+		Private ReadOnly oAuth2ImplicitCredentialsHelper As Lazy(Of OAuth2ImplicitCredentialsHelper) = New Lazy(Of OAuth2ImplicitCredentialsHelper)(AddressOf CreateOAuth2ImplicitCredentialsHelper)
 #End Region
 
 #Region "Properties"
 
-		Public Sub SetImplicitCredentialProvider()
-			If RelativityWebApiCredentialsProvider.Instance().CredentialsSet() AndAlso RelativityWebApiCredentialsProvider.Instance().ProviderType() = GetType(OAuth2ImplicitCredentials) Then
-				Dim tempImplicitProvider As OAuth2ImplicitCredentials = CType(RelativityWebApiCredentialsProvider.Instance().GetProvider(), OAuth2ImplicitCredentials)
-				tempImplicitProvider.CloseLoginView()
-			End If
-			Dim authEndpoint As String = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/authorize")
+        Public Sub SetImplicitCredentialProvider()
+            oAuth2ImplicitCredentialsHelper.Value.SetImplicitCredentialProvider()
+        End Sub
 
-			'Dim implicitProvider = New OAuth2ImplicitCredentials(New ThreadedLoginView(New Uri(authEndpoint), "Relativity Desktop Client"), AddressOf On_TokenRetrieved)
-			Dim implicitProvider = New OAuth2ImplicitCredentials(New Uri(authEndpoint), "Relativity Desktop Client", AddressOf On_TokenRetrieved)
-			RelativityWebApiCredentialsProvider.Instance().SetProvider(implicitProvider)
-		End Sub
+        Friend Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential)
+	        Return Await oAuth2ImplicitCredentialsHelper.Value.GetCredentialsAsync()
+        End Function
 
-		Friend Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential)
-			If Not RelativityWebApiCredentialsProvider.Instance().CredentialsSet() Then
-				SetImplicitCredentialProvider()
-			End If
-			Return Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
-		End Function
+	    Private Function CreateOAuth2ImplicitCredentialsHelper() As OAuth2ImplicitCredentialsHelper
+		    Return New OAuth2ImplicitCredentialsHelper(AddressOf GetIdentityServerLocation, AddressOf On_TokenRetrieved)
+	    End Function
 
 		Private Async Function GetFieldProviderCacheAsync() As Task(Of IFieldProviderCache)
 			If (_fieldProviderCache Is Nothing) Then
