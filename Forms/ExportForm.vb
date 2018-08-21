@@ -1,6 +1,7 @@
 Imports System.Linq
 Imports System.Collections.Generic
 Imports System.Threading.Tasks
+Imports Castle.Core.Internal
 Imports kCura.Windows.Forms
 
 Public Class ExportForm
@@ -1454,7 +1455,7 @@ Public Class ExportForm
 			If TypeOf newFile Is kCura.WinEDDS.ErrorExportFile Then
 				MsgBox(DirectCast(newFile, kCura.WinEDDS.ErrorExportFile).ErrorMessage, MsgBoxStyle.Exclamation)
 			Else
-				Dim exportFilterSelectionForm As New kCura.EDDS.WinForm.ExportFilterSelectForm(newFile.LoadFilesPrefix, ExportTypeStringName, DirectCast(_filters.DataSource, DataTable))
+				Dim exportFilterSelectionForm As New kCura.EDDS.WinForm.ExportFilterSelectForm(newFile.ViewID, ExportTypeStringName, DirectCast(_filters.DataSource, DataTable))
 				exportFilterSelectionForm.ShowDialog()
 				If exportFilterSelectionForm.DialogResult = DialogResult.OK Then
 					If exportFilterSelectionForm.SelectedItemArtifactIDs IsNot Nothing Then
@@ -1467,6 +1468,16 @@ Public Class ExportForm
 				_columnSelector.EnsureHorizontalScrollbars()
 			End If
 		End If
+	End Sub
+
+	''' <summary>
+	''' Select view field.
+	''' Move view field from left listbox to right listbox.
+	''' </summary>
+	''' <param name="listboxViewField">listbox view field to be selected</param>
+	Public Sub SelectField(listboxViewField As ViewFieldInfo)
+		_columnSelector.RightListBoxItems.Add(listboxViewField)
+		_columnSelector.LeftListBoxItems.Remove(listboxViewField)
 	End Sub
 
 	Public Async Function LoadExportFile(ByVal ef As kCura.WinEDDS.ExportFile) As Task
@@ -1562,18 +1573,13 @@ Public Class ExportForm
 		If ef.SelectedViewFields IsNot Nothing Then
 
 
-
-			Dim itemsToRemoveFromLeftListBox As New System.Collections.Generic.List(Of kCura.WinEDDS.ViewFieldInfo)()
 			_columnSelector.ClearSelection(kCura.Windows.Forms.ListBoxLocation.Right)
 			_columnSelector.RightListBoxItems.Clear()
-			For Each viewFieldFromKwx As kCura.WinEDDS.ViewFieldInfo In ef.SelectedViewFields
-				For Each leftListBoxViewField As kCura.WinEDDS.ViewFieldInfo In _columnSelector.LeftListBoxItems
-					If leftListBoxViewField.DisplayName.Equals(viewFieldFromKwx.DisplayName, StringComparison.InvariantCulture) Then
-						itemsToRemoveFromLeftListBox.Add(leftListBoxViewField)
-						_columnSelector.RightListBoxItems.Add(leftListBoxViewField)
-					End If
-				Next
-			Next
+
+			ef.SelectedViewFields _
+				.SelectMany(Function (x) kCura.EDDS.WinForm.Utility.FindCounterpartField(_columnSelector.LeftListBoxItems, x)) _
+				.ForEach(AddressOf SelectField)
+
 
 			If ef.AllExportableFields IsNot Nothing Then
 				Dim defaultSelectedIds As New System.Collections.ArrayList
@@ -1601,9 +1607,6 @@ Public Class ExportForm
 				End If
 			End If
 
-			For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
-				_columnSelector.LeftListBoxItems.Remove(vfi)
-			Next
 		End If
 
 		ManagePotentialTextFields()
@@ -1751,7 +1754,7 @@ Public Class ExportForm
 		InitializeLayout()
 	End Sub
 
-	Public Sub HandleLoad(ByVal sender As Object, ByVal e As System.EventArgs, ByVal volumeDigitPadding As Int32, ByVal exportSubdirectoryDigitPadding As Int32)
+	Public Async Sub HandleLoad(ByVal sender As Object, ByVal e As System.EventArgs, ByVal volumeDigitPadding As Int32, ByVal exportSubdirectoryDigitPadding As Int32)
 		_dataSourceIsSet = False
 		_filters.DataSource = ExportFile.DataTable
 		_filters.DisplayMember = "Name"
@@ -1785,7 +1788,8 @@ Public Class ExportForm
 						Me.Text = "Relativity Desktop Client | Export Folder and Subfolders"
 					End If
 				Else
-					Me.Text = String.Format("Relativity Desktop Client | Export {0} Objects", Me.GetObjectTypeName)
+					Dim objectTypeName As String = Await Me.GetObjectTypeName()
+					Me.Text = String.Format("Relativity Desktop Client | Export {0} Objects", objectTypeName)
 				End If
 			Case ExportFile.ExportType.Production
 				LabelNamedAfter.Visible = True
