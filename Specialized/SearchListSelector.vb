@@ -10,7 +10,8 @@ Namespace Specialized
 		Inherits Form
 		Private ReadOnly _dataSource As DataTable
 		Private _timer As Timer
-		Dim _isTextBoxPlaceholderUsed As Boolean = True
+		Private _isTextBoxPlaceholderUsed As Boolean = True
+		Private _isUserTyping As Boolean = False
 
 		Private Const _DELAYED_TEXT_CHANGED_TIMEOUT_IN_MILLISECONDS As Integer = 600
 		Private Const _DISPLAY_MEMBER_FIELD_NAME As String = "Name"
@@ -35,7 +36,7 @@ Namespace Specialized
 
 		Private Sub selectionSearchInput_TextChanged(sender As Object, e As EventArgs) _
 			Handles selectionSearchInput.TextChanged
-			If _isTextBoxPlaceholderUsed Then Return
+			If _isTextBoxPlaceholderUsed AndAlso Not _isUserTyping Then Return
 
 			If IsNothing(_timer) Then
 				_timer = New Timer()
@@ -91,6 +92,7 @@ Namespace Specialized
 		End Sub
 
 		Private Sub selectionSearchInput_Enter(sender As Object, e As EventArgs) Handles selectionSearchInput.Enter
+			_isUserTyping = True
 			If _isTextBoxPlaceholderUsed Then
 				selectionSearchInput.Text = ""
 				selectionSearchInput.ForeColor = Color.Black
@@ -99,6 +101,7 @@ Namespace Specialized
 		End Sub
 
 		Private Sub selectionSearchInput_Leave(sender As Object, e As EventArgs) Handles selectionSearchInput.Leave
+			_isUserTyping = False
 			If selectionSearchInput.Text = "" Then
 				_isTextBoxPlaceholderUsed = True
 				selectionSearchInput.Text = "Filter"
