@@ -22,18 +22,18 @@ Namespace kCura.EDDS.WinForm
 
 		Public Shared Function ExtractFieldMap(ByVal tLSelect As kCura.Windows.Forms.TwoListBox, ByVal docFieldList As DocumentFieldCollection) As DocumentField()
 			Dim i As Int32
-			Dim docfields(tLSelect.RightListBoxItems.Count - 1) As DocumentField
+			Dim docfields(tLSelect.RightSearchableListItems.Count - 1) As DocumentField
 			Dim docfield As DocumentField
 			For i = 0 To docfields.Length - 1
-				docfield = docFieldList.Item(CType(tLSelect.RightListBoxItems.Item(i), String))
+				docfield = docFieldList.Item(CType(tLSelect.RightSearchableListItems.Item(i), String))
 				docfields(i) = docfield
 			Next
 			Return docfields
 		End Function
 
 		Public Shared Function ExtractFieldMap(ByVal caseFields As kCura.Windows.Forms.TwoListBox, ByVal fileColumns As kCura.Windows.Forms.TwoListBox, ByVal docFieldList As DocumentFieldCollection, ByVal artifactTypeID As Int32, ObjectFieldIdList As IList(Of Int32)) As LoadFileFieldMap
-			Dim selectedFields As System.Windows.Forms.ListBox.ObjectCollection = caseFields.RightListBoxItems
-			Dim selectedColumns As System.Windows.Forms.ListBox.ObjectCollection = fileColumns.LeftListBoxItems
+			Dim selectedFields As List(Of Object) = caseFields.RightSearchableListItems
+			Dim selectedColumns As List(Of Object) = fileColumns.LeftSearchableListItems
 			Dim fieldMap As New kCura.WinEDDS.LoadFileFieldMap
 			Dim docfield As DocumentField
 			Dim i As Int32
@@ -62,7 +62,7 @@ Namespace kCura.EDDS.WinForm
 			Return fieldMap
 		End Function
 
-		Public Shared Function ExtractFieldNames(ByVal list As System.Windows.Forms.ListBox.ObjectCollection) As String()
+		Public Shared Function ExtractFieldNames(ByVal list As List(Of Object)) As String()
 			Dim i As Int32
 			Dim names(list.Count - 1) As String
 			For i = 0 To list.Count - 1
