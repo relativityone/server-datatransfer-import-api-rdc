@@ -51,7 +51,6 @@ Public Class ExportForm
 	Public WithEvents _folderPath As System.Windows.Forms.TextBox
 	Public WithEvents _appendOriginalFilenameCheckbox As System.Windows.Forms.CheckBox
 	Public WithEvents GroupBoxExportLocation As System.Windows.Forms.GroupBox
-	Public WithEvents _nativeFileNameSourceCombo As System.Windows.Forms.ComboBox
 	Public WithEvents TabControl1 As System.Windows.Forms.TabControl
 	Public WithEvents _dataSourceTabPage As System.Windows.Forms.TabPage
 	Public WithEvents _destinationFileTabPage As System.Windows.Forms.TabPage
@@ -127,6 +126,8 @@ Public Class ExportForm
 	Public WithEvents _startExportAtDocumentNumber As System.Windows.Forms.NumericUpDown
 	Public WithEvents _saveExportSettingsDialog As System.Windows.Forms.SaveFileDialog
 	Friend WithEvents _selectFromListButton As Button
+	Friend WithEvents _textAndNativeFileNamePicker As kCura.EDDS.WinForm.Controls.TextAndNativeFileNamePicker
+	Friend WithEvents TextAndNativeFileNamePicker1 As kCura.EDDS.WinForm.Controls.TextAndNativeFileNamePicker
 	Public WithEvents _loadExportSettingsDialog As System.Windows.Forms.OpenFileDialog
 
 	Private Sub InitializeComponent()
@@ -149,7 +150,6 @@ Public Class ExportForm
 		Me._folderPath = New System.Windows.Forms.TextBox()
 		Me._appendOriginalFilenameCheckbox = New System.Windows.Forms.CheckBox()
 		Me.GroupBoxExportLocation = New System.Windows.Forms.GroupBox()
-		Me._nativeFileNameSourceCombo = New System.Windows.Forms.ComboBox()
 		Me.TabControl1 = New System.Windows.Forms.TabControl()
 		Me._dataSourceTabPage = New System.Windows.Forms.TabPage()
 		Me._filtersBox = New System.Windows.Forms.GroupBox()
@@ -161,6 +161,7 @@ Public Class ExportForm
 		Me._columnSelector = New kCura.Windows.Forms.TwoListBox()
 		Me._destinationFileTabPage = New System.Windows.Forms.TabPage()
 		Me.GroupBoxTextAndNativeFileNames = New System.Windows.Forms.GroupBox()
+		Me._textAndNativeFileNamePicker = New kCura.EDDS.WinForm.Controls.TextAndNativeFileNamePicker()
 		Me._metadataGroupBox = New System.Windows.Forms.GroupBox()
 		Me.LabelTextPrecedence = New System.Windows.Forms.Label()
 		Me._textFieldPrecedencePicker = New kCura.EDDS.WinForm.TextFieldPrecedencePicker()
@@ -222,6 +223,7 @@ Public Class ExportForm
 		Me._recordDelimiter = New System.Windows.Forms.ComboBox()
 		Me._saveExportSettingsDialog = New System.Windows.Forms.SaveFileDialog()
 		Me._loadExportSettingsDialog = New System.Windows.Forms.OpenFileDialog()
+		Me.TextAndNativeFileNamePicker1 = New kCura.EDDS.WinForm.Controls.TextAndNativeFileNamePicker()
 		Me._productionPrecedenceBox.SuspendLayout()
 		Me.GroupBoxExportLocation.SuspendLayout()
 		Me.TabControl1.SuspendLayout()
@@ -256,11 +258,10 @@ Public Class ExportForm
 		Me.ExportMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.RunMenu, Me.SaveExportSettings, Me.LoadExportSettings, Me.MenuItem3, Me.RefreshMenu})
 		Me.ExportMenu.Text = "File"
 		'
-		'LoadExportSettings
+		'RunMenu
 		'
-		Me.LoadExportSettings.Index = 0
-		Me.LoadExportSettings.Shortcut = System.Windows.Forms.Shortcut.CtrlO
-		Me.LoadExportSettings.Text = "Load Export Settings"
+		Me.RunMenu.Index = 0
+		Me.RunMenu.Text = "Run"
 		'
 		'SaveExportSettings
 		'
@@ -268,10 +269,11 @@ Public Class ExportForm
 		Me.SaveExportSettings.Shortcut = System.Windows.Forms.Shortcut.CtrlS
 		Me.SaveExportSettings.Text = "Save Export Settings"
 		'
-		'RunMenu
+		'LoadExportSettings
 		'
-		Me.RunMenu.Index = 2
-		Me.RunMenu.Text = "Run"
+		Me.LoadExportSettings.Index = 2
+		Me.LoadExportSettings.Shortcut = System.Windows.Forms.Shortcut.CtrlO
+		Me.LoadExportSettings.Text = "Load Export Settings"
 		'
 		'MenuItem3
 		'
@@ -366,16 +368,6 @@ Public Class ExportForm
 		Me.GroupBoxExportLocation.TabStop = False
 		Me.GroupBoxExportLocation.Text = "Export Location"
 		'
-		'_nativeFileNameSourceCombo
-		'
-		Me._nativeFileNameSourceCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-		Me._nativeFileNameSourceCombo.Items.AddRange(New Object() {"Select...", "Identifier", "Begin production number"})
-		Me._nativeFileNameSourceCombo.Location = New System.Drawing.Point(116, 18)
-		Me._nativeFileNameSourceCombo.Name = "_nativeFileNameSourceCombo"
-		Me._nativeFileNameSourceCombo.Size = New System.Drawing.Size(176, 21)
-		Me._nativeFileNameSourceCombo.TabIndex = 30
-		Me._nativeFileNameSourceCombo.Visible = False
-		'
 		'TabControl1
 		'
 		Me.TabControl1.Controls.Add(Me._dataSourceTabPage)
@@ -469,7 +461,7 @@ Public Class ExportForm
 		Me._columnSelector.Location = New System.Drawing.Point(12, 64)
 		Me._columnSelector.Name = "_columnSelector"
 		Me._columnSelector.OuterBox = kCura.Windows.Forms.ListBoxLocation.Left
-		Me._columnSelector.RightOrderControlVisible = True
+		Me._columnSelector.RightOrderControlVisible = False
 		Me._columnSelector.Size = New System.Drawing.Size(366, 343)
 		Me._columnSelector.TabIndex = 17
 		'
@@ -493,15 +485,22 @@ Public Class ExportForm
 		'
 		'GroupBoxTextAndNativeFileNames
 		'
+		Me.GroupBoxTextAndNativeFileNames.Controls.Add(Me._textAndNativeFileNamePicker)
 		Me.GroupBoxTextAndNativeFileNames.Controls.Add(Me._appendOriginalFilenameCheckbox)
 		Me.GroupBoxTextAndNativeFileNames.Controls.Add(Me.LabelNamedAfter)
-		Me.GroupBoxTextAndNativeFileNames.Controls.Add(Me._nativeFileNameSourceCombo)
 		Me.GroupBoxTextAndNativeFileNames.Location = New System.Drawing.Point(435, 4)
 		Me.GroupBoxTextAndNativeFileNames.Name = "GroupBoxTextAndNativeFileNames"
 		Me.GroupBoxTextAndNativeFileNames.Size = New System.Drawing.Size(324, 68)
 		Me.GroupBoxTextAndNativeFileNames.TabIndex = 29
 		Me.GroupBoxTextAndNativeFileNames.TabStop = False
 		Me.GroupBoxTextAndNativeFileNames.Text = "Text and Native File Names"
+		'
+		'_textAndNativeFileNamePicker
+		'
+		Me._textAndNativeFileNamePicker.Location = New System.Drawing.Point(116, 18)
+		Me._textAndNativeFileNamePicker.Name = "_textAndNativeFileNamePicker"
+		Me._textAndNativeFileNamePicker.Size = New System.Drawing.Size(176, 21)
+		Me._textAndNativeFileNamePicker.TabIndex = 32
 		'
 		'_metadataGroupBox
 		'
@@ -1107,6 +1106,13 @@ Public Class ExportForm
 		Me._loadExportSettingsDialog.Filter = "Relativity Desktop Client settings files (*.kwx)|*.kwx|All files (*.*)|*.*"
 		Me._loadExportSettingsDialog.RestoreDirectory = True
 		'
+		'TextAndNativeFileNamePicker1
+		'
+		Me.TextAndNativeFileNamePicker1.Location = New System.Drawing.Point(116, 18)
+		Me.TextAndNativeFileNamePicker1.Name = "TextAndNativeFileNamePicker1"
+		Me.TextAndNativeFileNamePicker1.Size = New System.Drawing.Size(176, 21)
+		Me.TextAndNativeFileNamePicker1.TabIndex = 32
+		'
 		'ExportForm
 		'
 		Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -1348,13 +1354,14 @@ Public Class ExportForm
 				AppendErrorMessage(msg, "No image file type selected")
 			End If
 		End If
-		If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then
-			If _exportNativeFiles.Checked Then
-				If CType(_nativeFileNameSourceCombo.SelectedItem, String) = "Select..." Then
-					AppendErrorMessage(msg, "No file name source selected")
-				End If
-			End If
-		End If
+		'		If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then
+		'			If _exportNativeFiles.Checked Then
+		'				If CType(_nativeFileNameSourceCombo.SelectedItem, String) = "Select..." Then
+		'					AppendErrorMessage(msg, "No file name source selected")
+		'				End If
+		'			End If
+		'		End If
+		' TODO
 		If _dataFileEncoding.SelectedEncoding Is Nothing Then
 			AppendErrorMessage(msg, "No encoding selected for metadata file.")
 		End If
@@ -1410,7 +1417,7 @@ Public Class ExportForm
 			Case ExportFile.ExportType.Production
 				_exportFile.ArtifactID = CType(_filters.SelectedValue, Int32)
 				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
-				If _nativeFileNameSourceCombo.SelectedItem.ToString.ToLower = "identifier" Then
+				If TextAndNativeFileNamePicker1.SelectedItem.ToString.ToLower = "identifier" Then
 					_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier
 				Else
 					_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production
@@ -1543,11 +1550,11 @@ Public Class ExportForm
 
 		Select Case ef.ExportNativesToFileNamedFrom
 			Case kCura.WinEDDS.ExportNativeWithFilenameFrom.Identifier
-				_nativeFileNameSourceCombo.SelectedItem = "Identifier"
+				TextAndNativeFileNamePicker1.SelectedItem = "Identifier"
 			Case kCura.WinEDDS.ExportNativeWithFilenameFrom.Production
-				_nativeFileNameSourceCombo.SelectedItem = "Begin production number"
+				TextAndNativeFileNamePicker1.SelectedItem = "Begin production number"
 			Case kCura.WinEDDS.ExportNativeWithFilenameFrom.Select
-				_nativeFileNameSourceCombo.SelectedItem = "Select..."
+				TextAndNativeFileNamePicker1.SelectedItem = "Select..."
 		End Select
 
 		If ef.LoadFileIsHtml Then
@@ -1821,8 +1828,9 @@ Public Class ExportForm
 				LabelNamedAfter.Visible = True
 				_filters.Text = "Productions"
 				_filtersBox.Text = "Productions"
-				_nativeFileNameSourceCombo.Visible = True
-				_nativeFileNameSourceCombo.SelectedIndex = 0
+				'				_nativeFileNameSourceCombo.Visible = True
+				'				_nativeFileNameSourceCombo.SelectedIndex = 0
+				' TODO set dropdown values
 				Me.Text = "Relativity Desktop Client | Export Production Set"
 				_productionPrecedenceBox.Visible = False
 		End Select

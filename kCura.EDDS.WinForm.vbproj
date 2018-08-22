@@ -433,6 +433,12 @@
     <Compile Include="Controls\EncodingPicker.vb">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Controls\TextAndNativeFileNamePicker.Designer.vb">
+      <DependentUpon>TextAndNativeFileNamePicker.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TextAndNativeFileNamePicker.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Controls\TextFieldPrecedencePicker.Designer.vb">
       <DependentUpon>TextFieldPrecedencePicker.vb</DependentUpon>
     </Compile>
@@ -534,6 +540,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\EncodingPicker.resx">
       <DependentUpon>EncodingPicker.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TextAndNativeFileNamePicker.resx">
+      <DependentUpon>TextAndNativeFileNamePicker.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\TextFieldPrecedencePicker.resx">
       <DependentUpon>TextFieldPrecedencePicker.vb</DependentUpon>
