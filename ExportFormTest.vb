@@ -1064,19 +1064,19 @@ Namespace kCura.EDDS.WinForm.Tests
 		<Test()> Public Async Function LoadExportFile_NamedAfter_NotSelected() As Task
 			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.ExportNativesToFileNamedFrom = kCura.WinEDDS.ExportNativeWithFilenameFrom.Select}
 			Await _form.LoadExportFile(ef)
-			Assert.AreEqual("Select...", _form._nativeFileNameSourceCombo.SelectedItem.ToString)
+			Assert.AreEqual("Select...", _form._textAndNativeFileNamePicker.SelectedItem.ToString)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_NamedAfter_Identifier() As Task
 			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.AppendOriginalFileName = False, .ExportNativesToFileNamedFrom = kCura.WinEDDS.ExportNativeWithFilenameFrom.Identifier}
 			Await _form.LoadExportFile(ef)
-			Assert.AreEqual("Identifier", _form._nativeFileNameSourceCombo.SelectedItem.ToString)
+			Assert.AreEqual("Identifier", _form._textAndNativeFileNamePicker.SelectedItem.ToString)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_NamedAfter_Production() As Task
 			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.AppendOriginalFileName = False, .ExportNativesToFileNamedFrom = kCura.WinEDDS.ExportNativeWithFilenameFrom.Production}
 			Await _form.LoadExportFile(ef)
-			Assert.AreEqual("Begin production number", _form._nativeFileNameSourceCombo.SelectedItem.ToString)
+			Assert.AreEqual("Begin production number", _form._textAndNativeFileNamePicker.SelectedItem.ToString)
 		End Function
 
 #End Region
