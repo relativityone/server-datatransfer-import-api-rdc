@@ -20,6 +20,7 @@ Namespace kCura.Windows.Forms
 
 			'This call is required by the Windows Form Designer.
 			InitializeComponent()
+
 		End Sub
 
 		'UserControl overrides dispose to clean up the component list.
@@ -50,25 +51,6 @@ Namespace kCura.Windows.Forms
 		Friend WithEvents _searchableListLeft As Specialized.SearchableList
 		Friend WithEvents _searchableListRight As Specialized.SearchableList
 		Friend WithEvents _moveLeftSelectedItemUp As System.Windows.Forms.Button
-
-
-		Public ReadOnly Property RightListBox() As kCura.Windows.Forms.ListBox
-			Get
-				Return _rightListBox
-			End Get
-		End Property
-
-
-		Public ReadOnly Property LeftSearchableList() As SearchableList
-			Get
-				Return _searchableListLeft
-			End Get
-		End Property
-		Public ReadOnly Property RightSearchableList() As SearchableList
-			Get
-				Return _searchableListRight
-			End Get
-		End Property
 
 		Private Sub InitializeComponent()
 			Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(TwoListBox))
@@ -375,6 +357,24 @@ Namespace kCura.Windows.Forms
 
 #Region " Properties "
 
+		Public ReadOnly Property RightListBox() As kCura.Windows.Forms.ListBox
+			Get
+				Return _rightListBox
+			End Get
+		End Property
+
+
+		Public ReadOnly Property LeftSearchableList() As SearchableList
+			Get
+				Return _searchableListLeft
+			End Get
+		End Property
+		Public ReadOnly Property RightSearchableList() As SearchableList
+			Get
+				Return _searchableListRight
+			End Get
+		End Property
+
 		Public Property AlternateRowColors() As Boolean
 
 		Public Property OuterBox() As ListBoxLocation
@@ -425,6 +425,7 @@ Namespace kCura.Windows.Forms
 				Return _moveRightSelectedItemDown.Visible
 			End Get
 			Set(ByVal value As Boolean)
+				SetListBoxSortProperties(value)
 				If _moveRightSelectedItemDown.Visible <> value OrElse _moveRightSelectedItemUp.Visible <> value Then
 					_moveRightSelectedItemDown.Visible = value
 					_moveRightSelectedItemUp.Visible = value
@@ -432,6 +433,11 @@ Namespace kCura.Windows.Forms
 				End If
 			End Set
 		End Property
+
+		Private Sub SetListBoxSortProperties(isLeftListBoxSortable As Boolean)
+			_searchableListRight.IsListSortable = Not isLeftListBoxSortable
+			_searchableListLeft.IsListSortable = isLeftListBoxSortable
+		End Sub
 
 		Private _buttonsCentered As Boolean
 		Public Property KeepButtonsCentered() As Boolean
@@ -597,6 +603,11 @@ Namespace kCura.Windows.Forms
 				ShiftSelectedItems(__searchableListRight, _searchableListLeft)
 				EnsureHorizontalScrollbars()
 			End If
+		End Sub
+
+		Public Sub ForceRefresh()
+			_searchableListLeft.ForceRefresh()
+			_searchableListRight.ForceRefresh()
 		End Sub
 
 #End Region

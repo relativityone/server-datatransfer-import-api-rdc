@@ -11,9 +11,15 @@ Namespace Specialized
 		Private _isTextBoxPlaceholderUsed As Boolean = True
 		Private _isUserTyping As Boolean = False
 		Private Const _DELAYED_TEXT_CHANGED_TIMEOUT_IN_MILLISECONDS As Integer = 600
+
 		Public Event DoubleClickEvent(sender As Object, e As EventArgs)
 		Public Event KeyPressEvent(sender As Object, e As KeyPressEventArgs)
 		Public Event KeyUpEvent(sender As Object, e As KeyEventArgs)
+
+		Protected Overrides Sub OnCreateControl()
+			MyBase.OnCreateControl()
+			SetTextBoxPlaceholderText()
+		End Sub
 
 		Private Function GetMaxTextLength() As Integer
 			Dim maxLength As Integer = 0
@@ -32,7 +38,6 @@ Namespace Specialized
 
 		Private Sub selectionSearchInput_TextChanged(sender As Object, e As EventArgs) _
 			Handles _textBox.TextChanged
-			If _isTextBoxPlaceholderUsed AndAlso Not _isUserTyping Then Return
 			If IsNothing(_timer) Then
 				_timer = New Timer()
 				AddHandler _timer.Tick, AddressOf Timer_Tick
@@ -49,20 +54,20 @@ Namespace Specialized
 			If Not IsNothing(_timer) Then
 				_timer.Stop()
 			End If
+			If _isTextBoxPlaceholderUsed AndAlso Not _isUserTyping Then Return
 			Cursor = Cursors.WaitCursor
 			FilterAndAssignDataSource()
 			ResizeScrollBar()
 			Cursor = Cursors.Default
 		End Sub
 
-		Private Function Filter(dataSource As List(Of Object), filterText As String) As List(Of Object)
+		Private Function Filter(sourceList As List(Of Object), filterText As String) As List(Of Object)
 			If IsNothing(filterText) Then
-				Return dataSource
+				Return sourceList
 			End If
 			Dim filterTextLower As String = filterText.ToLower
-			Dim items As IEnumerable(Of Object) = From c In dataSource Where c.ToString().ToLower().Contains(filterTextLower) Select c
+			Dim items As IEnumerable(Of Object) = From c In sourceList Where c.ToString().ToLower().Contains(filterTextLower) Select c
 			Dim listOfItems As List(Of Object) = items.ToList()
-			listOfItems.Sort()
 			Return listOfItems
 		End Function
 
@@ -71,7 +76,11 @@ Namespace Specialized
 		End Sub
 
 		Private Sub FilterAndAssignDataSource()
-			_listBox.DataSource = Filter(_dataSource, _textBox.Text)
+			Dim listOfFields As List(Of Object) = Filter(_dataSource, If(_isTextBoxPlaceholderUsed, "", _textBox.Text))
+			If (IsListSortable) Then
+				listOfFields.Sort()
+			End If
+			_listBox.DataSource = listOfFields
 		End Sub
 
 		Public Sub RemoveSelection()
@@ -98,7 +107,7 @@ Namespace Specialized
 		End Sub
 
 #Region "Properties"
-
+		Public Property IsListSortable As Boolean = True
 		Public ReadOnly Property Listbox() As kCura.Windows.Forms.ListBox
 			Get
 				Return _listBox
@@ -119,7 +128,6 @@ Namespace Specialized
 				Return _listBox.Items.Cast(Of Object).ToList()
 			End Get
 		End Property
-
 
 
 
@@ -144,22 +152,28 @@ Namespace Specialized
 		Private Sub _textBox_Enter(sender As Object, e As EventArgs) Handles _textBox.Enter
 			_isUserTyping = True
 			If _isTextBoxPlaceholderUsed Then
+				_isTextBoxPlaceholderUsed = False
 				_textBox.Text = ""
 				_textBox.ForeColor = Color.Black
 				_textBox.Font = New Font(_textBox.Font, FontStyle.Regular)
 			End If
 		End Sub
+		Private Sub SetTextBoxPlaceholderText()
+			_isTextBoxPlaceholderUsed = True
+			_textBox.Text = "Filter"
+			_textBox.ForeColor = Color.Gray
+			_textBox.Font = New Font(_textBox.Font, FontStyle.Italic)
+
+		End Sub
 
 		Private Sub _textBox_Leave(sender As Object, e As EventArgs) Handles _textBox.Leave
 			_isUserTyping = False
 			If _textBox.Text = "" Then
-				_isTextBoxPlaceholderUsed = True
-				_textBox.Text = "Filter"
-				_textBox.ForeColor = Color.Gray
-				_textBox.Font = New Font(_textBox.Font, FontStyle.Italic)
+				SetTextBoxPlaceholderText()
 			Else
 				_isTextBoxPlaceholderUsed = False
 			End If
 		End Sub
+
 	End Class
 End Namespace
