@@ -58,6 +58,7 @@ Namespace kCura.WinEDDS
 				RaiseStatusEvent(EventType.Progress, "End Image Upload")
 			Catch ex As Exception
 				RaiseStatusEvent(EventType.Error, ex.Message)
+				RaiseFatalError(ex)
 			End Try
 			Return Nothing
 		End Function
@@ -68,21 +69,23 @@ Namespace kCura.WinEDDS
 			While Not valuearray Is Nothing AndAlso _continue
 				Dim record As New ImageRecord
 				record.OriginalIndex = Me.CurrentLineNumber
-				record.IsNewDoc = valuearray(Columns.MultiPageIndicator).ToLower = "Y"
-				record.FileLocation = valuearray(Columns.FileLocation)
+				record.IsNewDoc = GetValue(valuearray, Columns.MultiPageIndicator).ToLower = "Y"
+				record.FileLocation =  GetValue(valuearray, Columns.FileLocation)
+				record.BatesNumber =  GetValue(valuearray, Columns.DocumentArtifactID)
 
 				Dim filePath As String = BulkImageFileImporter.GetFileLocation(record)
 				If Not filePath = "" Then
 					filePath = Me.CheckFile(filePath)
 				End If
-				record.BatesNumber = Me.GetBatesNumber(valuearray)
+
 				If record.BatesNumber = "" Then
-					Me.RaiseStatusEvent(EventType.Progress, "Line improperly formatted.")
+					Me.RaiseStatusEvent(EventType.Progress, $"Line {CurrentLineNumber} improperly formatted. Invalid bates number.")
 				ElseIf filePath = "" Then
 					Me.RaiseStatusEvent(EventType.Progress, $"Record '{record.BatesNumber}' processed - file info error.")
 				Else
 					Me.RaiseStatusEvent(EventType.Progress, $"Record '{record.BatesNumber}' processed.")
 				End If
+
 				If MyBase.HasReachedEOF Then
 					valuearray = Nothing
 				Else
@@ -90,14 +93,14 @@ Namespace kCura.WinEDDS
 				End If
 			End While
 		End Sub
-
-		Private Function GetBatesNumber(ByVal valuearray As String()) As String
+		
+		Private Function GetValue(ByVal valuearray As String(), index As Int32) As String
 			Dim retval As String
 			Try
-				retval = valuearray(Columns.DocumentArtifactID)
+				retval = valuearray(index)
 				Return retval
 			Catch ex As IndexOutOfRangeException
-				Me.RaiseStatusEvent(EventType.Error, "Invalid line format - production number specified in line.")
+				Me.RaiseStatusEvent(EventType.Error, $"Line {CurrentLineNumber} is invalid format. No column at index {index}.")
 				Return ""
 			End Try
 		End Function
@@ -126,6 +129,12 @@ Namespace kCura.WinEDDS
 		End Function
 
 #Region "Events and Event Handling"
+
+		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception)
+
+		Private Sub RaiseFatalError(ByVal ex As System.Exception)
+			RaiseEvent FatalErrorEvent("Error processing line: " + CurrentLineNumber.ToString, ex)
+		End Sub
 
 		Private Sub RaiseStatusEvent(ByVal et As EventType, ByVal line As String)
 			'TODO: track stats
