@@ -77,9 +77,8 @@ Namespace kCura.EDDS.WinForm
 				Dim tempImplicitProvider As OAuth2ImplicitCredentials = CType(RelativityWebApiCredentialsProvider.Instance().GetProvider(), OAuth2ImplicitCredentials)
 				tempImplicitProvider.CloseLoginView()
 			End If
-			Dim authEndpoint As String = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/authorize")
+			Dim authEndpoint As String = $"{GetIdentityServerLocation()}/{"connect/authorize"}"
 
-			'Dim implicitProvider = New OAuth2ImplicitCredentials(New ThreadedLoginView(New Uri(authEndpoint), "Relativity Desktop Client"), AddressOf On_TokenRetrieved)
 			Dim implicitProvider = New OAuth2ImplicitCredentials(New Uri(authEndpoint), "Relativity Desktop Client", AddressOf On_TokenRetrieved)
 			RelativityWebApiCredentialsProvider.Instance().SetProvider(implicitProvider)
 		End Sub
@@ -1532,7 +1531,7 @@ Namespace kCura.EDDS.WinForm
 
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
 					If OpenCaseSelector Then Await OpenCaseAsync().ConfigureAwait(False)
-					_timeZoneOffset = 0                                                         'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+					_timeZoneOffset = 0
 					_lastCredentialCheckResult = CredentialCheckResult.Success
 					'This was created specifically for raising an event after login success for RDC forms authentication 
 					LogOnForm()
@@ -1602,7 +1601,7 @@ Namespace kCura.EDDS.WinForm
 				CheckVersion(netCreds)
 				If userManager.Login(netCreds.UserName, netCreds.Password) Then
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-					_timeZoneOffset = 0                                          'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+					_timeZoneOffset = 0
 					_lastCredentialCheckResult = CredentialCheckResult.Success
 				Else
 					_lastCredentialCheckResult = CredentialCheckResult.Fail
@@ -1631,7 +1630,7 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Function DoOAuthLogin(ByVal clientId As String, ByVal clientSecret As String) As CredentialCheckResult
-			Dim urlString As String = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/token")
+			Dim urlString As String = $"{GetIdentityServerLocation()}/{"connect/token"}"
 			Dim stsUrl As Uri = New Uri(urlString)
 
 			_lastCredentialCheckResult = DoOAuthLogin(clientId, clientSecret, stsUrl)
@@ -1642,7 +1641,7 @@ Namespace kCura.EDDS.WinForm
 		Public Function GetIdentityServerLocation() As String
 			Dim tempCred As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
 			Dim relManager As Service.RelativityManager = New Service.RelativityManager(tempCred, _CookieContainer)
-			Dim urlString As String = String.Format("{0}/{1}", relManager.GetRelativityUrl(), "Identity")
+			Dim urlString As String = $"{relManager.GetRelativityUrl()}/{"Identity"}"
 			Return urlString
 		End Function
 
@@ -1727,7 +1726,6 @@ Namespace kCura.EDDS.WinForm
 			Catch ex As System.Exception
 				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
 					NewLogin(False)
-					'productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
 					Return Nothing
 				Else
 					Throw
@@ -1761,7 +1759,7 @@ Namespace kCura.EDDS.WinForm
 				Process.Start(urlPrefix & "RelativityOne/Content/Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
 			Else
 				Dim v As System.Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
-				Dim majMin As String = String.Format("{0}.{1}", v.Major, v.Minor)
+				Dim majMin As String = $"{v.Major}.{v.Minor}"
 				Process.Start(urlPrefix & majMin & "/#Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
 			End If
 
