@@ -127,7 +127,7 @@ Public Class ExportForm
 	Public WithEvents _startExportAtDocumentNumber As System.Windows.Forms.NumericUpDown
 	Public WithEvents _saveExportSettingsDialog As System.Windows.Forms.SaveFileDialog
 	Friend WithEvents _selectFromListButton As Button
-	Friend WithEvents _textAndNativeFileNamePicker As TextAndNativeFileNamePicker
+	Public WithEvents _textAndNativeFileNamePicker As TextAndNativeFileNamePicker
 	Public WithEvents _loadExportSettingsDialog As System.Windows.Forms.OpenFileDialog
 
 	Private Sub InitializeComponent()
