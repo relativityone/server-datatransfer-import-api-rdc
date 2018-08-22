@@ -158,7 +158,7 @@ Namespace kCura.Windows.Process
 		End Sub
 
 		Private Sub WriteError(ByVal key As String, ByVal description As String)
-			If _errorsFileName = "" Then _errorsFileName = System.IO.Path.GetTempFileName
+			If _errorsFileName = "" Then _errorsFileName = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"RDC_Errors_{Guid.NewGuid()}.tmp")
 
 			If _errorsWriter Is Nothing OrElse _errorsWriter.BaseStream Is Nothing Then
 				_errorsWriter = New System.IO.StreamWriter(_errorsFileName, True)
@@ -169,7 +169,7 @@ Namespace kCura.Windows.Process
 		End Sub
 
 		Private Sub OpenFile()
-			_tempFileName = System.IO.Path.GetTempFileName()
+			_tempFileName = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"RDC_AllEvents_{Guid.NewGuid()}.tmp")
 			_outputWriter = New System.IO.StreamWriter(_tempFileName, False)
 			_outputWriter.WriteLine("<ProcessEvents>")
 		End Sub
