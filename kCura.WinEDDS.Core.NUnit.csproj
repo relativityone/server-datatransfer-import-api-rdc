@@ -88,6 +88,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -108,6 +109,7 @@
     <Compile Include="Export\Natives\Name\Factories\FileNamePartProviderContainerTest.cs" />
     <Compile Include="Export\Natives\Name\FieldFileNamePartProviderTests.cs" />
     <Compile Include="Export\Natives\Name\SeparatorFileNamePartProviderTests.cs" />
+    <Compile Include="Export\SearchListSelectorTest.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchCleanUpTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchExporterTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\BatchInitializationTests.cs" />
@@ -220,6 +222,10 @@
     <ProjectReference Include="..\..\kCura\kCura.OI.FileID\kCura.OI.FileID.vbproj">
       <Project>{ccefd50f-0840-402d-ab16-c93f8e579b8b}</Project>
       <Name>kCura.OI.FileID</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\kCura\kCura.Windows.Forms\kCura.Windows.Forms.vbproj">
+      <Project>{0DABBD47-5A46-429F-9D90-C95A58611E0A}</Project>
+      <Name>kCura.Windows.Forms</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.Windows.Process\kCura.Windows.Process.vbproj">
       <Project>{b092d1b2-909b-4ef0-9369-a81675c3fc18}</Project>
