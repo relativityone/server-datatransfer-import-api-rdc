@@ -115,5 +115,43 @@ Namespace kCura.EDDS.WinForm
 			return retval
 		End Function
 
+	Public Shared Function FindFieldByName(listboxItems As List(Of Object), field As ViewFieldInfo) As ViewFieldInfo
+		Return FindFieldBy(Function(x As ViewFieldInfo) x.DisplayName.Equals(field.DisplayName, StringComparison.InvariantCulture), listboxItems)
+	End Function
+
+	Public Shared Function FindFieldByArtifactId(listboxItems As List(Of Object), field As ViewFieldInfo) As ViewFieldInfo
+		Return FindFieldBy(Function(x As ViewFieldInfo) x.FieldArtifactId = field.FieldArtifactId, listboxItems)
+	End Function
+
+	Public Shared Function FindFieldBy(predicate As Func(Of ViewFieldInfo, Boolean), listboxItems As List(Of Object)) As ViewFieldInfo
+		For Each item As ViewFieldInfo In listboxItems
+			If predicate(item) Then
+				Return item
+			End If
+		Next
+		Return Nothing
+	End Function
+
+	''' <summary>
+	''' Find field in listboxItems collection which is a counterpart for fields found in kwx settings file.
+	''' First compare by name, then by artifactId
+	''' Wrap the result in a List or return empty List if a field is not found
+	''' </summary>
+	''' <param name="listboxItems">collections of all view fields from the workspace</param>
+	''' <param name="field">field from mappings from kwx file</param>
+	''' <returns></returns>
+	Public Shared Function FindCounterpartField(ByRef listboxItems As List(Of Object), ByVal field As ViewFieldInfo) As List(Of ViewFieldInfo)
+		Dim fieldByName As ViewFieldInfo = FindFieldByName(listboxItems, field)
+		If Not fieldByName Is Nothing Then
+			Return New List(Of ViewFieldInfo) From { fieldByName }
+		End If
+		Dim fieldByArtifactId As ViewFieldInfo = FindFieldByArtifactId(listboxItems, field)
+		If Not fieldByArtifactId Is Nothing Then
+			Return New List(Of ViewFieldInfo) From { fieldByArtifactId }
+		End If
+		Return New List(Of ViewFieldInfo)
+	End Function
+
+
 	End Class
 End Namespace

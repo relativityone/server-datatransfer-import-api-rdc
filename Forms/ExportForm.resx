@@ -126,12 +126,14 @@
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="_selectFromListButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAD1SURBVDhPpZIhD8JADIVnlkwgMTMozDwaS5YsKAwWiwGJxCGw/IDJJagJDBqP5y+QoCcIvLdc
-        Q7k1ZAviS7r23Wt7t2Cyyv7CTHbBTAqD2SEFF1A5zmCsNV8HNBAuwQvcwA7sXfwEc9E1DhIIhoAdCxCq
-        fAROrhYzxyS7aChitwfoyWFlEgMabGoDQzAC3LX0awJqvJeCsTUBO7QxODK2ilPwa4U++KyAwJ+Al5QA
-        3nYO9CWGoATUJbWBFH0gWDvhFWwdfEZpRKPQmoDcAZ+S69BA8tydRpyO37nZ3QdCjh6p74UzqBrituAw
-        f/PULHbBTLYnC943J0VjMRzkWgAAAABJRU5ErkJggg==
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAABl0RVh0U29m
+        dHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAFgSURBVDhPldFPK0RRGMfxSTLk79LKZmoWKCwoO0tL
+        C5bzDqymLLCQhXdgUjaazWyUhCQJoew0eBvKQsmf4fj+zjznuHfcjac+nXue55zfzJ3JJWtovjKFXTzB
+        4RmHmLUjqXLO2RPFoXV8QxezVNFhx33FAAardugLW5jAAEawgTdovtO80SwfQLOIBvTpCzZLFf1pvEIh
+        8XVCwKYNKtbPLOZlO3dqrRgwiAL60B7YmVj0eqBX+UCneiHgHEfYT7jAHlI/Gvs69C0K2oeAe/RjrsUy
+        TvxNK/Z3UEBR+xCg1HG82/BKq1141KriuQv6IfVPdauXDBizoQJqWu1SXauK50Wb31orFZDHAc5wg6oO
+        sPoA1km8QAFl9VQxwPZ/SjOMInw7Ua9X8xDw4E9nlB2eQbgc6J/Lh4BjXOOyhXp6pWGUsIJkSM0H2Ce1
+        ZWlOf4veEkJAIwb8p7i4hk9sO+dyPx7dKNystv5NAAAAAElFTkSuQmCC
 </value>
   </data>
   <data name="_textFieldPrecedencePicker.SelectedFields" mimetype="application/x-microsoft.net.object.binary.base64">

@@ -1,6 +1,7 @@
 Imports System.Linq
 Imports System.Collections.Generic
 Imports System.Threading.Tasks
+Imports Castle.Core.Internal
 Imports kCura.Windows.Forms
 Imports Specialized
 
@@ -255,10 +256,11 @@ Public Class ExportForm
 		Me.ExportMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.RunMenu, Me.SaveExportSettings, Me.LoadExportSettings, Me.MenuItem3, Me.RefreshMenu})
 		Me.ExportMenu.Text = "File"
 		'
-		'RunMenu
+		'LoadExportSettings
 		'
-		Me.RunMenu.Index = 0
-		Me.RunMenu.Text = "Run"
+		Me.LoadExportSettings.Index = 0
+		Me.LoadExportSettings.Shortcut = System.Windows.Forms.Shortcut.CtrlO
+		Me.LoadExportSettings.Text = "Load Export Settings"
 		'
 		'SaveExportSettings
 		'
@@ -266,11 +268,10 @@ Public Class ExportForm
 		Me.SaveExportSettings.Shortcut = System.Windows.Forms.Shortcut.CtrlS
 		Me.SaveExportSettings.Text = "Save Export Settings"
 		'
-		'LoadExportSettings
+		'RunMenu
 		'
-		Me.LoadExportSettings.Index = 2
-		Me.LoadExportSettings.Shortcut = System.Windows.Forms.Shortcut.CtrlO
-		Me.LoadExportSettings.Text = "Load Export Settings"
+		Me.RunMenu.Index = 2
+		Me.RunMenu.Text = "Run"
 		'
 		'MenuItem3
 		'
@@ -415,7 +416,7 @@ Public Class ExportForm
 		Me._selectFromListButton.Image = CType(resources.GetObject("_selectFromListButton.Image"), System.Drawing.Image)
 		Me._selectFromListButton.Location = New System.Drawing.Point(12, 20)
 		Me._selectFromListButton.Name = "_selectFromListButton"
-		Me._selectFromListButton.Padding = New System.Windows.Forms.Padding(0, 0, 2, 2)
+		Me._selectFromListButton.Padding = New System.Windows.Forms.Padding(0, 0, 0, 2)
 		Me._selectFromListButton.Size = New System.Drawing.Size(21, 21)
 		Me._selectFromListButton.TabIndex = 22
 		Me._selectFromListButton.Text = " "
@@ -1272,6 +1273,7 @@ Public Class ExportForm
 	Private _isLoadingExport As Boolean = False
 	Private _masterDT As DataTable
 
+
 	Public Property Application() As kCura.EDDS.WinForm.Application
 		Get
 			Return _application
@@ -1479,7 +1481,7 @@ Public Class ExportForm
 			If TypeOf newFile Is kCura.WinEDDS.ErrorExportFile Then
 				MsgBox(DirectCast(newFile, kCura.WinEDDS.ErrorExportFile).ErrorMessage, MsgBoxStyle.Exclamation)
 			Else
-				Dim exportFilterSelectionForm As New kCura.EDDS.WinForm.ExportFilterSelectForm(newFile.LoadFilesPrefix, ExportTypeStringName, DirectCast(_filters.DataSource, DataTable))
+				Dim exportFilterSelectionForm As New kCura.EDDS.WinForm.ExportFilterSelectForm(newFile.ViewID, ExportTypeStringName, DirectCast(_filters.DataSource, DataTable))
 				exportFilterSelectionForm.ShowDialog()
 				If exportFilterSelectionForm.DialogResult = DialogResult.OK Then
 					If exportFilterSelectionForm.SelectedItemArtifactIDs IsNot Nothing Then
@@ -1492,6 +1494,16 @@ Public Class ExportForm
 				_columnSelector.EnsureHorizontalScrollbars()
 			End If
 		End If
+	End Sub
+
+	''' <summary>
+	''' Select view field.
+	''' Move view field from left listbox to right listbox.
+	''' </summary>
+	''' <param name="listboxViewField">listbox view field to be selected</param>
+	Public Sub SelectField(listboxViewField As ViewFieldInfo)
+		_columnSelector.RightSearchableList.AddField(listboxViewField)
+		_columnSelector.LeftSearchableList.RemoveField(listboxViewField)
 	End Sub
 
 	Public Async Function LoadExportFile(ByVal ef As kCura.WinEDDS.ExportFile) As Task
@@ -1585,20 +1597,12 @@ Public Class ExportForm
 		End If
 
 		If ef.SelectedViewFields IsNot Nothing Then
-
-
-
-			Dim itemsToRemoveFromLeftListBox As New System.Collections.Generic.List(Of kCura.WinEDDS.ViewFieldInfo)()
 			_columnSelector.ClearSelection(kCura.Windows.Forms.ListBoxLocation.Right)
 			_columnSelector.RightSearchableList.ClearListBox()
-			For Each viewFieldFromKwx As kCura.WinEDDS.ViewFieldInfo In ef.SelectedViewFields
-				For Each leftListBoxViewField As kCura.WinEDDS.ViewFieldInfo In _columnSelector.LeftSearchableListItems
-					If leftListBoxViewField.DisplayName.Equals(viewFieldFromKwx.DisplayName, StringComparison.InvariantCulture) Then
-						itemsToRemoveFromLeftListBox.Add(leftListBoxViewField)
-						_columnSelector.RightSearchableList.AddField(leftListBoxViewField)
-					End If
-				Next
-			Next
+
+			ef.SelectedViewFields _
+				.SelectMany(Function (x) kCura.EDDS.WinForm.Utility.FindCounterpartField(_columnSelector.LeftSearchableListItems, x)) _
+				.ForEach(AddressOf SelectField)
 
 			If ef.AllExportableFields IsNot Nothing Then
 				Dim defaultSelectedIds As New System.Collections.ArrayList
@@ -1624,10 +1628,6 @@ Public Class ExportForm
 					Next
 				End If
 			End If
-
-			For Each vfi As kCura.WinEDDS.ViewFieldInfo In itemsToRemoveFromLeftListBox
-				_columnSelector.LeftSearchableList.RemoveField(vfi)
-			Next
 		End If
 
 		ManagePotentialTextFields()
@@ -1775,7 +1775,7 @@ Public Class ExportForm
 		InitializeLayout()
 	End Sub
 
-	Public Sub HandleLoad(ByVal sender As Object, ByVal e As System.EventArgs, ByVal volumeDigitPadding As Int32, ByVal exportSubdirectoryDigitPadding As Int32)
+	Public Async Sub HandleLoad(ByVal sender As Object, ByVal e As System.EventArgs, ByVal volumeDigitPadding As Int32, ByVal exportSubdirectoryDigitPadding As Int32)
 		_dataSourceIsSet = False
 		_masterDT = ExportFile.DataTable
 		_filters.DataSource = _masterDT
@@ -1810,7 +1810,8 @@ Public Class ExportForm
 						Me.Text = "Relativity Desktop Client | Export Folder and Subfolders"
 					End If
 				Else
-					Me.Text = String.Format("Relativity Desktop Client | Export {0} Objects", Me.GetObjectTypeName)
+					Dim objectTypeName As String = Await Me.GetObjectTypeName()
+					Me.Text = String.Format("Relativity Desktop Client | Export {0} Objects", objectTypeName)
 				End If
 			Case ExportFile.ExportType.Production
 				LabelNamedAfter.Visible = True
