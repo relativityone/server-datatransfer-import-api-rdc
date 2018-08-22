@@ -70,7 +70,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			};
 
 			//ACT
-			IList<ExportRequest> exportRequests = _instance.GetExportRequests();
+			IEnumerable<ExportRequest> exportRequests = _instance.GetExportRequests();
 
 			//ASSERT
 			CollectionAssert.AreEquivalent(expectedExportRequests, exportRequests);
