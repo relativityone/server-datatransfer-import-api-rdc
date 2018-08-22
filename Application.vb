@@ -68,26 +68,21 @@ Namespace kCura.EDDS.WinForm
 		Private WithEvents _optionsForm As OptionsForm
 		Private _messageService As IMessageService
 		Private _documentRepositoryList As String()
+		Private ReadOnly oAuth2ImplicitCredentialsHelper As Lazy(Of OAuth2ImplicitCredentialsHelper) = New Lazy(Of OAuth2ImplicitCredentialsHelper)(AddressOf CreateOAuth2ImplicitCredentialsHelper)
 #End Region
 
 #Region "Properties"
 
 		Public Sub SetImplicitCredentialProvider()
-			If RelativityWebApiCredentialsProvider.Instance().CredentialsSet() AndAlso RelativityWebApiCredentialsProvider.Instance().ProviderType() = GetType(OAuth2ImplicitCredentials) Then
-				Dim tempImplicitProvider As OAuth2ImplicitCredentials = CType(RelativityWebApiCredentialsProvider.Instance().GetProvider(), OAuth2ImplicitCredentials)
-				tempImplicitProvider.CloseLoginView()
-			End If
-			Dim authEndpoint As String = $"{GetIdentityServerLocation()}/{"connect/authorize"}"
-
-			Dim implicitProvider = New OAuth2ImplicitCredentials(New Uri(authEndpoint), "Relativity Desktop Client", AddressOf On_TokenRetrieved)
-			RelativityWebApiCredentialsProvider.Instance().SetProvider(implicitProvider)
+			oAuth2ImplicitCredentialsHelper.Value.SetImplicitCredentialProvider()
 		End Sub
 
 		Friend Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential)
-			If Not RelativityWebApiCredentialsProvider.Instance().CredentialsSet() Then
-				SetImplicitCredentialProvider()
-			End If
-			Return Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
+			Return Await oAuth2ImplicitCredentialsHelper.Value.GetCredentialsAsync()
+		End Function
+
+		Private Function CreateOAuth2ImplicitCredentialsHelper() As OAuth2ImplicitCredentialsHelper
+			Return New OAuth2ImplicitCredentialsHelper(AddressOf GetIdentityServerLocation, AddressOf On_TokenRetrieved)
 		End Function
 
 		Private Async Function GetFieldProviderCacheAsync() As Task(Of IFieldProviderCache)
@@ -1806,22 +1801,22 @@ Namespace kCura.EDDS.WinForm
 				Dim jobLiveSink = New JobLiveMetricSink(serviceFactory, metricsManagerFactory)
 
 				Dim jobLifetimeSink = New JobLifetimeSink(serviceFactory, metricsManagerFactory)
-				Dim jobLiveThrottledSink = New ThrottledMessageSink(Of TransferJobProgressMessage)(jobLiveSink, function() configProvider.CurrentConfig.ThrottleTimeout)
+				Dim jobLiveThrottledSink = New ThrottledMessageSink(Of TransferJobProgressMessage)(jobLiveSink, Function() configProvider.CurrentConfig.ThrottleTimeout)
 				Dim jobSumEolSink = New JobSumEndOfLifeSink(serviceFactory, metricsManagerFactory)
 				Dim jobApmEolSink = New JobApmEndOfLifeSink(serviceFactory, metricsManagerFactory)
 
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStartedMessage)(jobLifetimeSink, function() configProvider.CurrentConfig.SendSumMetrics))
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedMessage)(jobLifetimeSink, function() configProvider.CurrentConfig.SendSumMetrics))
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobFailedMessage)(jobLifetimeSink, function() configProvider.CurrentConfig.SendSumMetrics))
-				
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobThroughputMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobTotalRecordsCountMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedRecordsCountMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
-				
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobProgressMessage)(jobLiveThrottledSink, function() configProvider.CurrentConfig.SendLiveAPMMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStartedMessage)(jobLifetimeSink, Function() configProvider.CurrentConfig.SendSumMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedMessage)(jobLifetimeSink, Function() configProvider.CurrentConfig.SendSumMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobFailedMessage)(jobLifetimeSink, Function() configProvider.CurrentConfig.SendSumMetrics))
 
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(jobApmEolSink, function() configProvider.CurrentConfig.SendSummaryApmMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobThroughputMessage)(jobSumEolSink, Function() configProvider.CurrentConfig.SendSumMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobTotalRecordsCountMessage)(jobSumEolSink, Function() configProvider.CurrentConfig.SendSumMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedRecordsCountMessage)(jobSumEolSink, Function() configProvider.CurrentConfig.SendSumMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(jobSumEolSink, Function() configProvider.CurrentConfig.SendSumMetrics))
+
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobProgressMessage)(jobLiveThrottledSink, Function() configProvider.CurrentConfig.SendLiveApmMetrics))
+
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(jobApmEolSink, Function() configProvider.CurrentConfig.SendSummaryApmMetrics))
 			End If
 			Return _messageService
 		End Function

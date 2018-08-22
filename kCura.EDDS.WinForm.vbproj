@@ -226,6 +226,10 @@
       <HintPath>..\..\packages\Prism.Wpf.6.3.0\lib\net45\Prism.Wpf.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.AmbientData, Version=1.0.0.167, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.AmbientData.1.0.0-DEV-167\lib\net462\Relativity.AmbientData.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.DataTransfer.MessageService">
       <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.10.0.0\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
       <Private>True</Private>
