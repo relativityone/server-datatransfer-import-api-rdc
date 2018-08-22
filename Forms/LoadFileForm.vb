@@ -1958,7 +1958,7 @@ Namespace kCura.EDDS.WinForm
 			Dim fieldName As String
 			For Each fieldName In caseFields
 				If Not _fieldMap.FieldColumns.RightSearchableListItems.Contains(fieldName) AndAlso Not _fieldMap.FieldColumns.LeftSearchableListItems.Contains(fieldName) Then
-					_fieldMap.FieldColumns.LeftListBoxItems.Add(fieldName)
+					_fieldMap.FieldColumns.LeftSearchableList.AddField(fieldName)
 				End If
 			Next
 			Dim itemsToRemove As New System.Collections.ArrayList

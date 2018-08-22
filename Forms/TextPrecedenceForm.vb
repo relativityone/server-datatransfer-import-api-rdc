@@ -144,7 +144,7 @@ Namespace kCura.EDDS.WinForm
 			'Adjust the location of the label to be aligned with the left side of the Right ListBox
 
 			'Get the absolute position of the Right ListBox of the TwoListBox in screen coordinates
-			Dim absoluteListBoxLoc As Point = _longTextFieldsTwoListBox.RightListBox.PointToScreen(New Point(0, 0))
+			Dim absoluteListBoxLoc As Point = _longTextFieldsTwoListBox.RightSearchableList.PointToScreen(New Point(0, 0))
 			'Convert to a location relative to its parent (the form)
 			Dim relativeListBoxLoc As Point = Me._selectedLongTextFieldsLabel.Parent.PointToClient(absoluteListBoxLoc)
 			'Adjust the location of the label
