@@ -15,6 +15,7 @@ Namespace Specialized
 		Public Event DoubleClickEvent(sender As Object, e As EventArgs)
 		Public Event KeyPressEvent(sender As Object, e As KeyPressEventArgs)
 		Public Event KeyUpEvent(sender As Object, e As KeyEventArgs)
+		Public Event MeasureItemEvent(sender As Object, e As MeasureItemEventArgs)
 
 		Protected Overrides Sub OnCreateControl()
 			MyBase.OnCreateControl()
@@ -147,6 +148,10 @@ Namespace Specialized
 
 		Private Sub _listBox_KeyUp(sender As Object, e As KeyEventArgs) Handles _listBox.KeyUp
 			RaiseEvent KeyUpEvent(sender, e)
+		End Sub
+
+		Private Sub _listBox_MeasureItem(sender As Object, e As MeasureItemEventArgs) Handles _listBox.MeasureItem
+			RaiseEvent MeasureItemEvent(sender, e)
 		End Sub
 
 		Private Sub _textBox_Enter(sender As Object, e As EventArgs) Handles _textBox.Enter

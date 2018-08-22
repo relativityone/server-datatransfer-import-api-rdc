@@ -225,18 +225,18 @@ Namespace kCura.Windows.Forms
 #Region "Resizing"
 
 		'MeasureItem fixes issues in Large DPI mode
-		Private Sub LeftListBox_MeasureItem(sender As Object, e As System.Windows.Forms.MeasureItemEventArgs) Handles _leftListBox.MeasureItem
-			MeasureItemImpl(_leftListBox, e)
+		Private Sub LeftListBox_MeasureItem(sender As Object, e As System.Windows.Forms.MeasureItemEventArgs) Handles _searchableListLeft.MeasureItemEvent
+			MeasureItemImpl(_searchableListLeft, e)
 		End Sub
 
 		'MeasureItem fixes issues in Large DPI mode
-		Private Sub RightListBox_MeasureItem(sender As Object, e As System.Windows.Forms.MeasureItemEventArgs) Handles _rightListBox.MeasureItem
-			MeasureItemImpl(_rightListBox, e)
+		Private Sub RightListBox_MeasureItem(sender As Object, e As System.Windows.Forms.MeasureItemEventArgs) Handles _searchableListRight.MeasureItemEvent
+			MeasureItemImpl(_searchableListRight, e)
 		End Sub
 
-		Private Sub MeasureItemImpl(parentListBox As ListBox, e As System.Windows.Forms.MeasureItemEventArgs)
+		Private Sub MeasureItemImpl(parentListBox As SearchableList, e As System.Windows.Forms.MeasureItemEventArgs)
 			Dim initialSize As Size = New Size(Me.Width, 1000)
-			Dim str As String = parentListBox.Items(e.Index).ToString()
+			Dim str As String = parentListBox.CurrentItems(e.Index).ToString()
 			Dim itemSize As SizeF = e.Graphics.MeasureString(str, _leftListBox.Font, initialSize)
 			e.ItemHeight = CInt(itemSize.Height)
 			e.ItemWidth = CInt(itemSize.Width)
@@ -356,14 +356,6 @@ Namespace kCura.Windows.Forms
 #End Region
 
 #Region " Properties "
-
-		Public ReadOnly Property RightListBox() As kCura.Windows.Forms.ListBox
-			Get
-				Return _rightListBox
-			End Get
-		End Property
-
-
 		Public ReadOnly Property LeftSearchableList() As SearchableList
 			Get
 				Return _searchableListLeft
@@ -452,12 +444,14 @@ Namespace kCura.Windows.Forms
 			End Set
 		End Property
 
+		'Only in DBMT
 		Public ReadOnly Property LeftListBoxItems() As System.Windows.Forms.ListBox.ObjectCollection
 			Get
 				Return _leftListBox.Items
 			End Get
 		End Property
 
+		'Only in DBMT
 		Public ReadOnly Property RightListBoxItems() As System.Windows.Forms.ListBox.ObjectCollection
 			Get
 				Return _rightListBox.Items
