@@ -226,16 +226,6 @@
   <ItemGroup>
     <Service Include="{94E38DFF-614B-4CBD-B67C-F211BB35CE8B}" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\EDDS\Relativity.Core\Relativity.Core.vbproj">
-      <Project>{C13F3254-58A1-4515-BBA8-17DFAC919C24}</Project>
-      <Name>Relativity.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\EDDS\Relativity\Relativity.vbproj">
-      <Project>{044A6424-BC90-46CE-8805-0053A44AFCAB}</Project>
-      <Name>Relativity</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <PropertyGroup>
     <PreBuildEvent>
