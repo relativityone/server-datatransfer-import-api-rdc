@@ -23,43 +23,43 @@
 		'Do not modify it using the code editor.
 		<System.Diagnostics.DebuggerStepThrough()>
 		Private Sub InitializeComponent()
-			Me._nativeFileNameSourceComboBox = New System.Windows.Forms.ComboBox()
-			Me._nativeFileNameCustomOptions = New System.Windows.Forms.Button()
+			Me._comboBox = New System.Windows.Forms.ComboBox()
+			Me._customOptionsButton = New System.Windows.Forms.Button()
 			Me.SuspendLayout()
 			'
-			'_nativeFileNameSourceComboBox
+			'_comboBox
 			'
-			Me._nativeFileNameSourceComboBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+			Me._comboBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
 			Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me._nativeFileNameSourceComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me._nativeFileNameSourceComboBox.FormattingEnabled = True
-			Me._nativeFileNameSourceComboBox.Location = New System.Drawing.Point(0, 0)
-			Me._nativeFileNameSourceComboBox.Name = "_nativeFileNameSourceComboBox"
-			Me._nativeFileNameSourceComboBox.Size = New System.Drawing.Size(149, 21)
-			Me._nativeFileNameSourceComboBox.TabIndex = 0
+			Me._comboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+			Me._comboBox.FormattingEnabled = True
+			Me._comboBox.Location = New System.Drawing.Point(0, 0)
+			Me._comboBox.Name = "_comboBox"
+			Me._comboBox.Size = New System.Drawing.Size(149, 21)
+			Me._comboBox.TabIndex = 0
 			'
-			'_nativeFileNameCustomOptions
+			'_customOptionsButton
 			'
-			Me._nativeFileNameCustomOptions.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me._nativeFileNameCustomOptions.Location = New System.Drawing.Point(151, 0)
-			Me._nativeFileNameCustomOptions.Name = "_nativeFileNameCustomOptions"
-			Me._nativeFileNameCustomOptions.Size = New System.Drawing.Size(24, 20)
-			Me._nativeFileNameCustomOptions.TabIndex = 1
-			Me._nativeFileNameCustomOptions.Text = "..."
-			Me._nativeFileNameCustomOptions.UseVisualStyleBackColor = True
+			Me._customOptionsButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+			Me._customOptionsButton.Location = New System.Drawing.Point(151, 0)
+			Me._customOptionsButton.Name = "_customOptionsButton"
+			Me._customOptionsButton.Size = New System.Drawing.Size(24, 20)
+			Me._customOptionsButton.TabIndex = 1
+			Me._customOptionsButton.Text = "..."
+			Me._customOptionsButton.UseVisualStyleBackColor = True
 			'
 			'TextAndNativeFileNamePicker
 			'
 			Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit
-			Me.Controls.Add(Me._nativeFileNameCustomOptions)
-			Me.Controls.Add(Me._nativeFileNameSourceComboBox)
+			Me.Controls.Add(Me._customOptionsButton)
+			Me.Controls.Add(Me._comboBox)
 			Me.Name = "TextAndNativeFileNamePicker"
 			Me.Size = New System.Drawing.Size(176, 20)
 			Me.ResumeLayout(False)
 
 		End Sub
 
-		Friend WithEvents _nativeFileNameSourceComboBox As ComboBox
-		Friend WithEvents _nativeFileNameCustomOptions As Button
+		Friend WithEvents _comboBox As ComboBox
+		Friend WithEvents _customOptionsButton As Button
 	End Class
 End Namespace
