@@ -1,4 +1,6 @@
-﻿Namespace kCura.EDDS.WinForm.Controls
+﻿Imports kCura.WinEDDS.Forms
+
+Namespace kCura.EDDS.WinForm.Controls
 	Public Class TextAndNativeFileNamePicker
 
 		Public Const SelectOption = "Select..."
