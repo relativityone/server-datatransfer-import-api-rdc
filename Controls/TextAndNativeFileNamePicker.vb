@@ -6,6 +6,8 @@
 		Public Const ProductionOption = "Begin production number"
 		Public Const CustomOption = "Custom"
 
+		Private _form As TextAndNativeFileNameForm
+
 		Public Sub Initialize(exportType As ExportFile.ExportType)
 			_comboBox.Items.Clear()
 			AddDropdownItems(exportType)
@@ -33,6 +35,11 @@
 		Private Sub _nativeFileNameSourceComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles _comboBox.SelectedIndexChanged
 			Dim isCustomSelected = (SelectedItem = CustomOption)
 			_customOptionsButton.Enabled = isCustomSelected
+		End Sub
+
+		Private Sub _customOptionsButton_Click(sender As Object, e As EventArgs) Handles _customOptionsButton.Click
+			_form = New TextAndNativeFileNameForm()
+			_form.ShowDialog()
 		End Sub
 	End Class
 End Namespace

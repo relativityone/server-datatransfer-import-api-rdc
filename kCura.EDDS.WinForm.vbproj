@@ -502,6 +502,12 @@
     <Compile Include="Forms\SetWebServiceURL.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\TextAndNativeFileNameForm.Designer.vb">
+      <DependentUpon>TextAndNativeFileNameForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\TextAndNativeFileNameForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\TextDisplayForm.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -595,6 +601,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SetWebServiceURL.resx">
       <DependentUpon>SetWebServiceURL.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\TextAndNativeFileNameForm.resx">
+      <DependentUpon>TextAndNativeFileNameForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\TextDisplayForm.resx">
       <DependentUpon>TextDisplayForm.vb</DependentUpon>
