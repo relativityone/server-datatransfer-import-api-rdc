@@ -1079,6 +1079,12 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.AreEqual("Begin production number", _form._textAndNativeFileNamePicker.SelectedItem.ToString)
 		End Function
 
+		<Test()> Public Async Function LoadExportFile_NamedAfter_Custom() As Task
+			Dim ef As New kCura.WinEDDS.ExportFile(Relativity.ArtifactType.Document) With {.AppendOriginalFileName = False, .ExportNativesToFileNamedFrom = kCura.WinEDDS.ExportNativeWithFilenameFrom.Custom}
+			Await _form.LoadExportFile(ef)
+			Assert.AreEqual("Custom", _form._textAndNativeFileNamePicker.SelectedItem.ToString)
+		End Function
+
 #End Region
 
 #Region "Export Images Section"
