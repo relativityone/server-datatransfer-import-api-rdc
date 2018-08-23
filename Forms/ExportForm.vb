@@ -1838,7 +1838,7 @@ Public Class ExportForm
 		filtersToolTip.SetToolTip(_filters, Me.GetDatasourceToolTip)
 		_nativeFileFormat.SelectedIndex = 0
 		_productionPrecedenceList.Items.Add(New Pair("-1", "Original"))
-		_textAndNativeFileNamePicker.Initialize(ExportFile.TypeOfExport)
+		_textAndNativeFileNamePicker.Initialize(ExportFile.TypeOfExport, ExportFile.AllExportableFields)
 		Me.InitializeColumnSelecter()
 		Me.InitializeFileControls()
 

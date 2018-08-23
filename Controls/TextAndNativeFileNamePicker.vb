@@ -10,8 +10,10 @@ Namespace kCura.EDDS.WinForm.Controls
 		Public Const CustomOption = "Custom"
 
 		Private _form As TextAndNativeFileNameForm
+		Private _fields As ViewFieldInfo()
 
-		Public Sub Initialize(exportType As ExportFile.ExportType)
+		Public Sub Initialize(exportType As ExportFile.ExportType, fields As ViewFieldInfo())
+			_fields = fields
 			_comboBox.Items.Clear()
 			AddDropdownItems(exportType)
 		End Sub
@@ -42,7 +44,7 @@ Namespace kCura.EDDS.WinForm.Controls
 
 		Private Sub _customOptionsButton_Click(sender As Object, e As EventArgs) Handles _customOptionsButton.Click
 			_form = New TextAndNativeFileNameForm()
-			_form.Initialize()
+			_form.Initialize(_fields)
 			_form.ShowDialog()
 		End Sub
 	End Class
