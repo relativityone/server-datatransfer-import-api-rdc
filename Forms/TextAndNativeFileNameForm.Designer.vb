@@ -1,4 +1,4 @@
-﻿Namespace kCura.WinEDDS.Forms
+﻿Namespace kCura.EDDS.WinForm.Forms
 	<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 	Partial Class TextAndNativeFileNameForm
 		Inherits System.Windows.Forms.Form

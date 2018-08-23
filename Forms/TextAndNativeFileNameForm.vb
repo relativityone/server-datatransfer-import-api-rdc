@@ -1,4 +1,4 @@
-﻿Namespace kCura.WinEDDS.Forms
+﻿Namespace kCura.EDDS.WinForm.Forms
 	Public Class TextAndNativeFileNameForm
 
 		Private _numberOfFields As Integer

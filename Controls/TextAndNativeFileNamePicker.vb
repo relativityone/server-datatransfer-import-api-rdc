@@ -1,4 +1,5 @@
-﻿Imports kCura.WinEDDS.Forms
+﻿
+Imports kCura.EDDS.WinForm.Forms
 
 Namespace kCura.EDDS.WinForm.Controls
 	Public Class TextAndNativeFileNamePicker
