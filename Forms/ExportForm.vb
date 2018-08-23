@@ -1799,7 +1799,6 @@ Public Class ExportForm
 		_imageFileFormat.ValueMember = "Value"
 		_imageTypeDropdown.SelectedIndex = 0
 		_exportMulticodeFieldsAsNested.Checked = Me.ExportFile.MulticodesAsNested
-		LabelNamedAfter.Visible = False
 		Select Case Me.ExportFile.TypeOfExport
 			Case ExportFile.ExportType.ArtifactSearch
 				_filters.Text = "Searches"
@@ -1818,7 +1817,6 @@ Public Class ExportForm
 					Me.Text = String.Format("Relativity Desktop Client | Export {0} Objects", objectTypeName)
 				End If
 			Case ExportFile.ExportType.Production
-				LabelNamedAfter.Visible = True
 				_filters.Text = "Productions"
 				_filtersBox.Text = "Productions"
 				Me.Text = "Relativity Desktop Client | Export Production Set"
