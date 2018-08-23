@@ -41,6 +41,7 @@ Namespace kCura.EDDS.WinForm.Controls
 
 		Private Sub _customOptionsButton_Click(sender As Object, e As EventArgs) Handles _customOptionsButton.Click
 			_form = New TextAndNativeFileNameForm()
+			_form.Initialize()
 			_form.ShowDialog()
 		End Sub
 	End Class
