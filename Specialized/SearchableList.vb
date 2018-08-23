@@ -16,6 +16,7 @@ Namespace Specialized
 		Public Event KeyPressEvent(sender As Object, e As KeyPressEventArgs)
 		Public Event KeyUpEvent(sender As Object, e As KeyEventArgs)
 		Public Event MeasureItemEvent(sender As Object, e As MeasureItemEventArgs)
+		Public Event TextChangedEvent(sender As Object)
 
 		Protected Overrides Sub OnCreateControl()
 			MyBase.OnCreateControl()
@@ -60,6 +61,7 @@ Namespace Specialized
 			FilterAndAssignDataSource()
 			ResizeScrollBar()
 			Cursor = Cursors.Default
+			RaiseEvent TextChangedEvent(Me)
 		End Sub
 
 		Private Function Filter(sourceList As List(Of Object), filterText As String) As List(Of Object)
@@ -107,6 +109,11 @@ Namespace Specialized
 			_dataSource.Remove(field)
 		End Sub
 
+		Public Sub SetSelection(item As Object)
+			If Not IsNothing(item)
+				_listBox.SelectedItem = item
+			End If
+		End Sub
 #Region "Properties"
 		Public Property IsListSortable As Boolean = True
 		Public ReadOnly Property Listbox() As kCura.Windows.Forms.ListBox
@@ -129,8 +136,6 @@ Namespace Specialized
 				Return _listBox.Items.Cast(Of Object).ToList()
 			End Get
 		End Property
-
-
 
 #End Region
 		Private Sub _listBox_DoubleClick(sender As Object, e As EventArgs) Handles _listBox.DoubleClick
@@ -163,6 +168,7 @@ Namespace Specialized
 				_textBox.Font = New Font(_textBox.Font, FontStyle.Regular)
 			End If
 		End Sub
+
 		Private Sub SetTextBoxPlaceholderText()
 			_isTextBoxPlaceholderUsed = True
 			_textBox.Text = "Filter"

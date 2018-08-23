@@ -291,8 +291,6 @@ Namespace kCura.Windows.Forms
 				_layoutRatioList = New List(Of RelativeLayoutData)
 
 				'When the width of the control increases by 2 pixels, each groupbox increases by 1 pixel.  The ratio is 1/2 = .5
-				'				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, _leftListBox, LayoutRelativePropertyTypeForRatio.Width, 0.5))
-				'				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, _rightListBox, LayoutRelativePropertyTypeForRatio.Width, 0.5))
 				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, _searchableListLeft, LayoutRelativePropertyTypeForRatio.Width, 0.5))
 				_layoutRatioList.Add(New RelativeLayoutData(Me, LayoutBasePropertyTypeForRatio.Width, _searchableListRight, LayoutRelativePropertyTypeForRatio.Width, 0.5))
 
@@ -480,6 +478,35 @@ Namespace kCura.Windows.Forms
 
 #Region " ListBox methods and event handlers "
 
+		Private Sub SetEnabledOfRightMoveVerticalArrowButtons(value As Boolean)
+			_moveRightSelectedItemDown.Enabled = value
+			_moveRightSelectedItemUp.Enabled = value
+		End Sub
+
+		Private Sub SetEnabledOfLeftMoveVerticalArrowButtons(value As Boolean)
+			_moveLeftSelectedItemDown.Enabled = value
+			_moveLeftSelectedItemUp.Enabled = value
+		End Sub
+		Private Sub _searchableListLeft_TextChangedEvent(sender As Object) Handles _searchableListLeft.TextChangedEvent
+			If LeftOrderControlsVisible
+				If _searchableListLeft._textBox.Text <> ""
+					SetEnabledOfLeftMoveVerticalArrowButtons(False)
+					ElseIf _moveLeftSelectedItemUp.Enabled = False
+					SetEnabledOfLeftMoveVerticalArrowButtons(True)
+				End If
+			End If
+		End Sub
+
+		Private Sub _searchableListRight_TextChangedEvent(sender As Object) Handles _searchableListRight.TextChangedEvent
+			If Not LeftOrderControlsVisible
+				If _searchableListRight._textBox.Text <> ""
+					SetEnabledOfRightMoveVerticalArrowButtons(False)
+				ElseIf _moveRightSelectedItemUp.Enabled = False
+					SetEnabledOfRightMoveVerticalArrowButtons(True)
+				End If
+			End If
+		End Sub
+
 		Private Sub ShiftSelectedItems(ByVal giver As SearchableList, ByVal receiver As SearchableList)
 			If giver.Listbox.SelectedItems.Count > 0 Then
 				Dim selectedItemCollection As Windows.Forms.ListBox.SelectedObjectCollection = giver.Listbox.SelectedItems
@@ -622,26 +649,31 @@ Namespace kCura.Windows.Forms
 			Me.RaiseItemsShifted()
 		End Sub
 
+		Private Sub MoveSelectedItemAndRestoreSelection(ByVal box As SearchableList, ByVal direction As MoveDirection)
+			Dim selectedItem As Object = box.Listbox.SelectedItem
+			MoveSelectedItem(box, direction)
+			box.SetSelection(selectedItem)
+		End Sub
 
-		Private Sub MoveSelectedItem(ByVal box As System.Windows.Forms.ListBox, ByVal direction As MoveDirection)
-			If box.Items.Count > 1 Then
-				If box.SelectedItems.Count = 1 Then
+		Private Sub MoveSelectedItem(ByVal box As SearchableList, ByVal direction As MoveDirection)
+			If box.DataSource.Count > 1 Then
+				If box.Listbox.SelectedItems.Count = 1 Then
 					Dim bound As Int32
 					Dim indexModifier As Int32
 					Select Case direction
 						Case MoveDirection.Down
-							bound = box.Items.Count - 1
+							bound = box.DataSource.Count - 1
 							indexModifier = 1
 						Case MoveDirection.Up
 							bound = 0
 							indexModifier = -1
 					End Select
-					If Not box.SelectedIndex = bound Then
-						Dim i As Int32 = box.Items.IndexOf(box.SelectedItem)
-						Dim selectedItem As Object = box.SelectedItem
-						box.Items.RemoveAt(i)
-						box.Items.Insert(i + indexModifier, selectedItem)
-						box.SelectedIndex = i + indexModifier
+					If Not box.Listbox.SelectedIndex = bound Then
+						Dim i As Int32 = box.DataSource.IndexOf(box.Listbox.SelectedItem)
+						Dim selectedItem As Object = box.Listbox.SelectedItem
+						box.DataSource.RemoveAt(i)
+						box.DataSource.Insert(i + indexModifier, selectedItem)
+						box.Listbox.SelectedIndex = i + indexModifier
 					End If
 				End If
 			End If
@@ -665,19 +697,19 @@ Namespace kCura.Windows.Forms
 		End Sub
 
 		Private Sub _moveLeftSelectedItemUp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _moveLeftSelectedItemUp.Click
-			MoveSelectedItem(_leftListBox, MoveDirection.Up)
+			MoveSelectedItemAndRestoreSelection(_searchableListLeft, MoveDirection.Up)
 		End Sub
 
 		Private Sub _moveLeftSelectedItemDown_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _moveLeftSelectedItemDown.Click
-			MoveSelectedItem(_leftListBox, MoveDirection.Down)
+			MoveSelectedItemAndRestoreSelection(_searchableListLeft, MoveDirection.Down)
 		End Sub
 
 		Private Sub _moveRightSelectedItemUp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _moveRightSelectedItemUp.Click
-			MoveSelectedItem(_rightListBox, MoveDirection.Up)
+			MoveSelectedItemAndRestoreSelection(_searchableListRight, MoveDirection.Up)
 		End Sub
 
 		Private Sub _moveRightSelectedItemDown_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _moveRightSelectedItemDown.Click
-			MoveSelectedItem(_rightListBox, MoveDirection.Down)
+			MoveSelectedItemAndRestoreSelection(_searchableListRight, MoveDirection.Down)
 		End Sub
 
 #End Region
