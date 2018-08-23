@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using FileNaming.CustomFileNaming;
 using kCura.WinEDDS.Core.Export.Natives.Name.Factories;
-using kCura.WinEDDS.Core.Model;
 using kCura.WinEDDS.Exporters;
 
 namespace kCura.WinEDDS.Core.Export.Natives.Name

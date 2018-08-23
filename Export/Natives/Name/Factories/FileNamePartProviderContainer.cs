@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.WinEDDS.Core.Model;
+using FileNaming.CustomFileNaming;
 
 namespace kCura.WinEDDS.Core.Export.Natives.Name.Factories
 {
