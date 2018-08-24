@@ -436,9 +436,6 @@
       <DependentUpon>LogMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="Model\Export\ExtendedExportFile.cs" />
-    <Compile Include="Model\Export\Natives\Name\DescriptorPart.cs" />
-    <Compile Include="Model\Export\Natives\Name\FieldDescriptorPart.cs" />
-    <Compile Include="Model\Export\Natives\Name\SeparatorDescriptorPart.cs" />
     <Compile Include="Model\Export\Process\ExtendedObjectExportInfo.cs" />
   </ItemGroup>
   <ItemGroup>
