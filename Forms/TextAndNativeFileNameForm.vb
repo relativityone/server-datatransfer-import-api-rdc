@@ -17,8 +17,11 @@ Namespace kCura.EDDS.WinForm.Forms
 		}
 
 		Private ReadOnly Separators As SeparatorSelection() = New SeparatorSelection() {
+			New SeparatorSelection("_ (underscore)", "_"),
 			New SeparatorSelection("- (hyphen)", "-"),
-			New SeparatorSelection("_ (underscore)", "_")
+			New SeparatorSelection(". (period)", "."),
+			New SeparatorSelection("  (space)", " "),
+			New SeparatorSelection(" (none)", "")
 		}
 
 		Private _numberOfFields As Integer
