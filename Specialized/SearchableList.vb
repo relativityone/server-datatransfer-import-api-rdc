@@ -17,6 +17,12 @@ Namespace Specialized
 		Public Event KeyUpEvent(sender As Object, e As KeyEventArgs)
 		Public Event MeasureItemEvent(sender As Object, e As MeasureItemEventArgs)
 		Public Event TextChangedEvent(sender As Object)
+		Public Event RemoveAtEvent(sender As Object, index As Integer)
+
+		Private Sub _listBox_OnRemoveAtEvent1(index As Integer) Handles _listBox.RemoveAtEvent
+			RaiseEvent RemoveAtEvent(Me, index)
+		End Sub
+
 
 		Protected Overrides Sub OnCreateControl()
 			MyBase.OnCreateControl()
@@ -186,5 +192,28 @@ Namespace Specialized
 			End If
 		End Sub
 
+		Private Sub _listBox_OnAddFieldsEvent(items As Object()) Handles _listBox.AddFieldsEvent
+			AddFields(items)
+		End Sub
+
+		Private Sub _listBox_OnInsertFieldsEvent(position As Integer, item As Object) Handles _listBox.InsertFieldsEvent
+			InsertFields(position, item)
+		End Sub
+
+		Private Sub _listBox_OnRemoveAtEvent(index As Integer) Handles _listBox.RemoveAtEvent
+			Datasource.RemoveAt(index)
+		End Sub
+
+		Private Sub _listBox_OnDropped(sender As Object, e As DroppedEventArgs) Handles _listBox.Dropped
+			ForceRefresh()
+		End Sub
+
+		Private Sub InsertFields(position As Integer, item As Object)
+			DataSource.Insert(position, item)
+		End Sub
+
+		Public Sub RemoveFieldAtIndex(index As Integer)
+			DataSource.RemoveAt(index)
+		End Sub
 	End Class
 End Namespace

@@ -156,7 +156,12 @@
     <Compile Include="RichTextBox.vb">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Specialized\DragDropListBox.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Specialized\DroppedEventArgs.vb" />
     <Compile Include="Specialized\HighlightItemEventArgs.vb" />
+    <Compile Include="Specialized\IDragDropSource.vb" />
     <Compile Include="Specialized\LayoutPropertyType.vb" />
     <Compile Include="Specialized\ListBox.vb">
       <SubType>Component</SubType>
@@ -181,6 +186,8 @@
     <Compile Include="Specialized\TwoListBox.vb">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Specialized\VisualCue.vb" />
+    <Compile Include="Specialized\Win32.vb" />
     <Compile Include="Win32API.vb">
       <SubType>Code</SubType>
     </Compile>
