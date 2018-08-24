@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using kCura.WinEDDS.Core.Model;
+using FileNaming.CustomFileNaming;
 using kCura.WinEDDS.Core.Model.Export.Process;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.Helpers;
