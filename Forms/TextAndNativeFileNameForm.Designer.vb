@@ -99,6 +99,7 @@
 			'
 			'_cancelButton
 			'
+			Me._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel
 			Me._cancelButton.Location = New System.Drawing.Point(594, 67)
 			Me._cancelButton.Name = "_cancelButton"
 			Me._cancelButton.Size = New System.Drawing.Size(75, 23)
@@ -153,7 +154,9 @@
 			'
 			'TextAndNativeFileNameForm
 			'
+			Me.AcceptButton = Me._applyButton
 			Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit
+			Me.CancelButton = Me._cancelButton
 			Me.ClientSize = New System.Drawing.Size(681, 102)
 			Me.Controls.Add(Me._removeSecondFieldButton)
 			Me.Controls.Add(Me._addThirdFieldButton)

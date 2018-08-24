@@ -34,9 +34,6 @@ Namespace kCura.EDDS.WinForm.Forms
 		End Sub
 
 		Private Sub InitializeBindings()
-			_secondFieldComboBox.DataSource = _availableFields
-			_secondFieldComboBox.DisplayMember = "DisplayName"
-			_secondFieldComboBox.ValueMember = "ID"
 			InitializeFieldBindings(_secondFieldComboBox)
 			InitializeFieldBindings(_thirdFieldComboBox)
 			InitializeSeparatorBindings(_firstSeparatorComboBox)
@@ -98,6 +95,8 @@ Namespace kCura.EDDS.WinForm.Forms
 			_availableFields.AddRange(databaseFields)
 		End Sub
 
+		Public Event ApplyClicked()
+
 		Private Sub _addSecondFieldButton_Click(sender As Object, e As EventArgs) Handles _addSecondFieldButton.Click
 			ChangeNumberOfFields(2)
 		End Sub
@@ -120,6 +119,15 @@ Namespace kCura.EDDS.WinForm.Forms
 
 		Private Sub _thirdFieldComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles _thirdFieldComboBox.SelectedIndexChanged
 			ToggleThirdFieldCustomTextBox()
+		End Sub
+
+		Private Sub _applyButton_Click(sender As Object, e As EventArgs) Handles _applyButton.Click
+			RaiseEvent ApplyClicked()
+			Close()
+		End Sub
+
+		Private Sub _cancelButton_Click(sender As Object, e As EventArgs) Handles _cancelButton.Click
+			Close()
 		End Sub
 
 		Private Class FieldSelection
