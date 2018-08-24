@@ -1,8 +1,7 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
+using FileNaming.CustomFileNaming;
 using kCura.WinEDDS.Core.Export.Natives.Name;
-using kCura.WinEDDS.Core.Model;
 using kCura.WinEDDS.Core.Model.Export.Process;
 using kCura.WinEDDS.Core.NUnit.Helpers;
 using Moq;
