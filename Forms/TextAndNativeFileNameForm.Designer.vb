@@ -24,18 +24,10 @@
 		<System.Diagnostics.DebuggerStepThrough()>
 		Private Sub InitializeComponent()
 			Me._firstFieldTextBox = New System.Windows.Forms.TextBox()
-			Me._firstSeparatorComboBox = New System.Windows.Forms.ComboBox()
-			Me._secondFieldComboBox = New System.Windows.Forms.ComboBox()
-			Me._secondSeparatorComboBox = New System.Windows.Forms.ComboBox()
-			Me._thirdFieldComboBox = New System.Windows.Forms.ComboBox()
-			Me._secondFieldCustomTextBox = New System.Windows.Forms.TextBox()
-			Me._thirdFieldCustomTextBox = New System.Windows.Forms.TextBox()
 			Me._cancelButton = New System.Windows.Forms.Button()
 			Me._applyButton = New System.Windows.Forms.Button()
-			Me._removeThirdFieldButton = New System.Windows.Forms.Button()
-			Me._addSecondFieldButton = New System.Windows.Forms.Button()
-			Me._addThirdFieldButton = New System.Windows.Forms.Button()
-			Me._removeSecondFieldButton = New System.Windows.Forms.Button()
+			Me._addFieldButton = New System.Windows.Forms.Button()
+			Me._removeFieldButton = New System.Windows.Forms.Button()
 			Me.SuspendLayout()
 			'
 			'_firstFieldTextBox
@@ -47,63 +39,13 @@
 			Me._firstFieldTextBox.TabIndex = 0
 			Me._firstFieldTextBox.Text = "Control Number"
 			'
-			'_firstSeparatorComboBox
-			'
-			Me._firstSeparatorComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me._firstSeparatorComboBox.FormattingEnabled = True
-			Me._firstSeparatorComboBox.Location = New System.Drawing.Point(140, 13)
-			Me._firstSeparatorComboBox.Name = "_firstSeparatorComboBox"
-			Me._firstSeparatorComboBox.Size = New System.Drawing.Size(120, 21)
-			Me._firstSeparatorComboBox.TabIndex = 1
-			'
-			'_secondFieldComboBox
-			'
-			Me._secondFieldComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me._secondFieldComboBox.FormattingEnabled = True
-			Me._secondFieldComboBox.Location = New System.Drawing.Point(266, 13)
-			Me._secondFieldComboBox.Name = "_secondFieldComboBox"
-			Me._secondFieldComboBox.Size = New System.Drawing.Size(120, 21)
-			Me._secondFieldComboBox.TabIndex = 2
-			'
-			'_secondSeparatorComboBox
-			'
-			Me._secondSeparatorComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me._secondSeparatorComboBox.FormattingEnabled = True
-			Me._secondSeparatorComboBox.Location = New System.Drawing.Point(392, 13)
-			Me._secondSeparatorComboBox.Name = "_secondSeparatorComboBox"
-			Me._secondSeparatorComboBox.Size = New System.Drawing.Size(120, 21)
-			Me._secondSeparatorComboBox.TabIndex = 3
-			'
-			'_thirdFieldComboBox
-			'
-			Me._thirdFieldComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-			Me._thirdFieldComboBox.FormattingEnabled = True
-			Me._thirdFieldComboBox.Location = New System.Drawing.Point(518, 13)
-			Me._thirdFieldComboBox.Name = "_thirdFieldComboBox"
-			Me._thirdFieldComboBox.Size = New System.Drawing.Size(120, 21)
-			Me._thirdFieldComboBox.TabIndex = 4
-			'
-			'_secondFieldCustomTextBox
-			'
-			Me._secondFieldCustomTextBox.Location = New System.Drawing.Point(266, 41)
-			Me._secondFieldCustomTextBox.Name = "_secondFieldCustomTextBox"
-			Me._secondFieldCustomTextBox.Size = New System.Drawing.Size(120, 20)
-			Me._secondFieldCustomTextBox.TabIndex = 5
-			'
-			'_thirdFieldCustomTextBox
-			'
-			Me._thirdFieldCustomTextBox.Location = New System.Drawing.Point(518, 41)
-			Me._thirdFieldCustomTextBox.Name = "_thirdFieldCustomTextBox"
-			Me._thirdFieldCustomTextBox.Size = New System.Drawing.Size(120, 20)
-			Me._thirdFieldCustomTextBox.TabIndex = 6
-			'
 			'_cancelButton
 			'
 			Me._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel
 			Me._cancelButton.Location = New System.Drawing.Point(594, 67)
 			Me._cancelButton.Name = "_cancelButton"
 			Me._cancelButton.Size = New System.Drawing.Size(75, 23)
-			Me._cancelButton.TabIndex = 8
+			Me._cancelButton.TabIndex = 99
 			Me._cancelButton.Text = "Cancel"
 			Me._cancelButton.UseVisualStyleBackColor = True
 			'
@@ -112,45 +54,27 @@
 			Me._applyButton.Location = New System.Drawing.Point(513, 67)
 			Me._applyButton.Name = "_applyButton"
 			Me._applyButton.Size = New System.Drawing.Size(75, 23)
-			Me._applyButton.TabIndex = 9
+			Me._applyButton.TabIndex = 98
 			Me._applyButton.Text = "Apply"
 			Me._applyButton.UseVisualStyleBackColor = True
 			'
-			'_removeThirdFieldButton
+			'_addFieldButton
 			'
-			Me._removeThirdFieldButton.Location = New System.Drawing.Point(644, 12)
-			Me._removeThirdFieldButton.Name = "_removeThirdFieldButton"
-			Me._removeThirdFieldButton.Size = New System.Drawing.Size(25, 23)
-			Me._removeThirdFieldButton.TabIndex = 10
-			Me._removeThirdFieldButton.Text = "-"
-			Me._removeThirdFieldButton.UseVisualStyleBackColor = True
+			Me._addFieldButton.Location = New System.Drawing.Point(140, 12)
+			Me._addFieldButton.Name = "_addFieldButton"
+			Me._addFieldButton.Size = New System.Drawing.Size(25, 23)
+			Me._addFieldButton.TabIndex = 96
+			Me._addFieldButton.Text = "+"
+			Me._addFieldButton.UseVisualStyleBackColor = True
 			'
-			'_addSecondFieldButton
+			'_removeFieldButton
 			'
-			Me._addSecondFieldButton.Location = New System.Drawing.Point(140, 12)
-			Me._addSecondFieldButton.Name = "_addSecondFieldButton"
-			Me._addSecondFieldButton.Size = New System.Drawing.Size(25, 23)
-			Me._addSecondFieldButton.TabIndex = 11
-			Me._addSecondFieldButton.Text = "+"
-			Me._addSecondFieldButton.UseVisualStyleBackColor = True
-			'
-			'_addThirdFieldButton
-			'
-			Me._addThirdFieldButton.Location = New System.Drawing.Point(392, 12)
-			Me._addThirdFieldButton.Name = "_addThirdFieldButton"
-			Me._addThirdFieldButton.Size = New System.Drawing.Size(25, 23)
-			Me._addThirdFieldButton.TabIndex = 12
-			Me._addThirdFieldButton.Text = "+"
-			Me._addThirdFieldButton.UseVisualStyleBackColor = True
-			'
-			'_removeSecondFieldButton
-			'
-			Me._removeSecondFieldButton.Location = New System.Drawing.Point(423, 12)
-			Me._removeSecondFieldButton.Name = "_removeSecondFieldButton"
-			Me._removeSecondFieldButton.Size = New System.Drawing.Size(25, 23)
-			Me._removeSecondFieldButton.TabIndex = 13
-			Me._removeSecondFieldButton.Text = "-"
-			Me._removeSecondFieldButton.UseVisualStyleBackColor = True
+			Me._removeFieldButton.Location = New System.Drawing.Point(171, 12)
+			Me._removeFieldButton.Name = "_removeFieldButton"
+			Me._removeFieldButton.Size = New System.Drawing.Size(25, 23)
+			Me._removeFieldButton.TabIndex = 97
+			Me._removeFieldButton.Text = "-"
+			Me._removeFieldButton.UseVisualStyleBackColor = True
 			'
 			'TextAndNativeFileNameForm
 			'
@@ -158,18 +82,10 @@
 			Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit
 			Me.CancelButton = Me._cancelButton
 			Me.ClientSize = New System.Drawing.Size(681, 102)
-			Me.Controls.Add(Me._removeSecondFieldButton)
-			Me.Controls.Add(Me._addThirdFieldButton)
-			Me.Controls.Add(Me._addSecondFieldButton)
-			Me.Controls.Add(Me._removeThirdFieldButton)
+			Me.Controls.Add(Me._removeFieldButton)
+			Me.Controls.Add(Me._addFieldButton)
 			Me.Controls.Add(Me._applyButton)
 			Me.Controls.Add(Me._cancelButton)
-			Me.Controls.Add(Me._thirdFieldCustomTextBox)
-			Me.Controls.Add(Me._secondFieldCustomTextBox)
-			Me.Controls.Add(Me._thirdFieldComboBox)
-			Me.Controls.Add(Me._secondSeparatorComboBox)
-			Me.Controls.Add(Me._secondFieldComboBox)
-			Me.Controls.Add(Me._firstSeparatorComboBox)
 			Me.Controls.Add(Me._firstFieldTextBox)
 			Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
 			Me.Name = "TextAndNativeFileNameForm"
@@ -182,17 +98,9 @@
 		End Sub
 
 		Friend WithEvents _firstFieldTextBox As TextBox
-		Friend WithEvents _firstSeparatorComboBox As ComboBox
-		Friend WithEvents _secondFieldComboBox As ComboBox
-		Friend WithEvents _secondSeparatorComboBox As ComboBox
-		Friend WithEvents _thirdFieldComboBox As ComboBox
-		Friend WithEvents _secondFieldCustomTextBox As TextBox
-		Friend WithEvents _thirdFieldCustomTextBox As TextBox
 		Friend WithEvents _cancelButton As Button
 		Friend WithEvents _applyButton As Button
-		Friend WithEvents _removeThirdFieldButton As Button
-		Friend WithEvents _addSecondFieldButton As Button
-		Friend WithEvents _addThirdFieldButton As Button
-		Friend WithEvents _removeSecondFieldButton As Button
+		Friend WithEvents _addFieldButton As Button
+		Friend WithEvents _removeFieldButton As Button
 	End Class
 End Namespace

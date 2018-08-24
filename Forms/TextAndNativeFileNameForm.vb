@@ -6,6 +6,7 @@ Namespace kCura.EDDS.WinForm.Forms
 	Public Class TextAndNativeFileNameForm
 
 		Private Const CustomTextOption As String = "Custom Text..."
+		Private Const FieldLimit = 3
 
 		Private ReadOnly AllowedFieldTypes As FieldTypeHelper.FieldType() = New FieldTypeHelper.FieldType() {
 			FieldTypeHelper.FieldType.Varchar,
@@ -24,67 +25,19 @@ Namespace kCura.EDDS.WinForm.Forms
 			New SeparatorSelection(" (none)", "")
 		}
 
-		Private _numberOfFields As Integer
 		Private _availableFields As List(Of FieldSelection)
+		Private _fieldControls As List(Of SingleFieldControls)
+
+		Private ReadOnly Property NumberOfFields As Integer
+			Get
+				Return _fieldControls.Count
+			End Get
+		End Property
 
 		Public Sub Initialize(fields As ViewFieldInfo())
-			ChangeNumberOfFields(1)
+			ClientSize = New Size(252 * FieldLimit - 75, 102)
 			InitializeAvailableFields(fields)
-			InitializeBindings()
-		End Sub
-
-		Private Sub InitializeBindings()
-			InitializeFieldBindings(_secondFieldComboBox)
-			InitializeFieldBindings(_thirdFieldComboBox)
-			InitializeSeparatorBindings(_firstSeparatorComboBox)
-			InitializeSeparatorBindings(_secondSeparatorComboBox)
-		End Sub
-
-		Private Sub InitializeFieldBindings(comboBox As ComboBox)
-			comboBox.DataSource = _availableFields.ToList()
-			comboBox.DisplayMember = "DisplayName"
-		End Sub
-
-		Private Sub InitializeSeparatorBindings(comboBox As ComboBox)
-			comboBox.DataSource = Separators.ToList()
-			comboBox.DisplayMember = "DisplayName"
-		End Sub
-
-		Private Sub ChangeNumberOfFields(numberOfFields As Integer)
-			_numberOfFields = numberOfFields
-			ToggleControls()
-		End Sub
-
-		Private Sub ToggleControls()
-			_addSecondFieldButton.Visible = (_numberOfFields = 1)
-			_firstSeparatorComboBox.Visible = (_numberOfFields > 1)
-			_secondFieldComboBox.Visible = (_numberOfFields > 1)
-			ToggleSecondFieldCustomTextBox()
-			_addThirdFieldButton.Visible = (_numberOfFields = 2)
-			_removeSecondFieldButton.Visible = (_numberOfFields = 2)
-			_secondSeparatorComboBox.Visible = (_numberOfFields > 2)
-			_thirdFieldComboBox.Visible = (_numberOfFields > 2)
-			ToggleThirdFieldCustomTextBox()
-			_removeThirdFieldButton.Visible = (_numberOfFields = 3)
-		End Sub
-
-		Private Sub ToggleSecondFieldCustomTextBox()
-			ToggleFieldCustomTextBox(_secondFieldCustomTextBox, _secondFieldComboBox, 1)
-		End Sub
-
-		Private Sub ToggleThirdFieldCustomTextBox()
-			ToggleFieldCustomTextBox(_thirdFieldCustomTextBox, _thirdFieldComboBox, 2)
-		End Sub
-
-		Private Sub ToggleFieldCustomTextBox(textBox As TextBox, comboBox As ComboBox, fieldNumber As Integer)
-			Dim textBoxVisible = False
-			If _numberOfFields > fieldNumber Then
-				Dim selectedItem = TryCast(comboBox.SelectedItem, FieldSelection)
-				If selectedItem IsNot Nothing And selectedItem.DisplayName = CustomTextOption Then
-					textBoxVisible = True
-				End If
-			End If
-			textBox.Visible = textBoxVisible
+			InitializeFieldControls()
 		End Sub
 
 		Private Sub InitializeAvailableFields(fields As IEnumerable(Of ViewFieldInfo))
@@ -95,30 +48,112 @@ Namespace kCura.EDDS.WinForm.Forms
 			_availableFields.AddRange(databaseFields)
 		End Sub
 
+		Private Sub InitializeFieldControls()
+			_fieldControls = New List(Of SingleFieldControls) From {Nothing}
+		End Sub
+
+		Private Sub AddField()
+			Dim fieldComboBox As ComboBox = AddFieldComboBox(NumberOfFields)
+			Dim separatorComboBox As ComboBox = AddSeparatorComboBox()
+			Dim customTextBox As TextBox = AddCustomTextBox()
+			Dim singleFieldControls = New SingleFieldControls(fieldComboBox, separatorComboBox, customTextBox)
+			_fieldControls.Add(singleFieldControls)
+			SetupAddAndRemoveButtons()
+		End Sub
+
+		Private Function AddFieldComboBox(fieldNumber As Integer) As ComboBox
+			Dim fieldComboBox = New ComboBox()
+			fieldComboBox.DropDownStyle = ComboBoxStyle.DropDownList
+			fieldComboBox.FormattingEnabled = True
+			fieldComboBox.Location = New Point(252 * NumberOfFields + 14, 13)
+			fieldComboBox.Size = New Size(120, 21)
+			fieldComboBox.TabIndex = 1 + 3 * NumberOfFields
+			fieldComboBox.DataSource = _availableFields.ToList()
+			fieldComboBox.DisplayMember = "DisplayName"
+			fieldComboBox.Tag = fieldNumber
+			AddHandler fieldComboBox.SelectedIndexChanged, AddressOf FieldComboBoxSelectionChanged
+			Controls.Add(fieldComboBox)
+			Return fieldComboBox
+		End Function
+
+		Private Function AddSeparatorComboBox() As ComboBox
+			Dim separatorComboBox = New ComboBox()
+			separatorComboBox.DropDownStyle = ComboBoxStyle.DropDownList
+			separatorComboBox.FormattingEnabled = True
+			separatorComboBox.Location = New Point(252 * NumberOfFields - 112, 13)
+			separatorComboBox.Size = New Size(120, 21)
+			separatorComboBox.TabIndex = 2 + 3 * NumberOfFields
+			separatorComboBox.DataSource = Separators.ToList()
+			separatorComboBox.DisplayMember = "DisplayName"
+			Controls.Add(separatorComboBox)
+			Return separatorComboBox
+		End Function
+
+		Private Function AddCustomTextBox() As TextBox
+			Dim customTextBox = New TextBox()
+			customTextBox.Location = New Point(252 * NumberOfFields + 14, 41)
+			customTextBox.Size = New Size(120, 20)
+			customTextBox.TabIndex = 3 + 3 * NumberOfFields
+			Controls.Add(customTextBox)
+			Return customTextBox
+		End Function
+
+		Private Sub RemoveField()
+			Dim singleFieldControls = _fieldControls(_fieldControls.Count - 1)
+			singleFieldControls.FieldComboBox.DataSource = Nothing
+			RemoveHandler singleFieldControls.FieldComboBox.SelectedIndexChanged, AddressOf FieldComboBoxSelectionChanged
+			singleFieldControls.SeparatorComboBox.DataSource = Nothing
+			Controls.Remove(singleFieldControls.FieldComboBox)
+			Controls.Remove(singleFieldControls.SeparatorComboBox)
+			Controls.Remove(singleFieldControls.CustomTextBox)
+			_fieldControls.Remove(singleFieldControls)
+			SetupAddAndRemoveButtons()
+		End Sub
+
+		Private Sub SetupAddAndRemoveButtons()
+			If NumberOfFields = 1 Then
+				_addFieldButton.Visible = True
+				_addFieldButton.Location = New Point(252 * NumberOfFields - 112, 12)
+				_removeFieldButton.Visible = False
+			ElseIf NumberOfFields = FieldLimit Then
+				_addFieldButton.Visible = False
+				_removeFieldButton.Visible = True
+				_removeFieldButton.Location = New Point(252 * NumberOfFields - 112, 12)
+			Else
+				_addFieldButton.Visible = True
+				_addFieldButton.Location = New Point(252 * NumberOfFields - 112, 12)
+				_removeFieldButton.Visible = True
+				_removeFieldButton.Location = New Point(252 * NumberOfFields - 81, 12)
+			End If
+		End Sub
+
+		Private Sub ToggleFieldCustomTextBox(comboBox As ComboBox, textBox As TextBox)
+			Dim textBoxVisible = False
+			Dim selectedItem = TryCast(comboBox.SelectedItem, FieldSelection)
+			If selectedItem.DisplayName = CustomTextOption Then
+				textBoxVisible = True
+			End If
+			textBox.Visible = textBoxVisible
+		End Sub
+
 		Public Event ApplyClicked()
 
-		Private Sub _addSecondFieldButton_Click(sender As Object, e As EventArgs) Handles _addSecondFieldButton.Click
-			ChangeNumberOfFields(2)
+		Private Sub FieldComboBoxSelectionChanged(sender As Object, e As EventArgs)
+			Dim comboBox = TryCast(sender, ComboBox)
+			If comboBox Is Nothing Then
+				Return
+			End If
+			Dim fieldNumber = DirectCast(comboBox.Tag, Integer)
+			Dim textBox As TextBox = _fieldControls(fieldNumber).CustomTextBox
+			ToggleFieldCustomTextBox(comboBox, textBox)
 		End Sub
 
-		Private Sub _addThirdFieldButton_Click(sender As Object, e As EventArgs) Handles _addThirdFieldButton.Click
-			ChangeNumberOfFields(3)
+		Private Sub _addFieldButton_Click(sender As Object, e As EventArgs) Handles _addFieldButton.Click
+			AddField()
 		End Sub
 
-		Private Sub _removeSecondFieldButton_Click(sender As Object, e As EventArgs) Handles _removeSecondFieldButton.Click
-			ChangeNumberOfFields(1)
-		End Sub
-
-		Private Sub _removeThirdFieldButton_Click(sender As Object, e As EventArgs) Handles _removeThirdFieldButton.Click
-			ChangeNumberOfFields(2)
-		End Sub
-
-		Private Sub _secondFieldComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles _secondFieldComboBox.SelectedIndexChanged
-			ToggleSecondFieldCustomTextBox()
-		End Sub
-
-		Private Sub _thirdFieldComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles _thirdFieldComboBox.SelectedIndexChanged
-			ToggleThirdFieldCustomTextBox()
+		Private Sub _removeFieldButton_Click(sender As Object, e As EventArgs) Handles _removeFieldButton.Click
+			RemoveField()
 		End Sub
 
 		Private Sub _applyButton_Click(sender As Object, e As EventArgs) Handles _applyButton.Click
@@ -151,6 +186,20 @@ Namespace kCura.EDDS.WinForm.Forms
 
 			Public Property DisplayName As String
 			Public Property Value As String
+
+		End Class
+
+		Private Class SingleFieldControls
+
+			Public Sub New(fieldComboBox As ComboBox, separatorComboBox As ComboBox, customTextBox As TextBox)
+				Me.FieldComboBox = fieldComboBox
+				Me.SeparatorComboBox = separatorComboBox
+				Me.CustomTextBox = customTextBox
+			End Sub
+
+			Public Property FieldComboBox As ComboBox
+			Public Property SeparatorComboBox As ComboBox
+			Public Property CustomTextBox As TextBox
 
 		End Class
 
