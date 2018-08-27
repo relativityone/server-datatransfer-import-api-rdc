@@ -1,4 +1,6 @@
-﻿Namespace Specialized
+﻿Imports kCura.Windows.Forms
+
+Namespace Specialized
 	<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 	Partial Class SearchableList
 		Inherits System.Windows.Forms.UserControl
@@ -24,7 +26,7 @@
 		<System.Diagnostics.DebuggerStepThrough()>
 		Private Sub InitializeComponent()
 		Me._textBox = New System.Windows.Forms.TextBox()
-		Me._listBox = New DragDropListBox()
+		Me._listBox = New ListBox()
 		Me.SuspendLayout
 		'
 		'_textBox
@@ -49,7 +51,6 @@
 		Me._listBox.HighlightIndex = -1
 		Me._listBox.HorizontalScrollbar = true
 		Me._listBox.HorizontalScrollOffset = 0
-		Me._listBox.IsDragDropTarget = true
 		Me._listBox.Location = New System.Drawing.Point(0, 32)
 		Me._listBox.Margin = New System.Windows.Forms.Padding(4)
 		Me._listBox.Name = "_listBox"
@@ -72,6 +73,6 @@
 End Sub
 
 		Friend WithEvents _textBox As Windows.Forms.TextBox
-		Friend WithEvents _listBox As DragDropListBox
+		Friend WithEvents _listBox As ListBox
 	End Class
 End Namespace
