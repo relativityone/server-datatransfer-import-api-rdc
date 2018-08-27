@@ -73,17 +73,17 @@ Namespace kCura.EDDS.WinForm
 
 #Region "Properties"
 
-        Public Sub SetImplicitCredentialProvider()
-            oAuth2ImplicitCredentialsHelper.Value.SetImplicitCredentialProvider()
-        End Sub
+		Public Sub SetImplicitCredentialProvider()
+			oAuth2ImplicitCredentialsHelper.Value.SetImplicitCredentialProvider()
+		End Sub
 
-        Friend Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential)
-	        Return Await oAuth2ImplicitCredentialsHelper.Value.GetCredentialsAsync()
-        End Function
+		Friend Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential)
+			Return Await oAuth2ImplicitCredentialsHelper.Value.GetCredentialsAsync()
+		End Function
 
-	    Private Function CreateOAuth2ImplicitCredentialsHelper() As OAuth2ImplicitCredentialsHelper
-		    Return New OAuth2ImplicitCredentialsHelper(AddressOf GetIdentityServerLocation, AddressOf On_TokenRetrieved)
-	    End Function
+		Private Function CreateOAuth2ImplicitCredentialsHelper() As OAuth2ImplicitCredentialsHelper
+			Return New OAuth2ImplicitCredentialsHelper(AddressOf GetIdentityServerLocation, AddressOf On_TokenRetrieved)
+		End Function
 
 		Private Async Function GetFieldProviderCacheAsync() As Task(Of IFieldProviderCache)
 			If (_fieldProviderCache Is Nothing) Then
@@ -1526,7 +1526,7 @@ Namespace kCura.EDDS.WinForm
 
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
 					If OpenCaseSelector Then Await OpenCaseAsync().ConfigureAwait(False)
-					_timeZoneOffset = 0                                                         'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+					_timeZoneOffset = 0
 					_lastCredentialCheckResult = CredentialCheckResult.Success
 					'This was created specifically for raising an event after login success for RDC forms authentication 
 					LogOnForm()
@@ -1596,7 +1596,7 @@ Namespace kCura.EDDS.WinForm
 				CheckVersion(netCreds)
 				If userManager.Login(netCreds.UserName, netCreds.Password) Then
 					kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-					_timeZoneOffset = 0                                          'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+					_timeZoneOffset = 0
 					_lastCredentialCheckResult = CredentialCheckResult.Success
 				Else
 					_lastCredentialCheckResult = CredentialCheckResult.Fail
@@ -1625,7 +1625,7 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Function DoOAuthLogin(ByVal clientId As String, ByVal clientSecret As String) As CredentialCheckResult
-			Dim urlString As String = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/token")
+			Dim urlString As String = $"{GetIdentityServerLocation()}/{"connect/token"}"
 			Dim stsUrl As Uri = New Uri(urlString)
 
 			_lastCredentialCheckResult = DoOAuthLogin(clientId, clientSecret, stsUrl)
@@ -1636,7 +1636,7 @@ Namespace kCura.EDDS.WinForm
 		Public Function GetIdentityServerLocation() As String
 			Dim tempCred As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
 			Dim relManager As Service.RelativityManager = New Service.RelativityManager(tempCred, _CookieContainer)
-			Dim urlString As String = String.Format("{0}/{1}", relManager.GetRelativityUrl(), "Identity")
+			Dim urlString As String = $"{relManager.GetRelativityUrl()}/{"Identity"}"
 			Return urlString
 		End Function
 
@@ -1721,7 +1721,6 @@ Namespace kCura.EDDS.WinForm
 			Catch ex As System.Exception
 				If ex.Message.IndexOf("Need To Re Login") <> -1 Then
 					NewLogin(False)
-					'productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
 					Return Nothing
 				Else
 					Throw
@@ -1755,7 +1754,7 @@ Namespace kCura.EDDS.WinForm
 				Process.Start(urlPrefix & "RelativityOne/Content/Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
 			Else
 				Dim v As System.Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
-				Dim majMin As String = String.Format("{0}.{1}", v.Major, v.Minor)
+				Dim majMin As String = $"{v.Major}.{v.Minor}"
 				Process.Start(urlPrefix & majMin & "/#Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
 			End If
 
@@ -1802,22 +1801,22 @@ Namespace kCura.EDDS.WinForm
 				Dim jobLiveSink = New JobLiveMetricSink(serviceFactory, metricsManagerFactory)
 
 				Dim jobLifetimeSink = New JobLifetimeSink(serviceFactory, metricsManagerFactory)
-				Dim jobLiveThrottledSink = New ThrottledMessageSink(Of TransferJobProgressMessage)(jobLiveSink, function() configProvider.CurrentConfig.ThrottleTimeout)
+				Dim jobLiveThrottledSink = New ThrottledMessageSink(Of TransferJobProgressMessage)(jobLiveSink, Function() configProvider.CurrentConfig.ThrottleTimeout)
 				Dim jobSumEolSink = New JobSumEndOfLifeSink(serviceFactory, metricsManagerFactory)
 				Dim jobApmEolSink = New JobApmEndOfLifeSink(serviceFactory, metricsManagerFactory)
 
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStartedMessage)(jobLifetimeSink, function() configProvider.CurrentConfig.SendSumMetrics))
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedMessage)(jobLifetimeSink, function() configProvider.CurrentConfig.SendSumMetrics))
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobFailedMessage)(jobLifetimeSink, function() configProvider.CurrentConfig.SendSumMetrics))
-				
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobThroughputMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobTotalRecordsCountMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedRecordsCountMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(jobSumEolSink, function() configProvider.CurrentConfig.SendSumMetrics))
-				
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobProgressMessage)(jobLiveThrottledSink, function() configProvider.CurrentConfig.SendLiveAPMMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStartedMessage)(jobLifetimeSink, Function() configProvider.CurrentConfig.SendSumMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedMessage)(jobLifetimeSink, Function() configProvider.CurrentConfig.SendSumMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobFailedMessage)(jobLifetimeSink, Function() configProvider.CurrentConfig.SendSumMetrics))
 
-				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(jobApmEolSink, function() configProvider.CurrentConfig.SendSummaryApmMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobThroughputMessage)(jobSumEolSink, Function() configProvider.CurrentConfig.SendSumMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobTotalRecordsCountMessage)(jobSumEolSink, Function() configProvider.CurrentConfig.SendSumMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedRecordsCountMessage)(jobSumEolSink, Function() configProvider.CurrentConfig.SendSumMetrics))
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(jobSumEolSink, Function() configProvider.CurrentConfig.SendSumMetrics))
+
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobProgressMessage)(jobLiveThrottledSink, Function() configProvider.CurrentConfig.SendLiveApmMetrics))
+
+				_messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(jobApmEolSink, Function() configProvider.CurrentConfig.SendSummaryApmMetrics))
 			End If
 			Return _messageService
 		End Function
