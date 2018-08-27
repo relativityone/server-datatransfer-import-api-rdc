@@ -445,6 +445,7 @@
     <Compile Include="Controls\TextFieldPrecedencePicker.vb">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="CustomFileNameSelectionPart.vb" />
     <Compile Include="Forms\AdvancedFileLocation.vb">
       <SubType>Form</SubType>
     </Compile>
