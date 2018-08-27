@@ -12,6 +12,7 @@ Namespace Specialized
 		Private _dataSource As New List(Of Object)
 		Private _isTextBoxPlaceholderUsed As Boolean = True
 		Private _isUserTyping As Boolean = False
+		Private _wasUsedPlaceholder As Boolean
 		Private Const _DELAYED_TEXT_CHANGED_TIMEOUT_IN_MILLISECONDS As Integer = 600
 
 		Public Event DoubleClickEvent(sender As Object, e As EventArgs)
@@ -19,6 +20,8 @@ Namespace Specialized
 		Public Event KeyUpEvent(sender As Object, e As KeyEventArgs)
 		Public Event MeasureItemEvent(sender As Object, e As MeasureItemEventArgs)
 		Public Event TextChangedEvent(sender As Object)
+		Public Event MouseMoveEvent(sender As Object, e As MouseEventArgs)
+		Public Event MouseLeaveEvent(sender As Object, e As EventArgs)
 
 		Protected Overrides Sub OnCreateControl()
 			MyBase.OnCreateControl()
@@ -42,6 +45,10 @@ Namespace Specialized
 
 		Private Sub selectionSearchInput_TextChanged(sender As Object, e As EventArgs) _
 			Handles _textBox.TextChanged
+			If _wasUsedPlaceholder
+				_wasUsedPlaceholder = False
+				Return
+			End If
 			If IsNothing(_timer) Then
 				_timer = New Timer()
 				AddHandler _timer.Tick, AddressOf Timer_Tick
@@ -191,6 +198,7 @@ Namespace Specialized
 		Private Sub _textBox_Enter(sender As Object, e As EventArgs) Handles _textBox.Enter
 			_isUserTyping = True
 			If _isTextBoxPlaceholderUsed Then
+				_wasUsedPlaceholder = True
 				_isTextBoxPlaceholderUsed = False
 				_textBox.Text = ""
 				_textBox.ForeColor = System.Drawing.Color.Black
@@ -213,6 +221,15 @@ Namespace Specialized
 			Else
 				_isTextBoxPlaceholderUsed = False
 			End If
+		End Sub
+
+		Private Sub _listBox_MouseMoveEvent(sender As Object, e As MouseEventArgs) Handles _listBox.MouseMove
+			RaiseEvent MouseMoveEvent(sender, e)
+		End Sub
+
+
+		Private Sub _listBox_MouseLeaveEvent(sender As Object, e As EventArgs) Handles _listBox.MouseLeave
+			RaiseEvent MouseLeaveEvent(sender, e)
 		End Sub
 	End Class
 End Namespace

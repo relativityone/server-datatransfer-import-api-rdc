@@ -26,7 +26,7 @@ Namespace Specialized
 		<System.Diagnostics.DebuggerStepThrough()>
 		Private Sub InitializeComponent()
 		Me._textBox = New System.Windows.Forms.TextBox()
-		Me._listBox = New ListBox()
+		Me._listBox = New kCura.Windows.Forms.ListBox()
 		Me.SuspendLayout
 		'
 		'_textBox
@@ -54,6 +54,7 @@ Namespace Specialized
 		Me._listBox.Location = New System.Drawing.Point(0, 32)
 		Me._listBox.Margin = New System.Windows.Forms.Padding(4)
 		Me._listBox.Name = "_listBox"
+		Me._listBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple
 		Me._listBox.Size = New System.Drawing.Size(191, 303)
 		Me._listBox.TabIndex = 17
 		Me._listBox.VerticalScrollOffset = 0

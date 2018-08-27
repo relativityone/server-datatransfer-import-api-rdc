@@ -35,12 +35,6 @@ Namespace kCura.Windows.Forms
 
 		'Required by the Windows Form Designer
 		Private components As System.ComponentModel.IContainer
-
-		'NOTE: The following procedure is required by the Windows Form Designer
-		'It can be modified using the Windows Form Designer.  
-		'Do not modify it using the code editor.
-		Friend WithEvents _rightListBox As kCura.Windows.Forms.ListBox
-		Friend WithEvents _leftListBox As kCura.Windows.Forms.ListBox
 		Friend WithEvents _moveAllFieldsLeft As System.Windows.Forms.Button
 		Friend WithEvents _moveFieldLeft As System.Windows.Forms.Button
 		Friend WithEvents _moveFieldRight As System.Windows.Forms.Button
@@ -64,8 +58,6 @@ Namespace kCura.Windows.Forms
 		Me._moveLeftSelectedItemUp = New System.Windows.Forms.Button()
 		Me._searchableListRight = New Specialized.SearchableList()
 		Me._searchableListLeft = New Specialized.SearchableList()
-		Me._rightListBox = New kCura.Windows.Forms.ListBox()
-		Me._leftListBox = New kCura.Windows.Forms.ListBox()
 		Me.SuspendLayout
 		'
 		'_moveAllFieldsLeft
@@ -166,56 +158,18 @@ Namespace kCura.Windows.Forms
 		Me._searchableListLeft.Size = New System.Drawing.Size(144, 280)
 		Me._searchableListLeft.TabIndex = 19
 		'
-		'_rightListBox
-		'
-		Me._rightListBox.AlternateColors = false
-		Me._rightListBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom)  _
-            Or System.Windows.Forms.AnchorStyles.Left),System.Windows.Forms.AnchorStyles)
-		Me._rightListBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
-		Me._rightListBox.HighlightIndex = -1
-		Me._rightListBox.HorizontalScrollbar = true
-		Me._rightListBox.HorizontalScrollOffset = 0
-		Me._rightListBox.IntegralHeight = false
-		Me._rightListBox.Location = New System.Drawing.Point(212, 0)
-		Me._rightListBox.Name = "_rightListBox"
-		Me._rightListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
-		Me._rightListBox.Size = New System.Drawing.Size(144, 280)
-		Me._rightListBox.TabIndex = 16
-		Me._rightListBox.VerticalScrollOffset = 0
-		Me._rightListBox.Visible = false
-		'
-		'_leftListBox
-		'
-		Me._leftListBox.AlternateColors = false
-		Me._leftListBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom)  _
-            Or System.Windows.Forms.AnchorStyles.Left),System.Windows.Forms.AnchorStyles)
-		Me._leftListBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
-		Me._leftListBox.HighlightIndex = -1
-		Me._leftListBox.HorizontalScrollbar = true
-		Me._leftListBox.HorizontalScrollOffset = 0
-		Me._leftListBox.IntegralHeight = false
-		Me._leftListBox.Location = New System.Drawing.Point(24, 0)
-		Me._leftListBox.Name = "_leftListBox"
-		Me._leftListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
-		Me._leftListBox.Size = New System.Drawing.Size(144, 280)
-		Me._leftListBox.TabIndex = 11
-		Me._leftListBox.VerticalScrollOffset = 0
-		Me._leftListBox.Visible = false
-		'
 		'TwoListBox
 		'
 		Me.Controls.Add(Me._searchableListRight)
 		Me.Controls.Add(Me._searchableListLeft)
 		Me.Controls.Add(Me._moveLeftSelectedItemDown)
 		Me.Controls.Add(Me._moveLeftSelectedItemUp)
-		Me.Controls.Add(Me._rightListBox)
 		Me.Controls.Add(Me._moveRightSelectedItemDown)
 		Me.Controls.Add(Me._moveRightSelectedItemUp)
 		Me.Controls.Add(Me._moveAllFieldsLeft)
 		Me.Controls.Add(Me._moveFieldLeft)
 		Me.Controls.Add(Me._moveFieldRight)
 		Me.Controls.Add(Me._moveAllFieldsRight)
-		Me.Controls.Add(Me._leftListBox)
 		Me.Name = "TwoListBox"
 		Me.Size = New System.Drawing.Size(380, 280)
 		Me.ResumeLayout(false)
@@ -239,7 +193,7 @@ End Sub
 		Private Sub MeasureItemImpl(parentListBox As SearchableList, e As System.Windows.Forms.MeasureItemEventArgs)
 			Dim initialSize As Size = New Size(Me.Width, 1000)
 			Dim str As String = parentListBox.CurrentItems(e.Index).ToString()
-			Dim itemSize As SizeF = e.Graphics.MeasureString(str, _leftListBox.Font, initialSize)
+			Dim itemSize As SizeF = e.Graphics.MeasureString(str, _searchableListLeft.Listbox.Font, initialSize)
 			e.ItemHeight = CInt(itemSize.Height)
 			e.ItemWidth = CInt(itemSize.Width)
 		End Sub
@@ -385,10 +339,10 @@ End Sub
 					_moveLeftSelectedItemUp.Visible = value
 
 					'Visible
-					If _moveLeftSelectedItemDown.Visible AndAlso _leftListBox.Left = 0 Then
+					If _moveLeftSelectedItemDown.Visible AndAlso _searchableListLeft.Left = 0 Then
 						MoveControlsHorizontally(Me._layoutMarginPlusUpDownButtonWidth)
-					ElseIf (Not _moveLeftSelectedItemDown.Visible) AndAlso _leftListBox.Left > 0 Then
-						MoveControlsHorizontally(-_leftListBox.Left)
+					ElseIf (Not _moveLeftSelectedItemDown.Visible) AndAlso _searchableListLeft.Left > 0 Then
+						MoveControlsHorizontally(-_searchableListLeft.Left)
 					End If
 					Me.ResumeLayout()
 
@@ -585,14 +539,6 @@ End Sub
 			EnsureHorizontalScrollbars()
 		End Sub
 
-		Private Sub _leftListBox_Click(ByVal sender As Object, ByVal e As EventArgs) Handles _leftListBox.Click
-			_leftListBox.Invalidate()
-		End Sub
-
-		Private Sub _rightListBox_Click(ByVal sender As Object, ByVal e As EventArgs) Handles _rightListBox.Click
-			_rightListBox.Invalidate()
-		End Sub
-
 		Private Sub _searchableListLeft_KeyPress(sender As Object, e As KeyPressEventArgs) Handles _searchableListLeft.KeyPressEvent
 			If e.KeyChar.Equals(Microsoft.VisualBasic.ControlChars.Cr) OrElse e.KeyChar.Equals(Microsoft.VisualBasic.ControlChars.Lf) Then
 				ShiftSelectedItems(_searchableListLeft, __searchableListRight)
@@ -734,23 +680,23 @@ End Sub
 			g.Dispose()
 		End Sub
 
-		Private Sub _rightListBox_MouseLeave(ByVal sender As Object, ByVal e As System.EventArgs) Handles _rightListBox.MouseLeave
+		Private Sub _rightListBox_MouseLeave(ByVal sender As Object, ByVal e As System.EventArgs) Handles _searchableListRight.MouseLeaveEvent
 			ClearHighlight(ListBoxLocation.Right)
 			RaiseEvent ClearHighlightedItems(Me, New HighlightItemEventArgs With {.Location = ListBoxLocation.Left})
 		End Sub
 
-		Private Sub _leftListBox_MouseLeave(ByVal sender As Object, ByVal e As System.EventArgs) Handles _leftListBox.MouseLeave
+		Private Sub _leftListBox_MouseLeave(ByVal sender As Object, ByVal e As System.EventArgs) Handles _searchableListLeft.MouseLeaveEvent
 			ClearHighlight(ListBoxLocation.Left)
 			RaiseEvent ClearHighlightedItems(Me, New HighlightItemEventArgs With {.Location = ListBoxLocation.Right})
 		End Sub
 
-		Private Sub _leftListBox_MouseMove(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles _leftListBox.MouseMove
+		Private Sub _leftListBox_MouseMove(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles _searchableListLeft.MouseMoveEvent
 			If Not Me.OuterBox = ListBoxLocation.Left Then
 				HighlightMouseOverItem(sender, e, ListBoxLocation.Left)
 			End If
 		End Sub
 
-		Private Sub _rightListBox_MouseMove(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles _rightListBox.MouseMove
+		Private Sub _rightListBox_MouseMove(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles _searchableListRight.MouseMoveEvent
 			If Not Me.OuterBox = ListBoxLocation.Right Then
 				HighlightMouseOverItem(sender, e, ListBoxLocation.Right)
 			End If
