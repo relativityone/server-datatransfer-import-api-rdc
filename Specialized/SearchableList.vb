@@ -85,7 +85,8 @@ Namespace Specialized
 		End Function
 
 		Public Sub ForceRefresh()
-			Dim item As Object = GetFirstNotSelectedItemAfterGiven(GetFirstVisibleItem())
+			Dim visibleItem As Object = GetFirstVisibleItem()
+			Dim item As Object = GetFirstNotSelectedItemAfterGiven(visibleItem)
 			FilterAndAssignDataSource()
 			If item IsNot Nothing
 				_listBox.TopIndex = _listBox.Items.IndexOf(item)
@@ -122,6 +123,7 @@ Namespace Specialized
 
 		Public Sub RemoveField(field As Object)
 			_dataSource.Remove(field)
+			ForceRefresh()
 		End Sub
 
 		Public Sub SetSelection(item As Object)
@@ -134,7 +136,10 @@ Namespace Specialized
 
 			If _listbox.Items.Count > 0
 				Dim index As Integer = _listBox.TopIndex
-				Return _listbox.Items(index)
+				If index >=0
+					Return _listbox.Items(index)
+				End If
+				Return 0
 			End If
 			Return Nothing
 		End Function
@@ -144,6 +149,9 @@ Namespace Specialized
 				Return Nothing
 			End If
 			For i As Integer = _listbox.Items.IndexOf(itemToDoSearchAfter) To _listbox.Items.Count -1
+				If i < 0
+					Continue For
+				End If
 				If Not _listBox.GetSelected(i)
 					Return _listbox.Items(i)
 				End If
