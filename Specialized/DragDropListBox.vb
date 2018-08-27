@@ -207,7 +207,7 @@ Protected Overrides Sub OnDragDrop(ByVal drgevent As DragEventArgs)
 
 	Dim itemAboveDrop As Object = GetFirstNotSelectedItemBeforeGivenRow(row)
 	src.RemoveItems(srcItems)
-	AddItems(srcItems, GetItemsRowNumber(itemAboveDrop))
+	InsertItems(srcItems, GetItemsRowNumber(itemAboveDrop)+1)
 
 '	If row >= Items.Count Then
 '		RaiseEvent AddFieldsEvent(srcItems)
@@ -264,7 +264,7 @@ Protected Overrides Sub OnDragDrop(ByVal drgevent As DragEventArgs)
 	End If
 End Sub
 
-	Private Sub AddItems(srcItems As Object(), row As Integer)
+	Private Sub InsertItems(srcItems As Object(), row As Integer)
 		RaiseEvent InsertFieldsEvent(row, srcItems)
 
 	End Sub
@@ -285,7 +285,7 @@ End Sub
 		End Set
 	End Property
 	Private Function GetItemsRowNumber(item As Object) As Integer
-		Return Items.IndexOf(item)
+			Return Items.IndexOf(item)
 	End Function
 	Private Function GetFirstNotSelectedItemBeforeGivenRow(rowNumber As Integer) As Object
 		For i As Integer = rowNumber To 0 Step -1

@@ -197,8 +197,8 @@ Namespace Specialized
 			AddFields(items)
 		End Sub
 
-		Private Sub _listBox_OnInsertFieldsEvent(position As Integer, item As Object()) Handles _listBox.InsertFieldsEvent
-			InsertFields(position, item)
+		Private Sub _listBox_OnInsertFieldsEvent(position As Integer, items As Object()) Handles _listBox.InsertFieldsEvent
+			InsertFields(position, items)
 		End Sub
 
 		Private Sub _listBox_OnDropped(sender As Object, e As DroppedEventArgs) Handles _listBox.Dropped
