@@ -633,7 +633,7 @@ End Sub
 			_searchableListRight.ForceRefresh()
 		End Sub
 
-		Private Sub _searchableListLeft_OnRemoveAtEvent(sender As Object, index As Integer) Handles _searchableListLeft.RemoveAtEvent
+		Private Sub _searchableListLeft_OnRemoveAtEvent(sender As Object, index As Integer) Handles _searchableListLeft.RemoveAtEvent, _searchableListRight.RemoveAtEvent
 			DirectCast(sender, SearchableList).RemoveFieldAtIndex(index)
 		End Sub
 

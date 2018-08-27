@@ -53,7 +53,6 @@
 		Me._listBox.Location = New System.Drawing.Point(0, 32)
 		Me._listBox.Margin = New System.Windows.Forms.Padding(4)
 		Me._listBox.Name = "_listBox"
-		Me._listBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple
 		Me._listBox.Size = New System.Drawing.Size(191, 303)
 		Me._listBox.TabIndex = 17
 		Me._listBox.VerticalScrollOffset = 0

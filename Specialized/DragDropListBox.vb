@@ -15,9 +15,9 @@ Public Class DragDropListBox
 	Private _visualCue As VisualCue
 
 	Public Event AddFieldsEvent(items As Object())
-	Public Event InsertFieldsEvent(position As Integer,item As Object)
+	Public Event InsertFieldsEvent(position As Integer,item As Object())
 	Public Event RemoveAtEvent As Action(Of Integer)
-
+	Public Event RemoveItemsEvent(srcItems As Object())
 	Public Sub New()
 		MyBase.New()
 		AllowDrop = True
@@ -94,7 +94,7 @@ Public Class DragDropListBox
 	End Function
 
 	Public Sub RemoveSelectedItems(ByRef itemIndexToAjust  As Integer) Implements IDragDropSource.RemoveSelectedItems
-		For i As Integer = SelectedIndices.Count - 1 To 0
+		For i As Integer = SelectedIndices.Count - 1 To 0 Step -1
 			Dim at As Integer = SelectedIndices(i)
 			RaiseEvent RemoveAtEvent(at)
 			'Items.RemoveAt(at)
@@ -105,6 +105,9 @@ Public Class DragDropListBox
 		Next
 	End Sub
 
+	Public Sub RemoveItems(srcItems As Object()) Implements IDragDropSource.RemoveItems
+		RaiseEvent RemoveItemsEvent(srcItems)
+	End Sub
 
 	Public Sub OnDropped(e As DroppedEventArgs) Implements IDragDropSource.OnDropped
 		RaiseEvent Dropped(Me, e)
@@ -193,72 +196,78 @@ Public Class DragDropListBox
 	End Sub
 
 Protected Overrides Sub OnDragDrop(ByVal drgevent As DragEventArgs)
-    MyBase.OnDragDrop(drgevent)
-    _visualCue.Clear()
-    Dim src As IDragDropSource = TryCast(drgevent.Data.GetData("IDragDropSource"), IDragDropSource)
-    Dim srcItems As Object() = src.GetSelectedItems()
-    Dim sortedSave As Boolean = Sorted
-    Sorted = False
-    Dim row As Integer = DropIndex(drgevent.Y)
-    Dim insertPoint As Integer = row
+	MyBase.OnDragDrop(drgevent)
+	_visualCue.Clear()
+	Dim src As IDragDropSource = TryCast(drgevent.Data.GetData("IDragDropSource"), IDragDropSource)
+	Dim srcItems As Object() = src.GetSelectedItems()
+	Dim sortedSave As Boolean = Sorted
+	Sorted = False
+	Dim row As Integer = DropIndex(drgevent.Y)
+	Dim insertPoint As Integer = row
 
-    If row >= Items.Count Then
-		RaiseEvent AddFieldsEvent(srcItems)
-       ' Items.AddRange(srcItems)
-    Else
+	Dim itemAboveDrop As Object = GetFirstNotSelectedItemBeforeGivenRow(row)
+	src.RemoveItems(srcItems)
+	AddItems(srcItems, GetItemsRowNumber(itemAboveDrop))
 
-        For Each item As Object In srcItems
-			RaiseEvent InsertFieldsEvent(Math.Min(System.Threading.Interlocked.Increment(row), row - 1), item)
-            'Items.Insert(Math.Min(System.Threading.Interlocked.Increment(row), row - 1), item)
-        Next
-    End If
+'	If row >= Items.Count Then
+'		RaiseEvent AddFieldsEvent(srcItems)
+'	Else
+'		For Each item As Object In srcItems
+'			RaiseEvent InsertFieldsEvent(row, item)
+'			row += 1
+'		Next
+'	End If
 
-    Dim operation As DropOperation
+	Dim operation As DropOperation
 
-    If drgevent.Effect = DragDropEffects.Move Then
-        Dim adjustedInsertPoint As Integer = insertPoint
-        src.RemoveSelectedItems(adjustedInsertPoint)
+'	If drgevent.Effect = DragDropEffects.Move Then
+'		Dim adjustedInsertPoint As Integer = insertPoint
+'		src.RemoveSelectedItems(adjustedInsertPoint)
+'		If src.Equals(Me) Then
+'			insertPoint = adjustedInsertPoint
+'			operation = DropOperation.Reorder
+'		Else
+'			operation = DropOperation.MoveToHere
+'		End If
+'	Else
+'		operation = DropOperation.CopyToHere
+'	End If
 
-        If src.Equals(Me) Then
-            insertPoint = adjustedInsertPoint
-            operation = DropOperation.Reorder
-        Else
-            operation = DropOperation.MoveToHere
-        End If
-    Else
-        operation = DropOperation.CopyToHere
-    End If
+	ClearSelected()
 
-    ClearSelected()
+	If SelectionMode = SelectionMode.One Then
+		SelectedIndex = insertPoint
+	ElseIf SelectionMode <> SelectionMode.None Then
 
-    If SelectionMode = SelectionMode.One Then
-        SelectedIndex = insertPoint
-    ElseIf SelectionMode <> SelectionMode.None Then
+		For i As Integer = insertPoint To insertPoint + srcItems.Length - 1
+			SetSelected(i, True)
+		Next
+	End If
 
-        For i As Integer = insertPoint To insertPoint + srcItems.Length - 1
-            SetSelected(i, True)
-        Next
-    End If
+	Sorted = sortedSave
+	Dim e As DroppedEventArgs = New DroppedEventArgs() With {
+		.Operation = operation,
+		.Source = src,
+		.Target = Me,
+		.DroppedItems = srcItems
+	}
+	OnDropped(e)
 
-    Sorted = sortedSave
-    Dim e As DroppedEventArgs = New DroppedEventArgs() With {
-        .Operation = operation,
-        .Source = src,
-        .Target = Me,
-        .DroppedItems = srcItems
-    }
-    OnDropped(e)
-
-    If operation <> DropOperation.Reorder Then
-        e = New DroppedEventArgs() With {
-            .Operation = If(operation = DropOperation.MoveToHere, DropOperation.MoveFromHere, DropOperation.CopyFromHere),
-            .Source = src,
-            .Target = Me,
-            .DroppedItems = srcItems
-        }
-        src.OnDropped(e)
-    End If
+	If operation <> DropOperation.Reorder Then
+		e = New DroppedEventArgs() With {
+			.Operation = If(operation = DropOperation.MoveToHere, DropOperation.MoveFromHere, DropOperation.CopyFromHere),
+			.Source = src,
+			.Target = Me,
+			.DroppedItems = srcItems
+		}
+		src.OnDropped(e)
+	End If
 End Sub
+
+	Private Sub AddItems(srcItems As Object(), row As Integer)
+		RaiseEvent InsertFieldsEvent(row, srcItems)
+
+	End Sub
 
 	Private bSelectMode As Boolean = False
 
@@ -275,5 +284,15 @@ End Sub
 			MyBase.AllowDrop = _isDragDropTarget OrElse _allowReorder
 		End Set
 	End Property
-
+	Private Function GetItemsRowNumber(item As Object) As Integer
+		Return Items.IndexOf(item)
+	End Function
+	Private Function GetFirstNotSelectedItemBeforeGivenRow(rowNumber As Integer) As Object
+		For i As Integer = rowNumber To 0 Step -1
+			If Not GetSelected(i)
+				Return Items.Item(i)
+			End If
+		Next
+		Return Nothing
+	End Function
 End Class

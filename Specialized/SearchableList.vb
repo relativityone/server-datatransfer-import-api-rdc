@@ -19,7 +19,7 @@ Namespace Specialized
 		Public Event TextChangedEvent(sender As Object)
 		Public Event RemoveAtEvent(sender As Object, index As Integer)
 
-		Private Sub _listBox_OnRemoveAtEvent1(index As Integer) Handles _listBox.RemoveAtEvent
+		Private Sub _listBox_OnRemoveAtEvent(index As Integer) Handles _listBox.RemoveAtEvent
 			RaiseEvent RemoveAtEvent(Me, index)
 		End Sub
 
@@ -82,6 +82,7 @@ Namespace Specialized
 
 		Public Sub ForceRefresh()
 			FilterAndAssignDataSource()
+			RemoveSelection()
 		End Sub
 
 		Private Sub FilterAndAssignDataSource()
@@ -108,7 +109,7 @@ Namespace Specialized
 
 		Public Sub AddFields(fields As Object())
 			_dataSource.AddRange(fields)
-			ForceRefresh()
+			'ForceRefresh()
 		End Sub
 
 		Public Sub RemoveField(field As Object)
@@ -196,24 +197,26 @@ Namespace Specialized
 			AddFields(items)
 		End Sub
 
-		Private Sub _listBox_OnInsertFieldsEvent(position As Integer, item As Object) Handles _listBox.InsertFieldsEvent
+		Private Sub _listBox_OnInsertFieldsEvent(position As Integer, item As Object()) Handles _listBox.InsertFieldsEvent
 			InsertFields(position, item)
-		End Sub
-
-		Private Sub _listBox_OnRemoveAtEvent(index As Integer) Handles _listBox.RemoveAtEvent
-			Datasource.RemoveAt(index)
 		End Sub
 
 		Private Sub _listBox_OnDropped(sender As Object, e As DroppedEventArgs) Handles _listBox.Dropped
 			ForceRefresh()
 		End Sub
 
-		Private Sub InsertFields(position As Integer, item As Object)
-			DataSource.Insert(position, item)
+		Private Sub InsertFields(position As Integer, items As Object())
+			DataSource.InsertRange(position, items)
 		End Sub
 
 		Public Sub RemoveFieldAtIndex(index As Integer)
 			DataSource.RemoveAt(index)
+		End Sub
+
+		Private Sub _listBox_OnRemoveItemsEvent(srcItems As Object()) Handles _listBox.RemoveItemsEvent
+			For Each srcItem As Object In srcItems
+				RemoveField(srcItem)
+			Next
 		End Sub
 	End Class
 End Namespace
