@@ -1494,7 +1494,7 @@ Public Class ExportForm
 
 	Private Function GetDescriptorPartFromSelectionPart(selectionPart As CustomFileNameSelectionPart) As ExtendedDescriptorPart
 		Dim separatorPart = New SeparatorDescriptorPart(selectionPart.Separator)
-		If selectionPart.FieldID = -1 Then
+		If selectionPart.HasCustomText() Then
 			Dim customTextDescriptorPart = New CustomTextDescriptorPart(selectionPart.CustomText)
 			Return New ExtendedDescriptorPart(separatorPart, customTextDescriptorPart)
 		Else

@@ -11,7 +11,6 @@ Namespace kCura.EDDS.WinForm.Controls
 
 		Private WithEvents _form As TextAndNativeFileNameForm
 		Private _fields As ViewFieldInfo()
-		Private _selection As IList(Of CustomFileNameSelectionPart)
 
 		Public Sub Initialize(exportType As ExportFile.ExportType, fields As ViewFieldInfo())
 			_fields = fields
@@ -38,11 +37,7 @@ Namespace kCura.EDDS.WinForm.Controls
 			End Set
 		End Property
 
-		Public ReadOnly Property Selection As IList(Of CustomFileNameSelectionPart)
-			Get
-				Return _selection
-			End Get
-		End Property
+		Public Property Selection As IList(Of CustomFileNameSelectionPart)
 
 		Private Sub _nativeFileNameSourceComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles _comboBox.SelectedIndexChanged
 			Dim isCustomSelected = (SelectedItem = CustomOption)
@@ -51,12 +46,12 @@ Namespace kCura.EDDS.WinForm.Controls
 
 		Private Sub _customOptionsButton_Click(sender As Object, e As EventArgs) Handles _customOptionsButton.Click
 			_form = New TextAndNativeFileNameForm()
-			_form.Initialize(_fields)
+			_form.Initialize(_fields, Selection)
 			_form.ShowDialog()
 		End Sub
 
 		Private Sub _form_ApplyClicked() Handles _form.ApplyClicked
-			_selection = _form.GetSelection()
+			Selection = _form.GetSelection()
 		End Sub
 
 	End Class

@@ -21,5 +21,9 @@
 		Public Property FieldID As Integer
 		Public Property CustomText As String
 
+		Public Function HasCustomText() As Boolean
+			Return FieldID = -1
+		End Function
+
 	End Class
 End Namespace

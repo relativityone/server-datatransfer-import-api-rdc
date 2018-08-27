@@ -36,10 +36,11 @@ Namespace kCura.EDDS.WinForm.Forms
 			End Get
 		End Property
 
-		Public Sub Initialize(fields As ViewFieldInfo())
+		Public Sub Initialize(fields As ViewFieldInfo(), selection As IList(Of CustomFileNameSelectionPart))
 			ClientSize = New Size(252 * FieldLimit - 75, 102)
 			InitializeAvailableFields(fields)
 			InitializeFieldControls()
+			PopulateControls(selection)
 		End Sub
 
 		Private Sub InitializeAvailableFields(fields As IReadOnlyCollection(Of ViewFieldInfo))
@@ -56,6 +57,26 @@ Namespace kCura.EDDS.WinForm.Forms
 
 		Private Sub InitializeFieldControls()
 			_fieldControls = New List(Of SingleFieldControls) From {Nothing}
+		End Sub
+
+		Private Sub PopulateControls(selection As IList(Of CustomFileNameSelectionPart))
+			If selection Is Nothing Then
+				Return
+			End If
+			Dim index = 1
+			While index < selection.Count And index < FieldLimit
+				AddField()
+				Dim selectionPart = selection(index)
+				Dim fieldControls = _fieldControls(index)
+				fieldControls.SeparatorComboBox.SelectedValue = selectionPart.Separator
+				If selectionPart.HasCustomText() Then
+					fieldControls.FieldComboBox.SelectedValue = -1
+					fieldControls.CustomTextBox.Text = selectionPart.CustomText
+				Else
+					fieldControls.FieldComboBox.SelectedValue = selectionPart.FieldID
+				End If
+				index += 1
+			End While
 		End Sub
 
 		Public Function GetSelection() As IList(Of CustomFileNameSelectionPart)
@@ -94,6 +115,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			fieldComboBox.TabIndex = 1 + 3 * NumberOfFields
 			fieldComboBox.DataSource = _availableFields.ToList()
 			fieldComboBox.DisplayMember = "DisplayName"
+			fieldComboBox.ValueMember = "ID"
 			fieldComboBox.Tag = fieldNumber
 			AddHandler fieldComboBox.SelectedIndexChanged, AddressOf FieldComboBoxSelectionChanged
 			Controls.Add(fieldComboBox)
@@ -109,6 +131,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			separatorComboBox.TabIndex = 2 + 3 * NumberOfFields
 			separatorComboBox.DataSource = Separators.ToList()
 			separatorComboBox.DisplayMember = "DisplayName"
+			separatorComboBox.ValueMember = "Value"
 			Controls.Add(separatorComboBox)
 			Return separatorComboBox
 		End Function
