@@ -5,6 +5,7 @@ Imports Relativity
 Namespace kCura.EDDS.WinForm.Forms
 	Public Class TextAndNativeFileNameForm
 
+		Private Const FirstFieldName As String = "Control Number"
 		Private Const CustomTextOption As String = "Custom Text..."
 		Private Const FieldLimit = 3
 
@@ -25,6 +26,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			New SeparatorSelection(" (none)", "")
 		}
 
+		Private _firstFieldID As Integer
 		Private _availableFields As List(Of FieldSelection)
 		Private _fieldControls As List(Of SingleFieldControls)
 
@@ -40,17 +42,39 @@ Namespace kCura.EDDS.WinForm.Forms
 			InitializeFieldControls()
 		End Sub
 
-		Private Sub InitializeAvailableFields(fields As IEnumerable(Of ViewFieldInfo))
+		Private Sub InitializeAvailableFields(fields As IReadOnlyCollection(Of ViewFieldInfo))
 			_availableFields = New List(Of FieldSelection) From {New FieldSelection(CustomTextOption, -1)}
 			Dim databaseFields = fields.
 				Where(Function(f) AllowedFieldTypes.Contains(f.FieldType)).
 				Select(Function(f) New FieldSelection(f.DisplayName, f.FieldArtifactId))
 			_availableFields.AddRange(databaseFields)
+			_firstFieldID = fields.
+				Where(Function(f) f.DisplayName = FirstFieldName).
+				Select(Function(f) f.FieldArtifactId).
+				First()
 		End Sub
 
 		Private Sub InitializeFieldControls()
 			_fieldControls = New List(Of SingleFieldControls) From {Nothing}
 		End Sub
+
+		Public Function GetSelection() As IList(Of CustomFileNameSelectionPart)
+			Dim selection = New List(Of CustomFileNameSelectionPart)
+			selection.Add(New CustomFileNameSelectionPart(_firstFieldID))
+			For i = 1 To (NumberOfFields - 1)
+				Dim fieldControls = _fieldControls(i)
+				Dim selectedField = TryCast(fieldControls.FieldComboBox.SelectedItem, FieldSelection)
+				Dim selectedSeparator = TryCast(fieldControls.SeparatorComboBox.SelectedItem, SeparatorSelection)
+				Dim selectionPart As CustomFileNameSelectionPart
+				If selectedField.DisplayName = CustomTextOption Then
+					selectionPart = New CustomFileNameSelectionPart(selectedSeparator.Value, fieldControls.CustomTextBox.Text)
+				Else
+					selectionPart = New CustomFileNameSelectionPart(selectedSeparator.Value, selectedField.ID)
+				End If
+				selection.Add(selectionPart)
+			Next
+			Return selection
+		End Function
 
 		Private Sub AddField()
 			Dim fieldComboBox As ComboBox = AddFieldComboBox(NumberOfFields)
