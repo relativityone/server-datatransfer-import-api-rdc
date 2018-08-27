@@ -135,7 +135,7 @@ Namespace Specialized
 			If itemToDoSearchAfter Is Nothing
 				Return Nothing
 			End If
-			For i As Integer = _listbox.Items.IndexOf(itemToDoSearchAfter) To _listbox.Items.Count
+			For i As Integer = _listbox.Items.IndexOf(itemToDoSearchAfter) To _listbox.Items.Count -1
 				If Not _listBox.GetSelected(i)
 					Return _listbox.Items(i)
 				End If
