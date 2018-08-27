@@ -1501,7 +1501,7 @@ Public Class ExportForm
 	''' Move view field from left listbox to right listbox.
 	''' </summary>
 	''' <param name="listboxViewField">listbox view field to be selected</param>
-	Public Sub SelectField(listboxViewField As ViewFieldInfo)
+	Public Sub SelectField(listboxViewField As Object)
 		_columnSelector.RightSearchableList.AddField(listboxViewField)
 		_columnSelector.LeftSearchableList.RemoveField(listboxViewField)
 	End Sub
