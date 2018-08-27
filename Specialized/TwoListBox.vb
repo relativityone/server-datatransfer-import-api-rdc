@@ -604,7 +604,7 @@ End Sub
 					End If
 				End If
 			End If
-			Me.RaiseItemsShifted()
+			box.ForceRefresh()
 		End Sub
 
 		Private Sub _moveAllFieldsIn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _moveAllFieldsRight.Click

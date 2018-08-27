@@ -13,6 +13,7 @@ Namespace Specialized
 		Private _isTextBoxPlaceholderUsed As Boolean = True
 		Private _isUserTyping As Boolean = False
 		Private _wasUsedPlaceholder As Boolean
+		Private _lastSelectedItem As Object
 		Private Const _DELAYED_TEXT_CHANGED_TIMEOUT_IN_MILLISECONDS As Integer = 600
 
 		Public Event DoubleClickEvent(sender As Object, e As EventArgs)
@@ -132,7 +133,7 @@ Namespace Specialized
 		Private Function GetFirstVisibleItem() As Object
 
 			If _listbox.Items.Count > 0
-				Dim index As Integer = _listBox.IndexFromPoint(1,1)
+				Dim index As Integer = _listBox.TopIndex
 				Return _listbox.Items(index)
 			End If
 			Return Nothing
@@ -227,9 +228,27 @@ Namespace Specialized
 			RaiseEvent MouseMoveEvent(sender, e)
 		End Sub
 
-
 		Private Sub _listBox_MouseLeaveEvent(sender As Object, e As EventArgs) Handles _listBox.MouseLeave
 			RaiseEvent MouseLeaveEvent(sender, e)
 		End Sub
+
+		Private Sub _listBox_MouseUp(sender As Object, e As MouseEventArgs) Handles _listBox.MouseUp
+			If Not My.Computer.Keyboard.CtrlKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then
+				_listbox.ClearSelected()
+				_listbox.SetSelected(_listBox.IndexFromPoint(e.Location), True)
+				_lastSelectedItem = _listbox.Items(_listBox.IndexFromPoint(e.Location))
+			ElseIf My.Computer.Keyboard.ShiftKeyDown Then
+
+			End If
+		End Sub
+
+
+#Region "Selection methods"
+
+
+
+
+
+#End Region
 	End Class
 End Namespace
