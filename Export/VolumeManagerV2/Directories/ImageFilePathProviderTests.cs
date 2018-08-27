@@ -5,7 +5,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Directories
 {
 	public class ImageFilePathProviderTests : FilePathProviderTests
 	{
-		protected override FilePathProvider CreateInstance(IDirectoryHelper directoryHelper, ILabelManager labelManager, ExportFile exportSettings)
+		protected override FilePathProvider CreateInstance(IDirectoryHelper directoryHelper, ILabelManagerForArtifact labelManager, ExportFile exportSettings)
 		{
 			return new ImageFilePathProvider(labelManager, exportSettings, directoryHelper, new NullLogger());
 		}

@@ -15,49 +15,55 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 	[TestFixture]
 	public class BatchInitializationTests
 	{
-		private BatchInitialization _instance;
+		protected IBatchInitialization Instance { get; private set; }
 
-		private Mock<IDirectoryManager> _directoryManager;
-		private IList<Mock<IRepositoryBuilder>> _repositoryBuilderMocks;
-		private VolumePredictions[] _volumePredictions;
-		private ObjectExportInfo[] _artifacts;
+		protected Mock<IDirectoryManager> DirectoryManager { get; private set; }
+		protected IList<Mock<IRepositoryBuilder>> RepositoryBuilderMocks { get; private set; }
+		protected VolumePredictions[] VolumePredictions { get; private set; }
+		protected ObjectExportInfo[] Artifacts { get; private set; }
 
 		[SetUp]
 		public void SetUp()
 		{
-			_artifacts = new[] {new ObjectExportInfo(), new ObjectExportInfo(), new ObjectExportInfo()};
-			_volumePredictions = new[] {new VolumePredictions(), new VolumePredictions(), new VolumePredictions()};
+			Artifacts = new[] {new ObjectExportInfo(), new ObjectExportInfo(), new ObjectExportInfo()};
+			VolumePredictions = new[] {new VolumePredictions(), new VolumePredictions(), new VolumePredictions()};
 
-			_repositoryBuilderMocks = new List<Mock<IRepositoryBuilder>>
+			RepositoryBuilderMocks = new List<Mock<IRepositoryBuilder>>
 			{
 				new Mock<IRepositoryBuilder>(),
 				new Mock<IRepositoryBuilder>(),
 				new Mock<IRepositoryBuilder>()
 			};
-			_directoryManager = new Mock<IDirectoryManager>();
-			_instance = new BatchInitialization(_repositoryBuilderMocks.Select(x => x.Object).ToList(), _directoryManager.Object, new NullLogger());
+			DirectoryManager = new Mock<IDirectoryManager>();
+
+			Instance = CreateBatchInitialization();
+		}
+
+		protected virtual IBatchInitialization CreateBatchInitialization()
+		{
+			return new BatchInitialization(RepositoryBuilderMocks.Select(x => x.Object).ToList(), DirectoryManager.Object, new NullLogger());
 		}
 
 		[Test]
-		public void ItShouldUpdateDirectoryManagerForEachArtifact()
+		public virtual void ItShouldUpdateDirectoryManagerForEachArtifact()
 		{
 			//ACT
-			_instance.PrepareBatch(_artifacts, _volumePredictions, CancellationToken.None);
+			Instance.PrepareBatch(Artifacts, VolumePredictions, CancellationToken.None);
 
 			//ASSERT
-			_volumePredictions.ForEach(x => _directoryManager.Verify(dm => dm.MoveNext(x), Times.Once));
+			VolumePredictions.ForEach(x => DirectoryManager.Verify(dm => dm.MoveNext(x), Times.Once));
 		}
 
 		[Test]
 		public void ItShouldAddAllArtifactsToRepositories()
 		{
 			//ACT
-			_instance.PrepareBatch(_artifacts, _volumePredictions, CancellationToken.None);
+			Instance.PrepareBatch(Artifacts, VolumePredictions, CancellationToken.None);
 
 			//ASSERT
-			foreach (var artifact in _artifacts)
+			foreach (var artifact in Artifacts)
 			{
-				foreach (var repositoryBuilderMock in _repositoryBuilderMocks)
+				foreach (var repositoryBuilderMock in RepositoryBuilderMocks)
 				{
 					repositoryBuilderMock.Verify(x => x.AddToRepository(artifact, CancellationToken.None), Times.Once);
 				}
