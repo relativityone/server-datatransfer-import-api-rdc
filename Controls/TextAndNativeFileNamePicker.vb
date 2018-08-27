@@ -1,4 +1,5 @@
 ﻿Imports System.Collections.Generic
+Imports System.Text
 Imports kCura.EDDS.WinForm.Forms
 
 Namespace kCura.EDDS.WinForm.Controls

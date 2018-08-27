@@ -1349,14 +1349,9 @@ Public Class ExportForm
 				AppendErrorMessage(msg, "No image file type selected")
 			End If
 		End If
-		'		If Me.ExportFile.TypeOfExport = ExportFile.ExportType.Production Then
-		'			If _exportNativeFiles.Checked Then
-		'				If CType(_nativeFileNameSourceCombo.SelectedItem, String) = "Select..." Then
-		'					AppendErrorMessage(msg, "No file name source selected")
-		'				End If
-		'			End If
-		'		End If
-		' TODO
+		If _textAndNativeFileNamePicker.SelectedItem = TextAndNativeFileNamePicker.CustomOption And _textAndNativeFileNamePicker.Selection Is Nothing Then
+			AppendErrorMessage(msg, "Custom file naming option selected, but no custom settings specified")
+		End If
 		If _dataFileEncoding.SelectedEncoding Is Nothing Then
 			AppendErrorMessage(msg, "No encoding selected for metadata file.")
 		End If
@@ -1478,6 +1473,9 @@ Public Class ExportForm
 
 	Private Sub PopulateCustomFileNamingField()
 		Dim selection = _textAndNativeFileNamePicker.Selection
+		If selection Is Nothing Then
+			Return
+		End If
 		Dim firstField = New FieldDescriptorPart(selection(0).FieldID)
 		Dim secondField As ExtendedDescriptorPart = Nothing
 		Dim thirdField As ExtendedDescriptorPart = Nothing
@@ -1581,6 +1579,10 @@ Public Class ExportForm
 			Case ExportNativeWithFilenameFrom.Custom
 				_textAndNativeFileNamePicker.SelectedItem = TextAndNativeFileNamePicker.CustomOption
 		End Select
+
+		If ef.UseCustomFileNaming Then
+			LoadCustomFileNamingField(ef.CustomFileNaming)
+		End If
 
 		If ef.LoadFileIsHtml Then
 			_nativeFileFormat.SelectedItem = "HTML (.html)"
@@ -1696,9 +1698,31 @@ Public Class ExportForm
 		End If
 
 		_isLoadingExport = False
-
-
 	End Function
+
+	Private Sub LoadCustomFileNamingField(descriptorModel As CustomFileNameDescriptorModel)
+		Dim selection = New List(Of CustomFileNameSelectionPart)
+		Dim firstFieldSelectionPart = New CustomFileNameSelectionPart(descriptorModel.FirstFieldDescriptorPart().Value)
+		selection.Add(firstFieldSelectionPart)
+		Dim extendedDescriptorParts = descriptorModel.ExtendedDescriptorParts()
+		For i = 0 To (extendedDescriptorParts.Count - 1)
+			Dim extendedDescriptorPart = extendedDescriptorParts(i)
+			Dim separator = extendedDescriptorPart.Separator.Value
+			Dim fieldDescriptorPart = TryCast(extendedDescriptorPart.ValuePart, FieldDescriptorPart)
+			If fieldDescriptorPart IsNot Nothing Then
+				Dim fieldSelectionPart = New CustomFileNameSelectionPart(separator, fieldDescriptorPart.Value)
+				selection.Add(fieldSelectionPart)
+				Continue For
+			End If
+			Dim customTextDescriptorPart = TryCast(extendedDescriptorPart.ValuePart, CustomTextDescriptorPart)
+			If customTextDescriptorPart IsNot Nothing Then
+				Dim textSelectionPart = New CustomFileNameSelectionPart(separator, customTextDescriptorPart.Value)
+				selection.Add(textSelectionPart)
+				Continue For
+			End If
+		Next
+		_textAndNativeFileNamePicker.Selection = selection
+	End Sub
 
 	Private Async Sub RunMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunMenu.Click
 		Me.Cursor = System.Windows.Forms.Cursors.WaitCursor

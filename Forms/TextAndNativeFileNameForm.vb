@@ -70,13 +70,12 @@ Namespace kCura.EDDS.WinForm.Forms
 				Dim fieldControls = _fieldControls(index)
 				fieldControls.SeparatorComboBox.SelectedValue = selectionPart.Separator
 				If selectionPart.HasCustomText() Then
-					fieldControls.FieldComboBox.SelectedValue = -1
 					fieldControls.CustomTextBox.Text = selectionPart.CustomText
 				Else
 					fieldControls.FieldComboBox.SelectedValue = selectionPart.FieldID
 				End If
 				index += 1
-			End While
+            End While
 		End Sub
 
 		Public Function GetSelection() As IList(Of CustomFileNameSelectionPart)
@@ -113,12 +112,12 @@ Namespace kCura.EDDS.WinForm.Forms
 			fieldComboBox.Location = New Point(252 * NumberOfFields + 14, 13)
 			fieldComboBox.Size = New Size(120, 21)
 			fieldComboBox.TabIndex = 1 + 3 * NumberOfFields
+			fieldComboBox.Tag = fieldNumber
+			Controls.Add(fieldComboBox)
 			fieldComboBox.DataSource = _availableFields.ToList()
 			fieldComboBox.DisplayMember = "DisplayName"
 			fieldComboBox.ValueMember = "ID"
-			fieldComboBox.Tag = fieldNumber
 			AddHandler fieldComboBox.SelectedIndexChanged, AddressOf FieldComboBoxSelectionChanged
-			Controls.Add(fieldComboBox)
 			Return fieldComboBox
 		End Function
 
@@ -129,10 +128,10 @@ Namespace kCura.EDDS.WinForm.Forms
 			separatorComboBox.Location = New Point(252 * NumberOfFields - 112, 13)
 			separatorComboBox.Size = New Size(120, 21)
 			separatorComboBox.TabIndex = 2 + 3 * NumberOfFields
+			Controls.Add(separatorComboBox)
 			separatorComboBox.DataSource = Separators.ToList()
 			separatorComboBox.DisplayMember = "DisplayName"
 			separatorComboBox.ValueMember = "Value"
-			Controls.Add(separatorComboBox)
 			Return separatorComboBox
 		End Function
 
