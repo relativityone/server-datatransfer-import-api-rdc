@@ -2,7 +2,9 @@
 Imports System.Collections.Generic
 Imports System.Drawing
 Imports System.Linq
+Imports System.Windows.Controls
 Imports System.Windows.Forms
+Imports System.Windows.Media
 
 Namespace Specialized
 	Public Class SearchableList
@@ -17,12 +19,6 @@ Namespace Specialized
 		Public Event KeyUpEvent(sender As Object, e As KeyEventArgs)
 		Public Event MeasureItemEvent(sender As Object, e As MeasureItemEventArgs)
 		Public Event TextChangedEvent(sender As Object)
-		Public Event RemoveAtEvent(sender As Object, index As Integer)
-
-		Private Sub _listBox_OnRemoveAtEvent(index As Integer) Handles _listBox.RemoveAtEvent
-			RaiseEvent RemoveAtEvent(Me, index)
-		End Sub
-
 
 		Protected Overrides Sub OnCreateControl()
 			MyBase.OnCreateControl()
@@ -81,7 +77,11 @@ Namespace Specialized
 		End Function
 
 		Public Sub ForceRefresh()
+			Dim item As Object = GetFirstNotSelectedItemAfterGiven(GetFirstVisibleItem())
 			FilterAndAssignDataSource()
+			If item IsNot Nothing
+				_listBox.TopIndex = _listBox.Items.IndexOf(item)
+			End If
 			RemoveSelection()
 		End Sub
 
@@ -109,7 +109,7 @@ Namespace Specialized
 
 		Public Sub AddFields(fields As Object())
 			_dataSource.AddRange(fields)
-			'ForceRefresh()
+			ForceRefresh()
 		End Sub
 
 		Public Sub RemoveField(field As Object)
@@ -121,6 +121,27 @@ Namespace Specialized
 				_listBox.SelectedItem = item
 			End If
 		End Sub
+
+		Private Function GetFirstVisibleItem() As Object
+
+			If _listbox.Items.Count > 0
+				Dim index As Integer = _listBox.IndexFromPoint(1,1)
+				Return _listbox.Items(index)
+			End If
+			Return Nothing
+		End Function
+
+		Private Function GetFirstNotSelectedItemAfterGiven(itemToDoSearchAfter As Object) As Object
+			If itemToDoSearchAfter Is Nothing
+				Return Nothing
+			End If
+			For i As Integer = _listbox.Items.IndexOf(itemToDoSearchAfter) To _listbox.Items.Count
+				If Not _listBox.GetSelected(i)
+					Return _listbox.Items(i)
+				End If
+			Next
+			Return Nothing
+		End Function
 #Region "Properties"
 		Public Property IsListSortable As Boolean = True
 		Public ReadOnly Property Listbox() As kCura.Windows.Forms.ListBox
@@ -148,6 +169,7 @@ Namespace Specialized
 		Private Sub _listBox_DoubleClick(sender As Object, e As EventArgs) Handles _listBox.DoubleClick
 			RaiseEvent DoubleClickEvent(sender, e)
 		End Sub
+
 		Private Sub _listBox_Scrolled(ByVal sender As Object, ByVal e As ScrollEventArgs) Handles _listBox.Scrolled
 			If e.ScrollOrientation = ScrollOrientation.HorizontalScroll Then
 				Listbox.Invalidate()
@@ -171,7 +193,7 @@ Namespace Specialized
 			If _isTextBoxPlaceholderUsed Then
 				_isTextBoxPlaceholderUsed = False
 				_textBox.Text = ""
-				_textBox.ForeColor = Color.Black
+				_textBox.ForeColor = System.Drawing.Color.Black
 				_textBox.Font = New Font(_textBox.Font, FontStyle.Regular)
 			End If
 		End Sub
@@ -179,7 +201,7 @@ Namespace Specialized
 		Private Sub SetTextBoxPlaceholderText()
 			_isTextBoxPlaceholderUsed = True
 			_textBox.Text = "Filter"
-			_textBox.ForeColor = Color.Gray
+			_textBox.ForeColor = System.Drawing.Color.Gray
 			_textBox.Font = New Font(_textBox.Font, FontStyle.Italic)
 
 		End Sub
@@ -191,32 +213,6 @@ Namespace Specialized
 			Else
 				_isTextBoxPlaceholderUsed = False
 			End If
-		End Sub
-
-		Private Sub _listBox_OnAddFieldsEvent(items As Object()) Handles _listBox.AddFieldsEvent
-			AddFields(items)
-		End Sub
-
-		Private Sub _listBox_OnInsertFieldsEvent(position As Integer, items As Object()) Handles _listBox.InsertFieldsEvent
-			InsertFields(position, items)
-		End Sub
-
-		Private Sub _listBox_OnDropped(sender As Object, e As DroppedEventArgs) Handles _listBox.Dropped
-			ForceRefresh()
-		End Sub
-
-		Private Sub InsertFields(position As Integer, items As Object())
-			DataSource.InsertRange(position, items)
-		End Sub
-
-		Public Sub RemoveFieldAtIndex(index As Integer)
-			DataSource.RemoveAt(index)
-		End Sub
-
-		Private Sub _listBox_OnRemoveItemsEvent(srcItems As Object()) Handles _listBox.RemoveItemsEvent
-			For Each srcItem As Object In srcItems
-				RemoveField(srcItem)
-			Next
 		End Sub
 	End Class
 End Namespace
