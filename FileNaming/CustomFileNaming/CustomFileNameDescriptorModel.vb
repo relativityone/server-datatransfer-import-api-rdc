@@ -30,5 +30,14 @@ Namespace FileNaming.CustomFileNaming
 				Yield extendedDescriptorPart.ValuePart
 			Next
 		End Function
+
+		Public Function FirstFieldDescriptorPart() As FieldDescriptorPart
+			Return _firstField
+		End Function
+
+		Public Function ExtendedDescriptorParts() As IList(Of ExtendedDescriptorPart)
+			Return _extendedDescriptors.Cast(Of ExtendedDescriptorPart).ToList()
+		End Function
+
 	End Class
 End Namespace
