@@ -444,20 +444,6 @@ End Sub
 			End Set
 		End Property
 
-		'Only in DBMT
-		Public ReadOnly Property LeftListBoxItems() As System.Windows.Forms.ListBox.ObjectCollection
-			Get
-				Return _leftListBox.Items
-			End Get
-		End Property
-
-		'Only in DBMT
-		Public ReadOnly Property RightListBoxItems() As System.Windows.Forms.ListBox.ObjectCollection
-			Get
-				Return _rightListBox.Items
-			End Get
-		End Property
-
 		Public ReadOnly Property LeftSearchableListItems() As List(Of Object)
 			Get
 				Return _searchableListLeft.DataSource
@@ -469,13 +455,6 @@ End Sub
 				Return _searchableListRight.DataSource
 			End Get
 		End Property
-
-		'Public ReadOnly Property RelativityHighlightColor() As System.Drawing.Color
-		'	Get
-		'		Return System.Drawing.Color.FromArgb(229, 142, 26)
-		'	End Get
-		'End Property
-
 #End Region
 
 #Region " ListBox methods and event handlers "
@@ -631,10 +610,6 @@ End Sub
 		Public Sub ForceRefresh()
 			_searchableListLeft.ForceRefresh()
 			_searchableListRight.ForceRefresh()
-		End Sub
-
-		Private Sub _searchableListLeft_OnRemoveAtEvent(sender As Object, index As Integer) Handles _searchableListLeft.RemoveAtEvent, _searchableListRight.RemoveAtEvent
-			DirectCast(sender, SearchableList).RemoveFieldAtIndex(index)
 		End Sub
 
 #End Region
