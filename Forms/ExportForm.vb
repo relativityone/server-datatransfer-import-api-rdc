@@ -2,6 +2,8 @@ Imports System.Linq
 Imports System.Collections.Generic
 Imports System.Threading.Tasks
 Imports Castle.Core.Internal
+Imports FileNaming.CustomFileNaming
+Imports kCura.EDDS.WinForm
 Imports kCura.EDDS.WinForm.Controls
 Imports kCura.Windows.Forms
 Imports Specialized
@@ -1388,7 +1390,6 @@ Public Class ExportForm
 
 	Public Async Function PopulateExportFile(ByVal abstractExportForm As ExportForm, ByVal validateForm As Boolean) As Task(Of Boolean)
 		Dim d As DocumentFieldCollection = Await _application.CurrentFields(_exportFile.ArtifactTypeID, True)
-		Dim retval As Boolean = True
 		_exportFile.ObjectTypeName = Await _application.GetObjectTypeName(_exportFile.ArtifactTypeID)
 		If validateForm AndAlso Not Me.IsValid(abstractExportForm) Then Return False
 		If Not Await _application.IsConnected() Then Return False
@@ -1410,12 +1411,15 @@ Public Class ExportForm
 			Case ExportFile.ExportType.Production
 				_exportFile.ArtifactID = CType(_filters.SelectedValue, Int32)
 				_exportFile.LoadFilesPrefix = DirectCast(_filters.SelectedItem, System.Data.DataRowView)(_filters.DisplayMember).ToString
-				If _textAndNativeFileNamePicker.SelectedItem.ToString.ToLower = "identifier" Then
-					_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier
-				Else
-					_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production
-				End If
 		End Select
+		If _textAndNativeFileNamePicker.SelectedItem.ToString = TextAndNativeFileNamePicker.IdentifierOption Then
+			_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier
+		ElseIf _textAndNativeFileNamePicker.SelectedItem.ToString = TextAndNativeFileNamePicker.ProductionOption Then
+			_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production
+		Else
+			_exportFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Custom
+			PopulateCustomFileNamingField()
+		End If
 		_exportFile.MulticodesAsNested = _exportMulticodeFieldsAsNested.Checked
 		_exportFile.Overwrite = _overwriteCheckBox.Checked
 		'_exportFile.ExportFullText = _exportFullText.Checked
@@ -1472,6 +1476,32 @@ Public Class ExportForm
 		Return True
 	End Function
 
+	Private Sub PopulateCustomFileNamingField()
+		Dim selection = _textAndNativeFileNamePicker.Selection
+		Dim firstField = New FieldDescriptorPart(selection(0).FieldID)
+		Dim secondField As ExtendedDescriptorPart = Nothing
+		Dim thirdField As ExtendedDescriptorPart = Nothing
+		If selection.Count >= 2 Then
+			secondField = GetDescriptorPartFromSelectionPart(selection(1))
+			If selection.Count >= 3 Then
+				thirdField = GetDescriptorPartFromSelectionPart(selection(2))
+			End If
+		End If
+		Dim descriptorModel = New CustomFileNameDescriptorModel(firstField, secondField, thirdField)
+		_exportFile.UseCustomFileNaming = True
+		_exportFile.CustomFileNaming = descriptorModel
+	End Sub
+
+	Private Function GetDescriptorPartFromSelectionPart(selectionPart As CustomFileNameSelectionPart) As ExtendedDescriptorPart
+		Dim separatorPart = New SeparatorDescriptorPart(selectionPart.Separator)
+		If selectionPart.FieldID = -1 Then
+			Dim customTextDescriptorPart = New CustomTextDescriptorPart(selectionPart.CustomText)
+			Return New ExtendedDescriptorPart(separatorPart, customTextDescriptorPart)
+		Else
+			Dim fieldDescriptorPart = New FieldDescriptorPart(selectionPart.FieldID)
+			Return New ExtendedDescriptorPart(separatorPart, fieldDescriptorPart)
+		End If
+	End Function
 
 	Private Async Sub LoadExportSettings_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles LoadExportSettings.Click
 		If _loadExportSettingsDialog.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
