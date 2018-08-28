@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
@@ -89,7 +90,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			//ASSERT
 			Assert.That(_imageRepository.GetImage(artifactId1, batesNumber).HasBeenDownloaded, Is.False);
 			CollectionAssert.IsNotEmpty(_imageRepository.GetExportRequests());
-			Assert.That(_imageRepository.GetExportRequests()[0].ArtifactId, Is.EqualTo(artifactId1));
+			Assert.That(_imageRepository.GetExportRequests().ToList()[0].ArtifactId, Is.EqualTo(artifactId1));
 		}
 
 		[Test]

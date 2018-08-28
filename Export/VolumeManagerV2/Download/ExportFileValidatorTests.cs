@@ -1,5 +1,6 @@
 ﻿using kCura.Windows.Process;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
 using kCura.WinEDDS.Exporters;
 using Moq;
 using NUnit.Framework;
@@ -16,8 +17,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 
 		private Mock<IStatus> _status;
 		private Mock<IFileHelper> _fileHelper;
-
-		private ExportRequestRepositoryStub _exportRequestRepository;
+		private Mock<IExportRequestRepository> _exportRequestRepository;
 
 		[SetUp]
 		public void SetUp()
@@ -26,9 +26,9 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 
 			_status = new Mock<IStatus>();
 			_fileHelper = new Mock<IFileHelper>();
+			_exportRequestRepository = new Mock<IExportRequestRepository>();
 
-			_exportRequestRepository = new ExportRequestRepositoryStub();
-			_instance = new ExportFileValidator(_exportSettings, _exportRequestRepository, _status.Object, _fileHelper.Object, new NullLogger());
+			_instance = new ExportFileValidator(_exportSettings, _exportRequestRepository.Object, _status.Object, _fileHelper.Object, new NullLogger());
 		}
 
 		[Test]
@@ -83,7 +83,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 		{
 			const string filePath = "file_path";
 
-			_exportRequestRepository.ExportRequests.Add(new PhysicalFileExportRequest(new ObjectExportInfo(), filePath));
+			_exportRequestRepository.Setup(repository => repository.AnyRequestForLocation(filePath)).Returns(true);
 			_exportSettings.Overwrite = false;
 
 			//ACT
@@ -99,7 +99,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 		{
 			const string filePath = "file_path";
 
-			_exportRequestRepository.ExportRequests.Add(new PhysicalFileExportRequest(new ObjectExportInfo(), filePath));
+			_exportRequestRepository.Setup(repository => repository.AnyRequestForLocation(filePath)).Returns(true);
 			_exportSettings.Overwrite = true;
 
 			//ACT
