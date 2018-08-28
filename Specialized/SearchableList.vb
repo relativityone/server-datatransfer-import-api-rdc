@@ -5,6 +5,7 @@ Imports System.Linq
 Imports System.Windows.Controls
 Imports System.Windows.Forms
 Imports System.Windows.Media
+Imports kCura.Windows.Forms
 
 Namespace Specialized
 	Public Class SearchableList
@@ -72,7 +73,9 @@ Namespace Specialized
 				FilterAndAssignDataSource()
 				ResizeScrollBar()
 				Cursor = Cursors.Default
-				RaiseEvent TextChangedEvent(Me, _isTextBoxPlaceholderUsed)
+
+				Dim isTextBoxEmptyOrPlaceholder As Boolean =  _textBox.Text = "" OrElse _isTextBoxPlaceholderUsed
+				RaiseEvent TextChangedEvent(Me,isTextBoxEmptyOrPlaceholder )
 			End If
 		End Sub
 
@@ -136,13 +139,12 @@ Namespace Specialized
 		End Sub
 
 		Private Function GetFirstVisibleItem() As Object
-
 			If _listbox.Items.Count > 0
 				Dim index As Integer = _listBox.TopIndex
 				If index >=0
 					Return _listbox.Items(index)
 				End If
-				Return 0
+				Return Nothing
 			End If
 			Return Nothing
 		End Function
@@ -161,8 +163,42 @@ Namespace Specialized
 			Next
 			Return Nothing
 		End Function
+
+		Public Sub MoveSelectedItemAndRestoreSelection(ByVal direction As TwoListBox.MoveDirection)
+			Dim selectedItem As Object = Listbox.SelectedItem
+			MoveSelectedItem(direction)
+			SetSelection(selectedItem)
+		End Sub
+
+		Public Sub MoveSelectedItem(ByVal direction As TwoListBox.MoveDirection)
+			If DataSource.Count > 1 Then
+				If Listbox.SelectedItems.Count = 1 Then
+					Dim bound As Int32
+					Dim indexModifier As Int32
+					Select Case direction
+						Case TwoListBox.MoveDirection.Down
+							bound = DataSource.Count - 1
+							indexModifier = 1
+						Case TwoListBox.MoveDirection.Up
+							bound = 0
+							indexModifier = -1
+					End Select
+					If Not Listbox.SelectedIndex = bound Then
+						Dim i As Int32 = DataSource.IndexOf(Listbox.SelectedItem)
+						Dim selectedItem As Object = Listbox.SelectedItem
+						DataSource.RemoveAt(i)
+						DataSource.Insert(i + indexModifier, selectedItem)
+						Listbox.SelectedIndex = i + indexModifier
+					End If
+				End If
+			End If
+			ForceRefresh()
+		End Sub
+
+
 #Region "Properties"
 		Public Property IsListSortable As Boolean = True
+
 		Public ReadOnly Property Listbox() As kCura.Windows.Forms.ListBox
 			Get
 				Return _listBox

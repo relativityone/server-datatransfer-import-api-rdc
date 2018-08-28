@@ -422,9 +422,9 @@ End Sub
 			_moveLeftSelectedItemDown.Enabled = value
 			_moveLeftSelectedItemUp.Enabled = value
 		End Sub
-		Private Sub _searchableListLeft_TextChangedEvent(sender As Object, isPlaceholderUsed As  Boolean) Handles _searchableListLeft.TextChangedEvent
+		Private Sub _searchableListLeft_TextChangedEvent(sender As Object, isTextBoxEmptyOrPlaceholder As  Boolean) Handles _searchableListLeft.TextChangedEvent
 			If LeftOrderControlsVisible
-				If _searchableListLeft._textBox.Text = "" OrElse isPlaceholderUsed
+				If isTextBoxEmptyOrPlaceholder
 					SetEnabledOfLeftMoveVerticalArrowButtons(True)
 					ElseIf _moveLeftSelectedItemUp.Enabled = True
 					SetEnabledOfLeftMoveVerticalArrowButtons(False)
@@ -432,9 +432,9 @@ End Sub
 			End If
 		End Sub
 
-		Private Sub _searchableListRight_TextChangedEvent(sender As Object, isPlaceholderUsed As  Boolean) Handles _searchableListRight.TextChangedEvent
+		Private Sub _searchableListRight_TextChangedEvent(sender As Object, isTextBoxEmptyOrPlaceholder As  Boolean) Handles _searchableListRight.TextChangedEvent
 			If Not LeftOrderControlsVisible
-				If _searchableListRight._textBox.Text = "" OrElse isPlaceholderUsed
+				If isTextBoxEmptyOrPlaceholder
 					SetEnabledOfRightMoveVerticalArrowButtons(True)
 				ElseIf _moveRightSelectedItemUp.Enabled = True
 					SetEnabledOfRightMoveVerticalArrowButtons(False)
@@ -562,7 +562,7 @@ End Sub
 
 #Region " Move methods and event handlers "
 
-		Private Enum MoveDirection
+		Public Enum MoveDirection
 			Up
 			Down
 		End Enum
@@ -574,37 +574,6 @@ End Sub
 				giver.DataSource.Remove(currentItem)
 			Next
 			Me.RaiseItemsShifted()
-		End Sub
-
-		Private Sub MoveSelectedItemAndRestoreSelection(ByVal box As SearchableList, ByVal direction As MoveDirection)
-			Dim selectedItem As Object = box.Listbox.SelectedItem
-			MoveSelectedItem(box, direction)
-			box.SetSelection(selectedItem)
-		End Sub
-
-		Private Sub MoveSelectedItem(ByVal box As SearchableList, ByVal direction As MoveDirection)
-			If box.DataSource.Count > 1 Then
-				If box.Listbox.SelectedItems.Count = 1 Then
-					Dim bound As Int32
-					Dim indexModifier As Int32
-					Select Case direction
-						Case MoveDirection.Down
-							bound = box.DataSource.Count - 1
-							indexModifier = 1
-						Case MoveDirection.Up
-							bound = 0
-							indexModifier = -1
-					End Select
-					If Not box.Listbox.SelectedIndex = bound Then
-						Dim i As Int32 = box.DataSource.IndexOf(box.Listbox.SelectedItem)
-						Dim selectedItem As Object = box.Listbox.SelectedItem
-						box.DataSource.RemoveAt(i)
-						box.DataSource.Insert(i + indexModifier, selectedItem)
-						box.Listbox.SelectedIndex = i + indexModifier
-					End If
-				End If
-			End If
-			box.ForceRefresh()
 		End Sub
 
 		Private Sub _moveAllFieldsIn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _moveAllFieldsRight.Click
@@ -624,19 +593,19 @@ End Sub
 		End Sub
 
 		Private Sub _moveLeftSelectedItemUp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _moveLeftSelectedItemUp.Click
-			MoveSelectedItemAndRestoreSelection(_searchableListLeft, MoveDirection.Up)
+			_searchableListLeft.MoveSelectedItemAndRestoreSelection(MoveDirection.Up)
 		End Sub
 
 		Private Sub _moveLeftSelectedItemDown_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _moveLeftSelectedItemDown.Click
-			MoveSelectedItemAndRestoreSelection(_searchableListLeft, MoveDirection.Down)
+			_searchableListLeft.MoveSelectedItemAndRestoreSelection(MoveDirection.Down)
 		End Sub
 
 		Private Sub _moveRightSelectedItemUp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _moveRightSelectedItemUp.Click
-			MoveSelectedItemAndRestoreSelection(_searchableListRight, MoveDirection.Up)
+			_searchableListRight.MoveSelectedItemAndRestoreSelection(MoveDirection.Up)
 		End Sub
 
 		Private Sub _moveRightSelectedItemDown_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _moveRightSelectedItemDown.Click
-			MoveSelectedItemAndRestoreSelection(_searchableListRight, MoveDirection.Down)
+			_searchableListRight.MoveSelectedItemAndRestoreSelection(MoveDirection.Down)
 		End Sub
 
 #End Region
