@@ -83,7 +83,6 @@ Namespace kCura.EDDS.WinForm
             Me._exportFoldersMenuItem = New System.Windows.Forms.MenuItem()
             Me._exportFoldersAndSubfoldersMenuItem = New System.Windows.Forms.MenuItem()
             Me._exportObjectsMenuItem = New System.Windows.Forms.MenuItem()
-            Me.TransferMenu = New System.Windows.Forms.MenuItem()
             Me.OptionsMenu = New System.Windows.Forms.MenuItem()
             Me._toolsMenuSettingsItem = New System.Windows.Forms.MenuItem()
             Me._optionsMenuCheckConnectivityItem = New System.Windows.Forms.MenuItem()
