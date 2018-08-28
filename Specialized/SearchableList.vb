@@ -12,7 +12,8 @@ Namespace Specialized
 		Private _dataSource As New List(Of Object)
 		Private _isTextBoxPlaceholderUsed As Boolean = True
 		Private _wasUsedPlaceholder As Boolean
-		Private previousText As String
+		Private _previousText As String
+		Private _lastSelectedItemIndex As Integer
 		Private Const _DELAYED_TEXT_CHANGED_TIMEOUT_IN_MILLISECONDS As Integer = 600
 
 		Public Event DoubleClickEvent(sender As Object, e As EventArgs)
@@ -64,10 +65,9 @@ Namespace Specialized
 			If Not IsNothing(_timer) Then
 				_timer.Stop()
 			End If
-			If previousText = "" AndAlso _isTextBoxPlaceholderUsed Then Return
-			If Not _textBox.Text.Equals(previousText) Then
-	'		If _isTextBoxPlaceholderUsed AndAlso Not _isUserTyping Then Return
-				previousText = _textBox.Text
+			If _previousText = "" AndAlso _isTextBoxPlaceholderUsed Then Return
+			If Not _textBox.Text.Equals(_previousText) Then
+				_previousText = _textBox.Text
 				Cursor = Cursors.WaitCursor
 				FilterAndAssignDataSource()
 				ResizeScrollBar()
@@ -87,6 +87,7 @@ Namespace Specialized
 		End Function
 
 		Public Sub ForceRefresh()
+			_lastSelectedItemIndex = Nothing
 			Dim visibleItem As Object = GetFirstVisibleItem()
 			Dim item As Object = GetFirstNotSelectedItemAfterGiven(visibleItem)
 			FilterAndAssignDataSource()
@@ -239,30 +240,35 @@ Namespace Specialized
 		Private Sub _listBox_MouseLeaveEvent(sender As Object, e As EventArgs) Handles _listBox.MouseLeave
 			RaiseEvent MouseLeaveEvent(sender, e)
 		End Sub
-
+		Private Sub SelectAllItemsBetweenGiven(first As Integer, last As Integer)
+			If first > last Then
+				Dim tmp As Integer = last
+				last = first
+				first = tmp
+			End If
+			For i As Integer = first To last
+				_listBox.SetSelected(i, True)
+			Next
+		End Sub
 		Private Sub _listBox_MouseUp(sender As Object, e As MouseEventArgs) Handles _listBox.MouseUp
 			If ClientRectangle.Contains(e.Location) Then
 				Dim index As Integer = _listBox.IndexFromPoint(e.Location)
 				If index >= 0 Then
-					If Not My.Computer.Keyboard.CtrlKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then
+					If My.Computer.Keyboard.ShiftKeyDown Then
+						If Not IsNothing(_lastSelectedItemIndex)
+							SelectAllItemsBetweenGiven(_lastSelectedItemIndex, index)
+						Else
+							SelectAllItemsBetweenGiven(0, index)
+						End If
+					ElseIf My.Computer.Keyboard.CtrlKeyDown
+						_lastSelectedItemIndex = index
+					Else
 						_listbox.ClearSelected()
 						_listbox.SetSelected(index, True)
-'						_lastSelectedItem = _listbox.Items(_listBox.IndexFromPoint(e.Location))
-		'			ElseIf My.Computer.Keyboard.ShiftKeyDown Then
+						_lastSelectedItemIndex = index
 					End If
 				End If
 			End If
-
-
 		End Sub
-
-
-#Region "Selection methods"
-
-
-
-
-
-#End Region
 	End Class
 End Namespace
