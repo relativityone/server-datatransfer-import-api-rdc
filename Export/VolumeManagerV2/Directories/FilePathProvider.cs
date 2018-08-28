@@ -9,20 +9,20 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 		private readonly IDirectoryHelper _directoryHelper;
 		private readonly ILog _logger;
 
-		protected ILabelManager LabelManager { get; }
+		protected ILabelManagerForArtifact LabelManagerForArtifact { get; }
 
-		protected FilePathProvider(ILabelManager labelManager, ExportFile exportSettings, IDirectoryHelper directoryHelper, ILog logger)
+		protected FilePathProvider(ILabelManagerForArtifact labelManagerForArtifact, ExportFile exportSettings, IDirectoryHelper directoryHelper, ILog logger)
 		{
-			LabelManager = labelManager;
+			LabelManagerForArtifact = labelManagerForArtifact;
 			_exportSettings = exportSettings;
 			_directoryHelper = directoryHelper;
 			_logger = logger;
 		}
 
-		public string GetPathForFile(string fileName)
+		public string GetPathForFile(string fileName, int objectExportInfoArtifactId)
 		{
-			string volumeLabel = LabelManager.GetCurrentVolumeLabel();
-			string subdirectoryLabel = GetSubdirectoryLabel();
+			string volumeLabel = LabelManagerForArtifact.GetVolumeLabel(objectExportInfoArtifactId);
+			string subdirectoryLabel = GetSubdirectoryLabel(objectExportInfoArtifactId);
 
 			string destinationDirectory = Path.Combine(_exportSettings.FolderPath, volumeLabel, subdirectoryLabel);
 
@@ -35,6 +35,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
 			return Path.Combine(destinationDirectory, fileName);
 		}
 
-		protected abstract string GetSubdirectoryLabel();
+		protected abstract string GetSubdirectoryLabel(int objectExportInfoArtifactId);
 	}
 }

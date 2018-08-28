@@ -164,7 +164,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 			if (_exportSettings.ExportFullTextAsFile)
 			{
 				string fileName = _fileNameProvider.GetTextName(artifact);
-				return _filePathProvider.GetPathForFile(fileName);
+				return _filePathProvider.GetPathForFile(fileName, artifact.ArtifactID);
 			}
 
 			return Path.GetTempFileName();

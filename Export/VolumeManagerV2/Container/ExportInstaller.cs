@@ -28,13 +28,16 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 
 		private readonly Exporter _exporter;
 		private readonly string[] _columnNamesInOrder;
+		private readonly ILoadFileHeaderFormatterFactory _loadFileHeaderFormatterFactory;
 
 		protected ExportFile ExportSettings => _exporter.Settings;
+		protected IExportConfig ExportConfig => _exporter.ExportConfig;
 
-		public ExportInstaller(Exporter exporter, string[] columnNamesInOrder)
+		public ExportInstaller(Exporter exporter, string[] columnNamesInOrder, ILoadFileHeaderFormatterFactory loadFileHeaderFormatterFactory)
 		{
 			_exporter = exporter;
 			_columnNamesInOrder = columnNamesInOrder;
+			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory;
 		}
 
 		public void Install(IWindsorContainer container, IConfigurationStore store)
@@ -50,10 +53,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 		{
 			container.Register(Component.For<PaddingWarningValidator>().ImplementedBy<PaddingWarningValidator>());
 			container.Register(Component.For<Image>().ImplementedBy<Image>());
-			container.Register(Component.For<ILoadFileHeaderFormatterFactory>().ImplementedBy<ExportFileFormatterFactory>());
+			container.Register(Component.For<ILoadFileHeaderFormatterFactory>().Instance(_loadFileHeaderFormatterFactory));
 			container.Register(Component.For<ITransferClientHandler, IExportFileDownloaderStatus, ExportFileDownloaderStatus>().ImplementedBy<ExportFileDownloaderStatus>());
 			container.Register(Component.For<ILoadFileCellFormatter>().UsingFactoryMethod(k => k.Resolve<LoadFileCellFormatterFactory>().Create(ExportSettings)));
-			container.Register(Component.For<ExportStatistics, WinEDDS.Statistics>().Instance(_exporter._statistics));
+			container.Register(Component.For<ExportStatistics, WinEDDS.Statistics>().Instance(_exporter.Statistics));
 		}
 
 		private void InstallConnectionToWinEdds(IWindsorContainer container)
@@ -81,9 +84,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			// OTHER
 			container.Register(Component.For<IErrorFile>().UsingFactoryMethod(k => k.Resolve<ErrorFileDestinationPath>()));
 			container.Register(Component.For<IFilePathTransformer>().UsingFactoryMethod(k => k.Resolve<FilePathTransformerFactory>().Create(ExportSettings, container)));
-			container.Register(Component.For<IBatchValidator>().UsingFactoryMethod(k => k.Resolve<BatchValidatorFactory>().Create(ExportSettings, container)));
-			container.Register(Component.For<IBatchInitialization>().UsingFactoryMethod(k => k.Resolve<BatchInitializationFactory>().Create(ExportSettings, container)));
+			container.Register(Component.For<IBatchValidator>().UsingFactoryMethod(k => k.Resolve<BatchValidatorFactory>().Create(ExportSettings, ExportConfig, container)));
+			container.Register(Component.For<IBatchInitialization>().UsingFactoryMethod(k => k.Resolve<BatchInitializationFactory>().Create(ExportSettings, ExportConfig, container)));
 			container.Register(Component.For<ILog>().UsingFactoryMethod(k => RelativityLogFactory.CreateLog(_EXPORT_SUB_SYSTEM_NAME)));
+
+			container.Register(Component.For<ILabelManagerForArtifact>().UsingFactoryMethod(k =>
+				ExportConfig.ForceParallelismInNewExport
+					? (ILabelManagerForArtifact)k.Resolve<CachedLabelManagerForArtifact>()
+					: k.Resolve<LabelManagerForArtifact>()));
 		}
 
 		private void InstallFieldService(IWindsorContainer container)

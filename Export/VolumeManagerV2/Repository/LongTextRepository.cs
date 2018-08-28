@@ -10,20 +10,30 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 	public class LongTextRepository : IClearable, ILongTextRepository
 	{
 		private List<LongText> _longTexts;
+		private Dictionary<int, List<LongText>> _longTextsByArtifactIdDictionary;
+		private List<LongTextExportRequest> _exportRequests;
 
 		private readonly IFileHelper _fileHelper;
-		private readonly ILog _logger;
+		private readonly ILog _logger;	
+
+		private readonly object _syncLock = new object();
 
 		public LongTextRepository(IFileHelper fileHelper, ILog logger)
 		{
 			_fileHelper = fileHelper;
 			_logger = logger;
-			_longTexts = new List<LongText>();
+
+			InitializeCollections();
 		}
 
 		public void Add(IList<LongText> longTexts)
 		{
-			_longTexts.AddRange(longTexts);
+			lock (_syncLock)
+			{
+				_longTexts.AddRange(longTexts);
+
+				IndexLongTexts(longTexts);
+			}
 		}
 
 		public string GetTextFileLocation(int artifactId, int fieldArtifactId)
@@ -33,48 +43,120 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 
 		public LongText GetLongText(int artifactId, int fieldArtifactId)
 		{
-			return _longTexts.First(x => x.FieldArtifactId == fieldArtifactId && x.ArtifactId == artifactId);
+			lock (_syncLock)
+			{
+				IEnumerable<LongText> longTextsForArtifact = GetArtifactLongTexts(artifactId);
+				return longTextsForArtifact.First(x => x.FieldArtifactId == fieldArtifactId);
+			}
 		}
 
 		public IList<LongText> GetLongTexts()
 		{
-			return _longTexts;
+			lock (_syncLock)
+			{
+				return _longTexts;
+			}
 		}
 
-		public IList<LongTextExportRequest> GetExportRequests()
+		public IEnumerable<LongTextExportRequest> GetExportRequests()
 		{
-			return _longTexts.Select(x => x.ExportRequest).Where(x => x != null).ToList();
+			lock (_syncLock)
+			{
+				return _exportRequests;
+			}
+		}
+
+		public bool AnyRequestForLocation(string destinationLocation)
+		{
+			lock (_syncLock)
+			{
+				return GetExportRequests().Any(x => x.DestinationLocation == destinationLocation);
+			}
 		}
 
 		public LongText GetByLineNumber(int lineNumber)
 		{
-			return _longTexts.FirstOrDefault(x => x.ExportRequest != null && x.ExportRequest.Order == lineNumber);
+			lock (_syncLock)
+			{
+				return _longTexts.FirstOrDefault(x => x.ExportRequest != null && x.ExportRequest.Order == lineNumber);
+			}
 		}
 
-		public IList<LongText> GetArtifactLongTexts(int artifactId)
+		public IEnumerable<LongText> GetArtifactLongTexts(int artifactId)
 		{
-			return _longTexts.Where(x => x.ArtifactId == artifactId).ToList();
+			lock (_syncLock)
+			{
+				List<LongText> longTextsForArtifact;
+				return _longTextsByArtifactIdDictionary.TryGetValue(artifactId, out longTextsForArtifact)
+					? longTextsForArtifact
+					: Enumerable.Empty<LongText>();
+			}
 		}
 
 		public void Clear()
 		{
-			foreach (var longText in _longTexts)
+			lock (_syncLock)
 			{
-				if (longText.RequireDeletion)
+				foreach (var longText in _longTexts)
 				{
-					_logger.LogInformation("Removing long text temp file {file}.", longText.Location);
-					try
+					if (longText.RequireDeletion)
 					{
-						_fileHelper.Delete(longText.Location);
-					}
-					catch (Exception)
-					{
-						_logger.LogError("Failed to delete temp file {file} with LongText.", longText.Location);
+						_logger.LogInformation("Removing long text temp file {file}.", longText.Location);
+						try
+						{
+							_fileHelper.Delete(longText.Location);
+						}
+						catch (Exception)
+						{
+							_logger.LogError("Failed to delete temp file {file} with LongText.", longText.Location);
+						}
 					}
 				}
+
+				InitializeCollections();
+			}
+		}
+
+		private void IndexLongTexts(IList<LongText> longTexts)
+		{
+			foreach (LongText longText in longTexts)
+			{
+				IndexLongText(longText);
+			}
+		}
+
+		private void IndexLongText(LongText longText)
+		{
+			List<LongText> dictionaryItemForLongText = GetOrCreateLongTextListInDictionary(longText);
+
+			dictionaryItemForLongText.Add(longText);
+
+			LongTextExportRequest longTextExportRequest = longText.ExportRequest;
+			if (longTextExportRequest != null)
+			{
+				_exportRequests.Add(longTextExportRequest);
+			}
+		}
+
+		private List<LongText> GetOrCreateLongTextListInDictionary(LongText longText)
+		{
+			List<LongText> dictionaryItemForLongText;
+			int longTextArtifactId = longText.ArtifactId;
+
+			if (!_longTextsByArtifactIdDictionary.TryGetValue(longTextArtifactId, out dictionaryItemForLongText))
+			{
+				dictionaryItemForLongText = new List<LongText>();
+				_longTextsByArtifactIdDictionary[longTextArtifactId] = dictionaryItemForLongText;
 			}
 
+			return dictionaryItemForLongText;
+		}
+
+		private void InitializeCollections()
+		{
 			_longTexts = new List<LongText>();
+			_longTextsByArtifactIdDictionary = new Dictionary<int, List<LongText>>();
+			_exportRequests = new List<LongTextExportRequest>();
 		}
 	}
 }

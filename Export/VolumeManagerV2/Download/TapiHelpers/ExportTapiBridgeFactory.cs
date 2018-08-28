@@ -65,7 +65,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			TapiBridgeParameters parameters = CreateTapiBridgeParametersFromConfiguration();
 
 			parameters.FileshareCredentials = fileshareSettings?.TransferCredential ?? GetEmptyAsperaCredential();
-			parameters.FileShare = fileshareSettings?.FileshareName;
+			parameters.FileShare = fileshareSettings?.UncPath;
 
 			DownloadTapiBridge tapiBridge = TapiBridgeFactory.CreateDownloadBridge(parameters, _logger, token);
 			tapiBridge.DumpInfo();
@@ -81,6 +81,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		{
 			TapiBridgeParameters parameters = new TapiBridgeParameters
 			{
+				Application = Config.ApplicationName,
 				ClientRequestId = Guid.NewGuid(),
 				Credentials = _exportSettings.Credential,
 				AsperaDocRootLevels = Config.TapiAsperaNativeDocRootLevels,
@@ -94,6 +95,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 				MaxJobParallelism = Config.TapiMaxJobParallelism,
 				MaxJobRetryAttempts = _exportConfig.ExportIOErrorNumberOfRetries,
 				MinDataRateMbps = Config.TapiMinDataRateMbps,
+				SubmitApmMetrics = Config.TapiSubmitApmMetrics,
 				TargetPath = string.Empty,
 				TargetDataRateMbps = Config.TapiTargetDataRateMbps,
 				TransferLogDirectory = Config.TapiTransferLogDirectory,

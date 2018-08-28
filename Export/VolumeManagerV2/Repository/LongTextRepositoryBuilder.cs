@@ -9,8 +9,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 {
 	public class LongTextRepositoryBuilder : IRepositoryBuilder
 	{
-		private List<LongText> _longTexts;
-
 		private readonly LongTextRepository _longTextRepository;
 		private readonly ILongTextBuilder _longTextPrecedenceBuilder;
 		private readonly ILongTextBuilder _longTextFieldBuilder;
@@ -30,7 +28,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 		public void AddToRepository(ObjectExportInfo artifact, CancellationToken cancellationToken)
 		{
 			_logger.LogVerbose("Attempting to build LongText repository.");
-			_longTexts = new List<LongText>();
+			var longTextsToAdd = new List<LongText>();
 
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -40,7 +38,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 			_logger.LogVerbose("Creating LongText entries for text precedence.");
 			IList<LongText> precedenceLongTexts = _longTextPrecedenceBuilder.CreateLongText(artifact, cancellationToken);
 			_logger.LogVerbose("{count} LongText entries created.", precedenceLongTexts.Count);
-			AddDistinct(precedenceLongTexts);
+			AddDistinct(precedenceLongTexts, longTextsToAdd);
 
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -50,7 +48,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 			_logger.LogVerbose("Creating LongText entries for fields.");
 			IList<LongText> fieldLongTexts = _longTextFieldBuilder.CreateLongText(artifact, cancellationToken);
 			_logger.LogVerbose("{count} LongText entries created.", fieldLongTexts.Count);
-			AddDistinct(fieldLongTexts);
+			AddDistinct(fieldLongTexts, longTextsToAdd);
 
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -60,19 +58,19 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 			_logger.LogVerbose("Creating LongText entries for missing Extracted Text.");
 			IList<LongText> iproFullTexts = _longTextIproFullTextBuilder.CreateLongText(artifact, cancellationToken);
 			_logger.LogVerbose("{count} LongText entries created.", iproFullTexts.Count);
-			AddDistinct(iproFullTexts);
+			AddDistinct(iproFullTexts, longTextsToAdd);
 
-			_longTextRepository.Add(_longTexts);
+			_longTextRepository.Add(longTextsToAdd);
 		}
 
 
-		private void AddDistinct(IList<LongText> longTexts)
+		private void AddDistinct(IList<LongText> longTexts, List<LongText> targetCollection)
 		{
 			foreach (var longText in longTexts)
 			{
-				if (!_longTexts.Any(x => x.ArtifactId == longText.ArtifactId && x.FieldArtifactId == longText.FieldArtifactId))
+				if (!targetCollection.Any(x => x.ArtifactId == longText.ArtifactId && x.FieldArtifactId == longText.FieldArtifactId))
 				{
-					_longTexts.Add(longText);
+					targetCollection.Add(longText);
 				}
 			}
 		}

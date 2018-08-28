@@ -64,12 +64,10 @@
       <HintPath>..\..\packages\Relativity.Kepler.1.0.1.445\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging">
-      <HintPath>..\..\packages\Relativity.Logging.9.4.312\lib\net462\Relativity.Logging.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\Relativity.Logging.9.4.320\lib\net462\Relativity.Logging.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces">
-      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.312\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.320\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.OAuth2Client">
       <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.27\lib\net462\Relativity.OAuth2Client.dll</HintPath>
@@ -93,26 +91,26 @@
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.445\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared">
-      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.160\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.2018.8.0\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client, Version=3.0.18127.17, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.3.1.1\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client, Version=4.2.3.32, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.4.2.3\lib\net462\Relativity.Transfer.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Aspera, Version=3.0.18127.17, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.3.1.1\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Aspera, Version=4.2.3.32, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.4.2.3\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Core, Version=3.0.18127.17, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.3.1.1\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Core, Version=4.2.3.32, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.4.2.3\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.FileShare, Version=3.0.18127.17, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.3.1.1\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.FileShare, Version=4.2.3.32, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.4.2.3\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Http, Version=3.0.18127.17, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.3.1.1\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Http, Version=4.2.3.32, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.4.2.3\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
@@ -172,14 +170,19 @@
     <Compile Include="Export\VolumeManagerV2\Batches\IBatchExporter.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\IBatchState.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\ImageFileBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\ImageFileParallelBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\ImageLoadFileBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\IStateful.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\LoadFileBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\LongTextBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\LongTextParallelBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batches\NativeFileBatchValidator.cs" />
     <Compile Include="Export\VolumeManagerV2\Batch.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\NativeFileParallelBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\ParallelBatchInitialization.cs" />
     <Compile Include="Export\VolumeManagerV2\DataSize\EncodingFileSize.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\AbsoluteFilePathTransformer.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\CachedLabelManagerForArtifact.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\DirectoryManager.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\FilePathHelper.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\FilePathProvider.cs" />
@@ -187,7 +190,9 @@
     <Compile Include="Export\VolumeManagerV2\Directories\IFilePathTransformer.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\IFilePathProvider.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\ILabelManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\ILabelManagerForArtifact.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\ImageFilePathProvider.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\LabelManagerForArtifact.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\LongTextFilePathProvider.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\NativeFilePathProvider.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\PrefixFilePathTransformer.cs" />
@@ -372,6 +377,7 @@
     <Compile Include="Export\VolumeManagerV2\Statistics\MetadataStatistics.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\FileDownloadProgressHandler.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\ProgressHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\ThreadSafeAddOnlyHashSet.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\ExportPermissionCheck.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\ExportValidation.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\FilesOverwriteValidator.cs" />
