@@ -1,3 +1,6 @@
+Imports System.ComponentModel
+Imports System.Net
+Imports System.Threading.Tasks
 Imports Relativity.Transfer
 
 Namespace kCura.EDDS.WinForm
@@ -167,12 +170,13 @@ End Sub
 
 		Friend SelectDefaultPath As Boolean = True
 
-		Private Sub AdvancedFileLocation_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
-            SetRepositoriesComboBoxAccessibility()
-            _asperaModeWarningLinkLabel.Visible = IsUsingAsperaConnectionMode()
+		Public Property IsUsingAsperaConnectionMode() As Boolean
 
-		    If Me.SelectDefaultPath Then
-		        Me.SelectPath(kCura.EDDS.WinForm.Application.Instance.SelectedCaseInfo.DocumentPath)
+		Private Sub AdvancedFileLocation_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
+			SetRepositoriesComboBoxAccessibility()
+			_asperaModeWarningLinkLabel.Visible = IsUsingAsperaConnectionMode()
+			If Me.SelectDefaultPath Then
+		        Me.SelectPath(Application.Instance.SelectedCaseInfo.DocumentPath)
 		    End If
 
 		    Config.FlushEddsConfigSettings()
@@ -217,12 +221,6 @@ End Sub
                 _repositories.Enabled = _copyNativeFiles.Checked
             End If
         End Sub
-
-		Private Function IsUsingAsperaConnectionMode() As Boolean
-
-		    Dim clientTransferGuid As Guid = kCura.EDDS.WinForm.Application.Instance.GetConnectionMode().ConfigureAwait(False).GetAwaiter().GetResult()
-		    Return clientTransferGuid = Guid.Parse(TransferClientConstants.AsperaClientId)
-		End Function
 
 		Private Sub _defaultButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _defaultButton.Click
 			Me.SelectPath(kCura.EDDS.WinForm.Application.Instance.SelectedCaseInfo.DocumentPath)

@@ -12,14 +12,13 @@ Imports kCura.Windows.Forms
 Imports kCura.WinEDDS.Core.Export
 Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Monitoring
-Imports kCura.WinEDDS.Service
 Imports Relativity
 Imports Relativity.DataTransfer.MessageService
+Imports Relativity.DataTransfer.MessageService.Tools
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
-Imports Relativity.Services.InstanceDetails
-Imports Relativity.Services.ServiceProxy
+Imports Relativity.Transfer
 
 Namespace kCura.EDDS.WinForm
     Public Class Application
@@ -53,7 +52,7 @@ Namespace kCura.EDDS.WinForm
         Public Const ACCESS_DISABLED_MESSAGE As String = "Your Relativity account has been disabled.  Please contact your Relativity Administrator to activate your account."
         Public Const RDC_ERROR_TITLE As String = "Relativity Desktop Client Error"
         Public Const RDC_TITLE As String = "Relativity Desktop Client"
-    
+
         Private _caseSelected As Boolean = True
         Private _processPool As kCura.Windows.Process.ProcessPool
         Private _selectedCaseInfo As Relativity.CaseInfo
@@ -65,25 +64,21 @@ Namespace kCura.EDDS.WinForm
         Private WithEvents _optionsForm As OptionsForm
         Private _messageService As IMessageService
         Private _documentRepositoryList As String()
+        Private ReadOnly oAuth2ImplicitCredentialsHelper As Lazy(Of OAuth2ImplicitCredentialsHelper) = New Lazy(Of OAuth2ImplicitCredentialsHelper)(AddressOf CreateOAuth2ImplicitCredentialsHelper)
 #End Region
 
 #Region "Properties"
 
         Public Sub SetImplicitCredentialProvider()
-            If RelativityWebApiCredentialsProvider.Instance().CredentialsSet() AndAlso RelativityWebApiCredentialsProvider.Instance().ProviderType() = GetType(OAuth2ImplicitCredentials) Then
-                Dim tempImplicitProvider As OAuth2ImplicitCredentials = CType(RelativityWebApiCredentialsProvider.Instance().GetProvider(), OAuth2ImplicitCredentials)
-                tempImplicitProvider.CloseLoginView()
-            End If
-            Dim authEndpoint As String = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/authorize")
-            Dim implicitProvider = New OAuth2ImplicitCredentials(New Uri(authEndpoint), "Relativity Desktop Client", AddressOf On_TokenRetrieved)
-            RelativityWebApiCredentialsProvider.Instance().SetProvider(implicitProvider)
+            oAuth2ImplicitCredentialsHelper.Value.SetImplicitCredentialProvider()
         End Sub
 
         Friend Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential)
-            If Not RelativityWebApiCredentialsProvider.Instance().CredentialsSet() Then
-                SetImplicitCredentialProvider()
-            End If
-            Return Await RelativityWebApiCredentialsProvider.Instance().GetCredentialsAsync()
+            Return Await oAuth2ImplicitCredentialsHelper.Value.GetCredentialsAsync()
+        End Function
+
+        Private Function CreateOAuth2ImplicitCredentialsHelper() As OAuth2ImplicitCredentialsHelper
+            Return New OAuth2ImplicitCredentialsHelper(AddressOf GetIdentityServerLocation, AddressOf On_TokenRetrieved)
         End Function
 
         Private Async Function GetFieldProviderCacheAsync() As Task(Of IFieldProviderCache)
@@ -109,7 +104,7 @@ Namespace kCura.EDDS.WinForm
             End Get
         End Property
 
-        Public Async Function RefreshSelectedCaseInfo(Optional ByVal caseInfo As Relativity.CaseInfo = Nothing) As Task
+        Public Async Function RefreshSelectedCaseInfoAsync(Optional ByVal caseInfo As Relativity.CaseInfo = Nothing) As Task
             Dim caseManager As New kCura.WinEDDS.Service.CaseManager(Await Me.GetCredentialsAsync(), _CookieContainer)
             If caseInfo Is Nothing Then
                 _selectedCaseInfo = caseManager.Read(_selectedCaseInfo.ArtifactID)
@@ -211,13 +206,30 @@ Namespace kCura.EDDS.WinForm
             End If
         End Sub
 
+        ''' <summary>
+        ''' This method doesn't work! Use CursorDefaultWhichWorks instead.
+        ''' </summary>
         Public Sub CursorDefault()
             RaiseEvent ChangeCursor(System.Windows.Forms.Cursors.Default)
         End Sub
 
+        ''' <summary>
+        ''' This method doesn't work! Use CursorWaitWhichWorks instead.
+        ''' </summary>
         Public Sub CursorWait()
             RaiseEvent ChangeCursor(System.Windows.Forms.Cursors.WaitCursor)
         End Sub
+
+        Public Sub CursorDefaultWhichWorks()
+            'Name of this method should be changed after cleaning every usage of CursorDefault method will be replaced with this one
+            System.Windows.Forms.Application.UseWaitCursor = False
+        End Sub
+
+        Public Sub CursorWaitWhichWorks()
+            'Name of this method should be changed after cleaning every usage of CursorWait method will be replaced with this one
+            System.Windows.Forms.Application.UseWaitCursor = True
+        End Sub
+
 #End Region
 
 #Region "Document Field Collection"
@@ -236,15 +248,6 @@ Namespace kCura.EDDS.WinForm
         Public Async Function GetCaseFields(ByVal caseID As Int32, ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As Task(Of String())
             Dim retval As String() = Nothing
             Dim fields As DocumentFieldCollection = Await CurrentFields(artifactTypeID, refresh)
-            If Not fields Is Nothing Then
-                retval = fields.Names()
-            End If
-            Return retval
-        End Function
-
-        Public Async Function GetNonFileCaseFields(ByVal caseID As Int32, ByVal artifactTypeID As Int32, Optional ByVal refresh As Boolean = False) As Task(Of String())
-            Dim retval As String() = Nothing
-            Dim fields As DocumentFieldCollection = Await CurrentNonFileFields(artifactTypeID, refresh)
             If Not fields Is Nothing Then
                 retval = fields.Names()
             End If
@@ -416,24 +419,24 @@ Namespace kCura.EDDS.WinForm
                 Dim dataset As System.Data.DataSet = csMgr.RetrieveAll()
 
 #If EnableInjections Then
-                Dim dt As System.Data.DataTable = dataset.Tables(0)
-                If dt.Rows.Count > 0 Then
-                    Dim numberOfMockWorkspacesToAdd As Int32? = Config.NumberOfFakeWorkspacesToAdd
-                    If numberOfMockWorkspacesToAdd.HasValue AndAlso numberOfMockWorkspacesToAdd.Value > 0 Then
-                        Dim rows As System.Data.DataRow() = dt.Select()
-                        Dim maxID As Int32 = 0
-                        For Each row As System.Data.DataRow In rows
-                            maxID = Math.Max(CInt(row("ArtifactID")), maxID)
-                        Next
-                        Dim sampleRow As Object() = rows(0).ItemArray()
-                        For i As Int32 = 1 To numberOfMockWorkspacesToAdd.Value
-                            maxID += 1
-                            sampleRow(0) = maxID
-                            sampleRow(1) = "Workspace " & maxID.ToString().PadLeft(20, "0"c)
-                            dt.Rows.Add(sampleRow)
-                        Next
-                    End If
-                End If
+				Dim dt As System.Data.DataTable = dataset.Tables(0)
+				If dt.Rows.Count > 0 Then
+					Dim numberOfMockWorkspacesToAdd As Int32? = Config.NumberOfFakeWorkspacesToAdd
+					If numberOfMockWorkspacesToAdd.HasValue AndAlso numberOfMockWorkspacesToAdd.Value > 0 Then
+						Dim rows As System.Data.DataRow() = dt.Select()
+						Dim maxID As Int32 = 0
+						For Each row As System.Data.DataRow In rows
+							maxID = Math.Max(CInt(row("ArtifactID")), maxID)
+						Next
+						Dim sampleRow As Object() = rows(0).ItemArray()
+						For i As Int32 = 1 To numberOfMockWorkspacesToAdd.Value
+							maxID += 1
+							sampleRow(0) = maxID
+							sampleRow(1) = "Workspace " & maxID.ToString().PadLeft(20, "0"c)
+							dt.Rows.Add(sampleRow)
+						Next
+					End If
+				End If
 #End If
 
                 Return dataset
@@ -455,12 +458,17 @@ Namespace kCura.EDDS.WinForm
             _caseSelected = True
         End Sub
 
-        Public Async Function OpenCase() As Task
+        Public Async Function OpenCaseAsync() As Task
             Try
-                Dim caseInfo As Relativity.CaseInfo = Me.GetCase
+                Dim caseInfo As CaseInfo = Me.GetCase
                 If Not caseInfo Is Nothing Then
                     _selectedCaseInfo = caseInfo
-                    Await Me.RefreshSelectedCaseInfo()
+                    Try
+                        CursorWaitWhichWorks()
+                        Await RefreshSelectedCaseInfoAsync().ConfigureAwait(False)
+                    Finally
+                        CursorDefaultWhichWorks()
+                    End Try
                     RaiseEvent OnEvent(New LoadCaseEvent(caseInfo))
                 End If
             Catch MrSoapy As SoapException
@@ -494,14 +502,18 @@ Namespace kCura.EDDS.WinForm
 
         Public Async Function GetConnectionStatus() As Task(Of String)
             Dim parameters = CreateTapiParametersAsync()
-            Dim clientName = Await kCura.WinEDDS.TApi.TapiWinEddsHelper.GetWorkspaceClientDisplayNameAsync(await parameters)
+            Dim clientName = Await TApi.TapiWinEddsHelper.GetWorkspaceClientDisplayNameAsync(Await parameters)
             Return clientName
         End Function
 
         Public Async Function GetConnectionMode() As Task(Of Guid)
             Dim parameters = CreateTapiParametersAsync()
-            Dim clientName = Await kCura.WinEDDS.TApi.TapiWinEddsHelper.GetWorkspaceClientIdAsync(await parameters)
+            Dim clientName = Await TApi.TapiWinEddsHelper.GetWorkspaceClientIdAsync(Await parameters)
             Return clientName
+        End Function
+
+        Public Async Function IsUsingAsperaConnectionMode() As Task(Of Boolean)
+            Return (Await GetConnectionMode().ConfigureAwait(False)) = Guid.Parse(TransferClientConstants.AsperaClientId)
         End Function
 
         Private Async Function CreateTapiParametersAsync() As Task(Of TApi.TapiBridgeParameters)
@@ -513,12 +525,12 @@ Namespace kCura.EDDS.WinForm
             parameters.ForceAsperaClient = WinEDDS.Config.TapiForceAsperaClient
             parameters.ForceClientCandidates = WinEDDS.Config.TapiForceClientCandidates
             parameters.ForceFileShareClient = WinEDDS.Config.TapiForceFileShareClient
-            parameters.ForceHttpClient = WinEDDS.Config.ForceWebUpload OrElse WinEDDS.Config.TapiForceHttpClient                                                            
+            parameters.ForceHttpClient = WinEDDS.Config.ForceWebUpload OrElse WinEDDS.Config.TapiForceHttpClient
             parameters.WebCookieContainer = Me.CookieContainer
             parameters.WebServiceUrl = WinEDDS.Config.WebServiceURL
             parameters.WorkspaceId = Me.SelectedCaseInfo.ArtifactID
 
-            return parameters
+            Return parameters
         End Function
 #End Region
 
@@ -811,9 +823,9 @@ Namespace kCura.EDDS.WinForm
                     Dim s As New System.Text.StringBuilder
                     s.Append("There are no exportable ")
                     Select Case exportFile.TypeOfExport
-                        Case ExportFile.ExportType.Production
+                        Case exportFile.ExportType.Production
                             s.Append("productions ")
-                        Case ExportFile.ExportType.ArtifactSearch
+                        Case exportFile.ExportType.ArtifactSearch
                             s.Append("saved searches ")
                         Case Else
                             s.Append("views ")
@@ -851,10 +863,10 @@ Namespace kCura.EDDS.WinForm
             exportFile.TypeOfExport = typeOfExport
             exportFile.ObjectTypeName = Await Me.GetObjectTypeName(exportFile.ArtifactTypeID)
             Select Case typeOfExport
-                Case ExportFile.ExportType.Production
+                Case exportFile.ExportType.Production
                     exportFile.DataTable = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
                 Case Else
-                    exportFile.DataTable = Me.GetSearchExportDataSource(searchManager, caseInfo.ArtifactID, typeOfExport = ExportFile.ExportType.ArtifactSearch, exportFile.ArtifactTypeID)
+                    exportFile.DataTable = Me.GetSearchExportDataSource(searchManager, caseInfo.ArtifactID, typeOfExport = exportFile.ExportType.ArtifactSearch, exportFile.ArtifactTypeID)
             End Select
             Dim ids As New System.Collections.ArrayList
             For Each row As System.Data.DataRow In exportFile.DataTable.Rows
@@ -870,7 +882,7 @@ Namespace kCura.EDDS.WinForm
                 exportFile.ArtifactAvfLookup = New System.Collections.Specialized.HybridDictionary
                 exportFile.AllExportableFields = New WinEDDS.ViewFieldInfo() {}
             Else
-                exportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(caseInfo.ArtifactID, exportFile.ArtifactTypeID, DirectCast(ids.ToArray(GetType(Int32)), Int32()), typeOfExport = ExportFile.ExportType.Production)
+                exportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(caseInfo.ArtifactID, exportFile.ArtifactTypeID, DirectCast(ids.ToArray(GetType(Int32)), Int32()), typeOfExport = exportFile.ExportType.Production)
                 exportFile.AllExportableFields = searchManager.RetrieveAllExportableViewFields(caseInfo.ArtifactID, exportFile.ArtifactTypeID)
             End If
             Return exportFile
@@ -1084,12 +1096,12 @@ Namespace kCura.EDDS.WinForm
                 If CheckFieldMap(loadFile) Then
                     Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
                     Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(Await SetupMessageService())
-					importer.CaseInfo = SelectedCaseInfo
+                    importer.CaseInfo = SelectedCaseInfo
                     importer.LoadFile = loadFile
                     importer.TimeZoneOffset = _timeZoneOffset
                     importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
                     importer.CloudInstance = Config.CloudInstance
-					importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
+                    importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
                     importer.ExecutionSource = Relativity.ExecutionSource.Rdc
                     SetWorkingDirectory(loadFile.FilePath)
                     frm.ProcessObserver = importer.ProcessObserver
@@ -1138,10 +1150,10 @@ Namespace kCura.EDDS.WinForm
             Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
             Dim importer As New kCura.WinEDDS.ImportImageFileProcess(Await SetupMessageService())
             ImageLoadFile.CookieContainer = Me.CookieContainer
-			importer.CaseInfo = SelectedCaseInfo
+            importer.CaseInfo = SelectedCaseInfo
             importer.ImageLoadFile = ImageLoadFile
             importer.CloudInstance = Config.CloudInstance
-			importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
+            importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
             importer.ExecutionSource = Relativity.ExecutionSource.Rdc
             SetWorkingDirectory(ImageLoadFile.FileName)
             frm.ProcessObserver = importer.ProcessObserver
@@ -1161,9 +1173,9 @@ Namespace kCura.EDDS.WinForm
             End If
             Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
             frm.StatusRefreshRate = 0
-            Dim exporter As New kCura.WinEDDS.ExportSearchProcess(new ExportFileFormatterFactory(), New ExportConfig, Await SetupMessageService())
+            Dim exporter As New kCura.WinEDDS.ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig, Await SetupMessageService())
             exporter.UserNotification = New FormsUserNotification()
-			exporter.CaseInfo = SelectedCaseInfo
+            exporter.CaseInfo = SelectedCaseInfo
             exporter.ExportFile = exportFile
             frm.ProcessObserver = exporter.ProcessObserver
             frm.ProcessController = exporter.ProcessController
@@ -1370,7 +1382,7 @@ Namespace kCura.EDDS.WinForm
                 Case Application.CredentialCheckResult.Success
                     LogOn()
                     If (Not _caseSelected) Then
-                        Await OpenCase()
+                        Await OpenCaseAsync().ConfigureAwait(False)
                     End If
                     EnhancedMenuProvider.Hook(callingForm)
             End Select
@@ -1456,8 +1468,8 @@ Namespace kCura.EDDS.WinForm
                     System.Threading.Thread.CurrentThread.CurrentCulture = locale
 
                     kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-                    If OpenCaseSelector Then Await OpenCase()
-                    _timeZoneOffset = 0                                                         'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+                    If OpenCaseSelector Then Await OpenCaseAsync().ConfigureAwait(False)
+                    _timeZoneOffset = 0
                     _lastCredentialCheckResult = CredentialCheckResult.Success
                     'This was created specifically for raising an event after login success for RDC forms authentication 
                     LogOnForm()
@@ -1527,7 +1539,7 @@ Namespace kCura.EDDS.WinForm
                 CheckVersion(netCreds)
                 If userManager.Login(netCreds.UserName, netCreds.Password) Then
                     kCura.WinEDDS.Service.Settings.AuthenticationToken = userManager.GenerateDistributedAuthenticationToken()
-                    _timeZoneOffset = 0                                          'New kCura.WinEDDS.Service.RelativityManager(cred, _cookieContainer).GetServerTimezoneOffset
+                    _timeZoneOffset = 0
                     _lastCredentialCheckResult = CredentialCheckResult.Success
                 Else
                     _lastCredentialCheckResult = CredentialCheckResult.Fail
@@ -1556,7 +1568,7 @@ Namespace kCura.EDDS.WinForm
         End Function
 
         Public Function DoOAuthLogin(ByVal clientId As String, ByVal clientSecret As String) As CredentialCheckResult
-            Dim urlString As String = String.Format("{0}/{1}", GetIdentityServerLocation(), "connect/token")
+            Dim urlString As String = $"{GetIdentityServerLocation()}/{"connect/token"}"
             Dim stsUrl As Uri = New Uri(urlString)
 
             _lastCredentialCheckResult = DoOAuthLogin(clientId, clientSecret, stsUrl)
@@ -1566,8 +1578,8 @@ Namespace kCura.EDDS.WinForm
 
         Public Function GetIdentityServerLocation() As String
             Dim tempCred As System.Net.NetworkCredential = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
-            Dim relManager As Service.RelativityManager = New RelativityManager(tempCred, _CookieContainer)
-            Dim urlString As String = String.Format("{0}/{1}", relManager.GetRelativityUrl(), "Identity")
+            Dim relManager As Service.RelativityManager = New Service.RelativityManager(tempCred, _CookieContainer)
+            Dim urlString As String = $"{relManager.GetRelativityUrl()}/{"Identity"}"
             Return urlString
         End Function
 
@@ -1652,7 +1664,6 @@ Namespace kCura.EDDS.WinForm
             Catch ex As System.Exception
                 If ex.Message.IndexOf("Need To Re Login") <> -1 Then
                     NewLogin(False)
-                    'productionManager = New kCura.WinEDDS.Service.ProductionManager(Me.Credential, _cookieContainer)
                     Return Nothing
                 Else
                     Throw
@@ -1686,13 +1697,13 @@ Namespace kCura.EDDS.WinForm
                 Process.Start(urlPrefix & "RelativityOne/Content/Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
             Else
                 Dim v As System.Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
-                Dim majMin As String = String.Format("{0}.{1}", v.Major, v.Minor)
+                Dim majMin As String = $"{v.Major}.{v.Minor}"
                 Process.Start(urlPrefix & majMin & "/#Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
             End If
 
         End Function
 
-        Public Async Function GetIsCloudInstance()  As Task(Of System.Boolean) 
+        Public Async Function GetIsCloudInstance() As Task(Of System.Boolean)
             Dim cloudIsEnabled As Boolean = False
             'Get configuration information
             Dim configTable As System.Data.DataTable = Await GetSystemConfiguration()
@@ -1704,7 +1715,7 @@ Namespace kCura.EDDS.WinForm
                 Dim foundRow As System.Data.DataRow = foundRows.ElementAt(0)
                 cloudIsEnabled = CType(foundRow.ItemArray.ElementAt(2), Boolean)
             End If
-           
+
             Return cloudIsEnabled
         End Function
 
@@ -1724,10 +1735,35 @@ Namespace kCura.EDDS.WinForm
 
         Public Async Function SetupMessageService() As Task(Of IMessageService)
             If _messageService Is Nothing Then
-                _messageService = MessageServiceFactory.SetupMessageService(ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync()))
+                _messageService = New MessageService()
+                Dim metricsManagerFactory As New MetricsManagerFactory()
+                Dim serviceFactory = ServiceFactoryFactory.Create(Await Me.GetCredentialsAsync())
+                Dim configProvider As MetricsSinkConfigProvider = New MetricsSinkConfigProvider()
+                configProvider.Initialize()
+
+                Dim jobLiveSink = New JobLiveMetricSink(serviceFactory, metricsManagerFactory)
+
+                Dim jobLifetimeSink = New JobLifetimeSink(serviceFactory, metricsManagerFactory)
+                Dim jobLiveThrottledSink = New ThrottledMessageSink(Of TransferJobProgressMessage)(jobLiveSink, Function() configProvider.CurrentConfig.ThrottleTimeout)
+                Dim jobSumEolSink = New JobSumEndOfLifeSink(serviceFactory, metricsManagerFactory)
+                Dim jobApmEolSink = New JobApmEndOfLifeSink(serviceFactory, metricsManagerFactory)
+
+                _messageService.AddSink(New ToggledMessageSink(Of TransferJobStartedMessage)(jobLifetimeSink, Function() configProvider.CurrentConfig.SendSumMetrics))
+                _messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedMessage)(jobLifetimeSink, Function() configProvider.CurrentConfig.SendSumMetrics))
+                _messageService.AddSink(New ToggledMessageSink(Of TransferJobFailedMessage)(jobLifetimeSink, Function() configProvider.CurrentConfig.SendSumMetrics))
+
+                _messageService.AddSink(New ToggledMessageSink(Of TransferJobThroughputMessage)(jobSumEolSink, Function() configProvider.CurrentConfig.SendSumMetrics))
+                _messageService.AddSink(New ToggledMessageSink(Of TransferJobTotalRecordsCountMessage)(jobSumEolSink, Function() configProvider.CurrentConfig.SendSumMetrics))
+                _messageService.AddSink(New ToggledMessageSink(Of TransferJobCompletedRecordsCountMessage)(jobSumEolSink, Function() configProvider.CurrentConfig.SendSumMetrics))
+                _messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(jobSumEolSink, Function() configProvider.CurrentConfig.SendSumMetrics))
+
+                _messageService.AddSink(New ToggledMessageSink(Of TransferJobProgressMessage)(jobLiveThrottledSink, Function() configProvider.CurrentConfig.SendLiveApmMetrics))
+
+                _messageService.AddSink(New ToggledMessageSink(Of TransferJobStatisticsMessage)(jobApmEolSink, Function() configProvider.CurrentConfig.SendSummaryApmMetrics))
             End If
             Return _messageService
         End Function
+
 
     End Class
 End Namespace
