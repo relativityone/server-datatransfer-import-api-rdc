@@ -1,6 +1,10 @@
 ﻿Imports System.Xml.Linq
 Namespace kCura.WinEDDS
 	Public Class ExportFileSerializer
+
+		Private Const ENTITY_OBJECT_TYPE_NAME As String = "Entity" 
+		Private Const CUSTODIAN_OBJECT_TYPE_NAME As String = "Custodian" 
+
 		Private _settingsValidator As New ExportSettingsValidator
 		Public Property SettingsValidator As ExportSettingsValidator
 			Get
@@ -32,11 +36,21 @@ Namespace kCura.WinEDDS
 				Case ExportFile.ExportType.Production
 					retval.ImagePrecedence = New Pair() {}
 			End Select
-			If Not Relativity.SqlNameHelper.GetSqlFriendlyName(currentExportFile.ObjectTypeName).Equals(Relativity.SqlNameHelper.GetSqlFriendlyName(retval.ObjectTypeName)) Then
+			If Not ObjectTypesAreCompatible(currentExportFile, retval) Then
 				retval = New ErrorExportFile("Cannot load '" & currentExportFile.ObjectTypeName & "' settings from a saved '" & retval.ObjectTypeName & "' export")
 			End If
 			If Not Me.SettingsValidator.IsValidExportDirectory(retval.FolderPath) Then retval.FolderPath = String.Empty
 			Return retval
+		End Function
+
+		Public Function ObjectTypesAreCompatible(ByVal currentExportFile As ExportFile, ByVal deserializedExportFile As ExportFile) As Boolean
+			If currentExportFile.ObjectTypeName = ENTITY_OBJECT_TYPE_NAME AndAlso deserializedExportFile.ObjectTypeName = CUSTODIAN_OBJECT_TYPE_NAME Then
+				Return True
+			End If
+			If currentExportFile.ObjectTypeName = CUSTODIAN_OBJECT_TYPE_NAME AndAlso deserializedExportFile.ObjectTypeName = ENTITY_OBJECT_TYPE_NAME Then
+				Return True
+			End If
+			Return Relativity.SqlNameHelper.GetSqlFriendlyName(currentExportFile.ObjectTypeName) = Relativity.SqlNameHelper.GetSqlFriendlyName(deserializedExportFile.ObjectTypeName)
 		End Function
 
 		Private Function PropertyIsReadFromExisting(ByVal p As System.Reflection.PropertyInfo) As Boolean

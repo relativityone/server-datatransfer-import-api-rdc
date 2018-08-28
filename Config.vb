@@ -30,6 +30,7 @@ Namespace kCura.WinEDDS
                             Dim tempDict As System.Collections.IDictionary
                             tempDict = DirectCast(System.Configuration.ConfigurationManager.GetSection("kCura.WinEDDS"), System.Collections.IDictionary)
                             If tempDict Is Nothing Then tempDict = New System.Collections.Hashtable
+                            If Not tempDict.Contains("ApplicationName") Then tempDict.Add("ApplicationName", "")
                             If Not tempDict.Contains("ImportBatchSize") Then tempDict.Add("ImportBatchSize", "1000")
                             If Not tempDict.Contains("JobCompleteBatchSize") Then tempDict.Add("JobCompleteBatchSize", "50000")
                             If Not tempDict.Contains("WebAPIOperationTimeout") Then tempDict.Add("WebAPIOperationTimeout", "600000")
@@ -39,6 +40,7 @@ Namespace kCura.WinEDDS
                             If Not tempDict.Contains("ExportBatchSize") Then tempDict.Add("ExportBatchSize", "1000")
                             If Not tempDict.Contains("ExportThreadCount") Then tempDict.Add("ExportThreadCount", "2")
                             If Not tempDict.Contains("UseOldExport") Then tempDict.Add("UseOldExport", "False")
+	                        If Not tempDict.Contains("ForceParallelismInNewExport") Then tempDict.Add("ForceParallelismInNewExport", "False")
 	                        If Not tempDict.Contains("PermissionErrorsRetry") Then tempDict.Add("PermissionErrorsRetry", "False")
 	                        If Not tempDict.Contains("BadPathErrorsRetry") Then tempDict.Add("BadPathErrorsRetry", "False")
                             If Not tempDict.Contains("EnableSingleModeImport") Then tempDict.Add("EnableSingleModeImport", "False")
@@ -53,6 +55,7 @@ Namespace kCura.WinEDDS
                             If Not tempDict.Contains("TapiAsperaBcpRootFolder") Then tempDict.Add("TapiAsperaBcpRootFolder", "BCPPath")
                             If Not tempDict.Contains("TapiForceAsperaClient") Then tempDict.Add("TapiForceAsperaClient", "False")
                             If Not tempDict.Contains("TapiMinDataRateMbps") Then tempDict.Add("TapiMinDataRateMbps", "0")
+                            If Not tempDict.Contains("TapiSubmitApmMetrics") Then tempDict.Add("TapiSubmitApmMetrics", "False")
                             If Not tempDict.Contains("TapiTargetDataRateMbps") Then tempDict.Add("TapiTargetDataRateMbps", "100")
                             If Not tempDict.Contains("TapiTransferLogDirectory") Then tempDict.Add("TapiTransferLogDirectory", "")
                             If Not tempDict.Contains("TapiLargeFileProgressEnabled") Then tempDict.Add("TapiLargeFileProgressEnabled", "False")
@@ -169,6 +172,13 @@ Namespace kCura.WinEDDS
 
 
 #Region " Feature Toggles " 'TODO: either promote these to client-facing toggles with documentation or remove them
+
+        'This is used to set the application name. This is used for APM metrics and other reporting features. If not specified, the process name is used.
+        Public Shared ReadOnly Property ApplicationName() As String
+	        Get
+		        Return CType(ConfigSettings("ApplicationName"), String)
+	        End Get
+        End Property
 
         Friend Shared ReadOnly Property UsePipeliningForNativeAndObjectImports As Boolean
             Get
@@ -325,6 +335,12 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+        Public Shared ReadOnly Property ForceParallelismInNewExport() As Boolean
+	        Get
+		        Return CType(ConfigSettings("ForceParallelismInNewExport"), Boolean)
+	        End Get
+        End Property
+
         Public Shared ReadOnly Property DisableImageTypeValidation() As Boolean
             Get
                 Return CType(ConfigSettings("DisableImageTypeValidation"), Boolean)
@@ -403,7 +419,7 @@ Namespace kCura.WinEDDS
             End Get
         End Property
 
-        'This is used to force a semi-colon delimited list of TAPI clients
+        'This is used to force a semi-colon delimited list of TAPI clients.
         Public Shared ReadOnly Property TapiForceClientCandidates() As String
             Get
                 Return CType(ConfigSettings("TapiForceClientCandidates"), String)
@@ -415,6 +431,13 @@ Namespace kCura.WinEDDS
             Get
                 Return CType(ConfigSettings("TapiMinDataRateMbps"), Int32)
             End Get
+        End Property
+
+        ' This sets a TAPI setting to submit APM metrics upon completion of the transfer job.
+        Public Shared ReadOnly Property TapiSubmitApmMetrics() As Boolean
+	        Get
+		        Return CType(ConfigSettings("TapiSubmitApmMetrics"), Boolean)
+	        End Get
         End Property
 
         ' This sets a TAPI target data rate in Mbps units.
@@ -554,6 +577,6 @@ Namespace kCura.WinEDDS
                 Return System.Math.Max(CType(ConfigSettings("WebBasedFileDownloadChunkSize"), Int32), 1024)
             End Get
         End Property
-        
+
     End Class
 End Namespace

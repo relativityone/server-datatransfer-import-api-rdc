@@ -1,4 +1,5 @@
 Imports System.Threading
+Imports kCura.Windows.Process
 Imports kCura.WinEDDS.TApi
 Imports Relativity.DataTransfer.MessageService
 
@@ -83,19 +84,19 @@ Namespace kCura.WinEDDS
 		Protected Overrides Sub OnFatalError()
 			SendTransferJobFailedMessage()
 			MyBase.OnFatalError()
-			SendJobStatistics()
+			SendJobStatistics(_imageFileImporter.Statistics)
 		End Sub
 
 		Protected Overrides Sub OnSuccess()
-			MyBase.OnFatalError()
-			SendJobStatistics()
+			MyBase.OnSuccess()
+			SendJobStatistics(_imageFileImporter.Statistics)
 			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
-			MyBase.OnFatalError()
-			SendJobStatistics()
+			MyBase.OnHasErrors()
+			SendJobStatistics(_imageFileImporter.Statistics)
 			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
 		End Sub
@@ -192,6 +193,7 @@ Namespace kCura.WinEDDS
 			Select Case e.EventType
 				Case kCura.Windows.Process.EventType.Error
 					If e.CountsTowardsTotal Then _errorCount += 1
+					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
 					Me.ProcessObserver.RaiseErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Progress
 					TotalRecords = e.TotalRecords

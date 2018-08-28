@@ -1,11 +1,13 @@
-﻿Namespace kCura.WinEDDS.Api
+﻿Imports kCura.WinEDDS.Credentials
 
+Namespace kCura.WinEDDS.Api
 	Public Class LoginHelper
+		Private Shared relativityManager As kCura.WinEDDS.Service.RelativityManager
+
 		Public Shared Function LoginWindowsAuth(ByVal cookieContainer As System.Net.CookieContainer) As System.Net.NetworkCredential
 			If cookieContainer Is Nothing Then Throw New ArgumentException("Cookie container not set")
 			Dim myHttpWebRequest As System.Net.HttpWebRequest
 			Dim cred As System.Net.NetworkCredential
-			Dim relativityManager As kCura.WinEDDS.Service.RelativityManager
 
 			cred = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
 
@@ -15,17 +17,22 @@
 			relativityManager = New kCura.WinEDDS.Service.RelativityManager(cred, cookieContainer)
 
 			If relativityManager.ValidateSuccesfulLogin Then
-				CheckVersion(cred, cookieContainer)
+				CheckVersion(relativityManager)
 				Initialize(relativityManager, kCura.WinEDDS.Config.WebServiceURL)
 				Return cred
 			End If
 			Return Nothing
 		End Function
 
+		Public Shared Function LoginWindowsAuthTapi() As System.Net.NetworkCredential
+			Dim provider As IntegratedAuthenticationOAuthCredentialsProvider = New IntegratedAuthenticationOAuthCredentialsProvider(relativityManager)
+			Return provider.LoginWindowsAuthTapi()
+		End Function
+
 		Public Shared Function LoginUsernamePassword(ByVal username As String, ByVal password As String, ByVal cookieContainer As Net.CookieContainer) As System.Net.NetworkCredential
 			Return LoginUsernamePassword(username, password, cookieContainer, kCura.WinEDDS.Config.WebServiceURL)
 		End Function
-		
+
 		Public Shared Function LoginUsernamePassword(ByVal username As String, ByVal password As String, ByVal cookieContainer As Net.CookieContainer, ByVal webServiceUrl As String) As System.Net.NetworkCredential
 			webServiceUrl = kCura.WinEDDS.Config.ValidateURIFormat(webServiceUrl)
 			If cookieContainer Is Nothing Then Throw New ArgumentException("Cookie container not set")
@@ -33,7 +40,7 @@
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(credential, cookieContainer, webServiceUrl)
 			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(credential, cookieContainer, webServiceUrl)
 
-			CheckVersion(credential, cookieContainer)
+			CheckVersion(relativityManager)
 			If userManager.Login(username, password) Then
 				Initialize(relativityManager, webServiceUrl)
 				Return credential
@@ -51,9 +58,7 @@
 			kCura.WinEDDS.Service.Settings.AuthenticationToken = userMan.GenerateDistributedAuthenticationToken()
 		End Sub
 
-		Private Shared Sub CheckVersion(ByVal credential As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
-			Dim relativityManager As New kCura.WinEDDS.Service.RelativityManager(credential, cookieContainer)
-
+		Private Shared Sub CheckVersion(relativityManager As Service.RelativityManager)
 			Dim winVersionString As String = System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1)
 			Dim winRelativityVersion As String() = winVersionString.Split("."c)
 			Dim relVersionString As String = relativityManager.RetrieveRelativityVersion

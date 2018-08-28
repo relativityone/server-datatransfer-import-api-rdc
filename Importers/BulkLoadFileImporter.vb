@@ -32,7 +32,6 @@ Namespace kCura.WinEDDS
 
 		Private ReadOnly _copyFileToRepository As Boolean
 		Private ReadOnly _caseInfo As Relativity.CaseInfo
-		Private ReadOnly _timekeeper As New kCura.Utility.Timekeeper
 		Private ReadOnly _usePipeliningForNativeAndObjectImports As Boolean
 		Private ReadOnly _createFoldersInWebApi As Boolean
 		Private ReadOnly _createErrorForEmptyNativeFile As Boolean
@@ -64,6 +63,7 @@ Namespace kCura.WinEDDS
 		Protected OverlayArtifactId As Int32
 		Protected RunId As String = System.Guid.NewGuid.ToString.Replace("-", "_")
 		Private _lastRunMetadataImport As Int64 = 0
+		Private _timekeeper As ITimeKeeperManager
 
 		Protected OutputCodeFilePath As String = System.IO.Path.GetTempFileName
 		Protected OutputObjectFilePath As String = System.IO.Path.GetTempFileName
@@ -84,7 +84,17 @@ Namespace kCura.WinEDDS
 		Protected BulkLoadFileFieldDelimiter As String
 
 		Protected Property LinkDataGridRecords As Boolean
-
+		Public Property Timekeeper As ITimeKeeperManager
+			Get
+				If(_timekeeper Is Nothing)
+					_timekeeper = New DefaultTimeKeeperManager()
+				End If
+				Return _timekeeper
+			End Get
+		    Set(value As ITimeKeeperManager)
+				_timekeeper = value
+		    End Set
+		End Property
 #End Region
 
 #Region "Accessors"
@@ -384,15 +394,17 @@ Namespace kCura.WinEDDS
 			
 		End Sub
 
+
 		Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)
 			Dim gateway As Service.FileIO = New Service.FileIO(args.Credentials, args.CookieContainer)
 			Dim nativeParameters As TApi.UploadTapiBridgeParameters = New TApi.UploadTapiBridgeParameters
+			nativeParameters.Application = Config.ApplicationName
 			nativeParameters.BcpFileTransfer = False
 			nativeParameters.AsperaBcpRootFolder = String.Empty
 
 			' This will tie both native and BCP to a single unique identifier.
 			nativeParameters.ClientRequestId = Guid.NewGuid()
-			nativeParameters.Credentials = args.Credentials
+			nativeParameters.Credentials = If(args.TapiCredentials, args.Credentials)
 			nativeParameters.AsperaDocRootLevels = Config.TapiAsperaNativeDocRootLevels
 			nativeParameters.FileShare = args.CaseInfo.DocumentPath
 			nativeParameters.ForceAsperaClient = Config.TapiForceAsperaClient
@@ -405,6 +417,7 @@ Namespace kCura.WinEDDS
 			nativeParameters.MaxJobParallelism = Config.TapiMaxJobParallelism
 			nativeParameters.MaxJobRetryAttempts = Me.NumberOfRetries
 			nativeParameters.MinDataRateMbps = Config.TapiMinDataRateMbps
+			nativeParameters.SubmitApmMetrics = Config.TapiSubmitApmMetrics
 			nativeParameters.TargetPath = Me._defaultDestinationFolderPath
 			nativeParameters.TargetDataRateMbps = Config.TapiTargetDataRateMbps
 			nativeParameters.TransferLogDirectory = Config.TapiTransferLogDirectory
@@ -489,126 +502,127 @@ Namespace kCura.WinEDDS
 		Public Overridable Function ReadFile(ByVal path As String) As Object Implements IImportJob.ReadFile
 			Dim line As Api.ArtifactFieldCollection
 			_filePath = path
-			_timekeeper.MarkStart("TOTAL")
 			Try
-				OnStartFileImport()
-				_timekeeper.MarkStart("ReadFile_InitializeMembers")
-				If Not InitializeMembers(path) Then
-					Return False
-				End If
-				ProcessedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
-				_timekeeper.MarkEnd("ReadFile_InitializeMembers")
-
-				If (_enforceDocumentLimit) Then
-					If (Overwrite = Relativity.ImportOverwriteType.Append And _artifactTypeID = Relativity.ArtifactType.Document) Then
-						Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
-						Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
-						Dim fileLineStart As Long = _startLineNumber
-						If _startLineNumber <= 0 Then fileLineStart = 1
-						Dim countAfterJob As Long = currentDocCount + (RecordCount - (fileLineStart - 1))
-						If (docLimit <> 0 And countAfterJob > docLimit) Then
-							Dim errorMessage As String = String.Format("The document import was canceled.  It would have exceeded the workspace's document limit of {1} by {0} documents.", countAfterJob - docLimit, docLimit)
-							Throw New Exception(errorMessage)
+				Using TimeKeeper.CaptureTime("TOTAL")
+					OnStartFileImport()
+					Using TimeKeeper.CaptureTime("ReadFile_InitializeMembers")
+						If Not InitializeMembers(path) Then
 							Return False
 						End If
+						ProcessedDocumentIdentifiers = New Collections.Specialized.NameValueCollection
+					End Using
+
+					If (_enforceDocumentLimit) Then
+						If (Overwrite = Relativity.ImportOverwriteType.Append And _artifactTypeID = Relativity.ArtifactType.Document) Then
+							Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
+							Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
+							Dim fileLineStart As Long = _startLineNumber
+							If _startLineNumber <= 0 Then fileLineStart = 1
+							Dim countAfterJob As Long = currentDocCount + (RecordCount - (fileLineStart - 1))
+							If (docLimit <> 0 And countAfterJob > docLimit) Then
+								Dim errorMessage As String = String.Format("The document import was canceled.  It would have exceeded the workspace's document limit of {1} by {0} documents.", countAfterJob - docLimit, docLimit)
+								Throw New Exception(errorMessage)
+								Return False
+							End If
+						End If
 					End If
-				End If
 
-				Me.LogInformation("Preparing to import documents via WinEDDS.")
-				_timekeeper.MarkStart("ReadFile_ProcessDocuments")
-				_columnHeaders = _artifactReader.GetColumnNames(_settings)
-				If _firstLineContainsColumnNames Then Offset = -1
-				Statistics.BatchSize = Me.ImportBatchSize
-				JobCounter = 1
-				Me.TotalTransferredFilesCount = 0
-				Using fileService As kCura.OI.FileID.FileIDService = New kCura.OI.FileID.FileIDService()
-					While ShouldImport AndAlso _artifactReader.HasMoreRecords
-						Try
-							If Me.CurrentLineNumber < _startLineNumber Then
-								Me.AdvanceLine()
+					Me.LogInformation("Preparing to import documents via WinEDDS.")
+					Using TimeKeeper.CaptureTime("ReadFile_ProcessDocuments")
+						_columnHeaders = _artifactReader.GetColumnNames(_settings)
+						If _firstLineContainsColumnNames Then Offset = -1
+						Statistics.BatchSize = Me.ImportBatchSize
+						JobCounter = 1
+						Me.TotalTransferredFilesCount = 0
+						Using fileService As kCura.OI.FileID.FileIDService = New kCura.OI.FileID.FileIDService()
+							While ShouldImport AndAlso _artifactReader.HasMoreRecords
+								Try
+									If Me.CurrentLineNumber < _startLineNumber Then
+										Me.AdvanceLine()
 
-								' This will ensure progress takes into account the start line number
-								FileTapiProgressCount += 1
-							Else
-								_timekeeper.MarkStart("ReadFile_GetLine")
-								Statistics.DocCount += 1
-								'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
-								' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
-								' -Phil S. 06/12/2012
-								WriteStatusLine(Windows.Process.EventType.Count, String.Empty)
-								line = _artifactReader.ReadArtifact
-								_timekeeper.MarkEnd("ReadFile_GetLine")
-								Dim lineStatus As Int32 = 0
-								'If line.Count <> _columnHeaders.Length Then
-								'	lineStatus += ImportStatus.ColumnMismatch								 'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
-								'End If
+										' This will ensure progress takes into account the start line number
+										FileTapiProgressCount += 1
+									Else
+										Using TimeKeeper.CaptureTime("ReadFile_GetLine")
+											Statistics.DocCount += 1
+											'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
+											' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
+											' -Phil S. 06/12/2012
+											WriteStatusLine(Windows.Process.EventType.Count, String.Empty)
+											line = _artifactReader.ReadArtifact
+										End Using
+										Dim lineStatus As Int32 = 0
+										'If line.Count <> _columnHeaders.Length Then
+										'	lineStatus += ImportStatus.ColumnMismatch								 'Throw New ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
+										'End If
 
-								_timekeeper.MarkStart("ReadFile_ManageDocument")
-								Dim id As String = ManageDocument(fileService, line, lineStatus)
-								_timekeeper.MarkEnd("ReadFile_ManageDocument")
+										Dim id As String
+										Using TimeKeeper.CaptureTime("ReadFile_ManageDocument")
+											id = ManageDocument(fileService, line, lineStatus)
+										End Using
 
-								_timekeeper.MarkStart("ReadFile_IdTrack")
-								ProcessedDocumentIdentifiers.Add(id, CurrentLineNumber.ToString)
-								_timekeeper.MarkEnd("ReadFile_IdTrack")
-							End If
-						Catch ex As LoadFileBase.CodeCreationException
-							If ex.IsFatal Then
-								WriteFatalError(Me.CurrentLineNumber, ex)
-								Me.LogFatal(ex, "A fatal code operation error has occurred managing an import document.")
-							Else
-								WriteError(Me.CurrentLineNumber, ex.Message)
-								Me.LogError(ex, "A serious code operation error has occurred managing an import document.")
-							End If
-						Catch ex As System.IO.PathTooLongException
-							WriteError(Me.CurrentLineNumber, ERROR_MESSAGE_FOLDER_NAME_TOO_LONG)
-							Me.LogError(ex, "An import error has occured because of invalid document path - the path is too long.")
-						Catch ex As kCura.Utility.ImporterExceptionBase
-							WriteError(Me.CurrentLineNumber, ex.Message)
-							Me.LogError(ex, "An import data error has occurred managing an import document.")
-						Catch ex As kCura.WinEDDS.TApi.FileInfoInvalidPathException
-							WriteError(Me.CurrentLineNumber, ex.Message)
-							Me.LogError(ex, "An import error has occured because of invalid document path - illegal characters in path.")
-						Catch ex As System.IO.FileNotFoundException
-							WriteError(Me.CurrentLineNumber, ex.Message)
-							Me.LogError(ex, "A file not found error has occurred managing an import document.")
-						Catch ex As FileIDIdentificationException
-							WriteError(Me.CurrentLineNumber, ex.Message)
-							Me.LogError(ex, "An error occured identifying type of native file.")
-						Catch ex As System.Exception
-							WriteFatalError(Me.CurrentLineNumber, ex)
-							Me.LogFatal(ex, "A serious unexpected error has occurred managing an import document.")
-						End Try
-					End While
+										Using TimeKeeper.CaptureTime("ReadFile_IdTrack")
+											ProcessedDocumentIdentifiers.Add(id, CurrentLineNumber.ToString)
+										End Using
+									End If
+								Catch ex As LoadFileBase.CodeCreationException
+									If ex.IsFatal Then
+										WriteFatalError(Me.CurrentLineNumber, ex)
+										Me.LogFatal(ex, "A fatal code operation error has occurred managing an import document.")
+									Else
+										WriteError(Me.CurrentLineNumber, ex.Message)
+										Me.LogError(ex, "A serious code operation error has occurred managing an import document.")
+									End If
+								Catch ex As System.IO.PathTooLongException
+									WriteError(Me.CurrentLineNumber, ERROR_MESSAGE_FOLDER_NAME_TOO_LONG)
+									Me.LogError(ex, "An import error has occured because of invalid document path - the path is too long.")
+								Catch ex As kCura.Utility.ImporterExceptionBase
+									WriteError(Me.CurrentLineNumber, ex.Message)
+									Me.LogError(ex, "An import data error has occurred managing an import document.")
+								Catch ex As kCura.WinEDDS.TApi.FileInfoInvalidPathException
+									WriteError(Me.CurrentLineNumber, ex.Message)
+									Me.LogError(ex, "An import error has occured because of invalid document path - illegal characters in path.")
+								Catch ex As System.IO.FileNotFoundException
+									WriteError(Me.CurrentLineNumber, ex.Message)
+									Me.LogError(ex, "A file not found error has occurred managing an import document.")
+								Catch ex As FileIDIdentificationException
+									WriteError(Me.CurrentLineNumber, ex.Message)
+									Me.LogError(ex, "An error occured identifying type of native file.")
+								Catch ex As System.Exception
+									WriteFatalError(Me.CurrentLineNumber, ex)
+									Me.LogFatal(ex, "A serious unexpected error has occurred managing an import document.")
+								End Try
+							End While
 
-					' Dump OutSideIn info
-					Dim fileIdInfo As kCura.OI.FileID.FileIDInfo = fileService.GetConfigInfo()
-					Me.LogInformation("FileID service info.")
-					Me.LogInformation("Version: '{0}'.", fileIdInfo.Version)
-					Me.LogInformation("Idle worker timeout: '{0}'.", fileIdInfo.IdleWorkerTimeout)
-					Me.LogInformation("Install location: '{0}'.", fileIdInfo.InstallLocation)
+							' Dump OutSideIn info
+							Dim fileIdInfo As FileIDInfo = fileService.GetConfigInfo()
+							Me.LogInformation("FileID service info.")
+							Me.LogInformation("Version: '{0}'.", fileIdInfo.Version)
+							Me.LogInformation("Idle worker timeout: '{0}'.", fileIdInfo.IdleWorkerTimeout)
+							Me.LogInformation("Install location: '{0}'.", fileIdInfo.InstallLocation)
                     
-					If fileIdInfo.HasError Then
-						Me.LogWarning("Error: {0}", fileIdInfo.Exception)
-					End If
-				End Using
+							If fileIdInfo.HasError Then
+								Me.LogWarning("Error: {0}", fileIdInfo.Exception)
+							End If
+						End Using
 
-				If Not _task Is Nothing AndAlso _task.Status.In(
-					Threading.Tasks.TaskStatus.Running,
-					Threading.Tasks.TaskStatus.WaitingForActivation,
-					Threading.Tasks.TaskStatus.WaitingForChildrenToComplete,
-					Threading.Tasks.TaskStatus.WaitingToRun) Then
-					WaitOnPushBatchTask()
-				End If
-				_timekeeper.MarkEnd("ReadFile_ProcessDocuments")
-				_timekeeper.MarkStart("ReadFile_OtherFinalization")
-				Me.TryPushNativeBatch(True, True, True)
-				WaitOnPushBatchTask()
-				RaiseEvent EndFileImport(RunId)
-				WriteEndImport("Finish")
-				_artifactReader.Close()
-				_timekeeper.MarkEnd("ReadFile_OtherFinalization")
-				_timekeeper.MarkEnd("TOTAL")
-				_timekeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
+						If Not _task Is Nothing AndAlso _task.Status.In(
+							Threading.Tasks.TaskStatus.Running,
+							Threading.Tasks.TaskStatus.WaitingForActivation,
+							Threading.Tasks.TaskStatus.WaitingForChildrenToComplete,
+							Threading.Tasks.TaskStatus.WaitingToRun) Then
+							WaitOnPushBatchTask()
+						End If
+					End Using
+					Using TimeKeeper.CaptureTime("ReadFile_OtherFinalization")
+						Me.TryPushNativeBatch(True, True, True)
+						WaitOnPushBatchTask()
+						RaiseEvent EndFileImport(RunId)
+						WriteEndImport("Finish")
+						_artifactReader.Close()
+					End Using
+				End Using
+				TimeKeeper.GenerateCsvReportItemsAsRows("_winedds", "C:\")
 				Me.LogInformation("Successfully imported {ImportCount} documents via WinEDDS.", Me.FileTapiProgressCount)
 				Me.DumpStatisticsInfo()
 				Return True
@@ -617,10 +631,10 @@ Namespace kCura.WinEDDS
 				Me.LogFatal(ex, "A serious unexpected error has occurred importing documents.")
 				Me.DumpStatisticsInfo()
 			Finally
-				_timekeeper.MarkStart("ReadFile_CleanupTempTables")
-				DestroyTapiBridges()
-				CleanupTempTables()
-				_timekeeper.MarkEnd("ReadFile_CleanupTempTables")
+				Using TimeKeeper.CaptureTime("ReadFile_CleanupTempTables")
+					DestroyTapiBridges()
+					CleanupTempTables()
+				End Using
 			End Try
 			Return Nothing
 		End Function
@@ -693,159 +707,157 @@ Namespace kCura.WinEDDS
 			Dim oixFileIdData As OI.FileID.FileIDData = Nothing
 			Dim destinationVolume As String = Nothing
 			Dim injectableContainer As Api.IInjectableFieldCollection = TryCast(record, Api.IInjectableFieldCollection)
+			Dim folderPath As String = String.Empty
 
 			Dim injectableContainerIsNothing As Boolean = injectableContainer Is Nothing
 
-			_timekeeper.MarkStart("ManageDocument_Filesystem")
-			If uploadFile AndAlso _artifactTypeID = Relativity.ArtifactType.Document Then
-				filename = record.FieldList(Relativity.FieldTypeHelper.FieldType.File)(0).Value.ToString
-				If filename.Length > 1 AndAlso filename.Chars(0) = "\" AndAlso filename.Chars(1) <> "\" Then
-					filename = "." & filename
-				End If
+			Using TimeKeeper.CaptureTime("ManageDocument_Filesystem")
+				If uploadFile AndAlso _artifactTypeID = Relativity.ArtifactType.Document Then
+					filename = record.FieldList(Relativity.FieldTypeHelper.FieldType.File)(0).Value.ToString
+					If filename.Length > 1 AndAlso filename.Chars(0) = "\" AndAlso filename.Chars(1) <> "\" Then
+						filename = "." & filename
+					End If
 
-				If Me.DisableNativeLocationValidation Then
-					'assuming that file exists and not validating it
-					fileExists = True
-				Else
-					fileExists = System.IO.File.Exists(filename)
-				End If
+					If Me.DisableNativeLocationValidation Then
+						fileExists = True
+					Else
+						fileExists = System.IO.File.Exists(filename)
+					End If
 
-				If filename.Trim.Equals(String.Empty) Then
-					fileExists = False
-				End If
+					If filename.Trim.Equals(String.Empty) Then
+						fileExists = False
+					End If
 
-				If filename <> String.Empty AndAlso Not fileExists Then lineStatus += Relativity.MassImport.ImportStatus.FileSpecifiedDne 'Throw New InvalidFilenameException(filename)
-				If fileExists AndAlso Not Me.DisableNativeLocationValidation Then
-					If IoReporterInstance.GetFileLength(filename, Me.CurrentLineNumber) = 0 Then
-						If _createErrorForEmptyNativeFile Then
-							lineStatus += Relativity.MassImport.ImportStatus.EmptyFile 'Throw New EmptyNativeFileException(filename)
-						Else
-							WriteWarning("The file " & filename & " is empty; only metadata will be loaded for this record.")
-							fileExists = False
-							filename = String.Empty
+					If filename <> String.Empty AndAlso Not fileExists Then lineStatus += Relativity.MassImport.ImportStatus.FileSpecifiedDne
+					If fileExists AndAlso Not Me.DisableNativeLocationValidation Then
+						If IoReporterInstance.GetFileLength(filename, Me.CurrentLineNumber) = 0 Then
+							If _createErrorForEmptyNativeFile Then
+								lineStatus += Relativity.MassImport.ImportStatus.EmptyFile
+							Else
+								WriteWarning("Note that file " & filename & " has been detected as empty, metadata and the native file will be loaded.")
+							End If
 						End If
 					End If
-				End If
-				fullFilePath = filename
-				If fileExists Then
-					Dim now As Date = Date.Now
+					fullFilePath = filename
+					If fileExists Then
+						Dim now As Date = Date.Now
 					
-					Try
-						If Me.DisableNativeValidation Then
-							oixFileIdData = Nothing
-						Else
-							Dim idDataExtractor As Api.IHasOixFileType = Nothing
-							If (Not injectableContainerIsNothing) Then
-								idDataExtractor = injectableContainer.FileIdData
-							End If
-
-							If (idDataExtractor Is Nothing) Then
-								' REL-165493: Added OI resiliency and properly address FileNotFoundException scenarios.
-								Dim retryPolicy As Retry.RetryPolicy = Policy.Handle(Of kCura.OI.FileID.FileIDException).WaitAndRetry(
-									Me.NumberOfRetries,
-									Function(count) As TimeSpan
-										' Force OI to get reinitialized in the event the runtime configuration is invalid.
-										If count > 1 Then
-											fileService.Reinitialize()
-										End If
-										Return TimeSpan.FromSeconds(Me.WaitTimeBetweenRetryAttempts)
-									End Function,
-									Sub(exception, span, context)
-										LogError(exception, "Retry - {span} - OI failed to identify the '{fullFilePath}' source file.", span, fullFilePath)
-									End Sub)
-								oixFileIdData = retryPolicy.Execute(
-									function()
-										Return fileService.Identify(fullFilePath)
-									End Function)
+						Try
+							If Me.DisableNativeValidation Then
+								oixFileIdData = Nothing
 							Else
-								oixFileIdData = idDataExtractor.GetFileIDData()
-							End If
-						End If
+								Dim idDataExtractor As Api.IHasOixFileType = Nothing
+								If (Not injectableContainerIsNothing) Then
+									idDataExtractor = injectableContainer.FileIdData
+								End If
 
-						If _copyFileToRepository Then
-							If File.Exists(filename) Then
-								Dim guid As String = System.Guid.NewGuid().ToString()
-								Me.ImportFilesCount += 1
-								_jobCompleteNativeCount += 1
-								fileGuid = FileTapiBridge.AddPath(filename, guid, Me.CurrentLineNumber)
-								destinationVolume = FileTapiBridge.TargetFolderName
+								If (idDataExtractor Is Nothing) Then
+									' REL-165493: Added OI resiliency and properly address FileNotFoundException scenarios.
+									Dim retryPolicy As Retry.RetryPolicy = Policy.Handle(Of kCura.OI.FileID.FileIDException).WaitAndRetry(
+										Me.NumberOfRetries,
+										Function(count) As TimeSpan
+											' Force OI to get reinitialized in the event the runtime configuration is invalid.
+											If count > 1 Then
+												fileService.Reinitialize()
+											End If
+											Return TimeSpan.FromSeconds(Me.WaitTimeBetweenRetryAttempts)
+										End Function,
+										Sub(exception, span, context)
+											LogError(exception, "Retry - {span} - OI failed to identify the '{fullFilePath}' source file.", span, fullFilePath)
+										End Sub)
+									oixFileIdData = retryPolicy.Execute(
+										function()
+											Return fileService.Identify(fullFilePath)
+										End Function)
+								Else
+									oixFileIdData = idDataExtractor.GetFileIDData()
+								End If
+							End If
+
+							If _copyFileToRepository Then
+								If File.Exists(filename) Then
+									Dim guid As String = System.Guid.NewGuid().ToString()
+									Me.ImportFilesCount += 1
+									_jobCompleteNativeCount += 1
+									fileGuid = FileTapiBridge.AddPath(filename, guid, Me.CurrentLineNumber)
+									destinationVolume = FileTapiBridge.TargetFolderName
+								Else
+									WriteWarning("File " & filename & " does not exist and will be not uploaded")
+								End If
 							Else
-								WriteWarning("File " & filename & " does not exist and will be not uploaded")
+								fileGuid = System.Guid.NewGuid.ToString
 							End If
-						Else
-							fileGuid = System.Guid.NewGuid.ToString
-						End If
-						If (Not injectableContainerIsNothing AndAlso injectableContainer.HasFileName()) Then 
-							filename = injectableContainer.FileName.GetFileName() 
-						Else 
-							filename = Path.GetFileName(fullFilePath)
-						End If
-					Catch ex As System.IO.FileNotFoundException
-						If Me.DisableNativeLocationValidation Then
-							'Don't do anything. This exception can only happen if DisableNativeLocationValidation is turned on
-						Else
-							Throw
-						End If
-					End Try
+							If (Not injectableContainerIsNothing AndAlso injectableContainer.HasFileName()) Then 
+								filename = injectableContainer.FileName.GetFileName() 
+							Else 
+								filename = Path.GetFileName(fullFilePath)
+							End If
+						Catch ex As System.IO.FileNotFoundException
+							If Me.DisableNativeLocationValidation Then
+								'Don't do anything. This exception can only happen if DisableNativeLocationValidation is turned on
+							Else
+								Throw
+							End If
+						End Try
 
-					' Status must be handled the pre-TAPI way whenever the copy repository option is disabled.
-					If ShouldImport AndAlso Not _copyFileToRepository Then
-						WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
+						' Status must be handled the pre-TAPI way whenever the copy repository option is disabled.
+						If ShouldImport AndAlso Not _copyFileToRepository Then
+							WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
+						End If
 					End If
 				End If
-			End If
-			_timekeeper.MarkEnd("ManageDocument_Filesystem")
+			End Using
 
-			_timekeeper.MarkStart("ManageDocument_Folder")
-			Dim folderPath As String = String.Empty
-			If _createFolderStructure Then
-				If _artifactTypeID = Relativity.ArtifactType.Document Then
-					Dim value As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value))
-					If _createFoldersInWebAPI Then
-						'Server side folder creation
-						Dim cleanFolderPath As String = CleanDestinationFolderPath(value)
-						If (String.IsNullOrWhiteSpace(cleanFolderPath)) Then
-							parentFolderID = _folderID
-						ElseIf InnerRelativityFolderPathsAreTooLarge(cleanFolderPath) Then
-							Throw New PathTooLongException("Error occurred when importing the document. The folder name is longer than 255 characters.")
+			Using TimeKeeper.CaptureTime("ManageDocument_Folder")
+				If _createFolderStructure Then
+					If _artifactTypeID = Relativity.ArtifactType.Document Then
+						Dim value As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value))
+						If _createFoldersInWebAPI Then
+							'Server side folder creation
+							Dim cleanFolderPath As String = CleanDestinationFolderPath(value)
+							If (String.IsNullOrWhiteSpace(cleanFolderPath)) Then
+								parentFolderID = _folderID
+							ElseIf InnerRelativityFolderPathsAreTooLarge(cleanFolderPath) Then
+								Throw New PathTooLongException("Error occurred when importing the document. The folder name is longer than 255 characters.")
+							Else
+								folderPath = cleanFolderPath
+								'We're creating the structure on the server side, so it'll get a number then
+								parentFolderID = _UNKNOWN_PARENT_FOLDER_ID
+							End If
 						Else
-							folderPath = cleanFolderPath
-							'We're creating the structure on the server side, so it'll get a number then
-							parentFolderID = _UNKNOWN_PARENT_FOLDER_ID
+							'Client side folder creation (added back for Dominus# 1127879)
+							parentFolderID = FolderCache.FolderID(CleanDestinationFolderPath(value))
 						End If
 					Else
-						'Client side folder creation (added back for Dominus# 1127879)
-						parentFolderID = FolderCache.FolderID(CleanDestinationFolderPath(value))
-					End If
-				Else
-					'TODO: If we are going to do this for more than documents, fix this as well...
-					Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value.ToString))
-					If textIdentifier = "" Then
-						If Overwrite = Relativity.ImportOverwriteType.Overlay OrElse Overwrite = Relativity.ImportOverwriteType.AppendOverlay Then
-							parentFolderID = -1
-						End If
-						Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, DestinationFolderColumnIndex)
-					Else
-						Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID,
-																															   textIdentifier, _artifactTypeID).Tables(0)
-						If parentObjectTable.Rows.Count > 1 Then
-							Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, DestinationFolderColumnIndex, "Parent Info")
-						ElseIf parentObjectTable.Rows.Count = 0 Then
-							Throw New NonExistentParentException(Me.CurrentLineNumber, DestinationFolderColumnIndex, "Parent Info")
+						'TODO: If we are going to do this for more than documents, fix this as well...
+						Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value.ToString))
+						If textIdentifier = "" Then
+							If Overwrite = Relativity.ImportOverwriteType.Overlay OrElse Overwrite = Relativity.ImportOverwriteType.AppendOverlay Then
+								parentFolderID = -1
+							End If
+							Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, DestinationFolderColumnIndex)
 						Else
-							parentFolderID = CType(parentObjectTable.Rows(0)("ArtifactID"), Int32)
+							Dim parentObjectTable As System.Data.DataTable = _objectManager.RetrieveArtifactIdOfMappedParentObject(_caseArtifactID,
+																																   textIdentifier, _artifactTypeID).Tables(0)
+							If parentObjectTable.Rows.Count > 1 Then
+								Throw New DuplicateObjectReferenceException(Me.CurrentLineNumber, DestinationFolderColumnIndex, "Parent Info")
+							ElseIf parentObjectTable.Rows.Count = 0 Then
+								Throw New NonExistentParentException(Me.CurrentLineNumber, DestinationFolderColumnIndex, "Parent Info")
+							Else
+								parentFolderID = CType(parentObjectTable.Rows(0)("ArtifactID"), Int32)
+							End If
 						End If
 					End If
-				End If
-			Else
-				'If we're not creating the structure, all documents go in the root folder (aka _folderId)
-				If _artifactTypeID = Relativity.ArtifactType.Document OrElse Me.ParentArtifactTypeID = Relativity.ArtifactType.Case Then
-					parentFolderID = _folderID
 				Else
-					parentFolderID = -1
+					'If we're not creating the structure, all documents go in the root folder (aka _folderId)
+					If _artifactTypeID = Relativity.ArtifactType.Document OrElse Me.ParentArtifactTypeID = Relativity.ArtifactType.Case Then
+						parentFolderID = _folderID
+					Else
+						parentFolderID = -1
+					End If
 				End If
-			End If
-			_timekeeper.MarkEnd("ManageDocument_Folder")
+			End Using
+
 			Dim markPrepareFields As DateTime = DateTime.Now
 			identityValue = PrepareFieldCollectionAndExtractIdentityValue(record)
 			If identityValue = String.Empty Then
@@ -872,9 +884,11 @@ Namespace kCura.WinEDDS
 			Else
 				doc = New SizedMetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileIdData, lineStatus, destinationVolume, fileSizeExtractor.GetFileSize(), folderPath, dataGridID)
 			End If
-			_timekeeper.MarkStart("ManageDocument_ManageDocumentMetadata")
-			ManageDocumentMetaData(doc)
-			_timekeeper.MarkEnd("ManageDocument_ManageDocumentMetadata")
+
+			Using TimeKeeper.CaptureTime("ManageDocument_ManageDocumentMetadata")
+				ManageDocumentMetaData(doc)
+			End Using
+
 			Return identityValue
 		End Function
 
@@ -924,16 +938,17 @@ Namespace kCura.WinEDDS
 
 		Private Sub ManageDocumentMetaData(ByVal metaDoc As MetaDocument)
 			Try
-				_timekeeper.MarkStart("ManageDocumentMetadata_ManageDocumentLine")
-				ManageDocumentLine(metaDoc)
-				_timekeeper.MarkEnd("ManageDocumentMetadata_ManageDocumentLine")
-				_batchCounter += 1
-				_timekeeper.MarkStart("ManageDocumentMetadata_WserviceCall")
+				Using TimeKeeper.CaptureTime("ManageDocumentMetadata_ManageDocumentLine")
+					ManageDocumentLine(metaDoc)
+				End Using
 
-				If OutputFileWriter.CombinedStreamLength > ImportBatchVolume OrElse _batchCounter > ImportBatchSize - 1 Then
-					Me.TryPushNativeBatch(False, _jobCompleteNativeCount >= JobCompleteBatchSize, _jobCompleteMetadataCount >= JobCompleteBatchSize)
-				End If
-				_timekeeper.MarkEnd("ManageDocumentMetadata_WserviceCall")
+				_batchCounter += 1
+
+				Using TimeKeeper.CaptureTime("ManageDocumentMetadata_WserviceCall")
+					If OutputFileWriter.CombinedStreamLength > ImportBatchVolume OrElse _batchCounter > ImportBatchSize - 1 Then
+						Me.TryPushNativeBatch(False, _jobCompleteNativeCount >= JobCompleteBatchSize, _jobCompleteMetadataCount >= JobCompleteBatchSize)
+					End If
+				End Using
 			Catch ex As kCura.Utility.ImporterExceptionBase
 				WriteError(metaDoc.LineNumber, ex.Message)
 				Me.LogError(ex, "A serious import error has occurred managing document {file} metadata.", metaDoc.FullFilePath)
@@ -947,14 +962,14 @@ Namespace kCura.WinEDDS
 
 			' Let TAPI handle progress as long as we're transferring the native. See the TAPI progress event below.
 			If _copyFileToRepository AndAlso metaDoc.IndexFileInDB Then
-				_timekeeper.MarkStart("ManageDocumentMetadata_StatusEvent")
-				WriteStatusLine(Windows.Process.EventType.Status, $"Item '{metaDoc.IdentityValue}' file '{metaDoc.FileGuid}' processed.", metaDoc.LineNumber)
-				_timekeeper.MarkEnd("ManageDocumentMetadata_StatusEvent")
+				Using TimeKeeper.CaptureTime("ManageDocumentMetadata_StatusEvent")
+					WriteStatusLine(Windows.Process.EventType.Status, $"Item '{metaDoc.IdentityValue}' file '{metaDoc.FileGuid}' processed.", metaDoc.LineNumber)
+				End Using
 			Else
-				_timekeeper.MarkStart("ManageDocumentMetadata_ProgressEvent")
-				FileTapiProgressCount += 1
-				WriteStatusLine(Windows.Process.EventType.Progress, $"Item '{metaDoc.IdentityValue}' file '{metaDoc.FileGuid}'  processed.", metaDoc.LineNumber)
-				_timekeeper.MarkEnd("ManageDocumentMetadata_ProgressEvent")
+				Using TimeKeeper.CaptureTime("ManageDocumentMetadata_ProgressEvent")
+					FileTapiProgressCount += 1
+					WriteStatusLine(Windows.Process.EventType.Progress, $"Item '{metaDoc.IdentityValue}' file '{metaDoc.FileGuid}'  processed.", metaDoc.LineNumber)
+				End Using
 			End If
 		End Sub
 
