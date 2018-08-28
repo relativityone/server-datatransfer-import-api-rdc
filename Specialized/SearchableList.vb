@@ -207,7 +207,6 @@ Namespace Specialized
 		End Sub
 
 		Private Sub _textBox_Enter(sender As Object, e As EventArgs) Handles _textBox.Enter
-			_isUserTyping = True
 			If _isTextBoxPlaceholderUsed Then
 				_wasUsedPlaceholder = True
 				_isTextBoxPlaceholderUsed = False
@@ -226,7 +225,6 @@ Namespace Specialized
 		End Sub
 
 		Private Sub _textBox_Leave(sender As Object, e As EventArgs) Handles _textBox.Leave
-			_isUserTyping = False
 			If _textBox.Text = "" Then
 				SetTextBoxPlaceholderText()
 			Else
@@ -249,7 +247,7 @@ Namespace Specialized
 					If Not My.Computer.Keyboard.CtrlKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then
 						_listbox.ClearSelected()
 						_listbox.SetSelected(index, True)
-						_lastSelectedItem = _listbox.Items(_listBox.IndexFromPoint(e.Location))
+'						_lastSelectedItem = _listbox.Items(_listBox.IndexFromPoint(e.Location))
 		'			ElseIf My.Computer.Keyboard.ShiftKeyDown Then
 					End If
 				End If
