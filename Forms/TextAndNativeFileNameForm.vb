@@ -5,7 +5,6 @@ Imports Relativity
 Namespace kCura.EDDS.WinForm.Forms
 	Public Class TextAndNativeFileNameForm
 
-		Private Const FirstFieldName As String = "Control Number"
 		Private Const CustomTextOption As String = "Custom Text..."
 		Private Const FieldLimit = 3
 
@@ -26,7 +25,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			New SeparatorSelection(" (none)", "")
 		}
 
-		Private _firstFieldID As Integer
+		Private _firstField As FieldSelection
 		Private _availableFields As List(Of FieldSelection)
 		Private _fieldControls As List(Of SingleFieldControls)
 
@@ -49,9 +48,9 @@ Namespace kCura.EDDS.WinForm.Forms
 				Where(Function(f) AllowedFieldTypes.Contains(f.FieldType)).
 				Select(Function(f) New FieldSelection(f.DisplayName, f.FieldArtifactId))
 			_availableFields.AddRange(databaseFields)
-			_firstFieldID = fields.
-				Where(Function(f) f.DisplayName = FirstFieldName).
-				Select(Function(f) f.FieldArtifactId).
+			_firstField = fields.
+				Where(Function(f) f.Category = FieldCategory.Identifier).
+				Select(Function(f) New FieldSelection(f.DisplayName, f.FieldArtifactId)).
 				First()
 		End Sub
 
@@ -60,6 +59,7 @@ Namespace kCura.EDDS.WinForm.Forms
 		End Sub
 
 		Private Sub PopulateControls(selection As IList(Of CustomFileNameSelectionPart))
+			_firstFieldTextBox.Text = _firstField.DisplayName
 			If selection Is Nothing Then
 				Return
 			End If
@@ -75,12 +75,12 @@ Namespace kCura.EDDS.WinForm.Forms
 					fieldControls.FieldComboBox.SelectedValue = selectionPart.FieldID
 				End If
 				index += 1
-            End While
+			End While
 		End Sub
 
 		Public Function GetSelection() As IList(Of CustomFileNameSelectionPart)
 			Dim selection = New List(Of CustomFileNameSelectionPart)
-			selection.Add(New CustomFileNameSelectionPart(_firstFieldID))
+			selection.Add(New CustomFileNameSelectionPart(_firstField.ID))
 			For i = 1 To (NumberOfFields - 1)
 				Dim fieldControls = _fieldControls(i)
 				Dim selectedField = TryCast(fieldControls.FieldComboBox.SelectedItem, FieldSelection)
@@ -127,7 +127,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			separatorComboBox.FormattingEnabled = True
 			separatorComboBox.Location = New Point(252 * NumberOfFields - 112, 13)
 			separatorComboBox.Size = New Size(120, 21)
-			separatorComboBox.TabIndex = 2 + 3 * NumberOfFields
+			separatorComboBox.TabIndex = 3 + 3 * NumberOfFields
 			Controls.Add(separatorComboBox)
 			separatorComboBox.DataSource = Separators.ToList()
 			separatorComboBox.DisplayMember = "DisplayName"
@@ -139,7 +139,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			Dim customTextBox = New TextBox()
 			customTextBox.Location = New Point(252 * NumberOfFields + 14, 41)
 			customTextBox.Size = New Size(120, 20)
-			customTextBox.TabIndex = 3 + 3 * NumberOfFields
+			customTextBox.TabIndex = 2 + 3 * NumberOfFields
 			Controls.Add(customTextBox)
 			Return customTextBox
 		End Function
