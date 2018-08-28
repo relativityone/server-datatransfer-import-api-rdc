@@ -11,16 +11,15 @@ Namespace Specialized
 		Private _timer As Timer
 		Private _dataSource As New List(Of Object)
 		Private _isTextBoxPlaceholderUsed As Boolean = True
-		Private _isUserTyping As Boolean = False
 		Private _wasUsedPlaceholder As Boolean
-		Private _lastSelectedItem As Object
+		Private previousText As String
 		Private Const _DELAYED_TEXT_CHANGED_TIMEOUT_IN_MILLISECONDS As Integer = 600
 
 		Public Event DoubleClickEvent(sender As Object, e As EventArgs)
 		Public Event KeyPressEvent(sender As Object, e As KeyPressEventArgs)
 		Public Event KeyUpEvent(sender As Object, e As KeyEventArgs)
 		Public Event MeasureItemEvent(sender As Object, e As MeasureItemEventArgs)
-		Public Event TextChangedEvent(sender As Object)
+		Public Event TextChangedEvent(sender As Object, isPlaceHOlderUsed As Boolean)
 		Public Event MouseMoveEvent(sender As Object, e As MouseEventArgs)
 		Public Event MouseLeaveEvent(sender As Object, e As EventArgs)
 
@@ -61,17 +60,20 @@ Namespace Specialized
 
 			_timer.Start()
 		End Sub
-
 		Private Sub Timer_Tick(sender As Object, e As EventArgs)
 			If Not IsNothing(_timer) Then
 				_timer.Stop()
 			End If
-			If _isTextBoxPlaceholderUsed AndAlso Not _isUserTyping Then Return
-			Cursor = Cursors.WaitCursor
-			FilterAndAssignDataSource()
-			ResizeScrollBar()
-			Cursor = Cursors.Default
-			RaiseEvent TextChangedEvent(Me)
+			If previousText = "" AndAlso _isTextBoxPlaceholderUsed Then Return
+			If Not _textBox.Text.Equals(previousText) Then
+	'		If _isTextBoxPlaceholderUsed AndAlso Not _isUserTyping Then Return
+				previousText = _textBox.Text
+				Cursor = Cursors.WaitCursor
+				FilterAndAssignDataSource()
+				ResizeScrollBar()
+				Cursor = Cursors.Default
+				RaiseEvent TextChangedEvent(Me, _isTextBoxPlaceholderUsed)
+			End If
 		End Sub
 
 		Private Function Filter(sourceList As List(Of Object), filterText As String) As List(Of Object)
@@ -241,13 +243,19 @@ Namespace Specialized
 		End Sub
 
 		Private Sub _listBox_MouseUp(sender As Object, e As MouseEventArgs) Handles _listBox.MouseUp
-			If Not My.Computer.Keyboard.CtrlKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then
-				_listbox.ClearSelected()
-				_listbox.SetSelected(_listBox.IndexFromPoint(e.Location), True)
-				_lastSelectedItem = _listbox.Items(_listBox.IndexFromPoint(e.Location))
-			ElseIf My.Computer.Keyboard.ShiftKeyDown Then
-
+			If ClientRectangle.Contains(e.Location) Then
+				Dim index As Integer = _listBox.IndexFromPoint(e.Location)
+				If index >= 0 Then
+					If Not My.Computer.Keyboard.CtrlKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then
+						_listbox.ClearSelected()
+						_listbox.SetSelected(index, True)
+						_lastSelectedItem = _listbox.Items(_listBox.IndexFromPoint(e.Location))
+		'			ElseIf My.Computer.Keyboard.ShiftKeyDown Then
+					End If
+				End If
 			End If
+
+
 		End Sub
 
 

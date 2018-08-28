@@ -422,22 +422,22 @@ End Sub
 			_moveLeftSelectedItemDown.Enabled = value
 			_moveLeftSelectedItemUp.Enabled = value
 		End Sub
-		Private Sub _searchableListLeft_TextChangedEvent(sender As Object) Handles _searchableListLeft.TextChangedEvent
+		Private Sub _searchableListLeft_TextChangedEvent(sender As Object, isPlaceholderUsed As  Boolean) Handles _searchableListLeft.TextChangedEvent
 			If LeftOrderControlsVisible
-				If _searchableListLeft._textBox.Text <> ""
-					SetEnabledOfLeftMoveVerticalArrowButtons(False)
-					ElseIf _moveLeftSelectedItemUp.Enabled = False
+				If _searchableListLeft._textBox.Text = "" OrElse isPlaceholderUsed
 					SetEnabledOfLeftMoveVerticalArrowButtons(True)
+					ElseIf _moveLeftSelectedItemUp.Enabled = True
+					SetEnabledOfLeftMoveVerticalArrowButtons(False)
 				End If
 			End If
 		End Sub
 
-		Private Sub _searchableListRight_TextChangedEvent(sender As Object) Handles _searchableListRight.TextChangedEvent
+		Private Sub _searchableListRight_TextChangedEvent(sender As Object, isPlaceholderUsed As  Boolean) Handles _searchableListRight.TextChangedEvent
 			If Not LeftOrderControlsVisible
-				If _searchableListRight._textBox.Text <> ""
-					SetEnabledOfRightMoveVerticalArrowButtons(False)
-				ElseIf _moveRightSelectedItemUp.Enabled = False
+				If _searchableListRight._textBox.Text = "" OrElse isPlaceholderUsed
 					SetEnabledOfRightMoveVerticalArrowButtons(True)
+				ElseIf _moveRightSelectedItemUp.Enabled = True
+					SetEnabledOfRightMoveVerticalArrowButtons(False)
 				End If
 			End If
 		End Sub
