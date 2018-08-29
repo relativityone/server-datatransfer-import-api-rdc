@@ -363,12 +363,19 @@
     <Compile Include="Controls\EncodingPicker.vb">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Controls\TextAndNativeFileNamePicker.Designer.vb">
+      <DependentUpon>TextAndNativeFileNamePicker.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TextAndNativeFileNamePicker.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Controls\TextFieldPrecedencePicker.Designer.vb">
       <DependentUpon>TextFieldPrecedencePicker.vb</DependentUpon>
     </Compile>
     <Compile Include="Controls\TextFieldPrecedencePicker.vb">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="CustomFileNameSelectionPart.vb" />
     <Compile Include="Forms\AdvancedFileLocation.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -426,6 +433,12 @@
     <Compile Include="Forms\SetWebServiceURL.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\TextAndNativeFileNameForm.Designer.vb">
+      <DependentUpon>TextAndNativeFileNameForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\TextAndNativeFileNameForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\TextDisplayForm.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -464,6 +477,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\EncodingPicker.resx">
       <DependentUpon>EncodingPicker.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TextAndNativeFileNamePicker.resx">
+      <DependentUpon>TextAndNativeFileNamePicker.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\TextFieldPrecedencePicker.resx">
       <DependentUpon>TextFieldPrecedencePicker.vb</DependentUpon>
@@ -516,6 +532,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SetWebServiceURL.resx">
       <DependentUpon>SetWebServiceURL.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\TextAndNativeFileNameForm.resx">
+      <DependentUpon>TextAndNativeFileNameForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\TextDisplayForm.resx">
       <DependentUpon>TextDisplayForm.vb</DependentUpon>
