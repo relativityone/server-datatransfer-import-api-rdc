@@ -1220,5 +1220,26 @@
   <ItemGroup>
     <None Include="Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\BulkImportManager.disco" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FileNaming\CustomFileNaming\CustomFileNameDescriptorModel.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FileNaming\CustomFileNaming\CustomTextDescriptorPart.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FileNaming\CustomFileNaming\DescriptorPart.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FileNaming\CustomFileNaming\ExtendedDescriptorPart.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FileNaming\CustomFileNaming\FieldDescriptorPart.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FileNaming\CustomFileNaming\SeparatorDescriptorPart.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FileNaming\CustomFileNaming\ValueDescriptorPart.vb" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
 </Project>
