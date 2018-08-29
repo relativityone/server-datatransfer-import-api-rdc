@@ -1350,7 +1350,7 @@ Public Class ExportForm
 			End If
 		End If
 		If _textAndNativeFileNamePicker.SelectedItem = TextAndNativeFileNamePicker.CustomOption And _textAndNativeFileNamePicker.Selection Is Nothing Then
-			AppendErrorMessage(msg, "Custom file naming option selected, but no custom settings specified")
+			AppendErrorMessage(msg, "No custom file naming fields selected")
 		End If
 		If _dataFileEncoding.SelectedEncoding Is Nothing Then
 			AppendErrorMessage(msg, "No encoding selected for metadata file.")
