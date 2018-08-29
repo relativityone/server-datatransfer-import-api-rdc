@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using FileNaming.CustomFileNaming;
-using kCura.WinEDDS.Core.Export.Natives.Name;
-using kCura.WinEDDS.Core.Export.Natives.Name.Factories;
 using kCura.WinEDDS.Exporters;
+using kCura.WinEDDS.FileNaming;
+using kCura.WinEDDS.FileNaming.CustomFileNaming;
 using Moq;
 using NUnit.Framework;
 

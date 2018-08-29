@@ -1,5 +1,5 @@
 ﻿using FileNaming.CustomFileNaming;
-using kCura.WinEDDS.Core.Export.Natives.Name;
+using kCura.WinEDDS.FileNaming.CustomFileNaming;
 using NUnit.Framework;
 
 namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
