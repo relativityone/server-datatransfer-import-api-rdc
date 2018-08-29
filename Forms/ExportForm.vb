@@ -3,7 +3,7 @@ Imports System.Collections.Generic
 Imports System.Threading.Tasks
 Imports Castle.Core.Internal
 Imports kCura.Windows.Forms
-Imports Specialized
+Imports kCura.Windows.Forms.Specialized
 
 Public Class ExportForm
 	Inherits System.Windows.Forms.Form

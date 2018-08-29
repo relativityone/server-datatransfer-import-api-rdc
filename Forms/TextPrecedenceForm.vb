@@ -1,7 +1,7 @@
 ﻿Imports System.Collections.Generic
 Imports System.Linq
 Imports kCura.Windows.Forms
-Imports Specialized
+Imports kCura.Windows.Forms.Specialized
 
 Namespace kCura.EDDS.WinForm
 	Public Class TextPrecedenceForm

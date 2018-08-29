@@ -3,7 +3,7 @@ Imports kCura.Windows.Forms
 Imports System.Linq
 Imports System.Threading.Tasks
 Imports Relativity.Transfer
-Imports Specialized
+Imports kCura.Windows.Forms.Specialized
 
 Namespace kCura.EDDS.WinForm
 	Public Class LoadFileForm
