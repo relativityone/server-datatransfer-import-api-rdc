@@ -1,7 +1,7 @@
 Imports System.Linq
 Imports System.Collections.Generic
 Imports System.Threading.Tasks
-Imports Castle.Core.Internal
+Imports kCura.Vendor.Castle.Core.Internal
 Imports kCura.Windows.Forms
 Imports Specialized
 
