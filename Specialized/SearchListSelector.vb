@@ -5,7 +5,7 @@ Imports System.Linq
 Imports System.Windows.Forms
 
 
-Namespace Specialized
+Namespace kCura.Windows.Forms.Specialized
 	Public Class SearchListSelector
 		Inherits Form
 		Private ReadOnly _dataSource As DataTable

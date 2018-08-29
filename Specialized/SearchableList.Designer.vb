@@ -1,6 +1,7 @@
-﻿Imports kCura.Windows.Forms
+﻿Imports System.Windows.Forms
+Imports kCura.Windows.Forms
 
-Namespace Specialized
+Namespace kCura.Windows.Forms.Specialized
 	<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 	Partial Class SearchableList
 		Inherits System.Windows.Forms.UserControl
@@ -73,7 +74,7 @@ Namespace Specialized
 
 End Sub
 
-		Friend WithEvents _textBox As Windows.Forms.TextBox
+		Friend WithEvents _textBox As TextBox
 		Friend WithEvents _listBox As ListBox
 	End Class
 End Namespace

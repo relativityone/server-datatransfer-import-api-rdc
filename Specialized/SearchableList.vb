@@ -7,7 +7,7 @@ Imports System.Windows.Forms
 Imports System.Windows.Media
 Imports kCura.Windows.Forms
 
-Namespace Specialized
+Namespace kCura.Windows.Forms.Specialized
 	Public Class SearchableList
 		Private _timer As Timer
 		Private _dataSource As New List(Of Object)
@@ -24,6 +24,7 @@ Namespace Specialized
 		Public Event TextChangedEvent(sender As Object, isPlaceHOlderUsed As Boolean)
 		Public Event MouseMoveEvent(sender As Object, e As MouseEventArgs)
 		Public Event MouseLeaveEvent(sender As Object, e As EventArgs)
+		Public Event RaiseItemsShifted As Action(Of SearchableList)
 
 		Protected Overrides Sub OnCreateControl()
 			MyBase.OnCreateControl()
@@ -164,22 +165,22 @@ Namespace Specialized
 			Return Nothing
 		End Function
 
-		Public Sub MoveSelectedItemAndRestoreSelection(ByVal direction As TwoListBox.MoveDirection)
+		Public Sub MoveSelectedItemAndRestoreSelection(ByVal direction As MoveDirection)
 			Dim selectedItem As Object = Listbox.SelectedItem
 			MoveSelectedItem(direction)
 			SetSelection(selectedItem)
 		End Sub
 
-		Public Sub MoveSelectedItem(ByVal direction As TwoListBox.MoveDirection)
+		Public Sub MoveSelectedItem(ByVal direction As MoveDirection)
 			If DataSource.Count > 1 Then
 				If Listbox.SelectedItems.Count = 1 Then
 					Dim bound As Int32
 					Dim indexModifier As Int32
 					Select Case direction
-						Case TwoListBox.MoveDirection.Down
+						Case MoveDirection.Down
 							bound = DataSource.Count - 1
 							indexModifier = 1
-						Case TwoListBox.MoveDirection.Up
+						Case MoveDirection.Up
 							bound = 0
 							indexModifier = -1
 					End Select
@@ -193,6 +194,14 @@ Namespace Specialized
 				End If
 			End If
 			ForceRefresh()
+		End Sub
+
+		Public Sub MoveAllItems(ByVal receiver As SearchableList)
+			receiver.DataSource.AddRange(CurrentItems)
+			For Each currentItem As Object In CurrentItems
+				DataSource.Remove(currentItem)
+			Next
+			RaiseEvent RaiseItemsShifted(Me)
 		End Sub
 
 
@@ -276,13 +285,8 @@ Namespace Specialized
 		Private Sub _listBox_MouseLeaveEvent(sender As Object, e As EventArgs) Handles _listBox.MouseLeave
 			RaiseEvent MouseLeaveEvent(sender, e)
 		End Sub
-		Private Sub SelectAllItemsBetweenGiven(first As Integer, last As Integer)
-			If first > last Then
-				Dim tmp As Integer = last
-				last = first
-				first = tmp
-			End If
-			For i As Integer = first To last
+		Private Sub SelectAllItemsInRange(first As Integer, last As Integer)
+			For i As Integer = Math.Min(first, last) To Math.Max(first, last)
 				_listBox.SetSelected(i, True)
 			Next
 		End Sub
@@ -292,9 +296,9 @@ Namespace Specialized
 				If index >= 0 Then
 					If My.Computer.Keyboard.ShiftKeyDown Then
 						If Not IsNothing(_lastSelectedItemIndex)
-							SelectAllItemsBetweenGiven(_lastSelectedItemIndex, index)
+							SelectAllItemsInRange(_lastSelectedItemIndex, index)
 						Else
-							SelectAllItemsBetweenGiven(0, index)
+							SelectAllItemsInRange(0, index)
 						End If
 					ElseIf My.Computer.Keyboard.CtrlKeyDown
 						_lastSelectedItemIndex = index

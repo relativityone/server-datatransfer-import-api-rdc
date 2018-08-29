@@ -2,7 +2,7 @@ Imports System.Collections
 Imports System.Windows.Forms
 Imports System.Drawing
 Imports System.Collections.Generic
-Imports Specialized
+Imports kCura.Windows.Forms.Specialized
 
 ' TODO : Change namespace of this control
 Namespace kCura.Windows.Forms
@@ -453,6 +453,10 @@ End Sub
 			End If
 		End Sub
 
+		Private Sub _searchableListRight_OnRaiseItemsShifted(obj As SearchableList) Handles _searchableListRight.RaiseItemsShifted, _searchableListLeft.RaiseItemsShifted
+			Me.RaiseItemsShifted()
+		End Sub
+
 		Private Sub RaiseItemsShifted()
 			_searchableListLeft.ForceRefresh()
 			_searchableListRight.ForceRefresh()
@@ -561,27 +565,12 @@ End Sub
 #End Region
 
 #Region " Move methods and event handlers "
-
-		Public Enum MoveDirection
-			Up
-			Down
-		End Enum
-
-
-		Private Sub MoveAllItems(ByVal giver As SearchableList, ByVal receiver As SearchableList)
-			receiver.DataSource.AddRange(giver.CurrentItems)
-			For Each currentItem As Object In giver.CurrentItems
-				giver.DataSource.Remove(currentItem)
-			Next
-			Me.RaiseItemsShifted()
-		End Sub
-
 		Private Sub _moveAllFieldsIn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _moveAllFieldsRight.Click
-			MoveAllItems(_searchableListLeft, __searchableListRight)
+			_searchableListLeft.MoveAllItems(_searchableListRight)
 		End Sub
 
 		Private Sub _moveAllFieldsOut_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _moveAllFieldsLeft.Click
-			MoveAllItems(__searchableListRight, _searchableListLeft)
+			__searchableListRight.MoveAllItems(_searchableListLeft)
 		End Sub
 
 		Private Sub _moveFieldIn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _moveFieldRight.Click

@@ -164,6 +164,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Specialized\ListBoxLocation.vb" />
+    <Compile Include="Specialized\MoveDirection.vb" />
     <Compile Include="Specialized\OutputRichTextBox.vb">
       <SubType>UserControl</SubType>
     </Compile>
