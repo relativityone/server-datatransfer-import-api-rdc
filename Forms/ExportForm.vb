@@ -1,7 +1,7 @@
 Imports System.Linq
 Imports System.Collections.Generic
 Imports System.Threading.Tasks
-Imports Castle.Core.Internal
+Imports kCura.Vendor.Castle.Core.Internal
 Imports FileNaming.CustomFileNaming
 Imports kCura.EDDS.WinForm
 Imports kCura.EDDS.WinForm.Controls
