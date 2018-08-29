@@ -1,4 +1,4 @@
-﻿using kCura.WinEDDS.Core.Model;
+﻿using FileNaming.CustomFileNaming;
 using kCura.WinEDDS.Exporters;
 
 namespace kCura.WinEDDS.Core.Export.Natives.Name
