@@ -115,15 +115,15 @@ Namespace kCura.EDDS.WinForm
 			return retval
 		End Function
 
-	Public Shared Function FindFieldByName(listboxItems As List(Of Object), field As ViewFieldInfo) As ViewFieldInfo
+	Public Shared Function FindFieldByName(listboxItems As ICollection(Of Object), field As ViewFieldInfo) As ViewFieldInfo
 		Return FindFieldBy(Function(x As ViewFieldInfo) x.DisplayName.Equals(field.DisplayName, StringComparison.InvariantCulture), listboxItems)
 	End Function
 
-	Public Shared Function FindFieldByArtifactId(listboxItems As List(Of Object), field As ViewFieldInfo) As ViewFieldInfo
+	Public Shared Function FindFieldByArtifactId(listboxItems As ICollection(Of Object), field As ViewFieldInfo) As ViewFieldInfo
 		Return FindFieldBy(Function(x As ViewFieldInfo) x.FieldArtifactId = field.FieldArtifactId, listboxItems)
 	End Function
 
-	Public Shared Function FindFieldBy(predicate As Func(Of ViewFieldInfo, Boolean), listboxItems As List(Of Object)) As ViewFieldInfo
+	Public Shared Function FindFieldBy(predicate As Func(Of ViewFieldInfo, Boolean), listboxItems As ICollection(Of Object)) As ViewFieldInfo
 		For Each item As ViewFieldInfo In listboxItems
 			If predicate(item) Then
 				Return item
@@ -140,7 +140,7 @@ Namespace kCura.EDDS.WinForm
 	''' <param name="listboxItems">collections of all view fields from the workspace</param>
 	''' <param name="field">field from mappings from kwx file</param>
 	''' <returns></returns>
-	Public Shared Function FindCounterpartField(ByRef listboxItems As List(Of Object), ByVal field As ViewFieldInfo) As List(Of Object)
+	Public Shared Function FindCounterpartField(ByRef listboxItems As ICollection(Of Object), ByVal field As ViewFieldInfo) As ICollection(Of Object)
 		Dim fieldByName As ViewFieldInfo = FindFieldByName(listboxItems, field)
 		If  fieldByName IsNot Nothing Then
 			Return New List(Of Object) From { fieldByName }
