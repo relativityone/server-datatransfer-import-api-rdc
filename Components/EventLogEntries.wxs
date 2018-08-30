@@ -5,10 +5,6 @@
 	<Fragment>
 
 	<ComponentGroup Id="EventLogEntries" Directory="INSTALLDIR">
-	  <Component Id="RoseEntry" Guid="{B3880A8A-3EC9-4D5A-B135-8B7D5134E8DE}" Permanent="yes">
-		<util:EventSource Log="$(var.Logname)" Name="$(var.RoseEventLogEntryName)" KeyPath="yes"
-						  EventMessageFile="[NETFRAMEWORK40FULLINSTALLROOTDIR]EventLogMessages.dll"/>
-	  </Component>
 	  <Component Id="RdcEntry" Guid="{46199603-63ED-4E5E-94BD-95B6BDAE73DE}" Permanent="yes">
 		<util:EventSource Log="$(var.Logname)" Name="$(var.RdcEventLogEntryName)" KeyPath="yes"
 						  EventMessageFile="[NETFRAMEWORK40FULLINSTALLROOTDIR]EventLogMessages.dll"/>

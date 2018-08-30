@@ -28,8 +28,4 @@
   <xsl:key name="itextsharp-dll-search" match="wix:Component[contains(wix:File/@Source, 'itextsharp.dll')]" use="@Id" />
   <xsl:template match="wix:Component[key('itextsharp-dll-search', @Id)]" />
   <xsl:template match="wix:ComponentRef[key('itextsharp-dll-search', @Id)]" />
-
-  <xsl:key name="stagingexplorer-dll-search" match="wix:Component[contains(wix:File/@Source, 'Relativity.StagingExplorer.exe')]" use="@Id" />
-  <xsl:template match="wix:Component[key('stagingexplorer-dll-search', @Id)]" />
-  <xsl:template match="wix:ComponentRef[key('stagingexplorer-dll-search', @Id)]" />
 </xsl:stylesheet>
