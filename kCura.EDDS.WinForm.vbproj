@@ -172,9 +172,8 @@
       <HintPath>..\..\packages\Relativity.AmbientData.1.0.0-DEV-169\lib\net462\Relativity.AmbientData.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.DataTransfer.MessageService">
-      <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.10.0.0\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.DataTransfer.MessageService, Version=10.0.2.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.10.0.2\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Fileshare.Client">
       <SpecificVersion>False</SpecificVersion>
