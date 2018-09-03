@@ -59,6 +59,7 @@ Namespace kCura.EDDS.WinForm.Forms
 		End Sub
 
 		Private Sub PopulateControls(selection As IList(Of CustomFileNameSelectionPart))
+			_removeFieldButton.Visible = False
 			_firstFieldTextBox.Text = _firstField.DisplayName
 			If selection Is Nothing Then
 				Return
