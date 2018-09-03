@@ -95,8 +95,8 @@
       <HintPath>..\..\packages\relativity.transfer.client.4.2.5\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.UnitTestFramework, Version=4.2.3.32, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.testframework.4.2.3\lib\net462\Relativity.Transfer.UnitTestFramework.dll</HintPath>
+    <Reference Include="Relativity.Transfer.UnitTestFramework, Version=4.2.5.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.testframework.4.2.5\lib\net462\Relativity.Transfer.UnitTestFramework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
