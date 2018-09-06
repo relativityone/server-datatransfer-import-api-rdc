@@ -221,7 +221,6 @@
     <Compile Include="Services\ProductionManagerTests.vb" />
     <Compile Include="Services\RelativityManagerTests.vb" />
     <Compile Include="Services\SearchManagerTests.vb" />
-    <Compile Include="Services\TemplateManagerTests.vb" />
     <Compile Include="Services\UserManagerTests.vb" />
     <Compile Include="Stubs\StubDataReaderReader.vb" />
     <Compile Include="TestObjectFactories\QueryFieldFactory.vb" />
