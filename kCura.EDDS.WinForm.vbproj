@@ -172,8 +172,8 @@
       <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32.2018.6.1\lib\net40\oi.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.AmbientData, Version=1.0.0.169, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.AmbientData.1.0.0-DEV-169\lib\net462\Relativity.AmbientData.dll</HintPath>
+    <Reference Include="Relativity.AmbientData, Version=1.0.0.172, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\Relativity.AmbientData.1.0.0-DEV-172\lib\net462\Relativity.AmbientData.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.DataTransfer.MessageService, Version=10.0.2.2, Culture=neutral, processorArchitecture=MSIL">
@@ -187,11 +187,13 @@
     <Reference Include="Relativity.Kepler">
       <HintPath>..\..\packages\Relativity.Kepler.1.0.1.445\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Logging">
-      <HintPath>..\..\packages\Relativity.Logging.9.4.320\lib\net462\Relativity.Logging.dll</HintPath>
+    <Reference Include="Relativity.Logging, Version=9.4.321.17, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\Relativity.Logging.9.4.321\lib\net462\Relativity.Logging.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Logging.Interfaces">
-      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.320\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Logging.Interfaces, Version=9.4.321.17, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.321\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client">
       <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.27\lib\net462\Relativity.OAuth2Client.dll</HintPath>
@@ -214,8 +216,9 @@
     <Reference Include="Relativity.Services.ServiceProxy">
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.445\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared">
-      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.2018.8.0\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=2018.8.2.2, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.2018.8.2\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.6.88.61, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface.9.6.88.61\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
