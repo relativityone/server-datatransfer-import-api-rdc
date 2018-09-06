@@ -396,7 +396,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Exporters\VolumePredictions.vb" />
-    <Compile Include="FieldMapping\FieldMappingHelper.vb" />
     <Compile Include="FieldProviderCache.vb" />
     <Compile Include="FileDownloader.vb">
       <SubType>Code</SubType>
@@ -499,10 +498,6 @@
     </Compile>
     <Compile Include="PackageHelper.vb" />
     <Compile Include="PreviewChoicesHelper.vb" />
-    <Compile Include="Process\ApplicationDeploymentProcess.vb">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Process\ApplicationInstallProcessEvent.vb" />
     <Compile Include="Process\ConnectionDetailsProcess.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -533,7 +528,6 @@
     <Compile Include="PropertyExtractor\File.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ProxyClasses\TargetField.vb" />
     <Compile Include="ReadFromExisting.vb" />
     <Compile Include="ServiceFactoryFactory.vb" />
     <Compile Include="Service\AuditManager.vb">
@@ -603,9 +597,6 @@
     </Compile>
     <Compile Include="Service\SearchManager.vb">
       <SubType>code</SubType>
-    </Compile>
-    <Compile Include="Service\TemplateManager.vb">
-      <SubType>Code</SubType>
     </Compile>
     <Compile Include="Service\UserManager.vb">
       <SubType>code</SubType>
@@ -774,12 +765,6 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\Reference.vb">
-      <DependentUpon>Reference.map</DependentUpon>
-      <SubType>Code</SubType>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
     <Compile Include="Web References\kCura.EDDS.WebAPI.UserManagerBase\Reference.vb">
       <DependentUpon>Reference.map</DependentUpon>
       <SubType>code</SubType>
@@ -920,24 +905,6 @@
     </None>
     <None Include="Web References\kCura.EDDS.WebAPI.SearchManagerBase\SearchManager.disco" />
     <None Include="Web References\kCura.EDDS.WebAPI.SearchManagerBase\SearchManager.wsdl" />
-    <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\ApplicationInstallationResult.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\AppMappingData.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\ObjectGuidToName1.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\ObjectValidationResult.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\Reference.map">
-      <Generator>MSDiscoCodeGenerator</Generator>
-      <LastGenOutput>Reference.vb</LastGenOutput>
-    </None>
-    <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\TemplateManager.disco" />
-    <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\TemplateManager.wsdl" />
     <None Include="Web References\kCura.EDDS.WebAPI.UserManagerBase\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.vb</LastGenOutput>
@@ -1139,19 +1106,6 @@
       <RelPath>Web References\kCura.EDDS.WebAPI.SearchManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
       <UpdateFromURL>http://localhost/RelativityWebApi/SearchManager.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>
-      </CachedAppSettingsObjectName>
-      <CachedSettingsPropName>
-      </CachedSettingsPropName>
-    </WebReferenceUrl>
-    <WebReferenceUrl Include="http://localhost/RelativityWebApi/TemplateManager.asmx">
-      <RelPath>Web References\kCura.EDDS.WebAPI.TemplateManagerBase\</RelPath>
-      <UrlBehavior>Static</UrlBehavior>
-      <UpdateFromURL>http://localhost/RelativityWebApi/TemplateManager.asmx</UpdateFromURL>
       <ServiceLocationURL>
       </ServiceLocationURL>
       <CachedDynamicPropName>
