@@ -185,7 +185,7 @@ Namespace kCura.EDDS.WinForm
 						If _producedImages.Checked = False Then
 							_producedImages.Checked = True
 						End If
-						_productions.RightSearchableList.AddField(item)
+						_productions.RightListBoxItems.Add(item)
 						activeValues.Add(item.Value)
 					End If
 					If hasOriginals AndAlso _producedImages.Checked Then
@@ -196,7 +196,7 @@ Namespace kCura.EDDS.WinForm
 			End If
 			For Each row In PrecedenceTable.Rows
 				If Not activeValues.Contains(row("Value").ToString) Then
-					_productions.LeftSearchableList.AddField(New Pair(row("Value").ToString, row("Display").ToString))
+					_productions.LeftListBoxItems.Add(New Pair(row("Value").ToString, row("Display").ToString))
 				End If
 			Next
 		End Sub
@@ -207,7 +207,7 @@ Namespace kCura.EDDS.WinForm
 			If _originalImages.Checked Then
 				al.Add(New Pair("-1", "Original"))
 			Else
-				For Each item In _productions.RightSearchableListItems
+				For Each item In _productions.RightListBoxItems
 					al.Add(item)
 				Next
 				If _includeOriginals.Checked Then
@@ -305,7 +305,7 @@ Namespace kCura.EDDS.WinForm
 			'Adjust the location of the label to be aligned with the left side of the Right ListBox
 
 			'Get the absolute position of the Right ListBox of the TwoListBox in screen coordinates
-			Dim absoluteListBoxLoc As Point = _productions.RightSearchableList.PointToScreen(New Point(0, 0))
+			Dim absoluteListBoxLoc As Point = _productions.RightListBox.PointToScreen(New Point(0, 0))
 			'Convert to a location relative to the Views group (_filtersBox)
 			Dim relativeListBoxLoc As Point = Me.LabelSelectedProductions.Parent.PointToClient(absoluteListBoxLoc)
 			'Adjust the location of the label

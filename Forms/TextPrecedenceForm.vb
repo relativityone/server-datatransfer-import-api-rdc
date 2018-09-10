@@ -1,7 +1,6 @@
 ﻿Imports System.Collections.Generic
 Imports System.Linq
 Imports kCura.Windows.Forms
-Imports kCura.Windows.Forms.Specialized
 
 Namespace kCura.EDDS.WinForm
 	Public Class TextPrecedenceForm
@@ -28,27 +27,27 @@ Namespace kCura.EDDS.WinForm
 		Private Sub TextPrecedenceForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
 
 			For Each field As ViewFieldInfo In _listOfAllLongTextFields
-				_longTextFieldsTwoListBox.LeftSearchableList.AddField(field)
+				_longTextFieldsTwoListBox.LeftListBoxItems.Add(field)
 			Next
 
 			For Each item As ViewFieldInfo In _selectedTextFields
 				Dim itemExistsInAllAvailable As Boolean = GetItemExistsInAllAvailable(item)
 				If itemExistsInAllAvailable Then
-					_longTextFieldsTwoListBox.RightSearchableList.AddField(item)
-					RemoveItemByName(_longTextFieldsTwoListBox.LeftSearchableList, item)
+					_longTextFieldsTwoListBox.RightListBoxItems.Add(item)
+					RemoveItemByName(_longTextFieldsTwoListBox.LeftListBoxItems, item)
 				End If
 			Next
 		End Sub
 
-		Private Sub RemoveItemByName(searchableList As SearchableList, item As ViewFieldInfo)
+		Private Sub RemoveItemByName(objectCollection As System.Windows.Forms.ListBox.ObjectCollection, item As ViewFieldInfo)
 			Dim fieldToRemove As ViewFieldInfo = Nothing
-			For Each field As ViewFieldInfo In searchableList.DataSource
+			For Each field As ViewFieldInfo In objectCollection
 				If field.DisplayName.Equals(item.DisplayName, StringComparison.InvariantCulture) Then
 					fieldToRemove = field
 					Exit For
 				End If
 			Next
-			If fieldToRemove IsNot Nothing Then searchableList.RemoveField(fieldToRemove)
+			If fieldToRemove IsNot Nothing Then objectCollection.Remove(fieldToRemove)
 		End Sub
 
 		Private Function GetItemExistsInAllAvailable(ByVal item As ViewFieldInfo) As Boolean
@@ -69,9 +68,9 @@ Namespace kCura.EDDS.WinForm
 			Me.Close()
 		End Sub
 
-		Public ReadOnly Property SelectedTextFields() As List(Of Object)
+		Public ReadOnly Property SelectedTextFields() As System.Windows.Forms.ListBox.ObjectCollection
 			Get
-				Return _longTextFieldsTwoListBox.RightSearchableListItems
+				Return _longTextFieldsTwoListBox.RightListBoxItems
 			End Get
 		End Property
 
@@ -144,7 +143,7 @@ Namespace kCura.EDDS.WinForm
 			'Adjust the location of the label to be aligned with the left side of the Right ListBox
 
 			'Get the absolute position of the Right ListBox of the TwoListBox in screen coordinates
-			Dim absoluteListBoxLoc As Point = _longTextFieldsTwoListBox.RightSearchableList.PointToScreen(New Point(0, 0))
+			Dim absoluteListBoxLoc As Point = _longTextFieldsTwoListBox.RightListBox.PointToScreen(New Point(0, 0))
 			'Convert to a location relative to its parent (the form)
 			Dim relativeListBoxLoc As Point = Me._selectedLongTextFieldsLabel.Parent.PointToClient(absoluteListBoxLoc)
 			'Adjust the location of the label
