@@ -217,17 +217,17 @@ Namespace kCura.WinEDDS.UIControls
 		Public Sub MapCaseFieldsToLoadFileFields(ByVal caseFields As String(), ByVal columnHeaders As String(), ByVal selectedFieldNameList As System.Collections.ArrayList, ByVal selectedColumnNameList As System.Collections.ArrayList)
 			Dim selectedFieldNames As String() = DirectCast(selectedFieldNameList.ToArray(GetType(String)), String())
 			Dim selectedColumnNames As String() = DirectCast(selectedColumnNameList.ToArray(GetType(String)), String())
-			Me.FieldColumns.RightListBoxItems.AddRange(selectedFieldNames)
-			Me.LoadFileColumns.LeftListBoxItems.AddRange(selectedColumnNames)
+			Me.FieldColumns.RightSearchableList.AddFields(selectedFieldNames)
+			Me.LoadFileColumns.LeftSearchableList.AddFields(selectedColumnNames)
 			Dim name As String
 			For Each name In caseFields
 				If Array.IndexOf(selectedFieldNames, name) = -1 Then
-					Me.FieldColumns.LeftListBoxItems.Add(name)
+					Me.FieldColumns.LeftSearchableList.AddField(name)
 				End If
 			Next
 			For Each name In columnHeaders
 				If Array.IndexOf(selectedColumnNames, name) = -1 Then
-					Me.LoadFileColumns.RightListBoxItems.Add(name)
+					Me.LoadFileColumns.RightSearchableList.AddField(name)
 				End If
 			Next
 		End Sub
@@ -235,6 +235,11 @@ Namespace kCura.WinEDDS.UIControls
 		Public Sub ClearAll()
 			_fieldColumns.ClearAll()
 			_loadFileColumns.ClearAll()
+		End Sub
+
+		Public Sub ForceRefresh()
+			_loadFileColumns.ForceRefresh()
+			_fieldColumns.ForceRefresh()
 		End Sub
 
 #Region " Event handlers "
