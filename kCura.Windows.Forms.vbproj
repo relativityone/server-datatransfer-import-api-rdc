@@ -120,6 +120,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -162,10 +164,17 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Specialized\ListBoxLocation.vb" />
+    <Compile Include="Specialized\MoveDirection.vb" />
     <Compile Include="Specialized\OutputRichTextBox.vb">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Specialized\RelativeLayoutData.vb" />
+    <Compile Include="Specialized\SearchableList.Designer.vb">
+      <DependentUpon>SearchableList.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Specialized\SearchableList.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Specialized\SearchListSelector.Designer.vb">
       <DependentUpon>SearchListSelector.vb</DependentUpon>
     </Compile>
@@ -186,6 +195,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Specialized\OutputRichTextBox.resx">
       <DependentUpon>OutputRichTextBox.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Specialized\SearchableList.resx">
+      <DependentUpon>SearchableList.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Specialized\SearchListSelector.resx">
       <DependentUpon>SearchListSelector.vb</DependentUpon>
@@ -213,6 +225,9 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{94E38DFF-614B-4CBD-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <PropertyGroup>
