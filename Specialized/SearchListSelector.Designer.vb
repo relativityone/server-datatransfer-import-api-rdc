@@ -1,6 +1,4 @@
-﻿Imports System.Windows.Forms
-
-Namespace kCura.Windows.Forms.Specialized
+﻿Namespace Specialized
     <Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
     Partial Class SearchListSelector
         Inherits System.Windows.Forms.Form
@@ -92,9 +90,9 @@ Namespace kCura.Windows.Forms.Specialized
 
 		End Sub
 
-		Friend WithEvents selectionSearchInput As TextBox
-        Friend WithEvents selectionListBox As System.Windows.Forms.ListBox
-        Friend WithEvents _selectButton As Button
-        Friend WithEvents _cancelButton As Button
+		Friend WithEvents selectionSearchInput As Windows.Forms.TextBox
+        Friend WithEvents selectionListBox As Windows.Forms.ListBox
+        Friend WithEvents _selectButton As Windows.Forms.Button
+        Friend WithEvents _cancelButton As Windows.Forms.Button
     End Class
 End Namespace
