@@ -356,7 +356,6 @@
     <Compile Include="ConfigDictionary.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Controller\FieldMapFourPickerController.vb" />
     <Compile Include="Controls\CaseFolderExplorer.vb">
       <SubType>UserControl</SubType>
     </Compile>
@@ -577,7 +576,9 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Controller\" />
+  </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
