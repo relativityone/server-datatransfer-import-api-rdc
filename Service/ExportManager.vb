@@ -1,4 +1,6 @@
-﻿Namespace kCura.WinEDDS.Service
+﻿Imports kCura.WinEDDS.Service.Export
+
+Namespace kCura.WinEDDS.Service
 	Public Class ExportManager
 		Inherits kCura.EDDS.WebAPI.ExportManagerBase.ExportManager
 		Implements Export.IExportManager
@@ -29,6 +31,12 @@
 				End Function)
 		End Function
 
+		Public Function RetrieveResultsBlockForProductionStartingFromIndex(appID As Integer, runId As Guid, artifactTypeID As Integer, avfIds As Integer(), chunkSize As Integer, displayMulticodesAsNested As Boolean, multiValueDelimiter As Char, nestedValueDelimiter As Char, textPrecedenceAvfIds As Integer(), productionId As Integer, index As Integer) As Object() Implements IExportManager.RetrieveResultsBlockForProductionStartingFromIndex
+			Dim retval As Object() = MakeCallAttemptReLogin(Function() MyBase.RetrieveResultsBlockForProductionStartingFromIndex(appID, runId, artifactTypeID, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter, nestedValueDelimiter, textPrecedenceAvfIds, productionId, index))
+			RehydrateStrings(retval)
+			Return retval
+		End Function
+
 		Public Shadows Function InitializeFolderExport(ByVal appID As Int32, ByVal viewArtifactID As Int32, ByVal parentArtifactID As Int32, ByVal includeSubFolders As Boolean, ByVal avfIds As Int32(), ByVal startAtRecord As Int32, ByVal artifactTypeID As Int32) As kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults Implements Export.IExportManager.InitializeFolderExport
 			Return MakeCallAttemptReLogin(Function() MyBase.InitializeFolderExport(appID, viewArtifactID, parentArtifactID, includeSubFolders, avfIds, startAtRecord, artifactTypeID))
 		End Function
@@ -43,6 +51,12 @@
 
 		Public Shadows Function RetrieveResultsBlock(ByVal appID As Int32, ByVal runId As Guid, ByVal artifactTypeID As Int32, ByVal avfIds As Int32(), ByVal chunkSize As Int32, ByVal displayMulticodesAsNested As Boolean, ByVal multiValueDelimiter As Char, ByVal nestedValueDelimiter As Char, ByVal textPrecedenceAvfIds As Int32()) As Object() Implements Export.IExportManager.RetrieveResultsBlock
 			Dim retval As Object() = MakeCallAttemptReLogin(Function() MyBase.RetrieveResultsBlock(appID, runId, artifactTypeID, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter, nestedValueDelimiter, textPrecedenceAvfIds))
+			RehydrateStrings(retval)
+			Return retval
+		End Function
+
+		Public Function RetrieveResultsBlockStartingFromIndex(appID As Integer, runId As Guid, artifactTypeID As Integer, avfIds As Integer(), chunkSize As Integer, displayMulticodesAsNested As Boolean, multiValueDelimiter As Char, nestedValueDelimiter As Char, textPrecedenceAvfIds As Integer(), index As Integer) As Object() Implements IExportManager.RetrieveResultsBlockStartingFromIndex
+			Dim retval As Object() = MakeCallAttemptReLogin(Function() MyBase.RetrieveResultsBlockStartingFromIndex(appID, runId, artifactTypeID, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter, nestedValueDelimiter, textPrecedenceAvfIds, index))
 			RehydrateStrings(retval)
 			Return retval
 		End Function
