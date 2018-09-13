@@ -62,7 +62,6 @@ Namespace kCura.EDDS.WinForm
         Friend WithEvents ToolsImportProductionFileMenu As System.Windows.Forms.MenuItem
         Friend WithEvents _objectTypeDropDown As System.Windows.Forms.ComboBox
         Friend WithEvents _optionsMenuCheckConnectivityItem As System.Windows.Forms.MenuItem
-        Friend WithEvents TransferMenu As MenuItem
         Friend WithEvents _exportObjectsMenuItem As System.Windows.Forms.MenuItem
         <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
             Me.components = New System.ComponentModel.Container()
@@ -84,7 +83,6 @@ Namespace kCura.EDDS.WinForm
             Me._exportFoldersMenuItem = New System.Windows.Forms.MenuItem()
             Me._exportFoldersAndSubfoldersMenuItem = New System.Windows.Forms.MenuItem()
             Me._exportObjectsMenuItem = New System.Windows.Forms.MenuItem()
-            Me.TransferMenu = New System.Windows.Forms.MenuItem()
             Me.OptionsMenu = New System.Windows.Forms.MenuItem()
             Me._toolsMenuSettingsItem = New System.Windows.Forms.MenuItem()
             Me._optionsMenuCheckConnectivityItem = New System.Windows.Forms.MenuItem()
@@ -147,7 +145,7 @@ Namespace kCura.EDDS.WinForm
             '
             Me.EnhancedMenuProvider.SetImageIndex(Me.ToolsMenu, -1)
             Me.ToolsMenu.Index = 1
-            Me.ToolsMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ImportMenu, Me.ExportMenu, Me.TransferMenu})
+            Me.ToolsMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.ImportMenu, Me.ExportMenu})
             Me.ToolsMenu.OwnerDraw = True
             Me.ToolsMenu.Text = "&Tools"
             '
@@ -228,16 +226,10 @@ Namespace kCura.EDDS.WinForm
             Me._exportObjectsMenuItem.OwnerDraw = True
             Me._exportObjectsMenuItem.Text = "Objects"
             Me._exportObjectsMenuItem.Visible = False
-            '
-            'TransferMenu
-            '
-            Me.TransferMenu.Enabled = False
-            Me.EnhancedMenuProvider.SetImageIndex(Me.TransferMenu, -1)
-            Me.TransferMenu.Index = 2
-            Me.TransferMenu.OwnerDraw = True
-            Me.TransferMenu.Text = "Staging Explorer..."
-            Me.TransferMenu.Visible = False
-            '
+			'
+			'TransferMenu
+			'
+			'
             'OptionsMenu
             '
             Me.EnhancedMenuProvider.SetImageIndex(Me.OptionsMenu, -1)
@@ -416,10 +408,7 @@ Namespace kCura.EDDS.WinForm
                     'disable import and export menus if no permission
                     ToggleImportExportMenu()
                     'UpdateStatus("Case Folder Load: " + _application.SelectedCaseInfo.RootFolderID.ToString)
-
-                    'disable staging explorer menu if no permission
-                    TransferMenu.Enabled = _application.UserHasStagingPermission
-                    TransferMenu.Visible = _application.UserHasStagingPermission
+					'disable staging explorer menu if no permission
                 Case appEvent.AppEventType.LogOnRequested
                     '' please note that url input and connection loop retry takes place on the stack
                     '' if in doubt what it means please try to input several times invalid web api url from main form settings and check call stack while having breakpoint on the following line
@@ -523,12 +512,6 @@ Namespace kCura.EDDS.WinForm
         Private Async Sub ToolsExportSearchMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsExportSearchMenu.Click
             Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
             Await _application.NewSearchExport(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo, kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
-            Me.Cursor = System.Windows.Forms.Cursors.Default
-        End Sub
-
-        Private Sub ToolsTransferFileMenu_Click(sender As Object, e As EventArgs) Handles TransferMenu.Click
-            Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-            _application.NewFileTransfer(Me)
             Me.Cursor = System.Windows.Forms.Cursors.Default
         End Sub
 

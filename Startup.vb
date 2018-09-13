@@ -148,7 +148,7 @@ Namespace kCura.EDDS.WinForm
 					Case LoadMode.DynamicObject
 						_import.RunDynamicObjectImport(_importOptions)
 					Case LoadMode.Application
-						Await _import.RunApplicationImport(_importOptions)
+						Throw New InvalidOperationException("Load file is not supported for application imports")
                     Case LoadMode.Export
                         Await _import.RunExport(_importOptions.SelectedExportSettings)
                 End Select
