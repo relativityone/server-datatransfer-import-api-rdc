@@ -172,8 +172,8 @@
       <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32.2018.7.0\lib\net40\oi.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.AmbientData, Version=1.0.0.172, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\Relativity.AmbientData.1.0.0-DEV-172\lib\net462\Relativity.AmbientData.dll</HintPath>
+    <Reference Include="Relativity.AmbientData, Version=1.0.0.193, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\Relativity.AmbientData.1.0.0-DEV-193\lib\net462\Relativity.AmbientData.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.DataTransfer.MessageService, Version=10.0.2.2, Culture=neutral, processorArchitecture=MSIL">
