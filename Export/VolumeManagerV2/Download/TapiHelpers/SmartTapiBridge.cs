@@ -155,7 +155,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			}
 		}
 
-		public void ReleaseTapiBridge()
+		public void Disconnect()
 		{
 			RemoveTapiBridge();
 		}

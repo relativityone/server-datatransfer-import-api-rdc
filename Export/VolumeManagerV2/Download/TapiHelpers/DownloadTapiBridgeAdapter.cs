@@ -36,5 +36,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		public TapiClient ClientType => TapiBridge.ClientType;
 		public abstract string QueueDownload(TransferPath transferPath);
 		public abstract void WaitForTransferJob();
+		public void Disconnect()
+		{
+			TapiBridge.Disconnect();
+		}
 	}
 }

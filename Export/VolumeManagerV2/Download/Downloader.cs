@@ -73,11 +73,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				Task filesDownloadTask =
 					_physicalFilesDownloader.DownloadFilesAsync(_fileExportRequests, cancellationToken);
 
-				longTextDownloader = _exportTapiBridgePool.CreateForLongText(cancellationToken);
+				longTextDownloader = _exportTapiBridgePool.RequestForLongText(cancellationToken);
 				DownloadLongTexts(longTextDownloader, cancellationToken);
 
 				_logger.LogVerbose("Waiting for long text transfer to finish.");
 				longTextDownloader.WaitForTransferJob();
+				_exportTapiBridgePool.ReleaseLongText(longTextDownloader);
 				_logger.LogVerbose("Long text transfer finished.");
 
 				_logger.LogVerbose("Waiting for files transfer to finish.");

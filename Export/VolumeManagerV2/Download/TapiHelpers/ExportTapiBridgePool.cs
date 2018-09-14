@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
@@ -13,6 +14,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		private IDownloadTapiBridge _longTextTapiBridge;
 
 		private readonly IDictionary<RelativityFileShareSettings, IDownloadTapiBridge> _fileTapiBridges = new Dictionary<RelativityFileShareSettings, IDownloadTapiBridge>();
+
+		private readonly IList<IDownloadTapiBridge> _fileTapiBridgesInUse = new List<IDownloadTapiBridge>();
+		private readonly IList<IDownloadTapiBridge> _fileTapiBridgesConnected = new List<IDownloadTapiBridge>();
 
 		private readonly DownloadProgressManager _downloadProgressManager;
 		private readonly FilesStatistics _filesStatistics;
@@ -41,28 +45,48 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			_exportConfig = exportConfig;
 		}
 
-		public IDownloadTapiBridge CreateForFiles(RelativityFileShareSettings fileshareSettings,
+		public IDownloadTapiBridge RequestForFiles(RelativityFileShareSettings fileshareSettings,
 			CancellationToken token)
 		{
-			if (_fileTapiBridges.ContainsKey(fileshareSettings))
+			if (!_fileTapiBridges.ContainsKey(fileshareSettings))
 			{
-				IDownloadTapiBridge tapiBridge = _fileTapiBridges[fileshareSettings];
-				if (tapiBridge.ClientType != TapiClient.Web || _exportConfig.TapiForceHttpClient)
-				{
-					return tapiBridge;
-				}
-				TryDisposeTapiBridge(tapiBridge);
+				CreateTapiBridge(fileshareSettings, token);
 			}
-			ITapiBridgeFactory tapiBridgeFactory = new FilesTapiBridgeFactory(_tapiBridgeParametersFactory, _logger, fileshareSettings, token);
+
+			if (_fileTapiBridges[fileshareSettings].ClientType == TapiClient.Web && !_exportConfig.TapiForceHttpClient)
+			{
+				TryDisposeTapiBridge(_fileTapiBridges[fileshareSettings]);
+				CreateTapiBridge(fileshareSettings, token);
+			}
+
+			if (_fileTapiBridgesConnected.Count >= _exportConfig.MaxNumberOfFileExportTasks)
+			{
+				IDownloadTapiBridge connectedNotUsed = _fileTapiBridgesConnected.First(x => !_fileTapiBridgesInUse.Contains(x));
+				_fileTapiBridgesConnected.Remove(connectedNotUsed);
+				if (connectedNotUsed != _fileTapiBridges[fileshareSettings])
+				{
+					connectedNotUsed.Disconnect();
+				}
+			}
+
+			_fileTapiBridgesConnected.Add(_fileTapiBridges[fileshareSettings]);
+			_fileTapiBridgesInUse.Add(_fileTapiBridges[fileshareSettings]);
+			
+			return _fileTapiBridges[fileshareSettings];
+		}
+
+		private void CreateTapiBridge(RelativityFileShareSettings fileshareSettings, CancellationToken token)
+		{
+			ITapiBridgeFactory tapiBridgeFactory =
+				new FilesTapiBridgeFactory(_tapiBridgeParametersFactory, _logger, fileshareSettings, token);
 			var smartTapiBridge = new SmartTapiBridge(_exportConfig, tapiBridgeFactory, token);
 
 			_fileTapiBridges[fileshareSettings] = new DownloadTapiBridgeForFiles(smartTapiBridge,
 				new FileDownloadProgressHandler(_downloadProgressManager, _logger),
 				_messageHandler, _filesStatistics, _transferClientHandler, _logger);
-			return _fileTapiBridges[fileshareSettings];
 		}
 
-		public IDownloadTapiBridge CreateForLongText(CancellationToken token)
+		public IDownloadTapiBridge RequestForLongText(CancellationToken token)
 		{
 			if (_longTextTapiBridge != null)
 			{
@@ -76,6 +100,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 				longTextEncodingConverter, _logger);
 			return _longTextTapiBridge;
 		}
+
+		public void ReleaseFiles(IDownloadTapiBridge tapiBridge)
+		{
+			_fileTapiBridgesInUse.Remove(tapiBridge);
+		}
+
+		public void ReleaseLongText(IDownloadTapiBridge tapiBridge)
+		{
+			//Do nothing as long text tapi bridge is going through web mode
+		}
+
 
 		public void Dispose()
 		{

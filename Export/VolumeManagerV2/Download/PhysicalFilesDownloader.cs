@@ -41,7 +41,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				tasks.Add(Task.Run(() => CreateJobTask(queue, taskCancellationTokenSource), taskCancellationTokenSource.Token));
 			}
 
-		    await Task.WhenAll(tasks);
+			await Task.WhenAll(tasks);
 		}
 
 		private ConcurrentQueue<ExportRequestsWithFileshareSettings> CreateTransferQueue(List<ExportRequest> requests)
@@ -59,13 +59,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			{
 				try
 				{
-					IDownloadTapiBridge bridge = _exportTapiBridgePool.CreateForFiles(
+					IDownloadTapiBridge bridge = _exportTapiBridgePool.RequestForFiles(
 						exportRequestWithFileshareSettings.FileshareSettings,
 						downloadCancellationTokenSourceSource.Token);
-					
-						DownloadFiles(bridge, exportRequestWithFileshareSettings.Requests, downloadCancellationTokenSourceSource.Token);
-						bridge.WaitForTransferJob();
-					
+
+					DownloadFiles(bridge, exportRequestWithFileshareSettings.Requests,
+						downloadCancellationTokenSourceSource.Token);
+					bridge.WaitForTransferJob();
+
+					_exportTapiBridgePool.ReleaseFiles(bridge);
 				}
 				catch (TaskCanceledException)
 				{

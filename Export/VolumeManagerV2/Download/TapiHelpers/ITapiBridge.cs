@@ -17,5 +17,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 
 		string AddPath(TransferPath transferPath);
 		void WaitForTransferJob();
+		void Disconnect();
 	}
 }

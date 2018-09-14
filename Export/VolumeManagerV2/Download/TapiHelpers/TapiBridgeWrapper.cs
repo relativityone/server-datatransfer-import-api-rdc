@@ -67,6 +67,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			_tapiBridge.WaitForTransferJob();
 		}
 
+		public void Disconnect()
+		{
+		}
+
 		public void Dispose()
 		{
 			_tapiBridge.Dispose();

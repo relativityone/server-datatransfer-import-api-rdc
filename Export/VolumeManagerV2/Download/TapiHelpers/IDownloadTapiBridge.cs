@@ -9,5 +9,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		TapiClient ClientType { get; }
 		string QueueDownload(TransferPath transferPath);
 		void WaitForTransferJob();
+		void Disconnect();
 	}
 }
