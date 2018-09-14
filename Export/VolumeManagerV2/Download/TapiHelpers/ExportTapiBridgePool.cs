@@ -20,10 +20,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		private readonly ITransferClientHandler _transferClientHandler;
 		private readonly LongTextEncodingConverterFactory _converterFactory;
 		private readonly MetadataStatistics _metadataStatistics;
-		
+		private readonly IExportConfig _exportConfig;
+
 		public ExportTapiBridgePool(DownloadProgressManager downloadProgressManager, ILog logger,
 			IMessagesHandler messageHandler, FilesStatistics filesStatistics,
-			ITransferClientHandler transferClientHandler, TapiBridgeParametersFactory tapiBridgeParametersFactory, LongTextEncodingConverterFactory converterFactory, MetadataStatistics metadataStatistics)
+			ITransferClientHandler transferClientHandler, TapiBridgeParametersFactory tapiBridgeParametersFactory, 
+			LongTextEncodingConverterFactory converterFactory, MetadataStatistics metadataStatistics,
+			IExportConfig exportConfig)
 		{
 			_downloadProgressManager = downloadProgressManager;
 			_logger = logger;
@@ -33,6 +36,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			_tapiBridgeParametersFactory = tapiBridgeParametersFactory;
 			_converterFactory = converterFactory;
 			_metadataStatistics = metadataStatistics;
+			_exportConfig = exportConfig;
 		}
 
 		public IDownloadTapiBridge CreateForFiles(RelativityFileShareSettings fileshareSettings,
@@ -43,7 +47,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 				return _fileTapiBridges[fileshareSettings];
 			}
 			ITapiBridgeFactory tapiBridgeFactory = new FilesTapiBridgeFactory(_tapiBridgeParametersFactory, _logger, fileshareSettings, token);
-			var smartTapiBridge = new SmartTapiBridge(tapiBridgeFactory);
+			var smartTapiBridge = new SmartTapiBridge(_exportConfig, tapiBridgeFactory, token);
 
 			_fileTapiBridges[fileshareSettings] = new DownloadTapiBridgeForFiles(smartTapiBridge,
 				new FileDownloadProgressHandler(_downloadProgressManager, _logger),
@@ -58,7 +62,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 				return _longTextTapiBridge;
 			}
 			ITapiBridgeFactory tapiBridgeFactory = new LongTextTapiBridgeFactory(_tapiBridgeParametersFactory, _logger, token);
-			var smartTapiBridge = new SmartTapiBridge(tapiBridgeFactory);
+			var smartTapiBridge = new SmartTapiBridge(_exportConfig, tapiBridgeFactory, token);
 
 			LongTextEncodingConverter longTextEncodingConverter = _converterFactory.Create(token);
 			_longTextTapiBridge = new DownloadTapiBridgeWithEncodingConversion(smartTapiBridge, new LongTextProgressHandler(_downloadProgressManager, _logger), _messageHandler, _metadataStatistics,

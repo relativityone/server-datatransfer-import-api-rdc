@@ -70,7 +70,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			IDownloadTapiBridge longTextDownloader = null;
 			try
 			{
-				Task filesDownloadTask = _physicalFilesDownloader.DownloadFilesAsync(_fileExportRequests, cancellationToken);
+				Task filesDownloadTask =
+					_physicalFilesDownloader.DownloadFilesAsync(_fileExportRequests, cancellationToken);
 
 				longTextDownloader = _exportTapiBridgePool.CreateForLongText(cancellationToken);
 				DownloadLongTexts(longTextDownloader, cancellationToken);
@@ -99,13 +100,23 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				if (cancellationToken.IsCancellationRequested)
 				{
 					//this is needed, because TAPI in Web mode throws TransferException after canceling
-					_logger.LogWarning(ex, "TransferException occurred during transfer, but cancellation has been requested.");
+					_logger.LogWarning(ex,
+						"TransferException occurred during transfer, but cancellation has been requested.");
 					return;
 				}
 
 				_errorFileWriter.Write(ErrorFileWriter.ExportFileType.Generic, string.Empty, string.Empty,
 					$"Fatal exception occurred during transfer. Failed to download files for batch {ex.Message}");
-				_logger.LogError(ex, "TransferException occurred during transfer and cancellation has NOT been requested.");
+				_logger.LogError(ex,
+					"TransferException occurred during transfer and cancellation has NOT been requested.");
+				throw;
+			}
+			catch (TransferTimeoutException ex)
+			{
+				_errorFileWriter.Write(ErrorFileWriter.ExportFileType.Generic, string.Empty, string.Empty,
+					$"No transfer progress was registered for at least {ex.Timeout.TotalSeconds}s. Aborting the transfer.");
+				_logger.LogError(ex,
+					"TransferTimeoutException occurred during transfer.");
 				throw;
 			}
 			catch (Exception ex)

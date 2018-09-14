@@ -13,7 +13,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		private ITapiBridge _tapiBridge;
 		private readonly AutoResetEvent _autoResetEvent = new AutoResetEvent(true);
 		private readonly ITapiBridgeFactory _tapiBridgeFactory;
+		private readonly CancellationToken _token;
 		private readonly object _lockToken = new object();
+		private readonly TimeSpan _maximumWaitingTimeBetweenProgressEventsForExport;
+		private DateTime _lastProgressUpdateTime;
 
 		public event EventHandler<TapiMessageEventArgs> TapiStatusMessage;
 
@@ -29,9 +32,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 
 		public event EventHandler<TapiMessageEventArgs> TapiFatalError;
 
-		public SmartTapiBridge(ITapiBridgeFactory tapiBridgeFactory)
+		public SmartTapiBridge(IExportConfig exportConfig, ITapiBridgeFactory tapiBridgeFactory,
+			CancellationToken token)
 		{
 			_tapiBridgeFactory = tapiBridgeFactory;
+			_token = token;
+			_maximumWaitingTimeBetweenProgressEventsForExport =
+				TimeSpan.FromSeconds(exportConfig.MaximumWaitingTimeBetweenProgressEventsForExportInSeconds);
 		}
 
 		public string AddPath(TransferPath transferPath)
@@ -75,6 +82,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 
 		private void OnTapiBridgeProgress(object sender, TapiProgressEventArgs e)
 		{
+			_lastProgressUpdateTime = DateTime.Now;
 			if (e.DidTransferSucceed)
 			{
 				lock (_lockToken)
@@ -122,6 +130,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 
 		public void WaitForTransferJob()
 		{
+			_lastProgressUpdateTime = DateTime.Now;
+
 			lock (_lockToken)
 			{
 				if (_downloadRequestCounter != _downloadedFilesCounter)
@@ -129,8 +139,16 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 					_autoResetEvent.Reset();
 				}
 			}
-			//TODO timeout
-			_autoResetEvent.WaitOne();
+
+			while (_autoResetEvent.WaitOne(_maximumWaitingTimeBetweenProgressEventsForExport, _token))
+			{
+				if (_lastProgressUpdateTime - DateTime.Now > _maximumWaitingTimeBetweenProgressEventsForExport)
+				{
+					throw new TransferTimeoutException(_maximumWaitingTimeBetweenProgressEventsForExport,
+						$"No progress was registered in time span of {_maximumWaitingTimeBetweenProgressEventsForExport}.");
+				}
+			}
+
 			_totalFilesDownloadedUsingTapiBridge += _downloadedFilesCounter;
 			_downloadedFilesCounter = 0;
 			_downloadRequestCounter = 0;
