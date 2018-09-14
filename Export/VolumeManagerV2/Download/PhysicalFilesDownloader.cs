@@ -13,15 +13,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 	public class PhysicalFilesDownloader : IPhysicalFilesDownloader
 	{
 		private readonly IFileshareSettingsService _settingsService;
-		private readonly IExportTapiBridgeFactory _exportTapiBridgeFactory;
+		private readonly IExportTapiBridgePool _exportTapiBridgePool;
 		private readonly IExportConfig _exportConfig;
 		private readonly ILog _logger;
 		private readonly SafeIncrement _safeIncrement;
 
-		public PhysicalFilesDownloader(IFileshareSettingsService settingsService, IExportTapiBridgeFactory exportTapiBridgeFactory, IExportConfig exportConfig, SafeIncrement safeIncrement, ILog logger)
+		public PhysicalFilesDownloader(IFileshareSettingsService settingsService, IExportTapiBridgePool exportTapiBridgePool, IExportConfig exportConfig, SafeIncrement safeIncrement, ILog logger)
 		{
 			_settingsService = settingsService;
-			_exportTapiBridgeFactory = exportTapiBridgeFactory;
+			_exportTapiBridgePool = exportTapiBridgePool;
 			_exportConfig = exportConfig;
 			_safeIncrement = safeIncrement;
 			_logger = logger;
@@ -59,11 +59,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			{
 				try
 				{
-					using (IDownloadTapiBridge bridge = _exportTapiBridgeFactory.CreateForFiles(exportRequestWithFileshareSettings.FileshareSettings, downloadCancellationTokenSourceSource.Token))
-					{
+					IDownloadTapiBridge bridge = _exportTapiBridgePool.CreateForFiles(
+						exportRequestWithFileshareSettings.FileshareSettings,
+						downloadCancellationTokenSourceSource.Token);
+					
 						DownloadFiles(bridge, exportRequestWithFileshareSettings.Requests, downloadCancellationTokenSourceSource.Token);
 						bridge.WaitForTransferJob();
-					}
+					
 				}
 				catch (TaskCanceledException)
 				{

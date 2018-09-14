@@ -19,17 +19,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private readonly SafeIncrement _safeIncrement;
 		private readonly IErrorFileWriter _errorFileWriter;
 
-		private readonly IExportTapiBridgeFactory _exportTapiBridgeFactory;
+		private readonly IExportTapiBridgePool _exportTapiBridgePool;
 
 		private readonly ILog _logger;
 	    private readonly IExportRequestRetriever _exportRequestRetriever;
 
 	    public Downloader(IExportRequestRetriever exportRequestRetriever, IPhysicalFilesDownloader physicalFilesDownloader, SafeIncrement safeIncrement, 
-			IExportTapiBridgeFactory exportTapiBridgeFactory, IErrorFileWriter errorFileWriter, ILog logger)
+			IExportTapiBridgePool exportTapiBridgePool, IErrorFileWriter errorFileWriter, ILog logger)
 		{
 			_physicalFilesDownloader = physicalFilesDownloader;
 			_safeIncrement = safeIncrement;
-			_exportTapiBridgeFactory = exportTapiBridgeFactory;
+			_exportTapiBridgePool = exportTapiBridgePool;
 			_logger = logger;
 		    _exportRequestRetriever = exportRequestRetriever;
 		    _errorFileWriter = errorFileWriter;
@@ -72,7 +72,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			{
 				Task filesDownloadTask = _physicalFilesDownloader.DownloadFilesAsync(_fileExportRequests, cancellationToken);
 
-				longTextDownloader = _exportTapiBridgeFactory.CreateForLongText(cancellationToken);
+				longTextDownloader = _exportTapiBridgePool.CreateForLongText(cancellationToken);
 				DownloadLongTexts(longTextDownloader, cancellationToken);
 
 				_logger.LogVerbose("Waiting for long text transfer to finish.");
@@ -112,17 +112,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			{
 				_logger.LogError(ex, "Error occurred during transfer.");
 				throw;
-			}
-			finally
-			{
-				try
-				{
-					longTextDownloader?.Dispose();
-				}
-				catch (Exception ex)
-				{
-					_logger.LogError(ex, "Failed to dispose DownloadTapiBridge for long text.");
-				}
 			}
 		}
 

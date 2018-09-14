@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>kCura.WinEDDS.Core</RootNamespace>
-    <AssemblyName>kCura.WinEDDS.Core</AssemblyName>
+    <AssemblyName>.config</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -207,9 +207,14 @@
     <Compile Include="Export\VolumeManagerV2\Download\IPhysicalFilesDownloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ExportRequestsWithFileshareSettings.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\PhysicalFilesDownloader.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\IExportTapiBridgeFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\FilesTapiBridgeFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\IExportTapiBridgePool.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ITapiBridgeFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ITapiBridge.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\LongTextTapiBridgeFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\SafeIncrement.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\SmartTapiBridge.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\TapiBridgeParametersFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\TapiBridgeWrapper.cs" />
     <Compile Include="Export\VolumeManagerV2\FileshareSettingsService.cs" />
     <Compile Include="Export\VolumeManagerV2\IFileshareSettingsService.cs" />
@@ -262,7 +267,7 @@
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\LongTextEncodingConverterFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\LongTextExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\NativeFileExportRequestBuilder.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ExportTapiBridgeFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ExportTapiBridgePool.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\ISubdirectory.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\IVolume.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\IDirectoryManager.cs" />
