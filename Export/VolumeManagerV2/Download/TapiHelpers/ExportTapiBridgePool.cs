@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
+using kCura.WinEDDS.TApi;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
@@ -44,7 +46,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		{
 			if (_fileTapiBridges.ContainsKey(fileshareSettings))
 			{
-				return _fileTapiBridges[fileshareSettings];
+				IDownloadTapiBridge tapiBridge = _fileTapiBridges[fileshareSettings];
+				if (tapiBridge.ClientType != TapiClient.Web || _exportConfig.TapiForceHttpClient)
+				{
+					return tapiBridge;
+				}
+				TryDisposeTapiBridge(tapiBridge);
 			}
 			ITapiBridgeFactory tapiBridgeFactory = new FilesTapiBridgeFactory(_tapiBridgeParametersFactory, _logger, fileshareSettings, token);
 			var smartTapiBridge = new SmartTapiBridge(_exportConfig, tapiBridgeFactory, token);
@@ -85,8 +92,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			{
 				bridge?.Dispose();
 			}
-			catch
+			catch (Exception ex)
 			{
+				_logger.LogError(ex, "Failed to dispose Tapi Bridge.");
 				// We do not want to crash container disposal
 			}
 		}

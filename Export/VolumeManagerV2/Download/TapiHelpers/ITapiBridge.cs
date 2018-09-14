@@ -13,6 +13,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		event EventHandler<TapiProgressEventArgs> TapiProgress;
 		event EventHandler<TapiStatisticsEventArgs> TapiStatistics;
 		event EventHandler<TapiMessageEventArgs> TapiFatalError;
+		TapiClient ClientType { get; }
+
 		string AddPath(TransferPath transferPath);
 		void WaitForTransferJob();
 	}

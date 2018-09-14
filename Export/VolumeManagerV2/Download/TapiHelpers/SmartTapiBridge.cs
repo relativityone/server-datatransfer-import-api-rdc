@@ -40,6 +40,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 				TimeSpan.FromSeconds(exportConfig.TapiBridgeExportTransferWaitingTimeInSeconds);
 		}
 
+		public TapiClient ClientType => _tapiBridge?.ClientType ?? TapiClient.None;
+
 		public string AddPath(TransferPath transferPath)
 		{
 			if (_tapiBridge == null)

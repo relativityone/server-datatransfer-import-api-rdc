@@ -55,6 +55,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			remove { _tapiBridge.TapiFatalError -= value; }
 		}
 
+		public TapiClient ClientType => _tapiBridge.Client;
+
 		public string AddPath(TransferPath transferPath)
 		{
 			return _tapiBridge.AddPath(transferPath);
