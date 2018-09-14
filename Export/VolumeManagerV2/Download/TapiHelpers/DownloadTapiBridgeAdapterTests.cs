@@ -75,5 +75,15 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.TapiHelpers
 			//ASSERT
 			TapiBridge.Verify(x => x.AddPath(transferPath), Times.Once);
 		}
+
+		[Test]
+		public void ItShouldDisconnect()
+		{
+			//ACT
+			Instance.Disconnect();
+
+			//ASSERT
+			TapiBridge.Verify(x => x.Disconnect(), Times.Once);
+		}
 	}
 }
