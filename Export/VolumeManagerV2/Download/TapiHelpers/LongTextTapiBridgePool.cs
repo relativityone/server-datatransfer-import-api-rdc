@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
@@ -10,23 +8,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 	{
 		private IDownloadTapiBridge _longTextTapiBridge;
 
-		private readonly IExportConfig _exportConfig;
-		private readonly TapiBridgeParametersFactory _tapiBridgeParametersFactory;
-		private readonly LongTextEncodingConverterFactory _converterFactory;
-		private readonly DownloadProgressManager _downloadProgressManager;
-		private readonly IMessagesHandler _messageHandler;
-		private readonly MetadataStatistics _metadataStatistics;
+		private readonly ILongTextTapiBridgeFactory _factory;
 		private readonly ILog _logger;
 
-		public LongTextTapiBridgePool(IExportConfig exportConfig, TapiBridgeParametersFactory tapiBridgeParametersFactory, LongTextEncodingConverterFactory converterFactory,
-			DownloadProgressManager downloadProgressManager, IMessagesHandler messageHandler, MetadataStatistics metadataStatistics, ILog logger)
+		public LongTextTapiBridgePool(ILongTextTapiBridgeFactory factory, ILog logger)
 		{
-			_exportConfig = exportConfig;
-			_tapiBridgeParametersFactory = tapiBridgeParametersFactory;
-			_converterFactory = converterFactory;
-			_downloadProgressManager = downloadProgressManager;
-			_messageHandler = messageHandler;
-			_metadataStatistics = metadataStatistics;
+			_factory = factory;
 			_logger = logger;
 		}
 
@@ -37,12 +24,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 				return _longTextTapiBridge;
 			}
 
-			ITapiBridgeWrapperFactory tapiBridgeWrapperFactory = new LongTextTapiBridgeWrapperFactory(_tapiBridgeParametersFactory, _logger, token);
-			var smartTapiBridge = new SmartTapiBridge(_exportConfig, tapiBridgeWrapperFactory, token);
+			_longTextTapiBridge = _factory.Create(token);
 
-			LongTextEncodingConverter longTextEncodingConverter = _converterFactory.Create(token);
-			_longTextTapiBridge = new DownloadTapiBridgeWithEncodingConversion(smartTapiBridge, new LongTextProgressHandler(_downloadProgressManager, _logger), _messageHandler, _metadataStatistics,
-				longTextEncodingConverter, _logger);
 			return _longTextTapiBridge;
 		}
 

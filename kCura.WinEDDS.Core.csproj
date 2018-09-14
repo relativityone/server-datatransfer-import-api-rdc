@@ -211,8 +211,10 @@
     <Compile Include="Export\VolumeManagerV2\Download\PhysicalFilesDownloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\FileTapiBridgePool.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\IFileTapiBridgePool.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ILongTextTapiBridgeFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ILongTextTapiBridgePool.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ITapiBridgeWrapper.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\LongTextTapiBridgeFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\LongTextTapiBridgePool.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\PoolEntry.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\WaitHandleExtensions.cs" />
