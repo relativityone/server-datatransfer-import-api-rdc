@@ -68,6 +68,12 @@ Public Class ExportConfig
 			Return Config.TapiForceHttpClient
 		End Get
 	End Property
+
+	Public ReadOnly Property TotalFilesToDownloadUsingTapiBridge As Integer Implements IExportConfig.TotalFilesToDownloadUsingTapiBridge
+		Get
+			Return kCura.Utility.Config.TotalFilesToDownloadUsingTapiBridge
+		End Get
+	End Property
 End Class
 
 End Namespace
