@@ -111,14 +111,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 					"TransferException occurred during transfer and cancellation has NOT been requested.");
 				throw;
 			}
-			catch (TransferTimeoutException ex)
-			{
-				_errorFileWriter.Write(ErrorFileWriter.ExportFileType.Generic, string.Empty, string.Empty,
-					$"No transfer progress was registered for at least {ex.Timeout.TotalSeconds}s. Aborting the transfer.");
-				_logger.LogError(ex,
-					"TransferTimeoutException occurred during transfer.");
-				throw;
-			}
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Error occurred during transfer.");

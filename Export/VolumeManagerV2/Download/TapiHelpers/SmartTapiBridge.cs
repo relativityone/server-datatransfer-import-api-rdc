@@ -15,7 +15,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		private readonly ITapiBridgeFactory _tapiBridgeFactory;
 		private readonly CancellationToken _token;
 		private readonly object _lockToken = new object();
-		private readonly TimeSpan _maximumWaitingTimeBetweenProgressEventsForExport;
+		private readonly TimeSpan _tapiBridgeExportTransferWaitingTime;
 		private DateTime _lastProgressUpdateTime;
 
 		public event EventHandler<TapiMessageEventArgs> TapiStatusMessage;
@@ -37,8 +37,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		{
 			_tapiBridgeFactory = tapiBridgeFactory;
 			_token = token;
-			_maximumWaitingTimeBetweenProgressEventsForExport =
-				TimeSpan.FromSeconds(exportConfig.MaximumWaitingTimeBetweenProgressEventsForExportInSeconds);
+			_tapiBridgeExportTransferWaitingTime =
+				TimeSpan.FromSeconds(exportConfig.TapiBridgeExportTransferWaitingTimeInSeconds);
 		}
 
 		public string AddPath(TransferPath transferPath)
@@ -78,6 +78,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			_tapiBridge.TapiStatistics += OnTapiBridgeStatistics;
 			_tapiBridge.TapiStatusMessage += OnTapiBridgeStatusMessage;
 			_tapiBridge.TapiWarningMessage += OnTapiBridgeWarningMessage;
+			_totalFilesDownloadedUsingTapiBridge = 0;
 		}
 
 		private void OnTapiBridgeProgress(object sender, TapiProgressEventArgs e)
@@ -140,13 +141,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 				}
 			}
 
-			while (_autoResetEvent.WaitOne(_maximumWaitingTimeBetweenProgressEventsForExport, _token))
+			if(!_autoResetEvent.WaitOne(_tapiBridgeExportTransferWaitingTime, _token))
 			{
-				if (_lastProgressUpdateTime - DateTime.Now > _maximumWaitingTimeBetweenProgressEventsForExport)
-				{
-					throw new TransferTimeoutException(_maximumWaitingTimeBetweenProgressEventsForExport,
-						$"No progress was registered in time span of {_maximumWaitingTimeBetweenProgressEventsForExport}.");
-				}
+				_tapiBridge.WaitForTransferJob();
+				RemoveTapiBridge();
 			}
 
 			_totalFilesDownloadedUsingTapiBridge += _downloadedFilesCounter;
@@ -156,7 +154,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			if (_totalFilesDownloadedUsingTapiBridge > 10000)
 			{
 				RemoveTapiBridge();
-				_totalFilesDownloadedUsingTapiBridge = 0;
 			}
 		}
 

@@ -217,7 +217,6 @@
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\SmartTapiBridge.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\TapiBridgeParametersFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\TapiBridgeWrapper.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\TransferTimeoutException.cs" />
     <Compile Include="Export\VolumeManagerV2\FileshareSettingsService.cs" />
     <Compile Include="Export\VolumeManagerV2\IFileshareSettingsService.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\IImage.cs" />
