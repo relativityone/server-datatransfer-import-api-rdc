@@ -10,9 +10,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 {
 	public class FileTapiBridgePool : IFileTapiBridgePool
 	{
-		private readonly IDictionary<RelativityFileShareSettings, IDownloadTapiBridge> _fileTapiBridges;
-		private readonly IList<IDownloadTapiBridge> _fileTapiBridgesInUse;
-		private readonly IList<IDownloadTapiBridge> _fileTapiBridgesConnected;
+		private readonly IDictionary<RelativityFileShareSettings, PoolEntry> _fileTapiBridges;
 
 		private readonly IExportConfig _exportConfig;
 		private readonly TapiBridgeParametersFactory _tapiBridgeParametersFactory;
@@ -33,9 +31,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			_transferClientHandler = transferClientHandler;
 			_logger = logger;
 
-			_fileTapiBridges = new Dictionary<RelativityFileShareSettings, IDownloadTapiBridge>();
-			_fileTapiBridgesInUse = new List<IDownloadTapiBridge>();
-			_fileTapiBridgesConnected = new List<IDownloadTapiBridge>();
+			_fileTapiBridges = new Dictionary<RelativityFileShareSettings, PoolEntry>();
 		}
 
 		public IDownloadTapiBridge Request(RelativityFileShareSettings fileshareSettings, CancellationToken token)
@@ -45,26 +41,26 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 				CreateTapiBridge(fileshareSettings, token);
 			}
 
-			if (_fileTapiBridges[fileshareSettings].ClientType == TapiClient.Web && !_exportConfig.TapiForceHttpClient)
+			if (_fileTapiBridges[fileshareSettings].Bridge.ClientType == TapiClient.Web && !_exportConfig.TapiForceHttpClient)
 			{
-				TryDisposeTapiBridge(_fileTapiBridges[fileshareSettings]);
+				TryDisposeTapiBridge(_fileTapiBridges[fileshareSettings].Bridge);
 				CreateTapiBridge(fileshareSettings, token);
 			}
 
-			if (_fileTapiBridgesConnected.Count >= _exportConfig.MaxNumberOfFileExportTasks)
+			if (_fileTapiBridges.Values.Count(x => x.Connected) >= _exportConfig.MaxNumberOfFileExportTasks)
 			{
-				IDownloadTapiBridge connectedNotUsed = _fileTapiBridgesConnected.First(x => !_fileTapiBridgesInUse.Contains(x));
-				_fileTapiBridgesConnected.Remove(connectedNotUsed);
+				PoolEntry connectedNotUsed = _fileTapiBridges.Values.First(x => x.Connected && !x.InUse);
+				connectedNotUsed.Connected = false;
 				if (connectedNotUsed != _fileTapiBridges[fileshareSettings])
 				{
-					connectedNotUsed.Disconnect();
+					connectedNotUsed.Bridge.Disconnect();
 				}
 			}
 
-			_fileTapiBridgesConnected.Add(_fileTapiBridges[fileshareSettings]);
-			_fileTapiBridgesInUse.Add(_fileTapiBridges[fileshareSettings]);
+			_fileTapiBridges[fileshareSettings].Connected = true;
+			_fileTapiBridges[fileshareSettings].InUse = true;
 
-			return _fileTapiBridges[fileshareSettings];
+			return _fileTapiBridges[fileshareSettings].Bridge;
 		}
 
 		private void CreateTapiBridge(RelativityFileShareSettings fileshareSettings, CancellationToken token)
@@ -73,21 +69,21 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 				new FilesTapiBridgeFactory(_tapiBridgeParametersFactory, _logger, fileshareSettings, token);
 			var smartTapiBridge = new SmartTapiBridge(_exportConfig, tapiBridgeFactory, token);
 
-			_fileTapiBridges[fileshareSettings] = new DownloadTapiBridgeForFiles(smartTapiBridge,
-				new FileDownloadProgressHandler(_downloadProgressManager, _logger),
-				_messageHandler, _filesStatistics, _transferClientHandler, _logger);
+			IProgressHandler progressHandler = new FileDownloadProgressHandler(_downloadProgressManager, _logger);
+			var downloadTapiBridgeForFiles = new DownloadTapiBridgeForFiles(smartTapiBridge, progressHandler, _messageHandler, _filesStatistics, _transferClientHandler, _logger);
+			_fileTapiBridges[fileshareSettings] = new PoolEntry(downloadTapiBridgeForFiles);
 		}
 
 		public void Release(IDownloadTapiBridge bridge)
 		{
-			_fileTapiBridgesInUse.Remove(bridge);
+			_fileTapiBridges.Values.First(x => x.Bridge == bridge).InUse = false;
 		}
 
 		public void Dispose()
 		{
 			foreach (var tapiBridge in _fileTapiBridges.Values)
 			{
-				TryDisposeTapiBridge(tapiBridge);
+				TryDisposeTapiBridge(tapiBridge.Bridge);
 			}
 		}
 
