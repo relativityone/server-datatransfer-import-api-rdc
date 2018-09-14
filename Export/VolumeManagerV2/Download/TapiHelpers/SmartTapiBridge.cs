@@ -12,8 +12,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		private int _totalFilesDownloadedUsingTapiBridge;
 		private ITapiBridgeWrapper _tapiBridge;
 		private readonly AutoResetEvent _autoResetEvent = new AutoResetEvent(true);
-		private readonly ITapiBridgeWrapperFactory _tapiBridgeWrapperFactory;
 		private readonly CancellationToken _token;
+		private readonly int _maximumFilesForTapiBridge;
+		private readonly ITapiBridgeWrapperFactory _tapiBridgeWrapperFactory;
 		private readonly object _lockToken = new object();
 		private readonly TimeSpan _tapiBridgeExportTransferWaitingTime;
 
@@ -38,6 +39,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			_token = token;
 			_tapiBridgeExportTransferWaitingTime =
 				TimeSpan.FromSeconds(exportConfig.TapiBridgeExportTransferWaitingTimeInSeconds);
+			_totalFilesDownloadedUsingTapiBridge = exportConfig.TotalFilesToDownloadUsingTapiBridge;
 		}
 
 		public TapiClient ClientType => _tapiBridge?.ClientType ?? TapiClient.None;
@@ -149,7 +151,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			_downloadedFilesCounter = 0;
 			_downloadRequestCounter = 0;
 
-			if (_totalFilesDownloadedUsingTapiBridge > 10000)
+			if (_totalFilesDownloadedUsingTapiBridge > _maximumFilesForTapiBridge)
 			{
 				RemoveTapiBridge();
 			}
