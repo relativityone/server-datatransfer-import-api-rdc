@@ -207,9 +207,12 @@
     <Compile Include="Export\VolumeManagerV2\Download\IPhysicalFilesDownloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ExportRequestsWithFileshareSettings.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\PhysicalFilesDownloader.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\FileTapiBridgePool.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\IFileTapiBridgePool.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ILongTextTapiBridgePool.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\LongTextTapiBridgePool.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\WaitHandleExtensions.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\FilesTapiBridgeFactory.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\IExportTapiBridgePool.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ITapiBridgeFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ITapiBridge.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\LongTextTapiBridgeFactory.cs" />
@@ -268,7 +271,6 @@
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\LongTextEncodingConverterFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\LongTextExportRequest.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\NativeFileExportRequestBuilder.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ExportTapiBridgePool.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\ISubdirectory.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\IVolume.cs" />
     <Compile Include="Export\VolumeManagerV2\Directories\IDirectoryManager.cs" />

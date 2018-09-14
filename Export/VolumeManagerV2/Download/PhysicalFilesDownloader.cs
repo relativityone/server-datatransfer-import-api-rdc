@@ -6,22 +6,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 using Relativity.Logging;
-using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
 	public class PhysicalFilesDownloader : IPhysicalFilesDownloader
 	{
 		private readonly IFileshareSettingsService _settingsService;
-		private readonly IExportTapiBridgePool _exportTapiBridgePool;
+		private readonly IFileTapiBridgePool _fileTapiBridgePool;
 		private readonly IExportConfig _exportConfig;
 		private readonly ILog _logger;
 		private readonly SafeIncrement _safeIncrement;
 
-		public PhysicalFilesDownloader(IFileshareSettingsService settingsService, IExportTapiBridgePool exportTapiBridgePool, IExportConfig exportConfig, SafeIncrement safeIncrement, ILog logger)
+		public PhysicalFilesDownloader(IFileshareSettingsService settingsService, IFileTapiBridgePool fileTapiBridgePool, IExportConfig exportConfig, SafeIncrement safeIncrement, ILog logger)
 		{
 			_settingsService = settingsService;
-			_exportTapiBridgePool = exportTapiBridgePool;
+			_fileTapiBridgePool = fileTapiBridgePool;
 			_exportConfig = exportConfig;
 			_safeIncrement = safeIncrement;
 			_logger = logger;
@@ -41,7 +40,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				tasks.Add(Task.Run(() => CreateJobTask(queue, taskCancellationTokenSource), taskCancellationTokenSource.Token));
 			}
 
-			await Task.WhenAll(tasks);
+			await Task.WhenAll(tasks).ConfigureAwait(false);
 		}
 
 		private ConcurrentQueue<ExportRequestsWithFileshareSettings> CreateTransferQueue(List<ExportRequest> requests)
@@ -59,15 +58,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			{
 				try
 				{
-					IDownloadTapiBridge bridge = _exportTapiBridgePool.RequestForFiles(
-						exportRequestWithFileshareSettings.FileshareSettings,
-						downloadCancellationTokenSourceSource.Token);
+					IDownloadTapiBridge bridge = _fileTapiBridgePool.Request(exportRequestWithFileshareSettings.FileshareSettings, downloadCancellationTokenSourceSource.Token);
 
-					DownloadFiles(bridge, exportRequestWithFileshareSettings.Requests,
-						downloadCancellationTokenSourceSource.Token);
+					DownloadFiles(bridge, exportRequestWithFileshareSettings.Requests, downloadCancellationTokenSourceSource.Token);
 					bridge.WaitForTransferJob();
 
-					_exportTapiBridgePool.ReleaseFiles(bridge);
+					_fileTapiBridgePool.Release(bridge);
 				}
 				catch (TaskCanceledException)
 				{

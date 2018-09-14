@@ -10,7 +10,7 @@ using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
-    public class Downloader : IDownloader
+	public class Downloader : IDownloader
 	{
 		private List<ExportRequest> _fileExportRequests;
 		private List<LongTextExportRequest> _longTextExportRequests;
@@ -19,20 +19,20 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private readonly SafeIncrement _safeIncrement;
 		private readonly IErrorFileWriter _errorFileWriter;
 
-		private readonly IExportTapiBridgePool _exportTapiBridgePool;
+		private readonly ILongTextTapiBridgePool _longTextTapiBridgePool;
 
 		private readonly ILog _logger;
-	    private readonly IExportRequestRetriever _exportRequestRetriever;
+		private readonly IExportRequestRetriever _exportRequestRetriever;
 
-	    public Downloader(IExportRequestRetriever exportRequestRetriever, IPhysicalFilesDownloader physicalFilesDownloader, SafeIncrement safeIncrement, 
-			IExportTapiBridgePool exportTapiBridgePool, IErrorFileWriter errorFileWriter, ILog logger)
+		public Downloader(IExportRequestRetriever exportRequestRetriever, IPhysicalFilesDownloader physicalFilesDownloader, SafeIncrement safeIncrement, ILongTextTapiBridgePool longTextTapiBridgePool,
+			IErrorFileWriter errorFileWriter, ILog logger)
 		{
 			_physicalFilesDownloader = physicalFilesDownloader;
 			_safeIncrement = safeIncrement;
-			_exportTapiBridgePool = exportTapiBridgePool;
+			_longTextTapiBridgePool = longTextTapiBridgePool;
 			_logger = logger;
-		    _exportRequestRetriever = exportRequestRetriever;
-		    _errorFileWriter = errorFileWriter;
+			_exportRequestRetriever = exportRequestRetriever;
+			_errorFileWriter = errorFileWriter;
 
 			if (Config.SuppressCertificateCheckOnClient)
 			{
@@ -62,27 +62,26 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 		private void RetrieveExportRequests()
 		{
 			_fileExportRequests = _exportRequestRetriever.RetrieveFileExportRequests();
-		    _longTextExportRequests = _exportRequestRetriever.RetrieveLongTextExportRequests();
+			_longTextExportRequests = _exportRequestRetriever.RetrieveLongTextExportRequests();
 		}
 
-	    private async Task DownloadRequests(CancellationToken cancellationToken)
+		private async Task DownloadRequests(CancellationToken cancellationToken)
 		{
-			IDownloadTapiBridge longTextDownloader = null;
 			try
 			{
 				Task filesDownloadTask =
 					_physicalFilesDownloader.DownloadFilesAsync(_fileExportRequests, cancellationToken);
 
-				longTextDownloader = _exportTapiBridgePool.RequestForLongText(cancellationToken);
+				IDownloadTapiBridge longTextDownloader = _longTextTapiBridgePool.Request(cancellationToken);
 				DownloadLongTexts(longTextDownloader, cancellationToken);
 
 				_logger.LogVerbose("Waiting for long text transfer to finish.");
 				longTextDownloader.WaitForTransferJob();
-				_exportTapiBridgePool.ReleaseLongText(longTextDownloader);
+				_longTextTapiBridgePool.Release(longTextDownloader);
 				_logger.LogVerbose("Long text transfer finished.");
 
 				_logger.LogVerbose("Waiting for files transfer to finish.");
-				await filesDownloadTask;
+				await filesDownloadTask.ConfigureAwait(false);
 				_logger.LogVerbose("Files transfer finished.");
 			}
 			catch (OperationCanceledException ex)
