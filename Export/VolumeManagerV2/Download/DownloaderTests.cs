@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
@@ -22,10 +20,9 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 		private NativeRepository _nativeRepository;
 		private ImageRepository _imageRepository;
 		private LongTextRepository _longTextRepository;
-	    private IExportRequestRetriever _exportRequestRetriever;
-        
-        private Mock<IErrorFileWriter> _errorFileWriter;
-		private Mock<IDownloadTapiBridge> _fileBridge;
+		private IExportRequestRetriever _exportRequestRetriever;
+
+		private Mock<IErrorFileWriter> _errorFileWriter;
 		private Mock<IDownloadTapiBridge> _textBridge;
 		private Mock<IPhysicalFilesDownloader> _physicalFilesDownloader;
 
@@ -35,15 +32,13 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			_nativeRepository = new NativeRepository();
 			_imageRepository = new ImageRepository();
 			_longTextRepository = new LongTextRepository(null, new NullLogger());
-            _exportRequestRetriever = new ExportRequestRetriever(_nativeRepository, _imageRepository, _longTextRepository);
+			_exportRequestRetriever = new ExportRequestRetriever(_nativeRepository, _imageRepository, _longTextRepository);
 
-			_fileBridge = new Mock<IDownloadTapiBridge>();
 			_textBridge = new Mock<IDownloadTapiBridge>();
 			_physicalFilesDownloader = new Mock<IPhysicalFilesDownloader>();
 
-			Mock<IExportTapiBridgePool> exportTapiBridgeFactory = new Mock<IExportTapiBridgePool>();
-			exportTapiBridgeFactory.Setup(x => x.RequestForFiles(It.IsAny<RelativityFileShareSettings>(), CancellationToken.None)).Returns(_fileBridge.Object);
-			exportTapiBridgeFactory.Setup(x => x.RequestForLongText(CancellationToken.None)).Returns(_textBridge.Object);
+			Mock<ILongTextTapiBridgePool> exportTapiBridgeFactory = new Mock<ILongTextTapiBridgePool>();
+			exportTapiBridgeFactory.Setup(x => x.Request(CancellationToken.None)).Returns(_textBridge.Object);
 
 			_errorFileWriter = new Mock<IErrorFileWriter>();
 			_instance = new Downloader(_exportRequestRetriever, _physicalFilesDownloader.Object,
