@@ -204,7 +204,9 @@
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\IFileEncodingConverter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\ILongTextEncodingConverter.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\IExportRequestRetriever.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\ILongTextDownloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\IPhysicalFilesDownloader.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\LongTextDownloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ExportRequestsWithFileshareSettings.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\PhysicalFilesDownloader.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\FileTapiBridgePool.cs" />
