@@ -41,7 +41,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			_textBridge = new Mock<IDownloadTapiBridge>();
 			_physicalFilesDownloader = new Mock<IPhysicalFilesDownloader>();
 
-			Mock<IExportTapiBridgeFactory> exportTapiBridgeFactory = new Mock<IExportTapiBridgeFactory>();
+			Mock<IExportTapiBridgePool> exportTapiBridgeFactory = new Mock<IExportTapiBridgePool>();
 			exportTapiBridgeFactory.Setup(x => x.CreateForFiles(It.IsAny<RelativityFileShareSettings>(), CancellationToken.None)).Returns(_fileBridge.Object);
 			exportTapiBridgeFactory.Setup(x => x.CreateForLongText(CancellationToken.None)).Returns(_textBridge.Object);
 
@@ -72,8 +72,6 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 
 			_textBridge.Verify(x => x.WaitForTransferJob(), Times.Once);
 
-			_textBridge.Verify(x => x.Dispose(), Times.Once);
-
 			Assert.That(longText.ExportRequest.FileName, Is.EqualTo(textUniqueID));
 		}
 
@@ -86,17 +84,6 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			Assert.Throws<TransferException>(() => _instance.DownloadFilesForArtifacts(CancellationToken.None));
 
 			_errorFileWriter.Verify(x => x.Write(ErrorFileWriter.ExportFileType.Generic, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
-		}
-
-		[Test]
-		public void ItShouldAlwaysDisposeTapiBridges()
-		{
-			_textBridge.Setup(x => x.WaitForTransferJob()).Throws<Exception>();
-
-			//ACT & ASSERT
-			Assert.Throws<Exception>(() => _instance.DownloadFilesForArtifacts(CancellationToken.None));
-
-			_textBridge.Verify(x => x.Dispose(), Times.Once);
 		}
 	}
 }
