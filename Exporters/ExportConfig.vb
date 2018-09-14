@@ -62,6 +62,12 @@ Public Class ExportConfig
 			Return kCura.Utility.Config.TapiBridgeExportTransferWaitingTimeInSeconds
 		End Get
 	End Property
+
+	Public ReadOnly Property TapiForceHttpClient As Boolean Implements IExportConfig.TapiForceHttpClient
+		Get
+			Return Config.TapiForceHttpClient
+		End Get
+	End Property
 End Class
 
 End Namespace

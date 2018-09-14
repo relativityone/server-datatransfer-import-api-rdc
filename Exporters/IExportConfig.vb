@@ -22,6 +22,8 @@ Public Interface IExportConfig
 
 	ReadOnly Property TapiBridgeExportTransferWaitingTimeInSeconds As Int32
 
+	ReadOnly Property TapiForceHttpClient As Boolean
+
 End Interface
 
 End Namespace
