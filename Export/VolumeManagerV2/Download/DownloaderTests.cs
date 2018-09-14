@@ -2,8 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
 using Moq;
@@ -23,8 +21,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 		private IExportRequestRetriever _exportRequestRetriever;
 
 		private Mock<IErrorFileWriter> _errorFileWriter;
-		private Mock<IDownloadTapiBridge> _textBridge;
 		private Mock<IPhysicalFilesDownloader> _physicalFilesDownloader;
+		private Mock<ILongTextDownloader> _longTextDownloader;
 
 		[SetUp]
 		public void SetUp()
@@ -34,16 +32,11 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			_longTextRepository = new LongTextRepository(null, new NullLogger());
 			_exportRequestRetriever = new ExportRequestRetriever(_nativeRepository, _imageRepository, _longTextRepository);
 
-			_textBridge = new Mock<IDownloadTapiBridge>();
 			_physicalFilesDownloader = new Mock<IPhysicalFilesDownloader>();
-
-			Mock<ILongTextTapiBridgePool> exportTapiBridgeFactory = new Mock<ILongTextTapiBridgePool>();
-			exportTapiBridgeFactory.Setup(x => x.Request(CancellationToken.None)).Returns(_textBridge.Object);
+			_longTextDownloader = new Mock<ILongTextDownloader>();
 
 			_errorFileWriter = new Mock<IErrorFileWriter>();
-			_instance = new Downloader(_exportRequestRetriever, _physicalFilesDownloader.Object,
-				new SafeIncrement(), exportTapiBridgeFactory.Object, _errorFileWriter.Object,
-				new NullLogger());
+			_instance = new Downloader(_exportRequestRetriever, _physicalFilesDownloader.Object, _longTextDownloader.Object, _errorFileWriter.Object, new NullLogger());
 		}
 
 		[Test]
@@ -52,28 +45,20 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			Native native = ModelFactory.GetNative(_nativeRepository);
 			ModelFactory.GetImage(native.Artifact.ArtifactID, _imageRepository);
 			ModelFactory.GetImage(native.Artifact.ArtifactID, _imageRepository);
-			LongText longText = ModelFactory.GetLongText(native.Artifact.ArtifactID, _longTextRepository);
-
-			const string textUniqueID = "text_unique_id";
-
-			_textBridge.Setup(x => x.QueueDownload(It.IsAny<TransferPath>())).Returns(textUniqueID);
+			ModelFactory.GetLongText(native.Artifact.ArtifactID, _longTextRepository);
 
 			//ACT
 			_instance.DownloadFilesForArtifacts(CancellationToken.None);
 
 			//ASSERT
 			_physicalFilesDownloader.Verify(x => x.DownloadFilesAsync(It.Is<List<ExportRequest>>(list => list.Count == 3), CancellationToken.None));
-			_textBridge.Verify(x => x.QueueDownload(It.IsAny<TransferPath>()), Times.Once);
-
-			_textBridge.Verify(x => x.WaitForTransferJob(), Times.Once);
-
-			Assert.That(longText.ExportRequest.FileName, Is.EqualTo(textUniqueID));
+			_longTextDownloader.Verify(x => x.DownloadAsync(It.Is<List<LongTextExportRequest>>(list => list.Count == 1), CancellationToken.None), Times.Once);
 		}
 
 		[Test]
 		public void ItShouldWriteErrorWhenTransferExceptionOccurred()
 		{
-			_textBridge.Setup(x => x.WaitForTransferJob()).Throws<TransferException>();
+			_physicalFilesDownloader.Setup(x => x.DownloadFilesAsync(It.IsAny<List<ExportRequest>>(), CancellationToken.None)).Throws<TransferException>();
 
 			//ACT & ASSERT
 			Assert.Throws<TransferException>(() => _instance.DownloadFilesForArtifacts(CancellationToken.None));
