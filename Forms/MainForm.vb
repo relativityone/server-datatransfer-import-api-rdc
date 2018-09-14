@@ -226,8 +226,10 @@ Namespace kCura.EDDS.WinForm
             Me._exportObjectsMenuItem.OwnerDraw = True
             Me._exportObjectsMenuItem.Text = "Objects"
             Me._exportObjectsMenuItem.Visible = False
-
-            '
+			'
+			'TransferMenu
+			'
+			'
             'OptionsMenu
             '
             Me.EnhancedMenuProvider.SetImageIndex(Me.OptionsMenu, -1)
@@ -406,6 +408,7 @@ Namespace kCura.EDDS.WinForm
                     'disable import and export menus if no permission
                     ToggleImportExportMenu()
                     'UpdateStatus("Case Folder Load: " + _application.SelectedCaseInfo.RootFolderID.ToString)
+					'disable staging explorer menu if no permission
                 Case appEvent.AppEventType.LogOnRequested
                     '' please note that url input and connection loop retry takes place on the stack
                     '' if in doubt what it means please try to input several times invalid web api url from main form settings and check call stack while having breakpoint on the following line
