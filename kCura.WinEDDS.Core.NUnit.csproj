@@ -144,6 +144,7 @@
     <Compile Include="Export\VolumeManagerV2\Download\FieldFileExportRequestBuilderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\FileExportRequestBuilderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ImageExportRequestBuilderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\LongTextDownloaderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ModelFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\NativeFileExportRequestBuilderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeAdapterTests.cs" />
