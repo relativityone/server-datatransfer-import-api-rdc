@@ -65,9 +65,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 
 		private void CreateTapiBridge(RelativityFileShareSettings fileshareSettings, CancellationToken token)
 		{
-			ITapiBridgeFactory tapiBridgeFactory =
-				new FilesTapiBridgeFactory(_tapiBridgeParametersFactory, _logger, fileshareSettings, token);
-			var smartTapiBridge = new SmartTapiBridge(_exportConfig, tapiBridgeFactory, token);
+			ITapiBridgeWrapperFactory tapiBridgeWrapperFactory =
+				new FilesTapiBridgeWrapperFactory(_tapiBridgeParametersFactory, _logger, fileshareSettings, token);
+			var smartTapiBridge = new SmartTapiBridge(_exportConfig, tapiBridgeWrapperFactory, token);
 
 			IProgressHandler progressHandler = new FileDownloadProgressHandler(_downloadProgressManager, _logger);
 			var downloadTapiBridgeForFiles = new DownloadTapiBridgeForFiles(smartTapiBridge, progressHandler, _messageHandler, _filesStatistics, _transferClientHandler, _logger);

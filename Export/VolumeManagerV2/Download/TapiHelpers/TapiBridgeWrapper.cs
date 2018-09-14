@@ -4,7 +4,7 @@ using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 {
-	public class TapiBridgeWrapper : ITapiBridge
+	public class TapiBridgeWrapper : ITapiBridgeWrapper
 	{
 		private readonly TapiBridgeBase _tapiBridge;
 
@@ -65,10 +65,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		public void WaitForTransferJob()
 		{
 			_tapiBridge.WaitForTransferJob();
-		}
-
-		public void Disconnect()
-		{
 		}
 
 		public void Dispose()

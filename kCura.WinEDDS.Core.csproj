@@ -212,13 +212,14 @@
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\FileTapiBridgePool.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\IFileTapiBridgePool.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ILongTextTapiBridgePool.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ITapiBridgeWrapper.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\LongTextTapiBridgePool.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\PoolEntry.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\WaitHandleExtensions.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\FilesTapiBridgeFactory.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ITapiBridgeFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\FilesTapiBridgeWrapperFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ITapiBridgeWrapperFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ITapiBridge.cs" />
-    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\LongTextTapiBridgeFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\LongTextTapiBridgeWrapperFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\SafeIncrement.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\SmartTapiBridge.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\TapiBridgeParametersFactory.cs" />

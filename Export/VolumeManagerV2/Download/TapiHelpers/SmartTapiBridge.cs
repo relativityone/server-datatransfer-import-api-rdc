@@ -10,9 +10,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		private int _downloadedFilesCounter;
 		private int _downloadRequestCounter;
 		private int _totalFilesDownloadedUsingTapiBridge;
-		private ITapiBridge _tapiBridge;
+		private ITapiBridgeWrapper _tapiBridge;
 		private readonly AutoResetEvent _autoResetEvent = new AutoResetEvent(true);
-		private readonly ITapiBridgeFactory _tapiBridgeFactory;
+		private readonly ITapiBridgeWrapperFactory _tapiBridgeWrapperFactory;
 		private readonly CancellationToken _token;
 		private readonly object _lockToken = new object();
 		private readonly TimeSpan _tapiBridgeExportTransferWaitingTime;
@@ -31,10 +31,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 
 		public event EventHandler<TapiMessageEventArgs> TapiFatalError;
 
-		public SmartTapiBridge(IExportConfig exportConfig, ITapiBridgeFactory tapiBridgeFactory,
+		public SmartTapiBridge(IExportConfig exportConfig, ITapiBridgeWrapperFactory tapiBridgeWrapperFactory,
 			CancellationToken token)
 		{
-			_tapiBridgeFactory = tapiBridgeFactory;
+			_tapiBridgeWrapperFactory = tapiBridgeWrapperFactory;
 			_token = token;
 			_tapiBridgeExportTransferWaitingTime =
 				TimeSpan.FromSeconds(exportConfig.TapiBridgeExportTransferWaitingTimeInSeconds);
@@ -71,7 +71,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 
 		private void CreateTapiBridge()
 		{
-			_tapiBridge = _tapiBridgeFactory.Create();
+			_tapiBridge = _tapiBridgeWrapperFactory.Create();
 			_tapiBridge.TapiProgress += OnTapiBridgeProgress;
 			_tapiBridge.TapiClientChanged += OnTapiBridgeClientChanged;
 			_tapiBridge.TapiErrorMessage += OnTapiBridgeErrorMessage;

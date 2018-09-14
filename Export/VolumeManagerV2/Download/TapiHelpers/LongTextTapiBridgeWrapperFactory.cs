@@ -4,13 +4,13 @@ using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 {
-	public class LongTextTapiBridgeFactory : ITapiBridgeFactory
+	public class LongTextTapiBridgeWrapperFactory : ITapiBridgeWrapperFactory
 	{
 		private readonly ILog _logger;
 		private readonly TapiBridgeParametersFactory _tapiBridgeParametersFactory;
 		private readonly CancellationToken _token;
 
-		public LongTextTapiBridgeFactory(TapiBridgeParametersFactory tapiBridgeParametersFactory, ILog logger,
+		public LongTextTapiBridgeWrapperFactory(TapiBridgeParametersFactory tapiBridgeParametersFactory, ILog logger,
 			CancellationToken token)
 		{
 			_tapiBridgeParametersFactory = tapiBridgeParametersFactory;
@@ -19,7 +19,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		}
 
 
-		public ITapiBridge Create()
+		public ITapiBridgeWrapper Create()
 		{
 			TapiBridgeParameters parameters = _tapiBridgeParametersFactory.CreateTapiBridgeParametersFromConfiguration();
 

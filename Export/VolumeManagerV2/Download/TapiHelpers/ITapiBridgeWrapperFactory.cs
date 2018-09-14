@@ -1,7 +1,7 @@
 ﻿namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 {
-	public interface ITapiBridgeFactory
+	public interface ITapiBridgeWrapperFactory
 	{
-		ITapiBridge Create();
+		ITapiBridgeWrapper Create();
 	}
 }

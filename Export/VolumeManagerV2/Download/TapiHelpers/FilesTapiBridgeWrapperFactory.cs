@@ -6,14 +6,14 @@ using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 {
-	public class FilesTapiBridgeFactory : ITapiBridgeFactory
+	public class FilesTapiBridgeWrapperFactory : ITapiBridgeWrapperFactory
 	{
 		private readonly RelativityFileShareSettings _fileshareSettings;
 		private readonly ILog _logger;
 		private readonly TapiBridgeParametersFactory _tapiBridgeParametersFactory;
 		private readonly CancellationToken _token;
 
-		public FilesTapiBridgeFactory(TapiBridgeParametersFactory tapiBridgeParametersFactory, ILog logger,
+		public FilesTapiBridgeWrapperFactory(TapiBridgeParametersFactory tapiBridgeParametersFactory, ILog logger,
 			RelativityFileShareSettings fileshareSettings, CancellationToken token)
 		{
 			_tapiBridgeParametersFactory = tapiBridgeParametersFactory;
@@ -22,7 +22,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			_token = token;
 		}
 
-		public ITapiBridge Create()
+		public ITapiBridgeWrapper Create()
 		{
 			TapiBridgeParameters parameters = _tapiBridgeParametersFactory.CreateTapiBridgeParametersFromConfiguration();
 
