@@ -28,7 +28,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private void Download(List<LongTextExportRequest> longTextExportRequests, CancellationToken cancellationToken)
 		{
-			IDownloadTapiBridge longTextDownloader = _longTextTapiBridgePool.Request(cancellationToken);
+			IDownloadTapiBridge bridge = _longTextTapiBridgePool.Request(cancellationToken);
 
 			foreach (LongTextExportRequest textExportRequest in longTextExportRequests)
 			{
@@ -41,7 +41,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				{
 					_logger.LogVerbose("Adding export request for downloading long text {fieldId} to {destination}.", textExportRequest.FieldArtifactId, textExportRequest.DestinationLocation);
 					TransferPath path = textExportRequest.CreateTransferPath(_safeIncrement.GetNext());
-					textExportRequest.FileName = longTextDownloader.QueueDownload(path);
+					textExportRequest.FileName = bridge.QueueDownload(path);
 				}
 				catch (Exception ex)
 				{
@@ -50,8 +50,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				}
 			}
 
-			longTextDownloader.WaitForTransferJob();
-			_longTextTapiBridgePool.Release(longTextDownloader);
+			bridge.WaitForTransferJob();
+			_longTextTapiBridgePool.Release(bridge);
 		}
 	}
 }
