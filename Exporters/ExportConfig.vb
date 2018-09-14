@@ -57,6 +57,11 @@ Public Class ExportConfig
 	    End Get
 	End Property
 
+	Public ReadOnly Property MaximumWaitingTimeBetweenProgressEventsForExportInSeconds As Integer Implements IExportConfig.MaximumWaitingTimeBetweenProgressEventsForExportInSeconds
+		Get
+			Return kCura.Utility.Config.MaximumWaitingTimeBetweenProgressEventsForExportInSeconds
+		End Get
+	End Property
 End Class
 
 End Namespace
