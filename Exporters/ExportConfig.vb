@@ -57,9 +57,9 @@ Public Class ExportConfig
 	    End Get
 	End Property
 
-	Public ReadOnly Property MaximumWaitingTimeBetweenProgressEventsForExportInSeconds As Integer Implements IExportConfig.MaximumWaitingTimeBetweenProgressEventsForExportInSeconds
+	Public ReadOnly Property TapiBridgeExportTransferWaitingTimeInSeconds As Integer Implements IExportConfig.TapiBridgeExportTransferWaitingTimeInSeconds
 		Get
-			Return kCura.Utility.Config.MaximumWaitingTimeBetweenProgressEventsForExportInSeconds
+			Return kCura.Utility.Config.TapiBridgeExportTransferWaitingTimeInSeconds
 		End Get
 	End Property
 End Class

@@ -20,7 +20,7 @@ Public Interface IExportConfig
 
 	ReadOnly Property MaxNumberOfFileExportTasks() As Int32
 
-	ReadOnly Property MaximumWaitingTimeBetweenProgressEventsForExportInSeconds As Int32
+	ReadOnly Property TapiBridgeExportTransferWaitingTimeInSeconds As Int32
 
 End Interface
 
