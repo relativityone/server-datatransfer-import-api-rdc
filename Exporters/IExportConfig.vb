@@ -23,7 +23,7 @@ Public Interface IExportConfig
 	ReadOnly Property TapiBridgeExportTransferWaitingTimeInSeconds As Int32
 
 	ReadOnly Property TapiForceHttpClient As Boolean
-	ReadOnly Property TotalFilesToDownloadUsingTapiBridge As Integer
+	ReadOnly Property MaximumFilesForTapiBridge As Integer
 End Interface
 
 End Namespace

@@ -69,9 +69,9 @@ Public Class ExportConfig
 		End Get
 	End Property
 
-	Public ReadOnly Property TotalFilesToDownloadUsingTapiBridge As Integer Implements IExportConfig.TotalFilesToDownloadUsingTapiBridge
+	Public ReadOnly Property MaximumFilesForTapiBridge As Integer Implements IExportConfig.MaximumFilesForTapiBridge
 		Get
-			Return kCura.Utility.Config.TotalFilesToDownloadUsingTapiBridge
+			Return kCura.Utility.Config.MaximumFilesForTapiBridge
 		End Get
 	End Property
 End Class
