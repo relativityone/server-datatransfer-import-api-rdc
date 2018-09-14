@@ -39,7 +39,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			_token = token;
 			_tapiBridgeExportTransferWaitingTime =
 				TimeSpan.FromSeconds(exportConfig.TapiBridgeExportTransferWaitingTimeInSeconds);
-			_totalFilesDownloadedUsingTapiBridge = exportConfig.TotalFilesToDownloadUsingTapiBridge;
+			_maximumFilesForTapiBridge = exportConfig.MaximumFilesForTapiBridge;
 		}
 
 		public TapiClient ClientType => _tapiBridge?.ClientType ?? TapiClient.None;
@@ -151,7 +151,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			_downloadedFilesCounter = 0;
 			_downloadRequestCounter = 0;
 
-			if (_totalFilesDownloadedUsingTapiBridge > _maximumFilesForTapiBridge)
+			if (_totalFilesDownloadedUsingTapiBridge >= _maximumFilesForTapiBridge)
 			{
 				RemoveTapiBridge();
 			}
