@@ -16,7 +16,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		private readonly CancellationToken _token;
 		private readonly object _lockToken = new object();
 		private readonly TimeSpan _tapiBridgeExportTransferWaitingTime;
-		private DateTime _lastProgressUpdateTime;
 
 		public event EventHandler<TapiMessageEventArgs> TapiStatusMessage;
 
@@ -83,7 +82,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 
 		private void OnTapiBridgeProgress(object sender, TapiProgressEventArgs e)
 		{
-			_lastProgressUpdateTime = DateTime.Now;
 			if (e.DidTransferSucceed)
 			{
 				lock (_lockToken)
@@ -131,8 +129,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 
 		public void WaitForTransferJob()
 		{
-			_lastProgressUpdateTime = DateTime.Now;
-
 			lock (_lockToken)
 			{
 				if (_downloadRequestCounter != _downloadedFilesCounter)
