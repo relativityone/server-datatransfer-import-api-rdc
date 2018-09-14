@@ -42,8 +42,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			_physicalFilesDownloader = new Mock<IPhysicalFilesDownloader>();
 
 			Mock<IExportTapiBridgePool> exportTapiBridgeFactory = new Mock<IExportTapiBridgePool>();
-			exportTapiBridgeFactory.Setup(x => x.CreateForFiles(It.IsAny<RelativityFileShareSettings>(), CancellationToken.None)).Returns(_fileBridge.Object);
-			exportTapiBridgeFactory.Setup(x => x.CreateForLongText(CancellationToken.None)).Returns(_textBridge.Object);
+			exportTapiBridgeFactory.Setup(x => x.RequestForFiles(It.IsAny<RelativityFileShareSettings>(), CancellationToken.None)).Returns(_fileBridge.Object);
+			exportTapiBridgeFactory.Setup(x => x.RequestForLongText(CancellationToken.None)).Returns(_textBridge.Object);
 
 			_errorFileWriter = new Mock<IErrorFileWriter>();
 			_instance = new Downloader(_exportRequestRetriever, _physicalFilesDownloader.Object,
