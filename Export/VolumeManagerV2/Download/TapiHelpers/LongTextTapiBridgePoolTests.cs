@@ -26,25 +26,25 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.TapiHelpers
 		}
 
 		[Test]
-		public void ItShouldNotReleaseBridge()
+		public void ItShouldDisposeBridges()
 		{
 			// ACT
 			_instance.Release(_bridge.Object);
 
 			// ASSERT
 			_bridge.Verify(x => x.Disconnect(), Times.Never);
-			_bridge.Verify(x => x.Dispose(), Times.Never);
+			_bridge.Verify(x => x.Dispose(), Times.Once);
 		}
 
 		[Test]
-		public void ItShouldCreateOnlyOneBridge()
+		public void ItShouldCreateBridgeForEveryRequest()
 		{
 			// ACT
 			_instance.Request(CancellationToken.None);
 			_instance.Request(CancellationToken.None);
 
 			// ASSERT
-			_factory.Verify(x => x.Create(CancellationToken.None), Times.Once);
+			_factory.Verify(x => x.Create(CancellationToken.None), Times.Exactly(2));
 		}
 
 		[Test]
