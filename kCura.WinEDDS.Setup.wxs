@@ -101,8 +101,8 @@
 		</Component>
 		<Component Id="NativeDependencies" Directory="INSTALLDIR" Guid="{7C02F4C7-9DC9-403E-9242-124F71C39CEB}" KeyPath="yes">
 			<File Id='Primary.itextsharp' Name='itextsharp.dll' DiskId='1' Source='..\..\Vendor\iTextSharp\5.1.2_bin\$(var.Platform)\itextsharp.dll' />
-			<File Id='Primary.FreeImageNET' Name='FreeImageNET.dll' DiskId='1' Source='..\..\Vendor\FreeImage\3.151\FreeImage\Wrapper\FreeImage.NET\cs\Deploy\$(var.Platform)\FreeImageNET.dll' />
-			<File Id='Primary.FreeImage' Name='FreeImage.dll' DiskId='1' Source='..\..\Vendor\FreeImage\3.151\FreeImage\Release\$(var.Platform)\FreeImage.dll' />
+			<File Id='Primary.FreeImageNET' Name='FreeImageNET.dll' DiskId='1' Source='..\..\Vendor\FreeImage\3.18.0\FreeImageNET.dll' />
+			<File Id='Primary.FreeImage' Name='FreeImage.dll' DiskId='1' Source='..\..\Vendor\FreeImage\3.18.0\FreeImage.dll' />
 		</Component>
 	  <Component Id="RegistryEntries"  Directory="INSTALLDIR" Guid="{A20005D6-52D7-485B-9A2D-D0C335B0302B}">
 			<RegistryKey Root="HKLM" Key="$(var.RegistryKey)" ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
