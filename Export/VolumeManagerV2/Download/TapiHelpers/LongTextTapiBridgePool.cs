@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Relativity.Logging;
 
@@ -6,7 +7,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 {
 	public class LongTextTapiBridgePool : ILongTextTapiBridgePool
 	{
-		private IDownloadTapiBridge _longTextTapiBridge;
+		private readonly List<IDownloadTapiBridge> _longTextTapiBridges;
 
 		private readonly ILongTextTapiBridgeFactory _factory;
 		private readonly ILog _logger;
@@ -15,30 +16,36 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		{
 			_factory = factory;
 			_logger = logger;
+
+			_longTextTapiBridges = new List<IDownloadTapiBridge>();
 		}
 
 		public IDownloadTapiBridge Request(CancellationToken token)
 		{
-			if (_longTextTapiBridge != null)
-			{
-				return _longTextTapiBridge;
-			}
-
-			_longTextTapiBridge = _factory.Create(token);
-
-			return _longTextTapiBridge;
+			IDownloadTapiBridge longTextTapiBridge = _factory.Create(token);
+			_longTextTapiBridges.Add(longTextTapiBridge);
+			return longTextTapiBridge;
 		}
 
 		public void Release(IDownloadTapiBridge bridge)
 		{
-			//Do nothing as long text tapi bridge is going through web mode
+			_longTextTapiBridges.Remove(bridge);
+			TryDisposeTapiBridge(bridge);
 		}
 
 		public void Dispose()
 		{
+			foreach (IDownloadTapiBridge bridge in _longTextTapiBridges)
+			{
+				TryDisposeTapiBridge(bridge);
+			}
+		}
+
+		private void TryDisposeTapiBridge(IDownloadTapiBridge bridge)
+		{
 			try
 			{
-				_longTextTapiBridge?.Dispose();
+				bridge?.Dispose();
 			}
 			catch (Exception ex)
 			{

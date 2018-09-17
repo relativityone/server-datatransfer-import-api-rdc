@@ -30,7 +30,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		public IDownloadTapiBridge Create(CancellationToken token)
 		{
 			ITapiBridgeWrapperFactory tapiBridgeWrapperFactory = new LongTextTapiBridgeWrapperFactory(_tapiBridgeParametersFactory, _logger, token);
-			var smartTapiBridge = new SmartTapiBridge(_exportConfig, tapiBridgeWrapperFactory, token);
+			ITapiBridgeWrapper tapiBridgeWrapper = tapiBridgeWrapperFactory.Create();
+			var smartTapiBridge = new EmptyTapiBridge(tapiBridgeWrapper);
 
 			LongTextEncodingConverter longTextEncodingConverter = _converterFactory.Create(token);
 			return new DownloadTapiBridgeWithEncodingConversion(smartTapiBridge, new LongTextProgressHandler(_downloadProgressManager, _logger), _messageHandler, _metadataStatistics,
