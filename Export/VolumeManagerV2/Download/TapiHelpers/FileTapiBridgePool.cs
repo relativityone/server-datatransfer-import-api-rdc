@@ -10,7 +10,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 {
 	public class FileTapiBridgePool : IFileTapiBridgePool
 	{
-		private readonly IDictionary<RelativityFileShareSettings, PoolEntry> _fileTapiBridges;
+		private readonly object _sync = new object();
+
+		private readonly IDictionary<IRelativityFileShareSettings, PoolEntry> _fileTapiBridges;
 
 		private readonly IExportConfig _exportConfig;
 		private readonly TapiBridgeParametersFactory _tapiBridgeParametersFactory;
@@ -47,14 +49,20 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 				CreateTapiBridge(fileshareSettings, token);
 			}
 
-			if (_fileTapiBridges.Values.Count(x => x.Connected) >= _exportConfig.MaxNumberOfFileExportTasks)
+			PoolEntry connectedNotUsed = null;
+			lock (_sync)
 			{
-				PoolEntry connectedNotUsed = _fileTapiBridges.Values.First(x => x.Connected && !x.InUse);
-				connectedNotUsed.Connected = false;
-				if (connectedNotUsed != _fileTapiBridges[fileshareSettings])
+				if (_fileTapiBridges.Values.Count(x => x.Connected) >= _exportConfig.MaxNumberOfFileExportTasks)
 				{
-					connectedNotUsed.Bridge.Disconnect();
-				}
+					connectedNotUsed = _fileTapiBridges.Values.FirstOrDefault(x => x.Connected && !x.InUse);
+					if (connectedNotUsed != null)
+					{
+						connectedNotUsed.Connected = false;
+			}
+
+			if (connectedNotUsed != null && connectedNotUsed != _fileTapiBridges[fileshareSettings])
+			{
+				connectedNotUsed.Bridge.Disconnect();
 			}
 
 			_fileTapiBridges[fileshareSettings].Connected = true;
