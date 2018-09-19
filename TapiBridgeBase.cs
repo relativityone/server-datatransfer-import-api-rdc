@@ -22,7 +22,6 @@ namespace kCura.WinEDDS.TApi
     using Polly;
 
     using Relativity.Transfer;
-    using Relativity.Transfer.Aspera;
     using Relativity.Transfer.Http;
 
     /// <summary>
@@ -344,6 +343,7 @@ namespace kCura.WinEDDS.TApi
 
 			this.TransferLog.LogInformation("WinEDDS - Version: {WinEDDSVersion}", windEddsVersion);
 			this.TransferLog.LogInformation("TAPI - Version: {TapiVersion}", tapiVersion);
+	        this.TransferLog.LogInformation("Application: {ClientRequestId}", parameters.Application);
 			this.TransferLog.LogInformation("Client request id: {ClientRequestId}", parameters.ClientRequestId);
 			this.TransferLog.LogInformation("Aspera doc root level: {AsperaDocRootLevels}", parameters.AsperaDocRootLevels);
 			this.TransferLog.LogInformation("File share: {FileShare}", parameters.FileShare);
@@ -356,7 +356,8 @@ namespace kCura.WinEDDS.TApi
 			this.TransferLog.LogInformation("Min data rate: {MinDataRateMbps} Mbps", parameters.MinDataRateMbps);
             this.TransferLog.LogInformation("Retry on file permission error: {PermissionErrorsRetry}", parameters.PermissionErrorsRetry);
             this.TransferLog.LogInformation("Retry on bad path error: {BadPathErrorsRetry}", parameters.BadPathErrorsRetry);
-            this.TransferLog.LogInformation("Target data rate: {TargetDataRateMbps} Mbps", parameters.TargetDataRateMbps);
+	        this.TransferLog.LogInformation("Submit APM metrics: {SubmitApmMetrics}", parameters.SubmitApmMetrics);
+			this.TransferLog.LogInformation("Target data rate: {TargetDataRateMbps} Mbps", parameters.TargetDataRateMbps);
 			this.TransferLog.LogInformation("Wait time between retry attempts: {WaitTimeBetweenRetryAttempts}", parameters.WaitTimeBetweenRetryAttempts);
 			this.TransferLog.LogInformation("Workspace identifier: {WorkspaceId}", parameters.WorkspaceId);
 		}
@@ -551,23 +552,26 @@ namespace kCura.WinEDDS.TApi
 			var configuration =
 				new ClientConfiguration
 				{
-				    BcpRootFolder = this.parameters.AsperaBcpRootFolder,
-                    CookieContainer = this.parameters.WebCookieContainer,
-                    HttpTimeoutSeconds = this.parameters.TimeoutSeconds,
-                    MaxJobParallelism = this.parameters.MaxJobParallelism,
+					BadPathErrorsRetry = this.parameters.BadPathErrorsRetry,
+					BcpRootFolder = this.parameters.AsperaBcpRootFolder,
+					CookieContainer = this.parameters.WebCookieContainer,
+					Credential = this.parameters.FileshareCredentials != null
+						? this.parameters.FileshareCredentials.CreateCredential()
+						: null,
+					FileTransferHint = FileTransferHint.Natives,
+					HttpTimeoutSeconds = this.parameters.TimeoutSeconds,
+					MaxJobParallelism = this.parameters.MaxJobParallelism,
 					MaxJobRetryAttempts = this.parameters.MaxJobRetryAttempts,
 					MaxHttpRetryAttempts = MaxHttpRetryAttempts,
 					MinDataRateMbps = this.parameters.MinDataRateMbps,
+					PermissionErrorsRetry = this.parameters.PermissionErrorsRetry,
 					PreCalculateJobSize = false,
 					PreserveDates = false,
+					SupportCheckPath = this.parameters.SupportCheckPath,
 					TargetDataRateMbps = this.parameters.TargetDataRateMbps,
 					TransferLogDirectory = this.parameters.TransferLogDirectory,
-					ValidateSourcePaths = ValidateSourcePaths,
-                    PermissionErrorsRetry = this.parameters.PermissionErrorsRetry,
-				    BadPathErrorsRetry = this.parameters.BadPathErrorsRetry,
-					Credential = this.parameters.FileshareCredentials?.CreateCredential(),
-				    SupportCheckPath = this.parameters.SupportCheckPath
-                };
+					ValidateSourcePaths = ValidateSourcePaths
+				};
 			return configuration;
 		}
 
@@ -589,6 +593,10 @@ namespace kCura.WinEDDS.TApi
         /// <param name="httpFallback">
         /// Specify whether this method is setting up the HTTP fallback client.
         /// </param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Microsoft.Design",
+            "CA1031:DoNotCatchGeneralExceptionTypes",
+            Justification = "Never fail due to retrieving process info.")]
         private void CreateTransferJob(bool httpFallback)
         {
             this.CheckDispose();
@@ -602,7 +610,21 @@ namespace kCura.WinEDDS.TApi
             this.currentJobNumber++;
             this.currentJobId = Guid.NewGuid();
             this.jobRequest = CreateTransferRequestForJob(this.context);
-            this.jobRequest.ClientRequestId = this.parameters.ClientRequestId;
+	        this.jobRequest.Application = this.parameters.Application;
+	        if (string.IsNullOrEmpty(this.jobRequest.Application))
+	        {
+		        try
+		        {
+			        var file = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+			        this.jobRequest.Application = System.IO.Path.GetFileName(file);
+		        }
+		        catch (Exception)
+		        {
+			        this.jobRequest.Application = System.Diagnostics.Process.GetCurrentProcess().ProcessName;
+		        }
+	        }
+
+	        this.jobRequest.ClientRequestId = this.parameters.ClientRequestId;
             this.jobRequest.JobId = this.currentJobId;
             this.jobRequest.Tag = this.currentJobNumber;
 
@@ -613,6 +635,9 @@ namespace kCura.WinEDDS.TApi
             this.jobRequest.RetryStrategy =
                 RetryStrategies.CreateFixedTimeStrategy(this.parameters.WaitTimeBetweenRetryAttempts);
             this.SetupRemotePathResolvers(this.jobRequest);
+
+            // Submitting APM metrics is an opt-in feature.
+            this.jobRequest.SubmitApmMetrics = this.parameters.SubmitApmMetrics;
 
             try
             {

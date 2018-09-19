@@ -24,12 +24,14 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         public TapiBridgeParameters()
         {
-            this.AsperaBcpRootFolder = "BCPPath";
+	        this.Application = null;
+            this.AsperaBcpRootFolder = null;
             this.AsperaDocRootLevels = 1;
             this.BadPathErrorsRetry = false;
             this.ClientRequestId = Guid.NewGuid();
             this.Credentials = null;
             this.FileShare = null;
+            this.FileshareCredentials = null;
             this.ForceAsperaClient = false;
             this.ForceClientCandidates = null;
             this.ForceHttpClient = false;
@@ -39,7 +41,8 @@ namespace kCura.WinEDDS.TApi
             this.MaxJobParallelism = 10;
             this.MaxJobRetryAttempts = 3;
             this.MinDataRateMbps = 0;
- 			this.PermissionErrorsRetry = false;
+            this.PermissionErrorsRetry = false;
+            this.SubmitApmMetrics = false;
             this.SupportCheckPath = null;
             this.TargetDataRateMbps = 100;
             this.TargetPath = null;
@@ -64,12 +67,14 @@ namespace kCura.WinEDDS.TApi
                 throw new ArgumentNullException(nameof(copy));
             }
 
+	        this.Application = copy.Application;
             this.AsperaBcpRootFolder = copy.AsperaBcpRootFolder;
             this.AsperaDocRootLevels = copy.AsperaDocRootLevels;
             this.BadPathErrorsRetry = copy.BadPathErrorsRetry;
             this.ClientRequestId = copy.ClientRequestId;
             this.Credentials = copy.Credentials;
             this.FileShare = copy.FileShare;
+            this.FileshareCredentials = copy.FileshareCredentials;
             this.ForceAsperaClient = copy.ForceAsperaClient;
             this.ForceClientCandidates = copy.ForceClientCandidates;
             this.ForceHttpClient = copy.ForceHttpClient;
@@ -81,6 +86,7 @@ namespace kCura.WinEDDS.TApi
             this.MaxJobRetryAttempts = copy.MaxJobRetryAttempts;
             this.MinDataRateMbps = copy.MinDataRateMbps;
             this.PermissionErrorsRetry = copy.PermissionErrorsRetry;
+            this.SubmitApmMetrics = copy.SubmitApmMetrics;
             this.SupportCheckPath = copy.SupportCheckPath;
             this.TargetPath = copy.TargetPath;
             this.TimeoutSeconds = copy.TimeoutSeconds;
@@ -91,13 +97,25 @@ namespace kCura.WinEDDS.TApi
             this.WorkspaceId = copy.WorkspaceId;
         }
 
-        /// <summary>
-        /// Gets or sets the Aspera BCP root folder.
-        /// </summary>
-        /// <value>
-        /// The folder.
-        /// </value>
-        public string AsperaBcpRootFolder
+	    /// <summary>
+	    /// Gets or sets the optional application name for this request. When specified, this value is attached to the APM metrics and other reporting features for added insight.
+	    /// </summary>
+	    /// <value>
+	    /// The application.
+	    /// </value>
+	    public string Application
+	    {
+		    get;
+		    set;
+	    }
+
+		/// <summary>
+		/// Gets or sets the Aspera BCP root folder.
+		/// </summary>
+		/// <value>
+		/// The folder.
+		/// </value>
+		public string AsperaBcpRootFolder
         {
             get;
             set;
@@ -294,8 +312,20 @@ namespace kCura.WinEDDS.TApi
             get;
             set;
         }
-		
-		/// <summary>
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to submit APM metrics to Relativity once the transfer job completes. This is <see langword="false" /> by default.
+        /// </summary>
+        /// <value>
+        /// <see langword="true" /> to submit APM metrics; otherwise, <see langword="false" />.
+        /// </value>
+        public bool SubmitApmMetrics
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Gets or sets the support check path.
         /// </summary>
         /// <value>
