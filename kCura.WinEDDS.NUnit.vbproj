@@ -88,11 +88,18 @@
     <MyType>Windows</MyType>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Castle.Core.4.2.0\lib\net45\Castle.Core.dll</HintPath>
+    </Reference>
     <Reference Include="FaspManager, Version=3.7.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\relativity.faspmanager.3.7.2.0\lib\net40\FaspManager.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NSubstitute, Version=3.1.0.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NSubstitute.3.1.0\lib\net46\NSubstitute.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
@@ -101,17 +108,17 @@
     <Reference Include="Polly, Version=5.3.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Polly.5.3.1\lib\net45\Polly.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.20.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.1.0.20\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
+    <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.21.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.1.0.21\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Kepler, Version=1.0.1.445, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Kepler.1.0.1.445\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging">
-      <HintPath>..\..\packages\Relativity.Logging.9.4.311\lib\net462\Relativity.Logging.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Logging.9.4.317\lib\net462\Relativity.Logging.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces">
-      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.311\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.317\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.445, Culture=neutral, processorArchitecture=MSIL">
@@ -125,23 +132,27 @@
     </Reference>
     <Reference Include="Relativity.Transfer.Client, Version=3.2.18180.3, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\packages\relativity.transfer.client.3.2.1\lib\net462\Relativity.Transfer.Client.dll</HintPath>
-      <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Aspera, Version=3.2.18180.3, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.3.2.1\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.164.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.164\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Core, Version=3.2.18180.3, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.3.2.1\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.6.88.61, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface.9.6.88.61\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.FileShare, Version=3.2.18180.3, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.3.2.1\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.Transfer.Client, Version=4.1.18254.14, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.4.1.24\lib\net462\Relativity.Transfer.Client.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Http, Version=3.2.18180.3, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.3.2.1\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.Transfer.Client.Aspera, Version=4.1.18254.14, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.4.1.24\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.Core, Version=4.1.18254.14, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.4.1.24\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.FileShare, Version=4.1.18254.14, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.4.1.24\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.Http, Version=4.1.18254.14, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.4.1.24\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
     </Reference>
     <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
       <HintPath>..\..\packages\SSH.NET.2016.0.0\lib\net40\Renci.SshNet.dll</HintPath>
@@ -150,10 +161,14 @@
       <HintPath>..\..\Vendor\RhinoMocks\3.6\Rhino.Mocks.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Threading.Tasks.Extensions.4.3.0\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -190,6 +205,7 @@
     <Compile Include="MockBulkImportManagerSqlExceptions.vb" />
     <Compile Include="MockBulkImportManagerWebExceptions.vb" />
     <Compile Include="MockBulkLoadFileImporter.vb" />
+    <Compile Include="Monitoring\MetricsSinkConfigTests.vb" />
     <Compile Include="OutputFileWriterTests.vb" />
     <Compile Include="PreviewChoicesHelperTests.vb" />
     <Compile Include="RegKeyHelper.vb" />
