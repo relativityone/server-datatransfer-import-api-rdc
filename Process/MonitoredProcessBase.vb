@@ -45,6 +45,14 @@ Public MustInherit Class MonitoredProcessBase
 		StartTime = DateTime.Now
 	End Sub
 
+	Protected Overridable Sub SetEndTime()
+		EndTime = DateTime.Now
+	End Sub
+
+	Protected Overridable Sub SetStartTime()
+		StartTime = DateTime.Now
+	End Sub
+
 	Protected Overridable Sub OnFatalError()
 		SetEndTime()
 		Me.ProcessObserver.RaiseStatusEvent("", $"{JobType} aborted")
@@ -68,17 +76,83 @@ Public MustInherit Class MonitoredProcessBase
 
 	Protected Sub SendTransferJobStartedMessage()
 		If InitialTapiClientName Is Nothing Then
-			MessageService.Send(New TransferJobStartedMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CorrelationID = JobGuid.ToString()})
+			Me.SendMessageAsync(New TransferJobStartedMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CorrelationID = JobGuid.ToString()})
 			InitialTapiClientName = TapiClientName
 		End If
 	End Sub
 
 	Protected Sub SendTransferJobFailedMessage()
-		MessageService.Send(New TransferJobFailedMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CorrelationID = JobGuid.ToString()})
+		Me.SendMessageAsync(New TransferJobFailedMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CorrelationID = JobGuid.ToString()})
 	End Sub
 
 	Protected Sub SendTransferJobCompletedMessage()
-		MessageService.Send(New TransferJobCompletedMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CorrelationID = JobGuid.ToString()})
+		Me.SendMessageAsync(New TransferJobCompletedMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CorrelationID = JobGuid.ToString()})
+	End Sub
+
+	Protected Sub SendThroughputStatistics(metadataThroughput As Double, fileThroughput As Double)
+		Dim message As TransferJobProgressMessage = New TransferJobProgressMessage()
+		BuildApmBaseMessage(message)
+		message.MetadataThroughput = metadataThroughput
+		message.FileThroughput = fileThroughput
+		Me.SendMessageAsync(message)
+	End Sub
+
+	Protected Sub SendJobStatistics(statistics As Statistics)
+		SendJobThroughputMessage(statistics)
+		SendJobTotalRecordsCountMessage()
+		SendJobCompletedRecordsCountMessage()
+		SendJobSize(statistics)
+	End Sub
+
+	Protected Sub SendJobThroughputMessage(statistics As Statistics)
+		If CompletedRecordsCount = 0 Then
+			Return
+		End If
+		Dim duration As System.TimeSpan = EndTime - StartTime
+		Dim recordsPerSecond As Double
+		Dim bytesPerSecond As Double
+		If duration.TotalSeconds = 0 Then
+			recordsPerSecond = 0
+			bytesPerSecond = 0
+		Else
+			recordsPerSecond = CompletedRecordsCount / duration.TotalSeconds
+			bytesPerSecond = (statistics.FileBytes + statistics.MetadataBytes) / duration.TotalSeconds
+		End If
+
+		Me.SendMessageAsync(New TransferJobThroughputMessage With {.JobType = JobType, .TransferMode = TapiClientName, .RecordsPerSecond = recordsPerSecond, .BytesPerSecond = bytesPerSecond, .CorrelationID = JobGuid.ToString()})
+	End Sub
+
+	Protected Sub SendJobTotalRecordsCountMessage()
+		Me.SendMessageAsync(New TransferJobTotalRecordsCountMessage With {.JobType = JobType, .TransferMode = TapiClientName, .TotalRecords = TotalRecords, .CorrelationID = JobGuid.ToString()})
+	End Sub
+
+	Protected Sub SendJobCompletedRecordsCountMessage()
+		Me.SendMessageAsync(New TransferJobCompletedRecordsCountMessage With {.JobType = JobType, .TransferMode = TapiClientName, .CompletedRecords = CompletedRecordsCount, .CorrelationID = JobGuid.ToString()})
+	End Sub
+
+	Private Sub SendJobSize(statistics As Statistics)
+		Dim message As TransferJobStatisticsMessage = New TransferJobStatisticsMessage() With {
+				.MetadataBytes = statistics.MetadataBytes,
+				.FileBytes = statistics.FileBytes,
+				.JobSizeInBytes = statistics.MetadataBytes + statistics.FileBytes
+				}
+		BuildApmBaseMessage(message)
+		Me.SendMessageAsync(message)
+	End Sub
+
+	Private Sub BuildApmBaseMessage(message As TransferJobMessageBase)
+		message.JobType = JobType
+		message.TransferMode = TapiClientName
+		message.CorrelationID = JobGuid.ToString()
+		message.CustomData.Add("UseOldExport", Config.UseOldExport)
+		message.UnitOfMeasure = "Bytes(s)"
+		If Not (CaseInfo Is Nothing) Then
+			message.WorkspaceID = CaseInfo.ArtifactID
+		End If
+	End Sub
+
+	Private Sub SendMessageAsync(message As IMessage)
+		Me.MessageService.Send(message)
 	End Sub
 
 	Protected Sub SendThroughputStatistics(metadataThroughput As Double, fileThroughput As Double)

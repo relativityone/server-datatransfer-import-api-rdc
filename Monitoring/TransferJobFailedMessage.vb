@@ -1,6 +1,5 @@
 ﻿Namespace kCura.WinEDDS.Monitoring
-	Public Class TransferJobStartedMessage
+	Public Class TransferJobFailedMessage
 		Inherits TransferJobMessageBase
 	End Class
-
 End Namespace

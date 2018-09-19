@@ -1,5 +1,4 @@
-﻿Imports kCura.WinEDDS.Monitoring
-Imports Relativity.DataTransfer.MessageService
+﻿Imports Relativity.DataTransfer.MessageService
 Imports Relativity.DataTransfer.MessageService.Tools
 Imports Relativity.Services.ServiceProxy
 

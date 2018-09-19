@@ -6,5 +6,5 @@
     cause the file to be unrecognizable by the program.
 -->
 <GenericObjectDataSource DisplayName="InitializationResults" Version="1.0" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
-   <TypeInfo>kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults, Web References.kCura.EDDS.WebAPI.ExportManagerBase.Reference.vb, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</TypeInfo>
+   <TypeInfo>kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults, Web References.kCura.EDDS.WebAPI.ExportManagerBase.Reference.vb.dll, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</TypeInfo>
 </GenericObjectDataSource>

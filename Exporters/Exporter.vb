@@ -156,6 +156,11 @@ Namespace kCura.WinEDDS
 		End Sub
 
 #Region "Constructors"
+
+		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory)
+			Me.New(exportFile, processController, New Service.Export.WebApiServiceFactory(exportFile), loadFileFormatterFactory, New ExportConfig)
+		End Sub
+
 		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal processController As kCura.Windows.Process.Controller, serviceFactory As Service.Export.IServiceFactory,
 					   loadFileFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
 			_searchManager = serviceFactory.CreateSearchManager()
@@ -324,7 +329,7 @@ Namespace kCura.WinEDDS
 			End If
 			Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 
-			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, exportInitializationArgs.ColumnNames, UseOldExport)
+			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, exportInitializationArgs.ColumnNames, UseOldExport, _loadFileFormatterFactory)
 				Dim batch As IBatch = Nothing
 				Dim objectExportableSize As IObjectExportableSize = Nothing
 
@@ -350,21 +355,20 @@ Namespace kCura.WinEDDS
 
 				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", kCura.Windows.Process.EventType.ResetStartTime, _lastStatisticsSnapshot, Statistics))
 				RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType.ToString)
-				
+
 				Dim records As Object() = Nothing
-				Dim start, realStart As Int32
+				Dim nextRecordIndex As Int32 = 0
 				Dim lastRecordCount As Int32 = -1
 				While lastRecordCount <> 0
-					realStart = start + Me.Settings.StartAtDocumentNumber
 					_timekeeper.MarkStart("Exporter_GetDocumentBlock")
 					startTicks = System.DateTime.Now.Ticks
 					Dim textPrecedenceAvfIds As Int32() = Nothing
 					If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then textPrecedenceAvfIds = Me.Settings.SelectedTextFields.Select(Of Int32)(Function(f As ViewFieldInfo) f.AvfId).ToArray
 
 					If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
-						records = CallServerWithRetry(Function() Me.ExportManager.RetrieveResultsBlockForProduction(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, _exportConfig.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds, Me.Settings.ArtifactID), maxTries)
+						records = CallServerWithRetry(Function() Me.ExportManager.RetrieveResultsBlockForProductionStartingFromIndex(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, _exportConfig.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds, Me.Settings.ArtifactID, nextRecordIndex), maxTries)
 					Else
-						records = CallServerWithRetry(Function() Me.ExportManager.RetrieveResultsBlock(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, _exportConfig.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds), maxTries)
+						records = CallServerWithRetry(Function() Me.ExportManager.RetrieveResultsBlockStartingFromIndex(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, _exportConfig.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds, nextRecordIndex), maxTries)
 					End If
 
 					If records Is Nothing Then Exit While
@@ -381,12 +385,15 @@ Namespace kCura.WinEDDS
 							artifactIDs.Add(CType(artifactMetadata(artifactIdOrdinal), Int32))
 						Next
 						ExportChunk(artifactIDs.ToArray(), records, objectExportableSize, batch)
+						nextRecordIndex += records.Length
 						artifactIDs.Clear()
 						records = Nothing
 					End If
 					If _cancellationTokenSource.IsCancellationRequested Then Exit While
 				End While
-				
+				If exportInitializationArgs.RowCount <> nextRecordIndex Then
+					WriteError($"Total items processed ({nextRecordIndex}) is different than expected total records count ({exportInitializationArgs.RowCount}).")
+				End If
 				Me.WriteStatusLine(Windows.Process.EventType.Status, kCura.WinEDDS.FileDownloader.TotalWebTime.ToString, True)
 				_timekeeper.GenerateCsvReportItemsAsRows()
 
