@@ -50,7 +50,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 
 			var downloader = new PhysicalFilesDownloader(_fileshareSettingsServiceStub, mockExportTapiBridgeFactory.Object, _mockExportConfig.Object, _safeIncrement, _logger);
 
-			await downloader.DownloadFilesAsync(requests, CancellationToken.None);
+			await downloader.DownloadFilesAsync(requests, CancellationToken.None).ConfigureAwait(false);
 
 			mockExportTapiBridgeFactory.Verify(f => f.CreateForFiles(It.IsAny<RelativityFileShareSettings>(), It.IsAny<CancellationToken>()), Times.Exactly(_availableFileshares.Length));
 		}
@@ -62,7 +62,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 
 			var downloader = new PhysicalFilesDownloader(_fileshareSettingsServiceStub, _exportTapiBridgeFactoryStub, _mockExportConfig.Object, _safeIncrement, _logger);
 
-			await downloader.DownloadFilesAsync(requests, CancellationToken.None);
+		    await downloader.DownloadFilesAsync(requests, CancellationToken.None).ConfigureAwait(false);
 
 			_exportTapiBridgeFactoryStub.VerifyBridges(m => m.Verify(b => b.QueueDownload(It.IsAny<TransferPath>()), Times.Exactly(_DEFAULT_FILES_PER_FILESHARE)));
 			_exportTapiBridgeFactoryStub.VerifyBridges(m => m.Verify(b => b.WaitForTransferJob(), Times.Once));
@@ -83,7 +83,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 
 			var downloader = new PhysicalFilesDownloader(_fileshareSettingsServiceStub, mockExportTapiBridgeFactory.Object, _mockExportConfig.Object, _safeIncrement, _logger);
 
-			Assert.ThrowsAsync<TaskCanceledException>(async () => await downloader.DownloadFilesAsync(requests, CancellationToken.None));
+			Assert.ThrowsAsync<TaskCanceledException>(async () => await downloader.DownloadFilesAsync(requests, CancellationToken.None).ConfigureAwait(false));
 		}
 
 		private IEnumerable<ExportRequest> CreateThreeExportRequestsPerFileshares(IEnumerable<string> fileshares)
