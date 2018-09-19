@@ -206,8 +206,8 @@
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="oi, Version=2018.4.0.389, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32.2018.4.0\lib\net40\oi.dll</HintPath>
+    <Reference Include="oi, Version=2018.6.1.6, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32.2018.6.1\lib\net40\oi.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PCLWebUtility, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -226,17 +226,24 @@
       <HintPath>..\..\packages\Prism.Wpf.6.3.0\lib\net45\Prism.Wpf.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.20.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.1.0.20\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
+    <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.21.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.1.0.21\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Fileshare.Client, Version=1.1.11.20, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Relativity.FileshareAPI.1.1.11\lib\net462\Relativity.Fileshare.Client.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Kepler">
       <HintPath>..\..\packages\Relativity.Kepler.1.0.1.445\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging">
-      <HintPath>..\..\packages\Relativity.Logging.9.4.311\lib\net462\Relativity.Logging.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Relativity.Logging.9.4.317\lib\net462\Relativity.Logging.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces">
-      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.311\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.317\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.OAuth2Client">
       <HintPath>..\..\packages\Relativity.OAuth2Client.1.0.27\lib\net462\Relativity.OAuth2Client.dll</HintPath>
@@ -259,34 +266,29 @@
     <Reference Include="Relativity.Services.ServiceProxy">
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.445\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.StagingExplorer.Services.Interfaces, Version=1.3.7.7, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.StagingExplorer.Services.Interfaces.1.3.7\lib\net462\Relativity.StagingExplorer.Services.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.StagingExplorer.Services.Interfaces, Version=1.4.16.94, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.StagingExplorer.Services.Interfaces.1.4.16\lib\net462\Relativity.StagingExplorer.Services.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared">
-      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.159\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.164.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.164\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.6.88.61, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface.9.6.88.61\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client, Version=3.2.18180.3, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.3.2.1\lib\net462\Relativity.Transfer.Client.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.Transfer.Client, Version=4.1.18254.14, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.4.1.24\lib\net462\Relativity.Transfer.Client.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Aspera, Version=3.2.18180.3, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.3.2.1\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.Transfer.Client.Aspera, Version=4.1.18254.14, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.4.1.24\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Core, Version=3.2.18180.3, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.3.2.1\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.Transfer.Client.Core, Version=4.1.18254.14, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.4.1.24\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.FileShare, Version=3.2.18180.3, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.3.2.1\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.Transfer.Client.FileShare, Version=4.1.18254.14, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.4.1.24\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Http, Version=3.2.18180.3, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.3.2.1\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.Transfer.Client.Http, Version=4.1.18254.14, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.transfer.client.4.1.24\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
     </Reference>
     <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
       <HintPath>..\..\packages\SSH.NET.2016.0.0\lib\net40\Renci.SshNet.dll</HintPath>
@@ -385,7 +387,9 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="App.Prod.config" />
+    <None Include="App.Prod.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Controls\CaseFolderExplorer.xsx">
       <DependentUpon>CaseFolderExplorer.resx</DependentUpon>
     </None>
@@ -644,11 +648,11 @@
       copy /Y "$(ProjectDir)..\..\Vendor\FreeImage\3.151\FreeImage\Release\x64\FreeImage.dll" "$(TargetDir)"
     </PostBuildEvent>
   </PropertyGroup>
-  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32.2018.4.0\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2018.4.0\build\kCura.OutsideIn.FI.Win32.targets')" />
+  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32.2018.6.1\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2018.6.1\build\kCura.OutsideIn.FI.Win32.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2018.4.0\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\kCura.OutsideIn.FI.Win32.2018.4.0\build\kCura.OutsideIn.FI.Win32.targets'))" />
+    <Error Condition="!Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2018.6.1\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\kCura.OutsideIn.FI.Win32.2018.6.1\build\kCura.OutsideIn.FI.Win32.targets'))" />
   </Target>
 </Project>
