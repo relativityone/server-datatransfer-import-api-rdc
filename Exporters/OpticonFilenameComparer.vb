@@ -48,8 +48,8 @@ Namespace kCura.WinEDDS.Exporters
 				Me.Prefix = prefix
 			End Sub
 
-			Public Property PageNumber As Integer
-			Public Property Prefix As String
+			Public ReadOnly Property PageNumber As Integer
+			Public ReadOnly Property Prefix As String
 
 		End Class
 
