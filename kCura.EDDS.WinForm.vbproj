@@ -172,8 +172,8 @@
       <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32.2018.7.0\lib\net40\oi.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.AmbientData, Version=1.0.0.193, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\Relativity.AmbientData.1.0.0-DEV-193\lib\net462\Relativity.AmbientData.dll</HintPath>
+    <Reference Include="Relativity.AmbientData, Version=0.1.0.5, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\Relativity.AmbientData.0.1.0\lib\net462\Relativity.AmbientData.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.DataTransfer.MessageService, Version=10.0.2.2, Culture=neutral, processorArchitecture=MSIL">
@@ -222,6 +222,10 @@
     </Reference>
     <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.6.88.61, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface.9.6.88.61\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Toggles, Version=1.0.0.100, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\Relativity.Toggles.1.0.0.100\lib\net462\Relativity.Toggles.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Transfer.Client, Version=4.2.8.20, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\relativity.transfer.client.4.2.8\lib\net462\Relativity.Transfer.Client.dll</HintPath>
