@@ -27,16 +27,18 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 
 		private void OnFileProgress(object sender, TapiProgressEventArgs e)
 		{
-			_logger.LogVerbose("Tapi progress event for {fileName} with status {status} ({lineNumber}).", e.FileName, e.Status, e.LineNumber);
-			if (e.Status)
+            _logger.LogVerbose("Tapi progress event for {FileName} with status {DidTransferSucceed} ({LineNumber}).", e.FileName, e.DidTransferSucceed, e.LineNumber);
+            if (e.DidTransferSucceed)
 			{
+				try
+				{
 				try
 				{
 					MarkAsDownloaded(e.FileName, e.LineNumber);
 				}
 				catch (Exception ex)
 				{
-					_logger.LogError(ex, "Error while handling Tapi progress event for {fileName} with status {status} ({lineNumber}).", e.FileName, e.Status, e.LineNumber);
+					_logger.LogError(ex, "Error while handling Tapi progress event for {FileName} with status {DidTransferSucceed} ({LineNumber})", e.FileName, e.DidTransferSucceed, e.LineNumber);
 				}
 			}
 		}

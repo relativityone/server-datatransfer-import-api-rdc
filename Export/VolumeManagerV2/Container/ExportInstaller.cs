@@ -28,14 +28,16 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 
 		private readonly Exporter _exporter;
 		private readonly string[] _columnNamesInOrder;
+		private readonly ILoadFileHeaderFormatterFactory _loadFileHeaderFormatterFactory;
 
 		protected ExportFile ExportSettings => _exporter.Settings;
 		protected IExportConfig ExportConfig => _exporter.ExportConfig;
 
-		public ExportInstaller(Exporter exporter, string[] columnNamesInOrder)
+		public ExportInstaller(Exporter exporter, string[] columnNamesInOrder, ILoadFileHeaderFormatterFactory loadFileHeaderFormatterFactory)
 		{
 			_exporter = exporter;
 			_columnNamesInOrder = columnNamesInOrder;
+			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory;
 		}
 
 		public void Install(IWindsorContainer container, IConfigurationStore store)
@@ -51,7 +53,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 		{
 			container.Register(Component.For<PaddingWarningValidator>().ImplementedBy<PaddingWarningValidator>());
 			container.Register(Component.For<Image>().ImplementedBy<Image>());
-			container.Register(Component.For<ILoadFileHeaderFormatterFactory>().ImplementedBy<ExportFileFormatterFactory>());
+			container.Register(Component.For<ILoadFileHeaderFormatterFactory>().Instance(_loadFileHeaderFormatterFactory));
 			container.Register(Component.For<ITransferClientHandler, IExportFileDownloaderStatus, ExportFileDownloaderStatus>().ImplementedBy<ExportFileDownloaderStatus>());
 			container.Register(Component.For<ILoadFileCellFormatter>().UsingFactoryMethod(k => k.Resolve<LoadFileCellFormatterFactory>().Create(ExportSettings)));
 			container.Register(Component.For<ExportStatistics, WinEDDS.Statistics>().Instance(_exporter.Statistics));

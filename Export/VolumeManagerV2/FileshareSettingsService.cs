@@ -17,17 +17,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 
 		public FileshareSettingsService(ILog logger, ExportFile exportSettings)
 		{
-			if (logger == null)
-			{
-				throw new ArgumentNullException(nameof(logger));
-			}
+		    if (logger == null)
+		    {
+		        throw new ArgumentNullException(nameof(logger));
+		    }
 
-			if (exportSettings == null)
-			{
-				throw new ArgumentNullException(nameof(exportSettings));
-			}
+		    if (exportSettings == null)
+		    {
+		        throw new ArgumentNullException(nameof(exportSettings));
+		    }
 
-			_logger = logger;
+            _logger = logger;
 			_workspaceId = exportSettings.CaseInfo.ArtifactID;
 			_currentUserCredential = exportSettings.Credential;
 		}
@@ -36,7 +36,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 		{
 			if (_cachedSettings == null)
 			{
-				_cachedSettings = new List<RelativityFileShareSettings>();
 				GetFileshareSettingsForWorkspace(Config.WebServiceURL, _workspaceId, _currentUserCredential.UserName, _currentUserCredential.Password);
 			}
 
@@ -61,7 +60,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 					{
 						foreach (var fileShare in results.InvalidFileShares)
 						{
-							_logger.LogWarning(
+							this._logger.LogWarning(
 								"The Relativity instance '{Url}' defines workspace '{WorkspaceId}' that references invalid fileshare '{FileShareName}' from the associated resource pool.",
 								hostUrl,
 								workspaceId,
