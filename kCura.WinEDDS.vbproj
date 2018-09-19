@@ -177,12 +177,12 @@
     <Reference Include="Relativity.Kepler, Version=1.0.1.445, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Kepler.1.0.1.445\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Logging, Version=9.4.321.17, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\Relativity.Logging.9.4.321\lib\net462\Relativity.Logging.dll</HintPath>
+    <Reference Include="Relativity.Logging, Version=2018.9.0.4, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\Relativity.Logging.2018.9.0\lib\net462\Relativity.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Logging.Interfaces, Version=9.4.321.17, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.321\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Logging.Interfaces, Version=2018.9.0.4, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\Relativity.Logging.Interfaces.2018.9.0\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client">
