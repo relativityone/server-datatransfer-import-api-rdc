@@ -32,8 +32,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 			{
 				try
 				{
-				try
-				{
 					MarkAsDownloaded(e.FileName, e.LineNumber);
 				}
 				catch (Exception ex)
