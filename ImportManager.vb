@@ -27,14 +27,6 @@ Namespace kCura.EDDS.WinForm
             _application.StartProcess(exporter)
         End Function
 
-        Friend Async Function RunApplicationImport(ByVal importOptions As ImportOptions) As Task
-            Dim packageData As Byte()
-            packageData = System.IO.File.ReadAllBytes(importOptions.LoadFilePath)
-            Dim importer As New kCura.WinEDDS.ApplicationDeploymentProcess(New Int32() {}, Nothing, packageData, Await _application.GetCredentialsAsync(), _application.CookieContainer, New Relativity.CaseInfo() {importOptions.SelectedCaseInfo})
-            Dim executor As New kCura.EDDS.WinForm.CommandLineProcessRunner(importer.ProcessObserver, importer.ProcessController, importOptions.ErrorLoadFileLocation, importOptions.ErrorReportFileLocation)
-            _application.StartProcess(importer)
-        End Function
-
         Friend Sub RunDynamicObjectImport(ByVal importOptions As ImportOptions)
             Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(_application.SetupMessageService().GetAwaiter().GetResult())
             importOptions.SelectedNativeLoadFile.SourceFileEncoding = importOptions.SourceFileEncoding
