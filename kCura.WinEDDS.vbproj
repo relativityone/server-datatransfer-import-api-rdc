@@ -204,11 +204,11 @@
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.557\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Telemetry.APM">
-      <HintPath>..\..\packages\Relativity.Telemetry.APM.2018.9.1-DEV-0\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Telemetry.APM.2018.9.1\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared">
-      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.2018.9.1-DEV-0\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.2018.9.1\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.6.88.61, Culture=neutral, processorArchitecture=MSIL">
