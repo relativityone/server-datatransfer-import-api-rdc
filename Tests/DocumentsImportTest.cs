@@ -31,7 +31,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 			using (IRSAPIClient rsapiClient = ServiceFactory.GetProxy<IRSAPIClient>(SharedTestVariables.ADMIN_USERNAME, 
 				SharedTestVariables.DEFAULT_PASSWORD))
 			{
-				string now = DateTime.Now.ToString("MM/dd HH.mm.ss.fff");
+				string now = DateTime.Now.ToString("MM-dd HH.mm.ss.fff");
 				_workspaceId =
 					WorkspaceHelpers.CreateWorkspace(rsapiClient, $"Import API test workspace ({now})", "Relativity Starter Template");
 				WorkspaceHelpers.MarkTestWorkspaceAsUsed(_workspaceId.Value);
