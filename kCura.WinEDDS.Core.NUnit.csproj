@@ -147,6 +147,7 @@
     <Compile Include="Export\VolumeManagerV2\Download\LongTextDownloaderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\ModelFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\NativeFileExportRequestBuilderTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\PhysicalFilesDownloaderTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeAdapterTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeForFilesTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeWithEncodingConversionTests.cs" />
@@ -209,6 +210,7 @@
     <Compile Include="Export\VolumeManagerV2\Statistics\MessagesHandlerTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\MetadataStatisticsTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Statistics\ProgressHandlerTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\SmartTapiBridgeTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\ExportPermissionCheckTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Validation\FilesOverwriteValidatorTests.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\ImagesRollupFactoryTests.cs" />
