@@ -14,7 +14,8 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Helpers
 		{
 			const string keyName = "workspaceId";
 			string workspaceIdAsString = GetConfigurationValue(keyName);
-			bool isValidNumber = int.TryParse(workspaceIdAsString, out int workspaceId);
+			int workspaceId;
+			bool isValidNumber = int.TryParse(workspaceIdAsString, out workspaceId);
 			if (!isValidNumber)
 			{
 				throw new ImportApiTestException($"Incorrect '{keyName}' value in config file.");
