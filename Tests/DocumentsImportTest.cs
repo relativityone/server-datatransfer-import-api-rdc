@@ -81,7 +81,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 				const int maxItemsToFetch = 10;
 				QueryResult result = client.QueryAsync(_workspaceId.Value, queryRequest, 1, maxItemsToFetch).GetAwaiter().GetResult();
 
-				return result.Objects.Count;
+				return result.TotalCount;
 			}
 		}
 
