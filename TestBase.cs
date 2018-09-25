@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI.IntegrationTests.Helpers;
+using kCura.Relativity.ImportAPI.IntegrationTests.Tests;
 
 namespace kCura.Relativity.ImportAPI.IntegrationTests
 {
 	public class TestBase
 	{
-		protected const string _CONTROL_NUMBER_COLUMN_NAME = "Control Number";
+		protected const string CONTROL_NUMBER_COLUMN_NAME = "Control Number";
 
 		public void SetupJobSettings(ImportSettingsBase settings)
 		{
 			settings.CaseArtifactId = Utils.GetWorkspaceId();
 
-			settings.SelectedIdentifierFieldName = _CONTROL_NUMBER_COLUMN_NAME;
+			settings.SelectedIdentifierFieldName = CONTROL_NUMBER_COLUMN_NAME;
 
 			settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 			settings.CopyFilesToDocumentRepository = true;
@@ -48,7 +49,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests
 			if (jobreport.ErrorRowCount > 0)
 			{
 				IEnumerable<string> errors = jobreport.ErrorRows.Select(x => $"{x.Identifier} - {x.Message}");
-				throw new Exception(string.Join("\n", errors));
+				throw new ImportApiTestException(string.Join("\n", errors));
 			}
 		}
 

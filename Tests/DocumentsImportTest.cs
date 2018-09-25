@@ -19,11 +19,11 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 {
 	public class DocumentsImportTest
 	{
-		const string _CONTROL_NUMBER_COLUMN_NAME = "Control Number";
-
-		const string _NATIVE_FILE_COLUMN_NAME = "Native";
-
 		private int? _workspaceId;
+
+		public const string CONTROL_NUMBER_COLUMN_NAME = "Control Number";
+
+		public const string NATIVE_FILE_COLUMN_NAME = "Native";
 
 		[SetUp]
 		public void CreateWorkspace()
@@ -65,7 +65,8 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 			job.Execute();
 
 			// Assert
-			GetDocumentsCount().Should().Be(2);
+			int rowsCount = ((DataTable) job.SourceData.SourceData).Rows.Count;
+			GetDocumentsCount().Should().Be(rowsCount);
 		}
 
 		private int GetDocumentsCount()
@@ -77,7 +78,8 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 				{
 					ObjectType = new ObjectTypeRef { ArtifactTypeID = (int) ArtifactType.Document }
 				};
-				QueryResult result = client.QueryAsync(_workspaceId.Value, queryRequest, 1, 100).GetAwaiter().GetResult();
+				const int maxItemsToFetch = 10;
+				QueryResult result = client.QueryAsync(_workspaceId.Value, queryRequest, 1, maxItemsToFetch).GetAwaiter().GetResult();
 
 				return result.Objects.Count;
 			}
@@ -87,7 +89,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 		{
 			Settings settings = job.Settings;
 			settings.CaseArtifactId = _workspaceId.Value;
-			settings.SelectedIdentifierFieldName = _CONTROL_NUMBER_COLUMN_NAME;
+			settings.SelectedIdentifierFieldName = CONTROL_NUMBER_COLUMN_NAME;
 			settings.OverwriteMode = OverwriteModeEnum.Append;
 			settings.CopyFilesToDocumentRepository = true;
 			settings.DisableExtractedTextEncodingCheck = true;
@@ -98,7 +100,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 			settings.Billable = false;
 			settings.LoadImportedFullTextFromServer = false;
 			settings.MoveDocumentsInAppendOverlayMode = false;
-			settings.NativeFilePathSourceFieldName = _NATIVE_FILE_COLUMN_NAME;
+			settings.NativeFilePathSourceFieldName = NATIVE_FILE_COLUMN_NAME;
 			settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
 			settings.ArtifactTypeId = Constants.DOCUMENT_ARTIFACT_TYPE_ID;
 			settings.IdentityFieldId = Constants.CONTROL_NUMBER_FIELD_ID;
@@ -119,7 +121,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 			if (jobreport.ErrorRowCount > 0)
 			{
 				IEnumerable<string> errors = jobreport.ErrorRows.Select(x => $"{x.Identifier} - {x.Message}");
-				throw new Exception(string.Join("\n", errors));
+				throw new ImportApiTestException(string.Join("\n", errors));
 			}
 		}
 
@@ -131,19 +133,19 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 		private IDataReader CreateDataReader()
 		{
 			var dt = new DataTable("Input Data");
-			dt.Columns.Add(_CONTROL_NUMBER_COLUMN_NAME);
-			dt.Columns.Add(_NATIVE_FILE_COLUMN_NAME);
+			dt.Columns.Add(CONTROL_NUMBER_COLUMN_NAME);
+			dt.Columns.Add(NATIVE_FILE_COLUMN_NAME);
 			dt.Columns.Add("Extracted Text");
 
 			DataRow r = dt.NewRow();
-			r[_CONTROL_NUMBER_COLUMN_NAME] = "NATIVE_001";
-			r[_NATIVE_FILE_COLUMN_NAME] = GetNativeFilePath();
+			r[CONTROL_NUMBER_COLUMN_NAME] = "NATIVE_001";
+			r[NATIVE_FILE_COLUMN_NAME] = GetNativeFilePath();
 			r["Extracted Text"] = "Extracted text of 1 document.";
 			dt.Rows.Add(r);
 
 			r = dt.NewRow();
-			r[_CONTROL_NUMBER_COLUMN_NAME] = "NATIVE_002";
-			r[_NATIVE_FILE_COLUMN_NAME] = GetNativeFilePath();
+			r[CONTROL_NUMBER_COLUMN_NAME] = "NATIVE_002";
+			r[NATIVE_FILE_COLUMN_NAME] = GetNativeFilePath();
 			r["Extracted Text"] = "Extracted text of 2 document.";
 			dt.Rows.Add(r);
 

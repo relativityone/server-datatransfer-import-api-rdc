@@ -4,17 +4,17 @@
 	{
 		public static ImportAPI CreateImportApiWithPasswordAuthentication()
 		{
-			var username = Utils.GetConfigurationValue("username");
-			var password = Utils.GetConfigurationValue("password");
+			string username = Utils.GetConfigurationValue("username");
+			string password = Utils.GetConfigurationValue("password");
 
-			var webServiceUrl = Utils.getWebServiceUrl();
+			string webServiceUrl = Utils.GetWebServiceUrl();
 			var importApi = new ImportAPI(username, password, webServiceUrl);
 			return importApi;
 		}
 
 		public static ImportAPI CreateImportApiWithIntegratedAuthentication()
 		{
-			var webServiceUrl = Utils.getWebServiceUrlIntegrated();
+			string webServiceUrl = Utils.GetWebServiceUrlIntegrated();
 			var importApi = new ImportAPI(webServiceUrl);
 			return importApi;
 		}

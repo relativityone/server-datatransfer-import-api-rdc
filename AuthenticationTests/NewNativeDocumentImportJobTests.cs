@@ -42,11 +42,11 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 		private IDataReader CreateDataReader()
 		{
 			var dt = new DataTable("Input Data");
-			dt.Columns.Add(_CONTROL_NUMBER_COLUMN_NAME);
+			dt.Columns.Add(CONTROL_NUMBER_COLUMN_NAME);
 			dt.Columns.Add(_NATIVE_FILE_COLUMN_NAME);
 
 			DataRow r = dt.NewRow();
-			r[_CONTROL_NUMBER_COLUMN_NAME] = "NATIVE_001";
+			r[CONTROL_NUMBER_COLUMN_NAME] = "NATIVE_001";
 			string nativeLocation = GetNativeFilePath();
 
 			r[_NATIVE_FILE_COLUMN_NAME] = nativeLocation;
@@ -57,8 +57,8 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 
 		private static string GetNativeFilePath()
 		{
-			var currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-			var nativeLocation = Path.Combine(currentDirectory, @"TestData\Native\SBECK_0048460.docx");
+			string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+			string nativeLocation = Path.Combine(currentDirectory, @"TestData\Native\SBECK_0048460.docx");
 			return nativeLocation;
 		}
 
