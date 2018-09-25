@@ -45,7 +45,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private ConcurrentQueue<ExportRequestsWithFileshareSettings> CreateTransferQueue(List<ExportRequest> requests)
 		{
-			ILookup<RelativityFileShareSettings, ExportRequest> result = requests.ToLookup(r => _settingsService.GetSettingsForFileshare(r.SourceLocation));
+			ILookup<IRelativityFileShareSettings, ExportRequest> result = requests.ToLookup(r => _settingsService.GetSettingsForFileshare(r.SourceLocation));
 
 			return new ConcurrentQueue<ExportRequestsWithFileshareSettings>(result.Select(r => new ExportRequestsWithFileshareSettings(r.Key, r)));
 		}

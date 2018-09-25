@@ -6,10 +6,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 {
 	public class ExportRequestsWithFileshareSettings
 	{
-		public RelativityFileShareSettings FileshareSettings { get; }
+		public IRelativityFileShareSettings FileshareSettings { get; }
 		public IEnumerable<ExportRequest> Requests { get; }
 
-		public ExportRequestsWithFileshareSettings(RelativityFileShareSettings fileshareSettings, IEnumerable<ExportRequest> requests)
+		public ExportRequestsWithFileshareSettings(IRelativityFileShareSettings fileshareSettings, IEnumerable<ExportRequest> requests)
 		{
 			if (requests == null)
 			{
