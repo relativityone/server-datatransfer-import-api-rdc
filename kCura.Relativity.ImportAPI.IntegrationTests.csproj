@@ -47,9 +47,6 @@
     <Reference Include="kCura.NUnit.Integration, Version=9.3.377.8, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\kCura.NUnit.Integration.9.3.377.8\lib\net45\kCura.NUnit.Integration.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Relativity.Client, Version=10.0.68.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\kCura.Relativity.Client.10.0.68.1\lib\net462\kCura.Relativity.Client.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -142,6 +139,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.Relativity.Client\kCura.Relativity.Client.csproj">
+      <Project>{9863512f-159f-4e15-8a96-f982e9eadb15}</Project>
+      <Name>kCura.Relativity.Client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.Relativity.DataReader\kCura.Relativity.DataReaderClient.vbproj">
       <Project>{94BD2810-9FD8-4EEE-AA2B-590E4BCD4CC0}</Project>
       <Name>kCura.Relativity.DataReaderClient</Name>
