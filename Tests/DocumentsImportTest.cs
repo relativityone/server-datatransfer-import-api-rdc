@@ -57,7 +57,8 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 
 			ImportBulkArtifactJob job = importApi.NewNativeDocumentImportJob();
 			ConfigureJob(job);
-			job.SourceData.SourceData = CreateDataReader();
+			DataTable importData = CreateDataTable();
+			job.SourceData.SourceData = importData.CreateDataReader();
 			job.OnComplete += JobOnOnComplete;
 			job.OnFatalException += JobOnOnFatalException;
 
@@ -65,7 +66,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 			job.Execute();
 
 			// Assert
-			int rowsCount = ((DataTable) job.SourceData.SourceData).Rows.Count;
+			int rowsCount = importData.Rows.Count;
 			GetDocumentsCount().Should().Be(rowsCount);
 		}
 
@@ -80,6 +81,27 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 				};
 				const int maxItemsToFetch = 10;
 				QueryResult result = client.QueryAsync(_workspaceId.Value, queryRequest, 1, maxItemsToFetch).GetAwaiter().GetResult();
+
+				return result.TotalCount;
+			}
+		}
+
+		private int GetIdentifierFieldName()
+		{
+			using (var client = ServiceFactory.GetProxy<IObjectManager>(SharedTestVariables.ADMIN_USERNAME,
+				SharedTestVariables.DEFAULT_PASSWORD))
+			{
+				var queryRequest = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field }
+				};
+				const int maxItemsToFetch = 10000;
+				QueryResult result = client.QueryAsync(_workspaceId.Value, queryRequest, 1, maxItemsToFetch).GetAwaiter().GetResult();
+				foreach (RelativityObject relativityObject in result.Objects)
+				{
+					Console.WriteLine("FieldValues");
+					//relativityObject.FieldValues[]
+				}
 
 				return result.TotalCount;
 			}
@@ -130,7 +152,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 			throw jobreport.FatalException;
 		}
 
-		private IDataReader CreateDataReader()
+		private DataTable CreateDataTable()
 		{
 			var dt = new DataTable("Input Data");
 			dt.Columns.Add(CONTROL_NUMBER_COLUMN_NAME);
@@ -149,7 +171,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 			r["Extracted Text"] = "Extracted text of 2 document.";
 			dt.Rows.Add(r);
 
-			return dt.CreateDataReader();
+			return dt;
 		}
 
 		private static string GetNativeFilePath()
