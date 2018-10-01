@@ -8,13 +8,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 {
 	public class FilesTapiBridgeWrapperFactory : ITapiBridgeWrapperFactory
 	{
-		private readonly RelativityFileShareSettings _fileshareSettings;
+		private readonly IRelativityFileShareSettings _fileshareSettings;
 		private readonly ILog _logger;
 		private readonly TapiBridgeParametersFactory _tapiBridgeParametersFactory;
 		private readonly CancellationToken _token;
 
 		public FilesTapiBridgeWrapperFactory(TapiBridgeParametersFactory tapiBridgeParametersFactory, ILog logger,
-			RelativityFileShareSettings fileshareSettings, CancellationToken token)
+			IRelativityFileShareSettings fileshareSettings, CancellationToken token)
 		{
 			_tapiBridgeParametersFactory = tapiBridgeParametersFactory;
 			_logger = logger;

@@ -153,7 +153,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 
 			if (_totalFilesDownloadedUsingTapiBridge >= _maximumFilesForTapiBridge)
 			{
-				tapiBridge.WaitForTransferJob();
+				_tapiBridge.WaitForTransferJob();
 				RemoveTapiBridge();
 			}
 		}

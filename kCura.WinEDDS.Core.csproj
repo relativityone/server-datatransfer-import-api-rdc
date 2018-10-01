@@ -231,6 +231,7 @@
     <Compile Include="Export\VolumeManagerV2\IFileshareSettingsService.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\IImage.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\ImageWrapper.cs" />
+    <Compile Include="Export\VolumeManagerV2\IRelativityFileShareSettings.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\EmptyImageLoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\IImageLoadFile.cs" />
     <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFile.cs" />

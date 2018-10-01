@@ -3,12 +3,8 @@ using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 {
-	public class RelativityFileShareSettings
+	public class RelativityFileShareSettings : IRelativityFileShareSettings
 	{
-		protected bool Equals(RelativityFileShareSettings other)
-		{
-			return false;
-		}
 
 		private readonly RelativityFileShare _fileShare;
 
@@ -50,6 +46,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 			}
 
 			return string.Equals(UncPath, other.UncPath, StringComparison.InvariantCultureIgnoreCase) && (TransferCredential?.Equals(other.TransferCredential) ?? false);
+		}
+		protected bool Equals(RelativityFileShareSettings other)
+		{
+			return false;
 		}
 
 		public override int GetHashCode()

@@ -33,10 +33,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			_transferClientHandler = transferClientHandler;
 			_logger = logger;
 
-			_fileTapiBridges = new Dictionary<RelativityFileShareSettings, PoolEntry>();
+			_fileTapiBridges = new Dictionary<IRelativityFileShareSettings, PoolEntry>();
 		}
 
-		public IDownloadTapiBridge Request(RelativityFileShareSettings fileshareSettings, CancellationToken token)
+		public IDownloadTapiBridge Request(IRelativityFileShareSettings fileshareSettings, CancellationToken token)
 		{
 			if (!_fileTapiBridges.ContainsKey(fileshareSettings))
 			{
@@ -58,6 +58,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 					if (connectedNotUsed != null)
 					{
 						connectedNotUsed.Connected = false;
+					}
+				}
 			}
 
 			if (connectedNotUsed != null && connectedNotUsed != _fileTapiBridges[fileshareSettings])
@@ -71,7 +73,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			return _fileTapiBridges[fileshareSettings].Bridge;
 		}
 
-		private void CreateTapiBridge(RelativityFileShareSettings fileshareSettings, CancellationToken token)
+		private void CreateTapiBridge(IRelativityFileShareSettings fileshareSettings, CancellationToken token)
 		{
 			ITapiBridgeWrapperFactory tapiBridgeWrapperFactory =
 				new FilesTapiBridgeWrapperFactory(_tapiBridgeParametersFactory, _logger, fileshareSettings, token);
