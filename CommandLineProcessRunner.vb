@@ -75,7 +75,13 @@ Namespace kCura.EDDS.WinForm
                 If _exportErrorFileLocation <> "" Then _controller.ExportErrorFile(_exportErrorFileLocation)
                 If _exportErrorReportLocation <> "" Then _controller.ExportErrorReport(_exportErrorReportLocation)
             End If
-            FaspManager.destroy()
+            Try
+                FaspManager.destroy()
+            Catch e As NullReferenceException
+                ' catch NullReferenceException which occurs when FaspManager is was not created by TAPI
+                ' this is a case when transfer mode is not "Aspera"
+                ' this is needed in CLI flow to enable the process to exit, becaue FaspManager thread is blocking the process from ending
+            End Try
         End Sub
 
 		Private Sub _observer_OnProcessFatalException(ByVal ex As System.Exception) Handles _observer.OnProcessFatalException
