@@ -202,7 +202,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.TapiHelpers
 			_bridge.AddPath(new TransferPath("File 1"));
 			_bridge.AddPath(new TransferPath("File 2"));
 
-			Task raiseEventsTask = Task.Delay(1).ContinueWith(_ =>
+			Task raiseEventsTask = Task.Delay(100).ContinueWith(_ =>
 			{
 				_innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
 				_innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
@@ -228,7 +228,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.TapiHelpers
 			_bridge.AddPath(new TransferPath("File 1"));
 			_bridge.AddPath(new TransferPath("File 2"));
 
-			Task raiseEventsTask = Task.Delay(1).ContinueWith(_ =>
+			Task raiseEventsTask = Task.Delay(100).ContinueWith(_ =>
 			{
 				_innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
 				_innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
