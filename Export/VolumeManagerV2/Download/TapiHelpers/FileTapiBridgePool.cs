@@ -49,6 +49,21 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 				CreateTapiBridge(fileshareSettings, token);
 			}
 
+			PoolEntry connectedNotUsed = FindRedundantTapiBridge();
+
+			if (connectedNotUsed != null && connectedNotUsed != _fileTapiBridges[fileshareSettings])
+			{
+				connectedNotUsed.Bridge.Disconnect();
+			}
+
+			_fileTapiBridges[fileshareSettings].Connected = true;
+			_fileTapiBridges[fileshareSettings].InUse = true;
+
+			return _fileTapiBridges[fileshareSettings].Bridge;
+		}
+
+		private PoolEntry FindRedundantTapiBridge()
+		{
 			PoolEntry connectedNotUsed = null;
 			lock (_sync)
 			{
@@ -62,15 +77,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 				}
 			}
 
-			if (connectedNotUsed != null && connectedNotUsed != _fileTapiBridges[fileshareSettings])
-			{
-				connectedNotUsed.Bridge.Disconnect();
-			}
-
-			_fileTapiBridges[fileshareSettings].Connected = true;
-			_fileTapiBridges[fileshareSettings].InUse = true;
-
-			return _fileTapiBridges[fileshareSettings].Bridge;
+			return connectedNotUsed;
 		}
 
 		private void CreateTapiBridge(IRelativityFileShareSettings fileshareSettings, CancellationToken token)

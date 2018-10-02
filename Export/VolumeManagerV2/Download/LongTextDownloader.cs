@@ -28,30 +28,48 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		private void Download(List<LongTextExportRequest> longTextExportRequests, CancellationToken cancellationToken)
 		{
-			IDownloadTapiBridge bridge = _longTextTapiBridgePool.Request(cancellationToken);
-
-			foreach (LongTextExportRequest textExportRequest in longTextExportRequests)
+			if (longTextExportRequests == null)
 			{
-				if (cancellationToken.IsCancellationRequested)
-				{
-					return;
-				}
-
-				try
-				{
-					_logger.LogVerbose("Adding export request for downloading long text {fieldId} to {destination}.", textExportRequest.FieldArtifactId, textExportRequest.DestinationLocation);
-					TransferPath path = textExportRequest.CreateTransferPath(_safeIncrement.GetNext());
-					textExportRequest.FileName = bridge.QueueDownload(path);
-				}
-				catch (Exception ex)
-				{
-					_logger.LogError(ex, "Error occurred during adding long text export request to TAPI bridge. Skipping.");
-					throw;
-				}
+				throw new ArgumentNullException(nameof(longTextExportRequests));
 			}
 
-			bridge.WaitForTransferJob();
-			_longTextTapiBridgePool.Release(bridge);
+			IDownloadTapiBridge bridge = null;
+			try
+			{
+				bridge = _longTextTapiBridgePool.Request(cancellationToken);
+
+				foreach (LongTextExportRequest textExportRequest in longTextExportRequests)
+				{
+					if (cancellationToken.IsCancellationRequested)
+					{
+						return;
+					}
+
+					try
+					{
+						_logger.LogVerbose(
+							"Adding export request for downloading long text {fieldId} to {destination}.",
+							textExportRequest.FieldArtifactId, textExportRequest.DestinationLocation);
+						TransferPath path = textExportRequest.CreateTransferPath(_safeIncrement.GetNext());
+						textExportRequest.FileName = bridge.QueueDownload(path);
+					}
+					catch (Exception ex)
+					{
+						_logger.LogError(ex,
+							"Error occurred during adding long text export request to TAPI bridge. Skipping.");
+						throw;
+					}
+				}
+
+				bridge.WaitForTransferJob();
+			}
+			finally
+			{
+				if (bridge != null)
+				{
+					_longTextTapiBridgePool.Release(bridge);
+				}
+			}
 		}
 	}
 }

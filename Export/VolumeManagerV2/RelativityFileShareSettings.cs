@@ -45,11 +45,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 				return false;
 			}
 
-			return string.Equals(UncPath, other.UncPath, StringComparison.InvariantCultureIgnoreCase) && (TransferCredential?.Equals(other.TransferCredential) ?? false);
-		}
-		protected bool Equals(RelativityFileShareSettings other)
-		{
-			return false;
+			return string.Equals(UncPath, other.UncPath, StringComparison.OrdinalIgnoreCase) && (TransferCredential?.Equals(other.TransferCredential) ?? false);
 		}
 
 		public override int GetHashCode()

@@ -56,14 +56,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 			while (queue.TryDequeue(out exportRequestWithFileshareSettings))
 			{
+				IDownloadTapiBridge bridge = null;
 				try
 				{
-					IDownloadTapiBridge bridge = _fileTapiBridgePool.Request(exportRequestWithFileshareSettings.FileshareSettings, downloadCancellationTokenSourceSource.Token);
+					bridge = _fileTapiBridgePool.Request(exportRequestWithFileshareSettings.FileshareSettings,
+						downloadCancellationTokenSourceSource.Token);
 
-					DownloadFiles(bridge, exportRequestWithFileshareSettings.Requests, downloadCancellationTokenSourceSource.Token);
+					DownloadFiles(bridge, exportRequestWithFileshareSettings.Requests,
+						downloadCancellationTokenSourceSource.Token);
 					bridge.WaitForTransferJob();
-
-					_fileTapiBridgePool.Release(bridge);
 				}
 				catch (TaskCanceledException)
 				{
@@ -76,6 +77,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				{
 					downloadCancellationTokenSourceSource.Cancel();
 					throw;
+				}
+				finally
+				{
+					if (bridge != null)
+					{
+						_fileTapiBridgePool.Release(bridge);
+					}
 				}
 			}
 		}
