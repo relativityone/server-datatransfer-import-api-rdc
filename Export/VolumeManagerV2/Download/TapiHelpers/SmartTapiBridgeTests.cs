@@ -40,6 +40,15 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.TapiHelpers
 		}
 
 		[Test]
+		public void ItShouldCreateInnerTapiBridgeOnce()
+		{
+			_bridge.AddPath(new TransferPath("Mock Path"));
+			_bridge.AddPath(new TransferPath("Mock Path 2"));
+
+			_wrapperFactory.Verify(factory => factory.Create(), Times.Once);
+		}
+
+		[Test]
 		public void ItShouldDisposeInnerTapiBridgeOnDispose()
 		{
 			_bridge.AddPath(new TransferPath("Mock Path"));
