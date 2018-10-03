@@ -1122,7 +1122,9 @@ Namespace kCura.EDDS.WinForm
                     Next
                 End If
             End If
-            LoadFile.CreateFolderStructure = _buildFolderStructure.Checked
+            If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
+                LoadFile.CreateFolderStructure = _buildFolderStructure.Checked
+            End If
             'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
             If LoadFile.OverwriteDestination.ToLower <> Relativity.ImportOverwriteType.Overlay.ToString.ToLower Then
                 If LoadFile.CreateFolderStructure Then
