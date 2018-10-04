@@ -26,7 +26,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 
 		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions, CancellationToken cancellationToken)
 		{
-			IEnumerable<LongText> downloadedFiles = _longTextRepository.GetLongTexts().Where(x => x.ExportRequest != null && !x.RequireDeletion);
+			IEnumerable<LongText> downloadedFiles = _longTextRepository.GetLongTexts().Where(x => !x.RequireDeletion);
 			foreach (LongText longText in downloadedFiles)
 			{
 				if (cancellationToken.IsCancellationRequested)
