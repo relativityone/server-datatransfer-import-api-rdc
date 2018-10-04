@@ -78,8 +78,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 					UpdateDownloadedCountAndNotify(image.Artifact.ArtifactID, lineNumber);
 				}
 			}
-
-			_logger.LogWarning("File or Image for {fileName} not found.", fileName);
+			else
+			{
+				_logger.LogWarning("File for image {fileName} and line {lineNumber} not found.", fileName, lineNumber);
+			}
 		}
 
 		/// <summary>
