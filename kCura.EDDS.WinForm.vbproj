@@ -266,7 +266,6 @@
     </Reference>
     <Reference Include="Relativity.StagingExplorer.Services.Interfaces">
       <HintPath>..\..\packages\Relativity.StagingExplorer.Services.Interfaces.1.4.27\lib\net462\Relativity.StagingExplorer.Services.Interfaces.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.164.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.164\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
