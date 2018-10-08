@@ -431,10 +431,6 @@
     <Compile Include="Model\Export\Process\ExtendedObjectExportInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Applications\Telemetry\Relativity.Telemetry.Services.Interface\Relativity.Telemetry.Services.Interface.csproj">
-      <Project>{7344356e-2f00-469a-94dc-efcbdaa866c5}</Project>
-      <Name>Relativity.Telemetry.Services.Interface</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.OI.FileID\kCura.OI.FileID.vbproj">
       <Project>{ccefd50f-0840-402d-ab16-c93f8e579b8b}</Project>
       <Name>kCura.OI.FileID</Name>
