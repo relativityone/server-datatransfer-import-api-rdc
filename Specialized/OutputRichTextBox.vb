@@ -1,4 +1,6 @@
 ' TODO : Change namespace of this control
+Imports System.Collections.Generic
+
 Namespace kCura.Windows.Forms
   Public Class OutputRichTextBox
     Inherits System.Windows.Forms.UserControl
@@ -60,7 +62,6 @@ Namespace kCura.Windows.Forms
 			Me.TextBox.Text = ""
 			Me.TextBox.ReadOnly = True
 			Me.BackColor = Drawing.Color.White
-			Me.Scrollbars = System.Windows.Forms.ScrollBars.None
       '
       'OutputRichTextBox
 			'
@@ -111,24 +112,11 @@ Namespace kCura.Windows.Forms
 		Dim _inSafeMode As Boolean
 		Dim _totalLineCount As Int32
 		Dim _visibleLineCount As Int32
-		Dim _totalOutput As New System.Collections.ArrayList
-		Dim _tmpFileName As String
+		Dim _totalOutput As New List(Of String)
+    Dim _tmpFileName As String
 		Dim _syncLock As Object = New Object()
 
-		Public Sub Reset()
-			_totalOutput = New System.Collections.ArrayList
-			TextBox.Text = ""
-			Me.DetailsLink.SendToBack()
-			Me.DetailsLink.Text = ""
-		End Sub
-
-		Public Sub Save(ByVal filePath As String)
-			If AllowForSave Then
-				System.IO.File.Move(_tmpFileName, filePath)
-			End If
-		End Sub
-
-		Public Sub WriteLine(ByVal message As String)
+    Public Sub WriteLine(ByVal message As String)
 			WriteLine(message, vbCrLf)
 		End Sub
 
