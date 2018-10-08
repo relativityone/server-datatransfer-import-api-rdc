@@ -116,6 +116,19 @@ Namespace kCura.Windows.Forms
     Dim _tmpFileName As String
 		Dim _syncLock As Object = New Object()
 
+    Public Sub Reset()
+	    _totalOutput = New List(Of String)
+	    TextBox.Text = ""
+	    Me.DetailsLink.SendToBack()
+	    Me.DetailsLink.Text = ""
+    End Sub
+
+    Public Sub Save(ByVal filePath As String)
+	    If AllowForSave Then
+		    System.IO.File.Move(_tmpFileName, filePath)
+	    End If
+    End Sub
+
     Public Sub WriteLine(ByVal message As String)
 			WriteLine(message, vbCrLf)
 		End Sub
