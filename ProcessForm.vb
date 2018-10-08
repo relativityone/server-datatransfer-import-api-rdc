@@ -58,280 +58,286 @@ Namespace kCura.Windows.Process
 		Friend WithEvents _exportErrorFileDialog As System.Windows.Forms.SaveFileDialog
 		Friend WithEvents _exportErrorFilesTo As System.Windows.Forms.FolderBrowserDialog
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ProgressForm))
-			Me._stopImportButton = New System.Windows.Forms.Button
-			Me._showDetailButton = New System.Windows.Forms.Button
-			Me._progressBar = New System.Windows.Forms.ProgressBar
-			Me._currentRecordLabel = New System.Windows.Forms.Label
-			Me._overalProgressLabel = New System.Windows.Forms.Label
-			Me._saveOutputButton = New System.Windows.Forms.Button
-			Me._saveFileDialog = New System.Windows.Forms.SaveFileDialog
-			Me._Tabs = New System.Windows.Forms.TabControl
-			Me.SummaryTab = New System.Windows.Forms.TabPage
-			Me._summaryOutput = New System.Windows.Forms.TextBox
-			Me.ErrorsTab = New System.Windows.Forms.TabPage
-			Me._errorsOutputTextBox = New kCura.Windows.Forms.OutputRichTextBox
-			Me.ProgressTab = New System.Windows.Forms.TabPage
-			Me._outputTextBox = New kCura.Windows.Forms.OutputRichTextBox
-			Me.WarningsTab = New System.Windows.Forms.TabPage
-			Me._warningsOutputTextBox = New kCura.Windows.Forms.OutputRichTextBox
-			Me.ErrorReportTab = New System.Windows.Forms.TabPage
-			Me._exportErrorFileButton = New System.Windows.Forms.Button
-			Me._exportErrorReportBtn = New System.Windows.Forms.Button
-			Me._reportDataGrid = New System.Windows.Forms.DataGrid
-			Me._currentMessageStatus = New System.Windows.Forms.Label
-			Me._statusBar = New System.Windows.Forms.Label
-			Me._exportErrorsDialog = New System.Windows.Forms.SaveFileDialog
-			Me._exportErrorFileDialog = New System.Windows.Forms.SaveFileDialog
-			Me._exportErrorFilesTo = New System.Windows.Forms.FolderBrowserDialog
-			Me._Tabs.SuspendLayout()
-			Me.SummaryTab.SuspendLayout()
-			Me.ErrorsTab.SuspendLayout()
-			Me.ProgressTab.SuspendLayout()
-			Me.WarningsTab.SuspendLayout()
-			Me.ErrorReportTab.SuspendLayout()
-			CType(Me._reportDataGrid, System.ComponentModel.ISupportInitialize).BeginInit()
-			Me.SuspendLayout()
-			'
-			'_stopImportButton
-			'
-			Me._stopImportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me._stopImportButton.Location = New System.Drawing.Point(384, 56)
-			Me._stopImportButton.Name = "_stopImportButton"
-			Me._stopImportButton.Size = New System.Drawing.Size(84, 23)
-			Me._stopImportButton.TabIndex = 0
-			Me._stopImportButton.Text = "Stop"
-			'
-			'_showDetailButton
-			'
-			Me._showDetailButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me._showDetailButton.Location = New System.Drawing.Point(384, 80)
-			Me._showDetailButton.Name = "_showDetailButton"
-			Me._showDetailButton.Size = New System.Drawing.Size(84, 23)
-			Me._showDetailButton.TabIndex = 1
-			Me._showDetailButton.Text = "Hide Detail"
-			'
-			'_progressBar
-			'
-			Me._progressBar.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-			   Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me._progressBar.Location = New System.Drawing.Point(4, 56)
-			Me._progressBar.Name = "_progressBar"
-			Me._progressBar.Size = New System.Drawing.Size(372, 23)
-			Me._progressBar.TabIndex = 2
-			'
-			'_currentRecordLabel
-			'
-			Me._currentRecordLabel.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-			   Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me._currentRecordLabel.Location = New System.Drawing.Point(4, 4)
-			Me._currentRecordLabel.Name = "_currentRecordLabel"
-			Me._currentRecordLabel.Size = New System.Drawing.Size(460, 16)
-			Me._currentRecordLabel.TabIndex = 4
-			'
-			'_overalProgressLabel
-			'
-			Me._overalProgressLabel.Location = New System.Drawing.Point(4, 84)
-			Me._overalProgressLabel.Name = "_overalProgressLabel"
-			Me._overalProgressLabel.Size = New System.Drawing.Size(368, 16)
-			Me._overalProgressLabel.TabIndex = 5
-			'
-			'_saveOutputButton
-			'
-			Me._saveOutputButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me._saveOutputButton.Enabled = False
-			Me._saveOutputButton.Location = New System.Drawing.Point(360, 332)
-			Me._saveOutputButton.Name = "_saveOutputButton"
-			Me._saveOutputButton.Size = New System.Drawing.Size(108, 23)
-			Me._saveOutputButton.TabIndex = 10
-			Me._saveOutputButton.Text = "Save Progress Log"
-			Me._saveOutputButton.Visible = False
-			'
-			'_saveFileDialog
-			'
-			Me._saveFileDialog.DefaultExt = "log"
-			Me._saveFileDialog.Filter = "XML Log Files (*.log)|*.log"
-			'
-			'_Tabs
-			'
-			Me._Tabs.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-			   Or System.Windows.Forms.AnchorStyles.Left) _
-			   Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me._Tabs.Controls.Add(Me.SummaryTab)
-			Me._Tabs.Controls.Add(Me.ErrorsTab)
-			Me._Tabs.Controls.Add(Me.ProgressTab)
-			Me._Tabs.Controls.Add(Me.WarningsTab)
-			Me._Tabs.Controls.Add(Me.ErrorReportTab)
-			Me._Tabs.Location = New System.Drawing.Point(4, 104)
-			Me._Tabs.Name = "_Tabs"
-			Me._Tabs.SelectedIndex = 0
-			Me._Tabs.Size = New System.Drawing.Size(464, 228)
-			Me._Tabs.TabIndex = 11
-			'
-			'SummaryTab
-			'
-			Me.SummaryTab.Controls.Add(Me._summaryOutput)
-			Me.SummaryTab.Location = New System.Drawing.Point(4, 22)
-			Me.SummaryTab.Name = "SummaryTab"
-			Me.SummaryTab.Size = New System.Drawing.Size(456, 202)
-			Me.SummaryTab.TabIndex = 1
-			Me.SummaryTab.Text = "Summary"
-			'
-			'_summaryOutput
-			'
-			Me._summaryOutput.Dock = System.Windows.Forms.DockStyle.Fill
-			Me._summaryOutput.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-			Me._summaryOutput.Location = New System.Drawing.Point(0, 0)
-			Me._summaryOutput.Multiline = True
-			Me._summaryOutput.ReadOnly = True
-			Me._summaryOutput.BackColor = Color.White
-			Me._summaryOutput.Name = "_summaryOutput"
-			Me._summaryOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both
-			Me._summaryOutput.Size = New System.Drawing.Size(456, 202)
-			Me._summaryOutput.TabIndex = 12
-			Me._summaryOutput.Text = ""
-			'
-			'ErrorsTab
-			'
-			Me.ErrorsTab.Controls.Add(Me._errorsOutputTextBox)
-			Me.ErrorsTab.Location = New System.Drawing.Point(4, 22)
-			Me.ErrorsTab.Name = "ErrorsTab"
-			Me.ErrorsTab.Size = New System.Drawing.Size(456, 202)
-			Me.ErrorsTab.TabIndex = 2
-			Me.ErrorsTab.Text = "Errors"
-			'
-			'_errorsOutputTextBox
-			'
-			Me._errorsOutputTextBox.Dock = System.Windows.Forms.DockStyle.Fill
-			Me._errorsOutputTextBox.InSafeMode = False
-			Me._errorsOutputTextBox.Location = New System.Drawing.Point(0, 0)
-			Me._errorsOutputTextBox.Name = "_errorsOutputTextBox"
-			Me._errorsOutputTextBox.Size = New System.Drawing.Size(456, 202)
-			Me._errorsOutputTextBox.TabIndex = 11
-			'
-			'ProgressTab
-			'
-			Me.ProgressTab.Controls.Add(Me._outputTextBox)
-			Me.ProgressTab.Location = New System.Drawing.Point(4, 22)
-			Me.ProgressTab.Name = "ProgressTab"
-			Me.ProgressTab.Size = New System.Drawing.Size(456, 202)
-			Me.ProgressTab.TabIndex = 0
-			Me.ProgressTab.Text = "Progress"
-			'
-			'_outputTextBox
-			'
-			Me._outputTextBox.Dock = System.Windows.Forms.DockStyle.Fill
-			Me._outputTextBox.InSafeMode = False
-			Me._outputTextBox.Location = New System.Drawing.Point(0, 0)
-			Me._outputTextBox.Name = "_outputTextBox"
-			Me._outputTextBox.Size = New System.Drawing.Size(456, 202)
-			Me._outputTextBox.TabIndex = 10
-			'
-			'WarningsTab
-			'
-			Me.WarningsTab.Controls.Add(Me._warningsOutputTextBox)
-			Me.WarningsTab.Location = New System.Drawing.Point(4, 22)
-			Me.WarningsTab.Name = "WarningsTab"
-			Me.WarningsTab.Size = New System.Drawing.Size(456, 202)
-			Me.WarningsTab.TabIndex = 3
-			Me.WarningsTab.Text = "Warnings"
-			'
-			'_warningsOutputTextBox
-			'
-			Me._warningsOutputTextBox.Dock = System.Windows.Forms.DockStyle.Fill
-			Me._warningsOutputTextBox.InSafeMode = False
-			Me._warningsOutputTextBox.Location = New System.Drawing.Point(0, 0)
-			Me._warningsOutputTextBox.Name = "_warningsOutputTextBox"
-			Me._warningsOutputTextBox.Size = New System.Drawing.Size(456, 202)
-			Me._warningsOutputTextBox.TabIndex = 11
-			'
-			'ErrorReportTab
-			'
-			Me.ErrorReportTab.Controls.Add(Me._exportErrorFileButton)
-			Me.ErrorReportTab.Controls.Add(Me._exportErrorReportBtn)
-			Me.ErrorReportTab.Controls.Add(Me._reportDataGrid)
-			Me.ErrorReportTab.Location = New System.Drawing.Point(4, 22)
-			Me.ErrorReportTab.Name = "ErrorReportTab"
-			Me.ErrorReportTab.Size = New System.Drawing.Size(456, 202)
-			Me.ErrorReportTab.TabIndex = 4
-			Me.ErrorReportTab.Text = "Report"
-			'
-			'_exportErrorFileButton
-			'
-			Me._exportErrorFileButton.Location = New System.Drawing.Point(134, 2)
-			Me._exportErrorFileButton.Name = "_exportErrorFileButton"
-			Me._exportErrorFileButton.Size = New System.Drawing.Size(114, 20)
-			Me._exportErrorFileButton.TabIndex = 3
-			Me._exportErrorFileButton.Text = "Export Error File"
-			'
-			'_exportErrorReportBtn
-			'
-			Me._exportErrorReportBtn.Location = New System.Drawing.Point(0, 2)
-			Me._exportErrorReportBtn.Name = "_exportErrorReportBtn"
-			Me._exportErrorReportBtn.Size = New System.Drawing.Size(132, 20)
-			Me._exportErrorReportBtn.TabIndex = 2
-			Me._exportErrorReportBtn.Text = "Export Error Report"
-			'
-			'_reportDataGrid
-			'
-			Me._reportDataGrid.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-			   Or System.Windows.Forms.AnchorStyles.Left) _
-			   Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me._reportDataGrid.DataMember = ""
-			Me._reportDataGrid.HeaderForeColor = System.Drawing.SystemColors.ControlText
-			Me._reportDataGrid.Location = New System.Drawing.Point(0, 24)
-			Me._reportDataGrid.Name = "_reportDataGrid"
-			Me._reportDataGrid.Size = New System.Drawing.Size(480, 176)
-			Me._reportDataGrid.TabIndex = 0
-			'
-			'_currentMessageStatus
-			'
-			Me._currentMessageStatus.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-			   Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-			Me._currentMessageStatus.Location = New System.Drawing.Point(4, 24)
-			Me._currentMessageStatus.Name = "_currentMessageStatus"
-			Me._currentMessageStatus.Size = New System.Drawing.Size(460, 28)
-			Me._currentMessageStatus.TabIndex = 12
-			'
-			'_statusBar
-			'
-			Me._statusBar.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-			Me._statusBar.Location = New System.Drawing.Point(8, 336)
-			Me._statusBar.Name = "_statusBar"
-			Me._statusBar.Size = New System.Drawing.Size(352, 20)
-			Me._statusBar.TabIndex = 13
-			Me._statusBar.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-			'
-			'_exportErrorsDialog
-			'
-			Me._exportErrorsDialog.Filter = "CSV Files|*.csv|All Files|*.*"
-			'
-			'ProgressForm
-			'
-			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-			Me.ClientSize = New System.Drawing.Size(468, 357)
-			Me.Controls.Add(Me._statusBar)
-			Me.Controls.Add(Me._currentMessageStatus)
-			Me.Controls.Add(Me._Tabs)
-			Me.Controls.Add(Me._saveOutputButton)
-			Me.Controls.Add(Me._overalProgressLabel)
-			Me.Controls.Add(Me._currentRecordLabel)
-			Me.Controls.Add(Me._progressBar)
-			Me.Controls.Add(Me._showDetailButton)
-			Me.Controls.Add(Me._stopImportButton)
-			Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-			Me.Name = "ProgressForm"
-			Me.Text = "Import Progress..."
-			Me._Tabs.ResumeLayout(False)
-			Me.SummaryTab.ResumeLayout(False)
-			Me.ErrorsTab.ResumeLayout(False)
-			Me.ProgressTab.ResumeLayout(False)
-			Me.WarningsTab.ResumeLayout(False)
-			Me.ErrorReportTab.ResumeLayout(False)
-			CType(Me._reportDataGrid, System.ComponentModel.ISupportInitialize).EndInit()
-			Me.ResumeLayout(False)
+		Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ProgressForm))
+		Me._stopImportButton = New System.Windows.Forms.Button()
+		Me._showDetailButton = New System.Windows.Forms.Button()
+		Me._progressBar = New System.Windows.Forms.ProgressBar()
+		Me._currentRecordLabel = New System.Windows.Forms.Label()
+		Me._overalProgressLabel = New System.Windows.Forms.Label()
+		Me._saveOutputButton = New System.Windows.Forms.Button()
+		Me._saveFileDialog = New System.Windows.Forms.SaveFileDialog()
+		Me._Tabs = New System.Windows.Forms.TabControl()
+		Me.SummaryTab = New System.Windows.Forms.TabPage()
+		Me._summaryOutput = New System.Windows.Forms.TextBox()
+		Me.ErrorsTab = New System.Windows.Forms.TabPage()
+		Me._errorsOutputTextBox = New kCura.Windows.Forms.OutputRichTextBox()
+		Me.ProgressTab = New System.Windows.Forms.TabPage()
+		Me._outputTextBox = New kCura.Windows.Forms.OutputRichTextBox()
+		Me.WarningsTab = New System.Windows.Forms.TabPage()
+		Me._warningsOutputTextBox = New kCura.Windows.Forms.OutputRichTextBox()
+		Me.ErrorReportTab = New System.Windows.Forms.TabPage()
+		Me._exportErrorFileButton = New System.Windows.Forms.Button()
+		Me._exportErrorReportBtn = New System.Windows.Forms.Button()
+		Me._reportDataGrid = New System.Windows.Forms.DataGrid()
+		Me._currentMessageStatus = New System.Windows.Forms.Label()
+		Me._statusBar = New System.Windows.Forms.Label()
+		Me._exportErrorsDialog = New System.Windows.Forms.SaveFileDialog()
+		Me._exportErrorFileDialog = New System.Windows.Forms.SaveFileDialog()
+		Me._exportErrorFilesTo = New System.Windows.Forms.FolderBrowserDialog()
+		Me._Tabs.SuspendLayout
+		Me.SummaryTab.SuspendLayout
+		Me.ErrorsTab.SuspendLayout
+		Me.ProgressTab.SuspendLayout
+		Me.WarningsTab.SuspendLayout
+		Me.ErrorReportTab.SuspendLayout
+		CType(Me._reportDataGrid,System.ComponentModel.ISupportInitialize).BeginInit
+		Me.SuspendLayout
+		'
+		'_stopImportButton
+		'
+		Me._stopImportButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right),System.Windows.Forms.AnchorStyles)
+		Me._stopImportButton.Location = New System.Drawing.Point(700, 56)
+		Me._stopImportButton.Name = "_stopImportButton"
+		Me._stopImportButton.Size = New System.Drawing.Size(84, 23)
+		Me._stopImportButton.TabIndex = 0
+		Me._stopImportButton.Text = "Stop"
+		'
+		'_showDetailButton
+		'
+		Me._showDetailButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right),System.Windows.Forms.AnchorStyles)
+		Me._showDetailButton.Location = New System.Drawing.Point(700, 80)
+		Me._showDetailButton.Name = "_showDetailButton"
+		Me._showDetailButton.Size = New System.Drawing.Size(84, 23)
+		Me._showDetailButton.TabIndex = 1
+		Me._showDetailButton.Text = "Hide Detail"
+		'
+		'_progressBar
+		'
+		Me._progressBar.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left)  _
+            Or System.Windows.Forms.AnchorStyles.Right),System.Windows.Forms.AnchorStyles)
+		Me._progressBar.Location = New System.Drawing.Point(4, 56)
+		Me._progressBar.Name = "_progressBar"
+		Me._progressBar.Size = New System.Drawing.Size(688, 23)
+		Me._progressBar.TabIndex = 2
+		'
+		'_currentRecordLabel
+		'
+		Me._currentRecordLabel.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left)  _
+            Or System.Windows.Forms.AnchorStyles.Right),System.Windows.Forms.AnchorStyles)
+		Me._currentRecordLabel.Location = New System.Drawing.Point(4, 4)
+		Me._currentRecordLabel.Name = "_currentRecordLabel"
+		Me._currentRecordLabel.Size = New System.Drawing.Size(776, 16)
+		Me._currentRecordLabel.TabIndex = 4
+		'
+		'_overalProgressLabel
+		'
+		Me._overalProgressLabel.Location = New System.Drawing.Point(4, 84)
+		Me._overalProgressLabel.Name = "_overalProgressLabel"
+		Me._overalProgressLabel.Size = New System.Drawing.Size(368, 16)
+		Me._overalProgressLabel.TabIndex = 5
+		'
+		'_saveOutputButton
+		'
+		Me._saveOutputButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right),System.Windows.Forms.AnchorStyles)
+		Me._saveOutputButton.Enabled = false
+		Me._saveOutputButton.Location = New System.Drawing.Point(676, 536)
+		Me._saveOutputButton.Name = "_saveOutputButton"
+		Me._saveOutputButton.Size = New System.Drawing.Size(108, 23)
+		Me._saveOutputButton.TabIndex = 10
+		Me._saveOutputButton.Text = "Save Progress Log"
+		Me._saveOutputButton.Visible = false
+		'
+		'_saveFileDialog
+		'
+		Me._saveFileDialog.DefaultExt = "log"
+		Me._saveFileDialog.Filter = "XML Log Files (*.log)|*.log"
+		'
+		'_Tabs
+		'
+		Me._Tabs.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom)  _
+            Or System.Windows.Forms.AnchorStyles.Left)  _
+            Or System.Windows.Forms.AnchorStyles.Right),System.Windows.Forms.AnchorStyles)
+		Me._Tabs.Controls.Add(Me.SummaryTab)
+		Me._Tabs.Controls.Add(Me.ErrorsTab)
+		Me._Tabs.Controls.Add(Me.ProgressTab)
+		Me._Tabs.Controls.Add(Me.WarningsTab)
+		Me._Tabs.Controls.Add(Me.ErrorReportTab)
+		Me._Tabs.Location = New System.Drawing.Point(4, 104)
+		Me._Tabs.Name = "_Tabs"
+		Me._Tabs.SelectedIndex = 0
+		Me._Tabs.Size = New System.Drawing.Size(780, 432)
+		Me._Tabs.TabIndex = 11
+		'
+		'SummaryTab
+		'
+		Me.SummaryTab.Controls.Add(Me._summaryOutput)
+		Me.SummaryTab.Location = New System.Drawing.Point(4, 22)
+		Me.SummaryTab.Name = "SummaryTab"
+		Me.SummaryTab.Size = New System.Drawing.Size(772, 406)
+		Me.SummaryTab.TabIndex = 1
+		Me.SummaryTab.Text = "Summary"
+		'
+		'_summaryOutput
+		'
+		Me._summaryOutput.BackColor = System.Drawing.Color.White
+		Me._summaryOutput.Dock = System.Windows.Forms.DockStyle.Fill
+		Me._summaryOutput.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0,Byte))
+		Me._summaryOutput.Location = New System.Drawing.Point(0, 0)
+		Me._summaryOutput.Multiline = true
+		Me._summaryOutput.Name = "_summaryOutput"
+		Me._summaryOutput.ReadOnly = true
+		Me._summaryOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both
+		Me._summaryOutput.Size = New System.Drawing.Size(772, 406)
+		Me._summaryOutput.TabIndex = 12
+		'
+		'ErrorsTab
+		'
+		Me.ErrorsTab.Controls.Add(Me._errorsOutputTextBox)
+		Me.ErrorsTab.Location = New System.Drawing.Point(4, 22)
+		Me.ErrorsTab.Name = "ErrorsTab"
+		Me.ErrorsTab.Size = New System.Drawing.Size(456, 202)
+		Me.ErrorsTab.TabIndex = 2
+		Me.ErrorsTab.Text = "Errors"
+		'
+		'_errorsOutputTextBox
+		'
+		Me._errorsOutputTextBox.AllowForSave = false
+		Me._errorsOutputTextBox.Dock = System.Windows.Forms.DockStyle.Fill
+		Me._errorsOutputTextBox.InSafeMode = false
+		Me._errorsOutputTextBox.Location = New System.Drawing.Point(0, 0)
+		Me._errorsOutputTextBox.Name = "_errorsOutputTextBox"
+		Me._errorsOutputTextBox.Scrollbars = System.Windows.Forms.ScrollBars.Both
+		Me._errorsOutputTextBox.Size = New System.Drawing.Size(456, 202)
+		Me._errorsOutputTextBox.TabIndex = 11
+		'
+		'ProgressTab
+		'
+		Me.ProgressTab.Controls.Add(Me._outputTextBox)
+		Me.ProgressTab.Location = New System.Drawing.Point(4, 22)
+		Me.ProgressTab.Name = "ProgressTab"
+		Me.ProgressTab.Size = New System.Drawing.Size(456, 202)
+		Me.ProgressTab.TabIndex = 0
+		Me.ProgressTab.Text = "Progress"
+		'
+		'_outputTextBox
+		'
+		Me._outputTextBox.AllowForSave = false
+		Me._outputTextBox.Dock = System.Windows.Forms.DockStyle.Fill
+		Me._outputTextBox.InSafeMode = false
+		Me._outputTextBox.Location = New System.Drawing.Point(0, 0)
+		Me._outputTextBox.Name = "_outputTextBox"
+		Me._outputTextBox.Scrollbars = System.Windows.Forms.ScrollBars.Both
+		Me._outputTextBox.Size = New System.Drawing.Size(456, 202)
+		Me._outputTextBox.TabIndex = 10
+		'
+		'WarningsTab
+		'
+		Me.WarningsTab.Controls.Add(Me._warningsOutputTextBox)
+		Me.WarningsTab.Location = New System.Drawing.Point(4, 22)
+		Me.WarningsTab.Name = "WarningsTab"
+		Me.WarningsTab.Size = New System.Drawing.Size(456, 202)
+		Me.WarningsTab.TabIndex = 3
+		Me.WarningsTab.Text = "Warnings"
+		'
+		'_warningsOutputTextBox
+		'
+		Me._warningsOutputTextBox.AllowForSave = false
+		Me._warningsOutputTextBox.Dock = System.Windows.Forms.DockStyle.Fill
+		Me._warningsOutputTextBox.InSafeMode = false
+		Me._warningsOutputTextBox.Location = New System.Drawing.Point(0, 0)
+		Me._warningsOutputTextBox.Name = "_warningsOutputTextBox"
+		Me._warningsOutputTextBox.Scrollbars = System.Windows.Forms.ScrollBars.Both
+		Me._warningsOutputTextBox.Size = New System.Drawing.Size(456, 202)
+		Me._warningsOutputTextBox.TabIndex = 11
+		'
+		'ErrorReportTab
+		'
+		Me.ErrorReportTab.Controls.Add(Me._exportErrorFileButton)
+		Me.ErrorReportTab.Controls.Add(Me._exportErrorReportBtn)
+		Me.ErrorReportTab.Controls.Add(Me._reportDataGrid)
+		Me.ErrorReportTab.Location = New System.Drawing.Point(4, 22)
+		Me.ErrorReportTab.Name = "ErrorReportTab"
+		Me.ErrorReportTab.Size = New System.Drawing.Size(456, 202)
+		Me.ErrorReportTab.TabIndex = 4
+		Me.ErrorReportTab.Text = "Report"
+		'
+		'_exportErrorFileButton
+		'
+		Me._exportErrorFileButton.Location = New System.Drawing.Point(134, 2)
+		Me._exportErrorFileButton.Name = "_exportErrorFileButton"
+		Me._exportErrorFileButton.Size = New System.Drawing.Size(114, 20)
+		Me._exportErrorFileButton.TabIndex = 3
+		Me._exportErrorFileButton.Text = "Export Error File"
+		'
+		'_exportErrorReportBtn
+		'
+		Me._exportErrorReportBtn.Location = New System.Drawing.Point(0, 2)
+		Me._exportErrorReportBtn.Name = "_exportErrorReportBtn"
+		Me._exportErrorReportBtn.Size = New System.Drawing.Size(132, 20)
+		Me._exportErrorReportBtn.TabIndex = 2
+		Me._exportErrorReportBtn.Text = "Export Error Report"
+		'
+		'_reportDataGrid
+		'
+		Me._reportDataGrid.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom)  _
+            Or System.Windows.Forms.AnchorStyles.Left)  _
+            Or System.Windows.Forms.AnchorStyles.Right),System.Windows.Forms.AnchorStyles)
+		Me._reportDataGrid.DataMember = ""
+		Me._reportDataGrid.HeaderForeColor = System.Drawing.SystemColors.ControlText
+		Me._reportDataGrid.Location = New System.Drawing.Point(0, 24)
+		Me._reportDataGrid.Name = "_reportDataGrid"
+		Me._reportDataGrid.Size = New System.Drawing.Size(480, 176)
+		Me._reportDataGrid.TabIndex = 0
+		'
+		'_currentMessageStatus
+		'
+		Me._currentMessageStatus.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left)  _
+            Or System.Windows.Forms.AnchorStyles.Right),System.Windows.Forms.AnchorStyles)
+		Me._currentMessageStatus.Location = New System.Drawing.Point(4, 24)
+		Me._currentMessageStatus.Name = "_currentMessageStatus"
+		Me._currentMessageStatus.Size = New System.Drawing.Size(776, 28)
+		Me._currentMessageStatus.TabIndex = 12
+		'
+		'_statusBar
+		'
+		Me._statusBar.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left),System.Windows.Forms.AnchorStyles)
+		Me._statusBar.Location = New System.Drawing.Point(8, 540)
+		Me._statusBar.Name = "_statusBar"
+		Me._statusBar.Size = New System.Drawing.Size(352, 20)
+		Me._statusBar.TabIndex = 13
+		Me._statusBar.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+		'
+		'_exportErrorsDialog
+		'
+		Me._exportErrorsDialog.Filter = "CSV Files|*.csv|All Files|*.*"
+		'
+		'ProgressForm
+		'
+		Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
+		Me.ClientSize = New System.Drawing.Size(784, 561)
+		Me.Controls.Add(Me._statusBar)
+		Me.Controls.Add(Me._currentMessageStatus)
+		Me.Controls.Add(Me._Tabs)
+		Me.Controls.Add(Me._saveOutputButton)
+		Me.Controls.Add(Me._overalProgressLabel)
+		Me.Controls.Add(Me._currentRecordLabel)
+		Me.Controls.Add(Me._progressBar)
+		Me.Controls.Add(Me._showDetailButton)
+		Me.Controls.Add(Me._stopImportButton)
+		Me.Icon = CType(resources.GetObject("$this.Icon"),System.Drawing.Icon)
+		Me.Name = "ProgressForm"
+		Me.Text = "Import Progress..."
+		Me._Tabs.ResumeLayout(false)
+		Me.SummaryTab.ResumeLayout(false)
+		Me.SummaryTab.PerformLayout
+		Me.ErrorsTab.ResumeLayout(false)
+		Me.ProgressTab.ResumeLayout(false)
+		Me.WarningsTab.ResumeLayout(false)
+		Me.ErrorReportTab.ResumeLayout(false)
+		CType(Me._reportDataGrid,System.ComponentModel.ISupportInitialize).EndInit
+		Me.ResumeLayout(false)
 
-		End Sub
+End Sub
 
 #End Region
 
