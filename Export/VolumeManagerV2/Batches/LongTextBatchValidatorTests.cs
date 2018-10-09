@@ -52,8 +52,11 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 		[Test]
 		public void ItShouldPassForFileWithoutExportRequest()
 		{
-			LongText longText = Create("location", true, false);
+			string location = "location";
+			LongText longText = Create(location, true, false);
 			LongTextRepository.Setup(x => x.GetLongTexts()).Returns(new List<LongText> {longText});
+			FileHelper.Setup(x => x.Exists(location)).Returns(true);
+			FileHelper.Setup(x => x.GetFileSize(location)).Returns(1);
 
 			//ACT
 			Instance.ValidateExportedBatch(null, null, CancellationToken.None);
@@ -76,7 +79,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 			Instance.ValidateExportedBatch(null, null, CancellationToken.None);
 
 			//ASSERT
-			Status.Verify(x => x.WriteError(It.IsAny<string>()), Times.Once);
+			Status.Verify(x => x.WriteError(It.IsAny<string>()), Times.Once());
 			Status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never());
 		}
 
