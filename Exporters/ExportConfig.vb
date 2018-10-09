@@ -20,6 +20,12 @@ Public Class ExportConfig
 			Return Config.UseOldExport
 		End Get
 	End Property
+
+	Public ReadOnly Property ForceParallelismInNewExport As Boolean Implements IExportConfig.ForceParallelismInNewExport
+		Get
+			Return Config.ForceParallelismInNewExport
+		End Get
+	End Property
 	
 	Public ReadOnly Property ExportIOErrorWaitTime As Integer Implements IExportConfig.ExportIOErrorWaitTime
 		Get
@@ -51,6 +57,23 @@ Public Class ExportConfig
 	    End Get
 	End Property
 
+	Public ReadOnly Property TapiBridgeExportTransferWaitingTimeInSeconds As Integer Implements IExportConfig.TapiBridgeExportTransferWaitingTimeInSeconds
+		Get
+			Return kCura.Utility.Config.TapiBridgeExportTransferWaitingTimeInSeconds
+		End Get
+	End Property
+
+	Public ReadOnly Property TapiForceHttpClient As Boolean Implements IExportConfig.TapiForceHttpClient
+		Get
+			Return Config.TapiForceHttpClient
+		End Get
+	End Property
+
+	Public ReadOnly Property MaximumFilesForTapiBridge As Integer Implements IExportConfig.MaximumFilesForTapiBridge
+		Get
+			Return kCura.Utility.Config.MaximumFilesForTapiBridge
+		End Get
+	End Property
 End Class
 
 End Namespace

@@ -1,15 +1,16 @@
 Imports System.IO
 Imports kCura.Utility
 Imports kCura.Windows.Process
+Imports kCura.WinEDDS.Api
 
 Namespace kCura.WinEDDS
 	Public Class ImageFilePreviewer
-		Inherits kCura.Utility.DelimitedFileImporter
+		Inherits DelimitedFileImporter
 		
-		Private _filePath As String
+		Private ReadOnly _imageValidator As kCura.ImageValidator.IImageValidator
 		Private _fileLineCount As Int32
 		Private _continue As Boolean
-		Private WithEvents _processController As kCura.Windows.Process.Controller
+		Private WithEvents _processController As Controller
 
 		Private Enum Columns
 			DocumentArtifactID = 0
@@ -17,17 +18,7 @@ Namespace kCura.WinEDDS
 			MultiPageIndicator = 3
 		End Enum
 
-		Friend WriteOnly Property FilePath() As String
-			Set(ByVal value As String)
-				_filePath = value
-			End Set
-		End Property
-
-		Public Overloads Sub ReadFile()
-			Me.ReadFile(_filePath)
-		End Sub
-
-		Protected ReadOnly Property [Continue]() As Boolean
+		Private ReadOnly Property [Continue]() As Boolean
 			Get
 				Return Not MyBase.HasReachedEOF AndAlso _continue
 			End Get
@@ -35,60 +26,66 @@ Namespace kCura.WinEDDS
 
 		Public Event StatusMessage(ByVal args As StatusEventArgs)
 
-		Public Sub New(ByVal controller As kCura.Windows.Process.Controller, ByVal doRetryLogic As Boolean)
+		Public Sub New(ByVal controller As Controller, ByVal doRetryLogic As Boolean, imageValidator As kCura.ImageValidator.IImageValidator)
 			MyBase.New(New Char() {","c}, doRetryLogic)
 			
 			_processController = controller
+			_imageValidator = imageValidator
 			_continue = True
 		End Sub
 
 
 		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
 			Try
-				Dim documentIdentifier As String = String.Empty
 				_fileLineCount = kCura.Utility.File.Instance.CountLinesInFile(path)
 				Reader = New StreamReader(path)
-				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "Begin Image Upload")
+				RaiseStatusEvent(EventType.Progress, "Begin Image Upload")
 
 				While [Continue]
 					Try
 						DoFileUpload()
-					Catch ex As System.Exception
+					Catch ex As Exception
 						Dim txt As String = ex.ToString.ToLower
 						If txt.IndexOf("ix_") <> -1 AndAlso txt.IndexOf("duplicate") <> -1 Then
 							txt = "Error creating document - identifier field isn't being properly filled.  Please choose a different 'key' field."
 						Else
 							txt = ex.Message
 						End If
-						RaiseStatusEvent(kCura.Windows.Process.EventType.Error, txt)
+						RaiseStatusEvent(EventType.Error, txt)
 					End Try
 				End While
 				Me.Reader.Close()
-				RaiseStatusEvent(kCura.Windows.Process.EventType.Progress, "End Image Upload")
-			Catch ex As System.Exception
+				RaiseStatusEvent(EventType.Progress, "End Image Upload")
+			Catch ex As Exception
+				RaiseStatusEvent(EventType.Error, ex.Message)
 				RaiseFatalError(ex)
 			End Try
 			Return Nothing
 		End Function
 
 		Private Sub DoFileUpload()
-			Dim valuearray As String()
-			valuearray = Me.GetLine
-			Dim filePath As String
+			Dim valuearray As String() = Me.GetLine
+
 			While Not valuearray Is Nothing AndAlso _continue
-				Dim record As New Api.ImageRecord
+				Dim record As New ImageRecord
 				record.OriginalIndex = Me.CurrentLineNumber
-				record.IsNewDoc = valuearray(Columns.MultiPageIndicator).ToLower = "Y"
-				filePath = BulkImageFileImporter.GetFileLocation(record)
-				If Not filePath = "" Then filePath = Me.CheckFile(filePath)
-				record.BatesNumber = Me.GetBatesNumber(valuearray)
-				If record.BatesNumber = "" Then
-					Me.RaiseStatusEvent(Windows.Process.EventType.Progress, "Line improperly formatted.")
-				ElseIf filePath = "" Then
-					Me.RaiseStatusEvent(Windows.Process.EventType.Progress, $"Record '{record.BatesNumber}' processed - file info error.")
-				Else
-					Me.RaiseStatusEvent(Windows.Process.EventType.Progress, $"Record '{record.BatesNumber}' processed.")
+				record.IsNewDoc = GetValue(valuearray, Columns.MultiPageIndicator).ToLower = "Y"
+				record.FileLocation =  GetValue(valuearray, Columns.FileLocation)
+				record.BatesNumber =  GetValue(valuearray, Columns.DocumentArtifactID)
+
+				Dim filePath As String = BulkImageFileImporter.GetFileLocation(record)
+				If Not filePath = "" Then
+					filePath = Me.CheckFile(filePath)
 				End If
+
+				If record.BatesNumber = "" Then
+					Me.RaiseStatusEvent(EventType.Progress, $"Line {CurrentLineNumber} improperly formatted. Invalid bates number.")
+				ElseIf filePath = "" Then
+					Me.RaiseStatusEvent(EventType.Progress, $"Record '{record.BatesNumber}' processed - file info error.")
+				Else
+					Me.RaiseStatusEvent(EventType.Progress, $"Record '{record.BatesNumber}' processed.")
+				End If
+
 				If MyBase.HasReachedEOF Then
 					valuearray = Nothing
 				Else
@@ -96,36 +93,39 @@ Namespace kCura.WinEDDS
 				End If
 			End While
 		End Sub
-
-		Public Function GetFilePath(ByVal valuearray As String()) As String
+		
+		Private Function GetValue(ByVal valuearray As String(), index As Int32) As String
 			Dim retval As String
 			Try
-				retval = valuearray(Columns.FileLocation)
+				retval = valuearray(index)
 				Return retval
 			Catch ex As IndexOutOfRangeException
-				Me.RaiseStatusEvent(Windows.Process.EventType.Error, "Invalid line format - no file specified in line.")
+				Me.RaiseStatusEvent(EventType.Error, $"Line {CurrentLineNumber} is invalid format. No column at index {index}.")
 				Return ""
 			End Try
 		End Function
 
-		Public Function GetBatesNumber(ByVal valuearray As String()) As String
-			Dim retval As String
-			Try
-				retval = valuearray(Columns.DocumentArtifactID)
-				Return retval
-			Catch ex As IndexOutOfRangeException
-				Me.RaiseStatusEvent(Windows.Process.EventType.Error, "Invalid line format - production number specified in line.")
-				Return ""
-			End Try
-		End Function
-
-		Public Function CheckFile(ByVal path As String) As String
+		Private Function CheckFile(ByVal path As String) As String
 			If Not System.IO.File.Exists(path) Then
-				Me.RaiseStatusEvent(Windows.Process.EventType.Error, $"File '{path}' does not exist.")
+				Me.RaiseStatusEvent(EventType.Error, $"File '{path}' does not exist.")
+				Return ""
+			End If
+
+			If Not ValidateImage(path) Then
 				Return ""
 			End If
 
 			Return path
+		End Function
+
+		Private Function ValidateImage(path As String) As Boolean
+			Try
+				_imageValidator.ValidateImage(path)
+				Return True
+			Catch ex As Exception
+				RaiseStatusEvent(EventType.Error, ex.Message)
+				Return False
+			End Try
 		End Function
 
 #Region "Events and Event Handling"
@@ -136,38 +136,14 @@ Namespace kCura.WinEDDS
 			RaiseEvent FatalErrorEvent("Error processing line: " + CurrentLineNumber.ToString, ex)
 		End Sub
 
-		Private Sub RaiseStatusEvent(ByVal et As kCura.Windows.Process.EventType, ByVal line As String)
+		Private Sub RaiseStatusEvent(ByVal et As EventType, ByVal line As String)
 			'TODO: track stats
 			RaiseEvent StatusMessage(New StatusEventArgs(et, Me.CurrentLineNumber, _fileLineCount, line, Nothing, Nothing))
 		End Sub
 
 #End Region
 
-#Region "Exceptions"
-		Public Class FileLoadException
-			Inherits ImporterExceptionBase
-			Public Sub New()
-				MyBase.New("Error uploading file.  Skipping line.")
-			End Sub
-		End Class
-
-		Public Class CreateDocumentException
-			Inherits ImporterExceptionBase
-			Public Sub New(ByVal parentException As System.Exception)
-				MyBase.New("Error creating new document.  Skipping line: " & parentException.Message, parentException)
-			End Sub
-		End Class
-
-		Public Class OverwriteException
-			Inherits ImporterExceptionBase
-			Public Sub New()
-				MyBase.New("Document exists - upload aborted.")
-			End Sub
-		End Class
-
-#End Region
-
-		Private Sub _processObserver_CancelImport(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
+		Private Sub _processObserver_CancelImport(ByVal processID As Guid) Handles _processController.HaltProcessEvent
 			_continue = False
 		End Sub
 
