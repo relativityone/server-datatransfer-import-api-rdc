@@ -74,15 +74,6 @@
     <Reference Include="Relativity.Services.Interfaces, Version=10.0.68.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Services.Interfaces.10.0.68.1\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.Interfaces.Private, Version=10.0.68.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Services.Interfaces.Private.10.0.68.1\lib\net462\Relativity.Services.Interfaces.Private.dll</HintPath>
-    </Reference>
-    <Reference Include="Relativity.Services.Layout.DataContracts, Version=1.1.46.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Services.Layout.Interfaces.1.1.46\lib\Relativity.Services.Layout.DataContracts.dll</HintPath>
-    </Reference>
-    <Reference Include="Relativity.Services.Layout.Interfaces, Version=1.1.46.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Services.Layout.Interfaces.1.1.46\lib\Relativity.Services.Layout.Interfaces.dll</HintPath>
-    </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.74.5, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.74\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
     </Reference>
