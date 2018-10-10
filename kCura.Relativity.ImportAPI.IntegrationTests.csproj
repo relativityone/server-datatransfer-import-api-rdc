@@ -78,6 +78,7 @@
     <Compile Include="AuthenticationTests\NewNativeDocumentImportJobTests.cs" />
     <Compile Include="Helpers\ImportApiCreator.cs" />
     <Compile Include="Helpers\Utils.cs" />
+    <Compile Include="Tests\FolderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
