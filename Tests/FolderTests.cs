@@ -67,7 +67,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 		[Test]
 		public void UpdateFolderIdsForFolderPathsTest_HighVolume_AllRowsKnown()
 		{
-			// Assign
+			// Arrange
 			const int folderPathToIdWithUnknownIdNum = 5000;
 			const int folderPathToIdWithDefinedIdNum = 100;
 			const int folderPathToIdNotInDbNum = 100;
