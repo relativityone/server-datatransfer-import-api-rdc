@@ -82,25 +82,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 
 			var folderPathToIdWithDefinedId =
 				Enumerable.Range(folderPathToIdWithUnknownIdNum, folderPathToIdWithDefinedIdNum)
-					.Select(x =>
-				{
-					int val;
-					const int variantsNum = 3;
-					const int arbitraryVal = 10;
-					switch (x % variantsNum)
-					{
-						case 0:
-							val = x;
-							break;
-						case 1:
-							val = _ROOT_FOLDER_ID;
-							break;
-						default:
-							val = x * arbitraryVal;
-							break;
-					}
-					return new { Key = getFolderPath(x), Val = val };
-				});
+					.Select(x => new { Key = getFolderPath(x), Val = GenerateValue(x) });
 
 			var folderPathToIdNotInDb =
 				Enumerable.Range(folderPathToIdWithUnknownIdNum + folderPathToIdWithDefinedIdNum, folderPathToIdNotInDbNum)
@@ -133,6 +115,22 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 
 			// Assert
 			VerifyRows(expected);
+		}
+
+		private int GenerateValue(int index)
+		{
+			const int variantsNum = 3;
+			const int arbitraryVal = 10;
+			switch (index % variantsNum)
+			{
+				case 0:
+					return index;
+				case 1:
+					return _ROOT_FOLDER_ID;
+				default:
+					return index * arbitraryVal;
+			}
+
 		}
 
 	}
