@@ -3,27 +3,6 @@
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://foley.com/EDDS/DocumentManager">
       <s:import namespace="http://microsoft.com/wsdl/types/" />
-      <s:element name="GetAllDocumentsForCase">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="GetAllDocumentsForCaseResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GetAllDocumentsForCaseResult">
-              <s:complexType>
-                <s:sequence>
-                  <s:element ref="s:schema" />
-                  <s:any />
-                </s:sequence>
-              </s:complexType>
-            </s:element>
-          </s:sequence>
-        </s:complexType>
-      </s:element>
       <s:element name="NewFileDTO">
         <s:complexType />
       </s:element>
@@ -53,6 +32,7 @@
           <s:element minOccurs="0" maxOccurs="1" name="Message" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="ClearExisting" type="s:boolean" />
           <s:element minOccurs="0" maxOccurs="1" name="Details" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Billable" type="s:boolean" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ArrayOfRedaction">
@@ -64,10 +44,10 @@
         <s:sequence>
           <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
           <s:element minOccurs="0" maxOccurs="1" name="FileGuid" type="s:string" />
-          <s:element minOccurs="1" maxOccurs="1" name="X" type="s:int" />
-          <s:element minOccurs="1" maxOccurs="1" name="Y" type="s:int" />
-          <s:element minOccurs="1" maxOccurs="1" name="Width" type="s:int" />
-          <s:element minOccurs="1" maxOccurs="1" name="Height" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="X" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="Y" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="Width" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="Height" type="s:decimal" />
           <s:element minOccurs="1" maxOccurs="1" name="MarkupSetArtifactID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="MarkupType" nillable="true" type="tns:RedactionMarkupType" />
           <s:element minOccurs="1" maxOccurs="1" name="FillA" nillable="true" type="s:short" />
@@ -160,7 +140,6 @@
             <s:sequence>
               <s:element minOccurs="1" maxOccurs="1" name="FolderArtifactID" nillable="true" type="s:int" />
               <s:element minOccurs="0" maxOccurs="1" name="Fields" type="tns:ArrayOfField" />
-              <s:element minOccurs="0" maxOccurs="1" name="DataGridRecordMapping" type="tns:DataGridRecordMapping" />
               <s:element minOccurs="1" maxOccurs="1" name="HasImages" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="HasNative" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="HasProducedImages" type="s:boolean" />
@@ -308,6 +287,7 @@
       </s:simpleType>
       <s:complexType name="ObjectsFieldParameters">
         <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ManageFieldExposureForSingleObjectField" type="s:boolean" />
           <s:element minOccurs="0" maxOccurs="1" name="SiblingFieldName" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="FieldSchemaColumnName" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="SiblingFieldSchemaColumnName" type="s:string" />
@@ -340,12 +320,6 @@
       <s:complexType name="ArrayOfField">
         <s:sequence>
           <s:element minOccurs="0" maxOccurs="unbounded" name="Field" nillable="true" type="tns:Field" />
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="DataGridRecordMapping">
-        <s:sequence>
-          <s:element minOccurs="1" maxOccurs="1" name="DataGridID" type="s1:guid" />
-          <s:element minOccurs="1" maxOccurs="1" name="DataGridInstanceID" type="s1:guid" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ArrayOfString">
@@ -401,22 +375,6 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="GetDocumentArtifactIDFromFieldValue">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="identifier" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="fieldDisplayName" type="s:string" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="GetDocumentArtifactIDFromFieldValueResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="GetDocumentArtifactIDFromFieldValueResult" type="s:int" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
       <s:element name="ReadFromIdentifier">
         <s:complexType>
           <s:sequence>
@@ -433,40 +391,6 @@
             <s:element minOccurs="0" maxOccurs="1" name="ReadFromIdentifierResult" type="tns:Document" />
           </s:sequence>
         </s:complexType>
-      </s:element>
-      <s:element name="ReadFromIdentifierWithFileList">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="fieldDisplayName" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="identifier" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="fieldArtifactIds" type="tns:ArrayOfInt" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:complexType name="FullDocumentInfo">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="1" name="DocumentDTO" type="tns:Document" />
-          <s:element minOccurs="0" maxOccurs="1" name="FileList" type="tns:ArrayOfFile" />
-        </s:sequence>
-      </s:complexType>
-      <s:element name="ReadFromIdentifierWithFileListResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="ReadFromIdentifierWithFileListResult" type="tns:FullDocumentInfo" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="ClearImagesFromDocument">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
-            <s:element minOccurs="1" maxOccurs="1" name="documentArtifactID" type="s:int" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="ClearImagesFromDocumentResponse">
-        <s:complexType />
       </s:element>
       <s:element name="GetDocumentDirectoryByCaseArtifactID">
         <s:complexType>
@@ -604,12 +528,6 @@
       </s:simpleType>
     </s:schema>
   </wsdl:types>
-  <wsdl:message name="GetAllDocumentsForCaseSoapIn">
-    <wsdl:part name="parameters" element="tns:GetAllDocumentsForCase" />
-  </wsdl:message>
-  <wsdl:message name="GetAllDocumentsForCaseSoapOut">
-    <wsdl:part name="parameters" element="tns:GetAllDocumentsForCaseResponse" />
-  </wsdl:message>
   <wsdl:message name="NewFileDTOSoapIn">
     <wsdl:part name="parameters" element="tns:NewFileDTO" />
   </wsdl:message>
@@ -640,29 +558,11 @@
   <wsdl:message name="GetDocumentArtifactIDFromIdentifierSoapOut">
     <wsdl:part name="parameters" element="tns:GetDocumentArtifactIDFromIdentifierResponse" />
   </wsdl:message>
-  <wsdl:message name="GetDocumentArtifactIDFromFieldValueSoapIn">
-    <wsdl:part name="parameters" element="tns:GetDocumentArtifactIDFromFieldValue" />
-  </wsdl:message>
-  <wsdl:message name="GetDocumentArtifactIDFromFieldValueSoapOut">
-    <wsdl:part name="parameters" element="tns:GetDocumentArtifactIDFromFieldValueResponse" />
-  </wsdl:message>
   <wsdl:message name="ReadFromIdentifierSoapIn">
     <wsdl:part name="parameters" element="tns:ReadFromIdentifier" />
   </wsdl:message>
   <wsdl:message name="ReadFromIdentifierSoapOut">
     <wsdl:part name="parameters" element="tns:ReadFromIdentifierResponse" />
-  </wsdl:message>
-  <wsdl:message name="ReadFromIdentifierWithFileListSoapIn">
-    <wsdl:part name="parameters" element="tns:ReadFromIdentifierWithFileList" />
-  </wsdl:message>
-  <wsdl:message name="ReadFromIdentifierWithFileListSoapOut">
-    <wsdl:part name="parameters" element="tns:ReadFromIdentifierWithFileListResponse" />
-  </wsdl:message>
-  <wsdl:message name="ClearImagesFromDocumentSoapIn">
-    <wsdl:part name="parameters" element="tns:ClearImagesFromDocument" />
-  </wsdl:message>
-  <wsdl:message name="ClearImagesFromDocumentSoapOut">
-    <wsdl:part name="parameters" element="tns:ClearImagesFromDocumentResponse" />
   </wsdl:message>
   <wsdl:message name="GetDocumentDirectoryByCaseArtifactIDSoapIn">
     <wsdl:part name="parameters" element="tns:GetDocumentDirectoryByCaseArtifactID" />
@@ -713,10 +613,6 @@
     <wsdl:part name="parameters" element="tns:RetrieveDocumentLimitResponse" />
   </wsdl:message>
   <wsdl:portType name="DocumentManagerSoap">
-    <wsdl:operation name="GetAllDocumentsForCase">
-      <wsdl:input message="tns:GetAllDocumentsForCaseSoapIn" />
-      <wsdl:output message="tns:GetAllDocumentsForCaseSoapOut" />
-    </wsdl:operation>
     <wsdl:operation name="NewFileDTO">
       <wsdl:input message="tns:NewFileDTOSoapIn" />
       <wsdl:output message="tns:NewFileDTOSoapOut" />
@@ -737,21 +633,9 @@
       <wsdl:input message="tns:GetDocumentArtifactIDFromIdentifierSoapIn" />
       <wsdl:output message="tns:GetDocumentArtifactIDFromIdentifierSoapOut" />
     </wsdl:operation>
-    <wsdl:operation name="GetDocumentArtifactIDFromFieldValue">
-      <wsdl:input message="tns:GetDocumentArtifactIDFromFieldValueSoapIn" />
-      <wsdl:output message="tns:GetDocumentArtifactIDFromFieldValueSoapOut" />
-    </wsdl:operation>
     <wsdl:operation name="ReadFromIdentifier">
       <wsdl:input message="tns:ReadFromIdentifierSoapIn" />
       <wsdl:output message="tns:ReadFromIdentifierSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="ReadFromIdentifierWithFileList">
-      <wsdl:input message="tns:ReadFromIdentifierWithFileListSoapIn" />
-      <wsdl:output message="tns:ReadFromIdentifierWithFileListSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="ClearImagesFromDocument">
-      <wsdl:input message="tns:ClearImagesFromDocumentSoapIn" />
-      <wsdl:output message="tns:ClearImagesFromDocumentSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetDocumentDirectoryByCaseArtifactID">
       <wsdl:input message="tns:GetDocumentDirectoryByCaseArtifactIDSoapIn" />
@@ -788,15 +672,6 @@
   </wsdl:portType>
   <wsdl:binding name="DocumentManagerSoap" type="tns:DocumentManagerSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
-    <wsdl:operation name="GetAllDocumentsForCase">
-      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetAllDocumentsForCase" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="NewFileDTO">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/NewFileDTO" style="document" />
       <wsdl:input>
@@ -842,35 +717,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GetDocumentArtifactIDFromFieldValue">
-      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/GetDocumentArtifactIDFromFieldValue" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="ReadFromIdentifier">
       <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/ReadFromIdentifier" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="ReadFromIdentifierWithFileList">
-      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/ReadFromIdentifierWithFileList" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="ClearImagesFromDocument">
-      <soap:operation soapAction="http://foley.com/EDDS/DocumentManager/ClearImagesFromDocument" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -953,15 +801,6 @@
   </wsdl:binding>
   <wsdl:binding name="DocumentManagerSoap12" type="tns:DocumentManagerSoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
-    <wsdl:operation name="GetAllDocumentsForCase">
-      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/GetAllDocumentsForCase" style="document" />
-      <wsdl:input>
-        <soap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="NewFileDTO">
       <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/NewFileDTO" style="document" />
       <wsdl:input>
@@ -1007,35 +846,8 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GetDocumentArtifactIDFromFieldValue">
-      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/GetDocumentArtifactIDFromFieldValue" style="document" />
-      <wsdl:input>
-        <soap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="ReadFromIdentifier">
       <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/ReadFromIdentifier" style="document" />
-      <wsdl:input>
-        <soap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="ReadFromIdentifierWithFileList">
-      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/ReadFromIdentifierWithFileList" style="document" />
-      <wsdl:input>
-        <soap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="ClearImagesFromDocument">
-      <soap12:operation soapAction="http://foley.com/EDDS/DocumentManager/ClearImagesFromDocument" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
