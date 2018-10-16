@@ -1,16 +1,17 @@
 ﻿using System;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI.IntegrationTests.Helpers;
+using kCura.Relativity.ImportAPI.IntegrationTests.Tests;
 
 namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 {
-	public class AuthenticationTestBase
+	public class AuthenticationTestBase : TestBase
 	{
 		protected const string CONTROL_NUMBER_COLUMN_NAME = "Control Number";
 
 		public void SetupJobSettings(ImportSettingsBase settings)
 		{
-			settings.CaseArtifactId = Utils.GetWorkspaceId();
+			settings.CaseArtifactId = WorkspaceId.Value;
 
 			settings.SelectedIdentifierFieldName = CONTROL_NUMBER_COLUMN_NAME;
 

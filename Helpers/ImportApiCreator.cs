@@ -1,14 +1,13 @@
-﻿namespace kCura.Relativity.ImportAPI.IntegrationTests.Helpers
+﻿using kCura.NUnit.Integration;
+
+namespace kCura.Relativity.ImportAPI.IntegrationTests.Helpers
 {
 	internal static class ImportApiCreator
 	{
 		public static ImportAPI CreateImportApiWithPasswordAuthentication()
 		{
-			string username = Utils.GetConfigurationValue("username");
-			string password = Utils.GetConfigurationValue("password");
-
-			string webServiceUrl = Utils.GetWebServiceUrl();
-			var importApi = new ImportAPI(username, password, webServiceUrl);
+			string url = SharedTestVariables.SERVER_BINDING_TYPE + "://" + SharedTestVariables.RSAPI_SERVER_ADDRESS + "/RelativityWebApi";
+			var importApi = new ImportAPI(SharedTestVariables.ADMIN_USERNAME, SharedTestVariables.DEFAULT_PASSWORD, url);
 			return importApi;
 		}
 

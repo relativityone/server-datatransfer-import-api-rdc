@@ -35,8 +35,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 		public void ImportApiShouldImportDocuments()
 		{
 			// Arrange
-			string url = SharedTestVariables.SERVER_BINDING_TYPE + "://" + SharedTestVariables.RSAPI_SERVER_ADDRESS + "/RelativityWebApi";
-			var importApi = new ImportAPI(SharedTestVariables.ADMIN_USERNAME, SharedTestVariables.DEFAULT_PASSWORD, url);
+			ImportAPI importApi = ImportApiCreator.CreateImportApiWithPasswordAuthentication();
 
 			ImportBulkArtifactJob job = importApi.NewNativeDocumentImportJob();
 			ConfigureJob(job);

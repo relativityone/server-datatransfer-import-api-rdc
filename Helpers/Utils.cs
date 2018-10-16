@@ -1,7 +1,4 @@
-﻿using System;
-using kCura.Relativity.ImportAPI.IntegrationTests.Tests;
-
-namespace kCura.Relativity.ImportAPI.IntegrationTests.Helpers
+﻿namespace kCura.Relativity.ImportAPI.IntegrationTests.Helpers
 {
 	public static class Utils
 	{
@@ -10,34 +7,10 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Helpers
 			return System.Configuration.ConfigurationManager.AppSettings.Get(key);
 		}
 
-		public static int GetWorkspaceId()
-		{
-			const string keyName = "workspaceId";
-			string workspaceIdAsString = GetConfigurationValue(keyName);
-			int workspaceId;
-			bool isValidNumber = int.TryParse(workspaceIdAsString, out workspaceId);
-			if (!isValidNumber)
-			{
-				throw new ImportApiTestException($"Incorrect '{keyName}' value in config file.");
-			}
-
-			return workspaceId;
-		}
-
-		public static string GetWebServiceUrl()
-		{
-			string webServiceUrlKey = "webServiceUrl";
-			string host = GetConfigurationValue(webServiceUrlKey);
-			var uri = new Uri(host);
-			return $"{uri}RelativityWebApi";
-		}
-
 		public static string GetWebServiceUrlIntegrated()
 		{
-			string webServiceUrlKey = "webServiceUrl";
-			string host = GetConfigurationValue(webServiceUrlKey);
-			var uri = new Uri(host);
-			return $"{uri}WindowsAuthWebAPI";
+			string webServiceUrlKey = "integratedAuthWebApiUrl";
+			return GetConfigurationValue(webServiceUrlKey);
 		}
 	}
 }
