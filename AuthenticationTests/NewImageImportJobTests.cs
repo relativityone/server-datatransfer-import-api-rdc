@@ -6,7 +6,6 @@ using NUnit.Framework;
 namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 {
 	[TestFixture]
-	[Explicit("Relativity instance needs to be configured to work with integrated authentication. Please see readme.txt")]
 	public class NewImageImportJobTests : AuthenticationTestBase
 	{
 		private const string _BATES_NUMBER_COLUMN_NAME = "Bates Beg";
@@ -20,6 +19,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 		}
 
 		[Test]
+		[Explicit("Relativity instance needs to be configured to work with integrated authentication. Please see readme.txt")]
 		public void ItShouldImportImagesWithIntegratedAuthentication()
 		{
 			ImportAPI importApi = ImportApiCreator.CreateImportApiWithIntegratedAuthentication();

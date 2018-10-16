@@ -9,7 +9,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 {
 	public class TestBase
 	{
-		public int? WorkspaceId { get; private set; }
+		public int WorkspaceId { get; private set; }
 
 		[SetUp]
 		public virtual void SetUp()
@@ -31,15 +31,15 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 				string now = DateTime.Now.ToString("MM-dd HH.mm.ss.fff");
 				WorkspaceId =
 					WorkspaceHelpers.CreateWorkspace(rsapiClient, $"Import API test workspace ({now})", "Relativity Starter Template");
-				WorkspaceHelpers.MarkTestWorkspaceAsUsed(WorkspaceId.Value);
+				WorkspaceHelpers.MarkTestWorkspaceAsUsed(WorkspaceId);
 			}
 		}
 
 		private void DeleteWorkspace()
 		{
-			if (WorkspaceId.HasValue)
+			if (WorkspaceId > 0)
 			{
-				WorkspaceHelpers.DeleteTestWorkspace(WorkspaceId.Value);
+				WorkspaceHelpers.DeleteTestWorkspace(WorkspaceId);
 			}
 		}
 	}

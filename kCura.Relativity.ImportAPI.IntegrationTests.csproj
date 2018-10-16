@@ -47,6 +47,7 @@
     <Reference Include="kCura.NUnit.Integration, Version=9.3.377.8, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\kCura.NUnit.Integration.9.3.377.8\lib\net45\kCura.NUnit.Integration.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -68,6 +69,8 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
@@ -95,8 +98,11 @@
     <Compile Include="Helpers\Constants.cs" />
     <Compile Include="AuthenticationTests\AuthenticationTestBase.cs" />
     <Compile Include="AuthenticationTests\NewNativeDocumentImportJobTests.cs" />
+    <Compile Include="Helpers\FieldService.cs" />
     <Compile Include="Helpers\ImportApiCreator.cs" />
     <Compile Include="Helpers\ImportApiTestErrorHandler.cs" />
+    <Compile Include="Helpers\ProductionService.cs" />
+    <Compile Include="Helpers\Rest.cs" />
     <Compile Include="Helpers\Utils.cs" />
     <Compile Include="Tests\DocumentsImportTest.cs" />
     <Compile Include="Tests\ImportApiTestException.cs" />

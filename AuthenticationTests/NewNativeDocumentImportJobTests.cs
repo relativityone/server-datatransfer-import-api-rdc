@@ -8,7 +8,6 @@ using NUnit.Framework;
 namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 {
 	[TestFixture]
-	[Explicit("Relativity instance needs to be configured to work with integrated authentication. Please see readme.txt")]
 	public class NewNativeDocumentImportJobTests : AuthenticationTestBase
 	{
 		private const string _NATIVE_FILE_COLUMN_NAME = "Native";
@@ -21,6 +20,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 		}
 
 		[Test]
+		[Explicit("Relativity instance needs to be configured to work with integrated authentication. Please see readme.txt")]
 		public void ItShouldImportNativesWithIntegratedAuthentication()
 		{
 			ImportAPI importApi = ImportApiCreator.CreateImportApiWithIntegratedAuthentication();

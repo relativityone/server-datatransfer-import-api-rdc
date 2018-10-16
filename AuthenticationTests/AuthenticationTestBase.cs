@@ -11,7 +11,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 
 		public void SetupJobSettings(ImportSettingsBase settings)
 		{
-			settings.CaseArtifactId = WorkspaceId.Value;
+			settings.CaseArtifactId = WorkspaceId;
 
 			settings.SelectedIdentifierFieldName = CONTROL_NUMBER_COLUMN_NAME;
 

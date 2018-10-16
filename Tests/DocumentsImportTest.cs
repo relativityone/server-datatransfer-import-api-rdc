@@ -7,10 +7,8 @@ using Platform.Keywords.Connection;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using kCura.Relativity.Client.DTOs;
 using kCura.Relativity.ImportAPI.IntegrationTests.Helpers;
 using Constants = kCura.Relativity.ImportAPI.IntegrationTests.Helpers.Constants;
 using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
@@ -27,7 +25,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 		public override void SetUp()
 		{
 			base.SetUp();
-			_identifierColumnName = GetIdentifierFieldName();
+			_identifierColumnName = FieldService.GetIdentifierFieldName(WorkspaceId);
 		}
 
 		[Test]
@@ -61,37 +59,16 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 					ObjectType = new ObjectTypeRef { ArtifactTypeID = (int) ArtifactType.Document }
 				};
 				const int maxItemsToFetch = 10;
-				QueryResult result = client.QueryAsync(WorkspaceId.Value, queryRequest, 1, maxItemsToFetch).GetAwaiter().GetResult();
+				QueryResult result = client.QueryAsync(WorkspaceId, queryRequest, 1, maxItemsToFetch).GetAwaiter().GetResult();
 
 				return result.TotalCount;
-			}
-		}
-
-		private string GetIdentifierFieldName()
-		{
-			using (var client = ServiceFactory.GetProxy<IObjectManager>(SharedTestVariables.ADMIN_USERNAME,
-				SharedTestVariables.DEFAULT_PASSWORD))
-			{
-				var queryRequest = new QueryRequest
-				{
-					Condition = $"'{ArtifactTypeNames.ObjectType}' == '{ArtifactTypeNames.Document}' AND '{FieldFieldNames.IsIdentifier}' == true",
-					Fields = new List<FieldRef>
-					{
-						new FieldRef { Name = FieldFieldNames.Name },
-					},
-					ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field }
-				};
-				const int maxItemsToFetch = 2;
-				QueryResult result = client.QueryAsync(WorkspaceId.Value, queryRequest, 1, maxItemsToFetch).GetAwaiter().GetResult();
-				result.TotalCount.Should().Be(1);
-				return (string) result.Objects[0].FieldValues[0].Value;
 			}
 		}
 
 		private void ConfigureJob(ImportBulkArtifactJob job)
 		{
 			Settings settings = job.Settings;
-			settings.CaseArtifactId = WorkspaceId.Value;
+			settings.CaseArtifactId = WorkspaceId;
 			settings.SelectedIdentifierFieldName = _identifierColumnName;
 			settings.OverwriteMode = OverwriteModeEnum.Append;
 			settings.CopyFilesToDocumentRepository = true;
