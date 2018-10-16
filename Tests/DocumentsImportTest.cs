@@ -4,50 +4,30 @@ using kCura.Relativity.Client;
 using kCura.Relativity.DataReaderClient;
 using NUnit.Framework;
 using Platform.Keywords.Connection;
-using Platform.Keywords.RSAPI;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
 using kCura.Relativity.Client.DTOs;
+using kCura.Relativity.ImportAPI.IntegrationTests.Helpers;
 using Constants = kCura.Relativity.ImportAPI.IntegrationTests.Helpers.Constants;
 using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 
 namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 {
-	public class DocumentsImportTest
+	public class DocumentsImportTest : TestBase
 	{
-		private int? _workspaceId;
-
 		private string _identifierColumnName;
 
 		public const string NATIVE_FILE_COLUMN_NAME = "Native";
-
+		
 		[SetUp]
-		public void CreateWorkspace()
+		public override void SetUp()
 		{
-			using (IRSAPIClient rsapiClient = ServiceFactory.GetProxy<IRSAPIClient>(SharedTestVariables.ADMIN_USERNAME, 
-				SharedTestVariables.DEFAULT_PASSWORD))
-			{
-				string now = DateTime.Now.ToString("MM-dd HH.mm.ss.fff");
-				_workspaceId =
-					WorkspaceHelpers.CreateWorkspace(rsapiClient, $"Import API test workspace ({now})", "Relativity Starter Template");
-				WorkspaceHelpers.MarkTestWorkspaceAsUsed(_workspaceId.Value);
-
-				_identifierColumnName = GetIdentifierFieldName();
-			}
-		}
-
-		[TearDown]
-		public void DeleteWorkspace()
-		{
-			if (_workspaceId.HasValue)
-			{
-				WorkspaceHelpers.DeleteTestWorkspace(_workspaceId.Value);
-			}
+			base.SetUp();
+			_identifierColumnName = GetIdentifierFieldName();
 		}
 
 		[Test]
@@ -62,8 +42,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 			ConfigureJob(job);
 			DataTable importData = CreateDataTable();
 			job.SourceData.SourceData = importData.CreateDataReader();
-			job.OnComplete += JobOnOnComplete;
-			job.OnFatalException += JobOnOnFatalException;
+			ImportApiTestErrorHandler.Subscribe(job);
 
 			// Act
 			job.Execute();
@@ -83,7 +62,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 					ObjectType = new ObjectTypeRef { ArtifactTypeID = (int) ArtifactType.Document }
 				};
 				const int maxItemsToFetch = 10;
-				QueryResult result = client.QueryAsync(_workspaceId.Value, queryRequest, 1, maxItemsToFetch).GetAwaiter().GetResult();
+				QueryResult result = client.QueryAsync(WorkspaceId.Value, queryRequest, 1, maxItemsToFetch).GetAwaiter().GetResult();
 
 				return result.TotalCount;
 			}
@@ -104,7 +83,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 					ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field }
 				};
 				const int maxItemsToFetch = 2;
-				QueryResult result = client.QueryAsync(_workspaceId.Value, queryRequest, 1, maxItemsToFetch).GetAwaiter().GetResult();
+				QueryResult result = client.QueryAsync(WorkspaceId.Value, queryRequest, 1, maxItemsToFetch).GetAwaiter().GetResult();
 				result.TotalCount.Should().Be(1);
 				return (string) result.Objects[0].FieldValues[0].Value;
 			}
@@ -113,7 +92,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 		private void ConfigureJob(ImportBulkArtifactJob job)
 		{
 			Settings settings = job.Settings;
-			settings.CaseArtifactId = _workspaceId.Value;
+			settings.CaseArtifactId = WorkspaceId.Value;
 			settings.SelectedIdentifierFieldName = _identifierColumnName;
 			settings.OverwriteMode = OverwriteModeEnum.Append;
 			settings.CopyFilesToDocumentRepository = true;
@@ -134,25 +113,6 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 			settings.DisableExtractedTextFileLocationValidation = true;
 			settings.DisableNativeLocationValidation = false;
 			settings.DisableNativeValidation = false;
-		}
-
-		private void JobOnOnComplete(JobReport jobreport)
-		{
-			if (jobreport.FatalException != null)
-			{
-				throw jobreport.FatalException;
-			}
-
-			if (jobreport.ErrorRowCount > 0)
-			{
-				IEnumerable<string> errors = jobreport.ErrorRows.Select(x => $"{x.Identifier} - {x.Message}");
-				throw new ImportApiTestException(string.Join("\n", errors));
-			}
-		}
-
-		private void JobOnOnFatalException(JobReport jobreport)
-		{
-			throw jobreport.FatalException;
 		}
 
 		private DataTable CreateDataTable()

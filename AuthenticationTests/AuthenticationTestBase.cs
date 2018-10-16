@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI.IntegrationTests.Helpers;
-using kCura.Relativity.ImportAPI.IntegrationTests.Tests;
 
-namespace kCura.Relativity.ImportAPI.IntegrationTests
+namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 {
-	public class TestBase
+	public class AuthenticationTestBase
 	{
 		protected const string CONTROL_NUMBER_COLUMN_NAME = "Control Number";
 
@@ -31,31 +28,11 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests
 
 		public void ImportIntoWorkspace<T>(T job, Action<T> setupJobAction) where T : IImportNotifier, IImportBulkArtifactJob
 		{
-			job.OnComplete += JobOnOnComplete;
-			job.OnFatalException += JobOnOnFatalException;
+			ImportApiTestErrorHandler.Subscribe(job);
 			setupJobAction(job);
 
 			// act
 			job.Execute();
-		}
-
-		private void JobOnOnComplete(JobReport jobreport)
-		{
-			if (jobreport.FatalException != null)
-			{
-				throw jobreport.FatalException;
-			}
-
-			if (jobreport.ErrorRowCount > 0)
-			{
-				IEnumerable<string> errors = jobreport.ErrorRows.Select(x => $"{x.Identifier} - {x.Message}");
-				throw new ImportApiTestException(string.Join("\n", errors));
-			}
-		}
-
-		private void JobOnOnFatalException(JobReport jobreport)
-		{
-			throw jobreport.FatalException;
 		}
 	}
 }
