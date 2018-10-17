@@ -820,9 +820,6 @@
     <None Include="Web References\kCura.EDDS.WebAPI.DocumentManagerBase\File.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\kCura.EDDS.WebAPI.DocumentManagerBase\FullDocumentInfo.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
     <None Include="Web References\kCura.EDDS.WebAPI.DocumentManagerBase\NameValuePair.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
