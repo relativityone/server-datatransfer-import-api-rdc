@@ -10,6 +10,7 @@ using System;
 using System.Data;
 using System.IO;
 using kCura.Relativity.ImportAPI.IntegrationTests.Helpers;
+using kCura.Relativity.ImportAPI.IntegrationTests.Services;
 using Constants = kCura.Relativity.ImportAPI.IntegrationTests.Helpers.Constants;
 using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 

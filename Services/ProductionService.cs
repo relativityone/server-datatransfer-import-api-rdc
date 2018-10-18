@@ -1,7 +1,8 @@
 ﻿using System;
+using kCura.Relativity.ImportAPI.IntegrationTests.Helpers;
 using Newtonsoft.Json;
 
-namespace kCura.Relativity.ImportAPI.IntegrationTests.Helpers
+namespace kCura.Relativity.ImportAPI.IntegrationTests.Services
 {
 	internal class ProductionService
 	{

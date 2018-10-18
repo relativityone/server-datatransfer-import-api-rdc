@@ -8,7 +8,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 
-namespace kCura.Relativity.ImportAPI.IntegrationTests.Helpers
+namespace kCura.Relativity.ImportAPI.IntegrationTests.Services
 {
 	internal class FieldService
 	{

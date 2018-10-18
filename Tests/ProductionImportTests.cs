@@ -4,6 +4,7 @@ using System.Text;
 using kCura.EDDS.WebAPI.BulkImportManagerBase;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI.IntegrationTests.Helpers;
+using kCura.Relativity.ImportAPI.IntegrationTests.Services;
 using NUnit.Framework;
 using Constants = kCura.Relativity.ImportAPI.IntegrationTests.Helpers.Constants;
 using Settings = kCura.Relativity.DataReaderClient.Settings;

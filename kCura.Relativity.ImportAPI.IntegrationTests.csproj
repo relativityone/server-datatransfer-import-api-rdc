@@ -98,10 +98,10 @@
     <Compile Include="Helpers\Constants.cs" />
     <Compile Include="AuthenticationTests\AuthenticationTestBase.cs" />
     <Compile Include="AuthenticationTests\NewNativeDocumentImportJobTests.cs" />
-    <Compile Include="Helpers\FieldService.cs" />
+    <Compile Include="Services\FieldService.cs" />
     <Compile Include="Helpers\ImportApiCreator.cs" />
     <Compile Include="Helpers\ImportApiTestErrorHandler.cs" />
-    <Compile Include="Helpers\ProductionService.cs" />
+    <Compile Include="Services\ProductionService.cs" />
     <Compile Include="Helpers\Rest.cs" />
     <Compile Include="Helpers\ConfigurationProvider.cs" />
     <Compile Include="Tests\DocumentsImportTest.cs" />
