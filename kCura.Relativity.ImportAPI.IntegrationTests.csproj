@@ -105,6 +105,7 @@
     <Compile Include="Helpers\Rest.cs" />
     <Compile Include="Helpers\Utils.cs" />
     <Compile Include="Tests\DocumentsImportTest.cs" />
+    <Compile Include="Tests\FolderTests.cs" />
     <Compile Include="Tests\ImportApiTestException.cs" />
     <Compile Include="Tests\ProductionImportTests.cs" />
     <Compile Include="Tests\TestBase.cs" />
@@ -127,6 +128,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\kCura\kCura\kCura.vbproj">
+      <Project>{535d782a-2388-416f-ab46-10347e44eec9}</Project>
+      <Name>kCura</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.Relativity.Client\kCura.Relativity.Client.csproj">
       <Project>{9863512f-159f-4e15-8a96-f982e9eadb15}</Project>
       <Name>kCura.Relativity.Client</Name>
@@ -150,6 +155,10 @@
     <ProjectReference Include="..\Platform.Keywords\Platform.Keywords.RSAPI\Platform.Keywords.RSAPI.csproj">
       <Project>{63B1EBE3-2206-4CE3-B7C4-4C00692CA30C}</Project>
       <Name>Platform.Keywords.RSAPI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Relativity.Data\Relativity.Data.vbproj">
+      <Project>{4d3398ab-4c1e-4b1e-ba80-5f08f1e06a15}</Project>
+      <Name>Relativity.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\Relativity.Services.Interfaces\Relativity.Services.Interfaces.csproj">
       <Project>{494965f5-2ac5-4fcb-9eb8-2436a0d5dcc0}</Project>
