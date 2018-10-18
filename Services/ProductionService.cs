@@ -1,61 +1,38 @@
 ﻿using System;
-using kCura.Relativity.ImportAPI.IntegrationTests.Helpers;
-using Newtonsoft.Json;
+using kCura.NUnit.Integration;
+using Platform.Keywords.Connection;
+using Relativity.Productions.Services;
 
 namespace kCura.Relativity.ImportAPI.IntegrationTests.Services
 {
 	internal class ProductionService
 	{
-		private const string _PRODUCTION_SERVICE_URL_BASE =
-			"api/Relativity.Productions.Services.IProductionModule/Production%20Manager/";
-
-		private const string _CREATE_PRODUCTION_SERVICE =
-			_PRODUCTION_SERVICE_URL_BASE + "CreateSingleAsync";
-
-		private const string _READ_PRODUCTION_SERVICE =
-			_PRODUCTION_SERVICE_URL_BASE + "/ReadSingleAsync";
-
 		public static int Create(int workspaceId, string productionName)
 		{
-#pragma warning disable RG2007 // Explicit Type Declaration
-			var json =
-				$@"
-				{{
-					""workspaceArtifactID"": {workspaceId},
-					""Production"": {{
-						""Details"": {{
-							""BrandingFontSize"": 10,
-							""ScaleBrandingFont"": false
-						}},
-						""Numbering"": {{
-								""NumberingType"": ""DocumentField"",
-								""NumberingField"":{{  
-										 ""ArtifactID"":1003667,
-										 ""ViewFieldID"":0,
-										 ""Name"":""Control Number""
-								}},
-								""AttachmentRelationalField"": {{
-										""ArtifactID"": 0,
-										""ViewFieldID"": 0,
-										""Name"": """"
-								}},							  
-								""BatesPrefix"": """",
-								""BatesSuffix"": """",								
-								""BatesStartNumber"": 1,
-								""IncludePageNumbers"":false,
-								""DocumentNumberPageNumberSeparator"":"""",
-								""NumberOfDigitsForPageNumbering"":0,
-								""NumberOfDigitsForDocumentNumbering"": 7,
-								""StartNumberingOnSecondPage"":false
-						}},								
-						""ShouldCopyInstanceOnWorkspaceCreate"": false,
-						""Name"": ""{productionName}""
-					}}
-				}}";
-#pragma warning restore RG2007 // Explicit Type Declaration
+			const int productionFontSize = 10;
+			const int numberOfDigits = 7;
 
-			string output = Rest.PostRequestAsJson(_CREATE_PRODUCTION_SERVICE, json);
-			return int.Parse(output);
+			using (var client = ServiceFactory.GetProxy<IProductionManager>(SharedTestVariables.ADMIN_USERNAME, SharedTestVariables.DEFAULT_PASSWORD))
+			{
+				var production = new Production
+				{
+					Details = new ProductionDetails
+					{
+						BrandingFontSize = productionFontSize,
+						ScaleBrandingFont = false
+					},
+					Name = productionName,
+					Numbering = new DocumentLevelNumbering
+					{
+						NumberingType = NumberingType.DocumentLevel,
+						BatesPrefix = "PREFIX",
+						BatesStartNumber = 0,
+						NumberOfDigitsForDocumentNumbering = numberOfDigits,
+						IncludePageNumbers = false
+					}
+				};
+				return client.CreateSingleAsync(workspaceId, production).ConfigureAwait(false).GetAwaiter().GetResult();
+			}
 		}
 
 		/// <summary>
@@ -66,28 +43,13 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Services
 		/// <returns>First item is FirstBatesValue, second item is LastBatesValue</returns>
 		public static Tuple<string, string> GetProductionBatesNumbers(int workspaceId, int productionId)
 		{
-#pragma warning disable RG2007 // Explicit Type Declaration
-			var json =
-				$@"
-				{{
-					""workspaceArtifactID"": {workspaceId},
-					""productionArtifactID"": {productionId},
-					""dataSourceReadMode"": ""OnlyDataSources""
-				}}";
-#pragma warning restore RG2007 // Explicit Type Declaration
-
-			string productionDtoJson = Rest.PostRequestAsJson(_READ_PRODUCTION_SERVICE, json);
-			string firstBates = ExtractValueFromProductionDetails(productionDtoJson, "FirstBatesValue");
-			string lastBates = ExtractValueFromProductionDetails(productionDtoJson, "LastBatesValue");
-			return new Tuple<string, string>(firstBates, lastBates);
-		}
-
-		private static string ExtractValueFromProductionDetails(string productionDtoJson, string key)
-		{
-			dynamic productionObject = JsonConvert.DeserializeObject<dynamic>(productionDtoJson);
-			dynamic productionDetails = productionObject["Details"];
-			dynamic value = productionDetails[key];
-			return value.ToString();
+			using (var client = ServiceFactory.GetProxy<IProductionManager>(SharedTestVariables.ADMIN_USERNAME,
+				SharedTestVariables.DEFAULT_PASSWORD))
+			{
+				Production production = client.ReadSingleAsync(workspaceId, productionId)
+					.ConfigureAwait(false).GetAwaiter().GetResult();
+				return new Tuple<string, string>(production.Details.FirstBatesValue, production.Details.LastBatesValue);
+			}
 		}
 	}
 }

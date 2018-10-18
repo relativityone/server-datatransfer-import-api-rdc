@@ -63,6 +63,12 @@
     <Reference Include="Relativity.Kepler, Version=1.0.1.409, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Kepler.1.0.1.409\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.Productions.Services.Interfaces, Version=10.1.1.18, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces.10.1.1\lib\net45\Relativity.Productions.Services.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Productions.Services.Interfaces.Private, Version=10.1.1.18, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces.10.1.1\lib\net45\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.SecretCatalog, Version=1.0.18.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.SecretCatalog.1.0.18\lib\Relativity.SecretCatalog.dll</HintPath>
     </Reference>
@@ -102,7 +108,6 @@
     <Compile Include="Helpers\ImportApiCreator.cs" />
     <Compile Include="Helpers\ImportApiTestErrorHandler.cs" />
     <Compile Include="Services\ProductionService.cs" />
-    <Compile Include="Helpers\Rest.cs" />
     <Compile Include="Helpers\ConfigurationProvider.cs" />
     <Compile Include="Tests\DocumentsImportTest.cs" />
     <Compile Include="Tests\FolderTests.cs" />
