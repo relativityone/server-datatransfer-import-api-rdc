@@ -103,7 +103,7 @@
     <Compile Include="Helpers\ImportApiTestErrorHandler.cs" />
     <Compile Include="Helpers\ProductionService.cs" />
     <Compile Include="Helpers\Rest.cs" />
-    <Compile Include="Helpers\Utils.cs" />
+    <Compile Include="Helpers\ConfigurationProvider.cs" />
     <Compile Include="Tests\DocumentsImportTest.cs" />
     <Compile Include="Tests\FolderTests.cs" />
     <Compile Include="Tests\ImportApiTestException.cs" />

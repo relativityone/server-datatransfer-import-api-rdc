@@ -1,6 +1,6 @@
 ﻿namespace kCura.Relativity.ImportAPI.IntegrationTests.Helpers
 {
-	public static class Utils
+	internal static class ConfigurationProvider
 	{
 		public static string GetConfigurationValue(string key)
 		{

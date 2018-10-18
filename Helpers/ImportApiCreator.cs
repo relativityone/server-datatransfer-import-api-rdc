@@ -13,7 +13,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Helpers
 
 		public static ImportAPI CreateImportApiWithIntegratedAuthentication()
 		{
-			string webServiceUrl = Utils.GetWebServiceUrlIntegrated();
+			string webServiceUrl = ConfigurationProvider.GetWebServiceUrlIntegrated();
 			var importApi = new ImportAPI(webServiceUrl);
 			return importApi;
 		}
