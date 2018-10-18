@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 {
 	[TestFixture]
-	public class NewImageImportJobTests : AuthenticationTestBase
+	public class NewImageImportJobAuthenticationTests : AuthenticationTestBase
 	{
 		private const string _BATES_NUMBER_COLUMN_NAME = "Bates Beg";
 		private const string _IMAGE_FILE_COLUMN_NAME = "Image";

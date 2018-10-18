@@ -94,10 +94,10 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AuthenticationTests\NewImageImportJobTests.cs" />
+    <Compile Include="AuthenticationTests\NewImageImportJobAuthenticationTests.cs" />
     <Compile Include="Helpers\Constants.cs" />
     <Compile Include="AuthenticationTests\AuthenticationTestBase.cs" />
-    <Compile Include="AuthenticationTests\NewNativeDocumentImportJobTests.cs" />
+    <Compile Include="AuthenticationTests\NewNativeDocumentImportJobAuthenticationTests.cs" />
     <Compile Include="Services\FieldService.cs" />
     <Compile Include="Helpers\ImportApiCreator.cs" />
     <Compile Include="Helpers\ImportApiTestErrorHandler.cs" />

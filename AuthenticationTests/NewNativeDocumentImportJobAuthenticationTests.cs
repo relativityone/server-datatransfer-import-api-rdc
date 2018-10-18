@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 {
 	[TestFixture]
-	public class NewNativeDocumentImportJobTests : AuthenticationTestBase
+	public class NewNativeDocumentImportJobAuthenticationTests : AuthenticationTestBase
 	{
 		private const string _NATIVE_FILE_COLUMN_NAME = "Native";
 
