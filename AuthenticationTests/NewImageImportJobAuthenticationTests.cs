@@ -40,13 +40,13 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 		private DataTable CreateImageImportDataTable()
 		{
 			var dt = new DataTable("Image import");
-			dt.Columns.Add(CONTROL_NUMBER_COLUMN_NAME);
+			dt.Columns.Add(DocumentIdentifierColumnName);
 			
 			dt.Columns.Add(_BATES_NUMBER_COLUMN_NAME);
 			dt.Columns.Add(_IMAGE_FILE_COLUMN_NAME);
 
 			DataRow r = dt.NewRow();
-			r[CONTROL_NUMBER_COLUMN_NAME] = "IMAGE001";
+			r[DocumentIdentifierColumnName] = "IMAGE001";
 			r[_BATES_NUMBER_COLUMN_NAME] = "IMAGE001_1";
 			r[_IMAGE_FILE_COLUMN_NAME] = @"TestData\Image\PRODSET000001.TIF";
 			dt.Rows.Add(r);
@@ -58,7 +58,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 		{
 			base.SetupJobSettings(settings);
 
-			settings.DocumentIdentifierField = CONTROL_NUMBER_COLUMN_NAME;
+			settings.DocumentIdentifierField = DocumentIdentifierColumnName;
 			settings.ImageFilePathSourceFieldName = _IMAGE_FILE_COLUMN_NAME;
 			settings.FileLocationField = _IMAGE_FILE_COLUMN_NAME;
 			settings.BatesNumberField = _BATES_NUMBER_COLUMN_NAME;

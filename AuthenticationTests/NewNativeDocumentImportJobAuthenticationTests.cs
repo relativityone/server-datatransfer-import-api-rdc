@@ -42,11 +42,11 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 		private IDataReader CreateDataReader()
 		{
 			var dt = new DataTable("Input Data");
-			dt.Columns.Add(CONTROL_NUMBER_COLUMN_NAME);
+			dt.Columns.Add(DocumentIdentifierColumnName);
 			dt.Columns.Add(_NATIVE_FILE_COLUMN_NAME);
 
 			DataRow r = dt.NewRow();
-			r[CONTROL_NUMBER_COLUMN_NAME] = "NATIVE_001";
+			r[DocumentIdentifierColumnName] = "NATIVE_001";
 			string nativeLocation = GetNativeFilePath();
 
 			r[_NATIVE_FILE_COLUMN_NAME] = nativeLocation;

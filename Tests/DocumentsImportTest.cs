@@ -10,7 +10,6 @@ using System;
 using System.Data;
 using System.IO;
 using kCura.Relativity.ImportAPI.IntegrationTests.Helpers;
-using kCura.Relativity.ImportAPI.IntegrationTests.Services;
 using Constants = kCura.Relativity.ImportAPI.IntegrationTests.Helpers.Constants;
 using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 
@@ -18,16 +17,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 {
 	public class DocumentsImportTest : TestBase
 	{
-		private string _identifierColumnName;
-
 		public const string NATIVE_FILE_COLUMN_NAME = "Native";
-		
-		[SetUp]
-		public override void SetUp()
-		{
-			base.SetUp();
-			_identifierColumnName = FieldService.GetIdentifierFieldName(WorkspaceId);
-		}
 
 		[Test]
 		[Category("ImportApiIntegrationTestsForRelativityPipeline")]
@@ -70,7 +60,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 		{
 			Settings settings = job.Settings;
 			settings.CaseArtifactId = WorkspaceId;
-			settings.SelectedIdentifierFieldName = _identifierColumnName;
+			settings.SelectedIdentifierFieldName = DocumentIdentifierColumnName;
 			settings.OverwriteMode = OverwriteModeEnum.Append;
 			settings.CopyFilesToDocumentRepository = true;
 			settings.DisableExtractedTextEncodingCheck = true;
@@ -95,18 +85,18 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 		private DataTable CreateDataTable()
 		{
 			var dt = new DataTable("Input Data");
-			dt.Columns.Add(_identifierColumnName);
+			dt.Columns.Add(DocumentIdentifierColumnName);
 			dt.Columns.Add(NATIVE_FILE_COLUMN_NAME);
 			dt.Columns.Add("Extracted Text");
 
 			DataRow r = dt.NewRow();
-			r[_identifierColumnName] = "NATIVE_001";
+			r[DocumentIdentifierColumnName] = "NATIVE_001";
 			r[NATIVE_FILE_COLUMN_NAME] = GetNativeFilePath();
 			r["Extracted Text"] = "Extracted text of 1 document.";
 			dt.Rows.Add(r);
 
 			r = dt.NewRow();
-			r[_identifierColumnName] = "NATIVE_002";
+			r[DocumentIdentifierColumnName] = "NATIVE_002";
 			r[NATIVE_FILE_COLUMN_NAME] = GetNativeFilePath();
 			r["Extracted Text"] = "Extracted text of 2 document.";
 			dt.Rows.Add(r);

@@ -12,7 +12,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Services
 {
 	internal class FieldService
 	{
-		public static string GetIdentifierFieldName(int workspaceId)
+		public static string GetDocumentIdentifierFieldName(int workspaceId)
 		{
 			using (var client = ServiceFactory.GetProxy<IObjectManager>(SharedTestVariables.ADMIN_USERNAME,
 				SharedTestVariables.DEFAULT_PASSWORD))

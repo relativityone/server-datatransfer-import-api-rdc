@@ -7,13 +7,11 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 {
 	public class AuthenticationTestBase : TestBase
 	{
-		protected const string CONTROL_NUMBER_COLUMN_NAME = "Control Number";
-
 		public void SetupJobSettings(ImportSettingsBase settings)
 		{
 			settings.CaseArtifactId = WorkspaceId;
 
-			settings.SelectedIdentifierFieldName = CONTROL_NUMBER_COLUMN_NAME;
+			settings.SelectedIdentifierFieldName = DocumentIdentifierColumnName;
 
 			settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 			settings.CopyFilesToDocumentRepository = true;

@@ -14,19 +14,11 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 	[TestFixture]
 	public class ProductionImportTests : TestBase
 	{
-		private string _identifierColumnName;
 		private const string _BATES_NUMBER_COLUMN_NAME = "Bates Beg";
 		private const string _IMAGE_FILE_COLUMN_NAME = "Image";
 		private const string _IMAGE_FILE_PATH = @"TestData\Image\PRODSET000001.TIF";
 		private const string _FIRST_DOCUMENT_CONTROL_NUMBER = "PRODSET000001";
 		private const string _SECOND_DOCUMENT_CONTROL_NUMBER = "PRODSET001502";
-
-		[SetUp]
-		public override void SetUp()
-		{
-			base.SetUp();
-			_identifierColumnName = FieldService.GetIdentifierFieldName(WorkspaceId);
-		}
 
 		[Test]
 		public void ItShouldSetCorrectBatesNumbersWhenImportingMoreThanThousandImages()
@@ -71,7 +63,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 		{
 			Settings settings = job.Settings;
 			settings.CaseArtifactId = WorkspaceId;
-			settings.SelectedIdentifierFieldName = _identifierColumnName;
+			settings.SelectedIdentifierFieldName = DocumentIdentifierColumnName;
 			settings.OverwriteMode = OverwriteModeEnum.Append;
 			settings.CopyFilesToDocumentRepository = true;
 			settings.DisableExtractedTextEncodingCheck = true;
@@ -101,7 +93,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 			settings.DisableExtractedTextEncodingCheck = true;
 			settings.DisableUserSecurityCheck = true;
 			settings.ExtractedTextFieldContainsFilePath = true;
-			settings.SelectedIdentifierFieldName = _identifierColumnName;
+			settings.SelectedIdentifierFieldName = DocumentIdentifierColumnName;
 			settings.MaximumErrorCount = int.MaxValue - 1;
 			settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
 			settings.OverwriteMode = OverwriteModeEnum.Overlay;
@@ -111,7 +103,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 			settings.ForProduction = true;
 			settings.ExtractedTextEncoding = Encoding.UTF8;
 			settings.ExtractedTextFieldContainsFilePath = false;
-			settings.DocumentIdentifierField = _identifierColumnName;
+			settings.DocumentIdentifierField = DocumentIdentifierColumnName;
 			settings.ImageFilePathSourceFieldName = _IMAGE_FILE_COLUMN_NAME;
 			settings.FileLocationField = _IMAGE_FILE_COLUMN_NAME;
 			settings.BatesNumberField = _BATES_NUMBER_COLUMN_NAME;
@@ -125,14 +117,14 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 		private DataTable CreateDataTable()
 		{
 			var dt = new DataTable("Input Data");
-			dt.Columns.Add(_identifierColumnName);
+			dt.Columns.Add(DocumentIdentifierColumnName);
 
 			DataRow r = dt.NewRow();
-			r[_identifierColumnName] = _FIRST_DOCUMENT_CONTROL_NUMBER;
+			r[DocumentIdentifierColumnName] = _FIRST_DOCUMENT_CONTROL_NUMBER;
 			dt.Rows.Add(r);
 
 			r = dt.NewRow();
-			r[_identifierColumnName] = _SECOND_DOCUMENT_CONTROL_NUMBER;
+			r[DocumentIdentifierColumnName] = _SECOND_DOCUMENT_CONTROL_NUMBER;
 			dt.Rows.Add(r);
 
 			return dt;
@@ -141,7 +133,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 		private DataTable CreateImageImportDataTable()
 		{
 			var dt = new DataTable("Image import");
-			dt.Columns.Add(_identifierColumnName);
+			dt.Columns.Add(DocumentIdentifierColumnName);
 
 			dt.Columns.Add(_BATES_NUMBER_COLUMN_NAME);
 			dt.Columns.Add(_IMAGE_FILE_COLUMN_NAME);
@@ -150,14 +142,14 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 			for (int i = 1; i <= numberOfImagesForFirstDoc; i++)
 			{
 				row = dt.NewRow();
-				row[_identifierColumnName] = _FIRST_DOCUMENT_CONTROL_NUMBER;
+				row[DocumentIdentifierColumnName] = _FIRST_DOCUMENT_CONTROL_NUMBER;
 				row[_BATES_NUMBER_COLUMN_NAME] = $"PRODSET{i:D6}";
 				row[_IMAGE_FILE_COLUMN_NAME] = _IMAGE_FILE_PATH;
 				dt.Rows.Add(row);
 			}
 
 			row = dt.NewRow();
-			row[_identifierColumnName] = _SECOND_DOCUMENT_CONTROL_NUMBER;
+			row[DocumentIdentifierColumnName] = _SECOND_DOCUMENT_CONTROL_NUMBER;
 			row[_BATES_NUMBER_COLUMN_NAME] = _SECOND_DOCUMENT_CONTROL_NUMBER;
 			row[_IMAGE_FILE_COLUMN_NAME] = _IMAGE_FILE_PATH;
 			dt.Rows.Add(row);

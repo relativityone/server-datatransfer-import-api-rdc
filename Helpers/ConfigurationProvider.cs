@@ -9,8 +9,12 @@
 
 		public static string GetWebServiceUrlIntegrated()
 		{
-			string webServiceUrlKey = "integratedAuthWebApiUrl";
-			return GetConfigurationValue(webServiceUrlKey);
+			return GetConfigurationValue("integratedAuthWebApiUrl");
+		}
+
+		public static string GetEDDSDatabaseConnectionString()
+		{
+			return GetConfigurationValue("connectionString");
 		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using kCura.NUnit.Integration;
 using kCura.Relativity.Client;
+using kCura.Relativity.ImportAPI.IntegrationTests.Services;
 using NUnit.Framework;
 using Platform.Keywords.Connection;
 using Platform.Keywords.RSAPI;
@@ -9,16 +10,19 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 {
 	public class TestBase
 	{
-		public int WorkspaceId { get; private set; }
+		protected int WorkspaceId { get; private set; }
+		protected string DocumentIdentifierColumnName { get; private set; }
 
-		[SetUp]
-		public virtual void SetUp()
+
+		[OneTimeSetUp]
+		public virtual void OneTimeSetUp()
 		{
 			CreateWorkspace();
+			DocumentIdentifierColumnName = FieldService.GetDocumentIdentifierFieldName(WorkspaceId);
 		}
 
-		[TearDown]
-		public void TearDown()
+		[OneTimeTearDown]
+		public void OneTimeTearDown()
 		{
 			DeleteWorkspace();
 		}

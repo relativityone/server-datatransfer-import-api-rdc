@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Data;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using NUnit.Framework;
 using kCura.Data.RowDataGateway;
+using kCura.Relativity.ImportAPI.IntegrationTests.Helpers;
 using Relativity.Data;
 using Enumerable = System.Linq.Enumerable;
 
@@ -14,13 +14,10 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 	public class FolderTests
 	{
 		private string _tableName;
-		private BaseContext _context = new Context(_connectionString);
-
 		private const int _UNKNOWN_PARENT_FOLDER_ID = -9;
 		private const int _ROOT_FOLDER_ID = -7;
-		private static readonly string _connectionString = ConfigurationManager.AppSettings["connectionString"];
-
-
+		private readonly BaseContext _context = new Context(ConfigurationProvider.GetEDDSDatabaseConnectionString());
+		
 		private int CreateTable() =>
 			_context.ExecuteNonQuerySQLStatement(String.Format(@"CREATE TABLE [Resource].[{0}] (
 				[kCura_Import_ParentFolderID] [nvarchar](200) NOT NULL,
