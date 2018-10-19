@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 {
+	[TestFixture]
 	public class ImageProfilesImportTest : TestBase
 	{
 		private int _imagingProfileObjectTypeId;
@@ -37,6 +38,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 		}
 
 		[Test]
+		[Category("ImportApiIntegrationTestsForRelativityPipeline")]
 		public async Task ItShouldLinkMultiObjectFieldsToAllMatchingObjects() // REL-158418
 		{
 			// Arrange
