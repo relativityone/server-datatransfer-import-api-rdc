@@ -107,10 +107,12 @@
     <Compile Include="Services\FieldService.cs" />
     <Compile Include="Helpers\ImportApiCreator.cs" />
     <Compile Include="Helpers\ImportApiTestErrorHandler.cs" />
+    <Compile Include="Services\ObjectTypeService.cs" />
     <Compile Include="Services\ProductionService.cs" />
     <Compile Include="Helpers\ConfigurationProvider.cs" />
     <Compile Include="Tests\DocumentsImportTest.cs" />
     <Compile Include="Tests\FolderTests.cs" />
+    <Compile Include="Tests\ImageProfilesImportTest.cs" />
     <Compile Include="Tests\ImportApiTestException.cs" />
     <Compile Include="Tests\ProductionImportTests.cs" />
     <Compile Include="Tests\TestBase.cs" />
