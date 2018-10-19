@@ -12,6 +12,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 		private const string _IMAGE_FILE_COLUMN_NAME = "Image";
 
 		[Test]
+		[Category("ImportApiIntegrationTestsForRelativityPipeline")]
 		public void ItShouldImportImagesWithPasswordAuthentication()
 		{
 			ImportAPI importApi = ImportApiCreator.CreateImportApiWithPasswordAuthentication();
