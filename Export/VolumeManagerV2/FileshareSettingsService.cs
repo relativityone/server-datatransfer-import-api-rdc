@@ -32,7 +32,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 			_currentUserCredential = exportSettings.Credential;
 		}
 
-		public RelativityFileShareSettings GetSettingsForFileshare(string fileUrl)
+		public IRelativityFileShareSettings GetSettingsForFileshare(string fileUrl)
 		{
 			if (_cachedSettings == null)
 			{

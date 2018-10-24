@@ -4,7 +4,7 @@ using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 {
-	public interface ITapiBridge : IDisposable
+	public interface ITapiBridgeWrapper : IDisposable
 	{
 		event EventHandler<TapiMessageEventArgs> TapiStatusMessage;
 		event EventHandler<TapiMessageEventArgs> TapiErrorMessage;
@@ -17,6 +17,5 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 
 		string AddPath(TransferPath transferPath);
 		void WaitForTransferJob();
-		void Disconnect();
 	}
 }
