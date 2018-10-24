@@ -108,7 +108,7 @@ Namespace kCura.EDDS.WinForm.Forms
 
 		Private Function AddFieldComboBox(fieldNumber As Integer) As ComboBox
 			Dim fieldComboBox = New ComboBox()
-			fieldComboBox.DropDownStyle = ComboBoxStyle.DropDownList
+			fieldComboBox.DropDownStyle = ComboBoxStyle.DropDown
 			fieldComboBox.FormattingEnabled = True
 			fieldComboBox.Location = New Point(252 * NumberOfFields + 14, 13)
 			fieldComboBox.Size = New Size(120, 21)
@@ -118,13 +118,16 @@ Namespace kCura.EDDS.WinForm.Forms
 			fieldComboBox.DataSource = _availableFields.ToList()
 			fieldComboBox.DisplayMember = "DisplayName"
 			fieldComboBox.ValueMember = "ID"
+			fieldComboBox.AutoCompleteSource = AutoCompleteSource.ListItems
+			fieldComboBox.AutoCompleteMode = AutoCompleteMode.None
+			AddHandler fieldComboBox.Leave, AddressOf SelectBestFieldIfNoneChosen
 			AddHandler fieldComboBox.SelectedIndexChanged, AddressOf FieldComboBoxSelectionChanged
 			Return fieldComboBox
 		End Function
 
 		Private Function AddSeparatorComboBox() As ComboBox
 			Dim separatorComboBox = New ComboBox()
-			separatorComboBox.DropDownStyle = ComboBoxStyle.DropDownList
+			separatorComboBox.DropDownStyle = ComboBoxStyle.DropDown
 			separatorComboBox.FormattingEnabled = True
 			separatorComboBox.Location = New Point(252 * NumberOfFields - 112, 13)
 			separatorComboBox.Size = New Size(120, 21)
@@ -133,6 +136,9 @@ Namespace kCura.EDDS.WinForm.Forms
 			separatorComboBox.DataSource = Separators.ToList()
 			separatorComboBox.DisplayMember = "DisplayName"
 			separatorComboBox.ValueMember = "Value"
+			separatorComboBox.AutoCompleteSource = AutoCompleteSource.ListItems
+			separatorComboBox.AutoCompleteMode = AutoCompleteMode.None
+			AddHandler separatorComboBox.Leave, AddressOf SelectBestFieldIfNoneChosen
 			Return separatorComboBox
 		End Function
 
@@ -183,6 +189,26 @@ Namespace kCura.EDDS.WinForm.Forms
 			textBox.Visible = textBoxVisible
 		End Sub
 
+		Private Sub SelectBestFieldIfNoneChosen(sender As Object, e As EventArgs)
+			Dim comboBox = TryCast(sender, ComboBox)
+			If comboBox Is Nothing Then
+				Return
+			End If
+			If comboBox.SelectedIndex = -1 Then
+				If comboBox.Text = "" Then
+					comboBox.SelectedIndex = 0
+				Else
+					Dim bestItem = comboBox.Items.Cast(Of ISelection).Where(Function(x) x.DisplayName.ToLower.StartsWith(comboBox.Text.ToLower))
+					If bestItem.Count = 0 Then
+						comboBox.SelectedIndex = 0
+					Else
+						comboBox.SelectedIndex = comboBox.Items.IndexOf(bestItem.First)
+					End If
+
+				End If
+			End If
+		End Sub
+
 		Public Event ApplyClicked()
 
 		Private Sub FieldComboBoxSelectionChanged(sender As Object, e As EventArgs)
@@ -212,26 +238,29 @@ Namespace kCura.EDDS.WinForm.Forms
 			Close()
 		End Sub
 
+		Private Interface ISelection
+			Property DisplayName() As String
+		End Interface
 		Private Class FieldSelection
-
+			Implements ISelection
 			Public Sub New(displayName As String, id As Integer)
 				Me.DisplayName = displayName
 				Me.ID = id
 			End Sub
 
-			Public Property DisplayName As String
+			Public Property DisplayName As String Implements ISelection.DisplayName
 			Public Property ID As Integer
 
 		End Class
 
 		Private Class SeparatorSelection
-
+			Implements ISelection
 			Public Sub New(displayName As String, value As String)
 				Me.DisplayName = displayName
 				Me.Value = value
 			End Sub
 
-			Public Property DisplayName As String
+			Public Property DisplayName As String Implements ISelection.DisplayName
 			Public Property Value As String
 
 		End Class
