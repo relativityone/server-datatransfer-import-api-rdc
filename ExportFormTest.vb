@@ -146,7 +146,7 @@ Namespace kCura.EDDS.WinForm.Tests
 			 .AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
 			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production}
 			Await _form.LoadExportFile(ef)
-			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields.Count, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields.Count, _form._columnSelector.LeftSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_Production_AllExportableFields_OneFieldSelected() As Task
@@ -156,13 +156,13 @@ Namespace kCura.EDDS.WinForm.Tests
 			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
 			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production}
 			Await _form.LoadExportFile(ef)
-			For Each avf As kCura.WinEDDS.ViewFieldInfo In _form._columnSelector.RightListBoxItems
+			For Each avf As kCura.WinEDDS.ViewFieldInfo In _form._columnSelector.RightSearchableListItems
 				If selectedField.DisplayName.Equals(avf.DisplayName, StringComparison.InvariantCulture) Then
 
 				End If
 			Next
-			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftListBoxItems.Count)
-			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightListBoxItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftSearchableListItems.Count)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightSearchableListItems))
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_Production_AllExportableFields_TwoFieldSelected() As Task
@@ -173,10 +173,10 @@ Namespace kCura.EDDS.WinForm.Tests
 			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2},
 			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production}
 			Await _form.LoadExportFile(ef)
-			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 2, _form._columnSelector.LeftListBoxItems.Count)
-			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightListBoxItems))
-			Assert.IsTrue(DoesFieldExistsInListBox(selectedField2, _form._columnSelector.RightListBoxItems))
-			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 2, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 2, _form._columnSelector.LeftSearchableListItems.Count)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightSearchableListItems))
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField2, _form._columnSelector.RightSearchableListItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 2, _form._columnSelector.LeftSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_Production_AllExportableFields_OneFieldSelected_OneFieldPrePopulated() As Task
@@ -187,9 +187,9 @@ Namespace kCura.EDDS.WinForm.Tests
 			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
 			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production}
 			Await _form.LoadExportFile(ef)
-			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightListBoxItems))
-			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftListBoxItems.Count)
-			Assert.AreEqual(1, _form._columnSelector.RightListBoxItems.Count)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightSearchableListItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftSearchableListItems.Count)
+			Assert.AreEqual(1, _form._columnSelector.RightSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_Production_AllExportableFields_ZeroFieldsSelected_OneFieldPrePopulated() As Task
@@ -199,8 +199,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {},
 			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production}
 			Await _form.LoadExportFile(ef)
-			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count, _form._columnSelector.LeftListBoxItems.Count)
-			Assert.AreEqual(0, _form._columnSelector.RightListBoxItems.Count)
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count, _form._columnSelector.LeftSearchableListItems.Count)
+			Assert.AreEqual(0, _form._columnSelector.RightSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_Production_AllExportableFields_TwoFieldSelected_OneFieldIsNoLongerAvaialble() As Task
@@ -215,10 +215,10 @@ Namespace kCura.EDDS.WinForm.Tests
 			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2, selectedField3},
 			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production}
 			Await _form.LoadExportFile(ef)
-			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightListBoxItems))
-			Assert.IsFalse(_form._columnSelector.RightListBoxItems.Contains(selectedField2))
-			Assert.IsFalse(_form._columnSelector.LeftListBoxItems.Contains(selectedField2))
-			Assert.AreEqual(0, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightSearchableListItems))
+			Assert.IsFalse(_form._columnSelector.RightSearchableListItems.Contains(selectedField2))
+			Assert.IsFalse(_form._columnSelector.LeftSearchableListItems.Contains(selectedField2))
+			Assert.AreEqual(0, _form._columnSelector.LeftSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_Production_StartExportAtDocumentNumber_Is15() As Task
@@ -303,7 +303,7 @@ Namespace kCura.EDDS.WinForm.Tests
 			.AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
 			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
 			Await _form.LoadExportFile(ef)
-			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields.Count, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields.Count, _form._columnSelector.LeftSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_SavedSearch_AllExportableFields_OneFieldSelected() As Task
@@ -314,8 +314,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
 			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
 			Await _form.LoadExportFile(ef)
-			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightListBoxItems))
-			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightSearchableListItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_SavedSearch_AllExportableFields_TwoFieldSelected() As Task
@@ -327,9 +327,9 @@ Namespace kCura.EDDS.WinForm.Tests
 			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2},
 			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
 			Await _form.LoadExportFile(ef)
-			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightListBoxItems))
-			Assert.IsTrue(DoesFieldExistsInListBox(selectedField2, _form._columnSelector.RightListBoxItems))
-			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 2, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightSearchableListItems))
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField2, _form._columnSelector.RightSearchableListItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 2, _form._columnSelector.LeftSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_SavedSearch_AllExportableFields_OneFieldSelected_OneFieldPrePopulated() As Task
@@ -340,9 +340,9 @@ Namespace kCura.EDDS.WinForm.Tests
 			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
 			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
 			Await _form.LoadExportFile(ef)
-			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightListBoxItems))
-			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftListBoxItems.Count)
-			Assert.AreEqual(1, _form._columnSelector.RightListBoxItems.Count)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightSearchableListItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftSearchableListItems.Count)
+			Assert.AreEqual(1, _form._columnSelector.RightSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_SavedSearch_AllExportableFields_ZeroFieldsSelected_OneFieldPrePopulated() As Task
@@ -352,8 +352,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {},
 			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
 			Await _form.LoadExportFile(ef)
-			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count, _form._columnSelector.LeftListBoxItems.Count)
-			Assert.AreEqual(0, _form._columnSelector.RightListBoxItems.Count)
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count, _form._columnSelector.LeftSearchableListItems.Count)
+			Assert.AreEqual(0, _form._columnSelector.RightSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_SavedSearch_AllExportableFields_TwoFieldSelected_OneFieldIsNoLongerAvaialble() As Task
@@ -369,10 +369,10 @@ Namespace kCura.EDDS.WinForm.Tests
 			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2, selectedField3},
 			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch}
 			Await _form.LoadExportFile(ef)
-			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightListBoxItems))
-			Assert.IsFalse(_form._columnSelector.RightListBoxItems.Contains(selectedField2))
-			Assert.IsFalse(_form._columnSelector.LeftListBoxItems.Contains(selectedField2))
-			Assert.AreEqual(0, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightSearchableListItems))
+			Assert.IsFalse(_form._columnSelector.RightSearchableListItems.Contains(selectedField2))
+			Assert.IsFalse(_form._columnSelector.LeftSearchableListItems.Contains(selectedField2))
+			Assert.AreEqual(0, _form._columnSelector.LeftSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_SavedSearch_StartExportAtDocumentNumber_Is15() As Task
@@ -441,7 +441,7 @@ Namespace kCura.EDDS.WinForm.Tests
 			.AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
 			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
 			Await _form.LoadExportFile(ef)
-			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields.Count, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields.Count, _form._columnSelector.LeftSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_Folder_AllExportableFields_OneFieldSelected() As Task
@@ -452,8 +452,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
 			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
 			Await _form.LoadExportFile(ef)
-			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightListBoxItems))
-			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightSearchableListItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_Folder_AllExportableFields_TwoFieldSelected() As Task
@@ -465,9 +465,9 @@ Namespace kCura.EDDS.WinForm.Tests
 			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2},
 			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
 			Await _form.LoadExportFile(ef)
-			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightListBoxItems))
-			Assert.IsTrue(DoesFieldExistsInListBox(selectedField2, _form._columnSelector.RightListBoxItems))
-			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 2, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightSearchableListItems))
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField2, _form._columnSelector.RightSearchableListItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 2, _form._columnSelector.LeftSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_Folder_AllExportableFields_OneFieldSelected_OneFieldPrePopulated() As Task
@@ -478,9 +478,9 @@ Namespace kCura.EDDS.WinForm.Tests
 			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
 			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
 			Await _form.LoadExportFile(ef)
-			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightListBoxItems))
-			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftListBoxItems.Count)
-			Assert.AreEqual(1, _form._columnSelector.RightListBoxItems.Count)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightSearchableListItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftSearchableListItems.Count)
+			Assert.AreEqual(1, _form._columnSelector.RightSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_Folder_AllExportableFields_ZeroFieldsSelected_OneFieldPrePopulated() As Task
@@ -490,8 +490,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {},
 			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
 			Await _form.LoadExportFile(ef)
-			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count, _form._columnSelector.LeftListBoxItems.Count)
-			Assert.AreEqual(0, _form._columnSelector.RightListBoxItems.Count)
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count, _form._columnSelector.LeftSearchableListItems.Count)
+			Assert.AreEqual(0, _form._columnSelector.RightSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_Folder_AllExportableFields_TwoFieldSelected_OneFieldIsNoLongerAvaialble() As Task
@@ -507,10 +507,10 @@ Namespace kCura.EDDS.WinForm.Tests
 			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2, selectedField3},
 			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.ParentSearch}
 			Await _form.LoadExportFile(ef)
-			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightListBoxItems))
-			Assert.IsFalse(_form._columnSelector.RightListBoxItems.Contains(selectedField2))
-			Assert.IsFalse(_form._columnSelector.LeftListBoxItems.Contains(selectedField2))
-			Assert.AreEqual(0, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightSearchableListItems))
+			Assert.IsFalse(_form._columnSelector.RightSearchableListItems.Contains(selectedField2))
+			Assert.IsFalse(_form._columnSelector.LeftSearchableListItems.Contains(selectedField2))
+			Assert.AreEqual(0, _form._columnSelector.LeftSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_Folder_StartExportAtDocumentNumber_Is15() As Task
@@ -579,7 +579,7 @@ Namespace kCura.EDDS.WinForm.Tests
 			.AllExportableFields = _queryFieldFactory.GetAllDocumentFields,
 			.TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
 			Await _form.LoadExportFile(ef)
-			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields.Count, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields.Count, _form._columnSelector.LeftSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_FolderAndSubFolder_AllExportableFields_OneFieldSelected() As Task
@@ -590,8 +590,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
 			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
 			Await _form.LoadExportFile(ef)
-			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightListBoxItems))
-			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightSearchableListItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_FolderAndSubFolder_AllExportableFields_TwoFieldSelected() As Task
@@ -603,9 +603,9 @@ Namespace kCura.EDDS.WinForm.Tests
 			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2},
 			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
 			Await _form.LoadExportFile(ef)
-			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightListBoxItems))
-			Assert.IsTrue(DoesFieldExistsInListBox(selectedField2, _form._columnSelector.RightListBoxItems))
-			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 2, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightSearchableListItems))
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField2, _form._columnSelector.RightSearchableListItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 2, _form._columnSelector.LeftSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_FolderAndSubFolder_AllExportableFields_OneFieldSelected_OneFieldPrePopulated() As Task
@@ -616,9 +616,9 @@ Namespace kCura.EDDS.WinForm.Tests
 			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField},
 			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
 			Await _form.LoadExportFile(ef)
-			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightListBoxItems))
-			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftListBoxItems.Count)
-			Assert.AreEqual(1, _form._columnSelector.RightListBoxItems.Count)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField, _form._columnSelector.RightSearchableListItems))
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count - 1, _form._columnSelector.LeftSearchableListItems.Count)
+			Assert.AreEqual(1, _form._columnSelector.RightSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_FolderAndSubFolder_AllExportableFields_ZeroFieldsSelected_OneFieldPrePopulated() As Task
@@ -628,8 +628,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {},
 			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
 			Await _form.LoadExportFile(ef)
-			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count, _form._columnSelector.LeftListBoxItems.Count)
-			Assert.AreEqual(0, _form._columnSelector.RightListBoxItems.Count)
+			Assert.AreEqual(_queryFieldFactory.GetAllDocumentFields().Count, _form._columnSelector.LeftSearchableListItems.Count)
+			Assert.AreEqual(0, _form._columnSelector.RightSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_FolderAndSubFolder_AllExportableFields_TwoFieldSelected_OneFieldIsNoLongerAvaialble() As Task
@@ -645,10 +645,10 @@ Namespace kCura.EDDS.WinForm.Tests
 			 .SelectedViewFields = New WinEDDS.ViewFieldInfo() {selectedField1, selectedField2, selectedField3},
 			 .TypeOfExport = kCura.WinEDDS.ExportFile.ExportType.AncestorSearch}
 			Await _form.LoadExportFile(ef)
-			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightListBoxItems))
-			Assert.IsFalse(_form._columnSelector.RightListBoxItems.Contains(selectedField2))
-			Assert.IsFalse(_form._columnSelector.LeftListBoxItems.Contains(selectedField2))
-			Assert.AreEqual(0, _form._columnSelector.LeftListBoxItems.Count)
+			Assert.IsTrue(DoesFieldExistsInListBox(selectedField1, _form._columnSelector.RightSearchableListItems))
+			Assert.IsFalse(_form._columnSelector.RightSearchableListItems.Contains(selectedField2))
+			Assert.IsFalse(_form._columnSelector.LeftSearchableListItems.Contains(selectedField2))
+			Assert.AreEqual(0, _form._columnSelector.LeftSearchableListItems.Count)
 		End Function
 
 		<Test()> Public Async Function LoadExportFile_FolderAndSubFolder_StartExportAtDocumentNumber_Is15() As Task
@@ -1425,9 +1425,9 @@ Namespace kCura.EDDS.WinForm.Tests
 
 
 #Region "Helpers"
-		Private Function DoesFieldExistsInListBox(ByVal field As kCura.WinEDDS.ViewFieldInfo, ByVal listBox As Windows.Forms.ListBox.ObjectCollection) As Boolean
+		Private Function DoesFieldExistsInListBox(ByVal field As kCura.WinEDDS.ViewFieldInfo, ByVal list As List(Of Object)) As Boolean
 			Dim retVal As Boolean = False
-			For Each avf As kCura.WinEDDS.ViewFieldInfo In listBox
+			For Each avf As kCura.WinEDDS.ViewFieldInfo In list
 				If field.DisplayName.Equals(avf.DisplayName, StringComparison.InvariantCulture) Then
 					retVal = True
 					Exit For
