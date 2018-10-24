@@ -20,6 +20,11 @@ Public Interface IExportConfig
 
 	ReadOnly Property MaxNumberOfFileExportTasks() As Int32
 
+	ReadOnly Property TapiBridgeExportTransferWaitingTimeInSeconds As Int32
+
+	ReadOnly Property TapiForceHttpClient As Boolean
+
+	ReadOnly Property MaximumFilesForTapiBridge As Integer
 End Interface
 
 End Namespace

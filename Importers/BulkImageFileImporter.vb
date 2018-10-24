@@ -1220,7 +1220,7 @@ Namespace kCura.WinEDDS
 							_errorCount += 1
 							Dim originalIndex As Int64 = Int64.Parse(line(0))
 							Dim ht As New System.Collections.Hashtable
-							ht.Add("Line Number", originalIndex)
+							ht.Add("Line Number", Ctype(originalIndex,Int32))
 							ht.Add("DocumentID", line(1))
 							ht.Add("FileID", line(2))
 							Dim errorMessages As String = line(3)
