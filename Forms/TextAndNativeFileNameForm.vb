@@ -84,8 +84,8 @@ Namespace kCura.EDDS.WinForm.Forms
 			selection.Add(New CustomFileNameSelectionPart(_firstField.ID))
 			For i = 1 To (NumberOfFields - 1)
 				Dim fieldControls = _fieldControls(i)
-				Dim selectedField = TryCast(fieldControls.FieldComboBox.SelectedItem, FieldSelection)
-				Dim selectedSeparator = TryCast(fieldControls.SeparatorComboBox.SelectedItem, SeparatorSelection)
+				Dim selectedField = fieldControls.FieldComboBox.Items.Cast(Of FieldSelection).First(Function(x) x.DisplayName = fieldControls.FieldComboBox.Text)
+				Dim selectedSeparator = fieldControls.SeparatorComboBox.Items.Cast(Of SeparatorSelection).First(Function(x) x.DisplayName = fieldControls.SeparatorComboBox.Text)
 				Dim selectionPart As CustomFileNameSelectionPart
 				If selectedField.DisplayName = CustomTextOption Then
 					selectionPart = New CustomFileNameSelectionPart(selectedSeparator.Value, fieldControls.CustomTextBox.Text)
@@ -183,7 +183,7 @@ Namespace kCura.EDDS.WinForm.Forms
 		Private Sub ToggleFieldCustomTextBox(comboBox As ComboBox, textBox As TextBox)
 			Dim textBoxVisible = False
 			Dim selectedItem = TryCast(comboBox.SelectedItem, FieldSelection)
-			If selectedItem.DisplayName = CustomTextOption Then
+			If selectedItem IsNot Nothing AndAlso selectedItem.DisplayName = CustomTextOption Then
 				textBoxVisible = True
 			End If
 			textBox.Visible = textBoxVisible
@@ -194,6 +194,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			If comboBox Is Nothing Then
 				Return
 			End If
+
 			If comboBox.SelectedIndex = -1 Then
 				If comboBox.Text = "" Then
 					comboBox.SelectedIndex = 0
@@ -204,7 +205,6 @@ Namespace kCura.EDDS.WinForm.Forms
 					Else
 						comboBox.SelectedIndex = comboBox.Items.IndexOf(bestItem.First)
 					End If
-
 				End If
 			End If
 		End Sub
