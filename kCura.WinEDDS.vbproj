@@ -421,7 +421,11 @@
     <Compile Include="FileUploader.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Helpers\CaseSensitiveFilePathHelper.vb" />
     <Compile Include="Helpers\FieldValueHelper.vb" />
+    <Compile Include="Helpers\IFilePathHelper.vb" />
+    <Compile Include="Helpers\ISystemIoFileWrapper.vb" />
+    <Compile Include="Helpers\SystemIoFileWrapper.vb" />
     <Compile Include="IFieldProviderCache.vb" />
     <Compile Include="Importers\BulkImageFileImporter.vb">
       <SubType>Code</SubType>

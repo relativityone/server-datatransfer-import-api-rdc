@@ -6,6 +6,7 @@ Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.OI.FileID
 Imports kCura.Utility.Extensions
 Imports kCura.Windows.Process
+Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.TApi
 Imports Polly
 Imports Relativity
@@ -84,7 +85,7 @@ Namespace kCura.WinEDDS
 		Protected BulkLoadFileFieldDelimiter As String
 
 		Protected Property LinkDataGridRecords As Boolean
-
+		Private ReadOnly _filePathHelper As IFilePathHelper = New CaseSensitiveFilePathHelper()
 #End Region
 
 #Region "Accessors"
@@ -686,6 +687,7 @@ Namespace kCura.WinEDDS
 
 		Private Function ManageDocument(ByVal fileService As kCura.OI.FileID.FileIDService, ByVal record As Api.ArtifactFieldCollection, ByVal lineStatus As Int64) As String
 			Dim filename As String = String.Empty
+			Dim originalFilename As String = String.Empty
 			Dim fileGuid As String = String.Empty
 			Dim uploadFile As Boolean = record.FieldList(Relativity.FieldTypeHelper.FieldType.File).Length > 0 AndAlso Not record.FieldList(Relativity.FieldTypeHelper.FieldType.File)(0).Value Is Nothing
 			Dim fileExists As Boolean
@@ -695,6 +697,7 @@ Namespace kCura.WinEDDS
 			Dim oixFileIdData As OI.FileID.FileIDData = Nothing
 			Dim destinationVolume As String = Nothing
 			Dim injectableContainer As Api.IInjectableFieldCollection = TryCast(record, Api.IInjectableFieldCollection)
+			
 
 			Dim injectableContainerIsNothing As Boolean = injectableContainer Is Nothing
 
@@ -705,10 +708,18 @@ Namespace kCura.WinEDDS
 					filename = "." & filename
 				End If
 
+				originalFilename = filename
+
 				If Me.DisableNativeLocationValidation Then
 					fileExists = True
 				Else
-					fileExists = System.IO.File.Exists(filename)
+					Dim foundFileName As String = _filePathHelper.GetExistingFilePath(filename)
+					fileExists = Not String.IsNullOrEmpty(foundFileName)
+
+					If fileExists AndAlso (Not String.Equals(filename, foundFileName))
+						WriteWarning($"File {filename} does not exist. File {foundFileName} will be used instead.")
+						filename = foundFileName
+					End If
 				End If
 
 				If filename.Trim.Equals(String.Empty) Then
@@ -721,7 +732,7 @@ Namespace kCura.WinEDDS
 						If _createErrorForEmptyNativeFile Then
 							lineStatus += Relativity.MassImport.ImportStatus.EmptyFile
 						Else
-							WriteWarning("Note that file " & filename & " has been detected as empty, metadata and the native file will be loaded.")
+							WriteWarning($"Note that file {filename} has been detected as empty, metadata and the native file will be loaded.")
 						End If
 					End If
 				End If
@@ -769,7 +780,7 @@ Namespace kCura.WinEDDS
 								fileGuid = FileTapiBridge.AddPath(filename, guid, Me.CurrentLineNumber)
 								destinationVolume = FileTapiBridge.TargetFolderName
 							Else
-								WriteWarning("File " & filename & " does not exist and will be not uploaded")
+								WriteWarning($"File {filename} does not exist and will be not uploaded")
 							End If
 						Else
 							fileGuid = System.Guid.NewGuid.ToString
@@ -777,7 +788,7 @@ Namespace kCura.WinEDDS
 						If (Not injectableContainerIsNothing AndAlso injectableContainer.HasFileName()) Then 
 							filename = injectableContainer.FileName.GetFileName() 
 						Else 
-							filename = Path.GetFileName(fullFilePath)
+							filename = Path.GetFileName(originalFilename)
 						End If
 					Catch ex As System.IO.FileNotFoundException
 						If Me.DisableNativeLocationValidation Then

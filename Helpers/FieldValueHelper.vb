@@ -74,5 +74,4 @@ Public Module FieldValueHelper
 	End Function
 
 End Module
-
 End Namespace

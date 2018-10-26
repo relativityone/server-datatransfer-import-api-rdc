@@ -3,6 +3,7 @@ Imports System.IO
 Imports System.Threading
 Imports kCura.WinEDDS.Api
 Imports kCura.Utility
+Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.TApi
 Imports Relativity.Logging
 
@@ -20,6 +21,7 @@ Namespace kCura.WinEDDS
 		Public Shared extractedTextEncodingFieldName As String = "Extracted Text Encoding"
 		Private _relationalDocumentFields As DocumentField()
 		Private _processedIdentifiers As New Collections.Specialized.NameValueCollection
+		Private ReadOnly _filePathHelper As IFilePathHelper = New CaseSensitiveFilePathHelper()
 #End Region
 
 #Region "Constructors"
@@ -231,11 +233,16 @@ Namespace kCura.WinEDDS
 				End If
 				If filePath = "" Then
 					record.FileField.Value = "No File Specified."
-				ElseIf Not System.IO.File.Exists(existsFilePath) Then
-					record.FileField.Value = New Exceptions.ErrorMessage(String.Format("Error: file '{0}' does not exist", filePath))
-					lineContainsErrors = True
 				Else
-					record.FileField.Value = filePath
+					Dim foundFileName As String = _filePathHelper.GetExistingFilePath(existsFilePath)
+					Dim fileExists As Boolean = Not String.IsNullOrEmpty(foundFileName)
+
+					If Not fileExists Then
+						record.FileField.Value = New Exceptions.ErrorMessage($"Error: file '{filePath}' does not exist")
+						lineContainsErrors = True
+					Else
+						record.FileField.Value = filePath
+					End If
 				End If
 				retval.Add(record.FileField)
 			End If

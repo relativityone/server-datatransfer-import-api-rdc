@@ -5,6 +5,7 @@ Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.Utility.Extensions.Enumerable
 Imports kCura.WinEDDS.Service
 Imports kCura.Utility
+Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.TApi
 Imports Relativity
 
@@ -65,6 +66,8 @@ Namespace kCura.WinEDDS
 		Private _timekeeper As New kCura.Utility.Timekeeper
 		Private _doRetryLogic As Boolean
 		Private _verboseErrorCollection As New ClientSideErrorCollection
+
+		Protected ReadOnly FilePathHelper As IFilePathHelper = New CaseSensitiveFilePathHelper()
 		Public Property SkipExtractedTextEncodingCheck As Boolean
 		Public Property OIFileIdMapped As Boolean
 		Public Property OIFileIdColumnName As String
@@ -770,35 +773,51 @@ Namespace kCura.WinEDDS
 #Region "Worker Methods"
 
 		Public Function ProcessImageLine(ByVal imageRecord As Api.ImageRecord) As Relativity.MassImport.ImportStatus
-			_totalValidated += 1
-			Dim retval As Relativity.MassImport.ImportStatus = Relativity.MassImport.ImportStatus.Pending
+			_totalValidated += 1			
 			'check for existence
 			If imageRecord.BatesNumber.Trim = "" Then
 				Me.RaiseStatusEvent(Windows.Process.EventType.Error, "No image file or identifier specified on line.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
-				retval = Relativity.MassImport.ImportStatus.NoImageSpecifiedOnLine
-			ElseIf Not Me.DisableImageLocationValidation AndAlso Not System.IO.File.Exists(BulkImageFileImporter.GetFileLocation(imageRecord)) Then
-				Me.RaiseStatusEvent(Windows.Process.EventType.Error, $"Image file specified ( {imageRecord.FileLocation} ) does not exist.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
-				retval = Relativity.MassImport.ImportStatus.FileSpecifiedDne
-			Else
-				Dim validator As New kCura.ImageValidator.ImageValidator
-				Dim path As String = BulkImageFileImporter.GetFileLocation(imageRecord)
-				Try
-					If Not Me.DisableImageTypeValidation Then
-						validator.ValidateImage(path)
-					End If
-
-					Me.RaiseStatusEvent(Windows.Process.EventType.Status, $"Image file ( {imageRecord.FileLocation} ) validated.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
-				Catch ex As Exception
-					If TypeOf ex Is kCura.ImageValidator.Exception.Base Then
-						Me.LogError(ex, "Failed to validate the {Path} image.", path)
-						retval = Relativity.MassImport.ImportStatus.InvalidImageFormat
-						_verboseErrorCollection.AddError(imageRecord.OriginalIndex, ex)
-					Else
-						Me.LogFatal(ex, "Unexpected failure to validate the {Path} image file.", path)
-						Throw
-					End If
-				End Try
+				Return Relativity.MassImport.ImportStatus.NoImageSpecifiedOnLine
 			End If
+
+			Dim imageFilePath As String = BulkImageFileImporter.GetFileLocation(imageRecord)
+
+			If Not Me.DisableImageLocationValidation Then
+				'AndAlso Not System.IO.File.Exists(imageFilePath) 
+				Dim foundFileName As String = FilePathHelper.GetExistingFilePath(imageFilePath)
+				Dim fileExists As Boolean = Not String.IsNullOrEmpty(foundFileName)
+
+				If Not fileExists
+					Me.RaiseStatusEvent(Windows.Process.EventType.Error, $"Image file specified ( {imageRecord.FileLocation} ) does not exist.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+					Return Relativity.MassImport.ImportStatus.FileSpecifiedDne
+				End If
+
+				If Not String.Equals(imageFilePath, foundFileName)
+					Me.RaiseStatusEvent(Windows.Process.EventType.Warning ,$"File {imageFilePath} does not exist. File {foundFileName} will be used instead.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+					imageFilePath = foundFileName
+				End If
+			End If
+			
+			Dim retval As Relativity.MassImport.ImportStatus = Relativity.MassImport.ImportStatus.Pending
+			Dim validator As New kCura.ImageValidator.ImageValidator
+			
+			Try
+				If Not Me.DisableImageTypeValidation Then
+					validator.ValidateImage(imageFilePath)
+				End If
+
+				Me.RaiseStatusEvent(Windows.Process.EventType.Status, $"Image file ( {imageRecord.FileLocation} ) validated.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+			Catch ex As Exception
+				If TypeOf ex Is kCura.ImageValidator.Exception.Base Then
+					Me.LogError(ex, "Failed to validate the {Path} image.", imageFilePath)
+					retval = Relativity.MassImport.ImportStatus.InvalidImageFormat
+					_verboseErrorCollection.AddError(imageRecord.OriginalIndex, ex)
+				Else
+					Me.LogFatal(ex, "Unexpected failure to validate the {Path} image file.", imageFilePath)
+					Throw
+				End If
+			End Try
+			
 			Return retval
 		End Function
 
@@ -832,7 +851,14 @@ Namespace kCura.WinEDDS
 					Exit For
 				End If
 				record = lines(i)
-				Me.GetImageForDocument(BulkImageFileImporter.GetFileLocation(record), record.BatesNumber, documentId, i, offset, textFileList, i < lines.Count - 1, Convert.ToInt32(record.OriginalIndex), status, lines.Count, i = 0)
+
+				Dim imageFilePath As String = BulkImageFileImporter.GetFileLocation(record)
+				Dim foundFileName As String = FilePathHelper.GetExistingFilePath(imageFilePath)
+				If Not (foundFileName Is Nothing)
+					imageFilePath = foundFileName
+				End If
+
+				Me.GetImageForDocument(imageFilePath, record.BatesNumber, documentId, i, offset, textFileList, i < lines.Count - 1, Convert.ToInt32(record.OriginalIndex), status, lines.Count, i = 0)
 			Next
 
 			Dim lastDivider As String = If(_fullTextStorageIsInSql, ",", String.Empty)
