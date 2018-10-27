@@ -12,7 +12,7 @@ using Settings = kCura.Relativity.DataReaderClient.Settings;
 namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 {
 	[TestFixture]
-	[Category("ImportApiIntegrationTestsForRelativityPipeline")]
+	[Category("ImportApiIntegrationTestsForRelativityPipeline"), Category("testtype.cd")]
 	public class ProductionImportTests : TestBase
 	{
 		private const string _BATES_NUMBER_COLUMN_NAME = "Bates Beg";

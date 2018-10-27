@@ -13,7 +13,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 		private const string _NATIVE_FILE_COLUMN_NAME = "Native";
 
 		[Test]
-		[Category("ImportApiIntegrationTestsForRelativityPipeline")]
+		[Category("ImportApiIntegrationTestsForRelativityPipeline"), Category("testtype.cd")]
 		public void ItShouldImportNativesWithPasswordAuthentication()
 		{
 			ImportAPI importApi = ImportApiCreator.CreateImportApiWithPasswordAuthentication();

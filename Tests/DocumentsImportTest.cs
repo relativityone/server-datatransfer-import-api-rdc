@@ -20,7 +20,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 		public const string NATIVE_FILE_COLUMN_NAME = "Native";
 
 		[Test]
-		[Category("ImportApiIntegrationTestsForRelativityPipeline")]
+		[Category("ImportApiIntegrationTestsForRelativityPipeline"), Category("testtype.cd")]
 		public void ImportApiShouldImportDocuments()
 		{
 			// Arrange
