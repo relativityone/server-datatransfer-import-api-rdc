@@ -232,7 +232,6 @@
     <Compile Include="Services\TemplateManagerTests.vb" />
     <Compile Include="Services\UserManagerTests.vb" />
     <Compile Include="Stubs\StubDataReaderReader.vb" />
-    <Compile Include="TestableImageFilePreviewer.vb" />
     <Compile Include="TestObjectFactories\QueryFieldFactory.vb" />
   </ItemGroup>
   <ItemGroup>
