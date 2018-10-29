@@ -84,8 +84,8 @@ Namespace kCura.EDDS.WinForm.Forms
 			selection.Add(New CustomFileNameSelectionPart(_firstField.ID))
 			For i = 1 To (NumberOfFields - 1)
 				Dim fieldControls = _fieldControls(i)
-				Dim selectedField = fieldControls.FieldComboBox.Items.Cast(Of FieldSelection).First(Function(x) x.DisplayName.StartsWith(fieldControls.FieldComboBox.Text))
-				Dim selectedSeparator = fieldControls.SeparatorComboBox.Items.Cast(Of SeparatorSelection).First(Function(x) x.DisplayName.StartsWith(fieldControls.SeparatorComboBox.Text))
+				Dim selectedField = TryCast(fieldControls.FieldComboBox.SelectedItem, FieldSelection)
+				Dim selectedSeparator = TryCast(fieldControls.SeparatorComboBox.SelectedItem, SeparatorSelection)
 				Dim selectionPart As CustomFileNameSelectionPart
 				If selectedField.DisplayName = CustomTextOption Then
 					selectionPart = New CustomFileNameSelectionPart(selectedSeparator.Value, fieldControls.CustomTextBox.Text)
@@ -203,19 +203,16 @@ Namespace kCura.EDDS.WinForm.Forms
 			If comboBox Is Nothing Then
 				Return
 			End If
+			comboBox.DroppedDown = False
+			System.Windows.Forms.Application.DoEvents()
 
-			If comboBox.SelectedIndex = -1 Then
-				If comboBox.Text = "" Then
-					comboBox.SelectedIndex = 0
-				Else
-					Dim bestItem = comboBox.Items.Cast(Of ISelection).Where(Function(x) x.DisplayName.ToLower.StartsWith(comboBox.Text.ToLower))
-					If bestItem.Count = 0 Then
-						comboBox.SelectedIndex = 0
-					Else
-						comboBox.SelectedIndex = comboBox.Items.IndexOf(bestItem.First)
-					End If
-				End If
+			Dim bestItem = comboBox.Items.Cast(Of ISelection).Where(Function(x) x.DisplayName.ToLower.StartsWith(comboBox.Text.ToLower))
+			If bestItem.Count = 0 Then
+				comboBox.SelectedIndex = 0
+			Else
+				comboBox.SelectedIndex = comboBox.Items.IndexOf(bestItem.First)
 			End If
+
 		End Sub
 
 		Public Event ApplyClicked()
