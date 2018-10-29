@@ -112,7 +112,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			fieldComboBox.FormattingEnabled = True
 			fieldComboBox.Location = New Point(252 * NumberOfFields + 14, 13)
 			fieldComboBox.Size = New Size(120, 21)
-			fieldComboBox.TabIndex = 1 + 3 * NumberOfFields
+			fieldComboBox.TabIndex = 2 + 3 * NumberOfFields
 			fieldComboBox.Tag = fieldNumber
 			Controls.Add(fieldComboBox)
 			fieldComboBox.DataSource = _availableFields.ToList()
@@ -131,7 +131,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			separatorComboBox.FormattingEnabled = True
 			separatorComboBox.Location = New Point(252 * NumberOfFields - 112, 13)
 			separatorComboBox.Size = New Size(120, 21)
-			separatorComboBox.TabIndex = 3 + 3 * NumberOfFields
+			separatorComboBox.TabIndex = 1 + 3 * NumberOfFields
 			Controls.Add(separatorComboBox)
 			separatorComboBox.DataSource = Separators.ToList()
 			separatorComboBox.DisplayMember = "DisplayName"
@@ -146,7 +146,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			Dim customTextBox = New TextBox()
 			customTextBox.Location = New Point(252 * NumberOfFields + 14, 41)
 			customTextBox.Size = New Size(120, 20)
-			customTextBox.TabIndex = 2 + 3 * NumberOfFields
+			customTextBox.TabIndex = 3 + 3 * NumberOfFields
 			Controls.Add(customTextBox)
 			Return customTextBox
 		End Function
