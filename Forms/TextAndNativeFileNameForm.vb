@@ -84,8 +84,8 @@ Namespace kCura.EDDS.WinForm.Forms
 			selection.Add(New CustomFileNameSelectionPart(_firstField.ID))
 			For i = 1 To (NumberOfFields - 1)
 				Dim fieldControls = _fieldControls(i)
-				Dim selectedField = fieldControls.FieldComboBox.Items.Cast(Of FieldSelection).First(Function(x) x.DisplayName = fieldControls.FieldComboBox.Text)
-				Dim selectedSeparator = fieldControls.SeparatorComboBox.Items.Cast(Of SeparatorSelection).First(Function(x) x.DisplayName = fieldControls.SeparatorComboBox.Text)
+				Dim selectedField = fieldControls.FieldComboBox.Items.Cast(Of FieldSelection).First(Function(x) x.DisplayName.StartsWith(fieldControls.FieldComboBox.Text))
+				Dim selectedSeparator = fieldControls.SeparatorComboBox.Items.Cast(Of SeparatorSelection).First(Function(x) x.DisplayName.StartsWith(fieldControls.SeparatorComboBox.Text))
 				Dim selectionPart As CustomFileNameSelectionPart
 				If selectedField.DisplayName = CustomTextOption Then
 					selectionPart = New CustomFileNameSelectionPart(selectedSeparator.Value, fieldControls.CustomTextBox.Text)
