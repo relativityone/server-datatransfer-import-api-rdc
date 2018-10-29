@@ -120,6 +120,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			fieldComboBox.ValueMember = "ID"
 			fieldComboBox.AutoCompleteSource = AutoCompleteSource.ListItems
 			fieldComboBox.AutoCompleteMode = AutoCompleteMode.None
+			AddHandler fieldComboBox.KeyDown, AddressOf CatchEnterKey
 			AddHandler fieldComboBox.Leave, AddressOf SelectBestFieldIfNoneChosen
 			AddHandler fieldComboBox.SelectedIndexChanged, AddressOf FieldComboBoxSelectionChanged
 			Return fieldComboBox
@@ -138,6 +139,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			separatorComboBox.ValueMember = "Value"
 			separatorComboBox.AutoCompleteSource = AutoCompleteSource.ListItems
 			separatorComboBox.AutoCompleteMode = AutoCompleteMode.None
+			AddHandler separatorComboBox.KeyDown, AddressOf CatchEnterKey
 			AddHandler separatorComboBox.Leave, AddressOf SelectBestFieldIfNoneChosen
 			Return separatorComboBox
 		End Function
@@ -187,6 +189,13 @@ Namespace kCura.EDDS.WinForm.Forms
 				textBoxVisible = True
 			End If
 			textBox.Visible = textBoxVisible
+		End Sub
+
+		Private Sub CatchEnterKey(sender As Object, e As KeyEventArgs)
+			If e.KeyCode = Keys.Enter Then
+				e.Handled = True
+				SendKeys.Send("{TAB}")
+			End If
 		End Sub
 
 		Private Sub SelectBestFieldIfNoneChosen(sender As Object, e As EventArgs)
