@@ -205,15 +205,18 @@ Namespace kCura.EDDS.WinForm.Forms
 			End If
 			comboBox.DroppedDown = False
 			System.Windows.Forms.Application.DoEvents()
-
-			Dim bestItem = comboBox.Items.Cast(Of ISelection).Where(Function(x) x.DisplayName.ToLower.StartsWith(comboBox.Text.ToLower))
-			If bestItem.Count = 0 Then
-				comboBox.SelectedIndex = 0
-			Else
-				comboBox.SelectedIndex = comboBox.Items.IndexOf(bestItem.First)
-			End If
+			comboBox.SelectedIndex = GetIndexOfBestMatchFromList(comboBox.Items, comboBox.Text)
 
 		End Sub
+
+		Protected Function GetIndexOfBestMatchFromList(items As ComboBox.ObjectCollection, text As String) As Integer
+			Dim bestItems = items.Cast(Of ISelection).Where(Function(x) x.DisplayName.ToLower.StartsWith(text.ToLower))
+			If bestItems.Count = 0 Then
+				Return 0
+			Else
+				Return items.IndexOf(bestItems.First)
+			End If
+		End Function
 
 		Public Event ApplyClicked()
 
