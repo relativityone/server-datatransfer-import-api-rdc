@@ -1,10 +1,9 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.Windows.Process;
 using kCura.WinEDDS.Core.Model.Export;
-using kCura.WinEDDS.Core.Model.Export.Process;
 using kCura.WinEDDS.Exporters;
+using kCura.WinEDDS.FileNaming.CustomFileNaming;
 using kCura.WinEDDS.Service.Export;
 
 namespace kCura.WinEDDS.Core.Export
