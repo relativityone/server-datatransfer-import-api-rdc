@@ -321,26 +321,29 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Private Function GetFileSizeData() As Long?
 
+			If Not _FileSettings.FileSizeMapped Then
+				Return Nothing
+			End If
+
 			Dim fileSize As Nullable(Of Long) = Nothing
-			If _FileSettings.FileSizeMapped Then
-				If _fileSettingsFileSizeColumnIndex = -1 Then
-					For i As Integer = 0 To _reader.FieldCount - 1
-						If (_reader.GetName(i) = _FileSettings.FileSizeColumn) Then
-							Dim value As Long = -1
-							Dim readerValue As String = _reader.GetValue(i).ToString()
-							Long.TryParse(readerValue, value)
-							fileSize = value
-							_fileSettingsFileSizeColumnIndex = i
-							Exit For
-						End If
-					Next
-				Else
-					If (_reader.GetName(_fileSettingsFileSizeColumnIndex) = _FileSettings.FileSizeColumn) Then
+
+			If _fileSettingsFileSizeColumnIndex = -1 Then
+				For i As Integer = 0 To _reader.FieldCount - 1
+					If (_reader.GetName(i) = _FileSettings.FileSizeColumn) Then
 						Dim value As Long = -1
-						Dim readerValue As String = _reader.GetValue(_fileSettingsFileSizeColumnIndex).ToString()
+						Dim readerValue As String = _reader.GetValue(i).ToString()
 						Long.TryParse(readerValue, value)
 						fileSize = value
+						_fileSettingsFileSizeColumnIndex = i
+						Exit For
 					End If
+				Next
+			Else
+				If (_reader.GetName(_fileSettingsFileSizeColumnIndex) = _FileSettings.FileSizeColumn) Then
+					Dim value As Long = -1
+					Dim readerValue As String = _reader.GetValue(_fileSettingsFileSizeColumnIndex).ToString()
+					Long.TryParse(readerValue, value)
+					fileSize = value
 				End If
 			End If
 
