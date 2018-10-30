@@ -68,6 +68,8 @@ Namespace kCura.WinEDDS.ImportExtension
             Me.FileSizeMapped = loadFile.FileSizeMapped
             Me.FileSizeColumn = loadFile.FileSizeColumn
             Me.FileNameColumn = loadFile.FileNameColumn
+			Me.SupportedByViewerMapped = loadFile.SupportedByViewerMapped
+			Me.SupportedByViewerColumn = loadFile.SupportedByViewerColumn
             If temporaryLocalDirectory IsNot Nothing Then
                 Me.TemporaryLocalDirectory = temporaryLocalDirectory
             End If
@@ -173,14 +175,7 @@ Namespace kCura.WinEDDS.ImportExtension
                 End Try
                 columnIndex = columnIndex + 1
             Next
-            Dim fileSettings As New FileSettings() With {
-                    .IDColumnName = OIFileIdColumnName,
-                    .OIFileIdMapped = OIFileIdMapped,
-                    .TypeColumnName = OIFileTypeColumnName,
-                    .FileSizeColumn = FileSizeColumn,
-                    .FileSizeMapped = FileSizeMapped,
-                    .FileNameColumn = FileNameColumn
-                    }
+            Dim settings As New FileSettings() With {.IDColumnName = OIFileIdColumnName, .OIFileIdMapped = OIFileIdMapped, .TypeColumnName = OIFileTypeColumnName, .FileSizeColumn = FileSizeColumn, .FileSizeMapped = FileSizeMapped, .FileNameColumn = FileNameColumn, .SupportedByViewerMapped = SupportedByViewerMapped, .SupportedByViewerColumn = SupportedByViewerColumn}
             Dim initalizationArgs As New DataReaderReaderInitializationArgs(collection, _settings.ArtifactTypeID) With {.TemporaryLocalDirectory = TemporaryLocalDirectory}
             Dim retval As New DataReaderReader(initalizationArgs, _settings, _sourceReader, fileSettings)
             Return retval

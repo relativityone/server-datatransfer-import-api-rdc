@@ -30,16 +30,17 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private _fileSettingsFileSizeColumnIndex As Integer
 		Private _fileSettingsTypeColumnNameIndex As Integer
 		Private _fileSettingsIDColumnNameIndex As Integer
+		Private _fileSupportedByViewerColumnNameIndex As Integer
 
 		Public Sub New(ByVal args As DataReaderReaderInitializationArgs, ByVal fieldMap As kCura.WinEDDS.LoadFile, ByVal reader As System.Data.IDataReader)
-			Me.New(args, fieldMap, reader, New FileSettings() With {.OIFileIdMapped = False, .FileSizeMapped = False, .FileNameColumn = Nothing})
+			Me.New(args, fieldMap, reader, New FileSettings() With {.OIFileIdMapped = False, .FileSizeMapped = False, .FileNameColumn = Nothing, .SupportedByViewerMapped = False})
 		End Sub
 
 		Public Sub New(ByVal args As DataReaderReaderInitializationArgs, ByVal fieldMap As kCura.WinEDDS.LoadFile, ByVal reader As System.Data.IDataReader, fileSettings As FileSettings)
 			_reader = reader
 
 			If (fileSettings Is Nothing) Then
-				fileSettings = New FileSettings() With {.FileNameColumn = Nothing, .FileSizeColumn = Nothing, .FileSizeMapped = False, .IDColumnName = Nothing, .OIFileIdMapped = False, .TypeColumnName = Nothing}
+				fileSettings = New FileSettings() With {.FileNameColumn = Nothing, .FileSizeColumn = Nothing, .FileSizeMapped = False, .IDColumnName = Nothing, .OIFileIdMapped = False, .TypeColumnName = Nothing, .SupportedByViewerMapped = False}
 			End If
 			_FileSettings = fileSettings
 
@@ -68,6 +69,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			_fileSettingsFileSizeColumnIndex = -1
 			_fileSettingsTypeColumnNameIndex = -1
 			_fileSettingsIDColumnNameIndex = -1
+			_fileSupportedByViewerColumnNameIndex = -1
 		End Sub
 
 		Public Property TemporaryLocalDirectory As String
@@ -172,95 +174,8 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Function
 
 		Private Function ReadArtifactData() As kCura.WinEDDS.Api.ArtifactFieldCollection
-			Dim retval As Api.ArtifactFieldCollection
+			Dim artifactFieldCollection As ArtifactFieldCollection = GetArtifactFieldCollectionWithBasicFields()
 
-			Dim oiFileType As String = ""
-			Dim oiFileId As Int32
-			If _FileSettings.OIFileIdMapped Then
-				If (_fileSettingsTypeColumnNameIndex = -1 Or _fileSettingsIDColumnNameIndex = -1) Then
-					For i As Integer = 0 To _reader.FieldCount - 1
-						If (_reader.GetName(i) = _FileSettings.TypeColumnName) Then
-							oiFileType = _reader.GetValue(i).ToString()
-							_fileSettingsTypeColumnNameIndex = i
-						ElseIf (_reader.GetName(i) = _FileSettings.IDColumnName) Then
-							Dim value As Int32 = -1
-							Dim readerValue As String = _reader.GetValue(i).ToString()
-							Int32.TryParse(readerValue, value)
-							oiFileId = value
-							_fileSettingsIDColumnNameIndex = i
-						End If
-					Next
-				Else
-					If (_reader.GetName(_fileSettingsTypeColumnNameIndex) = _FileSettings.TypeColumnName) Then
-						oiFileType = _reader.GetValue(_fileSettingsTypeColumnNameIndex).ToString()
-					ElseIf (_reader.GetName(_fileSettingsIDColumnNameIndex) = _FileSettings.IDColumnName) Then
-						Dim value As Int32 = -1
-						Dim readerValue As String = _reader.GetValue(_fileSettingsIDColumnNameIndex).ToString()
-						Int32.TryParse(readerValue, value)
-						oiFileId = value
-					End If
-				End If
-			End If
-
-			Dim fileSize As Nullable(Of Long) = Nothing
-			If _FileSettings.FileSizeMapped Then
-				If _fileSettingsFileSizeColumnIndex = -1 Then
-					For i As Integer = 0 To _reader.FieldCount - 1
-						If (_reader.GetName(i) = _FileSettings.FileSizeColumn) Then
-							Dim value As Long = -1
-							Dim readerValue As String = _reader.GetValue(i).ToString()
-							Long.TryParse(readerValue, value)
-							fileSize = value
-							_fileSettingsFileSizeColumnIndex = i
-							Exit For
-						End If
-					Next
-				Else
-					If (_reader.GetName(_fileSettingsFileSizeColumnIndex) = _FileSettings.FileSizeColumn) Then
-						Dim value As Long = -1
-						Dim readerValue As String = _reader.GetValue(_fileSettingsFileSizeColumnIndex).ToString()
-						Long.TryParse(readerValue, value)
-						fileSize = value
-					End If
-				End If
-			End If
-
-			Dim fileName As String = Nothing
-			If (Not String.IsNullOrEmpty(_FileSettings.FileNameColumn)) Then
-				If _fileSettingsFileNameColumnIndex = -1 Then
-					For i As Integer = 0 To _reader.FieldCount - 1
-						If (_reader.GetName(i) = _FileSettings.FileNameColumn) Then
-							Dim fileNameValue As Object = _reader.GetValue(i)
-							If (fileNameValue IsNot Nothing) Then
-								fileName = fileNameValue.ToString()
-							End If
-							_fileSettingsFileNameColumnIndex = i
-							Exit For
-						End If
-					Next
-				Else
-					If (_reader.GetName(_fileSettingsFileNameColumnIndex) = _FileSettings.FileNameColumn) Then
-						Dim fileNameValue As Object = _reader.GetValue(_fileSettingsFileNameColumnIndex)
-						If (fileNameValue IsNot Nothing) Then
-							fileName = fileNameValue.ToString()
-						End If
-					End If
-				End If
-			End If
-
-			Dim idDataSet As FileIDData = Nothing
-			Dim fileSizeSet As Long? = Nothing
-			Dim fileNameSet As String = Nothing
-			If (Not String.IsNullOrEmpty(oiFileType)) Then
-				idDataSet = New FileIDData(oiFileId, oiFileType)
-			End If
-			If (fileSize.HasValue) Then
-				fileSizeSet = fileSize
-			End If
-			If (Not String.IsNullOrEmpty(fileName)) Then
-				fileNameSet = fileName
-			End If
-			retval = InjectableArtifactFieldCollection.CreateFieldCollection(fileNameSet, idDataSet, fileSizeSet)
 			Dim folderStructureContainedInColumnWithoutIndex As String = nameWithoutIndex(_loadFileSettings.FolderStructureContainedInColumn)
 
 			' step 1 - save off the identifier for the current record
@@ -273,7 +188,7 @@ Namespace kCura.WinEDDS.ImportExtension
 					If Not field.DisplayName = folderStructureContainedInColumnWithoutIndex Then
 						Dim thisCell As Api.ArtifactField = field.Copy
 						SetFieldValueInvoker(i, thisCell, field.DisplayName)
-						retval.Add(thisCell)
+						artifactFieldCollection.Add(thisCell)
 					End If
 				End If
 			Next
@@ -285,7 +200,7 @@ Namespace kCura.WinEDDS.ImportExtension
 					Dim displayName As String = _reader.GetName(nativeFileIndex - 1)
 					Dim field As New Api.ArtifactField(New DocumentField(displayName, -1, Relativity.FieldTypeHelper.FieldType.File, Relativity.FieldCategory.FileInfo, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), True, EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, False))
 					SetFieldValueInvoker(nativeFileIndex - 1, field, displayName)
-					retval.Add(field)
+					artifactFieldCollection.Add(field)
 				End If
 			End If
 
@@ -294,7 +209,7 @@ Namespace kCura.WinEDDS.ImportExtension
 				Dim displayName As String = _reader.GetName(dataGridIndex - 1)
 				Dim field As New Api.ArtifactField(New kCura.EDDS.WebAPI.DocumentManagerBase.Field() With {.ArtifactID = -3, .DisplayName = BulkLoadFileImporter.DATA_GRID_ID_FIELD_NAME})
 				SetFieldValueInvoker(dataGridIndex - 1, field, displayName)
-				retval.Add(field)
+				artifactFieldCollection.Add(field)
 			End If
 
 			If _loadFileSettings.CopyFilesToDocumentRepository = True Then
@@ -304,7 +219,7 @@ Namespace kCura.WinEDDS.ImportExtension
 					'When importing files, we copy to a local directory using the filename in kCuraMarkerFilename before actual import.
 					' we do not do this when we are pointing to files using links.
 					' we also don't do this if kCuraMarkerFilename field is not present because we can copy from the current location 
-					For Each field As Api.ArtifactField In retval
+					For Each field As Api.ArtifactField In artifactFieldCollection
 						If field.Type = Relativity.FieldTypeHelper.FieldType.File Then
 							If field.ValueAsString <> String.Empty Then
 								If System.IO.File.Exists(field.ValueAsString) Then
@@ -353,15 +268,162 @@ Namespace kCura.WinEDDS.ImportExtension
 				Dim displayName As String = _reader.GetName(parentIndex - 1)
 				Dim field As New Api.ArtifactField(displayName, -2, Relativity.FieldTypeHelper.FieldType.Object, Relativity.FieldCategory.ParentArtifact, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(255), New Nullable(Of Int32)(Nothing), False)
 				SetFieldValueInvoker(parentIndex - 1, field, displayName)
-				retval.Add(field)
+				artifactFieldCollection.Add(field)
 			End If
 
 			If Me.CurrentLineNumber = 0 Then
-				DisplayFieldMap(_reader, retval)
+				DisplayFieldMap(_reader, artifactFieldCollection)
 			End If
 
 
-			Return retval
+			Return artifactFieldCollection
+		End Function
+
+		Private Function GetArtifactFieldCollectionWithBasicFields() As ArtifactFieldCollection
+			Dim idDataSet As FileIDData = GetFieldIdData()
+			Dim fileSizeSet As Long? = GetFileSizeData()
+			Dim fileNameSet As String = GetFileNameData()
+
+			Return InjectableArtifactFieldCollection.CreateFieldCollection(fileNameSet, idDataSet, fileSizeSet)
+		End Function
+
+		Private Function GetFileNameData() As String
+
+			Dim fileName As String = Nothing
+			If (Not String.IsNullOrEmpty(_FileSettings.FileNameColumn)) Then
+				If _fileSettingsFileNameColumnIndex = -1 Then
+					For i As Integer = 0 To _reader.FieldCount - 1
+						If (_reader.GetName(i) = _FileSettings.FileNameColumn) Then
+							Dim fileNameValue As Object = _reader.GetValue(i)
+							If (fileNameValue IsNot Nothing) Then
+								fileName = fileNameValue.ToString()
+							End If
+							_fileSettingsFileNameColumnIndex = i
+							Exit For
+						End If
+					Next
+				Else
+					If (_reader.GetName(_fileSettingsFileNameColumnIndex) = _FileSettings.FileNameColumn) Then
+						Dim fileNameValue As Object = _reader.GetValue(_fileSettingsFileNameColumnIndex)
+						If (fileNameValue IsNot Nothing) Then
+							fileName = fileNameValue.ToString()
+						End If
+					End If
+				End If
+			End If
+			
+			If (Not String.IsNullOrEmpty(fileName)) Then
+				Return fileName
+			End If
+
+			Return Nothing
+		End Function
+
+		Private Function GetFileSizeData() As Long?
+
+			Dim fileSize As Nullable(Of Long) = Nothing
+			If _FileSettings.FileSizeMapped Then
+				If _fileSettingsFileSizeColumnIndex = -1 Then
+					For i As Integer = 0 To _reader.FieldCount - 1
+						If (_reader.GetName(i) = _FileSettings.FileSizeColumn) Then
+							Dim value As Long = -1
+							Dim readerValue As String = _reader.GetValue(i).ToString()
+							Long.TryParse(readerValue, value)
+							fileSize = value
+							_fileSettingsFileSizeColumnIndex = i
+							Exit For
+						End If
+					Next
+				Else
+					If (_reader.GetName(_fileSettingsFileSizeColumnIndex) = _FileSettings.FileSizeColumn) Then
+						Dim value As Long = -1
+						Dim readerValue As String = _reader.GetValue(_fileSettingsFileSizeColumnIndex).ToString()
+						Long.TryParse(readerValue, value)
+						fileSize = value
+					End If
+				End If
+			End If
+
+			If (fileSize.HasValue) Then
+				Return fileSize
+			End If
+
+			Return Nothing
+		End Function
+
+		Private Function GetSupportedByViewerData() As Boolean?
+
+			Dim supportedByViewer As Nullable(Of Boolean) = Nothing
+			If _FileSettings.SupportedByViewerMapped Then
+				If _fileSupportedByViewerColumnNameIndex = -1 Then
+					For i As Integer = 0 To _reader.FieldCount - 1
+						If (_reader.GetName(i) = _FileSettings.SupportedByViewerColumn) Then
+							Dim value As Boolean = False
+							Dim readerValue As String = _reader.GetValue(i).ToString()
+							Boolean.TryParse(readerValue, value)
+							supportedByViewer = value
+							_fileSupportedByViewerColumnNameIndex = i
+							Exit For
+						End If
+					Next
+				Else
+					If (_reader.GetName(_fileSupportedByViewerColumnNameIndex) = _FileSettings.SupportedByViewerColumn) Then
+						Dim value As Boolean = False
+						Dim readerValue As String = _reader.GetValue(_fileSupportedByViewerColumnNameIndex).ToString()
+						Boolean.TryParse(readerValue, value)
+						supportedByViewer = value
+					End If
+				End If
+			End If
+
+			If (supportedByViewer.HasValue) Then
+				Return supportedByViewer
+			End If
+
+			Return Nothing
+		End Function
+
+		Private Function GetFieldIdData() As FileIDData
+
+			Dim oiFileType As String = ""
+			Dim oiFileId As Int32
+			If _FileSettings.OIFileIdMapped Then
+				If (_fileSettingsTypeColumnNameIndex = -1 Or _fileSettingsIDColumnNameIndex = -1) Then
+					For i As Integer = 0 To _reader.FieldCount - 1
+						If (_reader.GetName(i) = _FileSettings.TypeColumnName) Then
+							oiFileType = _reader.GetValue(i).ToString()
+							_fileSettingsTypeColumnNameIndex = i
+						ElseIf (_reader.GetName(i) = _FileSettings.IDColumnName) Then
+							Dim value As Int32 = -1
+							Dim readerValue As String = _reader.GetValue(i).ToString()
+							Int32.TryParse(readerValue, value)
+							oiFileId = value
+							_fileSettingsIDColumnNameIndex = i
+						End If
+					Next
+				Else
+					If (_reader.GetName(_fileSettingsTypeColumnNameIndex) = _FileSettings.TypeColumnName) Then
+						oiFileType = _reader.GetValue(_fileSettingsTypeColumnNameIndex).ToString()
+					ElseIf (_reader.GetName(_fileSettingsIDColumnNameIndex) = _FileSettings.IDColumnName) Then
+						Dim value As Int32 = -1
+						Dim readerValue As String = _reader.GetValue(_fileSettingsIDColumnNameIndex).ToString()
+						Int32.TryParse(readerValue, value)
+						oiFileId = value
+					End If
+				End If
+			End If
+
+			If String.IsNullOrEmpty(oiFileType) Then
+				Return Nothing
+			End If
+
+			Dim isSupportedByViewer As Boolean? = GetSupportedByViewerData()
+
+			If isSupportedByViewer Is Nothing
+				Return New FileIDData(oiFileId, oiFileType)
+			Else 
+				Return New ExtendedFileIdData(oiFileType, isSupportedByViewer.Value)
+			End If
 		End Function
 
 		' Extracted from the middle of ReadArtifact() for testing purposes
@@ -553,6 +615,8 @@ Namespace kCura.WinEDDS.ImportExtension
 		Public Property FileSizeMapped() As Boolean
 		Public Property FileSizeColumn() As String
 		Public Property FileNameColumn As String
+		Public Property SupportedByViewerMapped As Boolean
+		Public Property SupportedByViewerColumn As String
 	End Class
 End Namespace
 
