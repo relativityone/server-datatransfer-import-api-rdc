@@ -59,6 +59,9 @@ Namespace kCura.WinEDDS
 		Public Property FileSizeMapped As Boolean
 		Public Property FileSizeColumn As String
 		Public Property FileNameColumn As String
+		Public Property SupportedByViewerMapped As Boolean
+		Public Property SupportedByViewerColumn As String
+
 		Public WriteOnly Property DisableUserSecurityCheck As Boolean
 			Set(ByVal value As Boolean)
 				_disableUserSecutityCheck = value
@@ -174,6 +177,8 @@ Namespace kCura.WinEDDS
 			_loadFileImporter.FileSizeColumn = FileSizeColumn
 			_loadFileImporter.FileSizeMapped = FileSizeMapped
 			_loadFileImporter.FileNameColumn = FileNameColumn
+			_loadFileImporter.SupportedByViewerMapped = SupportedByViewerMapped
+			_loadFileImporter.SupportedByViewerColumn = SupportedByViewerColumn
 			_loadFileImporter.LoadImportedFullTextFromServer = (Me.LoadImportedFullTextFromServer OrElse Config.LoadImportedFullTextFromServer)
 			Me.ProcessObserver.InputArgs = LoadFile.FilePath
 		End Sub

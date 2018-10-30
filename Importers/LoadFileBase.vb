@@ -63,6 +63,8 @@ Namespace kCura.WinEDDS
 		Public Property FileSizeMapped() As Boolean
 		Public Property FileSizeColumn() As String
 		Public Property FileNameColumn As String
+		Public Property SupportedByViewerMapped As Boolean
+		Public Property SupportedByViewerColumn As String
 #End Region
 
 #Region "Accessors"
@@ -143,6 +145,8 @@ Namespace kCura.WinEDDS
 			FileSizeMapped = args.FileSizeMapped
 			FileSizeColumn = args.FileSizeColumn
 			FileNameColumn = args.FileNameColumn
+			SupportedByViewerMapped = args.SupportedByViewerMapped
+			SupportedByViewerColumn = args.SupportedByViewerColumn
 			_timeZoneOffset = timezoneoffset
 			_autoDetect = autoDetect
 			_executionSource = executionSource
