@@ -154,19 +154,11 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property FileNameColumn As String
 
 		''' <summary>
-		''' To skip file supported by viewer checking, set this property to True.
-		''' </summary>
-		''' <value></value>
-		''' <returns></returns>
-		''' <remarks>If this value is True, <see cref="OIFileTypeColumnName">OIFileTypeColumnName</see> must be mapped.</remarks>
-		Public Property SupportedByViewerMapped As Boolean
-
-		''' <summary>
 		''' Indicates the column that contains the SupportedByViewer on the <see cref="SourceIDataReader.SourceData">SourceData</see> property.
 		''' </summary>
 		''' <value></value>
 		''' <returns></returns>
-		''' <remarks> To use this property, <see cref="SupportedByViewerMapped">SupportedByViewerMapped</see> must be set to True.</remarks>
+		''' <remarks> To use this property, <see cref="OIFileIdMapped">OIFileIdMapped</see> must be set to True and <see cref="OIFileIdColumnName">OIFileIdColumnName</see> must be empty.</remarks>
 		Public Property SupportedByViewerColumn As String
 
 		''' <summary>
