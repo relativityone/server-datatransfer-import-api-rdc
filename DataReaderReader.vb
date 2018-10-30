@@ -425,7 +425,7 @@ Namespace kCura.WinEDDS.ImportExtension
 
 			Dim isSupportedByViewer As Boolean? = Nothing
 			'Use IsSupportedByViewer mapping only when IDColumnName is not mapped, type id has precedence over this
-			If Not String.IsNullOrEmpty(_FileSettings.IDColumnName)
+			If String.IsNullOrEmpty(_FileSettings.IDColumnName)
 				isSupportedByViewer = GetSupportedByViewerData()
 			End If
 
