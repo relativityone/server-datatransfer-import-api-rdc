@@ -6,7 +6,7 @@ Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.OI.FileID
 Imports kCura.Utility.Extensions
 Imports kCura.Windows.Process
-Imports kCura.WinEDDS.Helpers
+Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS.TApi
 Imports Polly
 Imports Relativity
@@ -1459,19 +1459,7 @@ Namespace kCura.WinEDDS
 			Next
 
 			If _artifactTypeID = Relativity.ArtifactType.Document Then
-				If _filePathColumnIndex <> -1 AndAlso mdoc.UploadFile AndAlso mdoc.IndexFileInDB Then
-					Dim boolString As String = "0"
-					If Me.IsSupportedRelativityFileType(mdoc.FileIdData) Then boolString = "1"
-					OutputFileWriter.OutputNativeFileWriter.Write(boolString & BulkLoadFileFieldDelimiter)
-					Dim fieldType As String = mdoc.GetFileType()
-
-					OutputFileWriter.OutputNativeFileWriter.Write(fieldType & BulkLoadFileFieldDelimiter)
-					OutputFileWriter.OutputNativeFileWriter.Write("1" & BulkLoadFileFieldDelimiter)
-				Else
-					OutputFileWriter.OutputNativeFileWriter.Write("0" & BulkLoadFileFieldDelimiter)
-					OutputFileWriter.OutputNativeFileWriter.Write(BulkLoadFileFieldDelimiter)
-					OutputFileWriter.OutputNativeFileWriter.Write("0" & BulkLoadFileFieldDelimiter)
-				End If
+				WriteDocumentNativeInfo(mdoc)
 			End If
 
 			'_fullTextColumnMapsToFileLocation and chosenEncoding indicate that extracted text is being mapped
@@ -1502,6 +1490,33 @@ Namespace kCura.WinEDDS
 				OutputFileWriter.OutputDataGridFileWriter.Write(vbCrLf)
 			End If
 		End Sub
+
+		Private Sub WriteDocumentNativeInfo(mdoc As MetaDocument)
+			If _filePathColumnIndex <> -1 AndAlso mdoc.UploadFile AndAlso mdoc.IndexFileInDB Then
+				Dim supportedByViewerProvider As IHasSupportedByViewer = TryCast(mdoc.FileIdData, IHasSupportedByViewer)
+
+				If supportedByViewerProvider Is Nothing
+					WriteDocumentNativeInfo(Me.IsSupportedRelativityFileType(mdoc.FileIdData), mdoc.GetFileType(), True)
+				Else 
+					WriteDocumentNativeInfo(supportedByViewerProvider.SupportedByViewer(), mdoc.GetFileType(), True)
+				End If				
+			Else
+				WriteDocumentNativeInfo(False, String.Empty, False)
+			End If
+		End Sub
+
+		Private Sub WriteDocumentNativeInfo(supportedByViewer As Boolean, relativityNativeType As String, hasNative As Boolean)
+			Dim supportedByViewerAsString As String = ConvertToString(supportedByViewer)
+			Dim hasNativeAsString As String = ConvertToString(hasNative)
+
+			OutputFileWriter.OutputNativeFileWriter.Write(supportedByViewerAsString & BulkLoadFileFieldDelimiter)	'SupportedByViewer
+			OutputFileWriter.OutputNativeFileWriter.Write(relativityNativeType & BulkLoadFileFieldDelimiter)		'RelativityNativeType
+			OutputFileWriter.OutputNativeFileWriter.Write(hasNativeAsString & BulkLoadFileFieldDelimiter)			'HasNative
+		End Sub
+
+		Private Function ConvertToString(booleanValue As Boolean) As String
+			Return If(booleanValue, "1", "0")
+		End Function
 
 
 		Private Sub WriteDocumentField(ByRef chosenEncoding As System.Text.Encoding, field As Api.ArtifactField, ByVal outputWriter As System.IO.StreamWriter, ByVal fileBasedfullTextColumn As Boolean, ByVal delimiter As String, ByVal artifactTypeID As Int32, ByVal extractedTextEncoding As System.Text.Encoding)
@@ -2082,7 +2097,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub IoWarningHandler(ByVal e As kCura.Utility.RobustIoReporter.IoWarningEventArgs)
-			Dim ioWarningEventArgs As New IoWarningEventArgs(e.Message, e.CurrentLineNumber)
+			Dim ioWarningEventArgs As New TApi.IoWarningEventArgs(e.Message, e.CurrentLineNumber)
 			IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(ioWarningEventArgs)
 		End Sub
 
