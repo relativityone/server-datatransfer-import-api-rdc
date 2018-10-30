@@ -135,13 +135,11 @@ Namespace kCura.Relativity.DataReaderClient
 				End If
 				process.OIFileIdMapped = Settings.OIFileIdMapped
 				process.OIFileTypeColumnName = Settings.OIFileTypeColumnName
+				process.SupportedByViewerColumn = Settings.SupportedByViewerColumn
 				process.FileSizeMapped = Settings.FileSizeMapped
 				process.FileSizeColumn = Settings.FileSizeColumn
 				process.FileNameColumn = Settings.FileNameColumn
 				process.TimeKeeperManager = Settings.TimeKeeperManager
-
-				process.SupportedByViewerMapped = Settings.SupportedByViewerMapped
-				process.SupportedByViewerColumn = Settings.SupportedByViewerColumn
 
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.LoadFile = CreateLoadFile(Settings)
@@ -249,7 +247,6 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.FileSizeColumn = loadFileTemp.FileSizeColumn
 			tempLoadFile.FileSizeMapped = loadFileTemp.FileSizeMapped
 			tempLoadFile.FileNameColumn = loadFileTemp.FileNameColumn
-			tempLoadFile.SupportedByViewerMapped = loadFileTemp.SupportedByViewerMapped
 			tempLoadFile.SupportedByViewerColumn = loadFileTemp.SupportedByViewerColumn
 			Dim tempIDField As WinEDDS.DocumentField = SelectIdentifier(_docIDFieldCollection, Not clientSettings.DisableControlNumberCompatibilityMode, _controlNumberFieldName, clientSettings.SelectedIdentifierFieldName)
 			If tempIDField Is Nothing Then
