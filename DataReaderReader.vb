@@ -33,14 +33,14 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private _fileSupportedByViewerColumnNameIndex As Integer
 
 		Public Sub New(ByVal args As DataReaderReaderInitializationArgs, ByVal fieldMap As kCura.WinEDDS.LoadFile, ByVal reader As System.Data.IDataReader)
-			Me.New(args, fieldMap, reader, New FileSettings() With {.OIFileIdMapped = False, .FileSizeMapped = False, .FileNameColumn = Nothing, .SupportedByViewerMapped = False})
+			Me.New(args, fieldMap, reader, New FileSettings() With {.OIFileIdMapped = False, .FileSizeMapped = False, .FileNameColumn = Nothing})
 		End Sub
 
 		Public Sub New(ByVal args As DataReaderReaderInitializationArgs, ByVal fieldMap As kCura.WinEDDS.LoadFile, ByVal reader As System.Data.IDataReader, fileSettings As FileSettings)
 			_reader = reader
 
 			If (fileSettings Is Nothing) Then
-				fileSettings = New FileSettings() With {.FileNameColumn = Nothing, .FileSizeColumn = Nothing, .FileSizeMapped = False, .IDColumnName = Nothing, .OIFileIdMapped = False, .TypeColumnName = Nothing, .SupportedByViewerMapped = False}
+				fileSettings = New FileSettings() With {.FileNameColumn = Nothing, .FileSizeColumn = Nothing, .FileSizeMapped = False, .IDColumnName = Nothing, .OIFileIdMapped = False, .TypeColumnName = Nothing}
 			End If
 			_FileSettings = fileSettings
 
@@ -353,26 +353,29 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Private Function GetSupportedByViewerData() As Boolean?
 
+			If String.IsNullOrEmpty(_FileSettings.SupportedByViewerColumn)
+				Return Nothing
+			End If
+
 			Dim supportedByViewer As Nullable(Of Boolean) = Nothing
-			If _FileSettings.SupportedByViewerMapped Then
-				If _fileSupportedByViewerColumnNameIndex = -1 Then
-					For i As Integer = 0 To _reader.FieldCount - 1
-						If (_reader.GetName(i) = _FileSettings.SupportedByViewerColumn) Then
-							Dim value As Boolean = False
-							Dim readerValue As String = _reader.GetValue(i).ToString()
-							Boolean.TryParse(readerValue, value)
-							supportedByViewer = value
-							_fileSupportedByViewerColumnNameIndex = i
-							Exit For
-						End If
-					Next
-				Else
-					If (_reader.GetName(_fileSupportedByViewerColumnNameIndex) = _FileSettings.SupportedByViewerColumn) Then
+
+			If _fileSupportedByViewerColumnNameIndex = -1 Then
+				For i As Integer = 0 To _reader.FieldCount - 1
+					If (_reader.GetName(i) = _FileSettings.SupportedByViewerColumn) Then
 						Dim value As Boolean = False
-						Dim readerValue As String = _reader.GetValue(_fileSupportedByViewerColumnNameIndex).ToString()
+						Dim readerValue As String = _reader.GetValue(i).ToString()
 						Boolean.TryParse(readerValue, value)
 						supportedByViewer = value
+						_fileSupportedByViewerColumnNameIndex = i
+						Exit For
 					End If
+				Next
+			Else
+				If (_reader.GetName(_fileSupportedByViewerColumnNameIndex) = _FileSettings.SupportedByViewerColumn) Then
+					Dim value As Boolean = False
+					Dim readerValue As String = _reader.GetValue(_fileSupportedByViewerColumnNameIndex).ToString()
+					Boolean.TryParse(readerValue, value)
+					supportedByViewer = value
 				End If
 			End If
 
@@ -385,31 +388,34 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Private Function GetFieldIdData() As FileIDData
 
+			If Not _FileSettings.OIFileIdMapped
+				Return Nothing
+			End If
+
 			Dim oiFileType As String = ""
 			Dim oiFileId As Int32
-			If _FileSettings.OIFileIdMapped Then
-				If (_fileSettingsTypeColumnNameIndex = -1 Or _fileSettingsIDColumnNameIndex = -1) Then
-					For i As Integer = 0 To _reader.FieldCount - 1
-						If (_reader.GetName(i) = _FileSettings.TypeColumnName) Then
-							oiFileType = _reader.GetValue(i).ToString()
-							_fileSettingsTypeColumnNameIndex = i
-						ElseIf (_reader.GetName(i) = _FileSettings.IDColumnName) Then
-							Dim value As Int32 = -1
-							Dim readerValue As String = _reader.GetValue(i).ToString()
-							Int32.TryParse(readerValue, value)
-							oiFileId = value
-							_fileSettingsIDColumnNameIndex = i
-						End If
-					Next
-				Else
-					If (_reader.GetName(_fileSettingsTypeColumnNameIndex) = _FileSettings.TypeColumnName) Then
-						oiFileType = _reader.GetValue(_fileSettingsTypeColumnNameIndex).ToString()
-					ElseIf (_reader.GetName(_fileSettingsIDColumnNameIndex) = _FileSettings.IDColumnName) Then
+			
+			If (_fileSettingsTypeColumnNameIndex = -1 Or _fileSettingsIDColumnNameIndex = -1) Then
+				For i As Integer = 0 To _reader.FieldCount - 1
+					If (_reader.GetName(i) = _FileSettings.TypeColumnName) Then
+						oiFileType = _reader.GetValue(i).ToString()
+						_fileSettingsTypeColumnNameIndex = i
+					ElseIf (_reader.GetName(i) = _FileSettings.IDColumnName) Then
 						Dim value As Int32 = -1
-						Dim readerValue As String = _reader.GetValue(_fileSettingsIDColumnNameIndex).ToString()
+						Dim readerValue As String = _reader.GetValue(i).ToString()
 						Int32.TryParse(readerValue, value)
 						oiFileId = value
+						_fileSettingsIDColumnNameIndex = i
 					End If
+				Next
+			Else
+				If (_reader.GetName(_fileSettingsTypeColumnNameIndex) = _FileSettings.TypeColumnName) Then
+					oiFileType = _reader.GetValue(_fileSettingsTypeColumnNameIndex).ToString()
+				ElseIf (_reader.GetName(_fileSettingsIDColumnNameIndex) = _FileSettings.IDColumnName) Then
+					Dim value As Int32 = -1
+					Dim readerValue As String = _reader.GetValue(_fileSettingsIDColumnNameIndex).ToString()
+					Int32.TryParse(readerValue, value)
+					oiFileId = value
 				End If
 			End If
 
@@ -417,7 +423,11 @@ Namespace kCura.WinEDDS.ImportExtension
 				Return Nothing
 			End If
 
-			Dim isSupportedByViewer As Boolean? = GetSupportedByViewerData()
+			Dim isSupportedByViewer As Boolean? = Nothing
+			'Use IsSupportedByViewer mapping only when IDColumnName is not mapped, type id has precedence over this
+			If Not String.IsNullOrEmpty(_FileSettings.IDColumnName)
+				isSupportedByViewer = GetSupportedByViewerData()
+			End If
 
 			If isSupportedByViewer Is Nothing
 				Return New FileIDData(oiFileId, oiFileType)
@@ -615,7 +625,6 @@ Namespace kCura.WinEDDS.ImportExtension
 		Public Property FileSizeMapped() As Boolean
 		Public Property FileSizeColumn() As String
 		Public Property FileNameColumn As String
-		Public Property SupportedByViewerMapped As Boolean
 		Public Property SupportedByViewerColumn As String
 	End Class
 End Namespace

@@ -53,7 +53,6 @@ Namespace kCura.WinEDDS.ImportExtension
 			LoadFile.FileSizeColumn = FileSizeColumn
 			LoadFile.FileSizeMapped = FileSizeMapped
 			LoadFile.FileNameColumn = FileNameColumn
-			LoadFile.SupportedByViewerMapped = SupportedByViewerMapped
 			LoadFile.SupportedByViewerColumn = SupportedByViewerColumn
 			
             'Avoid initializing the Artifact Reader in the constructor because it calls back to a virtual method (GetArtifactReader).  
