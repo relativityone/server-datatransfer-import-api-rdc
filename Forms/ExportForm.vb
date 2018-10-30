@@ -5,7 +5,6 @@ Imports kCura.Vendor.Castle.Core.Internal
 Imports FileNaming.CustomFileNaming
 Imports kCura.EDDS.WinForm
 Imports kCura.EDDS.WinForm.Controls
->>>>>>>>> Temporary merge branch 2
 Imports kCura.Windows.Forms
 Imports kCura.Windows.Forms.Specialized
 
