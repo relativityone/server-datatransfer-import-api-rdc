@@ -120,9 +120,20 @@ Namespace kCura.WinEDDS.ImportExtension
 
                         Dim isValidItemName As Integer = _sourceReader.GetOrdinal(columnName)
 
-                        'Do not add to field map if field.DisplayName is  _settings.FolderStructureContainedInColumn or _settings.NativeFilePathColumn
-                        If _settings.FolderStructureContainedInColumn Is Nothing Then                   'AndAlso _settings.NativeFilePathColumn Is Nothing Then
-                            _settings.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(New kCura.WinEDDS.DocumentField(field.DisplayName, field.ArtifactID, field.FieldTypeID, field.FieldCategoryID, field.CodeTypeID, field.MaxLength, field.AssociativeArtifactTypeID, field.UseUnicodeEncoding, field.ImportBehavior, field.EnableDataGrid), columnIndex))
+                        If _settings.FolderStructureContainedInColumn Is Nothing Then
+                            _settings.FieldMap.Add(
+                                New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(
+                                    New kCura.WinEDDS.DocumentField(field.DisplayName,
+                                                                    field.ArtifactID,
+                                                                    field.FieldTypeID,
+                                                                    field.FieldCategoryID,
+                                                                    field.CodeTypeID,
+                                                                    field.MaxLength,
+                                                                    field.AssociativeArtifactTypeID,
+                                                                    field.UseUnicodeEncoding,
+                                                                    field.ImportBehavior,
+                                                                    field.EnableDataGrid),
+                                    columnIndex))
                         Else
                             Dim s_FolderStructureContainedInColumn As String
                             Dim s_NativeFilePathColumn As String
@@ -139,8 +150,20 @@ Namespace kCura.WinEDDS.ImportExtension
                                 s_NativeFilePathColumn = _settings.NativeFilePathColumn.ToLower
                             End If
 
-                            If Not field.DisplayName = s_FolderStructureContainedInColumn Then                      'then AndAlso Not field.DisplayName = s_NativeFilePathColumn Then
-                                _settings.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(New kCura.WinEDDS.DocumentField(field.DisplayName, field.ArtifactID, field.FieldTypeID, field.FieldCategoryID, field.CodeTypeID, field.MaxLength, field.AssociativeArtifactTypeID, field.UseUnicodeEncoding, field.ImportBehavior, field.EnableDataGrid), columnIndex))
+                            If Not field.DisplayName = s_FolderStructureContainedInColumn Then
+                                _settings.FieldMap.Add(
+                                    New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(
+                                        New kCura.WinEDDS.DocumentField(field.DisplayName,
+                                                                        field.ArtifactID,
+                                                                        field.FieldTypeID,
+                                                                        field.FieldCategoryID,
+                                                                        field.CodeTypeID,
+                                                                        field.MaxLength,
+                                                                        field.AssociativeArtifactTypeID,
+                                                                        field.UseUnicodeEncoding,
+                                                                        field.ImportBehavior,
+                                                                        field.EnableDataGrid),
+                                        columnIndex))
                             End If
                         End If
 
@@ -150,9 +173,16 @@ Namespace kCura.WinEDDS.ImportExtension
                 End Try
                 columnIndex = columnIndex + 1
             Next
-            Dim settings As New FileSettings() With {.IDColumnName = OIFileIdColumnName, .OIFileIdMapped = OIFileIdMapped, .TypeColumnName = OIFileTypeColumnName, .FileSizeColumn = FileSizeColumn, .FileSizeMapped = FileSizeMapped, .FileNameColumn = FileNameColumn}
+            Dim fileSettings As New FileSettings() With {
+                    .IDColumnName = OIFileIdColumnName,
+                    .OIFileIdMapped = OIFileIdMapped,
+                    .TypeColumnName = OIFileTypeColumnName,
+                    .FileSizeColumn = FileSizeColumn,
+                    .FileSizeMapped = FileSizeMapped,
+                    .FileNameColumn = FileNameColumn
+                    }
             Dim initalizationArgs As New DataReaderReaderInitializationArgs(collection, _settings.ArtifactTypeID) With {.TemporaryLocalDirectory = TemporaryLocalDirectory}
-            Dim retval As New DataReaderReader(initalizationArgs, _settings, _sourceReader, settings)
+            Dim retval As New DataReaderReader(initalizationArgs, _settings, _sourceReader, fileSettings)
             Return retval
         End Function
 

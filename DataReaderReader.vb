@@ -312,8 +312,8 @@ Namespace kCura.WinEDDS.ImportExtension
 									Dim newLocation As String
 									Try
 										'If _KCURAMARKERFILENAME is a column in the table, use it for the filename.  If not, use original filename.
-										Dim tempString As String = _reader.Item(_KCURAMARKERFILENAME).ToString
-										newLocation = System.IO.Path.Combine(_tempLocalDirectory, _reader.Item(_KCURAMARKERFILENAME).ToString())
+										Dim kcuraMarkerFilename As String = _reader.Item(_KCURAMARKERFILENAME).ToString
+										newLocation = System.IO.Path.Combine(_tempLocalDirectory, kcuraMarkerFilename)
 									Catch ex As Exception
 										newLocation = System.IO.Path.Combine(_tempLocalDirectory, System.IO.Path.GetFileName(field.ValueAsString))
 									End Try
@@ -375,10 +375,9 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Sub
 
 		Private Sub DisplayFieldMap(ByVal sourceData As System.Data.IDataReader, ByVal destination As kCura.WinEDDS.Api.ArtifactFieldCollection)
-			'TODO: fix thsi display.  something with uppercase/lowercase, I think.
-			'Display a list field mappings and unmapped fields
+            'Display a list field mappings and unmapped fields
 
-			Const SPECIALFILENAME As String = "*Filename*"
+            Const SPECIALFILENAME As String = "*Filename*"
 			Const NATIVEFILEPATH As String = "*NativeFilePath*"
 			Const NOTMAPPED As String = "NOT MAPPED (Target field not found)"
 
