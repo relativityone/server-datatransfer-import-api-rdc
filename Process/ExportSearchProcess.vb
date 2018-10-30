@@ -64,7 +64,7 @@ Namespace kCura.WinEDDS
 			MyBase.Initialize()
 			_warningCount = 0
 			_errorCount = 0
-			_searchExporter = New Exporter(Me.ExportFile, Me.ProcessController, New Service.Export.WebApiServiceFactory(Me.ExportFile),
+			_searchExporter = New ExtendedExporter(TryCast(Me.ExportFile, ExtendedExportFile), Me.ProcessController, New Service.Export.WebApiServiceFactory(Me.ExportFile),
 											_loadFileHeaderFormatterFactory, _exportConfig) With {.InteractionManager = UserNotification}
 			If Not UserNotificationFactory Is Nothing Then
 				Dim un As IUserNotification = UserNotificationFactory(_searchExporter)
