@@ -210,6 +210,12 @@ Namespace kCura.EDDS.WinForm.Forms
 		End Sub
 
 		Protected Function GetIndexOfBestMatchFromList(items As ComboBox.ObjectCollection, text As String) As Integer
+			If items Is Nothing Then
+				Throw New ArgumentException("The list is not initialized!")
+			End If
+			If items.Count = 0 Then
+				Throw New ArgumentException("The list cannot be empty!")
+			End If
 			Dim bestItems = items.Cast(Of ISelection).Where(Function(x) x.DisplayName.ToLower.StartsWith(text.ToLower))
 			If bestItems.Count = 0 Then
 				Return 0
