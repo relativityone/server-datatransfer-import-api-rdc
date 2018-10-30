@@ -236,6 +236,7 @@
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
+    <Reference Include="System.Collections" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -341,6 +342,7 @@
     <Compile Include="Exporters\Container\ContainerFactoryProvider.vb" />
     <Compile Include="Exporters\Container\IContainerFactory.vb" />
     <Compile Include="Exporters\ExportConfig.vb" />
+    <Compile Include="Exporters\ExtendedObjectExportInfo.vb" />
     <Compile Include="Exporters\IBatch.vb" />
     <Compile Include="Exporters\IErrorFile.vb" />
     <Compile Include="Exporters\IExportConfig.vb" />
@@ -399,7 +401,14 @@
     <Compile Include="FileDownloader.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="FileNaming\CustomFileNaming\CustomFileNameProvider.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\FieldFileNamePartProvider.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\FileNamePartProvider.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\FileNamePartProviderContainer.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\SeparatorFileNamePartProvider.vb" />
     <Compile Include="FileNaming\IdentifierExportFileNameProvider.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\IFileNamePartProvider.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\IFileNamePartProviderContainer.vb" />
     <Compile Include="FileNaming\IFileNameProvider.vb" />
     <Compile Include="FileNaming\ProductionExportFileNameProvider.vb" />
     <Compile Include="FileNaming\FileNameProviderContainer.vb" />

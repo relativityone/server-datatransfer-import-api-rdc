@@ -10,6 +10,7 @@ Imports Castle.Windsor
 Imports kCura.Windows.Process
 Imports kCura.WinEDDS.Container
 Imports kCura.WinEDDS.Exporters.Validator
+Imports kCura.WinEDDS.FileNaming.CustomFileNaming
 Imports kCura.WinEDDS.LoadFileEntry
 Imports kCura.WinEDDS.Service.Export
 
@@ -1119,7 +1120,7 @@ Namespace kCura.WinEDDS
 			Dim now As Long = System.DateTime.Now.Ticks
 
 			SyncLock _syncLock
-				If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then				
+				If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
 					_lastStatusMessageTs = now
 					_lastDocumentsExportedCountReported = Me.DocumentsExported
 					RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line, e, _lastStatisticsSnapshot, Statistics))
@@ -1212,10 +1213,12 @@ Namespace kCura.WinEDDS
 		Private Function BuildFileNameProvider() As IFileNameProvider
 			Dim identifierExportFileNameProvider As IFileNameProvider = New IdentifierExportFileNameProvider(Settings)
 			Dim productionExportFileNameProvider As IFileNameProvider = New ProductionExportFileNameProvider(Settings, NameTextAndNativesAfterBegBates)
+			Dim customExportFileNameProvider As IFileNameProvider = New CustomFileNameProvider(Settings.CustomFileNaming.DescriptorParts().ToList(), New FileNamePartProviderContainer())
 			Dim fileNameProvidersDictionary As New Dictionary(Of ExportNativeWithFilenameFrom, IFileNameProvider) From
 				{
 					{ExportNativeWithFilenameFrom.Identifier, identifierExportFileNameProvider},
-					{ExportNativeWithFilenameFrom.Production, productionExportFileNameProvider}
+					{ExportNativeWithFilenameFrom.Production, productionExportFileNameProvider},
+					{ExportNativeWithFilenameFrom.Custom, customExportFileNameProvider}
 				}
 
 			Return New FileNameProviderContainer(Settings, fileNameProvidersDictionary)
