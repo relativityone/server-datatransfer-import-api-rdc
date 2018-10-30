@@ -1639,7 +1639,6 @@ Namespace kCura.EDDS.WinForm
                 Dim userManager As New kCura.WinEDDS.Service.UserManager(Await GetCredentialsAsync(), _CookieContainer)
                 userManager.Logout()
             Catch ex As Exception
-
             End Try
 
         End Function

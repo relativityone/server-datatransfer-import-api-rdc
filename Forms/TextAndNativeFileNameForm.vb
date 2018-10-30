@@ -59,6 +59,7 @@ Namespace kCura.EDDS.WinForm.Forms
 		End Sub
 
 		Private Sub PopulateControls(selection As IList(Of CustomFileNameSelectionPart))
+			_removeFieldButton.Visible = False
 			_firstFieldTextBox.Text = _firstField.DisplayName
 			If selection Is Nothing Then
 				Return
@@ -176,7 +177,7 @@ Namespace kCura.EDDS.WinForm.Forms
 		Private Sub ToggleFieldCustomTextBox(comboBox As ComboBox, textBox As TextBox)
 			Dim textBoxVisible = False
 			Dim selectedItem = TryCast(comboBox.SelectedItem, FieldSelection)
-			If selectedItem.DisplayName = CustomTextOption Then
+			If selectedItem IsNot Nothing AndAlso selectedItem.DisplayName = CustomTextOption Then
 				textBoxVisible = True
 			End If
 			textBox.Visible = textBoxVisible
