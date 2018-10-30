@@ -342,6 +342,8 @@
     <Compile Include="Exporters\Container\ContainerFactoryProvider.vb" />
     <Compile Include="Exporters\Container\IContainerFactory.vb" />
     <Compile Include="Exporters\ExportConfig.vb" />
+    <Compile Include="Exporters\ExtendedExporter.vb" />
+    <Compile Include="Exporters\ExtendedExportFile.vb" />
     <Compile Include="Exporters\ExtendedObjectExportInfo.vb" />
     <Compile Include="Exporters\IBatch.vb" />
     <Compile Include="Exporters\IErrorFile.vb" />
