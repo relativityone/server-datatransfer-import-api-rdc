@@ -247,10 +247,10 @@ Namespace kCura.EDDS.WinForm.Forms
 			Close()
 		End Sub
 
-		Private Interface ISelection
+		Protected Interface ISelection
 			Property DisplayName() As String
 		End Interface
-		Private Class FieldSelection
+		Protected Class FieldSelection
 			Implements ISelection
 			Public Sub New(displayName As String, id As Integer)
 				Me.DisplayName = displayName
@@ -262,7 +262,7 @@ Namespace kCura.EDDS.WinForm.Forms
 
 		End Class
 
-		Private Class SeparatorSelection
+		Protected Class SeparatorSelection
 			Implements ISelection
 			Public Sub New(displayName As String, value As String)
 				Me.DisplayName = displayName
