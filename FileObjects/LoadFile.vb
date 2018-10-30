@@ -41,7 +41,6 @@ Namespace kCura.WinEDDS
 		Public FileNameColumn As String
 		Public MoveDocumentsInAppendOverlayMode As Boolean
 		Public OverlayBehavior As FieldOverlayBehavior?
-		Public SupportedByViewerMapped As Boolean
 		Public SupportedByViewerColumn As String
 		Public Billable As Boolean = True
 
