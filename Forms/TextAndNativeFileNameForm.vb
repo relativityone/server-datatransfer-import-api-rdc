@@ -7,7 +7,7 @@ Namespace kCura.EDDS.WinForm.Forms
 
 		Private Const CustomTextOption As String = "Custom Text..."
 		Private Const FieldLimit = 3
-
+		Private Const NumberOfFieldsInFieldsGroup = 3
 		Private ReadOnly AllowedFieldTypes As FieldTypeHelper.FieldType() = New FieldTypeHelper.FieldType() {
 			FieldTypeHelper.FieldType.Varchar,
 			FieldTypeHelper.FieldType.Date,
@@ -29,7 +29,7 @@ Namespace kCura.EDDS.WinForm.Forms
 		Private _availableFields As List(Of FieldSelection)
 		Private _fieldControls As List(Of SingleFieldControls)
 
-		Private ReadOnly Property NumberOfFields As Integer
+		Private ReadOnly Property NumberOfFieldsGroups As Integer
 			Get
 				Return _fieldControls.Count
 			End Get
@@ -82,7 +82,7 @@ Namespace kCura.EDDS.WinForm.Forms
 		Public Function GetSelection() As IList(Of CustomFileNameSelectionPart)
 			Dim selection = New List(Of CustomFileNameSelectionPart)
 			selection.Add(New CustomFileNameSelectionPart(_firstField.ID))
-			For i = 1 To (NumberOfFields - 1)
+			For i = 1 To (NumberOfFieldsGroups - 1)
 				Dim fieldControls = _fieldControls(i)
 				Dim selectedField = TryCast(fieldControls.FieldComboBox.SelectedItem, FieldSelection)
 				Dim selectedSeparator = TryCast(fieldControls.SeparatorComboBox.SelectedItem, SeparatorSelection)
@@ -98,7 +98,7 @@ Namespace kCura.EDDS.WinForm.Forms
 		End Function
 
 		Private Sub AddField()
-			Dim fieldComboBox As ComboBox = AddFieldComboBox(NumberOfFields)
+			Dim fieldComboBox As ComboBox = AddFieldComboBox(NumberOfFieldsGroups)
 			Dim separatorComboBox As ComboBox = AddSeparatorComboBox()
 			Dim customTextBox As TextBox = AddCustomTextBox()
 			Dim singleFieldControls = New SingleFieldControls(fieldComboBox, separatorComboBox, customTextBox)
@@ -107,12 +107,13 @@ Namespace kCura.EDDS.WinForm.Forms
 		End Sub
 
 		Private Function AddFieldComboBox(fieldNumber As Integer) As ComboBox
+			Const fieldComboBoxOffset = 2
 			Dim fieldComboBox = New ComboBox()
 			fieldComboBox.DropDownStyle = ComboBoxStyle.DropDown
 			fieldComboBox.FormattingEnabled = True
-			fieldComboBox.Location = New Point(252 * NumberOfFields + 14, 13)
+			fieldComboBox.Location = New Point(252 * NumberOfFieldsGroups + 14, 13)
 			fieldComboBox.Size = New Size(120, 21)
-			fieldComboBox.TabIndex = 2 + 3 * NumberOfFields
+			fieldComboBox.TabIndex = fieldComboBoxOffset + NumberOfFieldsInFieldsGroup * NumberOfFieldsGroups
 			fieldComboBox.Tag = fieldNumber
 			Controls.Add(fieldComboBox)
 			fieldComboBox.DataSource = _availableFields.ToList()
@@ -127,12 +128,13 @@ Namespace kCura.EDDS.WinForm.Forms
 		End Function
 
 		Private Function AddSeparatorComboBox() As ComboBox
+			Const separatorComboBoxOffset = 1
 			Dim separatorComboBox = New ComboBox()
 			separatorComboBox.DropDownStyle = ComboBoxStyle.DropDown
 			separatorComboBox.FormattingEnabled = True
-			separatorComboBox.Location = New Point(252 * NumberOfFields - 112, 13)
+			separatorComboBox.Location = New Point(252 * NumberOfFieldsGroups - 112, 13)
 			separatorComboBox.Size = New Size(120, 21)
-			separatorComboBox.TabIndex = 1 + 3 * NumberOfFields
+			separatorComboBox.TabIndex = separatorComboBoxOffset + NumberOfFieldsInFieldsGroup * NumberOfFieldsGroups
 			Controls.Add(separatorComboBox)
 			separatorComboBox.DataSource = Separators.ToList()
 			separatorComboBox.DisplayMember = "DisplayName"
@@ -145,10 +147,11 @@ Namespace kCura.EDDS.WinForm.Forms
 		End Function
 
 		Private Function AddCustomTextBox() As TextBox
+			Const customTextBoxOffset = 3
 			Dim customTextBox = New TextBox()
-			customTextBox.Location = New Point(252 * NumberOfFields + 14, 41)
+			customTextBox.Location = New Point(252 * NumberOfFieldsGroups + 14, 41)
 			customTextBox.Size = New Size(120, 20)
-			customTextBox.TabIndex = 3 + 3 * NumberOfFields
+			customTextBox.TabIndex = customTextBoxOffset + NumberOfFieldsInFieldsGroup * NumberOfFieldsGroups
 			Controls.Add(customTextBox)
 			Return customTextBox
 		End Function
@@ -166,19 +169,19 @@ Namespace kCura.EDDS.WinForm.Forms
 		End Sub
 
 		Private Sub SetupAddAndRemoveButtons()
-			If NumberOfFields = 1 Then
+			If NumberOfFieldsGroups = 1 Then
 				_addFieldButton.Visible = True
-				_addFieldButton.Location = New Point(252 * NumberOfFields - 112, 12)
+				_addFieldButton.Location = New Point(252 * NumberOfFieldsGroups - 112, 12)
 				_removeFieldButton.Visible = False
-			ElseIf NumberOfFields = FieldLimit Then
+			ElseIf NumberOfFieldsGroups = FieldLimit Then
 				_addFieldButton.Visible = False
 				_removeFieldButton.Visible = True
-				_removeFieldButton.Location = New Point(252 * NumberOfFields - 112, 12)
+				_removeFieldButton.Location = New Point(252 * NumberOfFieldsGroups - 112, 12)
 			Else
 				_addFieldButton.Visible = True
-				_addFieldButton.Location = New Point(252 * NumberOfFields - 112, 12)
+				_addFieldButton.Location = New Point(252 * NumberOfFieldsGroups - 112, 12)
 				_removeFieldButton.Visible = True
-				_removeFieldButton.Location = New Point(252 * NumberOfFields - 81, 12)
+				_removeFieldButton.Location = New Point(252 * NumberOfFieldsGroups - 81, 12)
 			End If
 		End Sub
 
