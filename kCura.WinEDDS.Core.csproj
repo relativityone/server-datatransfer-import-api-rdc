@@ -145,7 +145,6 @@
     </Compile>
     <Compile Include="Export\ExportFileFormatter.cs" />
     <Compile Include="Export\ExportFileFormatterBase.cs" />
-    <Compile Include="Export\ExtendedExporter.cs" />
     <Compile Include="Export\HtmlExportFileFormatter.cs" />
     <Compile Include="Export\FieldNameProvider.cs" />
     <Compile Include="Export\ExportFileFormatterFactory.cs" />
@@ -417,7 +416,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>LogMessages.resx</DependentUpon>
     </Compile>
-    <Compile Include="Model\Export\ExtendedExportFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\kCura\kCura.OI.FileID\kCura.OI.FileID.vbproj">
