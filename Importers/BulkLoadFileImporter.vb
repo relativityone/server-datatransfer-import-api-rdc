@@ -1499,7 +1499,7 @@ Namespace kCura.WinEDDS
 					WriteDocumentNativeInfo(Me.IsSupportedRelativityFileType(mdoc.FileIdData), mdoc.GetFileType(), True)
 				Else 
 					WriteDocumentNativeInfo(supportedByViewerProvider.SupportedByViewer(), mdoc.GetFileType(), True)
-				End If				
+				End If
 			Else
 				WriteDocumentNativeInfo(False, String.Empty, False)
 			End If
