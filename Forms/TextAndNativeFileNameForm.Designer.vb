@@ -78,7 +78,6 @@
 			'
 			'TextAndNativeFileNameForm
 			'
-			Me.AcceptButton = Me._applyButton
 			Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit
 			Me.CancelButton = Me._cancelButton
 			Me.ClientSize = New System.Drawing.Size(681, 102)

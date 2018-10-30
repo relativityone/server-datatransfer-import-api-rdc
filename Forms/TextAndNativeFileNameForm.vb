@@ -7,7 +7,7 @@ Namespace kCura.EDDS.WinForm.Forms
 
 		Private Const CustomTextOption As String = "Custom Text..."
 		Private Const FieldLimit = 3
-
+		Private Const NumberOfFieldsInFieldsGroup = 3
 		Private ReadOnly AllowedFieldTypes As FieldTypeHelper.FieldType() = New FieldTypeHelper.FieldType() {
 			FieldTypeHelper.FieldType.Varchar,
 			FieldTypeHelper.FieldType.Date,
@@ -29,7 +29,7 @@ Namespace kCura.EDDS.WinForm.Forms
 		Private _availableFields As List(Of FieldSelection)
 		Private _fieldControls As List(Of SingleFieldControls)
 
-		Private ReadOnly Property NumberOfFields As Integer
+		Private ReadOnly Property NumberOfFieldsGroups As Integer
 			Get
 				Return _fieldControls.Count
 			End Get
@@ -82,7 +82,7 @@ Namespace kCura.EDDS.WinForm.Forms
 		Public Function GetSelection() As IList(Of CustomFileNameSelectionPart)
 			Dim selection = New List(Of CustomFileNameSelectionPart)
 			selection.Add(New CustomFileNameSelectionPart(_firstField.ID))
-			For i = 1 To (NumberOfFields - 1)
+			For i = 1 To (NumberOfFieldsGroups - 1)
 				Dim fieldControls = _fieldControls(i)
 				Dim selectedField = TryCast(fieldControls.FieldComboBox.SelectedItem, FieldSelection)
 				Dim selectedSeparator = TryCast(fieldControls.SeparatorComboBox.SelectedItem, SeparatorSelection)
@@ -98,7 +98,7 @@ Namespace kCura.EDDS.WinForm.Forms
 		End Function
 
 		Private Sub AddField()
-			Dim fieldComboBox As ComboBox = AddFieldComboBox(NumberOfFields)
+			Dim fieldComboBox As ComboBox = AddFieldComboBox(NumberOfFieldsGroups)
 			Dim separatorComboBox As ComboBox = AddSeparatorComboBox()
 			Dim customTextBox As TextBox = AddCustomTextBox()
 			Dim singleFieldControls = New SingleFieldControls(fieldComboBox, separatorComboBox, customTextBox)
@@ -107,40 +107,51 @@ Namespace kCura.EDDS.WinForm.Forms
 		End Sub
 
 		Private Function AddFieldComboBox(fieldNumber As Integer) As ComboBox
+			Const fieldComboBoxOffset = 2
 			Dim fieldComboBox = New ComboBox()
-			fieldComboBox.DropDownStyle = ComboBoxStyle.DropDownList
+			fieldComboBox.DropDownStyle = ComboBoxStyle.DropDown
 			fieldComboBox.FormattingEnabled = True
-			fieldComboBox.Location = New Point(252 * NumberOfFields + 14, 13)
+			fieldComboBox.Location = New Point(252 * NumberOfFieldsGroups + 14, 13)
 			fieldComboBox.Size = New Size(120, 21)
-			fieldComboBox.TabIndex = 1 + 3 * NumberOfFields
+			fieldComboBox.TabIndex = fieldComboBoxOffset + NumberOfFieldsInFieldsGroup * NumberOfFieldsGroups
 			fieldComboBox.Tag = fieldNumber
 			Controls.Add(fieldComboBox)
 			fieldComboBox.DataSource = _availableFields.ToList()
 			fieldComboBox.DisplayMember = "DisplayName"
 			fieldComboBox.ValueMember = "ID"
+			fieldComboBox.AutoCompleteSource = AutoCompleteSource.ListItems
+			fieldComboBox.AutoCompleteMode = AutoCompleteMode.None
+			AddHandler fieldComboBox.KeyDown, AddressOf CatchEnterKey
+			AddHandler fieldComboBox.Leave, AddressOf SelectBestFieldIfNoneChosen
 			AddHandler fieldComboBox.SelectedIndexChanged, AddressOf FieldComboBoxSelectionChanged
 			Return fieldComboBox
 		End Function
 
 		Private Function AddSeparatorComboBox() As ComboBox
+			Const separatorComboBoxOffset = 1
 			Dim separatorComboBox = New ComboBox()
-			separatorComboBox.DropDownStyle = ComboBoxStyle.DropDownList
+			separatorComboBox.DropDownStyle = ComboBoxStyle.DropDown
 			separatorComboBox.FormattingEnabled = True
-			separatorComboBox.Location = New Point(252 * NumberOfFields - 112, 13)
+			separatorComboBox.Location = New Point(252 * NumberOfFieldsGroups - 112, 13)
 			separatorComboBox.Size = New Size(120, 21)
-			separatorComboBox.TabIndex = 3 + 3 * NumberOfFields
+			separatorComboBox.TabIndex = separatorComboBoxOffset + NumberOfFieldsInFieldsGroup * NumberOfFieldsGroups
 			Controls.Add(separatorComboBox)
 			separatorComboBox.DataSource = Separators.ToList()
 			separatorComboBox.DisplayMember = "DisplayName"
 			separatorComboBox.ValueMember = "Value"
+			separatorComboBox.AutoCompleteSource = AutoCompleteSource.ListItems
+			separatorComboBox.AutoCompleteMode = AutoCompleteMode.None
+			AddHandler separatorComboBox.KeyDown, AddressOf CatchEnterKey
+			AddHandler separatorComboBox.Leave, AddressOf SelectBestFieldIfNoneChosen
 			Return separatorComboBox
 		End Function
 
 		Private Function AddCustomTextBox() As TextBox
+			Const customTextBoxOffset = 3
 			Dim customTextBox = New TextBox()
-			customTextBox.Location = New Point(252 * NumberOfFields + 14, 41)
+			customTextBox.Location = New Point(252 * NumberOfFieldsGroups + 14, 41)
 			customTextBox.Size = New Size(120, 20)
-			customTextBox.TabIndex = 2 + 3 * NumberOfFields
+			customTextBox.TabIndex = customTextBoxOffset + NumberOfFieldsInFieldsGroup * NumberOfFieldsGroups
 			Controls.Add(customTextBox)
 			Return customTextBox
 		End Function
@@ -158,19 +169,19 @@ Namespace kCura.EDDS.WinForm.Forms
 		End Sub
 
 		Private Sub SetupAddAndRemoveButtons()
-			If NumberOfFields = 1 Then
+			If NumberOfFieldsGroups = 1 Then
 				_addFieldButton.Visible = True
-				_addFieldButton.Location = New Point(252 * NumberOfFields - 112, 12)
+				_addFieldButton.Location = New Point(252 * NumberOfFieldsGroups - 112, 12)
 				_removeFieldButton.Visible = False
-			ElseIf NumberOfFields = FieldLimit Then
+			ElseIf NumberOfFieldsGroups = FieldLimit Then
 				_addFieldButton.Visible = False
 				_removeFieldButton.Visible = True
-				_removeFieldButton.Location = New Point(252 * NumberOfFields - 112, 12)
+				_removeFieldButton.Location = New Point(252 * NumberOfFieldsGroups - 112, 12)
 			Else
 				_addFieldButton.Visible = True
-				_addFieldButton.Location = New Point(252 * NumberOfFields - 112, 12)
+				_addFieldButton.Location = New Point(252 * NumberOfFieldsGroups - 112, 12)
 				_removeFieldButton.Visible = True
-				_removeFieldButton.Location = New Point(252 * NumberOfFields - 81, 12)
+				_removeFieldButton.Location = New Point(252 * NumberOfFieldsGroups - 81, 12)
 			End If
 		End Sub
 
@@ -182,6 +193,39 @@ Namespace kCura.EDDS.WinForm.Forms
 			End If
 			textBox.Visible = textBoxVisible
 		End Sub
+
+		Private Sub CatchEnterKey(sender As Object, e As KeyEventArgs)
+			If e.KeyCode = Keys.Enter Then
+				e.Handled = True
+				SendKeys.Send("{TAB}")
+			End If
+		End Sub
+
+		Private Sub SelectBestFieldIfNoneChosen(sender As Object, e As EventArgs)
+			Dim comboBox = TryCast(sender, ComboBox)
+			If comboBox Is Nothing Then
+				Return
+			End If
+			comboBox.DroppedDown = False
+			System.Windows.Forms.Application.DoEvents()
+			comboBox.SelectedIndex = GetIndexOfBestMatchFromList(comboBox.Items, comboBox.Text)
+
+		End Sub
+
+		Protected Function GetIndexOfBestMatchFromList(items As ComboBox.ObjectCollection, text As String) As Integer
+			If items Is Nothing Then
+				Throw New ArgumentException("The list is not initialized!")
+			End If
+			If items.Count = 0 Then
+				Throw New ArgumentException("The list cannot be empty!")
+			End If
+			Dim bestItems = items.Cast(Of ISelection).Where(Function(x) x.DisplayName.ToLower.StartsWith(text.ToLower))
+			If bestItems.Count = 0 Then
+				Return 0
+			Else
+				Return items.IndexOf(bestItems.First)
+			End If
+		End Function
 
 		Public Event ApplyClicked()
 
@@ -212,26 +256,29 @@ Namespace kCura.EDDS.WinForm.Forms
 			Close()
 		End Sub
 
-		Private Class FieldSelection
-
+		Protected Interface ISelection
+			Property DisplayName() As String
+		End Interface
+		Protected Class FieldSelection
+			Implements ISelection
 			Public Sub New(displayName As String, id As Integer)
 				Me.DisplayName = displayName
 				Me.ID = id
 			End Sub
 
-			Public Property DisplayName As String
+			Public Property DisplayName As String Implements ISelection.DisplayName
 			Public Property ID As Integer
 
 		End Class
 
-		Private Class SeparatorSelection
-
+		Protected Class SeparatorSelection
+			Implements ISelection
 			Public Sub New(displayName As String, value As String)
 				Me.DisplayName = displayName
 				Me.Value = value
 			End Sub
 
-			Public Property DisplayName As String
+			Public Property DisplayName As String Implements ISelection.DisplayName
 			Public Property Value As String
 
 		End Class
