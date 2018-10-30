@@ -1334,6 +1334,7 @@ Namespace kCura.WinEDDS
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			Dim lastArtifactId As Int32 = -1
 			Dim loadFileBytes As Int64 = 0
+			Dim comparer As IComparer(Of String) = New OpticonFilenameComparer()
 
 			If linesToWriteOpt Is Nothing OrElse linesToWriteOpt.Count = 0 Then
 				Return
@@ -1353,11 +1354,11 @@ Namespace kCura.WinEDDS
 						For Each bates As String In artifact.Images.Cast(Of WinEDDS.Exporters.ImageExportInfo)().Select(Function(i) i.BatesNumber).Distinct()
 							'If IPRO Full Text append FT Lines
 							Dim key As String = bates
-							For Each entry As KeyValuePair(Of String, String) In linesToWriteOpt.Where(Function(e) e.Key = "FT" + key).OrderBy(Function(e) e.Key).ThenBy(Function(e) e.Value)
+							For Each entry As KeyValuePair(Of String, String) In linesToWriteOpt.Where(Function(e) e.Key = "FT" + key).OrderBy(Function(e) e.Key).ThenBy(Function(e) e.Value, comparer)
 								_imageFileWriter.Write(entry.Value)
 							Next
 							'Otherwise go and grab the Image line
-							For Each entry As KeyValuePair(Of String, String) In linesToWriteOpt.Where(Function(e) e.Key = key).OrderBy(Function(e) e.Key).ThenBy(Function(e) e.Value)
+							For Each entry As KeyValuePair(Of String, String) In linesToWriteOpt.Where(Function(e) e.Key = key).OrderBy(Function(e) e.Key).ThenBy(Function(e) e.Value, comparer)
 								_imageFileWriter.Write(entry.Value)
 							Next
 						Next

@@ -52,7 +52,7 @@ Namespace kCura.WinEDDS
                             If Not tempDict.Contains("TapiForceFileShareClient") Then tempDict.Add("TapiForceFileShareClient", "False")
                             If Not tempDict.Contains("TapiForceHttpClient") Then tempDict.Add("TapiForceHttpClient", "False")
                             If Not tempDict.Contains("TapiForceBcpHttpClient") Then tempDict.Add("TapiForceBcpHttpClient", "False")
-                            If Not tempDict.Contains("TapiAsperaBcpRootFolder") Then tempDict.Add("TapiAsperaBcpRootFolder", "BCPPath")
+                            If Not tempDict.Contains("TapiAsperaBcpRootFolder") Then tempDict.Add("TapiAsperaBcpRootFolder", "")
                             If Not tempDict.Contains("TapiForceAsperaClient") Then tempDict.Add("TapiForceAsperaClient", "False")
                             If Not tempDict.Contains("TapiMinDataRateMbps") Then tempDict.Add("TapiMinDataRateMbps", "0")
                             If Not tempDict.Contains("TapiSubmitApmMetrics") Then tempDict.Add("TapiSubmitApmMetrics", "False")
@@ -577,6 +577,5 @@ Namespace kCura.WinEDDS
                 Return System.Math.Max(CType(ConfigSettings("WebBasedFileDownloadChunkSize"), Int32), 1024)
             End Get
         End Property
-
     End Class
 End Namespace

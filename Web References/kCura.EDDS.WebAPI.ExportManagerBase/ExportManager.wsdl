@@ -124,6 +124,53 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="RetrieveResultsBlockForProductionStartingFromIndex">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="runId" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="artifactTypeID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="avfIds" type="tns:ArrayOfInt" />
+            <s:element minOccurs="1" maxOccurs="1" name="chunkSize" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="displayMulticodesAsNested" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="multiValueDelimiter" type="s1:char" />
+            <s:element minOccurs="1" maxOccurs="1" name="nestedValueDelimiter" type="s1:char" />
+            <s:element minOccurs="0" maxOccurs="1" name="textPrecedenceAvfIds" type="tns:ArrayOfInt" />
+            <s:element minOccurs="1" maxOccurs="1" name="productionId" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="index" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveResultsBlockForProductionStartingFromIndexResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveResultsBlockForProductionStartingFromIndexResult" type="tns:ArrayOfAnyType" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveResultsBlockStartingFromIndex">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="appID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="runId" type="s1:guid" />
+            <s:element minOccurs="1" maxOccurs="1" name="artifactTypeID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="avfIds" type="tns:ArrayOfInt" />
+            <s:element minOccurs="1" maxOccurs="1" name="chunkSize" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="displayMulticodesAsNested" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="multiValueDelimiter" type="s1:char" />
+            <s:element minOccurs="1" maxOccurs="1" name="nestedValueDelimiter" type="s1:char" />
+            <s:element minOccurs="0" maxOccurs="1" name="textPrecedenceAvfIds" type="tns:ArrayOfInt" />
+            <s:element minOccurs="1" maxOccurs="1" name="index" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveResultsBlockStartingFromIndexResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveResultsBlockStartingFromIndexResult" type="tns:ArrayOfAnyType" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="HasExportPermissions">
         <s:complexType>
           <s:sequence>
@@ -180,6 +227,18 @@
   <wsdl:message name="RetrieveResultsBlockSoapOut">
     <wsdl:part name="parameters" element="tns:RetrieveResultsBlockResponse" />
   </wsdl:message>
+  <wsdl:message name="RetrieveResultsBlockForProductionStartingFromIndexSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveResultsBlockForProductionStartingFromIndex" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveResultsBlockForProductionStartingFromIndexSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveResultsBlockForProductionStartingFromIndexResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveResultsBlockStartingFromIndexSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveResultsBlockStartingFromIndex" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveResultsBlockStartingFromIndexSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveResultsBlockStartingFromIndexResponse" />
+  </wsdl:message>
   <wsdl:message name="HasExportPermissionsSoapIn">
     <wsdl:part name="parameters" element="tns:HasExportPermissions" />
   </wsdl:message>
@@ -206,6 +265,14 @@
     <wsdl:operation name="RetrieveResultsBlock">
       <wsdl:input message="tns:RetrieveResultsBlockSoapIn" />
       <wsdl:output message="tns:RetrieveResultsBlockSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveResultsBlockForProductionStartingFromIndex">
+      <wsdl:input message="tns:RetrieveResultsBlockForProductionStartingFromIndexSoapIn" />
+      <wsdl:output message="tns:RetrieveResultsBlockForProductionStartingFromIndexSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveResultsBlockStartingFromIndex">
+      <wsdl:input message="tns:RetrieveResultsBlockStartingFromIndexSoapIn" />
+      <wsdl:output message="tns:RetrieveResultsBlockStartingFromIndexSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="HasExportPermissions">
       <wsdl:input message="tns:HasExportPermissionsSoapIn" />
@@ -252,6 +319,24 @@
     </wsdl:operation>
     <wsdl:operation name="RetrieveResultsBlock">
       <soap:operation soapAction="http://www.kCura.com/EDDS/ExportManager/RetrieveResultsBlock" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveResultsBlockForProductionStartingFromIndex">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/ExportManager/RetrieveResultsBlockForProductionStartingFromIndex" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveResultsBlockStartingFromIndex">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/ExportManager/RetrieveResultsBlockStartingFromIndex" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -309,6 +394,24 @@
     </wsdl:operation>
     <wsdl:operation name="RetrieveResultsBlock">
       <soap12:operation soapAction="http://www.kCura.com/EDDS/ExportManager/RetrieveResultsBlock" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveResultsBlockForProductionStartingFromIndex">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/ExportManager/RetrieveResultsBlockForProductionStartingFromIndex" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveResultsBlockStartingFromIndex">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/ExportManager/RetrieveResultsBlockStartingFromIndex" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
