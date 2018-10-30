@@ -6,22 +6,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 using Relativity.Logging;
-using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
 	public class PhysicalFilesDownloader : IPhysicalFilesDownloader
 	{
 		private readonly IFileshareSettingsService _settingsService;
-		private readonly IExportTapiBridgeFactory _exportTapiBridgeFactory;
+		private readonly IFileTapiBridgePool _fileTapiBridgePool;
 		private readonly IExportConfig _exportConfig;
 		private readonly ILog _logger;
 		private readonly SafeIncrement _safeIncrement;
 
-		public PhysicalFilesDownloader(IFileshareSettingsService settingsService, IExportTapiBridgeFactory exportTapiBridgeFactory, IExportConfig exportConfig, SafeIncrement safeIncrement, ILog logger)
+		public PhysicalFilesDownloader(IFileshareSettingsService settingsService, IFileTapiBridgePool fileTapiBridgePool, IExportConfig exportConfig, SafeIncrement safeIncrement, ILog logger)
 		{
 			_settingsService = settingsService;
-			_exportTapiBridgeFactory = exportTapiBridgeFactory;
+			_fileTapiBridgePool = fileTapiBridgePool;
 			_exportConfig = exportConfig;
 			_safeIncrement = safeIncrement;
 			_logger = logger;
@@ -41,12 +40,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				tasks.Add(Task.Run(() => CreateJobTask(queue, taskCancellationTokenSource), taskCancellationTokenSource.Token));
 			}
 
-		    await Task.WhenAll(tasks);
+			await Task.WhenAll(tasks).ConfigureAwait(false);
 		}
 
 		private ConcurrentQueue<ExportRequestsWithFileshareSettings> CreateTransferQueue(List<ExportRequest> requests)
 		{
-			ILookup<RelativityFileShareSettings, ExportRequest> result = requests.ToLookup(r => _settingsService.GetSettingsForFileshare(r.SourceLocation));
+			ILookup<IRelativityFileShareSettings, ExportRequest> result = requests.ToLookup(r => _settingsService.GetSettingsForFileshare(r.SourceLocation));
 
 			return new ConcurrentQueue<ExportRequestsWithFileshareSettings>(result.Select(r => new ExportRequestsWithFileshareSettings(r.Key, r)));
 		}
@@ -57,13 +56,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 			while (queue.TryDequeue(out exportRequestWithFileshareSettings))
 			{
+				IDownloadTapiBridge bridge = null;
 				try
 				{
-					using (IDownloadTapiBridge bridge = _exportTapiBridgeFactory.CreateForFiles(exportRequestWithFileshareSettings.FileshareSettings, downloadCancellationTokenSourceSource.Token))
-					{
-						DownloadFiles(bridge, exportRequestWithFileshareSettings.Requests, downloadCancellationTokenSourceSource.Token);
-						bridge.WaitForTransferJob();
-					}
+					bridge = _fileTapiBridgePool.Request(exportRequestWithFileshareSettings.FileshareSettings,
+						downloadCancellationTokenSourceSource.Token);
+
+					DownloadFiles(bridge, exportRequestWithFileshareSettings.Requests,
+						downloadCancellationTokenSourceSource.Token);
+					bridge.WaitForTransferJob();
 				}
 				catch (TaskCanceledException)
 				{
@@ -76,6 +77,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				{
 					downloadCancellationTokenSourceSource.Cancel();
 					throw;
+				}
+				finally
+				{
+					if (bridge != null)
+					{
+						_fileTapiBridgePool.Release(bridge);
+					}
 				}
 			}
 		}

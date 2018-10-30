@@ -1,4 +1,5 @@
 ﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
+using kCura.WinEDDS.TApi;
 using Relativity.Transfer;
 using ITransferStatistics = kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics.ITransferStatistics;
 
@@ -32,7 +33,12 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			TapiBridge.Dispose();
 		}
 
+		public TapiClient ClientType => TapiBridge.ClientType;
 		public abstract string QueueDownload(TransferPath transferPath);
 		public abstract void WaitForTransferJob();
+		public void Disconnect()
+		{
+			TapiBridge.Disconnect();
+		}
 	}
 }

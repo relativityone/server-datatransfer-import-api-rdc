@@ -2,6 +2,6 @@
 {
 	public interface IFileshareSettingsService
 	{
-		RelativityFileShareSettings GetSettingsForFileshare(string fileUrl);
+		IRelativityFileShareSettings GetSettingsForFileshare(string fileUrl);
 	}
 }

@@ -4,11 +4,11 @@ using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 {
-	public class TapiBridgeWrapper : ITapiBridgeWrapper
+	public class EmptyTapiBridge : ITapiBridge
 	{
-		private readonly TapiBridgeBase _tapiBridge;
+		private readonly ITapiBridgeWrapper _tapiBridge;
 
-		public TapiBridgeWrapper(TapiBridgeBase tapiBridge)
+		public EmptyTapiBridge(ITapiBridgeWrapper tapiBridge)
 		{
 			_tapiBridge = tapiBridge;
 		}
@@ -55,7 +55,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			remove { _tapiBridge.TapiFatalError -= value; }
 		}
 
-		public TapiClient ClientType => _tapiBridge.Client;
+		public TapiClient ClientType => _tapiBridge.ClientType;
 
 		public string AddPath(TransferPath transferPath)
 		{
@@ -65,6 +65,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		public void WaitForTransferJob()
 		{
 			_tapiBridge.WaitForTransferJob();
+		}
+
+		public void Disconnect()
+		{
 		}
 
 		public void Dispose()
