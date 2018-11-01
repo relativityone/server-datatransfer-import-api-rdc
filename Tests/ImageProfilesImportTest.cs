@@ -38,7 +38,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 		}
 
 		[Test]
-		[Category("ImportApiIntegrationTestsForRelativityPipeline")]
+		[Category("ImportApiIntegrationTestsForRelativityPipeline"), Category("testtype.cd")]
 		public async Task ItShouldLinkMultiObjectFieldsToAllMatchingObjects() // REL-158418
 		{
 			// Arrange
