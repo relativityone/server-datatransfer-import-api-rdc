@@ -106,7 +106,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 
 		private static string GetNativeFilePath()
 		{
-			string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+			string currentDirectory = TestContext.CurrentContext.TestDirectory;
 			return Path.Combine(currentDirectory, @"TestData\Native\SBECK_0048460.docx");
 		}
 	}

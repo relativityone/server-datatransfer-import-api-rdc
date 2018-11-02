@@ -58,9 +58,8 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 
 		private static string GetNativeFilePath()
 		{
-			string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-			string nativeLocation = Path.Combine(currentDirectory, @"TestData\Native\SBECK_0048460.docx");
-			return nativeLocation;
+			string currentDirectory = TestContext.CurrentContext.TestDirectory;
+			return Path.Combine(currentDirectory, @"TestData\Native\SBECK_0048460.docx");
 		}
 
 		private void SetupJobSettings(Settings settings)
