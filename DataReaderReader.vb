@@ -331,7 +331,7 @@ Namespace kCura.WinEDDS.ImportExtension
 				For i As Integer = 0 To _reader.FieldCount - 1
 					If (_reader.GetName(i) = _FileSettings.FileSizeColumn) Then
 						Dim value As Long = -1
-						Dim readerValue As String = _reader.GetValue(i).ToString()
+						Dim readerValue As String = Convert.ToString(_reader.GetValue(i))
 						Long.TryParse(readerValue, value)
 						fileSize = value
 						_fileSettingsFileSizeColumnIndex = i
@@ -366,7 +366,7 @@ Namespace kCura.WinEDDS.ImportExtension
 				For i As Integer = 0 To _reader.FieldCount - 1
 					If (_reader.GetName(i) = _FileSettings.SupportedByViewerColumn) Then
 						Dim value As Boolean = False
-						Dim readerValue As String = _reader.GetValue(i).ToString()
+						Dim readerValue As String = Convert.ToString(_reader.GetValue(i))
 						Boolean.TryParse(readerValue, value)
 						supportedByViewer = value
 						_fileSupportedByViewerColumnNameIndex = i
@@ -401,7 +401,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			If (_fileSettingsTypeColumnNameIndex = -1 Or _fileSettingsIDColumnNameIndex = -1) Then
 				For i As Integer = 0 To _reader.FieldCount - 1
 					If (_reader.GetName(i) = _FileSettings.TypeColumnName) Then
-						oiFileType = _reader.GetValue(i).ToString()
+						oiFileType = Convert.ToString(_reader.GetValue(i))
 						_fileSettingsTypeColumnNameIndex = i
 					ElseIf (_reader.GetName(i) = _FileSettings.IDColumnName) Then
 						Dim value As Int32 = -1
