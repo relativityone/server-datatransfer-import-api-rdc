@@ -8,7 +8,8 @@ namespace kCura.WinEDDS.TApi
 {
 	using System;
 	using System.Linq;
-	using System.Text;
+	using System.Net;
+    using System.Text;
 	using System.Threading.Tasks;
 
 	using kCura.WinEDDS.TApi.Resources;
@@ -28,21 +29,25 @@ namespace kCura.WinEDDS.TApi
 		/// </returns>
 		public static string BuildDocText()
 		{
-			var sb = new StringBuilder();
-			foreach (var clientMetadata in TransferClientHelper.SearchAvailableClients().OrderBy(x => x.DisplayName))
-			{
-				if (sb.Length > 0)
-				{
-					sb.AppendLine();
-					sb.AppendLine();
-				}
+		    using (var transferLog = new RelativityTransferLog())
+		    {
+		        var sb = new StringBuilder();
+		        foreach (var clientMetadata in TransferClientHelper.SearchAvailableClients(transferLog)
+		            .OrderBy(x => x.DisplayName))
+		        {
+		            if (sb.Length > 0)
+		            {
+		                sb.AppendLine();
+		                sb.AppendLine();
+		            }
 
-				sb.AppendFormat(" • {0} • ", clientMetadata.DisplayName);
-				sb.AppendLine();
-				sb.Append(clientMetadata.Description);
-			}
+		            sb.AppendFormat(" • {0} • ", clientMetadata.DisplayName);
+		            sb.AppendLine();
+		            sb.Append(clientMetadata.Description);
+		        }
 
-			return sb.ToString();
+		        return sb.ToString();
+		    }
 		}
 
 		/// <summary>
@@ -64,15 +69,18 @@ namespace kCura.WinEDDS.TApi
 				throw new ArgumentException("The client unique identifier must be non-empty.", nameof(clientId));
 			}
 
-			foreach (var clientMetadata in TransferClientHelper.SearchAvailableClients())
-			{
-				if (new Guid(clientMetadata.Id) == clientId)
-				{
-					return clientMetadata.DisplayName;
-				}
-			}
+		    using (var transferLog = new RelativityTransferLog())
+		    {
+		        foreach (var clientMetadata in TransferClientHelper.SearchAvailableClients(transferLog))
+		        {
+		            if (new Guid(clientMetadata.Id) == clientId)
+		            {
+		                return clientMetadata.DisplayName;
+		            }
+		        }
 
-			throw new ArgumentException(Strings.ClientIdNotFoundExceptionMessage);
+		        throw new ArgumentException(Strings.ClientIdNotFoundExceptionMessage);
+		    }
 		}
 
 		/// <summary>
@@ -91,47 +99,67 @@ namespace kCura.WinEDDS.TApi
 				throw new ArgumentNullException(nameof(parameters));
 			}
 
-			return CreateRelativityConnectionInfo(
-					parameters.WebServiceUrl,
-					parameters.WorkspaceId,
-					parameters.Credentials.UserName,
-					parameters.Credentials.Password);
+		    return CreateRelativityConnectionInfo(
+		        parameters.WebServiceUrl,
+		        parameters.WorkspaceId,
+		        parameters.Credentials.UserName,
+		        parameters.Credentials.Password);
 		}
 
-		/// <summary>
-		/// Creates a Relativity connection information object.
-		/// </summary>
-		/// <param name="webServiceUrl">
-		/// The Relativity web service URL.
-		/// </param>
-		/// <param name="workspaceId">
-		/// The workspace artifact identifier.
-		/// </param>
-		/// <param name="userName">
-		/// The Relativity user name.
-		/// </param>
-		/// <param name="password">
-		/// The Relativity password.
-		/// </param>
-		/// <returns>
-		/// The <see cref="RelativityConnectionInfo"/> instance.
-		/// </returns>
-		public static RelativityConnectionInfo CreateRelativityConnectionInfo(
-				string webServiceUrl,
-				int workspaceId,
-				string userName,
-				string password)
-		{
-			// Note: this is a temporary workaround to support integration tests.
-			var baseUri = new Uri(webServiceUrl);
+	    /// <summary>
+	    /// Creates a Relativity connection information object.
+	    /// </summary>
+	    /// <param name="webServiceUrl">
+	    /// The Relativity web service URL.
+	    /// </param>
+	    /// <param name="workspaceId">
+	    /// The workspace artifact identifier.
+	    /// </param>
+	    /// <param name="userName">
+	    /// The Relativity user name.
+	    /// </param>
+	    /// <param name="password">
+	    /// The Relativity password.
+	    /// </param>
+	    /// <returns>
+	    /// The <see cref="RelativityConnectionInfo"/> instance.
+	    /// </returns>
+	    public static RelativityConnectionInfo CreateRelativityConnectionInfo(
+	        string webServiceUrl,
+	        int workspaceId,
+	        string userName,
+	        string password)
+	    {
+            if (string.IsNullOrEmpty(webServiceUrl))
+            {
+                throw new ArgumentNullException(nameof(webServiceUrl));
+            }
+
+            if (workspaceId < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(workspaceId));
+            }
+
+            var baseUri = new Uri(webServiceUrl);
 			var host = new Uri(baseUri.GetLeftPart(UriPartial.Authority));
-			return string.Compare(userName, "XxX_BearerTokenCredentials_XxX", StringComparison.OrdinalIgnoreCase) == 0
-								 ? new RelativityConnectionInfo(host, new BearerTokenCredential(password), workspaceId)
-								 : new RelativityConnectionInfo(
-										 host,
-										 new BasicAuthenticationCredential(userName, password),
-										 workspaceId);
-		}
+
+            IHttpCredential credential;
+            if (string.Compare(userName, BearerTokenCredential.OAuth2UserName, StringComparison.OrdinalIgnoreCase) == 0)
+		    {
+		        credential = new BearerTokenCredential(password);
+		    }
+            else
+		    {
+		        credential = new BasicAuthenticationCredential(userName, password);
+		    }
+
+	        // Note: passing a null Web API credential object is safe.
+            return new RelativityConnectionInfo(
+	            host,
+	            credential,
+	            workspaceId,
+	            new Uri(webServiceUrl));
+	    }
 
 		/// <summary>
 		/// Gets the client identifier.
@@ -215,7 +243,8 @@ namespace kCura.WinEDDS.TApi
 			try
 			{
 				var connectionInfo = CreateRelativityConnectionInfo(parameters);
-				using (var transferHost = new RelativityTransferHost(connectionInfo))
+                using (var transferLog = new RelativityTransferLog())
+			    using (var transferHost = new RelativityTransferHost(connectionInfo, transferLog))
 				{
 					if (configuration.ClientId != Guid.Empty)
 					{
