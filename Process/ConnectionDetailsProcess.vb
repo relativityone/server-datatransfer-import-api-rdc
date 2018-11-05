@@ -27,21 +27,23 @@ Namespace kCura.WinEDDS
 					_caseInfo.ArtifactID,
 					_credential.UserName,
 					_credential.Password)
-			Using transferHost As New Relativity.Transfer.RelativityTransferHost(connectionInfo)
-				Dim context As New Relativity.Transfer.DiagnosticsContext
-				Dim configuration As New Relativity.Transfer.DiagnosticsConfiguration(context, _cookieContainer)
+			Using transferLog As New kCura.WinEDDS.TApi.RelativityTransferLog()
+				Using transferHost As New Relativity.Transfer.RelativityTransferHost(connectionInfo, transferLog)
+					Dim context As New Relativity.Transfer.DiagnosticsContext
+					Dim configuration As New Relativity.Transfer.DiagnosticsConfiguration(context, _cookieContainer)
 
-				' Reducing these values to more quickly publish error information to the user.
-				configuration.MaxHttpRetryAttempts = 1
-				configuration.MaxJobRetryAttempts = 2
-				Try
-					AddHandler context.DiagnosticMessage, AddressOf DiagnosticsContext_OnDiagnosticMessage
-					transferHost.ConnectionChecksAsync(configuration, System.Threading.CancellationToken.None).GetAwaiter().GetResult()
-				Catch e As Exception
-					Me.WriteStatus($"A fatal error occurred performing the connection check. Error: {e.Message}")
-				Finally
-					RemoveHandler context.DiagnosticMessage, AddressOf DiagnosticsContext_OnDiagnosticMessage
-				End Try
+					' Reducing these values to more quickly publish error information to the user.
+					configuration.MaxHttpRetryAttempts = 1
+					configuration.MaxJobRetryAttempts = 2
+					Try
+						AddHandler context.DiagnosticMessage, AddressOf DiagnosticsContext_OnDiagnosticMessage
+						transferHost.ConnectionChecksAsync(configuration, System.Threading.CancellationToken.None).GetAwaiter().GetResult()
+					Catch e As Exception
+						Me.WriteStatus($"A fatal error occurred performing the connection check. Error: {e.Message}")
+					Finally
+						RemoveHandler context.DiagnosticMessage, AddressOf DiagnosticsContext_OnDiagnosticMessage
+					End Try
+				End Using
 			End Using
 		End Sub
 
