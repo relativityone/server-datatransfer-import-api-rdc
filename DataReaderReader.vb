@@ -341,7 +341,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			Else
 				If (_reader.GetName(_fileSettingsFileSizeColumnIndex) = _FileSettings.FileSizeColumn) Then
 					Dim value As Long = -1
-					Dim readerValue As String = _reader.GetValue(_fileSettingsFileSizeColumnIndex).ToString()
+					Dim readerValue As String = Convert.ToString(_reader.GetValue(_fileSettingsFileSizeColumnIndex))
 					Long.TryParse(readerValue, value)
 					fileSize = value
 				End If
