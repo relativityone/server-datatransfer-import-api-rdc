@@ -1,6 +1,7 @@
 ﻿Imports System.Net
 Imports System.Collections.Generic
 Imports kCura.WinEDDS
+Imports Relativity
 
 Friend Class ImportCredentialManager
 
@@ -39,7 +40,6 @@ Friend Class ImportCredentialManager
 		End If
 
 		Dim retVal As SessionCredentials = Nothing
-		Dim ex As System.Exception = Nothing
 		Dim cachedCreds As Boolean = False
 
 		SyncLock _lockObject
@@ -59,7 +59,7 @@ Friend Class ImportCredentialManager
 				Dim cookieMonster As New CookieContainer
 
 				Try
-					If String.IsNullOrEmpty(UserName) Then	' use winAuth
+					If String.IsNullOrEmpty(UserName) Then  ' use winAuth
 						creds = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuth(cookieMonster)
 						credsTapi = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuthTapi()
 					Else
@@ -67,7 +67,11 @@ Friend Class ImportCredentialManager
 						creds = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePassword(UserName.Trim(), Password.Trim(), cookieMonster)
 						credsTapi = creds
 					End If
-				Catch ex
+				Catch ex As kCura.WinEDDS.Exceptions.CredentialsNotSupportedException
+					Throw
+				Catch ex As kCura.WinEDDS.Exceptions.InvalidLoginException
+					Throw
+				Catch ex As Exception
 					Throw New System.Exception("Unknown failure during authentication", ex)
 				End Try
 
