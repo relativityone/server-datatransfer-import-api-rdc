@@ -1350,6 +1350,9 @@ Public Class ExportForm
 				AppendErrorMessage(msg, "No image file type selected")
 			End If
 		End If
+		If _textAndNativeFileNamePicker.SelectedItem = TextAndNativeFileNamePicker.SelectOption Then
+			AppendErrorMessage(msg, "No file naming method selected")
+		End If
 		If _textAndNativeFileNamePicker.SelectedItem = TextAndNativeFileNamePicker.CustomOption And _textAndNativeFileNamePicker.Selection Is Nothing Then
 			AppendErrorMessage(msg, "No custom file naming fields selected")
 		End If
