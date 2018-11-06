@@ -296,7 +296,6 @@ Namespace kCura.WinEDDS
 
 				_productionExportProduction = production
 			End If
-
 			Dim allAvfIds As List(Of Int32) = GetAvfIds()
 
 			tries = 0
@@ -1213,7 +1212,7 @@ Namespace kCura.WinEDDS
 		Private Function BuildFileNameProvider() As IFileNameProvider
 			Dim identifierExportFileNameProvider As IFileNameProvider = New IdentifierExportFileNameProvider(Settings)
 			Dim productionExportFileNameProvider As IFileNameProvider = New ProductionExportFileNameProvider(Settings, NameTextAndNativesAfterBegBates)
-			Dim customExportFileNameProvider As IFileNameProvider = New CustomFileNameProvider(Settings.CustomFileNaming.DescriptorParts().ToList(), New FileNamePartProviderContainer())
+			Dim customExportFileNameProvider As IFileNameProvider = New CustomFileNameProvider(Settings.CustomFileNaming?.DescriptorParts().ToList(), New FileNamePartProviderContainer())
 			Dim fileNameProvidersDictionary As New Dictionary(Of ExportNativeWithFilenameFrom, IFileNameProvider) From
 				{
 					{ExportNativeWithFilenameFrom.Identifier, identifierExportFileNameProvider},
