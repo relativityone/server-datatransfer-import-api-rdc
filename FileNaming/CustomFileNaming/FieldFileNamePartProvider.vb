@@ -19,7 +19,7 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 		Private Function GetViewField(descriptorPart As FieldDescriptorPart, exportObject As ExtendedObjectExportInfo) As ViewFieldInfo
 			If Not _cache.ContainsKey(descriptorPart.Value) Then
 				Dim foundViewField As ViewFieldInfo = exportObject.SelectedNativeFileNameViewFields.ToList().
-						Find(Function(item) item.AvfId = descriptorPart.Value)
+						Find(Function(item) item.FieldArtifactId = descriptorPart.Value)
 				If (foundViewField Is Nothing) Then
 					Throw New ArgumentOutOfRangeException($"Can not find field id: {descriptorPart.Value} in selection list!")
 				End If
