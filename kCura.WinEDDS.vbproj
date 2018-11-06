@@ -404,6 +404,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="FileNaming\CustomFileNaming\CustomFileNameProvider.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\CustomTextFileNamePartProvider.vb" />
     <Compile Include="FileNaming\CustomFileNaming\FieldFileNamePartProvider.vb" />
     <Compile Include="FileNaming\CustomFileNaming\FileNamePartProvider.vb" />
     <Compile Include="FileNaming\CustomFileNaming\FileNamePartProviderContainer.vb" />
