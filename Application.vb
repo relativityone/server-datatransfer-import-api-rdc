@@ -854,8 +854,8 @@ Namespace kCura.EDDS.WinForm
 
 
         Public Async Function GetNewExportFileSettingsObject(ByVal selectedFolderId As Int32, ByVal caseInfo As Relativity.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType, ByVal artifactTypeID As Int32) As Task(Of WinEDDS.ExportFile)
-            Dim exportFile As New WinEDDS.ExportFile(artifactTypeID)
-            Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Await Me.GetCredentialsAsync(), _CookieContainer)
+			Dim exportFile As New WinEDDS.ExtendedExportFile(artifactTypeID)
+			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Await Me.GetCredentialsAsync(), _CookieContainer)
             Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Await Me.GetCredentialsAsync(), _CookieContainer)
             exportFile.ArtifactID = selectedFolderId
             exportFile.CaseInfo = caseInfo
@@ -863,11 +863,11 @@ Namespace kCura.EDDS.WinForm
             exportFile.TypeOfExport = typeOfExport
             exportFile.ObjectTypeName = Await Me.GetObjectTypeName(exportFile.ArtifactTypeID)
             Select Case typeOfExport
-                Case exportFile.ExportType.Production
-                    exportFile.DataTable = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
+				Case kCura.WinEDDS.ExportFile.ExportType.Production
+					exportFile.DataTable = productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
                 Case Else
-                    exportFile.DataTable = Me.GetSearchExportDataSource(searchManager, caseInfo.ArtifactID, typeOfExport = exportFile.ExportType.ArtifactSearch, exportFile.ArtifactTypeID)
-            End Select
+					exportFile.DataTable = Me.GetSearchExportDataSource(searchManager, caseInfo.ArtifactID, typeOfExport = kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch, exportFile.ArtifactTypeID)
+			End Select
             Dim ids As New System.Collections.ArrayList
             For Each row As System.Data.DataRow In exportFile.DataTable.Rows
                 ids.Add(row("ArtifactID"))
@@ -882,8 +882,8 @@ Namespace kCura.EDDS.WinForm
                 exportFile.ArtifactAvfLookup = New System.Collections.Specialized.HybridDictionary
                 exportFile.AllExportableFields = New WinEDDS.ViewFieldInfo() {}
             Else
-                exportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(caseInfo.ArtifactID, exportFile.ArtifactTypeID, DirectCast(ids.ToArray(GetType(Int32)), Int32()), typeOfExport = exportFile.ExportType.Production)
-                exportFile.AllExportableFields = searchManager.RetrieveAllExportableViewFields(caseInfo.ArtifactID, exportFile.ArtifactTypeID)
+				exportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(caseInfo.ArtifactID, exportFile.ArtifactTypeID, DirectCast(ids.ToArray(GetType(Int32)), Int32()), typeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production)
+				exportFile.AllExportableFields = searchManager.RetrieveAllExportableViewFields(caseInfo.ArtifactID, exportFile.ArtifactTypeID)
             End If
             Return exportFile
         End Function
