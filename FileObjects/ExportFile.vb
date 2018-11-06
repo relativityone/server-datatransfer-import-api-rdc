@@ -504,7 +504,7 @@ Namespace kCura.WinEDDS
 			info.AddValue("CustomFileNaming", Me.CustomFileNaming, GetType(CustomFileNameDescriptorModel))
 		End Sub
 
-		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+		Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
 			With info
 				Me.ArtifactID = info.GetInt32("ArtifactID")
 				Me.LoadFilesPrefix = System.Web.HttpUtility.HtmlDecode(info.GetString("LoadFilesPrefix"))
