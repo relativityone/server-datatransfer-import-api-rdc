@@ -44,5 +44,16 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name.Factories
 			IFileNamePartProvider retProvider = _subjectUnderTest.GetProvider(part);
 			Assert.That(retProvider, Is.TypeOf<SeparatorFileNamePartProvider>());
 		}
+
+		[Test]
+		public void ItShouldReturnCustomTextDescriptorPartProvider()
+		{
+			var part = new CustomTextDescriptorPart("Custom Text");
+
+			_subjectUnderTest = new FileNamePartProviderContainer();
+
+			IFileNamePartProvider retProvider = _subjectUnderTest.GetProvider(part);
+			Assert.That(retProvider, Is.TypeOf<CustomTextFileNamePartProvider>());
+		}
 	}
 }
