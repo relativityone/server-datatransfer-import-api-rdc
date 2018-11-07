@@ -141,6 +141,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			customTextBox.Location = New Point(252 * NumberOfFields + 14, 41)
 			customTextBox.Size = New Size(120, 20)
 			customTextBox.TabIndex = 2 + 3 * NumberOfFields
+			customTextBox.MaxLength = 260
 			Controls.Add(customTextBox)
 			Return customTextBox
 		End Function
@@ -204,14 +205,40 @@ Namespace kCura.EDDS.WinForm.Forms
 		End Sub
 
 		Private Sub _applyButton_Click(sender As Object, e As EventArgs) Handles _applyButton.Click
-			RaiseEvent ApplyClicked()
-			Close()
+			If AreFieldsValid() Then
+				RaiseEvent ApplyClicked()
+				Close()
+			Else
+				Dim errorMsg = "The following issues need to be addressed before continuing:" & Environment.NewLine & Environment.NewLine
+				Dim illegalCharsErrorMessage As String = "- Illegal characters in custom text box field!"
+				MsgBox(errorMsg & illegalCharsErrorMessage, MsgBoxStyle.Exclamation, "Warning")
+			End If
 		End Sub
 
 		Private Sub _cancelButton_Click(sender As Object, e As EventArgs) Handles _cancelButton.Click
 			Close()
 		End Sub
 
+		Private Function AreFieldsValid() As Boolean
+			For Each control As SingleFieldControls In _fieldControls
+				If control IsNot Nothing AndAlso Not IsCustomTextValid(control) Then
+					Return False
+				End If
+			Next
+			Return True
+		End Function
+
+		Private Function IsCustomTextValid(control As SingleFieldControls) As Boolean
+			Dim strIllegalChars As String = "/?-^%{}[];$=*`#|&@\<>()+,\"
+			If control.CustomTextBox IsNot Nothing Then
+				For Each c As Char In control.CustomTextBox.Text
+					If strIllegalChars.Contains(c) OrElse c = "'" OrElse c = """" Then
+						Return False
+					End If
+				Next
+			End If
+			Return True
+		End Function
 		Private Class FieldSelection
 
 			Public Sub New(displayName As String, id As Integer)
