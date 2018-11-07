@@ -408,6 +408,8 @@
     <Compile Include="FileNaming\CustomFileNaming\FieldFileNamePartProvider.vb" />
     <Compile Include="FileNaming\CustomFileNaming\FileNamePartProvider.vb" />
     <Compile Include="FileNaming\CustomFileNaming\FileNamePartProviderContainer.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\INativeFileNameViewFieldsHelper.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\NativeFileNameViewFieldsHelper.vb" />
     <Compile Include="FileNaming\CustomFileNaming\SeparatorFileNamePartProvider.vb" />
     <Compile Include="FileNaming\IdentifierExportFileNameProvider.vb" />
     <Compile Include="FileNaming\CustomFileNaming\IFileNamePartProvider.vb" />
