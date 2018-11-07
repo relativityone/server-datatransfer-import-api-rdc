@@ -141,7 +141,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			customTextBox.Location = New Point(252 * NumberOfFields + 14, 41)
 			customTextBox.Size = New Size(120, 20)
 			customTextBox.TabIndex = 2 + 3 * NumberOfFields
-			customTextBox.MaxLength = 260
+			customTextBox.MaxLength = 120
 			Controls.Add(customTextBox)
 			Return customTextBox
 		End Function
@@ -230,7 +230,7 @@ Namespace kCura.EDDS.WinForm.Forms
 
 		Private Function IsCustomTextValid(control As SingleFieldControls) As Boolean
 			Dim strIllegalChars As String = "/?-^%{}[];$=*`#|&@\<>()+,\"
-			If control.CustomTextBox IsNot Nothing Then
+			If control.CustomTextBox IsNot Nothing AndAlso control.CustomTextBox.Visible Then
 				For Each c As Char In control.CustomTextBox.Text
 					If strIllegalChars.Contains(c) OrElse c = "'" OrElse c = """" Then
 						Return False
