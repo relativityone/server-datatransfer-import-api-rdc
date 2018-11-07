@@ -151,9 +151,8 @@ Namespace kCura.EDDS.WinForm.Forms
 			Dim customTextBox = New TextBox()
 			customTextBox.Location = New Point(252 * NumberOfFieldsGroups + 14, 41)
 			customTextBox.Size = New Size(120, 20)
-			customTextBox.TabIndex = 2 + 3 * NumberOfFields
-			customTextBox.MaxLength = 120
 			customTextBox.TabIndex = customTextBoxOffset + NumberOfFieldsInFieldsGroup * NumberOfFieldsGroups
+			customTextBox.MaxLength = 120
 			Controls.Add(customTextBox)
 			Return customTextBox
 		End Function
@@ -284,8 +283,6 @@ Namespace kCura.EDDS.WinForm.Forms
 			End If
 			Return True
 		End Function
-		Private Class FieldSelection
-
 		Protected Interface ISelection
 			Property DisplayName() As String
 		End Interface
