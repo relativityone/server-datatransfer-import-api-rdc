@@ -167,8 +167,8 @@
     <Reference Include="Ionic.Zip">
       <HintPath>..\..\Vendor\DotNetZipLib-DevKit-v1.8\DotNetZip-v1.8\Release\Ionic.Zip.dll</HintPath>
     </Reference>
-    <Reference Include="Polly, Version=5.3.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Polly.5.3.1\lib\net45\Polly.dll</HintPath>
+    <Reference Include="Polly, Version=5.7.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\Polly.5.7.0\lib\net45\Polly.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.DataTransfer.MessageService, Version=10.0.2.2, Culture=neutral, processorArchitecture=MSIL">
