@@ -1626,7 +1626,7 @@ Namespace kCura.EDDS.WinForm
                 End If
             Next
             If Not match Then
-                Throw New RelativityVersionMismatchException(relVersionString)
+                Throw KCura.WinEDDS.Api.LoginHelper.CreateRelativityVersionMismatchException(relVersionString)
             Else
                 Exit Sub
             End If
