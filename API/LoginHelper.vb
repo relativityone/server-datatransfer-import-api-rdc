@@ -48,6 +48,30 @@ Namespace kCura.WinEDDS.Api
 			Return Nothing
 		End Function
 
+		Public Shared Function CreateRelativityVersionMismatchException(ByVal relativityVersion As String) As RelativityVersionMismatchException
+
+			' Rely on the process executable to craft a more accurate exception message.
+			Dim assembly As System.Reflection.Assembly = System.Reflection.Assembly.GetEntryAssembly()
+			If assembly Is Nothing Then
+				assembly = System.Reflection.Assembly.GetExecutingAssembly()
+			End If
+
+			Dim message As String = string.Empty
+			If assembly.GetName.Name.StartsWith("kCura.EDDS.WinForm", StringComparison.OrdinalIgnoreCase) Then
+				message =
+					$"Your version of the Relativity Desktop Client ({assembly.GetName.Version.ToString _
+						}) is out of date. Please make sure you're running the correct RDC version ({relativityVersion _
+						}) or specified the correct Relativity WebService URL."
+			Else
+				message =
+					$"Your version of the Import API ({assembly.GetName.Version.ToString _
+						}) is not supported. Please make sure you're running the correct Import API version ({relativityVersion _
+						}) or specified the correct Relativity WebService URL."
+			End If
+
+			Return New RelativityVersionMismatchException(message, relativityVersion, assembly.GetName.Version.ToString)
+		End Function
+
 		Private Shared Sub Initialize(ByVal relativityManager As kCura.WinEDDS.Service.RelativityManager, ByVal webServiceUrl As String)
 			Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
 			locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol
@@ -75,7 +99,9 @@ Namespace kCura.WinEDDS.Api
 					Exit For
 				End If
 			Next
-			If Not match Then Throw New RelativityVersionMismatchException(relVersionString)
+			If Not match Then
+				Throw CreateRelativityVersionMismatchException(relVersionString)
+			End If
 		End Sub
 	End Class
 End Namespace
