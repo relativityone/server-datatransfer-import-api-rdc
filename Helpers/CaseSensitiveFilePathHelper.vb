@@ -34,7 +34,7 @@ Namespace kCura.WinEDDS.Helpers
 			If (Not IsExtensionLowercase(extension)) AndAlso FileExistsWithNewExtension(path, extension.ToLower(), foundFileLocation)
 				Return foundFileLocation
 			End If
-
+			
 			If (Not IsExtensionUppercase(extension)) AndAlso FileExistsWithNewExtension(path, extension.ToUpper(), foundFileLocation)
 				Return foundFileLocation
 			End If
@@ -43,9 +43,13 @@ Namespace kCura.WinEDDS.Helpers
 		End Function
 
 		Private Function FileExistsWithNewExtension(path As String, extension As String, <Out> ByRef updatedPath As String) As Boolean
-			updatedPath = _systemIoWrapper.ChangeExtension(path, extension)
+			Dim fileLocationToTest As String = _systemIoWrapper.ChangeExtension(path, extension)
 
-			Return _systemIoWrapper.Exists(updatedPath)
+			Dim exists As Boolean = _systemIoWrapper.Exists(fileLocationToTest)
+
+			updatedPath = If(exists, fileLocationToTest, Nothing)
+
+			Return exists
 		End Function
 
 		Private Function IsExtensionLowercase(extension As String) As Boolean
