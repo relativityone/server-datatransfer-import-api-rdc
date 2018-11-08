@@ -55,7 +55,7 @@ Namespace kCura.WinEDDS
 		Private _codeValidator As CodeValidator.Base
 		Protected WithEvents _artifactReader As Api.IArtifactReader
 		Protected _executionSource As Relativity.ExecutionSource
-		Protected ReadOnly FilePathHelper As IFilePathHelper = New CaseSensitiveFilePathHelper()
+		Protected ReadOnly FilePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
 		Public Property SkipExtractedTextEncodingCheck As Boolean
 		Public Property LoadImportedFullTextFromServer As Boolean
 		Public Property DisableExtractedTextFileLocationValidation As Boolean

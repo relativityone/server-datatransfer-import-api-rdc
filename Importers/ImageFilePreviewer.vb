@@ -12,7 +12,7 @@ Namespace kCura.WinEDDS
 		Private _fileLineCount As Int32
 		Private _continue As Boolean
 		Private WithEvents _processController As Controller
-		Private ReadOnly _filePathHelper As IFilePathHelper = New CaseSensitiveFilePathHelper()
+		Private ReadOnly _filePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
 
 		Private Enum Columns
 			DocumentArtifactID = 0

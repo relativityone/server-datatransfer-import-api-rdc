@@ -67,7 +67,7 @@ Namespace kCura.WinEDDS
 		Private _doRetryLogic As Boolean
 		Private _verboseErrorCollection As New ClientSideErrorCollection
 
-		Protected ReadOnly FilePathHelper As IFilePathHelper = New CaseSensitiveFilePathHelper()
+		Protected ReadOnly FilePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
 		Public Property SkipExtractedTextEncodingCheck As Boolean
 		Public Property OIFileIdMapped As Boolean
 		Public Property OIFileIdColumnName As String

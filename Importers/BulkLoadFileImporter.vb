@@ -85,7 +85,7 @@ Namespace kCura.WinEDDS
 		Protected BulkLoadFileFieldDelimiter As String
 
 		Protected Property LinkDataGridRecords As Boolean
-		Private ReadOnly _filePathHelper As IFilePathHelper = New CaseSensitiveFilePathHelper()
+		Private ReadOnly _filePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
 #End Region
 
 #Region "Accessors"

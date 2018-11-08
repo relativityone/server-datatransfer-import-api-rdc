@@ -21,7 +21,7 @@ Namespace kCura.WinEDDS
 		Public Shared extractedTextEncodingFieldName As String = "Extracted Text Encoding"
 		Private _relationalDocumentFields As DocumentField()
 		Private _processedIdentifiers As New Collections.Specialized.NameValueCollection
-		Private ReadOnly _filePathHelper As IFilePathHelper = New CaseSensitiveFilePathHelper()
+		Private ReadOnly _filePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
 #End Region
 
 #Region "Constructors"

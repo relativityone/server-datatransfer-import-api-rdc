@@ -9,6 +9,7 @@ Namespace kCura.WinEDDS
 
         Private Shared _LoadLock As New System.Object
 		Private Shared _rdcMetricsConfiguration As String = "RDCMetricsConfiguration"
+        Private const _ENABLE_CASE_SENSITIVE_SEARCH_KEY as String = "EnableCaseSensitiveSearchOnImport"
 
         Private Shared _configDictionary As System.Collections.IDictionary
         Public Shared ReadOnly Property ConfigSettings() As System.Collections.IDictionary
@@ -69,6 +70,7 @@ Namespace kCura.WinEDDS
                             If Not tempDict.Contains("AsperaNativeFilesRootFolder") Then tempDict.Add("AsperaNativeFilesRootFolder", "Files")
                             If Not tempDict.Contains("LogConfigFile") Then tempDict.Add("LogConfigFile", "LogConfig.xml")
 	                        If Not tempDict.Contains("SuppressCertificateCheckOnClient") Then tempDict.Add("SuppressCertificateCheckOnClient", "False")
+	                        If Not tempDict.Contains(_ENABLE_CASE_SENSITIVE_SEARCH_KEY) Then tempDict.Add(_ENABLE_CASE_SENSITIVE_SEARCH_KEY, "True")
                             If Not tempDict.Contains(NameOf(LoadImportedFullTextFromServer)) Then tempDict.Add(NameOf(LoadImportedFullTextFromServer), "False")
                             If Not tempDict.Contains(NameOf(UsePipeliningForNativeAndObjectImports)) Then tempDict.Add(NameOf(UsePipeliningForNativeAndObjectImports), "True")
                             If Not tempDict.Contains(NameOf(ProcessFormRefreshRate)) Then tempDict.Add(NameOf(ProcessFormRefreshRate), "0")
@@ -578,6 +580,16 @@ Namespace kCura.WinEDDS
                 Return System.Math.Max(CType(ConfigSettings("WebBasedFileDownloadChunkSize"), Int32), 1024)
             End Get
         End Property
+
+		Public Shared ReadOnly Property EnableCaseSensitiveSearchOnImport As Boolean
+			Get
+				Try
+					Return CType(ConfigSettings(_ENABLE_CASE_SENSITIVE_SEARCH_KEY), Boolean)
+				Catch ex As Exception
+					Return True
+				End Try
+			End Get
+		End Property
 
         Public Shared ReadOnly Property SendLiveApmMetrics As Boolean
 	        Get

@@ -1,15 +1,10 @@
 ﻿Imports System.Runtime.InteropServices
-Imports System.Windows.Forms
 
 Namespace kCura.WinEDDS.Helpers
 	Public Class CaseSensitiveFilePathHelper
 		Implements IFilePathHelper
 
 		Private ReadOnly _systemIoWrapper As ISystemIoFileWrapper
-
-		Public Sub New()
-			Me.New(New SystemIoFileWrapper())
-		End Sub
 
 		Public Sub New(systemIoWrapper As ISystemIoFileWrapper)
 			_systemIoWrapper = systemIoWrapper
@@ -27,7 +22,7 @@ Namespace kCura.WinEDDS.Helpers
 			Return TryToSearchInCaseSensitivePaths(path)
 		End Function
 
-		Private Function TryToSearchInCaseSensitivePaths(path As String) As String
+		Protected Overridable Function TryToSearchInCaseSensitivePaths(path As String) As String
 			Dim extension As String = _systemIoWrapper.GetExtension(path)
 			
 			If String.IsNullOrEmpty(extension)
