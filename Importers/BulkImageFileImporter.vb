@@ -788,7 +788,7 @@ Namespace kCura.WinEDDS
 				Dim fileExists As Boolean = Not String.IsNullOrEmpty(foundFileName)
 
 				If Not fileExists
-				Me.RaiseStatusEvent(Windows.Process.EventType.Error, $"Image file specified ( {imageRecord.FileLocation} ) does not exist.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+					Me.RaiseStatusEvent(Windows.Process.EventType.Error, $"Image file specified ( {imageRecord.FileLocation} ) does not exist.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
 					Return Relativity.MassImport.ImportStatus.FileSpecifiedDne
 				End If
 
@@ -801,7 +801,6 @@ Namespace kCura.WinEDDS
 			Dim retval As Relativity.MassImport.ImportStatus = Relativity.MassImport.ImportStatus.Pending
 				Dim validator As New kCura.ImageValidator.ImageValidator
 			
-				Dim path As String = GetFileLocation(imageRecord)
 				Try
 					If Not Me.DisableImageTypeValidation Then
 					validator.ValidateImage(imageFilePath)
