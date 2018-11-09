@@ -202,6 +202,10 @@ Namespace kCura.WinEDDS.Service
 			End Sub
 
 			Public Overrides Function ToString() As String
+				If MyBase.InnerException Is Nothing Then
+					Return MyBase.ToString
+				End If
+
 				Return MyBase.ToString + vbNewLine + MyBase.InnerException.ToString
 			End Function
 		End Class

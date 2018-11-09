@@ -191,7 +191,11 @@ Namespace kCura.WinEDDS.Service
 			End Sub
 
 			Public Overrides Function ToString() As String
-				Return DetailedException.ExceptionFullText
+				If Me.DetailedException Is Nothing
+					Return String.Empty
+				End If
+
+				Return Me.DetailedException.ExceptionFullText
 			End Function
 		End Class
 
@@ -297,7 +301,7 @@ Namespace kCura.WinEDDS.Service
 			''' The exception that Is the cause of the current exception, Or a null reference (Nothing in Visual Basic) if no inner exception Is specified.
 			''' </param>
 			Public Sub New(ByVal exception As EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail)
-				MyBase.New(exception.ExceptionMessage.Replace("##InsufficientPermissionsForImportException##", ""))
+				MyBase.New(ExtractErrorMessage(exception))
 			End Sub
 
 			''' <summary>
@@ -318,6 +322,18 @@ Namespace kCura.WinEDDS.Service
 			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
 				MyBase.New(info, context)
 			End Sub
+
+			Private Shared Function ExtractErrorMessage(ByVal exception As EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail) As String
+				If (exception Is Nothing) Then
+					Return Nothing
+				End If
+
+				If (String.IsNullOrEmpty(exception.ExceptionMessage)) Then
+					Return exception.ExceptionMessage
+				End If
+
+				Return exception.ExceptionMessage.Replace("##InsufficientPermissionsForImportException##", "")
+			End Function
 		End Class
 
 #End Region
