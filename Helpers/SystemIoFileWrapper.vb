@@ -1,17 +1,9 @@
-﻿Imports System.Windows.Forms
-
-Namespace kCura.WinEDDS.Helpers
+﻿Namespace kCura.WinEDDS.Helpers
 	Public Class SystemIoFileWrapper
 		Implements ISystemIoFileWrapper
 
 		Public Function Exists(path As String) As Boolean Implements ISystemIoFileWrapper.Exists
-			Try
-				Dim fileInfo As System.IO.FileInfo = new System.IO.FileInfo(path)
-				System.IO.File.Exists(path)
-				Return fileInfo.Exists
-			Catch ex As Exception
-				Return False
-			End Try
+			Return System.IO.File.Exists(path)
 		End Function
 
 		Public Function ChangeExtension(path As String, extension As String) As String Implements ISystemIoFileWrapper.ChangeExtension
