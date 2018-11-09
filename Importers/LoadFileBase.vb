@@ -504,7 +504,7 @@ Namespace kCura.WinEDDS
 							End If
 
 							If Not String.Equals(value, foundFileName)
-								PublishWarningEvent($"File {value} defined in column {columnIndex} does not exist. File {foundFileName} will be used instead.", Me.CurrentLineNumber)
+								PublishWarningEvent($"File {value} defined in column {columnIndex} in line {Me.CurrentLineNumber} does not exist. File {foundFileName} will be used instead.", Me.CurrentLineNumber)
 								value = foundFileName
 							End If
 						End If
