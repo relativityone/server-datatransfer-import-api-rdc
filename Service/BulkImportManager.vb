@@ -183,6 +183,13 @@ Namespace kCura.WinEDDS.Service
 				Me.DetailedException = TryCast(info.GetValue("DetailedException", GetType(EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail)), EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail)
 			End Sub
 
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Public Overrides Sub GetObjectData(info As System.Runtime.Serialization.SerializationInfo, context As System.Runtime.Serialization.StreamingContext)
+				info.AddValue("DetailedException", Me.DetailedException)
+				MyBase.GetObjectData(info, context)
+			End Sub
+
 			Public Overrides Function ToString() As String
 				Return DetailedException.ExceptionFullText
 			End Function
@@ -250,6 +257,13 @@ Namespace kCura.WinEDDS.Service
 			''' The details.
 			''' </value>
 			Public ReadOnly Property Details As String()
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Public Overrides Sub GetObjectData(info As System.Runtime.Serialization.SerializationInfo, context As System.Runtime.Serialization.StreamingContext)
+				info.AddValue("Details", Me.Details)
+				MyBase.GetObjectData(info, context)
+			End Sub
 		End Class
 
 		''' <summary>
