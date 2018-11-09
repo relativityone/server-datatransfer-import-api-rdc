@@ -1,6 +1,7 @@
 ﻿''' <summary>
 ''' The exception thrown when attempting to set a configurable setting with an invalid or out of range value.
 ''' </summary>
+<Serializable>
 Public Class ImportSettingsException
 	Inherits Exception
 
@@ -69,6 +70,7 @@ End Class
 ''' <summary>
 ''' The exception thrown when attempting to set a configurable setting with an invalid or out of range value due to a conflict with another configurable setting.
 ''' </summary>
+<Serializable>
 Public Class ImportSettingsConflictException
 	Inherits Exception
 
