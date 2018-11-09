@@ -9,14 +9,18 @@ Namespace kCura.Relativity.DataReaderClient.NUnit.Exceptions
 	<TestFixture()>
 	Public Class ExceptionSerializationTests
 
+		Public Shared ReadOnly Iterator Property TestCases() As IEnumerable
+			Get
+				Yield New ImportCredentialException("message", "username", "url")
+				Yield New ImportSettingsException("setting")
+				Yield New ImportSettingsException("setting", "additionalInfo")
+				Yield New ImportSettingsConflictException("setting", "conflictingSettings", "message")
+			End Get
+		End Property
+	
 		<Test>
-		Public Sub ItShouldSerializeAndDeserializeTheDataReaderClientException()
-	        SerializeAndDeserialize(new ImportCredentialException("message", "username", "url"))
-			SerializeAndDeserialize(new ImportSettingsException("setting", "additionalInfo"))
-			SerializeAndDeserialize(new ImportSettingsConflictException("setting", "conflictingSettings", "message"))
-		End Sub	
-
-		Private Sub SerializeAndDeserialize(ByVal exception As System.Exception)
+		<TestCaseSource(nameof(TestCases))>
+		Public Sub ItShouldSerializeAndDeserializeTheDataReaderClientException(ByVal exception As Exception)
 			Dim formatter As IFormatter = New BinaryFormatter()
 			Using stream As MemoryStream = New MemoryStream()
 				formatter.Serialize(stream, exception)
