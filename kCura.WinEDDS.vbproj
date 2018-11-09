@@ -417,7 +417,13 @@
     <Compile Include="FileUploader.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Helpers\CaseInsensitiveFilePathHelper.vb" />
+    <Compile Include="Helpers\CaseSensitiveFilePathHelper.vb" />
+    <Compile Include="Helpers\ConfigurableFilePathHelper.vb" />
     <Compile Include="Helpers\FieldValueHelper.vb" />
+    <Compile Include="Helpers\IFilePathHelper.vb" />
+    <Compile Include="Helpers\ISystemIoFileWrapper.vb" />
+    <Compile Include="Helpers\SystemIoFileWrapper.vb" />
     <Compile Include="IFieldProviderCache.vb" />
     <Compile Include="Importers\BulkImageFileImporter.vb">
       <SubType>Code</SubType>
@@ -441,10 +447,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Importers\IFolderCache.vb" />
+    <Compile Include="Importers\IImportConfig.vb" />
     <Compile Include="Importers\IImportJob.vb" />
     <Compile Include="Importers\ImageFilePreviewer.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Importers\ImportConfig.vb" />
     <Compile Include="Importers\ImportExportTapiBase.vb" />
     <Compile Include="Importers\LoadFileBase.vb">
       <SubType>Code</SubType>
