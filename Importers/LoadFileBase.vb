@@ -685,106 +685,335 @@ Namespace kCura.WinEDDS
 
 #Region "Exceptions"
 
+		''' <summary>
+		''' The exception thrown when the extracted text file length exceeds the max extracted text length.
+		''' When the encoding is not specified or is <see cref="System.Text.Encoding.UTF8"/>, the max length is 1GB;
+		''' otherwise, the max length is <see cref="System.Int32.MaxValue"/>.
+		''' </summary>
+		<Serializable>
 		Public Class ExtractedTextTooLargeException
 			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="ExtractedTextTooLargeException"/> class.
+			''' </summary>
 			Public Sub New()
 				MyBase.New(String.Format("Extracted text is too large."))
 			End Sub
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
+			End Sub
 		End Class
 
+		''' <summary>
+		''' The exception thrown when the identity value has already been processed.
+		''' </summary>
+		<Serializable>
 		Public Class IdentifierOverlapException
 			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="IdentifierOverlapException"/> class.
+			''' </summary>
+			''' <param name="identityValue">
+			''' The document identity value.
+			''' </param>
+			''' <param name="previousLineNumber">
+			''' The line number containing the existing identity value.
+			''' </param>
 			Public Sub New(ByVal identityValue As String, ByVal previousLineNumber As String)
 				MyBase.New(String.Format("Document '({0})' has been previously processed in this file on line {1}.", identityValue, previousLineNumber))
 			End Sub
-		End Class
 
-		Public Class MissingCodeTypeException
-			Inherits kCura.Utility.ImporterExceptionBase
-			Public Sub New(ByVal row As Int32, ByVal column As Int32)
-				MyBase.New(row, column, String.Format("Document field is marked as a code type, but it's missing a CodeType."))
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
 			End Sub
 		End Class
 
-		Public Class NullGroupIdentifierException
-			Inherits kCura.Utility.ImporterExceptionBase
-			Public Sub New(ByVal row As Int32, ByVal column As Int32)
-				MyBase.New(row, column, String.Format("Group Identifier fields cannot accept null or empty values."))
-			End Sub
-		End Class
-
+		''' <summary>
+		''' The exception thrown when extracted text file validation is enabled and the file does not exist.
+		''' </summary>
+		<Serializable>
 		Public Class MissingFullTextFileException
 			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="MissingFullTextFileException"/> class.
+			''' </summary>
+			''' <param name="row">
+			''' The row where the error occurred.
+			''' </param>
+			''' <param name="column">
+			''' The column where the error occurred.
+			''' </param>
 			Public Sub New(ByVal row As Int32, ByVal column As Int32)
 				MyBase.New(row, column, String.Format("Error: full text file specified does not exist."))
 			End Sub
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
+			End Sub
 		End Class
 
+		''' <summary>
+		''' The exception thrown when the user artifact does not exist within the Relativity instance.
+		''' </summary>
+		<Serializable>
 		Public Class MissingUserException
 			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="MissingUserException"/> class.
+			''' </summary>
+			''' <param name="row">
+			''' The row where the error occurred.
+			''' </param>
+			''' <param name="column">
+			''' The column where the error occurred.
+			''' </param>
+			''' <param name="invalidEmailaddress">
+			''' The invalid email or user account.
+			''' </param>
 			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal invalidEmailaddress As String)
 				MyBase.New(row, column, String.Format("User '{0}' does not exist in the system or is not available for assignment.", invalidEmailaddress))
 			End Sub
-		End Class
 
-		Public Class CodeCreationException
-			Inherits kCura.Utility.ImporterExceptionBase
-			Private _isFatal As Boolean
-			Public ReadOnly Property IsFatal() As Boolean
-				Get
-					Return _isFatal
-				End Get
-			End Property
-			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal isFatal As Boolean, ByVal errorText As String)
-				MyBase.New(row, column, errorText)
-				_isFatal = isFatal
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
 			End Sub
 		End Class
 
+		''' <summary>
+		''' The exception thrown when a failure occurs attempting to create a new code.
+		''' </summary>
+		<Serializable>
+		Public Class CodeCreationException
+			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="CodeCreationException"/> class.
+			''' </summary>
+			''' <param name="row">
+			''' The row where the error occurred.
+			''' </param>
+			''' <param name="column">
+			''' The column where the error occurred.
+			''' </param>
+			''' <param name="isFatal">
+			''' Specify whether the error is fatal.
+			''' </param>
+			''' <param name="errorText">
+			''' The error text.
+			''' </param>
+			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal isFatal As Boolean, ByVal errorText As String)
+				MyBase.New(row, column, errorText)
+				Me.IsFatal = isFatal
+			End Sub
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
+				Me.IsFatal = info.GetBoolean("IsFatal")
+			End Sub
+
+			''' <summary>
+			''' Gets a value indicating whether the error is fatal.
+			''' </summary>
+			''' <value>
+			''' <see langword="true"/> if the error is considered fatal; otherwise, <see langword="false"/>.
+			''' </value>
+			Public ReadOnly Property IsFatal As Boolean
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Public Overrides Sub GetObjectData(info As System.Runtime.Serialization.SerializationInfo, context As System.Runtime.Serialization.StreamingContext)
+				info.AddValue("IsFatal", Me.IsFatal)
+				MyBase.GetObjectData(info, context)
+			End Sub
+		End Class
+
+		''' <summary>
+		''' The exception thrown when the load file line includes more columns than defined by the headers.
+		''' </summary>
+		<Serializable>
 		Public Class ColumnCountMismatchException
 			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="ColumnCountMismatchException"/> class.
+			''' </summary>
+			''' <param name="row">
+			''' The row where the error occurred.
+			''' </param>
+			''' <param name="expecting">
+			''' The expected number of cells in this row.
+			''' </param>
+			''' <param name="actual">
+			''' The actual number of cells in this row.
+			''' </param>
 			Public Sub New(ByVal row As Int32, ByVal expecting As Int32, ByVal actual As Int32)
 				MyBase.New(row, -1, String.Format("There are an invalid number of cells in this row - expecting:{0}, actual:{1}.", expecting, actual))
 			End Sub
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
+			End Sub
 		End Class
 
+		''' <summary>
+		''' The exception thrown when an object reference already exists and would result in a duplicate if allowed to be imported.
+		''' </summary>
+		<Serializable>
 		Public Class DuplicateObjectReferenceException
 			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="DuplicateObjectReferenceException"/> class.
+			''' </summary>
+			''' <param name="row">
+			''' The row where the error occurred.
+			''' </param>
+			''' <param name="column">
+			''' The column where the error occurred.
+			''' </param>
+			''' <param name="fieldName">
+			''' The field name for the existing reference.
+			''' </param>
 			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal fieldName As String)
 				MyBase.New(row, column, String.Format("Object identifier for field {0} references an identifier that is not unique.", fieldName))
 			End Sub
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
+			End Sub
 		End Class
 
+		''' <summary>
+		''' The exception thrown when a parent reference does not exist.
+		''' </summary>
+		<Serializable>
 		Public Class NonExistentParentException
 			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="NonExistentParentException"/> class.
+			''' </summary>
+			''' <param name="row">
+			''' The row where the error occurred.
+			''' </param>
+			''' <param name="column">
+			''' The column where the error occurred.
+			''' </param>
+			''' <param name="fieldName">
+			''' The field name for the non-existent parent reference.
+			''' </param>
 			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal fieldName As String)
 				MyBase.New(row, column, String.Format("Object references a parent object that does not exist.", fieldName))
 			End Sub
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
+			End Sub
 		End Class
 
+		''' <summary>
+		''' The exception thrown when a parent object reference does not exist.
+		''' </summary>
+		<Serializable>
 		Public Class ParentObjectReferenceRequiredException
 			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="ParentObjectReferenceRequiredException"/> class.
+			''' </summary>
+			''' <param name="row">
+			''' The row where the error occurred.
+			''' </param>
+			''' <param name="column">
+			''' The column where the error occurred.
+			''' </param>
 			Public Sub New(ByVal row As Int32, ByVal column As Int32)
 				MyBase.New(row, column, String.Format("Null parent object identifier found, this is required for the Parent Info field."))
 			End Sub
-		End Class
 
-		Public Class BcpPathAccessException
-			Inherits kCura.Utility.ImporterExceptionBase
-			Public Sub New(ByVal details As String)
-				MyBase.New("Error accessing the bcp share. Please contact your system administrator with the following details: " & System.Environment.NewLine & details)
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
 			End Sub
 		End Class
 
+		''' <summary>
+		''' The exception thrown when a failure occurs accessing the BCP share.
+		''' </summary>
+		<Serializable>
+		Public Class BcpPathAccessException
+			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="BcpPathAccessException"/> class.
+			''' </summary>
+			''' <param name="details">
+			''' The error details.
+			''' </param>
+			Public Sub New(ByVal details As String)
+				MyBase.New("Error accessing the bcp share. Please contact your system administrator with the following details: " & System.Environment.NewLine & details)
+			End Sub
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
+			End Sub
+		End Class
+
+		''' <summary>
+		''' The exception thrown when a multi-choice value already exists and would result in a duplicate if allowed to be imported.
+		''' </summary>
+		<Serializable>
 		Public Class DuplicateMulticodeValueException
 			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="DuplicateMulticodeValueException"/> class.
+			''' </summary>
+			''' <param name="row">
+			''' The row where the error occurred.
+			''' </param>
+			''' <param name="column">
+			''' The column where the error occurred.
+			''' </param>
+			''' <param name="codeName">
+			''' The choice name that was duplicated.
+			''' </param>
 			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal codeName As String)
 				MyBase.New(row, column, String.Format("Code value '{0}' specified twice for this record", codeName))
+			End Sub
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
 			End Sub
 		End Class
 
 #End Region
-
 
 		Private Sub _artifactReader_OnIoWarning(ByVal e As Api.IoWarningEventArgs) Handles _artifactReader.OnIoWarning
 			If e.Exception Is Nothing Then

@@ -1983,76 +1983,70 @@ Namespace kCura.WinEDDS
 
 #Region "Exceptions"
 
+		''' <summary>
+		''' The exception thrown when the identity field value is null or empty.
+		''' </summary>
+		<Serializable>
 		Public Class IdentityValueNotSetException
 			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="IdentityValueNotSetException"/> class.
+			''' </summary>
 			Public Sub New()
 				MyBase.New("Identity value not set")
 			End Sub
-		End Class
 
-		Public Class IdentityValueNotFoundException
-			Inherits kCura.Utility.ImporterExceptionBase
-			Public Sub New(ByVal value As String)
-				MyBase.New($"Identity value '{value}' not found")
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
 			End Sub
 		End Class
 
-		Public Class DocumentDomainException
-			Inherits kCura.Utility.ImporterExceptionBase
-			Public Sub New(ByVal ex As System.Exception)
-				MyBase.New("Error accessing document information in domain layer: " & ex.Message.Replace("System.Web.Services.Protocols.SoapException: Server was unable to process request. ---> ", ""), ex)
-			End Sub
-		End Class
-
-		Public Class DocumentReadException
-			Inherits kCura.Utility.ImporterExceptionBase
-			Public Sub New(ByVal parentException As System.Exception)
-				MyBase.New("Error retrieving document information from EDDS: [" & parentException.Message & "]", parentException)
-			End Sub
-		End Class
-
-		Public Class DocumentOverwriteException
-			Inherits kCura.Utility.ImporterExceptionBase
-			Public Sub New()
-				MyBase.New("Identifier points to document that would be overwritten")
-			End Sub
-		End Class
-
-		Public Class InvalidFilenameException
-			Inherits kCura.Utility.ImporterExceptionBase
-			Public Sub New(ByVal filename As String)
-				MyBase.New($"File '{filename}' not found.")
-			End Sub
-		End Class
-
-		Public Class EmptyNativeFileException
-			Inherits kCura.Utility.ImporterExceptionBase
-			Public Sub New(ByVal filename As String)
-				MyBase.New($"File '{filename}' contains 0 bytes.")
-			End Sub
-		End Class
-
-		Public Class FileUploadFailedException
-			Inherits kCura.Utility.ImporterExceptionBase
-			Public Sub New()
-				MyBase.New("File upload failed.  Either the access to the path is denied or there is no disk space available.")
-			End Sub
-		End Class
-
+		''' <summary>
+		''' The exception thrown when the extracted text file does not exist.
+		''' </summary>
+		<Serializable>
 		Public Class ExtractedTextFileNotFoundException
 			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="ExtractedTextFileNotFoundException"/> class.
+			''' </summary>
 			Public Sub New()
 				MyBase.New("Error occurred when importing the document. Extracted text is missing.")
 			End Sub
-		End Class
 
-		Public Shadows Class ExtractedTextTooLargeException
-			Inherits kCura.Utility.ImporterExceptionBase
-			Public Sub New()
-				MyBase.New("Error occurred when importing the document. Extracted text is greater than 2 GB.")
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
 			End Sub
 		End Class
 
+		''' <summary>
+		''' The exception thrown when the extracted text file length exceeds the max extracted text length.
+		''' When the encoding is not specified or is <see cref="System.Text.Encoding.UTF8"/>, the max length is 1GB;
+		''' otherwise, the max length is <see cref="System.Int32.MaxValue"/>.
+		''' </summary>
+		<Serializable>
+		Public Shadows Class ExtractedTextTooLargeException
+			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="ExtractedTextTooLargeException"/> class.
+			''' </summary>
+			Public Sub New()
+				MyBase.New("Error occurred when importing the document. Extracted text is greater than 2 GB.")
+			End Sub
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
+			End Sub
+		End Class
 #End Region
 
 		Private Sub _artifactReader_DataSourcePrep(ByVal e As Api.DataSourcePrepEventArgs) Handles _artifactReader.DataSourcePrep

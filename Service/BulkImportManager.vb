@@ -126,31 +126,61 @@ Namespace kCura.WinEDDS.Service
 
 #Region " Exceptions "
 
+		''' <summary>
+		''' The exception thrown when a SQL exception is thrown when performing a bulk import service call.
+		''' </summary>
 		<Serializable>
 		Public Class BulkImportSqlException
 			Inherits System.Exception
 
 			Private Property DetailedException As EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail
 
+			''' <summary>
+			''' Initializes a new instance of the <see cref="BulkImportSqlException"/> class.
+			''' </summary>
 			Public Sub New()
 				MyBase.New
 			End Sub
 
+			''' <summary>
+			''' Initializes a new instance of the <see cref="BulkImportSqlException"/> class.
+			''' </summary>
+			''' <param name="message">
+			''' The error message that explains the reason for the exception.
+			''' </param>
 			Public Sub New(ByVal message As String)
 				MyBase.New(message)
 			End Sub
 
+			''' <summary>
+			''' Initializes a new instance of the <see cref="BulkImportSqlException"/> class.
+			''' </summary>
+			''' <param name="message">
+			''' The error message that explains the reason for the exception.
+			''' </param>
+			''' <param name="innerException">
+			''' The exception that Is the cause of the current exception, Or a null reference (Nothing in Visual Basic) if no inner exception Is specified.
+			''' </param>
 			Public Sub New(ByVal message As String, ByVal innerException As Exception)
 				MyBase.New(message, innerException)
 			End Sub
 
-			Public Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
-				MyBase.New(info, context)
-			End Sub
-
+			''' <summary>
+			''' Initializes a new instance of the <see cref="BulkImportSqlException"/> class.
+			''' </summary>
+			''' <param name="exception">
+			''' The exception that Is the cause of the current exception, Or a null reference (Nothing in Visual Basic) if no inner exception Is specified.
+			''' </param>
 			Public Sub New(ByVal exception As EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail)
 				MyBase.New(exception.ExceptionMessage)
 				Me.DetailedException = exception
+			End Sub
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
+				Me.DetailedException = TryCast(info.GetValue("DetailedException", GetType(EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail)), EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail)
 			End Sub
 
 			Public Overrides Function ToString() As String
@@ -158,66 +188,125 @@ Namespace kCura.WinEDDS.Service
 			End Function
 		End Class
 
+		''' <summary>
+		''' The exception thrown when a SQL timeout exception is thrown when performing a bulk import service call.
+		''' </summary>
 		<Serializable>
 		Public Class BulkImportSqlTimeoutException
 			Inherits BulkImportSqlException
-			Private _details As String()
-			Public ReadOnly Property Details As String()
-				Get
-					Return _details
-				End Get
-			End Property
 
+			''' <summary>
+			''' Initializes a new instance of the <see cref="BulkImportSqlTimeoutException"/> class.
+			''' </summary>
 			Public Sub New()
 				MyBase.New
 			End Sub
 
+			''' <summary>
+			''' Initializes a new instance of the <see cref="BulkImportSqlTimeoutException"/> class.
+			''' </summary>
+			''' <param name="message">
+			''' The error message that explains the reason for the exception.
+			''' </param>
 			Public Sub New(ByVal message As String)
 				MyBase.New(message)
 			End Sub
 
+			''' <summary>
+			''' Initializes a new instance of the <see cref="BulkImportSqlTimeoutException"/> class.
+			''' </summary>
+			''' <param name="message">
+			''' The error message that explains the reason for the exception.
+			''' </param>
+			''' <param name="innerException">
+			''' The exception that Is the cause of the current exception, Or a null reference (Nothing in Visual Basic) if no inner exception Is specified.
+			''' </param>
 			Public Sub New(ByVal message As String, ByVal innerException As Exception)
 				MyBase.New(message, innerException)
 			End Sub
 
-			Public Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
-				MyBase.New(info, context)
-			End Sub
-
+			''' <summary>
+			''' Initializes a new instance of the <see cref="BulkImportSqlTimeoutException"/> class.
+			''' </summary>
+			''' <param name="exception">
+			''' The exception that Is the cause of the current exception, Or a null reference (Nothing in Visual Basic) if no inner exception Is specified.
+			''' </param>
 			Public Sub New(ByVal exception As EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail)
 				MyBase.New(exception)
-				_details = exception.Details
+				Me.Details = exception.Details
 			End Sub
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
+				Me.Details = TryCast(info.GetValue("Details", GetType(String())), String())
+			End Sub
+
+			''' <summary>
+			''' Gets the list of details.
+			''' </summary>
+			''' <value>
+			''' The details.
+			''' </value>
+			Public ReadOnly Property Details As String()
 		End Class
 
+		''' <summary>
+		''' The exception thrown when a SQL timeout exception is thrown when performing a bulk import service call.
+		''' </summary>
 		<Serializable>
 		Public Class InsufficientPermissionsForImportException
 			Inherits System.Exception
 
+			''' <summary>
+			''' Initializes a new instance of the <see cref="InsufficientPermissionsForImportException"/> class.
+			''' </summary>
 			Public Sub New()
 				MyBase.New
 			End Sub
 
+			''' <summary>
+			''' Initializes a new instance of the <see cref="InsufficientPermissionsForImportException"/> class.
+			''' </summary>
+			''' <param name="message">
+			''' The error message that explains the reason for the exception.
+			''' </param>
 			Public Sub New(ByVal message As String)
 				MyBase.New(message)
 			End Sub
 
+			''' <summary>
+			''' Initializes a new instance of the <see cref="InsufficientPermissionsForImportException"/> class.
+			''' </summary>
+			''' <param name="exception">
+			''' The exception that Is the cause of the current exception, Or a null reference (Nothing in Visual Basic) if no inner exception Is specified.
+			''' </param>
+			Public Sub New(ByVal exception As EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail)
+				MyBase.New(exception.ExceptionMessage.Replace("##InsufficientPermissionsForImportException##", ""))
+			End Sub
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="InsufficientPermissionsForImportException"/> class.
+			''' </summary>
+			''' <param name="message">
+			''' The error message that explains the reason for the exception.
+			''' </param>
+			''' <param name="innerException">
+			''' The exception that Is the cause of the current exception, Or a null reference (Nothing in Visual Basic) if no inner exception Is specified.
+			''' </param>
 			Public Sub New(ByVal message As String, ByVal innerException As Exception)
 				MyBase.New(message, innerException)
 			End Sub
 
-			Public Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
 				MyBase.New(info, context)
-			End Sub
-
-			Public Sub New(ByVal exception As EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail)
-				MyBase.New(exception.ExceptionMessage.Replace("##InsufficientPermissionsForImportException##", ""))
 			End Sub
 		End Class
 
 #End Region
 
 	End Class
-
-
 End Namespace
