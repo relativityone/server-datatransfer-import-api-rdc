@@ -7,8 +7,7 @@ Imports kCura.OI.FileID
 Imports kCura.Utility.Extensions
 Imports kCura.Windows.Process
 Imports kCura.WinEDDS.Api
-Imports kCura.WinEDDS.TApi
-Imports Polly
+Imports kCura.WinEDDS.Helpers
 Imports Relativity
 
 Namespace kCura.WinEDDS
@@ -96,6 +95,8 @@ Namespace kCura.WinEDDS
 				_timekeeper = value
 			End Set
 		End Property
+
+		Private ReadOnly _filePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
 #End Region
 
 #Region "Accessors"
@@ -699,6 +700,7 @@ Namespace kCura.WinEDDS
 
 		Private Function ManageDocument(ByVal fileService As kCura.OI.FileID.FileIDService, ByVal record As Api.ArtifactFieldCollection, ByVal lineStatus As Int64) As String
 			Dim filename As String = String.Empty
+			Dim originalFilename As String = String.Empty
 			Dim fileGuid As String = String.Empty
 			Dim uploadFile As Boolean = record.FieldList(Relativity.FieldTypeHelper.FieldType.File).Length > 0 AndAlso Not record.FieldList(Relativity.FieldTypeHelper.FieldType.File)(0).Value Is Nothing
 			Dim fileExists As Boolean
@@ -708,7 +710,6 @@ Namespace kCura.WinEDDS
 			Dim oixFileIdData As OI.FileID.FileIDData = Nothing
 			Dim destinationVolume As String = Nothing
 			Dim injectableContainer As Api.IInjectableFieldCollection = TryCast(record, Api.IInjectableFieldCollection)
-			Dim folderPath As String = String.Empty
 
 			Dim injectableContainerIsNothing As Boolean = injectableContainer Is Nothing
 
@@ -719,10 +720,18 @@ Namespace kCura.WinEDDS
 						filename = "." & filename
 					End If
 
+					originalFilename = filename
+
 					If Me.DisableNativeLocationValidation Then
 						fileExists = True
 					Else
-						fileExists = System.IO.File.Exists(filename)
+						Dim foundFileName As String = _filePathHelper.GetExistingFilePath(filename)
+						fileExists = Not String.IsNullOrEmpty(foundFileName)
+
+						If fileExists AndAlso (Not String.Equals(filename, foundFileName))
+							WriteWarning($"File {filename} does not exist. File {foundFileName} will be used instead.")
+							filename = foundFileName
+						End If
 					End If
 
 					If filename.Trim.Equals(String.Empty) Then
@@ -730,14 +739,14 @@ Namespace kCura.WinEDDS
 					End If
 
 					If filename <> String.Empty AndAlso Not fileExists Then
-					    lineStatus += Relativity.MassImport.ImportStatus.FileSpecifiedDne
+						lineStatus += Relativity.MassImport.ImportStatus.FileSpecifiedDne
 					End If
 					If fileExists AndAlso Not Me.DisableNativeLocationValidation Then
 						If IoReporterInstance.GetFileLength(filename, Me.CurrentLineNumber) = 0 Then
 							If _createErrorForEmptyNativeFile Then
 								lineStatus += Relativity.MassImport.ImportStatus.EmptyFile
 							Else
-								WriteWarning("Note that file " & filename & " has been detected as empty, metadata and the native file will be loaded.")
+								WriteWarning($"Note that file {filename} has been detected as empty, metadata and the native file will be loaded.")
 							End If
 						End If
 					End If
@@ -759,8 +768,8 @@ Namespace kCura.WinEDDS
 									Dim retryPolicy As Retry.RetryPolicy = Policy.Handle(Of kCura.OI.FileID.FileIDException).WaitAndRetry(
 										Me.NumberOfRetries,
 										Function(count) As TimeSpan
-											' Force OI to get reinitialized in the event the runtime configuration is invalid.
-											If count > 1 Then
+										' Force OI to get reinitialized in the event the runtime configuration is invalid.
+										If count > 1 Then
 												fileService.Reinitialize()
 											End If
 											Return TimeSpan.FromSeconds(Me.WaitTimeBetweenRetryAttempts)
@@ -769,9 +778,9 @@ Namespace kCura.WinEDDS
 											LogError(exception, "Retry - {span} - OI failed to identify the '{fullFilePath}' source file.", span, fullFilePath)
 										End Sub)
 									oixFileIdData = retryPolicy.Execute(
-										Function()
-											Return fileService.Identify(fullFilePath)
-										End Function)
+											Function()
+												Return fileService.Identify(fullFilePath)
+											End Function)
 								Else
 									oixFileIdData = idDataExtractor.GetFileIDData()
 								End If
@@ -785,7 +794,7 @@ Namespace kCura.WinEDDS
 									fileGuid = FileTapiBridge.AddPath(filename, guid, Me.CurrentLineNumber)
 									destinationVolume = FileTapiBridge.TargetFolderName
 								Else
-									WriteWarning("File " & filename & " does not exist and will be not uploaded")
+									WriteWarning($"File {filename} does not exist and will be not uploaded")
 								End If
 							Else
 								fileGuid = System.Guid.NewGuid.ToString
@@ -794,7 +803,7 @@ Namespace kCura.WinEDDS
 							If (Not injectableContainerIsNothing AndAlso injectableContainer.HasFileName()) Then
 								filename = injectableContainer.FileName.GetFileName()
 							Else
-								filename = Path.GetFileName(fullFilePath)
+								filename = Path.GetFileName(originalFilename)
 							End If
 						Catch ex As System.IO.FileNotFoundException
 							If Me.DisableNativeLocationValidation Then
@@ -812,7 +821,8 @@ Namespace kCura.WinEDDS
 				End If
 			End Using
 
-			Using Timekeeper.CaptureTime("ManageDocument_Folder")
+			Dim folderPath As String = String.Empty
+			Using TimeKeeper.CaptureTime("ManageDocument_Folder")
 				If _createFolderStructure Then
 					If _artifactTypeID = Relativity.ArtifactType.Document Then
 						Dim value As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value))
@@ -991,11 +1001,11 @@ Namespace kCura.WinEDDS
 					If tries = 0 Then
 						Me.LogFatal(ex, "The native bulk import service call failed and exceeded the max retry attempts.")
 						Throw
-					ElseIf IsTimeoutException(ex) Then
+					Else If IsTimeoutException(ex) Then
 						' A timeout exception can be retried.
 						Me.LogError(ex, "A SQL or HTTP timeout error has occurred bulk importing the native batch.")
 						Throw
-					ElseIf Not ShouldImport Then
+					Else If Not ShouldImport Then
 						' Don't log cancel requests
 						Throw
 					ElseIf IsBulkImportSqlException(ex) Then
@@ -1468,7 +1478,7 @@ Namespace kCura.WinEDDS
 
 				If supportedByViewerProvider Is Nothing
 					WriteDocumentNativeInfo(Me.IsSupportedRelativityFileType(mdoc.FileIdData), mdoc.GetFileType(), True)
-				Else 
+				Else
 					WriteDocumentNativeInfo(supportedByViewerProvider.SupportedByViewer(), mdoc.GetFileType(), True)
 				End If
 			Else
@@ -1480,9 +1490,9 @@ Namespace kCura.WinEDDS
 			Dim supportedByViewerAsString As String = ConvertToString(supportedByViewer)
 			Dim hasNativeAsString As String = ConvertToString(hasNative)
 
-			OutputFileWriter.OutputNativeFileWriter.Write(supportedByViewerAsString & BulkLoadFileFieldDelimiter)	'SupportedByViewer
-			OutputFileWriter.OutputNativeFileWriter.Write(relativityNativeType & BulkLoadFileFieldDelimiter)		'RelativityNativeType
-			OutputFileWriter.OutputNativeFileWriter.Write(hasNativeAsString & BulkLoadFileFieldDelimiter)			'HasNative
+			OutputFileWriter.OutputNativeFileWriter.Write(supportedByViewerAsString & BulkLoadFileFieldDelimiter)   'SupportedByViewer
+			OutputFileWriter.OutputNativeFileWriter.Write(relativityNativeType & BulkLoadFileFieldDelimiter)        'RelativityNativeType
+			OutputFileWriter.OutputNativeFileWriter.Write(hasNativeAsString & BulkLoadFileFieldDelimiter)           'HasNative
 		End Sub
 
 		Private Function ConvertToString(booleanValue As Boolean) As String

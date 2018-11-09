@@ -1,5 +1,6 @@
 Imports System.Threading
 Imports kCura.Utility.Extensions.Enumerable
+Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.TApi
 Imports Relativity
 Imports Relativity.Logging
@@ -54,6 +55,7 @@ Namespace kCura.WinEDDS
 		Private _codeValidator As CodeValidator.Base
 		Protected WithEvents _artifactReader As Api.IArtifactReader
 		Protected _executionSource As Relativity.ExecutionSource
+		Protected ReadOnly FilePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
 		Public Property SkipExtractedTextEncodingCheck As Boolean
 		Public Property LoadImportedFullTextFromServer As Boolean
 		Public Property DisableExtractedTextFileLocationValidation As Boolean
@@ -492,53 +494,67 @@ Namespace kCura.WinEDDS
 						Dim performExtractedTextFileLocationValidation As Boolean = Not DisableExtractedTextFileLocationValidation
 						If value = String.Empty Then
 							field.Value = String.Empty
-						ElseIf (performExtractedTextFileLocationValidation AndAlso Not System.IO.File.Exists(value)) Then
-							Throw New MissingFullTextFileException(Me.CurrentLineNumber, columnIndex)
-						Else
-							Dim detectedEncoding As System.Text.Encoding = _extractedTextFileEncoding
-							Dim determinedEncodingStream As DeterminedEncodingStream
+							Exit Select
+						End If
 
-							'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
-							' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
-							' across the network for the file, so this override allows that check to be skipped.
-							' -Phil S. 07/27/2012
-							If Not SkipExtractedTextEncodingCheck Then
-								determinedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False, performExtractedTextFileLocationValidation)
-								detectedEncoding = determinedEncodingStream.DeterminedEncoding
+						If (performExtractedTextFileLocationValidation) Then
+							Dim foundFileName As String = FilePathHelper.GetExistingFilePath(value)
+							Dim fileExists As Boolean = Not String.IsNullOrEmpty(foundFileName)
+							
+							If Not fileExists
+								Throw New MissingFullTextFileException(Me.CurrentLineNumber, columnIndex)
 							End If
 
-							If (performExtractedTextFileLocationValidation AndAlso (New System.IO.FileInfo(value).Length > GetMaxExtractedTextLength(detectedEncoding))) Then
-								Throw New ExtractedTextTooLargeException
-							Else
-								If forPreview Then
-									' Determine Encoding Here
-									determinedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False)
-									detectedEncoding = determinedEncodingStream.DeterminedEncoding
-									Dim chosenEncoding As System.Text.Encoding
-									If detectedEncoding IsNot Nothing Then
-										chosenEncoding = detectedEncoding
-									Else
-										chosenEncoding = _extractedTextFileEncoding
-									End If
-									Dim sr As New System.IO.StreamReader(determinedEncodingStream.UnderlyingStream, chosenEncoding)
-									Dim i As Int32 = 0
-									Dim sb As New System.Text.StringBuilder
-									While sr.Peek <> -1 AndAlso i < 100
-										sb.Append(ChrW(sr.Read))
-										i += 1
-									End While
-									If i = 100 Then sb.Append("...")
-									extractedTextFileCodePageId = chosenEncoding.CodePage
-									sr.Close()
-									determinedEncodingStream.Close()
-									'sb = sb.Replace(System.Environment.NewLine, Me.NewlineProxy).Replace(ChrW(10), Me.NewlineProxy).Replace(ChrW(13), Me.NewlineProxy)
-									field.Value = sb.ToString
+							If Not String.Equals(value, foundFileName)
+								PublishWarningEvent($"File {value} defined in column {columnIndex} in line {Me.CurrentLineNumber} does not exist. File {foundFileName} will be used instead.", Me.CurrentLineNumber)
+								value = foundFileName
+							End If
+						End If
+						
+						Dim detectedEncoding As System.Text.Encoding = _extractedTextFileEncoding
+						Dim determinedEncodingStream As DeterminedEncodingStream
+
+						'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
+						' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
+						' across the network for the file, so this override allows that check to be skipped.
+						' -Phil S. 07/27/2012
+						If Not SkipExtractedTextEncodingCheck Then
+							determinedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False, performExtractedTextFileLocationValidation)
+							detectedEncoding = determinedEncodingStream.DeterminedEncoding
+						End If
+
+						If (performExtractedTextFileLocationValidation AndAlso (New System.IO.FileInfo(value).Length > GetMaxExtractedTextLength(detectedEncoding))) Then
+							Throw New ExtractedTextTooLargeException
+						Else
+							If forPreview Then
+								' Determine Encoding Here
+								determinedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False)
+								detectedEncoding = determinedEncodingStream.DeterminedEncoding
+								Dim chosenEncoding As System.Text.Encoding
+								If detectedEncoding IsNot Nothing Then
+									chosenEncoding = detectedEncoding
 								Else
-									field.Value = value
+									chosenEncoding = _extractedTextFileEncoding
 								End If
+								Dim sr As New System.IO.StreamReader(determinedEncodingStream.UnderlyingStream, chosenEncoding)
+								Dim i As Int32 = 0
+								Dim sb As New System.Text.StringBuilder
+								While sr.Peek <> -1 AndAlso i < 100
+									sb.Append(ChrW(sr.Read))
+									i += 1
+								End While
+								If i = 100 Then sb.Append("...")
+								extractedTextFileCodePageId = chosenEncoding.CodePage
+								sr.Close()
+								determinedEncodingStream.Close()
+								'sb = sb.Replace(System.Environment.NewLine, Me.NewlineProxy).Replace(ChrW(10), Me.NewlineProxy).Replace(ChrW(13), Me.NewlineProxy)
+								field.Value = sb.ToString
+							Else
+								field.Value = value
 							End If
 						End If
 					End If
+
 				Case Else
 					Throw New System.Exception("Unsupported Field Type '" & field.Type.ToString & "'")
 			End Select
@@ -788,12 +804,16 @@ Namespace kCura.WinEDDS
 
 		Private Sub _artifactReader_OnIoWarning(ByVal e As Api.IoWarningEventArgs) Handles _artifactReader.OnIoWarning
 			If e.Exception Is Nothing Then
-				IoReporterInstance?.IOWarningPublisher?.PublishIoWarningEvent(new IoWarningEventArgs(e.Message, e.CurrentLineNumber))
+				PublishWarningEvent(e.Message, e.CurrentLineNumber)
 			Else
 				Dim message As String = IoReporter.BuildIoReporterWarningMessage(e.Exception, e.WaitTime)
 				IoReporterInstance?.IOWarningPublisher?.PublishIoWarningEvent(new IoWarningEventArgs(message, e.CurrentLineNumber))
 			End If
 		End Sub
 
+		Private Sub PublishWarningEvent(message As String, currentLineNumber As Long)
+			Dim ioEvent As IoWarningEventArgs = new IoWarningEventArgs(message, currentLineNumber)
+			IoReporterInstance?.IOWarningPublisher?.PublishIoWarningEvent(ioEvent)
+		End Sub
 	End Class
 End Namespace
