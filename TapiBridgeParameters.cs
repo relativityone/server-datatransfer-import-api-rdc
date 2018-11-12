@@ -42,7 +42,7 @@ namespace kCura.WinEDDS.TApi
             this.MaxJobRetryAttempts = 3;
             this.MinDataRateMbps = 0;
             this.PermissionErrorsRetry = false;
-            this.SubmitApmMetrics = false;
+            this.SubmitApmMetrics = true;
             this.SupportCheckPath = null;
             this.TargetDataRateMbps = 100;
             this.TargetPath = null;
@@ -314,7 +314,7 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to submit APM metrics to Relativity once the transfer job completes. This is <see langword="false" /> by default.
+        /// Gets or sets a value indicating whether to submit APM metrics to Relativity once the transfer job completes. This is <see langword="true" /> by default.
         /// </summary>
         /// <value>
         /// <see langword="true" /> to submit APM metrics; otherwise, <see langword="false" />.
