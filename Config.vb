@@ -55,7 +55,7 @@ Namespace kCura.WinEDDS
                             If Not tempDict.Contains("TapiAsperaBcpRootFolder") Then tempDict.Add("TapiAsperaBcpRootFolder", "")
                             If Not tempDict.Contains("TapiForceAsperaClient") Then tempDict.Add("TapiForceAsperaClient", "False")
                             If Not tempDict.Contains("TapiMinDataRateMbps") Then tempDict.Add("TapiMinDataRateMbps", "0")
-                            If Not tempDict.Contains("TapiSubmitApmMetrics") Then tempDict.Add("TapiSubmitApmMetrics", "False")
+                            If Not tempDict.Contains("TapiSubmitApmMetrics") Then tempDict.Add("TapiSubmitApmMetrics", "True")
                             If Not tempDict.Contains("TapiTargetDataRateMbps") Then tempDict.Add("TapiTargetDataRateMbps", "100")
                             If Not tempDict.Contains("TapiTransferLogDirectory") Then tempDict.Add("TapiTransferLogDirectory", "")
                             If Not tempDict.Contains("TapiLargeFileProgressEnabled") Then tempDict.Add("TapiLargeFileProgressEnabled", "False")
@@ -173,7 +173,7 @@ Namespace kCura.WinEDDS
 
 #Region " Feature Toggles " 'TODO: either promote these to client-facing toggles with documentation or remove them
 
-        'This is used to set the application name. This is used for APM metrics and other reporting features. If not specified, the process name is used.
+        'This sets the application name and is used to drive APM metrics and other reporting features. If not specified, the process name is used.
         Public Shared ReadOnly Property ApplicationName() As String
 	        Get
 		        Return CType(ConfigSettings("ApplicationName"), String)
