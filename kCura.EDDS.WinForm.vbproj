@@ -455,6 +455,11 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Exceptions.vb" />
+    <Compile Include="My Project\Settings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="Startup.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -544,6 +549,10 @@
     <Content Include="images\kcura.ICO" />
     <Content Include="images\relativity.ICO" />
     <Content Include="images\relativity1.ICO" />
+    <None Include="My Project\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

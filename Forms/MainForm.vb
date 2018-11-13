@@ -443,7 +443,7 @@ End Sub
         Private Async Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 
             ServicePointManager.DefaultConnectionLimit = Environment.ProcessorCount * 12
-
+            LoadWindowSize()
             Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
             _application.TemporaryForceFolderPreview = kCura.WinEDDS.Config.ForceFolderPreview
             If kCura.WinEDDS.Config.WebServiceURL = String.Empty Then
@@ -478,6 +478,7 @@ End Sub
         End Sub
 
         Private Async Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
+            SaveWindowSize()
             _application.UpdateForceFolderPreview()
             _application.UpdateWebServiceURL(False)
             Await _application.Logout()
@@ -615,7 +616,20 @@ End Sub
             Await _application.QueryConnectivity()
         End Sub
 
+        Private Sub LoadWindowSize()
+            If Settings.Default.MainFormWindowSize <> Nothing
+                Me.Size = Settings.Default.MainFormWindowSize
+            End If
+        End Sub
 
+        Private Sub SaveWindowSize()
+            If Me.WindowState = FormWindowState.Normal Then
+                Settings.Default.MainFormWindowSize = Me.Size
+            Else
+                Settings.Default.MainFormWindowSize = Me.RestoreBounds.Size
+            End If
+            Settings.Default.Save()
+        End Sub
     End Class
 
 End Namespace
