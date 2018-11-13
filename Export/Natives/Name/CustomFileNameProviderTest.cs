@@ -36,23 +36,30 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 			// Arrange
 			var firstDescriptor = new FieldDescriptorPart(1);
 			var secondDescriptor = new SeparatorDescriptorPart("");
+			var thirdDescriptor = new FieldDescriptorPart(1);
 
 			string firstPartName = "First";
-			string secondPartName = "Second";
+			string secondPartName = "_";
+			string thirdPartName = "Second";
 
+			Mock<IFileNamePartProvider> firstfieldProviderMock = new Mock<IFileNamePartProvider>();
 			Mock<IFileNamePartProvider> separatorProviderMock = new Mock<IFileNamePartProvider>();
-			Mock<IFileNamePartProvider> fieldProviderMock = new Mock<IFileNamePartProvider>();
+			Mock<IFileNamePartProvider> secondfieldProviderMock = new Mock<IFileNamePartProvider>();
 
-			separatorProviderMock.Setup(mock => mock.GetPartName(firstDescriptor, _exportObjectInfo)).Returns(firstPartName);
-			fieldProviderMock.Setup(mock => mock.GetPartName(secondDescriptor, _exportObjectInfo)).Returns(secondPartName);
 
-			_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(firstDescriptor)).Returns(separatorProviderMock.Object);
-			_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(secondDescriptor)).Returns(fieldProviderMock.Object);
+			firstfieldProviderMock.Setup(mock => mock.GetPartName(firstDescriptor, _exportObjectInfo)).Returns(firstPartName);
+			separatorProviderMock.Setup(mock => mock.GetPartName(secondDescriptor, _exportObjectInfo)).Returns(secondPartName);
+			secondfieldProviderMock.Setup(mock => mock.GetPartName(thirdDescriptor, _exportObjectInfo)).Returns(thirdPartName);
+
+			_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(firstDescriptor)).Returns(firstfieldProviderMock.Object);
+			_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(secondDescriptor)).Returns(separatorProviderMock.Object);
+			_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(thirdDescriptor)).Returns(secondfieldProviderMock.Object);
 
 			_subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>
 				{
 					firstDescriptor,
-					secondDescriptor
+					secondDescriptor,
+					thirdDescriptor
 				}, 
 				_fileNamePartProviderContainerMock.Object);
 
@@ -72,7 +79,52 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 			
 
 			// Assert
-			Assert.That(retFileName, Is.EqualTo($"{firstPartName}{secondPartName}.{extension}"));
+			Assert.That(retFileName, Is.EqualTo($"{firstPartName}{secondPartName}{thirdPartName}.{extension}"));
 		}
+
+
+		[Test]
+		public void ItShouldRemoveDoubleSeparators()
+		{
+			// Arrange
+			var firstDescriptor = new FieldDescriptorPart(1);
+			var secondDescriptor = new SeparatorDescriptorPart("");
+			var thirdDescriptor = new FieldDescriptorPart(1);
+
+			string firstPartName = "First";
+			string secondPartName = "_";
+			string thirdPartName = "";
+
+			Mock<IFileNamePartProvider> firstfieldProviderMock = new Mock<IFileNamePartProvider>();
+			Mock<IFileNamePartProvider> separatorProviderMock = new Mock<IFileNamePartProvider>();
+			Mock<IFileNamePartProvider> secondfieldProviderMock = new Mock<IFileNamePartProvider>();
+
+
+			firstfieldProviderMock.Setup(mock => mock.GetPartName(firstDescriptor, _exportObjectInfo)).Returns(firstPartName);
+			separatorProviderMock.Setup(mock => mock.GetPartName(secondDescriptor, _exportObjectInfo)).Returns(secondPartName);
+			secondfieldProviderMock.Setup(mock => mock.GetPartName(thirdDescriptor, _exportObjectInfo)).Returns(thirdPartName);
+
+			_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(firstDescriptor)).Returns(firstfieldProviderMock.Object);
+			_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(secondDescriptor)).Returns(separatorProviderMock.Object);
+			_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(thirdDescriptor)).Returns(secondfieldProviderMock.Object);
+
+			_subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>
+				{
+					firstDescriptor,
+					secondDescriptor,
+					thirdDescriptor
+				},
+				_fileNamePartProviderContainerMock.Object);
+
+			// Act
+			string retFileName = _subjectUnderTest.GetTextName(_exportObjectInfo);
+			string extension = TextExtension;
+
+
+
+			// Assert
+			Assert.That(retFileName, Is.EqualTo($"{firstPartName}{thirdPartName}.{extension}"));
+		}
+
 	}
 }
