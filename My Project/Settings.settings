@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="MainFormWindowSize" Type="System.Drawing.Size" Scope="User">
-      <Value Profile="(Default)">300, 300</Value>
+      <Value Profile="(Default)">606, 477</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -55,7 +55,7 @@ Partial Friend NotInheritable Class Settings
     
     <Global.System.Configuration.UserScopedSettingAttribute(),  _
      Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-     Global.System.Configuration.DefaultSettingValueAttribute("300, 300")>  _
+     Global.System.Configuration.DefaultSettingValueAttribute("606, 477")>  _
     Public Property MainFormWindowSize() As Global.System.Drawing.Size
         Get
             Return CType(Me("MainFormWindowSize"),Global.System.Drawing.Size)
