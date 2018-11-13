@@ -13,8 +13,19 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 			Dim extExportObject As ExtendedObjectExportInfo = TryCast(exportObject, ExtendedObjectExportInfo)
 			Dim viewFieldInfo As ViewFieldInfo = GetViewField(descriptorPart, extExportObject)
 			Dim fieldValue As String = ConvertToString(extExportObject.GetFieldValue(viewFieldInfo.AvfColumnName), viewFieldInfo, " "c)
+			If viewFieldInfo.FieldType = Relativity.FieldTypeHelper.FieldType.Boolean
+				GetYesNoFieldStatus(viewFieldInfo, fieldValue)
+			End If
 			Return kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(fieldValue)
 		End Function
+
+		Private Sub GetYesNoFieldStatus(viewFieldInfo As ViewFieldInfo, ByRef fieldValue As String)
+			If fieldValue = "True"
+				fieldValue = viewFieldInfo.DisplayName
+			Else
+				fieldValue = ""
+			End If
+		End Sub
 
 		Private Function GetViewField(descriptorPart As FieldDescriptorPart, exportObject As ExtendedObjectExportInfo) As ViewFieldInfo
 			If Not _cache.ContainsKey(descriptorPart.Value) Then
