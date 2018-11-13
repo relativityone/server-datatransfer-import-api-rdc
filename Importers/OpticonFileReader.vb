@@ -103,10 +103,30 @@
 
 #Region " Exceptions - Fatal "
 
+		''' <summary>
+		''' The exception thrown when an opticon file contains an invalid line entry.
+		''' </summary>
+		<Serializable>
 		Public Class InvalidLineFormatException
 			Inherits System.Exception
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="InvalidLineFormatException"/> class.
+			''' </summary>
+			''' <param name="lineNumber">
+			''' The line number where the error occurred.
+			''' </param>
+			''' <param name="numberOfColumns">
+			''' The actual number of columns found within the line.
+			''' </param>
 			Public Sub New(ByVal lineNumber As Int32, ByVal numberOfColumns As Int32)
 				MyBase.New(String.Format("Invalid opticon file line {0}.  There must be at least 4 columns per line in an opticon file, there are {1} in the current line", lineNumber, numberOfColumns))
+			End Sub
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
 			End Sub
 		End Class
 

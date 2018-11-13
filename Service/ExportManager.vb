@@ -98,14 +98,47 @@ Namespace kCura.WinEDDS.Service
 			If Not x Is Nothing Then Throw x
 		End Sub
 
+		''' <summary>
+		''' The exception thrown when the user does not have sufficient permissions to perform the export operation.
+		''' </summary>
+		<Serializable>
 		Public Class InsufficientPermissionsForExportException
 			Inherits System.Exception
 
+			''' <summary>
+			''' Initializes a new instance of the <see cref="InsufficientPermissionsForExportException"/> class.
+			''' </summary>
+			Public Sub New()
+				MyBase.New()
+			End Sub
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="InsufficientPermissionsForExportException"/> class.
+			''' </summary>
+			''' <param name="message">
+			''' The error message that explains the reason for the exception.
+			''' </param>
 			Public Sub New(message As String)
 				MyBase.New(message)
 			End Sub
-			Public Sub New(message As String, ex As System.Exception)
-				MyBase.New(message, ex)
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="InsufficientPermissionsForExportException"/> class.
+			''' </summary>
+			''' <param name="message">
+			''' The error message that explains the reason for the exception.
+			''' </param>
+			''' <param name="innerException">
+			''' The exception that Is the cause of the current exception, Or a null reference (Nothing in Visual Basic) if no inner exception Is specified.
+			''' </param>
+			Public Sub New(message As String, innerException As Exception)
+				MyBase.New(message, innerException)
+			End Sub
+
+				''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
 			End Sub
 		End Class
 

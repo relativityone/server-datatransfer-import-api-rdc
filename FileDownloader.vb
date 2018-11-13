@@ -262,8 +262,25 @@ Namespace kCura.WinEDDS
 			End Try
 		End Function
 
+		''' <summary>
+		''' The exception thrown when a Web API failure occurs because the user login must be initialized or has expired.
+		''' </summary>
+		<Serializable>
 		Public Class DistributedReLoginException
 			Inherits System.Exception
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="DistributedReLoginException"/> class.
+			''' </summary>
+			Public Sub New()
+				MyBase.New()
+			End Sub
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
+			End Sub
 		End Class
 
 		Private Sub CloseStream(ByVal stream As System.IO.Stream)
