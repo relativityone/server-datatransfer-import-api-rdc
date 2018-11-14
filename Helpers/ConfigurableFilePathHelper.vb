@@ -20,7 +20,7 @@ Namespace kCura.WinEDDS.Helpers
 
 		Private Function FilePathHelperFactory() As IFilePathHelper
 			Return If(_importConfig.EnableCaseSensitiveSearchOnImport,
-				New CaseSensitiveFilePathHelper(_systemIoWrapper),
+				CType(New CaseSensitiveFilePathHelper(_systemIoWrapper), IFilePathHelper),
 				New CaseInsensitiveFilePathHelper(_systemIoWrapper))
 		End Function
 
