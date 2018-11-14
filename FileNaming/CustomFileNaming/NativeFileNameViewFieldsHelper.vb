@@ -16,6 +16,10 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 
 
 		Public Sub PopulateNativeFileNameViewFields(ExportSettings As ExtendedExportFile) Implements INativeFileNameViewFieldsHelper.PopulateNativeFileNameViewFields
+			If ExportSettings.CustomFileNaming Is Nothing
+				Return
+			End If
+
 			Dim fieldDescriptorParts As IEnumerable(Of FieldDescriptorPart) = If(ExportSettings.CustomFileNaming.DescriptorParts IsNot Nothing, ExportSettings.CustomFileNaming.DescriptorParts.OfType(Of FieldDescriptorPart)(), Enumerable.Empty(Of FieldDescriptorPart)())
 
 			If fieldDescriptorParts.Any() Then
