@@ -8,11 +8,10 @@ Imports kCura.WinEDDS.Service.Export
 Namespace kCura.WinEDDS
 	Public Class ExtendedExporter
 		Inherits Exporter
-#Region "Members"
+
 		Private _exportSettings As ExtendedExportFile = TryCast(MyBase.Settings, ExtendedExportFile)
 		Private ReadOnly _nativeFileNameViewFieldHelper As INativeFileNameViewFieldsHelper = New NativeFileNameViewFieldsHelper()
-#End Region
-#Region "Constructors"
+
 
 		Public Sub New(exportFile As ExtendedExportFile, processController As Controller, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory)
 			MyBase.New(exportFile, processController, loadFileFormatterFactory)
@@ -20,7 +19,7 @@ Namespace kCura.WinEDDS
 		Public Sub New(exportFile As ExtendedExportFile, processController As Controller, serviceFactory As IServiceFactory, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
 			MyBase.New(exportFile, processController, serviceFactory, loadFileFormatterFactory, exportConfig)
 		End Sub
-#End Region
+
 
 		Protected Overrides Function CreateObjectExportInfo() As ObjectExportInfo
 			Return New ExtendedObjectExportInfo(FieldLookupService) With
