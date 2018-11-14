@@ -444,6 +444,7 @@ End Sub
 
             ServicePointManager.DefaultConnectionLimit = Environment.ProcessorCount * 12
             LoadWindowSize()
+            Me.CenterToScreen()
             Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
             _application.TemporaryForceFolderPreview = kCura.WinEDDS.Config.ForceFolderPreview
             If kCura.WinEDDS.Config.WebServiceURL = String.Empty Then
