@@ -5,7 +5,7 @@ Imports NUnit.Framework
 Namespace kCura.WinEDDS.NUnit.Helpers
 	<TestFixture>
 	Public Class CaseInsensitiveFilePathHelperTests
-		Private _filePathHelper As CaseSensitiveFilePathHelper
+		Private _filePathHelper As CaseInsensitiveFilePathHelper
 		Private _systemIoMock As ISystemIoFileWrapper
 
 		Private Const _SAMPLE_PATH As String = "\\dir\somePath.ext"
@@ -15,7 +15,7 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 			_systemIoMock.GetExtension(Arg.Any(Of String)).ReturnsForAnyArgs(function(info) System.IO.Path.GetExtension(info.Arg(Of String)()))
 			_systemIoMock.ChangeExtension(Arg.Any(Of String), Arg.Any(Of String)).ReturnsForAnyArgs(function(info) System.IO.Path.ChangeExtension(info.ArgAt(Of String)(0), info.ArgAt(Of String)(1)))
 
-			_filePathHelper = New CaseSensitiveFilePathHelper(_systemIoMock)
+			_filePathHelper = New CaseInsensitiveFilePathHelper(_systemIoMock)
 		End Sub
 
 		<Test>
