@@ -12,20 +12,30 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 		Public Overrides Function GetPartName(descriptorPart As FieldDescriptorPart, exportObject As ObjectExportInfo) As String
 			Dim extExportObject As ExtendedObjectExportInfo = TryCast(exportObject, ExtendedObjectExportInfo)
 			Dim viewFieldInfo As ViewFieldInfo = GetViewField(descriptorPart, extExportObject)
-			Dim fieldValue As String = ConvertToString(extExportObject.GetFieldValue(viewFieldInfo.AvfColumnName), viewFieldInfo, " "c)
-			If viewFieldInfo.FieldType = Relativity.FieldTypeHelper.FieldType.Boolean
-				GetYesNoFieldStatus(viewFieldInfo, fieldValue)
-			End If
+			Dim fieldValueText As String = ConvertToString(extExportObject.GetFieldValue(viewFieldInfo.AvfColumnName), viewFieldInfo, " "c)
+			Dim fieldValue As String = ""
+
+			Select Case viewFieldInfo.FieldType
+			    Case Relativity.FieldTypeHelper.FieldType.Boolean
+				    fieldValue = GetYesNoFieldStatus(viewFieldInfo, fieldValueText)
+				Case Else
+					fieldValue = fieldValueText
+			End Select
+
+
 			Return kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(fieldValue)
 		End Function
 
-		Private Sub GetYesNoFieldStatus(viewFieldInfo As ViewFieldInfo, ByRef fieldValue As String)
+		Private Function GetYesNoFieldStatus(viewFieldInfo As ViewFieldInfo, fieldValue As String) As String
+			Dim retVal As String = ""
 			If fieldValue = "True"
-				fieldValue = viewFieldInfo.DisplayName
+				retVal = viewFieldInfo.DisplayName
 			Else
-				fieldValue = ""
+				retVal = ""
 			End If
-		End Sub
+			Return retVal
+		End Function
+
 
 		Private Function GetViewField(descriptorPart As FieldDescriptorPart, exportObject As ExtendedObjectExportInfo) As ViewFieldInfo
 			If Not _cache.ContainsKey(descriptorPart.Value) Then
