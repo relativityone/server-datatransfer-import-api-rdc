@@ -26,5 +26,14 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 			_helper.PopulateNativeFileNameViewFields(exportFile);
 			Assert.AreEqual("Artifact ID", exportFile.SelectedNativesNameViewFields[0].DisplayName);
 		}
+
+		[Test]
+		public void ShouldLeaveEmptyListWhenGivenBadData()
+		{
+			var exportFile = new ExtendedExportFile(0);
+
+			_helper.PopulateNativeFileNameViewFields(exportFile);
+			Assert.AreEqual(0, exportFile.SelectedNativesNameViewFields.Count);
+		}
 	}
 }
