@@ -8,6 +8,8 @@ Imports kCura.Utility.Extensions
 Imports kCura.Windows.Process
 Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS.Helpers
+Imports kCura.WinEDDS.TApi
+Imports Polly
 Imports Relativity
 
 Namespace kCura.WinEDDS
