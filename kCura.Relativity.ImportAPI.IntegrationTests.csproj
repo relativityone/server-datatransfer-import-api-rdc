@@ -60,8 +60,8 @@
       <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32.2018.8.0\lib\net40\oi.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Kepler, Version=1.0.1.409, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Kepler.1.0.1.409\lib\net462\Relativity.Kepler.dll</HintPath>
+    <Reference Include="Relativity.Kepler">
+      <HintPath>..\..\packages\Relativity.Kepler.1.0.1.576\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Productions.Services.Interfaces, Version=10.1.1.18, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces.10.1.1\lib\net45\Relativity.Productions.Services.Interfaces.dll</HintPath>
