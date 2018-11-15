@@ -619,18 +619,20 @@ Namespace kCura.EDDS.WinForm
         End Sub
 
         Private Sub LoadWindowSize()
-	        If Settings.Default.MainFormWindowSize <> Nothing
-		        Me.Size = Settings.Default.MainFormWindowSize
-	        End If
+            If WinEDDS.Config.MainFormWindowWidth <> Nothing AndAlso WinEDDS.Config.MainFormWindowHeight <> Nothing Then
+                Me.Size = New Size(WinEDDS.Config.MainFormWindowWidth, WinEDDS.Config.MainFormWindowHeight)
+            End If
         End Sub
 
         Private Sub SaveWindowSize()
-	        If Me.WindowState = FormWindowState.Normal Then
-		        Settings.Default.MainFormWindowSize = Me.Size
-	        Else
-		        Settings.Default.MainFormWindowSize = Me.RestoreBounds.Size
-	        End If
-	        Settings.Default.Save()
+            If Me.WindowState = FormWindowState.Normal Then
+                WinEDDS.Config.MainFormWindowWidth = Me.Size.Width
+                WinEDDS.Config.MainFormWindowHeight = Me.Size.Height
+            Else
+                WinEDDS.Config.MainFormWindowWidth = Me.RestoreBounds.Size.Width
+                WinEDDS.Config.MainFormWindowHeight = Me.RestoreBounds.Size.Height
+            End If
+            Settings.Default.Save()
         End Sub
     End Class
 
