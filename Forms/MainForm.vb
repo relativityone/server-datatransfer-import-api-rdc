@@ -625,7 +625,7 @@ End Sub
         End Sub
 
         Private Sub SaveWindowSize()
-			If Me.WindowState = FormWindowState.Normal Then
+            If Me.WindowState = FormWindowState.Normal Then
                 WinEDDS.Config.MainFormWindowWidth = Me.Size.Width
                 WinEDDS.Config.MainFormWindowHeight = Me.Size.Height
             Else
