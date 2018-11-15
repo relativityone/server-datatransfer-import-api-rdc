@@ -632,7 +632,6 @@ Namespace kCura.EDDS.WinForm
                 WinEDDS.Config.MainFormWindowWidth = Me.RestoreBounds.Size.Width
                 WinEDDS.Config.MainFormWindowHeight = Me.RestoreBounds.Size.Height
             End If
-            Settings.Default.Save()
         End Sub
     End Class
 
