@@ -38,9 +38,11 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Private Const webServiceUrlKeyName As String = "WebServiceURL"
+        Private Const webServiceUrlKeyName As String = "WebServiceURL"
+        Private Const mainFormWindowHeightKey As String = "MainFormWindowHeight"
+        Private Const mainFormWindowWidthKey As String = "MainFormWindowWidth"
 
-		Public Const PREVIEW_THRESHOLD As Int32 = 1000
+        Public Const PREVIEW_THRESHOLD As Int32 = 1000
 
 		Public Shared ReadOnly Property FileTransferModeExplanationText(ByVal includeBulk As Boolean) As String
 			Get
@@ -461,37 +463,63 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Shared Property WebServiceURL() As String
-			Get
-				Dim returnValue As String = Nothing
+        Public Shared Property WebServiceURL() As String
+            Get
+                Dim returnValue As String = Nothing
 
-				'Programmatic ServiceURL
-				If Not String.IsNullOrWhiteSpace(_programmaticServiceURL) Then
-					returnValue = _programmaticServiceURL
-				ElseIf ConfigSettings.Contains(webServiceUrlKeyName) Then
-					'App.config ServiceURL
-					Dim regUrl As String = CType(ConfigSettings(webServiceUrlKeyName), String)
+                'Programmatic ServiceURL
+                If Not String.IsNullOrWhiteSpace(_programmaticServiceURL) Then
+                    returnValue = _programmaticServiceURL
+                ElseIf ConfigSettings.Contains(webServiceUrlKeyName) Then
+                    'App.config ServiceURL
+                    Dim regUrl As String = CType(ConfigSettings(webServiceUrlKeyName), String)
 
-					If Not String.IsNullOrWhiteSpace(regUrl) Then
-						returnValue = regUrl
-					End If
-				End If
+                    If Not String.IsNullOrWhiteSpace(regUrl) Then
+                        returnValue = regUrl
+                    End If
+                End If
 
-				'Registry ServiceURL
-				If String.IsNullOrWhiteSpace(returnValue) Then
-					returnValue = GetRegistryKeyValue(webServiceUrlKeyName)
-				End If
+                'Registry ServiceURL
+                If String.IsNullOrWhiteSpace(returnValue) Then
+                    returnValue = GetRegistryKeyValue(webServiceUrlKeyName)
+                End If
 
-				Return ValidateURIFormat(returnValue)
-			End Get
-			Set(ByVal value As String)
-				Dim properURI As String = ValidateURIFormat(value)
+                Return ValidateURIFormat(returnValue)
+            End Get
+            Set(ByVal value As String)
+                Dim properURI As String = ValidateURIFormat(value)
 
-				SetRegistryKeyValue(webServiceUrlKeyName, properURI)
-			End Set
-		End Property
+                SetRegistryKeyValue(webServiceUrlKeyName, properURI)
+            End Set
+        End Property
 
-		Private Shared _programmaticServiceURL As String = Nothing
+        Public Shared Property MainFormWindowWidth As Integer
+            Get
+                If GetRegistryKeyValue(mainFormWindowWidthKey) <> Nothing Then
+                    Return Convert.ToInt32(GetRegistryKeyValue(mainFormWindowWidthKey))
+                Else
+                    Return Nothing
+                End If
+            End Get
+            Set
+                SetRegistryKeyValue(mainFormWindowWidthKey, Value.ToString())
+            End Set
+        End Property
+
+        Public Shared Property MainFormWindowHeight As Integer
+            Get
+                If GetRegistryKeyValue(mainFormWindowHeightKey) <> Nothing Then
+                    Return Convert.ToInt32(GetRegistryKeyValue(mainFormWindowHeightKey))
+                Else
+                    Return Nothing
+                End If
+            End Get
+            Set
+                SetRegistryKeyValue(mainFormWindowHeightKey, Value.ToString())
+            End Set
+        End Property
+
+        Private Shared _programmaticServiceURL As String = Nothing
 
 		Public Shared Property ProgrammaticServiceURL() As String
 			Get
@@ -530,6 +558,40 @@ Namespace kCura.WinEDDS
 				End Try
 			End Get
 		End Property
+
+		Public Shared ReadOnly Property SendLiveApmMetrics As Boolean
+			Get
+				Dim metricsConfig As Integer = GetConfigWithDefault(_rdcMetricsConfiguration, Integer.MaxValue)
+				Return (metricsConfig And Metrics.LiveApmMetrics) > 0
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property SendSumMetrics As Boolean
+			Get
+				Dim metricsConfig As Integer = GetConfigWithDefault(_rdcMetricsConfiguration, Integer.MaxValue)
+				Return (metricsConfig And Metrics.SumMetrics) > 0
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property SendSummaryApmMetrics As Boolean
+			Get
+				Dim metricsConfig As Integer = GetConfigWithDefault(_rdcMetricsConfiguration, Integer.MaxValue)
+				Return (metricsConfig And Metrics.SummaryApmMetrics) > 0
+			End Get
+		End Property
+
+		Private Shared Function GetConfigWithDefault(Of T)(name As String, defaultValue As T) As T
+			If Not ConfigSettings.Contains(name) Then
+				ConfigSettings.Add(name, defaultValue)
+			End If
+			Return CType(ConfigSettings(name), T)
+		End Function
+
+		Private Enum Metrics
+			LiveApmMetrics = 1
+			SummaryApmMetrics = 2
+			SumMetrics = 4
+		End Enum
 
 		Private Shared Function InitializeConfigDictionaryWithDefaultValues() As IDictionary
 
