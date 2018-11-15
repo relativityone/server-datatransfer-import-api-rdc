@@ -783,7 +783,6 @@ Namespace kCura.WinEDDS
 			Dim imageFilePath As String = BulkImageFileImporter.GetFileLocation(imageRecord)
 
 			If Not Me.DisableImageLocationValidation Then
-				'AndAlso Not System.IO.File.Exists(imageFilePath) 
 				Dim foundFileName As String = FilePathHelper.GetExistingFilePath(imageFilePath)
 				Dim fileExists As Boolean = Not String.IsNullOrEmpty(foundFileName)
 
@@ -797,27 +796,27 @@ Namespace kCura.WinEDDS
 					imageFilePath = foundFileName
 				End If
 			End If
-			
+
 			Dim retval As Relativity.MassImport.ImportStatus = Relativity.MassImport.ImportStatus.Pending
-				Dim validator As New kCura.ImageValidator.ImageValidator
+			Dim validator As New kCura.ImageValidator.ImageValidator
 
-				Try
-					If Not Me.DisableImageTypeValidation Then
-						validator.ValidateImage(imageFilePath)
-					End If
+			Try
+				If Not Me.DisableImageTypeValidation Then
+					validator.ValidateImage(imageFilePath)
+				End If
 
-					Me.RaiseStatusEvent(Windows.Process.EventType.Status, $"Image file ( {imageRecord.FileLocation} ) validated.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
-				Catch ex As Exception
-					If TypeOf ex Is kCura.ImageValidator.Exception.Base Then
-					Me.LogError(ex, "Failed to validate the {Path} image.", imageFilePath)
-						retval = Relativity.MassImport.ImportStatus.InvalidImageFormat
-						_verboseErrorCollection.AddError(imageRecord.OriginalIndex, ex)
-					Else
-					Me.LogFatal(ex, "Unexpected failure to validate the {Path} image file.", imageFilePath)
-						Throw
-					End If
-				End Try
-			
+				Me.RaiseStatusEvent(Windows.Process.EventType.Status, $"Image file ( {imageRecord.FileLocation} ) validated.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+			Catch ex As Exception
+				If TypeOf ex Is kCura.ImageValidator.Exception.Base Then
+				Me.LogError(ex, "Failed to validate the {Path} image.", imageFilePath)
+					retval = Relativity.MassImport.ImportStatus.InvalidImageFormat
+					_verboseErrorCollection.AddError(imageRecord.OriginalIndex, ex)
+				Else
+				Me.LogFatal(ex, "Unexpected failure to validate the {Path} image file.", imageFilePath)
+					Throw
+				End If
+			End Try
+
 			Return retval
 		End Function
 
