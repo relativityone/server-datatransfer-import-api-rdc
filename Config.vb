@@ -495,8 +495,9 @@ Namespace kCura.WinEDDS
 
         Public Shared Property MainFormWindowWidth As Integer
             Get
-                If GetRegistryKeyValue(mainFormWindowWidthKey) <> Nothing Then
-                    Return Convert.ToInt32(GetRegistryKeyValue(mainFormWindowWidthKey))
+                Dim savedWidth As String = GetRegistryKeyValue(mainFormWindowWidthKey)
+                If savedWidth <> Nothing Then
+                    Return Convert.ToInt32(savedWidth)
                 Else
                     Return Nothing
                 End If
@@ -508,8 +509,9 @@ Namespace kCura.WinEDDS
 
         Public Shared Property MainFormWindowHeight As Integer
             Get
-                If GetRegistryKeyValue(mainFormWindowHeightKey) <> Nothing Then
-                    Return Convert.ToInt32(GetRegistryKeyValue(mainFormWindowHeightKey))
+                Dim savedHeight As String = GetRegistryKeyValue(mainFormWindowHeightKey)
+                If savedHeight <> Nothing Then
+                    Return Convert.ToInt32(savedHeight)
                 Else
                     Return Nothing
                 End If
