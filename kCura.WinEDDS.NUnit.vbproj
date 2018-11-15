@@ -113,7 +113,7 @@
       <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.10.0.2\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Kepler">
-      <HintPath>..\..\packages\Relativity.Kepler.1.0.1.557\lib\net462\Relativity.Kepler.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Kepler.1.0.1.576\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging">
       <HintPath>..\..\packages\Relativity.Logging.2018.9.0\lib\net462\Relativity.Logging.dll</HintPath>
@@ -124,7 +124,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy">
-      <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.557\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.576\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared">
       <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.2018.9.1\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
