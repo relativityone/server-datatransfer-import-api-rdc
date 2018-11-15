@@ -643,15 +643,14 @@ Namespace kCura.EDDS.WinForm
         End Sub
 
         Private Sub SaveWindowSize()
-			If Me.WindowState = FormWindowState.Normal Then
+            If Me.WindowState = FormWindowState.Normal Then
                 WinEDDS.Config.MainFormWindowWidth = Me.Size.Width
                 WinEDDS.Config.MainFormWindowHeight = Me.Size.Height
             Else
                 WinEDDS.Config.MainFormWindowWidth = Me.RestoreBounds.Size.Width
                 WinEDDS.Config.MainFormWindowHeight = Me.RestoreBounds.Size.Height
             End If
-			Settings.Default.Save()
-		End Sub
+        End Sub
 
 	End Class
 
