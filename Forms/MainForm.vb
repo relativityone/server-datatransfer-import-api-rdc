@@ -1,5 +1,6 @@
 Imports System.Net
 Imports System.Threading.Tasks
+Imports Microsoft.Win32
 Imports Relativity.OAuth2Client.Exceptions
 
 Namespace kCura.EDDS.WinForm
@@ -618,19 +619,21 @@ End Sub
         End Sub
 
         Private Sub LoadWindowSize()
-            If Settings.Default.MainFormWindowSize <> Nothing
-                Me.Size = Settings.Default.MainFormWindowSize
+            If WinEDDS.Config.MainFormWindowWidth <> Nothing AndAlso WinEDDS.Config.MainFormWindowHeight <> Nothing Then
+                Me.Size = New Size(WinEDDS.Config.MainFormWindowWidth, WinEDDS.Config.MainFormWindowHeight)
             End If
         End Sub
 
         Private Sub SaveWindowSize()
-            If Me.WindowState = FormWindowState.Normal Then
-                Settings.Default.MainFormWindowSize = Me.Size
+			If Me.WindowState = FormWindowState.Normal Then
+                WinEDDS.Config.MainFormWindowWidth = Me.Size.Width
+                WinEDDS.Config.MainFormWindowHeight = Me.Size.Height
             Else
-                Settings.Default.MainFormWindowSize = Me.RestoreBounds.Size
+                WinEDDS.Config.MainFormWindowWidth = Me.RestoreBounds.Size.Width
+                WinEDDS.Config.MainFormWindowHeight = Me.RestoreBounds.Size.Height
             End If
-            Settings.Default.Save()
-        End Sub
-    End Class
+	End Sub
+
+End Class
 
 End Namespace
