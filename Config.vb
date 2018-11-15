@@ -551,51 +551,17 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Shared ReadOnly Property EnableCaseSensitiveSearchOnImport As Boolean
-			Get
-				Try
-					Return CType(ConfigSettings(_ENABLE_CASE_SENSITIVE_SEARCH_KEY), Boolean)
-				Catch ex As Exception
-					Return True
-				End Try
-			End Get
-		End Property
+        Public Shared ReadOnly Property EnableCaseSensitiveSearchOnImport As Boolean
+            Get
+                Try
+                    Return CType(ConfigSettings(_ENABLE_CASE_SENSITIVE_SEARCH_KEY), Boolean)
+                Catch ex As Exception
+                    Return True
+                End Try
+            End Get
+        End Property
 
-		Public Shared ReadOnly Property SendLiveApmMetrics As Boolean
-			Get
-				Dim metricsConfig As Integer = GetConfigWithDefault(_rdcMetricsConfiguration, Integer.MaxValue)
-				Return (metricsConfig And Metrics.LiveApmMetrics) > 0
-			End Get
-		End Property
-
-		Public Shared ReadOnly Property SendSumMetrics As Boolean
-			Get
-				Dim metricsConfig As Integer = GetConfigWithDefault(_rdcMetricsConfiguration, Integer.MaxValue)
-				Return (metricsConfig And Metrics.SumMetrics) > 0
-			End Get
-		End Property
-
-		Public Shared ReadOnly Property SendSummaryApmMetrics As Boolean
-			Get
-				Dim metricsConfig As Integer = GetConfigWithDefault(_rdcMetricsConfiguration, Integer.MaxValue)
-				Return (metricsConfig And Metrics.SummaryApmMetrics) > 0
-			End Get
-		End Property
-
-		Private Shared Function GetConfigWithDefault(Of T)(name As String, defaultValue As T) As T
-			If Not ConfigSettings.Contains(name) Then
-				ConfigSettings.Add(name, defaultValue)
-			End If
-			Return CType(ConfigSettings(name), T)
-		End Function
-
-		Private Enum Metrics
-			LiveApmMetrics = 1
-			SummaryApmMetrics = 2
-			SumMetrics = 4
-		End Enum
-
-		Private Shared Function InitializeConfigDictionaryWithDefaultValues() As IDictionary
+        Private Shared Function InitializeConfigDictionaryWithDefaultValues() As IDictionary
 
 			Dim tempDict As IDictionary
 			tempDict = DirectCast(ConfigurationManager.GetSection("kCura.WinEDDS"), IDictionary)
