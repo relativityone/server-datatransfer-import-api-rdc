@@ -1,5 +1,6 @@
 ﻿Imports kCura.WinEDDS.Helpers
 Imports NSubstitute
+Imports NSubstitute.ExceptionExtensions
 Imports NUnit.Framework
 
 
@@ -23,13 +24,26 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 		End Sub
 
 		<Test>
-		Public Sub ShouldThrowWhenArgumentIsNothing()
-			Assert.Throws(Of ArgumentException)(sub() _filePathHelper.GetExistingFilePath(Nothing))
+		Public Sub ShouldReturnNothingWhenArgumentIsNothing()
+			Dim actual As String = _filePathHelper.GetExistingFilePath(Nothing)
+
+			Assert.IsNull(actual)
 		End Sub
 
 		<Test>
-		Public Sub ShouldThrowWhenArgumentIsEmpty()
-			Assert.Throws(Of ArgumentException)(sub() _filePathHelper.GetExistingFilePath(String.Empty))
+		Public Sub ShouldReturnNothingWhenArgumentIsEmpty()
+			Dim actual As String = _filePathHelper.GetExistingFilePath(String.Empty)
+
+			Assert.IsNull(actual)
+		End Sub
+
+		<Test>
+		Public Sub ShouldReturnNothingWhenWrapperThrows()
+			_systemIoMock.Exists(Arg.Any(Of String)()).Throws(New Exception())
+
+			Dim actual As String = _filePathHelper.GetExistingFilePath(Nothing)
+
+			Assert.IsNull(actual)
 		End Sub
 
 		<Test>
