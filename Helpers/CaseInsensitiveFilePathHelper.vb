@@ -1,13 +1,23 @@
 ﻿Namespace kCura.WinEDDS.Helpers
 	Public Class CaseInsensitiveFilePathHelper
-		Inherits CaseSensitiveFilePathHelper
+		Implements IFilePathHelper
+
+		Private ReadOnly _systemIoWrapper As ISystemIoFileWrapper
 
 		Public Sub New(systemIoWrapper As ISystemIoFileWrapper)
-			MyBase.New(systemIoWrapper)
+			_systemIoWrapper = systemIoWrapper
 		End Sub
 
-		Protected Overrides Function TryToSearchInCaseSensitivePaths(path As String) As String
-			Return Nothing
+		Public Function GetExistingFilePath(path As String) As String Implements IFilePathHelper.GetExistingFilePath
+			If String.IsNullOrEmpty(path) Then
+				Return Nothing
+			End If
+
+			Try
+				Return If(_systemIoWrapper.Exists(path), path, Nothing)
+			Catch ex As Exception
+				Return Nothing
+			End Try
 		End Function
 	End Class
 End NameSpace
