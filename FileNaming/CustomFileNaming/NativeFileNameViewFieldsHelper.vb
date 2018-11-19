@@ -5,27 +5,28 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 	Public Class NativeFileNameViewFieldsHelper
 		Implements INativeFileNameViewFieldsHelper
 
-		Private Function FilterFields(exportFile As ExportFile, fieldsIds As List(Of Integer)) As ViewFieldInfo() Implements INativeFileNameViewFieldsHelper.FilterFields
+		Private Function FilterAndSortFields(exportFile As ExportFile, fieldsIds As List(Of Integer)) As ViewFieldInfo() _
+			Implements INativeFileNameViewFieldsHelper.FilterAndSortFields
 			Return _
-				exportFile.AllExportableFields.Where(Function(x) fieldsIds.Any(Function(fieldId) fieldId = x.FieldArtifactId)).ToArray().OrderBy(
+				exportFile.AllExportableFields.Where(Function(x) fieldsIds.Contains(x.FieldArtifactId)).OrderBy(
 					Function(x)
 						Dim index As Integer = fieldsIds.IndexOf(x.FieldArtifactId)
-						Return If(index < 0, Integer.MaxValue, index)
+						Return index
 					End Function).ToArray()
 		End Function
 
 
-		Public Sub PopulateNativeFileNameViewFields(ExportSettings As ExtendedExportFile) Implements INativeFileNameViewFieldsHelper.PopulateNativeFileNameViewFields
-			If ExportSettings.CustomFileNaming Is Nothing
+		Public Sub PopulateNativeFileNameViewFields(ExportSettings As ExtendedExportFile) _
+			Implements INativeFileNameViewFieldsHelper.PopulateNativeFileNameViewFields
+			If ExportSettings.CustomFileNaming Is Nothing OrElse ExportSettings.CustomFileNaming.DescriptorParts Is Nothing
 				Return
 			End If
 
-			Dim fieldDescriptorParts As IEnumerable(Of FieldDescriptorPart) = If(ExportSettings.CustomFileNaming.DescriptorParts IsNot Nothing, ExportSettings.CustomFileNaming.DescriptorParts.OfType(Of FieldDescriptorPart)(), Enumerable.Empty(Of FieldDescriptorPart)())
+			Dim fieldDescriptorParts As IEnumerable(Of FieldDescriptorPart) =
+				ExportSettings.CustomFileNaming.DescriptorParts.OfType (Of FieldDescriptorPart)()
 
-			If fieldDescriptorParts.Any() Then
-				ExportSettings.SelectedNativesNameViewFields = FilterFields(ExportSettings, fieldDescriptorParts.[Select](Function(item) item.Value).ToList()).ToList()
-			End If
+			ExportSettings.SelectedNativesNameViewFields =
+				FilterAndSortFields(ExportSettings, fieldDescriptorParts.[Select](Function(item) item.Value).ToList()).ToList()
 		End Sub
-
 	End Class
 End Namespace
