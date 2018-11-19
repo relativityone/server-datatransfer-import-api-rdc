@@ -18,6 +18,8 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 			Select Case viewFieldInfo.FieldType
 			    Case Relativity.FieldTypeHelper.FieldType.Boolean
 				    fieldValue = GetYesNoFieldStatus(viewFieldInfo, fieldValueText)
+				Case Relativity.FieldTypeHelper.FieldType.Varchar
+					fieldValue = CleanUpFieldValueFromObjectTags(fieldValueText)
 				Case Else
 					fieldValue = fieldValueText
 			End Select
@@ -36,6 +38,9 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 			Return retVal
 		End Function
 
+		Private Function CleanUpFieldValueFromObjectTags(fieldValue As String) As String
+			Return fieldValue.Replace("<object/>", "")
+		End Function
 
 		Private Function GetViewField(descriptorPart As FieldDescriptorPart, exportObject As ExtendedObjectExportInfo) As ViewFieldInfo
 			If Not _cache.ContainsKey(descriptorPart.Value) Then
