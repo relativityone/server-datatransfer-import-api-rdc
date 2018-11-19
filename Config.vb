@@ -39,6 +39,8 @@ Namespace kCura.WinEDDS
         End Property
 
         Private Const webServiceUrlKeyName As String = "WebServiceURL"
+        Private Const mainFormWindowHeightKey As String = "MainFormWindowHeight"
+        Private Const mainFormWindowWidthKey As String = "MainFormWindowWidth"
 
         Public Const PREVIEW_THRESHOLD As Int32 = 1000
 
@@ -488,6 +490,34 @@ Namespace kCura.WinEDDS
                 Dim properURI As String = ValidateURIFormat(value)
 
                 SetRegistryKeyValue(webServiceUrlKeyName, properURI)
+            End Set
+        End Property
+
+        Public Shared Property MainFormWindowWidth As Integer
+            Get
+                Dim savedWidth As String = GetRegistryKeyValue(mainFormWindowWidthKey)
+                If savedWidth <> Nothing Then
+                    Return Convert.ToInt32(savedWidth)
+                Else
+                    Return Nothing
+                End If
+            End Get
+            Set
+                SetRegistryKeyValue(mainFormWindowWidthKey, Value.ToString())
+            End Set
+        End Property
+
+        Public Shared Property MainFormWindowHeight As Integer
+            Get
+                Dim savedHeight As String = GetRegistryKeyValue(mainFormWindowHeightKey)
+                If savedHeight <> Nothing Then
+                    Return Convert.ToInt32(savedHeight)
+                Else
+                    Return Nothing
+                End If
+            End Get
+            Set
+                SetRegistryKeyValue(mainFormWindowHeightKey, Value.ToString())
             End Set
         End Property
 
