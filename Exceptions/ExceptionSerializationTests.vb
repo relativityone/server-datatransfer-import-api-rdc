@@ -23,7 +23,6 @@ Namespace kCura.WinEDDS.NUnit
 				Yield New kCura.WinEDDS.Exceptions.InvalidPackageException("Message")
 				Yield New kCura.WinEDDS.Exceptions.InvalidPackageException("Message", New InvalidOperationException())
 				Yield New kCura.WinEDDS.RelativityVersionMismatchException("Message", "RelativityVersion", "ClientVersion")
-				Yield New kCura.WinEDDS.RelativityVersionMismatchException("RelativityVersion")
 				Yield new kCura.WinEDDS.Exceptions.WebApiConnectionFailureException("Message")
 				Yield new kCura.WinEDDS.Exceptions.WebApiConnectionFailureException("Message", New InvalidOperationException())
 		        Yield new kCura.WinEDDS.Exceptions.WebDownloadCorruptException("Message")
