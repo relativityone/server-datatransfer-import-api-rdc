@@ -10,10 +10,14 @@
 
 		Public Function GetExistingFilePath(path As String) As String Implements IFilePathHelper.GetExistingFilePath
 			If String.IsNullOrEmpty(path) Then
-				Throw New ArgumentException("Path cannot be empty", NameOf(path))
+				Return Nothing
 			End If
 
-			Return If(_systemIoWrapper.Exists(path), path, Nothing)
+			Try
+				Return If(_systemIoWrapper.Exists(path), path, Nothing)
+			Catch ex As Exception
+				Return Nothing
+			End Try
 		End Function
 	End Class
 End NameSpace

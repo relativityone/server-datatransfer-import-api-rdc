@@ -12,14 +12,18 @@ Namespace kCura.WinEDDS.Helpers
 
 		Public Function GetExistingFilePath(path As String) As String Implements IFilePathHelper.GetExistingFilePath
 			If String.IsNullOrEmpty(path) Then
-				Throw New ArgumentException("Path cannot be empty", NameOf(path))
+				Return Nothing
 			End If
 
 			If _systemIoWrapper.Exists(path)
 				Return path
 			End If
 
-			Return TryToSearchInCaseSensitivePaths(path)
+			Try
+				Return TryToSearchInCaseSensitivePaths(path)
+			Catch ex As Exception
+				Return Nothing
+			End Try
 		End Function
 
 		Protected Overridable Function TryToSearchInCaseSensitivePaths(path As String) As String
