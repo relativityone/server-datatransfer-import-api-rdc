@@ -1,6 +1,8 @@
 ﻿Imports System.Collections.Generic
 Imports System.Linq
 Imports Relativity
+Imports System.IO
+
 
 Namespace kCura.EDDS.WinForm.Forms
 	Public Class TextAndNativeFileNameForm
@@ -275,7 +277,7 @@ Namespace kCura.EDDS.WinForm.Forms
 		End Function
 
 		Private Function IsCustomTextValid(control As SingleFieldControls) As Boolean
-			Dim strIllegalChars As String = "/?-^%{}[]:;$=*`#|&@\<>()+,\'"""
+			Dim strIllegalChars As String = Path.GetInvalidFileNameChars() & Path.GetInvalidPathChars() & "',þ"
 			If control.CustomTextBox IsNot Nothing AndAlso control.CustomTextBox.Visible Then
 				For Each c As Char In control.CustomTextBox.Text
 					If strIllegalChars.Contains(c)
