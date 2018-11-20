@@ -13,7 +13,7 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 		private const string _NATIVE_FILE_COLUMN_NAME = "Native";
 
 		[Test]
-		[Category("ImportApiIntegrationTestsForRelativityPipeline")]
+		[Category("ImportApiIntegrationTestsForRelativityPipeline"), Category("testtype.cd")]
 		public void ItShouldImportNativesWithPasswordAuthentication()
 		{
 			ImportAPI importApi = ImportApiCreator.CreateImportApiWithPasswordAuthentication();
@@ -58,9 +58,8 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.AuthenticationTests
 
 		private static string GetNativeFilePath()
 		{
-			string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-			string nativeLocation = Path.Combine(currentDirectory, @"TestData\Native\SBECK_0048460.docx");
-			return nativeLocation;
+			string currentDirectory = TestContext.CurrentContext.TestDirectory;
+			return Path.Combine(currentDirectory, @"TestData\Native\SBECK_0048460.docx");
 		}
 
 		private void SetupJobSettings(Settings settings)
