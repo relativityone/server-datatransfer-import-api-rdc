@@ -10,20 +10,6 @@
 		''' <summary>
 		''' Initializes a new instance of the <see cref="RelativityVersionMismatchException"/> class.
 		''' </summary>
-		''' <param name="relativityVersion">
-		''' The mismatched Relativity version.
-		''' </param>
-        Public Sub New(ByVal relativityVersion As String)
-            MyBase.New(String.Format("Your version of the Relativity Desktop Client ({0}) is out of date. Please make sure you are running correct RDC version ({1}) or specified correct WebService URL for Relativity.", System.Reflection.Assembly.GetExecutingAssembly.GetName.Version.ToString, relativityVersion))
-
-			' Preserving the original constructor for compatibility purposes.
-			Me.RelativityVersion = relativityVersion
-			Me.ClientVersion = System.Reflection.Assembly.GetExecutingAssembly.GetName.Version.ToString()
-        End Sub
-
-		''' <summary>
-		''' Initializes a new instance of the <see cref="RelativityVersionMismatchException"/> class.
-		''' </summary>
 		''' <param name="message">
 		''' The error message that explains the reason for the exception.
 		''' </param>

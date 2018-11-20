@@ -56,20 +56,49 @@ Namespace kCura.WinEDDS.Api
 				assembly = System.Reflection.Assembly.GetExecutingAssembly()
 			End If
 
-			Dim message As String = string.Empty
-			If assembly.GetName.Name.StartsWith("kCura.EDDS.WinForm", StringComparison.OrdinalIgnoreCase) Then
-				message =
-					$"Your version of the Relativity Desktop Client ({assembly.GetName.Version.ToString _
-						}) is out of date. Please make sure you're running the correct RDC version ({relativityVersion _
-						}) or specified the correct Relativity WebService URL."
-			Else
-				message =
-					$"Your version of the Import API ({assembly.GetName.Version.ToString _
-						}) is not supported. Please make sure you're running the correct Import API version ({relativityVersion _
-						}) or specified the correct Relativity WebService URL."
+			Return CreateRelativityVersionMismatchException(relativityVersion, assembly)
+		End Function
+
+		Public Shared Function CreateRelativityVersionMismatchException(ByVal relativityVersion As String, ByVal assembly As System.Reflection.Assembly) As RelativityVersionMismatchException
+			
+			If assembly Is Nothing Then
+				Throw New ArgumentNullException(NameOf(assembly))
 			End If
 
-			Return New RelativityVersionMismatchException(message, relativityVersion, assembly.GetName.Version.ToString)
+			' Favor the supplied application name
+			Dim applicationName As String = Config.ApplicationName
+			If String.IsNullOrEmpty(applicationName) Then
+				If assembly.GetName.Name.StartsWith("kCura.EDDS.WinForm", StringComparison.OrdinalIgnoreCase) Then
+					applicationName = "Relativity Desktop Client"
+				Else
+					applicationName = "Import API"
+				End If
+			End If
+
+			Dim clientVersion As String = assembly.GetName.Version.ToString()
+			Return CreateRelativityVersionMismatchException(relativityVersion, clientVersion, applicationName)
+		End Function
+
+		Public Shared Function CreateRelativityVersionMismatchException(ByVal relativityVersion As String, ByVal clientVersion As String, ByVal applicationName As String) As RelativityVersionMismatchException
+
+			' Because this is existing code, avoid arg checks and just supply a default value.
+			Const UnknownVersion As String = "(unknown)"
+			If String.IsNullOrEmpty(relativityVersion) Then
+				relativityVersion = UnknownVersion
+			End If
+
+			If String.IsNullOrEmpty(clientVersion) Then
+				clientVersion = UnknownVersion
+			End If
+
+			If String.IsNullOrEmpty(applicationName) Then
+				applicationName = UnknownVersion
+			End If
+
+			Dim message As String = $"applicationName version of {applicationName} ({clientVersion _
+				    }) is out of date. Please make sure you're running the correct version ({relativityVersion _
+				}) or the correct Relativity WebService URL is specified."
+			Return New RelativityVersionMismatchException(message, relativityVersion, clientVersion)
 		End Function
 
 		Private Shared Sub Initialize(ByVal relativityManager As kCura.WinEDDS.Service.RelativityManager, ByVal webServiceUrl As String)
