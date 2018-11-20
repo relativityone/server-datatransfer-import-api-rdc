@@ -20,29 +20,34 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 			Return GetNameWithNativeExtension(name, exportObjectInfo)
 		End Function
 
-		Private Function CreateFileName(exportObjectInfo As ObjectExportInfo) As StringBuilder
-			Const numberOfDescriptorsPerPartName As Integer = 2
-			Const separatorPosition As Integer = 1
-			Const textPosition As Integer = 2
-
+		Private Function CreateFileName(objectExportInfo As ObjectExportInfo) As StringBuilder
 			Dim name As StringBuilder = New StringBuilder()
 			Dim namePartsCount As Integer = CType(((_fileNamePartDescriptors.Count - 1)/2), Integer)
-
-			name.Append(GetFileNamePartName(_fileNamePartDescriptors(0), exportObjectInfo))
+			name.Append(GetFileNamePartName(_fileNamePartDescriptors(0), objectExportInfo))
 
 			For i As Integer = 0 To namePartsCount - 1
-				Dim separator As String =
-						GetFileNamePartName(_fileNamePartDescriptors(numberOfDescriptorsPerPartName*i + separatorPosition),
-											exportObjectInfo)
-				Dim text As String = GetFileNamePartName(_fileNamePartDescriptors(numberOfDescriptorsPerPartName*i + textPosition),
-														exportObjectInfo)
-
-				name.Append(BuildFileNamePart(separator, text))
+				name.Append(BuildFileNamePart(objectExportInfo, i))
 			Next
+
 			Return name
 		End Function
 
-		Private Function BuildFileNamePart(separator As String, text As String) As String
+		Private Function BuildFileNamePart(objectExportInfo As ObjectExportInfo, partNumber As Integer) As String
+			Const numberOfDescriptorsPerPartName As Integer = 2
+			Const separatorPositionShift As Integer = 1
+			Const textPositionShift As Integer = 2
+
+			Dim separator As String =
+					GetFileNamePartName(_fileNamePartDescriptors(numberOfDescriptorsPerPartName*partNumber + separatorPositionShift),
+									objectExportInfo)
+			Dim text As String =
+					GetFileNamePartName(_fileNamePartDescriptors(numberOfDescriptorsPerPartName*partNumber + textPositionShift),
+									objectExportInfo)
+
+			Return BuildFileNamePartFromSeparatorAndText(separator, text)
+		End Function
+
+		Private Function BuildFileNamePartFromSeparatorAndText(separator As String, text As String) As String
 			If text = ""
 				Return ""
 			End If
