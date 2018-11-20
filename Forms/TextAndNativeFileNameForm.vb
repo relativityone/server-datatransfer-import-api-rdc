@@ -40,6 +40,8 @@ Namespace kCura.EDDS.WinForm.Forms
 			InitializeAvailableFields(fields)
 			InitializeFieldControls()
 			PopulateControls(selection)
+			Me.MaximizeBox = False
+			Me.MinimizeBox = False
 		End Sub
 
 		Private Sub InitializeAvailableFields(fields As IReadOnlyCollection(Of ViewFieldInfo))
