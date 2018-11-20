@@ -48,7 +48,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			_availableFields = New List(Of FieldSelection) From {New FieldSelection(CustomTextOption, -1)}
 			Dim databaseFields = fields.
 				Where(Function(f) AllowedFieldTypes.Contains(f.FieldType)).
-				Select(Function(f) New FieldSelection(f.DisplayName, f.FieldArtifactId))
+				Select(Function(f) New FieldSelection(f.DisplayName, f.FieldArtifactId)).OrderBy(Function(f) f.DisplayName)
 			_availableFields.AddRange(databaseFields)
 			_firstField = fields.
 				Where(Function(f) f.Category = FieldCategory.Identifier).
