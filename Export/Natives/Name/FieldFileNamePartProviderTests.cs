@@ -153,5 +153,14 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 
 			Assert.AreEqual(expectedVal, retFieldValue);
 		}
+
+		[Test]
+		public void ItShouldThrowExceptionWhenSelectedNativeFileNameViewFieldsIsEmpty()
+		{
+			Assert.Throws<ArgumentOutOfRangeException>(() =>
+			{
+				_subjectUnderTest.GetPartName(new FieldDescriptorPart(_AVF_ID), _extendedObjectExportInfo);
+			});
+		}
 	}
 }
