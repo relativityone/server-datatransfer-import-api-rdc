@@ -2,6 +2,16 @@
 
 Namespace kCura.WinEDDS.Api
 	Public Class LoginHelper
+		''' <summary>
+		''' The default application name used when a null or empty value is specified.
+		''' </summary>
+		Public Const DefaultApplicationName As String = "Import API"
+
+		''' <summary>
+		''' The default version used when a null or empty value is specified.
+		''' </summary>
+		Public Const DefaultUnknownVersion As String = "0.0.0.0"
+
 		Private Shared relativityManager As kCura.WinEDDS.Service.RelativityManager
 
 		Public Shared Function LoginWindowsAuth(ByVal cookieContainer As System.Net.CookieContainer) As System.Net.NetworkCredential
@@ -48,6 +58,27 @@ Namespace kCura.WinEDDS.Api
 			Return Nothing
 		End Function
 
+		Public Shared Function CreateRelativityVersionMismatchMessage(ByVal relativityVersion As String, ByVal clientVersion As String, ByVal applicationName As String) As String
+
+			' Because this is existing code, avoid arg checks and just supply a default value.
+			If String.IsNullOrEmpty(relativityVersion) Then
+				relativityVersion = DefaultUnknownVersion
+			End If
+
+			If String.IsNullOrEmpty(clientVersion) Then
+				clientVersion = DefaultUnknownVersion
+			End If
+
+			If String.IsNullOrEmpty(applicationName) Then
+				applicationName = DefaultApplicationName
+			End If
+
+			Dim message As String = $"Your version of {applicationName} ({clientVersion _
+				    }) is out of date. Please make sure you're running the correct version ({relativityVersion _
+				    }) or the correct Relativity WebService URL is specified."
+			Return message
+		End Function
+
 		Public Shared Function CreateRelativityVersionMismatchException(ByVal relativityVersion As String) As RelativityVersionMismatchException
 
 			' Rely on the process executable to craft a more accurate exception message.
@@ -68,10 +99,11 @@ Namespace kCura.WinEDDS.Api
 			' Favor the supplied application name
 			Dim applicationName As String = Config.ApplicationName
 			If String.IsNullOrEmpty(applicationName) Then
+				' Just in case the App.Config setting is removed or cleared.
 				If assembly.GetName.Name.StartsWith("kCura.EDDS.WinForm", StringComparison.OrdinalIgnoreCase) Then
 					applicationName = "Relativity Desktop Client"
 				Else
-					applicationName = "Import API"
+					applicationName = DefaultApplicationName
 				End If
 			End If
 
@@ -80,24 +112,7 @@ Namespace kCura.WinEDDS.Api
 		End Function
 
 		Public Shared Function CreateRelativityVersionMismatchException(ByVal relativityVersion As String, ByVal clientVersion As String, ByVal applicationName As String) As RelativityVersionMismatchException
-
-			' Because this is existing code, avoid arg checks and just supply a default value.
-			Const UnknownVersion As String = "(unknown)"
-			If String.IsNullOrEmpty(relativityVersion) Then
-				relativityVersion = UnknownVersion
-			End If
-
-			If String.IsNullOrEmpty(clientVersion) Then
-				clientVersion = UnknownVersion
-			End If
-
-			If String.IsNullOrEmpty(applicationName) Then
-				applicationName = UnknownVersion
-			End If
-
-			Dim message As String = $"applicationName version of {applicationName} ({clientVersion _
-				    }) is out of date. Please make sure you're running the correct version ({relativityVersion _
-				}) or the correct Relativity WebService URL is specified."
+			Dim message As String = CreateRelativityVersionMismatchMessage(relativityVersion, clientVersion, applicationName)
 			Return New RelativityVersionMismatchException(message, relativityVersion, clientVersion)
 		End Function
 
