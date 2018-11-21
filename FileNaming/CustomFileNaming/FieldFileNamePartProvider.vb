@@ -12,8 +12,34 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 		Public Overrides Function GetPartName(descriptorPart As FieldDescriptorPart, exportObject As ObjectExportInfo) As String
 			Dim extExportObject As ExtendedObjectExportInfo = TryCast(exportObject, ExtendedObjectExportInfo)
 			Dim viewFieldInfo As ViewFieldInfo = GetViewField(descriptorPart, extExportObject)
-			Dim fieldValue As String = ConvertToString(extExportObject.GetFieldValue(viewFieldInfo.AvfColumnName), viewFieldInfo, " "c)
+			Dim fieldValueText As String = ConvertToString(extExportObject.GetFieldValue(viewFieldInfo.AvfColumnName), viewFieldInfo, " "c)
+			Dim fieldValue As String = GetProperPartNameBasedOnFieldType(viewFieldInfo, fieldValueText)
 			Return kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(fieldValue)
+		End Function
+
+		Private Function GetProperPartNameBasedOnFieldType(viewFieldInfo As ViewFieldInfo, fieldValueText As String) As String
+			Select Case viewFieldInfo.FieldType
+				Case Relativity.FieldTypeHelper.FieldType.Boolean
+					Return GetYesNoFieldValue(viewFieldInfo, fieldValueText)
+				Case Relativity.FieldTypeHelper.FieldType.Varchar
+					Return CleanUpFieldValueFromObjectTags(fieldValueText)
+				Case Else
+					Return fieldValueText
+			End Select
+		End Function
+
+		Private Function GetYesNoFieldValue(viewFieldInfo As ViewFieldInfo, fieldValue As String) As String
+			Dim retVal As String = ""
+			If fieldValue = "True"
+				retVal = viewFieldInfo.DisplayName
+			Else
+				retVal = ""
+			End If
+			Return retVal
+		End Function
+
+		Private Function CleanUpFieldValueFromObjectTags(fieldValue As String) As String
+			Return fieldValue.Replace("<object/>", "")
 		End Function
 
 		Private Function GetViewField(descriptorPart As FieldDescriptorPart, exportObject As ExtendedObjectExportInfo) As ViewFieldInfo
