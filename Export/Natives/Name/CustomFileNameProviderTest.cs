@@ -126,5 +126,88 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 			Assert.That(retFileName, Is.EqualTo($"{firstPartName}.{extension}"));
 		}
 
+
+		[Test]
+		public void ItShouldReturnOnlyControlNumberWhenGivenOneField()
+		{
+			// Arrange
+			var firstDescriptor = new FieldDescriptorPart(1);
+
+			string firstPartName = "ControlNumber";
+
+			var firstfieldProviderMock = new Mock<IFileNamePartProvider>();
+
+
+			firstfieldProviderMock.Setup(mock => mock.GetPartName(firstDescriptor, _exportObjectInfo))
+				.Returns(firstPartName);
+
+			_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(firstDescriptor))
+				.Returns(firstfieldProviderMock.Object);
+
+			_subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>
+				{
+					firstDescriptor
+				},
+				_fileNamePartProviderContainerMock.Object);
+
+			// Act
+			string retFileName = _subjectUnderTest.GetTextName(_exportObjectInfo);
+			string extension = TextExtension;
+
+
+			// Assert
+			Assert.That(retFileName, Is.EqualTo($"{firstPartName}.{extension}"));
+		}
+
+
+		[Test]
+		public void ItShouldCreateCorrectFileNameForFiveParts()
+		{
+			const int numOfParts = 5;
+			var descriptors = new DescriptorPart[]
+			{
+				new FieldDescriptorPart(1),
+				new SeparatorDescriptorPart("-"),
+				new FieldDescriptorPart(1),
+				new SeparatorDescriptorPart("."),
+				new FieldDescriptorPart(1)
+			};
+			string[] partNames = new string[]
+			{
+				"Control Number",
+				"_",
+				"MD5 Hash",
+				".",
+				"Folder Name"
+			};
+
+			var mocks = new Mock<IFileNamePartProvider>[]
+			{
+				new Mock<IFileNamePartProvider>(),
+				new Mock<IFileNamePartProvider>(),
+				new Mock<IFileNamePartProvider>(),
+				new Mock<IFileNamePartProvider>(),
+				new Mock<IFileNamePartProvider>()
+			};
+
+			for (int i = 0; i < numOfParts; i++)
+			{
+				mocks[i].Setup(mock => mock.GetPartName(descriptors[i], _exportObjectInfo)).Returns(partNames[i]);
+				_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(descriptors[i]))
+					.Returns(mocks[i].Object);
+			}
+
+			_subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>(descriptors),
+				_fileNamePartProviderContainerMock.Object);
+
+			// Act
+			string retFileName = _subjectUnderTest.GetTextName(_exportObjectInfo);
+			string extension = TextExtension;
+
+			string expectedVal = string.Join("", partNames) + "." + extension;
+
+			// Assert
+			Assert.AreEqual(expectedVal, retFileName);
+		}
 	}
 }
