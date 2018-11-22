@@ -4,16 +4,10 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 
 	<TestFixture>
 	Public Class LoginHelperTests
-		Private _applicationName As String
-		Private _clientVersion As String
-		Private _relativityVersion As String
 		Private _exception  As RelativityVersionMismatchException
 
 		<SetUp>
 		Public Sub SetUp()
-			_applicationName = String.Empty
-			_clientVersion = String.Empty
-			_relativityVersion = String.Empty
 			_exception = Nothing
 			kCura.WinEDDS.Config.ConfigSettings(NameOf(Config.ApplicationName)) = String.Empty
 		End Sub
@@ -23,11 +17,8 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 		<TestCase("Application", Nothing, "20.0.1.0")>
 		<TestCase("Application", "1.0.1.0", Nothing)>
 		Public Sub ShouldNotThrowWhenTheExplicitParameterIsNullOrEmpty(testApplicationName As String, testClientVersion As String, testRelativityVersion As String)
-			GivenTheApplicationName(testApplicationName)
-			GivenTheClientVersion(testClientVersion)
-			GivenTheRelativityVersion(testRelativityVersion)
 			GivenTheTheConfigApplicationName(String.Empty)
-			WhenCreatingTheExceptionWithExplicitParameters()
+			WhenCreatingTheExceptionWithExplicitParameters(testRelativityVersion, testClientVersion, testApplicationName)
 			If String.IsNullOrEmpty(testApplicationName) Then
 				ThenTheExceptionMessageShouldEqualTheExpectedValue(kCura.WinEDDS.Api.LoginHelper.DefaultApplicationName, testClientVersion, testRelativityVersion)
 			Else If String.IsNullOrEmpty(testClientVersion) Then
@@ -42,15 +33,12 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 		<TestCase("Relativity Integration Points", "2.0.1.0", "21.0.1.0")>
 		<TestCase("Processing", "3.0.1.0", "22.0.1.0")>
 		Public Sub ShouldCreateTheExceptionWithExplicitParameters(testApplicationName As String, testClientVersion As String, testRelativityVersion As String)
-			GivenTheApplicationName(testApplicationName)
-			GivenTheClientVersion(testClientVersion)
-			GivenTheRelativityVersion(testRelativityVersion)
 			GivenTheTheConfigApplicationName(String.Empty)
-			WhenCreatingTheExceptionWithExplicitParameters()
+			WhenCreatingTheExceptionWithExplicitParameters(testRelativityVersion, testClientVersion, testApplicationName)
 			ThenTheExceptionIsNotNull()
 			ThenTheExceptionClientVersionIsNotNullOrEmpty()
 			ThenTheExceptionRelativityVersionIsNotNullOrEmpty()
-			ThenTheExceptionMessageShouldEqualTheExpectedValue(_applicationName, _clientVersion, _relativityVersion)
+			ThenTheExceptionMessageShouldEqualTheExpectedValue(testApplicationName, testClientVersion, testRelativityVersion)
 		End Sub
 
 		<Test>
@@ -58,15 +46,12 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 		<TestCase("12.0.1.0")>
 		<TestCase("13.0.1.0")>
 		Public Sub ShouldCreateTheExceptionWithAssumedAssemblyParameters(testRelativityVersion As String)
-			GivenTheApplicationName(String.Empty)
-			GivenTheClientVersion(String.Empty)
-			GivenTheRelativityVersion(testRelativityVersion)
 			GivenTheTheConfigApplicationName(String.Empty)
-			WhenCreatingTheExceptionWithAssumedParameters(GetAssumedAssembly())
+			WhenCreatingTheExceptionWithAssumedParameters(testRelativityVersion, GetAssumedAssembly())
 			ThenTheExceptionIsNotNull()
 			ThenTheExceptionClientVersionIsNotNullOrEmpty()
 			ThenTheExceptionRelativityVersionIsNotNullOrEmpty()
-			ThenTheExceptionMessageShouldEqualTheExpectedValue("Import API")
+			ThenTheExceptionMessageShouldEqualTheExpectedValue("Import API", GetAssumedAssemblyVersion(), testRelativityVersion)
 		End Sub
 
 		<Test>
@@ -78,47 +63,32 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 		<TestCase("My Processing", "22.0.1.0", False)>
 		Public Sub ShouldCreateTheExceptionWithAssumedAssemblyAndConfigParameters(testConfigApplicationName As String, testRelativityVersion As String, passAssembly As Boolean)
 			GivenTheTheConfigApplicationName(testConfigApplicationName)
-			GivenTheApplicationName(String.Empty)
-			GivenTheClientVersion(String.Empty)
-			GivenTheRelativityVersion(testRelativityVersion)
 			If passAssembly Then
-				WhenCreatingTheExceptionWithAssumedParameters(GetAssumedAssembly())
+				WhenCreatingTheExceptionWithAssumedParameters(testRelativityVersion, GetAssumedAssembly())
 			Else
-				WhenCreatingTheExceptionWithAssumedParameters()
+				WhenCreatingTheExceptionWithAssumedParameters(testRelativityVersion)
 			End If
 			
 			ThenTheExceptionIsNotNull()
 			ThenTheExceptionClientVersionIsNotNullOrEmpty()
 			ThenTheExceptionRelativityVersionIsNotNullOrEmpty()
-			ThenTheExceptionMessageShouldEqualTheExpectedValue(testConfigApplicationName)
+			ThenTheExceptionMessageShouldEqualTheExpectedValue(testConfigApplicationName, GetAssumedAssemblyVersion(), testRelativityVersion)
 		End Sub
 
 		Private Sub GivenTheTheConfigApplicationName(ByVal name As String)
 			kCura.WinEDDS.Config.ConfigSettings(NameOf(Config.ApplicationName)) = name
 		End Sub
 
-		Private Sub GivenTheApplicationName(ByVal value As String) 
-			_applicationName = value
+		Private Sub WhenCreatingTheExceptionWithAssumedParameters(relativityVersion As String)
+			_exception = kCura.WinEDDS.Api.LoginHelper.CreateRelativityVersionMismatchException(relativityVersion)
 		End Sub
 
-		Private Sub GivenTheClientVersion(ByVal value As String) 
-			_clientVersion = value
+		Private Sub WhenCreatingTheExceptionWithAssumedParameters(relativityVersion As String, ByVal assembly As System.Reflection.Assembly)
+			_exception = kCura.WinEDDS.Api.LoginHelper.CreateRelativityVersionMismatchException(relativityVersion, assembly)
 		End Sub
 
-		Private Sub GivenTheRelativityVersion(ByVal value As String) 
-			_relativityVersion = value
-		End Sub
-
-		Private Sub WhenCreatingTheExceptionWithAssumedParameters()
-			_exception = kCura.WinEDDS.Api.LoginHelper.CreateRelativityVersionMismatchException(_relativityVersion)
-		End Sub
-
-		Private Sub WhenCreatingTheExceptionWithAssumedParameters(ByVal assembly As System.Reflection.Assembly)
-			_exception = kCura.WinEDDS.Api.LoginHelper.CreateRelativityVersionMismatchException(_relativityVersion, assembly)
-		End Sub
-
-		Private Sub WhenCreatingTheExceptionWithExplicitParameters()
-			_exception = kCura.WinEDDS.Api.LoginHelper.CreateRelativityVersionMismatchException(_relativityVersion, _clientVersion, _applicationName)
+		Private Sub WhenCreatingTheExceptionWithExplicitParameters(relativityVersion As String, clientVersion As String, applicationName As String)
+			_exception = kCura.WinEDDS.Api.LoginHelper.CreateRelativityVersionMismatchException(relativityVersion, clientVersion, applicationName)
 		End Sub
 
 		Private Sub ThenTheExceptionIsNotNull()
@@ -133,14 +103,13 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 			Assert.That(_exception.RelativityVersion, [Is].Not.Null.Or.Empty)
 		End Sub
 
-		Private Sub ThenTheExceptionMessageShouldEqualTheExpectedValue(applicationName As String)
-			Dim assembly As System.Reflection.Assembly = GetAssumedAssembly()
-			ThenTheExceptionMessageShouldEqualTheExpectedValue(applicationName, assembly.GetName.Version.ToString(), _relativityVersion)
-		End Sub
-
 		Private Function GetAssumedAssembly() As System.Reflection.Assembly
 			' The assumed assembly name is taken from the kCura.WinEDDS assembly.
 			Return GetType(kCura.WinEDDS.Api.LoginHelper).Assembly
+		End Function
+
+		Private Function GetAssumedAssemblyVersion() As String
+			Return GetAssumedAssembly().GetName().Version.ToString()
 		End Function
 
 		Private Sub ThenTheExceptionMessageShouldEqualTheExpectedValue(applicationName As String, clientVersion As String, relativityVersion As String)
