@@ -337,7 +337,10 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property ErrorDestinationPath() As String
 			Get
-				If String.IsNullOrEmpty(_errorFileLocation) Then _errorFileLocation = System.IO.Path.GetTempFileName()
+				If String.IsNullOrEmpty(_errorFileLocation) Then
+					_errorFileLocation = TempFileBuilder.GetTempFile(TempFileBuilder.ErrorsFileNamePrefix)
+				End If
+
 				Return _errorFileLocation
 			End Get
 		End Property
@@ -575,7 +578,7 @@ Namespace kCura.WinEDDS
 
 			If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText AndAlso Me.Settings.ExportImages Then
 				If Not Me.TextPrecedenceIsSet Then
-					tempLocalIproFullTextFilePath = System.IO.Path.GetTempFileName
+					tempLocalIproFullTextFilePath = TempFileBuilder.GetTempFile(TempFileBuilder.IProFileNamePrefix)
 					Dim tries As Int32 = 0
 					Dim maxTries As Int32 = NumberOfRetries + 1
 					Dim start As Int64 = System.DateTime.Now.Ticks
@@ -610,7 +613,7 @@ Namespace kCura.WinEDDS
 					If tempLocalFullTextFilePath <> String.Empty Then
 						tempLocalIproFullTextFilePath = String.Copy(tempLocalFullTextFilePath)
 					Else
-						tempLocalIproFullTextFilePath = System.IO.Path.GetTempFileName
+						tempLocalIproFullTextFilePath = TempFileBuilder.GetTempFile(TempFileBuilder.IProFileNamePrefix)
 						Dim tempLocalIproFileStream As FileStream = _fileStreamFactory.Create(tempLocalIproFullTextFilePath, False)
 						Dim sw As New System.IO.StreamWriter(tempLocalIproFileStream, System.Text.Encoding.Unicode)
 						Dim val As String = artifact.Metadata(Me.OrdinalLookup(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).ToString
@@ -690,7 +693,7 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 		Private Function DownloadTextFieldAsFile(ByVal artifact As WinEDDS.Exporters.ObjectExportInfo, ByVal field As WinEDDS.ViewFieldInfo) As String
-			Dim tempLocalFullTextFilePath As String = System.IO.Path.GetTempFileName
+			Dim tempLocalFullTextFilePath As String = TempFileBuilder.GetTempFile(TempFileBuilder.FullTextFileNamePrefix)
 			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			Dim start As Int64 = System.DateTime.Now.Ticks
@@ -860,10 +863,6 @@ Namespace kCura.WinEDDS
 			If image.FileGuid = "" Then Return 0
 			Dim start As Int64 = System.DateTime.Now.Ticks
 			Dim tempFile As String = Me.GetImageExportLocation(image, currentVolumeNumber, currentSubDirectoryNumber)
-			'If Me.Settings.TypeOfImage = ExportFile.ImageType.Pdf Then
-			'	tempFile = System.IO.Path.GetTempFileName
-			'	kCura.Utility.File.Instance.Delete(tempFile)
-			'End If
 			If _fileHelper.Exists(tempFile) Then
 				If _settings.Overwrite Then
 					_fileHelper.Delete(tempFile)
