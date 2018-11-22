@@ -464,6 +464,12 @@ Namespace kCura.WinEDDS
 			Return columnNames
 		End Function
 
+		''' <summary>
+		''' Safely deletes all temporary load files that are auto-generated when this object is created.
+		''' </summary>
+		''' <remarks>
+		''' API users are responsible for calling this method when <see cref="ReadFile"/> is not executed.
+		''' </remarks>
 		Public Sub DeleteTempLoadFiles()
 			DeleteFiles()
 		End Sub
