@@ -5,12 +5,12 @@ Namespace kCura.WinEDDS.Api
 		''' <summary>
 		''' The default application name used when a null or empty value is specified.
 		''' </summary>
-		Public Const DefaultApplicationName As String = "Import API"
+		Friend Const DefaultApplicationName As String = "Import API"
 
 		''' <summary>
 		''' The default version used when a null or empty value is specified.
 		''' </summary>
-		Public Const DefaultUnknownVersion As String = "0.0.0.0"
+		Friend Const DefaultUnknownVersion As String = "0.0.0.0"
 
 		Private Shared relativityManager As kCura.WinEDDS.Service.RelativityManager
 
