@@ -20,16 +20,17 @@ Namespace kCura.WinEDDS.NUnit
 
 		<Test>
 		<TestCase(Nothing)>
-		<TestCase("custom-prefix")>
-		<TestCase(TempFileBuilder.CodeLoadFileNamePrefix)>
-		<TestCase(TempFileBuilder.DataGridLoadFileNamePrefix)>
-		<TestCase(TempFileBuilder.ErrorsFileNamePrefix)>
-		<TestCase(TempFileBuilder.FullTextFileNamePrefix)>
-		<TestCase(TempFileBuilder.IProFileNamePrefix)>
-		<TestCase(TempFileBuilder.NativeLoadFileNamePrefix)>
-		<TestCase(TempFileBuilder.ObjectLoadFileNamePrefix)>
-		Public Sub ShouldGetTheTempFileWithPrefix(prefix As String)
-			WhenGettingTheTempFile(prefix, True)
+		<TestCase("custom-suffix")>
+		<TestCase(TempFileConstants.CodeLoadFileNameSuffix)>
+		<TestCase(TempFileConstants.DataGridLoadFileNameSuffix)>
+		<TestCase(TempFileConstants.ErrorsFileNameSuffix)>
+		<TestCase(TempFileConstants.FullTextFileNameSuffix)>
+		<TestCase(TempFileConstants.IProFileNameSuffix)>
+		<TestCase(TempFileConstants.LongTextFileNameSuffix)>
+		<TestCase(TempFileConstants.NativeLoadFileNameSuffix)>
+		<TestCase(TempFileConstants.ObjectLoadFileNameSuffix)>
+		Public Sub ShouldGetTheTempFileWithSuffix(suffix As String)
+			WhenGettingTheTempFile(suffix)
 			ThenTheTempFileExists()
 			ThenTheTempFileIsNotLocked()
 			ThenTheTempFileExists()
@@ -37,35 +38,26 @@ Namespace kCura.WinEDDS.NUnit
 		End Sub
 
 		<Test>
-		Public Sub ShouldGetTheTempFileButNotCreateIt()
-			WhenGettingTheTempFile(TempFileBuilder.NativeLoadFileNamePrefix, False)
-			ThenTheTempFileDoesNotExist()
-		End Sub
-
-		<Test>
-		Public Sub ShouldGetTheTempFileWithoutThePrefix()
-			WhenGettingTheTempFileWithoutThePrefix()
+		Public Sub ShouldGetTheTempFileWithoutTheSuffix()
+			WhenGettingTheTempFileWithoutTheSuffix()
 			ThenTheTempFileExists()
 			ThenTheTempFileIsNotLocked()
 		End Sub
 
-		Private Sub WhenGettingTheTempFileWithoutThePrefix()
-			_tempFile = TempFileBuilder.GetTempFile()
+		Private Sub WhenGettingTheTempFileWithoutTheSuffix()
+			_tempFile = TempFileBuilder.GetTempFileName()
 		End Sub
 
-		Private Sub WhenGettingTheTempFile(prefix As String, create As Boolean)
-			_tempFile = TempFileBuilder.GetTempFile(prefix, create)
+		Private Sub WhenGettingTheTempFile(suffix As String)
+			_tempFile = TempFileBuilder.GetTempFileName(suffix)
 		End Sub
 
 		Private Sub ThenTheTempFileExists()
 			FileAssert.Exists(_tempFile)
 		End Sub
 
-		Private Sub ThenTheTempFileDoesNotExist()
-			FileAssert.DoesNotExist(_tempFile)
-		End Sub
-
 		Private Sub ThenTheTempFileIsNotLocked()
+			' Sanity check to ensure the file can be modified.
 			Using (System.IO.File.Open(_tempFile, System.IO.FileMode.Open, System.IO.FileAccess.ReadWrite, System.IO.FileShare.None))
 			End Using
 		End Sub
