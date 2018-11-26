@@ -22,7 +22,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths
 			{
 				if (string.IsNullOrEmpty(_errorFilePath))
 				{
-					_errorFilePath = System.IO.Path.GetTempFileName();
+					_errorFilePath = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix);
 					_logger.LogVerbose("Creating new path {path} for error file.", _errorFilePath);
 				}
 
