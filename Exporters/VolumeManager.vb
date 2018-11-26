@@ -338,7 +338,7 @@ Namespace kCura.WinEDDS
 		Public ReadOnly Property ErrorDestinationPath() As String
 			Get
 				If String.IsNullOrEmpty(_errorFileLocation) Then
-					_errorFileLocation = TempFileBuilder.GetTempFile(TempFileBuilder.ErrorsFileNamePrefix)
+					_errorFileLocation = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
 				End If
 
 				Return _errorFileLocation
@@ -578,7 +578,7 @@ Namespace kCura.WinEDDS
 
 			If Me.Settings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText AndAlso Me.Settings.ExportImages Then
 				If Not Me.TextPrecedenceIsSet Then
-					tempLocalIproFullTextFilePath = TempFileBuilder.GetTempFile(TempFileBuilder.IProFileNamePrefix)
+					tempLocalIproFullTextFilePath = TempFileBuilder.GetTempFileName(TempFileConstants.IProFileNameSuffix)
 					Dim tries As Int32 = 0
 					Dim maxTries As Int32 = NumberOfRetries + 1
 					Dim start As Int64 = System.DateTime.Now.Ticks
@@ -613,7 +613,7 @@ Namespace kCura.WinEDDS
 					If tempLocalFullTextFilePath <> String.Empty Then
 						tempLocalIproFullTextFilePath = String.Copy(tempLocalFullTextFilePath)
 					Else
-						tempLocalIproFullTextFilePath = TempFileBuilder.GetTempFile(TempFileBuilder.IProFileNamePrefix)
+						tempLocalIproFullTextFilePath = TempFileBuilder.GetTempFileName(TempFileConstants.IProFileNameSuffix)
 						Dim tempLocalIproFileStream As FileStream = _fileStreamFactory.Create(tempLocalIproFullTextFilePath, False)
 						Dim sw As New System.IO.StreamWriter(tempLocalIproFileStream, System.Text.Encoding.Unicode)
 						Dim val As String = artifact.Metadata(Me.OrdinalLookup(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).ToString
@@ -693,7 +693,7 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 		Private Function DownloadTextFieldAsFile(ByVal artifact As WinEDDS.Exporters.ObjectExportInfo, ByVal field As WinEDDS.ViewFieldInfo) As String
-			Dim tempLocalFullTextFilePath As String = TempFileBuilder.GetTempFile(TempFileBuilder.FullTextFileNamePrefix)
+			Dim tempLocalFullTextFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.FullTextFileNameSuffix)
 			Dim tries As Int32 = 0
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			Dim start As Int64 = System.DateTime.Now.Ticks

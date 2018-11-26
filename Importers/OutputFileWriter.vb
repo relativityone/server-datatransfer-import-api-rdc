@@ -15,8 +15,8 @@
 #End Region
 
 		Public Sub New()
-			OutputNativeFilePath = TempFileBuilder.GetTempFile(TempFileBuilder.NativeLoadFileNamePrefix)
-			OutputDataGridFilePath = TempFileBuilder.GetTempFile(TempFileBuilder.DatagridLoadFileNamePrefix)
+			OutputNativeFilePath = TempFileBuilder.GetTempFileName(TempFileConstants.NativeLoadFileNameSuffix)
+			OutputDataGridFilePath = TempFileBuilder.GetTempFileName(TempFileConstants.DatagridLoadFileNameSuffix)
 		End Sub
 
 		Public Sub Open(Optional ByVal appendMode As Boolean = False)

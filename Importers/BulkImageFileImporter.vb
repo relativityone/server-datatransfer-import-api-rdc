@@ -457,7 +457,7 @@ Namespace kCura.WinEDDS
 
 		Protected Sub LowerBatchSizeAndRetry(ByVal oldBulkLoadFilePath As String, ByVal dataGridFilePath As String, ByVal totalRecords As Int32)
 			'NOTE: we are not cutting a new/smaller data grid bulk file because it will be chunked as it is loaded into the data grid
-			Dim newBulkLoadFilePath As String = TempFileBuilder.GetTempFile(TempFileBuilder.NativeLoadFileNamePrefix)
+			Dim newBulkLoadFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.NativeLoadFileNameSuffix)
 			Dim limit As String = Relativity.Constants.ENDLINETERMSTRING
 			Dim last As New System.Collections.Generic.Queue(Of Char)
 			Dim recordsProcessed As Int32 = 0
@@ -612,8 +612,8 @@ Namespace kCura.WinEDDS
 
 		Public Sub ReadFile(ByVal path As String)
 			_timekeeper.MarkStart("TOTAL")
-			Dim bulkLoadFilePath As String = TempFileBuilder.GetTempFile(TempFileBuilder.NativeLoadFileNamePrefix)
-			Dim dataGridFilePath As String = TempFileBuilder.GetTempFile(TempFileBuilder.DatagridLoadFileNamePrefix)
+			Dim bulkLoadFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.NativeLoadFileNameSuffix)
+			Dim dataGridFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.DatagridLoadFileNameSuffix)
 			_fileIdentifierLookup = New System.Collections.Hashtable
 			_totalProcessed = 0
 			_totalValidated = 0
@@ -1101,7 +1101,7 @@ Namespace kCura.WinEDDS
 		Private Sub RaiseReportError(ByVal row As System.Collections.Hashtable, ByVal lineNumber As Int32, ByVal identifier As String, ByVal type As String)
 			_errorCount += 1
 			If _errorMessageFileLocation = "" Then
-				_errorMessageFileLocation = TempFileBuilder.GetTempFile(TempFileBuilder.ErrorsFileNamePrefix)
+				_errorMessageFileLocation = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
 			End If
 			Dim errorMessageFileWriter As New System.IO.StreamWriter(_errorMessageFileLocation, True, System.Text.Encoding.Default)
 			If _errorCount < MaxNumberOfErrorsInGrid Then
@@ -1141,11 +1141,11 @@ Namespace kCura.WinEDDS
 		Private Sub ManageErrors()
 			If Not _bulkImportManager.ImageRunHasErrors(_caseInfo.ArtifactID, _runId) Then Exit Sub
 			If _errorMessageFileLocation = "" Then
-				_errorMessageFileLocation = TempFileBuilder.GetTempFile(TempFileBuilder.ErrorsFileNamePrefix)
+				_errorMessageFileLocation = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
 			End If
 
 			If _errorRowsFileLocation = "" Then
-				_errorRowsFileLocation = TempFileBuilder.GetTempFile(TempFileBuilder.ErrorsFileNamePrefix)
+				_errorRowsFileLocation = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
 			End If
 
 			Dim w As System.IO.StreamWriter = Nothing
@@ -1156,7 +1156,7 @@ Namespace kCura.WinEDDS
 				With _bulkImportManager.GenerateImageErrorFiles(_caseInfo.ArtifactID, _runId, True, _keyFieldDto.ArtifactID)
 					Me.RaiseStatusEvent(Windows.Process.EventType.Status, "Retrieving errors from server", Me.CurrentLineNumber, Me.CurrentLineNumber)
 					Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer)
-					Dim errorsLocation As String = TempFileBuilder.GetTempFile(TempFileBuilder.ErrorsFileNamePrefix)
+					Dim errorsLocation As String = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
 					sr = AttemptErrorFileDownload(downloader, errorsLocation, .LogKey, _caseInfo)
 
 					If sr Is Nothing Then
@@ -1192,7 +1192,7 @@ Namespace kCura.WinEDDS
 							line = sr.ReadLine
 						End While
 						sr.Close()
-						Dim tmp As String = TempFileBuilder.GetTempFile(TempFileBuilder.ErrorsFileNamePrefix)
+						Dim tmp As String = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
 						downloader.MoveTempFileToLocal(tmp, .OpticonKey, _caseInfo)
 						w = New System.IO.StreamWriter(_errorRowsFileLocation, True, System.Text.Encoding.Default)
 						r = New System.IO.StreamReader(tmp, System.Text.Encoding.Default)

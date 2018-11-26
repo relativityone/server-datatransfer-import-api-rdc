@@ -67,8 +67,8 @@ Namespace kCura.WinEDDS
 		Private _lastRunMetadataImport As Int64 = 0
 		Private _timekeeper As ITimeKeeperManager
 
-		Protected OutputCodeFilePath As String = TempFileBuilder.GetTempFile(TempFileBuilder.CodeLoadFileNamePrefix)
-		Protected OutputObjectFilePath As String = TempFileBuilder.GetTempFile(TempFileBuilder.ObjectLoadFileNamePrefix)
+		Protected OutputCodeFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.CodeLoadFileNameSuffix)
+		Protected OutputObjectFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.ObjectLoadFileNameSuffix)
 		Private _filePath As String
 		Private _batchCounter As Int32 = 0
 		Private _jobCompleteNativeCount As Int32 = 0
@@ -1143,7 +1143,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub LowerBatchSizeAndRetry(ByVal oldNativeFilePath As String, ByVal totalRecords As Int32)
 			'NOTE: we are not cutting a new/smaller data grid bulk file because it will be chunked as it is loaded into the data grid
-			Dim newNativeFilePath As String = TempFileBuilder.GetTempFile(TempFileBuilder.NativeLoadFileNamePrefix)
+			Dim newNativeFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.NativeLoadFileNameSuffix)
 			Dim limit As String = BulkLoadFileFieldDelimiter & vbCrLf
 			Dim last As New System.Collections.Generic.Queue(Of Char)
 			Dim recordsProcessed As Int32 = 0
@@ -1829,7 +1829,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub WriteError(ByVal currentLineNumber As Int32, ByVal line As String)
 			If _prePushErrorLineNumbersFileName = "" Then
-				_prePushErrorLineNumbersFileName = TempFileBuilder.GetTempFile(TempFileBuilder.ErrorsFileNamePrefix)
+				_prePushErrorLineNumbersFileName = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
 			End If
 
 			Dim sw As New System.IO.StreamWriter(_prePushErrorLineNumbersFileName, True, System.Text.Encoding.Default)
@@ -1847,7 +1847,7 @@ Namespace kCura.WinEDDS
 		Private Sub RaiseReportError(ByVal row As System.Collections.Hashtable, ByVal lineNumber As Int32, ByVal identifier As String, ByVal type As String)
 			_errorCount += 1
 			If String.IsNullOrEmpty(_errorMessageFileLocation) Then
-				_errorMessageFileLocation = TempFileBuilder.GetTempFile(TempFileBuilder.ErrorsFileNamePrefix)
+				_errorMessageFileLocation = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
 			End If
 
 			Dim errorMessageFileWriter As New System.IO.StreamWriter(_errorMessageFileLocation, True, System.Text.Encoding.Default)
@@ -2100,7 +2100,7 @@ Namespace kCura.WinEDDS
 					Me.WriteStatusLine(Windows.Process.EventType.Status, "Retrieving errors from server")
 					downloader = New FileDownloader(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer)
 					AddHandler downloader.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
-					Dim errorsLocation As String = TempFileBuilder.GetTempFile(TempFileBuilder.ErrorsFileNamePrefix)
+					Dim errorsLocation As String = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
 					sr = AttemptErrorFileDownload(downloader, errorsLocation, .LogKey, _caseInfo)
 
 					If sr Is Nothing Then
