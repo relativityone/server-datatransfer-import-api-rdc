@@ -239,7 +239,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 
 
 			// Assert
-			Assert.That(retFileName, Is.EqualTo($"{firstPartName}_{_exportObjectInfo.OriginalFileName}.{extension}"));
+			Assert.That(retFileName, Is.EqualTo($"{firstPartName}_{_exportObjectInfo.OriginalFileName}"));
 		}
 	}
 }
