@@ -21,8 +21,7 @@ Namespace kCura.WinEDDS.Exporters
 				If FilenameIsOK(fileName)
 					Return filename
 				Else
-					Dim controlNumber As String = record(_fieldLookupService.GetOrdinalIndex("ControlNumber")).ToString()
-					_warningWriter.Invoke(controlNumber & " - File Name field contains illegal characters or is empty. Using old original file name.")
+					_warningWriter.Invoke("File Name field contains illegal characters or is empty. Using old original file name: " & nativeRow("Filename").ToString())
 				End If
 			End If
 
