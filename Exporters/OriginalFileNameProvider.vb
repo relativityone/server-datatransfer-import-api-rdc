@@ -17,7 +17,11 @@ Namespace kCura.WinEDDS.Exporters
 
 		Public Function GetOriginalFileName(record() As Object, nativeRow As DataRowView) As String
 			If _isFileNameFieldPresent
-				Dim fileName As String =  record(_fieldLookupService.GetOrdinalIndex("FileName")).ToString()
+				Dim fileNameObject As Object = record(_fieldLookupService.GetOrdinalIndex("FileName"))
+				If fileNameObject Is Nothing
+					Return nativeRow("Filename").ToString()
+				End If
+				Dim fileName As String =  fileNameObject.ToString()
 				If FilenameIsOK(fileName)
 					Return filename
 				Else
