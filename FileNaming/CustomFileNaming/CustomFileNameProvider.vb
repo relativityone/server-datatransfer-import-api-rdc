@@ -19,15 +19,17 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 
 		Public Function GetName(exportObjectInfo As ObjectExportInfo) As String Implements IFileNameProvider.GetName
 			Dim name As StringBuilder = CreateFileName(exportObjectInfo)
-			name = AppendOriginalFileName(name, exportObjectInfo)
-			Return GetNameWithNativeExtension(name, exportObjectInfo)
+			
+			If _appendOriginalFileName
+				name = AppendOriginalFileName(name, exportObjectInfo)
+			Else
+				name = GetNameWithNativeExtension(name, exportObjectInfo)
+			End If
+			Return name.ToString()
 		End Function
 
 		Private Function AppendOriginalFileName(ByRef name As StringBuilder, exportObjectInfo As ObjectExportInfo) As StringBuilder
-			If _appendOriginalFileName
-				Return name.Append("_" & exportObjectInfo.OriginalFileName)
-			End If
-			Return name
+			Return name.Append("_" & exportObjectInfo.OriginalFileName)
 		End Function
 		Private Function CreateFileName(objectExportInfo As ObjectExportInfo) As StringBuilder
 			Dim name As StringBuilder = New StringBuilder()
@@ -37,7 +39,6 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 			For i As Integer = 0 To namePartsCount - 1
 				name.Append(BuildFileNamePart(objectExportInfo, i))
 			Next
-
 			Return name
 		End Function
 
@@ -69,17 +70,23 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 		End Function
 
 
-		Private Function GetNameWithNativeExtension(name As StringBuilder, exportObjectInfo As ObjectExportInfo) As String
+		Private Function GetNameWithNativeExtension(name As StringBuilder, exportObjectInfo As ObjectExportInfo) As StringBuilder
 			If Not String.IsNullOrEmpty(exportObjectInfo.NativeExtension) Then
 				name.Append($".{exportObjectInfo.NativeExtension}")
 			End If
-			Return name.ToString()
+			Return name
 		End Function
 
-		Public Function GetTextName(exportedObjectInfo As ObjectExportInfo) As String Implements IFileNameProvider.GetTextName
-			Dim name As StringBuilder = CreateFileName(exportedObjectInfo)
-			name = AppendOriginalFileName(name, exportedObjectInfo)
-			Return GetNameWithTextExtension(name)
+		Public Function GetTextName(exportObjectInfo As ObjectExportInfo) As String Implements IFileNameProvider.GetTextName
+			Dim name As StringBuilder = CreateFileName(exportObjectInfo)
+			Dim nameAsString As String
+			If _appendOriginalFileName
+				nameAsString = AppendOriginalFileName(name, exportObjectInfo).ToString()
+			Else
+				nameAsString = GetNameWithTextExtension(name)
+			End If
+
+			Return nameAsString
 		End Function
 
 		Private Function GetNameWithTextExtension(name As StringBuilder) As String
