@@ -19,15 +19,15 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 
 		Public Function GetName(exportObjectInfo As ObjectExportInfo) As String Implements IFileNameProvider.GetName
 			Dim name As StringBuilder = CreateFileName(exportObjectInfo)
-			If _appendOriginalFileName
-				name = AppendOriginalFileName(name, exportObjectInfo)
-			End If
-
+			name = AppendOriginalFileName(name, exportObjectInfo)
 			Return GetNameWithNativeExtension(name, exportObjectInfo)
 		End Function
 
 		Private Function AppendOriginalFileName(ByRef name As StringBuilder, exportObjectInfo As ObjectExportInfo) As StringBuilder
-			Return name.Append("_" & exportObjectInfo.OriginalFileName)
+			If _appendOriginalFileName
+				Return name.Append("_" & exportObjectInfo.OriginalFileName)
+			End If
+			Return name
 		End Function
 		Private Function CreateFileName(objectExportInfo As ObjectExportInfo) As StringBuilder
 			Dim name As StringBuilder = New StringBuilder()
@@ -78,6 +78,7 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 
 		Public Function GetTextName(exportedObjectInfo As ObjectExportInfo) As String Implements IFileNameProvider.GetTextName
 			Dim name As StringBuilder = CreateFileName(exportedObjectInfo)
+			name = AppendOriginalFileName(name, exportedObjectInfo)
 			Return GetNameWithTextExtension(name)
 		End Function
 
