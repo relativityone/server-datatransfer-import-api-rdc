@@ -34,9 +34,14 @@ Namespace kCura.WinEDDS.Exporters
 		End Function
 
 		Public Shared Function ExtendFieldRequestByFileNameIfNecessary(exportableFields As ViewFieldInfo(), requestedFields As IList(Of Integer)) As Boolean
+			If requestedFields Is Nothing
+				Return False
+			End If
 			Dim fileName As ViewFieldInfo = exportableFields.SingleOrDefault(Function(info) info.DisplayName.Equals("File Name"))
 			If fileName IsNot Nothing
-				requestedFields.Add(fileName.AvfId)
+				If Not requestedFields.Contains(fileName.AvfId)
+					requestedFields.Add(fileName.AvfId)
+				End If
 				Return True
 			End If
 
