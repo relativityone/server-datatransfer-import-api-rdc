@@ -185,6 +185,7 @@
     <Compile Include="DataReaderReaderFixture.vb" />
     <Compile Include="Exceptions\FieldValueImportExceptionFixture.vb" />
     <Compile Include="Exporters\OpticonFilenameComparerTests.vb" />
+    <Compile Include="Exporters\OriginalFileNameProviderTests.vb" />
     <Compile Include="Exporters\Validator\PaddingWarningValidator\IsValid.vb" />
     <Compile Include="KWE_Save_Load\DocImportTests.vb" />
     <Compile Include="MockForLoweBatchSizeBulkImageFileImporter.vb" />
