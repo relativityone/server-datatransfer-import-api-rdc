@@ -1,6 +1,5 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.Collections.Generic
-Imports System.Diagnostics
 Imports System.IO
 Imports System.Threading
 Imports kCura.Utility.Extensions
@@ -58,6 +57,7 @@ Namespace kCura.WinEDDS
 		Private _errorFile As IErrorFile
 		Private ReadOnly _cancellationTokenSource As CancellationTokenSource
 		Private _syncLock As Object = New Object
+		Private _originalFileNameProvider As OriginalFileNameProvider
 
 #End Region
 
@@ -297,7 +297,8 @@ Namespace kCura.WinEDDS
 				_productionExportProduction = production
 			End If
 			Dim allAvfIds As List(Of Int32) = GetAvfIds()
-
+			Dim isFileNamePresent As Boolean = OriginalFileNameProvider.ExtendFieldRequestByFileNameIfNecessary(Me.Settings.AllExportableFields, allAvfIds)
+			
 			tries = 0
 			Select Case Me.Settings.TypeOfExport
 				Case ExportFile.ExportType.ArtifactSearch
@@ -348,6 +349,8 @@ Namespace kCura.WinEDDS
 					batch = container.Resolve(Of IBatch)
 					_downloadModeStatus = container.Resolve(Of IExportFileDownloaderStatus)
 				End If
+
+				_originalFileNameProvider = New OriginalFileNameProvider(isFileNamePresent, FieldLookupService, AddressOf WriteWarning)
 
 				Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
 				Me.WriteUpdate($"Data retrieved. Beginning {typeOfExportDisplayString} export...")
@@ -521,7 +524,7 @@ Namespace kCura.WinEDDS
 				Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, documentArtifactIDs(i))
 				Dim prediction As VolumePredictions = New VolumePredictions()
 				Dim artifact As ObjectExportInfo = CreateArtifact(record, documentArtifactIDs(i), nativeRow, images, productionImages, beginBatesColumnIndex, identifierColumnIndex, lookup, prediction)
-
+				
 				If UseOldExport Then
 					_volumeManager.FinalizeVolumeAndSubDirPredictions(prediction, artifact)
 				Else
@@ -651,7 +654,7 @@ Namespace kCura.WinEDDS
 				artifact.OriginalFileName = ""
 				artifact.NativeSourceLocation = ""
 			Else
-				artifact.OriginalFileName = nativeRow("Filename").ToString
+				artifact.OriginalFileName = _originalFileNameProvider.GetOriginalFileName(record, nativeRow)
 				artifact.NativeSourceLocation = nativeRow("Location").ToString
 				If Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document Then
 					artifact.NativeFileGuid = nativeRow("Guid").ToString

@@ -364,6 +364,7 @@
     <Compile Include="Exporters\LoadFileEntry\ILongTextEntryWriter.vb" />
     <Compile Include="Exporters\NullUserNotification.vb" />
     <Compile Include="Exporters\OpticonFilenameComparer.vb" />
+    <Compile Include="Exporters\OriginalFileNameProvider.vb" />
     <Compile Include="Exporters\TempTextFileDeletor.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\DelimitedCellFormatter.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\HtmlCellFormatter.vb" />
