@@ -350,7 +350,7 @@ Namespace kCura.WinEDDS
 					_downloadModeStatus = container.Resolve(Of IExportFileDownloaderStatus)
 				End If
 
-				_originalFileNameProvider = New OriginalFileNameProvider(isFileNamePresent, FieldLookupService, AddressOf WriteWarning)
+				_originalFileNameProvider = New OriginalFileNameProvider(isFileNamePresent, FieldLookupService, AddressOf WriteWarningWithoutShowingExportedDocumentsCount)
 
 				If Not isFileNamePresent
 					WriteWarning("File Name field not present in workspace. Using old original file name.")
@@ -1108,18 +1108,25 @@ Namespace kCura.WinEDDS
 			RaiseEvent FatalErrorEvent(line, ex)
 		End Sub
 
-		Friend Sub WriteStatusLine(ByVal e As kCura.Windows.Process.EventType, ByVal line As String, ByVal isEssential As Boolean) Implements IStatus.WriteStatusLine
+		Friend Sub WriteStatusLine(ByVal e As kCura.Windows.Process.EventType, ByVal line As String, ByVal isEssential As Boolean, ByVal showNumberOfExportedDocuments As Boolean)
 			Dim now As Long = System.DateTime.Now.Ticks
 
 			SyncLock _syncLock
 				If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
 					_lastStatusMessageTs = now
-					Dim appendString As String = " ... " & Me.DocumentsExported - _lastDocumentsExportedCountReported & " document(s) exported."
+					Dim appendString As String = ""
+					If showNumberOfExportedDocuments
+						 appendString  = " ... " & Me.DocumentsExported - _lastDocumentsExportedCountReported & " document(s) exported."
+					End If
 					_lastDocumentsExportedCountReported = Me.DocumentsExported
 					RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line & appendString, e, _lastStatisticsSnapshot, Statistics))
 				End If
 			End SyncLock
 
+		End Sub
+
+		Friend Sub WriteStatusLine(ByVal e As kCura.Windows.Process.EventType, ByVal line As String, ByVal isEssential As Boolean) Implements IStatus.WriteStatusLine
+			WriteStatusLine(e, line, isEssential, True)
 		End Sub
 
 		Friend Sub WriteStatusLineWithoutDocCount(ByVal e As kCura.Windows.Process.EventType, ByVal line As String, ByVal isEssential As Boolean)
@@ -1154,6 +1161,10 @@ Namespace kCura.WinEDDS
 			sw.Close()
 			Dim errorLine As String = String.Format("Error processing images for document {0}: {1}. Check {2}_img_errors.txt for details", artifact.IdentifierValue, ex.Message.TrimEnd("."c), _exportFile.LoadFilesPrefix)
 			Me.WriteError(errorLine)
+		End Sub
+		Friend Sub WriteWarningWithoutShowingExportedDocumentsCount(line As String)
+			Interlocked.Increment(_warningCount)
+			WriteStatusLine(kCura.Windows.Process.EventType.Warning, line, True, False)
 		End Sub
 
 		Friend Sub WriteWarning(ByVal line As String) Implements IStatus.WriteWarning
