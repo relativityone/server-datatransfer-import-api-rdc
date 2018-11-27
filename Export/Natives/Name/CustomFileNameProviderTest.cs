@@ -24,7 +24,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 			_exportObjectInfo = new ObjectExportInfo();
 
 			_exportObjectInfo.NativeExtension = NativeExtension;
-
+			_exportObjectInfo.OriginalFileName = "OriginalFileName.html";
 			_fileNamePartProviderContainerMock = new Mock<IFileNamePartProviderContainer>();
 		}
 
@@ -61,7 +61,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 					secondDescriptor,
 					thirdDescriptor
 				}, 
-				_fileNamePartProviderContainerMock.Object);
+				_fileNamePartProviderContainerMock.Object, false);
 
 			// Act
 			string retFileName;
@@ -114,7 +114,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 					secondDescriptor,
 					thirdDescriptor
 				},
-				_fileNamePartProviderContainerMock.Object);
+				_fileNamePartProviderContainerMock.Object, false);
 
 			// Act
 			string retFileName = _subjectUnderTest.GetTextName(_exportObjectInfo);
@@ -148,7 +148,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 				{
 					firstDescriptor
 				},
-				_fileNamePartProviderContainerMock.Object);
+				_fileNamePartProviderContainerMock.Object, false);
 
 			// Act
 			string retFileName = _subjectUnderTest.GetTextName(_exportObjectInfo);
@@ -198,7 +198,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 			}
 
 			_subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>(descriptors),
-				_fileNamePartProviderContainerMock.Object);
+				_fileNamePartProviderContainerMock.Object, false);
 
 			// Act
 			string retFileName = _subjectUnderTest.GetTextName(_exportObjectInfo);
@@ -208,6 +208,38 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 
 			// Assert
 			Assert.AreEqual(expectedVal, retFileName);
+		}
+
+		[Test]
+		public void ItShouldAppendOriginalFileName()
+		{
+			// Arrange
+			var firstDescriptor = new FieldDescriptorPart(1);
+
+			string firstPartName = "ControlNumber";
+
+			var firstfieldProviderMock = new Mock<IFileNamePartProvider>();
+
+
+			firstfieldProviderMock.Setup(mock => mock.GetPartName(firstDescriptor, _exportObjectInfo))
+				.Returns(firstPartName);
+
+			_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(firstDescriptor))
+				.Returns(firstfieldProviderMock.Object);
+
+			_subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>
+				{
+					firstDescriptor
+				},
+				_fileNamePartProviderContainerMock.Object, true);
+
+			// Act
+			string retFileName = _subjectUnderTest.GetTextName(_exportObjectInfo);
+			string extension = TextExtension;
+
+
+			// Assert
+			Assert.That(retFileName, Is.EqualTo($"{firstPartName}_{_exportObjectInfo.OriginalFileName}.{extension}"));
 		}
 	}
 }
