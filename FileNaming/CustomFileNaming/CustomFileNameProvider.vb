@@ -9,17 +9,26 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 
 		Private ReadOnly _fileNamePartDescriptors As List(Of DescriptorPart)
 		Private ReadOnly _fileNamePartNameContainer As IFileNamePartProviderContainer
+		Private ReadOnly _appendOriginalFileName As Boolean
 
-		Public Sub New(fileNamePartDescriptors As List(Of DescriptorPart), fileNamePartNameContainer As IFileNamePartProviderContainer)
+		Public Sub New(fileNamePartDescriptors As List(Of DescriptorPart), fileNamePartNameContainer As IFileNamePartProviderContainer, appendOriginalFileName As Boolean)
 			_fileNamePartDescriptors = fileNamePartDescriptors
 			_fileNamePartNameContainer = fileNamePartNameContainer
+			_appendOriginalFileName = appendOriginalFileName
 		End Sub
 
 		Public Function GetName(exportObjectInfo As ObjectExportInfo) As String Implements IFileNameProvider.GetName
 			Dim name As StringBuilder = CreateFileName(exportObjectInfo)
+			If _appendOriginalFileName
+				name = AppendOriginalFileName(name, exportObjectInfo)
+			End If
+
 			Return GetNameWithNativeExtension(name, exportObjectInfo)
 		End Function
 
+		Private Function AppendOriginalFileName(ByRef name As StringBuilder, exportObjectInfo As ObjectExportInfo) As StringBuilder
+			Return name.Append("_" & exportObjectInfo.OriginalFileName)
+		End Function
 		Private Function CreateFileName(objectExportInfo As ObjectExportInfo) As StringBuilder
 			Dim name As StringBuilder = New StringBuilder()
 			Dim namePartsCount As Integer = CType(((_fileNamePartDescriptors.Count - 1)/2), Integer)

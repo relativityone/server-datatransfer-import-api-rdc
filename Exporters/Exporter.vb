@@ -352,8 +352,8 @@ Namespace kCura.WinEDDS
 
 				_originalFileNameProvider = New OriginalFileNameProvider(isFileNamePresent, FieldLookupService, AddressOf WriteWarningWithoutShowingExportedDocumentsCount)
 
-				If Not isFileNamePresent
-					WriteWarning("File Name field not present in workspace. Using old original file name.")
+				If _exportFile.AppendOriginalFileName AndAlso Not isFileNamePresent
+					WriteWarningWithoutShowingExportedDocumentsCount("File Name field not present in workspace. Using old original file name.")
 				End If
 
 				Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
@@ -658,7 +658,9 @@ Namespace kCura.WinEDDS
 				artifact.OriginalFileName = ""
 				artifact.NativeSourceLocation = ""
 			Else
-				artifact.OriginalFileName = _originalFileNameProvider.GetOriginalFileName(record, nativeRow)
+				If _exportFile.AppendOriginalFileName
+					artifact.OriginalFileName = _originalFileNameProvider.GetOriginalFileName(record, nativeRow)
+				End If
 				artifact.NativeSourceLocation = nativeRow("Location").ToString
 				If Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document Then
 					artifact.NativeFileGuid = nativeRow("Guid").ToString
@@ -1230,7 +1232,7 @@ Namespace kCura.WinEDDS
 		Private Function BuildFileNameProvider() As IFileNameProvider
 			Dim identifierExportFileNameProvider As IFileNameProvider = New IdentifierExportFileNameProvider(Settings)
 			Dim productionExportFileNameProvider As IFileNameProvider = New ProductionExportFileNameProvider(Settings, NameTextAndNativesAfterBegBates)
-			Dim customExportFileNameProvider As IFileNameProvider = New CustomFileNameProvider(Settings.CustomFileNaming?.DescriptorParts().ToList(), New FileNamePartProviderContainer())
+			Dim customExportFileNameProvider As IFileNameProvider = New CustomFileNameProvider(Settings.CustomFileNaming?.DescriptorParts().ToList(), New FileNamePartProviderContainer(), _exportFile.AppendOriginalFileName)
 			Dim fileNameProvidersDictionary As New Dictionary(Of ExportNativeWithFilenameFrom, IFileNameProvider) From
 				{
 					{ExportNativeWithFilenameFrom.Identifier, identifierExportFileNameProvider},
