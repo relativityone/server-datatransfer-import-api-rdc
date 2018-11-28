@@ -433,6 +433,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Helpers\FieldValueHelper.vb" />
+    <Compile Include="Helpers\FileNameHelper.vb" />
     <Compile Include="IFieldProviderCache.vb" />
     <Compile Include="Importers\BulkImageFileImporter.vb">
       <SubType>Code</SubType>

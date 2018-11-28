@@ -26,7 +26,7 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 			Else
 				name = GetNameWithNativeExtension(name, exportObjectInfo)
 			End If
-			Return name.ToString()
+			Return kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(name.ToString())
 		End Function
 
 		Public Function GetTextName(exportObjectInfo As ObjectExportInfo) As String Implements IFileNameProvider.GetTextName
@@ -39,7 +39,7 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 				nameAsString = GetNameWithTextExtension(name)
 			End If
 
-			Return nameAsString
+			Return kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(nameAsString)
 		End Function
 
 		Private Function AppendOriginalFileName(ByRef name As StringBuilder, exportObjectInfo As ObjectExportInfo) As StringBuilder
@@ -93,12 +93,7 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 		
 		Private Function GetNameWithTextExtension(name As String) As String
 			Const textFileExtension As String = ".txt"
-			Dim currentExtension As String = Path.GetExtension(name)
-			If currentExtension.ToLower().Equals(textFileExtension) Then
-				Return name
-			Else
-				Return name + textFileExtension
-			End If
+			Return FileNameHelper.AppendExtensionToFileWhenMissing(name, textFileExtension)
 		End Function
 
 		Private Function GetNameWithTextExtension(nameBuilder As StringBuilder) As String

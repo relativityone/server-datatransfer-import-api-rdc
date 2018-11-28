@@ -20,7 +20,7 @@ Namespace kCura.WinEDDS
 			Dim productionTypeExport As Boolean = (_exportSettings.TypeOfExport = ExportFile.ExportType.Production)
 			Return exportedObjectInfo.FullTextFileName(productionTypeExport AndAlso
 													_exportSettings.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier,
-													False)
+													False, True)
 		End Function
 
 	End Class
