@@ -1,170 +1,225 @@
-﻿using System.Collections.Generic;
-using FileNaming.CustomFileNaming;
+﻿using FileNaming.CustomFileNaming;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.FileNaming.CustomFileNaming;
 using Moq;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 
 namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 {
 	public class CustomFileNameProviderTest
 	{
-		private CustomFileNameProvider _subjectUnderTest;
-
-		private ObjectExportInfo _exportObjectInfo;
-
-		private const string TextExtension = "txt";
-		private const string NativeExtension = "xls";
-
 		private Mock<IFileNamePartProviderContainer> _fileNamePartProviderContainerMock;
+		
+		private const string _TEXT_EXTENSION = ".txt";
+		private const string _NATIVE_EXTENSION = ".xls";
 
+		private readonly ObjectExportInfo _exportObjectInfoHtmlFile = new ObjectExportInfo
+		{
+			NativeExtension = "xls",
+			OriginalFileName = "OriginalFileName.html"
+		};
+
+		private readonly ObjectExportInfo _exportObjectInfoTextFile = new ObjectExportInfo
+		{
+			NativeExtension = "txt",
+			OriginalFileName = "OriginalFileName.TxT"
+		};
+
+		private readonly ObjectExportInfo _exportObjectInfoNoExtensionFile = new ObjectExportInfo
+		{
+			NativeExtension = "",
+			OriginalFileName = "OriginalFileName"
+		};
+		
 		[SetUp]
 		public void Init()
 		{
-			_exportObjectInfo = new ObjectExportInfo();
-
-			_exportObjectInfo.NativeExtension = NativeExtension;
-			_exportObjectInfo.OriginalFileName = "OriginalFileName.html";
 			_fileNamePartProviderContainerMock = new Mock<IFileNamePartProviderContainer>();
 		}
 
 		[Test]
-		[TestCase(true)]
-		[TestCase(false)]
-		public void ItShouldReturnFileNameTest(bool nativeTypeExport)
+		public void ItShouldReturnTextFileNameWhenThreeDescriptorsAreUsed()
 		{
-			// Arrange
-			var firstDescriptor = new FieldDescriptorPart(1);
-			var secondDescriptor = new SeparatorDescriptorPart("");
-			var thirdDescriptor = new FieldDescriptorPart(1);
-
-			string firstPartName = "First";
-			string secondPartName = "_";
-			string thirdPartName = "Second";
-
-			Mock<IFileNamePartProvider> firstfieldProviderMock = new Mock<IFileNamePartProvider>();
-			Mock<IFileNamePartProvider> separatorProviderMock = new Mock<IFileNamePartProvider>();
-			Mock<IFileNamePartProvider> secondfieldProviderMock = new Mock<IFileNamePartProvider>();
-
-
-			firstfieldProviderMock.Setup(mock => mock.GetPartName(firstDescriptor, _exportObjectInfo)).Returns(firstPartName);
-			separatorProviderMock.Setup(mock => mock.GetPartName(secondDescriptor, _exportObjectInfo)).Returns(secondPartName);
-			secondfieldProviderMock.Setup(mock => mock.GetPartName(thirdDescriptor, _exportObjectInfo)).Returns(thirdPartName);
-
-			_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(firstDescriptor)).Returns(firstfieldProviderMock.Object);
-			_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(secondDescriptor)).Returns(separatorProviderMock.Object);
-			_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(thirdDescriptor)).Returns(secondfieldProviderMock.Object);
-
-			_subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>
-				{
-					firstDescriptor,
-					secondDescriptor,
-					thirdDescriptor
-				}, 
-				_fileNamePartProviderContainerMock.Object, false);
-
-			// Act
-			string retFileName;
-			string extension;
-			if (nativeTypeExport)
-			{
-				retFileName = _subjectUnderTest.GetName(_exportObjectInfo);
-				extension = NativeExtension;
-			}
-			else
-			{
-				retFileName = _subjectUnderTest.GetTextName(_exportObjectInfo);
-				extension = TextExtension;
-			}
-			
-
-			// Assert
-			Assert.That(retFileName, Is.EqualTo($"{firstPartName}{secondPartName}{thirdPartName}.{extension}"));
+			ItShouldReturnFileNameWhenThreeDescriptorsAreUsed((sut, objectExportInfo) => sut.GetTextName(objectExportInfo), _TEXT_EXTENSION);
 		}
 
-
 		[Test]
-		public void ItShouldRemoveDoubleSeparators()
+		public void ItShouldReturnNativeFileNameWhenThreeDescriptorsAreUsed()
 		{
-			// Arrange
-			var firstDescriptor = new FieldDescriptorPart(1);
-			var secondDescriptor = new SeparatorDescriptorPart("");
-			var thirdDescriptor = new FieldDescriptorPart(1);
-
-			string firstPartName = "First";
-			string secondPartName = "_";
-			string thirdPartName = "";
-
-			Mock<IFileNamePartProvider> firstfieldProviderMock = new Mock<IFileNamePartProvider>();
-			Mock<IFileNamePartProvider> separatorProviderMock = new Mock<IFileNamePartProvider>();
-			Mock<IFileNamePartProvider> secondfieldProviderMock = new Mock<IFileNamePartProvider>();
-
-
-			firstfieldProviderMock.Setup(mock => mock.GetPartName(firstDescriptor, _exportObjectInfo)).Returns(firstPartName);
-			separatorProviderMock.Setup(mock => mock.GetPartName(secondDescriptor, _exportObjectInfo)).Returns(secondPartName);
-			secondfieldProviderMock.Setup(mock => mock.GetPartName(thirdDescriptor, _exportObjectInfo)).Returns(thirdPartName);
-
-			_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(firstDescriptor)).Returns(firstfieldProviderMock.Object);
-			_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(secondDescriptor)).Returns(separatorProviderMock.Object);
-			_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(thirdDescriptor)).Returns(secondfieldProviderMock.Object);
-
-			_subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>
-				{
-					firstDescriptor,
-					secondDescriptor,
-					thirdDescriptor
-				},
-				_fileNamePartProviderContainerMock.Object, false);
-
-			// Act
-			string retFileName = _subjectUnderTest.GetTextName(_exportObjectInfo);
-			string extension = TextExtension;
-
-
-
-			// Assert
-			Assert.That(retFileName, Is.EqualTo($"{firstPartName}.{extension}"));
+			ItShouldReturnFileNameWhenThreeDescriptorsAreUsed((sut, objectExportInfo) => sut.GetTextName(objectExportInfo), _TEXT_EXTENSION);
 		}
 
+		[Test]
+		public void ItShouldRemoveDoubleSeparatorsFromTextFileName()
+		{
+			ItShouldRemoveDoubleSeparatorsFromFileName((sut, objectExportInfo) => sut.GetTextName(objectExportInfo), _TEXT_EXTENSION);
+		}
 
 		[Test]
-		public void ItShouldReturnOnlyControlNumberWhenGivenOneField()
+		public void ItShouldRemoveDoubleSeparatorsFromNativeFileName()
+		{
+			ItShouldRemoveDoubleSeparatorsFromFileName((sut, objectExportInfo) => sut.GetName(objectExportInfo), _NATIVE_EXTENSION);
+		}
+		
+		[Test]
+		public void ItShouldReturnOnlyControlAsTextFileNameNumberWhenOneDescriptorIsUsed()
+		{
+			ItShouldReturnOnlyControlAsFileNameNumberWhenOneDescriptorIsUsed((sut, objectExportInfo) => sut.GetTextName(objectExportInfo), _TEXT_EXTENSION);
+		}
+
+		[Test]
+		public void ItShouldReturnOnlyControlAsNativeFileNameNumberWhenOneDescriptorIsUsed()
+		{
+			ItShouldReturnOnlyControlAsFileNameNumberWhenOneDescriptorIsUsed((sut, objectExportInfo) => sut.GetName(objectExportInfo), _NATIVE_EXTENSION);
+		}
+
+		[Test]
+		public void ItShouldCreateCorrectTextFileNameForFiveParts()
+		{
+			ItShouldCreateCorrectFileNameForFiveParts((sut, objectExportInfo) => sut.GetTextName(objectExportInfo), _TEXT_EXTENSION);
+		}
+
+		[Test]
+		public void ItShouldCreateCorrectNativeFileNameForFiveParts()
+		{
+			ItShouldCreateCorrectFileNameForFiveParts((sut, objectExportInfo) => sut.GetName(objectExportInfo), _NATIVE_EXTENSION);
+		}
+
+		[Test]
+		public void ItShouldAppendOriginalFileNameToTextFileName()
+		{
+			ItShouldAppendOriginalFileNameToFileName((sut, objectExportInfo) => sut.GetTextName(objectExportInfo), _TEXT_EXTENSION);
+		}
+
+		[Test]
+		public void ItShouldNotAppendExtensionWhenAppendOriginalFileNameToNativeFileName()
+		{
+			ItShouldAppendOriginalFileNameToFileName((sut, objectExportInfo) => sut.GetName(objectExportInfo), "");
+		}
+		
+		[Test]
+		public void ItShouldAppendTextExtenstionToTextFilesWhenOriginalFileNameWithoutExtensionIsAppended()
 		{
 			// Arrange
 			var firstDescriptor = new FieldDescriptorPart(1);
-
 			string firstPartName = "ControlNumber";
+			InitializeFileNamePartProviderContainer(firstDescriptor, firstPartName, _exportObjectInfoNoExtensionFile);
 
-			var firstfieldProviderMock = new Mock<IFileNamePartProvider>();
+			var subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>
+				{
+					firstDescriptor
+				},
+				_fileNamePartProviderContainerMock.Object, true);
 
+			// Act
+			string retFileName = subjectUnderTest.GetTextName(_exportObjectInfoNoExtensionFile);
 
-			firstfieldProviderMock.Setup(mock => mock.GetPartName(firstDescriptor, _exportObjectInfo))
-				.Returns(firstPartName);
+			// Assert
+			Assert.That(retFileName, Is.EqualTo($"{firstPartName}_{_exportObjectInfoNoExtensionFile.OriginalFileName}{_TEXT_EXTENSION}"));
+		}
 
-			_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(firstDescriptor))
-				.Returns(firstfieldProviderMock.Object);
+		[Test]
+		public void ItShouldNotAppendTextExtensionToOriginalFileNameForTextFilesIfNotNeeded()
+		{
+			// Arrange
+			var firstDescriptor = new FieldDescriptorPart(1);
+			string firstPartName = "ControlNumber";
+			InitializeFileNamePartProviderContainer(firstDescriptor, firstPartName, _exportObjectInfoTextFile);
 
-			_subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>
+			var subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>
+				{
+					firstDescriptor
+				},
+				_fileNamePartProviderContainerMock.Object, true);
+
+			// Act
+			string retFileName = subjectUnderTest.GetTextName(_exportObjectInfoTextFile);
+
+			// Assert
+			Assert.That(retFileName, Is.EqualTo($"{firstPartName}_{_exportObjectInfoTextFile.OriginalFileName}"));
+		}
+
+		private void ItShouldReturnFileNameWhenThreeDescriptorsAreUsed(Func<CustomFileNameProvider, ObjectExportInfo, string> fileNameProvider, string expectedExtension)
+		{
+			// Arrange
+			var descriptorParts = new List<DescriptorPart>
+			{
+				new FieldDescriptorPart(1),
+				new SeparatorDescriptorPart(""),
+				new FieldDescriptorPart(1)
+			};
+
+			var partNames = new List<string>
+			{
+				"First",
+				"_",
+				"Second"
+			};
+
+			InitializeFileNamePartProviderContainer(descriptorParts, partNames, _exportObjectInfoHtmlFile);
+
+			var subjectUnderTest = new CustomFileNameProvider(descriptorParts, _fileNamePartProviderContainerMock.Object, false);
+
+			// Act
+			string retFileName = fileNameProvider(subjectUnderTest, _exportObjectInfoHtmlFile);
+
+			// Assert
+			Assert.That(retFileName, Is.EqualTo($"{partNames[0]}{partNames[1]}{partNames[2]}{expectedExtension}"));
+		}
+
+		private void ItShouldRemoveDoubleSeparatorsFromFileName(Func<CustomFileNameProvider, ObjectExportInfo, string> fileNameProvider, string expectedExtension)
+		{
+			// Arrange
+			var descriptorParts = new List<DescriptorPart>
+			{
+				new FieldDescriptorPart(1),
+				new SeparatorDescriptorPart(""),
+				new FieldDescriptorPart(1)
+			};
+
+			var partNames = new List<string>
+			{
+				"First",
+				"_",
+				""
+			};
+
+			InitializeFileNamePartProviderContainer(descriptorParts, partNames, _exportObjectInfoHtmlFile);
+
+			var subjectUnderTest = new CustomFileNameProvider(descriptorParts, _fileNamePartProviderContainerMock.Object, false);
+
+			// Act
+			string retFileName = fileNameProvider(subjectUnderTest, _exportObjectInfoHtmlFile);
+
+			// Assert
+			Assert.That(retFileName, Is.EqualTo($"{partNames[0]}{expectedExtension}"));
+		}
+
+		private void ItShouldReturnOnlyControlAsFileNameNumberWhenOneDescriptorIsUsed(Func<CustomFileNameProvider, ObjectExportInfo, string> testedFunction, string expectedExtension)
+		{
+			// Arrange
+			var firstDescriptor = new FieldDescriptorPart(1);
+			string firstPartName = "ControlNumber";
+			InitializeFileNamePartProviderContainer(firstDescriptor, firstPartName, _exportObjectInfoHtmlFile);
+
+			var subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>
 				{
 					firstDescriptor
 				},
 				_fileNamePartProviderContainerMock.Object, false);
 
 			// Act
-			string retFileName = _subjectUnderTest.GetTextName(_exportObjectInfo);
-			string extension = TextExtension;
-
+			string retFileName = testedFunction(subjectUnderTest, _exportObjectInfoHtmlFile);
 
 			// Assert
-			Assert.That(retFileName, Is.EqualTo($"{firstPartName}.{extension}"));
+			Assert.That(retFileName, Is.EqualTo($"{firstPartName}{expectedExtension}"));
 		}
 
-
-		[Test]
-		public void ItShouldCreateCorrectFileNameForFiveParts()
+		private void ItShouldCreateCorrectFileNameForFiveParts(Func<CustomFileNameProvider, ObjectExportInfo, string> testedFunction, string expectedExtension)
 		{
-			const int numOfParts = 5;
-			var descriptors = new DescriptorPart[]
+			var descriptors = new List<DescriptorPart>
 			{
 				new FieldDescriptorPart(1),
 				new SeparatorDescriptorPart("-"),
@@ -172,7 +227,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 				new SeparatorDescriptorPart("."),
 				new FieldDescriptorPart(1)
 			};
-			string[] partNames = new string[]
+			var partNames = new List<string>
 			{
 				"Control Number",
 				"_",
@@ -181,65 +236,63 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 				"Folder Name"
 			};
 
-			var mocks = new Mock<IFileNamePartProvider>[]
-			{
-				new Mock<IFileNamePartProvider>(),
-				new Mock<IFileNamePartProvider>(),
-				new Mock<IFileNamePartProvider>(),
-				new Mock<IFileNamePartProvider>(),
-				new Mock<IFileNamePartProvider>()
-			};
+			InitializeFileNamePartProviderContainer(descriptors, partNames, _exportObjectInfoHtmlFile);
 
-			for (int i = 0; i < numOfParts; i++)
-			{
-				mocks[i].Setup(mock => mock.GetPartName(descriptors[i], _exportObjectInfo)).Returns(partNames[i]);
-				_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(descriptors[i]))
-					.Returns(mocks[i].Object);
-			}
-
-			_subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>(descriptors),
-				_fileNamePartProviderContainerMock.Object, false);
+			var subjectUnderTest = new CustomFileNameProvider(descriptors, _fileNamePartProviderContainerMock.Object, false);
 
 			// Act
-			string retFileName = _subjectUnderTest.GetTextName(_exportObjectInfo);
-			string extension = TextExtension;
+			string retFileName = testedFunction(subjectUnderTest, _exportObjectInfoHtmlFile);
 
-			string expectedVal = string.Join("", partNames) + "." + extension;
+			string expectedVal = string.Join("", partNames) + expectedExtension;
 
 			// Assert
 			Assert.AreEqual(expectedVal, retFileName);
 		}
 
-		[Test]
-		public void ItShouldAppendOriginalFileName()
+		private void ItShouldAppendOriginalFileNameToFileName(Func<CustomFileNameProvider, ObjectExportInfo, string> testedFunction, string expectedExtension)
 		{
 			// Arrange
 			var firstDescriptor = new FieldDescriptorPart(1);
-
 			string firstPartName = "ControlNumber";
+			InitializeFileNamePartProviderContainer(firstDescriptor, firstPartName, _exportObjectInfoHtmlFile);
 
-			var firstfieldProviderMock = new Mock<IFileNamePartProvider>();
-
-
-			firstfieldProviderMock.Setup(mock => mock.GetPartName(firstDescriptor, _exportObjectInfo))
-				.Returns(firstPartName);
-
-			_fileNamePartProviderContainerMock.Setup(mock => mock.GetProvider(firstDescriptor))
-				.Returns(firstfieldProviderMock.Object);
-
-			_subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>
+			var subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>
 				{
 					firstDescriptor
 				},
 				_fileNamePartProviderContainerMock.Object, true);
 
 			// Act
-			string retFileName = _subjectUnderTest.GetTextName(_exportObjectInfo);
-			string extension = TextExtension;
-
+			string retFileName = testedFunction(subjectUnderTest, _exportObjectInfoHtmlFile);
 
 			// Assert
-			Assert.That(retFileName, Is.EqualTo($"{firstPartName}_{_exportObjectInfo.OriginalFileName}"));
+			Assert.That(retFileName, Is.EqualTo($"{firstPartName}_{_exportObjectInfoHtmlFile.OriginalFileName}{expectedExtension}"));
+		}
+
+		private void InitializeFileNamePartProviderContainer(List<DescriptorPart> fieldDescriptors, List<string> partNames, ObjectExportInfo objectExportInfo)
+		{
+			if (fieldDescriptors.Count != partNames.Count)
+			{
+				throw new ArgumentException("List counts should match.");
+			}
+
+			for (int i = 0; i < fieldDescriptors.Count; i++)
+			{
+				InitializeFileNamePartProviderContainer(fieldDescriptors[i], partNames[i], objectExportInfo);
+			}
+		}
+
+		private void InitializeFileNamePartProviderContainer(DescriptorPart fieldDescriptor, string partName, ObjectExportInfo objectExportInfo)
+		{
+			var firstfieldProviderMock = new Mock<IFileNamePartProvider>();
+
+			firstfieldProviderMock
+				.Setup(mock => mock.GetPartName(fieldDescriptor, objectExportInfo))
+				.Returns(partName);
+
+			_fileNamePartProviderContainerMock
+				.Setup(mock => mock.GetProvider(fieldDescriptor))
+				.Returns(firstfieldProviderMock.Object);
 		}
 	}
 }
