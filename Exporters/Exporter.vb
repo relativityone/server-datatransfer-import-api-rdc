@@ -658,9 +658,7 @@ Namespace kCura.WinEDDS
 				artifact.OriginalFileName = ""
 				artifact.NativeSourceLocation = ""
 			Else
-				If _exportFile.AppendOriginalFileName
-					artifact.OriginalFileName = _originalFileNameProvider.GetOriginalFileName(record, nativeRow)
-				End If
+				artifact.OriginalFileName = _originalFileNameProvider.GetOriginalFileName(record, nativeRow)
 				artifact.NativeSourceLocation = nativeRow("Location").ToString
 				If Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document Then
 					artifact.NativeFileGuid = nativeRow("Guid").ToString
