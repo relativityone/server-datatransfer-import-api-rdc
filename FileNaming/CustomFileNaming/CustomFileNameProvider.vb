@@ -1,4 +1,5 @@
 ﻿Imports System.Collections.Generic
+Imports System.IO
 Imports System.Text
 Imports FileNaming.CustomFileNaming
 Imports kCura.WinEDDS.Exporters
@@ -19,8 +20,8 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 
 		Public Function GetName(exportObjectInfo As ObjectExportInfo) As String Implements IFileNameProvider.GetName
 			Dim name As StringBuilder = CreateFileName(exportObjectInfo)
-			
-			If _appendOriginalFileName
+
+			If _appendOriginalFileName Then
 				name = AppendOriginalFileName(name, exportObjectInfo)
 			Else
 				name = GetNameWithNativeExtension(name, exportObjectInfo)
@@ -28,12 +29,25 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 			Return name.ToString()
 		End Function
 
+		Public Function GetTextName(exportObjectInfo As ObjectExportInfo) As String Implements IFileNameProvider.GetTextName
+			Dim name As StringBuilder = CreateFileName(exportObjectInfo)
+			Dim nameAsString As String
+			If _appendOriginalFileName Then
+				Dim nameWithOriginalFileNameAppended As String = AppendOriginalFileName(name, exportObjectInfo).ToString()
+				nameAsString = GetNameWithTextExtension(nameWithOriginalFileNameAppended)
+			Else
+				nameAsString = GetNameWithTextExtension(name)
+			End If
+
+			Return nameAsString
+		End Function
+
 		Private Function AppendOriginalFileName(ByRef name As StringBuilder, exportObjectInfo As ObjectExportInfo) As StringBuilder
 			Return name.Append("_" & exportObjectInfo.OriginalFileName)
 		End Function
 		Private Function CreateFileName(objectExportInfo As ObjectExportInfo) As StringBuilder
 			Dim name As StringBuilder = New StringBuilder()
-			Dim namePartsCount As Integer = CType(((_fileNamePartDescriptors.Count - 1)/2), Integer)
+			Dim namePartsCount As Integer = CType(((_fileNamePartDescriptors.Count - 1) / 2), Integer)
 			name.Append(GetFileNamePartName(_fileNamePartDescriptors(0), objectExportInfo))
 
 			For i As Integer = 0 To namePartsCount - 1
@@ -48,17 +62,17 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 			Const textPositionShift As Integer = 2
 
 			Dim separator As String =
-					GetFileNamePartName(_fileNamePartDescriptors(numberOfDescriptorsPerPartName*partNumber + separatorPositionShift),
+					GetFileNamePartName(_fileNamePartDescriptors(numberOfDescriptorsPerPartName * partNumber + separatorPositionShift),
 									objectExportInfo)
 			Dim text As String =
-					GetFileNamePartName(_fileNamePartDescriptors(numberOfDescriptorsPerPartName*partNumber + textPositionShift),
+					GetFileNamePartName(_fileNamePartDescriptors(numberOfDescriptorsPerPartName * partNumber + textPositionShift),
 									objectExportInfo)
 
 			Return BuildFileNamePartFromSeparatorAndText(separator, text)
 		End Function
 
 		Private Function BuildFileNamePartFromSeparatorAndText(separator As String, text As String) As String
-			If text = ""
+			If text = "" Then
 				Return ""
 			End If
 			Return separator & text
@@ -66,7 +80,7 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 
 		Private Function GetFileNamePartName(descriptorPart As DescriptorPart, exportObjectInfo As ObjectExportInfo) As String
 			Dim fileNamePartProvider As IFileNamePartProvider = _fileNamePartNameContainer.GetProvider(descriptorPart)
-			return fileNamePartProvider.GetPartName(descriptorPart, exportObjectInfo)
+			Return fileNamePartProvider.GetPartName(descriptorPart, exportObjectInfo)
 		End Function
 
 
@@ -76,22 +90,19 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 			End If
 			Return name
 		End Function
-
-		Public Function GetTextName(exportObjectInfo As ObjectExportInfo) As String Implements IFileNameProvider.GetTextName
-			Dim name As StringBuilder = CreateFileName(exportObjectInfo)
-			Dim nameAsString As String
-			If _appendOriginalFileName
-				nameAsString = AppendOriginalFileName(name, exportObjectInfo).ToString()
+		
+		Private Function GetNameWithTextExtension(name As String) As String
+			Const textFileExtension As String = ".txt"
+			Dim currentExtension As String = Path.GetExtension(name)
+			If currentExtension.ToLower().Equals(textFileExtension) Then
+				Return name
 			Else
-				nameAsString = GetNameWithTextExtension(name)
+				Return name + textFileExtension
 			End If
-
-			Return nameAsString
 		End Function
 
-		Private Function GetNameWithTextExtension(name As StringBuilder) As String
-			name.Append(".txt")
-			Return name.ToString()
+		Private Function GetNameWithTextExtension(nameBuilder As StringBuilder) As String
+			Return GetNameWithTextExtension(nameBuilder.ToString())
 		End Function
 
 	End Class
