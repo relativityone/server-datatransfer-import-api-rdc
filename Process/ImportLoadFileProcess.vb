@@ -279,52 +279,52 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _loadFileImporter_StatusMessage(ByVal e As StatusEventArgs) Handles _loadFileImporter.StatusMessage
-			System.Threading.Monitor.Enter(Me.ProcessObserver)
-			Dim statisticsDictionary As IDictionary = Nothing
-			If Not e.AdditionalInfo Is Nothing Then statisticsDictionary = DirectCast(e.AdditionalInfo, IDictionary)
-			Select Case e.EventType
-				Case kCura.Windows.Process.EventType.End
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, System.DateTime.Now, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
-					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Me.ProcessObserver.RaiseEndEvent(e.Statistics.FileBytes, e.Statistics.MetadataBytes)
-				Case kCura.Windows.Process.EventType.Error
-					_errorCount += 1
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
-					Me.ProcessObserver.RaiseErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
-				Case kCura.Windows.Process.EventType.Progress
-					TotalRecords = e.TotalRecords
-					CompletedRecordsCount = e.CurrentRecordIndex
-					Me.ProcessObserver.RaiseRecordProcessed(e.CurrentRecordIndex)
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
-					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-				Case kCura.Windows.Process.EventType.Statistics
-					SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
-				Case kCura.Windows.Process.EventType.ResetProgress
-					' Do NOT raise RaiseRecordProcessed for this event. 
-					CompletedRecordsCount = 0
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
-					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-				Case kCura.Windows.Process.EventType.Status
-					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-				Case kCura.Windows.Process.EventType.Warning
-					_warningCount += 1
-					Me.ProcessObserver.RaiseWarningEvent(e.CurrentRecordIndex.ToString, e.Message)
-				Case Windows.Process.EventType.ResetStartTime
-					SetStartTime()
-				Case Windows.Process.EventType.Count
-					Me.ProcessObserver.RaiseCountEvent()
-			End Select
-			System.Threading.Monitor.Exit(Me.ProcessObserver)
+			SyncLock Me.ProcessObserver
+				Dim statisticsDictionary As IDictionary = Nothing
+				If Not e.AdditionalInfo Is Nothing Then statisticsDictionary = DirectCast(e.AdditionalInfo, IDictionary)
+				Select Case e.EventType
+					Case kCura.Windows.Process.EventType.End
+						Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, System.DateTime.Now, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+						Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
+						Me.ProcessObserver.RaiseEndEvent(e.Statistics.FileBytes, e.Statistics.MetadataBytes)
+					Case kCura.Windows.Process.EventType.Error
+						_errorCount += 1
+						Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+						Me.ProcessObserver.RaiseErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
+					Case kCura.Windows.Process.EventType.Progress
+						TotalRecords = e.TotalRecords
+						CompletedRecordsCount = e.CurrentRecordIndex
+						Me.ProcessObserver.RaiseRecordProcessed(e.CurrentRecordIndex)
+						Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+						Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
+					Case kCura.Windows.Process.EventType.Statistics
+						SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
+					Case kCura.Windows.Process.EventType.ResetProgress
+						' Do NOT raise RaiseRecordProcessed for this event. 
+						CompletedRecordsCount = 0
+						Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+						Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
+					Case kCura.Windows.Process.EventType.Status
+						Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
+					Case kCura.Windows.Process.EventType.Warning
+						_warningCount += 1
+						Me.ProcessObserver.RaiseWarningEvent(e.CurrentRecordIndex.ToString, e.Message)
+					Case Windows.Process.EventType.ResetStartTime
+						SetStartTime()
+					Case Windows.Process.EventType.Count
+						Me.ProcessObserver.RaiseCountEvent()
+				End Select
+			End SyncLock
 			'Me.ProcessObserver.RaiseProgressEvent(e.TotalLines, e.CurrentRecordIndex, 0, 0, _startTime, System.DateTime.Now)
 		End Sub
 
 		Private Sub _loadFileImporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception, ByVal runID As String) Handles _loadFileImporter.FatalErrorEvent
-			System.Threading.Monitor.Enter(Me.ProcessObserver)
-			Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
-			'TODO: _loadFileImporter.ErrorLogFileName
-			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
-			_hasFatalErrorOccured = True
-			System.Threading.Monitor.Exit(Me.ProcessObserver)
+			SyncLock Me.ProcessObserver
+				Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
+				'TODO: _loadFileImporter.ErrorLogFileName
+				Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
+				_hasFatalErrorOccured = True
+			End SyncLock
 			Me.AuditRun(False, runID)
 		End Sub
 
@@ -342,30 +342,30 @@ Namespace kCura.WinEDDS
 
 
 		Private Sub _loadFileImporter_DataSourcePrepEvent(ByVal e As Api.DataSourcePrepEventArgs) Handles _loadFileImporter.DataSourcePrepEvent
-			System.Threading.Monitor.Enter(Me.ProcessObserver)
-			Dim totaldisplay As String
-			Dim processeddisplay As String
-			If e.TotalBytes >= 1048576 Then
-				totaldisplay = (e.TotalBytes / 1048576).ToString("N0") & " MB"
-				processeddisplay = (e.BytesRead / 1048576).ToString("N0") & " MB"
-			ElseIf e.TotalBytes < 1048576 AndAlso e.TotalBytes >= 102400 Then
-				totaldisplay = (e.TotalBytes / 1024).ToString("N0") & " KB"
-				processeddisplay = (e.BytesRead / 1024).ToString("N0") & " KB"
-			Else
-				totaldisplay = e.TotalBytes.ToString & " B"
-				processeddisplay = e.BytesRead.ToString & " B"
-			End If
-			Select Case e.Type
-				Case Api.DataSourcePrepEventArgs.EventType.Close
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.TotalBytes, 0, 0, e.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
-				Case Api.DataSourcePrepEventArgs.EventType.Open
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
-					Me.ProcessObserver.RaiseStatusEvent("", "Preparing file for import")
-				Case Api.DataSourcePrepEventArgs.EventType.ReadEvent
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
-					Me.ProcessObserver.RaiseStatusEvent("", "Preparing file for import")
-			End Select
-			System.Threading.Monitor.Exit(Me.ProcessObserver)
+			SyncLock Me.ProcessObserver
+				Dim totaldisplay As String
+				Dim processeddisplay As String
+				If e.TotalBytes >= 1048576 Then
+					totaldisplay = (e.TotalBytes / 1048576).ToString("N0") & " MB"
+					processeddisplay = (e.BytesRead / 1048576).ToString("N0") & " MB"
+				ElseIf e.TotalBytes < 1048576 AndAlso e.TotalBytes >= 102400 Then
+					totaldisplay = (e.TotalBytes / 1024).ToString("N0") & " KB"
+					processeddisplay = (e.BytesRead / 1024).ToString("N0") & " KB"
+				Else
+					totaldisplay = e.TotalBytes.ToString & " B"
+					processeddisplay = e.BytesRead.ToString & " B"
+				End If
+				Select Case e.Type
+					Case Api.DataSourcePrepEventArgs.EventType.Close
+						Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.TotalBytes, 0, 0, e.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
+					Case Api.DataSourcePrepEventArgs.EventType.Open
+						Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
+						Me.ProcessObserver.RaiseStatusEvent("", "Preparing file for import")
+					Case Api.DataSourcePrepEventArgs.EventType.ReadEvent
+						Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
+						Me.ProcessObserver.RaiseStatusEvent("", "Preparing file for import")
+				End Select
+			End SyncLock
 		End Sub
 
 		Private Sub _loadFileImporter_ReportErrorEvent(ByVal row As System.Collections.IDictionary) Handles _loadFileImporter.ReportErrorEvent
@@ -373,9 +373,9 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _loadFileImporter_IoErrorEvent(ByVal sender As Object, ByVal e As IoWarningEventArgs) Handles _ioWarningPublisher.IoWarningEvent
-			System.Threading.Monitor.Enter(Me.ProcessObserver)
-			Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, e.Message)
-			System.Threading.Monitor.Exit(Me.ProcessObserver)
+			SyncLock Me.ProcessObserver
+				Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, e.Message)
+			End SyncLock
 		End Sub
 
 		Private Sub _loadFileImporter_EndFileImport(ByVal runID As String) Handles _loadFileImporter.EndFileImport
