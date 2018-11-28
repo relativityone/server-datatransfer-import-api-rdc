@@ -22,7 +22,7 @@ Namespace kCura.WinEDDS.Exporters
 					Return nativeRow("Filename").ToString()
 				End If
 				Dim fileName As String =  fileNameObject.ToString()
-				If FilenameIsOK(fileName)
+				If IsFileNameValid(fileName)
 					Return filename
 				Else
 					_warningWriter.Invoke("File Name field contains illegal characters or is empty. Using old original file name: " & nativeRow("Filename").ToString())
@@ -31,12 +31,7 @@ Namespace kCura.WinEDDS.Exporters
 
 			Return nativeRow("Filename").ToString()
 		End Function
-
-		Public Shared Function FilenameIsOK(ByVal fileName as String) as Boolean
-			Dim isCorrect As Boolean = fileName <> "" AndAlso Not (fileName.Intersect(Path.GetInvalidFileNameChars()).Any() OrElse fileName.Intersect(Path.GetInvalidPathChars()).Any()) 
-			Return isCorrect 
-		End Function
-
+		
 		Public Shared Function ExtendFieldRequestByFileNameIfNecessary(exportableFields As ViewFieldInfo(), requestedFields As IList(Of Integer)) As Boolean
 			If requestedFields Is Nothing OrElse exportableFields Is Nothing
 				Return False
@@ -50,6 +45,11 @@ Namespace kCura.WinEDDS.Exporters
 			End If
 
 			Return False
+		End Function
+
+		Private Shared Function IsFileNameValid(ByVal fileName as String) as Boolean
+			Dim isCorrect As Boolean = fileName <> "" AndAlso Not (fileName.Intersect(Path.GetInvalidFileNameChars()).Any() OrElse fileName.Intersect(Path.GetInvalidPathChars()).Any()) 
+			Return isCorrect 
 		End Function
 	End Class
 End NameSpace
