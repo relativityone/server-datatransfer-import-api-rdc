@@ -62,7 +62,19 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 		{
 			ItShouldRemoveDoubleSeparatorsFromFileName((sut, objectExportInfo) => sut.GetName(objectExportInfo), _NATIVE_EXTENSION);
 		}
-		
+
+		[Test]
+		public void ItShouldConvertIllegalCharactersInTextFileName()
+		{
+			ItShouldConvertIllegalCharactersInTextFileName((sut, objectExportInfo) => sut.GetTextName(objectExportInfo), _TEXT_EXTENSION);
+		}
+
+		[Test]
+		public void ItShouldConvertIllegalCharactersInNativeFileName()
+		{
+			ItShouldConvertIllegalCharactersInTextFileName((sut, objectExportInfo) => sut.GetName(objectExportInfo), _NATIVE_EXTENSION);
+		}
+
 		[Test]
 		public void ItShouldReturnOnlyControlAsTextFileNameNumberWhenOneDescriptorIsUsed()
 		{
@@ -141,7 +153,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 			Assert.That(retFileName, Is.EqualTo($"{firstPartName}_{_exportObjectInfoTextFile.OriginalFileName}"));
 		}
 
-		private void ItShouldReturnFileNameWhenThreeDescriptorsAreUsed(Func<CustomFileNameProvider, ObjectExportInfo, string> fileNameProvider, string expectedExtension)
+		private void ItShouldReturnFileNameWhenThreeDescriptorsAreUsed(Func<CustomFileNameProvider, ObjectExportInfo, string> testedFunction, string expectedExtension)
 		{
 			// Arrange
 			var descriptorParts = new List<DescriptorPart>
@@ -163,13 +175,13 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 			var subjectUnderTest = new CustomFileNameProvider(descriptorParts, _fileNamePartProviderContainerMock.Object, false);
 
 			// Act
-			string retFileName = fileNameProvider(subjectUnderTest, _exportObjectInfoHtmlFile);
+			string retFileName = testedFunction(subjectUnderTest, _exportObjectInfoHtmlFile);
 
 			// Assert
 			Assert.That(retFileName, Is.EqualTo($"{partNames[0]}{partNames[1]}{partNames[2]}{expectedExtension}"));
 		}
 
-		private void ItShouldRemoveDoubleSeparatorsFromFileName(Func<CustomFileNameProvider, ObjectExportInfo, string> fileNameProvider, string expectedExtension)
+		private void ItShouldRemoveDoubleSeparatorsFromFileName(Func<CustomFileNameProvider, ObjectExportInfo, string> testedFunction, string expectedExtension)
 		{
 			// Arrange
 			var descriptorParts = new List<DescriptorPart>
@@ -191,10 +203,31 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 			var subjectUnderTest = new CustomFileNameProvider(descriptorParts, _fileNamePartProviderContainerMock.Object, false);
 
 			// Act
-			string retFileName = fileNameProvider(subjectUnderTest, _exportObjectInfoHtmlFile);
+			string retFileName = testedFunction(subjectUnderTest, _exportObjectInfoHtmlFile);
 
 			// Assert
 			Assert.That(retFileName, Is.EqualTo($"{partNames[0]}{expectedExtension}"));
+		}
+
+		private void ItShouldConvertIllegalCharactersInTextFileName(Func<CustomFileNameProvider, ObjectExportInfo, string> testedFunction, string expectedExtension)
+		{
+			// Arrange
+			var firstDescriptor = new FieldDescriptorPart(1);
+			string firstPartName = "Control/Number";
+			string validFirstParnName = "Control_Number";
+			InitializeFileNamePartProviderContainer(firstDescriptor, firstPartName, _exportObjectInfoHtmlFile);
+
+			var subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>
+				{
+					firstDescriptor
+				},
+				_fileNamePartProviderContainerMock.Object, false);
+
+			// Act
+			string retFileName = testedFunction(subjectUnderTest, _exportObjectInfoHtmlFile);
+
+			// Assert
+			Assert.That(retFileName, Is.EqualTo($"{validFirstParnName}{expectedExtension}"));
 		}
 
 		private void ItShouldReturnOnlyControlAsFileNameNumberWhenOneDescriptorIsUsed(Func<CustomFileNameProvider, ObjectExportInfo, string> testedFunction, string expectedExtension)
