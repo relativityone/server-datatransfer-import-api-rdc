@@ -1,5 +1,6 @@
 ﻿Imports kCura.WinEDDS.Helpers
 Imports NSubstitute
+Imports NSubstitute.ExceptionExtensions
 Imports NUnit.Framework
 
 Namespace kCura.WinEDDS.NUnit.Helpers
