@@ -711,6 +711,7 @@ Namespace kCura.WinEDDS
 			Dim oixFileIdData As OI.FileID.FileIDData = Nothing
 			Dim destinationVolume As String = Nothing
 			Dim injectableContainer As Api.IInjectableFieldCollection = TryCast(record, Api.IInjectableFieldCollection)
+			
 
 			Dim injectableContainerIsNothing As Boolean = injectableContainer Is Nothing
 

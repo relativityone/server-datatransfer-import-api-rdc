@@ -7,6 +7,7 @@ Namespace kCura.WinEDDS
 #Region " ConfigSettings "
 
 		Private Shared ReadOnly _loadLock As New System.Object
+		Private Shared _rdcMetricsConfiguration As String = "RDCMetricsConfiguration"
 		Private const _ENABLE_CASE_SENSITIVE_SEARCH_KEY as String = "EnableCaseSensitiveSearchOnImport"
 
 		Private Shared _configDictionary As IDictionary
