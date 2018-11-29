@@ -1,5 +1,5 @@
 ﻿Imports System.Collections.Generic
-Imports System.IO
+Imports Relativity
 
 Namespace kCura.WinEDDS.Exporters
 
@@ -33,7 +33,7 @@ Namespace kCura.WinEDDS.Exporters
 			If requestedFields Is Nothing OrElse exportableFields Is Nothing
 				Return False
 			End If
-			Dim fileName As ViewFieldInfo = exportableFields.SingleOrDefault(Function(info) info.DisplayName.Equals("File Name"))
+			Dim fileName As ViewFieldInfo = exportableFields.SingleOrDefault(AddressOf IsFileNameField)
 			If fileName IsNot Nothing
 				If Not requestedFields.Contains(fileName.AvfId)
 					requestedFields.Add(fileName.AvfId)
@@ -42,6 +42,10 @@ Namespace kCura.WinEDDS.Exporters
 			End If
 
 			Return False
+		End Function
+
+		Private Shared Function IsFileNameField(field As ViewFieldInfo) As Boolean
+			Return field.DisplayName.Equals("File Name") AndAlso field.FieldType.Equals(FieldTypeHelper.FieldType.Varchar)
 		End Function
 
 		Private Shared Function IsFileNameValid(ByVal fileName as String) as Boolean
