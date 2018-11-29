@@ -18,10 +18,7 @@ Namespace kCura.WinEDDS.Exporters
 		Public Function GetOriginalFileName(record() As Object, nativeRow As DataRowView) As String
 			If _isFileNameFieldPresent
 				Dim fileNameObject As Object = record(_fieldLookupService.GetOrdinalIndex("FileName"))
-				If fileNameObject Is Nothing
-					Return nativeRow("Filename").ToString()
-				End If
-				Dim fileName As String =  fileNameObject.ToString()
+				Dim fileName As String =  If(fileNameObject, String.Empty).ToString()
 				If IsFileNameValid(fileName)
 					Return filename
 				Else
@@ -48,7 +45,7 @@ Namespace kCura.WinEDDS.Exporters
 		End Function
 
 		Private Shared Function IsFileNameValid(ByVal fileName as String) as Boolean
-			Dim isCorrect As Boolean = fileName <> "" AndAlso Not (fileName.Intersect(Path.GetInvalidFileNameChars()).Any() OrElse fileName.Intersect(Path.GetInvalidPathChars()).Any()) 
+			Dim isCorrect As Boolean = fileName <> ""
 			Return isCorrect 
 		End Function
 	End Class
