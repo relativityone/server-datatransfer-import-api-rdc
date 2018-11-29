@@ -1,5 +1,6 @@
 Imports System.Net
 Imports System.Threading.Tasks
+Imports Microsoft.Win32
 Imports Relativity.OAuth2Client.Exceptions
 
 Namespace kCura.EDDS.WinForm
