@@ -1117,8 +1117,8 @@ Namespace kCura.WinEDDS
 					Dim appendString As String = ""
 					If showNumberOfExportedDocuments
 						 appendString  = " ... " & Me.DocumentsExported - _lastDocumentsExportedCountReported & " document(s) exported."
+						_lastDocumentsExportedCountReported = Me.DocumentsExported
 					End If
-					_lastDocumentsExportedCountReported = Me.DocumentsExported
 					RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line & appendString, e, _lastStatisticsSnapshot, Statistics))
 				End If
 			End SyncLock
