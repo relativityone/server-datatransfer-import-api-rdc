@@ -63,11 +63,11 @@
     <Reference Include="Relativity.Kepler">
       <HintPath>..\..\packages\Relativity.Kepler.1.0.1.576\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Productions.Services.Interfaces, Version=10.1.1.18, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces.10.1.1\lib\net45\Relativity.Productions.Services.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Productions.Services.Interfaces, Version=10.1.6.70, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces.10.1.6-ALPHA-70\lib\net45\Relativity.Productions.Services.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Productions.Services.Interfaces.Private, Version=10.1.1.18, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces.10.1.1\lib\net45\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
+    <Reference Include="Relativity.Productions.Services.Interfaces.Private, Version=10.1.6.70, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces.10.1.6-ALPHA-70\lib\net45\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.SecretCatalog, Version=1.0.18.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.SecretCatalog.1.0.18\lib\Relativity.SecretCatalog.dll</HintPath>
