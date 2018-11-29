@@ -181,6 +181,7 @@ Imports NUnit.Framework
 
 		'Assert
 		Assert.AreEqual(fileNameFromFileTable, actualFileName)
+		Assert.AreEqual(1, _numberOfCallsToWriteWarning)
 	End Sub
 
 	<Test> Public Sub ItShouldReturnFileTableFileNameWhenMetadataFileNameIsPresentButNull()
@@ -197,28 +198,13 @@ Imports NUnit.Framework
 
 		'Assert
 		Assert.AreEqual(fileNameFromFileTable, actualFileName)
+		Assert.AreEqual(1, _numberOfCallsToWriteWarning)
 	End Sub
 
-	<Test> Public Sub ItShouldReturnFileTableFileNameWhenMetadataFileNameIsInvalid
+	<Test> Public Sub ItShouldReturnDocumentFileNameEvenWhenInvalidCharactersArePresent
 		For Each invalidCharacter As String In Path.GetInvalidFileNameChars()
-			ItShouldReturnFileTableFileNameWhenMetadataFileNameIsInvalid(invalidCharacter)
+			ItShouldReturnDocumentFileNameEvenWhenInvalidCharactersArePresent(invalidCharacter)
 		Next
-	End Sub
-
-	Private Sub ItShouldReturnFileTableFileNameWhenMetadataFileNameIsInvalid(invalidCharacter As String)
-		'Arrange
-		Dim fileNameFromFileTable As String = "CN0001.txt"
-		Dim fileNameFromDocumentTable As String = "file" + invalidCharacter + "name.txt"
-		Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(True, _fieldLookupService, AddressOf WriteWarning)
-		Dim metadata As Object() = New Object() {fileNameFromDocumentTable}
-		_fieldLookupService.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME).Returns(0)
-		Dim nativeFileData As DataRowView = CreateFileDataRowView(fileNameFromFileTable)
-
-		'Act
-		Dim actualFileName As String = fileNameProvider.GetOriginalFileName(metadata, nativeFileData)
-
-		'Assert
-		Assert.AreEqual(fileNameFromFileTable, actualFileName)
 	End Sub
 
 	<Test> Public Sub ItShouldWriteWarningWhenMetadataFileNameIsEmpty()
@@ -363,4 +349,20 @@ Imports NUnit.Framework
 		Dim dv As DataView = dt.DefaultView
 		Return dv(0)
 	End Function
+
+	Private Sub ItShouldReturnDocumentFileNameEvenWhenInvalidCharactersArePresent(invalidCharacter As String)
+		'Arrange
+		Dim fileNameFromFileTable As String = "CN0001.txt"
+		Dim fileNameFromDocumentTable As String = "file" + invalidCharacter + "name.txt"
+		Dim fileNameProvider As OriginalFileNameProvider = New OriginalFileNameProvider(True, _fieldLookupService, AddressOf WriteWarning)
+		Dim metadata As Object() = New Object() {fileNameFromDocumentTable}
+		_fieldLookupService.GetOrdinalIndex(_FILE_NAME_COLUMN_NAME).Returns(0)
+		Dim nativeFileData As DataRowView = CreateFileDataRowView(fileNameFromFileTable)
+
+		'Act
+		Dim actualFileName As String = fileNameProvider.GetOriginalFileName(metadata, nativeFileData)
+
+		'Assert
+		Assert.AreEqual(fileNameFromDocumentTable, actualFileName)
+	End Sub
 End Class
