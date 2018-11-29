@@ -4,6 +4,7 @@ Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Exporters
 Imports NSubstitute
 Imports NUnit.Framework
+Imports Relativity
 
 <TestFixture> Public Class OriginalFileNameProviderTests
 	Private Const _FILE_NAME_FIELD_ARTIFACT_ID As Integer = 534343
@@ -18,7 +19,7 @@ Imports NUnit.Framework
 
 	<Test> Public Sub ItShouldNotAddFileNameFieldWhenRequestedFieldsListIsNothing()
 		'Arrange
-		Dim exportableField As ViewFieldInfo() = CreateMappableFieldsArrayWithFileName()
+		Dim exportableField As kCura.WinEDDS.ViewFieldInfo() = CreateMappableFieldsArrayWithFileName()
 
 		'Act
 		Dim isFileNamePresent As Boolean = OriginalFileNameProvider.ExtendFieldRequestByFileNameIfNecessary(exportableField, Nothing)
@@ -30,7 +31,7 @@ Imports NUnit.Framework
 	<Test> Public Sub ItShouldAddFileNameFieldWhenRequestedFieldsListIsEmpty()
 		'Arrange
 		Dim requestedFields As List(Of Integer) = New List(Of Integer)()
-		Dim exportableField As ViewFieldInfo() = CreateMappableFieldsArrayWithFileName()
+		Dim exportableField As kCura.WinEDDS.ViewFieldInfo() = CreateMappableFieldsArrayWithFileName()
 
 		'Act
 		Dim isFileNamePresent As Boolean = OriginalFileNameProvider.ExtendFieldRequestByFileNameIfNecessary(exportableField, requestedFields)
@@ -43,7 +44,7 @@ Imports NUnit.Framework
 	<Test> Public Sub ItShouldAddFileNameFieldWhenRequestedFieldsListDoesNotContainFileName()
 		'Arrange
 		Dim requestedFields As List(Of Integer) = CreateFieldsListWithoutFileNameFieldPresent()
-		Dim exportableField As ViewFieldInfo() = CreateMappableFieldsArrayWithFileName()
+		Dim exportableField As kCura.WinEDDS.ViewFieldInfo() = CreateMappableFieldsArrayWithFileName()
 
 		'Act
 		Dim isFileNamePresent As Boolean = OriginalFileNameProvider.ExtendFieldRequestByFileNameIfNecessary(exportableField, requestedFields)
@@ -56,7 +57,7 @@ Imports NUnit.Framework
 	<Test> Public Sub ItShouldNotAddFileNameFieldWhenRequestedFieldsListContainsFileName()
 		'Arrange
 		Dim requestedFields As List(Of Integer) = CreateFieldsListWithFileNameFieldPresent()
-		Dim exportableField As ViewFieldInfo() = CreateMappableFieldsArrayWithFileName()
+		Dim exportableField As kCura.WinEDDS.ViewFieldInfo() = CreateMappableFieldsArrayWithFileName()
 
 		'Act
 		Dim isFileNamePresent As Boolean = OriginalFileNameProvider.ExtendFieldRequestByFileNameIfNecessary(exportableField, requestedFields)
@@ -69,7 +70,7 @@ Imports NUnit.Framework
 	<Test> Public Sub ItShouldNotAddFileNameFieldWhenFileNameFieldIsNotPresent()
 		'Arrange
 		Dim requestedFields As List(Of Integer) = CreateFieldsListWithoutFileNameFieldPresent()
-		Dim exportableField As ViewFieldInfo() = CreateMappableFieldsArrayWithoutFileName()
+		Dim exportableField As kCura.WinEDDS.ViewFieldInfo() = CreateMappableFieldsArrayWithoutFileName()
 
 		'Act
 		Dim isFileNamePresent As Boolean = OriginalFileNameProvider.ExtendFieldRequestByFileNameIfNecessary(exportableField, requestedFields)
@@ -88,6 +89,19 @@ Imports NUnit.Framework
 		'Assert
 		Assert.IsFalse(isFileNamePresent)
 		Assert.AreEqual(requestedFields, CreateFieldsListWithFileNameFieldPresent())
+	End Sub
+
+	<Test> Public Sub ItShouldNotAddFileNameFieldWhenItsTypeIsLongText()
+		'Arrange
+		Dim requestedFields As List(Of Integer) = CreateFieldsListWithoutFileNameFieldPresent()
+		Dim exportableField As kCura.WinEDDS.ViewFieldInfo() = CreateMappableFieldsArrayWithLongTextFileName()
+
+		'Act
+		Dim isFileNamePresent As Boolean = OriginalFileNameProvider.ExtendFieldRequestByFileNameIfNecessary(exportableField, requestedFields)
+
+		'Assert
+		Assert.IsFalse(isFileNamePresent)
+		Assert.AreEqual(requestedFields, CreateFieldsListWithoutFileNameFieldPresent())
 	End Sub
 
 	<Test> Public Sub ItShouldReturnFileTableFileNameWhenFileNameFieldIsNotPresent()
@@ -267,21 +281,26 @@ Imports NUnit.Framework
 		_numberOfCallsToWriteWarning += 1
 	End Sub
 
-	Private Function CreateMappableFieldsArrayWithoutFileName() As ViewFieldInfo()
-		Return New ViewFieldInfo() {
-			CreateViewFieldInfo("Id", "Id"),
-			CreateViewFieldInfo("Extracted Text", "ExtractedText"),
-			CreateViewFieldInfo("File Size", "FileSize")
+	Private Function CreateMappableFieldsArrayWithoutFileName() As kCura.WinEDDS.ViewFieldInfo()
+		Return New kCura.WinEDDS.ViewFieldInfo() {
+			CreateViewFieldInfo("Id", "Id", FieldTypeHelper.FieldType.Integer),
+			CreateViewFieldInfo("Extracted Text", "ExtractedText", FieldTypeHelper.FieldType.Text),
+			CreateViewFieldInfo("File Size", "FileSize", FieldTypeHelper.FieldType.Integer)
 		}
 	End Function
 
-	Private Function CreateMappableFieldsArrayWithFileName() As ViewFieldInfo()
-		Return New ViewFieldInfo() {
-			CreateViewFieldInfo("Id", "Id"),
-			CreateViewFieldInfo("Extracted Text", "ExtractedText"),
-			CreateViewFieldInfo("File Name", "FileName"),
-			CreateViewFieldInfo("File Size", "FileSize")
-		}
+	Private Function CreateMappableFieldsArrayWithFileName() As kCura.WinEDDS.ViewFieldInfo()
+		Return CreateMappableFieldsArrayWithFileName(FieldTypeHelper.FieldType.Varchar)
+	End Function
+
+	Private Function CreateMappableFieldsArrayWithLongTextFileName() As kCura.WinEDDS.ViewFieldInfo()
+		Return CreateMappableFieldsArrayWithFileName(FieldTypeHelper.FieldType.Text)
+	End Function
+
+	Private Function CreateMappableFieldsArrayWithFileName(fieldType As FieldTypeHelper.FieldType) As kCura.WinEDDS.ViewFieldInfo()
+		Dim viewFieldInfos As List(Of kCura.WinEDDS.ViewFieldInfo) = CreateMappableFieldsArrayWithoutFileName().ToList()
+		viewFieldInfos.Add(CreateViewFieldInfo("File Name", "FileName", fieldType))
+		Return viewFieldInfos.ToArray()
 	End Function
 
 	Private Function CreateFieldsListWithoutFileNameFieldPresent() As List(Of Integer)
@@ -292,16 +311,17 @@ Imports NUnit.Framework
 		Return New List(Of Integer) From {1, 2, _FILE_NAME_FIELD_ARTIFACT_ID, 7, 3}
 	End Function
 
-	Private Function CreateViewFieldInfo(displayName As String, avfColumnName As String) As ViewFieldInfo
+	Private Function CreateViewFieldInfo(displayName As String, avfColumnName As String, fieldType As FieldTypeHelper.FieldType) As kCura.WinEDDS.ViewFieldInfo
 		Dim dr As DataRow = CreateViewFieldInfoDataRowWithDefaultValues()
 		dr("DisplayName") = displayName
 		dr("AvfColumnName") = avfColumnName
 		dr("AvfId") = _FILE_NAME_FIELD_ARTIFACT_ID
-		Return New ViewFieldInfo(dr)
+		dr("FieldTypeID") = CType(fieldType, Integer)
+		Return New kCura.WinEDDS.ViewFieldInfo(dr)
 	End Function
 
 	Private Function CreateViewFieldInfoDataRowWithDefaultValues() As DataRow
-		Dim properties As PropertyInfo() = GetType(ViewFieldInfo).GetProperties()
+		Dim properties As PropertyInfo() = GetType(kCura.WinEDDS.ViewFieldInfo).GetProperties()
 		Dim dt As DataTable = New DataTable()
 		For Each propertyInfo As PropertyInfo In properties
 			dt.Columns.Add(propertyInfo.Name)
