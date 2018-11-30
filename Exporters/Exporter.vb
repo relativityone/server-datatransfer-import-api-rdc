@@ -353,7 +353,7 @@ Namespace kCura.WinEDDS
 				_originalFileNameProvider = New OriginalFileNameProvider(isFileNamePresent, FieldLookupService, AddressOf WriteWarningWithoutShowingExportedDocumentsCount)
 
 				If _exportFile.AppendOriginalFileName AndAlso Not isFileNamePresent
-					WriteWarningWithoutShowingExportedDocumentsCount("File Name field not present in workspace. Using old original file name.")
+					WriteWarningWithoutShowingExportedDocumentsCount("Filename column does not exist for this workspace and the filename from the file table will be used")
 				End If
 
 				Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)

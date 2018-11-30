@@ -25,7 +25,7 @@ Namespace kCura.WinEDDS.Exporters
 				If IsFileNameValid(fileName)
 					Return filename
 				Else
-					_warningWriter.Invoke("File Name field contains illegal characters or is empty. Using old original file name: " & nativeRow(_FILE_NAME_FILE_TABLE_COLUMN_NAME).ToString())
+					_warningWriter.Invoke("Filename column is not populated for this record and the filename from the file table will be used - " & nativeRow(_FILE_NAME_FILE_TABLE_COLUMN_NAME).ToString())
 				End If
 			End If
 
