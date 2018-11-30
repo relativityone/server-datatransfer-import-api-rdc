@@ -59,8 +59,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 		private void HandleTooLongTextWithoutPrecedence(ObjectExportInfo artifact, ViewFieldInfo field, IList<LongText> longTexts)
 		{
 			_logger.LogVerbose("Creating LongText with missing value.");
-			string tempLocation = Path.GetTempFileName();
-			LongTextExportRequest exportRequest = LongTextExportRequest.CreateRequestForLongText(artifact, field.FieldArtifactId, tempLocation);
+			string tempLocation = TempFileBuilder.GetTempFileName(TempFileConstants.LongTextFileNameSuffix);
+            LongTextExportRequest exportRequest = LongTextExportRequest.CreateRequestForLongText(artifact, field.FieldArtifactId, tempLocation);
 			Encoding sourceEncoding = _longTextHelper.GetLongTextFieldFileEncoding(field);
 			LongText longText = LongText.CreateFromMissingValue(artifact.ArtifactID, field.FieldArtifactId, exportRequest, sourceEncoding);
 			longTexts.Add(longText);

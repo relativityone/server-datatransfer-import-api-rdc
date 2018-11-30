@@ -167,8 +167,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 				return _filePathProvider.GetPathForFile(fileName, artifact.ArtifactID);
 			}
 
-			return Path.GetTempFileName();
-		}
+			return TempFileBuilder.GetTempFileName(TempFileConstants.LongTextFileNameSuffix);
+        }
 
 		private bool CanExport(string destinationLocation)
 		{
