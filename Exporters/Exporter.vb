@@ -773,7 +773,7 @@ Namespace kCura.WinEDDS
 			Dim retval As New System.Collections.ArrayList
 			If Not Me.Settings.ExportImages Then Return retval
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
-				productionImagesView.Sort = "DocumentArtifactID ASC"
+				productionImagesView.Sort = "DocumentArtifactID ASC, PageID ASC"
 				Return Me.PrepareImagesForProduction(productionImagesView, documentArtifactID, batesBase, artifact, prediction)
 			End If
 			Dim item As Pair
