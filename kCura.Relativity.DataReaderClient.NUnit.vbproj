@@ -159,7 +159,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.NUnit.Integration\kCura.NUnit.Integration.vbproj">
       <Project>{8A6B7E78-51B9-43DB-BBCA-17EE6A49E3FF}</Project>
-      <Name>kCura.IntegrationTest</Name>
+      <Name>kCura.NUnit.Integration</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura.OI.FileID\kCura.OI.FileID.vbproj">
       <Project>{CCEFD50F-0840-402D-AB16-C93F8E579B8B}</Project>
