@@ -1720,51 +1720,53 @@ Namespace kCura.WinEDDS
 #Region "Field Preparation"
 
 		Protected Function PrepareFieldCollectionAndExtractIdentityValue(ByVal record As Api.ArtifactFieldCollection) As String
-			System.Threading.Monitor.Enter(OutputFileWriter.OutputNativeFileWriter)
-			System.Threading.Monitor.Enter(_outputCodeFileWriter)
-			System.Threading.Monitor.Enter(_outputObjectFileWriter)
-			System.Threading.Monitor.Enter(OutputFileWriter.OutputDataGridFileWriter)
-			Dim item As LoadFileFieldMap.LoadFileFieldMapItem
-			Dim identityValue As String = String.Empty
-			Dim keyField As Api.ArtifactField
-			If _keyFieldID > 0 Then
-				keyField = record(_keyFieldID)
-			Else
-				keyField = record.IdentifierField
-			End If
+			SyncLock OutputFileWriter.OutputNativeFileWriter
+			SyncLock _outputCodeFileWriter
+			SyncLock _outputObjectFileWriter
+			SyncLock OutputFileWriter.OutputDataGridFileWriter
+				Dim item As LoadFileFieldMap.LoadFileFieldMapItem
+				Dim identityValue As String = String.Empty
+				Dim keyField As Api.ArtifactField
+				If _keyFieldID > 0 Then
+					keyField = record(_keyFieldID)
+				Else
+					keyField = record.IdentifierField
+				End If
 
-			If Not keyField Is Nothing AndAlso Not keyField.Value Is Nothing Then identityValue = keyField.Value.ToString
-			If identityValue Is Nothing OrElse identityValue = String.Empty Then Throw New IdentityValueNotSetException
-			If Not ProcessedDocumentIdentifiers(identityValue) Is Nothing Then Throw New IdentifierOverlapException(identityValue, ProcessedDocumentIdentifiers(identityValue))
-			For Each item In _fieldMap
-				If FirstTimeThrough Then
-					If item.DocumentField Is Nothing Then
-						WriteStatusLine(Windows.Process.EventType.Warning, String.Format("File column '{0}' will be unmapped", item.NativeFileColumnIndex + 1), 0)
+				If Not keyField Is Nothing AndAlso Not keyField.Value Is Nothing Then identityValue = keyField.Value.ToString
+				If identityValue Is Nothing OrElse identityValue = String.Empty Then Throw New IdentityValueNotSetException
+				If Not ProcessedDocumentIdentifiers(identityValue) Is Nothing Then Throw New IdentifierOverlapException(identityValue, ProcessedDocumentIdentifiers(identityValue))
+				For Each item In _fieldMap
+					If FirstTimeThrough Then
+						If item.DocumentField Is Nothing Then
+							WriteStatusLine(Windows.Process.EventType.Warning, String.Format("File column '{0}' will be unmapped", item.NativeFileColumnIndex + 1), 0)
+						End If
+						If item.NativeFileColumnIndex = -1 Then
+							WriteStatusLine(Windows.Process.EventType.Warning, String.Format("Field '{0}' will be unmapped", item.DocumentField.FieldName), 0)
+						End If
 					End If
-					If item.NativeFileColumnIndex = -1 Then
-						WriteStatusLine(Windows.Process.EventType.Warning, String.Format("Field '{0}' will be unmapped", item.DocumentField.FieldName), 0)
-					End If
-				End If
-				If Not item.DocumentField Is Nothing Then
-					If item.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
-						Me.ManageFileField(record(item.DocumentField.FieldID))
-					Else
+					If Not item.DocumentField Is Nothing Then
+						If item.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
+							Me.ManageFileField(record(item.DocumentField.FieldID))
+						Else
 
-						MyBase.SetFieldValue(record(item.DocumentField.FieldID), item.NativeFileColumnIndex, False, identityValue, 0, item.DocumentField.ImportBehavior)
+							MyBase.SetFieldValue(record(item.DocumentField.FieldID), item.NativeFileColumnIndex, False, identityValue, 0, item.DocumentField.ImportBehavior)
+						End If
 					End If
-				End If
-			Next
-			For Each fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.UnmappedRelationalFields
-				If fieldDTO.ImportBehavior = EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
-					Dim field As New Api.ArtifactField(fieldDTO)
-					field.Value = identityValue
-					Me.SetFieldValue(field, -1, False, identityValue, 0, fieldDTO.ImportBehavior)
-				End If
-			Next
-			FirstTimeThrough = False
-			System.Threading.Monitor.Exit(OutputFileWriter.OutputNativeFileWriter)
-			System.Threading.Monitor.Exit(_outputCodeFileWriter)
-			Return identityValue
+				Next
+				For Each fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.UnmappedRelationalFields
+					If fieldDTO.ImportBehavior = EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
+						Dim field As New Api.ArtifactField(fieldDTO)
+						field.Value = identityValue
+						Me.SetFieldValue(field, -1, False, identityValue, 0, fieldDTO.ImportBehavior)
+					End If
+				Next
+				FirstTimeThrough = False
+				Return identityValue
+			End SyncLock
+			End SyncLock
+			End SyncLock
+			End SyncLock
 		End Function
 
 		Private Sub ManageFileField(ByVal fileField As Api.ArtifactField)
