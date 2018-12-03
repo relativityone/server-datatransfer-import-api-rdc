@@ -179,12 +179,12 @@
     </Reference>
     <Reference Include="Relativity.Logging">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Relativity.Logging.9.4.317\lib\net462\Relativity.Logging.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Logging.2018.11.4\lib\net462\Relativity.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Relativity.Logging.Interfaces.9.4.317\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Logging.Interfaces.2018.11.4\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client">
