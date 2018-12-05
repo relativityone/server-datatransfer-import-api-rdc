@@ -499,7 +499,7 @@ Namespace kCura.WinEDDS
 			productionImages = retrieveThreads(2).Result()
 
 			Dim beginBatesColumnIndex As Int32 = -1
-			If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production AndAlso FieldLookupService.ContainsFieldName(_beginBatesColumn) Then
+			If FieldLookupService.ContainsFieldName(_beginBatesColumn) Then
 				beginBatesColumnIndex = FieldLookupService.GetOrdinalIndex(_beginBatesColumn)
 			End If
 			Dim identifierColumnName As String = Relativity.SqlNameHelper.GetSqlFriendlyName(Me.Settings.IdentifierColumnName)
@@ -648,7 +648,7 @@ Namespace kCura.WinEDDS
 
 			Dim artifact As ObjectExportInfo = CreateObjectExportInfo()
 
-			If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production AndAlso beginBatesColumnIndex <> -1 Then
+			If beginBatesColumnIndex <> -1 Then
 				artifact.ProductionBeginBates = record(beginBatesColumnIndex).ToString
 			End If
 			artifact.IdentifierValue = record(identifierColumnIndex).ToString
