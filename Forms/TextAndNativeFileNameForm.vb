@@ -52,21 +52,31 @@ Namespace kCura.EDDS.WinForm.Forms
 				Where(Function(f) AllowedFieldTypes.Contains(f.FieldType)).
 				Select(Function(f) New FieldSelection(f.DisplayName, f.FieldArtifactId)).OrderBy(Function(f) f.DisplayName)
 			_availableFields.AddRange(databaseFields)
-			InitializeFirstField(fields)
+			InitializeFirstFields(fields)
 		End Sub
 
-		Private Sub InitializeFirstField(databaseFields As IReadOnlyCollection(Of ViewFieldInfo))
+		Private Sub InitializeFirstFields(databaseFields As IReadOnlyCollection(Of ViewFieldInfo))
 			_firstFields = databaseFields.
 				Where(Function(f) f.Category = FieldCategory.Identifier).
 				Select(Function(f) New FieldSelection(f.DisplayName, f.FieldArtifactId)).ToList()
-			_firstFieldComboBox.DataSource = _firstFields
-			_firstFieldComboBox.DisplayMember = "DisplayName"
-			_firstFieldComboBox.ValueMember = "ID"
 		End Sub
 
 
 		Private Sub InitializeFieldControls()
-			_fieldControls = New List(Of SingleFieldControls) From {Nothing}
+			_fieldControls = New List(Of SingleFieldControls)
+			InitializeFirstFieldComboBox()
+			_fieldControls.Add(New SingleFieldControls(_firstFieldComboBox, Nothing, Nothing))
+		End Sub
+
+		Private Sub InitializeFirstFieldComboBox()
+			_firstFieldComboBox.DataSource = _firstFields
+			_firstFieldComboBox.DisplayMember = "DisplayName"
+			_firstFieldComboBox.ValueMember = "ID"
+			_firstFieldComboBox.AutoCompleteSource = AutoCompleteSource.ListItems
+			_firstFieldComboBox.AutoCompleteMode = AutoCompleteMode.None
+			_firstFieldComboBox.TabIndex = 0
+			AddHandler _firstFieldComboBox.KeyDown, AddressOf CatchEnterKey
+			AddHandler _firstFieldComboBox.Leave, AddressOf SelectBestFieldIfNoneChosen
 		End Sub
 
 		Private Sub PopulateControls(selection As IList(Of CustomFileNameSelectionPart))
