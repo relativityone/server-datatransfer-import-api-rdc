@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\NUnit.3.10.1\build\NUnit.props" Condition="Exists('..\..\packages\NUnit.3.10.1\build\NUnit.props')" />
+  <Import Project="..\..\packages\NUnit.3.11.0\build\NUnit.props" Condition="Exists('..\..\packages\NUnit.3.11.0\build\NUnit.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -44,17 +44,13 @@
     <Reference Include="FluentAssertions, Version=5.4.2.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\FluentAssertions.5.4.2\lib\net45\FluentAssertions.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.NUnit.Integration, Version=9.3.377.8, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\kCura.NUnit.Integration.9.3.377.8\lib\net45\kCura.NUnit.Integration.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="nunit.framework, Version=3.10.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NUnit.3.10.1\lib\net45\nunit.framework.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="nunit.framework, Version=3.11.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NUnit.3.11.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="oi, Version=2018.9.0.570, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32.2018.9.0-pre0570\lib\net40\oi.dll</HintPath>
@@ -118,9 +114,7 @@
     <Compile Include="Tests\TestBase.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="App.config" />
     <None Include="kCura.Relativity.ImportAPI.IntegrationTests.ps1" />
     <None Include="oi\unmanaged\cmmap000.bin" />
     <None Include="packages.config">
@@ -135,6 +129,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\kCura\kCura.NUnit.Integration\kCura.NUnit.Integration.vbproj">
+      <Project>{8a6b7e78-51b9-43db-bbca-17ee6a49e3ff}</Project>
+      <Name>kCura.NUnit.Integration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\kCura\kCura\kCura.vbproj">
       <Project>{535d782a-2388-416f-ab46-10347e44eec9}</Project>
       <Name>kCura</Name>
@@ -222,8 +220,8 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\NUnit.3.10.1\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\NUnit.3.10.1\build\NUnit.props'))" />
     <Error Condition="!Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2018.9.0-pre0570\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\kCura.OutsideIn.FI.Win32.2018.9.0-pre0570\build\kCura.OutsideIn.FI.Win32.targets'))" />
+    <Error Condition="!Exists('..\..\packages\NUnit.3.11.0\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\NUnit.3.11.0\build\NUnit.props'))" />
   </Target>
   <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32.2018.9.0-pre0570\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32.2018.9.0-pre0570\build\kCura.OutsideIn.FI.Win32.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
