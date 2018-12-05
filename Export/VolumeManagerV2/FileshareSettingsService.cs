@@ -8,7 +8,7 @@ using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 {
-	public partial class FileShareSettingsService : IFileshareSettingsService
+	public partial class FileShareSettingsService : IFileShareSettingsService
 	{
 		private List<RelativityFileShareSettings> _cachedSettings;
 		private readonly ILog _logger;
