@@ -27,7 +27,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			New SeparatorSelection(" (none)", "")
 		}
 
-		Private _firstField As FieldSelection
+		Private _firstFields As List(Of FieldSelection)
 		Private _availableFields As List(Of FieldSelection)
 		Private _fieldControls As List(Of SingleFieldControls)
 
@@ -52,11 +52,18 @@ Namespace kCura.EDDS.WinForm.Forms
 				Where(Function(f) AllowedFieldTypes.Contains(f.FieldType)).
 				Select(Function(f) New FieldSelection(f.DisplayName, f.FieldArtifactId)).OrderBy(Function(f) f.DisplayName)
 			_availableFields.AddRange(databaseFields)
-			_firstField = fields.
-				Where(Function(f) f.Category = FieldCategory.Identifier).
-				Select(Function(f) New FieldSelection(f.DisplayName, f.FieldArtifactId)).
-				First()
+			InitializeFirstField(fields)
 		End Sub
+
+		Private Sub InitializeFirstField(databaseFields As IReadOnlyCollection(Of ViewFieldInfo))
+			_firstFields = databaseFields.
+				Where(Function(f) f.Category = FieldCategory.Identifier).
+				Select(Function(f) New FieldSelection(f.DisplayName, f.FieldArtifactId)).ToList()
+			_firstFieldComboBox.DataSource = _firstFields
+			_firstFieldComboBox.DisplayMember = "DisplayName"
+			_firstFieldComboBox.ValueMember = "ID"
+		End Sub
+
 
 		Private Sub InitializeFieldControls()
 			_fieldControls = New List(Of SingleFieldControls) From {Nothing}
@@ -64,7 +71,6 @@ Namespace kCura.EDDS.WinForm.Forms
 
 		Private Sub PopulateControls(selection As IList(Of CustomFileNameSelectionPart))
 			_removeFieldButton.Visible = False
-			_firstFieldTextBox.Text = _firstField.DisplayName
 			If selection Is Nothing Then
 				Return
 			End If
@@ -85,7 +91,7 @@ Namespace kCura.EDDS.WinForm.Forms
 
 		Public Function GetSelection() As IList(Of CustomFileNameSelectionPart)
 			Dim selection = New List(Of CustomFileNameSelectionPart)
-			selection.Add(New CustomFileNameSelectionPart(_firstField.ID))
+			selection.Add(New CustomFileNameSelectionPart(TryCast(_firstFieldComboBox.SelectedItem, FieldSelection).ID))
 			For i = 1 To (NumberOfFieldsGroups - 1)
 				Dim fieldControls = _fieldControls(i)
 				Dim selectedField = TryCast(fieldControls.FieldComboBox.SelectedItem, FieldSelection)
