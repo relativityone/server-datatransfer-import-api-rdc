@@ -188,7 +188,7 @@
     <Compile Include="Exporters\OpticonFilenameComparerTests.vb" />
     <Compile Include="Exporters\Validator\PaddingWarningValidator\IsValid.vb" />
     <Compile Include="Helpers\CaseInsensitiveFilePathHelperTests.vb" />
-    <Compile Include="Helpers\FolderManagerTests.vb" />
+    <Compile Include="Helpers\CaseSensitiveFilePathHelperTests.vb" />
     <Compile Include="KWE_Save_Load\DocImportTests.vb" />
     <Compile Include="MockForLoweBatchSizeBulkImageFileImporter.vb" />
     <Compile Include="ExportNativeWithFilenameFrom.vb" />
