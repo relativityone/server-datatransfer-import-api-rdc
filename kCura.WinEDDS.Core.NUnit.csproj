@@ -103,6 +103,7 @@
     <Compile Include="Export\ExportFileFormatterSetUp.cs" />
     <Compile Include="Export\ExportFileFormatterTests.cs" />
     <Compile Include="Export\FieldNameProviderTests.cs" />
+    <Compile Include="Export\HtmlCellFormatterTests.cs" />
     <Compile Include="Export\HtmlExportFileFormatterTests.cs" />
     <Compile Include="Export\ExportFileFormatterFactoryTests.cs" />
     <Compile Include="Export\Natives\Name\CustomFileNameProviderTest.cs" />
