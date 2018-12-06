@@ -56,6 +56,9 @@ namespace kCura.Relativity.ImportAPI.IntegrationTests.Tests
 			{
 				Assert.Contains(expectedLinkedNativesType, linked);
 			}
+
+			// REL-277123: Once the implementation has been reverted, consider asserting
+			// that the inner exception is a SqlException whose Number equals 512.
 		}
 
 		private async Task CreateNativeTypes(List<int> expectedLinkedNativesTypes)
