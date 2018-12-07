@@ -33,10 +33,6 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 #Region " Shadow Functions "
-		Public Shadows Function GetAllDocumentsForCase(ByVal caseID As Int32) As System.Data.DataSet
-			Return RetryOnReLoginException(Function() MyBase.GetAllDocumentsForCase(caseID))
-		End Function
-
 		Public Shadows Function Read(ByVal caseContextArtifactID As Int32, ByVal artifactID As Int32, ByVal fieldArtifactIds As Int32()) As kCura.EDDS.WebAPI.DocumentManagerBase.Document
 			Return RetryOnReLoginException(Function() MyBase.Read(caseContextArtifactID, artifactID, fieldArtifactIds))
 		End Function
@@ -67,10 +63,6 @@ Namespace kCura.WinEDDS.Service
 			End While
 			Return Nothing
 		End Function
-
-		Public Shadows Sub ClearImagesFromDocument(ByVal caseContextArtifactID As Int32, ByVal artifactID As Int32)
-			RetryOnReLoginException(Sub() MyBase.ClearImagesFromDocument(caseContextArtifactID, artifactID))
-		End Sub
 
 		Public Shadows Function RetrieveAllUnsupportedOiFileIds() As Int32()
 			Return RetryOnReLoginException(Function() MyBase.RetrieveAllUnsupportedOiFileIds())
