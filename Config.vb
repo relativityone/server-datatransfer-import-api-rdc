@@ -2,41 +2,42 @@ Imports System.Configuration
 Imports System.Collections.Generic
 
 Namespace kCura.WinEDDS
-    Public Class Config
+	Public Class Config
 
 #Region " ConfigSettings "
 
 		Private Shared ReadOnly _loadLock As New System.Object
+		Private Shared _rdcMetricsConfiguration As String = "RDCMetricsConfiguration"
 		Private const _ENABLE_CASE_SENSITIVE_SEARCH_KEY as String = "EnableCaseSensitiveSearchOnImport"
 
 		Private Shared _configDictionary As IDictionary
 		Public Shared ReadOnly Property ConfigSettings() As IDictionary
-            Get
-                If _configDictionary Is Nothing Then
-                    SyncLock _LoadLock
-                        If _configDictionary Is Nothing Then
+			Get
+				If _configDictionary Is Nothing Then
+					SyncLock _LoadLock
+						If _configDictionary Is Nothing Then
 							_configDictionary = InitializeConfigDictionaryWithDefaultValues()
-                            End If
-                    End SyncLock
-                End If
-                Return _configDictionary
-            End Get
-        End Property
+						End If
+					End SyncLock
+				End If
+				Return _configDictionary
+			End Get
+		End Property
 #End Region
 
 #Region " Constants "
 
-        Public Shared ReadOnly Property MaxReloginTries() As Int32
-            Get
-                Return 4
-            End Get
-        End Property
+		Public Shared ReadOnly Property MaxReloginTries() As Int32
+			Get
+				Return 4
+			End Get
+		End Property
 
-        Public Shared ReadOnly Property WaitBeforeReconnect() As Int32		'Milliseconds
-            Get
-                Return 2000
-            End Get
-        End Property
+		Public Shared ReadOnly Property WaitBeforeReconnect() As Int32      'Milliseconds
+			Get
+				Return 2000
+			End Get
+		End Property
 
         Private Const webServiceUrlKeyName As String = "WebServiceURL"
         Private Const mainFormWindowHeightKey As String = "MainFormWindowHeight"
@@ -44,74 +45,74 @@ Namespace kCura.WinEDDS
 
         Public Const PREVIEW_THRESHOLD As Int32 = 1000
 
-        Public Shared ReadOnly Property FileTransferModeExplanationText(ByVal includeBulk As Boolean) As String
-            Get
-                Dim sb As New System.Text.StringBuilder
-                sb.Append("FILE TRANSFER MODES:" & vbNewLine)
-                sb.Append(kCura.WinEDDS.TApi.TapiWinEddsHelper.BuildDocText())
-                sb.Append(vbNewLine & vbNewLine)
-                If includeBulk Then
-                    sb.Append("SQL INSERT MODES:" & vbNewLine)
-                    sb.Append(" • Bulk • " & vbNewLine)
-                    sb.Append("The upload process has access to the SQL share on the appropriate case database.  This ensures the fastest transfer of information between the desktop client and the relativity servers.")
-                    sb.Append(vbNewLine & vbNewLine)
-                    sb.Append(" • Single •" & vbNewLine)
-                    sb.Append("The upload process has NO access to the SQL share on the appropriate case database.  This is a slower method of import. If the process is using single mode, contact your Relativity Database Administrator to see if a SQL share can be opened for the desired case.")
-                End If
-                Return sb.ToString
-            End Get
-        End Property
+		Public Shared ReadOnly Property FileTransferModeExplanationText(ByVal includeBulk As Boolean) As String
+			Get
+				Dim sb As New System.Text.StringBuilder
+				sb.Append("FILE TRANSFER MODES:" & vbNewLine)
+				sb.Append(kCura.WinEDDS.TApi.TapiWinEddsHelper.BuildDocText())
+				sb.Append(vbNewLine & vbNewLine)
+				If includeBulk Then
+					sb.Append("SQL INSERT MODES:" & vbNewLine)
+					sb.Append(" • Bulk • " & vbNewLine)
+					sb.Append("The upload process has access to the SQL share on the appropriate case database.  This ensures the fastest transfer of information between the desktop client and the relativity servers.")
+					sb.Append(vbNewLine & vbNewLine)
+					sb.Append(" • Single •" & vbNewLine)
+					sb.Append("The upload process has NO access to the SQL share on the appropriate case database.  This is a slower method of import. If the process is using single mode, contact your Relativity Database Administrator to see if a SQL share can be opened for the desired case.")
+				End If
+				Return sb.ToString
+			End Get
+		End Property
 
 #End Region
 
 #Region "Registry Helpers"
 
-        Public Shared Function GetRegistryKeyValue(ByVal keyName As String) As String
-            Dim regKey As Microsoft.Win32.RegistryKey = Config.GetRegistryKey(False)
-            Dim value As String = CType(regKey.GetValue(keyName, ""), String)
-            regKey.Close()
-            Return value
-        End Function
+		Public Shared Function GetRegistryKeyValue(ByVal keyName As String) As String
+			Dim regKey As Microsoft.Win32.RegistryKey = Config.GetRegistryKey(False)
+			Dim value As String = CType(regKey.GetValue(keyName, ""), String)
+			regKey.Close()
+			Return value
+		End Function
 
-        Private Shared Function SetRegistryKeyValue(ByVal keyName As String, ByVal keyVal As String) As String
-            Dim regKey As Microsoft.Win32.RegistryKey = Config.GetRegistryKey(True)
-            regKey.SetValue(keyName, keyVal)
-            regKey.Close()
-            Return Nothing
+		Private Shared Function SetRegistryKeyValue(ByVal keyName As String, ByVal keyVal As String) As String
+			Dim regKey As Microsoft.Win32.RegistryKey = Config.GetRegistryKey(True)
+			regKey.SetValue(keyName, keyVal)
+			regKey.Close()
+			Return Nothing
 
-        End Function
+		End Function
 
-        Private Shared ReadOnly Property GetRegistryKey(ByVal write As Boolean) As Microsoft.Win32.RegistryKey
-            Get
-                Dim regKey As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("software\kCura\Relativity", write)
-                If regKey Is Nothing Then
-                    Microsoft.Win32.Registry.CurrentUser.CreateSubKey("software\\kCura\\Relativity")
-                    regKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("software\kCura\Relativity", write)
-                End If
-                Return regKey
-            End Get
-        End Property
+		Private Shared ReadOnly Property GetRegistryKey(ByVal write As Boolean) As Microsoft.Win32.RegistryKey
+			Get
+				Dim regKey As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("software\kCura\Relativity", write)
+				If regKey Is Nothing Then
+					Microsoft.Win32.Registry.CurrentUser.CreateSubKey("software\\kCura\\Relativity")
+					regKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("software\kCura\Relativity", write)
+				End If
+				Return regKey
+			End Get
+		End Property
 
-        Public Shared Function ValidateURIFormat(ByVal returnValue As String) As String
-            If Not String.IsNullOrEmpty(returnValue) AndAlso Not returnValue.Trim.EndsWith("/") Then
-                returnValue = returnValue.Trim + "/"
-            End If
+		Public Shared Function ValidateURIFormat(ByVal returnValue As String) As String
+			If Not String.IsNullOrEmpty(returnValue) AndAlso Not returnValue.Trim.EndsWith("/") Then
+				returnValue = returnValue.Trim + "/"
+			End If
 
-            'NOTE: This is here for validation; an improper URI will cause this to throw an
-            ' exception. We set it then to 'Nothing' to avoid a warning-turned-error about
-            ' having an unused variable. -Phil S. 12/05/2011
-            ' fixed 1/24/2012 - slm - return an empty string if invalid uri format.  this will cause the 
-            ' rdc to pop up its dialog prompting the user to enter a valid address
+			'NOTE: This is here for validation; an improper URI will cause this to throw an
+			' exception. We set it then to 'Nothing' to avoid a warning-turned-error about
+			' having an unused variable. -Phil S. 12/05/2011
+			' fixed 1/24/2012 - slm - return an empty string if invalid uri format.  this will cause the 
+			' rdc to pop up its dialog prompting the user to enter a valid address
 
-            Try
-                Dim uriObj As Uri = New Uri(returnValue)
-                uriObj = Nothing
-            Catch
-                returnValue = String.Empty
-            End Try
+			Try
+				Dim uriObj As Uri = New Uri(returnValue)
+				uriObj = Nothing
+			Catch
+				returnValue = String.Empty
+			End Try
 
-            Return returnValue
-        End Function
+			Return returnValue
+		End Function
 
 #End Region
 
@@ -166,113 +167,113 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-        Public Shared ReadOnly Property ImportBatchMaxVolume() As Int32     'Volume in bytes
-            Get
-                Try
-                    Return CType(ConfigSettings("ImportBatchMaxVolume"), Int32)
-                Catch
-                    Return 1000000
-                End Try
-            End Get
-        End Property
+		Public Shared ReadOnly Property ImportBatchMaxVolume() As Int32     'Volume in bytes
+			Get
+				Try
+					Return CType(ConfigSettings("ImportBatchMaxVolume"), Int32)
+				Catch
+					Return 1000000
+				End Try
+			End Get
+		End Property
 
-        Public Shared ReadOnly Property ImportBatchSize() As Int32		'Number of records
-            Get
-                Try
-                    Return CType(ConfigSettings("ImportBatchSize"), Int32)
-                Catch ex As Exception
-                    Return 500
-                End Try
-            End Get
-        End Property
+		Public Shared ReadOnly Property ImportBatchSize() As Int32      'Number of records
+			Get
+				Try
+					Return CType(ConfigSettings("ImportBatchSize"), Int32)
+				Catch ex As Exception
+					Return 500
+				End Try
+			End Get
+		End Property
 
-        Public Shared ReadOnly Property JobCompleteBatchSize() As Int32		'Number of records
-            Get
-                Try
-                    Return CType(ConfigSettings("JobCompleteBatchSize"), Int32)
-                Catch ex As Exception
-                    Return 50000
-                End Try
-            End Get
-        End Property
+		Public Shared ReadOnly Property JobCompleteBatchSize() As Int32     'Number of records
+			Get
+				Try
+					Return CType(ConfigSettings("JobCompleteBatchSize"), Int32)
+				Catch ex As Exception
+					Return 50000
+				End Try
+			End Get
+		End Property
 
-        Public Shared ReadOnly Property WebAPIOperationTimeout() As Int32
-            Get
-                Try
-                    Return CType(ConfigSettings("WebAPIOperationTimeout"), Int32)
-                Catch ex As Exception
-                    Return 600000
-                End Try
-            End Get
-        End Property
+		Public Shared ReadOnly Property WebAPIOperationTimeout() As Int32
+			Get
+				Try
+					Return CType(ConfigSettings("WebAPIOperationTimeout"), Int32)
+				Catch ex As Exception
+					Return 600000
+				End Try
+			End Get
+		End Property
 
-        Public Shared ReadOnly Property PermissionErrorsRetry() As Boolean
-	        Get
-		        Try
-			        Return CType(ConfigSettings("PermissionErrorsRetry"), Boolean)
-		        Catch ex As Exception
-			        Return False
-		        End Try
-	        End Get
-        End Property
+		Public Shared ReadOnly Property PermissionErrorsRetry() As Boolean
+			Get
+				Try
+					Return CType(ConfigSettings("PermissionErrorsRetry"), Boolean)
+				Catch ex As Exception
+					Return False
+				End Try
+			End Get
+		End Property
 
-        Public Shared ReadOnly Property BadPathErrorsRetry() As Boolean
-	        Get
-		        Try
-			        Return CType(ConfigSettings("BadPathErrorsRetry"), Boolean)
-		        Catch ex As Exception
-			        Return False
-		        End Try
-	        End Get
-        End Property
+		Public Shared ReadOnly Property BadPathErrorsRetry() As Boolean
+			Get
+				Try
+					Return CType(ConfigSettings("BadPathErrorsRetry"), Boolean)
+				Catch ex As Exception
+					Return False
+				End Try
+			End Get
+		End Property
 
-        ''' <summary>
-        ''' If True, Folders which are created in Append mode are created in the WebAPI.
-        ''' If False, Folders which are created in Append mode are created in RDC/ImportAPI.
-        ''' If the value is not set in the config file, True is returned.
-        ''' </summary>
-        ''' <value></value>
-        ''' <returns></returns>
-        ''' <remarks>This property is part of the fix for Dominus# 1127879</remarks>
-        Public Shared ReadOnly Property CreateFoldersInWebAPI() As Boolean
-            Get
-                Try
-                    Return CType(ConfigSettings("CreateFoldersInWebAPI"), Boolean)
-                Catch ex As Exception
-                    Return True	' Default changed from False to True for Atlas' IAPI Folder changes Oct/Nov 2013
-                End Try
-            End Get
-        End Property
+		''' <summary>
+		''' If True, Folders which are created in Append mode are created in the WebAPI.
+		''' If False, Folders which are created in Append mode are created in RDC/ImportAPI.
+		''' If the value is not set in the config file, True is returned.
+		''' </summary>
+		''' <value></value>
+		''' <returns></returns>
+		''' <remarks>This property is part of the fix for Dominus# 1127879</remarks>
+		Public Shared ReadOnly Property CreateFoldersInWebAPI() As Boolean
+			Get
+				Try
+					Return CType(ConfigSettings("CreateFoldersInWebAPI"), Boolean)
+				Catch ex As Exception
+					Return True ' Default changed from False to True for Atlas' IAPI Folder changes Oct/Nov 2013
+				End Try
+			End Get
+		End Property
 
-        Public Shared ReadOnly Property DynamicBatchResizingOn() As Boolean		'Allow or not to automatically decrease import batch size while import is in progress
-            Get
-                Return CType(ConfigSettings("DynamicBatchResizingOn"), Boolean)
-            End Get
-        End Property
+		Public Shared ReadOnly Property DynamicBatchResizingOn() As Boolean     'Allow or not to automatically decrease import batch size while import is in progress
+			Get
+				Return CType(ConfigSettings("DynamicBatchResizingOn"), Boolean)
+			End Get
+		End Property
 
-        Public Shared ReadOnly Property DefaultMaximumErrorCount() As Int32
-            Get
-                Return 1000
-            End Get
-        End Property
+		Public Shared ReadOnly Property DefaultMaximumErrorCount() As Int32
+			Get
+				Return 1000
+			End Get
+		End Property
 
-        Public Shared ReadOnly Property MinimumBatchSize() As Int32		'When AutoBatch is on. This is the lower ceiling up to which batch will decrease
-            Get
-                Return CType(ConfigSettings("MinimumBatchSize"), Int32)
-            End Get
-        End Property
+		Public Shared ReadOnly Property MinimumBatchSize() As Int32     'When AutoBatch is on. This is the lower ceiling up to which batch will decrease
+			Get
+				Return CType(ConfigSettings("MinimumBatchSize"), Int32)
+			End Get
+		End Property
 
-        Public Shared ReadOnly Property ExportBatchSize() As Int32		'Number of records
-            Get
-                Return CType(ConfigSettings("ExportBatchSize"), Int32)
-            End Get
-        End Property
+		Public Shared ReadOnly Property ExportBatchSize() As Int32      'Number of records
+			Get
+				Return CType(ConfigSettings("ExportBatchSize"), Int32)
+			End Get
+		End Property
 
-        Public Shared ReadOnly Property ExportThreadCount() As Int32		'Number of threads during the exporting process
-            Get
-                Return CType(ConfigSettings("ExportThreadCount"), Int32)
-            End Get
-        End Property
+		Public Shared ReadOnly Property ExportThreadCount() As Int32        'Number of threads during the exporting process
+			Get
+				Return CType(ConfigSettings("ExportThreadCount"), Int32)
+			End Get
+		End Property
 
 		Public Shared ReadOnly Property UseOldExport() As Boolean
 			Get
@@ -280,145 +281,145 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-        Public Shared ReadOnly Property ForceParallelismInNewExport() As Boolean
-	        Get
-		        Return CType(ConfigSettings("ForceParallelismInNewExport"), Boolean)
-	        End Get
-        End Property
+		Public Shared ReadOnly Property ForceParallelismInNewExport() As Boolean
+			Get
+				Return CType(ConfigSettings("ForceParallelismInNewExport"), Boolean)
+			End Get
+		End Property
 
-        Public Shared ReadOnly Property DisableImageTypeValidation() As Boolean
-            Get
-                Return CType(ConfigSettings("DisableImageTypeValidation"), Boolean)
-            End Get
-        End Property
+		Public Shared ReadOnly Property DisableImageTypeValidation() As Boolean
+			Get
+				Return CType(ConfigSettings("DisableImageTypeValidation"), Boolean)
+			End Get
+		End Property
 
-        Public Shared ReadOnly Property DisableImageLocationValidation() As Boolean
-            Get
-                Return CType(ConfigSettings("DisableImageLocationValidation"), Boolean)
-            End Get
-        End Property
+		Public Shared ReadOnly Property DisableImageLocationValidation() As Boolean
+			Get
+				Return CType(ConfigSettings("DisableImageLocationValidation"), Boolean)
+			End Get
+		End Property
 
-        Public Shared ReadOnly Property DisableNativeValidation() As Boolean
-            Get
-                Return CType(ConfigSettings("DisableNativeValidation"), Boolean)
-            End Get
-        End Property
+		Public Shared ReadOnly Property DisableNativeValidation() As Boolean
+			Get
+				Return CType(ConfigSettings("DisableNativeValidation"), Boolean)
+			End Get
+		End Property
 
-        Public Shared ReadOnly Property DisableNativeLocationValidation() As Boolean
-            Get
-                Return CType(ConfigSettings("DisableNativeLocationValidation"), Boolean)
-            End Get
-        End Property
+		Public Shared ReadOnly Property DisableNativeLocationValidation() As Boolean
+			Get
+				Return CType(ConfigSettings("DisableNativeLocationValidation"), Boolean)
+			End Get
+		End Property
 
-        Public Shared ReadOnly Property CreateErrorForEmptyNativeFile() As Boolean
-            Get
-                Return CType(ConfigSettings("CreateErrorForEmptyNativeFile"), Boolean)
-            End Get
-        End Property
+		Public Shared ReadOnly Property CreateErrorForEmptyNativeFile() As Boolean
+			Get
+				Return CType(ConfigSettings("CreateErrorForEmptyNativeFile"), Boolean)
+			End Get
+		End Property
 
-        Public Shared ReadOnly Property AuditLevel() As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel
-            Get
-                Return DirectCast([Enum].Parse(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel), CStr(ConfigSettings("AuditLevel"))), kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel)
-            End Get
-        End Property
+		Public Shared ReadOnly Property AuditLevel() As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel
+			Get
+				Return DirectCast([Enum].Parse(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel), CStr(ConfigSettings("AuditLevel"))), kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel)
+			End Get
+		End Property
 
-        'This hidden configuration setting makes it easier to test WebUpload.  Testing is important.
-        Public Shared ReadOnly Property ForceWebUpload() As Boolean
-            Get
-                Return CType(ConfigSettings("ForceWebUpload"), Boolean)
-            End Get
-        End Property
+		'This hidden configuration setting makes it easier to test WebUpload.  Testing is important.
+		Public Shared ReadOnly Property ForceWebUpload() As Boolean
+			Get
+				Return CType(ConfigSettings("ForceWebUpload"), Boolean)
+			End Get
+		End Property
 
-        'This is used to force the TAPI file share client.
-        Public Shared ReadOnly Property TapiForceFileShareClient() As Boolean
-            Get
-                Return CType(ConfigSettings("TapiForceFileShareClient"), Boolean)
-            End Get
-        End Property
+		'This is used to force the TAPI file share client.
+		Public Shared ReadOnly Property TapiForceFileShareClient() As Boolean
+			Get
+				Return CType(ConfigSettings("TapiForceFileShareClient"), Boolean)
+			End Get
+		End Property
 
-        'This is used to force the TAPI HTTP client.
-        Public Shared ReadOnly Property TapiForceHttpClient() As Boolean
-            Get
-                Return CType(ConfigSettings("TapiForceHttpClient"), Boolean)
-            End Get
-        End Property
+		'This is used to force the TAPI HTTP client.
+		Public Shared ReadOnly Property TapiForceHttpClient() As Boolean
+			Get
+				Return CType(ConfigSettings("TapiForceHttpClient"), Boolean)
+			End Get
+		End Property
 
-        'This is used to force the TAPI HTTP client only for BCP. This is a temp workaround until Aspera supports multiple file shares.
-        Public Shared ReadOnly Property TapiForceBcpHttpClient() As Boolean
-            Get
-                Return CType(ConfigSettings("TapiForceBcpHttpClient"), Boolean)
-            End Get
-        End Property
+		'This is used to force the TAPI HTTP client only for BCP. This is a temp workaround until Aspera supports multiple file shares.
+		Public Shared ReadOnly Property TapiForceBcpHttpClient() As Boolean
+			Get
+				Return CType(ConfigSettings("TapiForceBcpHttpClient"), Boolean)
+			End Get
+		End Property
 
-        'This is used to specify the root folder where the Aspera BCP files are uploaded.
-        Public Shared ReadOnly Property TapiAsperaBcpRootFolder() As String
-            Get
-                Return CType(ConfigSettings("TapiAsperaBcpRootFolder"), String)
-            End Get
-        End Property
+		'This is used to specify the root folder where the Aspera BCP files are uploaded.
+		Public Shared ReadOnly Property TapiAsperaBcpRootFolder() As String
+			Get
+				Return CType(ConfigSettings("TapiAsperaBcpRootFolder"), String)
+			End Get
+		End Property
 
-        'This is used to force the TAPI Aspera client.
-        Public Shared ReadOnly Property TapiForceAsperaClient() As Boolean
-            Get
-                Return CType(ConfigSettings("TapiForceAsperaClient"), Boolean)
-            End Get
-        End Property
+		'This is used to force the TAPI Aspera client.
+		Public Shared ReadOnly Property TapiForceAsperaClient() As Boolean
+			Get
+				Return CType(ConfigSettings("TapiForceAsperaClient"), Boolean)
+			End Get
+		End Property
 
-        'This is used to force a semi-colon delimited list of TAPI clients.
-        Public Shared ReadOnly Property TapiForceClientCandidates() As String
-            Get
-                Return CType(ConfigSettings("TapiForceClientCandidates"), String)
-            End Get
-        End Property
+		'This is used to force a semi-colon delimited list of TAPI clients.
+		Public Shared ReadOnly Property TapiForceClientCandidates() As String
+			Get
+				Return CType(ConfigSettings("TapiForceClientCandidates"), String)
+			End Get
+		End Property
 
-        ' This sets a TAPI minimum data rate in Mbps units.
-        Public Shared ReadOnly Property TapiMinDataRateMbps() As Int32
-            Get
-                Return CType(ConfigSettings("TapiMinDataRateMbps"), Int32)
-            End Get
-        End Property
+		' This sets a TAPI minimum data rate in Mbps units.
+		Public Shared ReadOnly Property TapiMinDataRateMbps() As Int32
+			Get
+				Return CType(ConfigSettings("TapiMinDataRateMbps"), Int32)
+			End Get
+		End Property
 
-        ' This sets a TAPI setting to submit APM metrics upon completion of the transfer job.
-        Public Shared ReadOnly Property TapiSubmitApmMetrics() As Boolean
-	        Get
-		        Return CType(ConfigSettings("TapiSubmitApmMetrics"), Boolean)
-	        End Get
-        End Property
+		' This sets a TAPI setting to submit APM metrics upon completion of the transfer job.
+		Public Shared ReadOnly Property TapiSubmitApmMetrics() As Boolean
+			Get
+				Return CType(ConfigSettings("TapiSubmitApmMetrics"), Boolean)
+			End Get
+		End Property
 
-        ' This sets a TAPI target data rate in Mbps units.
-        Public Shared ReadOnly Property TapiTargetDataRateMbps() As Int32
-            Get
-                Return CType(ConfigSettings("TapiTargetDataRateMbps"), Int32)
-            End Get
-        End Property
+		' This sets a TAPI target data rate in Mbps units.
+		Public Shared ReadOnly Property TapiTargetDataRateMbps() As Int32
+			Get
+				Return CType(ConfigSettings("TapiTargetDataRateMbps"), Int32)
+			End Get
+		End Property
 
-        ' This sets a directory where TAPI client-specific transfer logs are stored.
-        Public Shared ReadOnly Property TapiTransferLogDirectory() As String
-            Get
-                Return CType(ConfigSettings("TapiTransferLogDirectory"), String)
-            End Get
-        End Property
+		' This sets a directory where TAPI client-specific transfer logs are stored.
+		Public Shared ReadOnly Property TapiTransferLogDirectory() As String
+			Get
+				Return CType(ConfigSettings("TapiTransferLogDirectory"), String)
+			End Get
+		End Property
 
-        ' This enables the feature that gives "trip 1 of x" progress for large files.
-        Public Shared ReadOnly Property TapiLargeFileProgressEnabled() As Boolean
-            Get
-                Return CType(ConfigSettings("TapiLargeFileProgressEnabled"), Boolean)
-            End Get
-        End Property
+		' This enables the feature that gives "trip 1 of x" progress for large files.
+		Public Shared ReadOnly Property TapiLargeFileProgressEnabled() As Boolean
+			Get
+				Return CType(ConfigSettings("TapiLargeFileProgressEnabled"), Boolean)
+			End Get
+		End Property
 
-        ' This sets the max number of concurrent threads used by the TAPI job engine.
-        Public Shared ReadOnly Property TapiMaxJobParallelism() As Int32
-            Get
-                Return CType(ConfigSettings("TapiMaxJobParallelism"), Int32)
-            End Get
-        End Property
+		' This sets the max number of concurrent threads used by the TAPI job engine.
+		Public Shared ReadOnly Property TapiMaxJobParallelism() As Int32
+			Get
+				Return CType(ConfigSettings("TapiMaxJobParallelism"), Int32)
+			End Get
+		End Property
 
-        ' This sets the number of levels the Aspera doc root folder is relative to the file share where native files are stored.
-        Public Shared ReadOnly Property TapiAsperaNativeDocRootLevels() As Int32
-            Get
-                Return CType(ConfigSettings("TapiAsperaNativeDocRootLevels"), Int32)
-            End Get
-        End Property
+		' This sets the number of levels the Aspera doc root folder is relative to the file share where native files are stored.
+		Public Shared ReadOnly Property TapiAsperaNativeDocRootLevels() As Int32
+			Get
+				Return CType(ConfigSettings("TapiAsperaNativeDocRootLevels"), Int32)
+			End Get
+		End Property
 
 		'This is used to disable certificates check of destiantion server on client. It should be enabled only when dealing with invalid certificates on test environments.
 		Public Shared ReadOnly Property SuppressCertificateCheckOnClient() As Boolean
@@ -427,41 +428,41 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-        Public Shared ReadOnly Property LogConfigFile() As String
-            Get
-                Return CType(ConfigSettings("LogConfigFile"), String)
-            End Get
-        End Property
+		Public Shared ReadOnly Property LogConfigFile() As String
+			Get
+				Return CType(ConfigSettings("LogConfigFile"), String)
+			End Get
+		End Property
 
-        Public Shared Property ForceFolderPreview() As Boolean
-            Get
-                Dim registryValue As String = Config.GetRegistryKeyValue("ForceFolderPreview")
-                If String.IsNullOrEmpty(registryValue) Then
-                    Config.SetRegistryKeyValue("ForceFolderPreview", "true")
-                    Return True
-                End If
-                Return registryValue.ToLower.Equals("true")
-            End Get
-            Set(ByVal value As Boolean)
-                Dim registryValue As String = "false"
-                If value Then registryValue = "true"
-                Config.SetRegistryKeyValue("ForceFolderPreview", registryValue)
-            End Set
-        End Property
+		Public Shared Property ForceFolderPreview() As Boolean
+			Get
+				Dim registryValue As String = Config.GetRegistryKeyValue("ForceFolderPreview")
+				If String.IsNullOrEmpty(registryValue) Then
+					Config.SetRegistryKeyValue("ForceFolderPreview", "true")
+					Return True
+				End If
+				Return registryValue.ToLower.Equals("true")
+			End Get
+			Set(ByVal value As Boolean)
+				Dim registryValue As String = "false"
+				If value Then registryValue = "true"
+				Config.SetRegistryKeyValue("ForceFolderPreview", registryValue)
+			End Set
+		End Property
 
-        Public Shared Property ObjectFieldIdListContainsArtifactId() As IList(Of Int32)
-            Get
-                Dim registryValue As String = Config.GetRegistryKeyValue("ObjectFieldIdListContainsArtifactId")
-                If String.IsNullOrEmpty(registryValue) Then
-                    Config.SetRegistryKeyValue("ObjectFieldIdListContainsArtifactId", "")
-                    Return New List(Of Int32)
-                End If
-                Return registryValue.Split(New String() {","}, StringSplitOptions.RemoveEmptyEntries).Select(Function(s As String) Int32.Parse(s)).ToArray
-            End Get
-            Set(ByVal value As IList(Of Int32))
-                Config.SetRegistryKeyValue("ObjectFieldIdListContainsArtifactId", String.Join(",", value.Select(Function(x) x.ToString()).ToArray))
-            End Set
-        End Property
+		Public Shared Property ObjectFieldIdListContainsArtifactId() As IList(Of Int32)
+			Get
+				Dim registryValue As String = Config.GetRegistryKeyValue("ObjectFieldIdListContainsArtifactId")
+				If String.IsNullOrEmpty(registryValue) Then
+					Config.SetRegistryKeyValue("ObjectFieldIdListContainsArtifactId", "")
+					Return New List(Of Int32)
+				End If
+				Return registryValue.Split(New String() {","}, StringSplitOptions.RemoveEmptyEntries).Select(Function(s As String) Int32.Parse(s)).ToArray
+			End Get
+			Set(ByVal value As IList(Of Int32))
+				Config.SetRegistryKeyValue("ObjectFieldIdListContainsArtifactId", String.Join(",", value.Select(Function(x) x.ToString()).ToArray))
+			End Set
+		End Property
 
         Public Shared Property WebServiceURL() As String
             Get
@@ -610,5 +611,5 @@ Namespace kCura.WinEDDS
 			Return tempDict
 		End Function
 
-    End Class
+	End Class
 End Namespace

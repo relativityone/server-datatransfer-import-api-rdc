@@ -783,6 +783,7 @@ Namespace kCura.WinEDDS
 			Dim imageFilePath As String = BulkImageFileImporter.GetFileLocation(imageRecord)
 
 			If Not Me.DisableImageLocationValidation Then
+				'AndAlso Not System.IO.File.Exists(imageFilePath) 
 				Dim foundFileName As String = FilePathHelper.GetExistingFilePath(imageFilePath)
 				Dim fileExists As Boolean = Not String.IsNullOrEmpty(foundFileName)
 
