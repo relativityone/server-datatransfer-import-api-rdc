@@ -10,6 +10,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 	{
 		private const string ROW_PREFIX = "<tr>";
 		private const string ROW_SUFFIX = "</tr>";
+		private const string COLUMN_PREFIX = "<td>";
+		private const string COLUMN_SUFFIX = "</td>";
 
 		private readonly IFilePathTransformer _filePathTransformer;
 		private readonly ExportFile _settings;
@@ -23,7 +25,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 		public string TransformToCell(string contents)
 		{
 			contents = HttpUtility.HtmlEncode(contents);
-			return $"<td>{contents}</td>";
+			return $"{COLUMN_PREFIX}{contents}{COLUMN_SUFFIX}";
 		}
 
 		public string RowPrefix => ROW_PREFIX;
@@ -32,17 +34,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 
 		public string CreateImageCell(ObjectExportInfo artifact)
 		{
-			if (!_settings.ExportImages || _settings.ArtifactTypeID != (int)ArtifactType.Document)
+			if (!_settings.ExportImages || !IsDocument())
 			{
 				return string.Empty;
 			}
 
-			return $"<td>{GetImagesHtmlString(artifact)}</td>";
+			return $"{COLUMN_PREFIX}{GetImagesHtmlString(artifact)}{COLUMN_SUFFIX}";
 		}
 
 		public string CreateNativeCell(string location, ObjectExportInfo artifact)
 		{
-			return $"<td>{GetNativeHtmlString(artifact, location)}</td>";
+			return $"{COLUMN_PREFIX}{GetNativeHtmlString(artifact, location)}{COLUMN_SUFFIX}";
 		}
 
 		private string GetNativeHtmlString(ObjectExportInfo artifact, string location)
@@ -56,10 +58,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 			{
 				return string.Empty;
 			}
-			StringBuilder retval = new StringBuilder();
-			retval.AppendFormat("<a style='display:block' href='{0}'>{1}</a>", location, artifact.NativeFileName(_settings.AppendOriginalFileName));
-			return retval.ToString();
 
+			string nativeFileName = artifact.NativeFileName(_settings.AppendOriginalFileName);
+			return GetLink(location, nativeFileName);
 		}
 
 		private bool IsDocument()
@@ -83,7 +84,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 					location = image.SourceLocation;
 				}
 
-				retval.AppendFormat("<a style='display:block' href='{0}'>{1}</a>", location, image.FileName);
+				retval.Append(GetLink(location, image.FileName));
 				if (_settings.TypeOfImage == ExportFile.ImageType.MultiPageTiff || _settings.TypeOfImage == ExportFile.ImageType.Pdf)
 				{
 					break;
@@ -91,6 +92,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 			}
 
 			return retval.ToString();
+		}
+
+		private string GetLink(string href, string text)
+		{
+			return $"<a style='display:block' href='{href}'>{text}</a>";
 		}
 	}
 }
