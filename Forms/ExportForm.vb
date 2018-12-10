@@ -1480,7 +1480,7 @@ Public Class ExportForm
 		If selection Is Nothing Then
 			Return
 		End If
-		Dim firstField = New FieldDescriptorPart(selection(0).FieldID)
+		Dim firstField = New FirstFieldDescriptorPart(selection(0).FieldID, selection(0).IsProductionBegBates)
 		Dim secondField As ExtendedDescriptorPart = Nothing
 		Dim thirdField As ExtendedDescriptorPart = Nothing
 		If selection.Count >= 2 Then

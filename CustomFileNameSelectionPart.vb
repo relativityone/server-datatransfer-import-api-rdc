@@ -17,9 +17,16 @@
 			Me.CustomText = customText
 		End Sub
 
+		Public Sub New(fieldID As Integer, isProduction As Boolean)
+			Me.FieldID = fieldID
+			Me.IsProductionBegBates = isProduction
+		End Sub
+
 		Public Property Separator As String
 		Public Property FieldID As Integer
 		Public Property CustomText As String
+
+		Public Property IsProductionBegBates As Boolean
 
 		Public Function HasCustomText() As Boolean
 			Return FieldID = -1

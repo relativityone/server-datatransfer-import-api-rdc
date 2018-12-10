@@ -8,6 +8,7 @@ Namespace kCura.EDDS.WinForm.Forms
 	Public Class TextAndNativeFileNameForm
 
 		Private Const CustomTextOption As String = "Custom Text..."
+		Private Const ProductionBeginBatesText As String = "Production Begin Bates"
 		Private Const FieldLimit = 3
 		Private Const NumberOfFieldsInFieldsGroup = 3
 		Private ReadOnly AllowedFieldTypes As FieldTypeHelper.FieldType() = New FieldTypeHelper.FieldType() {
@@ -59,6 +60,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			_firstFields = databaseFields.
 				Where(Function(f) f.Category = FieldCategory.Identifier).
 				Select(Function(f) New FieldSelection(f.DisplayName, f.FieldArtifactId)).ToList()
+			_firstFields.Add(New FieldSelection(ProductionBeginBatesText, Nothing))
 		End Sub
 
 
@@ -85,6 +87,7 @@ Namespace kCura.EDDS.WinForm.Forms
 				Return
 			End If
 			Dim index = 1
+			_firstFieldComboBox.SelectedValue = selection(0).FieldID
 			While index < selection.Count And index < FieldLimit
 				AddField()
 				Dim selectionPart = selection(index)
@@ -101,7 +104,7 @@ Namespace kCura.EDDS.WinForm.Forms
 
 		Public Function GetSelection() As IList(Of CustomFileNameSelectionPart)
 			Dim selection = New List(Of CustomFileNameSelectionPart)
-			selection.Add(New CustomFileNameSelectionPart(TryCast(_firstFieldComboBox.SelectedItem, FieldSelection).ID))
+			selection.Add(GetFirstFieldSelectionPart())
 			For i = 1 To (NumberOfFieldsGroups - 1)
 				Dim fieldControls = _fieldControls(i)
 				Dim selectedField = TryCast(fieldControls.FieldComboBox.SelectedItem, FieldSelection)
@@ -115,6 +118,16 @@ Namespace kCura.EDDS.WinForm.Forms
 				selection.Add(selectionPart)
 			Next
 			Return selection
+		End Function
+
+		Private Function GetFirstFieldSelectionPart() As CustomFileNameSelectionPart
+			Dim firstField = TryCast(_firstFieldComboBox.SelectedItem, FieldSelection)
+			If firstField.DisplayName = ProductionBeginBatesText
+				firstField.IsProduction = true
+			Else
+				firstField.IsProduction = false
+			End If
+			Return New CustomFileNameSelectionPart(firstField.ID, firstField.IsProduction)
 		End Function
 
 		Private Sub AddField()
@@ -309,13 +322,18 @@ Namespace kCura.EDDS.WinForm.Forms
 		Protected Class FieldSelection
 			Implements ISelection
 			Public Sub New(displayName As String, id As Integer)
+				Me.New(displayName, id, false)
+			End Sub
+			Public Sub New(displayName As String, id As Integer, isProduction As Boolean)
 				Me.DisplayName = displayName
 				Me.ID = id
+				Me.IsProduction = isProduction
 			End Sub
 
 			Public Property DisplayName As String Implements ISelection.DisplayName
 			Public Property ID As Integer
 
+			Public Property IsProduction As Boolean
 		End Class
 
 		Protected Class SeparatorSelection
