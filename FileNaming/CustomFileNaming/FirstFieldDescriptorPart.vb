@@ -3,7 +3,7 @@
 	Public Class FirstFieldDescriptorPart
 		Inherits ValueDescriptorPart
 
-		Public Sub New(ByVal fieldId As Integer, isProduction As Boolean)
+		Public Sub New(ByVal fieldId As Integer, Optional isProduction As Boolean = False)
 			Me.Value = fieldId
 			Me.isProduction = isProduction
 		End Sub
