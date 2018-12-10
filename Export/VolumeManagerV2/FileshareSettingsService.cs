@@ -8,14 +8,14 @@ using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 {
-	public class FileshareSettingsService : IFileshareSettingsService
+	public partial class FileShareSettingsService : IFileShareSettingsService
 	{
 		private List<RelativityFileShareSettings> _cachedSettings;
 		private readonly ILog _logger;
 		private readonly int _workspaceId;
 		private readonly NetworkCredential _currentUserCredential;
 
-		public FileshareSettingsService(ILog logger, ExportFile exportSettings)
+		public FileShareSettingsService(ILog logger, ExportFile exportSettings)
 		{
 		    if (logger == null)
 		    {
@@ -36,14 +36,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 		{
 			if (_cachedSettings == null)
 			{
-				GetFileshareSettingsForWorkspace(Config.WebServiceURL, _workspaceId, _currentUserCredential.UserName, _currentUserCredential.Password);
+				GetFileShareSettingsForWorkspace(Config.WebServiceURL, _workspaceId, _currentUserCredential.UserName, _currentUserCredential.Password);
 			}
 
 			RelativityFileShareSettings settings = _cachedSettings.FirstOrDefault(n => n.IsBaseOf(fileUrl));
 			return settings;
 		}
 
-		private void GetFileshareSettingsForWorkspace(string hostUrl, int workspaceId, string userName, string password)
+		private void GetFileShareSettingsForWorkspace(string hostUrl, int workspaceId, string userName, string password)
 		{
 			try
 			{
@@ -68,12 +68,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 						}
 					}
 
+					if (results.FileShares.Count == 0)
+					{
+						throw new FileShareSettingsServiceException(
+							$"There are 0 valid FileShares for workspace {workspaceId}.");
+					}
 					_cachedSettings = results.FileShares.Select(f => new RelativityFileShareSettings(f)).ToList();
 				}
 			}
 			catch (Exception e)
 			{
-				_logger.LogError(e, $"{nameof(GetFileshareSettingsForWorkspace)}() failed with following error message {0} and stack trace {1}", e.Message, e.StackTrace);
+				_logger.LogError(e, $"{nameof(GetFileShareSettingsForWorkspace)}() failed with following error message {0} and stack trace {1}", e.Message, e.StackTrace);
 				throw;
 			}
 		}

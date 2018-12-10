@@ -233,8 +233,9 @@
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\SmartTapiBridge.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\TapiBridgeParametersFactory.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\TapiBridgeWrapper.cs" />
-    <Compile Include="Export\VolumeManagerV2\FileshareSettingsService.cs" />
-    <Compile Include="Export\VolumeManagerV2\IFileshareSettingsService.cs" />
+    <Compile Include="Export\VolumeManagerV2\FileShareSettingsService.cs" />
+    <Compile Include="Export\VolumeManagerV2\FileShareSettingsServiceException.cs" />
+    <Compile Include="Export\VolumeManagerV2\IFileShareSettingsService.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\IImage.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\ImageWrapper.cs" />
     <Compile Include="Export\VolumeManagerV2\IRelativityFileShareSettings.cs" />
