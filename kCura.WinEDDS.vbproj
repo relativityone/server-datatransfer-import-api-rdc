@@ -409,6 +409,8 @@
     <Compile Include="FileNaming\CustomFileNaming\FieldFileNamePartProvider.vb" />
     <Compile Include="FileNaming\CustomFileNaming\FileNamePartProvider.vb" />
     <Compile Include="FileNaming\CustomFileNaming\FileNamePartProviderContainer.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\FirstFieldDescriptorPart.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\FirstFieldFileNamePartProvider.vb" />
     <Compile Include="FileNaming\CustomFileNaming\INativeFileNameViewFieldsHelper.vb" />
     <Compile Include="FileNaming\CustomFileNaming\NativeFileNameViewFieldsHelper.vb" />
     <Compile Include="FileNaming\CustomFileNaming\SeparatorFileNamePartProvider.vb" />

@@ -3,10 +3,10 @@
 Namespace FileNaming.CustomFileNaming
 	<Serializable>
 	Public Class CustomFileNameDescriptorModel
-		Private ReadOnly _firstField As FieldDescriptorPart
+		Private ReadOnly _firstField As FirstFieldDescriptorPart
 		Private ReadOnly _extendedDescriptors As ArrayList = New ArrayList(2)
 
-		Public Sub New(ByVal firstField As FieldDescriptorPart, ByVal Optional firstExtendedDescriptor As ExtendedDescriptorPart = Nothing, ByVal Optional secondExtendedDescriptor As ExtendedDescriptorPart = Nothing)
+		Public Sub New(ByVal firstField As FirstFieldDescriptorPart, ByVal Optional firstExtendedDescriptor As ExtendedDescriptorPart = Nothing, ByVal Optional secondExtendedDescriptor As ExtendedDescriptorPart = Nothing)
 			_firstField = firstField
 
 			If firstExtendedDescriptor Is Nothing Then
@@ -31,7 +31,7 @@ Namespace FileNaming.CustomFileNaming
 			Next
 		End Function
 
-		Public Function FirstFieldDescriptorPart() As FieldDescriptorPart
+		Public Function FirstFieldDescriptorPart() As FirstFieldDescriptorPart
 			Return _firstField
 		End Function
 
