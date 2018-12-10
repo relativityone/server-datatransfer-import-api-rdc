@@ -1406,7 +1406,7 @@ Namespace kCura.WinEDDS
 		Private Shared Function IsOpticonFile(line As String) As Boolean
 			Dim splittedLine As String() = line.Split(","c)
 			Dim fieldCount As Integer = splittedLine.Length
-			Return fieldCount <> 7
+			Return fieldCount <> OpticonFilenameComparer.OpticonFileColumnCount
 		End Function
 
 		Public Sub UpdateVolume()
