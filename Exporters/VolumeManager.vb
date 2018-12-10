@@ -1334,10 +1334,18 @@ Namespace kCura.WinEDDS
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			Dim lastArtifactId As Int32 = -1
 			Dim loadFileBytes As Int64 = 0
-			Dim comparer As IComparer(Of String) = New OpticonFilenameComparer()
 
 			If linesToWriteOpt Is Nothing OrElse linesToWriteOpt.Count = 0 Then
 				Return
+			End If
+
+			Dim firstLine As String = linesToWriteOpt.First().Value
+			Dim isOpticonFile As Boolean = VolumeManager.IsOpticonFile(firstLine)
+			Dim comparer As IComparer(Of String)
+			If isOpticonFile Then
+				comparer = New OpticonFilenameComparer()
+			Else
+				comparer = StringComparer.InvariantCulture
 			End If
 
 			While tries < maxTries And Not Me.Halt
@@ -1394,6 +1402,12 @@ Namespace kCura.WinEDDS
 				End Try
 			End While
 		End Sub
+
+		Private Shared Function IsOpticonFile(line As String) As Boolean
+			Dim splittedLine As String() = line.Split(","c)
+			Dim fieldCount As Integer = splittedLine.Length
+			Return fieldCount <> 7
+		End Function
 
 		Public Sub UpdateVolume()
 			_currentVolumeSize = 0
