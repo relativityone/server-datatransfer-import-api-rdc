@@ -69,7 +69,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export
 		}
 
 		[Test]
-		public void ItShouldReturnTdElementWithTransformedPath()
+		public void ItShouldReturnTdElementWithTransformedPathWhenTransformerIsUsed()
 		{
 			ExportFile settings = new ExportFile((int)ArtifactType.Document)
 			{
@@ -99,7 +99,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export
 		}
 		
 		[Test]
-		public void ItShouldReturnTdElementWithOriginalPath()
+		public void ItShouldReturnTdElementWithOriginalPathWhenTransformerIsNotUsed()
 		{
 			ExportFile settings = new ExportFile((int)ArtifactType.Document)
 			{
