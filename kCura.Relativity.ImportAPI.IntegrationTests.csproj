@@ -57,7 +57,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Kepler">
-      <HintPath>..\..\packages\Relativity.Kepler.1.0.1.576\lib\net462\Relativity.Kepler.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Kepler.1.0.1.589\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Productions.Services.Interfaces, Version=10.1.6.70, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces.10.1.6-ALPHA-70\lib\net45\Relativity.Productions.Services.Interfaces.dll</HintPath>
