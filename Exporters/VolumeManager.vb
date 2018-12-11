@@ -1339,8 +1339,7 @@ Namespace kCura.WinEDDS
 				Return
 			End If
 
-			Dim firstLine As String = linesToWriteOpt.First().Value
-			Dim isOpticonFile As Boolean = VolumeManager.IsOpticonFile(firstLine)
+			Dim isOpticonFile As Boolean = Settings.LogFileFormat.HasValue And Settings.LogFileFormat.Value.Equals(LoadFileType.FileFormat.Opticon)
 			Dim comparer As IComparer(Of String)
 			If isOpticonFile Then
 				comparer = New OpticonFilenameComparer()
@@ -1402,12 +1401,6 @@ Namespace kCura.WinEDDS
 				End Try
 			End While
 		End Sub
-
-		Private Shared Function IsOpticonFile(line As String) As Boolean
-			Dim splittedLine As String() = line.Split(","c)
-			Dim fieldCount As Integer = splittedLine.Length
-			Return fieldCount <> OpticonFilenameComparer.OpticonFileColumnCount
-		End Function
 
 		Public Sub UpdateVolume()
 			_currentVolumeSize = 0
