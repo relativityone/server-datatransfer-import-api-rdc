@@ -30,6 +30,12 @@ Namespace kCura.EDDS.WinForm.Forms
 			New SeparatorSelection(" (none)", "")
 		}
 
+		Public Enum FirstFieldIds
+			SelectField
+			ProductionBates
+		End Enum
+
+
 		Private _firstFields As List(Of FieldSelection)
 		Private _availableFields As List(Of FieldSelection)
 		Private _fieldControls As List(Of SingleFieldControls)
@@ -60,11 +66,11 @@ Namespace kCura.EDDS.WinForm.Forms
 
 		Private Sub InitializeFirstFields(databaseFields As IReadOnlyCollection(Of ViewFieldInfo))
 			_firstFields = New List(Of FieldSelection)
-			_firstFields.Add(New FieldSelection(SelectFirstFieldText, Nothing))
+			_firstFields.Add(New FieldSelection(SelectFirstFieldText, FirstFieldIds.SelectField))
 			_firstFields.AddRange(databaseFields.
 				Where(Function(f) f.Category = FieldCategory.Identifier).
 				Select(Function(f) New FieldSelection(f.DisplayName, f.FieldArtifactId)).ToList())
-			_firstFields.Add(New FieldSelection(ProductionBeginBatesText, Nothing))
+			_firstFields.Add(New FieldSelection(ProductionBeginBatesText, FirstFieldIds.ProductionBates))
 		End Sub
 
 
@@ -313,7 +319,7 @@ Namespace kCura.EDDS.WinForm.Forms
 		Private Function AreAllFieldsValid() As Boolean
 			Dim areFieldsValid As Boolean = True
 			Dim selectedItem = TryCast(_firstFieldComboBox.SelectedItem, FieldSelection)
-			If selectedItem.DisplayName = SelectFirstFieldText AndAlso selectedItem.ID = Nothing
+			If selectedItem.DisplayName = SelectFirstFieldText AndAlso selectedItem.ID = FirstFieldIds.SelectField
 				Dim firstFieldHasToBeSelectedErrorMessage As String = "- No first field selected!"
 				validationErrors.Add(firstFieldHasToBeSelectedErrorMessage)
 				areFieldsValid = False
