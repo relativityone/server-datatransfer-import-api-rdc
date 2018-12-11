@@ -1353,9 +1353,20 @@ Public Class ExportForm
 		If _textAndNativeFileNamePicker.SelectedItem = TextAndNativeFileNamePicker.SelectOption Then
 			AppendErrorMessage(msg, "No file naming method selected")
 		End If
-		If _textAndNativeFileNamePicker.SelectedItem = TextAndNativeFileNamePicker.CustomOption And _textAndNativeFileNamePicker.Selection Is Nothing Then
-			AppendErrorMessage(msg, "No custom file naming fields selected")
+		If _textAndNativeFileNamePicker.SelectedItem = TextAndNativeFileNamePicker.CustomOption 
+			If _textAndNativeFileNamePicker.Selection Is Nothing Then
+				AppendErrorMessage(msg, "No custom file naming fields selected")
+			End If
+			If _textAndNativeFileNamePicker.Selection IsNot Nothing AndAlso _textAndNativeFileNamePicker.Selection(0).IsProductionBegBates
+				If _productionPrecedenceList.Items.Count  = 1
+					Dim precedence = DirectCast(_productionPrecedenceList.Items(0), Pair)
+					If precedence.Value.Equals("-1")
+						AppendErrorMessage(msg, "No production precedence selected for custom file naming")
+					End If 
+				End If
+			End If
 		End If
+
 		If _dataFileEncoding.SelectedEncoding Is Nothing Then
 			AppendErrorMessage(msg, "No encoding selected for metadata file.")
 		End If
@@ -1701,7 +1712,7 @@ Public Class ExportForm
 
 	Private Sub LoadCustomFileNamingField(descriptorModel As CustomFileNameDescriptorModel)
 		Dim selection = New List(Of CustomFileNameSelectionPart)
-		Dim firstFieldSelectionPart = New CustomFileNameSelectionPart(descriptorModel.FirstFieldDescriptorPart().Value)
+		Dim firstFieldSelectionPart = New CustomFileNameSelectionPart(descriptorModel.FirstFieldDescriptorPart().Value, descriptorModel.FirstFieldDescriptorPart().isProduction)
 		selection.Add(firstFieldSelectionPart)
 		Dim extendedDescriptorParts = descriptorModel.ExtendedDescriptorParts()
 		For i = 0 To (extendedDescriptorParts.Count - 1)
