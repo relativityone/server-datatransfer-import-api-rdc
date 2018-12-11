@@ -2,6 +2,7 @@
 Imports System.Linq
 Imports Relativity
 Imports System.IO
+Imports System.Text
 
 
 Namespace kCura.EDDS.WinForm.Forms
@@ -9,6 +10,7 @@ Namespace kCura.EDDS.WinForm.Forms
 
 		Private Const CustomTextOption As String = "Custom Text..."
 		Private Const ProductionBeginBatesText As String = "Production Begin Bates"
+		Private Const SelectFirstFieldText As String = "Select..."
 		Private Const FieldLimit = 3
 		Private Const NumberOfFieldsInFieldsGroup = 3
 		Private ReadOnly AllowedFieldTypes As FieldTypeHelper.FieldType() = New FieldTypeHelper.FieldType() {
@@ -57,9 +59,11 @@ Namespace kCura.EDDS.WinForm.Forms
 		End Sub
 
 		Private Sub InitializeFirstFields(databaseFields As IReadOnlyCollection(Of ViewFieldInfo))
-			_firstFields = databaseFields.
+			_firstFields = New List(Of FieldSelection)
+			_firstFields.Add(New FieldSelection(SelectFirstFieldText, Nothing))
+			_firstFields.AddRange(databaseFields.
 				Where(Function(f) f.Category = FieldCategory.Identifier).
-				Select(Function(f) New FieldSelection(f.DisplayName, f.FieldArtifactId)).ToList()
+				Select(Function(f) New FieldSelection(f.DisplayName, f.FieldArtifactId)).ToList())
 			_firstFields.Add(New FieldSelection(ProductionBeginBatesText, Nothing))
 		End Sub
 
@@ -281,30 +285,55 @@ Namespace kCura.EDDS.WinForm.Forms
 			RemoveField()
 		End Sub
 
+		Private validationErrors As List(Of String) = New List(Of String)
+
 		Private Sub _applyButton_Click(sender As Object, e As EventArgs) Handles _applyButton.Click
-			If AreFieldsValid() Then
+			validationErrors.Clear()
+			If AreAllFieldsValid() Then
 				RaiseEvent ApplyClicked()
 				Close()
 			Else
-				Dim errorMsg = "The following issues need to be addressed before continuing:" & Environment.NewLine & Environment.NewLine
-				Dim illegalCharsErrorMessage As String = "- Illegal characters in custom text box field!"
-				MsgBox(errorMsg & illegalCharsErrorMessage, MsgBoxStyle.Exclamation, "Warning")
+				PrintErrorMessage(validationErrors)
 			End If
+		End Sub
+
+		Private Sub PrintErrorMessage(errors As List(Of String))
+			Dim errorMsg As StringBuilder = New StringBuilder
+			errorMsg.Append("The following issues need to be addressed before continuing:" & Environment.NewLine & Environment.NewLine)
+			For Each err As String In errors
+				errorMsg.Append(err & Environment.NewLine)
+			Next
+			MsgBox(errorMsg.ToString(), MsgBoxStyle.Exclamation, "Warning")
 		End Sub
 
 		Private Sub _cancelButton_Click(sender As Object, e As EventArgs) Handles _cancelButton.Click
 			Close()
 		End Sub
 
-		Private Function AreFieldsValid() As Boolean
+		Private Function AreAllFieldsValid() As Boolean
+			Dim areFieldsValid As Boolean = True
+			Dim selectedItem = TryCast(_firstFieldComboBox.SelectedItem, FieldSelection)
+			If selectedItem.DisplayName = SelectFirstFieldText AndAlso selectedItem.ID = Nothing
+				Dim firstFieldHasToBeSelectedErrorMessage As String = "- No first field selected!"
+				validationErrors.Add(firstFieldHasToBeSelectedErrorMessage)
+				areFieldsValid = False
+			End If
+			If Not IsCustomTextFieldValid()
+				areFieldsValid = False
+			End If
+			Return areFieldsValid
+		End Function
+
+		Private Function IsCustomTextFieldValid As Boolean
 			For Each control As SingleFieldControls In _fieldControls
 				If control IsNot Nothing AndAlso Not IsCustomTextValid(control) Then
+					Dim illegalCharsErrorMessage As String = "- Illegal characters in custom text box field!"
+					validationErrors.Add(illegalCharsErrorMessage)
 					Return False
 				End If
 			Next
 			Return True
 		End Function
-
 		Private Function IsCustomTextValid(control As SingleFieldControls) As Boolean
 			Dim strIllegalChars As String = Path.GetInvalidFileNameChars() & Path.GetInvalidPathChars() & "',þ"
 			If control.CustomTextBox IsNot Nothing AndAlso control.CustomTextBox.Visible Then
