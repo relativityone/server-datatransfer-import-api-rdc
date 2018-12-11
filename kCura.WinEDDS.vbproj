@@ -175,7 +175,7 @@
       <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.10.0.2\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Kepler">
-      <HintPath>..\..\packages\Relativity.Kepler.1.0.1.576\lib\net462\Relativity.Kepler.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Kepler.1.0.1.589\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging">
       <HintPath>..\..\packages\Relativity.Logging.2018.11.5\lib\net462\Relativity.Logging.dll</HintPath>
@@ -201,7 +201,7 @@
       <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.27\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy">
-      <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.576\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+      <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.589\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Telemetry.APM, Version=2018.12.1.2, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\packages\Relativity.Telemetry.APM.2018.12.1\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
