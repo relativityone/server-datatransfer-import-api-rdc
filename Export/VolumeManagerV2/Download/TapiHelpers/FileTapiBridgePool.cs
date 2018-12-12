@@ -38,6 +38,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 
 		public IDownloadTapiBridge Request(IRelativityFileShareSettings fileshareSettings, CancellationToken token)
 		{
+			if (fileshareSettings == null)
+			{
+				throw new ArgumentNullException(nameof(fileshareSettings));
+			}
+			
 			if (!_fileTapiBridges.ContainsKey(fileshareSettings))
 			{
 				CreateTapiBridge(fileshareSettings, token);

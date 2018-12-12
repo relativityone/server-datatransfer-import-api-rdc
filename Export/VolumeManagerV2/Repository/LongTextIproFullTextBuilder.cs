@@ -41,8 +41,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 		private LongText CreateTooLongTextForIpro(ObjectExportInfo artifact)
 		{
 			_logger.LogVerbose("Creating LongText for IPRO Full text with missing value.");
-			string tempLocation = Path.GetTempFileName();
-			int extractedTextFieldId = _longTextHelper.GetFieldArtifactId(LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME);
+			string tempLocation = TempFileBuilder.GetTempFileName(TempFileConstants.LongTextFileNameSuffix);
+            int extractedTextFieldId = _longTextHelper.GetFieldArtifactId(LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME);
 			LongTextExportRequest longTextExportRequest = LongTextExportRequest.CreateRequestForFullText(artifact, extractedTextFieldId, tempLocation);
 			//Encoding won't be used in this case. StreamReader will be created with auto detecting file encoding
 			LongText longText = LongText.CreateFromMissingValue(artifact.ArtifactID, extractedTextFieldId, longTextExportRequest, Encoding.Unicode);

@@ -11,13 +11,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
 	public class PhysicalFilesDownloader : IPhysicalFilesDownloader
 	{
-		private readonly IFileshareSettingsService _settingsService;
+		private readonly IFileShareSettingsService _settingsService;
 		private readonly IFileTapiBridgePool _fileTapiBridgePool;
 		private readonly IExportConfig _exportConfig;
 		private readonly ILog _logger;
 		private readonly SafeIncrement _safeIncrement;
 
-		public PhysicalFilesDownloader(IFileshareSettingsService settingsService, IFileTapiBridgePool fileTapiBridgePool, IExportConfig exportConfig, SafeIncrement safeIncrement, ILog logger)
+		public PhysicalFilesDownloader(IFileShareSettingsService settingsService, IFileTapiBridgePool fileTapiBridgePool, IExportConfig exportConfig, SafeIncrement safeIncrement, ILog logger)
 		{
 			_settingsService = settingsService;
 			_fileTapiBridgePool = fileTapiBridgePool;
