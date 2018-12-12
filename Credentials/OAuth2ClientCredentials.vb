@@ -9,7 +9,6 @@ Namespace kCura.WinEDDS.Credentials
 	Public Class OAuth2ClientCredentials
 		Implements ICredentialsProvider
 
-		Private Const _OAUTH_USERNAME As String = "XxX_BearerTokenCredentials_XxX"
 		Private ReadOnly _tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider
 		Private ReadOnly tokenSource As CancellationTokenSource 
 
@@ -40,8 +39,8 @@ Namespace kCura.WinEDDS.Credentials
 		Public Async Function GetCredentialsAsync() As Task(Of System.Net.NetworkCredential) Implements ICredentialsProvider.GetCredentialsAsync
 			
 			dim token As String = Await _tokenProvider.GetAccessTokenAsync(tokenSource.Token).ConfigureAwait(False)
-			dim creds As System.Net.NetworkCredential = new NetworkCredential(_OAUTH_USERNAME, token)
-			return creds
+			Dim creds As System.Net.NetworkCredential = New NetworkCredential(kCura.WinEDDS.Credentials.Constants.OAuthWebApiBearerTokenUserName, token)
+			Return creds
 
 		End Function
 

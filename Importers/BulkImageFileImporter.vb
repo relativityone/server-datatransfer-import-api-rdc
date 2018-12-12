@@ -5,6 +5,7 @@ Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.Utility.Extensions.Enumerable
 Imports kCura.WinEDDS.Service
 Imports kCura.Utility
+Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.TApi
 Imports Relativity
 
@@ -65,6 +66,8 @@ Namespace kCura.WinEDDS
 		Private _timekeeper As New kCura.Utility.Timekeeper
 		Private _doRetryLogic As Boolean
 		Private _verboseErrorCollection As New ClientSideErrorCollection
+
+		Protected ReadOnly FilePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
 		Public Property SkipExtractedTextEncodingCheck As Boolean
 		Public Property OIFileIdMapped As Boolean
 		Public Property OIFileIdColumnName As String
@@ -454,7 +457,7 @@ Namespace kCura.WinEDDS
 
 		Protected Sub LowerBatchSizeAndRetry(ByVal oldBulkLoadFilePath As String, ByVal dataGridFilePath As String, ByVal totalRecords As Int32)
 			'NOTE: we are not cutting a new/smaller data grid bulk file because it will be chunked as it is loaded into the data grid
-			Dim newBulkLoadFilePath As String = System.IO.Path.GetTempFileName
+			Dim newBulkLoadFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.NativeLoadFileNameSuffix)
 			Dim limit As String = Relativity.Constants.ENDLINETERMSTRING
 			Dim last As New System.Collections.Generic.Queue(Of Char)
 			Dim recordsProcessed As Int32 = 0
@@ -609,8 +612,8 @@ Namespace kCura.WinEDDS
 
 		Public Sub ReadFile(ByVal path As String)
 			_timekeeper.MarkStart("TOTAL")
-			Dim bulkLoadFilePath As String = System.IO.Path.GetTempFileName
-			Dim dataGridFilePath As String = System.IO.Path.GetTempFileName
+			Dim bulkLoadFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.NativeLoadFileNameSuffix)
+			Dim dataGridFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.DatagridLoadFileNameSuffix)
 			_fileIdentifierLookup = New System.Collections.Hashtable
 			_totalProcessed = 0
 			_totalValidated = 0
@@ -770,35 +773,50 @@ Namespace kCura.WinEDDS
 #Region "Worker Methods"
 
 		Public Function ProcessImageLine(ByVal imageRecord As Api.ImageRecord) As Relativity.MassImport.ImportStatus
-			_totalValidated += 1
-			Dim retval As Relativity.MassImport.ImportStatus = Relativity.MassImport.ImportStatus.Pending
+			_totalValidated += 1			
 			'check for existence
 			If imageRecord.BatesNumber.Trim = "" Then
 				Me.RaiseStatusEvent(Windows.Process.EventType.Error, "No image file or identifier specified on line.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
-				retval = Relativity.MassImport.ImportStatus.NoImageSpecifiedOnLine
-			ElseIf Not Me.DisableImageLocationValidation AndAlso Not System.IO.File.Exists(GetFileLocation(imageRecord)) Then
-				Me.RaiseStatusEvent(Windows.Process.EventType.Error, $"Image file specified ( {imageRecord.FileLocation} ) does not exist.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
-				retval = Relativity.MassImport.ImportStatus.FileSpecifiedDne
-			Else
-				Dim validator As New kCura.ImageValidator.ImageValidator
-				Dim path As String = GetFileLocation(imageRecord)
-				Try
-					If Not Me.DisableImageTypeValidation Then
-						validator.ValidateImage(path)
-					End If
-
-					Me.RaiseStatusEvent(Windows.Process.EventType.Status, $"Image file ( {imageRecord.FileLocation} ) validated.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
-				Catch ex As Exception
-					If TypeOf ex Is kCura.ImageValidator.Exception.Base Then
-						Me.LogError(ex, "Failed to validate the {Path} image.", path)
-						retval = Relativity.MassImport.ImportStatus.InvalidImageFormat
-						_verboseErrorCollection.AddError(imageRecord.OriginalIndex, ex)
-					Else
-						Me.LogFatal(ex, "Unexpected failure to validate the {Path} image file.", path)
-						Throw
-					End If
-				End Try
+				Return Relativity.MassImport.ImportStatus.NoImageSpecifiedOnLine
 			End If
+
+			Dim imageFilePath As String = BulkImageFileImporter.GetFileLocation(imageRecord)
+
+			If Not Me.DisableImageLocationValidation Then
+				Dim foundFileName As String = FilePathHelper.GetExistingFilePath(imageFilePath)
+				Dim fileExists As Boolean = Not String.IsNullOrEmpty(foundFileName)
+
+				If Not fileExists
+					Me.RaiseStatusEvent(Windows.Process.EventType.Error, $"Image file specified ( {imageRecord.FileLocation} ) does not exist.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+					Return Relativity.MassImport.ImportStatus.FileSpecifiedDne
+				End If
+
+				If Not String.Equals(imageFilePath, foundFileName)
+					Me.RaiseStatusEvent(Windows.Process.EventType.Warning ,$"File {imageFilePath} does not exist. File {foundFileName} will be used instead.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+					imageFilePath = foundFileName
+				End If
+			End If
+
+			Dim retval As Relativity.MassImport.ImportStatus = Relativity.MassImport.ImportStatus.Pending
+			Dim validator As New kCura.ImageValidator.ImageValidator
+
+			Try
+				If Not Me.DisableImageTypeValidation Then
+					validator.ValidateImage(imageFilePath)
+				End If
+
+				Me.RaiseStatusEvent(Windows.Process.EventType.Status, $"Image file ( {imageRecord.FileLocation} ) validated.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
+			Catch ex As Exception
+				If TypeOf ex Is kCura.ImageValidator.Exception.Base Then
+				Me.LogError(ex, "Failed to validate the {Path} image.", imageFilePath)
+					retval = Relativity.MassImport.ImportStatus.InvalidImageFormat
+					_verboseErrorCollection.AddError(imageRecord.OriginalIndex, ex)
+				Else
+				Me.LogFatal(ex, "Unexpected failure to validate the {Path} image file.", imageFilePath)
+					Throw
+				End If
+			End Try
+
 			Return retval
 		End Function
 
@@ -832,7 +850,14 @@ Namespace kCura.WinEDDS
 					Exit For
 				End If
 				record = lines(i)
-				Me.GetImageForDocument(GetFileLocation(record), record.BatesNumber, documentId, i, offset, textFileList, i < lines.Count - 1, Convert.ToInt32(record.OriginalIndex), status, lines.Count, i = 0)
+
+				Dim imageFilePath As String = BulkImageFileImporter.GetFileLocation(record)
+				Dim foundFileName As String = FilePathHelper.GetExistingFilePath(imageFilePath)
+				If Not (foundFileName Is Nothing)
+					imageFilePath = foundFileName
+				End If
+
+				Me.GetImageForDocument(imageFilePath, record.BatesNumber, documentId, i, offset, textFileList, i < lines.Count - 1, Convert.ToInt32(record.OriginalIndex), status, lines.Count, i = 0)
 			Next
 
 			Dim lastDivider As String = If(_fullTextStorageIsInSql, ",", String.Empty)
@@ -1075,7 +1100,9 @@ Namespace kCura.WinEDDS
 
 		Private Sub RaiseReportError(ByVal row As System.Collections.Hashtable, ByVal lineNumber As Int32, ByVal identifier As String, ByVal type As String)
 			_errorCount += 1
-			If _errorMessageFileLocation = "" Then _errorMessageFileLocation = System.IO.Path.GetTempFileName
+			If _errorMessageFileLocation = "" Then
+				_errorMessageFileLocation = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
+			End If
 			Dim errorMessageFileWriter As New System.IO.StreamWriter(_errorMessageFileLocation, True, System.Text.Encoding.Default)
 			If _errorCount < MaxNumberOfErrorsInGrid Then
 				RaiseEvent ReportErrorEvent(row)
@@ -1105,86 +1132,6 @@ Namespace kCura.WinEDDS
 		End Function
 
 #End Region
-
-#Region "Exceptions - Errors"
-		Public Class FileLoadException
-			Inherits ImporterExceptionBase
-			Public Sub New()
-				MyBase.New("Error uploading file.  Skipping line.")
-			End Sub
-		End Class
-
-		Public Class CreateDocumentException
-			Inherits ImporterExceptionBase
-			Public Sub New(ByVal parentException As System.Exception)
-				MyBase.New("Error creating new document.  Skipping line: " & parentException.Message, parentException)
-			End Sub
-		End Class
-
-		Public Class OverwriteNoneException
-			Inherits ImporterExceptionBase
-			Public Sub New(ByVal docIdentifier As String)
-				MyBase.New($"Document '{docIdentifier}' exists - upload aborted.")
-			End Sub
-		End Class
-
-		Public Class OverwriteStrictException
-			Inherits ImporterExceptionBase
-			Public Sub New(ByVal docIdentifier As String)
-				MyBase.New($"Document '{docIdentifier}' does not exist - upload aborted.")
-			End Sub
-		End Class
-
-		Public Class ImageCountMismatchException
-			Inherits ImporterExceptionBase
-			Public Sub New()
-				MyBase.New("Production and Document image counts don't match - upload aborted.")
-			End Sub
-		End Class
-
-		Public Class DocumentInProductionException
-			Inherits ImporterExceptionBase
-			Public Sub New()
-				MyBase.New("Document is already in specified production - upload aborted.")
-			End Sub
-		End Class
-
-		Public Class ProductionOverwriteException
-			Inherits ImporterExceptionBase
-			Public Sub New(ByVal identifier As String)
-				MyBase.New($"Document '{identifier}' belongs to one or more productions.  Document skipped.")
-			End Sub
-		End Class
-
-		Public Class RedactionOverwriteException
-			Inherits ImporterExceptionBase
-			Public Sub New(ByVal identifier As String)
-				MyBase.New($"The one or more images for document '{identifier}' have redactions.  Document skipped.")
-			End Sub
-		End Class
-
-		Public Class InvalidIdentifierKeyException
-			Inherits ImporterExceptionBase
-			Public Sub New(ByVal identifier As String, ByVal fieldName As String)
-				MyBase.New($"More than one document contains '{identifier}' as its '{fieldName}' value.  Document skipped.")
-			End Sub
-		End Class
-
-
-#End Region
-
-#Region "Exceptions - Fatal"
-		Public Class InvalidBatesFormatException
-			Inherits System.Exception
-			Public Sub New(ByVal batesNumber As String, ByVal productionName As String, ByVal batesPrefix As String, ByVal batesSuffix As String, ByVal batesFormat As String)
-				MyBase.New(
-					$"The image with production number {batesNumber} cannot be imported into production '{productionName _
-					          }' because the prefix and/or suffix do not match the values specified in the production. Expected prefix: '{ _
-					          batesPrefix}'. Expected suffix: '{batesSuffix}'. Expected format: '{batesFormat}'.")
-			End Sub
-		End Class
-
-#End Region
 		
 		Private Sub IoWarningHandler(ByVal e As RobustIoReporter.IoWarningEventArgs)
 			Dim ioWarningEventArgs As New IoWarningEventArgs(e.Message, e.CurrentLineNumber)
@@ -1193,8 +1140,14 @@ Namespace kCura.WinEDDS
 
 		Private Sub ManageErrors()
 			If Not _bulkImportManager.ImageRunHasErrors(_caseInfo.ArtifactID, _runId) Then Exit Sub
-			If _errorMessageFileLocation = "" Then _errorMessageFileLocation = System.IO.Path.GetTempFileName
-			If _errorRowsFileLocation = "" Then _errorRowsFileLocation = System.IO.Path.GetTempFileName
+			If _errorMessageFileLocation = "" Then
+				_errorMessageFileLocation = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
+			End If
+
+			If _errorRowsFileLocation = "" Then
+				_errorRowsFileLocation = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
+			End If
+
 			Dim w As System.IO.StreamWriter = Nothing
 			Dim r As System.IO.StreamReader = Nothing
 
@@ -1203,7 +1156,7 @@ Namespace kCura.WinEDDS
 				With _bulkImportManager.GenerateImageErrorFiles(_caseInfo.ArtifactID, _runId, True, _keyFieldDto.ArtifactID)
 					Me.RaiseStatusEvent(Windows.Process.EventType.Status, "Retrieving errors from server", Me.CurrentLineNumber, Me.CurrentLineNumber)
 					Dim downloader As New FileDownloader(DirectCast(_bulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, _bulkImportManager.CookieContainer)
-					Dim errorsLocation As String = System.IO.Path.GetTempFileName
+					Dim errorsLocation As String = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
 					sr = AttemptErrorFileDownload(downloader, errorsLocation, .LogKey, _caseInfo)
 
 					If sr Is Nothing Then
@@ -1239,7 +1192,7 @@ Namespace kCura.WinEDDS
 							line = sr.ReadLine
 						End While
 						sr.Close()
-						Dim tmp As String = System.IO.Path.GetTempFileName
+						Dim tmp As String = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
 						downloader.MoveTempFileToLocal(tmp, .OpticonKey, _caseInfo)
 						w = New System.IO.StreamWriter(_errorRowsFileLocation, True, System.Text.Encoding.Default)
 						r = New System.IO.StreamReader(tmp, System.Text.Encoding.Default)

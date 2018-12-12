@@ -166,7 +166,7 @@ Namespace kCura.WinEDDS
 		Private Sub LogErrorLine(ByVal values As String())
 			If values Is Nothing Then Exit Sub
 			If _errorLogFileName = "" Then
-				_errorLogFileName = System.IO.Path.GetTempFileName()
+				_errorLogFileName = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
 				_errorLogWriter = New System.IO.StreamWriter(_errorLogFileName, False, _sourceFileEncoding)
 				_errorLogWriter.WriteLine(Me.ToDelimetedLine(_columnHeaders))
 			End If
@@ -323,7 +323,7 @@ Namespace kCura.WinEDDS
 			Me.Reader = New System.IO.StreamReader(_settings.FilePath, _sourceFileEncoding, True)
 			Me.ResetLineCounter()
 			If prePushErrorLineNumbersFileName = "" Then
-				clientErrors = New System.IO.StreamReader(System.IO.Path.GetTempFileName, System.Text.Encoding.Default)
+				clientErrors = New System.IO.StreamReader(TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix), System.Text.Encoding.Default)
 			Else
 				clientErrors = New System.IO.StreamReader(prePushErrorLineNumbersFileName, System.Text.Encoding.Default)
 			End If
@@ -331,7 +331,7 @@ Namespace kCura.WinEDDS
 			Dim advanceAll As Boolean = True
 			Dim allErrorsLine As Int32
 			Dim clientErrorsLine As Int32
-			Dim errorLinesFileLocation As String = System.IO.Path.GetTempFileName
+			Dim errorLinesFileLocation As String = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
 			Dim sw As New System.IO.StreamWriter(errorLinesFileLocation, False, _sourceFileEncoding)
 			If _settings.FirstLineContainsHeaders Then
 				sw.WriteLine(Me.ToDelimetedLine(Me.GetLine))

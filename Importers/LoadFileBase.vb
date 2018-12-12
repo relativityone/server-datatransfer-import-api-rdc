@@ -1,5 +1,6 @@
 Imports System.Threading
 Imports kCura.Utility.Extensions.Enumerable
+Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.TApi
 Imports Relativity
 Imports Relativity.Logging
@@ -54,6 +55,7 @@ Namespace kCura.WinEDDS
 		Private _codeValidator As CodeValidator.Base
 		Protected WithEvents _artifactReader As Api.IArtifactReader
 		Protected _executionSource As Relativity.ExecutionSource
+		Protected ReadOnly FilePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
 		Public Property SkipExtractedTextEncodingCheck As Boolean
 		Public Property LoadImportedFullTextFromServer As Boolean
 		Public Property DisableExtractedTextFileLocationValidation As Boolean
@@ -63,6 +65,7 @@ Namespace kCura.WinEDDS
 		Public Property FileSizeMapped() As Boolean
 		Public Property FileSizeColumn() As String
 		Public Property FileNameColumn As String
+		Public Property SupportedByViewerColumn As String
 #End Region
 
 #Region "Accessors"
@@ -143,6 +146,7 @@ Namespace kCura.WinEDDS
 			FileSizeMapped = args.FileSizeMapped
 			FileSizeColumn = args.FileSizeColumn
 			FileNameColumn = args.FileNameColumn
+			SupportedByViewerColumn = args.SupportedByViewerColumn
 			_timeZoneOffset = timezoneoffset
 			_autoDetect = autoDetect
 			_executionSource = executionSource
@@ -490,53 +494,67 @@ Namespace kCura.WinEDDS
 						Dim performExtractedTextFileLocationValidation As Boolean = Not DisableExtractedTextFileLocationValidation
 						If value = String.Empty Then
 							field.Value = String.Empty
-						ElseIf (performExtractedTextFileLocationValidation AndAlso Not System.IO.File.Exists(value)) Then
-							Throw New MissingFullTextFileException(Me.CurrentLineNumber, columnIndex)
-						Else
-							Dim detectedEncoding As System.Text.Encoding = _extractedTextFileEncoding
-							Dim determinedEncodingStream As DeterminedEncodingStream
+							Exit Select
+						End If
 
-							'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
-							' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
-							' across the network for the file, so this override allows that check to be skipped.
-							' -Phil S. 07/27/2012
-							If Not SkipExtractedTextEncodingCheck Then
-								determinedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False, performExtractedTextFileLocationValidation)
-								detectedEncoding = determinedEncodingStream.DeterminedEncoding
+						If (performExtractedTextFileLocationValidation) Then
+							Dim foundFileName As String = FilePathHelper.GetExistingFilePath(value)
+							Dim fileExists As Boolean = Not String.IsNullOrEmpty(foundFileName)
+							
+							If Not fileExists
+								Throw New MissingFullTextFileException(Me.CurrentLineNumber, columnIndex)
 							End If
 
-							If (performExtractedTextFileLocationValidation AndAlso (New System.IO.FileInfo(value).Length > GetMaxExtractedTextLength(detectedEncoding))) Then
-								Throw New ExtractedTextTooLargeException
-							Else
-								If forPreview Then
-									' Determine Encoding Here
-									determinedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False)
-									detectedEncoding = determinedEncodingStream.DeterminedEncoding
-									Dim chosenEncoding As System.Text.Encoding
-									If detectedEncoding IsNot Nothing Then
-										chosenEncoding = detectedEncoding
-									Else
-										chosenEncoding = _extractedTextFileEncoding
-									End If
-									Dim sr As New System.IO.StreamReader(determinedEncodingStream.UnderlyingStream, chosenEncoding)
-									Dim i As Int32 = 0
-									Dim sb As New System.Text.StringBuilder
-									While sr.Peek <> -1 AndAlso i < 100
-										sb.Append(ChrW(sr.Read))
-										i += 1
-									End While
-									If i = 100 Then sb.Append("...")
-									extractedTextFileCodePageId = chosenEncoding.CodePage
-									sr.Close()
-									determinedEncodingStream.Close()
-									'sb = sb.Replace(System.Environment.NewLine, Me.NewlineProxy).Replace(ChrW(10), Me.NewlineProxy).Replace(ChrW(13), Me.NewlineProxy)
-									field.Value = sb.ToString
+							If Not String.Equals(value, foundFileName)
+								PublishWarningEvent($"File {value} defined in column {columnIndex} in line {Me.CurrentLineNumber} does not exist. File {foundFileName} will be used instead.", Me.CurrentLineNumber)
+								value = foundFileName
+							End If
+						End If
+						
+						Dim detectedEncoding As System.Text.Encoding = _extractedTextFileEncoding
+						Dim determinedEncodingStream As DeterminedEncodingStream
+
+						'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
+						' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
+						' across the network for the file, so this override allows that check to be skipped.
+						' -Phil S. 07/27/2012
+						If Not SkipExtractedTextEncodingCheck Then
+							determinedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False, performExtractedTextFileLocationValidation)
+							detectedEncoding = determinedEncodingStream.DeterminedEncoding
+						End If
+
+						If (performExtractedTextFileLocationValidation AndAlso (New System.IO.FileInfo(value).Length > GetMaxExtractedTextLength(detectedEncoding))) Then
+							Throw New ExtractedTextTooLargeException
+						Else
+							If forPreview Then
+								' Determine Encoding Here
+								determinedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False)
+								detectedEncoding = determinedEncodingStream.DeterminedEncoding
+								Dim chosenEncoding As System.Text.Encoding
+								If detectedEncoding IsNot Nothing Then
+									chosenEncoding = detectedEncoding
 								Else
-									field.Value = value
+									chosenEncoding = _extractedTextFileEncoding
 								End If
+								Dim sr As New System.IO.StreamReader(determinedEncodingStream.UnderlyingStream, chosenEncoding)
+								Dim i As Int32 = 0
+								Dim sb As New System.Text.StringBuilder
+								While sr.Peek <> -1 AndAlso i < 100
+									sb.Append(ChrW(sr.Read))
+									i += 1
+								End While
+								If i = 100 Then sb.Append("...")
+								extractedTextFileCodePageId = chosenEncoding.CodePage
+								sr.Close()
+								determinedEncodingStream.Close()
+								'sb = sb.Replace(System.Environment.NewLine, Me.NewlineProxy).Replace(ChrW(10), Me.NewlineProxy).Replace(ChrW(13), Me.NewlineProxy)
+								field.Value = sb.ToString
+							Else
+								field.Value = value
 							End If
 						End If
 					End If
+
 				Case Else
 					Throw New System.Exception("Unsupported Field Type '" & field.Type.ToString & "'")
 			End Select
@@ -683,115 +701,348 @@ Namespace kCura.WinEDDS
 
 #Region "Exceptions"
 
+		''' <summary>
+		''' The exception thrown when the extracted text file length exceeds the max extracted text length.
+		''' When the encoding is not specified or is <see cref="System.Text.Encoding.UTF8"/>, the max length is 1GB;
+		''' otherwise, the max length is <see cref="System.Int32.MaxValue"/>.
+		''' </summary>
+		<Serializable>
 		Public Class ExtractedTextTooLargeException
 			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="ExtractedTextTooLargeException"/> class.
+			''' </summary>
 			Public Sub New()
 				MyBase.New(String.Format("Extracted text is too large."))
 			End Sub
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
+			End Sub
 		End Class
 
+		''' <summary>
+		''' The exception thrown when the identity value has already been processed.
+		''' </summary>
+		<Serializable>
 		Public Class IdentifierOverlapException
 			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="IdentifierOverlapException"/> class.
+			''' </summary>
+			''' <param name="identityValue">
+			''' The document identity value.
+			''' </param>
+			''' <param name="previousLineNumber">
+			''' The line number containing the existing identity value.
+			''' </param>
 			Public Sub New(ByVal identityValue As String, ByVal previousLineNumber As String)
 				MyBase.New(String.Format("Document '({0})' has been previously processed in this file on line {1}.", identityValue, previousLineNumber))
 			End Sub
-		End Class
 
-		Public Class MissingCodeTypeException
-			Inherits kCura.Utility.ImporterExceptionBase
-			Public Sub New(ByVal row As Int32, ByVal column As Int32)
-				MyBase.New(row, column, String.Format("Document field is marked as a code type, but it's missing a CodeType."))
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
 			End Sub
 		End Class
 
-		Public Class NullGroupIdentifierException
-			Inherits kCura.Utility.ImporterExceptionBase
-			Public Sub New(ByVal row As Int32, ByVal column As Int32)
-				MyBase.New(row, column, String.Format("Group Identifier fields cannot accept null or empty values."))
-			End Sub
-		End Class
-
+		''' <summary>
+		''' The exception thrown when extracted text file validation is enabled and the file does not exist.
+		''' </summary>
+		<Serializable>
 		Public Class MissingFullTextFileException
 			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="MissingFullTextFileException"/> class.
+			''' </summary>
+			''' <param name="row">
+			''' The row where the error occurred.
+			''' </param>
+			''' <param name="column">
+			''' The column where the error occurred.
+			''' </param>
 			Public Sub New(ByVal row As Int32, ByVal column As Int32)
 				MyBase.New(row, column, String.Format("Error: full text file specified does not exist."))
 			End Sub
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
+			End Sub
 		End Class
 
+		''' <summary>
+		''' The exception thrown when the user artifact does not exist within the Relativity instance.
+		''' </summary>
+		<Serializable>
 		Public Class MissingUserException
 			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="MissingUserException"/> class.
+			''' </summary>
+			''' <param name="row">
+			''' The row where the error occurred.
+			''' </param>
+			''' <param name="column">
+			''' The column where the error occurred.
+			''' </param>
+			''' <param name="invalidEmailaddress">
+			''' The invalid email or user account.
+			''' </param>
 			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal invalidEmailaddress As String)
 				MyBase.New(row, column, String.Format("User '{0}' does not exist in the system or is not available for assignment.", invalidEmailaddress))
 			End Sub
-		End Class
 
-		Public Class CodeCreationException
-			Inherits kCura.Utility.ImporterExceptionBase
-			Private _isFatal As Boolean
-			Public ReadOnly Property IsFatal() As Boolean
-				Get
-					Return _isFatal
-				End Get
-			End Property
-			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal isFatal As Boolean, ByVal errorText As String)
-				MyBase.New(row, column, errorText)
-				_isFatal = isFatal
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
 			End Sub
 		End Class
 
+		''' <summary>
+		''' The exception thrown when a failure occurs attempting to create a new code.
+		''' </summary>
+		<Serializable>
+		Public Class CodeCreationException
+			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="CodeCreationException"/> class.
+			''' </summary>
+			''' <param name="row">
+			''' The row where the error occurred.
+			''' </param>
+			''' <param name="column">
+			''' The column where the error occurred.
+			''' </param>
+			''' <param name="isFatal">
+			''' Specify whether the error is fatal.
+			''' </param>
+			''' <param name="errorText">
+			''' The error text.
+			''' </param>
+			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal isFatal As Boolean, ByVal errorText As String)
+				MyBase.New(row, column, errorText)
+				Me.IsFatal = isFatal
+			End Sub
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
+				Me.IsFatal = info.GetBoolean("IsFatal")
+			End Sub
+
+			''' <summary>
+			''' Gets a value indicating whether the error is fatal.
+			''' </summary>
+			''' <value>
+			''' <see langword="true"/> if the error is considered fatal; otherwise, <see langword="false"/>.
+			''' </value>
+			Public ReadOnly Property IsFatal As Boolean
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Public Overrides Sub GetObjectData(info As System.Runtime.Serialization.SerializationInfo, context As System.Runtime.Serialization.StreamingContext)
+				info.AddValue("IsFatal", Me.IsFatal)
+				MyBase.GetObjectData(info, context)
+			End Sub
+		End Class
+
+		''' <summary>
+		''' The exception thrown when the load file line includes more columns than defined by the headers.
+		''' </summary>
+		<Serializable>
 		Public Class ColumnCountMismatchException
 			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="ColumnCountMismatchException"/> class.
+			''' </summary>
+			''' <param name="row">
+			''' The row where the error occurred.
+			''' </param>
+			''' <param name="expecting">
+			''' The expected number of cells in this row.
+			''' </param>
+			''' <param name="actual">
+			''' The actual number of cells in this row.
+			''' </param>
 			Public Sub New(ByVal row As Int32, ByVal expecting As Int32, ByVal actual As Int32)
 				MyBase.New(row, -1, String.Format("There are an invalid number of cells in this row - expecting:{0}, actual:{1}.", expecting, actual))
 			End Sub
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
+			End Sub
 		End Class
 
+		''' <summary>
+		''' The exception thrown when an object reference already exists and would result in a duplicate if allowed to be imported.
+		''' </summary>
+		<Serializable>
 		Public Class DuplicateObjectReferenceException
 			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="DuplicateObjectReferenceException"/> class.
+			''' </summary>
+			''' <param name="row">
+			''' The row where the error occurred.
+			''' </param>
+			''' <param name="column">
+			''' The column where the error occurred.
+			''' </param>
+			''' <param name="fieldName">
+			''' The field name for the existing reference.
+			''' </param>
 			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal fieldName As String)
 				MyBase.New(row, column, String.Format("Object identifier for field {0} references an identifier that is not unique.", fieldName))
 			End Sub
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
+			End Sub
 		End Class
 
+		''' <summary>
+		''' The exception thrown when a parent reference does not exist.
+		''' </summary>
+		<Serializable>
 		Public Class NonExistentParentException
 			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="NonExistentParentException"/> class.
+			''' </summary>
+			''' <param name="row">
+			''' The row where the error occurred.
+			''' </param>
+			''' <param name="column">
+			''' The column where the error occurred.
+			''' </param>
+			''' <param name="fieldName">
+			''' The field name for the non-existent parent reference.
+			''' </param>
 			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal fieldName As String)
 				MyBase.New(row, column, String.Format("Object references a parent object that does not exist.", fieldName))
 			End Sub
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
+			End Sub
 		End Class
 
+		''' <summary>
+		''' The exception thrown when a parent object reference does not exist.
+		''' </summary>
+		<Serializable>
 		Public Class ParentObjectReferenceRequiredException
 			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="ParentObjectReferenceRequiredException"/> class.
+			''' </summary>
+			''' <param name="row">
+			''' The row where the error occurred.
+			''' </param>
+			''' <param name="column">
+			''' The column where the error occurred.
+			''' </param>
 			Public Sub New(ByVal row As Int32, ByVal column As Int32)
 				MyBase.New(row, column, String.Format("Null parent object identifier found, this is required for the Parent Info field."))
 			End Sub
-		End Class
 
-		Public Class BcpPathAccessException
-			Inherits kCura.Utility.ImporterExceptionBase
-			Public Sub New(ByVal details As String)
-				MyBase.New("Error accessing the bcp share. Please contact your system administrator with the following details: " & System.Environment.NewLine & details)
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
 			End Sub
 		End Class
 
+		''' <summary>
+		''' The exception thrown when a failure occurs accessing the BCP share.
+		''' </summary>
+		<Serializable>
+		Public Class BcpPathAccessException
+			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="BcpPathAccessException"/> class.
+			''' </summary>
+			''' <param name="details">
+			''' The error details.
+			''' </param>
+			Public Sub New(ByVal details As String)
+				MyBase.New("Error accessing the bcp share. Please contact your system administrator with the following details: " & System.Environment.NewLine & details)
+			End Sub
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
+			End Sub
+		End Class
+
+		''' <summary>
+		''' The exception thrown when a multi-choice value already exists and would result in a duplicate if allowed to be imported.
+		''' </summary>
+		<Serializable>
 		Public Class DuplicateMulticodeValueException
 			Inherits kCura.Utility.ImporterExceptionBase
+
+			''' <summary>
+			''' Initializes a new instance of the <see cref="DuplicateMulticodeValueException"/> class.
+			''' </summary>
+			''' <param name="row">
+			''' The row where the error occurred.
+			''' </param>
+			''' <param name="column">
+			''' The column where the error occurred.
+			''' </param>
+			''' <param name="codeName">
+			''' The choice name that was duplicated.
+			''' </param>
 			Public Sub New(ByVal row As Int32, ByVal column As Int32, ByVal codeName As String)
 				MyBase.New(row, column, String.Format("Code value '{0}' specified twice for this record", codeName))
+			End Sub
+
+			''' <inheritdoc />
+			<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+			Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+				MyBase.New(info, context)
 			End Sub
 		End Class
 
 #End Region
 
-
 		Private Sub _artifactReader_OnIoWarning(ByVal e As Api.IoWarningEventArgs) Handles _artifactReader.OnIoWarning
 			If e.Exception Is Nothing Then
-				IoReporterInstance?.IOWarningPublisher?.PublishIoWarningEvent(new IoWarningEventArgs(e.Message, e.CurrentLineNumber))
+				PublishWarningEvent(e.Message, e.CurrentLineNumber)
 			Else
 				Dim message As String = IoReporter.BuildIoReporterWarningMessage(e.Exception, e.WaitTime)
 				IoReporterInstance?.IOWarningPublisher?.PublishIoWarningEvent(new IoWarningEventArgs(message, e.CurrentLineNumber))
 			End If
 		End Sub
 
+		Private Sub PublishWarningEvent(message As String, currentLineNumber As Long)
+			Dim ioEvent As IoWarningEventArgs = new IoWarningEventArgs(message, currentLineNumber)
+			IoReporterInstance?.IOWarningPublisher?.PublishIoWarningEvent(ioEvent)
+		End Sub
 	End Class
 End Namespace

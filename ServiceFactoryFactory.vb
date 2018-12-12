@@ -8,10 +8,10 @@ Namespace kCura.WinEDDS
 		Public Shared Function Create(credentials As NetworkCredential) As Relativity.Services.ServiceProxy.IServiceFactory
             Dim relativityCredentials As Relativity.Services.ServiceProxy.Credentials
 
-            If credentials.UserName = "XxX_BearerTokenCredentials_XxX" Then
-                relativityCredentials = New BearerTokenCredentials(credentials.Password)
-            Else
-                relativityCredentials = New UsernamePasswordCredentials(credentials.UserName, credentials.Password)
+			If credentials.UserName = kCura.WinEDDS.Credentials.Constants.OAuthWebApiBearerTokenUserName Then
+				relativityCredentials = New BearerTokenCredentials(credentials.Password)
+			Else
+				relativityCredentials = New UsernamePasswordCredentials(credentials.UserName, credentials.Password)
             End If
 			Dim webServiceUri As New Uri(Config.WebServiceURL)
 			Dim baseUri As New Uri(webServiceUri.GetLeftPart(UriPartial.Authority))
