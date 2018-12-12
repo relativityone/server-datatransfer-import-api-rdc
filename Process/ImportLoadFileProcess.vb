@@ -104,7 +104,7 @@ Namespace kCura.WinEDDS
 			Dim tokenSource As CancellationTokenSource = New CancellationTokenSource()
 			_ioWarningPublisher = New IoWarningPublisher()
 
-			Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog("WinEDDS")
+			Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.WinEDDSSubSystem)
 			Dim ioReporter As IIoReporter = IoReporterFactory.CreateIoReporter(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds,
 																			   WinEDDS.Config.DisableNativeLocationValidation, logger, _ioWarningPublisher, tokenSource.Token)
 
