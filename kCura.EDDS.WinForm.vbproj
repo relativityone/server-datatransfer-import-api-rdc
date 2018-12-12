@@ -216,12 +216,12 @@
     <Reference Include="Relativity.Services.ServiceProxy">
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.589\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=2018.12.1.2, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.2018.12.1\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=2018.12.2.3, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.2018.12.2\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.Services.Interface, Version=2018.12.1.2, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface.2018.12.1\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.Services.Interface, Version=2018.12.2.3, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface.2018.12.2\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Toggles, Version=1.0.0.100, Culture=neutral, PublicKeyToken=null">
