@@ -1,5 +1,6 @@
 Imports System.Net
 Imports System.Threading.Tasks
+Imports Microsoft.Win32
 Imports Relativity.OAuth2Client.Exceptions
 
 Namespace kCura.EDDS.WinForm
@@ -443,7 +444,8 @@ End Sub
         Private Async Sub MainForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 
             ServicePointManager.DefaultConnectionLimit = Environment.ProcessorCount * 12
-
+            LoadWindowSize()
+            Me.CenterToScreen()
             Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
             _application.TemporaryForceFolderPreview = kCura.WinEDDS.Config.ForceFolderPreview
             If kCura.WinEDDS.Config.WebServiceURL = String.Empty Then
@@ -478,6 +480,7 @@ End Sub
         End Sub
 
         Private Async Sub MainForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
+            SaveWindowSize()
             _application.UpdateForceFolderPreview()
             _application.UpdateWebServiceURL(False)
             Await _application.Logout()
@@ -615,7 +618,22 @@ End Sub
             Await _application.QueryConnectivity()
         End Sub
 
+        Private Sub LoadWindowSize()
+            If WinEDDS.Config.MainFormWindowWidth <> Nothing AndAlso WinEDDS.Config.MainFormWindowHeight <> Nothing Then
+                Me.Size = New Size(WinEDDS.Config.MainFormWindowWidth, WinEDDS.Config.MainFormWindowHeight)
+            End If
+        End Sub
 
-    End Class
+        Private Sub SaveWindowSize()
+            If Me.WindowState = FormWindowState.Normal Then
+                WinEDDS.Config.MainFormWindowWidth = Me.Size.Width
+                WinEDDS.Config.MainFormWindowHeight = Me.Size.Height
+            Else
+                WinEDDS.Config.MainFormWindowWidth = Me.RestoreBounds.Size.Width
+                WinEDDS.Config.MainFormWindowHeight = Me.RestoreBounds.Size.Height
+            End If
+	End Sub
+
+End Class
 
 End Namespace

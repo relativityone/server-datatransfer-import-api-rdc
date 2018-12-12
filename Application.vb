@@ -602,8 +602,17 @@ Namespace kCura.EDDS.WinForm
         Public Function GetColumnHeadersFromLoadFile(ByVal loadfile As kCura.WinEDDS.LoadFile, ByVal firstLineContainsColumnHeaders As Boolean) As String()
             loadfile.CookieContainer = Me.CookieContainer
             Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog("WinEDDS")
-            Dim parser As New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, Nothing, logger, _timeZoneOffset, False, Nothing, False, Config.BulkLoadFileFieldDelimiter, Config.EnforceDocumentLimit, Nothing, ExecutionSource.Rdc)
-            Return parser.GetColumnNames(loadfile)
+            Dim importer As kCura.WinEDDS.BulkLoadFileImporter = Nothing
+
+            Try
+                importer = New kCura.WinEDDS.BulkLoadFileImporter(loadfile, Nothing, Nothing, logger, _timeZoneOffset, False, Nothing, False, Config.BulkLoadFileFieldDelimiter, Config.EnforceDocumentLimit, Nothing, ExecutionSource.Rdc)
+                Return importer.GetColumnNames(loadfile)
+            Finally
+                ' All load files are auto-generated when the importer is constructed. This prevents excessive temp files from accumulating.
+                If importer IsNot Nothing Then
+                   importer.DeleteTempLoadFiles()
+                End If
+            End Try
         End Function
 
         Public Function GetCaseFolderPath(ByVal caseFolderArtifactID As Int32) As String
@@ -1626,7 +1635,7 @@ Namespace kCura.EDDS.WinForm
                 End If
             Next
             If Not match Then
-                Throw New RelativityVersionMismatchException(relVersionString)
+                Throw KCura.WinEDDS.Api.LoginHelper.CreateRelativityVersionMismatchException(relVersionString)
             Else
                 Exit Sub
             End If
