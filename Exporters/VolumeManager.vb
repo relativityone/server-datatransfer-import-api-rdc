@@ -1333,10 +1333,17 @@ Namespace kCura.WinEDDS
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			Dim lastArtifactId As Int32 = -1
 			Dim loadFileBytes As Int64 = 0
-			Dim comparer As IComparer(Of String) = New OpticonFilenameComparer()
 
 			If linesToWriteOpt Is Nothing OrElse linesToWriteOpt.Count = 0 Then
 				Return
+			End If
+
+			Dim isOpticonFile As Boolean = Settings.LogFileFormat.HasValue And Settings.LogFileFormat.Value.Equals(LoadFileType.FileFormat.Opticon)
+			Dim comparer As IComparer(Of String)
+			If isOpticonFile Then
+				comparer = New OpticonFilenameComparer()
+			Else
+				comparer = StringComparer.InvariantCulture
 			End If
 
 			While tries < maxTries And Not Me.Halt
