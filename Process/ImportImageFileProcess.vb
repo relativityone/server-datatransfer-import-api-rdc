@@ -187,41 +187,41 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _imageFileImporter_StatusMessage(ByVal e As StatusEventArgs) Handles _imageFileImporter.StatusMessage
-			System.Threading.Monitor.Enter(Me.ProcessObserver)
-			Dim additionalInfo As IDictionary = Nothing
-			If Not e.AdditionalInfo Is Nothing Then additionalInfo = DirectCast(e.AdditionalInfo, IDictionary)
-			Select Case e.EventType
-				Case kCura.Windows.Process.EventType.Error
-					If e.CountsTowardsTotal Then _errorCount += 1
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
-					Me.ProcessObserver.RaiseErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
-				Case kCura.Windows.Process.EventType.Progress
-					TotalRecords = e.TotalRecords
-					CompletedRecordsCount = e.CurrentRecordIndex
-					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
-					Me.ProcessObserver.RaiseRecordProcessed(e.CurrentRecordIndex)
-				Case kCura.Windows.Process.EventType.Statistics
-					SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
-				Case kCura.Windows.Process.EventType.Status
-					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-				Case kCura.Windows.Process.EventType.Warning
-					If e.CountsTowardsTotal Then _warningCount += 1
-					Me.ProcessObserver.RaiseWarningEvent(e.CurrentRecordIndex.ToString, e.Message)
-				Case Windows.Process.EventType.Count
-					Me.ProcessObserver.RaiseCountEvent()
-				Case Windows.Process.EventType.ResetStartTime
-					SetStartTime()
-			End Select
-			System.Threading.Monitor.Exit(Me.ProcessObserver)
+			SyncLock Me.ProcessObserver
+				Dim additionalInfo As IDictionary = Nothing
+				If Not e.AdditionalInfo Is Nothing Then additionalInfo = DirectCast(e.AdditionalInfo, IDictionary)
+				Select Case e.EventType
+					Case kCura.Windows.Process.EventType.Error
+						If e.CountsTowardsTotal Then _errorCount += 1
+						Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
+						Me.ProcessObserver.RaiseErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
+					Case kCura.Windows.Process.EventType.Progress
+						TotalRecords = e.TotalRecords
+						CompletedRecordsCount = e.CurrentRecordIndex
+						Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
+						Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
+						Me.ProcessObserver.RaiseRecordProcessed(e.CurrentRecordIndex)
+					Case kCura.Windows.Process.EventType.Statistics
+						SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
+					Case kCura.Windows.Process.EventType.Status
+						Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
+					Case kCura.Windows.Process.EventType.Warning
+						If e.CountsTowardsTotal Then _warningCount += 1
+						Me.ProcessObserver.RaiseWarningEvent(e.CurrentRecordIndex.ToString, e.Message)
+					Case Windows.Process.EventType.Count
+						Me.ProcessObserver.RaiseCountEvent()
+					Case Windows.Process.EventType.ResetStartTime
+						SetStartTime()
+				End Select
+			End SyncLock
 		End Sub
 
 		Private Sub _imageFileImporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Handles _imageFileImporter.FatalErrorEvent
-			System.Threading.Monitor.Enter(Me.ProcessObserver)
-			Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
-			Me.ProcessObserver.RaiseProcessCompleteEvent(False, _imageFileImporter.ErrorLogFileName, True)
-			_hasFatalErrorOccured = True
-			System.Threading.Monitor.Exit(Me.ProcessObserver)
+			SyncLock Me.ProcessObserver
+				Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
+				Me.ProcessObserver.RaiseProcessCompleteEvent(False, _imageFileImporter.ErrorLogFileName, True)
+				_hasFatalErrorOccured = True
+			End SyncLock
 		End Sub
 
 		Private Sub _imageFileImporter_ReportErrorEvent(ByVal row As System.Collections.IDictionary) Handles _imageFileImporter.ReportErrorEvent
@@ -240,9 +240,9 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _imageFileImporter_IoErrorEvent(ByVal sender As Object, ByVal e As IoWarningEventArgs) Handles _ioWarningPublisher.IoWarningEvent
-		    System.Threading.Monitor.Enter(Me.ProcessObserver)
-		    Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, e.Message)
-		    System.Threading.Monitor.Exit(Me.ProcessObserver)
+			SyncLock Me.ProcessObserver
+				Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, e.Message)
+			End SyncLock
 		End Sub
 
 		Private Sub _imageFileImporter_EndRun(ByVal success As Boolean, ByVal runID As String) Handles _imageFileImporter.EndRun

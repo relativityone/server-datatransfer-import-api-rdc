@@ -2,6 +2,16 @@
 
 Namespace kCura.WinEDDS.Api
 	Public Class LoginHelper
+		''' <summary>
+		''' The default application name used when a null or empty value is specified.
+		''' </summary>
+		Friend Const DefaultApplicationName As String = "Import API"
+
+		''' <summary>
+		''' The default version used when a null or empty value is specified.
+		''' </summary>
+		Friend Const DefaultUnknownVersion As String = "0.0.0.0"
+
 		Private Shared relativityManager As kCura.WinEDDS.Service.RelativityManager
 
 		Public Shared Function LoginWindowsAuth(ByVal cookieContainer As System.Net.CookieContainer) As System.Net.NetworkCredential
@@ -48,6 +58,64 @@ Namespace kCura.WinEDDS.Api
 			Return Nothing
 		End Function
 
+		Public Shared Function CreateRelativityVersionMismatchMessage(ByVal relativityVersion As String, ByVal clientVersion As String, ByVal applicationName As String) As String
+
+			' Because this is existing code, avoid arg checks and just supply a default value.
+			If String.IsNullOrEmpty(relativityVersion) Then
+				relativityVersion = DefaultUnknownVersion
+			End If
+
+			If String.IsNullOrEmpty(clientVersion) Then
+				clientVersion = DefaultUnknownVersion
+			End If
+
+			If String.IsNullOrEmpty(applicationName) Then
+				applicationName = DefaultApplicationName
+			End If
+
+			Dim message As String = $"Your version of {applicationName} ({clientVersion _
+				    }) is out of date. Please make sure you're running the correct version ({relativityVersion _
+				    }) or the correct Relativity WebService URL is specified."
+			Return message
+		End Function
+
+		Public Shared Function CreateRelativityVersionMismatchException(ByVal relativityVersion As String) As RelativityVersionMismatchException
+
+			' Rely on the process executable to craft a more accurate exception message.
+			Dim assembly As System.Reflection.Assembly = System.Reflection.Assembly.GetEntryAssembly()
+			If assembly Is Nothing Then
+				assembly = System.Reflection.Assembly.GetExecutingAssembly()
+			End If
+
+			Return CreateRelativityVersionMismatchException(relativityVersion, assembly)
+		End Function
+
+		Public Shared Function CreateRelativityVersionMismatchException(ByVal relativityVersion As String, ByVal assembly As System.Reflection.Assembly) As RelativityVersionMismatchException
+			
+			If assembly Is Nothing Then
+				Throw New ArgumentNullException(NameOf(assembly))
+			End If
+
+			' Favor the supplied application name
+			Dim applicationName As String = Config.ApplicationName
+			If String.IsNullOrEmpty(applicationName) Then
+				' Just in case the App.Config setting is removed or cleared.
+				If assembly.GetName.Name.StartsWith("kCura.EDDS.WinForm", StringComparison.OrdinalIgnoreCase) Then
+					applicationName = "Relativity Desktop Client"
+				Else
+					applicationName = DefaultApplicationName
+				End If
+			End If
+
+			Dim clientVersion As String = assembly.GetName.Version.ToString()
+			Return CreateRelativityVersionMismatchException(relativityVersion, clientVersion, applicationName)
+		End Function
+
+		Public Shared Function CreateRelativityVersionMismatchException(ByVal relativityVersion As String, ByVal clientVersion As String, ByVal applicationName As String) As RelativityVersionMismatchException
+			Dim message As String = CreateRelativityVersionMismatchMessage(relativityVersion, clientVersion, applicationName)
+			Return New RelativityVersionMismatchException(message, relativityVersion, clientVersion)
+		End Function
+
 		Private Shared Sub Initialize(ByVal relativityManager As kCura.WinEDDS.Service.RelativityManager, ByVal webServiceUrl As String)
 			Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
 			locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol
@@ -75,7 +143,9 @@ Namespace kCura.WinEDDS.Api
 					Exit For
 				End If
 			Next
-			If Not match Then Throw New RelativityVersionMismatchException(relVersionString)
+			If Not match Then
+				Throw CreateRelativityVersionMismatchException(relVersionString)
+			End If
 		End Sub
 	End Class
 End Namespace

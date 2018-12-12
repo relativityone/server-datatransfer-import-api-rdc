@@ -1,5 +1,4 @@
 Imports System.Configuration
-Imports System.Linq
 Imports System.Collections.Generic
 
 Namespace kCura.WinEDDS
@@ -7,78 +6,22 @@ Namespace kCura.WinEDDS
 
 #Region " ConfigSettings "
 
-        Private Shared _LoadLock As New System.Object
+		Private Shared ReadOnly _loadLock As New System.Object
+		Private const _ENABLE_CASE_SENSITIVE_SEARCH_KEY as String = "EnableCaseSensitiveSearchOnImport"
 
-        Private Shared _configDictionary As System.Collections.IDictionary
-        Public Shared ReadOnly Property ConfigSettings() As System.Collections.IDictionary
+		Private Shared _configDictionary As IDictionary
+		Public Shared ReadOnly Property ConfigSettings() As IDictionary
             Get
-                ' You may ask, why are there two identical if/then statements?
-                ' If the config dictionary is already set, we want to return it.  And 99% of the time, the if/then will handle this, not needing a synclock.  The synclock would just slow things down.
-
-                ' If the config dictionary is not set, we want to load it.  Previously it wasn't thread safe, so the synclock was added.
-
-                ' However, it is possible that one thread could start this and get into the synclock, and another thread comes in before _configDictionary is set, and tries to enter the load process.
-                ' This is why we want the second if/then.
-                ' Next, we don't set _configDictionary until the temporary dictionary is fully formed.  It was possible for multiple threads to throw an error because _configDictionary had been created, 
-                ' but hadn't had all its values added to it yet, thus code looking for a specific value threw a null reference exception.
-
-                ' So here you go, this is a good example of how to make loading a static collection thread safe, and still keep some performance.  - slm - 5/24/2012
-
                 If _configDictionary Is Nothing Then
                     SyncLock _LoadLock
                         If _configDictionary Is Nothing Then
-                            Dim tempDict As System.Collections.IDictionary
-                            tempDict = DirectCast(System.Configuration.ConfigurationManager.GetSection("kCura.WinEDDS"), System.Collections.IDictionary)
-                            If tempDict Is Nothing Then tempDict = New System.Collections.Hashtable
-                            If Not tempDict.Contains("ApplicationName") Then tempDict.Add("ApplicationName", "")
-                            If Not tempDict.Contains("ImportBatchSize") Then tempDict.Add("ImportBatchSize", "1000")
-                            If Not tempDict.Contains("JobCompleteBatchSize") Then tempDict.Add("JobCompleteBatchSize", "50000")
-                            If Not tempDict.Contains("WebAPIOperationTimeout") Then tempDict.Add("WebAPIOperationTimeout", "600000")
-                            If Not tempDict.Contains("DynamicBatchResizingOn") Then tempDict.Add("DynamicBatchResizingOn", "True")
-                            If Not tempDict.Contains("MinimumBatchSize") Then tempDict.Add("MinimumBatchSize", "100")
-                            If Not tempDict.Contains("ImportBatchMaxVolume") Then tempDict.Add("ImportBatchMaxVolume", "10485760") '10(2^20) - don't know what 10MB standard is
-                            If Not tempDict.Contains("ExportBatchSize") Then tempDict.Add("ExportBatchSize", "1000")
-                            If Not tempDict.Contains("ExportThreadCount") Then tempDict.Add("ExportThreadCount", "2")
-                            If Not tempDict.Contains("UseOldExport") Then tempDict.Add("UseOldExport", "False")
-	                        If Not tempDict.Contains("ForceParallelismInNewExport") Then tempDict.Add("ForceParallelismInNewExport", "False")
-	                        If Not tempDict.Contains("PermissionErrorsRetry") Then tempDict.Add("PermissionErrorsRetry", "False")
-	                        If Not tempDict.Contains("BadPathErrorsRetry") Then tempDict.Add("BadPathErrorsRetry", "False")
-                            If Not tempDict.Contains("EnableSingleModeImport") Then tempDict.Add("EnableSingleModeImport", "False")
-                            If Not tempDict.Contains("CreateErrorForEmptyNativeFile") Then tempDict.Add("CreateErrorForEmptyNativeFile", "False")
-                            If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")
-                            If Not tempDict.Contains("CreateFoldersInWebAPI") Then tempDict.Add("CreateFoldersInWebAPI", "True")
-                            If Not tempDict.Contains("ForceWebUpload") Then tempDict.Add("ForceWebUpload", "False")
-                            If Not tempDict.Contains("TapiForceClientCandidates") Then tempDict.Add("TapiForceClientCandidates", "")
-                            If Not tempDict.Contains("TapiForceFileShareClient") Then tempDict.Add("TapiForceFileShareClient", "False")
-                            If Not tempDict.Contains("TapiForceHttpClient") Then tempDict.Add("TapiForceHttpClient", "False")
-                            If Not tempDict.Contains("TapiForceBcpHttpClient") Then tempDict.Add("TapiForceBcpHttpClient", "False")
-                            If Not tempDict.Contains("TapiAsperaBcpRootFolder") Then tempDict.Add("TapiAsperaBcpRootFolder", "")
-                            If Not tempDict.Contains("TapiForceAsperaClient") Then tempDict.Add("TapiForceAsperaClient", "False")
-                            If Not tempDict.Contains("TapiMinDataRateMbps") Then tempDict.Add("TapiMinDataRateMbps", "0")
-                            If Not tempDict.Contains("TapiSubmitApmMetrics") Then tempDict.Add("TapiSubmitApmMetrics", "False")
-                            If Not tempDict.Contains("TapiTargetDataRateMbps") Then tempDict.Add("TapiTargetDataRateMbps", "100")
-                            If Not tempDict.Contains("TapiTransferLogDirectory") Then tempDict.Add("TapiTransferLogDirectory", "")
-                            If Not tempDict.Contains("TapiLargeFileProgressEnabled") Then tempDict.Add("TapiLargeFileProgressEnabled", "False")
-                            If Not tempDict.Contains("TapiMaxJobParallelism") Then tempDict.Add("TapiMaxJobParallelism", "10")
-                            If Not tempDict.Contains("TapiAsperaNativeDocRootLevels") Then tempDict.Add("TapiAsperaNativeDocRootLevels", "1")
-                            If Not tempDict.Contains("DisableAspera") Then tempDict.Add("DisableAspera", "True")
-                            If Not tempDict.Contains("RestUrl") Then tempDict.Add("RestUrl", "/Relativity.REST/api")
-                            If Not tempDict.Contains("ServicesUrl") Then tempDict.Add("ServicesUrl", "/Relativity.Services/")
-                            If Not tempDict.Contains("AsperaBcpPathRootFolder") Then tempDict.Add("AsperaBcpPathRootFolder", "BCPPath")
-                            If Not tempDict.Contains("AsperaNativeFilesRootFolder") Then tempDict.Add("AsperaNativeFilesRootFolder", "Files")
-                            If Not tempDict.Contains("LogConfigFile") Then tempDict.Add("LogConfigFile", "LogConfig.xml")
-	                        If Not tempDict.Contains("SuppressCertificateCheckOnClient") Then tempDict.Add("SuppressCertificateCheckOnClient", "False")
-                            If Not tempDict.Contains(NameOf(LoadImportedFullTextFromServer)) Then tempDict.Add(NameOf(LoadImportedFullTextFromServer), "False")
-                            If Not tempDict.Contains(NameOf(UsePipeliningForNativeAndObjectImports)) Then tempDict.Add(NameOf(UsePipeliningForNativeAndObjectImports), "True")
-                            If Not tempDict.Contains(NameOf(ProcessFormRefreshRate)) Then tempDict.Add(NameOf(ProcessFormRefreshRate), "0")
-                                _configDictionary = tempDict
+							_configDictionary = InitializeConfigDictionaryWithDefaultValues()
                             End If
                     End SyncLock
                 End If
                 Return _configDictionary
             End Get
         End Property
-
 #End Region
 
 #Region " Constants "
@@ -96,6 +39,8 @@ Namespace kCura.WinEDDS
         End Property
 
         Private Const webServiceUrlKeyName As String = "WebServiceURL"
+        Private Const mainFormWindowHeightKey As String = "MainFormWindowHeight"
+        Private Const mainFormWindowWidthKey As String = "MainFormWindowWidth"
 
         Public Const PREVIEW_THRESHOLD As Int32 = 1000
 
@@ -173,7 +118,7 @@ Namespace kCura.WinEDDS
 
 #Region " Feature Toggles " 'TODO: either promote these to client-facing toggles with documentation or remove them
 
-        'This is used to set the application name. This is used for APM metrics and other reporting features. If not specified, the process name is used.
+        'This sets the application name and is used to drive APM metrics and other reporting features. If not specified, the process name is used.
         Public Shared ReadOnly Property ApplicationName() As String
 	        Get
 		        Return CType(ConfigSettings("ApplicationName"), String)
@@ -548,6 +493,34 @@ Namespace kCura.WinEDDS
             End Set
         End Property
 
+        Public Shared Property MainFormWindowWidth As Integer
+            Get
+                Dim savedWidth As String = GetRegistryKeyValue(mainFormWindowWidthKey)
+                If savedWidth <> Nothing Then
+                    Return Convert.ToInt32(savedWidth)
+                Else
+                    Return Nothing
+                End If
+            End Get
+            Set
+                SetRegistryKeyValue(mainFormWindowWidthKey, Value.ToString())
+            End Set
+        End Property
+
+        Public Shared Property MainFormWindowHeight As Integer
+            Get
+                Dim savedHeight As String = GetRegistryKeyValue(mainFormWindowHeightKey)
+                If savedHeight <> Nothing Then
+                    Return Convert.ToInt32(savedHeight)
+                Else
+                    Return Nothing
+                End If
+            End Get
+            Set
+                SetRegistryKeyValue(mainFormWindowHeightKey, Value.ToString())
+            End Set
+        End Property
+
         Private Shared _programmaticServiceURL As String = Nothing
 
         Public Shared Property ProgrammaticServiceURL() As String
@@ -577,5 +550,65 @@ Namespace kCura.WinEDDS
                 Return System.Math.Max(CType(ConfigSettings("WebBasedFileDownloadChunkSize"), Int32), 1024)
             End Get
         End Property
+		Public Shared ReadOnly Property EnableCaseSensitiveSearchOnImport As Boolean
+			Get
+				Try
+					Return CType(ConfigSettings(_ENABLE_CASE_SENSITIVE_SEARCH_KEY), Boolean)
+				Catch ex As Exception
+					Return True
+				End Try
+			End Get
+		End Property
+
+		Private Shared Function InitializeConfigDictionaryWithDefaultValues() As IDictionary
+
+			Dim tempDict As IDictionary
+			tempDict = DirectCast(ConfigurationManager.GetSection("kCura.WinEDDS"), IDictionary)
+			If tempDict Is Nothing Then tempDict = New Hashtable
+			If Not tempDict.Contains("ApplicationName") Then tempDict.Add("ApplicationName", "")
+			If Not tempDict.Contains("ImportBatchSize") Then tempDict.Add("ImportBatchSize", "1000")
+			If Not tempDict.Contains("JobCompleteBatchSize") Then tempDict.Add("JobCompleteBatchSize", "50000")
+			If Not tempDict.Contains("WebAPIOperationTimeout") Then tempDict.Add("WebAPIOperationTimeout", "600000")
+			If Not tempDict.Contains("DynamicBatchResizingOn") Then tempDict.Add("DynamicBatchResizingOn", "True")
+			If Not tempDict.Contains("MinimumBatchSize") Then tempDict.Add("MinimumBatchSize", "100")
+			If Not tempDict.Contains("ImportBatchMaxVolume") Then tempDict.Add("ImportBatchMaxVolume", "10485760") '10(2^20) - don't know what 10MB standard is
+			If Not tempDict.Contains("ExportBatchSize") Then tempDict.Add("ExportBatchSize", "1000")
+			If Not tempDict.Contains("ExportThreadCount") Then tempDict.Add("ExportThreadCount", "2")
+			If Not tempDict.Contains("UseOldExport") Then tempDict.Add("UseOldExport", "False")
+			If Not tempDict.Contains("ForceParallelismInNewExport") Then tempDict.Add("ForceParallelismInNewExport", "False")
+			If Not tempDict.Contains("PermissionErrorsRetry") Then tempDict.Add("PermissionErrorsRetry", "False")
+			If Not tempDict.Contains("BadPathErrorsRetry") Then tempDict.Add("BadPathErrorsRetry", "False")
+			If Not tempDict.Contains("EnableSingleModeImport") Then tempDict.Add("EnableSingleModeImport", "False")
+			If Not tempDict.Contains("CreateErrorForEmptyNativeFile") Then tempDict.Add("CreateErrorForEmptyNativeFile", "False")
+			If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")
+			If Not tempDict.Contains("CreateFoldersInWebAPI") Then tempDict.Add("CreateFoldersInWebAPI", "True")
+			If Not tempDict.Contains("ForceWebUpload") Then tempDict.Add("ForceWebUpload", "False")
+			If Not tempDict.Contains("TapiForceClientCandidates") Then tempDict.Add("TapiForceClientCandidates", "")
+			If Not tempDict.Contains("TapiForceFileShareClient") Then tempDict.Add("TapiForceFileShareClient", "False")
+			If Not tempDict.Contains("TapiForceHttpClient") Then tempDict.Add("TapiForceHttpClient", "False")
+			If Not tempDict.Contains("TapiForceBcpHttpClient") Then tempDict.Add("TapiForceBcpHttpClient", "False")
+			If Not tempDict.Contains("TapiAsperaBcpRootFolder") Then tempDict.Add("TapiAsperaBcpRootFolder", "")
+			If Not tempDict.Contains("TapiForceAsperaClient") Then tempDict.Add("TapiForceAsperaClient", "False")
+			If Not tempDict.Contains("TapiMinDataRateMbps") Then tempDict.Add("TapiMinDataRateMbps", "0")
+			If Not tempDict.Contains("TapiSubmitApmMetrics") Then tempDict.Add("TapiSubmitApmMetrics", "True")
+			If Not tempDict.Contains("TapiTargetDataRateMbps") Then tempDict.Add("TapiTargetDataRateMbps", "100")
+			If Not tempDict.Contains("TapiTransferLogDirectory") Then tempDict.Add("TapiTransferLogDirectory", "")
+			If Not tempDict.Contains("TapiLargeFileProgressEnabled") Then tempDict.Add("TapiLargeFileProgressEnabled", "False")
+			If Not tempDict.Contains("TapiMaxJobParallelism") Then tempDict.Add("TapiMaxJobParallelism", "10")
+			If Not tempDict.Contains("TapiAsperaNativeDocRootLevels") Then tempDict.Add("TapiAsperaNativeDocRootLevels", "1")
+			If Not tempDict.Contains("DisableAspera") Then tempDict.Add("DisableAspera", "True")
+			If Not tempDict.Contains("RestUrl") Then tempDict.Add("RestUrl", "/Relativity.REST/api")
+			If Not tempDict.Contains("ServicesUrl") Then tempDict.Add("ServicesUrl", "/Relativity.Services/")
+			If Not tempDict.Contains("AsperaBcpPathRootFolder") Then tempDict.Add("AsperaBcpPathRootFolder", "BCPPath")
+			If Not tempDict.Contains("AsperaNativeFilesRootFolder") Then tempDict.Add("AsperaNativeFilesRootFolder", "Files")
+			If Not tempDict.Contains("LogConfigFile") Then tempDict.Add("LogConfigFile", "LogConfig.xml")
+			If Not tempDict.Contains("SuppressCertificateCheckOnClient") Then tempDict.Add("SuppressCertificateCheckOnClient", "False")
+			If Not tempDict.Contains(_ENABLE_CASE_SENSITIVE_SEARCH_KEY) Then tempDict.Add(_ENABLE_CASE_SENSITIVE_SEARCH_KEY, "True")
+			If Not tempDict.Contains(NameOf(LoadImportedFullTextFromServer)) Then tempDict.Add(NameOf(LoadImportedFullTextFromServer), "False")
+			If Not tempDict.Contains(NameOf(UsePipeliningForNativeAndObjectImports)) Then tempDict.Add(NameOf(UsePipeliningForNativeAndObjectImports), "True")
+			If Not tempDict.Contains(NameOf(ProcessFormRefreshRate)) Then tempDict.Add(NameOf(ProcessFormRefreshRate), "0")
+			Return tempDict
+		End Function
+
     End Class
 End Namespace

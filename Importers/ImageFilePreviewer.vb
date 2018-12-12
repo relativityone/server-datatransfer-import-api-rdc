@@ -2,6 +2,7 @@ Imports System.IO
 Imports kCura.Utility
 Imports kCura.Windows.Process
 Imports kCura.WinEDDS.Api
+Imports kCura.WinEDDS.Helpers
 
 Namespace kCura.WinEDDS
 	Public Class ImageFilePreviewer
@@ -11,6 +12,7 @@ Namespace kCura.WinEDDS
 		Private _fileLineCount As Int32
 		Private _continue As Boolean
 		Private WithEvents _processController As Controller
+		Private ReadOnly _filePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
 
 		Private Enum Columns
 			DocumentArtifactID = 0
@@ -67,16 +69,8 @@ Namespace kCura.WinEDDS
 			Dim valuearray As String() = Me.GetLine
 
 			While Not valuearray Is Nothing AndAlso _continue
-				Dim record As New ImageRecord
-				record.OriginalIndex = Me.CurrentLineNumber
-				record.IsNewDoc = GetValue(valuearray, Columns.MultiPageIndicator).ToLower = "Y"
-				record.FileLocation =  GetValue(valuearray, Columns.FileLocation)
-				record.BatesNumber =  GetValue(valuearray, Columns.DocumentArtifactID)
-
-				Dim filePath As String = BulkImageFileImporter.GetFileLocation(record)
-				If Not filePath = "" Then
-					filePath = Me.CheckFile(filePath)
-				End If
+				Dim record As ImageRecord = CreateImageRecord(valuearray)
+				Dim filePath As String = GetFilePathAndValidate(record)
 
 				If record.BatesNumber = "" Then
 					Me.RaiseStatusEvent(EventType.Progress, $"Line {CurrentLineNumber} improperly formatted. Invalid bates number.")
@@ -93,7 +87,41 @@ Namespace kCura.WinEDDS
 				End If
 			End While
 		End Sub
-		
+
+		Private Function CreateImageRecord(valuearray As String()) As ImageRecord
+
+			Dim record As New ImageRecord
+			record.OriginalIndex = Me.CurrentLineNumber
+			record.IsNewDoc = GetValue(valuearray, Columns.MultiPageIndicator).ToLower = "Y"
+			record.FileLocation =  GetValue(valuearray, Columns.FileLocation)
+			record.BatesNumber =  GetValue(valuearray, Columns.DocumentArtifactID)
+			Return record
+		End Function
+
+		Private Function GetFilePathAndValidate(record As ImageRecord) As String
+			Dim filename As String = BulkImageFileImporter.GetFileLocation(record)
+			If filename = String.Empty
+				Return filename
+			End If
+
+			Dim foundFileName As String = _filePathHelper.GetExistingFilePath(filename)
+			Dim fileExists As Boolean = Not String.IsNullOrEmpty(foundFileName)
+			If Not fileExists Then
+				Me.RaiseStatusEvent(EventType.Error, $"File '{filename}' does not exist.")
+				Return String.Empty
+			End If
+
+			If Not String.Equals(filename, foundFileName)
+				Me.RaiseStatusEvent(EventType.Warning, $"File '{filename}' does not exist. File {foundFileName} will be used instead.")
+			End If
+
+			If Not ValidateImage(foundFileName) Then
+				Return String.Empty
+			End If
+
+			Return foundFileName
+		End Function
+
 		Private Function GetValue(ByVal valuearray As String(), index As Int32) As String
 			Dim retval As String
 			Try
@@ -103,19 +131,6 @@ Namespace kCura.WinEDDS
 				Me.RaiseStatusEvent(EventType.Error, $"Line {CurrentLineNumber} is invalid format. No column at index {index}.")
 				Return ""
 			End Try
-		End Function
-
-		Private Function CheckFile(ByVal path As String) As String
-			If Not System.IO.File.Exists(path) Then
-				Me.RaiseStatusEvent(EventType.Error, $"File '{path}' does not exist.")
-				Return ""
-			End If
-
-			If Not ValidateImage(path) Then
-				Return ""
-			End If
-
-			Return path
 		End Function
 
 		Private Function ValidateImage(path As String) As Boolean
