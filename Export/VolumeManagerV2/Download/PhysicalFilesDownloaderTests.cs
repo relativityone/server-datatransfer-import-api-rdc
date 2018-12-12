@@ -22,7 +22,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 		private ILog _logger;
 		private List<Mock<IDownloadTapiBridge>> _mockTapiBridges;
 		private Mock<IExportConfig> _mockExportConfig;
-		private Mock<IFileshareSettingsService> _fileshareSettingsService;
+		private Mock<IFileShareSettingsService> _fileshareSettingsService;
 		private Mock<IFileTapiBridgePool> _fileTapiBridgePool;
 		private PhysicalFilesDownloader _downloader;
 		private SafeIncrement _safeIncrement;
@@ -38,7 +38,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 			_logger = new NullLogger();
 			_safeIncrement = new SafeIncrement();
 			_availableFileShares = new[] { @"\\fileShare.one", @"\\fileShare.two", @"\\fileShare.three" };
-			_fileshareSettingsService = new Mock<IFileshareSettingsService>();
+			_fileshareSettingsService = new Mock<IFileShareSettingsService>();
 			_fileshareSettingsService.Setup(s => s.GetSettingsForFileshare(It.IsAny<string>())).Returns((string val) => ReturnSettingsForFileshare(val));
 			_mockTapiBridges = new List<Mock<IDownloadTapiBridge>>();
 			_fileTapiBridgePool = new Mock<IFileTapiBridgePool>();
