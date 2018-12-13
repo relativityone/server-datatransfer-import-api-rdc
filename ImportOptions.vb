@@ -295,7 +295,6 @@ Public Class ImportOptions
 						artifactTypeID = tempLoadFile.ArtifactTypeID
 					End If
 					tempLoadFile.SelectedIdentifierField = (Await Application.Instance.CurrentFields(artifactTypeID, True)).IdentifierFields(0)
-					Dim mapItemToRemove As LoadFileFieldMap.LoadFileFieldMapItem = Nothing
 					If tempLoadFile.GroupIdentifierColumn = "" AndAlso System.IO.File.Exists(tempLoadFile.FilePath) Then
 						Dim fieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem
 						For Each fieldMapItem In tempLoadFile.FieldMap
@@ -306,7 +305,6 @@ Public Class ImportOptions
 							End If
 						Next
 					End If
-					If Not mapItemToRemove Is Nothing Then tempLoadFile.FieldMap.Remove(mapItemToRemove)
 
 					For Each fieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In tempLoadFile.FieldMap
 						If Not fieldMapItem.DocumentField Is Nothing Then
@@ -317,6 +315,7 @@ Public Class ImportOptions
 								fieldMapItem.DocumentField.CodeTypeID = thisField.CodeTypeID
 								fieldMapItem.DocumentField.FieldLength = thisField.FieldLength
 								fieldMapItem.DocumentField.ImportBehavior = thisField.ImportBehavior
+								fieldMapItem.DocumentField.EnableDataGrid = thisField.EnableDataGrid
 							Catch
 							End Try
 						End If
