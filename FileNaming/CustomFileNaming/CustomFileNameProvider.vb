@@ -22,7 +22,7 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 			Dim name As StringBuilder = CreateFileName(exportObjectInfo)
 
 			If _appendOriginalFileName Then
-				name = AppendOriginalFileName(name, exportObjectInfo)
+				name = exportObjectInfo.AppendOriginalFileName(name)
 			Else
 				name = GetNameWithNativeExtension(name, exportObjectInfo)
 			End If
@@ -33,7 +33,7 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 			Dim name As StringBuilder = CreateFileName(exportObjectInfo)
 			Dim nameAsString As String
 			If _appendOriginalFileName Then
-				Dim nameWithOriginalFileNameAppended As String = AppendOriginalFileName(name, exportObjectInfo).ToString()
+				Dim nameWithOriginalFileNameAppended As String = exportObjectInfo.AppendOriginalFileName(name).ToString()
 				nameAsString = GetNameWithTextExtension(nameWithOriginalFileNameAppended)
 			Else
 				nameAsString = GetNameWithTextExtension(name)
@@ -42,13 +42,6 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 			Return kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(nameAsString)
 		End Function
 
-		Private Function AppendOriginalFileName(ByRef name As StringBuilder, exportObjectInfo As ObjectExportInfo) As StringBuilder
-			If Not String.IsNullOrWhiteSpace(exportObjectInfo.OriginalFileName) Then
-				Return name.Append("_" & exportObjectInfo.OriginalFileName)
-			Else
-				Return name
-			End If
-		End Function
 		Private Function CreateFileName(objectExportInfo As ObjectExportInfo) As StringBuilder
 			Dim name As StringBuilder = New StringBuilder()
 			Dim namePartsCount As Integer = CType(((_fileNamePartDescriptors.Count - 1) / 2), Integer)
