@@ -160,6 +160,21 @@ Imports NUnit.Framework
 		Assert.AreEqual(expectedFileName, textFileName)
 	End Sub
 
+	<Test> Public Sub ItShouldNotAppendOriginalFileNameWhenItsEmpty()
+		'Arrange
+		Dim sut As ObjectExportInfo = New ObjectExportInfo()
+		sut.IdentifierValue = _IDENTIFIER
+		sut.OriginalFileName = String.Empty
+
+		'Act
+		Dim textFileName As String = sut.FullTextFileName(True, False, True)
+
+		'Assert
+		Dim expectedFileName As String = _IDENTIFIER & _TEXT_EXTENSION
+		Assert.AreEqual(expectedFileName, textFileName)
+	End Sub
+
+
 	<Test> Public Sub ItShouldAppendOriginalFileNameForProductionBeginBatesFileNamePropertyWhenFlagIsTrue()
 		'Arrange
 		Dim sut As ObjectExportInfo = New ObjectExportInfo()
