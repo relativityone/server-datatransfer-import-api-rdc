@@ -43,7 +43,11 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 		End Function
 
 		Private Function AppendOriginalFileName(ByRef name As StringBuilder, exportObjectInfo As ObjectExportInfo) As StringBuilder
-			Return name.Append("_" & exportObjectInfo.OriginalFileName)
+			If Not String.IsNullOrWhiteSpace(exportObjectInfo.OriginalFileName) Then
+				Return name.Append("_" & exportObjectInfo.OriginalFileName)
+			Else
+				Return name
+			End If
 		End Function
 		Private Function CreateFileName(objectExportInfo As ObjectExportInfo) As StringBuilder
 			Dim name As StringBuilder = New StringBuilder()
