@@ -207,5 +207,67 @@ Imports NUnit.Framework
 		Assert.AreEqual(expectedFileName, textFileName)
 	End Sub
 
+	<Test> Public Sub NativeFileNameShouldNotAddEmptyOriginalFileName()
+		'Arrange
+		Dim sut As ObjectExportInfo = New ObjectExportInfo()
+		sut.IdentifierValue = _IDENTIFIER
+		sut.OriginalFileName = String.Empty
+		sut.NativeExtension = _TEXT_EXTENSION
+		Dim appendToOriginal As Boolean = True
+
+		'Act
+		Dim textFileName As String = sut.NativeFileName(appendToOriginal)
+
+		'Assert
+		Dim expectedFileName As String = _IDENTIFIER
+		Assert.AreEqual(expectedFileName, textFileName)
+	End Sub
+
+	<Test> Public Sub NativeFileNameShouldAddOriginalFileName()
+		'Arrange
+		Dim sut As ObjectExportInfo = New ObjectExportInfo()
+		sut.IdentifierValue = _IDENTIFIER
+		sut.OriginalFileName = _ORIGINAL_FILE_NAME_XSL
+		Dim appendToOriginal As Boolean = True
+
+		'Act
+		Dim textFileName As String = sut.NativeFileName(appendToOriginal)
+
+		'Assert
+		Dim expectedFileName As String = _IDENTIFIER & "_" & _ORIGINAL_FILE_NAME_XSL
+		Assert.AreEqual(expectedFileName, textFileName)
+	End Sub
+
+	<Test> Public Sub NativeFileNameShouldNotAddOriginalFileNameButAddExtensions()
+		'Arrange
+		Dim fileExtension As String = "txt"
+		Dim sut As ObjectExportInfo = New ObjectExportInfo()
+		sut.IdentifierValue = _IDENTIFIER
+		sut.NativeExtension = fileExtension
+		Dim appendToOriginal As Boolean = False
+
+		'Act
+		Dim textFileName As String = sut.NativeFileName(appendToOriginal)
+
+		'Assert
+		Dim expectedFileName As String = _IDENTIFIER & "." & fileExtension
+		Assert.AreEqual(expectedFileName, textFileName)
+	End Sub
+
+	<Test> Public Sub NativeFileNameShouldNotAddOriginalFileNameNorFileExtension()
+		'Arrange
+		Dim sut As ObjectExportInfo = New ObjectExportInfo()
+		sut.IdentifierValue = _IDENTIFIER
+		sut.NativeExtension = String.Empty
+		Dim appendToOriginal As Boolean = False
+
+		'Act
+		Dim textFileName As String = sut.NativeFileName(appendToOriginal)
+
+		'Assert
+		Dim expectedFileName As String = _IDENTIFIER
+		Assert.AreEqual(expectedFileName, textFileName)
+	End Sub
+
 
 End Class
