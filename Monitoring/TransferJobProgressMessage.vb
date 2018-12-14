@@ -1,4 +1,4 @@
-﻿Imports Monitoring
+Imports Monitoring
 
 Namespace kCura.WinEDDS.Monitoring
 	Public Class TransferJobProgressMessage
