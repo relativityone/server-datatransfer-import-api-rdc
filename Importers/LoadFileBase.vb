@@ -478,7 +478,8 @@ Namespace kCura.WinEDDS
 
 				Case Relativity.FieldTypeHelper.FieldType.Object
 					If field.Value Is Nothing Then field.Value = String.Empty
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableAssociatedObjectName(field.Value.ToString, columnIndex, field.Value.ToString().Length, field.TextLength, field.DisplayName))
+					'field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableAssociatedObjectName(field.Value.ToString, columnIndex, field.TextLength, field.DisplayName))
+					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableAssociatedObjectName(field.Value.ToString, columnIndex, field.Value.ToString.Length, field.TextLength, field.DisplayName))
 					If forPreview Then field.Value = field.Value.ToString.Trim
 
 				Case Relativity.FieldTypeHelper.FieldType.Objects
@@ -691,8 +692,10 @@ Namespace kCura.WinEDDS
 			End If
 		End Function
 
+		'Public Function GetNullableAssociatedObjectName(ByVal value As String, ByVal column As Int32, ByVal fieldLength As Int32, ByVal fieldName As String) As String
 		Public Function GetNullableAssociatedObjectName(ByVal value As String, ByVal column As Int32, ByVal inputLength As Int32, ByVal fieldLength As Int32, ByVal fieldName As String) As String
 			If value.Length > fieldLength Then
+				'Throw New kCura.Utility.DelimitedFileImporter.InputObjectNameExceedsFixedLengthException(CurrentLineNumber, column, fieldLength, fieldName)
 				Throw New kCura.Utility.DelimitedFileImporter.InputObjectNameExceedsFixedLengthException(CurrentLineNumber, column, inputLength, fieldLength, fieldName)
 			Else
 				Return kCura.Utility.NullableTypesHelper.DBNullString(value)
