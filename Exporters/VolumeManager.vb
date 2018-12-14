@@ -7,6 +7,7 @@ Imports kCura.WinEDDS.Exporters
 Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.LoadFileEntry
 Imports kCura.WinEDDS.IO
+Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
 	Public Class VolumeManager
@@ -54,6 +55,8 @@ Namespace kCura.WinEDDS
 		Private _fileStreamFactory As IFileStreamFactory
 		Private _directoryHelper As IDirectoryHelper
 		Private _fileNameProvider As IFileNameProvider
+		
+		Private _logger As ILog
 #End Region
 
 		Private Enum ExportFileType
@@ -144,6 +147,8 @@ Namespace kCura.WinEDDS
 			_fileStreamFactory = New FileStreamFactory(_fileHelper)
 			_directoryHelper = directoryHelper
 			_fileNameProvider = fileNameProvider
+
+			_logger = RelativityLogFactory.CreateLog(RelativityLogFactory.WinEDDSSubSystem)
 
 			_timekeeper = t
 			_currentVolumeNumber = _settings.VolumeInfo.VolumeStartNumber
@@ -1333,10 +1338,17 @@ Namespace kCura.WinEDDS
 			Dim maxTries As Int32 = NumberOfRetries + 1
 			Dim lastArtifactId As Int32 = -1
 			Dim loadFileBytes As Int64 = 0
-			Dim comparer As IComparer(Of String) = New OpticonFilenameComparer()
 
 			If linesToWriteOpt Is Nothing OrElse linesToWriteOpt.Count = 0 Then
 				Return
+			End If
+
+			Dim isOpticonFile As Boolean = Settings.LogFileFormat.HasValue And Settings.LogFileFormat.Value.Equals(LoadFileType.FileFormat.Opticon)
+			Dim comparer As IComparer(Of String)
+			If isOpticonFile Then
+				comparer = New OpticonFilenameComparer(_logger)
+			Else
+				comparer = StringComparer.InvariantCulture
 			End If
 
 			While tries < maxTries And Not Me.Halt
