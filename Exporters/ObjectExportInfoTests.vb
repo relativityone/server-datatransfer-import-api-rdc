@@ -159,4 +159,38 @@ Imports NUnit.Framework
 		Dim expectedFileName As String = _IDENTIFIER & "_" & _ORIGINAL_FILE_NAME_TXT
 		Assert.AreEqual(expectedFileName, textFileName)
 	End Sub
+
+	<Test> Public Sub ItShouldAppendOriginalFileNameForProductionBeginBatesFileNamePropertyWhenFlagIsTrue()
+		'Arrange
+		Dim sut As ObjectExportInfo = New ObjectExportInfo()
+		sut.OriginalFileName = _ORIGINAL_FILE_NAME_TXT
+		sut.ProductionBeginBates = _PRODUCTION_BEGIN_BATES
+		Dim appendToOriginal As Boolean = True
+		Dim tryProductionBegBates As Boolean = False
+
+		'Act
+		Dim textFileName As String = sut.ProductionBeginBatesFileName(appendToOriginal, tryProductionBegBates)
+
+		'Assert
+		Dim expectedFileName As String = _PRODUCTION_BEGIN_BATES & "_" & _ORIGINAL_FILE_NAME_TXT
+		Assert.AreEqual(expectedFileName, textFileName)
+	End Sub
+
+	<Test> Public Sub ItShouldNotAppendOriginalFileNameForProductionBeginBatesFileNamePropertyWhenFlagIsFalse()
+		'Arrange
+		Dim sut As ObjectExportInfo = New ObjectExportInfo()
+		sut.OriginalFileName = _ORIGINAL_FILE_NAME_TXT
+		sut.ProductionBeginBates = _PRODUCTION_BEGIN_BATES
+		Dim appendToOriginal As Boolean = False
+		Dim tryProductionBegBates As Boolean = False
+
+		'Act
+		Dim textFileName As String = sut.ProductionBeginBatesFileName(appendToOriginal, tryProductionBegBates)
+
+		'Assert
+		Dim expectedFileName As String = _PRODUCTION_BEGIN_BATES
+		Assert.AreEqual(expectedFileName, textFileName)
+	End Sub
+
+
 End Class
