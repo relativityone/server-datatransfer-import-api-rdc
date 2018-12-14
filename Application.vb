@@ -601,7 +601,7 @@ Namespace kCura.EDDS.WinForm
 
         Public Function GetColumnHeadersFromLoadFile(ByVal loadfile As kCura.WinEDDS.LoadFile, ByVal firstLineContainsColumnHeaders As Boolean) As String()
             loadfile.CookieContainer = Me.CookieContainer
-            Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog("WinEDDS")
+            Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.WinEDDSSubSystem)
             Dim importer As kCura.WinEDDS.BulkLoadFileImporter = Nothing
 
             Try
