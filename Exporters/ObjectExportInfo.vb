@@ -78,7 +78,7 @@ Namespace kCura.WinEDDS.Exporters
 
 #End Region
 
-		Public Function NativeFileName(ByVal appendToOriginal As Boolean) As String
+		Public Overridable Function NativeFileName(ByVal appendToOriginal As Boolean) As String
 			Dim retval As String
 			If appendToOriginal Then
 				retval = IdentifierValue & _ORIGINAL_FILE_NAME_PART_SEPARATOR & OriginalFileName
@@ -96,7 +96,7 @@ Namespace kCura.WinEDDS.Exporters
 			Return FullTextFileName(nameFilesAfterIdentifier, tryProductionBegBates, False)
 		End Function
 
-		Public Function FullTextFileName(ByVal nameFilesAfterIdentifier As Boolean, tryProductionBegBates As Boolean, appendOriginalFilename As Boolean) As String
+		Public Overridable Function FullTextFileName(ByVal nameFilesAfterIdentifier As Boolean, tryProductionBegBates As Boolean, appendOriginalFilename As Boolean) As String
 			Dim retval As String = GetFullTextIdentifierFileNamePart(nameFilesAfterIdentifier, tryProductionBegBates)
 
 			If appendOriginalFilename Then
