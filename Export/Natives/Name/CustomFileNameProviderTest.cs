@@ -33,6 +33,12 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 			OriginalFileName = "OriginalFileName"
 		};
 		
+		private readonly ObjectExportInfo _exportObjectInfoNoNatives = new ObjectExportInfo
+		{
+			NativeExtension = "",
+			OriginalFileName = ""
+		};
+		
 		[SetUp]
 		public void Init()
 		{
@@ -106,9 +112,21 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 		}
 
 		[Test]
+		public void ItShouldNotAppendOriginalFileNameToTextFileNameIfOriginalFileNameIsEmpty()
+		{
+			ItShouldNotAppendOriginalFileNameToFileName((sut, objectExportInfo) => sut.GetTextName(objectExportInfo), _TEXT_EXTENSION);
+		}
+
+		[Test]
 		public void ItShouldNotAppendExtensionWhenAppendOriginalFileNameToNativeFileName()
 		{
 			ItShouldAppendOriginalFileNameToFileName((sut, objectExportInfo) => sut.GetName(objectExportInfo), "");
+		}
+
+		[Test]
+		public void ItShouldNotAppendExtensionWhenAppendEmptyOriginalFileNameToNativeFileName()
+		{
+			ItShouldNotAppendOriginalFileNameToFileName((sut, objectExportInfo) => sut.GetName(objectExportInfo), "");
 		}
 		
 		[Test]
@@ -300,6 +318,26 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 
 			// Assert
 			Assert.That(retFileName, Is.EqualTo($"{firstPartName}_{_exportObjectInfoHtmlFile.OriginalFileName}{expectedExtension}"));
+		}
+
+		private void ItShouldNotAppendOriginalFileNameToFileName(Func<CustomFileNameProvider, ObjectExportInfo, string> testedFunction, string expectedExtension)
+		{
+			// Arrange
+			var firstDescriptor = new FieldDescriptorPart(1);
+			string firstPartName = "ControlNumber";
+			InitializeFileNamePartProviderContainer(firstDescriptor, firstPartName, _exportObjectInfoNoNatives);
+
+			var subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>
+				{
+					firstDescriptor
+				},
+				_fileNamePartProviderContainerMock.Object, true);
+
+			// Act
+			string retFileName = testedFunction(subjectUnderTest, _exportObjectInfoNoNatives);
+
+			// Assert
+			Assert.That(retFileName, Is.EqualTo($"{firstPartName}{expectedExtension}"));
 		}
 
 		private void InitializeFileNamePartProviderContainer(List<DescriptorPart> fieldDescriptors, List<string> partNames, ObjectExportInfo objectExportInfo)
