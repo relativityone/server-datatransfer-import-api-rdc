@@ -108,9 +108,12 @@
     <Compile Include="Export\FieldNameProviderTests.cs" />
     <Compile Include="Export\HtmlExportFileFormatterTests.cs" />
     <Compile Include="Export\ExportFileFormatterFactoryTests.cs" />
+    <Compile Include="Export\Natives\Name\IdentifierExportFileNameProviderTests.cs" />
     <Compile Include="Export\Natives\Name\CustomFileNameProviderTest.cs" />
+    <Compile Include="Export\Natives\Name\CustomTextFileNamePartProviderTests.cs" />
     <Compile Include="Export\Natives\Name\Factories\FileNamePartProviderContainerTest.cs" />
     <Compile Include="Export\Natives\Name\FieldFileNamePartProviderTests.cs" />
+    <Compile Include="Export\Natives\Name\NativeFileNameViewFieldsHelperTests.cs" />
     <Compile Include="Export\Natives\Name\SeparatorFileNamePartProviderTests.cs" />
     <Compile Include="Export\SearchListSelectorTest.cs">
       <SubType>Form</SubType>

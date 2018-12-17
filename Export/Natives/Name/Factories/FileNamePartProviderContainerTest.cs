@@ -1,7 +1,8 @@
 ﻿using System;
+using FileNaming.CustomFileNaming;
 using kCura.WinEDDS.Core.Export.Natives.Name;
 using kCura.WinEDDS.Core.Export.Natives.Name.Factories;
-using kCura.WinEDDS.Core.Model;
+using kCura.WinEDDS.FileNaming.CustomFileNaming;
 using NUnit.Framework;
 
 namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name.Factories
@@ -42,6 +43,17 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name.Factories
 
 			IFileNamePartProvider retProvider = _subjectUnderTest.GetProvider(part);
 			Assert.That(retProvider, Is.TypeOf<SeparatorFileNamePartProvider>());
+		}
+
+		[Test]
+		public void ItShouldReturnCustomTextDescriptorPartProvider()
+		{
+			var part = new CustomTextDescriptorPart("Custom Text");
+
+			_subjectUnderTest = new FileNamePartProviderContainer();
+
+			IFileNamePartProvider retProvider = _subjectUnderTest.GetProvider(part);
+			Assert.That(retProvider, Is.TypeOf<CustomTextFileNamePartProvider>());
 		}
 	}
 }

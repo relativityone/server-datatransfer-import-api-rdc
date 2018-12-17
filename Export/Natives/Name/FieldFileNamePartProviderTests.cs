@@ -1,10 +1,8 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
-using kCura.WinEDDS.Core.Export.Natives.Name;
-using kCura.WinEDDS.Core.Model;
-using kCura.WinEDDS.Core.Model.Export.Process;
+using FileNaming.CustomFileNaming;
 using kCura.WinEDDS.Core.NUnit.Helpers;
+using kCura.WinEDDS.FileNaming.CustomFileNaming;
 using Moq;
 using NUnit.Framework;
 using Relativity;
@@ -93,6 +91,76 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 			string retFieldValue = _subjectUnderTest.GetPartName(new FieldDescriptorPart(_AVF_ID), _extendedObjectExportInfo);
 
 			Assert.That(retFieldValue, Is.EqualTo(fieldValue));
+		}
+
+		[Test]
+		[TestCase("True", "Has Native")]
+		[TestCase("False", "")]
+		public void ItShouldReturnFieldDisplayTextWhenGivenBooleanField(String fieldValue, String expectedValue)
+		{
+
+			string displayName = "Has Native";
+			ViewFieldInfo viewFieldInfo = _fieldInfoMockFactory
+				.Build()
+				.WithAvfId(_AVF_ID)
+				.WithAvfName(_NAME)
+				.WithFieldType(FieldTypeHelper.FieldType.Boolean)
+				.WithDisplayName(displayName)
+				.Create();
+
+			_extendedObjectExportInfo.Metadata = new object[]
+			{
+				"Some Control Number",
+				fieldValue 
+			};
+
+			_extendedObjectExportInfo.SelectedNativeFileNameViewFields = new List<ViewFieldInfo>
+			{
+				viewFieldInfo
+			};
+
+			string retFieldValue = _subjectUnderTest.GetPartName(new FieldDescriptorPart(_AVF_ID), _extendedObjectExportInfo);
+
+			Assert.AreEqual(expectedValue, retFieldValue);
+		}
+
+		[Test]
+		public void ItShouldClearVarcharFromObjectTags()
+		{
+			string fieldValue = "<object/><object/>QQ";
+			string displayName = "Production::Begin Bates";
+			string expectedVal = "QQ";
+			ViewFieldInfo viewFieldInfo = _fieldInfoMockFactory
+				.Build()
+				.WithAvfId(_AVF_ID)
+				.WithAvfName(_NAME)
+				.WithFieldType(FieldTypeHelper.FieldType.Varchar)
+				.WithDisplayName(displayName)
+				.Create();
+
+			_extendedObjectExportInfo.Metadata = new object[]
+			{
+				"Some Control Number",
+				fieldValue
+			};
+
+			_extendedObjectExportInfo.SelectedNativeFileNameViewFields = new List<ViewFieldInfo>
+			{
+				viewFieldInfo
+			};
+
+			string retFieldValue = _subjectUnderTest.GetPartName(new FieldDescriptorPart(_AVF_ID), _extendedObjectExportInfo);
+
+			Assert.AreEqual(expectedVal, retFieldValue);
+		}
+
+		[Test]
+		public void ItShouldThrowExceptionWhenSelectedNativeFileNameViewFieldsIsEmpty()
+		{
+			Assert.Throws<ArgumentOutOfRangeException>(() =>
+			{
+				_subjectUnderTest.GetPartName(new FieldDescriptorPart(_AVF_ID), _extendedObjectExportInfo);
+			});
 		}
 	}
 }
