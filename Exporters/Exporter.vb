@@ -1,6 +1,5 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.Collections.Generic
-Imports System.Diagnostics
 Imports System.IO
 Imports System.Threading
 Imports kCura.Utility.Extensions
@@ -10,6 +9,7 @@ Imports Castle.Windsor
 Imports kCura.Windows.Process
 Imports kCura.WinEDDS.Container
 Imports kCura.WinEDDS.Exporters.Validator
+Imports kCura.WinEDDS.FileNaming.CustomFileNaming
 Imports kCura.WinEDDS.LoadFileEntry
 Imports kCura.WinEDDS.Service.Export
 
@@ -57,6 +57,7 @@ Namespace kCura.WinEDDS
 		Private _errorFile As IErrorFile
 		Private ReadOnly _cancellationTokenSource As CancellationTokenSource
 		Private _syncLock As Object = New Object
+		Private _originalFileNameProvider As OriginalFileNameProvider
 
 #End Region
 
@@ -295,9 +296,9 @@ Namespace kCura.WinEDDS
 
 				_productionExportProduction = production
 			End If
-
 			Dim allAvfIds As List(Of Int32) = GetAvfIds()
-
+			Dim isFileNamePresent As Boolean = OriginalFileNameProvider.ExtendFieldRequestByFileNameIfNecessary(Me.Settings.AllExportableFields, allAvfIds)
+			
 			tries = 0
 			Select Case Me.Settings.TypeOfExport
 				Case ExportFile.ExportType.ArtifactSearch
@@ -347,6 +348,12 @@ Namespace kCura.WinEDDS
 					_errorFile = container.Resolve(Of IErrorFile)
 					batch = container.Resolve(Of IBatch)
 					_downloadModeStatus = container.Resolve(Of IExportFileDownloaderStatus)
+				End If
+
+				_originalFileNameProvider = New OriginalFileNameProvider(isFileNamePresent, FieldLookupService, AddressOf WriteWarningWithoutShowingExportedDocumentsCount)
+
+				If _exportFile.AppendOriginalFileName AndAlso Not isFileNamePresent
+					WriteWarningWithoutShowingExportedDocumentsCount("Filename column does not exist for this workspace and the filename from the file table will be used")
 				End If
 
 				Me.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Created search log file.", True)
@@ -521,7 +528,7 @@ Namespace kCura.WinEDDS
 				Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, documentArtifactIDs(i))
 				Dim prediction As VolumePredictions = New VolumePredictions()
 				Dim artifact As ObjectExportInfo = CreateArtifact(record, documentArtifactIDs(i), nativeRow, images, productionImages, beginBatesColumnIndex, identifierColumnIndex, lookup, prediction)
-
+				
 				If UseOldExport Then
 					_volumeManager.FinalizeVolumeAndSubDirPredictions(prediction, artifact)
 				Else
@@ -651,7 +658,7 @@ Namespace kCura.WinEDDS
 				artifact.OriginalFileName = ""
 				artifact.NativeSourceLocation = ""
 			Else
-				artifact.OriginalFileName = nativeRow("Filename").ToString
+				artifact.OriginalFileName = _originalFileNameProvider.GetOriginalFileName(record, nativeRow)
 				artifact.NativeSourceLocation = nativeRow("Location").ToString
 				If Me.Settings.ArtifactTypeID = Relativity.ArtifactType.Document Then
 					artifact.NativeFileGuid = nativeRow("Guid").ToString
@@ -1101,25 +1108,32 @@ Namespace kCura.WinEDDS
 			RaiseEvent FatalErrorEvent(line, ex)
 		End Sub
 
-		Friend Sub WriteStatusLine(ByVal e As kCura.Windows.Process.EventType, ByVal line As String, ByVal isEssential As Boolean) Implements IStatus.WriteStatusLine
+		Friend Sub WriteStatusLine(ByVal e As kCura.Windows.Process.EventType, ByVal line As String, ByVal isEssential As Boolean, ByVal showNumberOfExportedDocuments As Boolean)
 			Dim now As Long = System.DateTime.Now.Ticks
 
 			SyncLock _syncLock
 				If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
 					_lastStatusMessageTs = now
-					Dim appendString As String = " ... " & Me.DocumentsExported - _lastDocumentsExportedCountReported & " document(s) exported."
-					_lastDocumentsExportedCountReported = Me.DocumentsExported
+					Dim appendString As String = ""
+					If showNumberOfExportedDocuments
+						 appendString  = " ... " & Me.DocumentsExported - _lastDocumentsExportedCountReported & " document(s) exported."
+						_lastDocumentsExportedCountReported = Me.DocumentsExported
+					End If
 					RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line & appendString, e, _lastStatisticsSnapshot, Statistics))
 				End If
 			End SyncLock
 
 		End Sub
 
+		Friend Sub WriteStatusLine(ByVal e As kCura.Windows.Process.EventType, ByVal line As String, ByVal isEssential As Boolean) Implements IStatus.WriteStatusLine
+			WriteStatusLine(e, line, isEssential, True)
+		End Sub
+
 		Friend Sub WriteStatusLineWithoutDocCount(ByVal e As kCura.Windows.Process.EventType, ByVal line As String, ByVal isEssential As Boolean)
 			Dim now As Long = System.DateTime.Now.Ticks
 
 			SyncLock _syncLock
-				If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then				
+				If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
 					_lastStatusMessageTs = now
 					_lastDocumentsExportedCountReported = Me.DocumentsExported
 					RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line, e, _lastStatisticsSnapshot, Statistics))
@@ -1147,6 +1161,10 @@ Namespace kCura.WinEDDS
 			sw.Close()
 			Dim errorLine As String = String.Format("Error processing images for document {0}: {1}. Check {2}_img_errors.txt for details", artifact.IdentifierValue, ex.Message.TrimEnd("."c), _exportFile.LoadFilesPrefix)
 			Me.WriteError(errorLine)
+		End Sub
+		Friend Sub WriteWarningWithoutShowingExportedDocumentsCount(line As String)
+			Interlocked.Increment(_warningCount)
+			WriteStatusLine(kCura.Windows.Process.EventType.Warning, line, True, False)
 		End Sub
 
 		Friend Sub WriteWarning(ByVal line As String) Implements IStatus.WriteWarning
@@ -1212,10 +1230,12 @@ Namespace kCura.WinEDDS
 		Private Function BuildFileNameProvider() As IFileNameProvider
 			Dim identifierExportFileNameProvider As IFileNameProvider = New IdentifierExportFileNameProvider(Settings)
 			Dim productionExportFileNameProvider As IFileNameProvider = New ProductionExportFileNameProvider(Settings, NameTextAndNativesAfterBegBates)
+			Dim customExportFileNameProvider As IFileNameProvider = New CustomFileNameProvider(Settings.CustomFileNaming?.DescriptorParts().ToList(), New FileNamePartProviderContainer(), _exportFile.AppendOriginalFileName)
 			Dim fileNameProvidersDictionary As New Dictionary(Of ExportNativeWithFilenameFrom, IFileNameProvider) From
 				{
 					{ExportNativeWithFilenameFrom.Identifier, identifierExportFileNameProvider},
-					{ExportNativeWithFilenameFrom.Production, productionExportFileNameProvider}
+					{ExportNativeWithFilenameFrom.Production, productionExportFileNameProvider},
+					{ExportNativeWithFilenameFrom.Custom, customExportFileNameProvider}
 				}
 
 			Return New FileNameProviderContainer(Settings, fileNameProvidersDictionary)

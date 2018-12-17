@@ -1,5 +1,6 @@
 Imports System.Threading
 Imports kCura.WinEDDS.Exporters
+Imports kCura.WinEDDS.Service.Export
 Imports kCura.WinEDDS.TApi
 Imports Relativity.DataTransfer.MessageService
 
@@ -60,12 +61,26 @@ Namespace kCura.WinEDDS
 			Return _hasErrors
 		End Function
 
+		Private Function GetExporter() As Exporter
+			If (ExportFile.UseCustomFileNaming) Then
+				Return _
+					New ExtendedExporter(TryCast(Me.ExportFile, ExtendedExportFile), Me.ProcessController,
+										 New WebApiServiceFactory(Me.ExportFile),
+										 _loadFileHeaderFormatterFactory, _exportConfig) With {.InteractionManager = UserNotification}
+			Else
+				Return _
+					New Exporter(Me.ExportFile, Me.ProcessController,
+										 New WebApiServiceFactory(Me.ExportFile),
+										 _loadFileHeaderFormatterFactory, _exportConfig) With {.InteractionManager = UserNotification}
+
+			End If
+		End Function
+
 		Protected Overrides Sub Initialize()
 			MyBase.Initialize()
 			_warningCount = 0
 			_errorCount = 0
-			_searchExporter = New Exporter(Me.ExportFile, Me.ProcessController, New Service.Export.WebApiServiceFactory(Me.ExportFile),
-											_loadFileHeaderFormatterFactory, _exportConfig) With {.InteractionManager = UserNotification}
+			_searchExporter = GetExporter()
 			If Not UserNotificationFactory Is Nothing Then
 				Dim un As IUserNotification = UserNotificationFactory(_searchExporter)
 				If Not un Is Nothing Then
