@@ -106,6 +106,9 @@
     <Import Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\TextAndNativeFileNameTests.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Controls\TextFieldPrecedencePicker.vb" />
     <Compile Include="ExportFilterSelectForm.vb" />
     <Compile Include="ExportFormTest.vb" />
