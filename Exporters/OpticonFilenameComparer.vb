@@ -1,8 +1,18 @@
 ﻿Imports System.Collections.Generic
+Imports Relativity.Logging
 
 Namespace kCura.WinEDDS.Exporters
     Public Class OpticonFilenameComparer
         Implements IComparer(Of String)
+
+	    Public Const OpticonFileColumnCount As Integer = 7
+		Public Const InvalidFileColumnCount As String = "Invalid number of columns in Opticon file row: {0}"
+
+		Private ReadOnly _logger As ILog
+
+	    Public Sub New(logger As ILog)
+		    _logger = logger
+	    End Sub
 
 		Public Function Compare(x As String, y As String) As Integer Implements IComparer(Of String).Compare
 			Dim firstFilename As OpticonPageFilename = GetOpticonPageFilename(x)
@@ -35,9 +45,17 @@ Namespace kCura.WinEDDS.Exporters
 		End Function
 
 		Private Function GetTrimmedFilename(originalLine As String) As String
-            Dim filenameWithExtension As String = originalLine.Split(","c)(2)
+			Dim splittedOriginalLine As String() = originalLine.Split(","c)
+			If splittedOriginalLine.Length <> OpticonFileColumnCount Then
+				_logger.LogError(InvalidFileColumnCount, originalLine)
+				Return originalLine
+			End If
+			Dim filenameWithExtension As String = splittedOriginalLine(2)
             Dim index As Integer = filenameWithExtension.LastIndexOf("."c)
-            Dim filename As String = filenameWithExtension.Substring(0, index)
+			If index < 0
+				Return filenameWithExtension
+			End If
+			Dim filename As String = filenameWithExtension.Substring(0, index)
             Return filename
         End Function
 
