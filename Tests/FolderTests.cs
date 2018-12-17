@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using NUnit.Framework;
 using kCura.Data.RowDataGateway;
