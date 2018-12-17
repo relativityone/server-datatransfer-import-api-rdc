@@ -97,6 +97,7 @@ Namespace kCura.WinEDDS
 					Interlocked.Increment(_errorCount)
 					Me.ProcessObserver.RaiseErrorEvent(e.DocumentsExported.ToString, e.Message)
 				Case kCura.Windows.Process.EventType.Progress
+					SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
 					Me.ProcessObserver.RaiseStatusEvent("", e.Message)
 				Case kCura.Windows.Process.EventType.Statistics
 					SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
