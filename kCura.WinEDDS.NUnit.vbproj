@@ -192,8 +192,11 @@
     <Compile Include="DataReaderReaderFixture.vb" />
     <Compile Include="Exceptions\ExceptionSerializationTests.vb" />
     <Compile Include="Exceptions\FieldValueImportExceptionFixture.vb" />
+    <Compile Include="Exporters\ObjectExportInfoTests.vb" />
     <Compile Include="Exporters\OpticonFilenameComparerTests.vb" />
+    <Compile Include="Exporters\OriginalFileNameProviderTests.vb" />
     <Compile Include="Exporters\Validator\PaddingWarningValidator\IsValid.vb" />
+    <Compile Include="Helpers\FileNameHelperTests.vb" />
     <Compile Include="Helpers\LoginHelperTests.vb" />
     <Compile Include="Helpers\CaseInsensitiveFilePathHelperTests.vb" />
     <Compile Include="Helpers\CaseSensitiveFilePathHelperTests.vb" />
