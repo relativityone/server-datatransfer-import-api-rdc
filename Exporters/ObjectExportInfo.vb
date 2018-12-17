@@ -81,13 +81,7 @@ Namespace kCura.WinEDDS.Exporters
 #End Region
 
 		Public Function AppendOriginalFileName(value As String) As String
-			If Not String.IsNullOrWhiteSpace(value) AndAlso Not String.IsNullOrWhiteSpace(OriginalFileName) Then
-				Return value & _ORIGINAL_FILE_NAME_PART_SEPARATOR & OriginalFileName
-			ElseIf Not String.IsNullOrWhiteSpace(OriginalFileName) Then
-				Return OriginalFileName
-			Else
-				Return value
-			End If
+			Return AppendOriginalFileName(New StringBuilder(value)).ToString()
 		End Function
 
 		Public Function AppendOriginalFileName(value As StringBuilder) As StringBuilder
