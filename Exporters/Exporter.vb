@@ -692,10 +692,11 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function ShouldTextAndNativesBeNamedAfterPrecedenceBegBates() As Boolean
-			Return Me.NameTextAndNativesAfterBegBates AndAlso
-					Settings.TypeOfExport <> ExportFile.ExportType.Production AndAlso
-					ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production AndAlso
-					_productionPrecedenceIds.Any(Function(prodID) prodID > 0)
+			Return True
+			'Return Me.NameTextAndNativesAfterBegBates AndAlso
+			'		Settings.TypeOfExport <> ExportFile.ExportType.Production AndAlso
+			'		ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production AndAlso
+			'		_productionPrecedenceIds.Any(Function(prodID) prodID > 0)
 		End Function
 
 		Private Sub SetProductionBegBatesFileName(artifact As ObjectExportInfo, bateslookup As Lazy(Of Dictionary(Of Int32, List(Of BatesEntry))))
