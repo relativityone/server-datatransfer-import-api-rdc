@@ -8,6 +8,21 @@ Namespace kCura.WinEDDS.NUnit
 		Public Const CORRECT_FOLDER_PATH As String = "\ValidExport\Location\"
 		Private _serializer As New kCura.WinEDDS.ExportFileSerializer With {.SettingsValidator = New MockExportSettingsValidator}
 
+		<TestCase("Entity", "Custodian", True)>
+		<TestCase("Custodian", "Entity", True)>
+		<TestCase("Custodian", "Custodian", True)>
+		<TestCase("Custodian", "Document", False)>
+		<Test()> Public Sub ObjectTypesAreCompatibleTest(currentObjectType As String, deserializedObjectType As String, expected As Boolean)
+			Dim mockArtifactTypeId As Int32 = 10
+			Dim currentFile As ExportFile = New ExportFile(mockArtifactTypeId)
+			currentFile.ObjectTypeName = currentObjectType
+			Dim deserializedFile As ExportFile = New ExportFile(mockArtifactTypeId)
+			deserializedFile.ObjectTypeName = deserializedObjectType
+			Dim actual As Boolean = _serializer.ObjectTypesAreCompatible(currentFile, deserializedFile)
+			Assert.AreEqual(expected, actual, "Wrong result was returned!")
+		End Sub
+
+
 #Region " XML Builder - for further test creation "
 
 		'<Test()>
