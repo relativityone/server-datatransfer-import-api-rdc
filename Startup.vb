@@ -43,19 +43,19 @@ Namespace kCura.EDDS.WinForm
 
 			Dim args As String() = System.Environment.GetCommandLineArgs
 
-			If args.Length = 1 Then
-				CloseConsole()
-				Dim mainForm As New kCura.EDDS.WinForm.MainForm()
+            If args.Length = 1 Then
+                CloseConsole()
+                Dim mainForm As New kCura.EDDS.WinForm.MainForm()
 
-				mainForm.Show()
-				mainForm.Refresh()
-				System.Windows.Forms.Application.Run()
-			Else
-				Task.Run(Async Function() As Task
-							 Await RunInConsoleMode().ConfigureAwait(False)
-						 End Function).Wait()
-			End If
-		End Sub
+                mainForm.Show()
+                mainForm.Refresh()
+                System.Windows.Forms.Application.Run()
+            Else
+                Task.Run(Async Function() As Task
+                             Await RunInConsoleMode().ConfigureAwait(False)
+                         End Function).Wait()
+            End If
+        End Sub
 
 		Private Function GetValueFromCommandListByFlag(ByVal commandList As kCura.CommandLine.CommandList, ByVal flag As String) As String
 			For Each command As kCura.CommandLine.Command In commandList
@@ -148,13 +148,13 @@ Namespace kCura.EDDS.WinForm
 					Case LoadMode.DynamicObject
 						_import.RunDynamicObjectImport(_importOptions)
 					Case LoadMode.Application
-						Await _import.RunApplicationImport(_importOptions)
-					Case LoadMode.Export
-						Await _import.RunExport(_importOptions.SelectedExportSettings)
-				End Select
+						Throw New InvalidOperationException("Load file is not supported for application imports")
+                    Case LoadMode.Export
+                        Await _import.RunExport(_importOptions.SelectedExportSettings)
+                End Select
 
-				Await _application.Logout()
-			Catch ex As RdcBaseException
+                Await _application.Logout()
+            Catch ex As RdcBaseException
 				Console.WriteLine("--------------------------")
 				Console.WriteLine("ERROR: " & ex.Message)
 				Console.WriteLine("")
