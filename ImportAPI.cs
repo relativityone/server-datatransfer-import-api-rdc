@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
 using System.Net;
-using System.Security.Cryptography;
-using System.Text;
 using kCura.Relativity.ImportAPI.Data;
 using kCura.Relativity.ImportAPI.Enumeration;
 using kCura.WinEDDS;
@@ -22,8 +19,6 @@ namespace kCura.Relativity.ImportAPI
 	/// </remarks>
 	public  class ImportAPI : IImportAPI
 	{
-		private String _userName;
-		private String _password;
 		private CaseManager _caseManager;
 		/// <summary>
 		/// Holds cookies for the current session.
@@ -33,6 +28,7 @@ namespace kCura.Relativity.ImportAPI
 		/// Holds credentials for the logged-in user.
 		/// </summary>
 		protected ICredentials _credentials;
+		private NetworkCredential _tapiCredentials;
 		private ObjectTypeManager _objectTypeManager;
 		private ProductionManager _productionManager;
 
@@ -74,6 +70,7 @@ namespace kCura.Relativity.ImportAPI
 			}
 
 			_credentials = creds.Credentials;
+			_tapiCredentials = creds.TapiCredential;
 			_cookieMonster = creds.CookieMonster;
 
 			if (_credentials == null)
@@ -227,7 +224,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </remarks>
 		public ImageImportBulkArtifactJob NewImageImportJob()
 		{
-			return new ImageImportBulkArtifactJob(_credentials, _cookieMonster, _userName, _password, (int)ExecutionSource);
+			return new ImageImportBulkArtifactJob(_credentials, _cookieMonster, (int)ExecutionSource);
 		}
 
 		/// <summary>
@@ -273,7 +270,7 @@ namespace kCura.Relativity.ImportAPI
 		/// Returns a new instance of an ImportBulkArtifactJob with the Settings.ArtifactTypeId property set to <paramref name="artifactTypeId"/>.
 		/// </returns>
 		public ImportBulkArtifactJob NewObjectImportJob(int artifactTypeId) {
-			var returnJob = new ImportBulkArtifactJob(_credentials, _cookieMonster, _userName, _password, (int)ExecutionSource);
+			var returnJob = new ImportBulkArtifactJob(_credentials, _tapiCredentials, _cookieMonster, (int)ExecutionSource);
 
 			returnJob.Settings.ArtifactTypeId = artifactTypeId;
 
@@ -359,19 +356,6 @@ namespace kCura.Relativity.ImportAPI
 			}
 
 			return _productionManager;
-		}
-
-		private ICredentials GetCredentials()
-		{
-			ICredentials credentials = null;
-
-			credentials = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuth(_cookieMonster);
-			if (credentials == null)
-			{
-				credentials = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePassword(_userName, _password, _cookieMonster);
-			}
-
-			return credentials;
 		}
 
 		/// <summary>
