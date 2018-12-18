@@ -15,7 +15,6 @@ Imports kCura.WinEDDS.Service.Export
 
 Namespace kCura.WinEDDS
 	Public Class Exporter
-		Implements IExporterStatusNotification
 		Implements IExporter
 		Implements IStatus
 
@@ -147,7 +146,7 @@ Namespace kCura.WinEDDS
 				_fileNameProvider = Value
 			End Set
 		End Property
-		
+
 #End Region
 
 		Public Event ShutdownEvent()
@@ -507,7 +506,7 @@ Namespace kCura.WinEDDS
 
 			Dim artifacts(documentArtifactIDs.Length - 1) As Exporters.ObjectExportInfo
 			Dim volumePredictions(documentArtifactIDs.Length - 1) As VolumePredictions
-			
+
 			Dim threads As Task() = Nothing
 			If UseOldExport Then
 				Dim threadCount As Integer = _exportConfig.ExportThreadCount - 1
@@ -528,7 +527,7 @@ Namespace kCura.WinEDDS
 				Else
 					objectExportableSize.FinalizeSizeCalculations(artifact, prediction)
 				End If
-				
+
 				volumePredictions(i) = prediction
 
 				artifacts(i) = artifact

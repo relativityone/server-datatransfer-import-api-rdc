@@ -88,14 +88,14 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overrides Sub OnSuccess()
-			MyBase.OnFatalError()
+			MyBase.OnSuccess()
 			SendJobStatistics(_imageFileImporter.Statistics)
 			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
-			MyBase.OnFatalError()
+			MyBase.OnHasErrors()
 			SendJobStatistics(_imageFileImporter.Statistics)
 			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)

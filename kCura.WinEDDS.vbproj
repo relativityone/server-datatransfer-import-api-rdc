@@ -167,23 +167,21 @@
     <Reference Include="Ionic.Zip">
       <HintPath>..\..\Vendor\DotNetZipLib-DevKit-v1.8\DotNetZip-v1.8\Release\Ionic.Zip.dll</HintPath>
     </Reference>
-    <Reference Include="Polly, Version=5.3.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Polly.5.3.1\lib\net45\Polly.dll</HintPath>
+    <Reference Include="Polly, Version=5.7.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\Polly.5.7.0\lib\net45\Polly.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.21.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.1.0.21\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
+    <Reference Include="Relativity.DataTransfer.MessageService, Version=10.0.2.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Relativity.DataTransfer.MessageService.10.0.2\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Kepler, Version=1.0.1.445, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Kepler.1.0.1.445\lib\net462\Relativity.Kepler.dll</HintPath>
+    <Reference Include="Relativity.Kepler">
+      <HintPath>..\..\packages\Relativity.Kepler.1.0.1.557\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Relativity.Logging.2018.11.5\lib\net462\Relativity.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Relativity.Logging.Interfaces.2018.11.5\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -202,36 +200,38 @@
     <Reference Include="Relativity.OAuth2Client.Interfaces">
       <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces.1.0.27\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.445, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.445\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+    <Reference Include="Relativity.Services.ServiceProxy">
+      <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.557\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Telemetry.APM, Version=9.4.164.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Telemetry.APM.9.4.164\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.APM">
+      <HintPath>..\..\packages\Relativity.Telemetry.APM.2018.9.1\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.164.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.164\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared">
+      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.2018.9.1\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.6.88.61, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface.9.6.88.61\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client, Version=4.2.17.1, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.4.2.17\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client, Version=5.0.2.35, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.5.0.2\lib\net462\Relativity.Transfer.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Aspera, Version=4.2.17.1, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.4.2.17\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Aspera, Version=5.0.2.35, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.5.0.2\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Core, Version=4.2.17.1, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.4.2.17\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Core, Version=5.0.2.35, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.5.0.2\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.FileShare, Version=4.2.17.1, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.4.2.17\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.FileShare, Version=5.0.2.35, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.5.0.2\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Http, Version=4.2.17.1, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\relativity.transfer.client.4.2.17\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Http, Version=5.0.2.35, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.5.0.2\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
@@ -248,6 +248,7 @@
     <Reference Include="System.Data">
       <Name>System.Data</Name>
     </Reference>
+    <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization.Formatters.Soap">
       <Name>System.Runtime.Serialization.Formatters.Soap</Name>
@@ -309,8 +310,10 @@
     </Compile>
     <Compile Include="Credentials\CredentialsNotSetException.vb" />
     <Compile Include="Credentials\ICredentialsProvider.vb" />
+    <Compile Include="Credentials\IntegratedAuthenticationOAuthCredentialsProvider.vb" />
     <Compile Include="Credentials\OAuth2ClientCredentials.vb" />
     <Compile Include="Credentials\OAuth2ImplicitCredentials.vb" />
+    <Compile Include="Credentials\OAuth2ImplicitCredentialsHelper.vb" />
     <Compile Include="Credentials\RelativityWebApiCredentialsProvider.vb" />
     <Compile Include="Credentials\UserCredentialsProvider.vb" />
     <Compile Include="Event\AppEvent.vb">
@@ -398,7 +401,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Exporters\VolumePredictions.vb" />
-    <Compile Include="FieldMapping\FieldMappingHelper.vb" />
     <Compile Include="FieldProviderCache.vb" />
     <Compile Include="FileDownloader.vb">
       <SubType>Code</SubType>
@@ -477,6 +479,10 @@
     <Compile Include="Importers\OpticonFileReader.vb" />
     <Compile Include="Exceptions\InvalidPackageException.vb" />
     <Compile Include="Importers\OutputFileWriter.vb" />
+    <Compile Include="Importers\TimeKeeper\DefaultTimeKeeperManager.vb" />
+    <Compile Include="Importers\TimeKeeper\DefaultTimerKeeper.vb" />
+    <Compile Include="Importers\TimeKeeper\ImportTimeKeeperBase.vb" />
+    <Compile Include="Importers\TimeKeeper\ITimeKeeperManager.vb" />
     <Compile Include="IO\FileStreamFactory.vb" />
     <Compile Include="IO\IFileStreamFactory.vb" />
     <Compile Include="Monitoring\Sinks\IMetricsConfig.vb" />
@@ -505,10 +511,6 @@
     </Compile>
     <Compile Include="PackageHelper.vb" />
     <Compile Include="PreviewChoicesHelper.vb" />
-    <Compile Include="Process\ApplicationDeploymentProcess.vb">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Process\ApplicationInstallProcessEvent.vb" />
     <Compile Include="Process\ConnectionDetailsProcess.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -539,7 +541,6 @@
     <Compile Include="PropertyExtractor\File.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ProxyClasses\TargetField.vb" />
     <Compile Include="ReadFromExisting.vb" />
     <Compile Include="ServiceFactoryFactory.vb" />
     <Compile Include="Service\AuditManager.vb">
@@ -609,9 +610,6 @@
     </Compile>
     <Compile Include="Service\SearchManager.vb">
       <SubType>code</SubType>
-    </Compile>
-    <Compile Include="Service\TemplateManager.vb">
-      <SubType>Code</SubType>
     </Compile>
     <Compile Include="Service\UserManager.vb">
       <SubType>code</SubType>
@@ -780,12 +778,6 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\Reference.vb">
-      <DependentUpon>Reference.map</DependentUpon>
-      <SubType>Code</SubType>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
     <Compile Include="Web References\kCura.EDDS.WebAPI.UserManagerBase\Reference.vb">
       <DependentUpon>Reference.map</DependentUpon>
       <SubType>code</SubType>
@@ -839,9 +831,6 @@
     <None Include="Web References\kCura.EDDS.WebAPI.DocumentManagerBase\DocumentManager.disco" />
     <None Include="Web References\kCura.EDDS.WebAPI.DocumentManagerBase\DocumentManager.wsdl" />
     <None Include="Web References\kCura.EDDS.WebAPI.DocumentManagerBase\File.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\kCura.EDDS.WebAPI.DocumentManagerBase\FullDocumentInfo.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
     <None Include="Web References\kCura.EDDS.WebAPI.DocumentManagerBase\NameValuePair.datasource">
@@ -926,24 +915,6 @@
     </None>
     <None Include="Web References\kCura.EDDS.WebAPI.SearchManagerBase\SearchManager.disco" />
     <None Include="Web References\kCura.EDDS.WebAPI.SearchManagerBase\SearchManager.wsdl" />
-    <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\ApplicationInstallationResult.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\AppMappingData.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\ObjectGuidToName1.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\ObjectValidationResult.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\Reference.map">
-      <Generator>MSDiscoCodeGenerator</Generator>
-      <LastGenOutput>Reference.vb</LastGenOutput>
-    </None>
-    <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\TemplateManager.disco" />
-    <None Include="Web References\kCura.EDDS.WebAPI.TemplateManagerBase\TemplateManager.wsdl" />
     <None Include="Web References\kCura.EDDS.WebAPI.UserManagerBase\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.vb</LastGenOutput>
@@ -1145,19 +1116,6 @@
       <RelPath>Web References\kCura.EDDS.WebAPI.SearchManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
       <UpdateFromURL>http://localhost/RelativityWebApi/SearchManager.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>
-      </CachedAppSettingsObjectName>
-      <CachedSettingsPropName>
-      </CachedSettingsPropName>
-    </WebReferenceUrl>
-    <WebReferenceUrl Include="http://localhost/RelativityWebApi/TemplateManager.asmx">
-      <RelPath>Web References\kCura.EDDS.WebAPI.TemplateManagerBase\</RelPath>
-      <UrlBehavior>Static</UrlBehavior>
-      <UpdateFromURL>http://localhost/RelativityWebApi/TemplateManager.asmx</UpdateFromURL>
       <ServiceLocationURL>
       </ServiceLocationURL>
       <CachedDynamicPropName>

@@ -40,7 +40,6 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
-			SendJobStatistics(_searchExporter.Statistics)
 			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseStatusEvent("", "Export completed")
 			Me.ProcessObserver.RaiseProcessCompleteEvent()
@@ -48,13 +47,11 @@ Namespace kCura.WinEDDS
 
 		Protected Overrides Sub OnFatalError()
 			MyBase.OnFatalError()
-			SendJobStatistics(_searchExporter.Statistics)
 			SendTransferJobFailedMessage()
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
-			SendJobStatistics(_searchExporter.Statistics)
 			SendTransferJobCompletedMessage()
 			Me.ProcessObserver.RaiseProcessCompleteEvent(False, _searchExporter.ErrorLogFileName, True)
 		End Sub
@@ -94,6 +91,8 @@ Namespace kCura.WinEDDS
 
 		Private Sub _productionExporter_StatusMessage(ByVal e As ExportEventArgs) Handles _searchExporter.StatusMessage
 			Select Case e.EventType
+				Case kCura.Windows.Process.EventType.End
+					SendJobStatistics(e.Statistics)
 				Case kCura.Windows.Process.EventType.Error
 					Interlocked.Increment(_errorCount)
 					Me.ProcessObserver.RaiseErrorEvent(e.DocumentsExported.ToString, e.Message)

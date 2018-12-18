@@ -800,10 +800,10 @@ Namespace kCura.WinEDDS
 			
 			Dim retval As Relativity.MassImport.ImportStatus = Relativity.MassImport.ImportStatus.Pending
 				Dim validator As New kCura.ImageValidator.ImageValidator
-			
+
 				Try
 					If Not Me.DisableImageTypeValidation Then
-					validator.ValidateImage(imageFilePath)
+						validator.ValidateImage(imageFilePath)
 					End If
 
 					Me.RaiseStatusEvent(Windows.Process.EventType.Status, $"Image file ( {imageRecord.FileLocation} ) validated.", CType((_totalValidated + _totalProcessed) / 2, Int64), Me.CurrentLineNumber)
