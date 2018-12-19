@@ -1359,10 +1359,12 @@ Public Class ExportForm
 			End If
 			If _textAndNativeFileNamePicker.Selection IsNot Nothing AndAlso _textAndNativeFileNamePicker.Selection(0).IsProductionBegBates
 				If _productionPrecedenceList.Items.Count  = 1
-					Dim precedence = DirectCast(_productionPrecedenceList.Items(0), Pair)
-					If precedence.Value.Equals("-1")
-						AppendErrorMessage(msg, "No production precedence selected for custom file naming")
-					End If 
+					If _exportFile.TypeOfExport <> ExportFile.ExportType.Production Then
+						Dim precedence = DirectCast(_productionPrecedenceList.Items(0), Pair)
+						If precedence.Value.Equals("-1")
+							AppendErrorMessage(msg, "No production precedence selected for custom file naming")
+						End If 
+					End If
 				End If
 			End If
 		End If
