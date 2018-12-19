@@ -301,7 +301,7 @@ Namespace kCura.WinEDDS
 			Dim objectDisplayNames As String() = DirectCast(goodObjects.ToArray(GetType(String)), String())
 			Dim nameIDPairs As New System.Collections.Hashtable
 			For Each objectName As String In objectDisplayNames
-				If objectName.Length > field.TextLength Then Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(Me.CurrentLineNumber, column, field.TextLength, field.DisplayName)
+				If objectName.Length > field.TextLength Then Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(Me.CurrentLineNumber, column, objectName.Length, field.TextLength, field.DisplayName)
 				nameIDPairs(objectName) = Me.LookupArtifactIDForName(objectName, associatedObjectTypeID)
 			Next
 			Return nameIDPairs
@@ -339,7 +339,7 @@ Namespace kCura.WinEDDS
 			Dim nameIDPairs As New System.Collections.Hashtable
 
 			For Each objectArtifactId As String In objectArtifactIds
-				If objectArtifactId.Length > field.TextLength Then Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(Me.CurrentLineNumber, column, field.TextLength, field.DisplayName)
+				If objectArtifactId.Length > field.TextLength Then Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(Me.CurrentLineNumber, column, objectArtifactId.Length, field.TextLength, field.DisplayName)
 				nameIDPairs(objectArtifactId) = Me.LookupNameForArtifactID(CInt(objectArtifactId), associatedObjectTypeID)
 			Next
 			Return nameIDPairs
@@ -478,8 +478,7 @@ Namespace kCura.WinEDDS
 
 				Case Relativity.FieldTypeHelper.FieldType.Object
 					If field.Value Is Nothing Then field.Value = String.Empty
-					'field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableAssociatedObjectName(field.Value.ToString, columnIndex, field.TextLength, field.DisplayName))
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableAssociatedObjectName(field.Value.ToString, columnIndex, field.Value.ToString.Length, field.TextLength, field.DisplayName))
+					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableAssociatedObjectName(field.Value.ToString, columnIndex, field.TextLength, field.DisplayName))
 					If forPreview Then field.Value = field.Value.ToString.Trim
 
 				Case Relativity.FieldTypeHelper.FieldType.Objects
@@ -686,17 +685,15 @@ Namespace kCura.WinEDDS
 
 		Public Function GetNullableFixedString(ByVal value As String, ByVal column As Int32, ByVal fieldLength As Int32, ByVal displayName As String) As String
 			If value.Length > fieldLength Then
-				Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(CurrentLineNumber, column, fieldLength, displayName)
+				Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(CurrentLineNumber, column, value.Length, fieldLength, displayName)
 			Else
 				Return kCura.Utility.NullableTypesHelper.DBNullString(value)
 			End If
 		End Function
 
-		'Public Function GetNullableAssociatedObjectName(ByVal value As String, ByVal column As Int32, ByVal fieldLength As Int32, ByVal fieldName As String) As String
-		Public Function GetNullableAssociatedObjectName(ByVal value As String, ByVal column As Int32, ByVal inputLength As Int32, ByVal fieldLength As Int32, ByVal fieldName As String) As String
+		Public Function GetNullableAssociatedObjectName(ByVal value As String, ByVal column As Int32, ByVal fieldLength As Int32, ByVal fieldName As String) As String
 			If value.Length > fieldLength Then
-				'Throw New kCura.Utility.DelimitedFileImporter.InputObjectNameExceedsFixedLengthException(CurrentLineNumber, column, fieldLength, fieldName)
-				Throw New kCura.Utility.DelimitedFileImporter.InputObjectNameExceedsFixedLengthException(CurrentLineNumber, column, inputLength, fieldLength, fieldName)
+				Throw New kCura.Utility.DelimitedFileImporter.InputObjectNameExceedsFixedLengthException(CurrentLineNumber, column, fieldLength, fieldName)
 			Else
 				Return kCura.Utility.NullableTypesHelper.DBNullString(value)
 			End If
