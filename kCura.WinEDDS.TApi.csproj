@@ -90,6 +90,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="RelativityTransferLog.cs" />
     <Compile Include="ClientChangeReason.cs" />
     <Compile Include="DownloadTapiBridge.cs" />
     <Compile Include="FileInfoInvalidPathException.cs" />
@@ -100,7 +101,6 @@
     <Compile Include="IoWarningEventArgs.cs" />
     <Compile Include="IoWarningPublisher.cs" />
     <Compile Include="IWaitAndRetryPolicy.cs" />
-    <Compile Include="RelativityTransferLog.cs" />
     <Compile Include="TapiBridgeFactory.cs" />
     <Compile Include="TapiBridgeParameters.cs" />
     <Compile Include="Properties\AssemblyInfoLocal.cs" />
