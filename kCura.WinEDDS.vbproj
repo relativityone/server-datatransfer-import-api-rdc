@@ -305,9 +305,11 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="..\..\Version\ComVisibleFalse.vb" />
+    <Compile Include="AssemblyInfoLocal.vb" />
     <Compile Include="Config.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Credentials\Constants.vb" />
     <Compile Include="Credentials\CredentialsNotSetException.vb" />
     <Compile Include="Credentials\ICredentialsProvider.vb" />
     <Compile Include="Credentials\IntegratedAuthenticationOAuthCredentialsProvider.vb" />
@@ -328,6 +330,7 @@
     <Compile Include="Exceptions\CodeCreationFailedException.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Exceptions\CredentialsNotSupportedException.vb" />
     <Compile Include="Exceptions\ErrorMessage.vb" />
     <Compile Include="Exceptions\ExportBaseException.vb">
       <SubType>Code</SubType>
