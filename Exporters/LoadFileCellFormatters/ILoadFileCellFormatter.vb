@@ -7,11 +7,4 @@
 		ReadOnly Property RowPrefix() As String
 		ReadOnly Property RowSuffix() As String
 	End Interface
-
-
-
-
-
-	
 End Namespace
-
