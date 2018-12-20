@@ -12,7 +12,7 @@ Namespace kCura.WinEDDS
 				relativityCredentials = New BearerTokenCredentials(credentials.Password)
 			Else
 				relativityCredentials = New UsernamePasswordCredentials(credentials.UserName, credentials.Password)
-			End If
+            End If
 			Dim webServiceUri As New Uri(Config.WebServiceURL)
 			Dim baseUri As New Uri(webServiceUri.GetLeftPart(UriPartial.Authority))
 			Dim settings As New ServiceFactorySettings(New Uri(baseUri, "/Relativity.Services"), New Uri(baseUri, "/Relativity.Rest/api"), relativityCredentials)
