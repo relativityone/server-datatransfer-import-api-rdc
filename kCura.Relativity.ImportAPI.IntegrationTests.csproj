@@ -103,6 +103,7 @@
     <Compile Include="Services\FieldService.cs" />
     <Compile Include="Helpers\ImportApiCreator.cs" />
     <Compile Include="Helpers\ImportApiTestErrorHandler.cs" />
+    <Compile Include="Services\ObjectService.cs" />
     <Compile Include="Services\ObjectTypeService.cs" />
     <Compile Include="Services\ProductionService.cs" />
     <Compile Include="Helpers\ConfigurationProvider.cs" />
