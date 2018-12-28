@@ -10,8 +10,6 @@
 namespace kCura.WinEDDS.TApi
 {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
 	using System.Runtime.Caching;
 
 	using Polly;
@@ -27,30 +25,21 @@ namespace kCura.WinEDDS.TApi
 		private const string RelativityUrlKey = "REL-URL-7480CAB5-A1C5-414B-BC05-512EADC5BCA3";
 
 		/// <summary>
-		/// The user manager service backing.
-		/// </summary>
-		private readonly UserManagerService userManagerService;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="T:kCura.WinEDDS.TApi.WebApiService2"/> class.
 		/// </summary>
 		/// <param name="parameters">
 		/// The TAPI bridge parameters.
 		/// </param>
-		/// <param name="userManagerService">
-		/// The user manager service.
-		/// </param>
-		public RelativityManagerService(TapiBridgeParameters parameters, UserManagerService userManagerService)
+		public RelativityManagerService(TapiBridgeParameters parameters)
 			: base(parameters)
 		{
-			this.userManagerService = userManagerService;
 		}
 
 		/// <summary>
 		/// Retrieves the Relativity URL from the cache or from a WebAPI service.
 		/// </summary>
 		/// <returns>
-		/// The Relativity URL.
+		/// The <see cref="Uri"/> instance.
 		/// </returns>
 		public Uri GetRelativityUrl()
 		{
@@ -61,65 +50,31 @@ namespace kCura.WinEDDS.TApi
 				return relativityUrl;
 			}
 
-			relativityUrl = this.GetWebApiRelativityUrl();
-			var policy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(this.ExpirationMinutes) };
-			MemoryCache.Default.Set(key, relativityUrl, policy);
-			return relativityUrl;
-		}
-
-		private Uri GetWebApiRelativityUrl()
-		{
 			this.Initialize();
 			var policy = Policy.Handle<Exception>().WaitAndRetry(
 				this.MaxRetryAttempts,
 				retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
 				(exception, span) =>
 				{
-					this.LogError(exception, $"Get BCP share path failed - retry span: {span}");
-					this.CheckLogin(exception);
+					this.LogError(exception, $"Get Relativity URL failed - retry span: {span}");
 				});
 			return policy.Execute(() =>
 			{
+				// REL-281370: by design, GetRelativityUrl does NOT require authentication.
+				//             As a result, the UserManager Login service isn't required.
 				using (var serviceInstance = new RelativityManager())
 				{
 					serviceInstance.Url = Combine(this.WebServiceUrl, "RelativityManager.asmx");
 					serviceInstance.CookieContainer = this.CookieContainer;
 					serviceInstance.Credentials = this.Credential;
-					serviceInstance.Timeout = (int) TimeSpan.FromSeconds(this.TimeoutSeconds).TotalMilliseconds;
-					return new Uri(serviceInstance.GetRelativityUrl());
+					serviceInstance.Timeout = (int)TimeSpan.FromSeconds(this.TimeoutSeconds).TotalMilliseconds;
+					string relativityUrlString = serviceInstance.GetRelativityUrl();
+					relativityUrl = new Uri(relativityUrlString);
+					var cachePolicy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(this.ExpirationMinutes) };
+					MemoryCache.Default.Set(key, relativityUrl, cachePolicy);
+					return relativityUrl;
 				}
 			});
-		}
-
-		/// <summary>
-		/// Attempts to perform a distributed login if the exception indicates an authentication error.
-		/// </summary>
-		/// <param name="exception">
-		/// The exception.
-		/// </param>
-		private void CheckLogin(Exception exception)
-		{
-			var candidates = new List<string>
-			{
-				exception.ToString(),
-				exception.InnerException?.ToString() ?? string.Empty
-			};
-
-			var accessDenied = candidates.Any(
-				x => x.IndexOf("kcuraaccessdeniedmarker", StringComparison.OrdinalIgnoreCase) != -1);
-			var tokenExpired = candidates.Any(
-				x => x.IndexOf("NeedToReLoginException", StringComparison.OrdinalIgnoreCase) != -1);
-			if (accessDenied)
-			{
-				this.LogInformation(
-					"An access denied exception occurred and requesting a new login token.");
-				this.userManagerService.Login();
-			}
-			else if (tokenExpired)
-			{
-				this.LogInformation("The login token has expired and requesting a new login token.");
-				this.userManagerService.Login();
-			}
 		}
 
 		[System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.6.1055.0")]

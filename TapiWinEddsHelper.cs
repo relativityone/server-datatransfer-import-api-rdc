@@ -8,7 +8,6 @@ namespace kCura.WinEDDS.TApi
 {
 	using System;
 	using System.Linq;
-	using System.Net;
 	using System.Text;
 	using System.Threading.Tasks;
 
@@ -131,11 +130,8 @@ namespace kCura.WinEDDS.TApi
 
 			// REL-281370: Due to high SOI, this method takes on more responsibility
 			//             than it should but it limits the URL fetch to a single method.
-			RelativityManagerService service =
-				new RelativityManagerService(parameters, new UserManagerService(parameters));
+			RelativityManagerService service = new RelativityManagerService(parameters);
 			Uri relativityUrl = service.GetRelativityUrl();
-
-			// Note: passing a null Web API credential object is safe.
 			return new RelativityConnectionInfo(
 				relativityUrl,
 				httpCredential,

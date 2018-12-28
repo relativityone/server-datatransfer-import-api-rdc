@@ -93,7 +93,6 @@
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="WebApiServiceBase.cs" />
-    <Compile Include="UserManagerService.cs" />
     <Compile Include="RelativityManagerService.cs" />
     <Compile Include="RelativityTransferLog.cs" />
     <Compile Include="ClientChangeReason.cs" />
