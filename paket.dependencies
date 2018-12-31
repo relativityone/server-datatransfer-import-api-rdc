@@ -1,0 +1,10 @@
+framework: net462
+source https://nuget.org/api/v2
+
+# Note: periodically update NUnit to the latest version.
+nuget nunit = 3.11.0
+nuget moq = 4.10.1
+nuget nbuilder = 6.0.0
+
+# Proget packages are below.
+source https://proget.kcura.corp/NuGet/NuGet
