@@ -8,3 +8,8 @@ nuget nbuilder = 6.0.0
 
 # Proget packages are below.
 source https://proget.kcura.corp/NuGet/NuGet
+
+# Note: the REL-194231-iapi-foldercache Jenkins pipeline must be fixed 
+#       and the branch must be merged before this package can be used
+#       with this solution. Manually build WinEDDS to this exact version for now.
+nuget relativity.importexport = 9.7.193.3
