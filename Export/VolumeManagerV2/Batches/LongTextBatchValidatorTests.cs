@@ -68,7 +68,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 
 		[TestCase("")]
 		[TestCase(null)]
-		public void ItShouldPassForWhenNoLocationSet(string emptyLocation)
+		public void ItShouldPassForWheLocationNotSet(string emptyLocation)
 		{
 			LongText longText = Create(emptyLocation, true, false);
 			LongTextRepository.Setup(x => x.GetLongTexts()).Returns(new List<LongText> {longText});
