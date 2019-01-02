@@ -28,7 +28,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 		{
 			ParallelQuery<Action> validationResults =
 				_longTextRepository.GetLongTexts().AsParallel().AsOrdered()
-					.Where(x => (x.ExportRequest != null || x.HasBeenDownloaded) && !x.RequireDeletion)
+					.Where(x => (x.ExportRequest != null || x.HasBeenDownloaded) && !x.RequireDeletion &&
+					            !string.IsNullOrWhiteSpace(x.Location))
 					.Select(x => GetErrorActionForArtifact(x, cancellationToken));
 
 			foreach (Action validationAction in validationResults.Where(action => action != null))
