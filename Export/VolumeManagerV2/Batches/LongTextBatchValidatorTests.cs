@@ -66,6 +66,23 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 			Status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never());
 		}
 
+		[TestCase("")]
+		[TestCase(null)]
+		public void ItShouldPassForWhenNoLocationSet(string emptyLocation)
+		{
+			LongText longText = Create(emptyLocation, true, false);
+			LongTextRepository.Setup(x => x.GetLongTexts()).Returns(new List<LongText> {longText});
+
+			//ACT
+			Instance.ValidateExportedBatch(null, null, CancellationToken.None);
+
+			//ASSERT
+			Status.Verify(x => x.WriteError(It.IsAny<string>()), Times.Never());
+			Status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never());
+			FileHelper.Verify(x => x.Exists(emptyLocation), Times.Never());
+			FileHelper.Verify(x => x.GetFileSize(emptyLocation), Times.Never());
+		}
+
 		[Test]
 		public void ItShouldWriteErrorForMissingFile()
 		{
