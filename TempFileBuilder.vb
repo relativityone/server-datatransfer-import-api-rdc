@@ -28,21 +28,8 @@
 		''' The full path of the temporary file.
 		''' </returns>
 		Public Shared Function GetTempFileName(fileNameSuffix As String) As String
-			Const FileNameSeparator As String = "-"
-			If String.IsNullOrEmpty(fileNameSuffix) Then
-				fileNameSuffix = "rel-default"
-			End If
-
-			Dim tempDirectory As String = System.IO.Path.GetTempPath()
-			Dim fileName As String = String.Join(
-				FileNameSeparator,
-				DateTime.Now.ToString($"yyyyMMddHHmmss", System.Globalization.CultureInfo.InvariantCulture),
-				Guid.NewGuid().ToString("D").ToUpperInvariant(),
-				fileNameSuffix)
-			Dim file As String = System.IO.Path.Combine(tempDirectory, System.IO.Path.ChangeExtension(fileName, "tmp"))
-			Using (kCura.Utility.File.Instance.Create(file))
-			End Using
-			Return file
+			' The implementation has been relocated to the IPath object.
+			Return kCura.WinEDDS.TApi.FileSystem.Instance.Path.GetTempFileName(fileNameSuffix)
 		End Function
 	End Class
 End Namespace
