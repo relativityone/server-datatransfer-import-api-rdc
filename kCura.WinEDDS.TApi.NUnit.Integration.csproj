@@ -125,6 +125,7 @@
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DownloadTapiBridgeTests.cs" />
+    <Compile Include="FileSystemWrapTests.cs" />
     <Compile Include="TestRelativityLogFactory.cs" />
     <Compile Include="FileLockedImportJobTests.cs" />
     <Compile Include="FileNotFoundImportJobTests.cs" />
