@@ -12,10 +12,10 @@ namespace kCura.WinEDDS.TApi
 	using System;
     using System.Threading;
     using System.Globalization;
+
     using kCura.WinEDDS.TApi.Resources;
 
 	using Relativity.Logging;
-	using Relativity.Transfer;
 
 	/// <summary>
 	/// Base class for IO reporter
@@ -26,18 +26,17 @@ namespace kCura.WinEDDS.TApi
 		/// The value that indicates no retry information is provided.
 		/// </summary>
 		private const int NoRetryInfo = -1;
-        private readonly IFileSystemService fileSystemService;
-        private readonly IWaitAndRetryPolicy waitAndRetryPolicy;
-        private readonly IoWarningPublisher publisher;
-        private readonly ILog log;
+		private readonly IFileSystem fileSystem;
+		private readonly IWaitAndRetryPolicy waitAndRetryPolicy;
+		private readonly ILog log;
         private readonly bool disableNativeLocationValidation;
 		private readonly CancellationToken cancellationToken;
 
 		/// <summary>
 		/// Constructor for IO reporter
 		/// </summary>
-		/// <param name="fileService">
-		/// The file system service.
+		/// <param name="wrapper">
+		/// The file system wrapper.
 		/// </param>
 		/// <param name="waitAndRetry">
 		/// The resiliency component.
@@ -54,43 +53,26 @@ namespace kCura.WinEDDS.TApi
 		/// <param name="cancellationToken">
 		/// The Cancel Token used to stop the process a any requested time.</param>
 		public IoReporter(
-            IFileSystemService fileService,
+			IFileSystem wrapper,
             IWaitAndRetryPolicy waitAndRetry,
             ILog log,
             IoWarningPublisher publisher,
-			bool disableNativeLocationValidation, 
+			bool disableNativeLocationValidation,
 			CancellationToken cancellationToken)
 		{
-			if (fileService == null)
-			{
-				throw new ArgumentNullException(nameof(fileService));
-			}
-
-			if (waitAndRetry == null)
-			{
-				throw new ArgumentNullException(nameof(waitAndRetry));
-			}
-
-			if (log == null)
-			{
-				throw new ArgumentNullException(nameof(log));
-			}
-
-            if (publisher == null)
-			{
-                throw new ArgumentNullException(nameof(publisher));
-			}
-
-            this.fileSystemService = fileService;
-            this.waitAndRetryPolicy = waitAndRetry;
-            this.log = log;
-            this.publisher = publisher;
+			this.fileSystem = wrapper ?? throw new ArgumentNullException(nameof(wrapper));
+            this.waitAndRetryPolicy = waitAndRetry ?? throw new ArgumentNullException(nameof(waitAndRetry));
+            this.log = log ?? throw new ArgumentNullException(nameof(log));
+            this.IOWarningPublisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
             this.disableNativeLocationValidation = disableNativeLocationValidation;
 			this.cancellationToken = cancellationToken;
 		}
 
 		/// <inheritdoc />
-        public IoWarningPublisher IOWarningPublisher => this.publisher;
+		public IoWarningPublisher IOWarningPublisher
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Creates warning message from <paramref name="exception"/>.
@@ -178,76 +160,76 @@ namespace kCura.WinEDDS.TApi
 
             try
             {
-                return this.waitAndRetryPolicy.WaitAndRetry<long, Exception>(
-                    retryAttempt => TimeSpan.FromSeconds(
-                        retryAttempt == 1 ? 0 : this.waitAndRetryPolicy.WaitTimeSecondsBetweenRetryAttempts),
-                    (exception, timeSpan) =>
-                    {
-                        this.HandleGetFileLengthException(
-                            exception,
-                            lineNumberInParentFile,
-                            timeSpan.TotalSeconds);
-                    },
-                    (cancellationToken) => this.GetFileLength(fileName),
-                    cancellationToken
-                );
+	            return this.waitAndRetryPolicy.WaitAndRetry<long, Exception>(
+		            retryAttempt => TimeSpan.FromSeconds(
+			            retryAttempt == 1 ? 0 : this.waitAndRetryPolicy.WaitTimeSecondsBetweenRetryAttempts),
+		            (exception, timeSpan) =>
+		            {
+			            this.PublishAndLogError(
+				            exception,
+				            lineNumberInParentFile,
+				            timeSpan.TotalSeconds);
+		            },
+		            (ct) =>
+		            {
+						try
+						{
+							IFileInfo fileInfo = this.fileSystem.CreateFileInfo(fileName);
+							return fileInfo.Length;
+						}
+						catch (Exception exception)
+						{
+							if (this.CheckInvalidPathCharactersException(exception))
+							{
+								throw this.CreateInvalidPathCharactersException(exception, fileName);
+							}
+
+							throw;
+						}
+					},
+		            cancellationToken
+	            );
             }
             catch (OperationCanceledException)
             {
-                this.LogCancelRequest(fileName, lineNumberInParentFile);
-                return -1;
+	            this.log.LogInformation($"Get file length for line number {lineNumberInParentFile} and filename {fileName} has been canceled.");
+	            return -1;
             }
-            
         }
 
-        private void LogCancelRequest(string fileName, int lineNumber)
+        private bool CheckInvalidPathCharactersException(Exception exception)
         {
-            this.log.LogInformation($"Get file lenght for line number {lineNumber} and filename {fileName} has been canceled.");
+	        return this.disableNativeLocationValidation && exception is ArgumentException &&
+	               exception.Message.Contains("Illegal characters in path.");
         }
 
-        /// <summary>
-        ///  Handles all exceptions when retrieving the file length fails.
-        /// </summary>
-        /// <param name="exception">
-        /// The thrown exception.
-        /// </param>
-        /// <param name="lineNumberInParentFile">
-        /// The line number from the parent file.
-        /// </param>
-        /// <param name="timeoutSeconds">
-        /// The timeout in seconds.
-        /// </param>
-        /// <exception cref="FileInfoInvalidPathException">
-        /// Thrown when the path contains invalid path characters.
-        /// </exception>
-        private void HandleGetFileLengthException(Exception exception, int lineNumberInParentFile, double timeoutSeconds)
-		{
-			var warningMessage = BuildIoReporterWarningMessage(exception, timeoutSeconds);
-			publisher?.PublishIoWarningEvent(new IoWarningEventArgs(warningMessage, lineNumberInParentFile));
-			log.LogWarning(exception, warningMessage);
+        private FileInfoInvalidPathException CreateInvalidPathCharactersException(Exception exception, string fileName)
+        {
+	        var message = string.Format(
+		        CultureInfo.CurrentCulture,
+		        Strings.ImportInvalidPathCharactersExceptionMessage,
+		        fileName);
+	        this.log.LogError(exception, message);
+	        return new FileInfoInvalidPathException(message);
 		}
 
-		private long GetFileLength(string fileName)
+		/// <summary>
+		///  Publishes and logs the error.
+		/// </summary>
+		/// <param name="exception">
+		/// The thrown exception.
+		/// </param>
+		/// <param name="lineNumberInParentFile">
+		/// The line number from the parent file.
+		/// </param>
+		/// <param name="timeoutSeconds">
+		/// The timeout in seconds.
+		/// </param>
+		private void PublishAndLogError(Exception exception, int lineNumberInParentFile, double timeoutSeconds)
 		{
-			try
-			{
-				return this.fileSystemService.GetFileLength(fileName);
-			}
-			catch (Exception exception)
-			{
-            if (this.disableNativeLocationValidation && exception is ArgumentException &&
-                exception.Message.Contains("Illegal characters in path."))
-				{
-                var message = string.Format(
-                    CultureInfo.CurrentCulture,
-                    Strings.ImportInvalidPathCharactersExceptionMessage,
-                    fileName);
-                this.log.LogError(exception, message);
-                throw new FileInfoInvalidPathException(message);
-				}
-
-				throw;
-			}
-		}
+			var message = BuildIoReporterWarningMessage(exception, timeoutSeconds);
+	        IOWarningPublisher?.PublishIoWarningEvent(new IoWarningEventArgs(message, lineNumberInParentFile));
+	        log.LogWarning(exception, message);
+        }
 	}
 }

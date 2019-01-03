@@ -60,13 +60,11 @@ using System.Threading;
 	        {
 		        throw new ArgumentNullException(nameof(publisher));
 	        }
-			
 
-            var fileSystemService = new FileSystemService();
-            var waitAndRetryPolicy = new WaitAndRetryPolicy(maxRetryAttempts, waitTimeSecondsBetweenRetryAttempts); 
-
-            return new IoReporter(
-                fileSystemService,
+	        IWaitAndRetryPolicy waitAndRetryPolicy = new WaitAndRetryPolicy(maxRetryAttempts, waitTimeSecondsBetweenRetryAttempts);
+	        IFileSystem fileSystemInstance = FileSystem.Instance.DeepCopy();
+			return new IoReporter(
+				fileSystemInstance,
                 waitAndRetryPolicy,
                 logger,
                 publisher,
