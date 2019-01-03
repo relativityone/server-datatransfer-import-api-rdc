@@ -85,11 +85,25 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Caching" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DirectoryWrap.cs" />
+    <Compile Include="DirectoryInfoWrap.cs" />
+    <Compile Include="FileSystem.cs" />
+    <Compile Include="IDirectory.cs" />
+    <Compile Include="IDirectoryInfo.cs" />
+    <Compile Include="IFileSystem.cs" />
+    <Compile Include="FileSystemWrap.cs" />
+    <Compile Include="FileInfoWrap.cs" />
+    <Compile Include="PathWrap.cs" />
+    <Compile Include="FileWrap.cs" />
+    <Compile Include="IPath.cs" />
+    <Compile Include="IFile.cs" />
+    <Compile Include="IFileInfo.cs" />
     <Compile Include="RelativityTransferLog.cs" />
     <Compile Include="ClientChangeReason.cs" />
     <Compile Include="DownloadTapiBridge.cs" />
