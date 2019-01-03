@@ -10,13 +10,12 @@
 namespace kCura.WinEDDS.TApi.NUnit.Integration
 {
     using System;
-using System.Threading;
+	using System.Threading;
     using Moq;
 
     using global::NUnit.Framework;
 
     using global::Relativity.Logging;
-    using global::Relativity.Transfer;
 
     /// <summary>
     /// Represents <see cref="IoReporter"/> tests.
@@ -25,10 +24,10 @@ using System.Threading;
 	public class IoReporterTests
 	{
         private IIoReporter ioReporterInstance;
-        private Mock<IFileSystemService> fileSystemService;
-        private Mock<IWaitAndRetryPolicy> mockedWaitAndRetry;
+        private Mock<IFileSystem> mockfileSystem;
+        private Mock<IWaitAndRetryPolicy> mockWaitAndRetry;
         private IWaitAndRetryPolicy waitAndRetry;
-        private Mock<ILog> logger;
+        private Mock<ILog> mockLogger;
         private IoWarningPublisher publisher;
         private long actualFileLength;
         private Func<int, TimeSpan> actualRetryDuractionFunc = null;
@@ -48,10 +47,10 @@ using System.Threading;
 		[SetUp]
 		public void Setup()
 		{
-            this.fileSystemService = new Mock<IFileSystemService>();
-            this.mockedWaitAndRetry = new Mock<IWaitAndRetryPolicy>();
+			this.mockfileSystem = new Mock<IFileSystem>();
+            this.mockWaitAndRetry = new Mock<IWaitAndRetryPolicy>();
             this.waitAndRetry = null;
-            this.logger = new Mock<ILog>();
+            this.mockLogger = new Mock<ILog>();
             this.publisher = new IoWarningPublisher();
 		}
 
@@ -78,9 +77,8 @@ using System.Threading;
 		{
             this.GivenTheWaitAndRetryReturns(waitTimeBetweenRetryAttempts);
             this.GivenTheMockedWaitAndRetryPolicyCallback(1);
-            
-            this.WhenExecutingTheGetFileLength();
-            
+			this.GivenTheFileLength(1000);
+			this.WhenExecutingTheGetFileLength();            
             this.ThenTheActualRetryDuractionShouldCalculated(retryAttempt, waitTimeBetweenRetryAttempts);
 		}
 
@@ -91,9 +89,8 @@ using System.Threading;
             this.GivenTheExpectedLogWarningMessage();
             this.GivenTheMockedWaitAndRetryPolicyCallback(1);
             this.GivenTheLoggerWarningCallback();
-            
-            this.WhenExecutingTheGetFileLength();
-            
+            this.GivenTheFileLength(1000);
+			this.WhenExecutingTheGetFileLength();            
             this.ThenTheActualExceptionMessageShouldEqual();
             this.ThenTheActualLogWarningMessageShouldEqual();
             this.ThenTheLoggerWarningShouldBeInvokedOneTime();
@@ -115,11 +112,9 @@ using System.Threading;
             this.ThenTheLoggerErrorShouldBeInvokedOneTime();
 		}
 
-
-
 		private void ThenTheLoggerErrorShouldBeInvokedOneTime()
 		{
-            this.logger.Verify(logger => logger.LogError(It.IsAny<Exception>(), It.IsAny<string>()), Times.Once);
+            this.mockLogger.Verify(logger => logger.LogError(It.IsAny<Exception>(), It.IsAny<string>()), Times.Once);
 		}
 
 		private void ThenTheActualLogErrorMessageShouldEqual()
@@ -136,7 +131,7 @@ using System.Threading;
 
 		private void GivenTheWaitAndRetryReturns(int waitTimeBetweenRetryAttempts)
 		{
-            this.mockedWaitAndRetry.Setup(obj => obj.WaitTimeSecondsBetweenRetryAttempts).Returns(waitTimeBetweenRetryAttempts);
+            this.mockWaitAndRetry.Setup(obj => obj.WaitTimeSecondsBetweenRetryAttempts).Returns(waitTimeBetweenRetryAttempts);
 		}
 
         /// <summary>
@@ -149,7 +144,7 @@ using System.Threading;
 
         private void GivenTheMockedWaitAndRetryPolicyCallback(long expected)
         {
-            this.mockedWaitAndRetry
+            this.mockWaitAndRetry
                 .Setup(
                     obj => obj.WaitAndRetry<long, Exception>(
                         It.IsAny<Func<int, TimeSpan>>(),
@@ -167,18 +162,19 @@ using System.Threading;
 
 		private void GivenTheFileLength(int expectedLength)
 		{
-            this.fileSystemService.Setup(obj => obj.GetFileLength(_FILE_NAME)).Returns(expectedLength);
+			var mockFileInfo = new Mock<IFileInfo>();
+			mockFileInfo.Setup(x => x.Length).Returns(expectedLength);
+			this.mockfileSystem.Setup(x => x.CreateFileInfo(_FILE_NAME)).Returns(mockFileInfo.Object);
 		}
 
 		private void GivenTheFileServiceWhichThrowsArgumentException(ArgumentException exception)
 		{
-			fileSystemService.Setup(obj => obj.GetFileLength(It.IsAny<string>())).Throws(exception);
+			this.mockfileSystem.Setup(x => x.CreateFileInfo(It.IsAny<string>())).Throws(exception);
 		}
-
 
 	    private void GivenTheLoggerWarningCallback()
 	    {
-	        this.logger.Setup(
+	        this.mockLogger.Setup(
 	                log => log.LogWarning(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object[]>()))
 	            .Callback<Exception, string, object[]>(
 	                (ex, logWarningMessage, param) =>
@@ -190,7 +186,7 @@ using System.Threading;
 
 	    private void GivenTheLoggerErrorCallback()
 	    {
-	        this.logger.Setup(
+	        this.mockLogger.Setup(
 	                log => log.LogError(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object[]>()))
 	            .Callback<Exception, string, object[]>((ex, logWarningMessage, param) =>
 	            {
@@ -201,7 +197,7 @@ using System.Threading;
 
         private void GivenTheWaitAndRetryCallback()
         { 
-            this.mockedWaitAndRetry
+            this.mockWaitAndRetry
                 .Setup(
                     obj => obj.WaitAndRetry<long, Exception>(
                         It.IsAny<Func<int, TimeSpan>>(),
@@ -240,11 +236,11 @@ using System.Threading;
 
 		private void WhenExecutingTheGetFileLength(bool disableNativeLocationValidation = false)
 		{
-		    IWaitAndRetryPolicy policy = waitAndRetry ?? this.mockedWaitAndRetry.Object;
+		    IWaitAndRetryPolicy policy = waitAndRetry ?? this.mockWaitAndRetry.Object;
             this.ioReporterInstance = new IoReporter(
-                this.fileSystemService.Object,
+                this.mockfileSystem.Object,
                 policy,
-                this.logger.Object,
+                this.mockLogger.Object,
                 this.publisher,
                 disableNativeLocationValidation, 
                 tokenSource.Token);
@@ -254,9 +250,9 @@ using System.Threading;
 		private void WhenExecutingIoReporterGetFileLengthThenThrowsException(bool disableNativeLocationValidation)
 		{
 			ioReporterInstance = new IoReporter(
-                this.fileSystemService.Object,
-                this.mockedWaitAndRetry.Object,
-                this.logger.Object,
+                this.mockfileSystem.Object,
+                this.mockWaitAndRetry.Object,
+                this.mockLogger.Object,
                 this.publisher,
                 disableNativeLocationValidation, 
                 tokenSource.Token);
@@ -282,7 +278,7 @@ using System.Threading;
 
 		private void ThenTheLoggerWarningShouldBeInvokedOneTime()
 		{
-            this.logger.Verify(log => log.LogWarning(It.IsAny<Exception>(), It.IsAny<string>()), Times.Once);
+            this.mockLogger.Verify(log => log.LogWarning(It.IsAny<Exception>(), It.IsAny<string>()), Times.Once);
 		}
 
 		private void ThenTheActualLogWarningMessageShouldEqual()
