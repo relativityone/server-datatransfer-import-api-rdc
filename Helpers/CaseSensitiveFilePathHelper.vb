@@ -4,10 +4,10 @@ Namespace kCura.WinEDDS.Helpers
 	Public Class CaseSensitiveFilePathHelper
 		Implements IFilePathHelper
 
-		Private ReadOnly _systemIoWrapper As ISystemIoFileWrapper
+		Private ReadOnly _fileSystem As kCura.WinEDDS.TApi.IFileSystem
 
-		Public Sub New(systemIoWrapper As ISystemIoFileWrapper)
-			_systemIoWrapper = systemIoWrapper
+		Public Sub New(fileSystem As kCura.WinEDDS.TApi.IFileSystem)
+			_fileSystem = fileSystem
 		End Sub
 
 		Public Function GetExistingFilePath(path As String) As String Implements IFilePathHelper.GetExistingFilePath
@@ -15,7 +15,7 @@ Namespace kCura.WinEDDS.Helpers
 				Return Nothing
 			End If
 
-			If _systemIoWrapper.Exists(path)
+			If _fileSystem.File.Exists(path)
 				Return path
 			End If
 
@@ -27,7 +27,7 @@ Namespace kCura.WinEDDS.Helpers
 		End Function
 
 		Protected Overridable Function TryToSearchInCaseSensitivePaths(path As String) As String
-			Dim extension As String = _systemIoWrapper.GetExtension(path)
+			Dim extension As String = _fileSystem.Path.GetExtension(path)
 			
 			If String.IsNullOrEmpty(extension)
 				Return Nothing
@@ -47,9 +47,9 @@ Namespace kCura.WinEDDS.Helpers
 		End Function
 
 		Private Function FileExistsWithNewExtension(path As String, extension As String, <Out> ByRef updatedPath As String) As Boolean
-			Dim fileLocationToTest As String = _systemIoWrapper.ChangeExtension(path, extension)
+			Dim fileLocationToTest As String = _fileSystem.Path.ChangeExtension(path, extension)
 
-			Dim exists As Boolean = _systemIoWrapper.Exists(fileLocationToTest)
+			Dim exists As Boolean = _fileSystem.File.Exists(fileLocationToTest)
 
 			updatedPath = If(exists, fileLocationToTest, Nothing)
 
