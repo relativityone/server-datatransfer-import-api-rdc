@@ -139,6 +139,7 @@
     <Compile Include="TapiProgressEventArgs.cs" />
     <Compile Include="TapiStatisticsEventArgs.cs" />
     <Compile Include="UploadTapiBridge.cs" />
+    <Compile Include="RetryPolicies.cs" />
     <Compile Include="WaitAndRetryPolicy.cs" />
     <Compile Include="UploadTapiBridgeParameters.cs" />
   </ItemGroup>

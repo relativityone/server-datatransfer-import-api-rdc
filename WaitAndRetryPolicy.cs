@@ -37,16 +37,16 @@ namespace kCura.WinEDDS.TApi
         {
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WaitAndRetryPolicy"/> class.
-        /// </summary>
-        /// <param name="maxRetryAttempts">
-        /// The maximum number of retries.
-        /// </param>
-        /// <param name="waitTimeSecondsBetweenRetryAttempts">
-        /// The number of seconds to wait between retry attempts.
-        /// </param>
-        public WaitAndRetryPolicy(int maxRetryAttempts, int waitTimeSecondsBetweenRetryAttempts)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="WaitAndRetryPolicy"/> class.
+		/// </summary>
+		/// <param name="maxRetryAttempts">
+		/// The maximum number of retries.
+		/// </param>
+		/// <param name="waitTimeSecondsBetweenRetryAttempts">
+		/// The number of seconds to wait between retry attempts.
+		/// </param>
+		public WaitAndRetryPolicy(int maxRetryAttempts, int waitTimeSecondsBetweenRetryAttempts)
         {
             this.MaxRetryAttempts = maxRetryAttempts;
             this.WaitTimeSecondsBetweenRetryAttempts = waitTimeSecondsBetweenRetryAttempts;
@@ -81,10 +81,26 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <inheritdoc />
-        public TResult WaitAndRetry<TResult, TException>(Func<int, TimeSpan> retryDuration, Action<Exception, TimeSpan> retryAction, Func<CancellationToken, TResult> execFunc,
+        public TResult WaitAndRetry<TResult>(
+	        Func<Exception, bool> exceptionPredicate,
+	        Func<int, TimeSpan> retryDuration,
+	        Action<Exception, TimeSpan> retryAction,
+	        Func<CancellationToken, TResult> execFunc,
+	        CancellationToken token)
+        {
+	        return Policy.Handle(exceptionPredicate)
+		        .WaitAndRetry(this.MaxRetryAttempts, retryDuration, retryAction)
+		        .Execute(execFunc, token);
+        }
+
+        /// <inheritdoc />
+		public TResult WaitAndRetry<TResult, TException>(Func<int, TimeSpan> retryDuration, Action<Exception, TimeSpan> retryAction, Func<CancellationToken, TResult> execFunc,
             CancellationToken token) where TException : Exception
         {
-            return Policy.Handle<TException>().WaitAndRetry(this.MaxRetryAttempts, retryDuration, retryAction)
+            return Policy.Handle<TException>().WaitAndRetry(
+		            this.MaxRetryAttempts,
+		            retryDuration,
+		            retryAction)
                 .Execute(execFunc, token);
         }
 
@@ -92,7 +108,10 @@ namespace kCura.WinEDDS.TApi
         public TResult WaitAndRetry<TResult, TException>(int maxRetryCount, Func<int, TimeSpan> retryDuration, Action<Exception, TimeSpan> retryAction, Func<CancellationToken, TResult> execFunc,
             CancellationToken token) where TException : Exception
         {
-            return Policy.Handle<TException>().WaitAndRetry(maxRetryCount, retryDuration, retryAction)
+            return Policy.Handle<TException>().WaitAndRetry(
+		            maxRetryCount,
+		            retryDuration,
+		            retryAction)
             .Execute(execFunc, token);
         }
     }

@@ -26,6 +26,7 @@ namespace kCura.WinEDDS.TApi
 		/// The value that indicates no retry information is provided.
 		/// </summary>
 		private const int NoRetryInfo = -1;
+
 		private readonly IFileSystem fileSystem;
 		private readonly IWaitAndRetryPolicy waitAndRetryPolicy;
 		private readonly ILog log;
@@ -35,7 +36,7 @@ namespace kCura.WinEDDS.TApi
 		/// <summary>
 		/// Constructor for IO reporter
 		/// </summary>
-		/// <param name="wrapper">
+		/// <param name="fileSystem">
 		/// The file system wrapper.
 		/// </param>
 		/// <param name="waitAndRetry">
@@ -53,14 +54,14 @@ namespace kCura.WinEDDS.TApi
 		/// <param name="cancellationToken">
 		/// The Cancel Token used to stop the process a any requested time.</param>
 		public IoReporter(
-			IFileSystem wrapper,
+			IFileSystem fileSystem,
             IWaitAndRetryPolicy waitAndRetry,
             ILog log,
             IoWarningPublisher publisher,
 			bool disableNativeLocationValidation,
 			CancellationToken cancellationToken)
 		{
-			this.fileSystem = wrapper ?? throw new ArgumentNullException(nameof(wrapper));
+			this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
             this.waitAndRetryPolicy = waitAndRetry ?? throw new ArgumentNullException(nameof(waitAndRetry));
             this.log = log ?? throw new ArgumentNullException(nameof(log));
             this.IOWarningPublisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
@@ -145,59 +146,87 @@ namespace kCura.WinEDDS.TApi
 				exception.Message);
 		}
 
-        /// <inheritdoc />
-        public long GetFileLength(string fileName, int lineNumberInParentFile)
+		/// <inheritdoc />
+		public void CopyFile(string sourceFileName, string destFileName, bool overwrite, int lineNumber)
+		{
+			if (string.IsNullOrEmpty(sourceFileName))
+			{
+				throw new ArgumentNullException(nameof(sourceFileName));
+			}
+
+			if (string.IsNullOrEmpty(destFileName))
+			{
+				throw new ArgumentNullException(nameof(destFileName));
+			}
+
+			if (lineNumber < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(lineNumber),
+					string.Format(Resources.Strings.LineNumberOutOfRangeExceptionMessage, nameof(lineNumber)));
+			}
+
+			this.Exec(lineNumber, sourceFileName, "Copy File", () =>
+			{
+				this.fileSystem.File.Copy(sourceFileName, destFileName, overwrite);
+				return 0;
+			});
+		}
+
+		/// <inheritdoc />
+		public bool GetFileExists(string fileName, int lineNumber)
+		{
+			if (string.IsNullOrEmpty(fileName))
+			{
+				throw new ArgumentNullException(nameof(fileName));
+			}
+
+			if (lineNumber < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(lineNumber),
+					string.Format(Resources.Strings.LineNumberOutOfRangeExceptionMessage, nameof(lineNumber)));
+			}
+
+			return this.Exec(lineNumber, fileName, "File Exists", () =>
+			{
+				IFileInfo fileInfo = this.fileSystem.CreateFileInfo(fileName);
+				bool fileExists =  fileInfo != null && fileInfo.Exists;
+				return fileExists;
+			});
+		}
+
+		/// <inheritdoc />
+		public long GetFileLength(string fileName, int lineNumber)
         {
             if (string.IsNullOrEmpty(fileName))
             {
                 throw new ArgumentNullException(nameof(fileName));
             }
 
-            if (lineNumberInParentFile < 0)
+            if (lineNumber < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(lineNumberInParentFile), string.Format(Resources.Strings.LineNumberOutOfRangeExceptionMessage, nameof(lineNumberInParentFile)));
+	            throw new ArgumentOutOfRangeException(nameof(lineNumber),
+		            string.Format(Resources.Strings.LineNumberOutOfRangeExceptionMessage, nameof(lineNumber)));
             }
 
-            try
+            return this.Exec(lineNumber, fileName, "File Length", () =>
             {
-	            return this.waitAndRetryPolicy.WaitAndRetry<long, Exception>(
-		            retryAttempt => TimeSpan.FromSeconds(
-			            retryAttempt == 1 ? 0 : this.waitAndRetryPolicy.WaitTimeSecondsBetweenRetryAttempts),
-		            (exception, timeSpan) =>
-		            {
-			            this.PublishAndLogError(
-				            exception,
-				            lineNumberInParentFile,
-				            timeSpan.TotalSeconds);
-		            },
-		            (ct) =>
-		            {
-						try
-						{
-							IFileInfo fileInfo = this.fileSystem.CreateFileInfo(fileName);
-							return fileInfo.Length;
-						}
-						catch (Exception exception)
-						{
-							if (this.CheckInvalidPathCharactersException(exception))
-							{
-								throw this.CreateInvalidPathCharactersException(exception, fileName);
-							}
+	            IFileInfo fileInfo = this.fileSystem.CreateFileInfo(fileName);
 
-							throw;
-						}
-					},
-		            cancellationToken
-	            );
-            }
-            catch (OperationCanceledException)
-            {
-	            this.log.LogInformation($"Get file length for line number {lineNumberInParentFile} and filename {fileName} has been canceled.");
-	            return -1;
-            }
+				// We want any exceptions that occur when accessing properties to get thrown.
+	            long fileLength = fileInfo.Length;
+	            return fileLength;
+            });
         }
 
-        private bool CheckInvalidPathCharactersException(Exception exception)
+		/// <inheritdoc />
+		public void PublishRetryMessage(Exception exception, TimeSpan timeSpan, int retryCount, int totalRetryCount, long lineNumber)
+		{
+			var warningMessage = BuildIoReporterWarningMessage(exception, timeSpan.TotalSeconds, retryCount, totalRetryCount);
+			this.IOWarningPublisher.PublishIoWarningEvent(new IoWarningEventArgs(warningMessage, lineNumber));
+			log.LogWarning(exception, warningMessage);
+		}
+
+		private bool CheckInvalidPathCharactersException(Exception exception)
         {
 	        return this.disableNativeLocationValidation && exception is ArgumentException &&
 	               exception.Message.Contains("Illegal characters in path.");
@@ -213,23 +242,59 @@ namespace kCura.WinEDDS.TApi
 	        return new FileInfoInvalidPathException(message);
 		}
 
-		/// <summary>
-		///  Publishes and logs the error.
-		/// </summary>
-		/// <param name="exception">
-		/// The thrown exception.
-		/// </param>
-		/// <param name="lineNumberInParentFile">
-		/// The line number from the parent file.
-		/// </param>
-		/// <param name="timeoutSeconds">
-		/// The timeout in seconds.
-		/// </param>
-		private void PublishAndLogError(Exception exception, int lineNumberInParentFile, double timeoutSeconds)
+		private T Exec<T>(
+			int lineNumber,
+			string fileName,
+			string description,
+			Func<T> execFunc)
 		{
-			var message = BuildIoReporterWarningMessage(exception, timeoutSeconds);
-	        IOWarningPublisher?.PublishIoWarningEvent(new IoWarningEventArgs(message, lineNumberInParentFile));
-	        log.LogWarning(exception, message);
-        }
+			try
+			{
+				int maxRetryAttempts = this.waitAndRetryPolicy.MaxRetryAttempts;
+				int currentRetryAttempt = 0;
+				return this.waitAndRetryPolicy.WaitAndRetry(
+					RetryPolicies.IoStandardPolicy,
+					retryAttempt =>
+					{
+						currentRetryAttempt = retryAttempt;
+						return TimeSpan.FromSeconds(retryAttempt == 1
+							? 0
+							: this.waitAndRetryPolicy.WaitTimeSecondsBetweenRetryAttempts);
+					},
+					(exception, timeSpan) =>
+					{
+						this.PublishRetryMessage(
+							exception,
+							timeSpan,
+							currentRetryAttempt,
+							maxRetryAttempts,
+							lineNumber);
+					},
+					(ct) =>
+					{
+						try
+						{
+							return execFunc();
+						}
+						catch (Exception exception)
+						{
+							if (this.CheckInvalidPathCharactersException(exception))
+							{
+								throw this.CreateInvalidPathCharactersException(exception, fileName);
+							}
+
+							throw;
+						}
+					},
+					cancellationToken
+				);
+			}
+			catch (OperationCanceledException)
+			{
+				this.log.LogInformation(
+					$"The {description} I/O operation for file {fileName} and line number {lineNumber} has been canceled.");
+				return default(T);
+			}
+		}
 	}
 }

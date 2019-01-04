@@ -127,6 +127,40 @@ namespace kCura.WinEDDS.TApi
             where TException : Exception;
 
 		/// <summary>
+		/// Performs the synchronous retry operation for the specified exception and retry duration function and return a value.
+		/// </summary>
+		/// <typeparam name="TResult">
+		/// The result or return value.
+		/// </typeparam>
+		/// <param name="exceptionPredicate">
+		/// The function called to determine whether to retry the specified exception.
+		/// </param>
+		/// <param name="retryDuration">
+		/// The duration between retry attempts.
+		/// </param>
+		/// <param name="retryAction">
+		/// The action performed when a retry occurs.
+		/// </param>
+		/// <param name="execFunc">
+		/// The main function executed.
+		/// </param>
+		/// <param name="token"> 
+		/// A token which is used to cancel current task.</param>
+		/// <returns>
+		/// The <typeparamref name="TResult"/> value.
+		/// </returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Design",
+			"CA1004:GenericMethodsShouldProvideTypeParameter",
+			Justification = "This is required to support return value.")]
+		TResult WaitAndRetry<TResult>(
+			Func<Exception, bool> exceptionPredicate,
+			Func<int, TimeSpan> retryDuration,
+			Action<Exception, TimeSpan> retryAction,
+			Func<CancellationToken, TResult> execFunc,
+			CancellationToken token);
+
+		/// <summary>
 		/// Performs the synchronous retry operation for the specified exception type and retry duration function and return a value.
 		/// </summary>
 		/// <typeparam name="TResult">
