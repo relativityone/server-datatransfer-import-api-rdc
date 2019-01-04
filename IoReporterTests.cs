@@ -60,10 +60,8 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 		public void ItShouldGetFileLength(int expectedLength)
 		{
             this.GivenTheRealWaitAndRetryPolicy();
-            this.GivenTheFileLength(expectedLength);
-            
-            this.WhenExecutingTheGetFileLength();
-            
+            this.GivenTheFileLength(expectedLength);            
+            this.WhenExecutingTheGetFileLength();            
             this.ThenTheActualFileLengthShouldEqual(expectedLength);
 		}
 
@@ -76,24 +74,38 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 		public void ItShouldCalculateProperRetryDuration(int retryAttempt, int waitTimeBetweenRetryAttempts)
 		{
             this.GivenTheWaitAndRetryReturns(waitTimeBetweenRetryAttempts);
-            this.GivenTheMockedWaitAndRetryPolicyCallback(1);
+            this.GivenTheMockedWaitAndRetryPolicyCallback();
 			this.GivenTheFileLength(1000);
 			this.WhenExecutingTheGetFileLength();            
-            this.ThenTheActualRetryDuractionShouldCalculated(retryAttempt, waitTimeBetweenRetryAttempts);
+            this.ThenTheActualRetryDurationShouldCalculated(retryAttempt, waitTimeBetweenRetryAttempts);
 		}
 
 		[Test]
-		public void ItShouldRetryOnExceptionWhenNotDisabledNativeLocationValidation()
+		public void ItShouldRetryOnIoExceptionWhenNotDisabledNativeLocationValidation()
 		{
-            this.GivenTheExpectedException();
-            this.GivenTheExpectedLogWarningMessage();
-            this.GivenTheMockedWaitAndRetryPolicyCallback(1);
+            this.GivenTheExpectedIoException();
+            this.GivenTheExpectedLogWarningMessage(0, 0, 0);
+            this.GivenTheMockedWaitAndRetryPolicyCallback();
             this.GivenTheLoggerWarningCallback();
             this.GivenTheFileLength(1000);
 			this.WhenExecutingTheGetFileLength();            
             this.ThenTheActualExceptionMessageShouldEqual();
             this.ThenTheActualLogWarningMessageShouldEqual();
             this.ThenTheLoggerWarningShouldBeInvokedOneTime();
+		}
+
+		[Test]
+		public void ItShouldNotRetryNonIoException()
+		{
+			this.GivenTheExpectedException(new InvalidOperationException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE));
+			this.GivenTheExpectedLogWarningMessage(0, 0, 0);
+			this.GivenTheMockedWaitAndRetryPolicyCallback();
+			this.GivenTheLoggerWarningCallback();
+			this.GivenTheFileLength(1000);
+			this.WhenExecutingTheGetFileLength();
+			this.ThenTheActualExceptionMessageShouldEqual();
+			this.ThenTheActualLogWarningMessageShouldEqual();
+			this.ThenTheLoggerWarningShouldBeInvokedOneTime();
 		}
 
 		[Test]
@@ -104,9 +116,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 		    this.GivenTheFileServiceWhichThrowsArgumentException(expectedArgumentException);
 		    this.GivenTheWaitAndRetryCallback();
             this.GivenTheLoggerErrorCallback();
-
 		    this.WhenExecutingIoReporterGetFileLengthThenThrowsException(true);
-
             this.ThenTheActualInvalidPathExceptionMessageShouldEqual();
             this.ThenTheActualLogErrorMessageShouldEqual();
             this.ThenTheLoggerErrorShouldBeInvokedOneTime();
@@ -142,23 +152,29 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
             this.waitAndRetry = new WaitAndRetryPolicy(1, 0);
         }
 
-        private void GivenTheMockedWaitAndRetryPolicyCallback(long expected)
+        private void GivenTheMockedWaitAndRetryPolicyCallback()
         {
-            this.mockWaitAndRetry
-                .Setup(
-                    obj => obj.WaitAndRetry<long, Exception>(
-                        It.IsAny<Func<int, TimeSpan>>(),
-                        It.IsAny<Action<Exception, TimeSpan>>(),
-                        It.IsAny<Func<CancellationToken, long>>(),
-                        It.IsAny<CancellationToken>()))
-                .Callback<Func<int, TimeSpan>, Action<Exception, TimeSpan>, Func<CancellationToken, long>, CancellationToken>(
-                    (retryDuration, retryAction, execFunc, token) =>
-                    {
-                        this.actualRetryDuractionFunc = retryDuration;
-                        retryAction(this.expectedException, TimeSpan.Zero);
-                        execFunc(token);
-                    });
-		}
+			this.mockWaitAndRetry
+		        .Setup(
+			        obj => obj.WaitAndRetry(
+				        It.IsAny<Func<Exception, bool>>(),
+				        It.IsAny<Func<int, TimeSpan>>(),
+				        It.IsAny<Action<Exception, TimeSpan>>(),
+				        It.IsAny<Func<CancellationToken, long>>(),
+				        It.IsAny<CancellationToken>()))
+		        .Callback<
+			        Func<Exception, bool>,
+			        Func<int, TimeSpan>,
+			        Action<Exception, TimeSpan>,
+			        Func<CancellationToken, long>,
+			        CancellationToken>(
+			        (exceptionPredicate, retryDuration, retryAction, execFunc, token) =>
+			        {
+				        this.actualRetryDuractionFunc = retryDuration;
+				        retryAction(this.expectedException, TimeSpan.Zero);
+				        execFunc(token);
+			        });
+        }
 
 		private void GivenTheFileLength(int expectedLength)
 		{
@@ -196,25 +212,38 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 	    }
 
         private void GivenTheWaitAndRetryCallback()
-        { 
-            this.mockWaitAndRetry
-                .Setup(
-                    obj => obj.WaitAndRetry<long, Exception>(
-                        It.IsAny<Func<int, TimeSpan>>(),
-                        It.IsAny<Action<Exception, TimeSpan>>(),
-                        It.IsAny<Func<CancellationToken, long>>(),
-                        It.IsAny<CancellationToken>())).Callback<Func<int, TimeSpan>, Action<Exception, TimeSpan>, Func<CancellationToken, long>, CancellationToken> (
-                (retryDuration, retryAction, execFunc, token) =>
-                {
-                    actualRetryDuractionFunc = retryDuration;
-                    retryAction(this.expectedArgumentException, TimeSpan.Zero);
-                    execFunc(token);
-                });
-		}
+        {
+	        this.mockWaitAndRetry
+		        .Setup(
+			        obj => obj.WaitAndRetry(
+				        It.IsAny<Func<Exception, bool>>(),
+				        It.IsAny<Func<int, TimeSpan>>(),
+				        It.IsAny<Action<Exception, TimeSpan>>(),
+				        It.IsAny<Func<CancellationToken, long>>(),
+				        It.IsAny<CancellationToken>()))
+		        .Callback<Func<Exception, bool>, Func<int, TimeSpan>, Action<Exception, TimeSpan>,
+			        Func<CancellationToken, long>, CancellationToken>(
+			        (exceptionPredicate, retryDuration, retryAction, execFunc, token) =>
+			        {
+				        actualRetryDuractionFunc = retryDuration;
+				        retryAction(this.expectedArgumentException, TimeSpan.Zero);
+				        execFunc(token);
+			        });
+        }
 
-		private void GivenTheExpectedLogWarningMessage()
+		private void GivenTheExpectedLogWarningMessage(double timeoutSeconds, int? retryCount, int? totalRetryCount)
 		{
-            this.expectedLogWarningMessage = IoReporter.BuildIoReporterWarningMessage(this.expectedException, 0);
+			if (retryCount.HasValue && totalRetryCount.HasValue)
+			{
+				this.expectedLogWarningMessage =
+					IoReporter.BuildIoReporterWarningMessage(this.expectedException, timeoutSeconds, retryCount.Value,
+						totalRetryCount.Value);
+			}
+			else
+			{
+				this.expectedLogWarningMessage =
+					IoReporter.BuildIoReporterWarningMessage(this.expectedException, timeoutSeconds);
+			}
 		}
 
 		private void GivenTheExpectedLogErrorMessage()
@@ -224,9 +253,14 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
                 _FILE_NAME);
 		}
 
-		private void GivenTheExpectedException()
+		private void GivenTheExpectedIoException()
 		{
-            this.expectedException = new Exception(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE);
+			this.GivenTheExpectedException(new System.IO.IOException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE));
+		}
+
+		private void GivenTheExpectedException(Exception exception)
+		{
+			this.expectedException = exception;
 		}
 
 		private void GivenTheExpectedInvalidPathException()
@@ -261,7 +295,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 				Throws.Exception.TypeOf<FileInfoInvalidPathException>());
 		}
 
-		private void ThenTheActualRetryDuractionShouldCalculated(int retryAttempt, int waitTimeBetweenRetryAttempts)
+		private void ThenTheActualRetryDurationShouldCalculated(int retryAttempt, int waitTimeBetweenRetryAttempts)
 		{
             TimeSpan actualRetryDuraction = this.actualRetryDuractionFunc(retryAttempt);
             Assert.That(
