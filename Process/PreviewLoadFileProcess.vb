@@ -1,4 +1,5 @@
 Imports System.Threading
+Imports kCura.WinEDDS.TApi
 Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
@@ -8,6 +9,7 @@ Namespace kCura.WinEDDS
 
 		Public LoadFile As LoadFile
 		Protected WithEvents _loadFilePreviewer As LoadFilePreviewer
+		Protected WithEvents _ioWarningPublisher As IoWarningPublisher
 		Private _startTime As System.DateTime
 		Private _errorCount As Int32
 		Private _errorsOnly As Boolean
@@ -55,9 +57,24 @@ Namespace kCura.WinEDDS
 			_warningCount = 0
 			_errorCount = 0
 			Dim tokenSource As CancellationTokenSource = New CancellationTokenSource()
-            Dim logger As ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.WinEDDSSubSystem)
-            _loadFilePreviewer = New kCura.WinEDDS.LoadFilePreviewer(LoadFile, logger, _timeZoneOffset, _errorsOnly, True, tokenSource, ProcessController)
-
+			_ioWarningPublisher = New IoWarningPublisher()
+			Dim logger As ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.WinEDDSSubSystem)
+			Dim reporter As IIoReporter = IoReporterFactory.CreateIoReporter(
+				kCura.Utility.Config.IOErrorNumberOfRetries, _
+				kCura.Utility.Config.IOErrorWaitTimeInSeconds, _ 
+				WinEDDS.Config.DisableNativeLocationValidation, _
+				logger, _
+				_ioWarningPublisher, _
+				tokenSource.Token)
+			_loadFilePreviewer = New kCura.WinEDDS.LoadFilePreviewer(
+				LoadFile, _
+				reporter, _
+				logger, _
+				_timeZoneOffset, _
+				_errorsOnly, _
+				True,
+				tokenSource, _
+				ProcessController)
 			_valueThrower.ThrowValue(New Object() {_loadFilePreviewer.ReadFile(LoadFile.FilePath, _formType), _errorsOnly})
 			Me.ProcessObserver.RaiseProcessCompleteEvent(True)
 		End Sub
@@ -89,6 +106,12 @@ Namespace kCura.WinEDDS
 						Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.BytesRead, 0, 0, Me.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
 						Me.ProcessObserver.RaiseStatusEvent("", "Preparing file for preview")
 				End Select
+			End SyncLock
+		End Sub
+
+		Private Sub _loadFileImporter_IoErrorEvent(ByVal sender As Object, ByVal e As IoWarningEventArgs) Handles _ioWarningPublisher.IoWarningEvent
+			SyncLock Me.ProcessObserver
+				Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, e.Message)
 			End SyncLock
 		End Sub
 	End Class
