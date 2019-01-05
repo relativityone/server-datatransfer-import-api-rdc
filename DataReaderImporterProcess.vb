@@ -44,8 +44,13 @@ Namespace kCura.WinEDDS.ImportExtension
 		    _ioWarningPublisher = New IoWarningPublisher()
 			
 		    Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.WinEDDSSubSystem)
-		    Dim ioReporter As IIoReporter = IoReporterFactory.CreateIoReporter(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds, 
-		                                                                       WinEDDS.Config.DisableNativeLocationValidation,  logger, _ioWarningPublisher, tokenSource.Token)
+		    Dim ioReporter As IIoReporter = IoReporterFactory.CreateIoReporter(
+			    kCura.Utility.Config.IOErrorNumberOfRetries, 
+			    kCura.Utility.Config.IOErrorWaitTimeInSeconds,
+				WinEDDS.Config.DisableNativeLocationValidation,
+			    logger,
+			    _ioWarningPublisher,
+			    tokenSource.Token)
 
             LoadFile.OIFileIdColumnName = OIFileIdColumnName
 			LoadFile.OIFileIdMapped = OIFileIdMapped
