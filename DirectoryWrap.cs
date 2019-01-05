@@ -27,7 +27,12 @@ namespace kCura.WinEDDS.TApi
 		/// </exception>
 		internal DirectoryWrap(IPath path)
 		{
-			this.instance = path ?? throw new ArgumentNullException(nameof(path));
+			if (path == null)
+			{
+				throw new ArgumentNullException(nameof(path));
+			}
+
+			this.instance = path;
 		}
 
 		/// <inheritdoc />

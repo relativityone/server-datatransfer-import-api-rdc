@@ -61,10 +61,30 @@ namespace kCura.WinEDDS.TApi
 			bool disableNativeLocationValidation,
 			CancellationToken cancellationToken)
 		{
-			this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-            this.waitAndRetryPolicy = waitAndRetry ?? throw new ArgumentNullException(nameof(waitAndRetry));
-            this.log = log ?? throw new ArgumentNullException(nameof(log));
-            this.IOWarningPublisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
+			if (fileSystem == null)
+			{
+				throw new ArgumentNullException(nameof(fileSystem));
+			}
+
+			if (waitAndRetry == null)
+			{
+				throw new ArgumentNullException(nameof(waitAndRetry));
+			}
+
+			if (log == null)
+			{
+				throw new ArgumentNullException(nameof(log));
+			}
+
+			if (publisher == null)
+			{
+				throw new ArgumentNullException(nameof(publisher));
+			}
+
+			this.fileSystem = fileSystem;
+            this.waitAndRetryPolicy = waitAndRetry;
+            this.log = log;
+            this.IOWarningPublisher = publisher;
             this.disableNativeLocationValidation = disableNativeLocationValidation;
 			this.cancellationToken = cancellationToken;
 		}

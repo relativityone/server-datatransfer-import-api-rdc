@@ -52,7 +52,12 @@ namespace kCura.WinEDDS.TApi
 		/// </exception>
 		internal DirectoryInfoWrap(System.IO.DirectoryInfo info)
 		{
-			this.instance = info ?? throw new ArgumentNullException(nameof(info));
+			if (info == null)
+			{
+				throw new ArgumentNullException(nameof(info));
+			}
+
+			this.instance = info;
 		}
 
 		/// <inheritdoc />
