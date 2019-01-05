@@ -4,7 +4,6 @@
 ' </copyright>
 ' ----------------------------------------------------------------------------
 
-Imports System.Collections.Generic
 Imports System.Threading
 Imports kCura.WinEDDS.TApi
 Imports Polly
@@ -21,6 +20,7 @@ Namespace kCura.WinEDDS
 #Region "Members"
 		Protected IoReporterInstance As IIoReporter
 		Private ReadOnly _syncRoot As Object = New Object
+		Private ReadOnly _fileSystem As kCura.WinEDDS.TApi.IFileSystem
 		Private ReadOnly _cancellationToken As CancellationTokenSource
 		Private ReadOnly _statistics As New Statistics
 		Private WithEvents _bulkLoadTapiBridge As UploadTapiBridge
@@ -39,15 +39,19 @@ Namespace kCura.WinEDDS
 		Public Event UploadModeChangeEvent(ByVal statusBarText As String, ByVal tapiClientName As String, ByVal isBulkEnabled As Boolean)
 
 #Region "Constructor"
-		Public Sub New(ByVal ioReporterInstance As IIoReporter, ByVal logger As ILog, cancellationToken As CancellationTokenSource)
-			'There is no argument checks for ioReporterInstance and cancellationToken here as both of these are not used when the constructor is called in Application.vb for previewing the content of load file.
+		Public Sub New(ByVal reporter As IIoReporter, ByVal logger As ILog, cancellationToken As CancellationTokenSource)
+			
+			' There is no argument checks for reporter and cancellationToken here as both of these are not used when the constructor is called in Application.vb for previewing the content of load file.
 			If logger Is Nothing Then
 				Throw New ArgumentNullException("logger")
 			End If
 
+			' TODO: Refactor all core constructors to use a single config object
+			' TODO: once IAPI/RDC is moved into the new repo.
+			_fileSystem = kCura.WinEDDS.TApi.FileSystem.Instance.DeepCopy()
 			_logger = logger
 			_cancellationToken = cancellationToken
-			Me.IoReporterInstance = ioReporterInstance
+			Me.IoReporterInstance = reporter
 		End Sub
 
 #End Region
@@ -150,6 +154,110 @@ Namespace kCura.WinEDDS
 				Return False
 			End If
 		End Function
+
+		''' <summary>
+		''' Copies an existing file to a new file. Overwriting a file of the same name is not allowed.
+		''' </summary>
+		''' <param name="sourceFileName">
+		''' The file to copy.
+		''' </param>
+		''' <param name="destFileName">
+		''' The name of the destination file. This cannot be a directory.
+		''' </param>
+		''' <param name="retry">
+		''' <see langword="true" /> to retry <see cref="T:System.IO.IOException"/> and publish error messages; otherwise, <see langword="false" />.
+		''' </param>
+		Protected Sub CopyFile(sourceFileName As String, destFileName As String, retry As Boolean)
+			Const overwrite As Boolean = False
+			Me.CopyFile(sourceFileName, destFileName, overwrite, retry)
+		End Sub
+
+		''' <summary>
+		''' Copies an existing file to a new file. Overwriting a file of the same name is allowed.
+		''' </summary>
+		''' <param name="sourceFileName">
+		''' The file to copy.
+		''' </param>
+		''' <param name="destFileName">
+		''' The name of the destination file. This cannot be a directory.
+		''' </param>
+		''' <param name="overwrite">
+		''' <see langword="true" /> if the destination file can be overwritten; otherwise, <see langword="false" />.
+		''' </param>
+		''' <param name="retry">
+		''' <see langword="true" /> to retry <see cref="T:System.IO.IOException"/> and publish error messages; otherwise, <see langword="false" />.
+		''' </param>
+		Protected Sub CopyFile(sourceFileName As String, destFileName As String, overwrite As Boolean, retry As Boolean)
+			If Not retry OrElse Me.IoReporterInstance Is Nothing Then
+				_fileSystem.File.Copy(sourceFileName, destFileName, overwrite)
+			Else
+				Me.IoReporterInstance.CopyFile(sourceFileName, destFileName, overwrite, Me.CurrentLineNumber)
+			End If
+		End Sub
+
+		''' <summary>
+		''' Determines whether the specified file exists and optionally retries all thrown <see cref="T:System.IO.IOException"/>.
+		''' </summary>
+		''' <param name="path">
+		''' The file to check.
+		''' </param>
+		''' <param name="retry">
+		''' <see langword="true" /> to retry <see cref="T:System.IO.IOException"/> and publish error messages; otherwise, <see langword="false" />.
+		''' </param>
+		''' <returns>
+		''' <see langword="true" /> if the caller has the required permissions and path contains the name of an existing file; otherwise, <see langword="false" />.
+		''' </returns>
+		Protected Function GetFileExists(path As String, retry As Boolean) As Boolean
+			If Not retry OrElse Me.IoReporterInstance Is Nothing Then
+				Return _fileSystem.File.Exists(path)
+			Else
+				Return Me.IoReporterInstance.GetFileExists(path, Me.CurrentLineNumber)
+			End If
+		End Function
+
+		''' <summary>
+		''' Retrieves the specified file length and optionally retries all thrown <see cref="T:System.IO.IOException"/>.
+		''' </summary>
+		''' <param name="path">
+		''' The file to retrieve file length information.
+		''' </param>
+		''' <param name="retry">
+		''' <see langword="true" /> to retry <see cref="T:System.IO.IOException"/> and publish error messages; otherwise, <see langword="false" />.
+		''' </param>
+		''' <returns>
+		''' The file length.
+		''' </returns>
+		Protected Function GetFileLength(path As String, retry As Boolean) As Long
+			If Me.IoReporterInstance Is Nothing Then
+				' Note: this is always non-null even if the file doesn't exist.
+				' Note: always allow the System.IO.FileNotFoundException to throw.
+				Dim fileInfo As kCura.WinEDDS.TApi.IFileInfo = _fileSystem.CreateFileInfo(path)
+				Return fileInfo.Length
+			Else
+				Return Me.IoReporterInstance.GetFileLength(path, Me.CurrentLineNumber)
+			End If
+		End Function
+
+		''' <summary>
+		''' Publishes a retry-based warning message and logs the exception.
+		''' </summary>
+		''' <param name="exception">
+		''' The exception to publish and log.
+		''' </param>
+		''' <param name="timeSpan">
+		''' The time span between retry attempts.
+		''' </param>
+		''' <param name="retryCount">
+		''' The current retry count.
+		''' </param>
+		''' <param name="totalRetryCount">
+		''' The total retry count.
+		''' </param>
+		Protected Sub PublishRetryMessage(exception As Exception, timeSpan As TimeSpan, retryCount As Integer, totalRetryCount As Integer)
+			If Not Me.IoReporterInstance Is Nothing Then
+				Me.IoReporterInstance.PublishRetryMessage(exception, timeSpan, retryCount, totalRetryCount, Me.CurrentLineNumber)
+			End If
+		End Sub
 
 		Protected Sub CompletePendingPhysicalFileTransfers(waitingMessage As String, completedMessage As String, errorMessage As String)
 			Try
@@ -419,7 +527,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable Sub RaiseWarningAndPause(ByVal exception As Exception, ByVal timeoutSeconds As Int32, ByVal retryCount As Int32, ByVal totalRetryCount As Int32)
 			Dim message As String = TApi.IoReporter.BuildIoReporterWarningMessage(exception, timeoutSeconds, retryCount, totalRetryCount)
-			IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(New IoWarningEventArgs(message, CurrentLineNumber))
+			IoReporterInstance?.IOWarningPublisher?.PublishIoWarningEvent(New IoWarningEventArgs(message, CurrentLineNumber))
 			System.Threading.Thread.CurrentThread.Join(1000 * timeoutSeconds)
 		End Sub
 

@@ -343,6 +343,7 @@
     <Compile Include="Exceptions\FileWriteError.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Exceptions\ImportIOException.vb" />
     <Compile Include="Exceptions\InvalidLoginException.vb">
       <SubType>Code</SubType>
     </Compile>

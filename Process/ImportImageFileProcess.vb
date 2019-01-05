@@ -129,10 +129,24 @@ Namespace kCura.WinEDDS
 			Dim tokenSource As CancellationTokenSource = New CancellationTokenSource()
 		    _ioWarningPublisher = New IoWarningPublisher()
 		    Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.WinEDDSSubSystem)
-		    Dim ioReporter As IIoReporter = IoReporterFactory.CreateIoReporter(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds, 
-		                                                                       WinEDDS.Config.DisableNativeLocationValidation, logger, _ioWarningPublisher, tokenSource.Token)
-
-            Dim returnImporter As BulkImageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(ImageLoadFile.DestinationFolderID, ImageLoadFile, ProcessController, ioReporter, logger, Me.ProcessID, True, EnforceDocumentLimit, tokenSource, ExecutionSource)
+		    Dim reporter As IIoReporter = IoReporterFactory.CreateIoReporter(
+			    kCura.Utility.Config.IOErrorNumberOfRetries, _
+			    kCura.Utility.Config.IOErrorWaitTimeInSeconds, _ 
+			    WinEDDS.Config.DisableNativeLocationValidation, _
+			    logger, _
+			    _ioWarningPublisher, _
+			    tokenSource.Token)
+            Dim returnImporter As BulkImageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(
+	            ImageLoadFile.DestinationFolderID, _
+	            ImageLoadFile, _
+	            ProcessController, _
+	            reporter, _
+	            logger, _
+	            Me.ProcessID, _
+	            True, _
+				EnforceDocumentLimit, _
+	            tokenSource, _
+	            ExecutionSource)
 			Return returnImporter
 		End Function
 

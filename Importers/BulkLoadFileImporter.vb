@@ -1,5 +1,4 @@
 Imports System.Collections.Generic
-Imports System.IO
 Imports System.Threading
 Imports System.Threading.Tasks
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
@@ -285,6 +284,8 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		''' <param name="args">Information about the file being loaded</param>
 		''' <param name="processController">The process that is running</param>
+		''' <param name="reporter">The object that performs I/O operations and publishes messages during retry operations.</param>
+		''' <param name="logger">The Relativity logger.</param>
 		''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
 		''' <param name="initializeUploaders">Sets whether or not the uploaders should be initialized
 		''' for use</param>
@@ -295,11 +296,32 @@ Namespace kCura.WinEDDS
 		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByVal ioReporterInstance As IIoReporter, ByVal logger As Relativity.Logging.ILog,
-					   ByVal timeZoneOffset As Int32, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean, ByVal tokenSource As CancellationTokenSource,
+		Public Sub New(args As LoadFile, _
+		               processController As Controller, _
+		               reporter As IIoReporter, _
+		               logger As Relativity.Logging.ILog, _
+		               timeZoneOffset As Int32, _
+		               initializeUploaders As Boolean, _
+		               processID As Guid, _
+		               doRetryLogic As Boolean, _
+		               bulkLoadFileFieldDelimiter As String, _
+		               enforceDocumentLimit As Boolean, _
+		               tokenSource As CancellationTokenSource, _
 					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			Me.New(args, processController, ioReporterInstance, logger, timeZoneOffset, True, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit, tokenSource,
-				   initializeArtifactReader:=True, executionSource:=executionSource)
+			Me.New(args, _
+			       processController, _
+			       reporter, _
+			       logger, _
+			       timeZoneOffset, _
+			       True, _
+			       initializeUploaders, _
+			       processID, _
+			       doRetryLogic, _
+			       bulkLoadFileFieldDelimiter, _
+			       enforceDocumentLimit, _
+			       tokenSource, _
+			       initializeArtifactReader:=True, _
+			       executionSource:=executionSource)
 		End Sub
 
 		''' <summary>
@@ -307,6 +329,8 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		''' <param name="args">Information about the file being loaded</param>
 		''' <param name="processController">The process that is running</param>
+		''' <param name="reporter">The object that performs I/O operations and publishes messages during retry operations.</param>
+		''' <param name="logger">The Relativity logger.</param>
 		''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
 		''' <param name="initializeUploaders">Sets whether or not the uploaders should be initialized
 		''' for use</param>
@@ -317,10 +341,33 @@ Namespace kCura.WinEDDS
 		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(ByVal args As LoadFile, ByVal processController As Controller, ByVal ioReporterInstance As IIoReporter, ByVal logger As Relativity.Logging.ILog,
-					   ByVal timeZoneOffset As Int32, ByVal autoDetect As Boolean, ByVal initializeUploaders As Boolean, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean, ByVal tokenSource As CancellationTokenSource,
-					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			Me.New(args, processController, ioReporterInstance, logger, timeZoneOffset, autoDetect, initializeUploaders, processID, doRetryLogic, bulkLoadFileFieldDelimiter, enforceDocumentLimit, tokenSource, initializeArtifactReader:=True, executionSource:=executionSource)
+		Public Sub New(args As LoadFile, _
+		               processController As Controller, _
+		               reporter As IIoReporter, _
+		               logger As Relativity.Logging.ILog, _
+		               timeZoneOffset As Int32, _
+		               autoDetect As Boolean, _
+		               initializeUploaders As Boolean, _
+		               processID As Guid, _
+		               doRetryLogic As Boolean, _
+		               bulkLoadFileFieldDelimiter As String, _
+		               enforceDocumentLimit As Boolean, _
+		               tokenSource As CancellationTokenSource, _
+		               ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
+			Me.New(args, _
+			       processController, _
+			       reporter, _
+			       logger, _
+			       timeZoneOffset, _
+			       autoDetect, _
+			       initializeUploaders, _
+			       processID, _
+			       doRetryLogic,
+			       bulkLoadFileFieldDelimiter, _
+			       enforceDocumentLimit, _
+			       tokenSource, _
+			       initializeArtifactReader:=True, _
+			       executionSource:=executionSource)
 		End Sub
 
 		''' <summary>
@@ -328,6 +375,9 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		''' <param name="args">Information about the file being loaded</param>
 		''' <param name="processController">The process that is running</param>
+		''' <param name="fileSystem">The file system object.</param>
+		''' <param name="reporter">The object that performs I/O operations and publishes messages during retry operations.</param>
+		''' <param name="logger">The Relativity logger.</param>
 		''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
 		''' <param name="initializeUploaders">Sets whether or not the uploaders should be initialized
 		''' for use</param>
@@ -338,11 +388,29 @@ Namespace kCura.WinEDDS
 		''' is coming from.</param>
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
-		Public Sub New(args As LoadFile, processController As Controller, ByVal ioReporterInstance As IIoReporter, ByVal logger As Relativity.Logging.ILog,
-					   timeZoneOffset As Int32, autoDetect As Boolean, initializeUploaders As Boolean, processID As Guid, doRetryLogic As Boolean, bulkLoadFileFieldDelimiter As String, ByVal enforceDocumentLimit As Boolean, ByVal tokenSource As CancellationTokenSource,
-					   initializeArtifactReader As Boolean,
-					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			MyBase.New(args, ioReporterInstance, logger, timeZoneOffset, doRetryLogic, autoDetect, tokenSource, initializeArtifactReader, executionSource:=executionSource)
+		Public Sub New(args As LoadFile, _
+		               processController As Controller, _
+		               reporter As IIoReporter, _
+		               logger As Relativity.Logging.ILog, _
+		               timeZoneOffset As Int32, _
+		               autoDetect As Boolean, _
+		               initializeUploaders As Boolean, _
+		               processID As Guid, _
+		               doRetryLogic As Boolean, _
+		               bulkLoadFileFieldDelimiter As String, _
+		               enforceDocumentLimit As Boolean, _
+		               tokenSource As CancellationTokenSource,
+		               initializeArtifactReader As Boolean,
+		               ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
+			MyBase.New(args, _
+			           reporter, _
+			           logger, _
+			           timeZoneOffset, _
+			           doRetryLogic, _
+			           autoDetect, _
+			           tokenSource, _
+			           initializeArtifactReader, _
+			           executionSource:=executionSource)
 
 			' Avoid excessive concurrent dictionary hits by caching frequently used config settings.
 			_usePipeliningForNativeAndObjectImports = Config.UsePipeliningForNativeAndObjectImports
@@ -361,7 +429,7 @@ Namespace kCura.WinEDDS
 			If args.CopyFilesToDocumentRepository Then
 				'DEFECT: SF#226211, repositories without trailing \ caused import to fail. Changed to use Path.Combine. -tmh
 				Dim lastHalfPath As String = "EDDS" & args.CaseInfo.ArtifactID & "\"
-				_defaultDestinationFolderPath = Path.Combine(args.SelectedCasePath, lastHalfPath)
+				_defaultDestinationFolderPath = System.IO.Path.Combine(args.SelectedCasePath, lastHalfPath)
 				If args.ArtifactTypeID <> Relativity.ArtifactType.Document Then
 					For Each item As LoadFileFieldMap.LoadFileFieldMapItem In args.FieldMap
 						If Not item.DocumentField Is Nothing AndAlso item.NativeFileColumnIndex > -1 AndAlso item.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
@@ -593,7 +661,7 @@ Namespace kCura.WinEDDS
 								Catch ex As kCura.Utility.ImporterExceptionBase
 									WriteError(Me.CurrentLineNumber, ex.Message)
 									Me.LogError(ex, "An import data error has occurred managing an import document.")
-								Catch ex As kCura.WinEDDS.TApi.FileInfoInvalidPathException
+								Catch ex As FileInfoInvalidPathException
 									WriteError(Me.CurrentLineNumber, ex.Message)
 									Me.LogError(ex, "An import error has occured because of invalid document path - illegal characters in path.")
 								Catch ex As System.IO.FileNotFoundException
@@ -725,6 +793,7 @@ Namespace kCura.WinEDDS
 
 			Dim injectableContainerIsNothing As Boolean = injectableContainer Is Nothing
 
+			Const retry As Boolean = True
 			Using Timekeeper.CaptureTime("ManageDocument_Filesystem")
 				If uploadFile AndAlso _artifactTypeID = Relativity.ArtifactType.Document Then
 					filename = record.FieldList(Relativity.FieldTypeHelper.FieldType.File)(0).Value.ToString
@@ -754,7 +823,7 @@ Namespace kCura.WinEDDS
 						lineStatus += Relativity.MassImport.ImportStatus.FileSpecifiedDne
 					End If
 					If fileExists AndAlso Not Me.DisableNativeLocationValidation Then
-						If IoReporterInstance.GetFileLength(filename, Me.CurrentLineNumber) = 0 Then
+						If Me.GetFileLength(filename, retry) = 0 Then
 							If _createErrorForEmptyNativeFile Then
 								lineStatus += Relativity.MassImport.ImportStatus.EmptyFile
 							Else
@@ -777,29 +846,34 @@ Namespace kCura.WinEDDS
 
 								If (idDataExtractor Is Nothing) Then
 									' REL-165493: Added OI resiliency and properly address FileNotFoundException scenarios.
-									Dim retryPolicy As Retry.RetryPolicy = Policy.Handle(Of kCura.OI.FileID.FileIDException).WaitAndRetry(
-										Me.NumberOfRetries,
-										Function(count) As TimeSpan
-										' Force OI to get reinitialized in the event the runtime configuration is invalid.
-										If count > 1 Then
+									Dim maxRetryAttempts As Integer = Me.NumberOfRetries
+									Dim currentRetryAttempt As Integer = 0
+									Dim policy As WaitAndRetryPolicy = New WaitAndRetryPolicy(
+										maxRetryAttempts, _
+										Me.WaitTimeBetweenRetryAttempts)
+									oixFileIdData = policy.WaitAndRetry(Of kCura.OI.FileID.FileIDData, kCura.OI.FileID.FileIDException)(
+										Function(count)
+											' Force OI to get reinitialized in the event the runtime configuration is invalid.
+											currentRetryAttempt = count
+											If count > 1 Then
 												fileService.Reinitialize()
 											End If
 											Return TimeSpan.FromSeconds(Me.WaitTimeBetweenRetryAttempts)
 										End Function,
-										Sub(exception, span, context)
-											LogError(exception, "Retry - {span} - OI failed to identify the '{fullFilePath}' source file.", span, fullFilePath)
-										End Sub)
-									oixFileIdData = retryPolicy.Execute(
-											Function()
-												Return fileService.Identify(fullFilePath)
-											End Function)
+										Sub(exception, span)
+											Me.PublishRetryMessage(exception, span, currentRetryAttempt, maxRetryAttempts)
+										End Sub,
+										Function() As OI.FileID.FileIDData
+											Return fileService.Identify(fullFilePath)
+										End Function,
+										Me.CancellationToken)
 								Else
 									oixFileIdData = idDataExtractor.GetFileIDData()
 								End If
 							End If
 
 							If _copyFileToRepository Then
-								If Not Me.DisableNativeLocationValidation AndAlso fileExists OrElse File.Exists(filename) Then
+								If Not Me.DisableNativeLocationValidation AndAlso fileExists OrElse Me.GetFileExists(filename, retry) Then
 									Dim guid As String = System.Guid.NewGuid().ToString()
 									Me.ImportFilesCount += 1
 									_jobCompleteNativeCount += 1
@@ -815,7 +889,7 @@ Namespace kCura.WinEDDS
 							If (Not injectableContainerIsNothing AndAlso injectableContainer.HasFileName()) Then
 								filename = injectableContainer.FileName.GetFileName()
 							Else
-								filename = Path.GetFileName(originalFilename)
+								filename = System.IO.Path.GetFileName(originalFilename)
 							End If
 						Catch ex As System.IO.FileNotFoundException
 							If Me.DisableNativeLocationValidation Then
@@ -844,7 +918,7 @@ Namespace kCura.WinEDDS
 							If (String.IsNullOrWhiteSpace(cleanFolderPath)) Then
 								parentFolderID = _folderID
 							ElseIf InnerRelativityFolderPathsAreTooLarge(cleanFolderPath) Then
-								Throw New PathTooLongException("Error occurred when importing the document. The folder name is longer than 255 characters.")
+								Throw New System.IO.PathTooLongException("Error occurred when importing the document. The folder name is longer than 255 characters.")
 							Else
 								folderPath = cleanFolderPath
 								'We're creating the structure on the server side, so it'll get a number then
@@ -978,7 +1052,7 @@ Namespace kCura.WinEDDS
 			Catch ex As kCura.Utility.ImporterExceptionBase
 				WriteError(metaDoc.LineNumber, ex.Message)
 				Me.LogError(ex, "A serious import error has occurred managing document {file} metadata.", metaDoc.FullFilePath)
-			Catch ex As kCura.WinEDDS.TApi.FileInfoInvalidPathException
+			Catch ex As FileInfoInvalidPathException
 				WriteError(Me.CurrentLineNumber, ex.Message)
 				Me.LogError(ex, "An import error has occured because of invalid document path - illegal characters in path {0}", metaDoc.FullFilePath)
 			Catch ex As System.Exception
@@ -1398,8 +1472,9 @@ Namespace kCura.WinEDDS
 				End If
 				Dim fileSizeExtractor As Api.IHasFileSize = TryCast(mdoc, Api.IHasFileSize)
 				If (fileSizeExtractor Is Nothing) Then
-					If File.Exists(mdoc.FullFilePath) Then
-						OutputFileWriter.OutputNativeFileWriter.Write(IoReporterInstance.GetFileLength(mdoc.FullFilePath, Me.CurrentLineNumber) & BulkLoadFileFieldDelimiter) 'kCura_Import_FileSize
+					Const retry As Boolean = True
+					If Me.GetFileExists(mdoc.FullFilePath, retry) Then
+						OutputFileWriter.OutputNativeFileWriter.Write(Me.GetFileLength(mdoc.FullFilePath, retry) & BulkLoadFileFieldDelimiter) 'kCura_Import_FileSize
 					Else
 						OutputFileWriter.OutputNativeFileWriter.Write(0 & BulkLoadFileFieldDelimiter)
 					End If
@@ -1446,6 +1521,9 @@ Namespace kCura.WinEDDS
 					OutputFileWriter.RollbackDocumentLineWrites()
 					Throw
 				Catch ex As ExtractedTextTooLargeException
+					OutputFileWriter.RollbackDocumentLineWrites()
+					Throw
+				Catch ex As kCura.WinEDDS.Exceptions.ImportIOException
 					OutputFileWriter.RollbackDocumentLineWrites()
 					Throw
 				End Try
@@ -1543,75 +1621,104 @@ Namespace kCura.WinEDDS
 			Else
 				Dim fieldShouldReadFromTextFile As Boolean = FieldValueContainsTextFileLocation(field)
 				If fieldShouldReadFromTextFile Then
+
 					Try
 						If Not field.ValueAsString = String.Empty Then
-							chosenEncoding = extractedTextEncoding
-							Dim fileStream As Stream
+							' Prevent nested retry operations.
+							Const retry As Boolean = False
+							Dim maxRetryAttempts As Integer = Me.NumberOfRetries
+							Dim currentRetryAttempt As Integer = 0
 
-							Dim fileInfo As System.IO.FileInfo = New System.IO.FileInfo(field.ValueAsString)
-							Dim fileSize As Long = fileInfo.Length
-							If fileSize > GetMaxExtractedTextLength(chosenEncoding) Then
-								Throw New ExtractedTextTooLargeException
-							End If
+							' REL-272765: Added I/O resiliency and support document level errors.
+							Dim policy As WaitAndRetryPolicy = New WaitAndRetryPolicy(
+								maxRetryAttempts, _
+								Me.WaitTimeBetweenRetryAttempts)
 
-							If Me.LoadImportedFullTextFromServer Then
-								If Not SkipExtractedTextEncodingCheck Then
-									Dim determinedEncodingStream As DeterminedEncodingStream = Utility.DetectEncoding(field.ValueAsString, False)
-									fileStream = determinedEncodingStream.UnderlyingStream
-
-									Dim textField As kCura.EDDS.WebAPI.DocumentManagerBase.Field = Me.FullTextField(_settings.ArtifactTypeID)
-									Dim expectedEncoding As System.Text.Encoding = If(textField IsNot Nothing AndAlso textField.UseUnicodeEncoding, System.Text.Encoding.Unicode, Nothing)
-									Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
-									If Not System.Text.Encoding.Equals(expectedEncoding, detectedEncoding) Then
-										WriteWarning("The extracted text file's encoding was not detected to be the same as the extracted text field. The imported data may be incorrectly encoded.")
+							' Note: a lambda can't modify a ref param; therefore, a policy block return value is used.
+							Dim returnEncoding As System.Text.Encoding = policy.WaitAndRetry(Of System.Text.Encoding)(
+								RetryPolicies.IoStandardPolicy,								
+								Function(count)
+									currentRetryAttempt = count
+									Return TimeSpan.FromSeconds(Me.WaitTimeBetweenRetryAttempts)
+								End Function,
+								Sub(exception, span)
+									Me.PublishRetryMessage(exception, span, currentRetryAttempt, maxRetryAttempts)
+								End Sub,
+								Function(token) As System.Text.Encoding
+									Dim encoding As System.Text.Encoding = extractedTextEncoding
+									Dim fileStream As System.IO.Stream
+									Dim fileSize As Long = Me.GetFileLength(field.ValueAsString, retry)
+									If fileSize > GetMaxExtractedTextLength(encoding) Then
+										Throw New ExtractedTextTooLargeException
 									End If
-									If detectedEncoding IsNot Nothing Then
-										chosenEncoding = detectedEncoding
+
+									If Me.LoadImportedFullTextFromServer Then
+										If Not SkipExtractedTextEncodingCheck Then
+											Dim determinedEncodingStream As DeterminedEncodingStream = Utility.DetectEncoding(field.ValueAsString, False)
+											fileStream = determinedEncodingStream.UnderlyingStream
+
+											Dim textField As kCura.EDDS.WebAPI.DocumentManagerBase.Field = Me.FullTextField(_settings.ArtifactTypeID)
+											Dim expectedEncoding As System.Text.Encoding = If(textField IsNot Nothing AndAlso textField.UseUnicodeEncoding, System.Text.Encoding.Unicode, Nothing)
+											Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+											If Not System.Text.Encoding.Equals(expectedEncoding, detectedEncoding) Then
+												WriteWarning("The extracted text file's encoding was not detected to be the same as the extracted text field. The imported data may be incorrectly encoded.")
+											End If
+											If detectedEncoding IsNot Nothing Then
+												encoding = detectedEncoding
+											End If
+											Try
+												fileStream.Close()
+											Catch
+											End Try
+										End If
+										outputWriter.Write(field.Value)
+									Else
+										'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
+										' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
+										' across the network for the file, so this override allows that check to be skipped.
+										' -Phil S. 07/27/2012
+										If Not SkipExtractedTextEncodingCheck Then
+											Dim determinedEncodingStream As DeterminedEncodingStream = Utility.DetectEncoding(field.ValueAsString, False)
+											fileStream = determinedEncodingStream.UnderlyingStream
+
+											Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
+											If detectedEncoding IsNot Nothing Then
+												encoding = detectedEncoding
+											End If
+										Else
+											fileStream = New System.IO.FileStream(field.ValueAsString, System.IO.FileMode.Open, System.IO.FileAccess.Read)
+										End If
+
+										Dim sr As New System.IO.StreamReader(fileStream, encoding)
+										Dim count As Int32 = 1
+										Dim buff(_COPY_TEXT_FILE_BUFFER_SIZE) As Char
+										Do
+											count = sr.ReadBlock(buff, 0, _COPY_TEXT_FILE_BUFFER_SIZE)
+											If count > 0 Then
+												outputWriter.Write(buff, 0, count)
+												outputWriter.Flush()
+											End If
+										Loop Until count = 0
+										sr.Close()
+
+										Try
+											fileStream.Close()
+										Catch
+										End Try
 									End If
-									Try
-										fileStream.Close()
-									Catch
-									End Try
-								End If
-								outputWriter.Write(field.Value)
-							Else
-								'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
-								' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
-								' across the network for the file, so this override allows that check to be skipped.
-								' -Phil S. 07/27/2012
-								If Not SkipExtractedTextEncodingCheck Then
-									Dim determinedEncodingStream As DeterminedEncodingStream = Utility.DetectEncoding(field.ValueAsString, False)
-									fileStream = determinedEncodingStream.UnderlyingStream
-
-									Dim detectedEncoding As System.Text.Encoding = determinedEncodingStream.DeterminedEncoding
-									If detectedEncoding IsNot Nothing Then
-										chosenEncoding = detectedEncoding
-									End If
-								Else
-									fileStream = New FileStream(field.ValueAsString, FileMode.Open, FileAccess.Read)
-								End If
-
-								Dim sr As New System.IO.StreamReader(fileStream, chosenEncoding)
-								Dim count As Int32 = 1
-								Dim buff(_COPY_TEXT_FILE_BUFFER_SIZE) As Char
-								Do
-									count = sr.ReadBlock(buff, 0, _COPY_TEXT_FILE_BUFFER_SIZE)
-									If count > 0 Then
-										outputWriter.Write(buff, 0, count)
-										outputWriter.Flush()
-									End If
-								Loop Until count = 0
-
-								sr.Close()
-
-								Try
-									fileStream.Close()
-								Catch
-								End Try
+									Return encoding
+								End Function,
+								Me.CancellationToken)
+							' Only update the ref parameter when a non-null value is returned.
+							If Not returnEncoding Is Nothing Then
+								chosenEncoding = returnEncoding
 							End If
 						End If
 					Catch ex As System.IO.FileNotFoundException
 						Throw New ExtractedTextFileNotFoundException()
+					Catch ex As System.IO.IOException
+						Dim message As String = $"An I/O error occurred reading the file associated with the '{field.DisplayName}' full text field."
+						Throw New kCura.WinEDDS.Exceptions.ImportIOException(message, ex)
 					End Try
 				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Boolean Then
 					If field.ValueAsString <> String.Empty Then
@@ -1775,8 +1882,9 @@ Namespace kCura.WinEDDS
 			If fileField.Value.ToString = String.Empty Then Exit Sub
 			Dim localFilePath As String = fileField.Value.ToString
 			Dim fileSize As Int64
-			If System.IO.File.Exists(localFilePath) Then
-				fileSize = IoReporterInstance.GetFileLength(localFilePath, Me.CurrentLineNumber)
+			Const retry As Boolean = True
+			If Me.GetFileExists(localFilePath, retry) Then
+				fileSize = Me.GetFileLength(localFilePath, retry)
 				Dim fileName As String = System.IO.Path.GetFileName(localFilePath).Replace(ChrW(11), "_")
 				Dim location As String
 				If FileTapiBridge.TargetFolderName = "" Then
@@ -1961,49 +2069,39 @@ Namespace kCura.WinEDDS
 			Dim datetimeNow As System.DateTime = System.DateTime.Now
 			Dim errorFilePath As String = rootFilePath & "_ErrorLines_" & datetimeNow.Ticks & defaultExtension
 			Dim errorReportPath As String = rootFilePath & "_ErrorReport_" & datetimeNow.Ticks & ".csv"
-			If Not _errorLinesFileLocation Is Nothing AndAlso Not _errorLinesFileLocation = String.Empty AndAlso System.IO.File.Exists(_errorLinesFileLocation) Then
-				Try
-					System.IO.File.Copy(_errorLinesFileLocation, errorFilePath)
-				Catch
-					System.IO.File.Copy(_errorLinesFileLocation, errorFilePath)
-				End Try
+			Const retry As Boolean = True
+			If Not _errorLinesFileLocation Is Nothing AndAlso Not _errorLinesFileLocation = String.Empty AndAlso Me.GetFileExists(_errorLinesFileLocation, retry) Then
+				Me.CopyFile(_errorLinesFileLocation, errorFilePath, retry)
 			End If
-			Try
-				System.IO.File.Copy(_errorMessageFileLocation, errorReportPath)
-			Catch
-				System.IO.File.Copy(_errorMessageFileLocation, errorReportPath)
-			End Try
+
+			Me.CopyFile(_errorMessageFileLocation, errorReportPath, retry)
 			_errorMessageFileLocation = ""
 		End Sub
 
 		Private Sub _processController_ExportErrorReportEvent(ByVal exportLocation As String) Handles ProcessController.ExportErrorReportEvent
 			If String.IsNullOrEmpty(_errorMessageFileLocation) Then
 				' write out a blank file if there is no error message file
-				Dim fileWriter As StreamWriter = System.IO.File.CreateText(exportLocation)
+				Dim fileWriter As System.IO.StreamWriter = System.IO.File.CreateText(exportLocation)
 				fileWriter.Close()
 
 				Exit Sub
 			End If
 
-			' not sure why the following is done twice.  It seems silly.
-			Try
-				System.IO.File.Copy(_errorMessageFileLocation, exportLocation, True)
-			Catch ex As Exception
-				System.IO.File.Copy(_errorMessageFileLocation, exportLocation, True)
-			End Try
+			Const retry As Boolean = True
+			Me.CopyFile(_errorMessageFileLocation, exportLocation, True, retry)
 		End Sub
 
 		Private Sub _processController_ExportErrorFileEvent(ByVal exportLocation As String) Handles ProcessController.ExportErrorFileEvent
+			Const retry As Boolean = True
 			If _errorMessageFileLocation Is Nothing OrElse _errorMessageFileLocation = "" Then Exit Sub
-			If _errorLinesFileLocation Is Nothing OrElse _errorLinesFileLocation = "" OrElse Not System.IO.File.Exists(_errorLinesFileLocation) Then
+			If _errorLinesFileLocation Is Nothing OrElse _errorLinesFileLocation = "" OrElse Not Me.GetFileExists(_errorLinesFileLocation, retry) Then
 				_errorLinesFileLocation = _artifactReader.ManageErrorRecords(_errorMessageFileLocation, _prePushErrorLineNumbersFileName)
 			End If
-			If _errorLinesFileLocation Is Nothing Then Exit Sub
-			Try
-				System.IO.File.Copy(_errorLinesFileLocation, exportLocation, True)
-			Catch ex As Exception
-				System.IO.File.Copy(_errorLinesFileLocation, exportLocation, True)
-			End Try
+			If _errorLinesFileLocation Is Nothing Then
+				Exit Sub
+			End If
+
+			Me.CopyFile(_errorLinesFileLocation, exportLocation, True, retry)
 		End Sub
 
 #End Region

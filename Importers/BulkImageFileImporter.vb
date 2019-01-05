@@ -1,4 +1,3 @@
-Imports System.IO
 Imports System.Collections.Generic
 Imports System.Threading
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
@@ -185,10 +184,17 @@ Namespace kCura.WinEDDS
 #End Region
 
 #Region "Constructors"
-		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal ioReporterInstance As IIoReporter, 
-					   ByVal logger As Logging.ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean,  ByVal enforceDocumentLimit As Boolean, ByVal tokenSource As CancellationTokenSource,
-					   Optional ByVal executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			MyBase.New(ioReporterInstance, logger, tokenSource)
+		Public Sub New(folderID As Int32, _
+		               args As ImageLoadFile, _
+		               controller As kCura.Windows.Process.Controller, _
+		               reporter As IIoReporter, _
+		               logger As Logging.ILog, _
+		               processID As Guid, _
+		               doRetryLogic As Boolean, _
+		               enforceDocumentLimit As Boolean, _
+		               tokenSource As CancellationTokenSource, _
+		               Optional ByVal executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
+			MyBase.New(reporter, logger, tokenSource)
 
 			_executionSource = executionSource
 			_enforceDocumentLimit = enforceDocumentLimit
@@ -226,7 +232,6 @@ Namespace kCura.WinEDDS
 			If args.ReplaceFullText Then
 				_fullTextStorageIsInSql = (_fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, Relativity.ArtifactType.Document).FullText.EnableDataGrid = False)
 			End If
-
 		End Sub
 
 		Protected Overridable Sub InitializeUploaders(ByVal args As ImageLoadFile)
@@ -467,7 +472,7 @@ Namespace kCura.WinEDDS
 			While totalRecords > recordsProcessed AndAlso Not hasReachedEof AndAlso ShouldImport
 				Dim i As Int32 = 0
 				Dim charactersProcessed As Int64 = 0
-				Using sr As TextReader = CreateStreamReader(oldBulkLoadFilePath), sw As TextWriter = CreateStreamWriter(newBulkLoadFilePath)
+				Using sr As System.IO.TextReader = CreateStreamReader(oldBulkLoadFilePath), sw As System.IO.TextWriter = CreateStreamWriter(newBulkLoadFilePath)
 					Me.AdvanceStream(sr, charactersSuccessfullyProcessed)
 					Dim tempBatchSize As Int32 = Me.ImportBatchSize
 					While (Not hasReachedEof AndAlso i < tempBatchSize)
@@ -525,7 +530,7 @@ Namespace kCura.WinEDDS
 			Return New System.IO.StreamWriter(tmpLocation, False, System.Text.Encoding.Unicode)
 		End Function
 
-		Protected Overridable Function CreateStreamReader(ByVal outputPath As String) As TextReader
+		Protected Overridable Function CreateStreamReader(ByVal outputPath As String) As System.IO.TextReader
 			Return New System.IO.StreamReader(outputPath, System.Text.Encoding.Unicode)
 		End Function
 
@@ -557,7 +562,8 @@ Namespace kCura.WinEDDS
 			End If
 
 			_batchCount = 0
-			Me.Statistics.MetadataBytes += (IoReporterInstance.GetFileLength(bulkLoadFilePath, Me.CurrentLineNumber) + IoReporterInstance.GetFileLength(dataGridFilePath, Me.CurrentLineNumber))
+			Const retry As Boolean = True
+			Me.Statistics.MetadataBytes += (Me.GetFileLength(bulkLoadFilePath, retry) + Me.GetFileLength(dataGridFilePath, retry))
 
 			try
 				_uploadKey = Me.BulkLoadTapiBridge.AddPath(bulkLoadFilePath, Guid.NewGuid().ToString(), 1)
@@ -783,7 +789,6 @@ Namespace kCura.WinEDDS
 			Dim imageFilePath As String = BulkImageFileImporter.GetFileLocation(imageRecord)
 
 			If Not Me.DisableImageLocationValidation Then
-				'AndAlso Not System.IO.File.Exists(imageFilePath) 
 				Dim foundFileName As String = FilePathHelper.GetExistingFilePath(imageFilePath)
 				Dim fileExists As Boolean = Not String.IsNullOrEmpty(foundFileName)
 
@@ -896,7 +901,7 @@ Namespace kCura.WinEDDS
 							chosenEncoding = detectedEncoding
 						End If
 					Else
-						fileStream = New FileStream(filename, FileMode.Open, FileAccess.Read)
+						fileStream = New System.IO.FileStream(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read)
 					End If
 
 					With New System.IO.StreamReader(fileStream, chosenEncoding, True)
@@ -963,6 +968,7 @@ Namespace kCura.WinEDDS
 			Dim fileGuid As String = ""
 			Dim fileLocation As String = imageFile
 			Dim fileSize As Int64 = 0
+			Const retry As Boolean = True
 			_batchCount += 1
 			If status = 0 Then
 				If _copyFilesToRepository AndAlso ShouldImport Then
@@ -976,19 +982,19 @@ Namespace kCura.WinEDDS
 					Me.FileTapiProgressCount = Me.FileTapiProgressCount + 1
 				End If
 
-				If System.IO.File.Exists(imageFile) Then
-					fileSize = IoReporterInstance.GetFileLength(imageFile, Me.CurrentLineNumber)
+				If Me.GetFileExists(imageFile, retry) Then
+					fileSize = Me.GetFileLength(imageFile, retry)
 				End If
-				If _replaceFullText AndAlso System.IO.File.Exists(extractedTextFileName) AndAlso Not fullTextFiles Is Nothing Then
+				If _replaceFullText AndAlso Me.GetFileExists(extractedTextFileName, retry) AndAlso Not fullTextFiles Is Nothing Then
 					fullTextFiles.Add(extractedTextFileName)
 				Else
-					If _replaceFullText AndAlso Not System.IO.File.Exists(extractedTextFileName) Then
+					If _replaceFullText AndAlso Not Me.GetFileExists(extractedTextFileName, retry) Then
 						RaiseStatusEvent(kCura.Windows.Process.EventType.Warning, $"File '{extractedTextFileName}' not found.  No text updated.", CType((_totalValidated + _totalProcessed) / 2, Int64), originalLineNumber)
 					End If
 				End If
 			End If
-			If _replaceFullText AndAlso System.IO.File.Exists(extractedTextFileName) AndAlso Not fullTextFiles Is Nothing Then
-				offset += IoReporterInstance.GetFileLength(extractedTextFileName, Me.CurrentLineNumber)
+			If _replaceFullText AndAlso Me.GetFileExists(extractedTextFileName, retry) AndAlso Not fullTextFiles Is Nothing Then
+				offset += Me.GetFileLength(extractedTextFileName, retry)
 			End If
 			_bulkLoadFileWriter.Write(If(isStartRecord, "1,", "0,"))
 			_bulkLoadFileWriter.Write(status & ",")
@@ -1285,44 +1291,47 @@ Namespace kCura.WinEDDS
 			Dim datetimeNow As System.DateTime = System.DateTime.Now
 			Dim errorFilePath As String = rootFilePath & "_ErrorLines_" & datetimeNow.Ticks & defaultExtension
 			Dim errorReportPath As String = rootFilePath & "_ErrorReport_" & datetimeNow.Ticks & ".csv"
-			System.IO.File.Copy(_errorRowsFileLocation, errorFilePath)
-			System.IO.File.Copy(_errorMessageFileLocation, errorReportPath)
+			Const retry As Boolean = True
+			Me.CopyFile(_errorRowsFileLocation, errorFilePath, retry)
+			Me.CopyFile(_errorMessageFileLocation, errorReportPath, retry)
 		End Sub
 
 		Private Sub _processController_ExportErrorFileEvent(ByVal exportLocation As String) Handles _processController.ExportErrorFileEvent
+			Const retry As Boolean = True
 			If _errorRowsFileLocation Is Nothing Then
 				Exit Sub
 			End If
 
 			Try
-				If System.IO.File.Exists(_errorRowsFileLocation) Then
-					System.IO.File.Copy(_errorRowsFileLocation, exportLocation, True)
+				If Me.GetFileExists(_errorRowsFileLocation, retry) Then
+					Me.CopyFile(_errorRowsFileLocation, exportLocation, True, retry)
 				End If
 			Catch ex As Exception
 				Me.LogWarning(ex, "Failed to copy the image import error rows file. Going to retry the copy...")
-				If System.IO.File.Exists(_errorRowsFileLocation) Then
-					System.IO.File.Copy(_errorRowsFileLocation, exportLocation, True)
+				If Me.GetFileExists(_errorRowsFileLocation, retry) Then
+					Me.CopyFile(_errorRowsFileLocation, exportLocation, True, retry)
 					Me.LogInformation("Successfully copied the image import error rows file on retry.")
 				End If
 			End Try
 		End Sub
 
 		Private Sub _processController_ExportErrorReportEvent(ByVal exportLocation As String) Handles _processController.ExportErrorReportEvent
+			Const retry As Boolean = True
 			If String.IsNullOrEmpty(_errorMessageFileLocation) Then
 				' write out a blank file if there is no error message file
-				Dim fileWriter As StreamWriter = System.IO.File.CreateText(exportLocation)
+				Dim fileWriter As System.IO.StreamWriter = System.IO.File.CreateText(exportLocation)
 				fileWriter.Close()
 
 				Exit Sub
 			End If
 			Try
-				If System.IO.File.Exists(_errorMessageFileLocation) Then
-					System.IO.File.Copy(_errorMessageFileLocation, exportLocation, True)
+				If Me.GetFileExists(_errorMessageFileLocation, retry) Then
+					Me.CopyFile(_errorMessageFileLocation, exportLocation, True, retry)
 				End If
 			Catch ex As Exception
 				Me.LogWarning(ex, "Failed to copy the image import error location file. Going to retry the copy...")
-				If System.IO.File.Exists(_errorMessageFileLocation) Then
-					System.IO.File.Copy(_errorMessageFileLocation, exportLocation, True)
+				If Me.GetFileExists(_errorMessageFileLocation, retry) Then
+					Me.CopyFile(_errorMessageFileLocation, exportLocation, True, retry)
 					Me.LogInformation("Successfully copied the image import error location file.")
 				End If
 			End Try
