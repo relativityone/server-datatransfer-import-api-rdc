@@ -97,7 +97,6 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Private ReadOnly _filePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
 #End Region
 
 #Region "Accessors"
@@ -806,7 +805,7 @@ Namespace kCura.WinEDDS
 					If Me.DisableNativeLocationValidation Then
 						fileExists = True
 					Else
-						Dim foundFileName As String = _filePathHelper.GetExistingFilePath(filename)
+						Dim foundFileName As String = Me.GetExistingFilePath(filename, retry)
 						fileExists = Not String.IsNullOrEmpty(foundFileName)
 
 						If fileExists AndAlso (Not String.Equals(filename, foundFileName))
@@ -848,7 +847,7 @@ Namespace kCura.WinEDDS
 									' REL-165493: Added OI resiliency and properly address FileNotFoundException scenarios.
 									Dim maxRetryAttempts As Integer = Me.NumberOfRetries
 									Dim currentRetryAttempt As Integer = 0
-									Dim policy As WaitAndRetryPolicy = New WaitAndRetryPolicy(
+									Dim policy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(
 										maxRetryAttempts, _
 										Me.WaitTimeBetweenRetryAttempts)
 									oixFileIdData = policy.WaitAndRetry(Of kCura.OI.FileID.FileIDData, kCura.OI.FileID.FileIDException)(
@@ -861,7 +860,7 @@ Namespace kCura.WinEDDS
 											Return TimeSpan.FromSeconds(Me.WaitTimeBetweenRetryAttempts)
 										End Function,
 										Sub(exception, span)
-											Me.PublishRetryMessage(exception, span, currentRetryAttempt, maxRetryAttempts)
+											Me.PublishIoRetryMessage(exception, span, currentRetryAttempt, maxRetryAttempts)
 										End Sub,
 										Function() As OI.FileID.FileIDData
 											Return fileService.Identify(fullFilePath)
@@ -1630,7 +1629,7 @@ Namespace kCura.WinEDDS
 							Dim currentRetryAttempt As Integer = 0
 
 							' REL-272765: Added I/O resiliency and support document level errors.
-							Dim policy As WaitAndRetryPolicy = New WaitAndRetryPolicy(
+							Dim policy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(
 								maxRetryAttempts, _
 								Me.WaitTimeBetweenRetryAttempts)
 
@@ -1642,7 +1641,7 @@ Namespace kCura.WinEDDS
 									Return TimeSpan.FromSeconds(Me.WaitTimeBetweenRetryAttempts)
 								End Function,
 								Sub(exception, span)
-									Me.PublishRetryMessage(exception, span, currentRetryAttempt, maxRetryAttempts)
+									Me.PublishIoRetryMessage(exception, span, currentRetryAttempt, maxRetryAttempts)
 								End Sub,
 								Function(token) As System.Text.Encoding
 									Dim encoding As System.Text.Encoding = extractedTextEncoding
@@ -2188,7 +2187,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub IoWarningHandler(ByVal e As kCura.Utility.RobustIoReporter.IoWarningEventArgs)
 			Dim ioWarningEventArgs As New TApi.IoWarningEventArgs(e.Message, e.CurrentLineNumber)
-			IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(ioWarningEventArgs)
+			Me.PublishIoWarningEvent(ioWarningEventArgs)
 		End Sub
 
 		Private Sub ManageErrors(ByVal artifactTypeID As Int32)

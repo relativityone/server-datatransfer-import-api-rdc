@@ -18,7 +18,6 @@ Namespace kCura.WinEDDS
 		Public Shared extractedTextEncodingFieldName As String = "Extracted Text Encoding"
 		Private _relationalDocumentFields As DocumentField()
 		Private _processedIdentifiers As New Collections.Specialized.NameValueCollection
-		Private ReadOnly _filePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
 #End Region
 
 #Region "Constructors"
@@ -241,7 +240,8 @@ Namespace kCura.WinEDDS
 				If filePath = "" Then
 					record.FileField.Value = "No File Specified."
 				Else
-					Dim foundFileName As String = _filePathHelper.GetExistingFilePath(existsFilePath)
+					Const retry As Boolean = True
+					Dim foundFileName As String = Me.GetExistingFilePath(existsFilePath, retry)
 					Dim fileExists As Boolean = Not String.IsNullOrEmpty(foundFileName)
 
 					If Not fileExists Then

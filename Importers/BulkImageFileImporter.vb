@@ -789,7 +789,8 @@ Namespace kCura.WinEDDS
 			Dim imageFilePath As String = BulkImageFileImporter.GetFileLocation(imageRecord)
 
 			If Not Me.DisableImageLocationValidation Then
-				Dim foundFileName As String = FilePathHelper.GetExistingFilePath(imageFilePath)
+				Const retry As Boolean = True
+				Dim foundFileName As String = Me.GetExistingFilePath(imageFilePath, retry)
 				Dim fileExists As Boolean = Not String.IsNullOrEmpty(foundFileName)
 
 				If Not fileExists
@@ -857,8 +858,9 @@ Namespace kCura.WinEDDS
 				End If
 				record = lines(i)
 
+				Const retry As Boolean = True
 				Dim imageFilePath As String = BulkImageFileImporter.GetFileLocation(record)
-				Dim foundFileName As String = FilePathHelper.GetExistingFilePath(imageFilePath)
+				Dim foundFileName As String = Me.GetExistingFilePath(imageFilePath, retry)
 				If Not (foundFileName Is Nothing)
 					imageFilePath = foundFileName
 				End If
@@ -1142,7 +1144,7 @@ Namespace kCura.WinEDDS
 		
 		Private Sub IoWarningHandler(ByVal e As RobustIoReporter.IoWarningEventArgs)
 			Dim ioWarningEventArgs As New IoWarningEventArgs(e.Message, e.CurrentLineNumber)
-			IoReporterInstance.IOWarningPublisher?.PublishIoWarningEvent(ioWarningEventArgs)
+			Me.PublishIoWarningEvent(ioWarningEventArgs)
 		End Sub
 
 		Private Sub ManageErrors()

@@ -55,7 +55,6 @@ Namespace kCura.WinEDDS
 		Private _codeValidator As CodeValidator.Base
 		Protected WithEvents _artifactReader As Api.IArtifactReader
 		Protected _executionSource As Relativity.ExecutionSource
-		Protected ReadOnly FilePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
 		Public Property SkipExtractedTextEncodingCheck As Boolean
 		Public Property LoadImportedFullTextFromServer As Boolean
 		Public Property DisableExtractedTextFileLocationValidation As Boolean
@@ -527,7 +526,7 @@ Namespace kCura.WinEDDS
 							Dim currentRetryAttempt As Integer = 0
 
 							' REL-272765: Added I/O resiliency and support document level errors.
-							Dim policy As WaitAndRetryPolicy = New WaitAndRetryPolicy(
+							Dim policy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(
 								kCura.Utility.Config.IOErrorNumberOfRetries, _
 								kCura.Utility.Config.IOErrorWaitTimeInSeconds)
 
@@ -539,12 +538,12 @@ Namespace kCura.WinEDDS
 									Return TimeSpan.FromSeconds(kCura.Utility.Config.IOErrorWaitTimeInSeconds)
 								End Function,
 								Sub(exception, span)
-									Me.PublishRetryMessage(exception, span, currentRetryAttempt, maxRetryAttempts)
+									Me.PublishIoRetryMessage(exception, span, currentRetryAttempt, maxRetryAttempts)
 								End Sub,
 								Function(token) As Int32?
 									Dim codePage As Int32? = Nothing
 									If (performExtractedTextFileLocationValidation) Then
-										Dim foundFileName As String = FilePathHelper.GetExistingFilePath(value)
+										Dim foundFileName As String = Me.GetExistingFilePath(value, retry)
 										Dim fileExists As Boolean = Not String.IsNullOrEmpty(foundFileName)
 										
 										If Not fileExists
@@ -552,7 +551,8 @@ Namespace kCura.WinEDDS
 										End If
 
 										If Not String.Equals(value, foundFileName)
-											PublishWarningEvent($"File {value} defined in column {columnIndex} in line {Me.CurrentLineNumber} does not exist. File {foundFileName} will be used instead.", Me.CurrentLineNumber)
+											Dim message As String = $"File {value} defined in column {columnIndex} in line {Me.CurrentLineNumber} does not exist. File {foundFileName} will be used instead."
+											Me.PublishIoWarningEvent(new IoWarningEventArgs(message, currentLineNumber))
 											value = foundFileName
 										End If
 									End If
@@ -1092,16 +1092,11 @@ Namespace kCura.WinEDDS
 
 		Private Sub _artifactReader_OnIoWarning(ByVal e As Api.IoWarningEventArgs) Handles _artifactReader.OnIoWarning
 			If e.Exception Is Nothing Then
-				PublishWarningEvent(e.Message, e.CurrentLineNumber)
+				Me.PublishIoWarningEvent(new IoWarningEventArgs(e.Message, e.CurrentLineNumber))
 			Else
 				Dim message As String = IoReporter.BuildIoReporterWarningMessage(e.Exception, e.WaitTime)
-				IoReporterInstance?.IOWarningPublisher?.PublishIoWarningEvent(new IoWarningEventArgs(message, e.CurrentLineNumber))
+				Me.PublishIoWarningEvent(new IoWarningEventArgs(message, e.CurrentLineNumber))
 			End If
-		End Sub
-
-		Private Sub PublishWarningEvent(message As String, currentLineNumber As Long)
-			Dim ioEvent As IoWarningEventArgs = new IoWarningEventArgs(message, currentLineNumber)
-			IoReporterInstance?.IOWarningPublisher?.PublishIoWarningEvent(ioEvent)
 		End Sub
 	End Class
 End Namespace
