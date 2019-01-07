@@ -18,7 +18,7 @@ namespace kCura.WinEDDS.TApi
 	using Relativity.Logging;
 
 	/// <summary>
-	/// Base class for IO reporter
+	/// Represents a class object to perform I/O operations, publish warning messages, and retry the operation.
 	/// </summary>
 	public class IoReporter : IIoReporter
 	{
@@ -30,11 +30,12 @@ namespace kCura.WinEDDS.TApi
 		private readonly IFileSystem fileSystem;
 		private readonly IWaitAndRetryPolicy waitAndRetryPolicy;
 		private readonly ILog log;
-        private readonly bool disableNativeLocationValidation;
+		private readonly IoWarningPublisher publisher;
+		private readonly bool disableNativeLocationValidation;
 		private readonly CancellationToken cancellationToken;
 
 		/// <summary>
-		/// Constructor for IO reporter
+		/// Initializes a new instance of the <see cref="IoReporter"/> class.
 		/// </summary>
 		/// <param name="fileSystem">
 		/// The file system wrapper.
@@ -84,15 +85,9 @@ namespace kCura.WinEDDS.TApi
 			this.fileSystem = fileSystem;
             this.waitAndRetryPolicy = waitAndRetry;
             this.log = log;
-            this.IOWarningPublisher = publisher;
+            this.publisher = publisher;
             this.disableNativeLocationValidation = disableNativeLocationValidation;
 			this.cancellationToken = cancellationToken;
-		}
-
-		/// <inheritdoc />
-		public IoWarningPublisher IOWarningPublisher
-		{
-			get;
 		}
 
 		/// <summary>
@@ -209,7 +204,7 @@ namespace kCura.WinEDDS.TApi
 			return this.Exec(lineNumber, fileName, "File Exists", () =>
 			{
 				IFileInfo fileInfo = this.fileSystem.CreateFileInfo(fileName);
-				bool fileExists =  fileInfo != null && fileInfo.Exists;
+				bool fileExists =  fileInfo.Exists;
 				return fileExists;
 			});
 		}
@@ -242,8 +237,20 @@ namespace kCura.WinEDDS.TApi
 		public void PublishRetryMessage(Exception exception, TimeSpan timeSpan, int retryCount, int totalRetryCount, long lineNumber)
 		{
 			var warningMessage = BuildIoReporterWarningMessage(exception, timeSpan.TotalSeconds, retryCount, totalRetryCount);
-			this.IOWarningPublisher.PublishIoWarningEvent(new IoWarningEventArgs(warningMessage, lineNumber));
+			this.publisher.PublishIoWarningEvent(new IoWarningEventArgs(warningMessage, lineNumber));
 			log.LogWarning(exception, warningMessage);
+		}
+
+		/// <inheritdoc />
+		public void PublishWarningMessage(IoWarningEventArgs args)
+		{
+			if (args == null)
+			{
+				throw new ArgumentNullException(nameof(args));
+			}
+
+			this.publisher.PublishIoWarningEvent(args);
+			log.LogWarning(args.Message);
 		}
 
 		private bool CheckInvalidPathCharactersException(Exception exception)

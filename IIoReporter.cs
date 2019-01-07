@@ -3,18 +3,10 @@
 namespace kCura.WinEDDS.TApi
 {
 	/// <summary>
-	/// Represents an object used to perform I/O operations, publish warning messages, and retry the operation.
+	/// Represents an abstract object to perform I/O operations, publish warning messages, and retry the operation.
 	/// </summary>
 	public interface IIoReporter
 	{
-		/// <summary>
-		/// Property to expose IoWarningPublisher
-		/// </summary>
-		IoWarningPublisher IOWarningPublisher
-		{
-			get;
-		}
-
 		/// <summary>
 		/// Copies an existing file to a new file. Overwriting a file of the same name is allowed.
 		/// </summary>
@@ -118,5 +110,13 @@ namespace kCura.WinEDDS.TApi
 		/// </param>
 		void PublishRetryMessage(Exception exception, TimeSpan timeSpan, int retryCount, int totalRetryCount,
 			long lineNumber);
+
+		/// <summary>
+		/// Publishes a raw warning message but doesn't log the issue.
+		/// </summary>
+		/// <param name="args">
+		/// The warning event.
+		/// </param>
+		void PublishWarningMessage(IoWarningEventArgs args);
 	}
 }

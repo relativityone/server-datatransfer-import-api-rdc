@@ -99,6 +99,7 @@
     <Compile Include="IFileSystem.cs" />
     <Compile Include="FileSystemWrap.cs" />
     <Compile Include="FileInfoWrap.cs" />
+    <Compile Include="NullIoReporter.cs" />
     <Compile Include="PathWrap.cs" />
     <Compile Include="FileWrap.cs" />
     <Compile Include="IPath.cs" />
