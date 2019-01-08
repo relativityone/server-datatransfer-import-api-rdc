@@ -6,7 +6,7 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 		Inherits FileNamePartProvider(Of FirstFieldDescriptorPart)
 
 		Public Overrides Function GetPartName(descriptorPart As FirstFieldDescriptorPart, exportObject As ObjectExportInfo) As String
-			If exportObject.ProductionBeginBates IsNot Nothing AndAlso exportObject.ProductionBeginBates <> ""
+			If descriptorPart.isProduction AndAlso exportObject.ProductionBeginBates IsNot Nothing AndAlso exportObject.ProductionBeginBates <> ""
 				Return exportObject.ProductionBeginBates
 			End If
 			Return exportObject.IdentifierValue
