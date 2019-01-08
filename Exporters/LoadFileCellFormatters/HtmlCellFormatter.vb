@@ -1,5 +1,6 @@
 ﻿Namespace kCura.WinEDDS.Exporters
 
+	<Obsolete>
 	Public Class HtmlCellFormatter
 		Implements ILoadFileCellFormatter
 		Private _settings As kCura.WinEDDS.ExportFile
