@@ -3,7 +3,7 @@ Namespace kCura.WinEDDS.Exceptions
 	''' <summary>
 	''' The exception thrown when a login failure occurs.
 	''' </summary>
-	<Serializable>
+	<Serializable()>
 	Public Class InvalidLoginException
 		Inherits System.Exception
 
@@ -37,10 +37,24 @@ Namespace kCura.WinEDDS.Exceptions
 			MyBase.New(message, innerException)
 		End Sub
 
-		''' <inheritdoc />
+		''' <summary>
+		''' Initializes a New instance of the <see cref="InvalidLoginException"/> class.
+		''' </summary>
+		''' <param name="info">
+		''' The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.
+		''' </param>
+		''' <param name="context">
+		''' The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source Or destination.
+		''' </param>
 		<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
 		Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
 			MyBase.New(info, context)
+		End Sub
+
+		''' <inheritdoc />
+		<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
+		Overrides Sub GetObjectData(info As System.Runtime.Serialization.SerializationInfo, context As System.Runtime.Serialization.StreamingContext)
+			MyBase.GetObjectData(info, context)
 		End Sub
 	End Class
 End Namespace
