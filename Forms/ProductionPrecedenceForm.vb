@@ -204,7 +204,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _okButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _okButton.Click
 			Dim al As New System.Collections.ArrayList
 			Dim item As Pair
-			If _originalImages.Checked Then
+			If _productions.RightSearchableListItems.Count = 0 OrElse _originalImages.Checked Then
 				al.Add(New Pair("-1", "Original"))
 			Else
 				For Each item In _productions.RightSearchableListItems
