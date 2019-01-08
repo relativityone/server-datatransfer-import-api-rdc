@@ -15,7 +15,9 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Function GetTextName(exportedObjectInfo As ObjectExportInfo) As String Implements IFileNameProvider.GetTextName
-			Return exportedObjectInfo.FullTextFileName(True, False, _exportSettings.AppendOriginalFileName)
+			Dim nameFilesAfterIdentifier As Boolean = True
+			Dim tryProductionBegBates As Boolean = False
+			Return exportedObjectInfo.FullTextFileName(nameFilesAfterIdentifier, tryProductionBegBates, _exportSettings.AppendOriginalFileName)
 		End Function
 	End Class
 End Namespace
