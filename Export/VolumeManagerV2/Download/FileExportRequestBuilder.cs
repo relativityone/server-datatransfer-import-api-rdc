@@ -41,6 +41,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 				return Enumerable.Empty<ExportRequest>().ToList();
 			}
 
+			artifact.Filename = GetFileName(artifact);
 			string destinationLocation = GetExportDestinationLocation(artifact);
 			artifact.NativeTempLocation = destinationLocation;
 
@@ -62,11 +63,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 
 		protected abstract bool IsFileToExport(ObjectExportInfo artifact);
 
+		private string GetFileName(ObjectExportInfo artifact)
+		{
+			return _fileNameProvider.GetName(artifact);
+		}
 		private string GetExportDestinationLocation(ObjectExportInfo artifact)
 		{
-			string fileName = _fileNameProvider.GetName(artifact);
-
-			return _filePathProvider.GetPathForFile(fileName, artifact.ArtifactID);
+			return _filePathProvider.GetPathForFile(artifact.Filename, artifact.ArtifactID);
 		}
 	}
 }
