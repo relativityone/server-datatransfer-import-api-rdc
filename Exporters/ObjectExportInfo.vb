@@ -26,6 +26,7 @@ Namespace kCura.WinEDDS.Exporters
 		Public Property TotalNumberOfFiles() As Int64
 		Public Property DestinationVolume() As String = String.Empty
 		Friend Property CoalescedProductionID As Int32? = Nothing
+		Public Property Filename() As String = String.Empty
 
 #End Region
 
