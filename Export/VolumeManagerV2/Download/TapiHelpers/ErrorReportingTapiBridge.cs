@@ -11,7 +11,6 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 	/// </summary>
 	public class ErrorReportingTapiBridge : ITapiBridge
 	{
-		// TODO: Set this to correct client
 		public TapiClient ClientType => TapiClient.None;
 
 		public event EventHandler<TapiClientEventArgs> TapiClientChanged;
