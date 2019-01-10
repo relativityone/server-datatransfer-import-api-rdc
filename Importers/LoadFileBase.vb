@@ -531,8 +531,8 @@ Namespace kCura.WinEDDS
 								kCura.Utility.Config.IOErrorWaitTimeInSeconds)
 
 							' Note: a lambda can't modify a ref param; therefore, a policy block return value is used.
-							Dim returnCodePage As Int32? = policy.WaitAndRetry(Of Int32?)(
-								RetryPolicies.IoStandardPolicy,
+							Dim returnCodePage As Integer? = policy.WaitAndRetry(
+								RetryExceptionPolicies.IoStandardPolicy,
 								Function(count)
 									currentRetryAttempt = count
 									Return TimeSpan.FromSeconds(kCura.Utility.Config.IOErrorWaitTimeInSeconds)

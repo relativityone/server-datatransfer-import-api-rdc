@@ -226,8 +226,8 @@ Namespace kCura.WinEDDS
 				Dim policy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(
 					maxRetryAttempts, _
 					kCura.Utility.Config.IOErrorWaitTimeInSeconds)
-				Dim returnExistingPath As String = policy.WaitAndRetry(Of String)(
-					RetryPolicies.IoStandardPolicy,								
+				Dim returnExistingPath As String = policy.WaitAndRetry(
+					RetryExceptionPolicies.IoStandardPolicy,
 					Function(count)
 						currentRetryAttempt = count
 						Return TimeSpan.FromSeconds(kCura.Utility.Config.IOErrorWaitTimeInSeconds)

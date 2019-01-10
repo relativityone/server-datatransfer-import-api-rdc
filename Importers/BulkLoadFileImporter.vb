@@ -6,9 +6,7 @@ Imports kCura.OI.FileID
 Imports kCura.Utility.Extensions
 Imports kCura.Windows.Process
 Imports kCura.WinEDDS.Api
-Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.TApi
-Imports Polly
 Imports Relativity
 
 Namespace kCura.WinEDDS
@@ -666,6 +664,9 @@ Namespace kCura.WinEDDS
 								Catch ex As System.IO.FileNotFoundException
 									WriteError(Me.CurrentLineNumber, ex.Message)
 									Me.LogError(ex, "A file not found error has occurred managing an import document.")
+								Catch ex As System.UnauthorizedAccessException
+									WriteError(Me.CurrentLineNumber, ex.Message)
+									Me.LogError(ex, "An import error has occurred because the user doesn't have authorized access to the document.")
 								Catch ex As FileIDIdentificationException
 									WriteError(Me.CurrentLineNumber, ex.Message)
 									Me.LogError(ex, "An error occured identifying type of native file.")
@@ -850,7 +851,17 @@ Namespace kCura.WinEDDS
 									Dim policy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(
 										maxRetryAttempts, _
 										Me.WaitTimeBetweenRetryAttempts)
-									oixFileIdData = policy.WaitAndRetry(Of kCura.OI.FileID.FileIDData, kCura.OI.FileID.FileIDException)(
+									oixFileIdData = policy.WaitAndRetry(
+										Function(exception)
+											Dim outsideInException As FileIDIdentificationException = TryCast(exception, FileIDIdentificationException)
+											If (Not outsideInException Is Nothing)
+												' Retry as long as the OI error is NOT due to permissions.
+												Return outsideInException.ErrorCode <> 7
+											End If
+
+											Dim ioPolicyResult As Boolean = RetryExceptionPolicies.IoStandardPolicy(exception)
+											Return ioPolicyResult
+										End Function,
 										Function(count)
 											' Force OI to get reinitialized in the event the runtime configuration is invalid.
 											currentRetryAttempt = count
@@ -1634,8 +1645,8 @@ Namespace kCura.WinEDDS
 								Me.WaitTimeBetweenRetryAttempts)
 
 							' Note: a lambda can't modify a ref param; therefore, a policy block return value is used.
-							Dim returnEncoding As System.Text.Encoding = policy.WaitAndRetry(Of System.Text.Encoding)(
-								RetryPolicies.IoStandardPolicy,								
+							Dim returnEncoding As System.Text.Encoding = policy.WaitAndRetry(
+								RetryExceptionPolicies.IoStandardPolicy,
 								Function(count)
 									currentRetryAttempt = count
 									Return TimeSpan.FromSeconds(Me.WaitTimeBetweenRetryAttempts)
