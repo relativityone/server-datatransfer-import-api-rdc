@@ -161,6 +161,7 @@
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeAdapterTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeForFilesTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeWithEncodingConversionTests.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ErrorReportingTapiBridgeTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\FileTapiBridgePoolTests.cs" />
     <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\LongTextTapiBridgePoolTests.cs" />
     <Compile Include="Export\VolumeManagerV2\ImagesRollup\ImageException.cs" />
