@@ -17,17 +17,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 
 		public FileShareSettingsService(ILog logger, ExportFile exportSettings)
 		{
-		    if (logger == null)
-		    {
-		        throw new ArgumentNullException(nameof(logger));
-		    }
+			if (logger == null)
+			{
+				throw new ArgumentNullException(nameof(logger));
+			}
 
-		    if (exportSettings == null)
-		    {
-		        throw new ArgumentNullException(nameof(exportSettings));
-		    }
+			if (exportSettings == null)
+			{
+				throw new ArgumentNullException(nameof(exportSettings));
+			}
 
-            _logger = logger;
+			_logger = logger;
 			_workspaceId = exportSettings.CaseInfo.ArtifactID;
 			_currentUserCredential = exportSettings.Credential;
 		}
@@ -39,6 +39,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 				GetFileShareSettingsForWorkspace(Config.WebServiceURL, _workspaceId, _currentUserCredential.UserName, _currentUserCredential.Password);
 			}
 
+			// settings will be null here if the fileUrl belongs to no known file share, e.g. if the path in the database was somehow modified,
+			// or if the file share to which it was uploaded no longer exists in Relativity.
 			RelativityFileShareSettings settings = _cachedSettings.FirstOrDefault(n => n.IsBaseOf(fileUrl));
 			return settings;
 		}
