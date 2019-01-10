@@ -22,8 +22,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		private readonly ITransferClientHandler _transferClientHandler;
 		private readonly ILog _logger;
 
-		public FileTapiBridgePool(IExportConfig exportConfig, TapiBridgeParametersFactory tapiBridgeParametersFactory, DownloadProgressManager downloadProgressManager, FilesStatistics filesStatistics,
-			IMessagesHandler messageHandler, ITransferClientHandler transferClientHandler, ILog logger)
+		public FileTapiBridgePool(IExportConfig exportConfig,
+			TapiBridgeParametersFactory tapiBridgeParametersFactory,
+			DownloadProgressManager downloadProgressManager,
+			FilesStatistics filesStatistics,
+			IMessagesHandler messageHandler,
+			ITransferClientHandler transferClientHandler,
+			ILog logger)
 		{
 			_exportConfig = exportConfig;
 			_tapiBridgeParametersFactory = tapiBridgeParametersFactory;
@@ -40,9 +45,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		{
 			if (fileshareSettings == null)
 			{
-				throw new ArgumentNullException(nameof(fileshareSettings));
+				// fileshareSettings will be null if the source path for a file does not correspond to any known file server.
+				// Since we can't create a bridge without fileshare settings, we return a default implementation that reports
+				// errors for all attempted downloads.
+
+				return ErrorReportingTapiBridge;
 			}
-			
+
 			if (!_fileTapiBridges.ContainsKey(fileshareSettings))
 			{
 				CreateTapiBridge(fileshareSettings, token);
@@ -85,6 +94,17 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			return connectedNotUsed;
 		}
 
+		private IDownloadTapiBridge ErrorReportingTapiBridge
+		{
+			get
+			{
+				var tapiBridge = new ErrorReportingTapiBridge();
+				IProgressHandler progressHandler = new FileDownloadProgressHandler(_downloadProgressManager, _logger);
+				var downloadTapiBridge = new DownloadTapiBridgeForFiles(tapiBridge, progressHandler, _messageHandler, _filesStatistics, _transferClientHandler, _logger);
+				return downloadTapiBridge;
+			}
+		}
+
 		private void CreateTapiBridge(IRelativityFileShareSettings fileshareSettings, CancellationToken token)
 		{
 			ITapiBridgeWrapperFactory tapiBridgeWrapperFactory =
@@ -98,7 +118,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 
 		public void Release(IDownloadTapiBridge bridge)
 		{
-			_fileTapiBridges.Values.First(x => x.Bridge == bridge).InUse = false;
+			PoolEntry entryForBridge = _fileTapiBridges.Values.FirstOrDefault(x => x.Bridge == bridge);
+
+			// entryForBridge will be null if we returned an ErrorReportingTapiBridge when this bridge was requested.
+			if (entryForBridge != null)
+			{
+				entryForBridge.InUse = false;
+			}
 		}
 
 		public void Dispose()
