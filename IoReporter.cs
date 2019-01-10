@@ -280,7 +280,7 @@ namespace kCura.WinEDDS.TApi
 				int maxRetryAttempts = this.waitAndRetryPolicy.MaxRetryAttempts;
 				int currentRetryAttempt = 0;
 				return this.waitAndRetryPolicy.WaitAndRetry(
-					RetryPolicies.IoStandardPolicy,
+					RetryExceptionPolicies.IoStandardPolicy,
 					retryAttempt =>
 					{
 						currentRetryAttempt = retryAttempt;

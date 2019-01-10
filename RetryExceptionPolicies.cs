@@ -1,10 +1,10 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 
-// <copyright file="RetryPolicies.cs" company="kCura Corp">
+// <copyright file="RetryExceptionPolicies.cs" company="kCura Corp">
 //   kCura Corp (C) 2017 All Rights Reserved.
 // </copyright>
 // <summary>
-//   Represents a class object to support resiliency and retry policies.
+// Defines commonly used static function properties that decide whether an exception should be retried.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -13,9 +13,9 @@ namespace kCura.WinEDDS.TApi
     using System;
 
     /// <summary>
-    /// Defines commonly used static retry policies.
+    /// Defines commonly used static function properties that decide whether an exception should be retried.
     /// </summary>
-    public static class RetryPolicies
+    public static class RetryExceptionPolicies
 	{
 		/// <summary>
 		/// Defines a standard exception retry function that returns <see langword="true" /> for <see cref="FileInfoInvalidPathException"/> and all 
