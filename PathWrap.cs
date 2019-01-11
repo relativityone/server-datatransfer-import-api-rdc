@@ -46,11 +46,17 @@ namespace kCura.WinEDDS.TApi
 		private static readonly string AltDirectorySeparatorString = System.IO.Path.AltDirectorySeparatorChar.ToString();
 
 		/// <summary>
+		/// The backing field for the custom temporary directory.
+		/// </summary>
+		private string customTempDirectory;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="PathWrap" /> class.
 		/// </summary>
 		internal PathWrap()
 		{
 			this.SupportLongPaths = false;
+			this.CustomTempPath = string.Empty;
 		}
 
 		/// <inheritdoc />
@@ -58,6 +64,26 @@ namespace kCura.WinEDDS.TApi
 		{
 			get;
 			set;
+		}
+
+		/// <inheritdoc />
+		public string CustomTempPath
+		{
+			get => this.customTempDirectory;
+
+			set
+			{
+				if (!string.IsNullOrEmpty(value))
+				{
+					value = TryGetFullPath(value);
+					if (!string.IsNullOrEmpty(value) && !this.PathEndsWithTrailingBackSlash(value))
+					{
+						value = this.AddTrailingBackSlash(value);
+					}
+				}
+
+				this.customTempDirectory = value;
+			}
 		}
 
 		/// <inheritdoc />
@@ -113,7 +139,13 @@ namespace kCura.WinEDDS.TApi
 		/// <inheritdoc />
 		public string GetTempPath()
 		{
-			return System.IO.Path.GetTempPath();
+			string value = this.CustomTempPath;
+			if (string.IsNullOrEmpty(value))
+			{
+				value = System.IO.Path.GetTempPath();
+			}
+
+			return value;
 		}
 
 		/// <inheritdoc />
@@ -228,6 +260,42 @@ namespace kCura.WinEDDS.TApi
 			return string.IsNullOrEmpty(path)
 				? string.Empty
 				: path.TrimEnd(System.IO.Path.DirectorySeparatorChar, System.IO.Path.AltDirectorySeparatorChar);
+		}
+
+		/// <summary>
+		/// Tries to retrieve the supplied path.
+		/// </summary>
+		/// <param name="path">
+		/// The path.
+		/// </param>
+		/// <returns>
+		/// The absolute path.
+		/// </returns>
+		private static string TryGetFullPath(string path)
+		{
+			// Only catch exceptions that can throw from this method.
+
+			try
+			{
+				path = System.IO.Path.GetFullPath(path);
+				return path;
+			}
+			catch (ArgumentException)
+			{
+				return string.Empty;
+			}
+			catch (System.IO.IOException)
+			{
+				return string.Empty;
+			}
+			catch (System.Security.SecurityException)
+			{
+				return string.Empty;
+			}
+			catch (System.NotSupportedException)
+			{
+				return string.Empty;
+			}
 		}
 	}
 }

@@ -18,9 +18,21 @@ namespace kCura.WinEDDS.TApi
 		/// Gets or sets a value indicating whether to support long paths. This is always <see langword="false" /> by default and must be explicitly enabled.
 		/// </summary>
 		/// <value>
-		/// /// <see langword="true" /> to support long paths; otherwise, <see langword="false" />.
+		/// <see langword="true" /> to support long paths; otherwise, <see langword="false" />.
 		/// </value>
 		bool SupportLongPaths
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a custom temp directory to override the path returned by <see cref="GetTempPath"/>.
+		/// </summary>
+		/// <value>
+		/// The full path.
+		/// </value>
+		string CustomTempPath
 		{
 			get;
 			set;
