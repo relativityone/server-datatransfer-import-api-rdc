@@ -610,6 +610,11 @@ Namespace kCura.WinEDDS
 						Catch ex As System.IO.FileNotFoundException
 							Throw
 						Catch ex As System.IO.IOException
+							' Running out of disk space should always be treated as a fatal exception.
+							If RetryExceptionPolicies.IsOutOfDiskSpaceException(ex) Then
+								Throw
+							End If
+
 							Dim message As String = $"An I/O error occurred reading the file associated with the '{field.DisplayName}' full text field."
 							Throw New kCura.WinEDDS.Exceptions.ImportIOException(message, ex)
 						End Try
