@@ -254,10 +254,10 @@ namespace kCura.WinEDDS.TApi
 		}
 
 		private bool CheckInvalidPathCharactersException(Exception exception)
-        {
-	        return this.disableNativeLocationValidation && exception is ArgumentException &&
-	               exception.Message.Contains("Illegal characters in path.");
-        }
+		{
+			return this.disableNativeLocationValidation &&
+			       RetryExceptionPolicies.IsInvalidPathCharactersException(exception);
+		}
 
         private FileInfoInvalidPathException CreateInvalidPathCharactersException(Exception exception, string fileName)
         {

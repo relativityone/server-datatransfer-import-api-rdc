@@ -69,7 +69,10 @@ namespace kCura.WinEDDS.TApi
 		/// <inheritdoc />
 		public string CustomTempPath
 		{
-			get => this.customTempDirectory;
+			get
+			{
+				return this.customTempDirectory;
+			} 
 
 			set
 			{
