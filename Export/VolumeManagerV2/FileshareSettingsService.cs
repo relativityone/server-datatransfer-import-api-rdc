@@ -13,7 +13,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 		private List<RelativityFileShareSettings> _cachedSettings;
 		private readonly ILog _logger;
 		private readonly int _workspaceId;
+		private readonly string _webServiceUrl;
 		private readonly NetworkCredential _currentUserCredential;
+		private readonly CookieContainer _cookieContainer;
 
 		public FileShareSettingsService(ILog logger, ExportFile exportSettings)
 		{
@@ -28,8 +30,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 			}
 
 			_logger = logger;
+            _webServiceUrl = Config.WebServiceURL;
 			_workspaceId = exportSettings.CaseInfo.ArtifactID;
 			_currentUserCredential = exportSettings.Credential;
+			_cookieContainer = exportSettings.CookieContainer;
 		}
 
 		public IRelativityFileShareSettings GetSettingsForFileshare(string fileUrl)
@@ -49,8 +53,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 		{
 			try
 			{
-				RelativityConnectionInfo connectionInfo = TapiWinEddsHelper.CreateRelativityConnectionInfo(hostUrl, workspaceId, userName, password);
+				TapiBridgeParameters parameters = new TapiBridgeParameters
+				{
+					Credentials = _currentUserCredential,
+					WebCookieContainer = _cookieContainer,
+					WebServiceUrl = _webServiceUrl,
+					WorkspaceId = _workspaceId
+				};
 
+				RelativityConnectionInfo connectionInfo = TapiWinEddsHelper.CreateRelativityConnectionInfo(parameters);
 				using (ITransferLog transferLog = new RelativityTransferLog(_logger, false))
 				using (var transferHost = new RelativityTransferHost(connectionInfo, transferLog))
 				{
@@ -64,8 +75,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 						{
 							this._logger.LogWarning(
 								"The Relativity instance '{Url}' defines workspace '{WorkspaceId}' that references invalid fileshare '{FileShareName}' from the associated resource pool.",
-								hostUrl,
-								workspaceId,
+								_webServiceUrl,
+								_workspaceId,
 								fileShare.Name);
 						}
 					}
