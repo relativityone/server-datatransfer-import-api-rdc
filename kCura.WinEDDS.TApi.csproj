@@ -85,11 +85,15 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="WebApiServiceBase.cs" />
+    <Compile Include="RelativityManagerService.cs" />
     <Compile Include="RelativityTransferLog.cs" />
     <Compile Include="ClientChangeReason.cs" />
     <Compile Include="DownloadTapiBridge.cs" />
