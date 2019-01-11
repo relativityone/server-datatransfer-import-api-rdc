@@ -23,11 +23,6 @@ namespace kCura.WinEDDS.TApi
         private readonly TransferDirection transferDirection;
 
         /// <summary>
-        /// The client name.
-        /// </summary>
-        private readonly string clientName;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="TransferPathIssueListener"/> class. 
         /// </summary>
         /// <param name="log">
@@ -36,17 +31,13 @@ namespace kCura.WinEDDS.TApi
         /// <param name="direction">
         /// The transfer direction.
         /// </param>
-        /// <param name="clientName">
-        /// The client name.
-        /// </param>
         /// <param name="context">
         /// The transfer context.
         /// </param>
-        public TransferPathIssueListener(ITransferLog log, TransferDirection direction, string clientName, TransferContext context)
+        public TransferPathIssueListener(ITransferLog log, TransferDirection direction, TransferContext context)
             : base(log, context)
         {
             this.transferDirection = direction;
-            this.clientName = clientName;
         }
 
         /// <inheritdoc />
@@ -65,7 +56,7 @@ namespace kCura.WinEDDS.TApi
                 var message = string.Format(
                     CultureInfo.CurrentCulture,
                     formattedMessage,
-                    this.clientName,
+                    this.ClientDisplayName,
                     e.Issue.Message,
                     retryTimeSpan.TotalSeconds,
                     triesLeft);
@@ -98,7 +89,7 @@ namespace kCura.WinEDDS.TApi
                 var message = string.Format(
                     CultureInfo.CurrentCulture,
                     formattedMessage,
-                    this.clientName,
+                    this.ClientDisplayName,
                     e.Issue.Message,
                     retryTimeSpan.TotalSeconds,
                     triesLeft);
