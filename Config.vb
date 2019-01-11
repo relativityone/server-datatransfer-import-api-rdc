@@ -228,6 +228,22 @@ Namespace kCura.WinEDDS
 		End Property
 
 		''' <summary>
+		''' Overrides the default temp directory ordinarily provided by <see cref="System.IO.Path.GetTempPath"/>. This is 
+		''' </summary>
+		''' <value>
+		''' The full path to the temp directory.
+		''' </value>
+		Public Shared ReadOnly Property TempDirectory() As String
+			Get
+				Try
+					Return CType(ConfigSettings("TempDirectory"), String)
+				Catch ex As Exception
+					Return String.Empty
+				End Try
+			End Get
+		End Property
+
+		''' <summary>
 		''' If True, Folders which are created in Append mode are created in the WebAPI.
 		''' If False, Folders which are created in Append mode are created in RDC/ImportAPI.
 		''' If the value is not set in the config file, True is returned.
@@ -579,6 +595,7 @@ Namespace kCura.WinEDDS
 			If Not tempDict.Contains("ForceParallelismInNewExport") Then tempDict.Add("ForceParallelismInNewExport", "False")
 			If Not tempDict.Contains("PermissionErrorsRetry") Then tempDict.Add("PermissionErrorsRetry", "False")
 			If Not tempDict.Contains("BadPathErrorsRetry") Then tempDict.Add("BadPathErrorsRetry", "False")
+			If Not tempDict.Contains("TempDirectory") Then tempDict.Add("TempDirectory", "")
 			If Not tempDict.Contains("EnableSingleModeImport") Then tempDict.Add("EnableSingleModeImport", "False")
 			If Not tempDict.Contains("CreateErrorForEmptyNativeFile") Then tempDict.Add("CreateErrorForEmptyNativeFile", "False")
 			If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")
