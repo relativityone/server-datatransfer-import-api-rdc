@@ -10,6 +10,7 @@
 namespace kCura.WinEDDS.TApi.NUnit.Integration
 {
     using System;
+    using System.Collections.Generic;
 	using System.Threading;
     using Moq;
 
@@ -35,7 +36,6 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         private ArgumentException expectedArgumentException;
 		private const string _FILE_NAME = "TestFileName";
 		private const string _EXPECTED_DEFAULT_EXCEPTION_MESSAGE = "Expected exception message";
-		private const string _EXPECTED_INVALID_PATH_EXCEPTION_MESSAGE = "Illegal characters in path.";
         private string expectedLogWarningMessage;
         private string expectedLogErrorMessage;
         private string actualExceptionMessage = string.Empty;
@@ -43,6 +43,20 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         private string actualInvalidPathExceptionMessage = string.Empty;
         private string actualLogErrorMessage = string.Empty;
 		private readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
+
+		private static IEnumerable<Exception> NonRetryableExceptionTestCases
+		{
+			get
+			{
+				yield return new InvalidOperationException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE);
+				yield return new System.IO.IOException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE, RetryExceptionPolicies.DiskFullHResultHResult);
+				yield return new System.IO.IOException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE, RetryExceptionPolicies.HandleDiskFullHResult);
+				yield return new System.IO.FileNotFoundException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE);
+				yield return new System.IO.PathTooLongException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE);
+				yield return new FileInfoInvalidPathException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE);
+				yield return new UnauthorizedAccessException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE);
+			}
+		}
 
 		[SetUp]
 		public void Setup()
@@ -95,9 +109,10 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 		}
 
 		[Test]
-		public void ItShouldNotRetryNonIoException()
+		[TestCaseSourceAttribute(nameof(NonRetryableExceptionTestCases))]
+		public void ItShouldNotRetryException(Exception exception)
 		{
-			this.GivenTheExpectedException(new InvalidOperationException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE));
+			this.GivenTheExpectedException(exception);
 			this.GivenTheExpectedLogWarningMessage(0, 0, 0);
 			this.GivenTheMockedWaitAndRetryPolicyCallback();
 			this.GivenTheLoggerWarningCallback();
@@ -109,15 +124,15 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 		}
 
 		[Test]
-		public void ItShouldThrowFileInfoInvalidPathException()
+		public void ItShouldThrowFileInfoIllegalCharactersInPathException()
 		{
-            this.GivenTheExpectedInvalidPathException();
+            this.GivenTheExpectedIllegalCharactersInPathException();
             this.GivenTheExpectedLogErrorMessage();
 		    this.GivenTheFileServiceWhichThrowsArgumentException(expectedArgumentException);
 		    this.GivenTheWaitAndRetryCallback();
             this.GivenTheLoggerErrorCallback();
 		    this.WhenExecutingIoReporterGetFileLengthThenThrowsException(true);
-            this.ThenTheActualInvalidPathExceptionMessageShouldEqual();
+            this.ThenTheActualIllegalCharactersInPathExceptionMessageShouldEqual();
             this.ThenTheActualLogErrorMessageShouldEqual();
             this.ThenTheLoggerErrorShouldBeInvokedOneTime();
 		}
@@ -132,9 +147,9 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
             Assert.That(this.actualLogErrorMessage, Is.EqualTo(this.expectedLogErrorMessage));
 		}
 
-		private void ThenTheActualInvalidPathExceptionMessageShouldEqual()
+		private void ThenTheActualIllegalCharactersInPathExceptionMessageShouldEqual()
 		{
-            Assert.That(this.actualInvalidPathExceptionMessage, Is.EqualTo(_EXPECTED_INVALID_PATH_EXCEPTION_MESSAGE));
+            Assert.That(this.actualInvalidPathExceptionMessage, Is.EqualTo(RetryExceptionPolicies.IllegalCharactersInPathMessage));
 		}
 
 		#region "Helper methods"
@@ -263,9 +278,9 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 			this.expectedException = exception;
 		}
 
-		private void GivenTheExpectedInvalidPathException()
+		private void GivenTheExpectedIllegalCharactersInPathException()
 		{
-            this.expectedArgumentException = new ArgumentException(_EXPECTED_INVALID_PATH_EXCEPTION_MESSAGE);
+            this.expectedArgumentException = new ArgumentException(RetryExceptionPolicies.IllegalCharactersInPathMessage);
 		}
 
 		private void WhenExecutingTheGetFileLength(bool disableNativeLocationValidation = false)
