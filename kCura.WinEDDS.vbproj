@@ -348,7 +348,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Exceptions\RelativityVersionMismatchException.vb" />
-    <Compile Include="Exceptions\WebApiConnectionFailureException.vb" />
+    <Compile Include="Helpers\ExceptionHelper.vb" />
+    <Compile Include="Exceptions\WebApiException.vb" />
     <Compile Include="Exceptions\WebDownloadCorruptException.vb">
       <SubType>Code</SubType>
     </Compile>
