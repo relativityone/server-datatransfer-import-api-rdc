@@ -32,6 +32,7 @@ namespace kCura.WinEDDS.TApi
 		private readonly ILog log;
 		private readonly IoWarningPublisher publisher;
 		private readonly bool disableNativeLocationValidation;
+		private readonly RetryOptions retryOptions;
 		private readonly CancellationToken cancellationToken;
 
 		/// <summary>
@@ -50,7 +51,10 @@ namespace kCura.WinEDDS.TApi
 		/// The I/O warning publisher.
 		/// </param>
 		/// <param name="disableNativeLocationValidation">
-		/// if set to <c>true</c> [disable native location validation].
+		/// <see langword="true" /> to throw <see cref="FileInfoInvalidPathException"/> when illegal characters are found within the path.
+		/// </param>
+		/// <param name="options">
+		/// The configurable retry options.
 		/// </param>
 		/// <param name="cancellationToken">
 		/// The Cancel Token used to stop the process a any requested time.</param>
@@ -60,6 +64,7 @@ namespace kCura.WinEDDS.TApi
             ILog log,
             IoWarningPublisher publisher,
 			bool disableNativeLocationValidation,
+			RetryOptions options,
 			CancellationToken cancellationToken)
 		{
 			if (fileSystem == null)
@@ -86,7 +91,8 @@ namespace kCura.WinEDDS.TApi
             this.waitAndRetryPolicy = waitAndRetry;
             this.log = log;
             this.publisher = publisher;
-            this.disableNativeLocationValidation = disableNativeLocationValidation;
+			this.disableNativeLocationValidation = disableNativeLocationValidation;
+            this.retryOptions = options;
 			this.cancellationToken = cancellationToken;
 		}
 
@@ -253,13 +259,12 @@ namespace kCura.WinEDDS.TApi
 			log.LogWarning(args.Message);
 		}
 
-		private bool CheckInvalidPathCharactersException(Exception exception)
+		private bool ShouldThrowFileInfoInvalidPathException(Exception exception)
 		{
-			return this.disableNativeLocationValidation &&
-			       RetryExceptionPolicies.IsInvalidPathCharactersException(exception);
+			return this.disableNativeLocationValidation && RetryExceptionHelper.IsIllegalCharactersInPathException(exception);
 		}
 
-        private FileInfoInvalidPathException CreateInvalidPathCharactersException(Exception exception, string fileName)
+        private FileInfoInvalidPathException CreateFileInfoInvalidPathException(Exception exception, string fileName)
         {
 	        var message = string.Format(
 		        CultureInfo.CurrentCulture,
@@ -280,7 +285,7 @@ namespace kCura.WinEDDS.TApi
 				int maxRetryAttempts = this.waitAndRetryPolicy.MaxRetryAttempts;
 				int currentRetryAttempt = 0;
 				return this.waitAndRetryPolicy.WaitAndRetry(
-					RetryExceptionPolicies.IoStandardPolicy,
+					RetryExceptionHelper.CreateRetryPredicate(this.retryOptions),
 					retryAttempt =>
 					{
 						currentRetryAttempt = retryAttempt;
@@ -305,9 +310,9 @@ namespace kCura.WinEDDS.TApi
 						}
 						catch (Exception exception)
 						{
-							if (this.CheckInvalidPathCharactersException(exception))
+							if (this.ShouldThrowFileInfoInvalidPathException(exception))
 							{
-								throw this.CreateInvalidPathCharactersException(exception, fileName);
+								throw this.CreateFileInfoInvalidPathException(exception, fileName);
 							}
 
 							throw;

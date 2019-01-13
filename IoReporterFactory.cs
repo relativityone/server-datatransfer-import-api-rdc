@@ -19,35 +19,39 @@ namespace kCura.WinEDDS.TApi
     /// </summary>
     public static class IoReporterFactory
     {
-	    /// <summary>
-	    /// Create a new <see cref="IoReporter"/> instance.
-	    /// </summary>
-	    /// <param name="maxRetryAttempts">
-	    /// The maximum number of retry attempts.
-	    /// </param>
-	    /// <param name="waitTimeSecondsBetweenRetryAttempts">
-	    /// The total number of seconds to wait between each retry attempty.
-	    /// </param>
-	    /// <param name="disableNativeLocationValidation">
-	    /// Specify whether to disable checks to determine whether a file exists.
-	    /// </param>
-	    /// <param name="logger">
-	    /// The Relativity logger.
-	    /// </param>
-	    /// <param name="publisher">
-	    /// The warning publisher.
-	    /// </param>
-	    /// <param name="cancellationToken">
-	    /// A token which is used to cancel current task.
-	    /// </param>
-	    /// <returns>
-	    /// The <see cref="IoReporter"/> instance.
-	    /// </returns>
-	    public static IIoReporter CreateIoReporter(
+		/// <summary>
+		/// Create a new <see cref="IoReporter"/> instance.
+		/// </summary>
+		/// <param name="maxRetryAttempts">
+		/// The maximum number of retry attempts.
+		/// </param>
+		/// <param name="waitTimeSecondsBetweenRetryAttempts">
+		/// The total number of seconds to wait between each retry attempty.
+		/// </param>
+		/// <param name="disableNativeLocationValidation">
+		/// <see langword="true" /> to throw <see cref="FileInfoInvalidPathException"/> when illegal characters are found within the path.
+		/// </param>
+		/// <param name="options">
+		/// The configurable retry options.
+		/// </param>
+		/// <param name="logger">
+		/// The Relativity logger.
+		/// </param>
+		/// <param name="publisher">
+		/// The warning publisher.
+		/// </param>
+		/// <param name="cancellationToken">
+		/// A token which is used to cancel current task.
+		/// </param>
+		/// <returns>
+		/// The <see cref="IoReporter"/> instance.
+		/// </returns>
+		public static IIoReporter CreateIoReporter(
 		    int maxRetryAttempts,
 		    int waitTimeSecondsBetweenRetryAttempts,
 		    bool disableNativeLocationValidation,
-		    ILog logger,
+			RetryOptions options,
+			ILog logger,
 		    IoWarningPublisher publisher,
 		    CancellationToken cancellationToken)
 	    {
@@ -62,13 +66,14 @@ namespace kCura.WinEDDS.TApi
 	        }
 
 	        IWaitAndRetryPolicy waitAndRetryPolicy = new WaitAndRetryPolicy(maxRetryAttempts, waitTimeSecondsBetweenRetryAttempts);
-	        IFileSystem fileSystemInstance = FileSystem.Instance.DeepCopy();
+	        IFileSystem fileSystem = FileSystem.Instance.DeepCopy();
 			return new IoReporter(
-				fileSystemInstance,
+				fileSystem,
                 waitAndRetryPolicy,
                 logger,
                 publisher,
-                disableNativeLocationValidation,
+				disableNativeLocationValidation,
+				options,
 	            cancellationToken);
         }
     }

@@ -1,10 +1,9 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-
-// <copyright file="RetryExceptionPolicies.cs" company="kCura Corp">
+// <copyright file="RetryExceptionHelper.cs" company="kCura Corp">
 //   kCura Corp (C) 2017 All Rights Reserved.
 // </copyright>
 // <summary>
-// Defines commonly used static function properties that decide whether an exception should be retried.
+// Defines commonly used static retry helper functions to decide whether an exception should be retried.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -12,10 +11,10 @@ namespace kCura.WinEDDS.TApi
 {
     using System;
 
-    /// <summary>
-    /// Defines commonly used static function properties that decide whether an exception should be retried.
-    /// </summary>
-    public static class RetryExceptionPolicies
+	/// <summary>
+	/// Defines commonly used static retry helper functions to decide whether an exception should be retried.
+	/// </summary>
+	public static class RetryExceptionHelper
 	{
 		/// <summary>
 		/// The handle disk full HResult value.
@@ -33,15 +32,19 @@ namespace kCura.WinEDDS.TApi
 		public const string IllegalCharactersInPathMessage = "Illegal characters in path.";
 
 		/// <summary>
-		/// Defines a standard exception retry function that returns <see langword="true" /> for <see cref="FileInfoInvalidPathException"/> and all 
-		/// <see cref="System.IO.IOException"/> and derived exception types except <see cref="System.IO.FileNotFoundException"/>, 
-		/// <see cref="System.IO.PathTooLongException"/>, and disk full errors.
+		/// Creates a retry predicate that uses the specified options and exception to determine whether to retry the operation.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage(
-			"Microsoft.Usage",
-			"CA2211:NonConstantFieldsShouldNotBeVisible",
-			Justification = "This is acceptable for defining predicates.")]
-		public static Func<Exception, bool> IoStandardPolicy = IsRetryableException;
+		/// <param name="options">
+		/// The retry options.
+		/// </param>
+		/// <returns>
+		/// The predicate.
+		/// </returns>
+		public static Func<Exception, bool> CreateRetryPredicate(RetryOptions options)
+		{
+			Func<Exception, bool> retryPredicate = (exception) => IsRetryable(exception, options);
+			return retryPredicate;
+		}
 
 		/// <summary>
 		/// Determines whether the specified exception can be retried.
@@ -49,46 +52,60 @@ namespace kCura.WinEDDS.TApi
 		/// <param name="exception">
 		/// The exception.
 		/// </param>
+		/// <param name="options">
+		/// The retry options.
+		/// </param>
 		/// <returns>
 		/// <see langword="true" /> if the exception can be retried; otherwise, <see langword="false" />.
 		/// </returns>
 		/// <exception cref="ArgumentNullException">
 		/// Thrown when <paramref name="exception"/> is <see langword="null" />.
 		/// </exception>
-		public static bool IsRetryableException(Exception exception)
+		public static bool IsRetryable(Exception exception, RetryOptions options)
 		{
 			if (exception == null)
 			{
 				throw new ArgumentNullException(nameof(exception));
 			}
 
-			// Skip to preserve existing IoReporter behavior.
-			if (exception is FileInfoInvalidPathException || IsInvalidPathCharactersException(exception))
+			if (exception is System.UnauthorizedAccessException || exception is System.Security.SecurityException)
 			{
+				return options.HasFlag(RetryOptions.Permissions);
+			}
+
+			if (exception is FileInfoInvalidPathException || IsIllegalCharactersInPathException(exception))
+			{
+				// This is not configurable because it can never succeed.
 				return false;
 			}
 
-			// Skip to preserve existing IAPI/RDC behavior.
 			if (exception is System.IO.FileNotFoundException)
 			{
-				return false;
+				return options.HasFlag(RetryOptions.FileNotFound);
 			}
 
-			// Skip until the code base fully supports long paths.
+			if (exception is System.IO.DirectoryNotFoundException)
+			{
+				return options.HasFlag(RetryOptions.DirectoryNotFound);
+			}
+
 			if (exception is System.IO.PathTooLongException)
 			{
+				// This is not configurable because it can never succeed.
 				return false;
 			}
 
-			// Exclude all non I/O errors.
-			bool ioException = exception is System.IO.IOException;
-			if (!ioException)
+			if (IsOutOfDiskSpaceException(exception))
 			{
-				return false;
+				return options.HasFlag(RetryOptions.DiskFull);
 			}
 
-			// Retry all other I/O errors except the disk-full scenario.
-			return !IsOutOfDiskSpaceException(exception);
+			if (exception is System.IO.IOException)
+			{
+				return options.HasFlag(RetryOptions.Io);
+			}
+
+			return false;
 		}
 
 		/// <summary>
@@ -134,7 +151,7 @@ namespace kCura.WinEDDS.TApi
 		/// <exception cref="ArgumentNullException">
 		/// Thrown when <paramref name="exception"/> is <see langword="null" />.
 		/// </exception>
-		public static bool IsInvalidPathCharactersException(Exception exception)
+		public static bool IsIllegalCharactersInPathException(Exception exception)
 		{
 			if (exception == null)
 			{

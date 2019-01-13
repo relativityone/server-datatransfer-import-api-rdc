@@ -116,6 +116,7 @@
     <Compile Include="IoWarningEventArgs.cs" />
     <Compile Include="IoWarningPublisher.cs" />
     <Compile Include="IWaitAndRetryPolicy.cs" />
+    <Compile Include="RetryOptions.cs" />
     <Compile Include="TapiBridgeFactory.cs" />
     <Compile Include="TapiBridgeParameters.cs" />
     <Compile Include="Properties\AssemblyInfoLocal.cs" />
@@ -140,7 +141,7 @@
     <Compile Include="TapiProgressEventArgs.cs" />
     <Compile Include="TapiStatisticsEventArgs.cs" />
     <Compile Include="UploadTapiBridge.cs" />
-    <Compile Include="RetryExceptionPolicies.cs" />
+    <Compile Include="RetryExceptionHelper.cs" />
     <Compile Include="WaitAndRetryPolicy.cs" />
     <Compile Include="UploadTapiBridgeParameters.cs" />
   </ItemGroup>
