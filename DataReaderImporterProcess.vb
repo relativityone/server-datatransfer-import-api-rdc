@@ -48,6 +48,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			    kCura.Utility.Config.IOErrorNumberOfRetries, 
 			    kCura.Utility.Config.IOErrorWaitTimeInSeconds,
 				WinEDDS.Config.DisableNativeLocationValidation,
+			    WinEDDS.Config.RetryOptions,
 			    logger,
 			    _ioWarningPublisher,
 			    tokenSource.Token)
