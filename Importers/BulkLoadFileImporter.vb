@@ -100,7 +100,6 @@ Namespace kCura.WinEDDS
 #Region "Accessors"
 
 		Public Property DisableNativeValidation As Boolean = Config.DisableNativeValidation
-		Public Shadows DisableNativeLocationValidation As Boolean = Config.DisableNativeLocationValidation
 		Public Property DisableUserSecurityCheck As Boolean
 		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = WinEDDS.Config.AuditLevel
 		Public ReadOnly Property BatchSizeHistoryList As System.Collections.Generic.List(Of Int32)
@@ -664,28 +663,39 @@ Namespace kCura.WinEDDS
 								Catch ex As System.IO.FileNotFoundException
 									WriteError(Me.CurrentLineNumber, ex.Message)
 									Me.LogError(ex, "A file not found error has occurred managing an import document.")
-								Catch ex As System.UnauthorizedAccessException
-									WriteError(Me.CurrentLineNumber, ex.Message)
-									Me.LogError(ex, "An import error has occurred because the user doesn't have authorized access to the document.")
 								Catch ex As FileIDIdentificationException
 									WriteError(Me.CurrentLineNumber, ex.Message)
 									Me.LogError(ex, "An error occured identifying type of native file.")
+								Catch ex As System.UnauthorizedAccessException
+									WriteFatalError(Me.CurrentLineNumber, ex)
+									Me.LogFatal(ex, "A fatal import error has occurred because the user doesn't have authorized access to the document.")
 								Catch ex As System.Exception
 									WriteFatalError(Me.CurrentLineNumber, ex)
-									Me.LogFatal(ex, "A serious unexpected error has occurred managing an import document.")
+									Me.LogFatal(ex, "A fatal unexpected error has occurred managing an import document.")
 								End Try
 							End While
 
-							' Dump OutSideIn info
-							Dim fileIdInfo As FileIDInfo = fileService.GetConfigInfo()
-							Me.LogInformation("FileID service info.")
-							Me.LogInformation("Version: '{0}'.", fileIdInfo.Version)
-							Me.LogInformation("Idle worker timeout: '{0}'.", fileIdInfo.IdleWorkerTimeout)
-							Me.LogInformation("Install location: '{0}'.", fileIdInfo.InstallLocation)
-
-							If fileIdInfo.HasError Then
-								Me.LogWarning("Error: {0}", fileIdInfo.Exception)
-							End If
+							' Dump OI details.
+							' Preserving existing behavior where this can never fail.
+							Try
+								Dim fileIdInfo As FileIDInfo = fileService.GetConfigInfo()
+								If fileIdInfo.HasError Then
+									Me.LogError("OI Configuration Info")
+									Me.LogError("OI version: {Version}", fileIdInfo.Version)
+									Me.LogError("OI idle worker timeout: {Timeout} seconds", fileIdInfo.IdleWorkerTimeout)
+									Me.LogError("OI install path: {InstallPath}", fileIdInfo.InstallLocation)
+									If Not fileIdInfo.Exception Is Nothing Then
+										Me.LogError(fileIdInfo.Exception, "OI runtime exception.", fileIdInfo.Exception)
+									End If
+								Else
+									Me.LogInformation("OI Configuration Info")
+									Me.LogInformation("OI version: {Version}", fileIdInfo.Version)
+									Me.LogInformation("OI idle worker timeout: {Timeout}", fileIdInfo.IdleWorkerTimeout)
+									Me.LogInformation("OI install path: {InstallPath}", fileIdInfo.InstallLocation)
+								End If
+							Catch ex As FileIDException
+								Me.LogError(ex, "Failed to retrieve OI configuration info.")
+							End Try
 						End Using
 
 						If Not _task Is Nothing AndAlso _task.Status.In(
@@ -857,12 +867,18 @@ Namespace kCura.WinEDDS
 										Function(exception)
 											Dim outsideInException As FileIDIdentificationException = TryCast(exception, FileIDIdentificationException)
 											If (Not outsideInException Is Nothing)
-												' Retry as long as the OI error is NOT due to permissions.
-												Return outsideInException.ErrorCode <> 7
+												If (outsideInException.ErrorCode = FileIDService.FilePermissionErrorCode) Then
+													' Only perform a retry operation if configured to do so.
+													Return Me.RetryOptions.HasFlag(RetryOptions.Permissions)
+												End If
+
+												' All other OI exceptions are retried.
+												Return True
 											End If
 
-											Dim ioPolicyResult As Boolean = RetryExceptionPolicies.IoStandardPolicy(exception)
-											Return ioPolicyResult
+											' Otherwise, rely on the standard retry mechanism.
+											Dim retryResult As Boolean = RetryExceptionHelper.IsRetryable(exception, Me.RetryOptions)
+											Return retryResult
 										End Function,
 										Function(count)
 											' Force OI to get reinitialized in the event the runtime configuration is invalid.
@@ -1065,8 +1081,11 @@ Namespace kCura.WinEDDS
 				WriteError(metaDoc.LineNumber, ex.Message)
 				Me.LogError(ex, "A serious import error has occurred managing document {file} metadata.", metaDoc.FullFilePath)
 			Catch ex As FileInfoInvalidPathException
-				WriteError(Me.CurrentLineNumber, ex.Message)
+				WriteError(metaDoc.LineNumber, ex.Message)
 				Me.LogError(ex, "An import error has occured because of invalid document path - illegal characters in path {0}", metaDoc.FullFilePath)
+			Catch ex As System.UnauthorizedAccessException
+				WriteFatalError(metaDoc.LineNumber, ex)
+				Me.LogFatal(ex, "A fatal import error has occurred because the user doesn't have authorized access to the document {file} metadata.", metaDoc.FullFilePath)
 			Catch ex As System.Exception
 				WriteFatalError(metaDoc.LineNumber, ex)
 				Me.LogFatal(ex, "A fatal unexpected error has occurred managing document {file} metadata.", metaDoc.FullFilePath)
@@ -1648,7 +1667,7 @@ Namespace kCura.WinEDDS
 
 							' Note: a lambda can't modify a ref param; therefore, a policy block return value is used.
 							Dim returnEncoding As System.Text.Encoding = policy.WaitAndRetry(
-								RetryExceptionPolicies.IoStandardPolicy,
+								RetryExceptionHelper.CreateRetryPredicate(Me.RetryOptions),
 								Function(count)
 									currentRetryAttempt = count
 									Return TimeSpan.FromSeconds(Me.WaitTimeBetweenRetryAttempts)
@@ -1730,7 +1749,7 @@ Namespace kCura.WinEDDS
 						Throw New ExtractedTextFileNotFoundException()
 					Catch ex As System.IO.IOException
 						' Running out of disk space should always be treated as a fatal exception.
-						If RetryExceptionPolicies.IsOutOfDiskSpaceException(ex) Then
+						If RetryExceptionHelper.IsOutOfDiskSpaceException(ex) Then
 							Throw
 						End If
 
@@ -1948,10 +1967,19 @@ Namespace kCura.WinEDDS
 			OnStatusMessage(New StatusEventArgs(et, recordNumber, RecordCount, line, CurrentStatisticsSnapshot, Statistics))
 		End Sub
 
-		Private Sub WriteFatalError(ByVal lineNumber As Int32, ByVal ex As System.Exception)
+		''' <summary>
+		''' Writes a fatal error and stops the import.
+		''' </summary>
+		''' <param name="lineNumber">
+		''' The line number.
+		''' </param>
+		''' <param name="exception">
+		''' The fatal exception.
+		''' </param>
+		Private Sub WriteFatalError(ByVal lineNumber As Int32, ByVal exception As System.Exception)
 			_artifactReader.OnFatalErrorState()
 			StopImport()
-			OnFatalError($"Error processing line:{lineNumber.ToString}", ex, RunId)
+			OnFatalError($"Error processing line:{lineNumber.ToString}", exception, RunId)
 		End Sub
 
 		Private Sub WriteError(ByVal currentLineNumber As Int32, ByVal line As String)

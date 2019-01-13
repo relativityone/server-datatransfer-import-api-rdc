@@ -532,7 +532,7 @@ Namespace kCura.WinEDDS
 
 							' Note: a lambda can't modify a ref param; therefore, a policy block return value is used.
 							Dim returnCodePage As Integer? = policy.WaitAndRetry(
-								RetryExceptionPolicies.IoStandardPolicy,
+								RetryExceptionHelper.CreateRetryPredicate(Me.RetryOptions),
 								Function(count)
 									currentRetryAttempt = count
 									Return TimeSpan.FromSeconds(kCura.Utility.Config.IOErrorWaitTimeInSeconds)
@@ -611,7 +611,7 @@ Namespace kCura.WinEDDS
 							Throw
 						Catch ex As System.IO.IOException
 							' Running out of disk space should always be treated as a fatal exception.
-							If RetryExceptionPolicies.IsOutOfDiskSpaceException(ex) Then
+							If RetryExceptionHelper.IsOutOfDiskSpaceException(ex) Then
 								Throw
 							End If
 

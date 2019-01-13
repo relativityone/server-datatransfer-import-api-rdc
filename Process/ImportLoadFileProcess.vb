@@ -111,6 +111,7 @@ Namespace kCura.WinEDDS
 				kCura.Utility.Config.IOErrorNumberOfRetries, _
 				kCura.Utility.Config.IOErrorWaitTimeInSeconds, _ 
 				WinEDDS.Config.DisableNativeLocationValidation, _
+				WinEDDS.Config.RetryOptions, _
 				logger, _
 				_ioWarningPublisher, _
 				tokenSource.Token)

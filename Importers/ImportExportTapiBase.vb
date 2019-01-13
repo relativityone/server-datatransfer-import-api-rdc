@@ -126,6 +126,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Property DisableNativeLocationValidation As Boolean = Config.DisableNativeLocationValidation
 
 		Protected Property FileTapiProgressCount As Int32
 
@@ -136,6 +137,17 @@ Namespace kCura.WinEDDS
 		Protected Property ImportFilesCount As Int32 = 0
 
 		Protected Property MetadataFilesCount As Int32 = 0
+
+		''' <summary>
+		''' Gets the configurable retry options.
+		''' </summary>
+		''' <value>
+		''' The <see cref="kCura.WinEDDS.TApi.RetryOptions"/> value.
+		''' </value>
+		''' <remarks>
+		''' The config value is already cached.
+		''' </remarks>
+		Protected ReadOnly Property RetryOptions As kCura.WinEDDS.TApi.RetryOptions = kCura.WinEDDS.Config.RetryOptions
 #End Region
 
 		Protected Shared Function IsTimeoutException(ByVal ex As Exception) As Boolean
@@ -227,7 +239,7 @@ Namespace kCura.WinEDDS
 					maxRetryAttempts, _
 					kCura.Utility.Config.IOErrorWaitTimeInSeconds)
 				Dim returnExistingPath As String = policy.WaitAndRetry(
-					RetryExceptionPolicies.IoStandardPolicy,
+					RetryExceptionHelper.CreateRetryPredicate(Me.RetryOptions),
 					Function(count)
 						currentRetryAttempt = count
 						Return TimeSpan.FromSeconds(kCura.Utility.Config.IOErrorWaitTimeInSeconds)

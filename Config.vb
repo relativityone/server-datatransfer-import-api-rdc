@@ -10,6 +10,7 @@ Namespace kCura.WinEDDS
 		Private Shared _rdcMetricsConfiguration As String = "RDCMetricsConfiguration"
 		Private const _ENABLE_CASE_SENSITIVE_SEARCH_KEY as String = "EnableCaseSensitiveSearchOnImport"
 
+		Private Shared _retryOptions As kCura.WinEDDS.TApi.RetryOptions? = Nothing
 		Private Shared _configDictionary As IDictionary
 		Public Shared ReadOnly Property ConfigSettings() As IDictionary
 			Get
@@ -574,6 +575,31 @@ Namespace kCura.WinEDDS
 				Catch ex As Exception
 					Return True
 				End Try
+			End Get
+		End Property
+
+		''' <summary>
+		''' Gets the configurable retry options.
+		''' </summary>
+		''' <value>
+		''' The <see cref="kCura.WinEDDS.TApi.RetryOptions"/> value.
+		''' </value>
+		''' <remarks>
+		''' There are several other retry candidate behaviors and change should be limited to this property.
+		''' </remarks>
+		Public Shared ReadOnly Property RetryOptions As kCura.WinEDDS.TApi.RetryOptions
+			Get
+
+				If Not _retryOptions.HasValue Then
+					' Always retry all other I/O errors by default.
+					Dim options As kCura.WinEDDS.TApi.RetryOptions = kCura.WinEDDS.TApi.RetryOptions.Io
+					If kCura.WinEDDS.Config.PermissionErrorsRetry Then
+						options = options Or kCura.WinEDDS.TApi.RetryOptions.Permissions
+					End If
+
+					_retryOptions = options
+				End If
+				Return _retryOptions.Value
 			End Get
 		End Property
 
