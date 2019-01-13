@@ -86,6 +86,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\Version\AssemblyInfo.cs">
@@ -105,6 +106,7 @@
     <Compile Include="IPath.cs" />
     <Compile Include="IFile.cs" />
     <Compile Include="IFileInfo.cs" />
+    <Compile Include="RelativityManagerService.cs" />
     <Compile Include="RelativityTransferLog.cs" />
     <Compile Include="ClientChangeReason.cs" />
     <Compile Include="DownloadTapiBridge.cs" />
@@ -144,6 +146,7 @@
     <Compile Include="RetryExceptionHelper.cs" />
     <Compile Include="WaitAndRetryPolicy.cs" />
     <Compile Include="UploadTapiBridgeParameters.cs" />
+    <Compile Include="WebApiServiceBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Strings.resx">
