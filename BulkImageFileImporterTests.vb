@@ -34,9 +34,14 @@ Namespace kCura.WinEDDS.NUnit
 		    _logger = New NullLogger()
 			tokenSource = New CancellationTokenSource()
             Dim ioWarningPublisher As New IoWarningPublisher()
-		    _ioReporter = IoReporterFactory.CreateIoReporter(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds, 
-		                                                     WinEDDS.Config.DisableNativeLocationValidation, _logger, ioWarningPublisher, tokenSource.Token)
-            
+		    _ioReporter = IoReporterFactory.CreateIoReporter(
+			    kCura.Utility.Config.IOErrorNumberOfRetries, _
+			    kCura.Utility.Config.IOErrorWaitTimeInSeconds, _
+			    WinEDDS.Config.DisableNativeLocationValidation, _
+			    WinEDDS.Config.RetryOptions, _
+			    _logger, _
+			    ioWarningPublisher, _
+			    tokenSource.Token)            
 			_keyPathExistsAlready = RegKeyHelper.SubKeyPathExists(RegKeyHelper.RelativityKeyPath)
 			_keyValExistsAlready = False
 			If _keyPathExistsAlready = True Then
