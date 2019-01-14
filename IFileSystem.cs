@@ -9,7 +9,7 @@ namespace kCura.WinEDDS.TApi
 	using System;
 
 	/// <summary>
-	/// Represents an abstract <see cref="System.IO"/> wrapper to access and create file system related objects.
+	/// Represents an abstract wrapper for the <see cref="System.IO"/> wrapper to access and create file system related objects.
 	/// </summary>
 	[CLSCompliant(false)]
 	public interface IFileSystem

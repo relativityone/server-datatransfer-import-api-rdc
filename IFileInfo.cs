@@ -9,7 +9,7 @@ namespace kCura.WinEDDS.TApi
 	using System;
 
 	/// <summary>
-	/// Represents a wrapper for the <see cref="T:System.IO.FileInfo"/> class.
+	/// Represents an abstract wrapper for the <see cref="T:System.IO.FileInfo"/> class.
 	/// </summary>
 	[CLSCompliant(false)]
 	public interface IFileInfo

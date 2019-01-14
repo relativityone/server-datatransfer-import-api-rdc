@@ -9,7 +9,7 @@ namespace kCura.WinEDDS.TApi
 	using System;
 
 	/// <summary>
-	/// Represents a class object wrapper for <see cref="T:System.IO.File"/> class.
+	/// Represents a class object wrapper for the <see cref="T:System.IO.File"/> class.
 	/// </summary>
 	[CLSCompliant(false)]
 	internal class FileWrap : IFile

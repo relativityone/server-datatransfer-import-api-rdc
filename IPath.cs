@@ -9,7 +9,7 @@ namespace kCura.WinEDDS.TApi
 	using System;
 
 	/// <summary>
-	/// Represents a wrapper for <see cref="T:System.IO.Path"/> class.
+	/// Represents an abstract wrapper for the <see cref="T:System.IO.Path"/> class.
 	/// </summary>
 	[CLSCompliant(false)]
 	public interface IPath

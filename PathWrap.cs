@@ -10,7 +10,7 @@ namespace kCura.WinEDDS.TApi
 	using System.Globalization;
 
 	/// <summary>
-	/// Represents a class object wrapper for <see cref="T:System.IO.Path"/> class.
+	/// Represents a class object wrapper for the <see cref="T:System.IO.Path"/> class.
 	/// </summary>
 	[CLSCompliant(false)]
 	internal class PathWrap : IPath
