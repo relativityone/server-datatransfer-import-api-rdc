@@ -7,6 +7,7 @@ Imports kCura.OI.FileID
 Imports kCura.Utility.Extensions
 Imports kCura.Windows.Process
 Imports kCura.WinEDDS.Api
+Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.TApi
 Imports Polly
 Imports Relativity
@@ -754,23 +755,22 @@ Namespace kCura.WinEDDS
 							End If
 						End If
 					End If
-				End If
 				fullFilePath = filename
 				If fileExists Then
 					Dim now As Date = Date.Now
 
-						Try
-							If Me.DisableNativeValidation Then
-								oixFileIdData = Nothing
-							Else
-								Dim idDataExtractor As Api.IHasOixFileType = Nothing
-								If (Not injectableContainerIsNothing) Then
-									idDataExtractor = injectableContainer.FileIdData
-								End If
+					Try
+						If Me.DisableNativeValidation Then
+							oixFileIdData = Nothing
+						Else
+							Dim idDataExtractor As Api.IHasOixFileType = Nothing
+							If (Not injectableContainerIsNothing) Then
+								idDataExtractor = injectableContainer.FileIdData
+							End If
 
-								If (idDataExtractor Is Nothing) Then
-									' REL-165493: Added OI resiliency and properly address FileNotFoundException scenarios.
-									Dim retryPolicy As Retry.RetryPolicy = Policy.Handle(Of kCura.OI.FileID.FileIDException).WaitAndRetry(
+							If (idDataExtractor Is Nothing) Then
+								' REL-165493: Added OI resiliency and properly address FileNotFoundException scenarios.
+								Dim retryPolicy As Retry.RetryPolicy = Policy.Handle(Of kCura.OI.FileID.FileIDException).WaitAndRetry(
 										Me.NumberOfRetries,
 										Function(count) As TimeSpan
 											' Force OI to get reinitialized in the event the runtime configuration is invalid.
@@ -782,48 +782,33 @@ Namespace kCura.WinEDDS
 										Sub(exception, span, context)
 											LogError(exception, "Retry - {span} - OI failed to identify the '{fullFilePath}' source file.", span, fullFilePath)
 										End Sub)
-									oixFileIdData = retryPolicy.Execute(
+								oixFileIdData = retryPolicy.Execute(
 										Function()
 											Return fileService.Identify(fullFilePath)
 										End Function)
-								Else
-									oixFileIdData = idDataExtractor.GetFileIDData()
-								End If
-							End If
-
-							If _copyFileToRepository Then
-								If Not Me.DisableNativeLocationValidation AndAlso fileExists OrElse File.Exists(filename) Then
-									Dim guid As String = System.Guid.NewGuid().ToString()
-									Me.ImportFilesCount += 1
-									_jobCompleteNativeCount += 1
-									fileGuid = FileTapiBridge.AddPath(filename, guid, Me.CurrentLineNumber)
-									destinationVolume = FileTapiBridge.TargetFolderName
-								Else
-									WriteWarning("File " & filename & " does not exist and will be not uploaded")
-								End If
 							Else
 								oixFileIdData = idDataExtractor.GetFileIDData()
 							End If
 						End If
 
-							If (Not injectableContainerIsNothing AndAlso injectableContainer.HasFileName()) Then
-								filename = injectableContainer.FileName.GetFileName()
+						If _copyFileToRepository Then
+							If Not Me.DisableNativeLocationValidation AndAlso fileExists OrElse File.Exists(filename) Then
+								Dim guid As String = System.Guid.NewGuid().ToString()
+								Me.ImportFilesCount += 1
+								_jobCompleteNativeCount += 1
+								fileGuid = FileTapiBridge.AddPath(filename, guid, Me.CurrentLineNumber)
+								destinationVolume = FileTapiBridge.TargetFolderName
 							Else
-								filename = Path.GetFileName(fullFilePath)
-							End If
-						Catch ex As System.IO.FileNotFoundException
-							If Me.DisableNativeLocationValidation Then
-								'Don't do anything. This exception can only happen if DisableNativeLocationValidation is turned on
-							Else
-								WriteWarning($"File {filename} does not exist and will be not uploaded")
+								WriteWarning("File " & filename & " does not exist and will be not uploaded")
 							End If
 						Else
 							fileGuid = System.Guid.NewGuid.ToString
 						End If
-						If (Not injectableContainerIsNothing AndAlso injectableContainer.HasFileName()) Then 
-							filename = injectableContainer.FileName.GetFileName() 
-						Else 
-							filename = Path.GetFileName(originalFilename)
+
+						If (Not injectableContainerIsNothing AndAlso injectableContainer.HasFileName()) Then
+							filename = injectableContainer.FileName.GetFileName()
+						Else
+							filename = Path.GetFileName(fullFilePath)
 						End If
 					Catch ex As System.IO.FileNotFoundException
 						If Me.DisableNativeLocationValidation Then
@@ -841,6 +826,7 @@ Namespace kCura.WinEDDS
 			End If
 			End Using
 
+			Dim folderPath As String = String.Empty
 			Using Timekeeper.CaptureTime("ManageDocument_Folder")
 				If _createFolderStructure Then
 					If _artifactTypeID = Relativity.ArtifactType.Document Then
