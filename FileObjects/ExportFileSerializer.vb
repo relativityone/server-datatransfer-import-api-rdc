@@ -20,13 +20,13 @@ Namespace kCura.WinEDDS
 			Return input.ToString
 		End Function
 
-		Public Overridable Function DeserializeExportFile(ByVal currentExportFile As kCura.WinEDDS.ExportFile, ByVal xml As String) As kCura.WinEDDS.ExportFile
+		Public Overridable Function DeserializeExportFile(ByVal currentExportFile As kCura.WinEDDS.ExportFile, ByVal xml As String) As kCura.WinEDDS.ExtendedExportFile
 			Dim deserialized As kCura.WinEDDS.ExportFile = Me.DeserializeExportFile(XDocument.Parse(xml))
 			Return PopulateDeserializedExportFile(currentExportFile, deserialized)
 		End Function
 
-		Public Overridable Function PopulateDeserializedExportFile(ByVal currentExportFile As kCura.WinEDDS.ExportFile, deserialized As ExportFile) As kCura.WinEDDS.ExportFile
-			Dim retval As New kCura.WinEDDS.ExportFile(currentExportFile.ArtifactTypeID)
+		Public Overridable Function PopulateDeserializedExportFile(ByVal currentExportFile As kCura.WinEDDS.ExportFile, deserialized As ExportFile) As kCura.WinEDDS.ExtendedExportFile
+			Dim retval As New kCura.WinEDDS.ExtendedExportFile(currentExportFile.ArtifactTypeID)
 			For Each p As System.Reflection.PropertyInfo In (From prop As System.Reflection.PropertyInfo In retval.GetType.GetProperties Where prop.CanWrite)
 				p.SetValue(retval, p.GetValue(If(PropertyIsReadFromExisting(p), currentExportFile, deserialized), Nothing), Nothing)
 			Next

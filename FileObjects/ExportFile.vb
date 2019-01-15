@@ -1,3 +1,6 @@
+Imports System.Runtime.Serialization
+Imports FileNaming.CustomFileNaming
+
 Namespace kCura.WinEDDS
 	''' <summary>
 	''' Container class for all export settings
@@ -454,6 +457,8 @@ Namespace kCura.WinEDDS
 
 		Public Property ObjectTypeName As String
 
+		Public Property UseCustomFileNaming() As Boolean
+		Public Property CustomFileNaming() As CustomFileNameDescriptorModel
 #End Region
 
 #Region " Serialization "
@@ -495,9 +500,11 @@ Namespace kCura.WinEDDS
 			info.AddValue("ImagePrecedence", Me.ImagePrecedence, GetType(kCura.WinEDDS.Pair()))
 			info.AddValue("SelectedViewFields", Me.SelectedViewFields, GetType(kCura.WinEDDS.ViewFieldInfo()))
 			info.AddValue("ObjectTypeName", Me.ObjectTypeName, GetType(String))
+			info.AddValue("UseCustomFileNaming", Me.UseCustomFileNaming, GetType(Boolean))
+			info.AddValue("CustomFileNaming", Me.CustomFileNaming, GetType(CustomFileNameDescriptorModel))
 		End Sub
 
-		Private Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
+		Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
 			With info
 				Me.ArtifactID = info.GetInt32("ArtifactID")
 				Me.LoadFilesPrefix = System.Web.HttpUtility.HtmlDecode(info.GetString("LoadFilesPrefix"))
@@ -548,6 +555,16 @@ Namespace kCura.WinEDDS
 				Me.ImagePrecedence = DirectCast(info.GetValue("ImagePrecedence", GetType(kCura.WinEDDS.Pair())), kCura.WinEDDS.Pair())
 				Me.SelectedViewFields = DirectCast(info.GetValue("SelectedViewFields", GetType(kCura.WinEDDS.ViewFieldInfo())), kCura.WinEDDS.ViewFieldInfo())
 				Me.ObjectTypeName = info.GetString("ObjectTypeName")
+				Try
+					Me.UseCustomFileNaming = info.GetBoolean("UseCustomFileNaming")
+				Catch ex As SerializationException
+					Me.UseCustomFileNaming = False
+				End Try
+				Try
+					Me.CustomFileNaming = DirectCast(info.GetValue("CustomFileNaming", GetType(CustomFileNameDescriptorModel)), CustomFileNameDescriptorModel)
+				Catch ex As SerializationException
+					Me.CustomFileNaming = Nothing
+				End Try
 			End With
 		End Sub
 

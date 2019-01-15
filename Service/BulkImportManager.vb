@@ -133,7 +133,7 @@ Namespace kCura.WinEDDS.Service
 		Public Class BulkImportSqlException
 			Inherits System.Exception
 
-			Private Property DetailedException As EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail
+			Public Property DetailedException As EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail
 
 			''' <summary>
 			''' Initializes a new instance of the <see cref="BulkImportSqlException"/> class.

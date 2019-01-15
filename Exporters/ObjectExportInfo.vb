@@ -1,5 +1,8 @@
+Imports System.Text
+
 Namespace kCura.WinEDDS.Exporters
 	Public Class ObjectExportInfo
+		Private Const _ORIGINAL_FILE_NAME_PART_SEPARATOR As String = "_"
 		Private _docCount As Int32 = 1
 
 #Region " Member Accessors "
@@ -34,7 +37,7 @@ Namespace kCura.WinEDDS.Exporters
 				If tryProductionBegBates AndAlso String.IsNullOrWhiteSpace(ProductionBeginBates) Then
 					retval = NativeFileName(appendToOriginal)
 				ElseIf appendToOriginal Then
-					retval = ProductionBeginBates & "_" & OriginalFileName
+					retval = Me.AppendOriginalFileName(ProductionBeginBates)
 				Else
 					If Not NativeExtension = "" Then
 						retval = ProductionBeginBates & "." & NativeExtension
@@ -77,10 +80,30 @@ Namespace kCura.WinEDDS.Exporters
 
 #End Region
 
-		Public Function NativeFileName(ByVal appendToOriginal As Boolean) As String
+		Public Function AppendOriginalFileName(value As String) As String
+			If Not String.IsNullOrWhiteSpace(value) AndAlso Not String.IsNullOrWhiteSpace(OriginalFileName) Then
+				Return value & _ORIGINAL_FILE_NAME_PART_SEPARATOR & OriginalFileName
+			ElseIf Not String.IsNullOrWhiteSpace(OriginalFileName) Then
+				Return OriginalFileName
+			Else
+				Return value
+			End If
+		End Function
+
+		Public Function AppendOriginalFileName(value As StringBuilder) As StringBuilder
+			If Not value Is Nothing AndAlso value.Length > 0 AndAlso Not String.IsNullOrWhiteSpace(OriginalFileName) Then
+				Return value.Append(_ORIGINAL_FILE_NAME_PART_SEPARATOR & OriginalFileName)
+			ElseIf Not String.IsNullOrWhiteSpace(OriginalFileName) Then
+				Return New StringBuilder(OriginalFileName)
+			Else
+				Return value
+			End If
+		End Function
+
+		Public Overridable Function NativeFileName(ByVal appendToOriginal As Boolean) As String
 			Dim retval As String
 			If appendToOriginal Then
-				retval = IdentifierValue & "_" & OriginalFileName
+				retval = AppendOriginalFileName(IdentifierValue)
 			Else
 				If Not NativeExtension = "" Then
 					retval = IdentifierValue & "." & NativeExtension
@@ -92,6 +115,26 @@ Namespace kCura.WinEDDS.Exporters
 		End Function
 
 		Public Function FullTextFileName(ByVal nameFilesAfterIdentifier As Boolean, tryProductionBegBates As Boolean) As String
+			Return FullTextFileName(nameFilesAfterIdentifier, tryProductionBegBates, False)
+		End Function
+
+		Public Overridable Function FullTextFileName(ByVal nameFilesAfterIdentifier As Boolean, tryProductionBegBates As Boolean, appendOriginalFilename As Boolean) As String
+			Dim retval As String = GetFullTextIdentifierFileNamePart(nameFilesAfterIdentifier, tryProductionBegBates)
+
+			If appendOriginalFilename Then
+				retval = Me.AppendOriginalFileName(retval)
+			End If
+
+			retval = kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(retval)
+			retval = AppendExtensionToFullTextFileName(retval)
+			Return retval
+		End Function
+
+		Private Function AppendExtensionToFullTextFileName(retval As String) As String
+			Return FileNameHelper.AppendExtensionToFileWhenMissing(retval, ".txt")
+		End Function
+
+		Private Function GetFullTextIdentifierFileNamePart(nameFilesAfterIdentifier As Boolean, tryProductionBegBates As Boolean) As String
 			Dim retval As String
 			If tryProductionBegBates Then
 				retval = If(String.IsNullOrWhiteSpace(ProductionBeginBates), IdentifierValue, ProductionBeginBates)
@@ -100,8 +143,8 @@ Namespace kCura.WinEDDS.Exporters
 			Else
 				retval = Me.IdentifierValue
 			End If
-			Return kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(retval & ".txt")
-		End Function
 
+			Return If(retval, String.Empty)
+		End Function
 	End Class
 End Namespace

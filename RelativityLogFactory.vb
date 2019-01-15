@@ -10,6 +10,11 @@
 Public Class RelativityLogFactory
 
 	''' <summary>
+	''' WinEDDS sub-system name
+	''' </summary>
+	Public Shared WinEDDSSubSystem As String = "WinEDDS"
+
+	''' <summary>
 	''' Creates a new Relativity log instance.
 	''' </summary>
 	''' <param name="subSystem">

@@ -55,7 +55,7 @@ Namespace kCura.WinEDDS
 			_warningCount = 0
 			_errorCount = 0
 			Dim tokenSource As CancellationTokenSource = New CancellationTokenSource()
-            Dim logger As ILog = RelativityLogFactory.CreateLog("WinEDDS")
+            Dim logger As ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.WinEDDSSubSystem)
             _loadFilePreviewer = New kCura.WinEDDS.LoadFilePreviewer(LoadFile, logger, _timeZoneOffset, _errorsOnly, True, tokenSource, ProcessController)
 
 			_valueThrower.ThrowValue(New Object() {_loadFilePreviewer.ReadFile(LoadFile.FilePath, _formType), _errorsOnly})

@@ -690,7 +690,9 @@ Namespace kCura.WinEDDS
 			If _createFolderStructure Then
 				If Not _createFoldersInWebApi Then
 					'Client side folder creation (added back for Dominus# 1127879)
-					If _artifactTypeID = Relativity.ArtifactType.Document Then FolderCache = New FolderCache(_folderManager, _folderID, _caseArtifactID)
+					If _artifactTypeID = Relativity.ArtifactType.Document Then
+						FolderCache = New FolderCache(Me.Logger, _folderManager, _folderID, _caseArtifactID)
+					End If
 				End If
 				Dim openParenIndex As Int32 = _destinationFolder.LastIndexOf("("c) + 1
 				Dim closeParenIndex As Int32 = _destinationFolder.LastIndexOf(")"c)
@@ -852,7 +854,7 @@ Namespace kCura.WinEDDS
 							End If
 						Else
 							'Client side folder creation (added back for Dominus# 1127879)
-							parentFolderID = FolderCache.FolderID(CleanDestinationFolderPath(value))
+						parentFolderID = FolderCache.GetFolderId(CleanDestinationFolderPath(value))
 						End If
 					Else
 						'TODO: If we are going to do this for more than documents, fix this as well...

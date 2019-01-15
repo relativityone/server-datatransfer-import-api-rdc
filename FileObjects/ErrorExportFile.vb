@@ -1,7 +1,7 @@
 ﻿Namespace kCura.WinEDDS
 
 	Public Class ErrorExportFile
-		Inherits ExportFile
+		Inherits ExtendedExportFile
 		Private _errorMessage As String = String.Empty
 		Public Sub New(ByVal errorMessage As String)
 			MyBase.New(-1)
