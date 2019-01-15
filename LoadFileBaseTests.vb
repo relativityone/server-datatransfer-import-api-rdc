@@ -6,10 +6,13 @@ Namespace kCura.WinEDDS.NUnit
 
 		<Test()>
 		Public Sub GetFieldStringValue_Throw_Error_Correct_Test()
+			Dim value As String = "More Than 5 Chars"
+			Dim len As Int = value.length
+			Dim maxLen As Int = 5
 			Dim thrownException As kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException = Assert.Throws(Of kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException)(Sub()
-																																																				 kCura.Utility.ImprovedDelimitedFileImporter.ValidateStringForVarChar("Morethat5CharsForsureeee", 2, 5, 10, "Test")
+																																																				 kCura.Utility.ImprovedDelimitedFileImporter.ValidateStringForVarChar("Morethat5CharsForsureeee", 2, maxLen, 10, "Test")
 																																																			 End Sub)
-			Assert.AreEqual("Error in line 10, column ""C"".  Input length of 24 exceeds maximum set length of 5 for the Test field.", thrownException.Message)
+			Assert.AreEqual("This file contains Test metadata with a length of " & len & " character(s). This exceeds the limit for the Test field, which is currently set to " & maxLen & " character(s).", thrownException.Message)
 		End Sub
 
 		<Test()>
