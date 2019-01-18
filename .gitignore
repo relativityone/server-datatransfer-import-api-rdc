@@ -306,3 +306,4 @@ buildtools/*
 !buildtools/packages.config
 !buildtools/AllErrors.ruleset
 !buildtools/CustomDictionary.xml
+!buildtools/Test-PackageUpgrade.ps1
