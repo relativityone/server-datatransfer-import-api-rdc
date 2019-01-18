@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="TapiBridge.cs" company="kCura Corp">
+// <copyright file="TapiBridgeBase.cs" company="kCura Corp">
 //   kCura Corp (C) 2017 All Rights Reserved.
 // </copyright>
 // <summary>
@@ -81,14 +81,15 @@ namespace kCura.WinEDDS.TApi
         private ITransferRequest jobRequest;
 
         /// <summary>
-        /// The Relativity transfer host.
+        /// The lazy constructed transfer client. Always call <see cref="CreateTransferHost"/>
+        /// to get the reference instead of directly accessing this field.
         /// </summary>
-        private IRelativityTransferHost transferHost;
+		private RelativityTransferHost relativityTransferHost;
 
-        /// <summary>
-        /// The transfer client.
-        /// </summary>
-        private ITransferClient transferClient;
+		/// <summary>
+		/// The transfer client.
+		/// </summary>
+		private ITransferClient transferClient;
 
         /// <summary>
         /// The transfer job.
@@ -147,12 +148,6 @@ namespace kCura.WinEDDS.TApi
 
             this.currentDirection = direction;
             this.parameters = parameters;
-            var connectionInfo = TapiWinEddsHelper.CreateRelativityConnectionInfo(
-                parameters.WebServiceUrl,
-                parameters.WorkspaceId,
-                parameters.Credentials.UserName,
-                parameters.Credentials.Password);
-            this.transferHost = new RelativityTransferHost(connectionInfo, log);
             this.TargetPath = parameters.TargetPath;
             this.cancellationToken = token;
             this.TransferLog = log;
@@ -515,8 +510,9 @@ namespace kCura.WinEDDS.TApi
                         this.TransferLog.LogInformation("Using the default default transfer client strategy.");
                     }
 
-                    this.transferClient = this.transferHost
-                        .CreateClientAsync(configuration, clientStrategy, this.cancellationToken)
+                    var transferHost = this.CreateTransferHost();
+					this.transferClient = transferHost
+						.CreateClientAsync(configuration, clientStrategy, this.cancellationToken)
                         .GetAwaiter()
                         .GetResult();
                     this.TransferLog.LogInformation(
@@ -536,6 +532,25 @@ namespace kCura.WinEDDS.TApi
             {
                 this.OptimizeClient();
             }
+        }
+
+		/// <summary>
+		/// Creates the <see cref="RelativityTransferHost"/> instance if not already constructed.
+		/// </summary>
+		/// <returns>
+		/// The <see cref="RelativityTransferHost"/> instance.
+		/// </returns>
+		private RelativityTransferHost CreateTransferHost()
+        {
+			// REL-281370: Lazy construct to avoid lengthy construction
+			//             and exceptions getting thrown via constructor.
+			if (this.relativityTransferHost == null)
+			{
+				var connectionInfo = TapiWinEddsHelper.CreateRelativityConnectionInfo(parameters);
+				this.relativityTransferHost = new RelativityTransferHost(connectionInfo, this.TransferLog);
+			}
+
+			return this.relativityTransferHost;
         }
 
 		/// <summary>
@@ -583,8 +598,9 @@ namespace kCura.WinEDDS.TApi
         /// </param>
         private void CreateTransferClient(ClientConfiguration configuration)
         {
-            this.transferHost.Clear();
-            this.transferClient = this.transferHost.CreateClient(configuration);
+	        var transferHost = this.CreateTransferHost();
+	        transferHost.Clear();
+            this.transferClient = transferHost.CreateClient(configuration);
         }
 
         /// <summary>
@@ -758,13 +774,14 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         private void DestroyTransferHost()
         {
-            if (this.transferHost == null)
+			// Note: this is the only method that should directly reference the field.
+            if (this.relativityTransferHost == null)
             {
                 return;
             }
 
-            this.transferHost.Dispose();
-            this.transferHost = null;
+            this.relativityTransferHost.Dispose();
+            this.relativityTransferHost = null;
         }
 
         /// <summary>
