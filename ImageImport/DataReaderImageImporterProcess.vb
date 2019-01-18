@@ -16,7 +16,7 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Protected Overrides Function GetImageFileImporter() As kCura.WinEDDS.BulkImageFileImporter
 			Dim tokenSource As CancellationTokenSource = New CancellationTokenSource()
-		    Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog("WinEDDS")
+		    Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.WinEDDSSubSystem)
 		    Dim ioWarningPublisher As New IoWarningPublisher()
 		    Dim ioReporter As IIoReporter = IoReporterFactory.CreateIoReporter(kCura.Utility.Config.IOErrorNumberOfRetries, kCura.Utility.Config.IOErrorWaitTimeInSeconds, 
 		                                                                       WinEDDS.Config.DisableNativeLocationValidation,  logger, ioWarningPublisher, tokenSource.Token)
