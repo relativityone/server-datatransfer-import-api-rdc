@@ -1,30 +1,19 @@
-﻿Imports System.Diagnostics
-Imports System.Net
+﻿Imports System.Net
 Imports System.Net.Security
-Imports System.Reflection
-Imports System.Runtime.CompilerServices
-Imports System.Security.Cryptography.X509Certificates
 Imports System.Threading
 Imports System.Threading.Tasks
-Imports Credentials
-Imports kCura.WinEDDS.Exceptions
 Imports Relativity.Constant
 Imports Relativity.OAuth2Client
-Imports Relativity.OAuth2Client.Events
 Imports Relativity.OAuth2Client.Implicit
 Imports Relativity.OAuth2Client.Implicit.LoginForms
 Imports Relativity.OAuth2Client.Implicit.LoginView
-Imports Relativity.OAuth2Client.Implicit.RelativityWebBrowser
-Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
-Imports Relativity.OAuth2Client.TokenProviders.ProviderFactories
 
 Namespace kCura.WinEDDS.Credentials
 
 	Public Class  OAuth2ImplicitCredentials
 		Implements ICredentialsProvider
 
-		Private Const _OAUTH_USERNAME As String = "XxX_BearerTokenCredentials_XxX"
 		Private Const _REDIRECT_URI As String = "http://relativityimplicit/"
 		Private _tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider
 		Private ReadOnly _stsUri As Uri
@@ -60,8 +49,8 @@ Namespace kCura.WinEDDS.Credentials
 				ServicePointManager.ServerCertificateValidationCallback = oldCheck
 				_logInLock.Release()
 			End Try
-			
-			Dim creds As System.Net.NetworkCredential = New NetworkCredential(_OAUTH_USERNAME, token)
+
+			Dim creds As System.Net.NetworkCredential = New NetworkCredential(kCura.WinEDDS.Credentials.Constants.OAuthWebApiBearerTokenUserName, token)
 			Return creds
 		End Function
 

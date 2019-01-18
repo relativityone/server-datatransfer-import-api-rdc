@@ -7,6 +7,7 @@ Imports kCura.WinEDDS.Exporters
 Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.LoadFileEntry
 Imports kCura.WinEDDS.IO
+Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
 	Public Class VolumeManager
@@ -54,6 +55,8 @@ Namespace kCura.WinEDDS
 		Private _fileStreamFactory As IFileStreamFactory
 		Private _directoryHelper As IDirectoryHelper
 		Private _fileNameProvider As IFileNameProvider
+		
+		Private _logger As ILog
 #End Region
 
 		Private Enum ExportFileType
@@ -144,6 +147,8 @@ Namespace kCura.WinEDDS
 			_fileStreamFactory = New FileStreamFactory(_fileHelper)
 			_directoryHelper = directoryHelper
 			_fileNameProvider = fileNameProvider
+
+			_logger = RelativityLogFactory.CreateLog(RelativityLogFactory.WinEDDSSubSystem)
 
 			_timekeeper = t
 			_currentVolumeNumber = _settings.VolumeInfo.VolumeStartNumber
@@ -652,7 +657,7 @@ Namespace kCura.WinEDDS
 					linesToWrite.AddOrUpdate(-1, columnHeaderEntry, Function() columnHeaderEntry)
 					_hasWrittenColumnHeaderString = True
 				End If
-				Dim loadFileEntry As ILoadFileEntry = Me.UpdateLoadFile(artifact.Metadata, artifact.HasFullText, artifact.ArtifactID, nativeLocation, tempLocalFullTextFilePath, artifact, extractedTextFileLength, volumeNumber, subDirectoryNumber)
+				Dim loadFileEntry As ILoadFileEntry = Me.UpdateLoadFile(artifact.Metadata, nativeLocation, tempLocalFullTextFilePath, artifact, extractedTextFileLength, volumeNumber, subDirectoryNumber)
 				linesToWrite.AddOrUpdate(artifact.ArtifactID, loadFileEntry, Function() loadFileEntry)
 			Catch ex As System.IO.IOException
 				Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Load, ex)
@@ -1203,7 +1208,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Public Function UpdateLoadFile(ByVal record As Object(), ByVal hasFullText As Boolean, ByVal documentArtifactID As Int32, ByVal nativeLocation As String,
+		Public Function UpdateLoadFile(ByVal record As Object(), ByVal nativeLocation As String,
 																	 ByRef fullTextTempFile As String, ByVal doc As Exporters.ObjectExportInfo, ByRef extractedTextByteCount As Int64,
 																	 ByVal currentVolumeNumber As Integer, ByVal currentSubDirectoryNumber As Integer) As ILoadFileEntry
 			If _nativeFileWriter Is Nothing Then Return New CompletedLoadFileEntry("")
@@ -1251,14 +1256,6 @@ Namespace kCura.WinEDDS
 			If Not String.IsNullOrEmpty(_loadFileFormatter.RowSuffix) Then loadFileEntry.AddStringEntry(_loadFileFormatter.RowSuffix)
 			loadFileEntry.AddStringEntry(vbNewLine)
 			Return loadFileEntry
-		End Function
-
-		Private Function NameTextFilesAfterIdentifier() As Boolean
-			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
-				Return _parent.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier
-			Else
-				Return True
-			End If
 		End Function
 
 		Public Sub WriteLongTextFileToDatFile(fileWriter As System.IO.StreamWriter, ByVal longTextPath As String, ByVal encoding As System.Text.Encoding) Implements  ILongTextEntryWriter.WriteLongTextFileToDatFile
@@ -1342,7 +1339,7 @@ Namespace kCura.WinEDDS
 			Dim isOpticonFile As Boolean = Settings.LogFileFormat.HasValue And Settings.LogFileFormat.Value.Equals(LoadFileType.FileFormat.Opticon)
 			Dim comparer As IComparer(Of String)
 			If isOpticonFile Then
-				comparer = New OpticonFilenameComparer()
+				comparer = New OpticonFilenameComparer(_logger)
 			Else
 				comparer = StringComparer.InvariantCulture
 			End If

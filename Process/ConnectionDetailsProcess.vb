@@ -20,16 +20,15 @@ Namespace kCura.WinEDDS
 			Me.CheckDownloadHandlerURL()
 			Me.WriteStatus("")
 
-			' TAPI is now responsible to perform uniform connection checks against all available clients.
-			Dim connectionInfo As Relativity.Transfer.RelativityConnectionInfo =
-				kCura.WinEDDS.TApi.TapiWinEddsHelper.CreateRelativityConnectionInfo(
-					WinEDDS.Config.WebServiceURL,
-					_caseInfo.ArtifactID,
-					_credential.UserName,
-					_credential.Password)
-			Using transferLog As New kCura.WinEDDS.TApi.RelativityTransferLog
+			Dim parameters As kCura.WinEDDS.TApi.TapiBridgeParameters = New kCura.WinEDDS.TApi.TapiBridgeParameters
+			parameters.Credentials = _credential
+			parameters.WebCookieContainer = _cookieContainer
+			parameters.WebServiceUrl = Config.WebServiceURL
+			parameters.WorkspaceId = _caseInfo.ArtifactID
+			Dim connectionInfo As Relativity.Transfer.RelativityConnectionInfo = kCura.WinEDDS.TApi.TapiWinEddsHelper.CreateRelativityConnectionInfo(parameters)
+			Using transferLog As New kCura.WinEDDS.TApi.RelativityTransferLog()
 				Using transferHost As New Relativity.Transfer.RelativityTransferHost(connectionInfo, transferLog)
-					Dim context As New Relativity.Transfer.DiagnosticsContext
+					Dim context As New Relativity.Transfer.DiagnosticsContext()
 					Dim configuration As New Relativity.Transfer.DiagnosticsConfiguration(context, _cookieContainer)
 
 					' Reducing these values to more quickly publish error information to the user.
