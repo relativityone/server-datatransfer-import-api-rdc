@@ -39,6 +39,7 @@ $manager = [PackageUpgradeValidator]::new()
 $manager.Validate($Id, $OldVersion, $NewVersion)
 
 class PackageUpgradeValidator {
+  [bool] $verbose = $false
 
   hidden [void]
   Validate([string] $id, [string] $oldVersion, [string] $newVersion) {
@@ -47,7 +48,8 @@ class PackageUpgradeValidator {
     $newMap = $this.GetPackageHashTable($id, $newVersion)
     $totalGreenPackages = 0
     $skippedPackages = 0
-    foreach ($idKey in $newMap.Keys) 
+    $this.LogInfo("Package Comparison Summary")
+    foreach ($idKey in $newMap.Keys)
     {
       if ($oldMap.ContainsKey($idKey)) {
 
@@ -74,7 +76,7 @@ class PackageUpgradeValidator {
           elseif ($newVersion -gt $oldVersion)
           {
             $totalGreenPackages++
-            $this.DisplayPassStatus("Package dependency $idKey-$oldVersion is greater than $newVersion [Pass]")
+            $this.DisplayPassStatus("Package dependency $idKey-$oldVersion is greater than $newVersion")
           }
           else {
             $this.DisplayFailStatus("Package dependency $idKey-$oldVersion is less than $newVersion")
@@ -94,12 +96,12 @@ class PackageUpgradeValidator {
       $exitCode = 0
     }
 
-    Write-Host "Validated $totalGreenPackages of $totalPackages packages."
+    $this.LogInfo("Validated $totalGreenPackages of $totalPackages packages.")
     if ($skippedPackages -gt 0){
-      Write-Host "Skipped $skippedPackages packages."
+      $this.LogInfo("Skipped $skippedPackages packages.")
     }
 
-    Write-Host "Exit code: $exitCode"
+    $this.LogInfo("Exit code: $exitCode")
     exit $exitCode
   }
 
@@ -129,6 +131,7 @@ class PackageUpgradeValidator {
   hidden [hashtable]
   GetPackageHashTable([string] $id, [string] $version)
   {
+    $this.LogInfo("Retrieving the $id $version package details...")
     $tempDir = $this.CreatePackageTempDir()
     try {
       $this.InstallPackage($id, $version, $tempDir)
@@ -157,10 +160,10 @@ class PackageUpgradeValidator {
 
   hidden [void]
 	InstallPackage ([string] $id, [string] $version, [string] $extractDir) {
-		$this.LogInfo("Installing the [$id] package to the [$extractDir] directory...")
+		$this.LogVerbose("Installing the [$id] package to the [$extractDir] directory...")
 		$commandLineArgs = "install $id -Version $version -OutputDirectory ""$extractDir"""
 		$this.ExecNugetProcess("package installation/extraction", $commandLineArgs)
-		$this.LogInfo("Extracted the [$id] package to the [$extractDir] directory.")
+		$this.LogVerbose("Extracted the [$id] package to the [$extractDir] directory.")
 	}
 
   hidden [NugetPackage]
@@ -216,33 +219,33 @@ class PackageUpgradeValidator {
   hidden [void]
 	CreateDir([string] $dir) {
 		if (-Not (Test-Path -Path $dir)) {
-			$this.LogInfo("Creating directory [$dir]...")
+			$this.LogVerbose("Creating directory [$dir]...")
 			New-Item -ItemType directory -Path $dir
-			$this.LogInfo("Created directory [$dir].")
+			$this.LogVerbose("Created directory [$dir].")
 		}
   }
 
   hidden [void]
 	DeleteDir ([string] $dir) {
 		if (Test-Path -Path $dir) {
-			$this.LogInfo("Deleting directory [$dir]...")
+			$this.LogVerbose("Deleting directory [$dir]...")
 			Remove-Item "$dir" -Force -Recurse
-			$this.LogInfo("Deleted directory [$dir].")
+			$this.LogVerbose("Deleted directory [$dir].")
 		}
   }
 
   hidden [void]
 	CopyFile([string] $sourceFile, [string] $targetDir) {
-    $this.LogInfo("Copying source file [$sourceFile] to [$targetDir]...")
+    $this.LogVerbose("Copying source file [$sourceFile] to [$targetDir]...")
 		Copy-Item $sourceFile -Destination $targetDir
-    $this.LogInfo("Copied source file [$sourceFile] to [$targetDir].")
+    $this.LogVerbose("Copied source file [$sourceFile] to [$targetDir].")
   }
   
   hidden [void]
 	RenameFile ([string] $file, [string] $newFileName) {
-		$this.LogInfo("Renaming file [$file] with new filename [$newFileName]...")
+		$this.LogVerbose("Renaming file [$file] with new filename [$newFileName]...")
 		Rename-Item -Path $file -NewName $newFileName
-		$this.LogInfo("Renamed file [$file] with new filename [$newFileName].")
+		$this.LogVerbose("Renamed file [$file] with new filename [$newFileName].")
   }
   
   hidden [void]
@@ -255,36 +258,56 @@ class PackageUpgradeValidator {
     }
   }
 
-  hidden [void]
-	ExecNugetProcess([string] $id, [string] $commandLineArgs) {
-		$this.ExecNugetProcess($id, $commandLineArgs, $null)
-	}
-
 	hidden [void]
-	ExecNugetProcess([string] $commandDescription, [string] $commandLineArgs, [string] $workingDirectory) {
-		$exitCode = 0
-		$exePath = Join-Path $PSScriptRoot "nuget.exe"
-		if (-Not ([string]::IsNullOrEmpty($($workingDirectory)))) {
-			$process = Start-Process -FilePath "$exePath" -ArgumentList "$commandLineArgs" -NoNewWindow -PassThru -Wait -WorkingDirectory $workingDirectory
-			$exitCode = $process.ExitCode
-		}
-		else {
-			$process = Start-Process -FilePath "$exePath" -ArgumentList "$commandLineArgs" -NoNewWindow -PassThru -Wait
-			$exitCode = $process.ExitCode
-		}
-
+	ExecNugetProcess([string] $commandDescription, [string] $commandLineArgs) {
+    $exePath = Join-Path $PSScriptRoot "nuget.exe"
+    $pinfo = New-Object System.Diagnostics.ProcessStartInfo
+    $pinfo.FileName = $exePath
+    $pinfo.RedirectStandardError = $true
+    $pinfo.RedirectStandardOutput = $true
+    $pinfo.UseShellExecute = $false
+    $pinfo.Arguments = $commandLineArgs
+    $p = New-Object System.Diagnostics.Process
+    $p.StartInfo = $pinfo
+    $p.Start() | Out-Null
+    $stdout = $p.StandardOutput.ReadToEnd()
+    $stderr = $p.StandardError.ReadToEnd()
+    $p.WaitForExit()
+    $exitCode = $p.ExitCode
 		if ($exitCode -eq 0)
 		{
 			return
-		}
+    }
+       
+    if (![string]::IsNullOrEmpty($stdout))
+    {
+      $this.LogError($stdout)
+    }
 
+    if (![string]::IsNullOrEmpty($stderr))
+    {
+      $this.LogError($stderr)
+    }
+        
 		throw [System.InvalidOperationException] "The Nuget package command [$commandDescription] with arguments [$commandLineArgs] failed with the $exitCode exit code."
-	}
+  }
+  
+  hidden [void]
+  LogError([string] $message) {
+    Write-Host $message -ForegroundColor Red
+  }
 
   hidden [void]
 	LogInfo([string] $message) {
 		Write-Host $message
 	}
+
+  hidden [void]
+  LogVerbose([string] $message) {
+    if ($this.logVerbose -eq $true) {
+      Write-Host $message
+    }
+  }
 }
 
 class NugetPackage {
