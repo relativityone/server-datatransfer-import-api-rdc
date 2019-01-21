@@ -301,7 +301,7 @@ Namespace kCura.WinEDDS
 			Dim objectDisplayNames As String() = DirectCast(goodObjects.ToArray(GetType(String)), String())
 			Dim nameIDPairs As New System.Collections.Hashtable
 			For Each objectName As String In objectDisplayNames
-				If objectName.Length > field.TextLength Then Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(Me.CurrentLineNumber, column, objectName.Length, field.TextLength, field.DisplayName)
+				If objectName.Length > field.TextLength Then Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(Me.CurrentLineNumber, column, field.TextLength, field.DisplayName, objectName.Length)
 				nameIDPairs(objectName) = Me.LookupArtifactIDForName(objectName, associatedObjectTypeID)
 			Next
 			Return nameIDPairs
@@ -339,7 +339,7 @@ Namespace kCura.WinEDDS
 			Dim nameIDPairs As New System.Collections.Hashtable
 
 			For Each objectArtifactId As String In objectArtifactIds
-				If objectArtifactId.Length > field.TextLength Then Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(Me.CurrentLineNumber, column, objectArtifactId.Length, field.TextLength, field.DisplayName)
+				If objectArtifactId.Length > field.TextLength Then Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(Me.CurrentLineNumber, column, field.TextLength, field.DisplayName, objectArtifactId.Length)
 				nameIDPairs(objectArtifactId) = Me.LookupNameForArtifactID(CInt(objectArtifactId), associatedObjectTypeID)
 			Next
 			Return nameIDPairs
@@ -685,7 +685,7 @@ Namespace kCura.WinEDDS
 
 		Public Function GetNullableFixedString(ByVal value As String, ByVal column As Int32, ByVal fieldLength As Int32, ByVal displayName As String) As String
 			If value.Length > fieldLength Then
-				Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(CurrentLineNumber, column, value.Length, fieldLength, displayName)
+				Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(CurrentLineNumber, column, fieldLength, displayName, value.Length)
 			Else
 				Return kCura.Utility.NullableTypesHelper.DBNullString(value)
 			End If
