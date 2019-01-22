@@ -8,7 +8,8 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 	<TestFixture>
 	Public Class CaseSensitiveFilePathHelperTests
 		Private _filePathHelper As CaseSensitiveFilePathHelper
-		Private _systemIoMock As ISystemIoFileWrapper
+		Private _fileMock As kCura.WinEDDS.TApi.IFile
+		Private _pathMock As kCura.WinEDDS.TApi.IPath
 
 		Private Const _PATH_WITH_LOWER_CASE_EXTENSION As String = "\\dir\somePath.ext"
 		Private Const _PATH_WITH_UPPER_CASE_EXTENSION As String = "\\dir\somePath.EXT"
@@ -16,11 +17,14 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 		Private Const _PATH_WITH_NO_EXTENSION As String = "\\dir\somePath"
 
 		<SetUp> Public Sub SetUp()
-			_systemIoMock = Substitute.For(Of ISystemIoFileWrapper)()
-			_systemIoMock.GetExtension(Arg.Any(Of String)).ReturnsForAnyArgs(function(info) System.IO.Path.GetExtension(info.Arg(Of String)()))
-			_systemIoMock.ChangeExtension(Arg.Any(Of String), Arg.Any(Of String)).ReturnsForAnyArgs(function(info) System.IO.Path.ChangeExtension(info.ArgAt(Of String)(0), info.ArgAt(Of String)(1)))
-
-			_filePathHelper = New CaseSensitiveFilePathHelper(_systemIoMock)
+			_fileMock = Substitute.For(Of kCura.WinEDDS.TApi.IFile)()
+			_pathMock = Substitute.For(Of kCura.WinEDDS.TApi.IPath)()
+			_pathMock.GetExtension(Arg.Any(Of String)).ReturnsForAnyArgs(function(info) System.IO.Path.GetExtension(info.Arg(Of String)()))
+			_pathMock.ChangeExtension(Arg.Any(Of String), Arg.Any(Of String)).ReturnsForAnyArgs(function(info) System.IO.Path.ChangeExtension(info.ArgAt(Of String)(0), info.ArgAt(Of String)(1)))
+			Dim fileSystemMock As kCura.WinEDDS.TApi.IFileSystem = Substitute.For(Of kCura.WinEDDS.TApi.IFileSystem)()
+			fileSystemMock.File.Returns(_fileMock)
+			fileSystemMock.Path.Returns(_pathMock)
+			_filePathHelper = New CaseSensitiveFilePathHelper(fileSystemMock)
 		End Sub
 
 		<Test>
@@ -39,7 +43,7 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 
 		<Test>
 		Public Sub ShouldReturnNothingWhenWrapperThrows()
-			_systemIoMock.Exists(Arg.Any(Of String)()).Throws(New Exception())
+			_fileMock.Exists(Arg.Any(Of String)()).Throws(New Exception())
 
 			Dim actual As String = _filePathHelper.GetExistingFilePath(Nothing)
 
@@ -48,7 +52,7 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 
 		<Test>
 		Public Sub ShouldReturnSamePathIfOriginalOneExists()
-			_systemIoMock.Exists(_PATH_WITH_LOWER_CASE_EXTENSION).Returns(True)
+			_fileMock.Exists(_PATH_WITH_LOWER_CASE_EXTENSION).Returns(True)
 
 			Dim actual As String = _filePathHelper.GetExistingFilePath(_PATH_WITH_LOWER_CASE_EXTENSION)
 
@@ -57,11 +61,11 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 
 		<Test>
 		Public Sub ShouldNotCheckOtherPathsIfOriginalOneExists()
-			_systemIoMock.Exists(_PATH_WITH_LOWER_CASE_EXTENSION).Returns(True)
+			_fileMock.Exists(_PATH_WITH_LOWER_CASE_EXTENSION).Returns(True)
 
 			_filePathHelper.GetExistingFilePath(_PATH_WITH_LOWER_CASE_EXTENSION)
 
-			_systemIoMock.Received(1).Exists(Arg.Any(Of String)())
+			_fileMock.Received(1).Exists(Arg.Any(Of String)())
 		End Sub
 
 		<Test>
@@ -69,8 +73,8 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 			Dim pathToCheck As String = _PATH_WITH_LOWER_CASE_EXTENSION
 			Dim expected As String = _PATH_WITH_UPPER_CASE_EXTENSION
 
-			_systemIoMock.Exists(pathToCheck).Returns(False)
-			_systemIoMock.Exists(expected).Returns(True)
+			_fileMock.Exists(pathToCheck).Returns(False)
+			_fileMock.Exists(expected).Returns(True)
 
 			Dim actual As String = _filePathHelper.GetExistingFilePath(pathToCheck)
 
@@ -82,8 +86,8 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 			Dim pathToCheck As String = _PATH_WITH_UPPER_CASE_EXTENSION
 			Dim expected As String = _PATH_WITH_LOWER_CASE_EXTENSION
 
-			_systemIoMock.Exists(pathToCheck).Returns(False)
-			_systemIoMock.Exists(expected).Returns(True)
+			_fileMock.Exists(pathToCheck).Returns(False)
+			_fileMock.Exists(expected).Returns(True)
 
 			Dim actual As String = _filePathHelper.GetExistingFilePath(pathToCheck)
 
@@ -95,9 +99,9 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 			Dim pathToCheck As String = _PATH_WITH_MIXED_CASE_EXTENSION
 			Dim expected As String = _PATH_WITH_UPPER_CASE_EXTENSION
 
-			_systemIoMock.Exists(_PATH_WITH_LOWER_CASE_EXTENSION).Returns(False)
-			_systemIoMock.Exists(pathToCheck).Returns(False)
-			_systemIoMock.Exists(expected).Returns(True)
+			_fileMock.Exists(_PATH_WITH_LOWER_CASE_EXTENSION).Returns(False)
+			_fileMock.Exists(pathToCheck).Returns(False)
+			_fileMock.Exists(expected).Returns(True)
 
 			Dim actual As String = _filePathHelper.GetExistingFilePath(pathToCheck)
 
@@ -109,9 +113,9 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 			Dim pathToCheck As String = _PATH_WITH_MIXED_CASE_EXTENSION
 			Dim expected As String = _PATH_WITH_LOWER_CASE_EXTENSION
 
-			_systemIoMock.Exists(_PATH_WITH_UPPER_CASE_EXTENSION).Returns(False)
-			_systemIoMock.Exists(pathToCheck).Returns(False)
-			_systemIoMock.Exists(expected).Returns(True)
+			_fileMock.Exists(_PATH_WITH_UPPER_CASE_EXTENSION).Returns(False)
+			_fileMock.Exists(pathToCheck).Returns(False)
+			_fileMock.Exists(expected).Returns(True)
 
 			Dim actual As String = _filePathHelper.GetExistingFilePath(pathToCheck)
 
@@ -120,20 +124,20 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 
 		<Test>
 		Public Sub ShouldTryUpperAndLowerWhenMixedDoesNotExist()
-			_systemIoMock.Exists(_PATH_WITH_LOWER_CASE_EXTENSION).Returns(False)
-			_systemIoMock.Exists(_PATH_WITH_UPPER_CASE_EXTENSION).Returns(False)
-			_systemIoMock.Exists(_PATH_WITH_MIXED_CASE_EXTENSION).Returns(False)
+			_fileMock.Exists(_PATH_WITH_LOWER_CASE_EXTENSION).Returns(False)
+			_fileMock.Exists(_PATH_WITH_UPPER_CASE_EXTENSION).Returns(False)
+			_fileMock.Exists(_PATH_WITH_MIXED_CASE_EXTENSION).Returns(False)
 			
 			_filePathHelper.GetExistingFilePath(_PATH_WITH_MIXED_CASE_EXTENSION)
 
-			_systemIoMock.Received(1).Exists(_PATH_WITH_MIXED_CASE_EXTENSION)
-			_systemIoMock.Received(1).Exists(_PATH_WITH_UPPER_CASE_EXTENSION)
-			_systemIoMock.Received(1).Exists(_PATH_WITH_LOWER_CASE_EXTENSION)
+			_fileMock.Received(1).Exists(_PATH_WITH_MIXED_CASE_EXTENSION)
+			_fileMock.Received(1).Exists(_PATH_WITH_UPPER_CASE_EXTENSION)
+			_fileMock.Received(1).Exists(_PATH_WITH_LOWER_CASE_EXTENSION)
 		End Sub
 
 		<Test>
 		Public Sub ShouldReturnNullWhenNoneExists()
-			_systemIoMock.Exists(Arg.Any(Of String)).Returns(False)
+			_fileMock.Exists(Arg.Any(Of String)).Returns(False)
 			
 			Dim actual As String = _filePathHelper.GetExistingFilePath(_PATH_WITH_MIXED_CASE_EXTENSION)
 
@@ -145,7 +149,7 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 			Dim pathToCheck As String = _PATH_WITH_NO_EXTENSION
 			Dim expected As String = _PATH_WITH_NO_EXTENSION
 
-			_systemIoMock.Exists(expected).Returns(True)
+			_fileMock.Exists(expected).Returns(True)
 
 			Dim actual As String = _filePathHelper.GetExistingFilePath(pathToCheck)
 
@@ -156,7 +160,7 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 		Public Sub ShouldReturnNullWhenPathDoesNotExistAndThereIsNoExtension()
 			Dim pathToCheck As String = _PATH_WITH_NO_EXTENSION
 
-			_systemIoMock.Exists(pathToCheck).Returns(False)
+			_fileMock.Exists(pathToCheck).Returns(False)
 
 			Dim actual As String = _filePathHelper.GetExistingFilePath(pathToCheck)
 
@@ -167,11 +171,11 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 		Public Sub ShouldNotCheckOtherPathsIfThereIsNoExtensionAndOriginalOneDoesNotExist()
 			Dim pathToCheck As String = _PATH_WITH_NO_EXTENSION
 
-			_systemIoMock.Exists(pathToCheck).Returns(False)
+			_fileMock.Exists(pathToCheck).Returns(False)
 
 			_filePathHelper.GetExistingFilePath(pathToCheck)
 
-			_systemIoMock.Received(1).Exists(Arg.Any(Of String)())
+			_fileMock.Received(1).Exists(Arg.Any(Of String)())
 		End Sub
 	End Class
 End Namespace

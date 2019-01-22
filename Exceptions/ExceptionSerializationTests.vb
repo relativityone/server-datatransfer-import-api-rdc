@@ -61,6 +61,10 @@ Namespace kCura.WinEDDS.NUnit
 				Yield new kCura.WinEDDS.SettingsFactoryBase.InvalidCredentialsException()
 				Yield new kCura.WinEDDS.SettingsFactoryBase.InvalidCredentialsException("Message")
 		        Yield new kCura.WinEDDS.SettingsFactoryBase.InvalidCredentialsException("Message", New InvalidOperationException())
+				Yield new kCura.OI.FileID.FileIDIdentificationException()
+				Yield new kCura.OI.FileID.FileIDIdentificationException("Message")
+				Yield new kCura.OI.FileID.FileIDIdentificationException("Message", New InvalidOperationException())
+				Yield new kCura.OI.FileID.FileIDIdentificationException("Message", New InvalidOperationException(), 999)
 			End Get
 		End Property
 	

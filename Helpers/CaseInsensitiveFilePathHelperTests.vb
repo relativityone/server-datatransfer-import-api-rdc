@@ -7,16 +7,15 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 	<TestFixture>
 	Public Class CaseInsensitiveFilePathHelperTests
 		Private _filePathHelper As CaseInsensitiveFilePathHelper
-		Private _systemIoMock As ISystemIoFileWrapper
+		Private _fileMock As kCura.WinEDDS.TApi.IFile
 
 		Private Const _SAMPLE_PATH As String = "\\dir\somePath.ext"
 
 		<SetUp> Public Sub SetUp()
-			_systemIoMock = Substitute.For(Of ISystemIoFileWrapper)()
-			_systemIoMock.GetExtension(Arg.Any(Of String)).ReturnsForAnyArgs(function(info) System.IO.Path.GetExtension(info.Arg(Of String)()))
-			_systemIoMock.ChangeExtension(Arg.Any(Of String), Arg.Any(Of String)).ReturnsForAnyArgs(function(info) System.IO.Path.ChangeExtension(info.ArgAt(Of String)(0), info.ArgAt(Of String)(1)))
-
-			_filePathHelper = New CaseInsensitiveFilePathHelper(_systemIoMock)
+			_fileMock = Substitute.For(Of kCura.WinEDDS.TApi.IFile)()
+			Dim fileSystemMock As kCura.WinEDDS.TApi.IFileSystem = Substitute.For(Of kCura.WinEDDS.TApi.IFileSystem)()
+			fileSystemMock.File.Returns(_fileMock)
+			_filePathHelper = New CaseInsensitiveFilePathHelper(fileSystemMock)
 		End Sub
 
 		<Test>
@@ -35,7 +34,7 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 
 		<Test>
 		Public Sub ShouldReturnNothingWhenWrapperThrows()
-			_systemIoMock.Exists(Arg.Any(Of String)()).Throws(New Exception())
+			_fileMock.Exists(Arg.Any(Of String)()).Throws(New Exception())
 
 			Dim actual As String = _filePathHelper.GetExistingFilePath(Nothing)
 
@@ -44,7 +43,7 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 
 		<Test>
 		Public Sub ShouldReturnSamePathIfOriginalOneExists()
-			_systemIoMock.Exists(_SAMPLE_PATH).Returns(True)
+			_fileMock.Exists(_SAMPLE_PATH).Returns(True)
 
 			Dim actual As String = _filePathHelper.GetExistingFilePath(_SAMPLE_PATH)
 
@@ -54,7 +53,7 @@ Namespace kCura.WinEDDS.NUnit.Helpers
 
 		<Test>
 		Public Sub ShouldReturnNothingWhenOriginalDoesNotExist()
-			_systemIoMock.Exists(_SAMPLE_PATH).Returns(False)
+			_fileMock.Exists(_SAMPLE_PATH).Returns(False)
 
 			Dim actual As String = _filePathHelper.GetExistingFilePath(_SAMPLE_PATH)
 
