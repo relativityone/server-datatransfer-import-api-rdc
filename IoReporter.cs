@@ -12,13 +12,13 @@ namespace kCura.WinEDDS.TApi
 	using System;
     using System.Threading;
     using System.Globalization;
+
     using kCura.WinEDDS.TApi.Resources;
 
 	using Relativity.Logging;
-	using Relativity.Transfer;
 
 	/// <summary>
-	/// Base class for IO reporter
+	/// Represents a class object to perform I/O operations, publish warning messages, and retry the operation.
 	/// </summary>
 	public class IoReporter : IIoReporter
 	{
@@ -26,18 +26,20 @@ namespace kCura.WinEDDS.TApi
 		/// The value that indicates no retry information is provided.
 		/// </summary>
 		private const int NoRetryInfo = -1;
-        private readonly IFileSystemService fileSystemService;
-        private readonly IWaitAndRetryPolicy waitAndRetryPolicy;
-        private readonly IoWarningPublisher publisher;
-        private readonly ILog log;
-        private readonly bool disableNativeLocationValidation;
+
+		private readonly IFileSystem fileSystem;
+		private readonly IWaitAndRetryPolicy waitAndRetryPolicy;
+		private readonly ILog log;
+		private readonly IoWarningPublisher publisher;
+		private readonly bool disableNativeLocationValidation;
+		private readonly RetryOptions retryOptions;
 		private readonly CancellationToken cancellationToken;
 
 		/// <summary>
-		/// Constructor for IO reporter
+		/// Initializes a new instance of the <see cref="IoReporter"/> class.
 		/// </summary>
-		/// <param name="fileService">
-		/// The file system service.
+		/// <param name="fileSystem">
+		/// The file system wrapper.
 		/// </param>
 		/// <param name="waitAndRetry">
 		/// The resiliency component.
@@ -49,21 +51,25 @@ namespace kCura.WinEDDS.TApi
 		/// The I/O warning publisher.
 		/// </param>
 		/// <param name="disableNativeLocationValidation">
-		/// if set to <c>true</c> [disable native location validation].
+		/// <see langword="true" /> to throw <see cref="FileInfoInvalidPathException"/> when illegal characters are found within the path.
+		/// </param>
+		/// <param name="options">
+		/// The configurable retry options.
 		/// </param>
 		/// <param name="cancellationToken">
 		/// The Cancel Token used to stop the process a any requested time.</param>
 		public IoReporter(
-            IFileSystemService fileService,
+			IFileSystem fileSystem,
             IWaitAndRetryPolicy waitAndRetry,
             ILog log,
             IoWarningPublisher publisher,
-			bool disableNativeLocationValidation, 
+			bool disableNativeLocationValidation,
+			RetryOptions options,
 			CancellationToken cancellationToken)
 		{
-			if (fileService == null)
+			if (fileSystem == null)
 			{
-				throw new ArgumentNullException(nameof(fileService));
+				throw new ArgumentNullException(nameof(fileSystem));
 			}
 
 			if (waitAndRetry == null)
@@ -76,21 +82,19 @@ namespace kCura.WinEDDS.TApi
 				throw new ArgumentNullException(nameof(log));
 			}
 
-            if (publisher == null)
+			if (publisher == null)
 			{
-                throw new ArgumentNullException(nameof(publisher));
+				throw new ArgumentNullException(nameof(publisher));
 			}
 
-            this.fileSystemService = fileService;
+			this.fileSystem = fileSystem;
             this.waitAndRetryPolicy = waitAndRetry;
             this.log = log;
             this.publisher = publisher;
-            this.disableNativeLocationValidation = disableNativeLocationValidation;
+			this.disableNativeLocationValidation = disableNativeLocationValidation;
+            this.retryOptions = options;
 			this.cancellationToken = cancellationToken;
 		}
-
-		/// <inheritdoc />
-        public IoWarningPublisher IOWarningPublisher => this.publisher;
 
 		/// <summary>
 		/// Creates warning message from <paramref name="exception"/>.
@@ -163,90 +167,165 @@ namespace kCura.WinEDDS.TApi
 				exception.Message);
 		}
 
-        /// <inheritdoc />
-        public long GetFileLength(string fileName, int lineNumberInParentFile)
+		/// <inheritdoc />
+		public void CopyFile(string sourceFileName, string destFileName, bool overwrite, int lineNumber)
+		{
+			if (string.IsNullOrEmpty(sourceFileName))
+			{
+				throw new ArgumentNullException(nameof(sourceFileName));
+			}
+
+			if (string.IsNullOrEmpty(destFileName))
+			{
+				throw new ArgumentNullException(nameof(destFileName));
+			}
+
+			if (lineNumber < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(lineNumber),
+					string.Format(Resources.Strings.LineNumberOutOfRangeExceptionMessage, nameof(lineNumber)));
+			}
+
+			this.Exec(lineNumber, sourceFileName, "Copy File", () =>
+			{
+				this.fileSystem.File.Copy(sourceFileName, destFileName, overwrite);
+				return 0;
+			});
+		}
+
+		/// <inheritdoc />
+		public bool GetFileExists(string fileName, int lineNumber)
+		{
+			if (string.IsNullOrEmpty(fileName))
+			{
+				throw new ArgumentNullException(nameof(fileName));
+			}
+
+			if (lineNumber < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(lineNumber),
+					string.Format(Resources.Strings.LineNumberOutOfRangeExceptionMessage, nameof(lineNumber)));
+			}
+
+			return this.Exec(lineNumber, fileName, "File Exists", () =>
+			{
+				IFileInfo fileInfo = this.fileSystem.CreateFileInfo(fileName);
+				bool fileExists =  fileInfo.Exists;
+				return fileExists;
+			});
+		}
+
+		/// <inheritdoc />
+		public long GetFileLength(string fileName, int lineNumber)
         {
             if (string.IsNullOrEmpty(fileName))
             {
                 throw new ArgumentNullException(nameof(fileName));
             }
 
-            if (lineNumberInParentFile < 0)
+            if (lineNumber < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(lineNumberInParentFile), string.Format(Resources.Strings.LineNumberOutOfRangeExceptionMessage, nameof(lineNumberInParentFile)));
+	            throw new ArgumentOutOfRangeException(nameof(lineNumber),
+		            string.Format(Resources.Strings.LineNumberOutOfRangeExceptionMessage, nameof(lineNumber)));
             }
 
-            try
+            return this.Exec(lineNumber, fileName, "File Length", () =>
             {
-                return this.waitAndRetryPolicy.WaitAndRetry<long, Exception>(
-                    retryAttempt => TimeSpan.FromSeconds(
-                        retryAttempt == 1 ? 0 : this.waitAndRetryPolicy.WaitTimeSecondsBetweenRetryAttempts),
-                    (exception, timeSpan) =>
-                    {
-                        this.HandleGetFileLengthException(
-                            exception,
-                            lineNumberInParentFile,
-                            timeSpan.TotalSeconds);
-                    },
-                    (cancellationToken) => this.GetFileLength(fileName),
-                    cancellationToken
-                );
-            }
-            catch (OperationCanceledException)
-            {
-                this.LogCancelRequest(fileName, lineNumberInParentFile);
-                return -1;
-            }
-            
+	            IFileInfo fileInfo = this.fileSystem.CreateFileInfo(fileName);
+
+				// We want any exceptions that occur when accessing properties to get thrown.
+	            long fileLength = fileInfo.Length;
+	            return fileLength;
+            });
         }
 
-        private void LogCancelRequest(string fileName, int lineNumber)
-        {
-            this.log.LogInformation($"Get file lenght for line number {lineNumber} and filename {fileName} has been canceled.");
-        }
-
-        /// <summary>
-        ///  Handles all exceptions when retrieving the file length fails.
-        /// </summary>
-        /// <param name="exception">
-        /// The thrown exception.
-        /// </param>
-        /// <param name="lineNumberInParentFile">
-        /// The line number from the parent file.
-        /// </param>
-        /// <param name="timeoutSeconds">
-        /// The timeout in seconds.
-        /// </param>
-        /// <exception cref="FileInfoInvalidPathException">
-        /// Thrown when the path contains invalid path characters.
-        /// </exception>
-        private void HandleGetFileLengthException(Exception exception, int lineNumberInParentFile, double timeoutSeconds)
+		/// <inheritdoc />
+		public void PublishRetryMessage(Exception exception, TimeSpan timeSpan, int retryCount, int totalRetryCount, long lineNumber)
 		{
-			var warningMessage = BuildIoReporterWarningMessage(exception, timeoutSeconds);
-			publisher?.PublishIoWarningEvent(new IoWarningEventArgs(warningMessage, lineNumberInParentFile));
+			var warningMessage = BuildIoReporterWarningMessage(exception, timeSpan.TotalSeconds, retryCount, totalRetryCount);
+			this.publisher.PublishIoWarningEvent(new IoWarningEventArgs(warningMessage, lineNumber));
 			log.LogWarning(exception, warningMessage);
 		}
 
-		private long GetFileLength(string fileName)
+		/// <inheritdoc />
+		public void PublishWarningMessage(IoWarningEventArgs args)
+		{
+			if (args == null)
+			{
+				throw new ArgumentNullException(nameof(args));
+			}
+
+			this.publisher.PublishIoWarningEvent(args);
+			log.LogWarning(args.Message);
+		}
+
+		private bool ShouldThrowFileInfoInvalidPathException(Exception exception)
+		{
+			return this.disableNativeLocationValidation && RetryExceptionHelper.IsIllegalCharactersInPathException(exception);
+		}
+
+        private FileInfoInvalidPathException CreateFileInfoInvalidPathException(Exception exception, string fileName)
+        {
+	        var message = string.Format(
+		        CultureInfo.CurrentCulture,
+		        Strings.ImportInvalidPathCharactersExceptionMessage,
+		        fileName);
+	        this.log.LogError(exception, message);
+	        return new FileInfoInvalidPathException(message);
+		}
+
+		private T Exec<T>(
+			int lineNumber,
+			string fileName,
+			string description,
+			Func<T> execFunc)
 		{
 			try
 			{
-				return this.fileSystemService.GetFileLength(fileName);
-			}
-			catch (Exception exception)
-			{
-            if (this.disableNativeLocationValidation && exception is ArgumentException &&
-                exception.Message.Contains("Illegal characters in path."))
-				{
-                var message = string.Format(
-                    CultureInfo.CurrentCulture,
-                    Strings.ImportInvalidPathCharactersExceptionMessage,
-                    fileName);
-                this.log.LogError(exception, message);
-                throw new FileInfoInvalidPathException(message);
-				}
+				int maxRetryAttempts = this.waitAndRetryPolicy.MaxRetryAttempts;
+				int currentRetryAttempt = 0;
+				return this.waitAndRetryPolicy.WaitAndRetry(
+					RetryExceptionHelper.CreateRetryPredicate(this.retryOptions),
+					retryAttempt =>
+					{
+						currentRetryAttempt = retryAttempt;
+						return TimeSpan.FromSeconds(retryAttempt == 1
+							? 0
+							: this.waitAndRetryPolicy.WaitTimeSecondsBetweenRetryAttempts);
+					},
+					(exception, timeSpan) =>
+					{
+						this.PublishRetryMessage(
+							exception,
+							timeSpan,
+							currentRetryAttempt,
+							maxRetryAttempts,
+							lineNumber);
+					},
+					(ct) =>
+					{
+						try
+						{
+							return execFunc();
+						}
+						catch (Exception exception)
+						{
+							if (this.ShouldThrowFileInfoInvalidPathException(exception))
+							{
+								throw this.CreateFileInfoInvalidPathException(exception, fileName);
+							}
 
-				throw;
+							throw;
+						}
+					},
+					cancellationToken
+				);
+			}
+			catch (OperationCanceledException)
+			{
+				this.log.LogInformation(
+					$"The {description} I/O operation for file {fileName} and line number {lineNumber} has been canceled.");
+				return default(T);
 			}
 		}
 	}

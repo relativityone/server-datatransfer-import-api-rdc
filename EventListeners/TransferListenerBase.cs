@@ -4,6 +4,8 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using kCura.WinEDDS.TApi.Resources;
+
 namespace kCura.WinEDDS.TApi
 {
     using System;
@@ -20,7 +22,12 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         private bool disposed;
 
-        /// <summary>
+		/// <summary>
+		/// The client display name backing.
+		/// </summary>
+		private string clientDisplayName;
+
+	    /// <summary>
         /// Initializes a new instance of the <see cref="TransferListenerBase"/> class. 
         /// </summary>
         /// <param name="log">
@@ -71,10 +78,26 @@ namespace kCura.WinEDDS.TApi
         /// </summary>
         public event EventHandler<TapiMessageEventArgs> StatusMessage = delegate { };
 
-        /// <summary>
-        /// Gets or sets the transfer context. 
-        /// </summary>
-        protected TransferContext Context
+	    /// <summary>
+	    /// Gets or sets the transfer client display name.
+	    /// </summary>
+	    public string ClientDisplayName
+	    {
+		    get
+		    {
+			    return !string.IsNullOrEmpty(this.clientDisplayName) ? this.clientDisplayName : Strings.ClientInitializing;
+		    }
+
+		    set
+		    {
+			    this.clientDisplayName = value;
+			}
+	    }
+
+		/// <summary>
+		/// Gets or sets the transfer context. 
+		/// </summary>
+		protected TransferContext Context
         {
             get;
             set;

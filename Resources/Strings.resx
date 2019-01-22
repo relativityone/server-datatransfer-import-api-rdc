@@ -193,16 +193,16 @@
     <value>Switching to the HTTP client due to a serious error within the '{0}' transfer client. Error: {1}</value>
   </data>
   <data name="IoReporterWarningMessageWithException" xml:space="preserve">
-    <value>Error when accessing load file - Retrying in {0} seconds. Error: {1}</value>
+    <value>Import error - Retrying in {0} seconds. Error: {1}</value>
   </data>
   <data name="IoReporterWarningMessageWithExceptionAndRetryInfo" xml:space="preserve">
-    <value>Error when accessing load file - Retrying in {0} seconds - {1} tries left. Error: {2}</value>
+    <value>Import error - Retrying in {0} seconds - {1} tries left. Error: {2}</value>
   </data>
   <data name="IoReporterWarningMessageWithoutException" xml:space="preserve">
-    <value>Error when accessing load file - Retrying in {0} seconds. Error details are not available.</value>
+    <value>Import error - Retrying in {0} seconds. Error details are not available.</value>
   </data>
   <data name="IoReporterWarningMessageWithoutExceptionAndRetryInfo" xml:space="preserve">
-    <value>Error when accessing load file - Retrying in {0} seconds - {1} tries left. Error details are not available.</value>
+    <value>Import error - Retrying in {0} seconds - {1} tries left. Error details are not available.</value>
   </data>
   <data name="LineNumberOutOfRangeExceptionMessage" xml:space="preserve">
     <value>The value of {0} must be non-negative.</value>

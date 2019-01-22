@@ -10,9 +10,9 @@
 namespace kCura.WinEDDS.TApi
 {
     using System;
-using System.Threading;
+	using System.Threading;
+
     using Relativity.Logging;
-    using Relativity.Transfer;
 
     /// <summary>
     /// Represents a factory to create <see cref="IoReporter"/> instances.
@@ -29,7 +29,10 @@ using System.Threading;
 		/// The total number of seconds to wait between each retry attempty.
 		/// </param>
 		/// <param name="disableNativeLocationValidation">
-		/// Specify whether to disable checks to determine whether a file exists.
+		/// <see langword="true" /> to throw <see cref="FileInfoInvalidPathException"/> when illegal characters are found within the path.
+		/// </param>
+		/// <param name="options">
+		/// The configurable retry options.
 		/// </param>
 		/// <param name="logger">
 		/// The Relativity logger.
@@ -44,33 +47,33 @@ using System.Threading;
 		/// The <see cref="IoReporter"/> instance.
 		/// </returns>
 		public static IIoReporter CreateIoReporter(
-            int maxRetryAttempts,
-            int waitTimeSecondsBetweenRetryAttempts,
-            bool disableNativeLocationValidation,
-            ILog logger,
-            IoWarningPublisher publisher, 
-			CancellationToken cancellationToken)
-        {
+		    int maxRetryAttempts,
+		    int waitTimeSecondsBetweenRetryAttempts,
+		    bool disableNativeLocationValidation,
+			RetryOptions options,
+			ILog logger,
+		    IoWarningPublisher publisher,
+		    CancellationToken cancellationToken)
+	    {
             if (logger == null)
             {
                 throw new ArgumentNullException(nameof(logger));
             }
 
-	        if (publisher == null)
+			if (publisher == null)
 	        {
 		        throw new ArgumentNullException(nameof(publisher));
 	        }
-			
 
-            var fileSystemService = new FileSystemService();
-            var waitAndRetryPolicy = new WaitAndRetryPolicy(maxRetryAttempts, waitTimeSecondsBetweenRetryAttempts); 
-
-            return new IoReporter(
-                fileSystemService,
+	        IWaitAndRetryPolicy waitAndRetryPolicy = new WaitAndRetryPolicy(maxRetryAttempts, waitTimeSecondsBetweenRetryAttempts);
+	        IFileSystem fileSystem = FileSystem.Instance.DeepCopy();
+			return new IoReporter(
+				fileSystem,
                 waitAndRetryPolicy,
                 logger,
                 publisher,
-                disableNativeLocationValidation,
+				disableNativeLocationValidation,
+				options,
 	            cancellationToken);
         }
     }

@@ -159,7 +159,8 @@ namespace kCura.WinEDDS.TApi
                                };
 
             this.SetupTransferListeners();
-        }
+	        this.UpdateAllTransferListenersClientName();
+		}
 
         /// <summary>
         /// Occurs when a status message is available.
@@ -601,6 +602,7 @@ namespace kCura.WinEDDS.TApi
 	        var transferHost = this.CreateTransferHost();
 	        transferHost.Clear();
             this.transferClient = transferHost.CreateClient(configuration);
+	        this.UpdateAllTransferListenersClientName();
         }
 
         /// <summary>
@@ -720,7 +722,6 @@ namespace kCura.WinEDDS.TApi
                 new TransferPathIssueListener(
                     this.TransferLog,
                     this.currentDirection,
-                    this.ClientDisplayName,
                     this.context));
         }
 
@@ -767,7 +768,8 @@ namespace kCura.WinEDDS.TApi
 
             this.transferClient.Dispose();
             this.transferClient = null;
-        }
+	        this.UpdateAllTransferListenersClientName();
+		}
 
         /// <summary>
         /// Destroys the transfer host.
@@ -1008,7 +1010,8 @@ namespace kCura.WinEDDS.TApi
             this.RaiseStatusMessage(message, TapiConstants.NoLineNumber);
             var eventArgs = new TapiClientEventArgs(this.ClientDisplayName, this.Client);
             this.TapiClientChanged.Invoke(this, eventArgs);
-        }
+	        this.UpdateAllTransferListenersClientName();
+		}
 
         /// <summary>
         /// Raises a fatal error.
@@ -1085,5 +1088,22 @@ namespace kCura.WinEDDS.TApi
                     };
             }
         }
+
+		/// <summary>
+		/// Updates the client display name found on all listeners.
+		/// </summary>
+		private void UpdateAllTransferListenersClientName()
+	    {
+		    if (this.disposed)
+		    {
+			    return;
+		    }
+
+		    string name = this.ClientDisplayName;
+		    foreach (var listener in this.transferListeners)
+		    {
+			    listener.ClientDisplayName = name;
+		    }
+		}
     }
 }
