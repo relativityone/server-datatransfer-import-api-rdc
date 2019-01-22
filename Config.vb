@@ -10,6 +10,7 @@ Namespace kCura.WinEDDS
 		Private Shared _rdcMetricsConfiguration As String = "RDCMetricsConfiguration"
 		Private const _ENABLE_CASE_SENSITIVE_SEARCH_KEY as String = "EnableCaseSensitiveSearchOnImport"
 
+		Private Shared _retryOptions As kCura.WinEDDS.TApi.RetryOptions? = Nothing
 		Private Shared _configDictionary As IDictionary
 		Public Shared ReadOnly Property ConfigSettings() As IDictionary
 			Get
@@ -223,6 +224,22 @@ Namespace kCura.WinEDDS
 					Return CType(ConfigSettings("BadPathErrorsRetry"), Boolean)
 				Catch ex As Exception
 					Return False
+				End Try
+			End Get
+		End Property
+
+		''' <summary>
+		''' Overrides the default temp directory ordinarily provided by <see cref="System.IO.Path.GetTempPath"/>. This is 
+		''' </summary>
+		''' <value>
+		''' The full path to the temp directory.
+		''' </value>
+		Public Shared ReadOnly Property TempDirectory() As String
+			Get
+				Try
+					Return CType(ConfigSettings("TempDirectory"), String)
+				Catch ex As Exception
+					Return String.Empty
 				End Try
 			End Get
 		End Property
@@ -561,6 +578,31 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		''' <summary>
+		''' Gets the configurable retry options.
+		''' </summary>
+		''' <value>
+		''' The <see cref="kCura.WinEDDS.TApi.RetryOptions"/> value.
+		''' </value>
+		''' <remarks>
+		''' There are several other retry candidate behaviors and change should be limited to this property.
+		''' </remarks>
+		Public Shared ReadOnly Property RetryOptions As kCura.WinEDDS.TApi.RetryOptions
+			Get
+
+				If Not _retryOptions.HasValue Then
+					' Always retry all other I/O errors by default.
+					Dim options As kCura.WinEDDS.TApi.RetryOptions = kCura.WinEDDS.TApi.RetryOptions.Io
+					If kCura.WinEDDS.Config.PermissionErrorsRetry Then
+						options = options Or kCura.WinEDDS.TApi.RetryOptions.Permissions
+					End If
+
+					_retryOptions = options
+				End If
+				Return _retryOptions.Value
+			End Get
+		End Property
+
 		Private Shared Function InitializeConfigDictionaryWithDefaultValues() As IDictionary
 
 			Dim tempDict As IDictionary
@@ -579,6 +621,7 @@ Namespace kCura.WinEDDS
 			If Not tempDict.Contains("ForceParallelismInNewExport") Then tempDict.Add("ForceParallelismInNewExport", "False")
 			If Not tempDict.Contains("PermissionErrorsRetry") Then tempDict.Add("PermissionErrorsRetry", "False")
 			If Not tempDict.Contains("BadPathErrorsRetry") Then tempDict.Add("BadPathErrorsRetry", "False")
+			If Not tempDict.Contains("TempDirectory") Then tempDict.Add("TempDirectory", "")
 			If Not tempDict.Contains("EnableSingleModeImport") Then tempDict.Add("EnableSingleModeImport", "False")
 			If Not tempDict.Contains("CreateErrorForEmptyNativeFile") Then tempDict.Add("CreateErrorForEmptyNativeFile", "False")
 			If Not tempDict.Contains("AuditLevel") Then tempDict.Add("AuditLevel", "FullAudit")

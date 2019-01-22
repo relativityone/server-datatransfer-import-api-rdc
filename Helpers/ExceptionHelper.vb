@@ -75,7 +75,7 @@ Namespace kCura.WinEDDS.Helpers
 
 			SyncLock SyncRoot
 				Dim exceptionType As Type = exception.GetType()
-				Dim result As Boolean = FatalExceptionCandidates.Any(function(type) exceptionType = type)
+				Dim result As Boolean = FatalExceptionCandidates.Any(function(type) exceptionType = type) OrElse kCura.WinEDDS.TApi.RetryExceptionHelper.IsOutOfDiskSpaceException(exception)
 				Return result
 			End SyncLock
 		End Function

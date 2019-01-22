@@ -343,6 +343,7 @@
     <Compile Include="Exceptions\FileWriteError.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Exceptions\ImportIOException.vb" />
     <Compile Include="Exceptions\InvalidLoginException.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -451,8 +452,6 @@
     <Compile Include="Helpers\FieldValueHelper.vb" />
     <Compile Include="Helpers\FileNameHelper.vb" />
     <Compile Include="Helpers\IFilePathHelper.vb" />
-    <Compile Include="Helpers\ISystemIoFileWrapper.vb" />
-    <Compile Include="Helpers\SystemIoFileWrapper.vb" />
     <Compile Include="IFieldProviderCache.vb" />
     <Compile Include="Importers\BulkImageFileImporter.vb">
       <SubType>Code</SubType>
