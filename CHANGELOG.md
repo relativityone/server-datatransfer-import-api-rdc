@@ -13,7 +13,7 @@ and this project does *not* yet adhere to [Semantic Versioning](https://semver.o
 
 **Fixed**
 
-- Improved text exceed field size error messages [REL-274686]
+- Improved text exceed field size error messages [REL-277165]
 
 ## Bluestem update 3 preview release - v9.7.209.7 (01-14-2019)
 
