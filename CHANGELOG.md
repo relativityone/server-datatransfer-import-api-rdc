@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project does *not* yet adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Foxglove EA preview release - v10.2.15.51 (01-22-2019)
+
+**Added**
+
+- Improved I/O resiliency for extracted text and System.IO.* API calls
+- New "TempDirectory" config setting to override the directory where all import temp load files are stored
+
+**Fixed**
+
+- Improved text exceed field size error messages [REL-274686]
+
 ## Bluestem update 3 preview release - v9.7.209.7 (01-14-2019)
 
 **Added**
