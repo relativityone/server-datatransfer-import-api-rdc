@@ -132,8 +132,11 @@ namespace kCura.WinEDDS.TApi
 			//             than it should but it limits the URL fetch to a single method.
 			RelativityManagerService service = new RelativityManagerService(parameters);
 			Uri relativityUrl = service.GetRelativityUrl();
+
+			// REL-286484: There are several expectations on a normalized URL - especially extracted text downloads.
+			var host = new Uri(relativityUrl.GetLeftPart(UriPartial.Authority));
 			return new RelativityConnectionInfo(
-				relativityUrl,
+				host,
 				httpCredential,
 				parameters.WorkspaceId,
 				new Uri(parameters.WebServiceUrl));
