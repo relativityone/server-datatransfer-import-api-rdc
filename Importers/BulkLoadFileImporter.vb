@@ -812,7 +812,6 @@ Namespace kCura.WinEDDS
 					If filename.Length > 1 AndAlso filename.Chars(0) = "\" AndAlso filename.Chars(1) <> "\" Then
 						filename = "." & filename
 					End If
-
 					originalFilename = filename
 
 					If Me.DisableNativeLocationValidation Then
@@ -936,7 +935,7 @@ Namespace kCura.WinEDDS
 			End Using
 
 			Dim folderPath As String = String.Empty
-			Using TimeKeeper.CaptureTime("ManageDocument_Folder")
+			Using Timekeeper.CaptureTime("ManageDocument_Folder")
 				If _createFolderStructure Then
 					If _artifactTypeID = Relativity.ArtifactType.Document Then
 						Dim value As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value))
@@ -1118,11 +1117,11 @@ Namespace kCura.WinEDDS
 					If tries = 0 Then
 						Me.LogFatal(ex, "The native bulk import service call failed and exceeded the max retry attempts.")
 						Throw
-					Else If IsTimeoutException(ex) Then
+					ElseIf IsTimeoutException(ex) Then
 						' A timeout exception can be retried.
 						Me.LogError(ex, "A SQL or HTTP timeout error has occurred bulk importing the native batch.")
 						Throw
-					Else If Not ShouldImport Then
+					ElseIf Not ShouldImport Then
 						' Don't log cancel requests
 						Throw
 					ElseIf IsBulkImportSqlException(ex) Then
