@@ -1714,7 +1714,7 @@ Public Class ExportForm
 
 	Private Sub LoadCustomFileNamingField(descriptorModel As CustomFileNameDescriptorModel)
 		Dim selection = New List(Of CustomFileNameSelectionPart)
-		Dim firstFieldSelectionPart = New CustomFileNameSelectionPart(descriptorModel.FirstFieldDescriptorPart().Value, descriptorModel.FirstFieldDescriptorPart().isProduction)
+		Dim firstFieldSelectionPart = New CustomFileNameSelectionPart(descriptorModel.FirstFieldDescriptorPart().Value, descriptorModel.FirstFieldDescriptorPart().IsProduction)
 		selection.Add(firstFieldSelectionPart)
 		Dim extendedDescriptorParts = descriptorModel.ExtendedDescriptorParts()
 		For i = 0 To (extendedDescriptorParts.Count - 1)
