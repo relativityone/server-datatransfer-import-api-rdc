@@ -298,7 +298,7 @@ Namespace kCura.WinEDDS
 			End If
 			Dim allAvfIds As List(Of Int32) = GetAvfIds()
 			Dim isFileNamePresent As Boolean = OriginalFileNameProvider.ExtendFieldRequestByFileNameIfNecessary(Me.Settings.AllExportableFields, allAvfIds)
-			
+
 			tries = 0
 			Select Case Me.Settings.TypeOfExport
 				Case ExportFile.ExportType.ArtifactSearch
@@ -352,7 +352,7 @@ Namespace kCura.WinEDDS
 
 				_originalFileNameProvider = New OriginalFileNameProvider(isFileNamePresent, FieldLookupService, AddressOf WriteWarningWithoutShowingExportedDocumentsCount)
 
-				If _exportFile.AppendOriginalFileName AndAlso Not isFileNamePresent
+				If _exportFile.AppendOriginalFileName AndAlso Not isFileNamePresent Then
 					WriteWarningWithoutShowingExportedDocumentsCount("Filename column does not exist for this workspace and the filename from the file table will be used")
 				End If
 
@@ -528,7 +528,7 @@ Namespace kCura.WinEDDS
 				Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, documentArtifactIDs(i))
 				Dim prediction As VolumePredictions = New VolumePredictions()
 				Dim artifact As ObjectExportInfo = CreateArtifact(record, documentArtifactIDs(i), nativeRow, images, productionImages, beginBatesColumnIndex, identifierColumnIndex, lookup, prediction)
-				
+
 				If UseOldExport Then
 					_volumeManager.FinalizeVolumeAndSubDirPredictions(prediction, artifact)
 				Else
@@ -692,11 +692,22 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function ShouldTextAndNativesBeNamedAfterPrecedenceBegBates() As Boolean
-			Return True
-			'Return Me.NameTextAndNativesAfterBegBates AndAlso
-			'		Settings.TypeOfExport <> ExportFile.ExportType.Production AndAlso
-			'		ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production AndAlso
-			'		_productionPrecedenceIds.Any(Function(prodID) prodID > 0)
+			Dim isCustomFileNaming As Boolean = Settings.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Custom
+			Return If(isCustomFileNaming,
+				ShouldTextAndNativesBeNamedAfterPrecedenceBegBatesForCustomFileNaming(),
+				ShouldTextAndNativesBeNamedAfterPrecedenceBegBatesForSimpleFileNaming()
+			)
+		End Function
+
+		Private Function ShouldTextAndNativesBeNamedAfterPrecedenceBegBatesForCustomFileNaming() As Boolean
+			Return Settings.CustomFileNaming.FirstFieldDescriptorPart().IsProduction
+		End Function
+
+		Private Function ShouldTextAndNativesBeNamedAfterPrecedenceBegBatesForSimpleFileNaming() As Boolean
+			Return NameTextAndNativesAfterBegBates AndAlso
+				Settings.TypeOfExport <> ExportFile.ExportType.Production AndAlso
+				ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Production AndAlso
+				_productionPrecedenceIds.Any(Function(prodID) prodID > 0)
 		End Function
 
 		Private Sub SetProductionBegBatesFileName(artifact As ObjectExportInfo, bateslookup As Lazy(Of Dictionary(Of Int32, List(Of BatesEntry))))
@@ -1116,8 +1127,8 @@ Namespace kCura.WinEDDS
 				If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
 					_lastStatusMessageTs = now
 					Dim appendString As String = ""
-					If showNumberOfExportedDocuments
-						 appendString  = " ... " & Me.DocumentsExported - _lastDocumentsExportedCountReported & " document(s) exported."
+					If showNumberOfExportedDocuments Then
+						appendString = " ... " & Me.DocumentsExported - _lastDocumentsExportedCountReported & " document(s) exported."
 						_lastDocumentsExportedCountReported = Me.DocumentsExported
 					End If
 					RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line & appendString, e, _lastStatisticsSnapshot, Statistics))

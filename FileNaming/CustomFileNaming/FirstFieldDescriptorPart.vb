@@ -5,8 +5,8 @@
 
 		Public Sub New(ByVal fieldId As Integer, Optional isProduction As Boolean = False)
 			MyBase.New(fieldId)
-			Me.isProduction = isProduction
+			Me.IsProduction = isProduction
 		End Sub
-		Public ReadOnly Property isProduction As Boolean
+		Public ReadOnly Property IsProduction As Boolean
 	End Class
 End Namespace
