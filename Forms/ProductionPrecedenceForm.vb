@@ -202,12 +202,12 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub _okButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _okButton.Click
-			Dim al As New System.Collections.ArrayList
-			Dim item As Pair
-			If _productions.RightSearchableListItems.Count = 0 OrElse _originalImages.Checked Then
+			Dim al As New ArrayList
+			Dim isProductionPrecedenceSelected As Boolean = _productions.RightSearchableListItems.Count > 0
+			If (Not isProductionPrecedenceSelected) OrElse _originalImages.Checked Then
 				al.Add(New Pair("-1", "Original"))
 			Else
-				For Each item In _productions.RightSearchableListItems
+				For Each item As Pair In _productions.RightSearchableListItems
 					al.Add(item)
 				Next
 				If _includeOriginals.Checked Then

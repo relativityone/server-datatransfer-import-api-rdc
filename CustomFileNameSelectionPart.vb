@@ -1,24 +1,41 @@
 ﻿Namespace kCura.EDDS.WinForm
 	Public Class CustomFileNameSelectionPart
-
-		Public Sub New(fieldID As Integer)
-			Me.New(Nothing, fieldID)
-		End Sub
-
 		Public Sub New(separator As String, fieldID As Integer)
-			Me.Separator = separator
-			Me.FieldID = fieldID
-			Me.CustomText = Nothing
+			Me.New(
+				separator,
+				fieldID,
+				customText:=Nothing,
+				isProduction:=False
+			)
 		End Sub
 
 		Public Sub New(separator As String, customText As String)
-			Me.Separator = separator
-			Me.FieldID = -1
-			Me.CustomText = customText
+			Me.New(
+				separator,
+				fieldID:=-1,
+				customText:=customText,
+				isProduction:=False
+			)
 		End Sub
 
 		Public Sub New(fieldID As Integer, isProduction As Boolean)
+			Me.New(
+				separator:=Nothing,
+				fieldID:=fieldID,
+				customText:=Nothing,
+				isProduction:=isProduction
+			)
+		End Sub
+
+		Private Sub New(
+			separator As String,
+			fieldID As Integer,
+			customText As String,
+			isProduction As Boolean
+		)
+			Me.Separator = separator
 			Me.FieldID = fieldID
+			Me.CustomText = customText
 			Me.IsProductionBegBates = isProduction
 		End Sub
 

@@ -4,7 +4,6 @@ Imports Relativity
 Imports System.IO
 Imports System.Text
 
-
 Namespace kCura.EDDS.WinForm.Forms
 	Public Class TextAndNativeFileNameForm
 
@@ -29,13 +28,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			New SeparatorSelection("  (space)", " "),
 			New SeparatorSelection(" (none)", "")
 		}
-
-		Public Enum FirstFieldIds
-			SelectField
-			ProductionBates
-		End Enum
-
-
+		
 		Private _firstFields As List(Of FieldSelection)
 		Private _availableFields As List(Of FieldSelection)
 		Private _fieldControls As List(Of SingleFieldControls)
@@ -70,7 +63,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			_firstFields.AddRange(databaseFields.
 				Where(Function(f) f.Category = FieldCategory.Identifier).
 				Select(Function(f) New FieldSelection(f.DisplayName, f.FieldArtifactId)).ToList())
-			_firstFields.Add(New FieldSelection(ProductionBeginBatesText, FirstFieldIds.ProductionBates))
+			_firstFields.Add(New FieldSelection(ProductionBeginBatesText, FirstFieldIds.ProductionBates, True))
 		End Sub
 
 
@@ -132,11 +125,6 @@ Namespace kCura.EDDS.WinForm.Forms
 
 		Private Function GetFirstFieldSelectionPart() As CustomFileNameSelectionPart
 			Dim firstField = TryCast(_firstFieldComboBox.SelectedItem, FieldSelection)
-			If firstField.DisplayName = ProductionBeginBatesText
-				firstField.IsProduction = true
-			Else
-				firstField.IsProduction = false
-			End If
 			Return New CustomFileNameSelectionPart(firstField.ID, firstField.IsProduction)
 		End Function
 
@@ -317,17 +305,21 @@ Namespace kCura.EDDS.WinForm.Forms
 		End Sub
 
 		Private Function AreAllFieldsValid() As Boolean
-			Dim areFieldsValid As Boolean = True
+			Dim areFieldsValid = True
+			areFieldsValid = IsFirstFieldSelected() And areFieldsValid
+			areFieldsValid = IsCustomTextFieldValid() And areFieldsValid
+			Return areFieldsValid
+		End Function
+
+		Private Function IsFirstFieldSelected() As Boolean
 			Dim selectedItem = TryCast(_firstFieldComboBox.SelectedItem, FieldSelection)
 			If selectedItem.DisplayName = SelectFirstFieldText AndAlso selectedItem.ID = FirstFieldIds.SelectField
 				Dim firstFieldHasToBeSelectedErrorMessage As String = "- No first field selected!"
 				validationErrors.Add(firstFieldHasToBeSelectedErrorMessage)
-				areFieldsValid = False
+				Return False
 			End If
-			If Not IsCustomTextFieldValid()
-				areFieldsValid = False
-			End If
-			Return areFieldsValid
+
+			Return True
 		End Function
 
 		Private Function IsCustomTextFieldValid As Boolean
@@ -396,6 +388,11 @@ Namespace kCura.EDDS.WinForm.Forms
 			Public Property CustomTextBox As TextBox
 
 		End Class
+
+		Private Enum FirstFieldIds
+			SelectField = -1
+			ProductionBates = -2
+		End Enum
 
 	End Class
 End Namespace

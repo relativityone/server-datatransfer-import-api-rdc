@@ -1353,20 +1353,8 @@ Public Class ExportForm
 		If _textAndNativeFileNamePicker.SelectedItem = TextAndNativeFileNamePicker.SelectOption Then
 			AppendErrorMessage(msg, "No file naming method selected")
 		End If
-		If _textAndNativeFileNamePicker.SelectedItem = TextAndNativeFileNamePicker.CustomOption 
-			If _textAndNativeFileNamePicker.Selection Is Nothing Then
-				AppendErrorMessage(msg, "No custom file naming fields selected")
-			End If
-			If _textAndNativeFileNamePicker.Selection IsNot Nothing AndAlso _textAndNativeFileNamePicker.Selection(0).IsProductionBegBates
-				If _productionPrecedenceList.Items.Count  = 1
-					If _exportFile.TypeOfExport <> ExportFile.ExportType.Production Then
-						Dim precedence = DirectCast(_productionPrecedenceList.Items(0), Pair)
-						If precedence.Value.Equals("-1")
-							AppendErrorMessage(msg, "No production precedence selected for custom file naming")
-						End If 
-					End If
-				End If
-			End If
+		If _textAndNativeFileNamePicker.SelectedItem = TextAndNativeFileNamePicker.CustomOption
+			ValidateCustomFileNamingOptions(msg)
 		End If
 
 		If _dataFileEncoding.SelectedEncoding Is Nothing Then
@@ -1399,6 +1387,37 @@ Public Class ExportForm
 		End If
 		Return retval
 	End Function
+
+	Private Sub ValidateCustomFileNamingOptions(msg As Text.StringBuilder)
+		ValidateCustomFileNamingFieldsAreSelected(msg)
+		ValidateCustomFileNamingProductionPrecedenceIsSelected(msg)
+	End Sub
+	
+	Private Sub ValidateCustomFileNamingFieldsAreSelected(msg As Text.StringBuilder)
+		If _textAndNativeFileNamePicker.Selection Is Nothing Then
+			AppendErrorMessage(msg, "No custom file naming fields selected")
+		End If
+	End Sub
+
+	Private Sub ValidateCustomFileNamingProductionPrecedenceIsSelected(msg As Text.StringBuilder)
+		Dim isProductionBegBatesSelected As Boolean? = _textAndNativeFileNamePicker.Selection?.FirstOrDefault()?.IsProductionBegBates
+		If Not isProductionBegBatesSelected
+			Return
+		End If
+
+		If _exportFile.TypeOfExport = ExportFile.ExportType.Production Then
+			Return
+		End If
+
+		If _productionPrecedenceList.Items.Count <> 1
+			Return
+		End If
+
+		Dim precedence = DirectCast(_productionPrecedenceList.Items(0), Pair)
+		If precedence.Value.Equals("-1")
+			AppendErrorMessage(msg, "No production precedence selected for custom file naming")
+		End If
+	End Sub
 
 	Public Async Function PopulateExportFile(ByVal abstractExportForm As ExportForm, ByVal validateForm As Boolean) As Task(Of Boolean)
 		Dim d As DocumentFieldCollection = Await _application.CurrentFields(_exportFile.ArtifactTypeID, True)
