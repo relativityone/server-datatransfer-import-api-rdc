@@ -350,7 +350,7 @@ Namespace kCura.WinEDDS
 					_downloadModeStatus = container.Resolve(Of IExportFileDownloaderStatus)
 				End If
 
-				_originalFileNameProvider = New OriginalFileNameProvider(isFileNamePresent, FieldLookupService, AddressOf WriteWarningWithoutShowingExportedDocumentsCount)
+				CreateOriginalFileNameProviderInstance(isFileNamePresent)
 
 				If _exportFile.AppendOriginalFileName AndAlso Not isFileNamePresent Then
 					WriteWarningWithoutShowingExportedDocumentsCount("Filename column does not exist for this workspace and the filename from the file table will be used")
@@ -410,7 +410,18 @@ Namespace kCura.WinEDDS
 			End Using
 		End Function
 
+		Private Sub CreateOriginalFileNameProviderInstance(isFileNamePresent As Boolean)
+			Dim emptyAction As Action(Of String) = Sub (y)
+			End Sub
 
+			Dim shouldWriteWarning As Boolean = Settings.AppendOriginalFileName
+			Dim warningWriter As Action(Of String) = If(shouldWriteWarning,
+				CType(AddressOf WriteWarningWithoutShowingExportedDocumentsCount, Action(Of String)),
+				emptyAction
+			)
+			_originalFileNameProvider = New OriginalFileNameProvider(isFileNamePresent, FieldLookupService, warningWriter)
+		End Sub
+		
 		Private Function CallServerWithRetry(Of T)(f As Func(Of T), ByVal maxTries As Int32) As T
 			Dim tries As Integer
 			Dim records As T
