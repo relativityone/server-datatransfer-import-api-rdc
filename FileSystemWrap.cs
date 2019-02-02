@@ -57,6 +57,17 @@ namespace kCura.WinEDDS.TApi
 		}
 
 		/// <inheritdoc />
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Reliability",
+			"CA2000:Dispose objects before losing scope",
+			Justification = "This is an appropriate construction pattern.")]
+		public IStreamWriter CreateStreamWriter(string path, bool append, System.Text.Encoding encoding)
+		{
+			path = this.Path.NormalizePath(path);
+			return new StreamWriterWrap(this.Path.NormalizePath(path), append, encoding);
+		}
+
+		/// <inheritdoc />
 		public IFileSystem DeepCopy()
 		{
 			return new FileSystemWrap();

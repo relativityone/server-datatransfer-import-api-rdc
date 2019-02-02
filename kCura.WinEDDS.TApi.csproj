@@ -97,6 +97,8 @@
     <Compile Include="FileSystem.cs" />
     <Compile Include="IDirectory.cs" />
     <Compile Include="IDirectoryInfo.cs" />
+    <Compile Include="StreamWriterWrap.cs" />
+    <Compile Include="IStreamWriter.cs" />
     <Compile Include="IFileSystem.cs" />
     <Compile Include="FileSystemWrap.cs" />
     <Compile Include="FileInfoWrap.cs" />
