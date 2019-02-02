@@ -160,7 +160,7 @@ namespace kCura.WinEDDS.TApi.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This opration cannot be performed because this instance has already been disposed..
+        ///   Looks up a localized string similar to This operation cannot be performed because this instance has already been disposed..
         /// </summary>
         internal static string ObjectDisposedExceptionMessage {
             get {
