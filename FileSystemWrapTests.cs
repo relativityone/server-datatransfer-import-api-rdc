@@ -295,6 +295,48 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 			Assert.That(source.Path, Is.Not.SameAs(deepCopy.Path));
 		}
 
+		[Test]
+		public void ShouldDeleteTheFile()
+		{
+			string sourceFileName = GenerateUniqueFolderName();
+			string sourceFile = this.GenerateUniqueFilePath(sourceFileName);
+			System.IO.File.WriteAllText(sourceFile, "ABC123");
+			Assert.That(sourceFile, Does.Exist);
+			this.fileSystem.File.Delete(sourceFile);
+			Assert.That(sourceFile, Does.Not.Exist);
+
+			// Never fail when the file doesn't exist.
+			this.fileSystem.File.Delete(sourceFile);
+		}
+
+		[Test]
+		public void ShouldCreateTheStreamWriter()
+		{
+			string sourceFileName = GenerateUniqueFolderName();
+			string sourceFile = this.GenerateUniqueFilePath(sourceFileName);
+			IStreamWriter writer = this.fileSystem.CreateStreamWriter(sourceFile, false, System.Text.Encoding.UTF8);
+			Assert.That(writer, Is.Not.Null);
+			Assert.That(writer.BaseStream, Is.Not.Null);
+			writer.Write("Line1");
+			writer.Close();
+			Assert.That(writer.BaseStream, Is.Null);
+			writer = this.fileSystem.CreateStreamWriter(sourceFile, true, System.Text.Encoding.UTF8);
+			writer.Write(Environment.NewLine);
+			writer.Write("Line2");
+			writer.Close();
+			Assert.That(writer.BaseStream, Is.Null);
+			writer = this.fileSystem.CreateStreamWriter(sourceFile, true, System.Text.Encoding.UTF8);
+			writer.Write(Environment.NewLine);
+			writer.WriteLine("Line{0}", 3);
+			writer.Close();
+			Assert.That(writer.BaseStream, Is.Null);
+			string[] lines = System.IO.File.ReadAllLines(sourceFile);
+			Assert.That(lines.Length, Is.EqualTo(3));
+			Assert.That(lines[0], Is.EqualTo("Line1"));
+			Assert.That(lines[1], Is.EqualTo("Line2"));
+			Assert.That(lines[2], Is.EqualTo("Line3"));
+		}
+
 		private static string GenerateUniqueFileName()
 		{
 			return Guid.NewGuid() + ".txt";
