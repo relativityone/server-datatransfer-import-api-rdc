@@ -148,6 +148,18 @@ Namespace kCura.WinEDDS
 		''' The config value is already cached.
 		''' </remarks>
 		Protected ReadOnly Property RetryOptions As kCura.WinEDDS.TApi.RetryOptions = kCura.WinEDDS.Config.RetryOptions
+
+		''' <summary>
+		''' Gets the file system instance.
+		''' </summary>
+		''' <value>
+		''' The <see cref="kCura.WinEDDS.TApi.IFileSystem"/> instance.
+		''' </value>
+		Protected ReadOnly Property FileSystem As kCura.WinEDDS.TApi.IFileSystem
+			Get
+				Return _fileSystem
+			End Get
+		End Property
 #End Region
 
 		Protected Shared Function IsTimeoutException(ByVal ex As Exception) As Boolean

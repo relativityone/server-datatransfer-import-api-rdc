@@ -56,16 +56,11 @@ Namespace kCura.WinEDDS
 		Private _defaultDestinationFolderPath As String = String.Empty
 		Private _oixFileLookup As System.Collections.Specialized.HybridDictionary
 		Private _fieldArtifactIds As Int32()
-		Protected OutputFileWriter As OutputFileWriter = New OutputFileWriter()
-		Private _outputCodeFileWriter As System.IO.StreamWriter
-		Private _outputObjectFileWriter As System.IO.StreamWriter
+		Protected OutputFileWriter As OutputFileWriter
 		Protected OverlayArtifactId As Int32
 		Protected RunId As String = System.Guid.NewGuid.ToString.Replace("-", "_")
 		Private _lastRunMetadataImport As Int64 = 0
 		Private _timekeeper As ITimeKeeperManager
-
-		Protected OutputCodeFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.CodeLoadFileNameSuffix)
-		Protected OutputObjectFilePath As String = TempFileBuilder.GetTempFileName(TempFileConstants.ObjectLoadFileNameSuffix)
 		Private _filePath As String
 		Private _batchCounter As Int32 = 0
 		Private _jobCompleteNativeCount As Int32 = 0
@@ -371,7 +366,6 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		''' <param name="args">Information about the file being loaded</param>
 		''' <param name="processController">The process that is running</param>
-		''' <param name="fileSystem">The file system object.</param>
 		''' <param name="reporter">The object that performs I/O operations and publishes messages during retry operations.</param>
 		''' <param name="logger">The Relativity logger.</param>
 		''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
@@ -535,15 +529,25 @@ Namespace kCura.WinEDDS
 		''' API users are responsible for calling this method when <see cref="ReadFile"/> is not executed.
 		''' </remarks>
 		Public Sub DeleteTempLoadFiles()
-			DeleteFiles()
+			If (Not OutputFileWriter Is Nothing) Then
+				Me.OutputFileWriter.DeleteFiles()
+			End If
 		End Sub
 
 		Public Sub WriteCodeLineToTempFile(ByVal documentIdentifier As String, ByVal codeArtifactID As Int32, ByVal codeTypeID As Int32)
-			_outputCodeFileWriter.WriteLine(String.Format("{1}{0}{2}{0}{3}{0}", BulkLoadFileFieldDelimiter, documentIdentifier, codeArtifactID, codeTypeID))
+			If (Me.OutputFileWriter Is Nothing) Then
+				Throw New InvalidOperationException($"The code artifact '{codeArtifactID}' associated with '{documentIdentifier}' cannot be added to the load file because the file no longer exists. Try again. If the problem persists, please contact your system administrator for assistance.")
+			End If
+
+			Me.OutputFileWriter.OutputCodeFileWriter.WriteLine(String.Format("{1}{0}{2}{0}{3}{0}", BulkLoadFileFieldDelimiter, documentIdentifier, codeArtifactID, codeTypeID))
 		End Sub
 
 		Public Sub WriteObjectLineToTempFile(ByVal ownerIdentifier As String, ByVal objectName As String, ByVal artifactID As Int32, ByVal objectTypeArtifactID As Int32, ByVal fieldID As Int32)
-			_outputObjectFileWriter.WriteLine(String.Format("{1}{0}{2}{0}{3}{0}{4}{0}{5}{0}", BulkLoadFileFieldDelimiter, ownerIdentifier, objectName, artifactID, objectTypeArtifactID, fieldID))
+			If (Me.OutputFileWriter Is Nothing) Then
+				Throw New InvalidOperationException($"The object artifact '{artifactID}' associated with '{ownerIdentifier}' cannot be added to the load file because the file no longer exists. Try again. If the problem persists, please contact your system administrator for assistance.")
+			End If
+
+			Me.OutputFileWriter.OutputObjectFileWriter.WriteLine(String.Format("{1}{0}{2}{0}{3}{0}{4}{0}{5}{0}", BulkLoadFileFieldDelimiter, ownerIdentifier, objectName, artifactID, objectTypeArtifactID, fieldID))
 		End Sub
 
 #End Region
@@ -726,6 +730,12 @@ Namespace kCura.WinEDDS
 				Using Timekeeper.CaptureTime("ReadFile_CleanupTempTables")
 					DestroyTapiBridges()
 					CleanupTempTables()
+
+					' Deletes all temp load files too.
+					If Not Me.OutputFileWriter Is Nothing Then
+						Me.OutputFileWriter.Dispose()
+						Me.OutputFileWriter = Nothing
+					End If
 				End Using
 			End Try
 			Return Nothing
@@ -740,13 +750,13 @@ Namespace kCura.WinEDDS
 
 			Me.InitializeFolderManagement()
 			Me.InitializeFieldIdList()
-			DeleteFiles()
-			OpenFileWriters()
-			OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, RecordCount, RestartTimeEventMsg, Nothing, Statistics))
+			Me.DeleteTempLoadFiles()
+			Me.OpenFileWriters()
+			Me.OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, RecordCount, RestartTimeEventMsg, Nothing, Statistics))
 
 			' Counting all lines increments progress to 100%.
 			' This will reset progress back to zero instead of waiting for the first transfer to complete.
-			OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.ResetProgress, 0, RecordCount, "Starting import...", Nothing, Statistics))
+			Me.OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.ResetProgress, 0, RecordCount, "Starting import...", Nothing, Statistics))
 			Return True
 		End Function
 
@@ -755,13 +765,6 @@ Namespace kCura.WinEDDS
 			AuditManager = New Service.AuditManager(args.Credentials, args.CookieContainer)
 			_documentManager = New Service.DocumentManager(args.Credentials, args.CookieContainer)
 			RelativityManager = New Service.RelativityManager(args.Credentials, args.CookieContainer)
-		End Sub
-
-		Protected Sub DeleteFiles()
-			kCura.Utility.File.Instance.Delete(OutputFileWriter.OutputNativeFilePath)
-			kCura.Utility.File.Instance.Delete(OutputCodeFilePath)
-			kCura.Utility.File.Instance.Delete(OutputObjectFilePath)
-			kCura.Utility.File.Instance.Delete(OutputFileWriter.OutputDataGridFilePath)
 		End Sub
 
 		Protected Sub InitializeFolderManagement()
@@ -1072,7 +1075,7 @@ Namespace kCura.WinEDDS
 				_batchCounter += 1
 
 				Using Timekeeper.CaptureTime("ManageDocumentMetadata_WserviceCall")
-					If OutputFileWriter.CombinedStreamLength > ImportBatchVolume OrElse _batchCounter > ImportBatchSize - 1 Then
+					If Me.OutputFileWriter.CombinedStreamLength > ImportBatchVolume OrElse _batchCounter > ImportBatchSize - 1 Then
 						Me.TryPushNativeBatch(False, _jobCompleteNativeCount >= JobCompleteBatchSize, _jobCompleteMetadataCount >= JobCompleteBatchSize)
 					End If
 				End Using
@@ -1191,7 +1194,7 @@ Namespace kCura.WinEDDS
 
 		Private Sub TryPushNativeBatch(ByVal lastRun As Boolean, ByVal shouldCompleteNativeJob As Boolean, ByVal shouldCompleteMetadataJob As Boolean)
 			CloseFileWriters()
-			Dim outputNativePath As String = OutputFileWriter.OutputNativeFilePath
+			Dim outputNativePath As String = Me.OutputFileWriter.OutputNativeFilePath
 
 			If (shouldCompleteNativeJob Or lastRun) And _jobCompleteNativeCount > 0 Then
 				_jobCompleteNativeCount = 0
@@ -1241,8 +1244,11 @@ Namespace kCura.WinEDDS
 					End If
 				End Try
 			End If
-			DeleteFiles()
-			If Not lastRun Then OpenFileWriters()
+
+			Me.DeleteTempLoadFiles()
+			If Not lastRun Then
+				Me.OpenFileWriters()
+			End If
 		End Sub
 
 		Private Sub LowerBatchSizeAndRetry(ByVal oldNativeFilePath As String, ByVal totalRecords As Int32)
@@ -1333,9 +1339,9 @@ Namespace kCura.WinEDDS
 
 			Try
 				nativeFileUploadKey = BulkLoadTapiBridge.AddPath(outputNativePath, Guid.NewGuid().ToString(), 1)
-				codeFileUploadKey = BulkLoadTapiBridge.AddPath(OutputCodeFilePath, Guid.NewGuid().ToString(), 2)
-				objectFileUploadKey = BulkLoadTapiBridge.AddPath(OutputObjectFilePath, Guid.NewGuid().ToString(), 3)
-				dataGridFileUploadKey = BulkLoadTapiBridge.AddPath(OutputFileWriter.OutputDataGridFilePath, Guid.NewGuid().ToString(), 4)
+				codeFileUploadKey = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputCodeFilePath, Guid.NewGuid().ToString(), 2)
+				objectFileUploadKey = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputObjectFilePath, Guid.NewGuid().ToString(), 3)
+				dataGridFileUploadKey = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputDataGridFilePath, Guid.NewGuid().ToString(), 4)
 
 				' keep track of the total count of added files
 				MetadataFilesCount += 4
@@ -1441,15 +1447,17 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Sub OpenFileWriters()
-			OutputFileWriter.Open()
-			_outputCodeFileWriter = New System.IO.StreamWriter(OutputCodeFilePath, False, System.Text.Encoding.Unicode)
-			_outputObjectFileWriter = New System.IO.StreamWriter(OutputObjectFilePath, False, System.Text.Encoding.Unicode)
+			If Me.OutputFileWriter Is Nothing Then
+				Me.OutputFileWriter = New OutputFileWriter(Me.FileSystem)
+			End If
+
+			Me.OutputFileWriter.Open()
 		End Sub
 
 		Protected Sub CloseFileWriters()
-			OutputFileWriter.Close()
-			_outputCodeFileWriter.Close()
-			_outputObjectFileWriter.Close()
+			If Not Me.OutputFileWriter Is Nothing Then
+				Me.OutputFileWriter.Close()
+			End If
 		End Sub
 
 		Public Function GetMappedFields(ByVal artifactTypeId As Int32, ByVal ObjectFieldIdListContainsArtifactId As IList(Of Int32)) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo()
@@ -1483,7 +1491,6 @@ Namespace kCura.WinEDDS
 			Dim chosenEncoding As System.Text.Encoding = Nothing
 
 			OutputFileWriter.MarkRollbackPosition()
-
 			OutputFileWriter.OutputNativeFileWriter.Write("0" & BulkLoadFileFieldDelimiter) 'kCura_Import_ID
 			OutputFileWriter.OutputNativeFileWriter.Write(mdoc.LineStatus.ToString & BulkLoadFileFieldDelimiter)   'kCura_Import_Status
 			OutputFileWriter.OutputNativeFileWriter.Write("0" & BulkLoadFileFieldDelimiter) 'kCura_Import_IsNew
@@ -1620,7 +1627,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Private Sub WriteDocumentField(ByRef chosenEncoding As System.Text.Encoding, field As Api.ArtifactField, ByVal outputWriter As System.IO.StreamWriter, ByVal fileBasedfullTextColumn As Boolean, ByVal delimiter As String, ByVal artifactTypeID As Int32, ByVal extractedTextEncoding As System.Text.Encoding)
+		Private Sub WriteDocumentField(ByRef chosenEncoding As System.Text.Encoding, field As Api.ArtifactField, ByVal outputWriter As kCura.WinEDDS.TApi.IStreamWriter, ByVal fileBasedfullTextColumn As Boolean, ByVal delimiter As String, ByVal artifactTypeID As Int32, ByVal extractedTextEncoding As System.Text.Encoding)
 			If field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse field.Type = Relativity.FieldTypeHelper.FieldType.Code Then
 				outputWriter.Write(field.Value)
 				outputWriter.Write(delimiter)
@@ -1863,8 +1870,8 @@ Namespace kCura.WinEDDS
 
 		Protected Function PrepareFieldCollectionAndExtractIdentityValue(ByVal record As Api.ArtifactFieldCollection) As String
 			SyncLock OutputFileWriter.OutputNativeFileWriter
-			SyncLock _outputCodeFileWriter
-			SyncLock _outputObjectFileWriter
+			SyncLock OutputFileWriter.OutputCodeFileWriter
+			SyncLock OutputFileWriter.OutputObjectFileWriter
 			SyncLock OutputFileWriter.OutputDataGridFileWriter
 				Dim item As LoadFileFieldMap.LoadFileFieldMapItem
 				Dim identityValue As String = String.Empty
