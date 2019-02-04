@@ -273,8 +273,6 @@ Namespace kCura.WinEDDS
 			Dim startTicks As Int64 = System.DateTime.Now.Ticks
 			Dim exportInitializationArgs As kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults = Nothing
 			Dim columnHeaderString As String = Me.LoadColumns
-			Dim expectedExportedRecordsCount As Long = exportInitializationArgs.RowCount - _exportFile.StartAtDocumentNumber
-
 			Dim production As kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo = Nothing
 
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
@@ -325,9 +323,10 @@ Namespace kCura.WinEDDS
 				InteractionManager.AlertCriticalError(msg)
 				Me.Shutdown()
 				Return False
-			Else
-				Me.TotalExportArtifactCount -= Me.Settings.StartAtDocumentNumber
 			End If
+
+			Me.TotalExportArtifactCount -= Me.Settings.StartAtDocumentNumber
+
 			Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 
 			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, exportInitializationArgs.ColumnNames, UseOldExport, _loadFileFormatterFactory)
@@ -402,7 +401,7 @@ Namespace kCura.WinEDDS
 				Me.WriteStatusLine(EventType.Status, FileDownloader.TotalWebTime.ToString, True)
 				_timekeeper.GenerateCsvReportItemsAsRows()
 
-				ValidateExportedRecordCount(lastRecordCount, expectedExportedRecordsCount)
+				ValidateExportedRecordCount(lastRecordCount, Me.TotalExportArtifactCount)
 
 				If UseOldExport Then _volumeManager.Finish()
 
