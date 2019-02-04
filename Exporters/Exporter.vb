@@ -273,6 +273,7 @@ Namespace kCura.WinEDDS
 			Dim startTicks As Int64 = System.DateTime.Now.Ticks
 			Dim exportInitializationArgs As kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults = Nothing
 			Dim columnHeaderString As String = Me.LoadColumns
+			Dim expectedExportedRecordsCount As Long = exportInitializationArgs.RowCount - _exportFile.StartAtDocumentNumber
 
 			Dim production As kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo = Nothing
 
@@ -397,11 +398,11 @@ Namespace kCura.WinEDDS
 					End If
 					If _cancellationTokenSource.IsCancellationRequested Then Exit While
 				End While
-				If exportInitializationArgs.RowCount <> nextRecordIndex Then
-					WriteError($"Total items processed ({nextRecordIndex}) is different than expected total records count ({exportInitializationArgs.RowCount}).")
-				End If
-				Me.WriteStatusLine(Windows.Process.EventType.Status, kCura.WinEDDS.FileDownloader.TotalWebTime.ToString, True)
+
+				Me.WriteStatusLine(EventType.Status, FileDownloader.TotalWebTime.ToString, True)
 				_timekeeper.GenerateCsvReportItemsAsRows()
+
+				ValidateExportedRecordCount(lastRecordCount, expectedExportedRecordsCount)
 
 				If UseOldExport Then _volumeManager.Finish()
 
@@ -410,6 +411,11 @@ Namespace kCura.WinEDDS
 			End Using
 		End Function
 
+		Private Sub ValidateExportedRecordCount(actualExportedRecordsCount As Int32, expectedExportedRecordsCount As Long)
+			If actualExportedRecordsCount <> expectedExportedRecordsCount Then
+				WriteError($"Total items processed ({actualExportedRecordsCount}) is different than expected total records count ({expectedExportedRecordsCount}).")
+			End If
+		End Sub
 
 		Private Function CallServerWithRetry(Of T)(f As Func(Of T), ByVal maxTries As Int32) As T
 			Dim tries As Integer
