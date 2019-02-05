@@ -398,10 +398,10 @@ Namespace kCura.WinEDDS
 					If _cancellationTokenSource.IsCancellationRequested Then Exit While
 				End While
 
+				ValidateExportedRecordCount(lastRecordCount, Me.TotalExportArtifactCount)
+
 				Me.WriteStatusLine(EventType.Status, FileDownloader.TotalWebTime.ToString, True)
 				_timekeeper.GenerateCsvReportItemsAsRows()
-
-				ValidateExportedRecordCount(lastRecordCount, Me.TotalExportArtifactCount)
 
 				If UseOldExport Then _volumeManager.Finish()
 
