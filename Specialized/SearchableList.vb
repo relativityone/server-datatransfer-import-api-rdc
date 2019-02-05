@@ -244,28 +244,37 @@ Namespace kCura.Windows.Forms.Specialized
 			If Not Char.IsLetter(e.KeyChar)
 				RaiseEvent KeyPressEvent(sender, e)
 			End If
-			Dim senderListbox As ListBox = CType(sender, ListBox)
-			SelectItemBasedOnEnteredChar(senderListbox, e.KeyChar.ToString)
-		End Sub
+            Dim senderListbox As ListBox = CType(sender, ListBox)
+            Dim firstLetter As String = e.KeyChar.ToString
+            SelectItemWhichNameStartsWith(firstLetter, senderListbox)
+        End Sub
 
-		Private Sub SelectItemBasedOnEnteredChar(sender As ListBox, enteredChar As String)
-			Dim nextItem As Object = Nothing
-			Dim itemsStartingWithEnteredLetter As IList(Of Object) = (From result As Object In sender.Items Where result.ToString.ToLower.StartsWith(enteredChar.ToLower)).ToList()
-			If itemsStartingWithEnteredLetter.Contains(sender.SelectedItem)
-				Dim currentIndex As Integer = itemsStartingWithEnteredLetter.IndexOf(sender.SelectedItem)
-				Dim nextIndex As Integer = (currentIndex + 1) Mod itemsStartingWithEnteredLetter.Count
-				nextItem = itemsStartingWithEnteredLetter.Item(nextIndex)
-			Else
-				nextItem = itemsStartingWithEnteredLetter.FirstOrDefault
-			End If
+        Private Sub SelectItemWhichNameStartsWith(firstLetter As String, sender As ListBox)
+            Dim loweredFirstLetter As String = firstLetter.ToLower()
+            Dim itemsStartingWithLetter As IList(Of Object) = sender.Items.OfType(Of Object).Where(
+                   Function(item) item.ToString().ToLower().StartsWith(loweredFirstLetter)
+                ).ToList()
+            Dim itemToSelect As Object = GetFirstItemNextToCurrentlySelectedOne(
+                itemsStartingWithLetter, 
+                sender.SelectedIndex
+            )
 
-			If nextItem IsNot Nothing
-				sender.ClearSelected
-				sender.SelectedItem = nextItem
-			End If
-		End Sub
+            If itemToSelect IsNot Nothing Then
+                sender.ClearSelected()
+                sender.SelectedItem = itemToSelect
+            End If
+        End Sub
 
-		Private Sub _listBox_KeyUp(sender As Object, e As KeyEventArgs) Handles _listBox.KeyUp
+        Private Function GetFirstItemNextToCurrentlySelectedOne(items As IList(Of Object), currentSelectedItemIndex As Integer) As Object
+            If Not items.Any() Then
+                Return Nothing
+            End If
+            
+            Dim itemToSelectIndex As Integer = (currentSelectedItemIndex + 1) Mod items.Count 
+            Return items.Item(itemToSelectIndex)
+        End Function
+
+        Private Sub _listBox_KeyUp(sender As Object, e As KeyEventArgs) Handles _listBox.KeyUp
 			RaiseEvent KeyUpEvent(sender, e)
 		End Sub
 
