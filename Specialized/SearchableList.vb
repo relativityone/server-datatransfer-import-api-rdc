@@ -244,35 +244,9 @@ Namespace kCura.Windows.Forms.Specialized
 			If Not Char.IsLetter(e.KeyChar)
 				RaiseEvent KeyPressEvent(sender, e)
 			End If
-            Dim senderListbox As ListBox = CType(sender, ListBox)
-            Dim firstLetter As String = e.KeyChar.ToString
-            SelectItemWhichNameStartsWith(firstLetter, senderListbox)
+            Dim listBox As ListBox = CType(sender, ListBox)
+		    listBox.SelectItemWhichNameStartsWith(e.KeyChar)
         End Sub
-
-        Private Sub SelectItemWhichNameStartsWith(firstLetter As String, sender As ListBox)
-            Dim loweredFirstLetter As String = firstLetter.ToLower()
-            Dim itemsStartingWithLetter As IList(Of Object) = sender.Items.OfType(Of Object).Where(
-                   Function(item) item.ToString().ToLower().StartsWith(loweredFirstLetter)
-                ).ToList()
-            Dim itemToSelect As Object = GetFirstItemNextToCurrentlySelectedOne(
-                itemsStartingWithLetter, 
-                sender.SelectedIndex
-            )
-
-            If itemToSelect IsNot Nothing Then
-                sender.ClearSelected()
-                sender.SelectedItem = itemToSelect
-            End If
-        End Sub
-
-        Private Function GetFirstItemNextToCurrentlySelectedOne(items As IList(Of Object), currentSelectedItemIndex As Integer) As Object
-            If Not items.Any() Then
-                Return Nothing
-            End If
-            
-            Dim itemToSelectIndex As Integer = (currentSelectedItemIndex + 1) Mod items.Count 
-            Return items.Item(itemToSelectIndex)
-        End Function
 
         Private Sub _listBox_KeyUp(sender As Object, e As KeyEventArgs) Handles _listBox.KeyUp
 			RaiseEvent KeyUpEvent(sender, e)
