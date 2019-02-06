@@ -1,6 +1,6 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="AssemblyInfo.cs" company="kCura Corp">
-//   kCura Corp (C) 2017 All Rights Reserved.
+// <copyright file="AssemblyInfo.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
 

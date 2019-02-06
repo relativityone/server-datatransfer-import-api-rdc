@@ -8,7 +8,4 @@ nuget nbuilder = 6.0.0
 
 # Proget packages are below.
 source https://proget.kcura.corp/NuGet/NuGet
-nuget relativity.importexport = 9.7.209.7
-
-# Note: Bluestem requires specifying this package. Remove as soon as the repo is upgraded.
-nuget relativity.logging.interfaces = 2018.11.5
+nuget relativity.importexport = 10.2.30.42
