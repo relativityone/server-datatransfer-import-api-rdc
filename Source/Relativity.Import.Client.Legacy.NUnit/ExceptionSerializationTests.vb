@@ -8,7 +8,7 @@ Imports NUnit.Framework
 
 Namespace Relativity.Import.Client.NUnit
 
-	<TestFixture()>
+	<TestFixture>
 	Public Class ExceptionSerializationTests
 
 		Public Shared ReadOnly Iterator Property TestCases() As IEnumerable

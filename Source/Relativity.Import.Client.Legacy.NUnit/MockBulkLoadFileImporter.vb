@@ -51,7 +51,7 @@ Namespace Relativity.Import.Client.NUnit
 		End Sub
 
 		Public Function CleanFolderPath(ByVal path As String) As String
-			Return MyBase.CleanDestinationFolderPath(path)
+			Return CleanDestinationFolderPath(path)
 		End Function
 
 		Public Function ConvertOverlayBehaviorEnum(ByVal inputOverlayType As LoadFile.FieldOverlayBehavior?) As kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior

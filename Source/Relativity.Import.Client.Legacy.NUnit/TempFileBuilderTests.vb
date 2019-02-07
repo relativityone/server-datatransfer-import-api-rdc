@@ -3,6 +3,7 @@
 Imports NUnit.Framework
 
 Namespace Relativity.Import.Client.NUnit
+
 	<TestFixture>
 	Public Class TempFileBuilderTests
 		

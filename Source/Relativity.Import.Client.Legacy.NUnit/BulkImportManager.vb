@@ -2,7 +2,8 @@
 
 Namespace Relativity.Import.Client.NUnit
 
-	<TestFixture()> Public Class BulkImportManager
+	<TestFixture>
+	Public Class BulkImportManager
 
 		'pulled straight from the sql timeout exception
 		Private Const TimeoutMessage As String = "Error: Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding."

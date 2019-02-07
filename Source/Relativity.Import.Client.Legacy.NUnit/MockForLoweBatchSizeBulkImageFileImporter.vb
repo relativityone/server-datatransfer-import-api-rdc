@@ -9,8 +9,7 @@ Imports kCura.WinEDDS.TApi
 Imports Relativity.Logging
 
 Namespace Relativity.Import.Client.NUnit
-
-Public Class MockForLoweBatchSizeBulkImageFileImporter
+	Public Class MockForLoweBatchSizeBulkImageFileImporter
 		Inherits kCura.WinEDDS.BulkImageFileImporter
 
 		Private Property WillThrowException As Boolean
@@ -78,10 +77,6 @@ Public Class MockForLoweBatchSizeBulkImageFileImporter
 		Protected Overrides Sub InitializeUploaders(ByVal args As ImageLoadFile)
 			'do nothing
 		End Sub
-
-		'Protected Overrides Sub InitializeManagers(ByVal args As ImageLoadFile)
-		'	'do nothing
-		'End Sub
 
 		Protected Overrides Sub RaiseWarningAndPause(ByVal ex As System.Exception, ByVal timeoutSeconds As Integer)
 			PauseCalled += 1

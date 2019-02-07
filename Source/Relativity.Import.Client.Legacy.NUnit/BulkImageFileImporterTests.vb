@@ -10,7 +10,9 @@ Imports NUnit.Framework
 Imports Relativity.Logging
 
 Namespace Relativity.Import.Client.NUnit
-	<TestFixture()> Public Class BulkImageFileImporterTests
+
+	<TestFixture>
+	Public Class BulkImageFileImporterTests
 
 #Region " Members "
 		Dim _args As ImageLoadFile

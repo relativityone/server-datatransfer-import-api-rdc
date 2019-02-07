@@ -150,14 +150,11 @@
     <Compile Include="FieldValueImportExceptionFixture.vb" />
     <Compile Include="FileIOTests.vb" />
     <Compile Include="FileNameHelperTests.vb" />
-    <Compile Include="FolderCacheTests.vb" />
     <Compile Include="GlobalSuppressions.vb" />
-    <Compile Include="ImageFilePreviewerTests.vb" />
     <Compile Include="IsValid.vb" />
     <Compile Include="LoadFileBaseTests.vb" />
     <Compile Include="LoadFileType.vb" />
     <Compile Include="LoginHelperTests.vb" />
-    <Compile Include="MetricsSinkConfigTests.vb" />
     <Compile Include="MockBulkImageFileImporter.vb" />
     <Compile Include="MockBulkImportManagerSqlExceptions.vb" />
     <Compile Include="MockBulkImportManagerWebExceptions.vb" />
@@ -178,15 +175,7 @@
     <None Include="app.config" />
     <None Include="paket.references" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Exceptions\" />
-    <Folder Include="Exporters\Validator\PaddingWarningValidator\" />
-    <Folder Include="Helpers\" />
-    <Folder Include="Monitoring\" />
-    <Folder Include="Services\" />
-    <Folder Include="Stubs\" />
-    <Folder Include="TestObjectFactories\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">

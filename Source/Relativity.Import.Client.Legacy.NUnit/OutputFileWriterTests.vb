@@ -3,10 +3,11 @@
 Imports NUnit.Framework
 
 Namespace Relativity.Import.Client.NUnit
-	<TestFixture()>
+
+	<TestFixture>
 	Public Class OutputFileWriterTests
 
-		<Test()>
+		<Test>
 		Public Sub OutputFileWriter_Open_OpensFile()
 			Dim writer As kCura.WinEDDS.OutputFileWriter = New OutputFileWriter()
 			writer.Open()
@@ -17,7 +18,7 @@ Namespace Relativity.Import.Client.NUnit
 			System.IO.File.Delete(writer.OutputDataGridFilePath)
 		End Sub
 
-		<Test()>
+		<Test>
 		Public Sub OutputFileWriter_Close_ClosesFile()
 			Dim writer As kCura.WinEDDS.OutputFileWriter = New OutputFileWriter()
 			writer.Open()
@@ -28,7 +29,7 @@ Namespace Relativity.Import.Client.NUnit
 			System.IO.File.Delete(writer.OutputDataGridFilePath)
 		End Sub
 
-		<Test()>
+		<Test>
 		Public Sub OutputFileWriter_RollbackDocumentLinWrites_RollsbackToCorrectPosition()
 			Dim writer As kCura.WinEDDS.OutputFileWriter = New OutputFileWriter()
 			writer.Open()

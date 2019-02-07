@@ -19,8 +19,6 @@ Namespace Relativity.Import.Client.NUnit
 			End If
 		End Sub
 
-#Region " Throw if given an excpetion "
-
 		Protected Overrides Function InvokeBulkImportImage(ByVal appID As Integer, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			If AlwaysThrow Then Throw Me.ErrorMessage
@@ -44,8 +42,6 @@ Namespace Relativity.Import.Client.NUnit
 			If AlwaysThrow Then Throw Me.ErrorMessage
 			Return retval
 		End Function
-
-#End Region
 
 	End Class
 End NameSpace

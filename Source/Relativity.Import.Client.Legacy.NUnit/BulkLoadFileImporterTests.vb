@@ -11,7 +11,9 @@ Imports NUnit.Framework
 Imports Relativity.Logging
 
 Namespace Relativity.Import.Client.NUnit
-	<TestFixture()> Public Class BulkLoadFileImporterTests
+
+	<TestFixture>
+	Public Class BulkLoadFileImporterTests
 
 #Region " Members "
 		Dim _args As LoadFile

@@ -7,7 +7,9 @@ Imports NUnit.Framework
 Imports Relativity.Logging
 
 Namespace Relativity.Import.Client.NUnit
-    <TestFixture> Public Class OpticonFilenameComparerTests
+
+    <TestFixture>
+    Public Class OpticonFilenameComparerTests
 
         Private ReadOnly _pageLinesDoc2 As List(Of String) = New List(Of String) From {
             "TEST0000002,VOL01,.\VOL01\IMAGES\IMG001\TEST0000002.tif,Y,,,19",
@@ -35,12 +37,14 @@ Namespace Relativity.Import.Client.NUnit
         Private _logger As ILog
         Private _comparer As OpticonFilenameComparer
 
-        <SetUp> Public Sub SetUp()
+        <SetUp>
+        Public Sub SetUp()
 			_logger = Substitute.For(Of ILog)
             _comparer = New OpticonFilenameComparer(_logger)
         End Sub
 
-        <Test> Public Sub OneDocumentPagesAreSortedCorrectly()
+        <Test>
+        Public Sub OneDocumentPagesAreSortedCorrectly()
             For i As Integer = 0 To _pageLinesDoc4.Count - 1
                 For j As Integer = 0 To _pageLinesDoc4.Count - 1
                     Dim comparisonResult As Integer = _comparer.Compare(_pageLinesDoc4(i), _pageLinesDoc4(j))
@@ -57,7 +61,8 @@ Namespace Relativity.Import.Client.NUnit
 			_logger.DidNotReceive().LogError(Arg.Any(Of String), Arg.Any(Of Object()))
         End Sub
 
-        <Test> Public Sub DifferentDocumentPagesAreSortedCorrectly()
+        <Test>
+        Public Sub DifferentDocumentPagesAreSortedCorrectly()
             For i As Integer = 0 To _pageLinesDoc2.Count - 1
                 For j As Integer = 0 To _pageLinesDoc4.Count - 1
 					Dim comparisonResult As Integer = _comparer.Compare(_pageLinesDoc2(i), _pageLinesDoc4(j))
@@ -68,7 +73,8 @@ Namespace Relativity.Import.Client.NUnit
 	        _logger.DidNotReceive().LogError(Arg.Any(Of String), Arg.Any(Of Object()))
         End Sub
 
-		<Test> Public Sub MalformedDocumentPagesAreSortedCorrectlyAndErrorIsLogged()
+		<Test>
+		Public Sub MalformedDocumentPagesAreSortedCorrectlyAndErrorIsLogged()
 			For i As Integer = 0 To _malformedPageLines.Count - 1
 				For j As Integer = 0 To _malformedPageLines.Count - 1
 					Dim comparisonResult As Integer = _comparer.Compare(_malformedPageLines(i), _malformedPageLines(j))

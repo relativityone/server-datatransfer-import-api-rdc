@@ -1,14 +1,15 @@
 ﻿Imports System.Net
-Imports System.Web.Services.Protocols	'used by SoapException
+Imports System.Web.Services.Protocols
+
 Imports Rhino.Mocks
+
 Imports NUnit.Framework
-Imports kCura.WinEDDS.Service
 
 Namespace Relativity.Import.Client.NUnit
-	<TestFixture()>
+
+	<TestFixture>
 	Public Class FileIOTests
 
-#Region " Members "
 		Dim _testObj As kCura.WinEDDS.Service.FileIO = Nothing
 		Private _mockRepo As MockRepository = Nothing
 		Dim _mockCredentials As ICredentials
@@ -16,11 +17,9 @@ Namespace Relativity.Import.Client.NUnit
 
 		Dim _keyPathExistsAlready As Boolean
 		Dim _keyValExistsAlready As Boolean
-#End Region
 
-#Region "Setup And Teardown"
-
-		<SetUp()> Public Sub SetUp()
+		<SetUp>
+		Public Sub SetUp()
 			_mockRepo = New MockRepository()
 			_mockCredentials = _mockRepo.DynamicMock(Of ICredentials)()
 			_mockCookieContainer = _mockRepo.DynamicMock(Of CookieContainer)()
@@ -38,7 +37,8 @@ Namespace Relativity.Import.Client.NUnit
 			_testObj = New kCura.WinEDDS.Service.FileIO(_mockCredentials, _mockCookieContainer)
 		End Sub
 
-		<TearDown()> Public Sub TearDown()
+		<TearDown>
+		Public Sub TearDown()
 			_testObj = Nothing
 			_mockCredentials = Nothing
 			_mockCookieContainer = Nothing
@@ -48,8 +48,6 @@ Namespace Relativity.Import.Client.NUnit
 				RegKeyHelper.RemoveKeyPath(RegKeyHelper.RelativityKeyPath)
 			End If
 		End Sub
-
-#End Region
 
 		<Test>
 		Public Sub ConvertSoapPermissionError()
