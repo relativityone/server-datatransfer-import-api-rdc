@@ -10,10 +10,14 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 				Throw New ArgumentException($"Expected instance of {nameof(FirstFieldDescriptorPart)}")
 			End If
 
-			If descriptorPart.IsProduction AndAlso exportObject.ProductionBeginBates IsNot Nothing AndAlso exportObject.ProductionBeginBates <> ""
+			If ShouldNameAfterProductionBeginBates(descriptorPart, exportObject)
 				Return exportObject.ProductionBeginBates
 			End If
 			Return exportObject.IdentifierValue
+		End Function
+
+		Private Shared Function ShouldNameAfterProductionBeginBates(descriptorPart As FirstFieldDescriptorPart, exportObject As ObjectExportInfo) As Boolean
+			Return descriptorPart.IsProduction AndAlso Not String.IsNullOrEmpty(exportObject.ProductionBeginBates)
 		End Function
 	End Class
 
