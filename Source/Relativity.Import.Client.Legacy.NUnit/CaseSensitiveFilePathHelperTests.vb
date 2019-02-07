@@ -5,7 +5,7 @@ Imports NSubstitute.ExceptionExtensions
 
 Imports NUnit.Framework
 
-Namespace Relativity.Import.Client.NUnit.Helpers
+Namespace Relativity.Import.Client.NUnit
 	<TestFixture>
 	Public Class CaseSensitiveFilePathHelperTests
 		Private _filePathHelper As CaseSensitiveFilePathHelper

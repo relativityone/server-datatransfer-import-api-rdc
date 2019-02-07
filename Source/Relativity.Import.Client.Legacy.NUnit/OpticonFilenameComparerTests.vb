@@ -6,7 +6,7 @@ Imports NUnit.Framework
 
 Imports Relativity.Logging
 
-Namespace Relativity.Import.Client.NUnit.Exporters
+Namespace Relativity.Import.Client.NUnit
     <TestFixture> Public Class OpticonFilenameComparerTests
 
         Private ReadOnly _pageLinesDoc2 As List(Of String) = New List(Of String) From {

@@ -140,46 +140,52 @@
     <Compile Include="BulkImageFileImporterTests.vb" />
     <Compile Include="BulkImportManager.vb" />
     <Compile Include="BulkLoadFileImporterTests.vb" />
+    <Compile Include="CaseInsensitiveFilePathHelperTests.vb" />
+    <Compile Include="CaseSensitiveFilePathHelperTests.vb" />
     <Compile Include="DataReaderReaderFixture.vb" />
-    <Compile Include="Exceptions\ExceptionSerializationTests.vb" />
-    <Compile Include="Exceptions\FieldValueImportExceptionFixture.vb" />
-    <Compile Include="Exporters\ObjectExportInfoTests.vb" />
-    <Compile Include="Exporters\OpticonFilenameComparerTests.vb" />
-    <Compile Include="Exporters\OriginalFileNameProviderTests.vb" />
-    <Compile Include="Exporters\Validator\PaddingWarningValidator\IsValid.vb" />
+    <Compile Include="ExceptionSerializationTests.vb" />
     <Compile Include="ExportFileSerializer.part.vb" />
     <Compile Include="ExportFileSerializer.vb" />
     <Compile Include="ExportNativeWithFilenameFrom.vb" />
+    <Compile Include="FieldValueImportExceptionFixture.vb" />
     <Compile Include="FileIOTests.vb" />
+    <Compile Include="FileNameHelperTests.vb" />
     <Compile Include="FolderCacheTests.vb" />
     <Compile Include="GlobalSuppressions.vb" />
-    <Compile Include="Helpers\CaseInsensitiveFilePathHelperTests.vb" />
-    <Compile Include="Helpers\CaseSensitiveFilePathHelperTests.vb" />
-    <Compile Include="Helpers\FileNameHelperTests.vb" />
-    <Compile Include="Helpers\LoginHelperTests.vb" />
     <Compile Include="ImageFilePreviewerTests.vb" />
+    <Compile Include="IsValid.vb" />
     <Compile Include="LoadFileBaseTests.vb" />
     <Compile Include="LoadFileType.vb" />
+    <Compile Include="LoginHelperTests.vb" />
+    <Compile Include="MetricsSinkConfigTests.vb" />
     <Compile Include="MockBulkImageFileImporter.vb" />
     <Compile Include="MockBulkImportManagerSqlExceptions.vb" />
     <Compile Include="MockBulkImportManagerWebExceptions.vb" />
     <Compile Include="MockBulkLoadFileImporter.vb" />
     <Compile Include="MockForLoweBatchSizeBulkImageFileImporter.vb" />
-    <Compile Include="Monitoring\MetricsSinkConfigTests.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="ObjectExportInfoTests.vb" />
+    <Compile Include="OpticonFilenameComparerTests.vb" />
+    <Compile Include="OriginalFileNameProviderTests.vb" />
     <Compile Include="OutputFileWriterTests.vb" />
     <Compile Include="PreviewChoicesHelperTests.vb" />
+    <Compile Include="QueryFieldFactory.vb" />
     <Compile Include="RegKeyHelper.vb" />
-    <Compile Include="Stubs\StubDataReaderReader.vb" />
+    <Compile Include="StubDataReaderReader.vb" />
     <Compile Include="TempFileBuilderTests.vb" />
-    <Compile Include="TestObjectFactories\QueryFieldFactory.vb" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Exceptions\" />
+    <Folder Include="Exporters\Validator\PaddingWarningValidator\" />
+    <Folder Include="Helpers\" />
+    <Folder Include="Monitoring\" />
     <Folder Include="Services\" />
+    <Folder Include="Stubs\" />
+    <Folder Include="TestObjectFactories\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Choose>

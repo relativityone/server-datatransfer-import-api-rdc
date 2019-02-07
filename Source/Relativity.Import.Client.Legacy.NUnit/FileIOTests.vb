@@ -57,7 +57,7 @@ Namespace Relativity.Import.Client.NUnit
 			Dim mockEx As MockInsufficientAccessControlListPermissions = New MockInsufficientAccessControlListPermissions(errorMsg)
 			Dim mockSoapEx As System.Exception = Helper.Soapify(mockEx)
 			Dim relativityEx As System.Exception = _testObj.ConvertExpectedSoapExceptionToRelativityException(mockSoapEx)
-			Assert.IsTrue(TypeOf relativityEx Is BulkImportManager.InsufficientPermissionsForImportException)
+			Assert.IsTrue(TypeOf relativityEx Is kCura.WinEDDS.Service.BulkImportManager.InsufficientPermissionsForImportException)
 			Assert.AreEqual(relativityEx.Message, "Error: " + mockEx.Message + vbCrLf)
 		End Sub
 

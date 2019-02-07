@@ -2,8 +2,6 @@
 
 Imports NUnit.Framework
 
-Imports Relativity.Import.Client.NUnit.TestObjectFactories
-
 Namespace Relativity.Import.Client.NUnit
 
 	<TestFixture()> Public Class ExportFileSerializer
@@ -94,7 +92,8 @@ Namespace Relativity.Import.Client.NUnit
 			Assert.AreEqual(CInt(kCura.WinEDDS.ExportFile.ExportType.Production), 0)
 		End Sub
 		<Test()> Public Sub ExportType_Range()
-			Dim min, max As Int32?
+			Dim min As Int32? = Nothing
+			Dim max As Int32? = Nothing
 			Dim count As Int32 = 0
 			For Each e As kCura.WinEDDS.ExportFile.ExportType In System.Enum.GetValues(GetType(kCura.WinEDDS.ExportFile.ExportType))
 				If Not min.HasValue Then min = CInt(e)
@@ -120,7 +119,8 @@ Namespace Relativity.Import.Client.NUnit
 			Assert.AreEqual(CInt(kCura.WinEDDS.ExportFile.ExportedFilePathType.Prefix), 2)
 		End Sub
 		<Test()> Public Sub ExportedFilePathType_Range()
-			Dim min, max As Int32?
+			Dim min As Int32? = Nothing
+			Dim max As Int32? = Nothing
 			Dim count As Int32 = 0
 			For Each e As kCura.WinEDDS.ExportFile.ExportedFilePathType In System.Enum.GetValues(GetType(kCura.WinEDDS.ExportFile.ExportedFilePathType))
 				If Not min.HasValue Then min = CInt(e)
@@ -146,7 +146,8 @@ Namespace Relativity.Import.Client.NUnit
 			Assert.AreEqual(CInt(kCura.WinEDDS.ExportFile.ImageType.MultiPageTiff), 1)
 		End Sub
 		<Test()> Public Sub ImageType_Range()
-			Dim min, max As Int32?
+			Dim min As Int32? = Nothing
+			Dim max As Int32? = Nothing
 			Dim count As Int32 = 0
 			For Each e As kCura.WinEDDS.ExportFile.ImageType In System.Enum.GetValues(GetType(kCura.WinEDDS.ExportFile.ImageType))
 				If Not min.HasValue Then min = CInt(e)

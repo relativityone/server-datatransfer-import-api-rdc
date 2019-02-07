@@ -1,4 +1,4 @@
-﻿Namespace Relativity.Import.Client.NUnit.TestObjectFactories
+﻿Namespace Relativity.Import.Client.NUnit
 	Public Class QueryFieldFactory
 		Private Shared _dt As System.Data.DataTable
 

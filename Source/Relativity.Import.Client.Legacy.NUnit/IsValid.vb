@@ -2,7 +2,7 @@
 
 Imports NUnit.Framework
 
-Namespace Relativity.Import.Client.NUnit.Exporters.Validator.PaddingWarningValidator
+Namespace Relativity.Import.Client.NUnit
 
 	<TestFixture()> Public Class IsValid
 		Private _settings As ExportFile
