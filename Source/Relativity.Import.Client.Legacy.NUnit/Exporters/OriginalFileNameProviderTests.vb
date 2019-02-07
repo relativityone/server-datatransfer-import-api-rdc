@@ -8,6 +8,8 @@ Imports NSubstitute
 
 Imports NUnit.Framework
 
+Imports Relativity
+
 <TestFixture> Public Class OriginalFileNameProviderTests
 	Private Const _FILE_NAME_FIELD_ARTIFACT_ID As Integer = 534343
 	Private Const _FILE_NAME_COLUMN_NAME As String = "FileName"

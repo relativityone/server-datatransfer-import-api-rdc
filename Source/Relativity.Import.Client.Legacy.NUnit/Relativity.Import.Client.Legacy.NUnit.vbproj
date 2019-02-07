@@ -7,7 +7,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{6B2E3939-E33B-4672-B420-F3B6021DDA78}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Relativity.Import.Client.NUnit</RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <AssemblyName>Relativity.Import.Client.Legacy.NUnit</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>Windows</MyType>
@@ -149,6 +150,7 @@
     <Compile Include="ExportFileSerializer.part.vb" />
     <Compile Include="ExportFileSerializer.vb" />
     <Compile Include="ExportNativeWithFilenameFrom.vb" />
+    <Compile Include="FileIOTests.vb" />
     <Compile Include="FolderCacheTests.vb" />
     <Compile Include="GlobalSuppressions.vb" />
     <Compile Include="Helpers\CaseInsensitiveFilePathHelperTests.vb" />
@@ -168,23 +170,6 @@
     <Compile Include="OutputFileWriterTests.vb" />
     <Compile Include="PreviewChoicesHelperTests.vb" />
     <Compile Include="RegKeyHelper.vb" />
-    <Compile Include="Services\AuditManagerTests.vb" />
-    <Compile Include="Services\BulkImportManagerTests.vb" />
-    <Compile Include="Services\CaseManagerTests.vb" />
-    <Compile Include="Services\CodeManagerTests.vb" />
-    <Compile Include="Services\DocumentManagerTests.vb" />
-    <Compile Include="Services\ExportManagerTests.vb" />
-    <Compile Include="Services\FieldManagerTests.vb" />
-    <Compile Include="Services\FieldQueryTests.vb" />
-    <Compile Include="Services\FileIOTests.vb" />
-    <Compile Include="Services\FileManagerTests.vb" />
-    <Compile Include="Services\FolderManagerTests.vb" />
-    <Compile Include="Services\ObjectManagerTests.vb" />
-    <Compile Include="Services\ObjectTypeManagerTests.vb" />
-    <Compile Include="Services\ProductionManagerTests.vb" />
-    <Compile Include="Services\RelativityManagerTests.vb" />
-    <Compile Include="Services\SearchManagerTests.vb" />
-    <Compile Include="Services\UserManagerTests.vb" />
     <Compile Include="Stubs\StubDataReaderReader.vb" />
     <Compile Include="TempFileBuilderTests.vb" />
     <Compile Include="TestObjectFactories\QueryFieldFactory.vb" />
@@ -192,6 +177,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="paket.references" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Choose>

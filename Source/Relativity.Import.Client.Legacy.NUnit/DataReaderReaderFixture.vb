@@ -3,6 +3,8 @@
 Imports kCura.WinEDDS.ImportExtension
 Imports kCura.WinEDDS
 
+Imports Relativity
+
 Imports Rhino.Mocks
 
 Public Class DataReaderReaderFixture

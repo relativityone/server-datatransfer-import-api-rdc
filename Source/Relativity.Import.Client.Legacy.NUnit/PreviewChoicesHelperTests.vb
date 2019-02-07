@@ -3,6 +3,8 @@ Imports kCura.WinEDDS.Api
 
 Imports NUnit.Framework
 
+Imports Relativity
+
 <TestFixture()>
 Public Class PreviewChoicesHelperTests
 

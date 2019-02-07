@@ -2,7 +2,7 @@
 
 Imports NUnit.Framework
 
-Imports Relativity.Import.Client.NUnit.Relativity.Import.Client.NUnit.TestObjectFactories
+Imports Relativity.Import.Client.NUnit.TestObjectFactories
 
 Namespace Relativity.Import.Client.NUnit
 

@@ -4,8 +4,8 @@ Imports Rhino.Mocks
 Imports NUnit.Framework
 Imports kCura.WinEDDS.Service
 
-Namespace Relativity.Import.Client.NUnit.Services
-	'<TestFixture()>
+Namespace Relativity.Import.Client.NUnit
+	<TestFixture()>
 	Public Class FileIOTests
 
 #Region " Members "
@@ -136,7 +136,7 @@ Namespace Relativity.Import.Client.NUnit.Services
 		End Sub
 
 		Public Sub ModifySoapDetailsToThisExceptionType(exDetail As SoapExceptionDetail) Implements SoapDetailModifierForMockException.ModifySoapDetailsToEmulateThisExceptionType
-			Helper.ModifyRelativitySoapDetails("Relativity.Import.Client.NUnit.Relativity.Import.Client.NUnit.Services.MockInsufficientAccessControlListPermissions", "Relativity.Core.Exception.InsufficientAccessControlListPermissions", exDetail)
+			Helper.ModifyRelativitySoapDetails("Relativity.Import.Client.NUnit.MockInsufficientAccessControlListPermissions", "Relativity.Core.Exception.InsufficientAccessControlListPermissions", exDetail)
 		End Sub
 	End Class
 
@@ -149,13 +149,7 @@ Namespace Relativity.Import.Client.NUnit.Services
 		End Sub
 
 		Public Sub ModifySoapDetailsToThisExceptionType(exDetail As SoapExceptionDetail) Implements SoapDetailModifierForMockException.ModifySoapDetailsToEmulateThisExceptionType
-			Helper.ModifyRelativitySoapDetails("Relativity.Import.Client.NUnit.Relativity.Import.Client.NUnit.Services.MockArgumentException", "System.ArgumentException", exDetail)
+			Helper.ModifyRelativitySoapDetails("Relativity.Import.Client.NUnit.MockArgumentException", "System.ArgumentException", exDetail)
 		End Sub
 	End Class
 End Namespace
-
-
-
-
-
-
