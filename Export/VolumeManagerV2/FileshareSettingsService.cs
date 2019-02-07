@@ -13,23 +13,27 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 		private List<RelativityFileShareSettings> _cachedSettings;
 		private readonly ILog _logger;
 		private readonly int _workspaceId;
+		private readonly string _webServiceUrl;
 		private readonly NetworkCredential _currentUserCredential;
+		private readonly CookieContainer _cookieContainer;
 
 		public FileShareSettingsService(ILog logger, ExportFile exportSettings)
 		{
-		    if (logger == null)
-		    {
-		        throw new ArgumentNullException(nameof(logger));
-		    }
+			if (logger == null)
+			{
+				throw new ArgumentNullException(nameof(logger));
+			}
 
-		    if (exportSettings == null)
-		    {
-		        throw new ArgumentNullException(nameof(exportSettings));
-		    }
+			if (exportSettings == null)
+			{
+				throw new ArgumentNullException(nameof(exportSettings));
+			}
 
-            _logger = logger;
+			_logger = logger;
+            _webServiceUrl = Config.WebServiceURL;
 			_workspaceId = exportSettings.CaseInfo.ArtifactID;
 			_currentUserCredential = exportSettings.Credential;
+			_cookieContainer = exportSettings.CookieContainer;
 		}
 
 		public IRelativityFileShareSettings GetSettingsForFileshare(string fileUrl)
@@ -39,6 +43,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 				GetFileShareSettingsForWorkspace(Config.WebServiceURL, _workspaceId, _currentUserCredential.UserName, _currentUserCredential.Password);
 			}
 
+			// settings will be null here if the fileUrl belongs to no known file share, e.g. if the path in the database was somehow modified,
+			// or if the file share to which it was uploaded no longer exists in Relativity.
 			RelativityFileShareSettings settings = _cachedSettings.FirstOrDefault(n => n.IsBaseOf(fileUrl));
 			return settings;
 		}
@@ -47,8 +53,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 		{
 			try
 			{
-				RelativityConnectionInfo connectionInfo = TapiWinEddsHelper.CreateRelativityConnectionInfo(hostUrl, workspaceId, userName, password);
+				TapiBridgeParameters parameters = new TapiBridgeParameters
+				{
+					Credentials = _currentUserCredential,
+					WebCookieContainer = _cookieContainer,
+					WebServiceUrl = _webServiceUrl,
+					WorkspaceId = _workspaceId
+				};
 
+				RelativityConnectionInfo connectionInfo = TapiWinEddsHelper.CreateRelativityConnectionInfo(parameters);
 				using (ITransferLog transferLog = new RelativityTransferLog(_logger, false))
 				using (var transferHost = new RelativityTransferHost(connectionInfo, transferLog))
 				{
@@ -62,8 +75,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 						{
 							this._logger.LogWarning(
 								"The Relativity instance '{Url}' defines workspace '{WorkspaceId}' that references invalid fileshare '{FileShareName}' from the associated resource pool.",
-								hostUrl,
-								workspaceId,
+								_webServiceUrl,
+								_workspaceId,
 								fileShare.Name);
 						}
 					}
