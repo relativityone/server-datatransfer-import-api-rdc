@@ -7,12 +7,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{6B2E3939-E33B-4672-B420-F3B6021DDA78}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Relativity.Import.Client.Legacy.NUnit</RootNamespace>
+    <RootNamespace>Relativity.Import.Client.NUnit</RootNamespace>
     <AssemblyName>Relativity.Import.Client.Legacy.NUnit</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>Windows</MyType>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <Deterministic>true</Deterministic>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,7 +23,7 @@
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>Relativity.Import.Client.Legacy.NUnit.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -55,6 +56,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -133,9 +136,61 @@
     <Compile Include="..\..\Version\AssemblySharedInfo.vb">
       <Link>My Project\AssemblySharedInfo.vb</Link>
     </Compile>
+    <Compile Include="BulkImageFileImporterTests.vb" />
+    <Compile Include="BulkImportManager.vb" />
+    <Compile Include="BulkLoadFileImporterTests.vb" />
+    <Compile Include="DataReaderReaderFixture.vb" />
+    <Compile Include="Exceptions\ExceptionSerializationTests.vb" />
+    <Compile Include="Exceptions\FieldValueImportExceptionFixture.vb" />
+    <Compile Include="Exporters\ObjectExportInfoTests.vb" />
+    <Compile Include="Exporters\OpticonFilenameComparerTests.vb" />
+    <Compile Include="Exporters\OriginalFileNameProviderTests.vb" />
+    <Compile Include="Exporters\Validator\PaddingWarningValidator\IsValid.vb" />
+    <Compile Include="ExportFileSerializer.part.vb" />
+    <Compile Include="ExportFileSerializer.vb" />
+    <Compile Include="ExportNativeWithFilenameFrom.vb" />
+    <Compile Include="FolderCacheTests.vb" />
+    <Compile Include="GlobalSuppressions.vb" />
+    <Compile Include="Helpers\CaseInsensitiveFilePathHelperTests.vb" />
+    <Compile Include="Helpers\CaseSensitiveFilePathHelperTests.vb" />
+    <Compile Include="Helpers\FileNameHelperTests.vb" />
+    <Compile Include="Helpers\LoginHelperTests.vb" />
+    <Compile Include="ImageFilePreviewerTests.vb" />
+    <Compile Include="LoadFileBaseTests.vb" />
+    <Compile Include="LoadFileType.vb" />
+    <Compile Include="MockBulkImageFileImporter.vb" />
+    <Compile Include="MockBulkImportManagerSqlExceptions.vb" />
+    <Compile Include="MockBulkImportManagerWebExceptions.vb" />
+    <Compile Include="MockBulkLoadFileImporter.vb" />
+    <Compile Include="MockForLoweBatchSizeBulkImageFileImporter.vb" />
+    <Compile Include="Monitoring\MetricsSinkConfigTests.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="OutputFileWriterTests.vb" />
+    <Compile Include="PreviewChoicesHelperTests.vb" />
+    <Compile Include="RegKeyHelper.vb" />
+    <Compile Include="Services\AuditManagerTests.vb" />
+    <Compile Include="Services\BulkImportManagerTests.vb" />
+    <Compile Include="Services\CaseManagerTests.vb" />
+    <Compile Include="Services\CodeManagerTests.vb" />
+    <Compile Include="Services\DocumentManagerTests.vb" />
+    <Compile Include="Services\ExportManagerTests.vb" />
+    <Compile Include="Services\FieldManagerTests.vb" />
+    <Compile Include="Services\FieldQueryTests.vb" />
+    <Compile Include="Services\FileIOTests.vb" />
+    <Compile Include="Services\FileManagerTests.vb" />
+    <Compile Include="Services\FolderManagerTests.vb" />
+    <Compile Include="Services\ObjectManagerTests.vb" />
+    <Compile Include="Services\ObjectTypeManagerTests.vb" />
+    <Compile Include="Services\ProductionManagerTests.vb" />
+    <Compile Include="Services\RelativityManagerTests.vb" />
+    <Compile Include="Services\SearchManagerTests.vb" />
+    <Compile Include="Services\UserManagerTests.vb" />
+    <Compile Include="Stubs\StubDataReaderReader.vb" />
+    <Compile Include="TempFileBuilderTests.vb" />
+    <Compile Include="TestObjectFactories\QueryFieldFactory.vb" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="paket.references" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
@@ -233,6 +288,20 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Microsoft.CSharp">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="NSubstitute">
+          <HintPath>..\..\packages\NSubstitute\lib\net46\NSubstitute.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="nunit.framework">
           <HintPath>..\..\packages\NUnit\lib\net45\nunit.framework.dll</HintPath>
           <Private>True</Private>
@@ -245,7 +314,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Polly">
-          <HintPath>..\..\packages\Polly\lib\netstandard1.1\Polly.dll</HintPath>
+          <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -386,6 +455,11 @@
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="Relativity.Logging.Interfaces">
+          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
       </ItemGroup>
     </When>
   </Choose>
@@ -490,6 +564,17 @@
         </Reference>
         <Reference Include="Relativity.Transfer.Client.Http">
           <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Rhino.Mocks">
+          <HintPath>..\..\packages\RhinoMocks\lib\Rhino.Mocks.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

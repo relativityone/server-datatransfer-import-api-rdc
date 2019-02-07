@@ -5,7 +5,18 @@ source https://nuget.org/api/v2
 nuget nunit = 3.11.0
 nuget moq = 4.10.1
 nuget nbuilder = 6.0.0
+nuget nsubstitute = 3.1.0
+
+# Polly is explicitly listed to avoid conflicts between TAPI and Relatativity.
+nuget polly = 5.7.0.0
+nuget rhinomocks  = 3.6.0
 
 # Proget packages are below.
 source https://proget.kcura.corp/NuGet/NuGet
+
+# Both kCura and Relativity are explicitly listed to address a bug with Relativity and NuGet packages (IE 10.2.0.0 only)
+nuget kcura = 10.2.30.42
+nuget relativity = 10.2.30.42
 nuget relativity.importexport = 10.2.30.42
+nuget relativity.telemetry.datacontracts.shared = 2019.1.0
+nuget relativity.telemetry.services.interface = 2019.1.0
