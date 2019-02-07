@@ -3,6 +3,7 @@ NUGET
   remote: https://www.nuget.org/api/v2
     BCrypt-Official (0.1.109)
     Castle.Core (4.3.1)
+    Microsoft.Build.Logging.StructuredLogger (1.0.89)
     Moq (4.10.1)
       Castle.Core (>= 4.3.1)
       System.Threading.Tasks.Extensions (>= 4.5.1)
@@ -13,7 +14,10 @@ NUGET
       System.Threading.Tasks.Extensions (>= 4.3)
     NuGetPowerTools (0.29)
     NUnit (3.11)
+    NUnit.ConsoleRunner (3.9)
+    NUnit.Extension.VSProjectLoader (3.8)
     Polly (5.7)
+    psake (4.7.4)
     RhinoMocks (3.6)
     SSH.NET (2016.0)
     System.Runtime.CompilerServices.Unsafe (4.5.2)

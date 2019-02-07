@@ -1,10 +1,9 @@
 ﻿' ----------------------------------------------------------------------------
-' <copyright file="AssemblyInfo.cs" company="Relativity ODA LLC">
+' <copyright file="AssemblyInfo.vb" company="Relativity ODA LLC">
 '   © Relativity All Rights Reserved.
 ' </copyright>
 ' ----------------------------------------------------------------------------
 
-Imports System
 Imports System.Reflection
 Imports System.Runtime.InteropServices
 

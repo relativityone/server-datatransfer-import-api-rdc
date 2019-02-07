@@ -2,13 +2,17 @@ framework: net462
 source https://nuget.org/api/v2
 
 # Note: periodically update NUnit to the latest version.
-nuget nunit = 3.11.0
+nuget microsoft.build.logging.structuredlogger = 1.0.89
 nuget moq = 4.10.1
 nuget nbuilder = 6.0.0
 nuget nsubstitute = 3.1.0
+nuget nunit = 3.11.0
+nuget nunit.consolerunner = 3.9.0
+nuget nunit.extension.vsprojectloader = 3.8.0
 
 # Polly is explicitly listed to avoid conflicts between TAPI and Relatativity.
 nuget polly = 5.7.0.0
+nuget psake = 4.7.4
 nuget rhinomocks  = 3.6.0
 
 # Proget packages are below.

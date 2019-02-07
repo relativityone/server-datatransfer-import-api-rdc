@@ -81,25 +81,28 @@ param(
 
 $BaseDir = $PSScriptRoot
 $BuildToolsDir = Join-Path $BaseDir "buildtools"
-$NuGetEXE = Join-Path $BuildToolsDir "nuget.exe"
+$PackagesDir = Join-Path $BaseDir "packages"
+$PaketDir = Join-Path $BaseDir ".paket"
+$PaketExe = Join-Path $PaketDir 'paket.bootstrapper.exe'
 Write-Verbose "BaseDir resolves to $BaseDir"
-
-Write-Verbose "Checking for NuGet in tools path..."
-if (-Not (Test-Path $NuGetEXE)) {
-    Invoke-WebRequest "https://dist.nuget.org/win-x86-commandline/v4.9.2/nuget.exe" -OutFile $NuGetEXE
+Write-Verbose "Checking for Paket in the .paket sub-directory..."
+if (-Not (Test-Path $PaketDir -PathType Container)) {
+    New-Item -ItemType directory -Path $PaketDir
 }
 
-$NuGetVerbosity = if ($VerbosePreference -gt "SilentlyContinue") { "detailed" } else { "normal" }
+if (-Not (Test-Path $PaketExe -PathType Leaf)) {
+    Invoke-WebRequest "https://github.com/fsprojects/Paket/releases/download/5.196.2/paket.exe" -OutFile $PaketExe
+}
 
-Write-Verbose "NuGetVerbosity is $NuGetVerbosity"
-Write-Output "Restoring tools from NuGet..."
-& $NuGetEXE install (Join-Path $BuildToolsDir "packages.config") -o $BuildToolsDir -Verbosity $NuGetVerbosity
+$PaketVerbosity = if ($VerbosePreference -gt "SilentlyContinue") { "--verbose" } else { "" }
+Write-Verbose "Restoring packages via paket for $MasterSolution"
+& $PaketExe restore $PaketVerbosity
 if ($LASTEXITCODE -ne 0) 
 {
 	Throw "An error occured while restoring build tools."
 }
 
-if($Test -or $UnitTest)
+if ($Test -or $UnitTest)
 {
     $TempList = New-Object System.Collections.ArrayList($null)
     $TempList.AddRange($TaskList)
@@ -114,7 +117,6 @@ $Params = @{
     framework = "4.6.2"
     parameters = @{
         Root = $BaseDir
-        NuGetEXE = $NuGetEXE
         BuildToolsDir = $BuildToolsDir
     }
     properties = @{
@@ -133,7 +135,12 @@ $Params = @{
 }
 
 # Execute the build
-Import-Module (Resolve-Path (Join-Path $BuildToolsDir "psake.*\tools\psake\psake.psm1"))
+$PSakePath = Join-Path $PackagesDir "psake\tools\psake\psake.psm1"
+if (-Not (Test-Path $PSakePath -PathType Leaf)) {
+    Throw "The expected PSake path '$PSakePath' doesn't exist."
+}
+
+Import-Module $PSakePath
 
 Try
 {

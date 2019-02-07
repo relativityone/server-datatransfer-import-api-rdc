@@ -11,8 +11,8 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Relativity.Transfer.Tests64")]
-[assembly: AssemblyDescription("A Relativity transfer 64-bit unit tests library.")]
+[assembly: AssemblyTitle("Relativity.Import.Client.NUnit")]
+[assembly: AssemblyDescription("A Relativity import client unit test library.")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 

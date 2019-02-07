@@ -32,10 +32,8 @@ task Initialize -Description "Prepare variables for the build." {
     Write-Verbose "BuildConfig set to: $script:BuildConfig"
 }
 
-task BuildInitialize -Description "Prepare to build the sample and restore NuGet packages." -Depends Initialize {
-    
-    Write-Verbose "Restoring NuGet packages for $MasterSolution"
-    exec { & $NuGetEXE restore $MasterSolution }
+task BuildInitialize -Description "Prepare to build the solution." -Depends Initialize {    
+    # Place any new initialization requirements here.
 }
 
 task UpdateAssemblyInfo -Precondition { $AssemblyVersion -ne "1.0.0.0" } -Description "Update the AssemblyInfo files in \Version\" {
