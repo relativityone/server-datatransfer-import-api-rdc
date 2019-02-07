@@ -203,16 +203,16 @@
     <Reference Include="Relativity.Services.ServiceProxy">
       <HintPath>..\..\packages\Relativity.Kepler.Client.1.0.1.589\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Telemetry.APM, Version=2018.12.2.3, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\Relativity.Telemetry.APM.2018.12.2\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.APM, Version=2019.1.0.3, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\Relativity.Telemetry.APM.2019.1.0\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=2018.12.2.3, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.2018.12.2\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=2019.1.0.3, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared.2019.1.0\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.Services.Interface, Version=2018.12.2.3, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface.2018.12.2\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.Services.Interface, Version=2019.1.0.3, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface.2019.1.0\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Transfer.Client, Version=5.0.2.35, Culture=neutral, PublicKeyToken=null">
@@ -343,11 +343,13 @@
     <Compile Include="Exceptions\FileWriteError.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Exceptions\ImportIOException.vb" />
     <Compile Include="Exceptions\InvalidLoginException.vb">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Exceptions\RelativityVersionMismatchException.vb" />
-    <Compile Include="Exceptions\WebApiConnectionFailureException.vb" />
+    <Compile Include="Helpers\ExceptionHelper.vb" />
+    <Compile Include="Exceptions\WebApiException.vb" />
     <Compile Include="Exceptions\WebDownloadCorruptException.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -452,8 +454,6 @@
     <Compile Include="Helpers\FieldValueHelper.vb" />
     <Compile Include="Helpers\FileNameHelper.vb" />
     <Compile Include="Helpers\IFilePathHelper.vb" />
-    <Compile Include="Helpers\ISystemIoFileWrapper.vb" />
-    <Compile Include="Helpers\SystemIoFileWrapper.vb" />
     <Compile Include="IFieldProviderCache.vb" />
     <Compile Include="Importers\BulkImageFileImporter.vb">
       <SubType>Code</SubType>

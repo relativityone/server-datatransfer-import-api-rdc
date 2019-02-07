@@ -8,6 +8,8 @@
 	''' </remarks>
 	Public Class TempFileBuilder
 
+		Private Shared _fileSystem As kCura.WinEDDS.TApi.IFileSystem
+
 		''' <summary>
 		''' Gets a uniquely named, zero-byte temporary file on disk and returns the full path of that file.
 		''' </summary>
@@ -28,21 +30,20 @@
 		''' The full path of the temporary file.
 		''' </returns>
 		Public Shared Function GetTempFileName(fileNameSuffix As String) As String
-			Const FileNameSeparator As String = "-"
-			If String.IsNullOrEmpty(fileNameSuffix) Then
-				fileNameSuffix = "rel-default"
-			End If
-
-			Dim tempDirectory As String = System.IO.Path.GetTempPath()
-			Dim fileName As String = String.Join(
-				FileNameSeparator,
-				DateTime.Now.ToString($"yyyyMMddHHmmss", System.Globalization.CultureInfo.InvariantCulture),
-				Guid.NewGuid().ToString("D").ToUpperInvariant(),
-				fileNameSuffix)
-			Dim file As String = System.IO.Path.Combine(tempDirectory, System.IO.Path.ChangeExtension(fileName, "tmp"))
-			Using (kCura.Utility.File.Instance.Create(file))
-			End Using
-			Return file
+			' The implementation has been relocated to the IPath object.
+			Return FileSystem.Path.GetTempFileName(fileNameSuffix)
 		End Function
+
+		Private Shared ReadOnly Property FileSystem As kCura.WinEDDS.TApi.IFileSystem
+			Get
+				' Limiting custom temp directory configuration to just this class.
+				If _fileSystem Is Nothing
+					_fileSystem = kCura.WinEDDS.TApi.FileSystem.Instance.DeepCopy()
+					_fileSystem.Path.CustomTempPath = kCura.WinEDDS.Config.TempDirectory
+				End If
+
+				Return _fileSystem
+			End Get
+		End Property
 	End Class
 End Namespace

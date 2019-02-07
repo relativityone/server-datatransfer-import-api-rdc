@@ -2,10 +2,10 @@
 	Public Class CaseInsensitiveFilePathHelper
 		Implements IFilePathHelper
 
-		Private ReadOnly _systemIoWrapper As ISystemIoFileWrapper
+		Private ReadOnly _fileSystem As kCura.WinEDDS.TApi.IFileSystem
 
-		Public Sub New(systemIoWrapper As ISystemIoFileWrapper)
-			_systemIoWrapper = systemIoWrapper
+		Public Sub New(fileSystem As kCura.WinEDDS.TApi.IFileSystem)
+			_fileSystem = fileSystem
 		End Sub
 
 		Public Function GetExistingFilePath(path As String) As String Implements IFilePathHelper.GetExistingFilePath
@@ -14,7 +14,7 @@
 			End If
 
 			Try
-				Return If(_systemIoWrapper.Exists(path), path, Nothing)
+				Return If(_fileSystem.File.Exists(path), path, Nothing)
 			Catch ex As Exception
 				Return Nothing
 			End Try

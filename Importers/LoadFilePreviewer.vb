@@ -1,7 +1,4 @@
-'Imports kCura.EDDS.DynamicFields
-Imports System.IO
 Imports System.Threading
-Imports kCura.WinEDDS.Api
 Imports kCura.Utility
 Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.TApi
@@ -21,19 +18,28 @@ Namespace kCura.WinEDDS
 		Public Shared extractedTextEncodingFieldName As String = "Extracted Text Encoding"
 		Private _relationalDocumentFields As DocumentField()
 		Private _processedIdentifiers As New Collections.Specialized.NameValueCollection
-		Private ReadOnly _filePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
 #End Region
 
 #Region "Constructors"
 
-
-		Public Sub New(ByVal args As LoadFile, ByVal logger As ILog, ByVal timeZoneOffset As Int32, ByVal errorsOnly As Boolean, ByVal doRetryLogic As Boolean, ByVal tokenSource As CancellationTokenSource,
-					   Optional ByVal processController As kCura.Windows.Process.Controller = Nothing)
-			MyBase.New(args, Nothing, logger, timeZoneOffset, doRetryLogic, True, tokenSource)
+		Public Sub New(args As LoadFile, _
+		               reporter As IIoReporter, _
+		               logger As ILog, _
+		               timeZoneOffset As Int32, _
+		               errorsOnly As Boolean, _
+		               doRetryLogic As Boolean, _
+		               tokenSource As CancellationTokenSource,
+		               Optional ByVal processController As kCura.Windows.Process.Controller = Nothing)
+			MyBase.New(args, _
+			           reporter, _
+			           logger, _
+			           timeZoneOffset, _
+			           doRetryLogic, _
+			           True, _
+			           tokenSource)
 			_selectedCaseArtifactID = args.CaseInfo.ArtifactID
 			_errorsOnly = errorsOnly
 			_processController = processController
-
 		End Sub
 
 #End Region
@@ -234,7 +240,8 @@ Namespace kCura.WinEDDS
 				If filePath = "" Then
 					record.FileField.Value = "No File Specified."
 				Else
-					Dim foundFileName As String = _filePathHelper.GetExistingFilePath(existsFilePath)
+					Const retry As Boolean = True
+					Dim foundFileName As String = Me.GetExistingFilePath(existsFilePath, retry)
 					Dim fileExists As Boolean = Not String.IsNullOrEmpty(foundFileName)
 
 					If Not fileExists Then
