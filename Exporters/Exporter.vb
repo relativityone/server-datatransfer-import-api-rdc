@@ -273,7 +273,6 @@ Namespace kCura.WinEDDS
 			Dim startTicks As Int64 = System.DateTime.Now.Ticks
 			Dim exportInitializationArgs As kCura.EDDS.WebAPI.ExportManagerBase.InitializationResults = Nothing
 			Dim columnHeaderString As String = Me.LoadColumns
-
 			Dim production As kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo = Nothing
 
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
@@ -324,9 +323,10 @@ Namespace kCura.WinEDDS
 				InteractionManager.AlertCriticalError(msg)
 				Me.Shutdown()
 				Return False
-			Else
-				Me.TotalExportArtifactCount -= Me.Settings.StartAtDocumentNumber
 			End If
+
+			Me.TotalExportArtifactCount -= Me.Settings.StartAtDocumentNumber
+
 			Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
 
 			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, exportInitializationArgs.ColumnNames, UseOldExport, _loadFileFormatterFactory)
@@ -397,10 +397,10 @@ Namespace kCura.WinEDDS
 					End If
 					If _cancellationTokenSource.IsCancellationRequested Then Exit While
 				End While
-				If exportInitializationArgs.RowCount <> nextRecordIndex Then
-					WriteError($"Total items processed ({nextRecordIndex}) is different than expected total records count ({exportInitializationArgs.RowCount}).")
-				End If
-				Me.WriteStatusLine(Windows.Process.EventType.Status, kCura.WinEDDS.FileDownloader.TotalWebTime.ToString, True)
+
+				ValidateExportedRecordCount(lastRecordCount, Me.TotalExportArtifactCount)
+
+				Me.WriteStatusLine(EventType.Status, FileDownloader.TotalWebTime.ToString, True)
 				_timekeeper.GenerateCsvReportItemsAsRows()
 
 				If UseOldExport Then _volumeManager.Finish()
@@ -410,6 +410,11 @@ Namespace kCura.WinEDDS
 			End Using
 		End Function
 
+		Private Sub ValidateExportedRecordCount(actualExportedRecordsCount As Int32, expectedExportedRecordsCount As Long)
+			If actualExportedRecordsCount <> expectedExportedRecordsCount Then
+				WriteError($"Total items processed ({actualExportedRecordsCount}) is different than expected total records count ({expectedExportedRecordsCount}).")
+			End If
+		End Sub
 
 		Private Function CallServerWithRetry(Of T)(f As Func(Of T), ByVal maxTries As Int32) As T
 			Dim tries As Integer
