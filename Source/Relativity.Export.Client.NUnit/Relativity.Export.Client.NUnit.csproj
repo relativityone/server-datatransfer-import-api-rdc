@@ -264,25 +264,7 @@
       <Name>Relativity.ImportExport.UnitTestFramework</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Export\Natives\Name\Factories\" />
-    <Folder Include="Export\VolumeManagerV2\Batches\" />
-    <Folder Include="Export\VolumeManagerV2\DataSize\" />
-    <Folder Include="Export\VolumeManagerV2\Directories\" />
-    <Folder Include="Export\VolumeManagerV2\Download\EncodingHelpers\" />
-    <Folder Include="Export\VolumeManagerV2\Download\TapiHelpers\" />
-    <Folder Include="Export\VolumeManagerV2\ImagesRollup\" />
-    <Folder Include="Export\VolumeManagerV2\Metadata\Images\Lines\" />
-    <Folder Include="Export\VolumeManagerV2\Metadata\Natives\" />
-    <Folder Include="Export\VolumeManagerV2\Metadata\Paths\" />
-    <Folder Include="Export\VolumeManagerV2\Metadata\Text\" />
-    <Folder Include="Export\VolumeManagerV2\Metadata\Writers\" />
-    <Folder Include="Export\VolumeManagerV2\Repository\" />
-    <Folder Include="Export\VolumeManagerV2\Settings\" />
-    <Folder Include="Export\VolumeManagerV2\Statistics\" />
-    <Folder Include="Export\VolumeManagerV2\Validation\" />
-    <Folder Include="Helpers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
