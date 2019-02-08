@@ -256,10 +256,6 @@ FakesAssemblies/
 **/*.Server/ModelManifest.xml
 _Pvt_Extensions
 
-# Paket dependency manager
-.paket/paket.exe
-paket-files/
-
 # FAKE - F# Make
 .fake/
 
@@ -289,10 +285,11 @@ build/
 
 # build artifacts
 /.paket/paket.*.exe
+/.paket/Paket.Restore.targets
+/paket-files
 /Logs/*
 /PDBs/*
 /Source/Relativity.ImportAPI-RDC.sln.DotSettings
-/.paket/Paket.Restore.targets
 errors.xml
 
 # Ignore everything in BuildTools
