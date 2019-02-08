@@ -1,18 +1,29 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using kCura.WinEDDS.Exporters;
-using Moq;
-using NUnit.Framework;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="LongTextBatchValidatorTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Batches
 {
-	[TestFixture]
+    using System.Collections.Generic;
+    using System.Text;
+    using System.Threading;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
+    using kCura.WinEDDS.Exporters;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class LongTextBatchValidatorTests
 	{
 		protected IBatchValidator Instance;

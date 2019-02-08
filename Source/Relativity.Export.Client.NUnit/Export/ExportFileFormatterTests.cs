@@ -1,11 +1,19 @@
-﻿using System;
-using System.Linq;
-using kCura.WinEDDS.Core.Export;
-using NUnit.Framework;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="ExportFileFormatterTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export
+namespace Relativity.Export.Client.NUnit.Export
 {
-	public class ExportFileFormatterTests : ExportFileFormatterSetUp<ExportFileFormatter>
+    using System;
+    using System.Linq;
+
+    using kCura.WinEDDS.Core.Export;
+
+    using global::NUnit.Framework;
+
+    public class ExportFileFormatterTests : ExportFileFormatterSetUp<ExportFileFormatter>
 	{
 		
 		[Test]

@@ -1,20 +1,32 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize;
-using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.NUnit.TestObjectFactories;
-using Moq;
-using NUnit.Framework;
-using Relativity;
-using Relativity.Logging;
-using Constants = Relativity.Constants;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="LongTextFromFieldBuilderTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Repository
 {
-	[TestFixture]
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
+    using kCura.WinEDDS.Exporters;
+            
+    using Moq;
+
+    using global::NUnit.Framework;
+    
+    using Relativity;
+    using Relativity.Export.Client.NUnit.Export.VolumeManagerV2.DataSize;
+    using Relativity.Import.Client.NUnit;
+    using Relativity.Logging;
+
+    using RelativityConstants = Relativity.Constants;
+
+    [TestFixture]
 	public class LongTextFromFieldBuilderTests
 	{
 		private LongTextFromFieldBuilder _instance;
@@ -37,8 +49,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 		[Test]
 		public void ItShouldTakeOnlyLongTextFields()
 		{
-			ViewFieldInfo[] fields = _queryFieldFactory.GetAllDocumentFields();
-			ViewFieldInfo longTextField = fields.First(x => x.FieldType == FieldTypeHelper.FieldType.Text);
+            kCura.WinEDDS.ViewFieldInfo[] fields = _queryFieldFactory.GetAllDocumentFields();
+            kCura.WinEDDS.ViewFieldInfo longTextField = fields.First(x => x.FieldType == FieldTypeHelper.FieldType.Text);
 			_fieldService.Setup(x => x.GetColumns()).Returns(fields);
 			_fieldService.Setup(x => x.GetOrdinalIndex(longTextField.AvfColumnName)).Returns(0);
 
@@ -62,7 +74,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 			FieldStub longTextField2 = new FieldStub(_queryFieldFactory.GetExtractedTextField());
 			longTextField1.SetFieldArtifactId(111);
 			longTextField2.SetFieldArtifactId(222);
-			_fieldService.Setup(x => x.GetColumns()).Returns(new ViewFieldInfo[] {longTextField1, longTextField2});
+			_fieldService.Setup(x => x.GetColumns()).Returns(new kCura.WinEDDS.ViewFieldInfo[] {longTextField1, longTextField2});
 			_fieldService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns(0);
 
 			ObjectExportInfo artifact = new ObjectExportInfo
@@ -82,7 +94,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 		[Test]
 		public void ItShouldHandleNotTooLongText()
 		{
-			ViewFieldInfo longTextField = _queryFieldFactory.GetExtractedTextField();
+            kCura.WinEDDS.ViewFieldInfo longTextField = _queryFieldFactory.GetExtractedTextField();
 			_fieldService.Setup(x => x.GetColumns()).Returns(new[] {longTextField});
 			_fieldService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns(0);
 
@@ -106,11 +118,11 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 		[Test]
 		public void ItShouldHandleTooLongText()
 		{
-			ViewFieldInfo longTextField = _queryFieldFactory.GetExtractedTextField();
+            kCura.WinEDDS.ViewFieldInfo longTextField = _queryFieldFactory.GetExtractedTextField();
 			_fieldService.Setup(x => x.GetColumns()).Returns(new[] {longTextField});
 			_fieldService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns(0);
 
-			const string tooLongText = Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
+			const string tooLongText = RelativityConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
@@ -132,10 +144,10 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 		{
 			CoalescedTextViewField longTextField = new CoalescedTextViewField(_queryFieldFactory.GetExtractedTextField(), true);
 
-			_fieldService.Setup(x => x.GetColumns()).Returns(new ViewFieldInfo[] {longTextField});
+			_fieldService.Setup(x => x.GetColumns()).Returns(new kCura.WinEDDS.ViewFieldInfo[] {longTextField});
 			_fieldService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns(0);
 
-			const string tooLongText = Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
+			const string tooLongText = RelativityConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{

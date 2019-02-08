@@ -1,13 +1,23 @@
-﻿using System.IO;
-using System.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
-using NUnit.Framework;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="FromFileToLoadFileWriterTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Writers
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Writers
 {
-	[TestFixture]
+    using System.IO;
+    using System.Text;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class FromFileToLoadFileWriterTests
 	{
 		private FromFileToLoadFileWriter _instance;

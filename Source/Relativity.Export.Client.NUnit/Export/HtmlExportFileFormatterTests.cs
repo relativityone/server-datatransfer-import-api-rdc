@@ -1,15 +1,22 @@
-﻿
-using System;
-using System.Data;
-using System.Linq;
-using System.Text;
-using kCura.WinEDDS.Core.Export;
-using NUnit.Framework;
-using Relativity;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="HtmlExportFileFormatterTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export
+namespace Relativity.Export.Client.NUnit.Export
 {
-	public class HtmlExportFileFormatterTests : ExportFileFormatterSetUp<HtmlExportFileFormatter>
+    using System;
+    using System.Linq;
+    using System.Text;
+
+    using kCura.WinEDDS.Core.Export;
+
+    using global::NUnit.Framework;
+
+    using Relativity;
+
+    public class HtmlExportFileFormatterTests : ExportFileFormatterSetUp<HtmlExportFileFormatter>
 	{
 		private string _headerPrefix;
 		private string _headerSuffix = $"{Environment.NewLine}{_HTML_TR_END}{Environment.NewLine}";

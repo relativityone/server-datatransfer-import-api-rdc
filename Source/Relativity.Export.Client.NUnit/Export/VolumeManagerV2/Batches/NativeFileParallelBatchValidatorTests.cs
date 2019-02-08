@@ -1,10 +1,18 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
-using NUnit.Framework;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="NativeFileParallelBatchValidatorTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Batches
 {
-	[TestFixture]
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class NativeFileParallelBatchValidatorTests: NativeFileBatchValidatorTests
 	{
 		protected override IBatchValidator CreateValidator()

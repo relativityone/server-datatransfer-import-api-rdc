@@ -1,10 +1,18 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using Moq;
-using NUnit.Framework;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="LabelManagerForArtifactTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Directories
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Directories
 {
-	[TestFixture]
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    [TestFixture]
 	public class LabelManagerForArtifactTests
 	{
 		private LabelManagerForArtifact _instance;

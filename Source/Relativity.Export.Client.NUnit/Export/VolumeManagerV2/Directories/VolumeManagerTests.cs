@@ -1,15 +1,25 @@
-﻿using System;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Exporters;
-using Moq;
-using NUnit.Framework;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="VolumeManagerTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Directories
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Directories
 {
-	[TestFixture]
+    using System;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+    using kCura.WinEDDS.Exporters;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    [TestFixture]
 	public class VolumeManagerTests
 	{
-		private Core.Export.VolumeManagerV2.Directories.VolumeManager _instance;
+		private kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories.VolumeManager _instance;
 		private Mock<ISubdirectoryManager> _subdirectoryManager;
 
 		private const int _MBS_TO_BYTES = 1024 * 1024;
@@ -30,7 +40,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Directories
 					VolumeMaxSize = maxSizeInMBs
 				}
 			};
-			_instance = new Core.Export.VolumeManagerV2.Directories.VolumeManager(exportSettings, _subdirectoryManager.Object);
+			_instance = new kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories.VolumeManager(exportSettings, _subdirectoryManager.Object);
 		}
 
 		[Test]

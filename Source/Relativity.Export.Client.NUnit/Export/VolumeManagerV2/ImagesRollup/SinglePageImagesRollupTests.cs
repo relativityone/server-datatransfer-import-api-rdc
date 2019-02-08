@@ -1,11 +1,19 @@
-﻿using System.Collections;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
-using kCura.WinEDDS.Exporters;
-using NUnit.Framework;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="SinglePageImagesRollupTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.ImagesRollup
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.ImagesRollup
 {
-	[TestFixture]
+    using System.Collections;
+
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
+    using kCura.WinEDDS.Exporters;
+
+    using global::NUnit.Framework;
+
+    [TestFixture]
 	public class SinglePageImagesRollupTests
 	{
 		[Test]

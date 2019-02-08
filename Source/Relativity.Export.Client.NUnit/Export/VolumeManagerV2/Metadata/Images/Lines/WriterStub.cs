@@ -1,10 +1,17 @@
-﻿using System.Text;
-using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="WriterStub.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Images.Lines
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Images.Lines
 {
-	public class WriterStub : IRetryableStreamWriter
+    using System.Text;
+    using System.Threading;
+
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
+
+    public class WriterStub : IRetryableStreamWriter
 	{
 		private readonly StringBuilder _stringBuilder = new StringBuilder();
 

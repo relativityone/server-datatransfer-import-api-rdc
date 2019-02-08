@@ -1,18 +1,29 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.LoadFileEntry;
-using kCura.WinEDDS.NUnit.TestObjectFactories;
-using Moq;
-using NUnit.Framework;
-using Relativity;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="LineFieldsValueTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Natives
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Natives
 {
-	[TestFixture]
+    using System.Collections.Generic;
+    using System.Linq;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+    using kCura.WinEDDS.Exporters;
+    using kCura.WinEDDS.LoadFileEntry;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity;
+    using Relativity.Import.Client.NUnit;
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class LineFieldsValueTests
 	{
 		private LineFieldsValue _instance;
@@ -45,8 +56,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Natives
 		[Test]
 		public void ItShouldDistinguishLongTextFields()
 		{
-			ViewFieldInfo artifactIdField = _queryFieldFactory.GetArtifactIdField();
-			ViewFieldInfo extractedTextField = _queryFieldFactory.GetExtractedTextField();
+			kCura.WinEDDS.ViewFieldInfo artifactIdField = _queryFieldFactory.GetArtifactIdField();
+            kCura.WinEDDS.ViewFieldInfo extractedTextField = _queryFieldFactory.GetExtractedTextField();
 
 
 			ObjectExportInfo artifact = new ObjectExportInfo
@@ -71,7 +82,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Natives
 		public void ItShouldCreateLineForFields()
 		{
 			ObjectExportInfo artifact = new ObjectExportInfo();
-			List<ViewFieldInfo> fields = PrepareDataSet(artifact);
+			List<kCura.WinEDDS.ViewFieldInfo> fields = PrepareDataSet(artifact);
 
 			DeferredEntry loadFileEntry = new DeferredEntry();
 
@@ -85,16 +96,16 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Natives
 			Assert.That(LoadFileTestHelpers.GetStringFromEntry(loadFileEntry), Is.EqualTo(expectedResult));
 		}
 
-		private static string FormatFieldValue(ViewFieldInfo x)
+		private static string FormatFieldValue(kCura.WinEDDS.ViewFieldInfo x)
 		{
 			return $"{_QUOTE_DELIMITER}{x.AvfColumnName}{_QUOTE_DELIMITER}";
 		}
 
-		private List<ViewFieldInfo> PrepareDataSet(ObjectExportInfo artifact)
+		private List<kCura.WinEDDS.ViewFieldInfo> PrepareDataSet(ObjectExportInfo artifact)
 		{
-			ViewFieldInfo[] allDocumentFields = _queryFieldFactory.GetAllDocumentFields();
+            kCura.WinEDDS.ViewFieldInfo[] allDocumentFields = _queryFieldFactory.GetAllDocumentFields();
 
-			List<ViewFieldInfo> fields = allDocumentFields
+			List<kCura.WinEDDS.ViewFieldInfo> fields = allDocumentFields
 				.Where(x => x.FieldType != FieldTypeHelper.FieldType.Text && x.FieldType != FieldTypeHelper.FieldType.OffTableText).ToList();
 
 			List<string> fieldValues = new List<string>();
@@ -108,8 +119,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Natives
 			_fieldLookupService.Setup(x => x.GetColumns()).Returns(allDocumentFields);
 			_fieldLookupService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns((string columnName) => fields.FindIndex(x => x.AvfColumnName == columnName));
 
-			_longTextHandler.Setup(x => x.HandleLongText(It.IsAny<ObjectExportInfo>(), It.IsAny<ViewFieldInfo>(), It.IsAny<DeferredEntry>()))
-				.Callback((ObjectExportInfo a, ViewFieldInfo f, DeferredEntry l) => l.AddStringEntry(FormatFieldValue(f)));
+			_longTextHandler.Setup(x => x.HandleLongText(It.IsAny<ObjectExportInfo>(), It.IsAny<kCura.WinEDDS.ViewFieldInfo>(), It.IsAny<DeferredEntry>()))
+				.Callback((ObjectExportInfo a, kCura.WinEDDS.ViewFieldInfo f, DeferredEntry l) => l.AddStringEntry(FormatFieldValue(f)));
 
 			return allDocumentFields.ToList();
 		}

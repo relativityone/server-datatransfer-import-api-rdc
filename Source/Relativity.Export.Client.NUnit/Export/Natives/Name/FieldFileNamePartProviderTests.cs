@@ -1,15 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using FileNaming.CustomFileNaming;
-using kCura.WinEDDS.Core.NUnit.Helpers;
-using kCura.WinEDDS.FileNaming.CustomFileNaming;
-using Moq;
-using NUnit.Framework;
-using Relativity;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="FieldFileNamePartProviderTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
+namespace Relativity.Export.Client.NUnit.Export.Natives.Name
 {
-	public class FieldFileNamePartProviderTests
+    using System;
+    using System.Collections.Generic;
+
+    using FileNaming.CustomFileNaming;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.FileNaming.CustomFileNaming;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity;
+    using Relativity.Export.Client.NUnit.Helpers;
+
+    public class FieldFileNamePartProviderTests
 	{
 		private FieldFileNamePartProvider _subjectUnderTest;
 		private ExtendedObjectExportInfo _extendedObjectExportInfo;
@@ -37,7 +49,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 		{
 			var fieldValue = new DateTime(2020, 1, 2, 10, 3, 5);
 
-			ViewFieldInfo viewFieldInfo = _fieldInfoMockFactory
+			kCura.WinEDDS.ViewFieldInfo viewFieldInfo = _fieldInfoMockFactory
 				.Build()
 				.WithAvfId(_AVF_ID)
 				.WithAvfName(_NAME)
@@ -53,7 +65,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 			};
 
 			// assumption: one column selected by user (Control Number)
-			_extendedObjectExportInfo.SelectedNativeFileNameViewFields = new List<ViewFieldInfo>
+			_extendedObjectExportInfo.SelectedNativeFileNameViewFields = new List<kCura.WinEDDS.ViewFieldInfo>
 			{
 				viewFieldInfo
 			};
@@ -68,7 +80,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 		{
 			var fieldValue = "Some Custodian";
 
-			ViewFieldInfo viewFieldInfo = _fieldInfoMockFactory
+            kCura.WinEDDS.ViewFieldInfo viewFieldInfo = _fieldInfoMockFactory
 				.Build()
 				.WithAvfId(_AVF_ID)
 				.WithAvfName(_NAME)
@@ -83,7 +95,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 			};
 
 			// assumption: one column selected by user (Control Number)
-			_extendedObjectExportInfo.SelectedNativeFileNameViewFields = new List<ViewFieldInfo>
+			_extendedObjectExportInfo.SelectedNativeFileNameViewFields = new List<kCura.WinEDDS.ViewFieldInfo>
 			{
 				viewFieldInfo
 			};
@@ -100,7 +112,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 		{
 
 			string displayName = "Has Native";
-			ViewFieldInfo viewFieldInfo = _fieldInfoMockFactory
+            kCura.WinEDDS.ViewFieldInfo viewFieldInfo = _fieldInfoMockFactory
 				.Build()
 				.WithAvfId(_AVF_ID)
 				.WithAvfName(_NAME)
@@ -114,7 +126,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 				fieldValue 
 			};
 
-			_extendedObjectExportInfo.SelectedNativeFileNameViewFields = new List<ViewFieldInfo>
+			_extendedObjectExportInfo.SelectedNativeFileNameViewFields = new List<kCura.WinEDDS.ViewFieldInfo>
 			{
 				viewFieldInfo
 			};
@@ -130,7 +142,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 			string fieldValue = "<object/><object/>QQ";
 			string displayName = "Production::Begin Bates";
 			string expectedVal = "QQ";
-			ViewFieldInfo viewFieldInfo = _fieldInfoMockFactory
+            kCura.WinEDDS.ViewFieldInfo viewFieldInfo = _fieldInfoMockFactory
 				.Build()
 				.WithAvfId(_AVF_ID)
 				.WithAvfName(_NAME)
@@ -144,7 +156,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
 				fieldValue
 			};
 
-			_extendedObjectExportInfo.SelectedNativeFileNameViewFields = new List<ViewFieldInfo>
+			_extendedObjectExportInfo.SelectedNativeFileNameViewFields = new List<kCura.WinEDDS.ViewFieldInfo>
 			{
 				viewFieldInfo
 			};

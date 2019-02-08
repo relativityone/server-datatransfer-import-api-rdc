@@ -1,12 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
-using NUnit.Framework;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="IproLoadFileEntryTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Images.Lines
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Images.Lines
 {
-	[TestFixture]
+    using System;
+    using System.Collections.Generic;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class IproLoadFileEntryTests
 	{
 		private IproLoadFileEntry _instance;

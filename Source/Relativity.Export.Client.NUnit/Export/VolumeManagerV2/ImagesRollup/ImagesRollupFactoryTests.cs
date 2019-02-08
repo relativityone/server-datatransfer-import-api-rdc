@@ -1,14 +1,25 @@
-﻿using Castle.Windsor;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
-using kCura.WinEDDS.Exporters;
-using Moq;
-using NUnit.Framework;
-using Relativity;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="ImagesRollupFactoryTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.ImagesRollup
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.ImagesRollup
 {
-	[TestFixture]
+    using Castle.Windsor;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
+    using kCura.WinEDDS.Exporters;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity;
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class ImagesRollupFactoryTests
 	{
 		[Test]

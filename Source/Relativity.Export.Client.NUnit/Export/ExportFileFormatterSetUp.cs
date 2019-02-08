@@ -1,21 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using kCura.WinEDDS.Core.Export;
-using kCura.WinEDDS.Core.NUnit.Helpers;
-using kCura.WinEDDS.Exporters;
-using Moq;
-using NUnit.Framework;
-using Relativity;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="ExportFileFormatterSetUp.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export
+namespace Relativity.Export.Client.NUnit.Export
 {
-	public class ExportFileFormatterSetUp<T> where T : ExportFileFormatterBase
+    using System;
+    using System.Collections.Generic;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export;
+    using kCura.WinEDDS.Exporters;
+
+    using Relativity.Export.Client.NUnit.Helpers;
+    
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity;
+
+    public class ExportFileFormatterSetUp<T> where T : ExportFileFormatterBase
 	{
 		protected T SubjectUnderTest;
 
 		protected Mock<IFieldNameProvider> FieldNameProviderMock;
 		protected ExportFile ExpFile;
-		protected ViewFieldInfo[] Fields;
+		protected kCura.WinEDDS.ViewFieldInfo[] Fields;
 
 		protected const string FIELD_NAME_1 = "Name1";
 		protected const string FIELD_NAME_2 = "Name2";
@@ -32,9 +44,9 @@ namespace kCura.WinEDDS.Core.NUnit.Export
 		protected virtual void InitTestCase()
 		{
 			FieldNameProviderMock = new Mock<IFieldNameProvider>();
-
-			FieldNameProviderMock.Setup(mock => mock.GetDisplayName(It.IsAny<ViewFieldInfo>()))
-				.Returns((ViewFieldInfo field) => field.DisplayName);
+            
+			FieldNameProviderMock.Setup(mock => mock.GetDisplayName(It.IsAny<kCura.WinEDDS.ViewFieldInfo>()))
+				.Returns((kCura.WinEDDS.ViewFieldInfo field) => field.DisplayName);
 
 			int index = 1;
 			Fields = ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(new List<Tuple<int, string>>

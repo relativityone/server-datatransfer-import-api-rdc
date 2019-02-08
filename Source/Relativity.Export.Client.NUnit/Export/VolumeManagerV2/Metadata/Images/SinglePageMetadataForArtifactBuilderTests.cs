@@ -1,16 +1,27 @@
-﻿using System.Collections;
-using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
-using kCura.WinEDDS.Exporters;
-using Moq;
-using NUnit.Framework;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="SinglePageMetadataForArtifactBuilderTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Images
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Images
 {
-	[TestFixture]
+    using System.Collections;
+    using System.Threading;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
+    using kCura.WinEDDS.Exporters;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class SinglePageMetadataForArtifactBuilderTests : ImageLoadFileMetadataForArtifactBuilderTests
 	{
 		protected override ImageLoadFileMetadataForArtifactBuilder CreateInstance(ExportFile exportSettings, IFilePathTransformer filePathTransformer,

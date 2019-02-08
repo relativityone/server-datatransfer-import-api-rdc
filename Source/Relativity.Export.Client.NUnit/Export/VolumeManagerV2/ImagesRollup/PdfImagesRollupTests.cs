@@ -1,12 +1,22 @@
-﻿using System.Linq;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
-using kCura.WinEDDS.Exporters;
-using Moq;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="PdfImagesRollupTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.ImagesRollup
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.ImagesRollup
 {
-	public class PdfImagesRollupTests : MultiPageImagesRollupTests
+    using System.Linq;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
+    using kCura.WinEDDS.Exporters;
+
+    using Moq;
+
+    using Relativity.Logging;
+
+    public class PdfImagesRollupTests : MultiPageImagesRollupTests
 	{
 		protected override MultiPageImagesRollup CreateInstance(ExportFile exportSettings, IFileHelper fileHelper, IStatus status, IImage imageConverter)
 		{

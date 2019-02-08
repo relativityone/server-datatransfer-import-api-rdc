@@ -1,14 +1,24 @@
-﻿using System;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-using Moq;
-using NUnit.Framework;
-using Relativity.Logging;
-using Relativity.Transfer;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="DownloadTapiBridgeWithEncodingConversionTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.TapiHelpers
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Download.TapiHelpers
 {
-	[TestFixture]
+    using System;
+
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Logging;
+    using Relativity.Transfer;
+
+    [TestFixture]
 	public class DownloadTapiBridgeWithEncodingConversionTests : DownloadTapiBridgeAdapterTests
 	{
 		private Mock<ILongTextEncodingConverter> _longTextEncodingConverter;

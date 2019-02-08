@@ -1,14 +1,24 @@
-﻿using System;
-using System.Text;
-using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers;
-using Moq;
-using NUnit.Framework;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="FileEncodingConverterTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.EncodingHelpers
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Download.EncodingHelpers
 {
-	[TestFixture]
+    using System;
+    using System.Text;
+    using System.Threading;
+
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class FileEncodingConverterTests
 	{
 		private FileEncodingConverter _instance;

@@ -1,15 +1,25 @@
-﻿using System.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Exporters;
-using NUnit.Framework;
-using Relativity.Logging;
-using Constants = Relativity.Export.Constants;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="IproFullTextWithPrecedenceLoadFileEntryTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Images.Lines
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Images.Lines
 {
-	[TestFixture]
+    using System.Text;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+    using kCura.WinEDDS.Exporters;
+
+    using global::NUnit.Framework;
+    
+    using Relativity.Logging;
+    using RelativityConstants = Relativity.Export.Constants;
+
+    [TestFixture]
 	public class IproFullTextWithPrecedenceLoadFileEntryTests : IproFullTextLoadFileEntryTests
 	{
 		protected override IproFullTextLoadFileEntry CreateInstance(IFieldService fieldService, LongTextHelper longTextHelper, IFullTextLineWriter fullTextLineWriter)
@@ -19,7 +29,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Images.Lines
 
 		protected override void PrepareDataSet(ObjectExportInfo artifact, string textToWrite)
 		{
-			FieldService.Setup(x => x.GetOrdinalIndex(Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(0);
+			FieldService.Setup(x => x.GetOrdinalIndex(RelativityConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(0);
 			artifact.Metadata = new object[] {textToWrite};
 		}
 
@@ -28,9 +38,9 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Images.Lines
 			const int fieldArtifactId = 998687;
 			const int artifactId = 817225;
 
-			FieldService.Setup(x => x.GetOrdinalIndex(Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(0);
+			FieldService.Setup(x => x.GetOrdinalIndex(RelativityConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(0);
 
-			FieldService.Setup(x => x.GetOrdinalIndex(Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(1);
+			FieldService.Setup(x => x.GetOrdinalIndex(RelativityConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(1);
 
 			artifact.ArtifactID = artifactId;
 			artifact.Metadata = new object[] {textToWrite, fieldArtifactId};

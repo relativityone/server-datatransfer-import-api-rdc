@@ -1,10 +1,18 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using Moq;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="FileDownloadProgressHandlerTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Statistics
 {
-	public class FileDownloadProgressHandlerTests : ProgressHandlerTests
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
+
+    using Moq;
+
+    using Relativity.Logging;
+
+    public class FileDownloadProgressHandlerTests : ProgressHandlerTests
 	{
 		protected override ProgressHandler CreateInstance(IDownloadProgressManager downloadProgressManager)
 		{

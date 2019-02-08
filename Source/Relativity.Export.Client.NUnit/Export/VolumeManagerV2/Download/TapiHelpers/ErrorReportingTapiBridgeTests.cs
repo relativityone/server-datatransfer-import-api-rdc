@@ -1,10 +1,18 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-using NUnit.Framework;
-using Relativity.Transfer;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="ErrorReportingTapiBridgeTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.TapiHelpers
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Download.TapiHelpers
 {
-	[TestFixture]
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Transfer;
+
+    [TestFixture]
 	public class ErrorReportingTapiBridgeTests
 	{
 		[Test]

@@ -1,13 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using kCura.WinEDDS.Core.Export;
-using kCura.WinEDDS.Core.NUnit.Helpers;
-using NUnit.Framework;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="FieldNameProviderTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export
+namespace Relativity.Export.Client.NUnit.Export
 {
-	public class FieldNameProviderTests
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    using kCura.WinEDDS.Core.Export;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Export.Client.NUnit.Helpers;
+
+    public class FieldNameProviderTests
 	{
 		private FieldNameProvider _subjectUnderTest;
 
@@ -21,7 +30,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export
 		public void ItShouldReturnDisplayName()
 		{
 			string expectedText = "ColName";
-			ViewFieldInfo fieldInfo = ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(new List<Tuple<int, string>>
+			kCura.WinEDDS.ViewFieldInfo fieldInfo = ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(new List<Tuple<int, string>>
 			{
 				Tuple.Create<int, string>(1, expectedText)
 			}).FirstOrDefault();

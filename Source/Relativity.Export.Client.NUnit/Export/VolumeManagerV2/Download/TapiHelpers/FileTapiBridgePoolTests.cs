@@ -1,14 +1,25 @@
-﻿using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using Moq;
-using NUnit.Framework;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="FileTapiBridgePoolTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.TapiHelpers
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Download.TapiHelpers
 {
-	[TestFixture]
+    using System.Threading;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class FileTapiBridgePoolTests
 	{
 		private FileTapiBridgePool _uut;
@@ -30,7 +41,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.TapiHelpers
 		private LongTextRepository _longTextRepository;
 		private Mock<IFileHelper> _fileHelper;
 		private Mock<IStatus> _status;
-		private WinEDDS.Statistics _statistics;
+		private kCura.WinEDDS.Statistics _statistics;
 
 		private const int _DOCUMENT_ARTIFACT_TYPE = 10;
 
@@ -50,7 +61,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.TapiHelpers
 			_status = new Mock<IStatus>();
 			_downloadProgressManager = new DownloadProgressManager(_nativeRepository, _imageRepository, _longTextRepository, _fileHelper.Object, _status.Object, _logger.Object);
 
-			_statistics = new WinEDDS.Statistics();
+			_statistics = new kCura.WinEDDS.Statistics();
 			_filesStatistics = new FilesStatistics(_statistics, _fileHelper.Object, _logger.Object);
 
 			_messageHandler = new Mock<IMessagesHandler>();

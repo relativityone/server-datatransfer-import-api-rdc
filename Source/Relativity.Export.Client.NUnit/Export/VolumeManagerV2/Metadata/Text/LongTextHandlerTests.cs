@@ -1,15 +1,25 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Delimiter;
-using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.LoadFileEntry;
-using kCura.WinEDDS.NUnit.TestObjectFactories;
-using Moq;
-using NUnit.Framework;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="LongTextHandlerTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Text
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Text
 {
-	[TestFixture]
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Delimiter;
+    using kCura.WinEDDS.Exporters;
+    using kCura.WinEDDS.LoadFileEntry;   
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Logging;
+    using Relativity.Import.Client.NUnit;
+
+    [TestFixture]
 	public class LongTextHandlerTests
 	{
 		private LongTextHandler _instance;
@@ -34,7 +44,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Text
 		[Test]
 		public void ItShouldHandleLongTextField()
 		{
-			ViewFieldInfo field = new QueryFieldFactory().GetExtractedTextField();
+			kCura.WinEDDS.ViewFieldInfo field = new QueryFieldFactory().GetExtractedTextField();
 
 			ObjectExportInfo artifact = new ObjectExportInfo();
 

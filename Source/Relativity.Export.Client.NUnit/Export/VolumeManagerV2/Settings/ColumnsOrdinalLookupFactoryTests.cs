@@ -1,12 +1,23 @@
-﻿using System.Collections.Generic;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings;
-using NUnit.Framework;
-using Relativity.Logging;
-using Constants = Relativity.Export.Constants;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="ColumnsOrdinalLookupFactoryTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Settings
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Settings
 {
-	[TestFixture]
+    using System.Collections.Generic;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings;
+
+    using global::NUnit.Framework;
+    
+    using Relativity.Logging;
+
+    using ExportConstants = Relativity.Export.Constants;
+
+    [TestFixture]
 	public class ColumnsOrdinalLookupFactoryTests
 	{
 		private ColumnsOrdinalLookupFactory _instance;
@@ -53,8 +64,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Settings
 				Assert.That(i, Is.EqualTo(ordinalLookup[columnsInOrder[i]]));
 			}
 
-			Assert.That(columnsInOrder.Length, Is.EqualTo(ordinalLookup[Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME]));
-			Assert.That(columnsInOrder.Length + 1, Is.EqualTo(ordinalLookup[Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME]));
+			Assert.That(columnsInOrder.Length, Is.EqualTo(ordinalLookup[ExportConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME]));
+			Assert.That(columnsInOrder.Length + 1, Is.EqualTo(ordinalLookup[ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME]));
 
 			Assert.That(ordinalLookup.Count, Is.EqualTo(columnsInOrder.Length + 2));
 		}

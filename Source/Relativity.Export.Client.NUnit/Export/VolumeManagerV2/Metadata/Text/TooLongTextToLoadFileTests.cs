@@ -1,20 +1,32 @@
-﻿using System.IO;
-using System.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.LoadFileEntry;
-using kCura.WinEDDS.NUnit.TestObjectFactories;
-using Moq;
-using NUnit.Framework;
-using Relativity.Logging;
-using Constants = Relativity.Export.Constants;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="TooLongTextToLoadFileTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Text
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Text
 {
-	[TestFixture]
+    using System.IO;
+    using System.Text;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
+    using kCura.WinEDDS.Exporters;
+    using kCura.WinEDDS.LoadFileEntry;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Import.Client.NUnit;
+    using Relativity.Logging;
+
+    using ExportConstants = Relativity.Export.Constants;
+
+    [TestFixture]
 	public class TooLongTextToLoadFileTests
 	{
 		private TooLongTextToLoadFile _instance;
@@ -87,7 +99,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Text
 				Metadata = new object[] {trueTextPrecedenceField.FieldArtifactId}
 			};
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(0);
+			_fieldService.Setup(x => x.GetOrdinalIndex(ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(0);
 
 			LongText longText = LongText.CreateFromMissingFile(artifact.ArtifactID, trueTextPrecedenceField.FieldArtifactId,
 				LongTextExportRequest.CreateRequestForLongText(artifact, trueTextPrecedenceField.FieldArtifactId, expectedPath), Encoding.Unicode, expectedEncoding);

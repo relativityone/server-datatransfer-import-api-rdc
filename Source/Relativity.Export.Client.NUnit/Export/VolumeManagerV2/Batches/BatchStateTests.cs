@@ -1,15 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Castle.Core.Internal;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
-using Moq;
-using NUnit.Framework;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="BatchStateTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Batches
 {
-	[TestFixture]
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    using kCura.Vendor.Castle.Core.Internal;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class BatchStateTests
 	{
 		private BatchState _instance;

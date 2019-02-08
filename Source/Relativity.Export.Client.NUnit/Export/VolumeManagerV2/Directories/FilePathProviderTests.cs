@@ -1,11 +1,21 @@
-﻿using System.IO;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using Moq;
-using NUnit.Framework;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="FilePathProviderTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Directories
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Directories
 {
-	[TestFixture]
+    using System.IO;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    [TestFixture]
 	public abstract class FilePathProviderTests
 	{
 		private Mock<IDirectoryHelper> _directoryHelper;

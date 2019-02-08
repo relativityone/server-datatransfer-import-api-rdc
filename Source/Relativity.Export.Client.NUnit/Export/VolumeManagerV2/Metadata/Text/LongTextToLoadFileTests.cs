@@ -1,15 +1,26 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.LoadFileEntry;
-using kCura.WinEDDS.NUnit.TestObjectFactories;
-using Moq;
-using NUnit.Framework;
-using Relativity.Logging;
-using Constants = Relativity.Constants;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="LongTextToLoadFileTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Text
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Text
 {
-	[TestFixture]
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+    using kCura.WinEDDS.Exporters;
+    using kCura.WinEDDS.LoadFileEntry;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Import.Client.NUnit;
+    using Relativity.Logging;
+
+    using RelativityConstants = Relativity.Constants;
+
+    [TestFixture]
 	public class LongTextToLoadFileTests
 	{
 		private LongTextToLoadFile _instance;
@@ -59,7 +70,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Text
 		{
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
-				Metadata = new object[] {Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN}
+				Metadata = new object[] { RelativityConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN }
 			};
 
 			ViewFieldInfo field = new QueryFieldFactory().GetArtifactIdField();

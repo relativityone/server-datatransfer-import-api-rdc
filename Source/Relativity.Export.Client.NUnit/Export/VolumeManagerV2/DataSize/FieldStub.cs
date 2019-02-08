@@ -1,9 +1,14 @@
-﻿using System.Data;
-using Relativity;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="FieldStub.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.DataSize
 {
-	public class FieldStub : ViewFieldInfo
+    using System.Data;
+
+    public class FieldStub : kCura.WinEDDS.ViewFieldInfo
 	{
 		public FieldStub(DataRow row) : base(row)
 		{

@@ -1,14 +1,26 @@
-﻿using System.Collections;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Exporters;
-using Moq;
-using NUnit.Framework;
-using Relativity;
-using HtmlCellFormatter = kCura.WinEDDS.Core.Export.VolumeManagerV2.HtmlCellFormatter;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="HtmlCellFormatterTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export
+namespace Relativity.Export.Client.NUnit.Export
 {
-	[TestFixture]
+    using System.Collections;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+    using kCura.WinEDDS.Exporters;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity;
+
+    using HtmlCellFormatter = kCura.WinEDDS.Core.Export.VolumeManagerV2.HtmlCellFormatter;
+
+    [TestFixture]
 	public class HtmlCellFormatterTests
 	{
 		[Test]

@@ -1,15 +1,26 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
-using Moq;
-using NUnit.Framework;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="ErrorFileWriterTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Writers
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Writers
 {
-	[TestFixture]
+    using System;
+    using System.IO;
+    using System.Text;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class ErrorFileWriterTests
 	{
 		private ErrorFileWriter _instance;

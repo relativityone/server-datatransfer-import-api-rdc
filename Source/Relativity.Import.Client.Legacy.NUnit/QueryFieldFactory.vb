@@ -205,8 +205,8 @@
 			Return Me.GenerateQueryField(516343, 1001339, FieldCategory.ParentArtifact, FieldTypeHelper.FieldType.Object, 1000053, "ProjectChild", -1, True, "Project", "Project", "Project", "", 1000052, False, False, "", -1, "Project", "Name", -1, -1, "", -1, -1, "", False, "MainTable", "o1000052_f516343", "", "", "", ParentReflectionType.Empty, "", "", "", "", False)
 		End Function
 
-		Public Function GetAllDocumentFields() As ViewFieldInfo()
-			Dim retval As New System.Collections.Generic.List(Of ViewFieldInfo)
+		Public Function GetAllDocumentFields() As kCura.WinEDDS.ViewFieldInfo()
+			Dim retval As New System.Collections.Generic.List(Of kCura.WinEDDS.ViewFieldInfo)
 			retval.Add(GetIdentifierQueryField)
 			retval.Add(GetExtractedTextField)
 			retval.Add(GetGenericBooleanField)

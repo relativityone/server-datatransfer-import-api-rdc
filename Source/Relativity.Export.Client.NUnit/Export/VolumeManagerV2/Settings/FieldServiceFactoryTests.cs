@@ -1,14 +1,25 @@
-﻿using System.Collections.Generic;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings;
-using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.NUnit.TestObjectFactories;
-using Moq;
-using NUnit.Framework;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="FieldServiceFactoryTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Settings
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Settings
 {
-	[TestFixture]
+    using System.Collections.Generic;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings;
+    using kCura.WinEDDS.Exporters;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Import.Client.NUnit;
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class FieldServiceFactoryTests
 	{
 		private FieldServiceFactory _instance;
@@ -32,7 +43,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Settings
 		[TestCase(false, false, ExpectedResult = false)]
 		public bool ItShouldUpdateExportFullTextSettingAccordingly(bool exportFullText, bool containsFullText)
 		{
-			ViewFieldInfo[] fields = new ViewFieldInfo[1];
+            kCura.WinEDDS.ViewFieldInfo[] fields = new kCura.WinEDDS.ViewFieldInfo[1];
 
 			if (containsFullText)
 			{
@@ -62,11 +73,11 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Settings
 		{
 			var exportSettings = new ExportFile(1)
 			{
-				SelectedViewFields = new ViewFieldInfo[0]
+				SelectedViewFields = new kCura.WinEDDS.ViewFieldInfo[0]
 			};
 			var columnNamesInOrder = new string[0];
 
-			ViewFieldInfo[] fields = new ViewFieldInfo[1];
+            kCura.WinEDDS.ViewFieldInfo[] fields = new kCura.WinEDDS.ViewFieldInfo[1];
 			_columnsFactory.Setup(x => x.CreateColumns(exportSettings)).Returns(fields);
 
 			//ACT
@@ -74,7 +85,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Settings
 
 			//ASSERT
 			_columnsFactory.Verify(x => x.CreateColumns(exportSettings));
-			_formatter.Verify(x => x.GetHeader(It.IsAny<List<ViewFieldInfo>>()));
+			_formatter.Verify(x => x.GetHeader(It.IsAny<List<kCura.WinEDDS.ViewFieldInfo>>()));
 			_columnsOrdinalLookup.Verify(x => x.CreateOrdinalLookup(exportSettings, columnNamesInOrder));
 		}
 	}

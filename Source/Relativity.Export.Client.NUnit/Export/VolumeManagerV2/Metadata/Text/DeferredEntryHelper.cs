@@ -1,10 +1,17 @@
-﻿using System.IO;
-using System.Text;
-using kCura.WinEDDS.LoadFileEntry;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="DeferredEntryHelper.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Text
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Text
 {
-	public static class DeferredEntryHelper
+    using System.IO;
+    using System.Text;
+
+    using kCura.WinEDDS.LoadFileEntry;
+
+    public static class DeferredEntryHelper
 	{
 		public static string GetTextFromEntry(this DeferredEntry entry)
 		{

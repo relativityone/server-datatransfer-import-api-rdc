@@ -1,10 +1,19 @@
-﻿using kCura.WinEDDS.Exporters;
-using Moq;
-using NUnit.Framework;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="IdentifierExportFileNameProviderTest.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
+namespace Relativity.Export.Client.NUnit.Export.Natives.Name
 {
-	public class IdentifierExportFileNameProviderTest
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Exporters;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    public class IdentifierExportFileNameProviderTest
 	{
 		private const int _ARTIFACT_ID = 10;
 		private ExportFile _exportFileMock;

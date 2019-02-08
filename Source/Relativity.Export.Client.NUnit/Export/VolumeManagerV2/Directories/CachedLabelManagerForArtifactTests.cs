@@ -1,15 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using Castle.Core.Internal;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Exporters;
-using Moq;
-using NUnit.Framework;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="CachedLabelManagerForArtifactTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Directories
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Directories
 {
-	[TestFixture]
+    using System;
+    using System.Collections.Generic;
+    using System.Threading;
+
+    using kCura.Vendor.Castle.Core.Internal;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+    using kCura.WinEDDS.Exporters;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    [TestFixture]
 	public class CachedLabelManagerForArtifactTests
 	{
 		private CachedLabelManagerForArtifact _instance;
@@ -69,7 +78,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Directories
 		{
 			_instance.InitializeFor(_artifacts, _volumePredictions, CancellationToken.None);
 
-			_directoryManager.ResetCalls();
+            _directoryManager.Invocations.Clear();
 
 			foreach (Func<CachedLabelManagerForArtifact, Func<int, string>> methodGenerator in MethodsToTest())
 			{

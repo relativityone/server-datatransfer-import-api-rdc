@@ -1,10 +1,18 @@
-﻿using FileNaming.CustomFileNaming;
-using kCura.WinEDDS.FileNaming.CustomFileNaming;
-using NUnit.Framework;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="SeparatorFileNamePartProviderTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
+namespace Relativity.Export.Client.NUnit.Export.Natives.Name
 {
-	public class SeparatorFileNamePartProviderTests
+    using FileNaming.CustomFileNaming;
+
+    using kCura.WinEDDS.FileNaming.CustomFileNaming;
+
+    using global::NUnit.Framework;
+
+    public class SeparatorFileNamePartProviderTests
 	{
 		private SeparatorFileNamePartProvider _subjectUnderTests;
 

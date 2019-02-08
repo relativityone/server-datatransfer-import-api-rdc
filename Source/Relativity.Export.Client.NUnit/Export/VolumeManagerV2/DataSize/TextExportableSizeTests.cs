@@ -1,17 +1,30 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.NUnit.TestObjectFactories;
-using Moq;
-using NUnit.Framework;
-using Relativity;
-using Constants = Relativity.Export.Constants;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="TextExportableSizeTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.DataSize
 {
-	[TestFixture]
+    using System.Collections.Generic;
+    using System.Text;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+    using kCura.WinEDDS.Exporters;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity;
+    using Relativity.Import.Client.NUnit;
+
+    using ExportConstants = Relativity.Export.Constants;
+    using RelativityConstants = Relativity.Constants;
+
+    [TestFixture]
 	public class TextExportableSizeTests
 	{
 		private ExportFile _exportSettings;
@@ -88,11 +101,11 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
 
 		[Test]
 		[TestCaseSource(nameof(NonTextFieldDataSet))]
-		public void ItShouldNotCountFieldsOtherThanText(ViewFieldInfo field)
+		public void ItShouldNotCountFieldsOtherThanText(kCura.WinEDDS.ViewFieldInfo field)
 		{
 			SetExportingTextAsFiles();
 
-			ViewFieldInfo[] fields = {field};
+            kCura.WinEDDS.ViewFieldInfo[] fields = {field};
 			_fieldService.Setup(x => x.GetColumns()).Returns(fields);
 
 			const int textFileCount = 3;
@@ -176,8 +189,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
 
 			SetUpMocksForField(FieldTypeHelper.FieldType.Text, Encoding.Unicode);
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(Constants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(1);
-			_fieldService.Setup(x => x.ContainsFieldName(Constants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(true);
+			_fieldService.Setup(x => x.GetOrdinalIndex(ExportConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(1);
+			_fieldService.Setup(x => x.ContainsFieldName(ExportConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(true);
 
 			VolumePredictions predictions = new VolumePredictions
 			{
@@ -189,7 +202,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
 			{
 				Metadata = new object[]
 				{
-					Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN,
+                    RelativityConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN,
 					textSize
 				}
 			};
@@ -210,8 +223,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
 
 			SetUpMocksForField(FieldTypeHelper.FieldType.Text, encoding);
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(Constants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(1);
-			_fieldService.Setup(x => x.ContainsFieldName(Constants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(true);
+			_fieldService.Setup(x => x.GetOrdinalIndex(ExportConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(1);
+			_fieldService.Setup(x => x.ContainsFieldName(ExportConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(true);
 
 			VolumePredictions predictions = new VolumePredictions
 			{
@@ -244,7 +257,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
 
 			SetUpMocksForField(FieldTypeHelper.FieldType.Text, Encoding.Unicode);
 
-			_fieldService.Setup(x => x.ContainsFieldName(Constants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(false);
+			_fieldService.Setup(x => x.ContainsFieldName(ExportConstants.TEXT_PRECEDENCE_AWARE_TEXT_SIZE)).Returns(false);
 
 			VolumePredictions predictions = new VolumePredictions
 			{
@@ -285,12 +298,12 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
 			SetExportingTextAsFiles();
 			_exportSettings.TextFileEncoding = encoding;
 
-			FieldStub fieldStub = GetTextFieldStub();
+            FieldStub fieldStub = GetTextFieldStub();
 			fieldStub.SetType(fieldType);
 
 			CoalescedTextViewField field = new CoalescedTextViewField(fieldStub, true);
 
-			_fieldService.Setup(x => x.GetColumns()).Returns(new ViewFieldInfo[] {field});
+			_fieldService.Setup(x => x.GetColumns()).Returns(new kCura.WinEDDS.ViewFieldInfo[] {field});
 			_fieldService.Setup(x => x.GetOrdinalIndex(field.AvfColumnName)).Returns(0);
 		}
 
@@ -298,14 +311,14 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
 		{
 			_exportSettings.ExportFullText = true;
 			_exportSettings.ExportFullTextAsFile = true;
-			_exportSettings.SelectedTextFields = new ViewFieldInfo[1];
+			_exportSettings.SelectedTextFields = new kCura.WinEDDS.ViewFieldInfo[1];
 		}
 
-		private static IEnumerable<ViewFieldInfo> NonTextFieldDataSet()
+		private static IEnumerable<kCura.WinEDDS.ViewFieldInfo> NonTextFieldDataSet()
 		{
 			var fieldFactory = new QueryFieldFactory();
-			ViewFieldInfo[] fields = fieldFactory.GetAllDocumentFields();
-			foreach (ViewFieldInfo field in fields)
+            kCura.WinEDDS.ViewFieldInfo[] fields = fieldFactory.GetAllDocumentFields();
+			foreach (kCura.WinEDDS.ViewFieldInfo field in fields)
 			{
 				if (field.FieldType == FieldTypeHelper.FieldType.Text || field.FieldType == FieldTypeHelper.FieldType.OffTableText)
 				{
@@ -319,7 +332,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
 		private static FieldStub GetTextFieldStub()
 		{
 			QueryFieldFactory fieldFactory = new QueryFieldFactory();
-			ViewFieldInfo field = fieldFactory.GetExtractedTextField();
+            kCura.WinEDDS.ViewFieldInfo field = fieldFactory.GetExtractedTextField();
 			return new FieldStub(field);
 		}
 

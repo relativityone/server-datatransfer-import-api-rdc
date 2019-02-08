@@ -1,18 +1,28 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using kCura.Utility.Extensions;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using kCura.WinEDDS.Exporters;
-using Moq;
-using NUnit.Framework;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="LongTextRepositoryTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Repository
 {
-	[TestFixture]
+    using System.Collections.Generic;
+    using System.Text;
+
+    using kCura.Utility.Extensions;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
+    using kCura.WinEDDS.Exporters;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class LongTextRepositoryTests
 	{
 		private LongTextRepository _instance;

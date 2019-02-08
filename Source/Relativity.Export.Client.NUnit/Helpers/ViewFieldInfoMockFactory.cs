@@ -1,12 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using Relativity;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="ViewFieldInfoMockFactory.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Helpers
+namespace Relativity.Export.Client.NUnit.Helpers
 {
-	
-	internal class ViewFieldInfoMockFactory
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+
+    using Relativity;
+
+    internal class ViewFieldInfoMockFactory
 	{
 		private DataRow _dataRow;
 		
@@ -14,9 +20,9 @@ namespace kCura.WinEDDS.Core.NUnit.Helpers
 		/// It creates ViewFiledInfo array 
 		/// </summary>
 		/// <param name="fieldsInfo">it hold info about AvfId and display name of teh field</param>
-		public static ViewFieldInfo[] CreateMockedViewFieldInfoArray(List<Tuple<int, string>> fieldsInfo)
+		public static kCura.WinEDDS.ViewFieldInfo[] CreateMockedViewFieldInfoArray(List<Tuple<int, string>> fieldsInfo)
 		{
-			var viewFieldInfo = new List<ViewFieldInfo>();
+			var viewFieldInfo = new List<kCura.WinEDDS.ViewFieldInfo>();
 			DataTable dataTable = CreateMock();
 
 			foreach (var fieldInfo in fieldsInfo)
@@ -26,7 +32,7 @@ namespace kCura.WinEDDS.Core.NUnit.Helpers
 				row["AvfId"] = fieldInfo.Item1;
 				row["DisplayName"] = fieldInfo.Item2;
 
-				viewFieldInfo.Add(new ViewFieldInfo(row));
+				viewFieldInfo.Add(new kCura.WinEDDS.ViewFieldInfo(row));
 			}
 			return viewFieldInfo.ToArray();
 		}
@@ -67,9 +73,9 @@ namespace kCura.WinEDDS.Core.NUnit.Helpers
 			return this;
 		}
 
-		public ViewFieldInfo Create()
+		public kCura.WinEDDS.ViewFieldInfo Create()
 		{
-			return new ViewFieldInfo(_dataRow);
+			return new kCura.WinEDDS.ViewFieldInfo(_dataRow);
 		}
 
 		private static DataTable CreateMock()

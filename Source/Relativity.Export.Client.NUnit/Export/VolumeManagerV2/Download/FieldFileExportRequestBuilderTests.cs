@@ -1,15 +1,25 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using kCura.WinEDDS.Exporters;
-using NUnit.Framework;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="FieldFileExportRequestBuilderTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Download
 {
-	public class FieldFileExportRequestBuilderTests : ExportRequestBuilderTests
+    using System.Collections.Generic;
+    using System.Threading;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
+    using kCura.WinEDDS.Exporters;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Logging;
+
+    public class FieldFileExportRequestBuilderTests : ExportRequestBuilderTests
 	{
 		protected override ExportRequestBuilder CreateInstance(IFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, IExportFileValidator exportFileValidator,
 			IFileProcessingStatistics fileProcessingStatistics)

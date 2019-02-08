@@ -1,13 +1,22 @@
-﻿using System;
-using kCura.WinEDDS.Core.Export;
-using kCura.WinEDDS.Exporters;
-using Moq;
-using NUnit.Framework;
-using Relativity;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="ExportFileFormatterFactoryTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export
+namespace Relativity.Export.Client.NUnit.Export
 {
-	public class ExportFileFormatterFactoryTests
+    using System;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export;
+    using kCura.WinEDDS.Exporters;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    public class ExportFileFormatterFactoryTests
 	{
 		private Mock<IFieldNameProvider> _fieldNameProviderMock;
 		private ExportFileFormatterFactory _subjectUnderTest;

@@ -1,12 +1,21 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using Moq;
-using NUnit.Framework;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="DownloadTapiBridgeForFilesTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.TapiHelpers
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Download.TapiHelpers
 {
-	[TestFixture]
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class DownloadTapiBridgeForFilesTests : DownloadTapiBridgeAdapterTests
 	{
 		private Mock<ITransferClientHandler> _transferClientHandler;

@@ -1,17 +1,28 @@
-﻿using System.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.LoadFileEntry;
-using kCura.WinEDDS.NUnit.TestObjectFactories;
-using Moq;
-using NUnit.Framework;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="NotTooLongTextToLoadFileTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Text
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Text
 {
-	[TestFixture]
+    using System.Text;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
+    using kCura.WinEDDS.Exporters;
+    using kCura.WinEDDS.LoadFileEntry;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Import.Client.NUnit;
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class NotTooLongTextToLoadFileTests
 	{
 		private NotTooLongTextToLoadFile _instance;

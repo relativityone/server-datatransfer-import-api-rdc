@@ -1,17 +1,26 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using Moq;
-using NUnit.Framework;
-using Relativity.Logging;
-using Relativity.Transfer;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="DownloaderTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Download
 {
-	[TestFixture]
+    using System.Collections.Generic;
+    using System.Threading;
+
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Logging;
+    using Relativity.Transfer;
+
+    [TestFixture]
 	public class DownloaderTests
 	{
 		private Downloader _instance;
@@ -40,7 +49,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download
 		}
 
 		[Test]
-		public async Task GoldWorkflow()
+		public void GoldWorkflow()
 		{
 			Native native = ModelFactory.GetNative(_nativeRepository);
 			ModelFactory.GetImage(native.Artifact.ArtifactID, _imageRepository);

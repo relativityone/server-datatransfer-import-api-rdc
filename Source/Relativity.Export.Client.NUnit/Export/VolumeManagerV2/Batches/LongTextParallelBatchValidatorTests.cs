@@ -1,10 +1,18 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
-using NUnit.Framework;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="LongTextParallelBatchValidatorTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Batches
 {
-	[TestFixture]
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class LongTextParallelBatchValidatorTests : LongTextBatchValidatorTests
 	{
 		protected override IBatchValidator CreateValidator()

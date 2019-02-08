@@ -1,15 +1,25 @@
-﻿using kCura.Windows.Process;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download;
-using Moq;
-using NUnit.Framework;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="DownloadProgressManagerTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Statistics
 {
-	[TestFixture]
+    using kCura.Windows.Process;
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Download;
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class DownloadProgressManagerTests
 	{
 		private DownloadProgressManager _instance;

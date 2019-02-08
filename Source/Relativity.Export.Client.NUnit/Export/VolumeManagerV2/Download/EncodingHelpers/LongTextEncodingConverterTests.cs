@@ -1,19 +1,29 @@
-﻿using System;
-using System.Text;
-using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using kCura.WinEDDS.TApi;
-using Moq;
-using NUnit.Framework;
-using Relativity.Logging;
-using Relativity.Transfer;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="LongTextEncodingConverterTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Download.EncodingHelpers
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Download.EncodingHelpers
 {
-	[TestFixture]
+    using System;
+    using System.Text;
+    using System.Threading;
+
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
+    using kCura.WinEDDS.TApi;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Logging;
+    using Relativity.Transfer;
+
+    [TestFixture]
 	public class LongTextEncodingConverterTests
 	{
 		private LongTextEncodingConverter _instance;

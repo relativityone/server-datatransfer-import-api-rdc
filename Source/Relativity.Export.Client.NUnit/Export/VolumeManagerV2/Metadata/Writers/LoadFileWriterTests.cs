@@ -1,18 +1,28 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
-using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.LoadFileEntry;
-using NUnit.Framework;
-using Polly;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="LoadFileWriterTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Writers
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Writers
 {
-	[TestFixture]
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
+    using System.Threading;
+
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
+    using kCura.WinEDDS.Exporters;
+    using kCura.WinEDDS.LoadFileEntry;
+
+    using global::NUnit.Framework;
+
+    using Polly;
+
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class LoadFileWriterTests
 	{
 		private LoadFileWriter _instance;

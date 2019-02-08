@@ -1,6 +1,14 @@
-﻿namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Images.Lines
+﻿// ----------------------------------------------------------------------------
+// <copyright file="ImageLoadFileEntryDataSet.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
+
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Images.Lines
 {
-	public class ImageLoadFileEntryDataSet
+    using kCura.WinEDDS;
+
+    public class ImageLoadFileEntryDataSet
 	{
 		public string BatesNumber { get; set; }
 		public string FilePath { get; set; }

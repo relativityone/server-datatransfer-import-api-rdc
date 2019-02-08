@@ -1,22 +1,34 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.NUnit.TestObjectFactories;
-using Moq;
-using NUnit.Framework;
-using Relativity.Logging;
-using Constants = Relativity.Export.Constants;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="LongTextPrecedenceBuilderTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Repository
 {
-	[TestFixture]
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
+    using System.Threading;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
+    using kCura.WinEDDS.Exporters;
+    
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Import.Client.NUnit;
+    using Relativity.Logging;
+
+    using ExportConstants = Relativity.Export.Constants;
+
+    [TestFixture]
 	public class LongTextPrecedenceBuilderTests
 	{
 		private LongTextPrecedenceBuilder _instance;
@@ -50,8 +62,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
 
 			_fileToDelete = Path.GetTempFileName();
 
-			_fieldService.Setup(x => x.GetOrdinalIndex(Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(0);
-			_fieldService.Setup(x => x.GetOrdinalIndex(Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(1);
+			_fieldService.Setup(x => x.GetOrdinalIndex(ExportConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(0);
+			_fieldService.Setup(x => x.GetOrdinalIndex(ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(1);
 
 			LongTextHelper longTextHelper = new LongTextHelper(_exportSettings, _fieldService.Object, new LongTextRepository(null, new NullLogger()));
 

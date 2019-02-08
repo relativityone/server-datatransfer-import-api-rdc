@@ -1,11 +1,20 @@
-﻿using System.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
-using kCura.WinEDDS.Exceptions;
-using NUnit.Framework;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="DestinationPathTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Paths
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Paths
 {
-	[TestFixture]
+    using System.Text;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
+    using kCura.WinEDDS.Exceptions;
+
+    using global::NUnit.Framework;
+
+    [TestFixture]
 	public class DestinationPathTests
 	{
 		[Test]

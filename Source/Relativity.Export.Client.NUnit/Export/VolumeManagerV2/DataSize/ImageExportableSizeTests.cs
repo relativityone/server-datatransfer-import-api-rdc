@@ -1,11 +1,20 @@
-﻿using System;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize;
-using kCura.WinEDDS.Exporters;
-using NUnit.Framework;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="ImageExportableSizeTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.DataSize
 {
-	[TestFixture]
+    using System;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize;
+    using kCura.WinEDDS.Exporters;
+
+    using global::NUnit.Framework;
+
+    [TestFixture]
 	public class ImageExportableSizeTests
 	{
 		private ExportFile _exportSettings;

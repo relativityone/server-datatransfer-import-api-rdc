@@ -1,27 +1,37 @@
-﻿using System;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using kCura.WinEDDS.TApi;
-using Moq;
-using NUnit.Framework;
-using Relativity.Logging;
-using Relativity.Transfer;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="FilesStatisticsTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Statistics
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Statistics
 {
-	[TestFixture]
+    using System;
+
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
+    using kCura.WinEDDS.TApi;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Logging;
+    using Relativity.Transfer;
+
+    [TestFixture]
 	public class FilesStatisticsTests
 	{
 		private FilesStatistics _instance;
 
-		private WinEDDS.Statistics _statistics;
+		private kCura.WinEDDS.Statistics _statistics;
 		private Mock<IFileHelper> _fileHelper;
 		private Mock<ITapiBridge> _tapiBridge;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_statistics = new WinEDDS.Statistics();
+			_statistics = new kCura.WinEDDS.Statistics();
 			_fileHelper = new Mock<IFileHelper>();
 			_tapiBridge = new Mock<ITapiBridge>();
 

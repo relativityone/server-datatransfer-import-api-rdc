@@ -1,10 +1,19 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using NUnit.Framework;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="RelativeFilePathProviderTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Directories
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Directories
 {
-	[TestFixture]
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class RelativeFilePathProviderTests
 	{
 		[Test]

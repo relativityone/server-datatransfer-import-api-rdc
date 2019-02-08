@@ -1,11 +1,21 @@
-﻿using FileNaming.CustomFileNaming;
-using kCura.WinEDDS.FileNaming.CustomFileNaming;
-using kCura.WinEDDS.NUnit.TestObjectFactories;
-using NUnit.Framework;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="NativeFileNameViewFieldsHelperTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
+namespace Relativity.Export.Client.NUnit.Export.Natives.Name
 {
-	public class NativeFileNameViewFieldsHelperTests
+    using FileNaming.CustomFileNaming;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.FileNaming.CustomFileNaming;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Import.Client.NUnit;
+
+    public class NativeFileNameViewFieldsHelperTests
 	{
 		private readonly INativeFileNameViewFieldsHelper _helper = new NativeFileNameViewFieldsHelper();
 

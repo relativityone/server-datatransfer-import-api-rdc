@@ -1,20 +1,32 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using Moq;
-using NUnit.Framework;
-using Polly;
-using Polly.NoOp;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="RetryableStreamWriterTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Writers
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Writers
 {
-	[TestFixture]
+    using System;
+    using System.IO;
+    using System.Text;
+    using System.Threading;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+    
+    using Polly;
+    using Polly.NoOp;
+
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class RetryableStreamWriterTests
 	{
 		private RetryableStreamWriter _instance;

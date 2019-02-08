@@ -1,10 +1,17 @@
-﻿using System.IO;
-using System.Text;
-using kCura.WinEDDS.LoadFileEntry;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="LoadFileMetadataBuilderTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Natives
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Natives
 {
-	public class LoadFileTestHelpers
+    using System.IO;
+    using System.Text;
+
+    using kCura.WinEDDS.LoadFileEntry;
+
+    public class LoadFileTestHelpers
 	{
 		public static string GetStringFromEntry(DeferredEntry entry)
 		{

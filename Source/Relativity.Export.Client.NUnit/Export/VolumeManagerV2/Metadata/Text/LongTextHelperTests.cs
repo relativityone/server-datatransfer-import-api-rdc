@@ -1,19 +1,32 @@
-﻿using System.Linq;
-using System.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.DataSize;
-using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.NUnit.TestObjectFactories;
-using Moq;
-using NUnit.Framework;
-using Relativity;
-using Relativity.Logging;
-using Constants = Relativity.Constants;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="LongTextHelperTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Text
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Text
 {
-	[TestFixture]
+    using System.Linq;
+    using System.Text;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
+    using kCura.WinEDDS.Exporters;
+        
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity;
+    using Relativity.Export.Client.NUnit.Export.VolumeManagerV2.DataSize;
+    using Relativity.Import.Client.NUnit;
+    using Relativity.Logging;
+
+    using RelativityConstants = Relativity.Constants;
+    using LoadFileType = Relativity.Import.Client.NUnit.LoadFileType;
+
+    [TestFixture]
 	public class LongTextHelperTests
 	{
 		private LongTextHelper _instance;
@@ -130,7 +143,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Text
 		[TestCase("not too long text not too long text not too long text not too long text not too long text", false)]
 		[TestCase(null, false)]
 		[TestCase("", false)]
-		[TestCase(Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN, true)]
+		[TestCase(RelativityConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN, true)]
 		public void ItShouldCheckIfLongTextIsTooLong(string text, bool expectedResult)
 		{
 			const string fieldName = "fieldName";
@@ -159,7 +172,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Text
 		{
 			_fieldService.Setup(x => x.GetOrdinalIndex(LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME)).Returns(extractedTextFieldIndex);
 
-			_fieldService.Setup(x => x.GetColumns()).Returns(new ViewFieldInfo[5]);
+			_fieldService.Setup(x => x.GetColumns()).Returns(new kCura.WinEDDS.ViewFieldInfo[5]);
 
 			//ACT
 			bool actualResult = _instance.IsExtractedTextMissing();
@@ -174,7 +187,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Text
 		[TestCase(9)]
 		public void ItShouldGetFieldArtifactIdFromFieldName(int fieldIndex)
 		{
-			ViewFieldInfo[] fields = _fieldFactory.GetAllDocumentFields();
+			kCura.WinEDDS.ViewFieldInfo[] fields = _fieldFactory.GetAllDocumentFields();
 
 			_fieldService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns((string fieldName) => fields.ToList().FindIndex(x => x.AvfColumnName == fieldName));
 			_fieldService.Setup(x => x.GetColumns()).Returns(fields);
@@ -189,11 +202,11 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Text
 		[Test]
 		public void ItShouldGetFieldArtifactIdForMissingExtractedTextField()
 		{
-			_exportSettings.LogFileFormat = LoadFileType.FileFormat.IPRO_FullText;
+			_exportSettings.LogFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.IPRO_FullText;
 
 			_fieldService.Setup(x => x.GetOrdinalIndex(LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME)).Returns(1);
 
-			_fieldService.Setup(x => x.GetColumns()).Returns(new ViewFieldInfo[1]);
+			_fieldService.Setup(x => x.GetColumns()).Returns(new kCura.WinEDDS.ViewFieldInfo[1]);
 
 			//ACT
 			int actualFieldArtifactId = _instance.GetFieldArtifactId(LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME);
@@ -208,7 +221,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Text
 		[TestCase(100)]
 		public void ItShouldReturnTextPrecedenceIsSet(int textFieldsArrayLength)
 		{
-			_exportSettings.SelectedTextFields = new ViewFieldInfo[textFieldsArrayLength];
+			_exportSettings.SelectedTextFields = new kCura.WinEDDS.ViewFieldInfo[textFieldsArrayLength];
 			_exportSettings.SelectedTextFields[textFieldsArrayLength - 1] = _fieldFactory.GetArtifactIdField();
 
 			//ACT
@@ -233,7 +246,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Text
 		[Test]
 		public void ItShouldReturnTextPrecedenceIsNotSetWhenTextFieldsArrayIsEmpty()
 		{
-			_exportSettings.SelectedTextFields = new ViewFieldInfo[0];
+			_exportSettings.SelectedTextFields = new kCura.WinEDDS.ViewFieldInfo[0];
 
 			//ACT
 			bool isTextPrecedenceSet = _instance.IsTextPrecedenceSet();
@@ -248,7 +261,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Text
 		[TestCase(100)]
 		public void ItShouldReturnTextPrecedenceIsNotSetWhenAllTextFieldsAreMissing(int textFieldsArrayLength)
 		{
-			_exportSettings.SelectedTextFields = new ViewFieldInfo[textFieldsArrayLength];
+			_exportSettings.SelectedTextFields = new kCura.WinEDDS.ViewFieldInfo[textFieldsArrayLength];
 
 			//ACT
 			bool isTextPrecedenceSet = _instance.IsTextPrecedenceSet();
@@ -269,7 +282,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Text
 			field1.SetFieldArtifactId(field1ArtifactId);
 			field2.SetFieldArtifactId(field2ArtifactId);
 
-			_exportSettings.SelectedTextFields = new ViewFieldInfo[] {field1, field2};
+			_exportSettings.SelectedTextFields = new kCura.WinEDDS.ViewFieldInfo[] {field1, field2};
 
 			ObjectExportInfo artifact = new ObjectExportInfo
 			{
@@ -278,8 +291,8 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Text
 
 			_fieldService.Setup(x => x.GetOrdinalIndex(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(0);
 
-			//ACT
-			ViewFieldInfo textPrecedenceField = _instance.GetTextPrecedenceField(artifact);
+            //ACT
+            kCura.WinEDDS.ViewFieldInfo textPrecedenceField = _instance.GetTextPrecedenceField(artifact);
 
 			//ASSERT
 			Assert.That(textPrecedenceField, Is.EqualTo(field2));

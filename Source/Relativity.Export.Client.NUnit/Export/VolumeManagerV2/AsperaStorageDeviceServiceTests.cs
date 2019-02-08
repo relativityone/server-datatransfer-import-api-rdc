@@ -1,27 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using Castle.Core.Logging;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2;
-using Newtonsoft.Json;
-using NUnit.Framework;
-using Relativity;
-using Relativity.Logging;
-using Relativity.Transfer;
-using Relativity.Transfer.Aspera;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="AsperaStorageDeviceServiceTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2
 {
-	[TestFixture]
+    using global::NUnit.Framework;
+
+    [TestFixture]
 	public class AsperaStorageDeviceServiceTests
 	{
 		[Test]
+        [Ignore("No implementation")]
 		public void ShouldCacheCredentialsForFileshareTest()
 		{
 			//TODO!!!!!

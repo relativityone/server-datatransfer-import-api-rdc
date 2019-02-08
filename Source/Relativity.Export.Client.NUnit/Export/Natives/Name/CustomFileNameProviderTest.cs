@@ -1,14 +1,24 @@
-﻿using FileNaming.CustomFileNaming;
-using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.FileNaming.CustomFileNaming;
-using Moq;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="CustomFileNameProviderTest.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name
+namespace Relativity.Export.Client.NUnit.Export.Natives.Name
 {
-	public class CustomFileNameProviderTest
+    using System;
+    using System.Collections.Generic;
+
+    using FileNaming.CustomFileNaming;
+
+    using kCura.WinEDDS.Exporters;
+    using kCura.WinEDDS.FileNaming.CustomFileNaming;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    public class CustomFileNameProviderTest
 	{
 		private Mock<IFileNamePartProviderContainer> _fileNamePartProviderContainerMock;
 		

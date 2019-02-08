@@ -1,13 +1,20 @@
-﻿using System;
-using FileNaming.CustomFileNaming;
-using kCura.WinEDDS.Core.Export.Natives.Name;
-using kCura.WinEDDS.Core.Export.Natives.Name.Factories;
-using kCura.WinEDDS.FileNaming.CustomFileNaming;
-using NUnit.Framework;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="FileNamePartProviderContainerTest.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.Natives.Name.Factories
+namespace Relativity.Export.Client.NUnit.Export.Natives.Name.Factories
 {
-	public class FileNamePartProviderContainerTest
+    using System;
+
+    using FileNaming.CustomFileNaming;
+
+    using kCura.WinEDDS.FileNaming.CustomFileNaming;
+
+    using global::NUnit.Framework;
+
+    public class FileNamePartProviderContainerTest
 	{
 		private class HelperDescriptorBasePart : DescriptorPart
 		{

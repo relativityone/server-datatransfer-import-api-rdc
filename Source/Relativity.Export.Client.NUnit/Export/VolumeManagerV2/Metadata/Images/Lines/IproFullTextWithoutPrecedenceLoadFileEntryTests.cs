@@ -1,14 +1,24 @@
-﻿using System.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Exporters;
-using NUnit.Framework;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="IproFullTextWithoutPrecedenceLoadFileEntryTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Images.Lines
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Images.Lines
 {
-	[TestFixture]
+    using System.Text;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+    using kCura.WinEDDS.Exporters;
+
+    using global::NUnit.Framework;
+    
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class IproFullTextWithoutPrecedenceLoadFileEntryTests : IproFullTextLoadFileEntryTests
 	{
 		protected override IproFullTextLoadFileEntry CreateInstance(IFieldService fieldService, LongTextHelper longTextHelper, IFullTextLineWriter fullTextLineWriter)

@@ -1,14 +1,22 @@
-﻿using System.Collections.Generic;
-using kCura.Utility.Extensions;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using kCura.WinEDDS.Exporters;
-using NUnit.Framework;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="ImageRepositoryTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Repository
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Repository
 {
-	[TestFixture]
+    using System.Collections.Generic;
+
+    using kCura.Utility.Extensions;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
+    using kCura.WinEDDS.Exporters;
+
+    using global::NUnit.Framework;
+
+    [TestFixture]
 	public class ImageRepositoryTests
 	{
 		private ImageRepository _instance;

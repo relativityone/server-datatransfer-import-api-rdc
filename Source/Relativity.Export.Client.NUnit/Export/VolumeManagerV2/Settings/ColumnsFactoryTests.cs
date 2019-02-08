@@ -1,13 +1,23 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings;
-using kCura.WinEDDS.NUnit.TestObjectFactories;
-using NUnit.Framework;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="ColumnsFactoryTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Settings
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Settings
 {
-	[TestFixture]
+    using System.Collections.Generic;
+    using System.Linq;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Import.Client.NUnit;
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class ColumnsFactoryTests
 	{
 		private ColumnsFactory _instance;

@@ -1,8 +1,14 @@
-﻿using System.IO;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="StreamStub.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Writers
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Writers
 {
-	public class StreamStub : MemoryStream
+    using System.IO;
+
+    public class StreamStub : MemoryStream
 	{
 		private int _counter;
 		private readonly int _failOn;

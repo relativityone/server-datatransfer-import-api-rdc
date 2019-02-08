@@ -1,12 +1,21 @@
-﻿using System.Collections;
-using System.Threading;
-using kCura.WinEDDS.Exporters;
-using Moq;
-using NUnit.Framework;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="MultiPageNotOpticonMetadataForArtifactBuilderTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Metadata.Images
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Images
 {
-	[TestFixture]
+    using System.Collections;
+    using System.Threading;
+
+    using kCura.WinEDDS.Exporters;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    [TestFixture]
 	public class MultiPageNotOpticonMetadataForArtifactBuilderTests : MultiPageMetadataForArtifactBuilderTests
 	{
 		[Test]

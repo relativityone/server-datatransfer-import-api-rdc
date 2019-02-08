@@ -1,14 +1,25 @@
-﻿using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
-using kCura.WinEDDS.Exporters;
-using Moq;
-using NUnit.Framework;
-using Relativity.Logging;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="NativeFileBatchValidatorTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
+namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Batches
 {
-	[TestFixture]
+    using System.Threading;
+
+    using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
+    using kCura.WinEDDS.Exporters;
+
+    using Moq;
+
+    using global::NUnit.Framework;
+
+    using Relativity.Logging;
+
+    [TestFixture]
 	public class NativeFileBatchValidatorTests
 	{
 		protected IBatchValidator Instance { get; private set; }
@@ -135,7 +146,7 @@ namespace kCura.WinEDDS.Core.NUnit.Export.VolumeManagerV2.Batches
 			Instance.ValidateExportedBatch(artifacts, new VolumePredictions[1], CancellationToken.None);
 
 			//ASSERT
-			ErrorFileWriter.Verify(x => x.Write(Core.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType.Native, artifact.IdentifierValue, artifact.NativeTempLocation, It.IsAny<string>()), Times.Once);
+			ErrorFileWriter.Verify(x => x.Write(kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType.Native, artifact.IdentifierValue, artifact.NativeTempLocation, It.IsAny<string>()), Times.Once);
 			Status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 	}
