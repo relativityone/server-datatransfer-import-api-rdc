@@ -106,8 +106,10 @@
     <Content Include="oi\unmanaged\wvcore-R1.dll">
       <Paket>True</Paket>
     </Content>
+    <Compile Include="DataReaderReaderTests.cs" />
     <Compile Include="FolderCacheTests.cs" />
     <Compile Include="ImportTestCategories.cs" />
+    <Compile Include="LoadFileReaderTests.cs" />
     <Compile Include="RandomHelper.cs" />
     <Compile Include="..\..\Version\AssemblySharedInfo.cs">
       <Link>Properties\AssemblySharedInfo.cs</Link>
