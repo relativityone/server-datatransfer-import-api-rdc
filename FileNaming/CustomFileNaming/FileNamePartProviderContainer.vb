@@ -11,7 +11,9 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 			Register(GetType(SeparatorDescriptorPart), New SeparatorFileNamePartProvider())
 			Register(GetType(FieldDescriptorPart), New FieldFileNamePartProvider())
 			Register(GetType(CustomTextDescriptorPart), New CustomTextFileNamePartProvider())
+			Register(GetType(FirstFieldDescriptorPart), New FirstFieldFileNamePartProvider())
 		End Sub
+
 
 		Public Function GetProvider(descriptor As DescriptorPart) As IFileNamePartProvider Implements IFileNamePartProviderContainer.GetProvider
 			Dim descriptorType As Type = descriptor.GetType()
