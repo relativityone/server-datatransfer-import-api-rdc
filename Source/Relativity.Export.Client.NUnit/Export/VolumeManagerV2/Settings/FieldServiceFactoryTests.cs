@@ -16,7 +16,7 @@ namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Settings
 
     using global::NUnit.Framework;
 
-    using Relativity.Import.Client.NUnit;
+    using Relativity.ImportExport.UnitTestFramework;
     using Relativity.Logging;
 
     [TestFixture]

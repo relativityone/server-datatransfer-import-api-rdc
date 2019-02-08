@@ -20,11 +20,10 @@ namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Text
 
     using Relativity;
     using Relativity.Export.Client.NUnit.Export.VolumeManagerV2.DataSize;
-    using Relativity.Import.Client.NUnit;
+    using Relativity.ImportExport.UnitTestFramework;
     using Relativity.Logging;
 
     using RelativityConstants = Relativity.Constants;
-    using LoadFileType = Relativity.Import.Client.NUnit.LoadFileType;
 
     [TestFixture]
 	public class LongTextHelperTests
@@ -186,8 +185,8 @@ namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Text
 		[TestCase(5)]
 		[TestCase(9)]
 		public void ItShouldGetFieldArtifactIdFromFieldName(int fieldIndex)
-		{
-			kCura.WinEDDS.ViewFieldInfo[] fields = _fieldFactory.GetAllDocumentFields();
+        {
+            kCura.WinEDDS.ViewFieldInfo[] fields = _fieldFactory.GetAllDocumentFields().ToArray();
 
 			_fieldService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns((string fieldName) => fields.ToList().FindIndex(x => x.AvfColumnName == fieldName));
 			_fieldService.Setup(x => x.GetColumns()).Returns(fields);

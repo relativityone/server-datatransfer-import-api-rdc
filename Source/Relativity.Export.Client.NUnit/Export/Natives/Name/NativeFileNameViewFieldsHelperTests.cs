@@ -13,7 +13,7 @@ namespace Relativity.Export.Client.NUnit.Export.Natives.Name
 
     using global::NUnit.Framework;
 
-    using Relativity.Import.Client.NUnit;
+    using Relativity.ImportExport.UnitTestFramework;
 
     public class NativeFileNameViewFieldsHelperTests
 	{

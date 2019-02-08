@@ -21,7 +21,7 @@ namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Text
 
     using global::NUnit.Framework;
 
-    using Relativity.Import.Client.NUnit;
+    using Relativity.ImportExport.UnitTestFramework;
     using Relativity.Logging;
 
     using ExportConstants = Relativity.Export.Constants;

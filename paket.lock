@@ -3,6 +3,8 @@ NUGET
   remote: https://www.nuget.org/api/v2
     BCrypt-Official (0.1.109)
     Castle.Core (4.3.1)
+    Castle.Windsor (3.3)
+      Castle.Core (>= 3.3)
     Microsoft.Build.Logging.StructuredLogger (1.0.89)
     Moq (4.10.1)
       Castle.Core (>= 4.3.1)

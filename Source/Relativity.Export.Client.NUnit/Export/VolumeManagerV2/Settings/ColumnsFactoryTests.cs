@@ -14,7 +14,7 @@ namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Settings
 
     using global::NUnit.Framework;
 
-    using Relativity.Import.Client.NUnit;
+    using Relativity.ImportExport.UnitTestFramework;
     using Relativity.Logging;
 
     [TestFixture]
@@ -30,8 +30,8 @@ namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Settings
 
 		[Test]
 		public void ItShouldNotModifyColumnsWhenTextPrecedenceIsNotSet()
-		{
-			ViewFieldInfo[] fields = new QueryFieldFactory().GetAllDocumentFields();
+        {
+            ViewFieldInfo[] fields = new QueryFieldFactory().GetAllDocumentFields().ToArray();
 
 			ExportFile exportSettings = new ExportFile(1)
 			{
@@ -53,7 +53,7 @@ namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Settings
 		public void ItShouldAddTextPrecedenceFieldIfMultipleTextFieldsSelected(int numberOfTextFields)
 		{
 			QueryFieldFactory fieldFactory = new QueryFieldFactory();
-			ViewFieldInfo[] fields = fieldFactory.GetAllDocumentFields();
+            ViewFieldInfo[] fields = fieldFactory.GetAllDocumentFields().ToArray();
 
 			List<ViewFieldInfo> textFields = new List<ViewFieldInfo>();
 			for (int i = 0; i < numberOfTextFields; i++)
@@ -80,7 +80,7 @@ namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Settings
 		public void ItShouldReplaceOnlyTextFieldWithTextPrecedenceUsingOldFieldName()
 		{
 			QueryFieldFactory fieldFactory = new QueryFieldFactory();
-			ViewFieldInfo[] fields = fieldFactory.GetAllDocumentFields();
+            ViewFieldInfo[] fields = fieldFactory.GetAllDocumentFields().ToArray();
 
 			ViewFieldInfo[] textFields = {fieldFactory.GetExtractedTextField()};
 

@@ -16,8 +16,8 @@ namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Text
 
     using global::NUnit.Framework;
 
+    using Relativity.ImportExport.UnitTestFramework;
     using Relativity.Logging;
-    using Relativity.Import.Client.NUnit;
 
     [TestFixture]
 	public class LongTextHandlerTests

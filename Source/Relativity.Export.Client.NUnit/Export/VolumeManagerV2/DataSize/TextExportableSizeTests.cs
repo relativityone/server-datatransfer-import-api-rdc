@@ -19,7 +19,7 @@ namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.DataSize
     using global::NUnit.Framework;
 
     using Relativity;
-    using Relativity.Import.Client.NUnit;
+    using Relativity.ImportExport.UnitTestFramework;
 
     using ExportConstants = Relativity.Export.Constants;
     using RelativityConstants = Relativity.Constants;
@@ -317,7 +317,7 @@ namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.DataSize
 		private static IEnumerable<kCura.WinEDDS.ViewFieldInfo> NonTextFieldDataSet()
 		{
 			var fieldFactory = new QueryFieldFactory();
-            kCura.WinEDDS.ViewFieldInfo[] fields = fieldFactory.GetAllDocumentFields();
+            IEnumerable<kCura.WinEDDS.ViewFieldInfo> fields = fieldFactory.GetAllDocumentFields();
 			foreach (kCura.WinEDDS.ViewFieldInfo field in fields)
 			{
 				if (field.FieldType == FieldTypeHelper.FieldType.Text || field.FieldType == FieldTypeHelper.FieldType.OffTableText)

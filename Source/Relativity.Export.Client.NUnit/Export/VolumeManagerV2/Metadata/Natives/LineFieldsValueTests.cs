@@ -20,7 +20,7 @@ namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Natives
     using global::NUnit.Framework;
 
     using Relativity;
-    using Relativity.Import.Client.NUnit;
+    using Relativity.ImportExport.UnitTestFramework;
     using Relativity.Logging;
 
     [TestFixture]
@@ -102,9 +102,9 @@ namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Natives
 		}
 
 		private List<kCura.WinEDDS.ViewFieldInfo> PrepareDataSet(ObjectExportInfo artifact)
-		{
-            kCura.WinEDDS.ViewFieldInfo[] allDocumentFields = _queryFieldFactory.GetAllDocumentFields();
-
+        {
+            kCura.WinEDDS.ViewFieldInfo[] allDocumentFields =
+                _queryFieldFactory.GetAllDocumentFields().ToArray();
 			List<kCura.WinEDDS.ViewFieldInfo> fields = allDocumentFields
 				.Where(x => x.FieldType != FieldTypeHelper.FieldType.Text && x.FieldType != FieldTypeHelper.FieldType.OffTableText).ToList();
 
@@ -116,7 +116,7 @@ namespace Relativity.Export.Client.NUnit.Export.VolumeManagerV2.Metadata.Natives
 
 			artifact.Metadata = fieldValues.Cast<object>().ToArray();
 
-			_fieldLookupService.Setup(x => x.GetColumns()).Returns(allDocumentFields);
+			_fieldLookupService.Setup(x => x.GetColumns()).Returns(allDocumentFields.ToArray);
 			_fieldLookupService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns((string columnName) => fields.FindIndex(x => x.AvfColumnName == columnName));
 
 			_longTextHandler.Setup(x => x.HandleLongText(It.IsAny<ObjectExportInfo>(), It.IsAny<kCura.WinEDDS.ViewFieldInfo>(), It.IsAny<DeferredEntry>()))

@@ -2,6 +2,8 @@
 
 Imports NUnit.Framework
 
+Imports Relativity.ImportExport.UnitTestFramework
+
 Namespace Relativity.Import.Client.NUnit
 
 	<TestFixture>
