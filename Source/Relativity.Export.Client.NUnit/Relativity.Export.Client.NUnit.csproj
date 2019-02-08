@@ -129,7 +129,6 @@
     <Compile Include="..\..\Version\AssemblySharedInfo.cs">
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
-    <Compile Include="AsperaStorageDeviceServiceTests.cs" />
     <Compile Include="BatchCleanUpTests.cs" />
     <Compile Include="BatchExporterTests.cs" />
     <Compile Include="BatchInitializationTests.cs" />

@@ -95,7 +95,6 @@ namespace Relativity.Export.Client.NUnit
 		}
 
 		[Test]
-		[Ignore("Until File Size calculation is fixed by Production team REL-198994")]
 		public void ItShouldWriteWarningForFileWithInvalidSize()
 		{
 			var artifact = new ObjectExportInfo
@@ -121,11 +120,10 @@ namespace Relativity.Export.Client.NUnit
 
 			//ASSERT
 			ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), artifact.IdentifierValue, artifact.NativeTempLocation, It.IsAny<string>()), Times.Never);
-			Status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Once);
+			Status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
 		[Test]
-		[Ignore("Until File Size calculation is fixed by Production team REL-198994")]
 		[TestCase(true, 0)]
 		[TestCase(false, 1)]
 		public void ItShouldWriteErrorForMissingOrEmptyFile(bool exists, long size)

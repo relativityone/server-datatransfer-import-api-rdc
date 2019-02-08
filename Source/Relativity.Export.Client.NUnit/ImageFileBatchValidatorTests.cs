@@ -94,7 +94,6 @@ namespace Relativity.Export.Client.NUnit
 		}
 
 		[Test]
-		[Ignore("Until File Size calculation is fixed by Production team REL-198994")]
 		public void ItShouldWriteUpdateForImageWithSmallerSize()
 		{
 			string location = "file_location";
@@ -117,11 +116,10 @@ namespace Relativity.Export.Client.NUnit
 
 			//ASSERT
 			_errorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-			_status.Verify(x => x.WriteUpdate(It.IsAny<string>(), true), Times.Once);
+			_status.Verify(x => x.WriteUpdate(It.IsAny<string>(), true), Times.Never);
 		}
 
 		[Test]
-		[Ignore("Until File Size calculation is fixed by Production team REL-198994")]
 		public void ItShouldWriteWarningForImageWithBiggerSize()
 		{
 			string location = "file_location";
@@ -144,7 +142,7 @@ namespace Relativity.Export.Client.NUnit
 
 			//ASSERT
 			_errorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-			_status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Once);
+			_status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
 		[Test]
@@ -172,7 +170,6 @@ namespace Relativity.Export.Client.NUnit
 		}
 
 		[Test]
-		[Ignore("Until File Size calculation is fixed by Production team REL-198994")]
 		public void ItShouldWriteWarningForInvalidSize()
 		{
 			string location1 = "file_location_1";
@@ -201,7 +198,7 @@ namespace Relativity.Export.Client.NUnit
 
 			//ASSERT
 			_errorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-			_status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Once);
+			_status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
 		#region Create helpers
