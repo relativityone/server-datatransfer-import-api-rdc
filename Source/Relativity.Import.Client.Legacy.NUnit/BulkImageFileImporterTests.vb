@@ -14,7 +14,6 @@ Namespace Relativity.Import.Client.NUnit
 	<TestFixture>
 	Public Class BulkImageFileImporterTests
 
-#Region " Members "
 		Dim _args As ImageLoadFile
 		Dim _guid As System.Guid
 		Dim _controller As Controller
@@ -24,11 +23,9 @@ Namespace Relativity.Import.Client.NUnit
         Dim _ioReporter As IIoReporter
         Dim _logger As ILog
 		Dim tokenSource As CancellationTokenSource
-#End Region
 
-#Region " Setup "
-
-		<SetUp()> Public Sub SetUp()
+		<SetUp>
+		Public Sub SetUp()
 			_args = New ImageLoadFile()
 			_args.CaseInfo = New CaseInfo()
 			_args.CaseInfo.RootArtifactID = 1
@@ -58,119 +55,45 @@ Namespace Relativity.Import.Client.NUnit
 			End If
 		End Sub
 
-		<TearDown()> Public Sub TakeDown()
+		<TearDown>
+		Public Sub TakeDown()
 			If _keyValExistsAlready = False Then
 				RegKeyHelper.RemoveKeyPath(RegKeyHelper.RelativityKeyPath)
 			End If
 		End Sub
-#End Region
 
-#Region " Basic Retry + Batch Size  Tests"
-
-		<Test(), Ignore("")> Public Sub BulkImportImageFile_CatchWebException_Retries_CallsLowerBatchSize_True()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), tokenSource)
-			Try
-				bulkImporter.TryBulkImport(_overwrite)
-			Catch ex As Exception
-				Assert.AreEqual(GetType(System.Net.WebException), ex.GetType)
-			End Try
-			Assert.AreEqual(500 - 200, bulkImporter.BatchSize)
-			Assert.AreEqual(2, bulkImporter.PauseCalled)
-		End Sub
-
-		<Test()> Public Sub BulkImportImageFile_NoException_NoRetries_CallsLowerBatchSize_False()
+		<Test>
+		Public Sub BulkImportImageFile_NoException_NoRetries_CallsLowerBatchSize_False()
 			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(False), tokenSource)
 			bulkImporter.TryBulkImport(_overwrite)
 			Assert.AreEqual(500, bulkImporter.BatchSize)
 			Assert.AreEqual(0, bulkImporter.PauseCalled)
 		End Sub
 
-		<Test(), Ignore("")> Public Sub BulkImportImageFile_CatchSystemException_Retries_CallsLowerBatchSize_False()
-			Dim manager As New MockBulkImportManagerWebExceptions(True)
-			manager.ErrorMessage = New System.Exception("bombed out")
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, manager, tokenSource)
-			Try
-				bulkImporter.TryBulkImport(_overwrite)
-			Catch ex As Exception
-				Assert.AreEqual(GetType(System.Exception), ex.GetType)
-				Assert.AreEqual("bombed out", ex.Message)
-			End Try
-			Assert.AreEqual(500, bulkImporter.BatchSize)
-			Assert.AreEqual(2, bulkImporter.PauseCalled)
-		End Sub
-
-		<Test(), Ignore("")> Public Sub BulkImportImageFile_CatchSQLException_Retries_CallsLowerBatchSize_True()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerSqlExceptions(True), tokenSource)
-			Try
-				bulkImporter.TryBulkImport(_overwrite)
-			Catch ex As Exception
-				Assert.AreEqual(GetType(kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlTimeoutException), ex.GetType)
-			End Try
-			Assert.AreEqual(500 - 200, bulkImporter.BatchSize)
-			Assert.AreEqual(2, bulkImporter.PauseCalled)
-		End Sub
-
-#End Region
-
-#Region " Retry-Until-It-Works Tests"
-		<Test(), Ignore("")> Public Sub BulkImportImageFile_CatchSQLException_500RetryTo400_ThenWork()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerSqlExceptions(400), tokenSource)
-			bulkImporter.TryBulkImport(_overwrite)
-
-			Assert.AreEqual(400, bulkImporter.BatchSize)
-			Assert.AreEqual(1, bulkImporter.PauseCalled)
-			CollectionAssert.AreEquivalent({500, 400}, bulkImporter.BatchSizeHistoryList)
-		End Sub
-
-		<Test(), Ignore("")> Public Sub BulkImportImageFile_CatchSQLException_500RetryToMinimum_ThenWork()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerSqlExceptions(300), tokenSource)
-			bulkImporter.MinimumBatch = 300
-			bulkImporter.TryBulkImport(_overwrite)
-			Assert.AreEqual(300, bulkImporter.BatchSize)
-			Assert.AreEqual(2, bulkImporter.PauseCalled)
-			CollectionAssert.AreEquivalent({500, 400, 300}, bulkImporter.BatchSizeHistoryList)
-		End Sub
-
-		<Test(), Ignore("")> Public Sub BulkImportImageFile_CatchSQLException_500Retry_HitMinimum_ThrowException()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerSqlExceptions(200), tokenSource)
-			bulkImporter.MinimumBatch = 350
-			Try
-				bulkImporter.TryBulkImport(_overwrite)
-			Catch ex As Exception
-				Assert.AreEqual(GetType(kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlTimeoutException), ex.GetType)
-			End Try
-			Assert.AreEqual(350, bulkImporter.BatchSize)
-			Assert.AreEqual(2, bulkImporter.PauseCalled)
-			CollectionAssert.AreEquivalent({500, 400, 350}, bulkImporter.BatchSizeHistoryList)
-		End Sub
-
-#End Region
-
-#Region " Batch Size Adjustment "
-		<Test()> Public Sub BulkImportImageFile_Lower_500BatchSize_to300()
+		<Test>
+		Public Sub BulkImportImageFile_Lower_500BatchSize_to300()
 			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), tokenSource)
 			bulkImporter.BatchSize = 300
 			Assert.AreEqual(300, bulkImporter.BatchSize)
 		End Sub
 
-		<Test()> Public Sub BulkImportImageFile_Lower_500BatchSize_ToMinimum300()
+		<Test>
+		Public Sub BulkImportImageFile_Lower_500BatchSize_ToMinimum300()
 			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), tokenSource)
 			bulkImporter.MinimumBatch = 300
 			bulkImporter.BatchSize = 300
 			Assert.AreEqual(300, bulkImporter.BatchSize)
 		End Sub
 
-		<Test()> Public Sub BulkImportImageFile_Lower_500BatchSize_To200_PastMinimum300()
+		<Test>
+		Public Sub BulkImportImageFile_Lower_500BatchSize_To200_PastMinimum300()
 			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), tokenSource)
 			bulkImporter.MinimumBatch = 300
 			bulkImporter.BatchSize = 200
 			Assert.AreEqual(300, bulkImporter.BatchSize)
 		End Sub
 
-#End Region
-
-#Region "LowerBatchSizeAndRetry"
-		<Test()>
+		<Test>
 		Public Sub LowerBatchSizeAndRetry_Initial100Docs_Batch78_NewFileHas80()
 			Dim originalBatchSizeWith100Images As String = <string>1,0,0,0,1,AS000001,AS000001,09ea36a7-6e04-45e5-8a89-79545589cb6f,AS000001.tif,0,0,35852,\\localhost\files\EDDS1015054\RV_55f36d7b-4eb9-4f7f-aba2-b9a7b6b460a3\09ea36a7-6e04-45e5-8a89-79545589cb6f,\\192.168.14.18\SvP_ExportII\VOL01\IMG001\AS000001.tif,þþKþþ
 1,0,0,0,2,AS000002,AS000002,684dabe5-1625-49fa-a5b3-7bf5c5106c71,AS000002.tif,0,0,256498,\\localhost\files\EDDS1015054\RV_55f36d7b-4eb9-4f7f-aba2-b9a7b6b460a3\684dabe5-1625-49fa-a5b3-7bf5c5106c71,\\192.168.14.18\SvP_ExportII\VOL01\IMG001\AS000002.tif,þþKþþ
@@ -362,8 +285,5 @@ Namespace Relativity.Import.Client.NUnit
 			bulkImporter.MockLowerBatchSizeAndRetry(100)
 			Assert.AreEqual(expectedReducedFileWith80Rows, bulkImporter._outPutFromStringWriter.ToString())
 		End Sub
-
-#End Region
 	End Class
 End Namespace
-

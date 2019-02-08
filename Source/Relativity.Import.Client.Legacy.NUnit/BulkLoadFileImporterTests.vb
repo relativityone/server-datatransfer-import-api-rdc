@@ -15,7 +15,6 @@ Namespace Relativity.Import.Client.NUnit
 	<TestFixture>
 	Public Class BulkLoadFileImporterTests
 
-#Region " Members "
 		Dim _args As LoadFile
 		Dim _guid As System.Guid
 		Dim _controller As Controller
@@ -24,11 +23,9 @@ Namespace Relativity.Import.Client.NUnit
 		Dim _keyPathExistsAlready As Boolean
 		Dim _keyValExistsAlready As Boolean
 		Dim tokenSource As CancellationTokenSource
-#End Region
 
-#Region " Setup "
-
-		<SetUp()> Public Sub SetUp()
+		<SetUp>
+		Public Sub SetUp()
 			_args = New LoadFile()
 			_args.CaseInfo = New CaseInfo()
 			_args.CaseInfo.RootArtifactID = 1
@@ -57,7 +54,8 @@ Namespace Relativity.Import.Client.NUnit
 			End If
 		End Sub
 
-		<TearDown()> Public Sub TakeDown()
+		<TearDown>
+		Public Sub TakeDown()
 			_args = Nothing
 			_guid = Nothing
 			_controller = Nothing
@@ -66,29 +64,17 @@ Namespace Relativity.Import.Client.NUnit
 				RegKeyHelper.RemoveKeyPath(RegKeyHelper.RelativityKeyPath)
 			End If
 		End Sub
-#End Region
 
-#Region " Basic Retry + Batch Size  Tests"
-
-		<Test(), Ignore("")> Public Sub BulkImportLoadFile_CatchWebException_Retries_CallsLowerBatchSize_True()
-			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True), tokenSource)
-			Try
-				bulkImporter.TryBulkImport(New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo())
-			Catch ex As Exception
-				Assert.AreEqual(GetType(System.Net.WebException), ex.GetType)
-			End Try
-			Assert.AreEqual(500 - 200, bulkImporter.BatchSize)
-			Assert.AreEqual(2, bulkImporter.PauseCalled)
-		End Sub
-
-		<Test()> Public Sub BulkImportLoadFile_NoException_NoRetries_CallsLowerBatchSize_False()
+		<Test>
+		Public Sub BulkImportLoadFile_NoException_NoRetries_CallsLowerBatchSize_False()
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(False), tokenSource)
 			bulkImporter.TryBulkImport(New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo())
 			Assert.AreEqual(500, bulkImporter.BatchSize)
 			Assert.AreEqual(0, bulkImporter.PauseCalled)
 		End Sub
 
-		<Test()> Public Sub BulkImportLoadFile_CatchSystemException_Retries_CallsLowerBatchSize_False()
+		<Test>
+		Public Sub BulkImportLoadFile_CatchSystemException_Retries_CallsLowerBatchSize_False()
 			Dim manager As New MockBulkImportManagerWebExceptions(True)
 			manager.ErrorMessage = New System.Exception("bombed out")
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, manager, tokenSource)
@@ -102,78 +88,31 @@ Namespace Relativity.Import.Client.NUnit
 			Assert.AreEqual(2, bulkImporter.PauseCalled)
 		End Sub
 
-
-		<Test(), Ignore("")> Public Sub BulkImportLoadFile_CatchSQLException_Retries_CallsLowerBatchSize_True()
-			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerSqlExceptions(True), tokenSource)
-			Try
-				bulkImporter.TryBulkImport(New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo())
-			Catch ex As Exception
-				Assert.AreEqual(GetType(kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlTimeoutException), ex.GetType)
-			End Try
-			Assert.AreEqual(500 - 200, bulkImporter.BatchSize)
-			Assert.AreEqual(2, bulkImporter.PauseCalled)
-		End Sub
-
-#End Region
-
-#Region " Retry-Until-It-Works Tests"
-		<Test(), Ignore("")> Public Sub BulkImportLoadFile_CatchSQLException_500RetryTo400_ThenWork()
-			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerSqlExceptions(400), tokenSource)
-			bulkImporter.TryBulkImport(New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo())
-
-			Assert.AreEqual(400, bulkImporter.BatchSize)
-			Assert.AreEqual(1, bulkImporter.PauseCalled)
-			CollectionAssert.AreEquivalent({500, 400}, bulkImporter.BatchSizeHistoryList)
-		End Sub
-
-		<Test(), Ignore("")> Public Sub BulkImportLoadFile_CatchSQLException_500RetryToMinimum_ThenWork()
-			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerSqlExceptions(300), tokenSource)
-			bulkImporter.MinimumBatch = 300
-			bulkImporter.TryBulkImport(New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo())
-			Assert.AreEqual(300, bulkImporter.BatchSize)
-			Assert.AreEqual(2, bulkImporter.PauseCalled)
-			CollectionAssert.AreEquivalent({500, 400, 300}, bulkImporter.BatchSizeHistoryList)
-		End Sub
-
-		<Test(), Ignore("")> Public Sub BulkImportLoadFile_CatchSQLException_500Retry_HitMinimum_ThrowException()
-			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerSqlExceptions(200), tokenSource)
-			bulkImporter.MinimumBatch = 350
-			Try
-				bulkImporter.TryBulkImport(New kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo())
-			Catch ex As Exception
-				Assert.AreEqual(GetType(kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlTimeoutException), ex.GetType)
-			End Try
-			Assert.AreEqual(350, bulkImporter.BatchSize)
-			Assert.AreEqual(2, bulkImporter.PauseCalled)
-			CollectionAssert.AreEquivalent({500, 400, 350}, bulkImporter.BatchSizeHistoryList)
-		End Sub
-
-#End Region
-
-#Region " Batch Size Adjustment "
-		<Test()> Public Sub BulkImportLoadFile_Lower_500BatchSize_to300()
+		<Test>
+		Public Sub BulkImportLoadFile_Lower_500BatchSize_to300()
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True), tokenSource)
 			bulkImporter.BatchSize = 300
 			Assert.AreEqual(300, bulkImporter.BatchSize)
 		End Sub
-		<Test()> Public Sub BulkImportLoadFile_Lower_500BatchSize_ToMinimum300()
+
+		<Test>
+		Public Sub BulkImportLoadFile_Lower_500BatchSize_ToMinimum300()
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True), tokenSource)
 			bulkImporter.MinimumBatch = 300
 			bulkImporter.BatchSize = 300
 			Assert.AreEqual(300, bulkImporter.BatchSize)
 		End Sub
 
-		<Test()> Public Sub BulkImportLoadFile_Lower_500BatchSize_To200_PastMinimum300()
+		<Test>
+		Public Sub BulkImportLoadFile_Lower_500BatchSize_To200_PastMinimum300()
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True), tokenSource)
 			bulkImporter.MinimumBatch = 300
 			bulkImporter.BatchSize = 200
 			Assert.AreEqual(300, bulkImporter.BatchSize)
 		End Sub
 
-#End Region
-
-#Region " GetMappedFields "
-		<Test()> Public Sub GetMappedFields_AllObjectFieldsSelected_AllFieldsObjectFieldContainsArtifactId()
+		<Test>
+		Public Sub GetMappedFields_AllObjectFieldsSelected_AllFieldsObjectFieldContainsArtifactId()
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True), tokenSource)
 
 			Dim FieldMap As New LoadFileFieldMap
@@ -188,7 +127,8 @@ Namespace Relativity.Import.Client.NUnit
 			Assert.AreEqual(ImportBehaviorChoice.ObjectFieldContainsArtifactId, fields(1).ImportBehavior)
 		End Sub
 
-		<Test()> Public Sub GetMappedFields_NoObjectFieldsSelected_NoFieldsObjectFieldContainsArtifactId()
+		<Test>
+		Public Sub GetMappedFields_NoObjectFieldsSelected_NoFieldsObjectFieldContainsArtifactId()
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True), tokenSource)
 
 			Dim FieldMap As New LoadFileFieldMap
@@ -203,7 +143,8 @@ Namespace Relativity.Import.Client.NUnit
 			Assert.AreEqual(Nothing, fields(1).ImportBehavior)
 		End Sub
 
-		<Test()> Public Sub GetMappedFields_NoSelection_NoFieldsObjectFieldContainsArtifactId()
+		<Test>
+		Public Sub GetMappedFields_NoSelection_NoFieldsObjectFieldContainsArtifactId()
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True), tokenSource)
 
 			Dim FieldMap As New LoadFileFieldMap
@@ -218,7 +159,8 @@ Namespace Relativity.Import.Client.NUnit
 			Assert.AreEqual(Nothing, fields(1).ImportBehavior)
 		End Sub
 
-		<Test()> Public Sub GetMappedFields_OneObjectFieldSelected_OneFieldsObjectFieldContainsArtifactId()
+		<Test>
+		Public Sub GetMappedFields_OneObjectFieldSelected_OneFieldsObjectFieldContainsArtifactId()
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True), tokenSource)
 
 			Dim FieldMap As New LoadFileFieldMap
@@ -233,7 +175,8 @@ Namespace Relativity.Import.Client.NUnit
 			Assert.AreEqual(Nothing, fields(1).ImportBehavior)
 		End Sub
 
-		<Test()> Public Sub GetMappedFields_NoneObjectFieldsSelected_NoFieldsObjectFieldContainsArtifactId()
+		<Test>
+		Public Sub GetMappedFields_NoneObjectFieldsSelected_NoFieldsObjectFieldContainsArtifactId()
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True), tokenSource)
 
 			Dim FieldMap As New LoadFileFieldMap
@@ -274,7 +217,8 @@ Namespace Relativity.Import.Client.NUnit
 			Assert.AreEqual(Nothing, fields(14).ImportBehavior)
 		End Sub
 
-		<Test()> Public Sub GetMappedFields_TwoObjectFieldsSelected_TwoFieldsObjectFieldContainsArtifactId()
+		<Test>
+		Public Sub GetMappedFields_TwoObjectFieldsSelected_TwoFieldsObjectFieldContainsArtifactId()
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True), tokenSource)
 
 			Dim FieldMap As New LoadFileFieldMap
@@ -314,9 +258,6 @@ Namespace Relativity.Import.Client.NUnit
 			Assert.AreEqual(Nothing, fields(13).ImportBehavior)
 			Assert.AreEqual(Nothing, fields(14).ImportBehavior)
 		End Sub
-#End Region
-
-#Region " GetMassImportOverlayType "
 
 		<Test>
 		<TestCaseSource("OverlayTypeSource")>
@@ -334,10 +275,6 @@ Namespace Relativity.Import.Client.NUnit
 			Return retval
 		End Function
 
-#End Region
-
-#Region " CleanDestinationFolderPath "
-
 		<Test>
 		<TestCase("\", "")>
 		<TestCase("\", "\\")>
@@ -351,33 +288,28 @@ Namespace Relativity.Import.Client.NUnit
 			Assert.AreEqual(expected, actual)
 		End Sub
 
-#End Region
-
-#Region "GetMaxExtractedTextLength"
-		<Test()>
+		<Test>
 		Public Sub GetMaxExtractedTextLength_Return_Correct_Value_Nothing()
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerSqlExceptions(True), tokenSource)
 			Dim encoding As System.Text.Encoding = Nothing
 			Assert.AreEqual(1073741824, bulkImporter.GetMaxExtractedTextLength(encoding))
 		End Sub
 
-		<Test()>
+		<Test>
 		Public Sub GetMaxExtractedTextLength_Return_Correct_Value_UTF8()
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerSqlExceptions(True), tokenSource)
 			Dim encoding As System.Text.Encoding = System.Text.Encoding.UTF8
 			Assert.AreEqual(1073741824, bulkImporter.GetMaxExtractedTextLength(encoding))
 		End Sub
 
-		<Test()>
+		<Test>
 		Public Sub GetMaxExtractedTextLength_Return_Correct_Value_Other()
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerSqlExceptions(True), tokenSource)
 			Dim encoding As System.Text.Encoding = System.Text.Encoding.UTF32
 			Assert.AreEqual(2147483647, bulkImporter.GetMaxExtractedTextLength(encoding))
 		End Sub
-#End Region
 
-#Region "WaitForRetry"
-		<Test()>
+		<Test>
 		Public Sub WaitForRetry_TestRetryCountOnFail()
 			Dim retryMax As Int32 = 10
 			Dim attemptCount As Int32 = 0
@@ -392,7 +324,7 @@ Namespace Relativity.Import.Client.NUnit
 			Assert.AreEqual(retryMax + 1, attemptCount)
 		End Sub
 
-		<Test()>
+		<Test>
 		Public Sub WaitForRetry_TestRetryNotExecuted()
 			Dim attemptCount As Int32 = 0
 			Dim bulkImporter As MockBulkLoadFileImporter = New MockBulkLoadFileImporter(_args, _controller, _ioReporter, _logger, 0, False, False, _guid, True, "S", True, New MockBulkImportManagerWebExceptions(True), tokenSource)
@@ -406,7 +338,7 @@ Namespace Relativity.Import.Client.NUnit
 			Assert.AreEqual(1, attemptCount)
 		End Sub
 
-		<Test()>
+		<Test>
 		Public Sub WaitForRetry_TestEventuallySucceeds()
 			Dim attemptCount As Int32 = 0
 			Dim succeedCount As Int32 = 6
@@ -423,6 +355,5 @@ Namespace Relativity.Import.Client.NUnit
 
 			Assert.AreEqual(succeedCount, attemptCount)
 		End Sub
-#End Region
 	End Class
 End Namespace
