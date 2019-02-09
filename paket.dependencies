@@ -20,8 +20,8 @@ nuget rhinomocks  = 3.6.0
 source https://proget.kcura.corp/NuGet/NuGet
 
 # Both kCura and Relativity are explicitly listed to address a bug with Relativity and NuGet packages (IE 10.2.0.0 only)
-nuget kcura = 10.2.30.42
-nuget relativity = 10.2.30.42
-nuget relativity.importexport = 10.2.30.42
+nuget kcura = 10.2.32.58-DEV
+nuget relativity = 10.2.32.58-DEV
+nuget relativity.importexport = 10.2.32.58-DEV
 nuget relativity.telemetry.datacontracts.shared = 2019.1.0
 nuget relativity.telemetry.services.interface = 2019.1.0
