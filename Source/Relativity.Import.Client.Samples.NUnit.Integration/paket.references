@@ -1,2 +1,5 @@
+kCura.relativity.client
 nunit
 relativity.importexport
+relativity.objectmanager
+relativity.productions.services.interfaces
