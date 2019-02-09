@@ -4,7 +4,6 @@ nbuilder
 nsubstitute
 nunit
 relativity.importexport
-relativity.logging.interfaces
 relativity.telemetry.datacontracts.shared
 relativity.telemetry.services.interface
 rhinomocks
