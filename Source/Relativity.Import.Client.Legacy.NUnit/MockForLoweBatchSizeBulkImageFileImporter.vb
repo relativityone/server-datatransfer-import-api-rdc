@@ -1,3 +1,9 @@
+' -----------------------------------------------------------------------------------------------------
+' <copyright file="MockForLoweBatchSizeBulkImageFileImporter.cs" company="Relativity ODA LLC">
+'   © Relativity All Rights Reserved.
+' </copyright>
+' -----------------------------------------------------------------------------------------------------
+
 Imports System.IO
 Imports System.Text
 Imports System.Threading
@@ -9,6 +15,7 @@ Imports kCura.WinEDDS.TApi
 Imports Relativity.Logging
 
 Namespace Relativity.Import.Client.NUnit
+
 	Public Class MockForLoweBatchSizeBulkImageFileImporter
 		Inherits kCura.WinEDDS.BulkImageFileImporter
 

@@ -1,6 +1,13 @@
-﻿Imports Microsoft.Win32
+﻿' -----------------------------------------------------------------------------------------------------
+' <copyright file="RegKeyHelper.cs" company="Relativity ODA LLC">
+'   © Relativity All Rights Reserved.
+' </copyright>
+' -----------------------------------------------------------------------------------------------------
+
+Imports Microsoft.Win32
 
 Namespace Relativity.Import.Client.NUnit
+
 	Public Class RegKeyHelper
 		Public Shared ReadOnly Property RelativityKeyPath() As String
 			Get

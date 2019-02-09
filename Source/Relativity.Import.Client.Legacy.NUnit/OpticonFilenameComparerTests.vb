@@ -1,4 +1,10 @@
-﻿Imports kCura.WinEDDS.Exporters
+﻿' -----------------------------------------------------------------------------------------------------
+' <copyright file="OpticonFilenameComparerTests.cs" company="Relativity ODA LLC">
+'   © Relativity All Rights Reserved.
+' </copyright>
+' -----------------------------------------------------------------------------------------------------
+
+Imports kCura.WinEDDS.Exporters
 
 Imports NSubstitute
 

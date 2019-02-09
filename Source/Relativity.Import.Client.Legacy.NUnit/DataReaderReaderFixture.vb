@@ -1,4 +1,10 @@
-﻿Imports NUnit.Framework
+﻿' -----------------------------------------------------------------------------------------------------
+' <copyright file="DataReaderReaderFixture.cs" company="Relativity ODA LLC">
+'   © Relativity All Rights Reserved.
+' </copyright>
+' -----------------------------------------------------------------------------------------------------
+
+Imports NUnit.Framework
 
 Imports kCura.WinEDDS.ImportExtension
 Imports kCura.WinEDDS

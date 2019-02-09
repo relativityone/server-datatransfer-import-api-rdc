@@ -1,4 +1,10 @@
-﻿Imports kCura.WinEDDS
+﻿' -----------------------------------------------------------------------------------------------------
+' <copyright file="IsValid.cs" company="Relativity ODA LLC">
+'   © Relativity All Rights Reserved.
+' </copyright>
+' -----------------------------------------------------------------------------------------------------
+
+Imports kCura.WinEDDS
 
 Imports NUnit.Framework
 
@@ -6,6 +12,7 @@ Namespace Relativity.Import.Client.NUnit
 
 	<TestFixture>
 	Public Class IsValid
+
 		Private _settings As ExportFile
 		Private _validator As kCura.WinEDDS.Exporters.Validator.PaddingWarningValidator
 		Private _recommendedVolumePadding As Int32

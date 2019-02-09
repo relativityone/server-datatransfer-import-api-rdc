@@ -1,4 +1,10 @@
-﻿Imports kCura.WinEDDS.Helpers
+﻿' -----------------------------------------------------------------------------------------------------
+' <copyright file="CaseInsensitiveFilePathHelperTests.cs" company="Relativity ODA LLC">
+'   © Relativity All Rights Reserved.
+' </copyright>
+' -----------------------------------------------------------------------------------------------------
+
+Imports kCura.WinEDDS.Helpers
 
 Imports NSubstitute
 Imports NSubstitute.ExceptionExtensions

@@ -1,4 +1,10 @@
-﻿Imports kCura.WinEDDS
+﻿' -----------------------------------------------------------------------------------------------------
+' <copyright file="ExportFileSerializer.cs" company="Relativity ODA LLC">
+'   © Relativity All Rights Reserved.
+' </copyright>
+' -----------------------------------------------------------------------------------------------------
+
+Imports kCura.WinEDDS
 
 Imports NUnit.Framework
 

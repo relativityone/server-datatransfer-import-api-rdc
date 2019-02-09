@@ -1,4 +1,10 @@
-﻿Imports kCura.WinEDDS.Exporters
+﻿' -----------------------------------------------------------------------------------------------------
+' <copyright file="ObjectExportInfoTests.cs" company="Relativity ODA LLC">
+'   © Relativity All Rights Reserved.
+' </copyright>
+' -----------------------------------------------------------------------------------------------------
+
+Imports kCura.WinEDDS.Exporters
 
 Imports NUnit.Framework
 
@@ -6,6 +12,7 @@ Namespace Relativity.Import.Client.NUnit
 
 	<TestFixture>
 	Public Class ObjectExportInfoTests
+
 		Private Const _IDENTIFIER As String = "AZIPPER003232"
 		Private Const _ORIGINAL_FILE_NAME_XSL As String= "originalFile.xsl"
 		Private Const _ORIGINAL_FILE_NAME_TXT As String= "originalFile.tXT"

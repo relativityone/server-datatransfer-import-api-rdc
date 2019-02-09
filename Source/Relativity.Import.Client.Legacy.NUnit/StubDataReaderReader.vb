@@ -1,6 +1,13 @@
+' -----------------------------------------------------------------------------------------------------
+' <copyright file="StubDataReaderReader.cs" company="Relativity ODA LLC">
+'   © Relativity All Rights Reserved.
+' </copyright>
+' -----------------------------------------------------------------------------------------------------
+
 Imports kCura.WinEDDS.ImportExtension
 
 Namespace Relativity.Import.Client.NUnit
+
 	Friend Class StubDataReaderReader
 		Inherits DataReaderReader
 

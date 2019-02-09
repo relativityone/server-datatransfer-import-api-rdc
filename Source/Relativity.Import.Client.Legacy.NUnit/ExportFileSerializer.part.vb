@@ -1,6 +1,13 @@
-﻿Namespace Relativity.Import.Client.NUnit
+﻿' -----------------------------------------------------------------------------------------------------
+' <copyright file="ExportFileSerializer.cs" company="Relativity ODA LLC">
+'   © Relativity All Rights Reserved.
+' </copyright>
+' -----------------------------------------------------------------------------------------------------
+
+Namespace Relativity.Import.Client.NUnit
 
 	Partial Public Class ExportFileSerializer
+
 		Public Shared AllPrimitivesSet_7_2 As String =
 		<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:clr="http://schemas.microsoft.com/soap/encoding/clr/1.0" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
 			<SOAP-ENV:Body>

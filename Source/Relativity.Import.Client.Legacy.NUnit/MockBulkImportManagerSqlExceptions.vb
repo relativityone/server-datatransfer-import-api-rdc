@@ -1,4 +1,11 @@
+' -----------------------------------------------------------------------------------------------------
+' <copyright file="MockBulkImportManagerSqlExceptions.cs" company="Relativity ODA LLC">
+'   © Relativity All Rights Reserved.
+' </copyright>
+' -----------------------------------------------------------------------------------------------------
+
 Namespace Relativity.Import.Client.NUnit
+
 	''' <summary>
 	''' Mock BulkImportManager for testing when SQL throws timeout Exceptions
 	''' </summary>

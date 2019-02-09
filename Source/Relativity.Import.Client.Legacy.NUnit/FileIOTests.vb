@@ -1,4 +1,10 @@
-﻿Imports System.Net
+﻿' -----------------------------------------------------------------------------------------------------
+' <copyright file="FileIOTests.cs" company="Relativity ODA LLC">
+'   © Relativity All Rights Reserved.
+' </copyright>
+' -----------------------------------------------------------------------------------------------------
+
+Imports System.Net
 Imports System.Web.Services.Protocols
 
 Imports Rhino.Mocks

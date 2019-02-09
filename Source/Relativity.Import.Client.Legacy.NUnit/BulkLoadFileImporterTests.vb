@@ -1,4 +1,10 @@
-﻿Imports System.Threading
+﻿' -----------------------------------------------------------------------------------------------------
+' <copyright file="BulkLoadFileImporterTests.cs" company="Relativity ODA LLC">
+'   © Relativity All Rights Reserved.
+' </copyright>
+' -----------------------------------------------------------------------------------------------------
+
+Imports System.Threading
 
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.Windows.Process

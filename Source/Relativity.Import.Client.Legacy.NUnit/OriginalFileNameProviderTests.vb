@@ -1,4 +1,10 @@
-﻿Imports System.IO
+﻿' -----------------------------------------------------------------------------------------------------
+' <copyright file="OriginalFileNameProviderTests.cs" company="Relativity ODA LLC">
+'   © Relativity All Rights Reserved.
+' </copyright>
+' -----------------------------------------------------------------------------------------------------
+
+Imports System.IO
 Imports System.Reflection
 
 Imports kCura.WinEDDS
@@ -12,6 +18,7 @@ Namespace Relativity.Import.Client.NUnit
 
 	<TestFixture>
 	Public Class OriginalFileNameProviderTests
+
 		Private Const _FILE_NAME_FIELD_ARTIFACT_ID As Integer = 534343
 		Private Const _FILE_NAME_COLUMN_NAME As String = "FileName"
 		Private _fieldLookupService As IFieldLookupService

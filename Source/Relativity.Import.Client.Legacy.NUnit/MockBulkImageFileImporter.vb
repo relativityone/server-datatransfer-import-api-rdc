@@ -1,3 +1,9 @@
+' -----------------------------------------------------------------------------------------------------
+' <copyright file="MockBulkImageFileImporter.cs" company="Relativity ODA LLC">
+'   © Relativity All Rights Reserved.
+' </copyright>
+' -----------------------------------------------------------------------------------------------------
+
 Imports System.Threading
 
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
@@ -7,6 +13,7 @@ Imports kCura.WinEDDS.TApi
 Imports Relativity.Logging
 
 Namespace Relativity.Import.Client.NUnit
+
 	''' <summary>
 	''' Inheriting the BulkLoadFileImporter to override its BulkImportManager property (the part we want to throw timeout exceptions)
 	''' </summary>

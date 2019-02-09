@@ -1,4 +1,10 @@
-﻿Imports kCura.WinEDDS
+﻿' -----------------------------------------------------------------------------------------------------
+' <copyright file="PreviewChoicesHelperTests.cs" company="Relativity ODA LLC">
+'   © Relativity All Rights Reserved.
+' </copyright>
+' -----------------------------------------------------------------------------------------------------
+
+Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Api
 
 Imports NUnit.Framework

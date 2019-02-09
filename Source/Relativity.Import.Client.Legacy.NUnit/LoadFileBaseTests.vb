@@ -1,3 +1,9 @@
+' -----------------------------------------------------------------------------------------------------
+' <copyright file="LoadFileBaseTests.cs" company="Relativity ODA LLC">
+'   © Relativity All Rights Reserved.
+' </copyright>
+' -----------------------------------------------------------------------------------------------------
+
 Imports NUnit.Framework
 
 Namespace Relativity.Import.Client.NUnit
