@@ -107,6 +107,7 @@
       <Paket>True</Paket>
     </Content>
     <Compile Include="DataReaderReaderTests.cs" />
+    <Compile Include="ExceptionSerializationTests.cs" />
     <Compile Include="FolderCacheTests.cs" />
     <Compile Include="ImportTestCategories.cs" />
     <Compile Include="LoadFileReaderTests.cs" />

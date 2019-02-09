@@ -51,7 +51,6 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExceptionSerializationTests.cs" />
     <Compile Include="RelativeFilePathProviderTests.cs" />
     <Compile Include="RetryableStreamWriterTests.cs" />
     <Compile Include="RetryableStreamWriterTestsRetries.cs" />
