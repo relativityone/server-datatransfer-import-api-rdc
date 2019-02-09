@@ -284,7 +284,7 @@ build/
 ################################################################################
 
 # build artifacts
-/.paket/paket.*.exe
+/.paket/paket*.exe
 /.paket/Paket.Restore.targets
 /paket-files
 /Logs/*
