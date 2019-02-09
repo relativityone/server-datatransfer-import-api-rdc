@@ -1,5 +1,5 @@
 ﻿' -----------------------------------------------------------------------------------------------------
-' <copyright file="DataReaderReaderFixture.cs" company="Relativity ODA LLC">
+' <copyright file="DataReaderReaderTests.cs" company="Relativity ODA LLC">
 '   © Relativity All Rights Reserved.
 ' </copyright>
 ' -----------------------------------------------------------------------------------------------------
@@ -14,7 +14,7 @@ Imports Rhino.Mocks
 Namespace Relativity.Import.Client.NUnit
 
 	<TestFixture>
-	Public Class DataReaderReaderFixture	
+	Public Class DataReaderReaderTests	
 	Private _stubReader As System.Data.IDataReader			
 
 		<SetUp()>

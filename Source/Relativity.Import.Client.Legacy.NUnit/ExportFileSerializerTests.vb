@@ -13,7 +13,7 @@ Imports Relativity.ImportExport.UnitTestFramework
 Namespace Relativity.Import.Client.NUnit
 
 	<TestFixture>
-	Public Class ExportFileSerializer
+	Public Class ExportFileSerializerTests
 
 		Protected Property QueryFieldFactory As QueryFieldFactory = New QueryFieldFactory
 		Public Const CORRECT_FOLDER_PATH As String = "\ValidExport\Location\"

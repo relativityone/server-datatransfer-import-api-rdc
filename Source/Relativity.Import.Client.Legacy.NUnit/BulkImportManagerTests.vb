@@ -1,5 +1,5 @@
 ﻿' -----------------------------------------------------------------------------------------------------
-' <copyright file="BulkImportManager.cs" company="Relativity ODA LLC">
+' <copyright file="BulkImportManagerTests.cs" company="Relativity ODA LLC">
 '   © Relativity All Rights Reserved.
 ' </copyright>
 ' -----------------------------------------------------------------------------------------------------
@@ -9,7 +9,7 @@ Imports NUnit.Framework
 Namespace Relativity.Import.Client.NUnit
 
 	<TestFixture>
-	Public Class BulkImportManager
+	Public Class BulkImportManagerTests
 
 		'pulled straight from the sql timeout exception
 		Private Const TimeoutMessage As String = "Error: Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding."

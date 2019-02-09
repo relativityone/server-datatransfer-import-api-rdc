@@ -1,5 +1,5 @@
 ﻿' -----------------------------------------------------------------------------------------------------
-' <copyright file="IsValid.cs" company="Relativity ODA LLC">
+' <copyright file="PaddingWarningValidatorTests.cs" company="Relativity ODA LLC">
 '   © Relativity All Rights Reserved.
 ' </copyright>
 ' -----------------------------------------------------------------------------------------------------
@@ -11,7 +11,7 @@ Imports NUnit.Framework
 Namespace Relativity.Import.Client.NUnit
 
 	<TestFixture>
-	Public Class IsValid
+	Public Class PaddingWarningValidatorTests
 
 		Private _settings As ExportFile
 		Private _validator As kCura.WinEDDS.Exporters.Validator.PaddingWarningValidator

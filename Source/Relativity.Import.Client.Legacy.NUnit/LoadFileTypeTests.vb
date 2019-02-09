@@ -1,5 +1,5 @@
 ﻿' -----------------------------------------------------------------------------------------------------
-' <copyright file="LoadFileType.cs" company="Relativity ODA LLC">
+' <copyright file="LoadFileTypeTests.cs" company="Relativity ODA LLC">
 '   © Relativity All Rights Reserved.
 ' </copyright>
 ' -----------------------------------------------------------------------------------------------------

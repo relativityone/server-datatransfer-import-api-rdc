@@ -138,21 +138,20 @@
       <Link>My Project\AssemblySharedInfo.vb</Link>
     </Compile>
     <Compile Include="BulkImageFileImporterTests.vb" />
-    <Compile Include="BulkImportManager.vb" />
+    <Compile Include="BulkImportManagerTests.vb" />
     <Compile Include="BulkLoadFileImporterTests.vb" />
     <Compile Include="CaseInsensitiveFilePathHelperTests.vb" />
     <Compile Include="CaseSensitiveFilePathHelperTests.vb" />
-    <Compile Include="DataReaderReaderFixture.vb" />
-    <Compile Include="ExportFileSerializer.part.vb" />
-    <Compile Include="ExportFileSerializer.vb" />
-    <Compile Include="ExportNativeWithFilenameFrom.vb" />
-    <Compile Include="FieldValueImportExceptionFixture.vb" />
+    <Compile Include="DataReaderReaderTests.vb" />
+    <Compile Include="ExportFileSerializerTests.part.vb" />
+    <Compile Include="ExportFileSerializerTests.vb" />
+    <Compile Include="ExportNativeWithFilenameFromTests.vb" />
+    <Compile Include="FieldValueImportExceptionTests.vb" />
     <Compile Include="FileIOTests.vb" />
     <Compile Include="FileNameHelperTests.vb" />
     <Compile Include="GlobalSuppressions.vb" />
-    <Compile Include="IsValid.vb" />
     <Compile Include="LoadFileBaseTests.vb" />
-    <Compile Include="LoadFileType.vb" />
+    <Compile Include="LoadFileTypeTests.vb" />
     <Compile Include="LoginHelperTests.vb" />
     <Compile Include="MockBulkImageFileImporter.vb" />
     <Compile Include="MockBulkImportManagerSqlExceptions.vb" />
@@ -164,6 +163,7 @@
     <Compile Include="OpticonFilenameComparerTests.vb" />
     <Compile Include="OriginalFileNameProviderTests.vb" />
     <Compile Include="OutputFileWriterTests.vb" />
+    <Compile Include="PaddingWarningValidatorTests.vb" />
     <Compile Include="PreviewChoicesHelperTests.vb" />
     <Compile Include="RegKeyHelper.vb" />
     <Compile Include="StubDataReaderReader.vb" />
