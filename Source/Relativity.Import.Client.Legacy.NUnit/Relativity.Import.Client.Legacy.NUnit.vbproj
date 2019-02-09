@@ -143,7 +143,6 @@
     <Compile Include="CaseInsensitiveFilePathHelperTests.vb" />
     <Compile Include="CaseSensitiveFilePathHelperTests.vb" />
     <Compile Include="DataReaderReaderFixture.vb" />
-    <Compile Include="ExceptionSerializationTests.vb" />
     <Compile Include="ExportFileSerializer.part.vb" />
     <Compile Include="ExportFileSerializer.vb" />
     <Compile Include="ExportNativeWithFilenameFrom.vb" />
