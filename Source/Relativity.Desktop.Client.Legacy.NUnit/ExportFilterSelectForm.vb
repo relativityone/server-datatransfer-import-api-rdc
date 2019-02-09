@@ -1,12 +1,15 @@
 ﻿Imports NUnit.Framework
 
-Namespace kCura.EDDS.WinForm.Tests
-	<TestFixture()>
+Namespace Relativity.Desktop.Client.Legacy.NUnit
+
+	<TestFixture>
 	Public Class ExportFilterSelectForm
+
 		Private Const _NON_EXISTENT_ID As Int32 = 999
 		Private _filtersDataTable As New DataTable()
 
-		<SetUp()> Public Sub SetUp()
+		<SetUp>
+		Public Sub SetUp()
 			_filtersDataTable = New DataTable
 			_filtersDataTable.Columns.Add("Name", GetType(String))
 			_filtersDataTable.Columns.Add("ArtifactID", GetType(Int32))
@@ -16,7 +19,7 @@ Namespace kCura.EDDS.WinForm.Tests
 			_filtersDataTable.Rows.Add({"345", 345})
 		End Sub
 
-		<Test()>
+		<Test>
 		Public Sub NewFormAllItemsAreDisplayedNoneSelected()
 			Dim form As New MockExportFilterSelectForm(_NON_EXISTENT_ID, "DOESNOTMATTER", _filtersDataTable)
 			form.FakeLoad()
@@ -24,8 +27,7 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.AreEqual(Nothing, form.SelectedItemArtifactIDs)
 		End Sub
 
-
-		<Test()>
+		<Test>
 		Public Sub NewFormAllItemsAreDisplayedOneSelected()
 			Dim form As New MockExportFilterSelectForm(245, "DOESNOTMATTER", _filtersDataTable)
 			form.Show()
@@ -35,7 +37,7 @@ Namespace kCura.EDDS.WinForm.Tests
 			form.Close()
 		End Sub
 
-		<Test()>
+		<Test>
 		Public Sub NewFormAllItemsAreDisplayedNoneSelectedOkButtonDisabled()
 			Dim form As New MockExportFilterSelectForm(_NON_EXISTENT_ID, "DOESNOTMATTER", _filtersDataTable)
 			form.Show()
@@ -45,7 +47,7 @@ Namespace kCura.EDDS.WinForm.Tests
 			form.Close()
 		End Sub
 
-		<Test()>
+		<Test>
 		Public Sub NewFormAllItemsAreDisplayedOneSelectedOkButtonEnabled()
 			Dim form As New MockExportFilterSelectForm(245, "DOESNOTMATTER", _filtersDataTable)
 			form.Show()
@@ -85,4 +87,3 @@ Namespace kCura.EDDS.WinForm.Tests
 
 	End Class
 End Namespace
-

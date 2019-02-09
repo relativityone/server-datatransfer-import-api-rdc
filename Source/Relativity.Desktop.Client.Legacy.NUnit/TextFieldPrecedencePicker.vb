@@ -1,13 +1,14 @@
 ﻿Imports NUnit.Framework
 
-Namespace kCura.EDDS.WinForm.Tests
-	<TestFixture()> Public Class TextFieldPrecedencePicker
+Namespace Relativity.Desktop.Client.Legacy.NUnit
+
+	<TestFixture>
+	Public Class TextFieldPrecedencePicker
 
 		Private _queryFieldFactory As New kCura.WinEDDS.NUnit.TestObjectFactories.QueryFieldFactory()
 
-#Region " setting available fields "
-
-		<Test()> Public Sub SetAvailableSelectedField_SetAllFieldsDoesNotRemoveIt()
+		<Test>
+		Public Sub SetAvailableSelectedField_SetAllFieldsDoesNotRemoveIt()
 			Dim extractedTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(1)
 
 			Dim picker As New kCura.EDDS.WinForm.TextFieldPrecedencePicker()
@@ -18,7 +19,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.AreEqual(extractedTextField, picker.SelectedFields(0))
 		End Sub
 
-		<Test()> Public Sub SetUnavailableSelectedField_SetAllFieldsRemovesIt()
+		<Test>
+		Public Sub SetUnavailableSelectedField_SetAllFieldsRemovesIt()
 			Dim longTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetGenericLongTextField
 
 			Dim picker As New kCura.EDDS.WinForm.TextFieldPrecedencePicker()
@@ -28,7 +30,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.AreEqual(0, picker.SelectedFields.Count)
 		End Sub
 
-		<Test()> Public Sub SetOneUnavailableOneAvailableSelectedField_SetAllFieldsRemovesOneKeepsOne()
+		<Test>
+		Public Sub SetOneUnavailableOneAvailableSelectedField_SetAllFieldsRemovesOneKeepsOne()
 			Dim longTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetGenericLongTextField
 			Dim extractedTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(1)
 
@@ -40,11 +43,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.AreEqual(extractedTextField, picker.SelectedFields(0))
 		End Sub
 
-#End Region
-
-#Region " setting default 'first' field "
-
-		<Test()> Public Sub SetDefaultField_ShouldHaveOneSelected()
+		<Test>
+		Public Sub SetDefaultField_ShouldHaveOneSelected()
 			Dim extractedTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(1)
 			Dim picker As New kCura.EDDS.WinForm.TextFieldPrecedencePicker()
 			picker.AllAvailableLongTextFields = _queryFieldFactory.GetAllDocumentFields.ToList
@@ -54,7 +54,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.AreEqual(extractedTextField, picker.SelectedFields(0))
 		End Sub
 
-		<Test()> Public Sub SetDefaultField_FieldIsNull_ShouldHaveNoneSelected()
+		<Test>
+		Public Sub SetDefaultField_FieldIsNull_ShouldHaveNoneSelected()
 			Dim picker As New kCura.EDDS.WinForm.TextFieldPrecedencePicker()
 			picker.AllAvailableLongTextFields = _queryFieldFactory.GetAllDocumentFields.ToList
 
@@ -62,7 +63,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.AreEqual(0, picker.SelectedFields.Count)
 		End Sub
 
-		<Test()> Public Sub SetDefaultField_NoAvailableFields_ShouldHaveNoneSelected()
+		<Test>
+		Public Sub SetDefaultField_NoAvailableFields_ShouldHaveNoneSelected()
 			Dim extractedTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(1)
 			Dim picker As New kCura.EDDS.WinForm.TextFieldPrecedencePicker()
 			picker.AllAvailableLongTextFields = New List(Of WinEDDS.ViewFieldInfo)()
@@ -71,11 +73,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.AreEqual(0, picker.SelectedFields.Count)
 		End Sub
 
-#End Region
-		
-#Region " loading fields from kwx "
-
-		<Test()> Public Sub StartWithOneSelected_LoadTwoSelectedFromKwx()
+		<Test>
+		Public Sub StartWithOneSelected_LoadTwoSelectedFromKwx()
 			Dim longTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetGenericLongTextField
 			Dim extractedTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(1)
 			Dim longTextFieldRenamed As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetRenamedGenericLongTextField
@@ -88,7 +87,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.AreEqual(2, picker.SelectedFields.Count)
 		End Sub
 
-		<Test()> Public Sub StartWithNoneSelected_LoadTwoSelectedFromKwx()
+		<Test>
+		Public Sub StartWithNoneSelected_LoadTwoSelectedFromKwx()
 			Dim longTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetGenericLongTextField
 			Dim extractedTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(1)
 			Dim longTextFieldRenamed As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetRenamedGenericLongTextField
@@ -101,7 +101,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.AreEqual(2, picker.SelectedFields.Count)
 		End Sub
 
-		<Test()> Public Sub StartWithNoneSelected_LoadZeroSelectedFromKwx()
+		<Test>
+		Public Sub StartWithNoneSelected_LoadZeroSelectedFromKwx()
 
 			Dim picker As New kCura.EDDS.WinForm.TextFieldPrecedencePicker()
 			picker.AllAvailableLongTextFields = New List(Of WinEDDS.ViewFieldInfo)()
@@ -111,7 +112,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.AreEqual(0, picker.SelectedFields.Count)
 		End Sub
 
-		<Test()> Public Sub StartWithOneSelected_LoadZeroSelectedFromKwx()
+		<Test>
+		Public Sub StartWithOneSelected_LoadZeroSelectedFromKwx()
 			Dim longTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetGenericLongTextField
 			Dim extractedTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(1)
 			Dim longTextFieldRenamed As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetRenamedGenericLongTextField
@@ -124,7 +126,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.AreEqual(0, picker.SelectedFields.Count)
 		End Sub
 
-		<Test()> Public Sub StartWithTwoSelected_LoadTwoSelectedFromKwx()
+		<Test>
+		Public Sub StartWithTwoSelected_LoadTwoSelectedFromKwx()
 			Dim longTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetGenericLongTextField
 			Dim extractedTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(1)
 			Dim longTextFieldRenamed As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetRenamedGenericLongTextField
@@ -137,7 +140,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.AreEqual(2, picker.SelectedFields.Count)
 		End Sub
 
-		<Test()> Public Sub StartWithNoneSelected_LoadTwoSelectedFromKwx_OneNotAvailable()
+		<Test>
+		Public Sub StartWithNoneSelected_LoadTwoSelectedFromKwx_OneNotAvailable()
 			Dim longTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetGenericLongTextField
 			Dim extractedTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(1)
 			Dim longTextFieldRenamed As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetRenamedGenericLongTextField
@@ -151,7 +155,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.AreEqual(1, picker.SelectedFields.Count)
 		End Sub
 
-		<Test()> Public Sub StartWithOneSelected_LoadOneFromOldFieldMap()
+		<Test>
+		Public Sub StartWithOneSelected_LoadOneFromOldFieldMap()
 			Dim longTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetGenericLongTextField
 			Dim extractedTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(1)
 			Dim oldLongTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetSameNameDifferentIdGenericLongTextField
@@ -165,11 +170,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.AreEqual(longTextField, picker.SelectedFields(0))
 		End Sub
 
-#End Region
-
-#Region " tooltip "
-
-		<Test()> Public Sub LoadTwoSelectedFromKwx_TwoLineToolTip()
+		<Test>
+		Public Sub LoadTwoSelectedFromKwx_TwoLineToolTip()
 			Dim longTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetGenericLongTextField
 			Dim extractedTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(1)
 
@@ -181,7 +183,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.AreEqual("Long Text" & vbCrLf & "Extracted Text", picker.ToolTipText)
 		End Sub
 
-		<Test()> Public Sub LoadOneSelectedFromKwx_OneLineToolTip()
+		<Test>
+		Public Sub LoadOneSelectedFromKwx_OneLineToolTip()
 			Dim longTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetGenericLongTextField
 
 			Dim picker As New kCura.EDDS.WinForm.TextFieldPrecedencePicker()
@@ -192,7 +195,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.AreEqual("Long Text", picker.ToolTipText)
 		End Sub
 
-		<Test()> Public Sub LoadNoneSelectedFromKwx_BlankToolTip()
+		<Test>
+		Public Sub LoadNoneSelectedFromKwx_BlankToolTip()
 			Dim longTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetGenericLongTextField
 
 			Dim picker As New kCura.EDDS.WinForm.TextFieldPrecedencePicker()
@@ -203,11 +207,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.AreEqual(String.Empty, picker.ToolTipText)
 		End Sub
 
-#End Region
-
-#Region " label text "
-
-		<Test()> Public Sub LoadTwoSelectedFromKwx_LabelWithEllipsis()
+		<Test>
+		Public Sub LoadTwoSelectedFromKwx_LabelWithEllipsis()
 			Dim longTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetGenericLongTextField
 			Dim extractedTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetAllDocumentFields(1)
 
@@ -219,7 +220,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.AreEqual("Long Text (+)", picker.LabelText)
 		End Sub
 
-		<Test()> Public Sub LoadOneSelectedFromKwx_LabelWithNoEllipsis()
+		<Test>
+		Public Sub LoadOneSelectedFromKwx_LabelWithNoEllipsis()
 			Dim longTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetGenericLongTextField
 
 			Dim picker As New kCura.EDDS.WinForm.TextFieldPrecedencePicker()
@@ -230,7 +232,8 @@ Namespace kCura.EDDS.WinForm.Tests
 			Assert.AreEqual("Long Text", picker.LabelText)
 		End Sub
 
-		<Test()> Public Sub LoadNoneSelectedFromKwx_BlankLabel()
+		<Test>
+		Public Sub LoadNoneSelectedFromKwx_BlankLabel()
 			Dim longTextField As kCura.WinEDDS.ViewFieldInfo = _queryFieldFactory.GetGenericLongTextField
 
 			Dim picker As New kCura.EDDS.WinForm.TextFieldPrecedencePicker()
@@ -240,9 +243,5 @@ Namespace kCura.EDDS.WinForm.Tests
 
 			Assert.AreEqual(String.Empty, picker.LabelText)
 		End Sub
-
-#End Region
-
-
 	End Class
 End Namespace
