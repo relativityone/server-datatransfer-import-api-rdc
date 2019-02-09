@@ -24,7 +24,7 @@ namespace Relativity.Export.Client.NUnit
 		{
 			ViewFieldInfo[] fields = {new QueryFieldFactory().GetArtifactIdField()};
 
-			var part = new FieldDescriptorPart(fields[0].FieldArtifactId);
+			var part = new FirstFieldDescriptorPart(fields[0].FieldArtifactId);
 			var model = new CustomFileNameDescriptorModel(part);
 
 			var exportFile = new ExtendedExportFile(0)
@@ -44,7 +44,7 @@ namespace Relativity.Export.Client.NUnit
 			var qf = new QueryFieldFactory();
 			ViewFieldInfo[] fields = {qf.GetExtractedTextField(), qf.GetArtifactIdField()};
 
-			var field1 = new FieldDescriptorPart(fields[0].FieldArtifactId);
+			var field1 = new FirstFieldDescriptorPart(fields[0].FieldArtifactId);
 			var part2 = new FieldDescriptorPart(fields[1].FieldArtifactId);
 			var field2 = new ExtendedDescriptorPart(new SeparatorDescriptorPart("-"), part2);
 
@@ -79,7 +79,7 @@ namespace Relativity.Export.Client.NUnit
 			var qf = new QueryFieldFactory();
 			ViewFieldInfo[] fields = { };
 
-			var part = new FieldDescriptorPart(qf.GetArtifactIdField().FieldArtifactId);
+			var part = new FirstFieldDescriptorPart(qf.GetArtifactIdField().FieldArtifactId);
 			var model = new CustomFileNameDescriptorModel(part);
 
 			var exportFile = new ExtendedExportFile(0)
