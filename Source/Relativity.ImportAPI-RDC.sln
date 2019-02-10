@@ -22,7 +22,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Desktop.Client.N
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Client.NUnit.Integration", "Relativity.Import.Client.NUnit.Integration\Relativity.Import.Client.NUnit.Integration.csproj", "{4BC26612-C72D-45D9-9902-88562017EDA0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Client.Samples.NUnit.Integration", "Relativity.Import.Client.Samples.NUnit.Integration\Relativity.Import.Client.Samples.NUnit.Integration.csproj", "{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Client.Samples.NUnit", "Relativity.Import.Client.Samples.NUnit\Relativity.Import.Client.Samples.NUnit.csproj", "{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

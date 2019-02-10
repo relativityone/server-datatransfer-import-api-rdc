@@ -8,8 +8,8 @@
     <ProjectGuid>{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Relativity.Import.Client.Samples.NUnit.Integration</RootNamespace>
-    <AssemblyName>Relativity.Import.Client.Samples.NUnit.Integration</AssemblyName>
+    <RootNamespace>Relativity.Import.Client.Samples.NUnit</RootNamespace>
+    <AssemblyName>Relativity.Import.Client.Samples.NUnit</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
