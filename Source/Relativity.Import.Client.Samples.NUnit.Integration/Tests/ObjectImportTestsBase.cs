@@ -47,7 +47,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		private readonly List<int> _detailArtifacts = new List<int>();
 
 		protected ObjectImportTestsBase()
-			: base(AssemblySetup.Logger)
+			: base(AssemblySetupHelper.Logger)
 		{
 			// Assume that AssemblySetup has already setup the singleton.
 		}

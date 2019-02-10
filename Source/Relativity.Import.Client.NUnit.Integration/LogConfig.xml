@@ -4,6 +4,6 @@
     <rule system="*" loggingLevel="Error" sink="File1"/>
   </rules>
   <sinks>
-    <fileSink name="File1" logFileLocation="%temp%\IAPI_log\" maxFileSizeInMB ="10000" />
+    <fileSink name="File1" logFileLocation="%temp%\Relativity-Import\IntegrationTests\" maxFileSizeInMB ="10000" />
   </sinks>
 </kCuraLogging>

@@ -44,10 +44,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblySetupHelper.cs" />
     <Compile Include="TestHelper.cs" />
     <Compile Include="TestSettings.cs" />
     <Content Include="LICENSE.txt">

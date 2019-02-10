@@ -24,7 +24,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		/// Initializes a new instance of the <see cref="DocImportTestsBase"/> class.
 		/// </summary>
 		protected DocImportTestsBase()
-			: base(AssemblySetup.Logger)
+			: base(AssemblySetupHelper.Logger)
 		{
 			// Assume that AssemblySetup has already setup the singleton.
 		}

@@ -1,15 +1,20 @@
-﻿// ----------------------------------------------------------------------------
-// <copyright file="FileSystemWrapTests.cs" company="kCura Corp">
-//   kCura Corp (C) 2017 All Rights Reserved.
+﻿// -----------------------------------------------------------------------------------------------------
+// <copyright file="FileSystemWrapTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
 // </copyright>
-// ----------------------------------------------------------------------------
+// <summary>
+//   Represents <see cref="FileSystemWrap"/> tests.
+// </summary>
+// -----------------------------------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.TApi.NUnit.Integration
+namespace Relativity.Import.Client.NUnit.Integration
 {
 	using System;
 	using System.Collections.Generic;
 
 	using global::NUnit.Framework;
+
+    using kCura.WinEDDS.TApi;
 
     /// <summary>
     /// Represents integration tests cases involving multiple clients and file not found scenarios.
@@ -22,8 +27,8 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 
 		[SetUp]
 	    public void Setup()
-	    {
-			this.fileSystem = new FileSystemWrap();
+        {
+            this.fileSystem = FileSystem.Instance.DeepCopy();
 			this.pathsForDeletion.Clear();
 		}
 

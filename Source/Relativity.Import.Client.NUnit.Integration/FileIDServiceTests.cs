@@ -1,13 +1,13 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="FileIDServiceTests.cs" company="kCura Corp">
-//   kCura Corp (C) 2017 All Rights Reserved.
+﻿// -----------------------------------------------------------------------------------------------------
+// <copyright file="FileIDServiceTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
 //   Represents <see cref="FileIDService"/> tests.
 // </summary>
-// --------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.TApi.NUnit.Integration
+namespace Relativity.Import.Client.NUnit.Integration
 {
 	using kCura.OI.FileID;
 

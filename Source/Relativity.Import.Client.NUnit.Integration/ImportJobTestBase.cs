@@ -1,10 +1,13 @@
-﻿// ----------------------------------------------------------------------------
-// <copyright file="ImportJobTestBase.cs" company="kCura Corp">
-//   kCura Corp (C) 2017 All Rights Reserved.
+﻿// -----------------------------------------------------------------------------------------------------
+// <copyright file="ImportJobTestBase.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
 // </copyright>
-// ----------------------------------------------------------------------------
+// <summary>
+//   Represents an abstract load-file base class.
+// </summary>
+// -----------------------------------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.TApi.NUnit.Integration
+namespace Relativity.Import.Client.NUnit.Integration
 {
     using System;
     using System.Collections;
@@ -16,12 +19,15 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
     using System.Security.Principal;
     using System.Text;
 
+    using kCura.Config;
     using kCura.Relativity.DataReaderClient;
     using kCura.Relativity.ImportAPI;
+    using kCura.WinEDDS.TApi;        
 
     using global::NUnit.Framework;
+
+    using Relativity.ImportExport.UnitTestFramework;
     using global::Relativity.Transfer;
-    using global::Relativity.Transfer.UnitTestFramework;
 
     /// <summary>
     /// Represents an abstract load-file base class.
@@ -79,23 +85,6 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         private int workspaceId;
 
         /// <summary>
-        /// The Relativity Logging logger used to capture logs for this integration test.
-        /// </summary>
-        private TestRelativityLog logger;
-
-        /// <summary>
-        /// Gets or sets the relativity import URL.
-        /// </summary>
-        /// <value>
-        /// The relativity import URL.
-        /// </value>
-        protected string RelativityImportUrl
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Gets or sets source data.
         /// </summary>
         /// <value>
@@ -120,18 +109,6 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         }
 
         /// <summary>
-        /// Gets or sets the test instance.
-        /// </summary>
-        /// <value>
-        /// The test instance.
-        /// </value>
-        protected TestInstance TestInstance
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Gets or sets timestamp.
         /// </summary>
         /// <value>
@@ -149,11 +126,6 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         [SetUp]
         public void Setup()
         {
-            this.logger = TestRelativityLogFactory.Create();
-            ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, errors) => true;
-            ServicePointManager.SecurityProtocol =
-                SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
-                | SecurityProtocolType.Tls12;
             this.Timestamp = DateTime.Now;
             this.SourceData = new DataTable();
             this.SourceData.Columns.Add("Control Number", typeof(string));
@@ -162,8 +134,6 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
             this.jobFatalExceptions.Clear();
             this.errorRows.Clear();
             this.progressCompletedRows.Clear();
-            this.TestInstance = null;
-            this.RelativityImportUrl = null;
             this.importJob = null;
             this.completedJobReport = null;
             this.workspaceId = 0;
@@ -190,7 +160,6 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
             }
 
             this.TempDirectory?.Dispose();
-            this.logger?.Dispose();
             this.OnTearDown();
         }
 
@@ -234,18 +203,6 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         /// </summary>
         protected virtual void OnTearDown()
         {
-        }
-
-        /// <summary>
-        /// Given the test instance.
-        /// </summary>
-        /// <param name="testEnvironment">
-        /// The test environment.
-        /// </param>
-        protected void GivenTheTestInstance(TestEnvironment testEnvironment)
-        {
-            this.TestInstance = TestInstanceHelper.GetTestInstance(testEnvironment);
-            this.RelativityImportUrl = string.Concat(this.TestInstance.RelativityUrl, "RelativityWebApi");
         }
 
         /// <summary>
@@ -508,11 +465,11 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         protected void GivenTheImportJob()
         {
             var iapi = new ImportAPI(
-                this.TestInstance.RelativityUsername,
-                this.TestInstance.RelativityPassword,
-                this.RelativityImportUrl);
+                TestSettings.RelativityUserName,
+                TestSettings.RelativityPassword,
+                TestSettings.RelativityWebApiUrl.ToString());
             this.importJob = iapi.NewNativeDocumentImportJob();
-            this.importJob.Settings.WebServiceURL = this.RelativityImportUrl;
+            this.importJob.Settings.WebServiceURL = TestSettings.RelativityWebApiUrl.ToString();
             this.importJob.Settings.CaseArtifactId = this.workspaceId;
             this.importJob.Settings.ArtifactTypeId = 10;
             this.importJob.Settings.ExtractedTextFieldContainsFilePath = false;
@@ -654,7 +611,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         {
             for (var i = 0; i < maxFiles; i++)
             {
-                RandomHelper.NextTextFile(
+                TestHelper.NextTextFile(
                     MinTestFileLength,
                     MaxTestFileLength,
                     this.TempDirectory.Directory,

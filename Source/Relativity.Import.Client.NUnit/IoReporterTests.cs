@@ -1,17 +1,19 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IoReporterTests.cs" company="kCura Corp">
-//   kCura Corp (C) 2017 All Rights Reserved.
+﻿// -----------------------------------------------------------------------------------------------------
+// <copyright file="IoReporterTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
 //   Represents <see cref="IoReporter"/> tests.
 // </summary>
-// --------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.TApi.NUnit.Integration
+namespace Relativity.Import.Client.NUnit
 {
     using System;
     using System.Collections;
 	using System.Threading;
+
+    using kCura.WinEDDS.TApi;
 
     using Moq;
 
@@ -19,11 +21,16 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 
     using global::Relativity.Logging;
 
+
     /// <summary>
     /// Represents <see cref="IoReporter"/> tests.
     /// </summary>
-	[TestFixture]
-	public class IoReporterTests
+    [TestFixture]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Microsoft.Design", 
+        "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
+        Justification = "The test class handles the disposal.")]
+    public class IoReporterTests
 	{
         private IIoReporter ioReporterInstance;
         private Mock<IFileSystem> mockFileSystem;
@@ -33,8 +40,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
         private IoWarningPublisher publisher;
         private long actualFileLength;
         private Func<int, TimeSpan> actualRetryDuractionFunc = null;
-        private Exception expectedException; 
-        private ArgumentException expectedArgumentException;
+        private Exception expectedException;
 		private const string _FILE_NAME = "TestFileName";
 		private const string _EXPECTED_DEFAULT_EXCEPTION_MESSAGE = "Expected exception message";
 		private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
@@ -46,8 +52,6 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 		private Exception actualLoggedErrorException;
 		private string actualLoggedErrorMessage;
 		private string actualLoggedInformationMessage;
-
-
 
 		private static IEnumerable RetryExceptionTestCases
 		{
@@ -257,7 +261,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 		public void ItShouldGetTheFileLength(int expectedLength)
 		{
             this.GivenTheRealWaitAndRetryPolicy(1);
-            this.GivenTheMockFileSystemCreateFileInfoReturns(expectedLength);
+            this.GivenTheMockFileSystemCreateFileInfoReturns(expectedLength, true);
 			this.GivenTheDisableNativeLocationValidationConfigSetting(false);
 			this.GivenTheRetryOptions(RetryOptions.Io);
 			this.GivenTheIoReportInstanceIsConstructed();
@@ -265,7 +269,20 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
             this.ThenTheActualFileLengthShouldEqual(expectedLength);
 		}
 
-		[TestCase(1, 1)]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void ItShouldGetTheFileExists(bool expectedFileExists)
+        {
+            this.GivenTheRealWaitAndRetryPolicy(1);
+            this.GivenTheMockFileSystemCreateFileInfoReturns(1, expectedFileExists);
+            this.GivenTheDisableNativeLocationValidationConfigSetting(false);
+            this.GivenTheRetryOptions(RetryOptions.Io);
+            this.GivenTheIoReportInstanceIsConstructed();
+            this.WhenCallingTheGetFileExistsReporterMethod();
+            this.ThenTheActualFileExistsShouldEqual(expectedFileExists);
+        }
+
+        [TestCase(1, 1)]
 		[TestCase(2, 1)]
 		[TestCase(2, 2)]
 		[TestCase(3, 10)]
@@ -275,7 +292,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 		{
             this.GivenTheMockWaitAndRetryReturns(waitTimeBetweenRetryAttempts);
             this.GivenTheMockWaitAndRetryPolicyCallback();
-			this.GivenTheMockFileSystemCreateFileInfoReturns(1000);
+			this.GivenTheMockFileSystemCreateFileInfoReturns(1000, true);
 			this.GivenTheDisableNativeLocationValidationConfigSetting(false);
 			this.GivenTheRetryOptions(RetryOptions.Io);
 			this.GivenTheIoReportInstanceIsConstructed();
@@ -288,7 +305,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 		{
 			this.cancellationTokenSource.Cancel();
 			this.GivenTheRealWaitAndRetryPolicy(1);
-			this.GivenTheMockFileSystemCreateFileInfoReturns(1);
+			this.GivenTheMockFileSystemCreateFileInfoReturns(1, true);
 			this.GivenTheDisableNativeLocationValidationConfigSetting(false);
 			this.GivenTheRetryOptions(RetryOptions.None);
 			this.GivenTheIoReportInstanceIsConstructed();
@@ -326,7 +343,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 			Assert.Throws(testException.GetType(), this.WhenCallingTheGetFileExistsReporterMethod);
 			this.ThenTheLoggerErrorShouldBeInvoked(0, expectedException);
 			this.ThenTheLoggerWarningShouldBeInvoked(testExpectedRetryCount, expectedException);
-			this.ResetMockLogger();
+            this.ResetMockLogger();
 		}
 
 		[Test]
@@ -395,14 +412,15 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 			        });
         }
 
-		private void GivenTheMockFileSystemCreateFileInfoReturns(int expectedLength)
+		private void GivenTheMockFileSystemCreateFileInfoReturns(int expectedLength, bool expectedFileExists)
 		{
 			var mockFileInfo = new Mock<IFileInfo>();
 			mockFileInfo.Setup(x => x.Length).Returns(expectedLength);
-			this.mockFileSystem.Setup(x => x.CreateFileInfo(_FILE_NAME)).Returns(mockFileInfo.Object);
+            mockFileInfo.Setup(x => x.Exists).Returns(expectedFileExists);
+            this.mockFileSystem.Setup(x => x.CreateFileInfo(_FILE_NAME)).Returns(mockFileInfo.Object);
 		}
 
-		private void GivenTheMockFileSystemCreateFileInfoThrows(Exception exception)
+        private void GivenTheMockFileSystemCreateFileInfoThrows(Exception exception)
 		{
 			this.mockFileSystem.Setup(x => x.CreateFileInfo(It.IsAny<string>())).Throws(exception);
 		}
@@ -429,7 +447,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 			        (exceptionPredicate, retryDuration, retryAction, execFunc, token) =>
 			        {
 				        actualRetryDuractionFunc = retryDuration;
-				        retryAction(this.expectedArgumentException, TimeSpan.Zero);
+				        retryAction(null, TimeSpan.Zero);
 				        execFunc(token);
 			        });
         }
@@ -491,7 +509,12 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
             Assert.That(this.actualFileLength, Is.EqualTo(expectedLength));
 		}
 
-		private void ThenTheLoggerWarningShouldBeInvoked(int expectedCount, bool expectedException)
+        private void ThenTheActualFileExistsShouldEqual(bool expectedFileExists)
+        {
+            Assert.That(this.actualFileExists, Is.EqualTo(expectedFileExists));
+        }
+
+        private void ThenTheLoggerWarningShouldBeInvoked(int expectedCount, bool expectedException)
 		{
 			this.mockLogger.Verify(logger => logger.LogWarning(It.IsAny<Exception>(), It.IsAny<string>()), Times.Exactly(expectedCount));
 			if (expectedCount == 0)
@@ -546,7 +569,7 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 
 		private void ResetMockLogger()
 		{
-			this.mockLogger.ResetCalls();
+			this.mockLogger.Invocations.Clear();
 			this.actualLoggedErrorException = null;
 			this.actualLoggedErrorMessage = null;
 			this.actualLoggedWarningException = null;

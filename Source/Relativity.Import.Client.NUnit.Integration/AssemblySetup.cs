@@ -4,9 +4,9 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.Sample.NUnit
+namespace Relativity.Import.Client.NUnit.Integration
 {
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
     using Relativity.ImportExport.UnitTestFramework;
 
@@ -14,7 +14,7 @@ namespace Relativity.Import.Client.Sample.NUnit
     /// Represents a global assembly-wide setup routine that's guaranteed to be executed before ANY NUnit test.
     /// </summary>
     [SetUpFixture]
-    public class AssemblySetup
+	public class AssemblySetup
     {
         /// <summary>
         /// The main setup method.

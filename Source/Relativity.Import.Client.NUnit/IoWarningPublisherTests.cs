@@ -1,14 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using kCura.Config;
-using kCura.WinEDDS.Api;
-using Moq;
-using NUnit.Framework;
-using Relativity.Logging;
-using Relativity.Transfer;
+﻿// -----------------------------------------------------------------------------------------------------
+// <copyright file="IoReporterTests.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// <summary>
+//   Represents <see cref="IoWarningPublisher"/> tests.
+// </summary>
+// -----------------------------------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.TApi.NUnit.Integration
+namespace Relativity.Import.Client.NUnit
 {
+    using System;
+    using System.Collections.Generic;
+
+    using kCura.WinEDDS.TApi;
+
+    using global::NUnit.Framework;
+    
     [TestFixture]
     public class IoWarningPublisherTests
 	{
@@ -33,7 +40,6 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 	        ResultsDictionaryContains(message, lineNubmer);
         }
 		
-		#region helper methods
 		private void WhenEventOccursWithMessageAndLineNumber(string message, long lineNumber)
 		{
 			_ioWarningPublisher.PublishIoWarningEvent(new IoWarningEventArgs(message, lineNumber));
@@ -60,6 +66,5 @@ namespace kCura.WinEDDS.TApi.NUnit.Integration
 			Assert.That(_results.ContainsKey(lineNubmer));
 			Assert.That(_results.ContainsValue(message));
 		}
-		#endregion
 	}
 }

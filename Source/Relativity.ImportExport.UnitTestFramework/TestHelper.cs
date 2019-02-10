@@ -8,7 +8,8 @@ namespace Relativity.ImportExport.UnitTestFramework
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
+    using System.IO;
+    using System.Linq;
 	using System.Net;
 	using System.Threading.Tasks;
 
@@ -402,6 +403,97 @@ namespace Relativity.ImportExport.UnitTestFramework
         {
             decimal value = NextInt(minValue, maxValue);
             return value;
+        }
+
+        /// <summary>
+        /// Creates a new random text file whose file size is between <paramref name="minLength"/> and <paramref name="maxLength"/>.
+        /// </summary>
+        /// <param name="minLength">
+        /// The minimum file length.
+        /// </param>
+        /// <param name="maxLength">
+        /// The maximum file length.
+        /// </param>
+        /// <param name="directory">
+        /// The directory to create the file.
+        /// </param>
+        /// <returns>
+        /// The file.
+        /// </returns>
+        public static string NextTextFile(int minLength, int maxLength, string directory)
+        {
+            return NextTextFile(minLength, maxLength, directory, false);
+        }
+
+        /// <summary>
+        /// Creates a new random text file whose file size is between <paramref name="minLength"/> and <paramref name="maxLength"/>.
+        /// </summary>
+        /// <param name="minLength">
+        /// The minimum file length.
+        /// </param>
+        /// <param name="maxLength">
+        /// The maximum file length.
+        /// </param>
+        /// <param name="directory">
+        /// The directory to create the file.
+        /// </param>
+        /// <param name="readOnly">
+        /// Specify whether to set the file read-only attribute.
+        /// </param>
+        /// <returns>
+        /// The file.
+        /// </returns>
+        public static string NextTextFile(int minLength, int maxLength, string directory, bool readOnly)
+        {
+            var fileName = "Tapi_TestFile_" + DateTime.Now.Ticks + "_" + Guid.NewGuid().ToString("D");
+            var file = NextTextFile(minLength, maxLength, directory, fileName);
+            if (!readOnly)
+            {
+                return file;
+            }
+
+            var fileAttributes = File.GetAttributes(file);
+            File.SetAttributes(file, fileAttributes | FileAttributes.ReadOnly);
+            return file;
+        }
+
+        /// <summary>
+        /// Creates a new random text file whose file size is between <paramref name="minValue"/> and <paramref name="maxValue"/>.
+        /// </summary>
+        /// <param name="minValue">
+        /// The minimum value.
+        /// </param>
+        /// <param name="maxValue">
+        /// The maximum value.
+        /// </param>
+        /// <param name="directory">
+        /// The directory to create the file.
+        /// </param>
+        /// <param name="fileName">
+        /// The file name.
+        /// </param>
+        /// <returns>
+        /// The file.
+        /// </returns>
+        public static string NextTextFile(int minValue, int maxValue, string directory, string fileName)
+        {
+            checked
+            {
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                if (string.IsNullOrEmpty(Path.GetExtension(fileName)))
+                {
+                    fileName = Path.ChangeExtension(fileName, ".txt");
+                }
+
+                var text = NextString(minValue, maxValue);
+                var file = Path.Combine(directory, fileName);
+                File.WriteAllText(file, text);
+                return file;
+            }
         }
 
         public static int QueryArtifactTypeId(
