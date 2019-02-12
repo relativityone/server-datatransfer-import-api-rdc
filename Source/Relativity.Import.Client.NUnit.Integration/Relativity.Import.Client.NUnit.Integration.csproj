@@ -56,9 +56,10 @@
     <Compile Include="FileNotFoundImportJobTests.cs" />
     <Compile Include="FileSystemWrapTests.cs" />
     <Compile Include="ImportJobTest.cs" />
+    <Compile Include="TapiBridgeTestBase.cs" />
+    <Compile Include="TestBase.cs" />
     <Compile Include="ImportJobTestBase.cs" />
     <Compile Include="PositiveImportJobTests.cs" />
-    <Compile Include="TapiBridgeTestsBase.cs" />
     <Compile Include="UploadTapiBridgeTests.cs" />
     <Content Include="LICENSE.txt">
       <Paket>True</Paket>

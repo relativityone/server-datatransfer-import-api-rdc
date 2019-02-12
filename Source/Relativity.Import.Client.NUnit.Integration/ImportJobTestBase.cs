@@ -7,6 +7,8 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
+using System.Globalization;
+
 namespace Relativity.Import.Client.NUnit.Integration
 {
 	using System;
@@ -15,13 +17,10 @@ namespace Relativity.Import.Client.NUnit.Integration
 	using System.Diagnostics;
 	using System.IO;
 	using System.Linq;
-	using System.Security.AccessControl;
-	using System.Security.Principal;
 	using System.Text;
 
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
-	using kCura.WinEDDS.TApi;
 
 	using global::NUnit.Framework;
 
@@ -31,7 +30,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 	/// <summary>
 	/// Represents an abstract load-file base class.
 	/// </summary>
-	public abstract class ImportJobTestBase
+	public abstract class ImportJobTestBase : TestBase
 	{
 		/// <summary>
 		/// The minimum test file length [1KB]
@@ -51,22 +50,22 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// <summary>
 		/// The job messages.
 		/// </summary>
-		private readonly global::System.Collections.Generic.List<string> jobMessages = new global::System.Collections.Generic.List<string>();
+		private readonly System.Collections.Generic.List<string> jobMessages = new global::System.Collections.Generic.List<string>();
 
 		/// <summary>
 		/// The job fatal exceptions.
 		/// </summary>
-		private readonly global::System.Collections.Generic.List<Exception> jobFatalExceptions = new global::System.Collections.Generic.List<Exception>();
+		private readonly System.Collections.Generic.List<Exception> jobFatalExceptions = new global::System.Collections.Generic.List<Exception>();
 
 		/// <summary>
 		/// The error rows.
 		/// </summary>
-		private readonly global::System.Collections.Generic.List<IDictionary> errorRows = new global::System.Collections.Generic.List<IDictionary>();
+		private readonly System.Collections.Generic.List<IDictionary> errorRows = new global::System.Collections.Generic.List<IDictionary>();
 
 		/// <summary>
 		/// The progress completed rows.
 		/// </summary>
-		private readonly global::System.Collections.Generic.List<long> progressCompletedRows = new global::System.Collections.Generic.List<long>();
+		private readonly System.Collections.Generic.List<long> progressCompletedRows = new global::System.Collections.Generic.List<long>();
 
 		/// <summary>
 		/// The import job.
@@ -91,37 +90,12 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		/// <summary>
-		/// Gets or sets the temp directory.
-		/// </summary>
-		/// <value>
-		/// The temp directory.
-		/// </value>
-		protected TempDirectory TempDirectory
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Gets or sets timestamp.
-		/// </summary>
-		/// <value>
-		/// The <see cref="DateTime"/> instance.
-		/// </value>
-		protected DateTime Timestamp
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// The test setup.
 		/// </summary>
-		[SetUp]
-		public void Setup()
+		protected override void OnSetup()
 		{
-			this.Timestamp = DateTime.Now;
-			this.SourceData = new DataTable();
+			base.OnSetup();
+			this.SourceData = new DataTable {  Locale = CultureInfo.InvariantCulture };
 			this.SourceData.Columns.Add("Control Number", typeof(string));
 			this.SourceData.Columns.Add("File Path", typeof(string));
 			this.jobMessages.Clear();
@@ -132,16 +106,13 @@ namespace Relativity.Import.Client.NUnit.Integration
 			this.completedJobReport = null;
 			this.TempDirectory = new TempDirectory();
 			this.TempDirectory.Create();
-			this.OnSetup();
 		}
 
 		/// <summary>
 		/// The test tear down.
 		/// </summary>
-		[TearDown]
-		public void TearDown()
+		protected override void OnTearDown()
 		{
-			this.OnPreTearDown();
 			this.SourceData?.Dispose();
 			if (this.importJob != null)
 			{
@@ -152,50 +123,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 				this.importJob.OnProgress -= this.ImportJob_OnProgress;
 			}
 
-			this.TempDirectory?.Dispose();
-			this.OnTearDown();
-		}
-
-		/// <summary>
-		/// Changes the file full permissions.
-		/// </summary>
-		/// <param name="path">
-		/// The path.
-		/// </param>
-		/// <param name="grant">
-		/// Specify whether to grant or deny access.
-		/// </param>
-		protected static void ChangeFileFullPermissions(string path, bool grant)
-		{
-			var accessControl = File.GetAccessControl(path);
-			var sid = new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null);
-			accessControl.AddAccessRule(
-				new FileSystemAccessRule(
-					sid,
-					FileSystemRights.FullControl,
-					grant ? AccessControlType.Allow : AccessControlType.Deny));
-			File.SetAccessControl(path, accessControl);
-		}
-
-		/// <summary>
-		/// Called when the test setup occurs.
-		/// </summary>
-		protected virtual void OnSetup()
-		{
-		}
-
-		/// <summary>
-		/// Called before the test tear down occurs.
-		/// </summary>
-		protected virtual void OnPreTearDown()
-		{
-		}
-
-		/// <summary>
-		/// Called when the test tear down occurs.
-		/// </summary>
-		protected virtual void OnTearDown()
-		{
+			base.OnTearDown();
 		}
 
 		/// <summary>
@@ -213,17 +141,6 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// <summary>
 		/// Given the source files are locked.
 		/// </summary>
-		protected void GivenTheSourceFilesAreLocked()
-		{
-			for (var i = 0; i < this.SourceData.Rows.Count; i++)
-			{
-				this.GivenTheSourceFileIsLocked(i);
-			}
-		}
-
-		/// <summary>
-		/// Given the source files are locked.
-		/// </summary>
 		/// <param name="index">
 		/// Specify the zero-based index.
 		/// </param>
@@ -231,237 +148,6 @@ namespace Relativity.Import.Client.NUnit.Integration
 		{
 			var filePath = this.SourceData.Rows[index][1].ToString();
 			ChangeFileFullPermissions(filePath, false);
-		}
-
-		/// <summary>
-		/// Givens the standard configuration settings.
-		/// </summary>
-		/// <param name="forceClient">
-		/// Sppecify whichi client to force.
-		/// </param>
-		/// <param name="disableNativeLocationValidation">
-		/// Specify whether to disable native location validation.
-		/// </param>
-		/// <param name="disableNativeValidation">
-		/// Specify whether to disable native validation.
-		/// </param>
-		protected void GivenTheStandardConfigSettings(
-			TapiClient forceClient,
-			bool disableNativeLocationValidation,
-			bool disableNativeValidation)
-		{
-			this.GivenTheBadPathErrorsRetrySetting(false);
-			this.GivenTheForceWebUploadSetting(false);
-			this.GivenThePermissionErrorsRetrySetting(false);
-			this.GivenTheTapiForceAsperaClientSetting(forceClient == TapiClient.Aspera);
-			this.GivenTheTapiForceFileShareClientSetting(forceClient == TapiClient.Direct);
-			this.GivenTheTapiForceHttpClientSetting(forceClient == TapiClient.Web);
-			this.GivenTheTapiMaxJobRetryAttemptsSetting(1);
-			this.GivenTheTapiMaxJobParallelismSetting(1);
-			this.GivenTheTapiLogEnabledSetting(true);
-			this.GivenTheTapiSubmitApmMetricsSetting(false);
-			this.GivenTheIoErrorWaitTimeInSeconds(0);
-			this.GivenTheUsePipeliningForFileIdAndCopySetting(false);
-			this.GivenTheDisableNativeLocationValidationSetting(disableNativeLocationValidation);
-			this.GivenTheDisableNativeValidationSetting(disableNativeValidation);
-
-			// Note: there's no longer a BCP sub-folder.
-			this.GivenTheTapiAsperaBcpRootFolder(string.Empty);
-			this.GivenTheTapiAsperaNativeDocRootLevels(1);
-		}
-
-		/// <summary>
-		/// Given the bad path errors retry setting.
-		/// </summary>
-		/// <param name="value">
-		/// The path errors retry value.
-		/// </param>
-		protected void GivenTheBadPathErrorsRetrySetting(bool value)
-		{
-			kCura.WinEDDS.Config.ConfigSettings["BadPathErrorsRetry"] = value;
-		}
-
-		/// <summary>
-		/// Given the import batch size setting.
-		/// </summary>
-		/// <param name="value">
-		/// The import batch size.
-		/// </param>
-		protected void GivenTheImportBatchSizeSetting(int value)
-		{
-			kCura.WinEDDS.Config.ConfigSettings["ImportBatchSize"] = value;
-		}
-
-		/// <summary>
-		/// Given the force web upload setting.
-		/// </summary>
-		/// <param name="value">
-		/// The setting value.
-		/// </param>
-		protected void GivenTheForceWebUploadSetting(bool value)
-		{
-			kCura.WinEDDS.Config.ConfigSettings["ForceWebUpload"] = value;
-		}
-
-		/// <summary>
-		/// Given the permission errors retry setting.
-		/// </summary>
-		/// <param name="value">
-		/// The permission errors retry value.
-		/// </param>
-		protected void GivenThePermissionErrorsRetrySetting(bool value)
-		{
-			kCura.WinEDDS.Config.ConfigSettings["PermissionErrorsRetry"] = value;
-		}
-
-		/// <summary>
-		/// Given the TAPI force Aspera client setting.
-		/// </summary>
-		/// <param name="value">
-		/// The force setting.
-		/// </param>
-		protected void GivenTheTapiForceAsperaClientSetting(bool value)
-		{
-			kCura.WinEDDS.Config.ConfigSettings["TapiForceAsperaClient"] = value.ToString();
-		}
-
-		/// <summary>
-		/// Given the TAPI force file share client setting.
-		/// </summary>
-		/// <param name="value">
-		/// The force setting.
-		/// </param>
-		protected void GivenTheTapiForceFileShareClientSetting(bool value)
-		{
-			kCura.WinEDDS.Config.ConfigSettings["TapiForceFileShareClient"] = value.ToString();
-		}
-
-		/// <summary>
-		/// Given the TAPI force HTTP client setting.
-		/// </summary>
-		/// <param name="value">
-		/// The force setting.
-		/// </param>
-		protected void GivenTheTapiForceHttpClientSetting(bool value)
-		{
-			kCura.WinEDDS.Config.ConfigSettings["TapiForceHttpClient"] = value.ToString();
-		}
-
-		/// <summary>
-		/// Given the TAPI max job parallelism setting.
-		/// </summary>
-		/// <param name="value">
-		/// The setting value.
-		/// </param>
-		protected void GivenTheTapiMaxJobParallelismSetting(int value)
-		{
-			kCura.WinEDDS.Config.ConfigSettings["TapiMaxJobParallelism"] = value;
-		}
-
-		/// <summary>
-		/// Given the TAPI log enabled setting.
-		/// </summary>
-		/// <param name="value">
-		/// The setting value.
-		/// </param>
-		protected void GivenTheTapiLogEnabledSetting(bool value)
-		{
-			kCura.WinEDDS.Config.ConfigSettings["TapiLogEnabled"] = value;
-		}
-
-		/// <summary>
-		/// Given the TAPI Aspera native files doc-root levels.
-		/// </summary>
-		/// <param name="value">
-		/// The setting value.
-		/// </param>
-		protected void GivenTheTapiAsperaNativeDocRootLevels(int value)
-		{
-			kCura.WinEDDS.Config.ConfigSettings["TapiAsperaNativeDocRootLevels"] = value;
-		}
-
-		/// <summary>
-		/// Given the TAPI Aspera BCP root folder.
-		/// </summary>
-		/// <param name="value">
-		/// The setting value.
-		/// </param>
-		protected void GivenTheTapiAsperaBcpRootFolder(string value)
-		{
-			kCura.WinEDDS.Config.ConfigSettings["TapiAsperaBcpRootFolder"] = value;
-		}
-
-		/// <summary>
-		/// Given the TAPI max job retry attempts setting.
-		/// </summary>
-		/// <param name="value">
-		/// The setting value.
-		/// </param>
-		protected void GivenTheTapiMaxJobRetryAttemptsSetting(int value)
-		{
-			kCura.WinEDDS.Config.ConfigSettings["TapiMaxJobRetryAttempts"] = value;
-		}
-
-		/// <summary>
-		/// Given the TAPI submit APM setting.
-		/// </summary>
-		/// <param name="value">
-		/// The setting value.
-		/// </param>
-		protected void GivenTheTapiSubmitApmMetricsSetting(bool value)
-		{
-			kCura.WinEDDS.Config.ConfigSettings["TapiSubmitApmMetrics"] = value;
-		}
-
-		/// <summary>
-		/// Given the disable native location validation setting.
-		/// </summary>
-		/// <param name="value">
-		/// The setting value.
-		/// </param>
-		protected void GivenTheDisableNativeLocationValidationSetting(bool value)
-		{
-			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = value;
-		}
-
-		/// <summary>
-		/// Given the disable native validation setting.
-		/// </summary>
-		/// <param name="value">
-		/// The setting value.
-		/// </param>
-		protected void GivenTheDisableNativeValidationSetting(bool value)
-		{
-			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = value;
-		}
-
-		/// <summary>
-		/// Given the pipelining for file id and copy setting.
-		/// </summary>
-		/// <param name="value">
-		/// The setting value.
-		/// </param>
-		/// <remarks>
-		/// This is the key configuration setting that has created instability with negative test cases.
-		/// </remarks>
-		protected void GivenTheUsePipeliningForFileIdAndCopySetting(bool value)
-		{
-			kCura.WinEDDS.Config.ConfigSettings["UsePipeliningForFileIdAndCopy"] = value;
-		}
-
-		/// <summary>
-		/// Given the time to wait when an I/O error occurs setting.
-		/// </summary>
-		/// <param name="value">
-		/// The setting value.
-		/// </param>
-		protected void GivenTheIoErrorWaitTimeInSeconds(int value)
-		{
-			kCura.Utility.Config.ConfigSettings["IOErrorWaitTimeInSeconds"] = value;
-			if (value == 0)
-			{
-				kCura.Utility.Config.ConfigSettings["IOErrorNumberOfRetries"] = 0;
-			}
 		}
 
 		/// <summary>

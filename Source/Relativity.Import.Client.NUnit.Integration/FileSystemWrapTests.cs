@@ -16,10 +16,10 @@ namespace Relativity.Import.Client.NUnit.Integration
 
     using kCura.WinEDDS.TApi;
 
-    /// <summary>
-    /// Represents integration tests cases involving multiple clients and file not found scenarios.
-    /// </summary>
-    [TestFixture]
+	/// <summary>
+	/// Represents <see cref="FileSystemWrap"/> tests. 
+	/// </summary>
+	[TestFixture]
     public class FileSystemWrapTests
     {
 	    private readonly List<string> pathsForDeletion = new List<string>();

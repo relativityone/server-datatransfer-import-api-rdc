@@ -19,10 +19,10 @@ namespace Relativity.Import.Client.NUnit.Integration
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
 
+	using global::NUnit.Framework;
+
 	using Relativity.ImportExport.UnitTestFramework;
 	using Relativity.Transfer;
-
-	using global::NUnit.Framework;
 
 	/// <summary>
 	/// Tests an import job.

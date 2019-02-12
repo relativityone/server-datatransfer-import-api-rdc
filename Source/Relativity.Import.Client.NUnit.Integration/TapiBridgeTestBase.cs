@@ -1,9 +1,9 @@
 ﻿// -----------------------------------------------------------------------------------------------------
-// <copyright file="TapiBridgeTestsBase.cs" company="Relativity ODA LLC">
+// <copyright file="TapiBridgeTestBase.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   Represents <see cref="TapiBridgeBase"/> tests.
+//   Represents the <see cref="TapiBridgeBase"/> base test class.
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
@@ -22,9 +22,9 @@ namespace Relativity.Import.Client.NUnit.Integration
 	using Relativity.Transfer;
 
 	/// <summary>
-	/// Base class for the tests for the <see cref="TapiBridgeBase"/> class.
+	/// Represents the <see cref="TapiBridgeBase"/> base test class.
 	/// </summary>
-	public abstract class TapiBridgeTestsBase
+	public abstract class TapiBridgeTestBase : TestBase
 	{
 		/// <summary>
 		/// The minimum test file length [1KB]
@@ -40,11 +40,6 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// The thread synchronization root backing.
 		/// </summary>
 		private static readonly object SyncRoot = new object();
-
-		/// <summary>
-		/// The test directory backing.
-		/// </summary>
-		private TempDirectory testDirectory;
 
 		/// <summary>
 		/// The file count.
@@ -69,12 +64,9 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// <summary>
 		/// The test setup.
 		/// </summary>
-		[SetUp]
-		public void Setup()
+		protected override void OnSetup()
 		{
-			ServicePointManager.SecurityProtocol =
-				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
-				| SecurityProtocolType.Tls12;
+			base.OnSetup();
 			this.SourcePaths = new global::System.Collections.Generic.List<string>();
 			this.MaxFilesPerFolder = 1000;
 			this.TargetPath = null;
@@ -83,19 +75,13 @@ namespace Relativity.Import.Client.NUnit.Integration
 			this.filesTransferred = 0;
 			this.fatalErrors = 0;
 			this.warnings = 0;
-			this.testDirectory = new TempDirectory { ClearReadOnlyAttributes = true };
-			this.testDirectory.Create();
 			this.TransferLog = new Mock<ITransferLog>();
 		}
 
-		/// <summary>
-		/// The test tear down.
-		/// </summary>
-		[TearDown]
-		public void TearDown()
+		protected override void OnTearDown()
 		{
+			base.OnTearDown();
 			this.NativeFileTransfer?.Dispose();
-			this.testDirectory?.Dispose();
 		}
 
 		/// <summary>
@@ -141,14 +127,6 @@ namespace Relativity.Import.Client.NUnit.Integration
 			get;
 			private set;
 		}
-
-		/// <summary>
-		/// The test directory.
-		/// </summary>
-		/// <value>
-		/// The full path.
-		/// </value>
-		protected string TestDirectory => this.testDirectory.Directory;
 
 		/// <summary>
 		/// The mock transfer log.
