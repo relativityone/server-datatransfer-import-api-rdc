@@ -14,7 +14,7 @@ Namespace kCura.WinEDDS.Credentials
 	Public Class  OAuth2ImplicitCredentials
 		Implements ICredentialsProvider
 
-		Private Const _REDIRECT_URI As String = "http://relativityimplicit/"
+		Private Const _REDIRECT_URI As String = "rdc://relativityimplicit/"
 		Private _tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider
 		Private ReadOnly _stsUri As Uri
 		Private ReadOnly _clientId As String
