@@ -50,10 +50,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblySetup.cs" />
+    <Compile Include="DownloadTapiBridgeTests.cs" />
     <Compile Include="FileIDServiceTests.cs" />
+    <Compile Include="FileLockedImportJobTests.cs" />
+    <Compile Include="FileNotFoundImportJobTests.cs" />
     <Compile Include="FileSystemWrapTests.cs" />
     <Compile Include="ImportJobTest.cs" />
     <Compile Include="ImportJobTestBase.cs" />
+    <Compile Include="PositiveImportJobTests.cs" />
+    <Compile Include="TapiBridgeTestsBase.cs" />
+    <Compile Include="UploadTapiBridgeTests.cs" />
     <Content Include="LICENSE.txt">
       <Paket>True</Paket>
     </Content>

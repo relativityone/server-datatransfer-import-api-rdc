@@ -12,23 +12,27 @@ namespace Relativity.ImportExport.UnitTestFramework
 	using System.IO;
 	using System.Net;
 
+	using kCura.WinEDDS.TApi;
+
 	using global::NUnit.Framework;
 
-    /// <summary>
-    /// Represents a global assembly-wide setup routine that's guaranteed to be executed before ANY NUnit test.
-    /// </summary>
+	using Relativity.Transfer;
+
+	/// <summary>
+	/// Represents a global assembly-wide setup routine that's guaranteed to be executed before ANY NUnit test.
+	/// </summary>
 	public static class AssemblySetupHelper
 	{
-        public static Relativity.Logging.ILog Logger
-        {
-            get;
-            private set;
-        }
+		public static Relativity.Logging.ILog Logger
+		{
+			get;
+			private set;
+		}
 
-        /// <summary>
-        /// The main setup method.
-        /// </summary>
-        public static void Setup()
+		/// <summary>
+		/// The main setup method.
+		/// </summary>
+		public static void Setup()
 		{
 			TestSettings.RelativityUserName = GetConfigurationStringValue("RelativityUserName");
 			TestSettings.RelativityPassword = GetConfigurationStringValue("RelativityPassword");
@@ -40,6 +44,8 @@ namespace Relativity.ImportExport.UnitTestFramework
 			TestSettings.SqlAdminUserName = GetConfigurationStringValue("SqlAdminUserName");
 			TestSettings.SqlAdminPassword = GetConfigurationStringValue("SqlAdminPassword");
 			TestSettings.SqlDropWorkspaceDatabase = bool.Parse(GetConfigurationStringValue("SqlDropWorkspaceDatabase"));
+			TestSettings.SkipAsperaModeTests = bool.Parse(GetConfigurationStringValue("SkipAsperaModeTests"));
+			TestSettings.SkipDirectModeTests = bool.Parse(GetConfigurationStringValue("SkipDirectModeTests"));
 			TestSettings.WorkspaceTemplate = GetConfigurationStringValue("WorkspaceTemplate");
 
 			// Note: don't create the logger until all parameters have been retrieved.
@@ -51,6 +57,17 @@ namespace Relativity.ImportExport.UnitTestFramework
 				TestSettings.RelativityPassword,
 				TestSettings.WorkspaceTemplate,
 				Logger);
+			using (ITransferLog transferLog = new RelativityTransferLog(Logger, false))
+			{
+				RelativityConnectionInfo connectionInfo = new RelativityConnectionInfo(
+					TestSettings.RelativityUrl,
+					new BasicAuthenticationCredential(TestSettings.RelativityUserName,
+						TestSettings.RelativityPassword),
+					TestSettings.WorkspaceId);
+				WorkspaceService workspaceService = new WorkspaceService(connectionInfo, transferLog);
+				Workspace workspace = workspaceService.GetWorkspaceAsync().GetAwaiter().GetResult();
+				TestSettings.FileShareUncPath = workspace.DefaultFileShareUncPath;
+			}
 		}
 
 		/// <summary>
