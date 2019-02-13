@@ -130,13 +130,20 @@ END";
 
 		private static string GetConfigurationStringValue(string key)
 		{
+			string envVariable = $"IAPI_INTEGRATION_{key.ToUpperInvariant()}";
+			string envValue = Environment.GetEnvironmentVariable(envVariable, EnvironmentVariableTarget.User);
+			if (!string.IsNullOrEmpty(envValue))
+			{
+				return envValue;
+			}
+
 			string value = System.Configuration.ConfigurationManager.AppSettings.Get(key);
 			if (!string.IsNullOrEmpty(value))
 			{
 				return value;
 			}
 
-			throw new AssertionException($"The '{key}' app.config setting is not specified.");
+			throw new AssertionException($"The '{key}' app.config setting or '{envVariable}' environment variable is not specified.");
 		}
 
 		private static void SetupLogger()
