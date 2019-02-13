@@ -22,6 +22,7 @@ NUGET
     psake (4.7.4)
     RhinoMocks (3.6)
     SSH.NET (2016.0)
+    StyleCop.Analyzers (1.0.2)
     System.Runtime.CompilerServices.Unsafe (4.5.2)
     System.Threading.Tasks.Extensions (4.5.2)
       System.Runtime.CompilerServices.Unsafe (>= 4.5.2)

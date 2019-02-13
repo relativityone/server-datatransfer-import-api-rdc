@@ -83,7 +83,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		{
 			string file = TestHelper.GetDocsResourceFilePath(fileName);
 			DocImportRecord record = new DocImportRecord { ControlNumber = controlNumber, File = file, Folder = folder };
-			return this.ArrangeImportJob(new[] { record  });
+			return this.ArrangeImportJob(new[] { record });
 		}
 
 		protected kCura.Relativity.DataReaderClient.ImportBulkArtifactJob ArrangeImportJob(IEnumerable<DocImportRecord> records)
@@ -211,27 +211,6 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			{
 				this.PublishedProgressRows.Add(row);
 			};
-		}
-	}
-
-	public class DocImportRecord
-	{
-		public string ControlNumber
-		{
-			get;
-			set;
-		}
-
-		public string Folder
-		{
-			get;
-			set;
-		}
-
-		public string File
-		{
-			get;
-			set;
 		}
 	}
 }

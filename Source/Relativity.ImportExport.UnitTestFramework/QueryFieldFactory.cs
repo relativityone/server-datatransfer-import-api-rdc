@@ -14,53 +14,6 @@ namespace Relativity.ImportExport.UnitTestFramework
     {
         private DataTable table;
 
-        private DataRow GenerateRow()
-        {
-            if (table == null)
-            {
-                table = new DataTable("Test-Data") {  Locale = CultureInfo.InvariantCulture };
-                table.Columns.Add("FieldArtifactID", typeof(int));
-                table.Columns.Add("AvfId", typeof(int));
-                table.Columns.Add("FieldCategoryID", typeof(int));
-                table.Columns.Add("FieldTypeID", typeof(int));
-                table.Columns.Add("ArtifactTypeID", typeof(int));
-                table.Columns.Add("ArtifactTypeTableName", typeof(string));
-                table.Columns.Add("FieldCodeTypeID", typeof(int));
-                table.Columns.Add("FieldIsArtifactBaseField", typeof(bool));
-                table.Columns.Add("DisplayName", typeof(string));
-                table.Columns.Add("AvfColumnName", typeof(string));
-                table.Columns.Add("AvfHeaderName", typeof(string));
-                table.Columns.Add("FormatString", typeof(string));
-                table.Columns.Add("AssociativeArtifactTypeID", typeof(int));
-                table.Columns.Add("IsUnicodeEnabled", typeof(bool));
-                table.Columns.Add("AllowHtml", typeof(bool));
-                table.Columns.Add("AllowFieldName", typeof(string));
-                table.Columns.Add("SourceFieldArtifactID", typeof(int));
-                table.Columns.Add("SourceFieldArtifactTypeTableName", typeof(string));
-                table.Columns.Add("SourceFieldDisplayName", typeof(string));
-                table.Columns.Add("SourceFieldArtifactTypeID", typeof(int));
-                table.Columns.Add("ConnectorFieldArtifactID", typeof(int));
-                table.Columns.Add("ConnectorFieldName", typeof(string));
-                table.Columns.Add("ConnectorFieldCategoryID", typeof(int));
-                table.Columns.Add("ParentFileFieldArtifactID", typeof(int));
-                table.Columns.Add("ParentFileFieldDisplayName", typeof(string));
-                table.Columns.Add("IsLinked", typeof(bool));
-                table.Columns.Add("ColumnSource", typeof(string));
-                table.Columns.Add("DataSource", typeof(string));
-                table.Columns.Add("RelationalTableName", typeof(string));
-                table.Columns.Add("RelationalTableColumnName", typeof(string));
-                table.Columns.Add("RelationalTableColumnName2", typeof(string));
-                table.Columns.Add("ParentReflectionType", typeof(int));
-                table.Columns.Add("ReflectedFieldArtifactTypeTableName", typeof(string));
-                table.Columns.Add("ReflectedFieldArtifactTypeIdentifierColumnName", typeof(string));
-                table.Columns.Add("ReflectedFieldArtifactTypeConnectorFieldName", typeof(string));
-                table.Columns.Add("ReflectedConnectorArtifactTypeIdentifierColumnName", typeof(string));
-                table.Columns.Add("EnableDataGrid", typeof(bool));
-            }
-
-            return table.NewRow();
-        }
-
         public kCura.WinEDDS.ViewFieldInfo GenerateQueryField(
             int fieldArtifactID,
             int avfId,
@@ -100,11 +53,11 @@ namespace Relativity.ImportExport.UnitTestFramework
             string reflectedConnectorIdentifierColumnName,
             bool enableDataGrid)
         {
-            var row = GenerateRow();
+            var row = this.GenerateRow();
             row["FieldArtifactId"] = fieldArtifactID;
             row["AvfId"] = avfId;
-            row["FieldCategoryID"] = (int) fieldCategory;
-            row["FieldTypeID"] = (int) fieldType;
+            row["FieldCategoryID"] = (int)fieldCategory;
+            row["FieldTypeID"] = (int)fieldType;
             row["ArtifactTypeID"] = artifactTypeId;
             row["ArtifactTypeTableName"] = artifactTypeTableName;
             row["FieldCodeTypeID"] = fieldCodeTypeID;
@@ -132,7 +85,7 @@ namespace Relativity.ImportExport.UnitTestFramework
             row["RelationalTableName"] = relationalTableName;
             row["RelationalTableColumnName"] = relationalTableColumnName;
             row["RelationalTableColumnName2"] = relationalTableColumnName2;
-            row["ParentReflectionType"] = (int) parentReflectionType;
+            row["ParentReflectionType"] = (int)parentReflectionType;
             row["ReflectedFieldArtifactTypeTableName"] = reflectedFieldArtifactTypeTableName;
             row["ReflectedFieldArtifactTypeIdentifierColumnName"] = reflectedFieldIdentifierColumnName;
             row["ReflectedFieldArtifactTypeConnectorFieldName"] = reflectedFieldConnectorFieldName;
@@ -143,131 +96,674 @@ namespace Relativity.ImportExport.UnitTestFramework
 
         public kCura.WinEDDS.ViewFieldInfo GetIdentifierQueryField()
         {
-            return this.GenerateQueryField(5, 1000186, FieldCategory.Identifier, FieldTypeHelper.FieldType.Varchar, 10,
-                "Document", -1, false, "Identifier", "Identifier", "Identifier", "", -1, true, false, "", -1, "",
-                "Identifier", -1, -1, "", -1, -1, "", true, "MainTable", "Document", "", "", "",
-                ParentReflectionType.Empty, "", "", "", "", false);
+            return this.GenerateQueryField(
+	            5,
+	            1000186,
+	            FieldCategory.Identifier,
+	            FieldTypeHelper.FieldType.Varchar,
+	            10,
+                "Document",
+	            -1,
+	            false,
+	            "Identifier",
+	            "Identifier",
+	            "Identifier",
+	            string.Empty,
+	            -1,
+	            true,
+	            false,
+	            string.Empty,
+	            -1,
+	            string.Empty,
+                "Identifier",
+	            -1,
+	            -1,
+	            string.Empty,
+	            -1,
+	            -1,
+	            string.Empty,
+	            true,
+	            "MainTable",
+	            "Document",
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+                ParentReflectionType.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            false);
         }
 
         public kCura.WinEDDS.ViewFieldInfo GetExtractedTextField()
         {
-            return this.GenerateQueryField(6, 1000187, FieldCategory.FullText, FieldTypeHelper.FieldType.Text, 10,
-                "Document", -1, false, "Extracted Text", "ExtractedText", "Extracted Text", "", -1, true, false, "", -1,
-                "", "Extracted Text", -1, -1, "", -1, -1, "", false, "MainTable", "Document", "", "", "",
-                ParentReflectionType.Empty, "", "", "", "", false);
+            return this.GenerateQueryField(
+	            6,
+	            1000187,
+	            FieldCategory.FullText,
+	            FieldTypeHelper.FieldType.Text,
+	            10,
+                "Document",
+	            -1,
+	            false,
+	            "Extracted Text",
+	            "ExtractedText",
+	            "Extracted Text",
+	            string.Empty,
+	            -1,
+	            true,
+	            false,
+	            string.Empty,
+	            -1,
+                string.Empty,
+	            "Extracted Text",
+	            -1,
+	            -1,
+	            string.Empty,
+	            -1,
+	            -1,
+	            string.Empty,
+	            false,
+	            "MainTable",
+	            "Document",
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+                ParentReflectionType.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            false);
         }
 
         public kCura.WinEDDS.ViewFieldInfo GetGenericLongTextField()
         {
-            return this.GenerateQueryField(6, 1001440, FieldCategory.FullText, FieldTypeHelper.FieldType.Text, 10,
-                "Document", -1,
-                false, "Long Text", "LongText", "Long Text", "", -1, true, false, "", -1, "", "Long Text", -1, -1, "",
-                -1, -1, "", false, "MainTable", "Document", "", "", "", ParentReflectionType.Empty, "", "", "", "",
+            return this.GenerateQueryField(
+	            6,
+	            1001440,
+	            FieldCategory.FullText,
+	            FieldTypeHelper.FieldType.Text,
+	            10,
+                "Document",
+	            -1,
+                false,
+	            "Long Text",
+	            "LongText",
+	            "Long Text",
+	            string.Empty,
+	            -1,
+	            true,
+	            false,
+	            string.Empty,
+	            -1,
+	            string.Empty,
+	            "Long Text",
+	            -1,
+	            -1,
+	            string.Empty,
+                -1,
+	            -1,
+	            string.Empty,
+	            false,
+	            "MainTable",
+	            "Document",
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            ParentReflectionType.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
                 false);
         }
 
         public kCura.WinEDDS.ViewFieldInfo GetRenamedGenericLongTextField()
         {
-            return this.GenerateQueryField(6, 1001440, FieldCategory.FullText, FieldTypeHelper.FieldType.Text, 10,
-                "Document", -1, false, "OtherLong Text", "OtherLongText", "OtherLong Text", "", -1, true, false, "", -1,
-                "", "OtherLong Text", -1, -1, "", -1, -1, "", false, "MainTable", "Document", "", "", "",
-                ParentReflectionType.Empty, "", "", "", "", false);
+            return this.GenerateQueryField(
+	            6,
+	            1001440,
+	            FieldCategory.FullText,
+	            FieldTypeHelper.FieldType.Text,
+	            10,
+                "Document",
+	            -1,
+	            false,
+	            "OtherLong Text",
+	            "OtherLongText",
+	            "OtherLong Text",
+	            string.Empty,
+	            -1,
+	            true,
+	            false,
+	            string.Empty,
+	            -1,
+                string.Empty,
+	            "OtherLong Text",
+	            -1,
+	            -1,
+	            string.Empty,
+	            -1,
+	            -1,
+	            string.Empty,
+	            false,
+	            "MainTable",
+	            "Document",
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+                ParentReflectionType.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            false);
         }
 
         public kCura.WinEDDS.ViewFieldInfo GetGenericBooleanField()
         {
-            return this.GenerateQueryField(14497, 1000357, FieldCategory.Generic, FieldTypeHelper.FieldType.Boolean, 10,
-                "Document", -1, false, "Bool", "Bool", "Bool", "", -1, false, false, "", -1, "", "Bool", -1, -1, "", -1,
-                -1, "", false, "MainTable", "Document", "", "", "", ParentReflectionType.Empty, "", "", "", "", false);
+            return this.GenerateQueryField(
+	            14497,
+	            1000357,
+	            FieldCategory.Generic,
+	            FieldTypeHelper.FieldType.Boolean,
+	            10,
+                "Document",
+	            -1,
+	            false,
+	            "Bool",
+	            "Bool",
+	            "Bool",
+	            string.Empty,
+	            -1,
+	            false,
+	            false,
+	            string.Empty,
+	            -1,
+	            string.Empty,
+	            "Bool",
+	            -1,
+	            -1,
+	            string.Empty,
+	            -1,
+                -1,
+	            string.Empty,
+	            false,
+	            "MainTable",
+	            "Document",
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            ParentReflectionType.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            false);
         }
 
         public kCura.WinEDDS.ViewFieldInfo GetGenericSingleCodeField()
         {
-            return this.GenerateQueryField(391085, 1001118, FieldCategory.Generic, FieldTypeHelper.FieldType.Code, 10,
-                "Document", 1000097, false, "Single Choice", "SingleChoice", "Single Choice", "", -1, true, false, "",
-                -1, "", "Single Choice", -1, -1, "", -1, -1, "", false, "MainTable", "Document", "", "", "",
-                ParentReflectionType.Empty, "", "", "", "", false);
+            return this.GenerateQueryField(
+	            391085,
+	            1001118,
+	            FieldCategory.Generic,
+	            FieldTypeHelper.FieldType.Code,
+	            10,
+                "Document",
+	            1000097,
+	            false,
+	            "Single Choice",
+	            "SingleChoice",
+	            "Single Choice",
+	            string.Empty,
+	            -1,
+	            true,
+	            false,
+	            string.Empty,
+                -1,
+	            string.Empty,
+	            "Single Choice",
+	            -1,
+	            -1,
+	            string.Empty,
+	            -1,
+	            -1,
+	            string.Empty,
+	            false,
+	            "MainTable",
+	            "Document",
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+                ParentReflectionType.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            false);
         }
 
         public kCura.WinEDDS.ViewFieldInfo GetGenericMultiCodeField()
         {
-            return this.GenerateQueryField(391081, 1001117, FieldCategory.Generic, FieldTypeHelper.FieldType.MultiCode, 10,
-                "Document", 1000096, false, "MCode", "MCode", "MCode", "", -1, false, false, "", -1, "", "MCode", -1,
-                -1, "", -1, -1, "", false, "MainTable", "Document", "", "", "", ParentReflectionType.Empty, "", "", "",
-                "", false);
+            return this.GenerateQueryField(
+	            391081,
+	            1001117,
+	            FieldCategory.Generic,
+	            FieldTypeHelper.FieldType.MultiCode,
+	            10,
+                "Document",
+	            1000096,
+	            false,
+	            "MCode",
+	            "MCode",
+	            "MCode",
+	            string.Empty,
+	            -1,
+	            false,
+	            false,
+	            string.Empty,
+	            -1,
+	            string.Empty,
+	            "MCode",
+	            -1,
+                -1,
+	            string.Empty,
+	            -1,
+	            -1,
+	            string.Empty,
+	            false,
+	            "MainTable",
+	            "Document",
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            ParentReflectionType.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+                string.Empty,
+	            false);
         }
 
         public kCura.WinEDDS.ViewFieldInfo GetArtifactIdField()
         {
-            return this.GenerateQueryField(13090, 1000248, FieldCategory.Generic, FieldTypeHelper.FieldType.Integer, 10,
-                "Document", -1, true, "Artifact ID", "ArtifactID", "ArtifactID", "", -1, false, false, "", -1, "",
-                "ArtifactID", -1, -1, "", -1, -1, "", false, "MainTable", "Document", "", "", "",
-                ParentReflectionType.Empty, "", "", "", "", false);
+            return this.GenerateQueryField(
+	            13090,
+	            1000248,
+	            FieldCategory.Generic,
+	            FieldTypeHelper.FieldType.Integer,
+	            10,
+                "Document",
+	            -1,
+	            true,
+	            "Artifact ID",
+	            "ArtifactID",
+	            "ArtifactID",
+	            string.Empty,
+	            -1,
+	            false,
+	            false,
+	            string.Empty,
+	            -1,
+	            string.Empty,
+                "ArtifactID",
+	            -1,
+	            -1,
+	            string.Empty,
+	            -1,
+	            -1,
+	            string.Empty,
+	            false,
+	            "MainTable",
+	            "Document",
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+                ParentReflectionType.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            false);
         }
 
         public kCura.WinEDDS.ViewFieldInfo GetGenericNumericField(FieldTypeHelper.FieldType type)
         {
-            return this.GenerateQueryField(13090, 1000248, FieldCategory.Generic, type, 10, "Document", -1, false, "Decimal",
-                "Decimal", "Decimal", "", -1, false, false, "", -1, "", "Decimal", -1, -1, "", -1, -1, "", false,
-                "MainTable", "Document", "", "", "", ParentReflectionType.Empty, "", "", "", "", false);
+            return this.GenerateQueryField(
+	            13090,
+	            1000248,
+	            FieldCategory.Generic,
+	            type,
+	            10,
+	            "Document",
+	            -1,
+	            false,
+	            "Decimal",
+                "Decimal",
+	            "Decimal",
+	            string.Empty,
+	            -1,
+	            false,
+	            false,
+	            string.Empty,
+	            -1,
+	            string.Empty,
+	            "Decimal",
+	            -1,
+	            -1,
+	            string.Empty,
+	            -1,
+	            -1,
+	            string.Empty,
+	            false,
+                "MainTable",
+	            "Document",
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            ParentReflectionType.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            false);
         }
 
         public kCura.WinEDDS.ViewFieldInfo GetGenericUserField()
         {
-            return this.GenerateQueryField(14490, 1000353, FieldCategory.Generic, FieldTypeHelper.FieldType.User, 10,
-                "Document",
-                -1, false, "User Field", "UserField", "User Field", "", -1, false, false, "", -1, "", "User Field", -1,
-                -1, "", -1, -1, "", false, "MainTable", "Document", "", "", "", ParentReflectionType.Empty, "", "", "",
-                "", false);
+	        return this.GenerateQueryField(
+		        14490,
+		        1000353,
+		        FieldCategory.Generic,
+		        FieldTypeHelper.FieldType.User,
+		        10,
+		        "Document",
+		        -1,
+		        false,
+		        "User Field",
+		        "UserField",
+		        "User Field",
+		        string.Empty,
+		        -1,
+		        false,
+		        false,
+		        string.Empty,
+		        -1,
+		        string.Empty,
+		        "User Field",
+		        -1,
+		        -1,
+		        string.Empty,
+		        -1,
+		        -1,
+		        string.Empty,
+		        false,
+		        "MainTable",
+		        "Document",
+		        string.Empty,
+		        string.Empty,
+		        string.Empty,
+		        ParentReflectionType.Empty,
+		        string.Empty,
+		        string.Empty,
+		        string.Empty,
+		        string.Empty,
+		        false);
         }
 
         public kCura.WinEDDS.ViewFieldInfo GetGenericObjectField()
         {
-            return this.GenerateQueryField(504869, 1001267, FieldCategory.Generic, FieldTypeHelper.FieldType.Object, 10,
+            return this.GenerateQueryField(
+	            504869,
+	            1001267,
+	            FieldCategory.Generic,
+	            FieldTypeHelper.FieldType.Object,
+	            10,
                 "Document",
-                -1, false, "WSP", "WSP", "WSP", "", 1000047, false, false, "", -1, "WithSpace", "Name", -1, -1, "", -1,
-                -1, "", false, "MainTable", "o1000047_f504869", "", "", "", ParentReflectionType.Empty, "", "", "", "",
+                -1,
+	            false,
+	            "WSP",
+	            "WSP",
+	            "WSP",
+	            string.Empty,
+	            1000047,
+	            false,
+	            false,
+	            string.Empty,
+	            -1,
+	            "WithSpace",
+	            "Name",
+	            -1,
+	            -1,
+	            string.Empty,
+	            -1,
+                -1,
+	            string.Empty,
+	            false,
+	            "MainTable",
+	            "o1000047_f504869",
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            ParentReflectionType.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
                 false);
         }
 
         public kCura.WinEDDS.ViewFieldInfo GetGenericObjectsField()
         {
-            return this.GenerateQueryField(505158, 1001278, FieldCategory.Generic, FieldTypeHelper.FieldType.Objects, 10,
-                "Document", -1, false, "DcMon", "DcMon", "DcMon", "", 1000045, false, false, "", -1, "Cmon", "Name", -1,
-                -1, "Name", -1, -1, "", false, "MainTable", "Document", "f505158f505168", "f505158ArtifactID",
-                "f505168ArtifactID", ParentReflectionType.Empty, "", "", "", "", false);
+            return this.GenerateQueryField(
+	            505158,
+	            1001278,
+	            FieldCategory.Generic,
+	            FieldTypeHelper.FieldType.Objects,
+	            10,
+                "Document",
+                -1,
+                false,
+                "DcMon",
+                "DcMon",
+	            "DcMon",
+	            string.Empty,
+	            1000045,
+	            false,
+	            false,
+	            string.Empty,
+	            -1,
+	            "Cmon",
+	            "Name",
+	            -1,
+                -1,
+	            "Name",
+	            -1,
+	            -1,
+	            string.Empty,
+	            false,
+	            "MainTable",
+	            "Document",
+	            "f505158f505168",
+	            "f505158ArtifactID",
+                "f505168ArtifactID",
+	            ParentReflectionType.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            false);
         }
 
         public kCura.WinEDDS.ViewFieldInfo GenerateMultiReflectedUserField()
         {
-            return this.GenerateQueryField(505162, 1001282, FieldCategory.MultiReflected, FieldTypeHelper.FieldType.User, 10,
-                "Document", -1, false, "DcMon::User", "DcMonUser", "DcMon::User", "", 1000045, false, false, "", 504867,
-                "Cmon", "User", 1000045, 505158, "Name", 0, -1, "", false, "MainTable", "Cmon", "f505158f505168",
-                "f505158ArtifactID", "f505168ArtifactID", ParentReflectionType.Empty, "", "", "", "", false);
+            return this.GenerateQueryField(
+	            505162,
+	            1001282,
+	            FieldCategory.MultiReflected,
+	            FieldTypeHelper.FieldType.User,
+	            10,
+                "Document",
+	            -1,
+	            false,
+	            "DcMon::User",
+	            "DcMonUser",
+	            "DcMon::User",
+	            string.Empty,
+	            1000045,
+	            false,
+	            false,
+	            string.Empty,
+	            504867,
+                "Cmon",
+	            "User",
+	            1000045,
+	            505158,
+	            "Name",
+	            0,
+	            -1,
+	            string.Empty,
+	            false,
+	            "MainTable",
+	            "Cmon",
+	            "f505158f505168",
+                "f505158ArtifactID",
+	            "f505168ArtifactID",
+	            ParentReflectionType.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            false);
         }
 
         public kCura.WinEDDS.ViewFieldInfo GetGenericDateField()
         {
-            return this.GenerateQueryField(504869, 1001267, FieldCategory.Generic, FieldTypeHelper.FieldType.Date, 10,
+            return this.GenerateQueryField(
+	            504869,
+	            1001267,
+	            FieldCategory.Generic,
+	            FieldTypeHelper.FieldType.Date,
+	            10,
                 "Document",
-                -1, false, "Date", "Date", "Date", "d", -1, false, false, "", -1, "", "Date", -1, -1, "", -1, -1, "",
-                false, "MainTable", "Document", "", "", "", ParentReflectionType.Empty, "", "", "", "", false);
+                -1,
+	            false,
+	            "Date",
+	            "Date",
+	            "Date",
+	            "d",
+	            -1,
+	            false,
+	            false,
+	            string.Empty,
+	            -1,
+	            string.Empty,
+	            "Date",
+	            -1,
+	            -1,
+	            string.Empty,
+	            -1,
+	            -1,
+	            string.Empty,
+                false,
+	            "MainTable",
+	            "Document",
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            ParentReflectionType.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            false);
         }
 
         public kCura.WinEDDS.ViewFieldInfo GetGenericDateTimeField()
         {
-            return this.GenerateQueryField(504869, 1001267, FieldCategory.Generic, FieldTypeHelper.FieldType.Date, 10,
+            return this.GenerateQueryField(
+	            504869,
+	            1001267,
+	            FieldCategory.Generic,
+	            FieldTypeHelper.FieldType.Date,
+	            10,
                 "Document",
-                -1, false, "Date", "Date", "Date", "g", -1, false, false, "", -1, "", "Date", -1, -1, "", -1, -1, "",
-                false, "MainTable", "Document", "", "", "", ParentReflectionType.Empty, "", "", "", "", false);
+                -1,
+	            false,
+	            "Date",
+	            "Date",
+	            "Date",
+	            "g",
+	            -1,
+	            false,
+	            false,
+	            string.Empty,
+	            -1,
+	            string.Empty,
+	            "Date",
+	            -1,
+	            -1,
+	            string.Empty,
+	            -1,
+	            -1,
+	            string.Empty,
+                false,
+	            "MainTable",
+	            "Document",
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            ParentReflectionType.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            false);
         }
 
         public kCura.WinEDDS.ViewFieldInfo GetDocumentFolderNameField()
         {
-            return this.GenerateQueryField(15, 1000196, FieldCategory.FolderName, FieldTypeHelper.FieldType.Varchar, 10,
-                "Document", -1, false, "Folder Name", "FolderName", "Folder Name", "", -1, false, false, "", -1, "",
-                "Name", -1, -1, "", -1, -1, "", false, "Artifact", "Folder", "", "", "", ParentReflectionType.Empty, "",
-                "", "", "", false);
+            return this.GenerateQueryField(
+	            15,
+	            1000196,
+	            FieldCategory.FolderName,
+	            FieldTypeHelper.FieldType.Varchar,
+	            10,
+                "Document",
+	            -1,
+	            false,
+	            "Folder Name",
+	            "FolderName",
+	            "Folder Name",
+	            string.Empty,
+	            -1,
+	            false,
+	            false,
+	            string.Empty,
+	            -1,
+	            string.Empty,
+                "Name",
+	            -1,
+	            -1,
+	            string.Empty,
+	            -1,
+	            -1,
+	            string.Empty,
+	            false,
+	            "Artifact",
+	            "Folder",
+	            string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            ParentReflectionType.Empty,
+	            string.Empty,
+                string.Empty,
+	            string.Empty,
+	            string.Empty,
+	            false);
         }
 
         public IEnumerable<kCura.WinEDDS.ViewFieldInfo> GetAllDocumentFields()
@@ -292,5 +788,52 @@ namespace Relativity.ImportExport.UnitTestFramework
                 this.GetDocumentFolderNameField()
             };
         }
-    }
+
+		private DataRow GenerateRow()
+		{
+			if (this.table == null)
+			{
+				this.table = new DataTable("Test-Data") { Locale = CultureInfo.InvariantCulture };
+				this.table.Columns.Add("FieldArtifactID", typeof(int));
+				this.table.Columns.Add("AvfId", typeof(int));
+				this.table.Columns.Add("FieldCategoryID", typeof(int));
+				this.table.Columns.Add("FieldTypeID", typeof(int));
+				this.table.Columns.Add("ArtifactTypeID", typeof(int));
+				this.table.Columns.Add("ArtifactTypeTableName", typeof(string));
+				this.table.Columns.Add("FieldCodeTypeID", typeof(int));
+				this.table.Columns.Add("FieldIsArtifactBaseField", typeof(bool));
+				this.table.Columns.Add("DisplayName", typeof(string));
+				this.table.Columns.Add("AvfColumnName", typeof(string));
+				this.table.Columns.Add("AvfHeaderName", typeof(string));
+				this.table.Columns.Add("FormatString", typeof(string));
+				this.table.Columns.Add("AssociativeArtifactTypeID", typeof(int));
+				this.table.Columns.Add("IsUnicodeEnabled", typeof(bool));
+				this.table.Columns.Add("AllowHtml", typeof(bool));
+				this.table.Columns.Add("AllowFieldName", typeof(string));
+				this.table.Columns.Add("SourceFieldArtifactID", typeof(int));
+				this.table.Columns.Add("SourceFieldArtifactTypeTableName", typeof(string));
+				this.table.Columns.Add("SourceFieldDisplayName", typeof(string));
+				this.table.Columns.Add("SourceFieldArtifactTypeID", typeof(int));
+				this.table.Columns.Add("ConnectorFieldArtifactID", typeof(int));
+				this.table.Columns.Add("ConnectorFieldName", typeof(string));
+				this.table.Columns.Add("ConnectorFieldCategoryID", typeof(int));
+				this.table.Columns.Add("ParentFileFieldArtifactID", typeof(int));
+				this.table.Columns.Add("ParentFileFieldDisplayName", typeof(string));
+				this.table.Columns.Add("IsLinked", typeof(bool));
+				this.table.Columns.Add("ColumnSource", typeof(string));
+				this.table.Columns.Add("DataSource", typeof(string));
+				this.table.Columns.Add("RelationalTableName", typeof(string));
+				this.table.Columns.Add("RelationalTableColumnName", typeof(string));
+				this.table.Columns.Add("RelationalTableColumnName2", typeof(string));
+				this.table.Columns.Add("ParentReflectionType", typeof(int));
+				this.table.Columns.Add("ReflectedFieldArtifactTypeTableName", typeof(string));
+				this.table.Columns.Add("ReflectedFieldArtifactTypeIdentifierColumnName", typeof(string));
+				this.table.Columns.Add("ReflectedFieldArtifactTypeConnectorFieldName", typeof(string));
+				this.table.Columns.Add("ReflectedConnectorArtifactTypeIdentifierColumnName", typeof(string));
+				this.table.Columns.Add("EnableDataGrid", typeof(bool));
+			}
+
+			return this.table.NewRow();
+		}
+	}
 }

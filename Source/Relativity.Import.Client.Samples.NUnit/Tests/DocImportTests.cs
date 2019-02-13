@@ -20,23 +20,29 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
     [TestFixture]
 	public class DocImportTests : DocImportTestsBase
 	{
-		private static IEnumerable<TestCaseData> TestCases
-		{
-			get
-			{
-				// Ensure that duplicate folders never cause failures.
-				yield return new TestCaseData(SampleDocPdfFileName, null);
-				yield return new TestCaseData(SampleDocWordFileName, string.Empty);
-				yield return new TestCaseData(SampleDocExcelFileName, "\\doc-import-root1");
-				yield return new TestCaseData(SampleDocMsgFileName, "\\doc-import-root1");
-				yield return new TestCaseData(SampleDocHtmFileName, "\\doc-import-root1\\doc-import-root2");
-				yield return new TestCaseData(SampleDocEmfFileName, "\\doc-import-root1\\doc-import-root2");
-				yield return new TestCaseData(SampleDocPptFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3");
-				yield return new TestCaseData(SampleDocPngFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3");
-				yield return new TestCaseData(SampleDocTxtFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3\\doc-import-root4");
-				yield return new TestCaseData(SampleDocWmfFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3\\doc-import-root4");
-			}
-		}
+		/// <summary>
+		/// Gets the test case data.
+		/// </summary>
+		/// <value>
+		/// The <see cref="TestCaseData"/> instances.
+		/// </value>
+		/// <remarks>
+		/// Ensure that duplicate folders never cause failures.
+		/// </remarks>
+		private static IEnumerable<TestCaseData> TestCases =>
+			new List<TestCaseData>
+				{
+					new TestCaseData(SampleDocPdfFileName, null),
+					new TestCaseData(SampleDocWordFileName, string.Empty),
+					new TestCaseData(SampleDocExcelFileName, "\\doc-import-root1"),
+					new TestCaseData(SampleDocMsgFileName, "\\doc-import-root1"),
+					new TestCaseData(SampleDocHtmFileName, "\\doc-import-root1\\doc-import-root2"),
+					new TestCaseData(SampleDocEmfFileName, "\\doc-import-root1\\doc-import-root2"),
+					new TestCaseData(SampleDocPptFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3"),
+					new TestCaseData(SampleDocPngFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3"),
+					new TestCaseData(SampleDocTxtFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3\\doc-import-root4"),
+					new TestCaseData(SampleDocWmfFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3\\doc-import-root4")
+				};
 
 		[Test]
 		[TestCaseSource(nameof(TestCases))]
@@ -81,7 +87,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			Assert.That(actualDocCount, Is.EqualTo(expectedDocCount));
 
 			// Assert - the imported document exists.
-			IList<Relativity.Services.Objects.DataContracts.RelativityObject> docs = 
+			IList<Relativity.Services.Objects.DataContracts.RelativityObject> docs =
 				this.QueryRelativityObjects(this.ArtifactTypeId, new[] { WellKnownFields.ControlNumber });
 			Assert.That(docs, Is.Not.Null);
 			Assert.That(docs.Count, Is.EqualTo(expectedDocCount));

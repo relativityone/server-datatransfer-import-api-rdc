@@ -132,9 +132,9 @@ namespace Relativity.ImportExport.UnitTestFramework
             {
                 CreateRequest request = new CreateRequest
                 {
-                    ObjectType = new ObjectTypeRef {ArtifactTypeID = artifactTypeId},
+                    ObjectType = new ObjectTypeRef { ArtifactTypeID = artifactTypeId },
                     FieldValues = fields.Keys.Select(key => new FieldRefValuePair
-                        {Field = new FieldRef {Name = key}, Value = fields[key]})
+                        { Field = new FieldRef { Name = key }, Value = fields[key] })
                 };
 
                 Services.Objects.DataContracts.CreateResult result
@@ -228,8 +228,10 @@ namespace Relativity.ImportExport.UnitTestFramework
                 ProcessOperationResult result =
                     client.Repositories.Workspace.CreateAsync(templateWorkspaceId, workspace);
                 int workspaceArtifactId = QueryWorkspaceArtifactId(client, result, logger);
-                logger.LogInformation("Created the {WorkspaceName} workspace. Workspace Artifact ID: {WorkspaceId}.",
-                    workspace.Name, workspaceArtifactId);
+                logger.LogInformation(
+	                "Created the {WorkspaceName} workspace. Workspace Artifact ID: {WorkspaceId}.",
+                    workspace.Name,
+	                workspaceArtifactId);
                 return workspaceArtifactId;
             }
         }
@@ -247,7 +249,7 @@ namespace Relativity.ImportExport.UnitTestFramework
             {
                 DeleteRequest request = new DeleteRequest
                 {
-                    Object = new RelativityObjectRef {ArtifactID = artifactId}
+                    Object = new RelativityObjectRef { ArtifactID = artifactId }
                 };
 
                 Services.Objects.DataContracts.DeleteResult result
@@ -303,7 +305,8 @@ namespace Relativity.ImportExport.UnitTestFramework
 
                 QueryResultSet<Folder> resultSet = client.Repositories.Folder.Query(query, 0);
                 List<string> folders = resultSet.Results.Select(x => x.Artifact.Name).ToList();
-                logger.LogInformation("Retrieved {FolderCount} {WorkspaceId} workspace folders.",
+                logger.LogInformation(
+	                "Retrieved {FolderCount} {WorkspaceId} workspace folders.",
                     folders.Count,
                     workspaceId);
                 return folders;
@@ -330,8 +333,7 @@ namespace Relativity.ImportExport.UnitTestFramework
         {
             string basePath = System.IO.Path.GetDirectoryName(typeof(TestHelper).Assembly.Location);
             string sourceFile =
-                System.IO.Path.Combine(System.IO.Path.Combine(System.IO.Path.Combine(basePath, "Resources"), folder),
-                    fileName);
+                System.IO.Path.Combine(System.IO.Path.Combine(System.IO.Path.Combine(basePath, "Resources"), folder), fileName);
             return sourceFile;
         }
 
@@ -532,7 +534,7 @@ namespace Relativity.ImportExport.UnitTestFramework
                     return 0;
                 }
 
-                return (int) result.Objects.Single().FieldValues.Single().Value;
+                return (int)result.Objects.Single().FieldValues.Single().Value;
             }
         }
 
@@ -581,8 +583,7 @@ namespace Relativity.ImportExport.UnitTestFramework
             int productionId)
         {
             using (Relativity.Productions.Services.IProductionManager client =
-                GetProxy<Relativity.Productions.Services.IProductionManager>(relativityRestUrl, relativityServicesUrl,
-                    userName, password))
+                GetProxy<Relativity.Productions.Services.IProductionManager>(relativityRestUrl, relativityServicesUrl, userName, password))
             {
                 Relativity.Productions.Services.Production production = client
                     .ReadSingleAsync(workspaceId, productionId)
@@ -609,7 +610,7 @@ namespace Relativity.ImportExport.UnitTestFramework
             {
                 QueryRequest queryRequest = new QueryRequest
                 {
-                    ObjectType = new ObjectTypeRef {ArtifactTypeID = artifactTypeId}
+                    ObjectType = new ObjectTypeRef { ArtifactTypeID = artifactTypeId }
                 };
 
                 Services.Objects.DataContracts.QueryResult result =
@@ -654,8 +655,8 @@ namespace Relativity.ImportExport.UnitTestFramework
             {
                 QueryRequest queryRequest = new QueryRequest
                 {
-                    Fields = fields.Select(x => new FieldRef {Name = x}),
-                    ObjectType = new ObjectTypeRef {ArtifactTypeID = artifactTypeId}
+                    Fields = fields.Select(x => new FieldRef { Name = x }),
+                    ObjectType = new ObjectTypeRef { ArtifactTypeID = artifactTypeId }
                 };
 
                 Services.Objects.DataContracts.QueryResult result =
@@ -673,7 +674,7 @@ namespace Relativity.ImportExport.UnitTestFramework
             int artifactId)
         {
             kCura.Relativity.Client.DTOs.ObjectType objectType = new kCura.Relativity.Client.DTOs.ObjectType(artifactId)
-                {Fields = FieldValue.AllFields};
+                { Fields = FieldValue.AllFields };
             ResultSet<kCura.Relativity.Client.DTOs.ObjectType> resultSet;
             using (IRSAPIClient client =
                 GetProxy<IRSAPIClient>(relativityRestUrl, relativityServicesUrl, userName, password))
@@ -711,8 +712,8 @@ namespace Relativity.ImportExport.UnitTestFramework
             {
                 ReadRequest readRequest = new ReadRequest
                 {
-                    Fields = fields.Select(x => new FieldRef {Name = x}),
-                    Object = new RelativityObjectRef {ArtifactID = artifactId}
+                    Fields = fields.Select(x => new FieldRef { Name = x }),
+                    Object = new RelativityObjectRef { ArtifactID = artifactId }
                 };
 
                 Services.Objects.DataContracts.ReadResult result =
@@ -725,12 +726,15 @@ namespace Relativity.ImportExport.UnitTestFramework
             Uri relativityRestUrl,
             Uri relativityServicesUrl,
             string username,
-            string password) where T : class, IDisposable
+            string password)
+	        where T : class, IDisposable
         {
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls |
                                                               SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-            ServiceFactorySettings serviceFactorySettings = new ServiceFactorySettings(relativityServicesUrl,
-                relativityRestUrl, new Relativity.Services.ServiceProxy.UsernamePasswordCredentials(username, password))
+            ServiceFactorySettings serviceFactorySettings = new ServiceFactorySettings(
+	            relativityServicesUrl,
+                relativityRestUrl,
+	            new Relativity.Services.ServiceProxy.UsernamePasswordCredentials(username, password))
             {
                 ProtocolVersion = Relativity.Services.Pipeline.WireProtocolVersion.V2
             };
@@ -775,14 +779,16 @@ namespace Relativity.ImportExport.UnitTestFramework
 
             client.ProcessCompleteWithError += (sender, args) =>
             {
-                logger.LogError("The create process completed with errors. Message: {Message}",
+                logger.LogError(
+	                "The create process completed with errors. Message: {Message}",
                     args.ProcessInformation.Message);
                 source.SetResult(args.ProcessInformation);
             };
 
             client.ProcessFailure += (sender, args) =>
             {
-                logger.LogError("The create process failed to complete. Message: {Message}",
+                logger.LogError(
+	                "The create process failed to complete. Message: {Message}",
                     args.ProcessInformation.Message);
                 source.SetResult(args.ProcessInformation);
             };

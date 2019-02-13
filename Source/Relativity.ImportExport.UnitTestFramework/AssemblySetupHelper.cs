@@ -12,9 +12,9 @@ namespace Relativity.ImportExport.UnitTestFramework
 	using System.IO;
 	using System.Net;
 
-	using kCura.WinEDDS.TApi;
-
 	using global::NUnit.Framework;
+
+	using kCura.WinEDDS.TApi;
 
 	using Relativity.Transfer;
 
@@ -59,10 +59,11 @@ namespace Relativity.ImportExport.UnitTestFramework
 				Logger);
 			using (ITransferLog transferLog = new RelativityTransferLog(Logger, false))
 			{
+				IHttpCredential credential =
+					new BasicAuthenticationCredential(TestSettings.RelativityUserName, TestSettings.RelativityPassword);
 				RelativityConnectionInfo connectionInfo = new RelativityConnectionInfo(
 					TestSettings.RelativityUrl,
-					new BasicAuthenticationCredential(TestSettings.RelativityUserName,
-						TestSettings.RelativityPassword),
+					credential,
 					TestSettings.WorkspaceId);
 				WorkspaceService workspaceService = new WorkspaceService(connectionInfo, transferLog);
 				Workspace workspace = workspaceService.GetWorkspaceAsync().GetAwaiter().GetResult();
@@ -102,7 +103,6 @@ namespace Relativity.ImportExport.UnitTestFramework
 						connection.Open();
 						using (SqlCommand command = connection.CreateCommand())
 						{
-
 							command.CommandText = $@"
 IF EXISTS(SELECT name FROM sys.databases WHERE name = '{database}')
 BEGIN

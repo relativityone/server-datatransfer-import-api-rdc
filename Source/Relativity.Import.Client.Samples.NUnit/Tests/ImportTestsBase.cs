@@ -102,34 +102,6 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
         protected const string DefaultDataSourceTableName = "Input Data";
 
         /// <summary>
-        /// The list of all sample document file names available for testing within the output directory.
-        /// </summary>
-        protected static IEnumerable<string> AllSampleDocFileNames = new[]
-        {
-            SampleDocPdfFileName,
-            SampleDocWordFileName,
-            SampleDocExcelFileName,
-            SampleDocMsgFileName,
-            SampleDocHtmFileName,
-            SampleDocEmfFileName,
-            SampleDocPptFileName,
-            SampleDocPngFileName,
-            SampleDocTxtFileName,
-            SampleDocWmfFileName
-        };
-
-        /// <summary>
-        /// The list of all sample image file names available for testing within the output directory.
-        /// </summary>
-        protected static IEnumerable<string> AllSampleImageFileNames = new[]
-        {
-            SampleImage1FileName,
-            SampleImage2FileName,
-            SampleImage3FileName,
-            SampleProductionImage1FileName
-        };
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ImportTestsBase"/> class.
         /// </summary>
         protected ImportTestsBase()
@@ -155,20 +127,56 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			Assert.That(this.Logger, Is.Not.Null);
 		}
 
-        /// <summary>
-        /// Gets the artifact type identifier.
-        /// </summary>
-        /// <value>
-        /// The unique identifier.
-        /// </value>
-        protected int ArtifactTypeId
+		/// <summary>
+		/// Gets the list of all sample document file names available for testing within the output directory.
+		/// </summary>
+		/// <value>
+		/// The file names.
+		/// </value>
+		protected static IReadOnlyList<string> AllSampleDocFileNames =>
+			new List<string>
+				{
+					SampleDocPdfFileName,
+					SampleDocWordFileName,
+					SampleDocExcelFileName,
+					SampleDocMsgFileName,
+					SampleDocHtmFileName,
+					SampleDocEmfFileName,
+					SampleDocPptFileName,
+					SampleDocPngFileName,
+					SampleDocTxtFileName,
+					SampleDocWmfFileName
+				};
+
+		/// <summary>
+		/// Gets the list of all sample image file names available for testing within the output directory.
+		/// </summary>
+		/// <value>
+		/// The file names.
+		/// </value>
+		protected static IReadOnlyList<string> AllSampleImageFileNames =>
+			new List<string>
+				{
+					SampleImage1FileName,
+					SampleImage2FileName,
+					SampleImage3FileName,
+					SampleProductionImage1FileName
+				};
+
+		/// <summary>
+		/// Gets or sets the artifact type identifier.
+		/// </summary>
+		/// <value>
+		/// The unique identifier.
+		/// </value>
+		protected int ArtifactTypeId
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Gets the identifier field unique identifier.
+        /// Gets or sets the identifier field unique identifier.
         /// </summary>
         /// <value>
         /// The unique identifier.
@@ -180,7 +188,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
         }
 
         /// <summary>
-        /// Gets the identifier field name.
+        /// Gets or sets the identifier field name.
         /// </summary>
         /// <value>
         /// The field name.
@@ -203,16 +211,16 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			private set;
 		}
 
-		/// <summary>
-		/// Gets the Relativity logger.
-		/// </summary>
-		/// <value>
-		/// The <see cref="Relativity.Logging.ILog"/> value.
-		/// </value>
-		protected Relativity.Logging.ILog Logger
-		{
-			get;
-		}
+        /// <summary>
+        /// Gets the Relativity logger.
+        /// </summary>
+        /// <value>
+        /// The <see cref="Relativity.Logging.ILog"/> value.
+        /// </value>
+        protected Relativity.Logging.ILog Logger
+        {
+	        get;
+        }
 
 		/// <summary>
 		/// Gets the published errors.
@@ -220,7 +228,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		/// <value>
 		/// The <see cref="IDictionary"/> instances.
 		/// </value>
-		public IList<IDictionary> PublishedErrors
+		protected IList<IDictionary> PublishedErrors
 		{
 			get;
 			private set;
@@ -271,7 +279,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		protected IList<kCura.Relativity.DataReaderClient.FullStatus> PublishedProcessProgress
 		{
 			get;
-			set;
+			private set;
 		}
 
 		/// <summary>
@@ -647,7 +655,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 				Name = fieldName,
 				OpenToAssociations = false,
 				Unicode = false,
-				Width = "",
+				Width = string.Empty,
 				Wrapping = false
 			};
 
@@ -724,7 +732,8 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 				objectTypeName);
 			this.Logger.LogInformation(
 				"Successfully created object type '{ObjectTypeName}' - {ArtifactId}.",
-				objectTypeName, artifactId);
+				objectTypeName,
+				artifactId);
 			return artifactId;
 		}
 
@@ -738,8 +747,10 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 				TestSettings.WorkspaceId,
 				artifactTypeId,
 				fields);
-			this.Logger.LogInformation("Successfully created instance {ArtifactId} of object type {ArtifactTypeId}.",
-				artifactId, artifactTypeId);
+			this.Logger.LogInformation(
+				"Successfully created instance {ArtifactId} of object type {ArtifactTypeId}.",
+				artifactId,
+				artifactTypeId);
 			return artifactId;
 		}
 
@@ -754,8 +765,10 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
                 productionName,
                 batesPrefix,
                 this.Logger);
-            this.Logger.LogInformation("Successfully created production {ProductionName} - {ArtifactId}.",
-                productionName, artifactId);
+            this.Logger.LogInformation(
+	            "Successfully created production {ProductionName} - {ArtifactId}.",
+                productionName,
+	            artifactId);
             return artifactId;
         }
 
@@ -882,7 +895,8 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 				TestSettings.RelativityRestUrl,
 				TestSettings.RelativityServicesUrl,
 				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword, TestSettings.WorkspaceId,
+				TestSettings.RelativityPassword,
+				TestSettings.WorkspaceId,
 				artifactTypeId);
 		}
 
@@ -920,7 +934,8 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 				artifactId);
 		}
 
-		protected Relativity.Services.Objects.DataContracts.RelativityObject ReadRelativityObject(int artifactId,
+		protected Relativity.Services.Objects.DataContracts.RelativityObject ReadRelativityObject(
+			int artifactId,
 			IEnumerable<string> fields)
 		{
 			return TestHelper.ReadRelativityObject(

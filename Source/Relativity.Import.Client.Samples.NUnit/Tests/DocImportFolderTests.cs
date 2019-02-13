@@ -39,12 +39,6 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			this.serverSideFolders = serverSideFolders;
 		}
 
-		protected override void OnSetup()
-		{
-			base.OnSetup();
-			SetWinEddsConfigValue(true, "CreateFoldersInWebAPI", this.serverSideFolders);
-		}
-
 		[Test]
 		[TestCase("00-te/st")]
 		[TestCase("01-te:st")]
@@ -133,6 +127,12 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			// Assert - all max depth folders were created.
 			IEnumerable<string> folders = SplitFolderPath(folderPath);
 			this.AssertDistinctFolders(folders.ToArray());
+		}
+
+		protected override void OnSetup()
+		{
+			base.OnSetup();
+			SetWinEddsConfigValue(true, "CreateFoldersInWebAPI", this.serverSideFolders);
 		}
 	}
 }
