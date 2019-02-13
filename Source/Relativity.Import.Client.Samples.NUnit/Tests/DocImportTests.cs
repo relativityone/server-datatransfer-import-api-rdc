@@ -51,17 +51,17 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 				job,
 				this.ArtifactTypeId,
 				this.IdentifierFieldId,
-				FilePathFieldName,
-				ControlNumberFieldName,
-				FolderFieldName);
+				WellKnownFields.FilePath,
+				WellKnownFields.ControlNumber,
+				WellKnownFields.FolderName);
 			this.ConfigureJobEvents(job);
 
 			// Setup the data source.
 			this.DataSource.Columns.AddRange(new[]
 			{
-				new DataColumn(ControlNumberFieldName, typeof(string)),
-				new DataColumn(FilePathFieldName, typeof(string)),
-				new DataColumn(FolderFieldName, typeof(string))
+				new DataColumn(WellKnownFields.ControlNumber, typeof(string)),
+				new DataColumn(WellKnownFields.FilePath, typeof(string)),
+				new DataColumn(WellKnownFields.FolderName, typeof(string))
 			});
 
 			// Add the file to the data source.
@@ -82,11 +82,11 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 			// Assert - the imported document exists.
 			IList<Relativity.Services.Objects.DataContracts.RelativityObject> docs = 
-				this.QueryRelativityObjects(this.ArtifactTypeId, new[] { ControlNumberFieldName });
+				this.QueryRelativityObjects(this.ArtifactTypeId, new[] { WellKnownFields.ControlNumber });
 			Assert.That(docs, Is.Not.Null);
 			Assert.That(docs.Count, Is.EqualTo(expectedDocCount));
 			Relativity.Services.Objects.DataContracts.RelativityObject importedObj
-				= FindRelativityObject(docs, ControlNumberFieldName, controlNumber);
+				= FindRelativityObject(docs, WellKnownFields.ControlNumber, controlNumber);
 			Assert.That(importedObj, Is.Not.Null);
 
 			// Assert - the workspace doesn't include duplicate folders.

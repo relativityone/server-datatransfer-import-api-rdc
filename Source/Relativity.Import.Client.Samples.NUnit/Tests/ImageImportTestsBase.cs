@@ -23,7 +23,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
             kCura.Relativity.DataReaderClient.ImageSettings settings = job.Settings;
 			settings.ArtifactTypeId = this.ArtifactTypeId;
             settings.AutoNumberImages = false;
-			settings.BatesNumberField = BatesNumberFieldName;
+			settings.BatesNumberField = WellKnownFields.BatesNumber;
             settings.Billable = false;
             settings.CaseArtifactId = TestSettings.WorkspaceId;
 			settings.CopyFilesToDocumentRepository = true;
@@ -34,10 +34,10 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			settings.DocumentIdentifierField = this.IdentifierFieldName;
 			settings.ExtractedTextEncoding = Encoding.Unicode;
             settings.ExtractedTextFieldContainsFilePath = false;
-			settings.FileLocationField = FileLocationFieldName;
+			settings.FileLocationField = WellKnownFields.FileLocation;
             settings.FolderPathSourceFieldName = null;
             settings.IdentityFieldId = this.IdentifierFieldId;
-            settings.ImageFilePathSourceFieldName = FileLocationFieldName;
+            settings.ImageFilePathSourceFieldName = WellKnownFields.FileLocation;
             settings.LoadImportedFullTextFromServer = false;
             settings.MaximumErrorCount = int.MaxValue - 1;
             settings.MoveDocumentsInAppendOverlayMode = false;

@@ -27,36 +27,6 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
         protected const string BatesPrefix = "BATES";
 
         /// <summary>
-        /// The control number field name constant.
-        /// </summary>
-        protected const string ControlNumberFieldName = "control number";
-
-        /// <summary>
-        /// The document artifact type name constant.
-        /// </summary>
-        protected const string DocumentArtifactTypeName = "Document";
-
-        /// <summary>
-        /// The file path field name.
-        /// </summary>
-        protected const string FilePathFieldName = "file path";
-
-        /// <summary>
-        /// The file location field name.
-        /// </summary>
-        protected const string FileLocationFieldName = "file location";
-
-        /// <summary>
-        /// The folder field name.
-        /// </summary>
-        protected const string FolderFieldName = "folder name";
-
-        /// <summary>
-        /// The control number field name.
-        /// </summary>
-        protected const string BatesNumberFieldName = "bates number";
-
-        /// <summary>
 		/// The sample PDF file name that's available for testing within the output directory.
 		/// </summary>
 		protected const string SampleDocPdfFileName = "EDRM-Sample1.pdf";
@@ -125,16 +95,6 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
         /// The sample production image file name.
         /// </summary>
         protected const string SampleProductionImage1FileName = "EDRM-Sample-000001.tif";
-
-        /// <summary>
-        /// The well-known document artifact type identifier constant.
-        /// </summary>
-        protected const int WellKnownDocumentArtifactTypeId = 10;
-
-        /// <summary>
-        /// The well-known control number field identifier constant.
-        /// </summary>
-        protected const int WellKnownControlNumberFieldId = 1003667;
 
         /// <summary>
         /// The default data source table name constant.
@@ -350,9 +310,9 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			this.PublishedMessages = new List<string>();
 			this.PublishedProgressRows = new List<long>();
 			this.PublishedProcessProgress = new List<kCura.Relativity.DataReaderClient.FullStatus>();
-            this.ArtifactTypeId = this.QueryArtifactTypeId(DocumentArtifactTypeName);
-            this.IdentifierFieldId = this.QueryIdentifierFieldId(DocumentArtifactTypeName);
-            this.IdentifierFieldName = this.QueryIdentifierFieldName(DocumentArtifactTypeName);
+            this.ArtifactTypeId = this.QueryArtifactTypeId(WellKnownArtifactTypes.DocumentArtifactTypeName);
+            this.IdentifierFieldId = this.QueryIdentifierFieldId(WellKnownArtifactTypes.DocumentArtifactTypeName);
+            this.IdentifierFieldName = this.QueryIdentifierFieldName(WellKnownArtifactTypes.DocumentArtifactTypeName);
             SetWinEddsConfigValue(false, "CreateFoldersInWebAPI", true);
 			this.OnSetup();
 		}
@@ -572,10 +532,10 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
         {
             ConfigureJobSettings(
                 job,
-                WellKnownDocumentArtifactTypeId,
-                WellKnownControlNumberFieldId,
-                FilePathFieldName,
-                ControlNumberFieldName,
+				WellKnownArtifactTypes.DocumentArtifactTypeId,
+				WellKnownFields.ControlNumberId,
+				WellKnownFields.FilePath,
+                WellKnownFields.ControlNumber,
                 null);
         }
 
@@ -599,7 +559,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
             settings.DisableNativeValidation = false;
             settings.ExtractedTextEncoding = System.Text.Encoding.Unicode;
             settings.ExtractedTextFieldContainsFilePath = false;
-            settings.FileSizeColumn = "NativeFileSize";
+            settings.FileSizeColumn = WellKnownFields.NativeFileSize;
             settings.FileSizeMapped = true;
             settings.FolderPathSourceFieldName = folderFieldName;
             settings.IdentityFieldId = identityFieldId;
@@ -608,9 +568,9 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
             settings.MoveDocumentsInAppendOverlayMode = false;
             settings.NativeFileCopyMode = kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum.CopyFiles;
             settings.NativeFilePathSourceFieldName = nativeFilePathSourceFieldName;
-            settings.OIFileIdColumnName = "OutsideInFileId";
+            settings.OIFileIdColumnName = WellKnownFields.OutsideInFileId;
             settings.OIFileIdMapped = true;
-            settings.OIFileTypeColumnName = "OutsideInFileType";
+            settings.OIFileTypeColumnName = WellKnownFields.OutsideInFileType;
             settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append;
             settings.SelectedIdentifierFieldName = identifierFieldName;
             settings.StartRecordNumber = 0;
@@ -888,7 +848,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
         protected string GetDocumentIdentifierFieldName()
         {
-            return this.QueryIdentifierFieldName(DocumentArtifactTypeName);
+            return this.QueryIdentifierFieldName(WellKnownArtifactTypes.DocumentArtifactTypeName);
         }
 
         protected string QueryIdentifierFieldName(string artifactTypeName)

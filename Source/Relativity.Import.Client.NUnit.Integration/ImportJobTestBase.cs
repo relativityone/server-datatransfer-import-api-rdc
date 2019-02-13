@@ -96,8 +96,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 		{
 			base.OnSetup();
 			this.SourceData = new DataTable {  Locale = CultureInfo.InvariantCulture };
-			this.SourceData.Columns.Add("Control Number", typeof(string));
-			this.SourceData.Columns.Add("File Path", typeof(string));
+			this.SourceData.Columns.Add(WellKnownFields.ControlNumber, typeof(string));
+			this.SourceData.Columns.Add(WellKnownFields.FilePath, typeof(string));
 			this.jobMessages.Clear();
 			this.jobFatalExceptions.Clear();
 			this.errorRows.Clear();
@@ -162,16 +162,16 @@ namespace Relativity.Import.Client.NUnit.Integration
 			this.importJob.Settings.CaseArtifactId = TestSettings.WorkspaceId;
 			this.importJob.Settings.ArtifactTypeId = 10;
 			this.importJob.Settings.ExtractedTextFieldContainsFilePath = false;
-			this.importJob.Settings.NativeFilePathSourceFieldName = "File Path";
-			this.importJob.Settings.SelectedIdentifierFieldName = "Control Number";
+			this.importJob.Settings.NativeFilePathSourceFieldName = WellKnownFields.FilePath;
+			this.importJob.Settings.SelectedIdentifierFieldName = WellKnownFields.ControlNumber;
 			this.importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
 			this.importJob.Settings.OverwriteMode = OverwriteModeEnum.Append;
 			this.importJob.Settings.OIFileIdMapped = true;
-			this.importJob.Settings.OIFileIdColumnName = "OutsideInFileId";
-			this.importJob.Settings.OIFileTypeColumnName = "OutsideInFileType";
+			this.importJob.Settings.OIFileIdColumnName = WellKnownFields.OutsideInFileId;
+			this.importJob.Settings.OIFileTypeColumnName = WellKnownFields.OutsideInFileType;
 			this.importJob.Settings.ExtractedTextEncoding = Encoding.Unicode;
 			this.importJob.Settings.FileSizeMapped = true;
-			this.importJob.Settings.FileSizeColumn = "NativeFileSize";
+			this.importJob.Settings.FileSizeColumn = WellKnownFields.NativeFileSize;
 			this.importJob.SourceData.SourceData = this.SourceData.CreateDataReader();
 			this.importJob.OnError += this.ImportJob_OnError;
 			this.importJob.OnFatalException += this.ImportJob_OnFatalException;

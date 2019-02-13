@@ -31,9 +31,9 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			string file = TestHelper.GetImagesResourceFilePath(fileName);
             this.DataSource.Columns.AddRange(new[]
             {
-                new DataColumn(BatesNumberFieldName, typeof(string)),
-                new DataColumn(ControlNumberFieldName, typeof(string)),
-                new DataColumn(FileLocationFieldName, typeof(string))
+				new DataColumn(WellKnownFields.BatesNumber, typeof(string)),
+                new DataColumn(WellKnownFields.ControlNumber, typeof(string)),
+                new DataColumn(WellKnownFields.FileLocation, typeof(string))
             });
 
 			int initialDocumentCount = this.QueryRelativityObjectCount((int)kCura.Relativity.Client.ArtifactType.Document);
@@ -76,7 +76,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 			// Assert - the imported document exists.
 			IList<Relativity.Services.Objects.DataContracts.RelativityObject> docs =
-				this.QueryRelativityObjects(this.ArtifactTypeId, new[] { ControlNumberFieldName });
+				this.QueryRelativityObjects(this.ArtifactTypeId, new[] { WellKnownFields.ControlNumber });
 			Assert.That(docs, Is.Not.Null);
 			Assert.That(docs.Count, Is.EqualTo(expectedDocCount));
 		}

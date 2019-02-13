@@ -95,17 +95,17 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 				job,
 				this.ArtifactTypeId,
 				this.IdentifierFieldId,
-				FilePathFieldName,
-				ControlNumberFieldName,
-				FolderFieldName);
+				WellKnownFields.FilePath,
+				WellKnownFields.ControlNumber,
+				WellKnownFields.FolderName);
 			this.ConfigureJobEvents(job);
 
 			// Setup the data source.
 			this.DataSource.Columns.AddRange(new[]
 			{
-				new DataColumn(ControlNumberFieldName, typeof(string)),
-				new DataColumn(FilePathFieldName, typeof(string)),
-				new DataColumn(FolderFieldName, typeof(string))
+				new DataColumn(WellKnownFields.ControlNumber, typeof(string)),
+				new DataColumn(WellKnownFields.FilePath, typeof(string)),
+				new DataColumn(WellKnownFields.FolderName, typeof(string))
 			});
 
 			// Add the file to the data source.

@@ -97,8 +97,8 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
             this.DataSource.Columns.AddRange(new[]
             {
                 new DataColumn(this.IdentifierFieldName, typeof(string)),
-                new DataColumn(BatesNumberFieldName, typeof(string)),
-                new DataColumn(FileLocationFieldName, typeof(string))
+                new DataColumn(WellKnownFields.BatesNumber, typeof(string)),
+                new DataColumn(WellKnownFields.FileLocation, typeof(string))
             });
 
             DataRow row;
@@ -106,15 +106,15 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
             {
                 row = this.DataSource.NewRow();
                 row[this.IdentifierFieldName] = FirstDocumentControlNumber;
-                row[BatesNumberFieldName] = $"EDRM-Sample-{i:D6}";
-                row[FileLocationFieldName] = TestHelper.GetImagesResourceFilePath(SampleProductionImage1FileName);
+                row[WellKnownFields.BatesNumber] = $"EDRM-Sample-{i:D6}";
+                row[WellKnownFields.FileLocation] = TestHelper.GetImagesResourceFilePath(SampleProductionImage1FileName);
                 this.DataSource.Rows.Add(row);
             }
 
             row = this.DataSource.NewRow();
             row[this.IdentifierFieldName] = SecondDocumentControlNumber;
-            row[BatesNumberFieldName] = SecondDocumentControlNumber;
-            row[FileLocationFieldName] = TestHelper.GetImagesResourceFilePath(SampleProductionImage1FileName);
+            row[WellKnownFields.BatesNumber] = SecondDocumentControlNumber;
+            row[WellKnownFields.FileLocation] = TestHelper.GetImagesResourceFilePath(SampleProductionImage1FileName);
             this.DataSource.Rows.Add(row);
             job.SourceData.SourceData = this.DataSource;
             job.Execute();
