@@ -44,6 +44,7 @@ Namespace Relativity.Import.Client.NUnit
 			Assert.Throws(Of System.ArgumentNullException)(
 				Sub()
 					Dim writer As OutputFileWriter = New OutputFileWriter(Nothing)
+					Assert.That(writer, [Is].Not.Null)
 				End Sub)
 		End Sub
 
