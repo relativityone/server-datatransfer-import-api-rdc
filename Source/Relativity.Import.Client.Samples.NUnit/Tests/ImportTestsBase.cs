@@ -360,7 +360,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		[TearDown]
 		public void Teardown()
 		{
-			DataSource?.Dispose();
+			this.DataSource?.Dispose();
 			SetWinEddsConfigValue(false, "CreateFoldersInWebAPI", true);
 			this.OnTearDown();
 		}

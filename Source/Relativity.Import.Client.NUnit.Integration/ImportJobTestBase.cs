@@ -104,8 +104,6 @@ namespace Relativity.Import.Client.NUnit.Integration
 			this.progressCompletedRows.Clear();
 			this.importJob = null;
 			this.completedJobReport = null;
-			this.TempDirectory = new TempDirectory();
-			this.TempDirectory.Create();
 		}
 
 		/// <summary>

@@ -445,7 +445,7 @@ namespace Relativity.ImportExport.UnitTestFramework
         /// </returns>
         public static string NextTextFile(int minLength, int maxLength, string directory, bool readOnly)
         {
-            var fileName = "Tapi_TestFile_" + DateTime.Now.Ticks + "_" + Guid.NewGuid().ToString("D");
+            var fileName = "IXApi_TestFile_" + DateTime.Now.Ticks + "_" + Guid.NewGuid().ToString("D");
             var file = NextTextFile(minLength, maxLength, directory, fileName);
             if (!readOnly)
             {

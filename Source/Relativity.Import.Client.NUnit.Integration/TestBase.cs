@@ -35,7 +35,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		protected TempDirectory TempDirectory
 		{
 			get;
-			set;
+			private set;
 		}
 
 		/// <summary>
@@ -47,7 +47,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		protected DateTime Timestamp
 		{
 			get;
-			set;
+			private set;
 		}
 
 		/// <summary>
@@ -60,7 +60,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
 			this.Timestamp = DateTime.Now;
-			this.TempDirectory = new TempDirectory();
+			this.TempDirectory = new TempDirectory { ClearReadOnlyAttributes = true };
 			this.TempDirectory.Create();
 			this.OnSetup();
 		}
@@ -72,7 +72,23 @@ namespace Relativity.Import.Client.NUnit.Integration
 		public void TearDown()
 		{
 			this.OnPreTearDown();
-			this.TempDirectory?.Dispose();
+			if (this.TempDirectory != null)
+			{
+				try
+				{
+					string[] files = System.IO.Directory.GetFiles(this.TempDirectory.Directory, "*");
+					foreach (var file in files)
+					{
+						RestoreFileFullPermissions(file);
+					}
+				}
+				finally
+				{
+					this.TempDirectory?.Dispose();
+					this.TempDirectory = null;
+				}
+			}
+			
 			this.OnTearDown();
 		}
 
@@ -94,6 +110,32 @@ namespace Relativity.Import.Client.NUnit.Integration
 					sid,
 					FileSystemRights.FullControl,
 					grant ? AccessControlType.Allow : AccessControlType.Deny));
+			File.SetAccessControl(path, accessControl);
+		}
+
+		/// <summary>
+		/// Restores the file full permissions.
+		/// </summary>
+		/// <param name="path">
+		/// The path.
+		/// </param>
+		protected static void RestoreFileFullPermissions(string path)
+		{
+			var accessControl = File.GetAccessControl(path);
+			var sid = new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null);
+			foreach (FileSystemAccessRule rule in accessControl.GetAccessRules(true, true, typeof(System.Security.Principal.NTAccount)))
+			{
+				if (rule.AccessControlType == AccessControlType.Deny)
+				{
+					accessControl.RemoveAccessRule(rule);
+				}
+			}
+
+			accessControl.AddAccessRule(
+				new FileSystemAccessRule(
+					sid,
+					FileSystemRights.FullControl,
+					AccessControlType.Allow));
 			File.SetAccessControl(path, accessControl);
 		}
 

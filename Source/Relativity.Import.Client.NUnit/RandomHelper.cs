@@ -44,7 +44,7 @@ namespace Relativity.Import.Client.NUnit
         /// </returns>
         public static string NextBinaryFile(long minLength, long maxLength, string directory)
         {
-            var fileName = "Tapi_TestFile_" + DateTime.Now.Ticks + "_" + Guid.NewGuid().ToString("D");
+            var fileName = "IXApi_TestFile_" + DateTime.Now.Ticks + "_" + Guid.NewGuid().ToString("D");
             return NextBinaryFile(minLength, maxLength, directory, fileName);
         }
 

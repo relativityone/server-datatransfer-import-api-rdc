@@ -63,17 +63,5 @@ namespace Relativity.Import.Client.NUnit.Integration
 			this.ThenTheImportProgressEventsCountIsNonZero();
 			this.ThenTheImportMessageCountIsNonZero();
 		}
-
-		/// <inheritdoc />
-		protected override void OnPreTearDown()
-		{
-			foreach (DataRow file in this.SourceData.Rows)
-			{
-				var filePath = file[1].ToString();
-				ImportJobTestBase.ChangeFileFullPermissions(filePath, true);
-			}
-
-			base.OnPreTearDown();
-		}
 	}
 }
