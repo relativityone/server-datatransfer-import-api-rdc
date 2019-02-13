@@ -50,6 +50,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblySetupHelper.cs" />
+    <Compile Include="WellKnownArtifactTypes.cs" />
+    <Compile Include="WellKnownFields.cs" />
     <Compile Include="TestHelper.cs" />
     <Compile Include="TestSettings.cs" />
     <Content Include="LICENSE.txt">
