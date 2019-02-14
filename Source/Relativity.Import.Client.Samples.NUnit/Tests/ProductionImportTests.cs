@@ -43,6 +43,8 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
         private const int TotalImagesForFirstDocument = 1001;
 
         [Test]
+        [Category(TestCategories.ImportProduction)]
+        [Category(TestCategories.Integration)]
 		public void ShouldImportTheProductionImages()
 		{
             // Arrange

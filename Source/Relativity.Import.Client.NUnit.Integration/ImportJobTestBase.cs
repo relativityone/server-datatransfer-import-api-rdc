@@ -7,14 +7,13 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-using System.Globalization;
-
 namespace Relativity.Import.Client.NUnit.Integration
 {
 	using System;
 	using System.Collections;
 	using System.Data;
 	using System.Diagnostics;
+	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Text;
@@ -25,7 +24,6 @@ namespace Relativity.Import.Client.NUnit.Integration
 	using global::NUnit.Framework;
 
 	using Relativity.ImportExport.UnitTestFramework;
-	using Relativity.Transfer;
 
 	/// <summary>
 	/// Represents an abstract load-file base class.

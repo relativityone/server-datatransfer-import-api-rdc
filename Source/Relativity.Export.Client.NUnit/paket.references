@@ -2,5 +2,6 @@ castle.core
 castle.windsor
 moq
 nbuilder
+newtonsoft.json
 nunit
 relativity.importexport

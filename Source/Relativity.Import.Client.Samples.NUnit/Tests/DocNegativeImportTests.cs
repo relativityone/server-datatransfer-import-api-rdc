@@ -17,6 +17,8 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 	public class DocNegativeImportTests : DocImportTestsBase
 	{
 		[Test]
+		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
 		public void ShouldNotImportWhenTheFolderExceedsTheMaxLength()
 		{
 			// Arrange

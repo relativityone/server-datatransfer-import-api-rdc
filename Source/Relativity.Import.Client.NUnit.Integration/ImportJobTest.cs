@@ -143,6 +143,9 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// The transfer client identifier.
 		/// </param>
 		[Test]
+		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
+		[Category(TestCategories.TransferApi)]
 		[TestCase("00000000-0000-0000-0000-000000000000")]
 		[TestCase(TransferClientConstants.FileShareClientId)]
 		[TestCase(TransferClientConstants.HttpClientId)]
@@ -184,6 +187,9 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// Specify whether to disable validation for file not found.
 		/// </param>
 		[Test]
+		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
+		[Category(TestCategories.TransferApi)]
 		[TestCase(TransferClientConstants.FileShareClientId, false)]
 		[TestCase(TransferClientConstants.FileShareClientId, true)]
 		[TestCase(TransferClientConstants.HttpClientId, false)]

@@ -25,6 +25,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 	public class ExporterTests : ExporterTestBase
 	{
 		[Test]
+		[Category(TestCategories.Export)]
+		[Category(TestCategories.Integration)]
 		public async Task ShouldExportAsync()
 		{
 			this.GivenTheExportType(ExportFile.ExportType.ParentSearch);

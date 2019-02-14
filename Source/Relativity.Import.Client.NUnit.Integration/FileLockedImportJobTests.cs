@@ -9,8 +9,6 @@
 
 namespace Relativity.Import.Client.NUnit.Integration
 {
-	using System.Data;
-
 	using kCura.WinEDDS.TApi;
 
 	using global::NUnit.Framework;
@@ -36,6 +34,9 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// Specify whether to disable native validation.
 		/// </param>
 		[Test]
+		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
+		[Category(TestCategories.TransferApi)]
 		[TestCase(TapiClient.Direct, false, true)]
 		[TestCase(TapiClient.Direct, true, true)]
 		[TestCase(TapiClient.Web, false, true)]

@@ -38,6 +38,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// Tests the download bridge.
 		/// </summary>
 		[Test]
+		[Category(TestCategories.Integration)]
+		[Category(TestCategories.TransferApi)]
 		public void ShouldDownloadTheFiles()
 		{
 			this.GivenTheMaxFilesPerFolder(10);

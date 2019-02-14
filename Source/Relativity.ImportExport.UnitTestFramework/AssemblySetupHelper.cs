@@ -7,12 +7,11 @@
 namespace Relativity.ImportExport.UnitTestFramework
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Data;
 	using System.Data.SqlClient;
 	using System.IO;
 	using System.Net;
-
-	using global::NUnit.Framework;
 
 	using kCura.WinEDDS.TApi;
 
@@ -23,6 +22,12 @@ namespace Relativity.ImportExport.UnitTestFramework
 	/// </summary>
 	public static class AssemblySetupHelper
 	{
+		/// <summary>
+		/// Gets the Relativity logging instance.
+		/// </summary>
+		/// <value>
+		/// The <see cref="Relativity.Logging.ILog"/> instance.
+		/// </value>
 		public static Relativity.Logging.ILog Logger
 		{
 			get;
@@ -46,10 +51,17 @@ namespace Relativity.ImportExport.UnitTestFramework
 			TestSettings.SqlDropWorkspaceDatabase = bool.Parse(GetConfigurationStringValue("SqlDropWorkspaceDatabase"));
 			TestSettings.SkipAsperaModeTests = bool.Parse(GetConfigurationStringValue("SkipAsperaModeTests"));
 			TestSettings.SkipDirectModeTests = bool.Parse(GetConfigurationStringValue("SkipDirectModeTests"));
+			TestSettings.SkipIntegrationTests = bool.Parse(GetConfigurationStringValue("SkipIntegrationTests"));
 			TestSettings.WorkspaceTemplate = GetConfigurationStringValue("WorkspaceTemplate");
 
 			// Note: don't create the logger until all parameters have been retrieved.
 			SetupLogger();
+			if (TestSettings.SkipIntegrationTests)
+			{
+				Console.WriteLine("Skipping test workspace creation.");
+				return;
+			}
+
 			TestSettings.WorkspaceId = TestHelper.CreateTestWorkspace(
 				TestSettings.RelativityRestUrl,
 				TestSettings.RelativityServicesUrl,
@@ -76,6 +88,12 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// </summary>
 		public static void TearDown()
 		{
+			if (TestSettings.SkipIntegrationTests)
+			{
+				Console.WriteLine("Skipping test workspace teardown.");
+				return;
+			}
+
 			TestHelper.DeleteTestWorkspace(
 				TestSettings.RelativityRestUrl,
 				TestSettings.RelativityServicesUrl,
@@ -131,10 +149,22 @@ END";
 		private static string GetConfigurationStringValue(string key)
 		{
 			string envVariable = $"IAPI_INTEGRATION_{key.ToUpperInvariant()}";
-			string envValue = Environment.GetEnvironmentVariable(envVariable, EnvironmentVariableTarget.User);
-			if (!string.IsNullOrEmpty(envValue))
+
+			// Note: these targets are intentionally ordered to favor process vars!
+			IEnumerable<EnvironmentVariableTarget> targets = new[]
+				{
+				 EnvironmentVariableTarget.Process,
+				 EnvironmentVariableTarget.User,
+				 EnvironmentVariableTarget.Machine
+				};
+
+			foreach (EnvironmentVariableTarget target in targets)
 			{
-				return envValue;
+				string envValue = Environment.GetEnvironmentVariable(envVariable, target);
+				if (!string.IsNullOrEmpty(envValue))
+				{
+					return envValue;
+				}
 			}
 
 			string value = System.Configuration.ConfigurationManager.AppSettings.Get(key);
@@ -143,7 +173,7 @@ END";
 				return value;
 			}
 
-			throw new AssertionException($"The '{key}' app.config setting or '{envVariable}' environment variable is not specified.");
+			throw new InvalidOperationException($"The '{key}' app.config setting or '{envVariable}' environment variable is not specified.");
 		}
 
 		private static void SetupLogger()

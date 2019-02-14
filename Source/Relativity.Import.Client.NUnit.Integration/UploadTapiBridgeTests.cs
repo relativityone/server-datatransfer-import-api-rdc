@@ -36,6 +36,9 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// Tests the upload bridge.
 		/// </summary>
 		[Test]
+		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
+		[Category(TestCategories.TransferApi)]
 		public void ShouldUploadTheFiles()
 		{
 			this.GivenTheMaxFilesPerFolder(10);

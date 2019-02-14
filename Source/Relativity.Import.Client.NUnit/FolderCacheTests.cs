@@ -22,6 +22,8 @@ namespace Relativity.Import.Client.NUnit
 
 	using Moq;
 
+	using Relativity.ImportExport.UnitTestFramework;
+
 	/// <summary>
 	/// Represents <see cref="FolderCache"/> tests.
 	/// </summary>
@@ -108,7 +110,7 @@ namespace Relativity.Import.Client.NUnit
 		/// An exception is thrown when the <see cref="Logging.ILog"/> is null.
 		/// </summary>
 		[Test]
-		[Category(TransferTestCategories.UnitTest)]
+		[Category(TestCategories.Folder)]
 		public void ShouldThrowWhenTheLoggerIsNull()
 		{
 			// Arrange
@@ -131,7 +133,7 @@ namespace Relativity.Import.Client.NUnit
 		/// An exception is thrown when the <see cref="IHierarchicArtifactManager"/> is null.
 		/// </summary>
 		[Test]
-		[Category(TransferTestCategories.UnitTest)]
+		[Category(TestCategories.Folder)]
 		public void ShouldThrowWhenTheHierarchicalArtifactManagerIsNull()
 		{
 			// Arrange
@@ -154,7 +156,7 @@ namespace Relativity.Import.Client.NUnit
 		/// An exception is thrown when the root folder artifact identifier is out of range.
 		/// </summary>
 		[Test]
-		[Category(TransferTestCategories.UnitTest)]
+		[Category(TestCategories.Folder)]
 		[TestCase(0)]
 		[TestCase(-1)]
 		[TestCase(-1000)]
@@ -193,7 +195,7 @@ namespace Relativity.Import.Client.NUnit
 		[TestCase(true, false, false)]
 		[TestCase(false, true, false)]
 		[TestCase(false, false, true)]
-		[Category(TransferTestCategories.UnitTest)]
+		[Category(TestCategories.Folder)]
 		public void ShouldRethrowFatalExceptions(bool create, bool read, bool retrieve)
 		{
 			int skipped = 0;
@@ -261,7 +263,7 @@ namespace Relativity.Import.Client.NUnit
 		/// Verifies that server-side read folder errors throw <see cref="WebApiException"/>.
 		/// </summary>
 		[Test]
-		[Category(TransferTestCategories.UnitTest)]
+		[Category(TestCategories.Folder)]
 		public void ShouldThrowWhenReadingFoldersFails()
 		{
 			// Arrange
@@ -294,7 +296,7 @@ namespace Relativity.Import.Client.NUnit
 		/// Verifies that server-side create folder errors throw <see cref="WebApiException"/>.
 		/// </summary>
 		[Test]
-		[Category(TransferTestCategories.UnitTest)]
+		[Category(TestCategories.Folder)]
 		public void ShouldThrowWhenCreatingFoldersFails()
 		{
 			// Arrange
@@ -326,7 +328,7 @@ namespace Relativity.Import.Client.NUnit
 		/// An exception is thrown when the workspace artifact identifier is out of range.
 		/// </summary>
 		[Test]
-		[Category(TransferTestCategories.UnitTest)]
+		[Category(TestCategories.Folder)]
 		[TestCase(0)]
 		[TestCase(-1)]
 		[TestCase(-1000)]
@@ -355,7 +357,7 @@ namespace Relativity.Import.Client.NUnit
 		/// Verifies that non-existent folders are created using the mock folder manager.
 		/// </summary>
 		[Test]
-		[Category(TransferTestCategories.UnitTest)]
+		[Category(TestCategories.Folder)]
 		[TestCaseSource(nameof(CreateFolderTestCases))]
 		public void ShouldCreateTheFolder(string folderPath, int expectedCacheCount, bool clearRows)
 		{
@@ -399,7 +401,7 @@ namespace Relativity.Import.Client.NUnit
 		/// Verifies that each specified path returns the expected folder artifact identifier from the mocked dataset.
 		/// </summary>
 		[Test]
-		[Category(TransferTestCategories.UnitTest)]
+		[Category(TestCategories.Folder)]
 		[TestCase("\\", 100000)]
 		[TestCase("\\1", 100001)]
 		[TestCase("\\1\\2", 100002)]

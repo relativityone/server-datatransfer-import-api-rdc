@@ -1,4 +1,5 @@
 moq
 nbuilder
+newtonsoft.json
 nunit
 relativity.importexport

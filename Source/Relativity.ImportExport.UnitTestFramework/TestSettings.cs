@@ -180,6 +180,18 @@ namespace Relativity.ImportExport.UnitTestFramework
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to skip integration tests.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to skip the integration tests; otherwise, <see langword="false" />.
+		/// </value>
+		public static bool SkipIntegrationTests
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets the test workspace artifact identifier.
 		/// </summary>
 		/// <value>

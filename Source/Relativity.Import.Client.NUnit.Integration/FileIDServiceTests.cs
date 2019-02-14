@@ -13,6 +13,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 
 	using global::NUnit.Framework;
 
+	using Relativity.ImportExport.UnitTestFramework;
+
 	/// <summary>
 	/// Represents <see cref="FileIDService"/> tests.
 	/// </summary>
@@ -52,6 +54,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		[Test]
+		[Category(TestCategories.OutsideIn)]
+		[Category(TestCategories.Integration)]
 		public void ItShouldIdentifyTheFile()
 		{
 			for (int i = 0; i < 2; i++)
@@ -68,6 +72,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		[Test]
+		[Category(TestCategories.OutsideIn)]
+		[Category(TestCategories.Integration)]
 		public void ItShouldThrowWhenTheFileDoesNotExist()
 		{
 			string tempDirectory = System.IO.Path.GetTempPath();
@@ -78,6 +84,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		[Test]
+		[Category(TestCategories.OutsideIn)]
+		[Category(TestCategories.Integration)]
 		public void ItShouldThrowWhenTheFileIsLocked()
 		{
 			using (System.IO.FileStream stream =
@@ -92,6 +100,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		[Test]
+		[Category(TestCategories.OutsideIn)]
+		[Category(TestCategories.Integration)]
 		public void ItShouldGetTheConfigInfo()
 		{
 			for (int i = 0; i < 5; i++)

@@ -34,6 +34,9 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// Specify whether to disable native validation.
 		/// </param>
 		[Test]
+		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
+		[Category(TestCategories.TransferApi)]
 		[TestCase(TapiClient.Direct, true, true)]
 		[TestCase(TapiClient.Web, true, true)]
 		[TestCase(TapiClient.Aspera, true, true)]

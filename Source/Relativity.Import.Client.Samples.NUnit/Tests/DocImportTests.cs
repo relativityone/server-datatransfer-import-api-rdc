@@ -45,6 +45,8 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 				};
 
 		[Test]
+		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
 		[TestCaseSource(nameof(TestCases))]
 		public void ShouldImportTheDoc(string fileName, string folderPath)
 		{

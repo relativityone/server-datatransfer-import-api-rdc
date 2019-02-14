@@ -20,6 +20,8 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 	public class ImageImportTests : ImageImportTestsBase
 	{
         [Test]
+        [Category(TestCategories.ImportImage)]
+        [Category(TestCategories.Integration)]
 		[TestCaseSource(nameof(AllSampleImageFileNames))]
 		public void ShouldImportTheImage(string fileName)
 		{

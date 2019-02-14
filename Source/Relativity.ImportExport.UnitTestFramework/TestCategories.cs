@@ -1,0 +1,72 @@
+﻿// ----------------------------------------------------------------------------
+// <copyright file="TestCategories.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
+
+namespace Relativity.ImportExport.UnitTestFramework
+{
+    using System.Diagnostics.CodeAnalysis;
+
+    /// <summary>
+    /// Represents all import and export API test categories.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public static class TestCategories
+    {
+		/// <summary>
+		/// The export test category.
+		/// </summary>
+		public const string Export = "Export";
+
+		/// <summary>
+		/// The file system test category.
+		/// </summary>
+		public const string FileSystem = "FileSystem";
+
+		/// <summary>
+		/// The folder test category.
+		/// </summary>
+		public const string Folder = "Folder";
+
+		/// <summary>
+		/// The import document test category.
+		/// </summary>
+		public const string ImportDoc = "ImportDoc";
+
+		/// <summary>
+		/// The import image test category.
+		/// </summary>
+		public const string ImportImage = "ImportImage";
+
+		/// <summary>
+		/// The import object test category.
+		/// </summary>
+		public const string ImportObject = "ImportObject";
+
+		/// <summary>
+		/// The import production test category.
+		/// </summary>
+		public const string ImportProduction = "ImportProduction";
+
+		/// <summary>
+		/// The integration test category.
+		/// </summary>
+		public const string Integration = "Integration";
+
+		/// <summary>
+		/// The Outside In test category.
+		/// </summary>
+		public const string OutsideIn = "OutsideIn";
+
+		/// <summary>
+		/// The separate domain test category.
+		/// </summary>
+		public const string SeparateDomain = "SeparateDomain";
+
+		/// <summary>
+		/// The transfer API test category.
+		/// </summary>
+		public const string TransferApi = "TransferApi";
+	}
+}

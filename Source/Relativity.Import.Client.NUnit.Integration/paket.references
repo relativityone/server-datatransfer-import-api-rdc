@@ -1,4 +1,5 @@
 castle.windsor
 moq
+newtonsoft.json
 nunit
 relativity.importexport

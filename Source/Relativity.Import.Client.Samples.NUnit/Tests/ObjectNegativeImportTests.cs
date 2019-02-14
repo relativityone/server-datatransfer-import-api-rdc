@@ -32,6 +32,8 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 				};
 
 		[Test]
+		[Category(TestCategories.ImportObject)]
+		[Category(TestCategories.Integration)]
 		[TestCaseSource(nameof(TestCases))]
 		public void ShouldNotImportDuplicateSingleObjectFields(
 			string name,
@@ -78,6 +80,8 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		}
 
 		[Test]
+		[Category(TestCategories.ImportObject)]
+		[Category(TestCategories.Integration)]
 		[TestCaseSource(nameof(TestCases))]
 		public void ShouldNotImportDuplicateMultiObjectFields(
 			string name,
