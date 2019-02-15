@@ -121,7 +121,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			List<DocImportRecord> records = AllSampleDocFileNames.Select(fileName => new DocImportRecord
 			{
 				ControlNumber = GenerateControlNumber(),
-				File = TestHelper.GetDocsResourceFilePath(fileName),
+				File = ResourceFileHelper.GetDocsResourceFilePath(fileName),
 				Folder = folderPath
 			}).ToList();
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = this.ArrangeImportJob(records);

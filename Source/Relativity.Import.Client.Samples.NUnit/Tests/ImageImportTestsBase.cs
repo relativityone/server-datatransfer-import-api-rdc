@@ -25,7 +25,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
             settings.AutoNumberImages = false;
 			settings.BatesNumberField = WellKnownFields.BatesNumber;
             settings.Billable = false;
-            settings.CaseArtifactId = TestSettings.WorkspaceId;
+            settings.CaseArtifactId = this.TestParameters.WorkspaceId;
 			settings.CopyFilesToDocumentRepository = true;
             settings.DisableExtractedTextEncodingCheck = true;
             settings.DisableImageLocationValidation = false;
@@ -47,9 +47,9 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			settings.SelectedIdentifierFieldName = this.IdentifierFieldName;
             settings.StartRecordNumber = 0;
 
-            // Note: production related settings are automatically set by ImportAPI.
-            ////settings.ForProduction = true;
-            ////settings.ProductionArtifactID = 1;
+            // Note: production related parameters are automatically set by ImportAPI.
+            ////parameters.ForProduction = true;
+            ////parameters.ProductionArtifactID = 1;
         }
 
 		protected void ConfigureJobEvents(kCura.Relativity.DataReaderClient.ImageImportBulkArtifactJob job)

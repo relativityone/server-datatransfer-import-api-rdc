@@ -186,7 +186,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 
 			for (var i = 0; i < this.fileCount; i++)
 			{
-				var file = TestHelper.NextTextFile(
+				var file = RandomHelper.NextTextFile(
 					MinTestFileLength,
 					MaxTestFileLength,
 					directory,

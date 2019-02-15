@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.NUnit
+namespace Relativity.ImportExport.UnitTestFramework
 {
     using System;
     using System.Collections.Generic;
@@ -13,7 +13,7 @@ namespace Relativity.Import.Client.NUnit
     using FizzWare.NBuilder;
 
     /// <summary>
-    /// Represents static helper methods to create random test data.
+    /// Represents static helper methods to create random test files and data.
     /// </summary>
     public static class RandomHelper
     {
@@ -83,21 +83,74 @@ namespace Relativity.Import.Client.NUnit
         }
 
         /// <summary>
-        /// Creates a new random text file whose file size is between <paramref name="minLength"/> and <paramref name="maxLength"/>.
+        /// Gets the next random integer value between <paramref name="minValue"/> and <paramref name="maxValue"/>.
         /// </summary>
-        /// <param name="minLength">
-        /// The minimum file length.
+        /// <param name="minValue">
+        /// The minimum value.
         /// </param>
-        /// <param name="maxLength">
-        /// The maximum file length.
-        /// </param>
-        /// <param name="directory">
-        /// The directory to create the file.
+        /// <param name="maxValue">
+        /// The maximum value.
         /// </param>
         /// <returns>
-        /// The file.
+        /// The random integer value.
         /// </returns>
-        public static string NextTextFile(int minLength, int maxLength, string directory)
+        public static int NextInt(int minValue, int maxValue)
+        {
+	        return RandomInstance.Next(minValue, maxValue);
+        }
+
+        /// <summary>
+        /// Gets the next random double value between <paramref name="minValue"/> and <paramref name="maxValue"/>.
+        /// </summary>
+        /// <param name="minValue">
+        /// The minimum value.
+        /// </param>
+        /// <param name="maxValue">
+        /// The maximum value.
+        /// </param>
+        /// <returns>
+        /// The random integer value.
+        /// </returns>
+        public static double NextDouble(int minValue, int maxValue)
+        {
+	        double value = NextInt(minValue, maxValue);
+	        return value;
+        }
+
+		/// <summary>
+		/// Gets the next random double value between <paramref name="minValue"/> and <paramref name="maxValue"/>.
+		/// </summary>
+		/// <param name="minValue">
+		/// The minimum value.
+		/// </param>
+		/// <param name="maxValue">
+		/// The maximum value.
+		/// </param>
+		/// <returns>
+		/// The random integer value.
+		/// </returns>
+		public static decimal NextDecimal(int minValue, int maxValue)
+        {
+	        decimal value = NextInt(minValue, maxValue);
+	        return value;
+        }
+
+		/// <summary>
+		/// Creates a new random text file whose file size is between <paramref name="minLength"/> and <paramref name="maxLength"/>.
+		/// </summary>
+		/// <param name="minLength">
+		/// The minimum file length.
+		/// </param>
+		/// <param name="maxLength">
+		/// The maximum file length.
+		/// </param>
+		/// <param name="directory">
+		/// The directory to create the file.
+		/// </param>
+		/// <returns>
+		/// The file.
+		/// </returns>
+		public static string NextTextFile(int minLength, int maxLength, string directory)
         {
             return NextTextFile(minLength, maxLength, directory, false);
         }

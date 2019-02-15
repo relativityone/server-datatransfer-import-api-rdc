@@ -151,6 +151,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		public void OneTimeSetUp()
 		{
 			// Create the object types in reverse order.
+			this.AssignTestSettings();
 			objectTypeUniqueSuffix++;
 			this.CreateTransferDetailObjectType();
 			this.CreateTransferDataSourceObjectType();
@@ -168,7 +169,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			settings.ArtifactTypeId = artifactTypeId;
 			settings.Billable = false;
 			settings.BulkLoadFileFieldDelimiter = ";";
-			settings.CaseArtifactId = TestSettings.WorkspaceId;
+			settings.CaseArtifactId = this.TestParameters.WorkspaceId;
 			settings.CopyFilesToDocumentRepository = false;
 			settings.DisableControlNumberCompatibilityMode = true;
 			settings.DisableExtractedTextEncodingCheck = true;
@@ -229,8 +230,8 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			Dictionary<string, object> transferDetailFieldValues = new Dictionary<string, object>
 			{
 				{ TransferDetailFieldName, name },
-				{ TransferDetailFieldTransferredBytes, TestHelper.NextDecimal(100000, 1000000) },
-				{ TransferDetailFieldTransferredFiles, TestHelper.NextDecimal(1000, 500000) },
+				{ TransferDetailFieldTransferredBytes, RandomHelper.NextDecimal(100000, 1000000) },
+				{ TransferDetailFieldTransferredFiles, RandomHelper.NextDecimal(1000, 500000) },
 				{ TransferDetailFieldStartDate, DateTime.Now },
 				{ TransferDetailFieldEndDate, DateTime.Now.AddDays(3) },
 			};
@@ -247,8 +248,8 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			Dictionary<string, object> transferDataSourceFieldValues = new Dictionary<string, object>
 			{
 				{ TransferDataSourceFieldName, name },
-				{ TransferDataSourceFieldNumber, TestHelper.NextDecimal(1, 100) },
-				{ TransferDataSourceFieldConnectionString, TestHelper.NextString(50, 450) }
+				{ TransferDataSourceFieldNumber, RandomHelper.NextDecimal(1, 100) },
+				{ TransferDataSourceFieldConnectionString, RandomHelper.NextString(50, 450) }
 			};
 
 			int artifactId = this.CreateObjectTypeInstance(
@@ -260,7 +261,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 		protected kCura.Relativity.DataReaderClient.ImportBulkArtifactJob CreateImportBulkArtifactJob()
 		{
-			kCura.Relativity.ImportAPI.ImportAPI importApi = CreateImportApiObject();
+			kCura.Relativity.ImportAPI.ImportAPI importApi = this.CreateImportApiObject();
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job =
 				importApi.NewObjectImportJob(this.TransferArtifactTypeId);
 			this.ConfigureJobEvents(job);

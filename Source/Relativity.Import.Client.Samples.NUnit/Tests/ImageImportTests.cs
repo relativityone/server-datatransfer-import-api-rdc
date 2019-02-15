@@ -26,11 +26,11 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		public void ShouldImportTheImage(string fileName)
 		{
 			// Arrange
-			kCura.Relativity.ImportAPI.ImportAPI importApi = CreateImportApiObject();
+			kCura.Relativity.ImportAPI.ImportAPI importApi = this.CreateImportApiObject();
 			kCura.Relativity.DataReaderClient.ImageImportBulkArtifactJob job = importApi.NewImageImportJob();
             this.ConfigureJobSettings(job);
             this.ConfigureJobEvents(job);
-			string file = TestHelper.GetImagesResourceFilePath(fileName);
+			string file = ResourceFileHelper.GetImagesResourceFilePath(fileName);
             this.DataSource.Columns.AddRange(new[]
             {
 				new DataColumn(WellKnownFields.BatesNumber, typeof(string)),

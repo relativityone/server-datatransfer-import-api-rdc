@@ -57,10 +57,10 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = this.CreateImportBulkArtifactJob();
 			int initialObjectCount = this.QueryRelativityObjectCount(this.TransferArtifactTypeId);
-			string description = TestHelper.NextString(50, 450);
-			decimal requestBytes = TestHelper.NextDecimal(10, 1000000);
+			string description = RandomHelper.NextString(50, 450);
+			decimal requestBytes = RandomHelper.NextDecimal(10, 1000000);
 			DateTime requestDate = DateTime.Now;
-			decimal requestFiles = TestHelper.NextDecimal(1000, 10000);
+			decimal requestFiles = RandomHelper.NextDecimal(1000, 10000);
 			this.DataSource.Rows.Add(
 				name,
 				description,

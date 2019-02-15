@@ -68,7 +68,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			StringBuilder sb = new StringBuilder();
 			for (var i = 0; i < maxDepth; i++)
 			{
-				string folderName = $"\\{Guid.NewGuid()}-{TestHelper.NextString(20, TestSettings.MaxFolderLength - 36)}";
+				string folderName = $"\\{Guid.NewGuid()}-{RandomHelper.NextString(20, DtxTestParameters.MaxFolderLength - 36)}";
 				sb.Append(folderName);
 			}
 
@@ -81,7 +81,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			string folder,
 			string fileName)
 		{
-			string file = TestHelper.GetDocsResourceFilePath(fileName);
+			string file = ResourceFileHelper.GetDocsResourceFilePath(fileName);
 			DocImportRecord record = new DocImportRecord { ControlNumber = controlNumber, File = file, Folder = folder };
 			return this.ArrangeImportJob(new[] { record });
 		}
@@ -89,9 +89,9 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		protected kCura.Relativity.DataReaderClient.ImportBulkArtifactJob ArrangeImportJob(IEnumerable<DocImportRecord> records)
 		{
 			// Arrange
-			kCura.Relativity.ImportAPI.ImportAPI importApi = CreateImportApiObject();
+			kCura.Relativity.ImportAPI.ImportAPI importApi = this.CreateImportApiObject();
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = importApi.NewNativeDocumentImportJob();
-            ConfigureJobSettings(
+			this.ConfigureJobSettings(
 				job,
 				this.ArtifactTypeId,
 				this.IdentifierFieldId,

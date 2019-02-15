@@ -37,81 +37,93 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// <summary>
 		/// The main setup method.
 		/// </summary>
-		public static void Setup()
+		/// <returns>
+		/// The <see cref="DtxTestParameters"/> instance.
+		/// </returns>
+		public static DtxTestParameters Setup()
 		{
-			TestSettings.RelativityUserName = GetConfigurationStringValue("RelativityUserName");
-			TestSettings.RelativityPassword = GetConfigurationStringValue("RelativityPassword");
-			TestSettings.RelativityRestUrl = new Uri(GetConfigurationStringValue("RelativityRestUrl"));
-			TestSettings.RelativityServicesUrl = new Uri(GetConfigurationStringValue("RelativityServicesUrl"));
-			TestSettings.RelativityUrl = new Uri(GetConfigurationStringValue("RelativityUrl"));
-			TestSettings.RelativityWebApiUrl = new Uri(GetConfigurationStringValue("RelativityWebApiUrl"));
-			TestSettings.SqlInstanceName = GetConfigurationStringValue("SqlInstanceName");
-			TestSettings.SqlAdminUserName = GetConfigurationStringValue("SqlAdminUserName");
-			TestSettings.SqlAdminPassword = GetConfigurationStringValue("SqlAdminPassword");
-			TestSettings.SqlDropWorkspaceDatabase = bool.Parse(GetConfigurationStringValue("SqlDropWorkspaceDatabase"));
-			TestSettings.SkipAsperaModeTests = bool.Parse(GetConfigurationStringValue("SkipAsperaModeTests"));
-			TestSettings.SkipDirectModeTests = bool.Parse(GetConfigurationStringValue("SkipDirectModeTests"));
-			TestSettings.SkipIntegrationTests = bool.Parse(GetConfigurationStringValue("SkipIntegrationTests"));
-			TestSettings.WorkspaceTemplate = GetConfigurationStringValue("WorkspaceTemplate");
+			Console.WriteLine("Preparing to create a test workspace...");
+			DtxTestParameters parameters = new DtxTestParameters
+				                        {
+					                        RelativityUserName = GetConfigurationStringValue("RelativityUserName"),
+					                        RelativityPassword = GetConfigurationStringValue("RelativityPassword"),
+					                        RelativityRestUrl =
+						                        new Uri(GetConfigurationStringValue("RelativityRestUrl")),
+					                        RelativityServicesUrl =
+						                        new Uri(GetConfigurationStringValue("RelativityServicesUrl")),
+					                        RelativityUrl = new Uri(GetConfigurationStringValue("RelativityUrl")),
+					                        RelativityWebApiUrl =
+						                        new Uri(GetConfigurationStringValue("RelativityWebApiUrl")),
+					                        SqlInstanceName = GetConfigurationStringValue("SqlInstanceName"),
+					                        SqlAdminUserName = GetConfigurationStringValue("SqlAdminUserName"),
+					                        SqlAdminPassword = GetConfigurationStringValue("SqlAdminPassword"),
+					                        SqlDropWorkspaceDatabase =
+						                        bool.Parse(GetConfigurationStringValue("SqlDropWorkspaceDatabase")),
+					                        SkipAsperaModeTests =
+						                        bool.Parse(GetConfigurationStringValue("SkipAsperaModeTests")),
+					                        SkipDirectModeTests =
+						                        bool.Parse(GetConfigurationStringValue("SkipDirectModeTests")),
+					                        SkipIntegrationTests = bool.Parse(
+						                        GetConfigurationStringValue("SkipIntegrationTests")),
+					                        WorkspaceTemplate = GetConfigurationStringValue("WorkspaceTemplate")
+				                        };
 
 			// Note: don't create the logger until all parameters have been retrieved.
-			SetupLogger();
-			if (TestSettings.SkipIntegrationTests)
+			SetupLogger(parameters);
+			if (parameters.SkipIntegrationTests)
 			{
 				Console.WriteLine("Skipping test workspace creation.");
-				return;
+				return parameters;
 			}
 
-			TestSettings.WorkspaceId = TestHelper.CreateTestWorkspace(
-				TestSettings.RelativityRestUrl,
-				TestSettings.RelativityServicesUrl,
-				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword,
-				TestSettings.WorkspaceTemplate,
-				Logger);
+			WorkspaceHelper.CreateTestWorkspace(parameters, Logger);
 			using (ITransferLog transferLog = new RelativityTransferLog(Logger, false))
 			{
 				IHttpCredential credential =
-					new BasicAuthenticationCredential(TestSettings.RelativityUserName, TestSettings.RelativityPassword);
+					new BasicAuthenticationCredential(parameters.RelativityUserName, parameters.RelativityPassword);
 				RelativityConnectionInfo connectionInfo = new RelativityConnectionInfo(
-					TestSettings.RelativityUrl,
+					parameters.RelativityUrl,
 					credential,
-					TestSettings.WorkspaceId);
+					parameters.WorkspaceId);
 				WorkspaceService workspaceService = new WorkspaceService(connectionInfo, transferLog);
 				Workspace workspace = workspaceService.GetWorkspaceAsync().GetAwaiter().GetResult();
-				TestSettings.FileShareUncPath = workspace.DefaultFileShareUncPath;
+				parameters.FileShareUncPath = workspace.DefaultFileShareUncPath;
+				Console.WriteLine($"The test workspace {parameters.WorkspaceId} is successfully created.");
+				return parameters;
 			}
 		}
 
 		/// <summary>
 		/// The main teardown method.
 		/// </summary>
-		public static void TearDown()
+		/// <param name="parameters">
+		/// The data transfer test parameters used to perform the teardown.
+		/// </param>
+		public static void TearDown(DtxTestParameters parameters)
 		{
-			if (TestSettings.SkipIntegrationTests)
+			if (parameters == null)
+			{
+				throw new ArgumentNullException(nameof(parameters));
+			}
+
+			if (parameters.SkipIntegrationTests)
 			{
 				Console.WriteLine("Skipping test workspace teardown.");
 				return;
 			}
 
-			TestHelper.DeleteTestWorkspace(
-				TestSettings.RelativityRestUrl,
-				TestSettings.RelativityServicesUrl,
-				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword,
-				TestSettings.WorkspaceId,
-				Logger);
-			string database = $"EDDS{TestSettings.WorkspaceId}";
-			if (TestSettings.SqlDropWorkspaceDatabase && TestSettings.WorkspaceId > 0)
+			WorkspaceHelper.DeleteTestWorkspace(parameters, Logger);
+			string database = $"EDDS{parameters.WorkspaceId}";
+			if (parameters.SqlDropWorkspaceDatabase && parameters.WorkspaceId > 0)
 			{
 				try
 				{
 					SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder
 					{
-						DataSource = TestSettings.SqlInstanceName,
+						DataSource = parameters.SqlInstanceName,
 						IntegratedSecurity = false,
-						UserID = TestSettings.SqlAdminUserName,
-						Password = TestSettings.SqlAdminPassword,
+						UserID = parameters.SqlAdminUserName,
+						Password = parameters.SqlAdminPassword,
 						InitialCatalog = string.Empty
 					};
 
@@ -176,12 +188,12 @@ END";
 			throw new InvalidOperationException($"The '{key}' app.config setting or '{envVariable}' environment variable is not specified.");
 		}
 
-		private static void SetupLogger()
+		private static void SetupLogger(DtxTestParameters parameters)
 		{
 			Logging.LoggerOptions loggerOptions = new Logging.LoggerOptions
 			{
 				Application = "8A1A6418-29B3-4067-8C9E-51E296F959DE",
-				ConfigurationFileLocation = Path.Combine(TestHelper.GetBasePath(), "LogConfig.xml"),
+				ConfigurationFileLocation = Path.Combine(ResourceFileHelper.GetBasePath(), "LogConfig.xml"),
 				System = "Import-API",
 				SubSystem = "Samples"
 			};
@@ -195,10 +207,10 @@ END";
 			// Configure the optional HTTP sink to periodically send logs to Relativity.
 			loggerOptions.AddSinkParameter(
 				Logging.Configuration.RelativityHttpSinkConfig.CredentialSinkParameterKey,
-				new NetworkCredential(TestSettings.RelativityUserName, TestSettings.RelativityPassword));
+				new NetworkCredential(parameters.RelativityUserName, parameters.RelativityPassword));
 			loggerOptions.AddSinkParameter(
 				Logging.Configuration.RelativityHttpSinkConfig.InstanceUrlSinkParameterKey,
-				TestSettings.RelativityUrl);
+				parameters.RelativityUrl);
 			Logger = Logging.Factory.LogFactory.GetLogger(loggerOptions);
 
 			// Until Import API supports passing a logger instance via constructor, the API

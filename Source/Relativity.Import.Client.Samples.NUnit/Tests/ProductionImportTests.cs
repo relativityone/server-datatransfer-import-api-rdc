@@ -84,9 +84,9 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
         private void ImportProduction(int productionId)
         {
-            kCura.Relativity.ImportAPI.ImportAPI importApi = CreateImportApiObject();
+            kCura.Relativity.ImportAPI.ImportAPI importApi = this.CreateImportApiObject();
             IEnumerable<kCura.Relativity.ImportAPI.Data.ProductionSet> productionSets =
-                importApi.GetProductionSets(TestSettings.WorkspaceId).ToList();
+                importApi.GetProductionSets(this.TestParameters.WorkspaceId).ToList();
             Assert.That(productionSets.Count, Is.GreaterThan(0));
             kCura.Relativity.ImportAPI.Data.ProductionSet productionSet =
                 productionSets.FirstOrDefault(x => x.ArtifactID == productionId);
@@ -109,14 +109,14 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
                 row = this.DataSource.NewRow();
                 row[this.IdentifierFieldName] = FirstDocumentControlNumber;
                 row[WellKnownFields.BatesNumber] = $"EDRM-Sample-{i:D6}";
-                row[WellKnownFields.FileLocation] = TestHelper.GetImagesResourceFilePath(SampleProductionImage1FileName);
+                row[WellKnownFields.FileLocation] = ResourceFileHelper.GetImagesResourceFilePath(SampleProductionImage1FileName);
                 this.DataSource.Rows.Add(row);
             }
 
             row = this.DataSource.NewRow();
             row[this.IdentifierFieldName] = SecondDocumentControlNumber;
             row[WellKnownFields.BatesNumber] = SecondDocumentControlNumber;
-            row[WellKnownFields.FileLocation] = TestHelper.GetImagesResourceFilePath(SampleProductionImage1FileName);
+            row[WellKnownFields.FileLocation] = ResourceFileHelper.GetImagesResourceFilePath(SampleProductionImage1FileName);
             this.DataSource.Rows.Add(row);
             job.SourceData.SourceData = this.DataSource;
             job.Execute();

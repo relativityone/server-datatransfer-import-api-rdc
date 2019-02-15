@@ -53,11 +53,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblySetupHelper.cs" />
+    <Compile Include="FieldHelper.cs" />
+    <Compile Include="ServiceHelper.cs" />
+    <Compile Include="ProductionHelper.cs" />
+    <Compile Include="RandomHelper.cs" />
+    <Compile Include="ResourceFileHelper.cs" />
     <Compile Include="TestCategories.cs" />
+    <Compile Include="RdoHelper.cs" />
+    <Compile Include="WorkspaceHelper.cs" />
     <Compile Include="WellKnownArtifactTypes.cs" />
     <Compile Include="WellKnownFields.cs" />
-    <Compile Include="TestHelper.cs" />
-    <Compile Include="TestSettings.cs" />
+    <Compile Include="DtxTestParameters.cs" />
     <Content Include="LICENSE.txt">
       <Paket>True</Paket>
     </Content>

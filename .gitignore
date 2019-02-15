@@ -300,7 +300,9 @@ buildtools/*
 !buildtools/packages.config
 !buildtools/stylecop.json
 !buildtools/Test-PackageUpgrade.ps1
-/.vscode/settings.json
 
 # Outside In nuget package
 **/oi/
+
+# Visual Studio Code
+/.vscode/*

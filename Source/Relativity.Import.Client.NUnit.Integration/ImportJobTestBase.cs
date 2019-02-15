@@ -152,12 +152,12 @@ namespace Relativity.Import.Client.NUnit.Integration
 		protected void GivenTheImportJob()
 		{
 			var iapi = new ImportAPI(
-				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword,
-				TestSettings.RelativityWebApiUrl.ToString());
+				this.TestParameters.RelativityUserName,
+				this.TestParameters.RelativityPassword,
+				this.TestParameters.RelativityWebApiUrl.ToString());
 			this.importJob = iapi.NewNativeDocumentImportJob();
-			this.importJob.Settings.WebServiceURL = TestSettings.RelativityWebApiUrl.ToString();
-			this.importJob.Settings.CaseArtifactId = TestSettings.WorkspaceId;
+			this.importJob.Settings.WebServiceURL = this.TestParameters.RelativityWebApiUrl.ToString();
+			this.importJob.Settings.CaseArtifactId = this.TestParameters.WorkspaceId;
 			this.importJob.Settings.ArtifactTypeId = 10;
 			this.importJob.Settings.ExtractedTextFieldContainsFilePath = false;
 			this.importJob.Settings.NativeFilePathSourceFieldName = WellKnownFields.FilePath;
@@ -306,7 +306,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		{
 			for (var i = 0; i < maxFiles; i++)
 			{
-				TestHelper.NextTextFile(
+				RandomHelper.NextTextFile(
 					MinTestFileLength,
 					MaxTestFileLength,
 					this.TempDirectory.Directory,

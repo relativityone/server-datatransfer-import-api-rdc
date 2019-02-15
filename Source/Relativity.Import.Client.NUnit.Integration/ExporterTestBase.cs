@@ -60,6 +60,18 @@ namespace Relativity.Import.Client.NUnit.Integration
 		private ExtendedExportFile exportFile;
 
 		/// <summary>
+		/// Gets data transfer test parameters.
+		/// </summary>
+		/// <value>
+		/// The <see cref="DtxTestParameters"/> value.
+		/// </value>
+		protected DtxTestParameters TestParameters
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// The test setup.
 		/// </summary>
 		[SetUp]
@@ -68,6 +80,11 @@ namespace Relativity.Import.Client.NUnit.Integration
 			ServicePointManager.SecurityProtocol =
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
+			this.AssignTestSettings();
+			Assert.That(
+				this.TestParameters.WorkspaceId,
+				Is.Positive,
+				() => "The test workspace must be created or specified in order to run this integration test.");
 			this.alerts.Clear();
 			this.alertCriticalErrors.Clear();
 			this.alertWarningSkippables.Clear();
@@ -77,7 +94,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 			this.selectedFolderId = 0;
 			this.exportType = ExportFile.ExportType.AncestorSearch;
 			this.cookieContainer = new CookieContainer();
-			this.credentials = new NetworkCredential(TestSettings.RelativityUserName, TestSettings.RelativityPassword);
+			this.credentials = new NetworkCredential(this.TestParameters.RelativityUserName, this.TestParameters.RelativityPassword);
 			this.identifierColumnName = null;
 			this.encoding = Encoding.Unicode;
 			this.logger = new Mock<ILog>();
@@ -87,22 +104,22 @@ namespace Relativity.Import.Client.NUnit.Integration
 			this.userNotification = new Mock<IUserNotification>();
 			this.userNotification.Setup(x => x.Alert(It.IsAny<string>())).Callback<string>(msg =>
 			{
-				alerts.Add(msg);
+				this.alerts.Add(msg);
 				Console.WriteLine($"Alert: {msg}");
 			});
 			this.userNotification.Setup(x => x.AlertCriticalError(It.IsAny<string>()))
 				.Callback<string>(msg =>
 				{
-					alertCriticalErrors.Add(msg);
+					this.alertCriticalErrors.Add(msg);
 					Console.WriteLine($"Alert critical error: {msg}");
 				});
 			this.userNotification.Setup(x => x.AlertWarningSkippable(It.IsAny<string>()))
 				.Callback<string>(msg =>
 				{
-					alertWarningSkippables.Add(msg);
+					this.alertWarningSkippables.Add(msg);
 					Console.WriteLine($"Alert warning skipped: {msg}");
 				}).Returns(true);
-			this.workspaceId = TestSettings.WorkspaceId;
+			this.workspaceId = this.TestParameters.WorkspaceId;
 		}
 
 		/// <summary>
@@ -119,6 +136,17 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		/// <summary>
+		/// Assign the test parameters. This should always be called from methods with <see cref="SetUpAttribute"/> or <see cref="OneTimeSetUpAttribute"/>.
+		/// </summary>
+		protected void AssignTestSettings()
+		{
+			if (this.TestParameters == null)
+			{
+				this.TestParameters = AssemblySetup.GlobalDtxTestParameters.DeepCopy();
+			}
+		}
+
+		/// <summary>
 		/// Given the list of native files are imported.
 		/// </summary>
 		/// <param name="files">
@@ -127,9 +155,9 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// <exception cref="InvalidOperationException">
 		/// The exception thrown when the import fails.
 		/// </exception>
-		protected static void GivenTheFilesAreImported(IEnumerable<string> files)
+		protected void GivenTheFilesAreImported(IEnumerable<string> files)
 		{
-			GivenTheFilesAreImported(null, files);
+			this.GivenTheFilesAreImported(null, files);
 		}
 
 		/// <summary>
@@ -144,7 +172,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// <exception cref="InvalidOperationException">
 		/// The exception thrown when the import fails.
 		/// </exception>
-		protected static void GivenTheFilesAreImported(string folderPath, IEnumerable<string> files)
+		protected void GivenTheFilesAreImported(string folderPath, IEnumerable<string> files)
 		{
 			if (files == null)
 			{
@@ -153,15 +181,15 @@ namespace Relativity.Import.Client.NUnit.Integration
 
 			kCura.Relativity.ImportAPI.ImportAPI importApi =
 				new kCura.Relativity.ImportAPI.ImportAPI(
-					TestSettings.RelativityUserName,
-					TestSettings.RelativityPassword,
-					TestSettings.RelativityWebApiUrl.ToString());
+					this.TestParameters.RelativityUserName,
+					this.TestParameters.RelativityPassword,
+					this.TestParameters.RelativityWebApiUrl.ToString());
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = importApi.NewNativeDocumentImportJob();
 			kCura.Relativity.DataReaderClient.Settings settings = job.Settings;
 			settings.ArtifactTypeId = WellKnownArtifactTypes.DocumentArtifactTypeId;
 			settings.Billable = false;
 			settings.BulkLoadFileFieldDelimiter = ";";
-			settings.CaseArtifactId = TestSettings.WorkspaceId;
+			settings.CaseArtifactId = this.TestParameters.WorkspaceId;
 			settings.CopyFilesToDocumentRepository = true;
 			settings.DisableControlNumberCompatibilityMode = true;
 			settings.DisableExtractedTextFileLocationValidation = false;
@@ -313,10 +341,10 @@ namespace Relativity.Import.Client.NUnit.Integration
 			{
 				this.exportFile = new kCura.WinEDDS.ExtendedExportFile((int) ArtifactType.Document)
 				{
-					ArtifactID = selectedFolderId,
+					ArtifactID = this.selectedFolderId,
 					CaseInfo = caseInfo,
 					CookieContainer = this.cookieContainer,
-					Credential = credentials,
+					Credential = this.credentials,
 					ExportNative = true,
 					ExportImages = true,
 					FolderPath = this.tempDirectory.Directory,
@@ -331,7 +359,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 					SubdirectoryDigitPadding = 3,
 					QuoteDelimiter = 'þ',
 					TextFileEncoding = this.encoding,
-					TypeOfExport = exportType,
+					TypeOfExport = this.exportType,
 					TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Absolute,
 					TypeOfImage = ExportFile.ImageType.Pdf,
 					ViewID = 1003684,
@@ -347,7 +375,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 				};
 
 				this.exportFile.ObjectTypeName = await this.GetObjectTypeNameAsync(this.exportFile.ArtifactTypeID);
-				switch (exportType)
+				switch (this.exportType)
 				{
 					case ExportFile.ExportType.Production:
 						this.exportFile.DataTable = productionManager
@@ -356,7 +384,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 
 					default:
 						this.exportFile.DataTable = this.GetSearchExportDataSourceAsync(searchManager,
-							exportType == kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch,
+							this.exportType == kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch,
 							this.exportFile.ArtifactTypeID);
 						break;
 				}
@@ -386,7 +414,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 				{
 					this.exportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(
 						this.workspaceId, this.exportFile.ArtifactTypeID, artifactIds.ToArray(),
-						exportType == kCura.WinEDDS.ExportFile.ExportType.Production);
+						this.exportType == kCura.WinEDDS.ExportFile.ExportType.Production);
 					this.exportFile.AllExportableFields =
 						searchManager.RetrieveAllExportableViewFields(this.workspaceId, this.exportFile.ArtifactTypeID);
 				}
@@ -402,7 +430,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 			var exporter = new Exporter(
 				this.exportFile,
 				controller,
-				new WebApiServiceFactory(exportFile),
+				new WebApiServiceFactory(this.exportFile),
 				new ExportFileFormatterFactory(),
 				new ExportConfig());
 			exporter.StatusMessage += args =>

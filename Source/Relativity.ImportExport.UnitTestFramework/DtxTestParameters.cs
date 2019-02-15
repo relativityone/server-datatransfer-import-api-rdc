@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="TestSettings.cs" company="Relativity ODA LLC">
+// <copyright file="DtxTestParameters.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -9,9 +9,9 @@ namespace Relativity.ImportExport.UnitTestFramework
 	using System;
 
 	/// <summary>
-	/// Represents static test settings used throughout the sample.
+	/// Represents the data transfer test settings.
 	/// </summary>
-	public static class TestSettings
+	public class DtxTestParameters
 	{
 		/// <summary>
 		/// The maximum folder length.
@@ -24,12 +24,56 @@ namespace Relativity.ImportExport.UnitTestFramework
 		public const string SkipTestMessage = "This test is conditionally skipped - Reason: {0}";
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="DtxTestParameters"/> class.
+		/// </summary>
+		public DtxTestParameters()
+		{
+			this.WorkspaceId = 0;
+			this.FileShareUncPath = null;
+			this.RelativityPassword = null;
+			this.RelativityRestUrl = null;
+			this.RelativityServicesUrl = null;
+			this.RelativityUrl = null;
+			this.RelativityUserName = null;
+			this.RelativityWebApiUrl = null;
+			this.SkipAsperaModeTests = false;
+			this.SkipDirectModeTests = false;
+			this.SkipIntegrationTests = false;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DtxTestParameters"/> class.
+		/// </summary>
+		/// <param name="copy">
+		/// The object to copy.
+		/// </param>
+		public DtxTestParameters(DtxTestParameters copy)
+		{
+			if (copy == null)
+			{
+				throw new ArgumentNullException(nameof(copy));
+			}
+
+			this.WorkspaceId = copy.WorkspaceId;
+			this.FileShareUncPath = copy.FileShareUncPath;
+			this.RelativityPassword = copy.RelativityPassword;
+			this.RelativityRestUrl = new Uri(copy.RelativityRestUrl.ToString());
+			this.RelativityServicesUrl = new Uri(copy.RelativityServicesUrl.ToString());
+			this.RelativityUrl = new Uri(copy.RelativityUrl.ToString());
+			this.RelativityUserName = copy.RelativityUserName;
+			this.RelativityWebApiUrl = new Uri(copy.RelativityWebApiUrl.ToString());
+			this.SkipAsperaModeTests = copy.SkipAsperaModeTests;
+			this.SkipDirectModeTests = copy.SkipDirectModeTests;
+			this.SkipIntegrationTests = copy.SkipIntegrationTests;
+		}
+
+		/// <summary>
 		/// Gets or sets the full UNC path to the file share.
 		/// </summary>
 		/// <value>
 		/// The full path.
 		/// </value>
-		public static string FileShareUncPath
+		public string FileShareUncPath
 		{
 			get;
 			set;
@@ -41,7 +85,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// <value>
 		/// The password.
 		/// </value>
-		public static string RelativityPassword
+		public string RelativityPassword
 		{
 			get;
 			set;
@@ -53,7 +97,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// <value>
 		/// The <see cref="Uri"/> instance.
 		/// </value>
-		public static Uri RelativityRestUrl
+		public Uri RelativityRestUrl
 		{
 			get;
 			set;
@@ -65,7 +109,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// <value>
 		/// The <see cref="Uri"/> instance.
 		/// </value>
-		public static Uri RelativityServicesUrl
+		public Uri RelativityServicesUrl
 		{
 			get;
 			set;
@@ -77,7 +121,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// <value>
 		/// The <see cref="Uri"/> instance.
 		/// </value>
-		public static Uri RelativityUrl
+		public Uri RelativityUrl
 		{
 			get;
 			set;
@@ -89,7 +133,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// <value>
 		/// The user name.
 		/// </value>
-		public static string RelativityUserName
+		public string RelativityUserName
 		{
 			get;
 			set;
@@ -101,7 +145,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// <value>
 		/// The <see cref="Uri"/> instance.
 		/// </value>
-		public static Uri RelativityWebApiUrl
+		public Uri RelativityWebApiUrl
 		{
 			get;
 			set;
@@ -113,7 +157,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// <value>
 		/// The password.
 		/// </value>
-		public static string SqlAdminPassword
+		public string SqlAdminPassword
 		{
 			get;
 			set;
@@ -125,7 +169,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// <value>
 		/// The user name.
 		/// </value>
-		public static string SqlAdminUserName
+		public string SqlAdminUserName
 		{
 			get;
 			set;
@@ -137,7 +181,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// <value>
 		/// <see langword="true" /> to drop the workspace SQL database; otherwise, <see langword="false" />.
 		/// </value>
-		public static bool SqlDropWorkspaceDatabase
+		public bool SqlDropWorkspaceDatabase
 		{
 			get;
 			set;
@@ -149,7 +193,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// <value>
 		/// The SQL instance name.
 		/// </value>
-		public static string SqlInstanceName
+		public string SqlInstanceName
 		{
 			get;
 			set;
@@ -161,7 +205,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// <value>
 		/// <see langword="true" /> to skip the tests; otherwise, <see langword="false" />.
 		/// </value>
-		public static bool SkipAsperaModeTests
+		public bool SkipAsperaModeTests
 		{
 			get;
 			set;
@@ -173,7 +217,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// <value>
 		/// <see langword="true" /> to skip the tests; otherwise, <see langword="false" />.
 		/// </value>
-		public static bool SkipDirectModeTests
+		public bool SkipDirectModeTests
 		{
 			get;
 			set;
@@ -185,7 +229,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// <value>
 		/// <see langword="true" /> to skip the integration tests; otherwise, <see langword="false" />.
 		/// </value>
-		public static bool SkipIntegrationTests
+		public bool SkipIntegrationTests
 		{
 			get;
 			set;
@@ -197,7 +241,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// <value>
 		/// The artifact identifier.
 		/// </value>
-		public static int WorkspaceId
+		public int WorkspaceId
 		{
 			get;
 			set;
@@ -209,10 +253,21 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// <value>
 		/// The template name.
 		/// </value>
-		public static string WorkspaceTemplate
+		public string WorkspaceTemplate
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Performs a deep copy of this instance.
+		/// </summary>
+		/// <returns>
+		/// The <see cref="DtxTestParameters"/> instance.
+		/// </returns>
+		public DtxTestParameters DeepCopy()
+		{
+			return new DtxTestParameters(this);
 		}
 	}
 }

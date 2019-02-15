@@ -114,7 +114,6 @@
     <Compile Include="IoReporterTests.cs" />
     <Compile Include="IoWarningPublisherTests.cs" />
     <Compile Include="LoadFileReaderTests.cs" />
-    <Compile Include="RandomHelper.cs" />
     <Compile Include="..\..\Version\AssemblySharedInfo.cs">
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>

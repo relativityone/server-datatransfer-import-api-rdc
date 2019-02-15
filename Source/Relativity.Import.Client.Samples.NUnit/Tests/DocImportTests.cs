@@ -53,9 +53,9 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			// Arrange
 			int initialDocumentCount = this.QueryRelativityObjectCount((int)kCura.Relativity.Client.ArtifactType.Document);
 			string controlNumber = GenerateControlNumber();
-			kCura.Relativity.ImportAPI.ImportAPI importApi = CreateImportApiObject();
+			kCura.Relativity.ImportAPI.ImportAPI importApi = this.CreateImportApiObject();
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = importApi.NewNativeDocumentImportJob();
-			ConfigureJobSettings(
+			this.ConfigureJobSettings(
 				job,
 				this.ArtifactTypeId,
 				this.IdentifierFieldId,
@@ -73,7 +73,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			});
 
 			// Add the file to the data source.
-			string file = TestHelper.GetDocsResourceFilePath(fileName);
+			string file = ResourceFileHelper.GetDocsResourceFilePath(fileName);
 			this.DataSource.Rows.Add(controlNumber, file, folderPath);
 			job.SourceData.SourceData = this.DataSource.CreateDataReader();
 
