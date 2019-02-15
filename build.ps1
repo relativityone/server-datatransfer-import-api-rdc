@@ -1,48 +1,46 @@
 ﻿<#
 .SYNOPSIS
-This is the Import API sample build script.
+This is the Import API and RDC build script.
 
 .DESCRIPTION
 This script is responsible for all build processes.
 
 .EXAMPLE
 .\build.ps1
-Build using Tasks that run by default: Build.
+Build the solution.
 
 .EXAMPLE
-.\build.ps1 -Test
-Run build then unit tests.
+.\build.ps1 -UnitTests
+Builds the solution and then executes all unit tests.
 
 .EXAMPLE
-.\build.ps1 -SkipBuild -Test
-Skips build then unit tests.
+.\build.ps1 -Target "None" -UnitTests
+Skips building the solution and only executes all unit tests.
 
-.PARAMETER TaskList
-List of Psake tasks to run. For more information run: build.ps1 help.
+.EXAMPLE
+.\build.ps1 -Target "None" -UnitTests -IntegrationTests
+Skips building the solution and executes all unit and integration tests.
 
-.PARAMETER Release
-Use this switch to build Relativity's code in the Release configuration.
+.PARAMETER Target
+The target to build (e.g. Build, Rebuild, Clean, or None).
 
-.PARAMETER BuildType
-Type of build (e.g. DEV or GOLD).
+.PARAMETER Configuration
+Use this switch to choose the build configuration (e.g. Debug or Release).
 
 .PARAMETER AssemblyVersion
-Version of assemblies produced by build.
+Version of assemblies produced by the build.
 
 .PARAMETER Verbosity
 The verbosity of the build log.
 
-.PARAMETER Rebuild
-Runs a rebuild (i.e. clean then build).
+.PARAMETER UnitTests
+Executes all unit tests.
 
-.PARAMETER Test
-Runs UnitTest task.
+.PARAMETER IntegrationTests
+Executes all integration tests.
 
 .PARAMETER TestTimeoutInMS
-Timeout for NUnit unit tests (in milliseconds).
-
-.PARAMETER SkipBuild
-Skips building Relativity code.
+Timeout for NUnit tests (in milliseconds).
 #>
 
 #Requires -Version 5.0
@@ -50,64 +48,62 @@ Skips building Relativity code.
 [CmdletBinding()]
 param(
     [Parameter(Position=0)]
-    [String[]]$TaskList = @("default"),
+    [ValidateSet("Build", "Rebuild", "Clean")]
+    [String]$Target = "Build",
     [Parameter()]
-    [Switch]$Release,
-    [Parameter()]
-    [ValidateSet("DEV", "GOLD", "ALPHA", "BETA", "RC")]
-    [String]$BuildType = "DEV",
+    [ValidateSet("Debug", "Release")]
+    [String]$Configuration = "Release",
     [Parameter()]
     [Version]$AssemblyVersion = "1.0.0.0",
-    [Parameter()]
-    [ValidateSet("local", "teambranch")]
-    [String]$ServerType = "local",
     [Parameter()]
     [ValidateSet("quiet", "minimal", "normal", "detailed", "diagnostic")]
     [String]$Verbosity = "quiet",
     [Parameter()]
-    [Switch]$Rebuild,
+    [Switch]$UnitTests,
     [Parameter()]
-    [Switch]$Test,
-    [Parameter()]
-    [Switch]$UnitTest,
+    [Switch]$IntegrationTests,
     [Parameter()]
     [int]$TestTimeoutInMS = 90000,
     [Parameter()]
     [Alias("skip")]
-    [Switch]$SkipBuild,
-    [Parameter()]
-    [hashtable]$Tests
+    [Switch]$SkipBuild
 )
 
 $BaseDir = $PSScriptRoot
-$BuildToolsDir = Join-Path $BaseDir "buildtools"
 $PackagesDir = Join-Path $BaseDir "packages"
 $PaketDir = Join-Path $BaseDir ".paket"
-$PaketExe = Join-Path $PaketDir 'paket.bootstrapper.exe'
+$PaketFilesDir = Join-Path $BaseDir "paket-files"
+$PaketExe = Join-Path $PaketDir 'paket.exe'
+$PaketBootstrapperExe = Join-Path $PaketDir 'paket.bootstrapper.exe'
 Write-Verbose "BaseDir resolves to $BaseDir"
 Write-Verbose "Checking for Paket in the .paket sub-directory..."
 if (-Not (Test-Path $PaketDir -PathType Container)) {
     New-Item -ItemType directory -Path $PaketDir
 }
 
-if (-Not (Test-Path $PaketExe -PathType Leaf)) {
-    Invoke-WebRequest "https://github.com/fsprojects/Paket/releases/download/5.196.2/paket.exe" -OutFile $PaketExe
+if (Test-Path $PaketExe -PathType Leaf) {
+    Remove-Item $PaketExe
 }
+
+if (Test-Path $PaketBootstrapperExe -PathType Leaf) {
+    Remove-Item $PaketBootstrapperExe
+}
+
+Invoke-WebRequest "https://github.com/fsprojects/Paket/releases/download/5.196.2/paket.exe" -OutFile $PaketExe
 
 $PaketVerbosity = if ($VerbosePreference -gt "SilentlyContinue") { "--verbose" } else { "" }
 Write-Verbose "Restoring packages via paket for $MasterSolution"
 & $PaketExe restore $PaketVerbosity
 if ($LASTEXITCODE -ne 0) 
 {
-	Throw "An error occured while restoring build tools."
+	Throw "An error occured while restoring packages."
 }
 
-if ($Test -or $UnitTest)
+$TaskList = New-Object System.Collections.ArrayList($null)
+$TaskList.Add("Build")
+if ($UnitTests -or $IntegrationTests)
 {
-    $TempList = New-Object System.Collections.ArrayList($null)
-    $TempList.AddRange($TaskList)
-    $TempList.Add("UnitTest")
-    $TaskList = $TempList
+    $TaskList.Add("Test")
 }
 
 $Params = @{
@@ -117,18 +113,17 @@ $Params = @{
     framework = "4.6.2"
     parameters = @{
         Root = $BaseDir
-        BuildToolsDir = $BuildToolsDir
+        PackagesDir = $PackagesDir
     }
     properties = @{
-        Release = $Release
-        BuildType = $BuildType
-        AssemblyVersion = $AssemblyVersion
-        ServerType = $ServerType
+        Target = $Target
+        Configuration = $Configuration
+        AssemblyVersion = $AssemblyVersion        
         Verbosity = $Verbosity
-        Rebuild = $Rebuild
-        SkipBuild = $SkipBuild
         TestTimeoutInMS = $TestTimeoutInMS
-        Tests = $Tests
+        IntegrationTests = $IntegrationTests
+        UnitTests = $UnitTests
+        SkipBuild = $SkipBuild
     }
 
     Verbose = $VerbosePreference
@@ -156,6 +151,15 @@ Finally
 
     Remove-Module PSBuildTools -Force -ErrorAction SilentlyContinue
     Remove-Module psake -Force -ErrorAction SilentlyContinue
+	
+	# Removing paket eliminates a VS paket extension conflict.
+	if (Test-Path $PaketExe -PathType Leaf) {
+        Remove-Item $PaketExe
+    }
+    
+    if (Test-Path $PaketBootstrapperExe -PathType Leaf) {
+        Remove-Item $PaketBootstrapperExe
+    }
 }
 
 Exit $ExitCode
