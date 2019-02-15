@@ -10,8 +10,10 @@ namespace Relativity.ImportExport.UnitTestFramework
 	using System.Collections.Generic;
 	using System.Data;
 	using System.Data.SqlClient;
+	using System.Diagnostics;
 	using System.IO;
 	using System.Net;
+	using System.Reflection;
 
 	using kCura.WinEDDS.TApi;
 
@@ -42,33 +44,8 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// </returns>
 		public static DtxTestParameters Setup()
 		{
-			Console.WriteLine("Preparing to create a test workspace...");
-			DtxTestParameters parameters = new DtxTestParameters
-				                        {
-					                        RelativityUserName = GetConfigurationStringValue("RelativityUserName"),
-					                        RelativityPassword = GetConfigurationStringValue("RelativityPassword"),
-					                        RelativityRestUrl =
-						                        new Uri(GetConfigurationStringValue("RelativityRestUrl")),
-					                        RelativityServicesUrl =
-						                        new Uri(GetConfigurationStringValue("RelativityServicesUrl")),
-					                        RelativityUrl = new Uri(GetConfigurationStringValue("RelativityUrl")),
-					                        RelativityWebApiUrl =
-						                        new Uri(GetConfigurationStringValue("RelativityWebApiUrl")),
-					                        SqlInstanceName = GetConfigurationStringValue("SqlInstanceName"),
-					                        SqlAdminUserName = GetConfigurationStringValue("SqlAdminUserName"),
-					                        SqlAdminPassword = GetConfigurationStringValue("SqlAdminPassword"),
-					                        SqlDropWorkspaceDatabase =
-						                        bool.Parse(GetConfigurationStringValue("SqlDropWorkspaceDatabase")),
-					                        SkipAsperaModeTests =
-						                        bool.Parse(GetConfigurationStringValue("SkipAsperaModeTests")),
-					                        SkipDirectModeTests =
-						                        bool.Parse(GetConfigurationStringValue("SkipDirectModeTests")),
-					                        SkipIntegrationTests = bool.Parse(
-						                        GetConfigurationStringValue("SkipIntegrationTests")),
-					                        WorkspaceTemplate = GetConfigurationStringValue("WorkspaceTemplate")
-				                        };
-
 			// Note: don't create the logger until all parameters have been retrieved.
+			DtxTestParameters parameters = GetDtxTestParameters();
 			SetupLogger(parameters);
 			if (parameters.SkipIntegrationTests)
 			{
@@ -76,6 +53,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 				return parameters;
 			}
 
+			Console.WriteLine("Creating a test workspace...");
 			WorkspaceHelper.CreateTestWorkspace(parameters, Logger);
 			using (ITransferLog transferLog = new RelativityTransferLog(Logger, false))
 			{
@@ -88,7 +66,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 				WorkspaceService workspaceService = new WorkspaceService(connectionInfo, transferLog);
 				Workspace workspace = workspaceService.GetWorkspaceAsync().GetAwaiter().GetResult();
 				parameters.FileShareUncPath = workspace.DefaultFileShareUncPath;
-				Console.WriteLine($"The test workspace {parameters.WorkspaceId} is successfully created.");
+				Console.WriteLine($"Created {parameters.WorkspaceId} test workspace.");
 				return parameters;
 			}
 		}
@@ -156,6 +134,52 @@ END";
 			{
 				Logger.LogInformation("Skipped dropping the {DatabaseName} SQL workspace database.", database);
 			}
+		}
+
+		private static DtxTestParameters GetDtxTestParameters()
+		{
+			Console.WriteLine("Retrieving all DTX test parameters...");
+			DtxTestParameters parameters = new DtxTestParameters
+				                               {
+					                               RelativityUserName = GetConfigurationStringValue("RelativityUserName"),
+					                               RelativityPassword = GetConfigurationStringValue("RelativityPassword"),
+					                               RelativityRestUrl =
+						                               new Uri(GetConfigurationStringValue("RelativityRestUrl")),
+					                               RelativityServicesUrl =
+						                               new Uri(GetConfigurationStringValue("RelativityServicesUrl")),
+					                               RelativityUrl = new Uri(GetConfigurationStringValue("RelativityUrl")),
+					                               RelativityWebApiUrl =
+						                               new Uri(GetConfigurationStringValue("RelativityWebApiUrl")),
+					                               SqlInstanceName = GetConfigurationStringValue("SqlInstanceName"),
+					                               SqlAdminUserName = GetConfigurationStringValue("SqlAdminUserName"),
+					                               SqlAdminPassword = GetConfigurationStringValue("SqlAdminPassword"),
+					                               SqlDropWorkspaceDatabase =
+						                               bool.Parse(GetConfigurationStringValue("SqlDropWorkspaceDatabase")),
+					                               SkipAsperaModeTests =
+						                               bool.Parse(GetConfigurationStringValue("SkipAsperaModeTests")),
+					                               SkipDirectModeTests =
+						                               bool.Parse(GetConfigurationStringValue("SkipDirectModeTests")),
+					                               SkipIntegrationTests = bool.Parse(
+						                               GetConfigurationStringValue("SkipIntegrationTests")),
+					                               WorkspaceTemplate = GetConfigurationStringValue("WorkspaceTemplate")
+				                               };
+			Console.WriteLine("Retrieved all DTX test parameters.");
+			Console.WriteLine("Dumping all DTX test parameters.");
+			foreach (var prop in parameters.GetType().GetProperties())
+			{
+				DebuggerBrowsableAttribute attribute = prop.GetCustomAttribute<DebuggerBrowsableAttribute>();
+				if (attribute != null && attribute.State == DebuggerBrowsableState.Never)
+				{
+					Console.WriteLine("{0}=[Obfuscated]", prop.Name);
+				}
+				else
+				{
+					Console.WriteLine("{0}={1}", prop.Name, prop.GetValue(parameters, null));
+				}
+			}
+
+			Console.WriteLine("Dumped all DTX test parameters.");
+			return parameters;
 		}
 
 		private static string GetConfigurationStringValue(string key)

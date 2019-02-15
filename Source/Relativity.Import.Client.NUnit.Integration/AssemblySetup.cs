@@ -32,7 +32,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// The main setup method.
 		/// </summary>
 		[OneTimeSetUp]
-        public void Setup()
+		public void Setup()
         {
             GlobalDtxTestParameters = AssemblySetupHelper.Setup();
         }

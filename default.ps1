@@ -11,9 +11,10 @@ properties {
     $AssemblyVersion = $Null
     $Verbosity = $Null
     $TestTimeoutInMS = $Null
-    $IntegrationTests = $Null
     $UnitTests = $Null
+    $IntegrationTests = $Null
     $SkipBuild = $Null
+    $TestParametersFile = $Null
 }
 
 task Build -Description "Builds the source code" -Depends UpdateAssemblyInfo, CompileMasterSolution -Precondition { -not $SkipBuild } {
@@ -69,7 +70,7 @@ task Test -Description "Run NUnit on Master solution" {
         Remove-Item $OutputFile
     }
     
-    $testCategoryFilter = ""
+    $testCategoryFilter = $Null
     if ($IntegrationTests -and -not $UnitTests) {
         $testCategoryFilter = "--where=`"cat==Integration`""
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPINTEGRATIONTESTS", "false", "Process")    
@@ -79,8 +80,27 @@ task Test -Description "Run NUnit on Master solution" {
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPINTEGRATIONTESTS", "true", "Process")
     }
 
+    if ($TestParametersFile) {
+        if (-Not (Test-Path $TestParametersFile -PathType Leaf)) {
+            Throw "The test parameters file '$TestParametersFile' was specified but doesn't exist."
+        }
+
+        $json = Get-Content -Raw -Path $TestParametersFile | ConvertFrom-Json
+        foreach ($property in $json.PSObject.Properties) {
+            $name = $property.Name
+            $value = $property.Value
+
+            # Ensure the parameters are in env var format.
+            if (-Not ($name.StartsWith("IAPI_INTEGRATION_"))) {
+                $name = "IAPI_INTEGRATION_" + $name.ToUpper()
+            }
+
+            [Environment]::SetEnvironmentVariable($name, $value , "Process")
+        }
+    }
+
     exec { & $NUnit3 $MasterSolution `
-        "--labels=On" `
+        "--labels=All" `
         "--domain=Multiple" `
         "--process=Multiple" `
         "--agents=$NumberOfProcessors" `

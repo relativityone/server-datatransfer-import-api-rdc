@@ -14,15 +14,15 @@ Build the solution.
 Builds the solution and then executes all unit tests.
 
 .EXAMPLE
-.\build.ps1 -Target "None" -UnitTests
+.\build.ps1 -SkipBuild -UnitTests
 Skips building the solution and only executes all unit tests.
 
 .EXAMPLE
-.\build.ps1 -Target "None" -UnitTests -IntegrationTests
+.\build.ps1 -SkipBuild -UnitTests -IntegrationTests
 Skips building the solution and executes all unit and integration tests.
 
 .PARAMETER Target
-The target to build (e.g. Build, Rebuild, Clean, or None).
+The target to build (e.g. Build, Rebuild, or Clean).
 
 .PARAMETER Configuration
 Use this switch to choose the build configuration (e.g. Debug or Release).
@@ -41,6 +41,12 @@ Executes all integration tests.
 
 .PARAMETER TestTimeoutInMS
 Timeout for NUnit tests (in milliseconds).
+
+.PARAMETER SkipBuild
+Skips building the master solution.
+
+.PARAMETER TestParametersFile
+An optional test parameters JSON file that conforms to the standard App.Config file (e.g. Scripts\test-settings-sample.json)
 #>
 
 #Requires -Version 5.0
@@ -66,13 +72,14 @@ param(
     [int]$TestTimeoutInMS = 90000,
     [Parameter()]
     [Alias("skip")]
-    [Switch]$SkipBuild
+    [Switch]$SkipBuild,
+    [Parameter()]
+    [String]$TestParametersFile
 )
 
 $BaseDir = $PSScriptRoot
 $PackagesDir = Join-Path $BaseDir "packages"
 $PaketDir = Join-Path $BaseDir ".paket"
-$PaketFilesDir = Join-Path $BaseDir "paket-files"
 $PaketExe = Join-Path $PaketDir 'paket.exe'
 $PaketBootstrapperExe = Join-Path $PaketDir 'paket.bootstrapper.exe'
 Write-Verbose "BaseDir resolves to $BaseDir"
@@ -121,9 +128,10 @@ $Params = @{
         AssemblyVersion = $AssemblyVersion        
         Verbosity = $Verbosity
         TestTimeoutInMS = $TestTimeoutInMS
-        IntegrationTests = $IntegrationTests
         UnitTests = $UnitTests
+        IntegrationTests = $IntegrationTests
         SkipBuild = $SkipBuild
+        TestParametersFile = $TestParametersFile
     }
 
     Verbose = $VerbosePreference

@@ -7,6 +7,7 @@
 namespace Relativity.ImportExport.UnitTestFramework
 {
 	using System;
+	using System.Diagnostics;
 
 	/// <summary>
 	/// Represents the data transfer test settings.
@@ -85,6 +86,9 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// <value>
 		/// The password.
 		/// </value>
+#if !DEBUG
+        [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
+#endif
 		public string RelativityPassword
 		{
 			get;
@@ -157,6 +161,9 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// <value>
 		/// The password.
 		/// </value>
+#if !DEBUG
+        [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
+#endif
 		public string SqlAdminPassword
 		{
 			get;
