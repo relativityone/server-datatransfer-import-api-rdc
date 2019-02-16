@@ -8,39 +8,39 @@ namespace Relativity.Import.Client.NUnit
 {
     using System.Globalization;
 
-    using kCura.WinEDDS;
-
     using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
 
     [TestFixture]
 	public class LoadFileReaderTests
 	{
-		private LoadFileReader _subjectUnderTest;
-		private LoadFile _loadFileArgs;
-		private const decimal _EXPECTED_DECIMAL = 10.05m;
-		private const decimal _DECIMAL_PARSED_INVARIANT_WAY = 1005m;
-		private const string _DECIMAL_GERMAN_FORMAT = "10,05";
-		private const string _GERMAN_CULTURE = "de-DE";
+		private const decimal ExpectedDecimal = 10.05m;
+		private const decimal DecimalParsedInvariantWay = 1005m;
+		private const string DecimalGermanFormat = "10,05";
+		private const string GermanCulture = "de-DE";
+		private LoadFileReader subjectUnderTest;
+		private LoadFile loadFileArgs;
 
 		[SetUp]
 		public void Setup()
 		{
 			CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-			_loadFileArgs = new LoadFile() {CaseInfo = new CaseInfo()};
+			this.loadFileArgs = new LoadFile { CaseInfo = new CaseInfo() };
 		}
 
 		[Test]
-		public void GetNullableDecimal_UsesCurrentCultureOnRdc()
+		public void GetNullableDecimalUsesCurrentCultureOnRdc()
 		{
-			//Arrange
-			_subjectUnderTest = new LoadFileReader( _loadFileArgs , false, ExecutionSource.Rdc);
-			CultureInfo.CurrentCulture = new CultureInfo(_GERMAN_CULTURE);
+			// Arrange
+			this.subjectUnderTest = new LoadFileReader(this.loadFileArgs, false, ExecutionSource.Rdc);
+			CultureInfo.CurrentCulture = new CultureInfo(GermanCulture);
 
-			//Act
-			decimal? result = _subjectUnderTest.GetNullableDecimal(_DECIMAL_GERMAN_FORMAT, 1);
+			// Act
+			decimal? result = this.subjectUnderTest.GetNullableDecimal(DecimalGermanFormat, 1);
 
-			//Assert
-			Assert.AreEqual( _EXPECTED_DECIMAL , result);
+			// Assert
+			Assert.AreEqual(ExpectedDecimal, result);
 		}
 
 		[Test]
@@ -48,18 +48,18 @@ namespace Relativity.Import.Client.NUnit
 		[TestCase(ExecutionSource.ImportAPI)]
 		[TestCase(ExecutionSource.Processing)]
 		[TestCase(ExecutionSource.RIP)]
-		public void GetNullableDecimal_NeglectsCurrentCultureOnOtherExecutionSources(ExecutionSource executionSource)
+		public void GetNullableDecimalNeglectsCurrentCultureOnOtherExecutionSources(ExecutionSource executionSource)
 		{
-			//Arrange
-			_subjectUnderTest = new LoadFileReader(_loadFileArgs, false, executionSource);
-			CultureInfo.CurrentCulture = new CultureInfo(_GERMAN_CULTURE);
+			// Arrange
+			this.subjectUnderTest = new LoadFileReader(this.loadFileArgs, false, executionSource);
+			CultureInfo.CurrentCulture = new CultureInfo(GermanCulture);
 
-			//Act
-			decimal? result = _subjectUnderTest.GetNullableDecimal(_DECIMAL_GERMAN_FORMAT, 1);
+			// Act
+			decimal? result = this.subjectUnderTest.GetNullableDecimal(DecimalGermanFormat, 1);
 
-			//Assert
-			Assert.AreNotEqual(_EXPECTED_DECIMAL, result);
-			Assert.AreEqual(_DECIMAL_PARSED_INVARIANT_WAY, result);
+			// Assert
+			Assert.AreNotEqual(ExpectedDecimal, result);
+			Assert.AreEqual(DecimalParsedInvariantWay, result);
 		}
 	}
 }

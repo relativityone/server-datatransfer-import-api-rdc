@@ -33,6 +33,11 @@ namespace Relativity.Import.Client.NUnit
 		private const int TestRootFolderId = 100000;
 		private const int TestWorkspaceId = 2000000;
 
+		private DataSet mockDataSet;
+		private DataTable mockDataTable;
+		private Mock<IHierarchicArtifactManager> mockFolderManager;
+		private Mock<Logging.ILog> mockLogger;
+
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
 			"Microsoft.Performance",
 			"CA1811:AvoidUncalledPrivateCode",
@@ -63,11 +68,6 @@ namespace Relativity.Import.Client.NUnit
 				}
 			}
 		}
-
-		private DataSet mockDataSet;
-		private DataTable mockDataTable;
-		private Mock<IHierarchicArtifactManager> mockFolderManager;
-		private Mock<Logging.ILog> mockLogger;
 
 		/// <summary>
 		/// The test setup.
@@ -120,7 +120,10 @@ namespace Relativity.Import.Client.NUnit
 			ArgumentNullException exception = Assert.Throws<ArgumentNullException>(
 				() =>
 				{
-					IFolderCache folderCache = new FolderCache(null, this.mockFolderManager.Object, TestRootFolderId,
+					IFolderCache folderCache = new FolderCache(
+						null,
+						this.mockFolderManager.Object,
+						TestRootFolderId,
 						TestWorkspaceId);
 					Assert.That(folderCache, Is.Not.Null);
 				});
@@ -155,6 +158,9 @@ namespace Relativity.Import.Client.NUnit
 		/// <summary>
 		/// An exception is thrown when the root folder artifact identifier is out of range.
 		/// </summary>
+		/// <param name="rootFolderId">
+		/// The test root folder identifier.
+		/// </param>
 		[Test]
 		[Category(TestCategories.Folder)]
 		[TestCase(0)]
@@ -327,6 +333,9 @@ namespace Relativity.Import.Client.NUnit
 		/// <summary>
 		/// An exception is thrown when the workspace artifact identifier is out of range.
 		/// </summary>
+		/// <param name="workspaceId">
+		/// The test workspace unique identifier.
+		/// </param>
 		[Test]
 		[Category(TestCategories.Folder)]
 		[TestCase(0)]
@@ -356,6 +365,15 @@ namespace Relativity.Import.Client.NUnit
 		/// <summary>
 		/// Verifies that non-existent folders are created using the mock folder manager.
 		/// </summary>
+		/// <param name="folderPath">
+		/// The test folder path.
+		/// </param>
+		/// <param name="expectedCacheCount">
+		/// The expected count.
+		/// </param>
+		/// <param name="clearRows">
+		/// The flag indicating whether to clear all data table rows.
+		/// </param>
 		[Test]
 		[Category(TestCategories.Folder)]
 		[TestCaseSource(nameof(CreateFolderTestCases))]
@@ -400,6 +418,12 @@ namespace Relativity.Import.Client.NUnit
 		/// <summary>
 		/// Verifies that each specified path returns the expected folder artifact identifier from the mocked dataset.
 		/// </summary>
+		/// <param name="folderPath">
+		/// The test folder path.
+		/// </param>
+		/// <param name="expectedArtifactId">
+		/// The expected artifact unique identifier.
+		/// </param>
 		[Test]
 		[Category(TestCategories.Folder)]
 		[TestCase("\\", 100000)]

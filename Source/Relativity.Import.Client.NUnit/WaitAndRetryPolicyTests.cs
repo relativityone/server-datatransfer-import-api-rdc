@@ -9,229 +9,253 @@
 
 namespace Relativity.Import.Client.NUnit
 {
-    using System;
-    using System.Threading;
+	using System;
+	using System.Threading;
 
-    using kCura.WinEDDS.TApi;
+	using global::NUnit.Framework;
 
-    using global::NUnit.Framework;
+	using kCura.WinEDDS.TApi;
 
-    [TestFixture]
-    public class WaitAndRetryPolicyTests
-    {
-        private int waitTimeMillisecondsBetweenRetryAttempts;
-        private int actualRetryCallCount;
-        private int actualExecFuncCallCount;
-        private int expectedRetryCallCount;
-        private int expectedExecFuncCallCount;
-        private Func<int, TimeSpan> retryDuration;
-        private Action<Exception, TimeSpan> retryAction;
-        private Action<CancellationToken> execFunc;
+	[TestFixture]
+	public class WaitAndRetryPolicyTests
+	{
+		private int waitTimeMillisecondsBetweenRetryAttempts;
+		private int actualRetryCallCount;
+		private int actualExecFuncCallCount;
+		private int expectedRetryCallCount;
+		private int expectedExecFuncCallCount;
+		private Func<int, TimeSpan> retryDuration;
+		private Action<Exception, TimeSpan> retryAction;
+		private Action<CancellationToken> execFunc;
 
-        private class WaitAndRetryPolicyException : Exception
-        {
-        }
+		[SetUp]
+		public void Setup()
+		{
+			// DO NOT INCREASE this VALUE BECAUSE IT WILL INCREASE THE TESTS EXECUTION TIME
+			this.waitTimeMillisecondsBetweenRetryAttempts = 1;
+			this.actualRetryCallCount = 0;
+			this.actualExecFuncCallCount = 0;
+		}
 
-        [SetUp]
-        public void Setup()
-        {
-            waitTimeMillisecondsBetweenRetryAttempts = 1;   //DO NOT INCREASE this VALUE BECAUSE IT WILL INCREASE THE TESTS EXECUTION TIME
+		[TestCase(1)]
+		[TestCase(2)]
+		[TestCase(2)]
+		[TestCase(12)]
+		public void ItShouldWaitAndRetryWithMethodParamsSuccess(int maxRetryCount)
+		{
+			this.GivenTheExpectedRetryCallCount(0);
+			this.GivenTheExpectedExecFuncCallCount(1);
 
-            actualRetryCallCount = 0;
-            actualExecFuncCallCount = 0;
-        }
+			this.GivenTheRetryDuration();
+			this.GivenTheRetryAction();
+			this.GivenTheExecFunc((token) => { this.actualExecFuncCallCount++; });
 
-        [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(2)]
-        [TestCase(12)]
-        public void ItShouldWaitAndRetryWithMethodParamsSuccess(int maxRetryCount)
-        {
-            GivenTheExpectedRetryCallCount(0);
-            GivenTheExpectedExecFuncCallCount(1);
+			// Act
+			this.WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParams(maxRetryCount);
 
-            GivenTheRetryDuration();
-            GivenTheRetryAction();
-            GivenTheExecFunc((token) => { actualExecFuncCallCount++; });
+			// Assert
+			this.ThenTheActualRetryCallCountShouldEqual();
+			this.ThenTheActualExecFuncCallCountShouldEqual();
+		}
 
-            //Act
-            WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParams(maxRetryCount);
+		[TestCase(1)]
+		[TestCase(2)]
+		[TestCase(2)]
+		[TestCase(12)]
+		public void ItShouldWaitAndRetryWithConstructorParamsSuccess(int maxRetryCount)
+		{
+			this.GivenTheExpectedRetryCallCount(0);
+			this.GivenTheExpectedExecFuncCallCount(1);
 
-            //Assert
-            ThenTheActualRetryCallCountShouldEqual();
-            ThenTheActualExecFuncCallCountShouldEqual();
-        }
+			this.GivenTheRetryDuration();
+			this.GivenTheRetryAction();
+			this.GivenTheExecFunc((token) => { this.actualExecFuncCallCount++; });
 
-        [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(2)]
-        [TestCase(12)]
-        public void ItShouldWaitAndRetryWithConstructorParamsSuccess(int maxRetryCount)
-        {
-            GivenTheExpectedRetryCallCount(0);
-            GivenTheExpectedExecFuncCallCount(1);
+			this.WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParams(maxRetryCount);
 
-            GivenTheRetryDuration();
-            GivenTheRetryAction();
-            GivenTheExecFunc((token) => { actualExecFuncCallCount++; });
-            
-            WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParams(maxRetryCount);
-            
-            ThenTheActualRetryCallCountShouldEqual();
-            ThenTheActualExecFuncCallCountShouldEqual();
-        }
-        
-        [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(3)]
-        [TestCase(10)]
-        public void ItShouldWaitAndRetryWithMethodParamsAlwaysFails(int maxRetryCount)
-        {
-            GivenTheExpectedRetryCallCount(maxRetryCount);
-            GivenTheExpectedExecFuncCallCount(maxRetryCount + 1);
+			this.ThenTheActualRetryCallCountShouldEqual();
+			this.ThenTheActualExecFuncCallCountShouldEqual();
+		}
 
-            GivenTheRetryDuration();
-            GivenTheRetryAction();
-            GivenTheExecFunc((token) => {
-                actualExecFuncCallCount++;
-                throw new WaitAndRetryPolicyException();
-            });
-            
-            WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParamsThenThwowsException(maxRetryCount);
-            
-            ThenTheActualRetryCallCountShouldEqual();
-            ThenTheActualExecFuncCallCountShouldEqual();
-        }
-        
-        [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(3)]
-        [TestCase(10)]
-        public void ItShouldWaitAndRetryWithConstructorParamsAlwaysFails(int maxRetryCount)
-        {
-            GivenTheExpectedRetryCallCount(maxRetryCount);
-            GivenTheExpectedExecFuncCallCount(maxRetryCount + 1);
+		[TestCase(1)]
+		[TestCase(2)]
+		[TestCase(3)]
+		[TestCase(10)]
+		public void ItShouldWaitAndRetryWithMethodParamsAlwaysFails(int maxRetryCount)
+		{
+			this.GivenTheExpectedRetryCallCount(maxRetryCount);
+			this.GivenTheExpectedExecFuncCallCount(maxRetryCount + 1);
 
-            GivenTheRetryDuration();
-            GivenTheRetryAction();
-            GivenTheExecFunc((token) => {
-                actualExecFuncCallCount++;
-                throw new WaitAndRetryPolicyException();
-            });
-            
-            WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParamsThenThwowsException(maxRetryCount);
-            
-            ThenTheActualRetryCallCountShouldEqual();
-            ThenTheActualExecFuncCallCountShouldEqual();
-        }
-        
-        [TestCase(2, 1)]
-        [TestCase(3, 2)]
-        [TestCase(10, 5)]
-        public void ItShouldWaitAndRetryWithMethodParamsNotAllFails(int maxRetryCount, int succesAfterRetryNum)
-        {
-            GivenTheExpectedRetryCallCount(succesAfterRetryNum);
-            GivenTheExpectedExecFuncCallCount(succesAfterRetryNum + 1);
+			this.GivenTheRetryDuration();
+			this.GivenTheRetryAction();
+			this.GivenTheExecFunc((token) =>
+			{
+				this.actualExecFuncCallCount++;
+				throw new WaitAndRetryPolicyException();
+			});
 
-            GivenTheRetryDuration();
-            GivenTheRetryAction();
-            GivenTheExecFunc((token) => {
-                actualExecFuncCallCount++;
-                if (actualExecFuncCallCount <= succesAfterRetryNum)
-                {
-                    throw new WaitAndRetryPolicyException();
-                }
-            });
-            
-            WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParams(maxRetryCount);
-            
-            ThenTheActualRetryCallCountShouldEqual();
-            ThenTheActualExecFuncCallCountShouldEqual();
-        }
+			this.WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParamsThenThwowsException(maxRetryCount);
 
-        [TestCase(2, 1)]
-        [TestCase(3, 2)]
-        [TestCase(10, 5)]
-        public void ItShouldWaitAndRetryWithConstructorParamsNotAllFails(int maxRetryCount, int succesAfterRetryNum)
-        {
-            GivenTheExpectedRetryCallCount(succesAfterRetryNum);
-            GivenTheExpectedExecFuncCallCount(succesAfterRetryNum + 1);
+			this.ThenTheActualRetryCallCountShouldEqual();
+			this.ThenTheActualExecFuncCallCountShouldEqual();
+		}
 
-            GivenTheRetryDuration();
-            GivenTheRetryAction();
-            GivenTheExecFunc((token) => {
-                actualExecFuncCallCount++;
-                if (actualExecFuncCallCount <= succesAfterRetryNum)
-                {
-                    throw new WaitAndRetryPolicyException();
-                }
-            });
-            
-            WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParams(maxRetryCount);
-            
-            ThenTheActualRetryCallCountShouldEqual();
-            ThenTheActualExecFuncCallCountShouldEqual();
-        }
+		[TestCase(1)]
+		[TestCase(2)]
+		[TestCase(3)]
+		[TestCase(10)]
+		public void ItShouldWaitAndRetryWithConstructorParamsAlwaysFails(int maxRetryCount)
+		{
+			this.GivenTheExpectedRetryCallCount(maxRetryCount);
+			this.GivenTheExpectedExecFuncCallCount(maxRetryCount + 1);
 
-        private void GivenTheExpectedRetryCallCount(int expectedRetryCallCount)
-        {
-            this.expectedRetryCallCount = expectedRetryCallCount;
-        }
+			this.GivenTheRetryDuration();
+			this.GivenTheRetryAction();
+			this.GivenTheExecFunc((token) =>
+			{
+				this.actualExecFuncCallCount++;
+				throw new WaitAndRetryPolicyException();
+			});
 
-        private void GivenTheExpectedExecFuncCallCount(int expectedExecFuncCallCount)
-        {
-            this.expectedExecFuncCallCount = expectedExecFuncCallCount;
-        }
+			this.WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParamsThenThrowsException(maxRetryCount);
 
-        private void GivenTheRetryDuration()
-        {
-            retryDuration = waitTime => TimeSpan.FromMilliseconds(waitTimeMillisecondsBetweenRetryAttempts);
-        }
+			this.ThenTheActualRetryCallCountShouldEqual();
+			this.ThenTheActualExecFuncCallCountShouldEqual();
+		}
 
-        private void GivenTheRetryAction()
-        {
-            retryAction = (exception, timeSpan) => { actualRetryCallCount++; };
-        }
-        
-        private void GivenTheExecFunc(Action<CancellationToken> action)
-        {
-            execFunc = action;
-        }
+		[TestCase(2, 1)]
+		[TestCase(3, 2)]
+		[TestCase(10, 5)]
+		public void ItShouldWaitAndRetryWithMethodParamsNotAllFails(int maxRetryCount, int succesAfterRetryNum)
+		{
+			this.GivenTheExpectedRetryCallCount(succesAfterRetryNum);
+			this.GivenTheExpectedExecFuncCallCount(succesAfterRetryNum + 1);
 
-        private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParams(int maxRetryCount)
-        {
-            var waitAndRetryPolicy = new WaitAndRetryPolicy(maxRetryCount, waitTimeMillisecondsBetweenRetryAttempts);
-            waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(retryDuration, retryAction, execFunc, CancellationToken.None);
-        }
+			this.GivenTheRetryDuration();
+			this.GivenTheRetryAction();
+			this.GivenTheExecFunc((token) =>
+			{
+				this.actualExecFuncCallCount++;
+				if (this.actualExecFuncCallCount <= succesAfterRetryNum)
+				{
+					throw new WaitAndRetryPolicyException();
+				}
+			});
 
-        private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParamsThenThwowsException(int maxRetryCount)
-        {
-            var waitAndRetryPolicy = new WaitAndRetryPolicy(maxRetryCount, waitTimeMillisecondsBetweenRetryAttempts);
-            Assert.That(() => waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(retryDuration, retryAction, execFunc, CancellationToken.None),
-                Throws.Exception.TypeOf<WaitAndRetryPolicyException>());
-        }
+			this.WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParams(maxRetryCount);
 
-        private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParams(int maxRetryCount)
-        {
-            var waitAndRetryPolicy = new WaitAndRetryPolicy();
-            waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(maxRetryCount, retryDuration, retryAction, execFunc, CancellationToken.None);
-        }
+			this.ThenTheActualRetryCallCountShouldEqual();
+			this.ThenTheActualExecFuncCallCountShouldEqual();
+		}
 
-        private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParamsThenThwowsException(int maxRetryCount)
-        {
-            var waitAndRetryPolicy = new WaitAndRetryPolicy();
-            Assert.That(() => waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(maxRetryCount, retryDuration, retryAction, execFunc, CancellationToken.None),
-                Throws.Exception.TypeOf<WaitAndRetryPolicyException>());
-        }
-        
-        private void ThenTheActualRetryCallCountShouldEqual()
-        {
-            Assert.That(actualRetryCallCount, Is.EqualTo(expectedRetryCallCount));
-        }
+		[TestCase(2, 1)]
+		[TestCase(3, 2)]
+		[TestCase(10, 5)]
+		public void ItShouldWaitAndRetryWithConstructorParamsNotAllFails(int maxRetryCount, int succesAfterRetryNum)
+		{
+			this.GivenTheExpectedRetryCallCount(succesAfterRetryNum);
+			this.GivenTheExpectedExecFuncCallCount(succesAfterRetryNum + 1);
 
-        private void ThenTheActualExecFuncCallCountShouldEqual()
-        {
-            Assert.That(actualExecFuncCallCount, Is.EqualTo(expectedExecFuncCallCount));
-        }
-    }
+			this.GivenTheRetryDuration();
+			this.GivenTheRetryAction();
+			this.GivenTheExecFunc((token) =>
+			{
+				this.actualExecFuncCallCount++;
+				if (this.actualExecFuncCallCount <= succesAfterRetryNum)
+				{
+					throw new WaitAndRetryPolicyException();
+				}
+			});
+
+			this.WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParams(maxRetryCount);
+
+			this.ThenTheActualRetryCallCountShouldEqual();
+			this.ThenTheActualExecFuncCallCountShouldEqual();
+		}
+
+		private void GivenTheExpectedRetryCallCount(int expectedRetryCallCount)
+		{
+			this.expectedRetryCallCount = expectedRetryCallCount;
+		}
+
+		private void GivenTheExpectedExecFuncCallCount(int expectedExecFuncCallCount)
+		{
+			this.expectedExecFuncCallCount = expectedExecFuncCallCount;
+		}
+
+		private void GivenTheRetryDuration()
+		{
+			this.retryDuration = waitTime => TimeSpan.FromMilliseconds(this.waitTimeMillisecondsBetweenRetryAttempts);
+		}
+
+		private void GivenTheRetryAction()
+		{
+			this.retryAction = (exception, timeSpan) => { this.actualRetryCallCount++; };
+		}
+
+		private void GivenTheExecFunc(Action<CancellationToken> action)
+		{
+			this.execFunc = action;
+		}
+
+		private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParams(int maxRetryCount)
+		{
+			var waitAndRetryPolicy = new WaitAndRetryPolicy(maxRetryCount, this.waitTimeMillisecondsBetweenRetryAttempts);
+			waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(
+				this.retryDuration,
+				this.retryAction,
+				this.execFunc,
+				CancellationToken.None);
+		}
+
+		private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParamsThenThrowsException(int maxRetryCount)
+		{
+			var waitAndRetryPolicy = new WaitAndRetryPolicy(maxRetryCount, this.waitTimeMillisecondsBetweenRetryAttempts);
+			Assert.That(
+				() => waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(
+					this.retryDuration,
+					this.retryAction,
+					this.execFunc,
+					CancellationToken.None),
+				Throws.Exception.TypeOf<WaitAndRetryPolicyException>());
+		}
+
+		private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParams(int maxRetryCount)
+		{
+			var waitAndRetryPolicy = new WaitAndRetryPolicy();
+			waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(
+				maxRetryCount,
+				this.retryDuration,
+				this.retryAction,
+				this.execFunc,
+				CancellationToken.None);
+		}
+
+		private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParamsThenThwowsException(int maxRetryCount)
+		{
+			var waitAndRetryPolicy = new WaitAndRetryPolicy();
+			Assert.That(
+				() => waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(
+					maxRetryCount,
+					this.retryDuration,
+					this.retryAction,
+					this.execFunc,
+					CancellationToken.None),
+				Throws.Exception.TypeOf<WaitAndRetryPolicyException>());
+		}
+
+		private void ThenTheActualRetryCallCountShouldEqual()
+		{
+			Assert.That(this.actualRetryCallCount, Is.EqualTo(this.expectedRetryCallCount));
+		}
+
+		private void ThenTheActualExecFuncCallCountShouldEqual()
+		{
+			Assert.That(this.actualExecFuncCallCount, Is.EqualTo(this.expectedExecFuncCallCount));
+		}
+
+		private class WaitAndRetryPolicyException : Exception
+		{
+		}
+	}
 }
