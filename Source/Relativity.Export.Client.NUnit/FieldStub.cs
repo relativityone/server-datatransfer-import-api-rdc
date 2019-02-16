@@ -10,11 +10,13 @@ namespace Relativity.Export.Client.NUnit
 
     public class FieldStub : kCura.WinEDDS.ViewFieldInfo
 	{
-		public FieldStub(DataRow row) : base(row)
+		public FieldStub(DataRow row)
+			: base(row)
 		{
 		}
 
-		public FieldStub(Relativity.ViewFieldInfo vfi) : base(vfi)
+		public FieldStub(Relativity.ViewFieldInfo vfi)
+			: base(vfi)
 		{
 		}
 

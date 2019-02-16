@@ -9,10 +9,10 @@ namespace Relativity.Export.Client.NUnit
     using System.Collections.Generic;
     using System.Linq;
 
-    using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings;
-
     using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings;
 
     using Relativity.ImportExport.UnitTestFramework;
     using Relativity.Logging;
@@ -39,10 +39,10 @@ namespace Relativity.Export.Client.NUnit
 				SelectedViewFields = fields
 			};
 
-			//ACT
+			// ACT
 			ViewFieldInfo[] actualFields = _instance.CreateColumns(exportSettings);
 
-			//ASSERT
+			// ASSERT
 			CollectionAssert.AreEquivalent(fields, actualFields);
 		}
 
@@ -67,10 +67,10 @@ namespace Relativity.Export.Client.NUnit
 				SelectedViewFields = fields
 			};
 
-			//ACT
+			// ACT
 			ViewFieldInfo[] actualFields = _instance.CreateColumns(exportSettings);
 
-			//ASSERT
+			// ASSERT
 			CollectionAssert.IsSubsetOf(fields, actualFields);
 			Assert.That(actualFields.Any(x => x is CoalescedTextViewField));
 			Assert.That(actualFields.Length, Is.EqualTo(fields.Length + 1));
@@ -81,8 +81,7 @@ namespace Relativity.Export.Client.NUnit
 		{
 			QueryFieldFactory fieldFactory = new QueryFieldFactory();
             ViewFieldInfo[] fields = fieldFactory.GetAllDocumentFields().ToArray();
-
-			ViewFieldInfo[] textFields = {fieldFactory.GetExtractedTextField()};
+            ViewFieldInfo[] textFields = { fieldFactory.GetExtractedTextField() };
 
 			ViewFieldInfo fieldToReplace = fields.First(x => x.Equals(textFields[0]));
 			int indexOfFieldToReplace = fields.ToList().IndexOf(fieldToReplace);
@@ -93,10 +92,10 @@ namespace Relativity.Export.Client.NUnit
 				SelectedViewFields = fields
 			};
 
-			//ACT
+			// ACT
 			ViewFieldInfo[] actualFields = _instance.CreateColumns(exportSettings);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(actualFields.Length, Is.EqualTo(fields.Length));
 			for (int i = 0; i < fields.Length; i++)
 			{
@@ -118,8 +117,7 @@ namespace Relativity.Export.Client.NUnit
 		{
 			QueryFieldFactory fieldFactory = new QueryFieldFactory();
 			ViewFieldInfo[] fields = fieldFactory.GetAllDocumentFields().Where(x => x.AvfColumnName != "ExtractedText").ToArray();
-
-			ViewFieldInfo[] textFields = {fieldFactory.GetExtractedTextField()};
+			ViewFieldInfo[] textFields = { fieldFactory.GetExtractedTextField() };
 
 			ExportFile exportSettings = new ExportFile(1)
 			{
@@ -127,10 +125,10 @@ namespace Relativity.Export.Client.NUnit
 				SelectedViewFields = fields
 			};
 
-			//ACT
+			// ACT
 			ViewFieldInfo[] actualFields = _instance.CreateColumns(exportSettings);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(actualFields.Length, Is.EqualTo(fields.Length + 1));
 			CollectionAssert.IsSubsetOf(fields, actualFields);
 			Assert.That(actualFields.Last().AvfColumnName, Is.EqualTo("Text Precedence"));

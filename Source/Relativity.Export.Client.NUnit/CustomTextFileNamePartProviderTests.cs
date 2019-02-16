@@ -6,11 +6,11 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using FileNaming.CustomFileNaming;
+	using FileNaming.CustomFileNaming;
+
+	using global::NUnit.Framework;
 
     using kCura.WinEDDS.FileNaming.CustomFileNaming;
-
-    using global::NUnit.Framework;
 
     public class CustomTextFileNamePartProviderTests
 	{

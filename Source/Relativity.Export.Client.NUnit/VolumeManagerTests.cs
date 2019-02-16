@@ -8,21 +8,20 @@ namespace Relativity.Export.Client.NUnit
 {
     using System;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
 
-    using global::NUnit.Framework;
-
     [TestFixture]
 	public class VolumeManagerTests
 	{
+		private const int _MBS_TO_BYTES = 1024 * 1024;
 		private kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories.VolumeManager _instance;
 		private Mock<ISubdirectoryManager> _subdirectoryManager;
-
-		private const int _MBS_TO_BYTES = 1024 * 1024;
 
 		[SetUp]
 		public void SetUp()
@@ -50,7 +49,7 @@ namespace Relativity.Export.Client.NUnit
 		{
 			SetUpInstance(volumeStartNumber, 1);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_instance.CurrentVolumeNumber, Is.EqualTo(volumeStartNumber));
 		}
 
@@ -74,11 +73,11 @@ namespace Relativity.Export.Client.NUnit
 				TextFilesSize = sizeInMBs * _MBS_TO_BYTES
 			};
 
-			//ACT
+			// ACT
 			_instance.MoveNext(predictions);
 			_instance.MoveNext(predictions);
 
-			//ASSERT
+			// ASSERT
 			_subdirectoryManager.Verify(x => x.RestartSubdirectoryCounting(), Times.Once);
 		}
 
@@ -96,7 +95,7 @@ namespace Relativity.Export.Client.NUnit
 				TextFilesSize = sizeInMBs * _MBS_TO_BYTES / 2
 			};
 
-			//ACT & ASSERT
+			// ACT & ASSERT
 			Assert.That(_instance.CurrentVolumeNumber, Is.EqualTo(startNumber));
 
 			_instance.MoveNext(predictions);
@@ -113,20 +112,20 @@ namespace Relativity.Export.Client.NUnit
 
 			VolumePredictions predictionsNative = new VolumePredictions
 			{
-				NativeFilesSize = sizeInMBs * _MBS_TO_BYTES + 1
+				NativeFilesSize = (sizeInMBs * _MBS_TO_BYTES) + 1
 			};
 
 			VolumePredictions predictionsImage = new VolumePredictions
 			{
-				ImageFilesSize = sizeInMBs * _MBS_TO_BYTES + 1
+				ImageFilesSize = (sizeInMBs * _MBS_TO_BYTES) + 1
 			};
 
 			VolumePredictions predictionsText = new VolumePredictions
 			{
-				TextFilesSize = sizeInMBs * _MBS_TO_BYTES + 1
+				TextFilesSize = (sizeInMBs * _MBS_TO_BYTES) + 1
 			};
 
-			//ACT & ASSERT
+			// ACT & ASSERT
 			_instance.MoveNext(predictionsNative);
 			Assert.That(_instance.CurrentVolumeNumber, Is.EqualTo(startNumber));
 
@@ -169,7 +168,7 @@ namespace Relativity.Export.Client.NUnit
 				TextFilesSize = sizeInMBs * _MBS_TO_BYTES / 2
 			};
 
-			//ACT & ASSERT
+			// ACT & ASSERT
 			_instance.MoveNext(predictionsNotExceeding);
 			Assert.That(_instance.CurrentVolumeNumber, Is.EqualTo(startNumber));
 

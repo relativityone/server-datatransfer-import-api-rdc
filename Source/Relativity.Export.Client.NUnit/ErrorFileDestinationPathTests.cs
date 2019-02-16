@@ -6,11 +6,11 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using kCura.WinEDDS;
+	using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
 
-    using global::NUnit.Framework;
-    
     using Relativity.Logging;
 
     [TestFixture]
@@ -29,11 +29,11 @@ namespace Relativity.Export.Client.NUnit
 		[Test]
 		public void ItShouldReturnSamePathEveryTime()
 		{
-			//ACT
+			// ACT
 			string path1 = _instance.Path;
 			string path2 = _instance.Path;
 
-			//ASSERT
+			// ASSERT
 			Assert.That(path1, Is.Not.Null.Or.Empty);
 			Assert.That(path1, Is.EqualTo(path2));
 		}
@@ -41,12 +41,12 @@ namespace Relativity.Export.Client.NUnit
 		[Test]
 		public void ItShouldReturnItErrorFileCreated()
 		{
-			//ACT
+			// ACT
 			bool beforeFirstPathCall = _instance.IsErrorFileCreated();
 			string path = _instance.Path;
 			bool afterFirstPathCall = _instance.IsErrorFileCreated();
 
-			//ASSERT
+			// ASSERT
 			Assert.That(beforeFirstPathCall, Is.False);
 			Assert.That(afterFirstPathCall, Is.True);
 		}

@@ -6,7 +6,9 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using kCura.WinEDDS;
+	using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
     using kCura.WinEDDS.Exporters;
@@ -14,21 +16,16 @@ namespace Relativity.Export.Client.NUnit
 
     using Moq;
 
-    using global::NUnit.Framework;
-
     using Relativity.Logging;
 
     [TestFixture]
 	public class LineNativeFilePathTests
 	{
-		private LineNativeFilePath _instance;
-
-		private ExportFile _exportSettings;
-
-		private Mock<IFilePathTransformer> _filePathTransformer;
-
 		private const char _QUOTE_DELIMITER = 'Q';
 		private const char _RECORD_DELIMITER = 'R';
+		private LineNativeFilePath _instance;
+		private ExportFile _exportSettings;
+		private Mock<IFilePathTransformer> _filePathTransformer;
 
 		[SetUp]
 		public void SetUp()
@@ -54,10 +51,10 @@ namespace Relativity.Export.Client.NUnit
 				NativeSourceLocation = "native_source_location"
 			};
 
-			//ACT
+			// ACT
 			_instance.AddNativeFilePath(loadFileEntry, artifact);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(LoadFileTestHelpers.GetStringFromEntry(loadFileEntry), Is.EqualTo(string.Empty));
 		}
 
@@ -79,10 +76,10 @@ namespace Relativity.Export.Client.NUnit
 				NativeSourceLocation = nativeSourceLocation
 			};
 
-			//ACT
+			// ACT
 			_instance.AddNativeFilePath(loadFileEntry, artifact);
 
-			//ASSERT
+			// ASSERT
 			string expectedValue = LoadFileTestHelpers.FormatPathEntry(nativeSourceLocation, _QUOTE_DELIMITER, _RECORD_DELIMITER);
 			Assert.That(LoadFileTestHelpers.GetStringFromEntry(loadFileEntry), Is.EqualTo(expectedValue));
 		}
@@ -108,10 +105,10 @@ namespace Relativity.Export.Client.NUnit
 
 			_filePathTransformer.Setup(x => x.TransformPath(nativeTempLocation)).Returns(transformedLocation);
 
-			//ACT
+			// ACT
 			_instance.AddNativeFilePath(loadFileEntry, artifact);
 
-			//ASSERT
+			// ASSERT
 			string expectedValue = LoadFileTestHelpers.FormatPathEntry(transformedLocation, _QUOTE_DELIMITER, _RECORD_DELIMITER);
 			Assert.That(LoadFileTestHelpers.GetStringFromEntry(loadFileEntry), Is.EqualTo(expectedValue));
 		}
@@ -134,10 +131,10 @@ namespace Relativity.Export.Client.NUnit
 				NativeSourceLocation = "native_source_location"
 			};
 
-			//ACT
+			// ACT
 			_instance.AddNativeFilePath(loadFileEntry, artifact);
 
-			//ASSERT
+			// ASSERT
 			string expectedValue = LoadFileTestHelpers.FormatPathEntry(nativeTempLocation, _QUOTE_DELIMITER, _RECORD_DELIMITER);
 			Assert.That(LoadFileTestHelpers.GetStringFromEntry(loadFileEntry), Is.EqualTo(expectedValue));
 			_filePathTransformer.Verify(x => x.TransformPath(It.IsAny<string>()), Times.Never);

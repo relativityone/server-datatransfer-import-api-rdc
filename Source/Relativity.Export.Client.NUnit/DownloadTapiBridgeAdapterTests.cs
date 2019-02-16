@@ -1,17 +1,17 @@
 ﻿// -----------------------------------------------------------------------------------------------------
-// <copyright file="DownloadTapiBridgeAdapter.cs" company="Relativity ODA LLC">
+// <copyright file="DownloadTapiBridgeAdapterTests.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
 namespace Relativity.Export.Client.NUnit
 {
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
+	using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 
-    using Moq;
-
-    using global::NUnit.Framework;
+	using Moq;
 
     using Relativity.Transfer;
 
@@ -23,8 +23,11 @@ namespace Relativity.Export.Client.NUnit
 		protected DownloadTapiBridgeAdapter Instance { get; set; }
 
 		protected Mock<ITapiBridge> TapiBridge { get; private set; }
+
 		protected Mock<IProgressHandler> ProgressHandler { get; private set; }
+
 		protected Mock<IMessagesHandler> MessagesHandler { get; private set; }
+
 		protected Mock<ITransferStatistics> TransferStatistics { get; private set; }
 
 		protected void SetUpMocks()
@@ -40,7 +43,7 @@ namespace Relativity.Export.Client.NUnit
 		{
 			Instance.Dispose();
 
-			//ASSERT
+			// ASSERT
 			ProgressHandler.Verify(x => x.Attach(TapiBridge.Object), Times.Once);
 			ProgressHandler.Verify(x => x.Detach(), Times.Once);
 
@@ -56,21 +59,21 @@ namespace Relativity.Export.Client.NUnit
 		[Test]
 		public void ItShouldWaitForTransferJob()
 		{
-			//ACT
+			// ACT
 			Instance.QueueDownload(new TransferPath());
 			Instance.WaitForTransferJob();
 
-			//ASSERT
+			// ASSERT
 			TapiBridge.Verify(x => x.WaitForTransferJob(), Times.Once);
 		}
 
 		[Test]
 		public void ItShouldNotWaitForTransferJobWhenNothingHasBeenAddedToQueue()
 		{
-			//ACT
+			// ACT
 			Instance.WaitForTransferJob();
 
-			//ASSERT
+			// ASSERT
 			TapiBridge.Verify(x => x.WaitForTransferJob(), Times.Never);
 		}
 
@@ -79,20 +82,20 @@ namespace Relativity.Export.Client.NUnit
 		{
 			TransferPath transferPath = new TransferPath();
 
-			//ACT
+			// ACT
 			Instance.QueueDownload(transferPath);
 
-			//ASSERT
+			// ASSERT
 			TapiBridge.Verify(x => x.AddPath(transferPath), Times.Once);
 		}
 
 		[Test]
 		public void ItShouldDisconnect()
 		{
-			//ACT
+			// ACT
 			Instance.Disconnect();
 
-			//ASSERT
+			// ASSERT
 			TapiBridge.Verify(x => x.Disconnect(), Times.Once);
 		}
 	}

@@ -10,28 +10,25 @@ namespace Relativity.Export.Client.NUnit
     using System.IO;
     using System.Text;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
 
     [TestFixture]
 	public class ErrorFileWriterTests
 	{
-		private ErrorFileWriter _instance;
-
-		private MemoryStream _memoryStream;
-		private StreamWriter _streamWriter;
-
-		private Mock<IStatus> _status;
-
 		private const string _HEADER = "\"File Type\",\"Document Identifier\",\"File Guid\",\"Error Description\"";
 		private const string _ERROR_LINE = "\"{0}\",\"record_identifier\",\"file_location\",\"error_text\"";
+		private ErrorFileWriter _instance;
+		private MemoryStream _memoryStream;
+		private StreamWriter _streamWriter;
+		private Mock<IStatus> _status;
 
 		[SetUp]
 		public void SetUp()
@@ -61,11 +58,11 @@ namespace Relativity.Export.Client.NUnit
 			const string fileLocation = "file_location";
 			const string errorText = "error_text";
 
-			//ACT
+			// ACT
 			_instance.Write(type, recordIdentifier, fileLocation, errorText);
 			_instance.Write(type, recordIdentifier, fileLocation, errorText);
 
-			//ASSERT
+			// ASSERT
 			string expectedText = $"{_HEADER}{Environment.NewLine}{string.Format(_ERROR_LINE, type)}{Environment.NewLine}{string.Format(_ERROR_LINE, type)}{Environment.NewLine}";
 			string writtenText = GetWrittenText();
 			Assert.That(writtenText, Is.EqualTo(expectedText));

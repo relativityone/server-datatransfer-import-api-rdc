@@ -10,12 +10,12 @@ namespace Relativity.Export.Client.NUnit
     using System.Collections.Generic;
     using System.Linq;
 
-    using kCura.Vendor.Castle.Core.Internal;
+    using global::NUnit.Framework;
+
+	using kCura.Vendor.Castle.Core.Internal;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
 
-    using Moq;
-
-    using global::NUnit.Framework;
+	using Moq;
 
     using Relativity.Logging;
 
@@ -40,20 +40,20 @@ namespace Relativity.Export.Client.NUnit
 		[Test]
 		public void ItShouldSaveStateForEveryStatefulComponent()
 		{
-			//ACT
+			// ACT
 			_instance.SaveState();
 
-			//ASSERT
+			// ASSERT
 			_statefulComponentMocks.ForEach(x => x.Verify(sc => sc.SaveState()));
 		}
 
 		[Test]
 		public void ItShouldRestoreStateInEveryStatefulComponent()
 		{
-			//ACT
+			// ACT
 			_instance.RestoreState();
 
-			//ASSERT
+			// ASSERT
 			_statefulComponentMocks.ForEach(x => x.Verify(sc => sc.RestoreLastState()));
 		}
 
@@ -62,7 +62,7 @@ namespace Relativity.Export.Client.NUnit
 		{
 			_statefulComponentMocks[1].Setup(x => x.SaveState()).Throws<Exception>();
 
-			//ACT & ASSERT
+			// ACT & ASSERT
 			Assert.Throws<Exception>(() => _instance.SaveState());
 
 			_statefulComponentMocks[0].Verify(x => x.SaveState());
@@ -74,7 +74,7 @@ namespace Relativity.Export.Client.NUnit
 		{
 			_statefulComponentMocks[1].Setup(x => x.RestoreLastState()).Throws<Exception>();
 
-			//ACT & ASSERT
+			// ACT & ASSERT
 			Assert.Throws<Exception>(() => _instance.RestoreState());
 
 			_statefulComponentMocks[0].Verify(x => x.RestoreLastState());

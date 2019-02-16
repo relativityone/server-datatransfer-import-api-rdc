@@ -8,13 +8,13 @@ namespace Relativity.Export.Client.NUnit
 {
     using System.Collections.Generic;
 
-    using kCura.Utility.Extensions;
+    using global::NUnit.Framework;
+
+	using kCura.Utility.Extensions;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
     using kCura.WinEDDS.Exporters;
-
-    using global::NUnit.Framework;
 
     [TestFixture]
 	public class ImageRepositoryTests
@@ -35,12 +35,12 @@ namespace Relativity.Export.Client.NUnit
 		[Test]
 		public void ItShouldSearchImageByArtifactIdAndBatesNumber()
 		{
-			//ACT
+			// ACT
 			Image image1 = _instance.GetImage(1, "bates_1");
 			Image image2 = _instance.GetImage(1, "bates_2");
 			Image image3 = _instance.GetImage(2, "bates_3");
 
-			//ASSERT
+			// ASSERT
 			Assert.That(image1, Is.EqualTo(_images[0]));
 			Assert.That(image2, Is.EqualTo(_images[1]));
 			Assert.That(image3, Is.EqualTo(_images[2]));
@@ -49,11 +49,11 @@ namespace Relativity.Export.Client.NUnit
 		[Test]
 		public void ItShouldGetImagesForArtifact()
 		{
-			//ACT
+			// ACT
 			IList<Image> images1 = _instance.GetArtifactImages(1);
 			IList<Image> images2 = _instance.GetArtifactImages(2);
 
-			//ASSERT
+			// ASSERT
 			CollectionAssert.AreEquivalent(_images.GetRange(0, 2), images1);
 			CollectionAssert.AreEquivalent(_images[2].InList(), images2);
 		}
@@ -61,10 +61,10 @@ namespace Relativity.Export.Client.NUnit
 		[Test]
 		public void ItShouldGetAllImages()
 		{
-			//ACT
+			// ACT
 			IList<Image> images = _instance.GetImages();
 
-			//ASSERT
+			// ASSERT
 			CollectionAssert.AreEquivalent(_images, images);
 		}
 
@@ -77,22 +77,22 @@ namespace Relativity.Export.Client.NUnit
 				_images[2].ExportRequest
 			};
 
-			//ACT
+			// ACT
 			IEnumerable<ExportRequest> exportRequests = _instance.GetExportRequests();
 
-			//ASSERT
+			// ASSERT
 			CollectionAssert.AreEquivalent(expectedExportRequests, exportRequests);
 		}
 
 		[Test]
 		public void ItShouldGetImageByUniqueId()
 		{
-			//ACT
+			// ACT
 			Image image1 = _instance.GetByLineNumber(1);
 			Image image2 = _instance.GetByLineNumber(2);
 			Image image3 = _instance.GetByLineNumber(3);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(image1, Is.EqualTo(_images[0]));
 			Assert.That(image2, Is.Null);
 			Assert.That(image3, Is.EqualTo(_images[2]));
@@ -101,15 +101,13 @@ namespace Relativity.Export.Client.NUnit
 		[Test]
 		public void ItShouldClearRepository()
 		{
-			//ACT
+			// ACT
 			_instance.Clear();
 			IList<Image> images = _instance.GetImages();
 
-			//ASSERT
+			// ASSERT
 			CollectionAssert.IsEmpty(images);
 		}
-
-		#region DataSet
 
 		private List<Image> CreateDataSet()
 		{
@@ -155,9 +153,7 @@ namespace Relativity.Export.Client.NUnit
 			};
 			image3.ExportRequest.CreateTransferPath(3);
 
-			return new List<Image> {image1, image2, image3};
+			return new List<Image> { image1, image2, image3 };
 		}
-
-		#endregion
 	}
 }

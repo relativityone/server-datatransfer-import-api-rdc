@@ -9,14 +9,14 @@ namespace Relativity.Export.Client.NUnit
     using System.Collections.Generic;
     using System.Threading;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
     using kCura.WinEDDS.Exporters;
     using kCura.WinEDDS.LoadFileEntry;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
 
@@ -45,11 +45,11 @@ namespace Relativity.Export.Client.NUnit
 			const string columnHeader = "column_header";
 			_fieldLookupService.Setup(x => x.GetColumnHeader()).Returns(columnHeader);
 
-			//ACT
+			// ACT
 			IDictionary<int, ILoadFileEntry> loadFileEntriesWithHeader = _instance.AddLines(new ObjectExportInfo[0], CancellationToken.None);
 			IDictionary<int, ILoadFileEntry> loadFileEntriesWithoutHeader = _instance.AddLines(new ObjectExportInfo[0], CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(loadFileEntriesWithHeader.ContainsKey(-1), Is.True);
 			Assert.That(loadFileEntriesWithoutHeader.ContainsKey(-1), Is.False);
 
@@ -78,10 +78,12 @@ namespace Relativity.Export.Client.NUnit
 			ILoadFileEntry line2 = new CompletedLoadFileEntry("value_2");
 			_loadFileLine.Setup(x => x.CreateLine(artifact2)).Returns(line2);
 
-			//ACT
-			IDictionary<int, ILoadFileEntry> loadFileEntries = _instance.AddLines(new[] {artifact1, artifact2}, CancellationToken.None);
+			// ACT
+			IDictionary<int, ILoadFileEntry> loadFileEntries = _instance.AddLines(
+				new[] { artifact1, artifact2 },
+				CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(loadFileEntries.ContainsKey(artifactId1), Is.True);
 			Assert.That(loadFileEntries[artifactId1], Is.EqualTo(line1));
 

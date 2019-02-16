@@ -8,24 +8,24 @@ namespace Relativity.Export.Client.NUnit
 {
     using System.Collections.Generic;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation;
     using kCura.WinEDDS.Exporters;
     using kCura.WinEDDS.Exporters.Validator;
 
     using Moq;
 
-    using global::NUnit.Framework;
-
     using Relativity.Logging;
 
 	[TestFixture]
 	public class VolumeAndSubdirectoryValidatorTests
 	{
-		private Mock<IUserNotification> _userNotificationMock;
-		private VolumeAndSubdirectoryValidator _instance;
+		private const int _MAX_DIGIT_PADDING = 10;
+		private const int _DEFAULT_NUMBER_OF_FILES = 1000;
 
-		private static List<TestCaseData> _volumePaddingValidationTestCaseData = new List<TestCaseData>()
+		private static readonly List<TestCaseData> _volumePaddingValidationTestCaseData = new List<TestCaseData>()
 		{
 			new TestCaseData(0, 0, 0).Returns(false),
 			new TestCaseData(0, 0, 1).Returns(true),
@@ -48,8 +48,8 @@ namespace Relativity.Export.Client.NUnit
 			new TestCaseData(99999, 1, 6).Returns(true),
 		};
 
-		private const int _MAX_DIGIT_PADDING = 10;
-		private const int _DEFAULT_NUMBER_OF_FILES = 1000;
+		private Mock<IUserNotification> _userNotificationMock;
+		private VolumeAndSubdirectoryValidator _instance;
 
 		[SetUp]
 		public void SetUp()
@@ -120,6 +120,5 @@ namespace Relativity.Export.Client.NUnit
 
 			return _instance.Validate(exportSettings, totalFiles);
 		}
-
 	}
 }

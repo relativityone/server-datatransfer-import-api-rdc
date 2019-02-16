@@ -6,19 +6,19 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading;
+	using System;
+	using System.Collections.Generic;
+	using System.Threading;
 
-    using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-    using kCura.WinEDDS.Exporters;
+	using global::NUnit.Framework;
 
-    using Moq;
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
+	using kCura.WinEDDS.Exporters;
 
-    using global::NUnit.Framework;
+	using Moq;
 
     [TestFixture]
 	public abstract class ExportRequestBuilderTests
@@ -40,7 +40,10 @@ namespace Relativity.Export.Client.NUnit
 			Instance = CreateInstance(_filePathProvider.Object, _fileNameProvider.Object, _validator.Object, _fileProcessingStatistics.Object);
 		}
 
-		protected abstract ExportRequestBuilder CreateInstance(IFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, IExportFileValidator exportFileValidator,
+		protected abstract ExportRequestBuilder CreateInstance(
+			IFilePathProvider filePathProvider,
+			IFileNameProvider fileNameProvider,
+			IExportFileValidator exportFileValidator,
 			IFileProcessingStatistics fileProcessingStatistics);
 
 		[Test]
@@ -60,10 +63,10 @@ namespace Relativity.Export.Client.NUnit
 			_filePathProvider.Setup(x => x.GetPathForFile(fileName, It.IsAny<int>())).Returns(exportPath);
 			_validator.Setup(x => x.CanExport(exportPath, It.IsAny<string>())).Returns(false);
 
-			//ACT
+			// ACT
 			IList<ExportRequest> requests = Instance.Create(artifact, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			CollectionAssert.IsEmpty(requests);
 			_fileProcessingStatistics.Verify(x => x.UpdateStatisticsForFile(exportPath));
 		}
@@ -85,10 +88,10 @@ namespace Relativity.Export.Client.NUnit
 			_filePathProvider.Setup(x => x.GetPathForFile(fileName, It.IsAny<int>())).Returns(exportPath);
 			_validator.Setup(x => x.CanExport(exportPath, It.IsAny<string>())).Returns(true);
 
-			//ACT
+			// ACT
 			IList<ExportRequest> requests = Instance.Create(artifact, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(requests.Count, Is.EqualTo(1));
 			Assert.That(requests[0].DestinationLocation, Is.EqualTo(exportPath));
 		}

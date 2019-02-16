@@ -6,7 +6,9 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using kCura.WinEDDS;
+	using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
@@ -14,8 +16,6 @@ namespace Relativity.Export.Client.NUnit
     using kCura.WinEDDS.Exporters;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     [TestFixture]
 	public abstract class ImageLoadFileMetadataForArtifactBuilderTests
@@ -25,8 +25,11 @@ namespace Relativity.Export.Client.NUnit
 		protected ExportFile ExportSettings { get; private set; }
 
 		protected Mock<IFilePathTransformer> FilePathTransformer { get; private set; }
+
 		protected Mock<IImageLoadFileEntry> ImageLoadFileEntry { get; private set; }
+
 		protected Mock<IFullTextLoadFileEntry> FullTextLoadFileEntry { get; private set; }
+
 		protected Mock<IRetryableStreamWriter> Writer { get; private set; }
 
 		[SetUp]
@@ -44,7 +47,9 @@ namespace Relativity.Export.Client.NUnit
 			Instance = CreateInstance(ExportSettings, FilePathTransformer.Object, ImageLoadFileEntry.Object, FullTextLoadFileEntry.Object);
 		}
 
-		protected abstract ImageLoadFileMetadataForArtifactBuilder CreateInstance(ExportFile exportSettings, IFilePathTransformer filePathTransformer,
+		protected abstract ImageLoadFileMetadataForArtifactBuilder CreateInstance(
+			ExportFile exportSettings,
+			IFilePathTransformer filePathTransformer,
 			IImageLoadFileEntry imageLoadFileEntry,
 			IFullTextLoadFileEntry fullTextLoadFileEntry);
 	}

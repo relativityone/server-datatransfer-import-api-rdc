@@ -6,22 +6,20 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using System;
-    using System.Collections.Generic;
+	using System;
+	using System.Collections.Generic;
 
-    using FileNaming.CustomFileNaming;
+	using FileNaming.CustomFileNaming;
 
-    using kCura.WinEDDS.Exporters;
-    using kCura.WinEDDS.FileNaming.CustomFileNaming;
+	using global::NUnit.Framework;
 
-    using Moq;
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.FileNaming.CustomFileNaming;
 
-    using global::NUnit.Framework;
+	using Moq;
 
     public class CustomFileNameProviderTest
 	{
-		private Mock<IFileNamePartProviderContainer> _fileNamePartProviderContainerMock;
-		
 		private const string _TEXT_EXTENSION = ".txt";
 		private const string _NATIVE_EXTENSION = ".xls";
 
@@ -39,16 +37,18 @@ namespace Relativity.Export.Client.NUnit
 
 		private readonly ObjectExportInfo _exportObjectInfoNoExtensionFile = new ObjectExportInfo
 		{
-			NativeExtension = "",
+			NativeExtension = string.Empty,
 			OriginalFileName = "OriginalFileName"
 		};
-		
+
 		private readonly ObjectExportInfo _exportObjectInfoNoNatives = new ObjectExportInfo
 		{
-			NativeExtension = "",
-			OriginalFileName = ""
+			NativeExtension = string.Empty,
+			OriginalFileName = string.Empty
 		};
-		
+
+		private Mock<IFileNamePartProviderContainer> _fileNamePartProviderContainerMock;
+
 		[SetUp]
 		public void Init()
 		{
@@ -130,15 +130,15 @@ namespace Relativity.Export.Client.NUnit
 		[Test]
 		public void ItShouldNotAppendExtensionWhenAppendOriginalFileNameToNativeFileName()
 		{
-			ItShouldAppendOriginalFileNameToFileName((sut, objectExportInfo) => sut.GetName(objectExportInfo), "");
+			ItShouldAppendOriginalFileNameToFileName((sut, objectExportInfo) => sut.GetName(objectExportInfo), string.Empty);
 		}
 
 		[Test]
 		public void ItShouldNotAppendExtensionWhenAppendEmptyOriginalFileNameToNativeFileName()
 		{
-			ItShouldNotAppendOriginalFileNameToFileName((sut, objectExportInfo) => sut.GetName(objectExportInfo), "");
+			ItShouldNotAppendOriginalFileNameToFileName((sut, objectExportInfo) => sut.GetName(objectExportInfo), string.Empty);
 		}
-		
+
 		[Test]
 		public void ItShouldAppendTextExtenstionToTextFilesWhenOriginalFileNameWithoutExtensionIsAppended()
 		{
@@ -147,11 +147,10 @@ namespace Relativity.Export.Client.NUnit
 			string firstPartName = "ControlNumber";
 			InitializeFileNamePartProviderContainer(firstDescriptor, firstPartName, _exportObjectInfoNoExtensionFile);
 
-			var subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>
-				{
-					firstDescriptor
-				},
-				_fileNamePartProviderContainerMock.Object, true);
+			var subjectUnderTest = new CustomFileNameProvider(
+				new List<DescriptorPart> { firstDescriptor },
+				_fileNamePartProviderContainerMock.Object,
+				true);
 
 			// Act
 			string retFileName = subjectUnderTest.GetTextName(_exportObjectInfoNoExtensionFile);
@@ -168,11 +167,10 @@ namespace Relativity.Export.Client.NUnit
 			string firstPartName = "ControlNumber";
 			InitializeFileNamePartProviderContainer(firstDescriptor, firstPartName, _exportObjectInfoTextFile);
 
-			var subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>
-				{
-					firstDescriptor
-				},
-				_fileNamePartProviderContainerMock.Object, true);
+			var subjectUnderTest = new CustomFileNameProvider(
+				new List<DescriptorPart> { firstDescriptor },
+				_fileNamePartProviderContainerMock.Object,
+				true);
 
 			// Act
 			string retFileName = subjectUnderTest.GetTextName(_exportObjectInfoTextFile);
@@ -187,7 +185,7 @@ namespace Relativity.Export.Client.NUnit
 			var descriptorParts = new List<DescriptorPart>
 			{
 				new FieldDescriptorPart(1),
-				new SeparatorDescriptorPart(""),
+				new SeparatorDescriptorPart(string.Empty),
 				new FieldDescriptorPart(1)
 			};
 
@@ -215,7 +213,7 @@ namespace Relativity.Export.Client.NUnit
 			var descriptorParts = new List<DescriptorPart>
 			{
 				new FieldDescriptorPart(1),
-				new SeparatorDescriptorPart(""),
+				new SeparatorDescriptorPart(string.Empty),
 				new FieldDescriptorPart(1)
 			};
 
@@ -223,7 +221,7 @@ namespace Relativity.Export.Client.NUnit
 			{
 				"First",
 				"_",
-				""
+				string.Empty
 			};
 
 			InitializeFileNamePartProviderContainer(descriptorParts, partNames, _exportObjectInfoHtmlFile);
@@ -245,11 +243,10 @@ namespace Relativity.Export.Client.NUnit
 			string validFirstParnName = "Control_Number";
 			InitializeFileNamePartProviderContainer(firstDescriptor, firstPartName, _exportObjectInfoHtmlFile);
 
-			var subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>
-				{
-					firstDescriptor
-				},
-				_fileNamePartProviderContainerMock.Object, false);
+			var subjectUnderTest = new CustomFileNameProvider(
+				new List<DescriptorPart> { firstDescriptor },
+				_fileNamePartProviderContainerMock.Object,
+				false);
 
 			// Act
 			string retFileName = testedFunction(subjectUnderTest, _exportObjectInfoHtmlFile);
@@ -265,11 +262,10 @@ namespace Relativity.Export.Client.NUnit
 			string firstPartName = "ControlNumber";
 			InitializeFileNamePartProviderContainer(firstDescriptor, firstPartName, _exportObjectInfoHtmlFile);
 
-			var subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>
-				{
-					firstDescriptor
-				},
-				_fileNamePartProviderContainerMock.Object, false);
+			var subjectUnderTest = new CustomFileNameProvider(
+				new List<DescriptorPart> { firstDescriptor },
+				_fileNamePartProviderContainerMock.Object,
+				false);
 
 			// Act
 			string retFileName = testedFunction(subjectUnderTest, _exportObjectInfoHtmlFile);
@@ -304,7 +300,7 @@ namespace Relativity.Export.Client.NUnit
 			// Act
 			string retFileName = testedFunction(subjectUnderTest, _exportObjectInfoHtmlFile);
 
-			string expectedVal = string.Join("", partNames) + expectedExtension;
+			string expectedVal = string.Join(string.Empty, partNames) + expectedExtension;
 
 			// Assert
 			Assert.AreEqual(expectedVal, retFileName);
@@ -317,11 +313,10 @@ namespace Relativity.Export.Client.NUnit
 			string firstPartName = "ControlNumber";
 			InitializeFileNamePartProviderContainer(firstDescriptor, firstPartName, _exportObjectInfoHtmlFile);
 
-			var subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>
-				{
-					firstDescriptor
-				},
-				_fileNamePartProviderContainerMock.Object, true);
+			var subjectUnderTest = new CustomFileNameProvider(
+				new List<DescriptorPart> { firstDescriptor },
+				_fileNamePartProviderContainerMock.Object,
+				true);
 
 			// Act
 			string retFileName = testedFunction(subjectUnderTest, _exportObjectInfoHtmlFile);
@@ -337,11 +332,10 @@ namespace Relativity.Export.Client.NUnit
 			string firstPartName = "ControlNumber";
 			InitializeFileNamePartProviderContainer(firstDescriptor, firstPartName, _exportObjectInfoNoNatives);
 
-			var subjectUnderTest = new CustomFileNameProvider(new List<DescriptorPart>
-				{
-					firstDescriptor
-				},
-				_fileNamePartProviderContainerMock.Object, true);
+			var subjectUnderTest = new CustomFileNameProvider(
+				new List<DescriptorPart> { firstDescriptor },
+				_fileNamePartProviderContainerMock.Object,
+				true);
 
 			// Act
 			string retFileName = testedFunction(subjectUnderTest, _exportObjectInfoNoNatives);

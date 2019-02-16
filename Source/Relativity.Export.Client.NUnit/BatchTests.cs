@@ -9,14 +9,14 @@ namespace Relativity.Export.Client.NUnit
     using System;
     using System.Threading;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
     using kCura.WinEDDS.Exporters;
 
-    using Moq;
-
-    using global::NUnit.Framework;
+	using Moq;
 
     using Relativity.Logging;
 
@@ -50,10 +50,10 @@ namespace Relativity.Export.Client.NUnit
 			ObjectExportInfo[] artifacts = new ObjectExportInfo[1];
 			VolumePredictions[] volumePredictions = new VolumePredictions[1];
 
-			//ACT
+			// ACT
 			_instance.Export(artifacts, volumePredictions, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			_batchInitialization.Verify(x => x.PrepareBatch(artifacts, volumePredictions, CancellationToken.None), Times.Once);
 			_batchExporter.Verify(x => x.Export(artifacts, CancellationToken.None), Times.Once);
 			_batchValidator.Verify(x => x.ValidateExportedBatch(artifacts, volumePredictions, CancellationToken.None), Times.Once);
@@ -71,7 +71,7 @@ namespace Relativity.Export.Client.NUnit
 
 			_batchExporter.Setup(x => x.Export(artifacts, CancellationToken.None)).Throws<Exception>();
 
-			//ACT & ASSERT
+			// ACT & ASSERT
 			Assert.Throws<Exception>(() => _instance.Export(artifacts, volumePredictions, CancellationToken.None));
 
 			_batchCleanUp.Verify(x => x.CleanUp(), Times.Once);
@@ -87,10 +87,10 @@ namespace Relativity.Export.Client.NUnit
 
 			_batchExporter.Setup(x => x.Export(artifacts, tokenSource.Token)).Callback(() => tokenSource.Cancel());
 
-			//ACT
+			// ACT
 			_instance.Export(artifacts, volumePredictions, tokenSource.Token);
 
-			//ASSERT
+			// ASSERT
 			_batchState.Verify(x => x.RestoreState(), Times.Once);
 		}
 	}

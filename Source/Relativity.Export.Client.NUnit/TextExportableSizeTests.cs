@@ -9,14 +9,14 @@ namespace Relativity.Export.Client.NUnit
     using System.Collections.Generic;
     using System.Text;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity;
     using Relativity.ImportExport.UnitTestFramework;
@@ -27,15 +27,12 @@ namespace Relativity.Export.Client.NUnit
     [TestFixture]
 	public class TextExportableSizeTests
 	{
-		private ExportFile _exportSettings;
-		private VolumePredictions _volumePredictions;
-
-		private TextExportableSize _instance;
-
-		private Mock<IFieldService> _fieldService;
-
 		private const long _TEXT_FILE_COUNT = 660488;
 		private const long _TEXT_FILE_SIZE = 444442;
+		private ExportFile _exportSettings;
+		private VolumePredictions _volumePredictions;
+		private TextExportableSize _instance;
+		private Mock<IFieldService> _fieldService;
 
 		[SetUp]
 		public void SetUp()
@@ -62,10 +59,10 @@ namespace Relativity.Export.Client.NUnit
 			_exportSettings.ExportFullText = false;
 			_exportSettings.ExportFullTextAsFile = true;
 
-			//ACT
+			// ACT
 			_instance.CalculateTextSize(_volumePredictions, null);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_volumePredictions.TextFileCount, Is.Zero);
 			Assert.That(_volumePredictions.TextFilesSize, Is.Zero);
 		}
@@ -76,10 +73,10 @@ namespace Relativity.Export.Client.NUnit
 			_exportSettings.ExportFullText = true;
 			_exportSettings.ExportFullTextAsFile = false;
 
-			//ACT
+			// ACT
 			_instance.CalculateTextSize(_volumePredictions, null);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_volumePredictions.TextFileCount, Is.Zero);
 			Assert.That(_volumePredictions.TextFilesSize, Is.Zero);
 		}
@@ -91,10 +88,10 @@ namespace Relativity.Export.Client.NUnit
 			_exportSettings.ExportFullTextAsFile = true;
 			_exportSettings.SelectedTextFields = null;
 
-			//ACT
+			// ACT
 			_instance.CalculateTextSize(_volumePredictions, null);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_volumePredictions.TextFileCount, Is.Zero);
 			Assert.That(_volumePredictions.TextFilesSize, Is.Zero);
 		}
@@ -105,7 +102,7 @@ namespace Relativity.Export.Client.NUnit
 		{
 			SetExportingTextAsFiles();
 
-            kCura.WinEDDS.ViewFieldInfo[] fields = {field};
+			kCura.WinEDDS.ViewFieldInfo[] fields = { field };
 			_fieldService.Setup(x => x.GetColumns()).Returns(fields);
 
 			const int textFileCount = 3;
@@ -117,10 +114,10 @@ namespace Relativity.Export.Client.NUnit
 				TextFilesSize = textFileSize
 			};
 
-			//ACT
+			// ACT
 			_instance.CalculateTextSize(predictions, new ObjectExportInfo());
 
-			//ASSERT
+			// ASSERT
 			Assert.That(predictions.TextFileCount, Is.EqualTo(textFileCount));
 			Assert.That(predictions.TextFilesSize, Is.EqualTo(textFileSize));
 		}
@@ -140,15 +137,12 @@ namespace Relativity.Export.Client.NUnit
 				TextFilesSize = 0
 			};
 
-			ObjectExportInfo artifact = new ObjectExportInfo
-			{
-				Metadata = new object[] {fieldTextValue}
-			};
+			ObjectExportInfo artifact = new ObjectExportInfo { Metadata = new object[] { fieldTextValue } };
 
-			//ACT
+			// ACT
 			_instance.CalculateTextSize(predictions, artifact);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(predictions.TextFileCount, Is.EqualTo(1));
 			int expectedSize = _exportSettings.TextFileEncoding.GetByteCount(fieldTextValue);
 			Assert.That(predictions.TextFilesSize, Is.EqualTo(expectedSize));
@@ -168,15 +162,12 @@ namespace Relativity.Export.Client.NUnit
 				TextFilesSize = 0
 			};
 
-			ObjectExportInfo artifact = new ObjectExportInfo
-			{
-				Metadata = new object[] {fieldTextValue}
-			};
+			ObjectExportInfo artifact = new ObjectExportInfo { Metadata = new object[] { fieldTextValue } };
 
-			//ACT
+			// ACT
 			_instance.CalculateTextSize(predictions, artifact);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(predictions.TextFileCount, Is.EqualTo(1));
 			int expectedSize = encoding.GetByteCount(fieldTextValue);
 			Assert.That(predictions.TextFilesSize, Is.EqualTo(expectedSize));
@@ -207,10 +198,10 @@ namespace Relativity.Export.Client.NUnit
 				}
 			};
 
-			//ACT
+			// ACT
 			_instance.CalculateTextSize(predictions, artifact);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(predictions.TextFileCount, Is.EqualTo(1));
 			Assert.That(predictions.TextFilesSize, Is.EqualTo(textSize));
 		}
@@ -241,10 +232,10 @@ namespace Relativity.Export.Client.NUnit
 				}
 			};
 
-			//ACT
+			// ACT
 			_instance.CalculateTextSize(predictions, artifact);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(predictions.TextFileCount, Is.EqualTo(1));
 			long expectedFileSize = EncodingFileSize.CalculateLongTextFileSize(textSize, encoding);
 			Assert.That(predictions.TextFilesSize, Is.EqualTo(expectedFileSize));
@@ -273,13 +264,34 @@ namespace Relativity.Export.Client.NUnit
 				}
 			};
 
-			//ACT & ASSERT
+			// ACT & ASSERT
 			Assert.DoesNotThrow(() => _instance.CalculateTextSize(predictions, artifact));
 
 			Assert.That(predictions.TextFilesSize, Is.EqualTo(extractedTextSizeNaive));
 		}
 
-		#region Helpers
+		private static IEnumerable<kCura.WinEDDS.ViewFieldInfo> NonTextFieldDataSet()
+		{
+			var fieldFactory = new QueryFieldFactory();
+			IEnumerable<kCura.WinEDDS.ViewFieldInfo> fields = fieldFactory.GetAllDocumentFields();
+			foreach (kCura.WinEDDS.ViewFieldInfo field in fields)
+			{
+				if (field.FieldType == FieldTypeHelper.FieldType.Text
+				    || field.FieldType == FieldTypeHelper.FieldType.OffTableText)
+				{
+					continue;
+				}
+
+				yield return field;
+			}
+		}
+
+		private static FieldStub GetTextFieldStub()
+		{
+			QueryFieldFactory fieldFactory = new QueryFieldFactory();
+			kCura.WinEDDS.ViewFieldInfo field = fieldFactory.GetExtractedTextField();
+			return new FieldStub(field);
+		}
 
 		private static IEnumerable<Encoding> GetSampleEncodings()
 		{
@@ -303,7 +315,7 @@ namespace Relativity.Export.Client.NUnit
 
 			CoalescedTextViewField field = new CoalescedTextViewField(fieldStub, true);
 
-			_fieldService.Setup(x => x.GetColumns()).Returns(new kCura.WinEDDS.ViewFieldInfo[] {field});
+			_fieldService.Setup(x => x.GetColumns()).Returns(new kCura.WinEDDS.ViewFieldInfo[] { field });
 			_fieldService.Setup(x => x.GetOrdinalIndex(field.AvfColumnName)).Returns(0);
 		}
 
@@ -313,29 +325,5 @@ namespace Relativity.Export.Client.NUnit
 			_exportSettings.ExportFullTextAsFile = true;
 			_exportSettings.SelectedTextFields = new kCura.WinEDDS.ViewFieldInfo[1];
 		}
-
-		private static IEnumerable<kCura.WinEDDS.ViewFieldInfo> NonTextFieldDataSet()
-		{
-			var fieldFactory = new QueryFieldFactory();
-            IEnumerable<kCura.WinEDDS.ViewFieldInfo> fields = fieldFactory.GetAllDocumentFields();
-			foreach (kCura.WinEDDS.ViewFieldInfo field in fields)
-			{
-				if (field.FieldType == FieldTypeHelper.FieldType.Text || field.FieldType == FieldTypeHelper.FieldType.OffTableText)
-				{
-					continue;
-				}
-
-				yield return field;
-			}
-		}
-
-		private static FieldStub GetTextFieldStub()
-		{
-			QueryFieldFactory fieldFactory = new QueryFieldFactory();
-            kCura.WinEDDS.ViewFieldInfo field = fieldFactory.GetExtractedTextField();
-			return new FieldStub(field);
-		}
-
-		#endregion
 	}
 }

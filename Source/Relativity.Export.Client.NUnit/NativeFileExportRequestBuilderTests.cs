@@ -9,19 +9,22 @@ namespace Relativity.Export.Client.NUnit
     using System.Collections.Generic;
     using System.Threading;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
     using kCura.WinEDDS.Exporters;
 
-    using global::NUnit.Framework;
-
     using Relativity.Logging;
 
     public class NativeFileExportRequestBuilderTests : ExportRequestBuilderTests
 	{
-		protected override ExportRequestBuilder CreateInstance(IFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, IExportFileValidator exportFileValidator,
+		protected override ExportRequestBuilder CreateInstance(
+			IFilePathProvider filePathProvider,
+			IFileNameProvider fileNameProvider,
+			IExportFileValidator exportFileValidator,
 			IFileProcessingStatistics fileProcessingStatistics)
 		{
 			return new NativeFileExportRequestBuilder(filePathProvider, fileNameProvider, exportFileValidator, fileProcessingStatistics, new NullLogger());
@@ -35,10 +38,10 @@ namespace Relativity.Export.Client.NUnit
 				NativeFileGuid = string.Empty
 			};
 
-			//ACT
+			// ACT
 			IList<ExportRequest> requests = Instance.Create(artifact, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			CollectionAssert.IsEmpty(requests);
 		}
 	}

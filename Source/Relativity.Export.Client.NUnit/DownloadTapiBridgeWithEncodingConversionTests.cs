@@ -8,12 +8,12 @@ namespace Relativity.Export.Client.NUnit
 {
     using System;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
     using Relativity.Transfer;
@@ -30,19 +30,24 @@ namespace Relativity.Export.Client.NUnit
 
 			_longTextEncodingConverter = new Mock<ILongTextEncodingConverter>();
 
-			Instance = new DownloadTapiBridgeWithEncodingConversion(TapiBridge.Object, ProgressHandler.Object, MessagesHandler.Object, TransferStatistics.Object,
-				_longTextEncodingConverter.Object, new NullLogger());
+			Instance = new DownloadTapiBridgeWithEncodingConversion(
+				TapiBridge.Object,
+				ProgressHandler.Object,
+				MessagesHandler.Object,
+				TransferStatistics.Object,
+				_longTextEncodingConverter.Object,
+				new NullLogger());
 		}
 
 		[Test]
 		public void ItShouldStartConverterAfterAddingFirstTransferPath()
 		{
-			//ACT
+			// ACT
 			Instance.QueueDownload(new TransferPath());
 			Instance.QueueDownload(new TransferPath());
 			Instance.QueueDownload(new TransferPath());
 
-			//ASSERT
+			// ASSERT
 			_longTextEncodingConverter.Verify(x => x.StartListening(TapiBridge.Object), Times.Once);
 		}
 
@@ -51,22 +56,22 @@ namespace Relativity.Export.Client.NUnit
 		{
 			TapiBridge.Setup(x => x.WaitForTransferJob()).Throws<Exception>();
 
-			//ACT
+			// ACT
 			Instance.QueueDownload(new TransferPath());
 			Assert.Throws<Exception>(() => Instance.WaitForTransferJob());
 
-			//ASSERT
+			// ASSERT
 			_longTextEncodingConverter.Verify(x => x.StopListening(TapiBridge.Object), Times.Once);
 		}
 
 		[Test]
 		public void ItShouldWaitForConversionToComplete()
 		{
-			//ACT
+			// ACT
 			Instance.QueueDownload(new TransferPath());
 			Instance.WaitForTransferJob();
 
-			//ASSERT
+			// ASSERT
 			_longTextEncodingConverter.Verify(x => x.WaitForConversionCompletion(), Times.Once);
 		}
 	}

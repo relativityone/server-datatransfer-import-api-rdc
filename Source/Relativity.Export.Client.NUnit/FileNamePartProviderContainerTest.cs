@@ -10,16 +10,12 @@ namespace Relativity.Export.Client.NUnit
 
     using FileNaming.CustomFileNaming;
 
-    using kCura.WinEDDS.FileNaming.CustomFileNaming;
+	using global::NUnit.Framework;
 
-    using global::NUnit.Framework;
+    using kCura.WinEDDS.FileNaming.CustomFileNaming;
 
     public class FileNamePartProviderContainerTest
 	{
-		private class HelperDescriptorBasePart : DescriptorPart
-		{
-		}
-
 		private FileNamePartProviderContainer _subjectUnderTest;
 
 		[Test]
@@ -44,7 +40,7 @@ namespace Relativity.Export.Client.NUnit
 		[Test]
 		public void ItShouldReturnSeparatorDescriptorPartProvider()
 		{
-			var part = new SeparatorDescriptorPart("");
+			var part = new SeparatorDescriptorPart(string.Empty);
 
 			_subjectUnderTest = new FileNamePartProviderContainer();
 
@@ -61,6 +57,10 @@ namespace Relativity.Export.Client.NUnit
 
 			IFileNamePartProvider retProvider = _subjectUnderTest.GetProvider(part);
 			Assert.That(retProvider, Is.TypeOf<CustomTextFileNamePartProvider>());
+		}
+
+		private class HelperDescriptorBasePart : DescriptorPart
+		{
 		}
 	}
 }

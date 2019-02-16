@@ -8,13 +8,13 @@ namespace Relativity.Export.Client.NUnit
 {
     using System;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
     using kCura.WinEDDS.TApi;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
     using Relativity.Transfer;
@@ -49,16 +49,16 @@ namespace Relativity.Export.Client.NUnit
 
 			_instance.Attach(_tapiBridge.Object);
 
-			//ACT
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs("", true, TransferPathStatus.Successful, 0, size1, start, end));
+			// ACT
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, size1, start, end));
 
 			_instance.SaveState();
 
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs("", true, TransferPathStatus.Successful, 0, size2, start, end));
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, size2, start, end));
 
 			_instance.RestoreLastState();
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_statistics.FileBytes, Is.EqualTo(size1));
 			Assert.That(_statistics.FileTime, Is.EqualTo(end.Ticks - start.Ticks));
 		}
@@ -75,12 +75,12 @@ namespace Relativity.Export.Client.NUnit
 
 			_instance.Attach(_tapiBridge.Object);
 
-			//ACT
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs("", true, TransferPathStatus.Successful, 0, sizeDownload1, start, end));
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs("", false, TransferPathStatus.Failed, 0, sizeNotDownload1, start, end));
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs("", true, TransferPathStatus.Successful, 0, sizeDownload2, start, end));
+			// ACT
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, sizeDownload1, start, end));
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, false, TransferPathStatus.Failed, 0, sizeNotDownload1, start, end));
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, sizeDownload2, start, end));
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_statistics.FileBytes, Is.EqualTo(sizeDownload1 + sizeDownload2));
 			Assert.That(_statistics.FileTime, Is.EqualTo((end.Ticks - start.Ticks) * 2));
 		}
@@ -96,14 +96,14 @@ namespace Relativity.Export.Client.NUnit
 
 			_instance.Attach(_tapiBridge.Object);
 
-			//ACT
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs("", true, TransferPathStatus.Successful, 0, size1, start, end));
+			// ACT
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, size1, start, end));
 
 			_instance.Detach();
 
-			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs("", true, TransferPathStatus.Successful, 0, size2, start, end));
+			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(string.Empty, true, TransferPathStatus.Successful, 0, size2, start, end));
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_statistics.FileBytes, Is.EqualTo(size1));
 			Assert.That(_statistics.FileTime, Is.EqualTo(end.Ticks - start.Ticks));
 		}
@@ -117,10 +117,10 @@ namespace Relativity.Export.Client.NUnit
 			_fileHelper.Setup(x => x.Exists(fileName)).Returns(true);
 			_fileHelper.Setup(x => x.GetFileSize(fileName)).Returns(fileSize);
 
-			//ACT
+			// ACT
 			_instance.UpdateStatisticsForFile(fileName);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_statistics.FileBytes, Is.EqualTo(fileSize));
 		}
 
@@ -131,7 +131,7 @@ namespace Relativity.Export.Client.NUnit
 
 			_fileHelper.Setup(x => x.Exists(fileName)).Returns(false);
 
-			//ACT & ASSERT
+			// ACT & ASSERT
 			Assert.DoesNotThrow(() => _instance.UpdateStatisticsForFile(fileName));
 		}
 	}

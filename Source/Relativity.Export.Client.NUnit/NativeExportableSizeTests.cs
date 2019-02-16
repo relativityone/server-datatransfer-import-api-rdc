@@ -6,22 +6,20 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using kCura.WinEDDS;
+	using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize;
     using kCura.WinEDDS.Exporters;
-
-    using global::NUnit.Framework;
 
     [TestFixture]
 	public class NativeExportableSizeTests
 	{
-		private ExportFile _exportSettings;
-		private VolumePredictions _volumePredictions;
-
-		private NativeExportableSize _instance;
-
 		private const long _NATIVE_FILE_SIZE = 647109;
 		private const long _NATIVE_FILE_COUNT = 771933;
+		private ExportFile _exportSettings;
+		private VolumePredictions _volumePredictions;
+		private NativeExportableSize _instance;
 
 		[SetUp]
 		public void SetUp()
@@ -46,10 +44,10 @@ namespace Relativity.Export.Client.NUnit
 			_exportSettings.ExportNative = false;
 			_exportSettings.VolumeInfo.CopyNativeFilesFromRepository = true;
 
-			//ACT
+			// ACT
 			_instance.CalculateNativesSize(_volumePredictions);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_volumePredictions.NativeFileCount, Is.Zero);
 			Assert.That(_volumePredictions.NativeFilesSize, Is.Zero);
 		}
@@ -60,10 +58,10 @@ namespace Relativity.Export.Client.NUnit
 			_exportSettings.ExportNative = true;
 			_exportSettings.VolumeInfo.CopyNativeFilesFromRepository = false;
 
-			//ACT
+			// ACT
 			_instance.CalculateNativesSize(_volumePredictions);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_volumePredictions.NativeFileCount, Is.Zero);
 			Assert.That(_volumePredictions.NativeFilesSize, Is.Zero);
 		}
@@ -74,10 +72,10 @@ namespace Relativity.Export.Client.NUnit
 			_exportSettings.ExportNative = true;
 			_exportSettings.VolumeInfo.CopyNativeFilesFromRepository = true;
 
-			//ACT
+			// ACT
 			_instance.CalculateNativesSize(_volumePredictions);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_volumePredictions.NativeFileCount, Is.EqualTo(_NATIVE_FILE_COUNT));
 			Assert.That(_volumePredictions.NativeFilesSize, Is.EqualTo(_NATIVE_FILE_SIZE));
 		}

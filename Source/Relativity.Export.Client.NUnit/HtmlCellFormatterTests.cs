@@ -8,13 +8,13 @@ namespace Relativity.Export.Client.NUnit
 {
     using System.Collections;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity;
 
@@ -109,7 +109,7 @@ namespace Relativity.Export.Client.NUnit
 			var result = subject.CreateImageCell(arg);
 			Assert.AreEqual("<td><a style='display:block' href='./transformed_path.txt'></a></td>", result);
 		}
-		
+
 		[Test]
 		public void ItShouldReturnTdElementWithOriginalPathWhenTransformerIsNotUsed()
 		{
@@ -139,7 +139,7 @@ namespace Relativity.Export.Client.NUnit
 			var result = subject.CreateImageCell(arg);
 			Assert.AreEqual("<td><a style='display:block' href='./path.txt'></a></td>", result);
 		}
-		
+
 		[TestCase(ExportFile.ImageType.MultiPageTiff)]
 		[TestCase(ExportFile.ImageType.Pdf)]
 		public void ItShouldReturnOnlyOneTdElement(ExportFile.ImageType imageType)
@@ -173,7 +173,7 @@ namespace Relativity.Export.Client.NUnit
 			var result = subject.CreateImageCell(arg);
 			Assert.AreEqual("<td><a style='display:block' href='./path1.txt'></a></td>", result);
 		}
-		
+
 		[Test]
 		public void ItShouldReturnEmptyNativeCellWhenArtifactIsDocumentAndHasNoNatives()
 		{
@@ -184,10 +184,10 @@ namespace Relativity.Export.Client.NUnit
 			HtmlCellFormatter subject = new HtmlCellFormatter(settings, new Mock<IFilePathTransformer>().Object);
 
 			ObjectExportInfo arg = new ObjectExportInfo();
-			var result = subject.CreateNativeCell("", arg);
+			var result = subject.CreateNativeCell(string.Empty, arg);
 			Assert.AreEqual("<td></td>", result);
 		}
-		
+
 		[Test]
 		public void ItShouldReturnEmptyNativeCellWhenArtifactIsNotDocumentAndFileIDLessThan0()
 		{
@@ -202,7 +202,7 @@ namespace Relativity.Export.Client.NUnit
 			{
 				FileID = -1
 			};
-			var result = subject.CreateNativeCell("", arg);
+			var result = subject.CreateNativeCell(string.Empty, arg);
 			Assert.AreEqual("<td></td>", result);
 		}
 

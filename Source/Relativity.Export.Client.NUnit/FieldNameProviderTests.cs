@@ -10,9 +10,9 @@ namespace Relativity.Export.Client.NUnit
     using System.Collections.Generic;
     using System.Linq;
 
-    using kCura.WinEDDS.Core.Export;
-
     using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export;
 
     public class FieldNameProviderTests
 	{

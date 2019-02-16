@@ -8,13 +8,13 @@ namespace Relativity.Export.Client.NUnit
 {
     using System.Collections.Generic;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.ImportExport.UnitTestFramework;
     using Relativity.Logging;
@@ -54,17 +54,16 @@ namespace Relativity.Export.Client.NUnit
 				fields[0] = new QueryFieldFactory().GetArtifactIdField();
 			}
 
-
 			ExportFile exportSettings = new ExportFile(1)
 			{
 				ExportFullText = exportFullText,
 				SelectedViewFields = fields
 			};
 
-			//ACT
+			// ACT
 			_instance.Create(exportSettings, null);
 
-			//ASSERT
+			// ASSERT
 			return exportSettings.ExportFullText;
 		}
 
@@ -80,10 +79,10 @@ namespace Relativity.Export.Client.NUnit
             kCura.WinEDDS.ViewFieldInfo[] fields = new kCura.WinEDDS.ViewFieldInfo[1];
 			_columnsFactory.Setup(x => x.CreateColumns(exportSettings)).Returns(fields);
 
-			//ACT
+			// ACT
 			_instance.Create(exportSettings, columnNamesInOrder);
 
-			//ASSERT
+			// ASSERT
 			_columnsFactory.Verify(x => x.CreateColumns(exportSettings));
 			_formatter.Verify(x => x.GetHeader(It.IsAny<List<kCura.WinEDDS.ViewFieldInfo>>()));
 			_columnsOrdinalLookup.Verify(x => x.CreateOrdinalLookup(exportSettings, columnNamesInOrder));

@@ -9,26 +9,45 @@ namespace Relativity.Export.Client.NUnit
     using System.Collections.Generic;
     using System.Threading;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
     using kCura.WinEDDS.Exporters;
 
-    using global::NUnit.Framework;
-
     using Relativity.Logging;
 
     public class FieldFileExportRequestBuilderTests : ExportRequestBuilderTests
 	{
-		protected override ExportRequestBuilder CreateInstance(IFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, IExportFileValidator exportFileValidator,
+		protected override ExportRequestBuilder CreateInstance(
+			IFilePathProvider filePathProvider,
+			IFileNameProvider fileNameProvider,
+			IExportFileValidator exportFileValidator,
 			IFileProcessingStatistics fileProcessingStatistics)
 		{
 			ExportFile exportSettings = new ExportFile(1)
-			{
-				FileField = new DocumentField("", 1, 1, 1, null, null, null, true, null, null, false)
-			};
-			return new FieldFileExportRequestBuilder(filePathProvider, fileNameProvider, exportFileValidator, fileProcessingStatistics, new NullLogger(),
+				                            {
+					                            FileField = new DocumentField(
+						                            string.Empty,
+						                            1,
+						                            1,
+						                            1,
+						                            null,
+						                            null,
+						                            null,
+						                            true,
+						                            null,
+						                            null,
+						                            false)
+				                            };
+			return new FieldFileExportRequestBuilder(
+				filePathProvider,
+				fileNameProvider,
+				exportFileValidator,
+				fileProcessingStatistics,
+				new NullLogger(),
 				new FieldFileExportRequestFactory(exportSettings));
 		}
 
@@ -41,10 +60,10 @@ namespace Relativity.Export.Client.NUnit
 				NativeSourceLocation = "location"
 			};
 
-			//ACT
+			// ACT
 			IList<ExportRequest> requests = Instance.Create(artifact, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			CollectionAssert.IsEmpty(requests);
 		}
 
@@ -57,10 +76,10 @@ namespace Relativity.Export.Client.NUnit
 				NativeSourceLocation = string.Empty
 			};
 
-			//ACT
+			// ACT
 			IList<ExportRequest> requests = Instance.Create(artifact, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			CollectionAssert.IsEmpty(requests);
 		}
 	}

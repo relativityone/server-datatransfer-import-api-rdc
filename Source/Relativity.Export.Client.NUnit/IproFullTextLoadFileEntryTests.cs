@@ -9,7 +9,9 @@ namespace Relativity.Export.Client.NUnit
     using System.IO;
     using System.Threading;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
@@ -18,25 +20,21 @@ namespace Relativity.Export.Client.NUnit
 
     using Moq;
 
-    using global::NUnit.Framework;
-    
     using Relativity.Logging;
     using RelativityConstants = Relativity.Constants;
 
     [TestFixture]
 	public abstract class IproFullTextLoadFileEntryTests
 	{
-		private IproFullTextLoadFileEntry _instance;
-
-		private Mock<IRetryableStreamWriter> _writer;
-		private Mock<IFullTextLineWriter> _fullTextLineWriter;
-
-		private string _tempFile;
-
 		private const string _BATES_NUMBER = "batesNumber";
 		private const long _PAGE_OFFSET = 891326;
+		private IproFullTextLoadFileEntry _instance;
+		private Mock<IRetryableStreamWriter> _writer;
+		private Mock<IFullTextLineWriter> _fullTextLineWriter;
+		private string _tempFile;
 
 		protected LongTextRepository LongTextRepository { get; private set; }
+
 		protected Mock<IFieldService> FieldService { get; private set; }
 
 		[SetUp]
@@ -83,11 +81,11 @@ namespace Relativity.Export.Client.NUnit
 			_fullTextLineWriter.Setup(x => x.WriteLine(_BATES_NUMBER, _PAGE_OFFSET, _writer.Object, It.IsAny<TextReader>(), CancellationToken.None)).Callback(
 				(string bn, long po, IRetryableStreamWriter w, TextReader tr, CancellationToken t) => textReader = tr);
 
-			//ACT
+			// ACT
 			_instance.WriteFullTextLine(artifact, _BATES_NUMBER, 0, _PAGE_OFFSET, _writer.Object, CancellationToken.None);
 			_instance.WriteFullTextLine(artifact, _BATES_NUMBER, 1, _PAGE_OFFSET, _writer.Object, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(textReader.ReadToEnd(), Is.EqualTo(textToWrite));
 			_fullTextLineWriter.Verify(x => x.WriteLine(_BATES_NUMBER, _PAGE_OFFSET, _writer.Object, textReader, CancellationToken.None), Times.Exactly(2));
 		}
@@ -115,11 +113,11 @@ namespace Relativity.Export.Client.NUnit
 					textReaders[i++] = tr;
 				});
 
-			//ACT
+			// ACT
 			_instance.WriteFullTextLine(artifact1, _BATES_NUMBER, 0, _PAGE_OFFSET, _writer.Object, CancellationToken.None);
 			_instance.WriteFullTextLine(artifact2, _BATES_NUMBER, 0, _PAGE_OFFSET, _writer.Object, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(texts[0], Is.EqualTo(textToWrite1));
 			Assert.That(texts[1], Is.EqualTo(textToWrite2));
 
@@ -143,16 +141,18 @@ namespace Relativity.Export.Client.NUnit
 			_fullTextLineWriter.Setup(x => x.WriteLine(_BATES_NUMBER, _PAGE_OFFSET, _writer.Object, It.IsAny<TextReader>(), CancellationToken.None)).Callback(
 				(string bn, long po, IRetryableStreamWriter w, TextReader tr, CancellationToken t) => textReader = tr);
 
-			//ACT
+			// ACT
 			_instance.WriteFullTextLine(artifact, _BATES_NUMBER, 0, _PAGE_OFFSET, _writer.Object, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(textReader.ReadToEnd(), Is.EqualTo(textInFile));
 			_fullTextLineWriter.Verify(x => x.WriteLine(_BATES_NUMBER, _PAGE_OFFSET, _writer.Object, textReader, CancellationToken.None), Times.Once);
 		}
 
 		protected abstract IproFullTextLoadFileEntry CreateInstance(IFieldService fieldService, LongTextHelper longTextHelper, IFullTextLineWriter fullTextLineWriter);
+
 		protected abstract void PrepareDataSet(ObjectExportInfo artifact, string textToWrite);
+
 		protected abstract void PrepareDataSetForTooLongText(ObjectExportInfo artifact, string textToWrite, string fileLocation);
 	}
 }

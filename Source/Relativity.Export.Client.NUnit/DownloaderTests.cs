@@ -9,13 +9,13 @@ namespace Relativity.Export.Client.NUnit
     using System.Collections.Generic;
     using System.Threading;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
     using Relativity.Transfer;
@@ -56,10 +56,10 @@ namespace Relativity.Export.Client.NUnit
 			ModelFactory.GetImage(native.Artifact.ArtifactID, _imageRepository);
 			ModelFactory.GetLongText(native.Artifact.ArtifactID, _longTextRepository);
 
-			//ACT
+			// ACT
 			_instance.DownloadFilesForArtifacts(CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			_physicalFilesDownloader.Verify(x => x.DownloadFilesAsync(It.Is<List<ExportRequest>>(list => list.Count == 3), CancellationToken.None));
 			_longTextDownloader.Verify(x => x.DownloadAsync(It.Is<List<LongTextExportRequest>>(list => list.Count == 1), CancellationToken.None), Times.Once);
 		}
@@ -69,7 +69,7 @@ namespace Relativity.Export.Client.NUnit
 		{
 			_physicalFilesDownloader.Setup(x => x.DownloadFilesAsync(It.IsAny<List<ExportRequest>>(), CancellationToken.None)).Throws<TransferException>();
 
-			//ACT & ASSERT
+			// ACT & ASSERT
 			Assert.Throws<TransferException>(() => _instance.DownloadFilesForArtifacts(CancellationToken.None));
 
 			_errorFileWriter.Verify(x => x.Write(ErrorFileWriter.ExportFileType.Generic, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));

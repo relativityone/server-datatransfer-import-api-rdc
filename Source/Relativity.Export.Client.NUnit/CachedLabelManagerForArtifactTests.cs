@@ -10,32 +10,31 @@ namespace Relativity.Export.Client.NUnit
     using System.Collections.Generic;
     using System.Threading;
 
-    using kCura.Vendor.Castle.Core.Internal;
+    using global::NUnit.Framework;
+
+	using kCura.Vendor.Castle.Core.Internal;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
 
-    using global::NUnit.Framework;
-
     [TestFixture]
 	public class CachedLabelManagerForArtifactTests
 	{
+		private static readonly Dictionary<string, string> MethodNameToReturnedPrefix =
+			new Dictionary<string, string>()
+				{
+					{ nameof(CachedLabelManagerForArtifact.GetVolumeLabel), "VOL" },
+					{ nameof(CachedLabelManagerForArtifact.GetImageSubdirectoryLabel), "IMG" },
+					{ nameof(CachedLabelManagerForArtifact.GetNativeSubdirectoryLabel), "NAT" },
+					{ nameof(CachedLabelManagerForArtifact.GetTextSubdirectoryLabel), "TXT" }
+				};
+
 		private CachedLabelManagerForArtifact _instance;
 		private Mock<ILabelManager> _labelManager;
 		private Mock<IDirectoryManager> _directoryManager;
-
 		private VolumePredictions[] _volumePredictions;
 		private ObjectExportInfo[] _artifacts;
-
-		private static readonly Dictionary<string, string> MethodNameToReturnedPrefix =
-			new Dictionary<string, string>()
-			{
-				{nameof(CachedLabelManagerForArtifact.GetVolumeLabel), "VOL"},
-				{nameof(CachedLabelManagerForArtifact.GetImageSubdirectoryLabel), "IMG"},
-				{nameof(CachedLabelManagerForArtifact.GetNativeSubdirectoryLabel), "NAT"},
-				{nameof(CachedLabelManagerForArtifact.GetTextSubdirectoryLabel), "TXT"},
-			};
 
 		private static List<Func<CachedLabelManagerForArtifact, Func<int, string>>> MethodsToTest()
 		{
@@ -51,7 +50,11 @@ namespace Relativity.Export.Client.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_artifacts = new[] { new ObjectExportInfo() {ArtifactID = 0}, new ObjectExportInfo() { ArtifactID = 1 }, new ObjectExportInfo() { ArtifactID = 2 } };
+			_artifacts = new[]
+				             {
+					             new ObjectExportInfo() { ArtifactID = 0 }, new ObjectExportInfo() { ArtifactID = 1 },
+					             new ObjectExportInfo() { ArtifactID = 2 }
+				             };
 			_volumePredictions = new[] { new VolumePredictions(), new VolumePredictions(), new VolumePredictions() };
 
 			_labelManager = new Mock<ILabelManager>();
@@ -133,7 +136,7 @@ namespace Relativity.Export.Client.NUnit
 
 				string result = testMethod(artifactId);
 
-				Assert.That(result, Is.EqualTo(expectedResult));				
+				Assert.That(result, Is.EqualTo(expectedResult));
 			}
 		}
 	}

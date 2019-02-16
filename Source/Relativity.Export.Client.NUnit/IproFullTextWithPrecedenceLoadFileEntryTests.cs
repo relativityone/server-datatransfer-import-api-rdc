@@ -8,14 +8,14 @@ namespace Relativity.Export.Client.NUnit
 {
     using System.Text;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
     using kCura.WinEDDS.Exporters;
 
-    using global::NUnit.Framework;
-    
     using Relativity.Logging;
     using RelativityConstants = Relativity.Export.Constants;
 
@@ -30,7 +30,7 @@ namespace Relativity.Export.Client.NUnit
 		protected override void PrepareDataSet(ObjectExportInfo artifact, string textToWrite)
 		{
 			FieldService.Setup(x => x.GetOrdinalIndex(RelativityConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)).Returns(0);
-			artifact.Metadata = new object[] {textToWrite};
+			artifact.Metadata = new object[] { textToWrite };
 		}
 
 		protected override void PrepareDataSetForTooLongText(ObjectExportInfo artifact, string textToWrite, string fileLocation)
@@ -43,7 +43,7 @@ namespace Relativity.Export.Client.NUnit
 			FieldService.Setup(x => x.GetOrdinalIndex(RelativityConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(1);
 
 			artifact.ArtifactID = artifactId;
-			artifact.Metadata = new object[] {textToWrite, fieldArtifactId};
+			artifact.Metadata = new object[] { textToWrite, fieldArtifactId };
 
 			LongText longText = LongText.CreateFromExistingFile(artifactId, fieldArtifactId, fileLocation, Encoding.Default);
 			LongTextRepository.Add(longText.InList());

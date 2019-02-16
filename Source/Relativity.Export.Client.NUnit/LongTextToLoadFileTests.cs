@@ -6,14 +6,14 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using kCura.WinEDDS;
+	using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
     using kCura.WinEDDS.Exporters;
     using kCura.WinEDDS.LoadFileEntry;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.ImportExport.UnitTestFramework;
     using Relativity.Logging;
@@ -47,10 +47,7 @@ namespace Relativity.Export.Client.NUnit
 		[Test]
 		public void ItShouldHandleLongText()
 		{
-			ObjectExportInfo artifact = new ObjectExportInfo
-			{
-				Metadata = new object[] {"not too long text"}
-			};
+			ObjectExportInfo artifact = new ObjectExportInfo { Metadata = new object[] { "not too long text" } };
 
 			ViewFieldInfo field = new QueryFieldFactory().GetArtifactIdField();
 
@@ -58,10 +55,10 @@ namespace Relativity.Export.Client.NUnit
 
 			_fieldService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns(0);
 
-			//ACT
+			// ACT
 			_instance.HandleLongText(artifact, field, lineEntry);
 
-			//ASSERT
+			// ASSERT
 			_notTooLongTextToLoadFile.Verify(x => x.HandleLongText(artifact, field, lineEntry));
 		}
 
@@ -79,10 +76,10 @@ namespace Relativity.Export.Client.NUnit
 
 			_fieldService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns(0);
 
-			//ACT
+			// ACT
 			_instance.HandleLongText(artifact, field, lineEntry);
 
-			//ASSERT
+			// ASSERT
 			_tooLongTextToLoadFile.Verify(x => x.HandleLongText(artifact, field, lineEntry));
 		}
 	}

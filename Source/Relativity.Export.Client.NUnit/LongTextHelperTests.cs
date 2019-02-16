@@ -9,14 +9,14 @@ namespace Relativity.Export.Client.NUnit
     using System.Linq;
     using System.Text;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
     using kCura.WinEDDS.Exporters;
-        
-    using Moq;
 
-    using global::NUnit.Framework;
+    using Moq;
 
     using Relativity;
     using Relativity.ImportExport.UnitTestFramework;
@@ -67,11 +67,11 @@ namespace Relativity.Export.Client.NUnit
 			FieldStub field = new FieldStub(_fieldFactory.GetArtifactIdField());
 			field.SetType(fieldType);
 
-			//ACT
+			// ACT
 			bool isFieldLongTextResult = _instance.IsLongTextField(field);
 			bool isLongTextType = _instance.IsLongTextField(fieldType);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(isFieldLongTextResult, Is.EqualTo(expectedResult));
 			Assert.That(isLongTextType, Is.EqualTo(expectedResult));
 		}
@@ -82,17 +82,14 @@ namespace Relativity.Export.Client.NUnit
 			const string expectedText = "expected_text";
 			const string fieldName = "fieldName";
 
-			ObjectExportInfo artifact = new ObjectExportInfo
-			{
-				Metadata = new object[] {expectedText}
-			};
+			ObjectExportInfo artifact = new ObjectExportInfo { Metadata = new object[] { expectedText } };
 
 			_fieldService.Setup(x => x.GetOrdinalIndex(fieldName)).Returns(0);
 
-			//ACT
+			// ACT
 			string actualResult = _instance.GetTextFromField(artifact, fieldName);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(actualResult, Is.EqualTo(expectedText));
 		}
 
@@ -109,10 +106,10 @@ namespace Relativity.Export.Client.NUnit
 
 			_fieldService.Setup(x => x.GetOrdinalIndex(fieldName)).Returns(0);
 
-			//ACT
+			// ACT
 			string actualResult = _instance.GetTextFromField(artifact, fieldName);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(actualResult, Is.EqualTo(expectedText));
 		}
 
@@ -129,10 +126,10 @@ namespace Relativity.Export.Client.NUnit
 
 			_fieldService.Setup(x => x.GetOrdinalIndex(fieldName)).Returns(0);
 
-			//ACT
+			// ACT
 			string actualResult = _instance.GetTextFromField(artifact, fieldName);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(actualResult, Is.EqualTo(string.Empty));
 		}
 
@@ -146,18 +143,15 @@ namespace Relativity.Export.Client.NUnit
 		{
 			const string fieldName = "fieldName";
 
-			ObjectExportInfo artifact = new ObjectExportInfo
-			{
-				Metadata = new object[] {text}
-			};
+			ObjectExportInfo artifact = new ObjectExportInfo { Metadata = new object[] { text } };
 
 			_fieldService.Setup(x => x.GetOrdinalIndex(fieldName)).Returns(0);
 
-			//ACT
+			// ACT
 			bool isTextTooLong = _instance.IsTextTooLong(text);
 			bool isTextFromFieldTooLong = _instance.IsTextTooLong(artifact, fieldName);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(isTextTooLong, Is.EqualTo(expectedResult));
 			Assert.That(isTextFromFieldTooLong, Is.EqualTo(expectedResult));
 		}
@@ -172,10 +166,10 @@ namespace Relativity.Export.Client.NUnit
 
 			_fieldService.Setup(x => x.GetColumns()).Returns(new kCura.WinEDDS.ViewFieldInfo[5]);
 
-			//ACT
+			// ACT
 			bool actualResult = _instance.IsExtractedTextMissing();
 
-			//ASSERT
+			// ASSERT
 			Assert.That(actualResult, Is.EqualTo(expectedResult));
 		}
 
@@ -190,10 +184,10 @@ namespace Relativity.Export.Client.NUnit
 			_fieldService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns((string fieldName) => fields.ToList().FindIndex(x => x.AvfColumnName == fieldName));
 			_fieldService.Setup(x => x.GetColumns()).Returns(fields);
 
-			//ACT
+			// ACT
 			int actualFieldArtifactId = _instance.GetFieldArtifactId(fields[fieldIndex].AvfColumnName);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(actualFieldArtifactId, Is.EqualTo(fields[fieldIndex].FieldArtifactId));
 		}
 
@@ -206,10 +200,10 @@ namespace Relativity.Export.Client.NUnit
 
 			_fieldService.Setup(x => x.GetColumns()).Returns(new kCura.WinEDDS.ViewFieldInfo[1]);
 
-			//ACT
+			// ACT
 			int actualFieldArtifactId = _instance.GetFieldArtifactId(LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(actualFieldArtifactId, Is.EqualTo(-1));
 		}
 
@@ -222,10 +216,10 @@ namespace Relativity.Export.Client.NUnit
 			_exportSettings.SelectedTextFields = new kCura.WinEDDS.ViewFieldInfo[textFieldsArrayLength];
 			_exportSettings.SelectedTextFields[textFieldsArrayLength - 1] = _fieldFactory.GetArtifactIdField();
 
-			//ACT
+			// ACT
 			bool isTextPrecedenceSet = _instance.IsTextPrecedenceSet();
 
-			//ASSERT
+			// ASSERT
 			Assert.That(isTextPrecedenceSet, Is.True);
 		}
 
@@ -234,10 +228,10 @@ namespace Relativity.Export.Client.NUnit
 		{
 			_exportSettings.SelectedTextFields = null;
 
-			//ACT
+			// ACT
 			bool isTextPrecedenceSet = _instance.IsTextPrecedenceSet();
 
-			//ASSERT
+			// ASSERT
 			Assert.That(isTextPrecedenceSet, Is.False);
 		}
 
@@ -246,10 +240,10 @@ namespace Relativity.Export.Client.NUnit
 		{
 			_exportSettings.SelectedTextFields = new kCura.WinEDDS.ViewFieldInfo[0];
 
-			//ACT
+			// ACT
 			bool isTextPrecedenceSet = _instance.IsTextPrecedenceSet();
 
-			//ASSERT
+			// ASSERT
 			Assert.That(isTextPrecedenceSet, Is.False);
 		}
 
@@ -261,10 +255,10 @@ namespace Relativity.Export.Client.NUnit
 		{
 			_exportSettings.SelectedTextFields = new kCura.WinEDDS.ViewFieldInfo[textFieldsArrayLength];
 
-			//ACT
+			// ACT
 			bool isTextPrecedenceSet = _instance.IsTextPrecedenceSet();
 
-			//ASSERT
+			// ASSERT
 			Assert.That(isTextPrecedenceSet, Is.False);
 		}
 
@@ -280,19 +274,16 @@ namespace Relativity.Export.Client.NUnit
 			field1.SetFieldArtifactId(field1ArtifactId);
 			field2.SetFieldArtifactId(field2ArtifactId);
 
-			_exportSettings.SelectedTextFields = new kCura.WinEDDS.ViewFieldInfo[] {field1, field2};
+			_exportSettings.SelectedTextFields = new kCura.WinEDDS.ViewFieldInfo[] { field1, field2 };
 
-			ObjectExportInfo artifact = new ObjectExportInfo
-			{
-				Metadata = new object[] {field2ArtifactId}
-			};
+			ObjectExportInfo artifact = new ObjectExportInfo { Metadata = new object[] { field2ArtifactId } };
 
 			_fieldService.Setup(x => x.GetOrdinalIndex(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)).Returns(0);
 
-            //ACT
+            // ACT
             kCura.WinEDDS.ViewFieldInfo textPrecedenceField = _instance.GetTextPrecedenceField(artifact);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(textPrecedenceField, Is.EqualTo(field2));
 		}
 
@@ -302,10 +293,10 @@ namespace Relativity.Export.Client.NUnit
 			FieldStub field = new FieldStub(_fieldFactory.GetArtifactIdField());
 			field.SetIsUnicodeEnabled(true);
 
-			//ACT
+			// ACT
 			Encoding fieldEncoding = _instance.GetLongTextFieldFileEncoding(field);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(fieldEncoding, Is.EqualTo(Encoding.Unicode));
 		}
 
@@ -315,10 +306,10 @@ namespace Relativity.Export.Client.NUnit
 			FieldStub field = new FieldStub(_fieldFactory.GetArtifactIdField());
 			field.SetIsUnicodeEnabled(false);
 
-			//ACT
+			// ACT
 			Encoding fieldEncoding = _instance.GetLongTextFieldFileEncoding(field);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(fieldEncoding, Is.EqualTo(Encoding.Default));
 		}
 	}

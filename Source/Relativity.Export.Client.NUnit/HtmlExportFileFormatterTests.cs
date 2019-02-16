@@ -10,24 +10,22 @@ namespace Relativity.Export.Client.NUnit
     using System.Linq;
     using System.Text;
 
-    using kCura.WinEDDS.Core.Export;
-
     using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export;
 
     using Relativity;
 
     public class HtmlExportFileFormatterTests : ExportFileFormatterSetUp<HtmlExportFileFormatter>
 	{
-		private string _headerPrefix;
-		private string _headerSuffix = $"{Environment.NewLine}{_HTML_TR_END}{Environment.NewLine}";
-
 		private const string _WKSP_NAME = "WkspName";
 		private const string _HTML_TH = "<th>";
 		private const string _HTML_TH_END = "</th>";
 		private const string _HTML_TR_END = "</tr>";
-
 		private const string _IMAGE_COL_NAME = "Image Files";
 		private const string _NATIVE_COL_NAME = "Native Files";
+		private readonly string _headerSuffix = $"{Environment.NewLine}{_HTML_TR_END}{Environment.NewLine}";
+		private string _headerPrefix;
 
 		protected override void InitTestCase()
 		{
@@ -52,7 +50,6 @@ namespace Relativity.Export.Client.NUnit
 			};
 		}
 
-
 		[Test]
 		public void ItShouldReturnHeaderStringWithoutNativeAndWithoutImage()
 		{
@@ -61,8 +58,9 @@ namespace Relativity.Export.Client.NUnit
 			ExpFile.ExportImages = false;
 			SubjectUnderTest = new HtmlExportFileFormatter(ExpFile, FieldNameProviderMock.Object);
 
-			string expectedHeaderRow = $"{_HTML_TH}{FIELD_NAME_1}{_HTML_TH_END}{_HTML_TH}{FIELD_NAME_2}{_HTML_TH_END}";
+			string expectedHeaderRow = $"{_HTML_TH}{FileName1}{_HTML_TH_END}{_HTML_TH}{FieldName2}{_HTML_TH_END}";
 			string expectedHeader = GetExpectedHeaderText(expectedHeaderRow);
+
 			// Act
 			string header = SubjectUnderTest.GetHeader(Fields.ToList());
 
@@ -78,10 +76,11 @@ namespace Relativity.Export.Client.NUnit
 			ExpFile.ExportImages = true;
 			SubjectUnderTest = new HtmlExportFileFormatter(ExpFile, FieldNameProviderMock.Object);
 
-			string expectedHeaderRow = $"{_HTML_TH}{FIELD_NAME_1}{_HTML_TH_END}{_HTML_TH}{FIELD_NAME_2}{_HTML_TH_END}" +
+			string expectedHeaderRow = $"{_HTML_TH}{FileName1}{_HTML_TH_END}{_HTML_TH}{FieldName2}{_HTML_TH_END}" +
 									   $"{_HTML_TH}{_IMAGE_COL_NAME}{_HTML_TH_END}";
 
 			string expectedHeader = GetExpectedHeaderText(expectedHeaderRow);
+
 			// Act
 			string header = SubjectUnderTest.GetHeader(Fields.ToList());
 
@@ -97,10 +96,11 @@ namespace Relativity.Export.Client.NUnit
 			ExpFile.ExportImages = false;
 			SubjectUnderTest = new HtmlExportFileFormatter(ExpFile, FieldNameProviderMock.Object);
 
-			string expectedHeaderRow = $"{_HTML_TH}{FIELD_NAME_1}{_HTML_TH_END}{_HTML_TH}{FIELD_NAME_2}{_HTML_TH_END}" +
+			string expectedHeaderRow = $"{_HTML_TH}{FileName1}{_HTML_TH_END}{_HTML_TH}{FieldName2}{_HTML_TH_END}" +
 									   $"{_HTML_TH}{_NATIVE_COL_NAME}{_HTML_TH_END}";
 
 			string expectedHeader = GetExpectedHeaderText(expectedHeaderRow);
+
 			// Act
 			string header = SubjectUnderTest.GetHeader(Fields.ToList());
 
@@ -112,6 +112,5 @@ namespace Relativity.Export.Client.NUnit
 		{
 			return $"{_headerPrefix}{expectedHeaderRow}{_headerSuffix}{Environment.NewLine}";
 		}
-
 	}
 }

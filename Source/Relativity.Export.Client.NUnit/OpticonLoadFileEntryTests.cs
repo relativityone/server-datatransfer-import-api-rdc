@@ -9,9 +9,9 @@ namespace Relativity.Export.Client.NUnit
     using System;
     using System.Collections.Generic;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
-
     using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
 
     using Relativity.Logging;
 
@@ -30,10 +30,10 @@ namespace Relativity.Export.Client.NUnit
 		[TestCaseSource(nameof(DataSets))]
 		public void ItShouldCreateOpticonEntry(ImageLoadFileEntryDataSet dataSet)
 		{
-			//ACT
+			// ACT
 			string actualResult = _instance.Create(dataSet.BatesNumber, dataSet.FilePath, dataSet.Volume, dataSet.PageNumber, dataSet.NumberOfImages);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(actualResult, Is.EqualTo(dataSet.ExpectedResult));
 		}
 

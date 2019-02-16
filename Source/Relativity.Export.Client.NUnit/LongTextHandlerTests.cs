@@ -6,15 +6,15 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using kCura.WinEDDS;
+	using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Delimiter;
     using kCura.WinEDDS.Exporters;
-    using kCura.WinEDDS.LoadFileEntry;   
+    using kCura.WinEDDS.LoadFileEntry;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.ImportExport.UnitTestFramework;
     using Relativity.Logging;
@@ -22,13 +22,11 @@ namespace Relativity.Export.Client.NUnit
     [TestFixture]
 	public class LongTextHandlerTests
 	{
-		private LongTextHandler _instance;
-
-		private Mock<ILongTextHandler> _textPrecedenceHandler;
-		private Mock<ILongTextHandler> _textToLoadFile;
-
 		private const string _DELIMITER_START = "delimiter_start";
 		private const string _DELIMITER_END = "delimiter_end";
+		private LongTextHandler _instance;
+		private Mock<ILongTextHandler> _textPrecedenceHandler;
+		private Mock<ILongTextHandler> _textToLoadFile;
 
 		[SetUp]
 		public void SetUp()
@@ -50,10 +48,10 @@ namespace Relativity.Export.Client.NUnit
 
 			DeferredEntry lineEntry = new DeferredEntry();
 
-			//ACT
+			// ACT
 			_instance.HandleLongText(artifact, field, lineEntry);
 
-			//ASSERT
+			// ASSERT
 			_textToLoadFile.Verify(x => x.HandleLongText(artifact, field, lineEntry));
 			Assert.That(lineEntry.GetTextFromEntry(), Is.EqualTo($"{_DELIMITER_START}{_DELIMITER_END}"));
 		}
@@ -67,10 +65,10 @@ namespace Relativity.Export.Client.NUnit
 
 			DeferredEntry lineEntry = new DeferredEntry();
 
-			//ACT
+			// ACT
 			_instance.HandleLongText(artifact, field, lineEntry);
 
-			//ASSERT
+			// ASSERT
 			_textPrecedenceHandler.Verify(x => x.HandleLongText(artifact, field, lineEntry));
 			Assert.That(lineEntry.GetTextFromEntry(), Is.EqualTo($"{_DELIMITER_START}{_DELIMITER_END}"));
 		}

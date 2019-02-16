@@ -6,13 +6,13 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using kCura.WinEDDS;
+	using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     [TestFixture]
 	public class LabelManagerTests
@@ -49,7 +49,7 @@ namespace Relativity.Export.Client.NUnit
 			_volumeMock.SetupGet(x => x.CurrentVolumeNumber).Returns(volumeNumber);
 			var instance = new LabelManager(exportSettings, _volumeMock.Object, _subdirectoryMock.Object);
 
-			//ACT
+			// ACT
 			return instance.GetCurrentVolumeLabel();
 		}
 
@@ -74,7 +74,7 @@ namespace Relativity.Export.Client.NUnit
 			_subdirectoryMock.SetupGet(x => x.CurrentSubdirectoryNumber).Returns(subdirectoryNumber);
 			var instance = new LabelManager(exportSettings, _volumeMock.Object, _subdirectoryMock.Object);
 
-			//ACT
+			// ACT
 			return instance.GetCurrentImageSubdirectoryLabel();
 		}
 
@@ -99,7 +99,7 @@ namespace Relativity.Export.Client.NUnit
 			_subdirectoryMock.SetupGet(x => x.CurrentSubdirectoryNumber).Returns(subdirectoryNumber);
 			var instance = new LabelManager(exportSettings, _volumeMock.Object, _subdirectoryMock.Object);
 
-			//ACT
+			// ACT
 			return instance.GetCurrentNativeSubdirectoryLabel();
 		}
 
@@ -124,7 +124,7 @@ namespace Relativity.Export.Client.NUnit
 			_subdirectoryMock.SetupGet(x => x.CurrentSubdirectoryNumber).Returns(subdirectoryNumber);
 			var instance = new LabelManager(exportSettings, _volumeMock.Object, _subdirectoryMock.Object);
 
-			//ACT
+			// ACT
 			return instance.GetCurrentTextSubdirectoryLabel();
 		}
 	}

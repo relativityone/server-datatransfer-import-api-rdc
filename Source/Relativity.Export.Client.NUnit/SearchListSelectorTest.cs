@@ -9,9 +9,9 @@ namespace Relativity.Export.Client.NUnit
     using System.Data;
     using System.Globalization;
 
-    using kCura.Windows.Forms.Specialized;
-
     using global::NUnit.Framework;
+
+	using kCura.Windows.Forms.Specialized;
 
     internal class SearchListSelectorTest : SearchListSelector
 	{
@@ -28,7 +28,7 @@ namespace Relativity.Export.Client.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_dt = new DataTable {  Locale = CultureInfo.InvariantCulture };
+			_dt = new DataTable { Locale = CultureInfo.InvariantCulture };
 			_dt.Columns.Add("Name", typeof(string));
 			_dt.Columns.Add("ArtifactID", typeof(int));
 		}
@@ -83,7 +83,7 @@ namespace Relativity.Export.Client.NUnit
 		{
 			const int amount = 4;
 			AddRowsToDataTable(amount, "substr");
-			System.Data.DataTable result = FilterRowsFromDataTable(_dt, "");
+			System.Data.DataTable result = FilterRowsFromDataTable(_dt, string.Empty);
 			Assert.AreEqual(_dt, result);
 		}
 

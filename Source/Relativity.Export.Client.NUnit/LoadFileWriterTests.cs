@@ -11,12 +11,12 @@ namespace Relativity.Export.Client.NUnit
     using System.Text;
     using System.Threading;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
     using kCura.WinEDDS.Exporters;
     using kCura.WinEDDS.LoadFileEntry;
-
-    using global::NUnit.Framework;
 
     using Polly;
 
@@ -43,13 +43,18 @@ namespace Relativity.Export.Client.NUnit
 		public void ItShouldWriteHeader()
 		{
 			const string header = "header";
-			IDictionary<int, ILoadFileEntry> linesToWrite = new Dictionary<int, ILoadFileEntry>();
-			linesToWrite.Add(LoadFileHeader.HEADER_KEY, new CompletedLoadFileEntry(header));
+			IDictionary<int, ILoadFileEntry> linesToWrite = new Dictionary<int, ILoadFileEntry>
+				                                                {
+					                                                {
+						                                                LoadFileHeader.HEADER_KEY,
+						                                                new CompletedLoadFileEntry(header)
+					                                                },
+				                                                };
 
-			//ACT
-			_instance.Write(_streamWriter, linesToWrite, new ArtifactEnumerator(new ObjectExportInfo[0], new Context("")), CancellationToken.None);
+			// ACT
+			_instance.Write(_streamWriter, linesToWrite, new ArtifactEnumerator(new ObjectExportInfo[0], new Context(string.Empty)), CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			string actualText = GetWrittenText();
 			Assert.That(actualText, Is.EqualTo(header));
 		}
@@ -59,10 +64,10 @@ namespace Relativity.Export.Client.NUnit
 		{
 			IDictionary<int, ILoadFileEntry> linesToWrite = new Dictionary<int, ILoadFileEntry>();
 
-			//ACT
-			_instance.Write(_streamWriter, linesToWrite, new ArtifactEnumerator(new ObjectExportInfo[0], new Context("")), CancellationToken.None);
+			// ACT
+			_instance.Write(_streamWriter, linesToWrite, new ArtifactEnumerator(new ObjectExportInfo[0], new Context(string.Empty)), CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			string actualText = GetWrittenText();
 			Assert.That(actualText, Is.Empty);
 		}
@@ -78,24 +83,41 @@ namespace Relativity.Export.Client.NUnit
 			{
 				ArtifactID = 1
 			};
+
 			ObjectExportInfo artifact2 = new ObjectExportInfo
 			{
 				ArtifactID = 2
 			};
+
 			ObjectExportInfo artifact3 = new ObjectExportInfo
 			{
 				ArtifactID = 3
 			};
 
-			IDictionary<int, ILoadFileEntry> linesToWrite = new Dictionary<int, ILoadFileEntry>();
-			linesToWrite.Add(artifact1.ArtifactID, new CompletedLoadFileEntry(artifact1Entry));
-			linesToWrite.Add(artifact2.ArtifactID, new CompletedLoadFileEntry(artifact2Entry));
-			linesToWrite.Add(artifact3.ArtifactID, new CompletedLoadFileEntry(artifact3Entry));
+			IDictionary<int, ILoadFileEntry> linesToWrite = new Dictionary<int, ILoadFileEntry>
+				                                                {
+					                                                {
+						                                                artifact1.ArtifactID,
+						                                                new CompletedLoadFileEntry(artifact1Entry)
+					                                                },
+					                                                {
+						                                                artifact2.ArtifactID,
+						                                                new CompletedLoadFileEntry(artifact2Entry)
+					                                                },
+					                                                {
+						                                                artifact3.ArtifactID,
+						                                                new CompletedLoadFileEntry(artifact3Entry)
+					                                                }
+				                                                };
 
-			//ACT
-			_instance.Write(_streamWriter, linesToWrite, new ArtifactEnumerator(new[] {artifact3, artifact1, artifact2}, new Context("")), CancellationToken.None);
+			// ACT
+			_instance.Write(
+				_streamWriter,
+				linesToWrite,
+				new ArtifactEnumerator(new[] { artifact3, artifact1, artifact2 }, new Context(string.Empty)),
+				CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			string expectedText = $"{artifact3Entry}{artifact1Entry}{artifact2Entry}";
 			string actualText = GetWrittenText();
 			Assert.That(actualText, Is.EqualTo(expectedText));

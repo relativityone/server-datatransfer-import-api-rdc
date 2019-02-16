@@ -8,13 +8,13 @@ namespace Relativity.Export.Client.NUnit
 {
     using System;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
     using kCura.WinEDDS.TApi;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Transfer;
 
@@ -40,11 +40,11 @@ namespace Relativity.Export.Client.NUnit
 		{
 			const string id = "812216";
 
-			//ACT
+			// ACT
 			_instance.Attach(_tapiBridge.Object);
 			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, true, TransferPathStatus.Successful, 1, 1, DateTime.Now, DateTime.Now));
 
-			//ASSERT
+			// ASSERT
 			VerifyFileMarkedAsDownloaded(_downloadProgressManager, id, 1);
 		}
 
@@ -53,11 +53,11 @@ namespace Relativity.Export.Client.NUnit
 		{
 			const string id = "812216";
 
-			//ACT
+			// ACT
 			_instance.Attach(_tapiBridge.Object);
 			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id, false, TransferPathStatus.Failed, 1, 1, DateTime.Now, DateTime.Now));
 
-			//ASSERT
+			// ASSERT
 			VerifyFileNotMarkedAsDownloaded(_downloadProgressManager, id, 1);
 		}
 
@@ -67,21 +67,22 @@ namespace Relativity.Export.Client.NUnit
 			const string id1 = "812216";
 			const string id2 = "267641";
 
-			//ACT
+			// ACT
 			_instance.Attach(_tapiBridge.Object);
 			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id1, true, TransferPathStatus.Successful, 1, 1, DateTime.Now, DateTime.Now));
 
 			_instance.Detach();
 			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(id2, true, TransferPathStatus.Successful, 1, 1, DateTime.Now, DateTime.Now));
 
-
-			//ASSERT
+			// ASSERT
 			VerifyFileMarkedAsDownloaded(_downloadProgressManager, id1, 1);
 			VerifyFileNotMarkedAsDownloaded(_downloadProgressManager, id2, 2);
 		}
 
 		protected abstract ProgressHandler CreateInstance(IDownloadProgressManager downloadProgressManager);
+
 		protected abstract void VerifyFileMarkedAsDownloaded(Mock<IDownloadProgressManager> downloadProgressManager, string id, int lineNumber);
+
 		protected abstract void VerifyFileNotMarkedAsDownloaded(Mock<IDownloadProgressManager> downloadProgressManager, string id, int lineNumber);
 	}
 }

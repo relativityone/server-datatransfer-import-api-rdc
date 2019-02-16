@@ -6,18 +6,18 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using Castle.Windsor;
+	using Castle.Windsor;
 
-    using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
-    using kCura.WinEDDS.Exporters;
+	using global::NUnit.Framework;
 
-    using Moq;
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
+	using kCura.WinEDDS.Exporters;
 
-    using global::NUnit.Framework;
+	using Moq;
 
-    using Relativity;
-    using Relativity.Logging;
+	using Relativity;
+	using Relativity.Logging;
 
     [TestFixture]
 	public class ImagesRollupFactoryTests
@@ -28,7 +28,7 @@ namespace Relativity.Export.Client.NUnit
 		[TestCase(true, false)]
 		public void ItShouldReturnSinglePageRollupWhenNotExportingImages(bool exportImages, bool copyFiles)
 		{
-			ExportFile exportSettings = new ExportFile((int) ArtifactType.Document)
+			ExportFile exportSettings = new ExportFile((int)ArtifactType.Document)
 			{
 				ExportImages = exportImages,
 				VolumeInfo = new VolumeInfo
@@ -42,10 +42,10 @@ namespace Relativity.Export.Client.NUnit
 
 			var instance = new ImagesRollupFactory(new NullLogger());
 
-			//ACT
+			// ACT
 			instance.Create(exportSettings, windsorContainerMock.Object);
 
-			//ASSERT
+			// ASSERT
 			windsorContainerMock.Verify(x => x.Resolve<SinglePageImagesRollup>());
 		}
 	}

@@ -13,11 +13,11 @@ namespace Relativity.Export.Client.NUnit
 
     public class ImageFilePathProviderTests : FilePathProviderTests
 	{
+		protected override string Subdirectory => "image_sub";
+
 		protected override FilePathProvider CreateInstance(IDirectoryHelper directoryHelper, ILabelManagerForArtifact labelManager, ExportFile exportSettings)
 		{
 			return new ImageFilePathProvider(labelManager, exportSettings, directoryHelper, new NullLogger());
 		}
-
-		protected override string Subdirectory => "image_sub";
 	}
 }

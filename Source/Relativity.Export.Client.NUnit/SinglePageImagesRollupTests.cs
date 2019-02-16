@@ -8,10 +8,10 @@ namespace Relativity.Export.Client.NUnit
 {
     using System.Collections;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
-    using kCura.WinEDDS.Exporters;
-
     using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
+    using kCura.WinEDDS.Exporters;
 
     [TestFixture]
 	public class SinglePageImagesRollupTests
@@ -29,10 +29,10 @@ namespace Relativity.Export.Client.NUnit
 			var image = new ImageExportInfo();
 			artifact.Images.Add(image);
 
-			//ACT
+			// ACT
 			instance.RollupImages(artifact);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(image.SuccessfulRollup, Is.False);
 		}
 
@@ -46,7 +46,7 @@ namespace Relativity.Export.Client.NUnit
 				Images = new ArrayList()
 			};
 
-			//ACT
+			// ACT
 			Assert.DoesNotThrow(() => instance.RollupImages(artifact));
 		}
 	}

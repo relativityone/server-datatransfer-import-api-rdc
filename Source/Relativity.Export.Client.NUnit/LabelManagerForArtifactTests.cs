@@ -6,11 +6,11 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+	using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     [TestFixture]
 	public class LabelManagerForArtifactTests

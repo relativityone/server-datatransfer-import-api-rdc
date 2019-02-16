@@ -8,25 +8,24 @@ namespace Relativity.Export.Client.NUnit
 {
     using System.IO;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 
     using Moq;
 
-    using global::NUnit.Framework;
-
     [TestFixture]
 	public abstract class FilePathProviderTests
 	{
-		private Mock<IDirectoryHelper> _directoryHelper;
-		private Mock<ILabelManagerForArtifact> _labelManager;
-
-		private ExportFile _exportSettings;
-
-		private FilePathProvider _instance;
-
 		private readonly string _volumeLabel = "volume_label";
 		private readonly string _folderPath = "folder_path";
+		private Mock<IDirectoryHelper> _directoryHelper;
+		private Mock<ILabelManagerForArtifact> _labelManager;
+		private ExportFile _exportSettings;
+		private FilePathProvider _instance;
+
+		protected abstract string Subdirectory { get; }
 
 		[SetUp]
 		public void SetUp()
@@ -49,8 +48,6 @@ namespace Relativity.Export.Client.NUnit
 
 		protected abstract FilePathProvider CreateInstance(IDirectoryHelper directoryHelper, ILabelManagerForArtifact labelManager, ExportFile exportSettings);
 
-		protected abstract string Subdirectory { get; }
-
 		[Test]
 		public void ItShouldCreateDirectoryIfNotExists()
 		{
@@ -58,10 +55,10 @@ namespace Relativity.Export.Client.NUnit
 
 			_directoryHelper.Setup(x => x.Exists(It.IsAny<string>())).Returns(false);
 
-			//ACT
+			// ACT
 			_instance.GetPathForFile(fileName, 0);
 
-			//ASSERT
+			// ASSERT
 			string expectedPath = Path.Combine(_folderPath, _volumeLabel, Subdirectory);
 			_directoryHelper.Verify(x => x.CreateDirectory(expectedPath), Times.Once);
 		}
@@ -71,10 +68,10 @@ namespace Relativity.Export.Client.NUnit
 		{
 			const string fileName = "file_name.txt";
 
-			//ACT
+			// ACT
 			string result = _instance.GetPathForFile(fileName, 0);
 
-			//ASSERT
+			// ASSERT
 			string expectedFilePath = Path.Combine(_folderPath, _volumeLabel, Subdirectory, fileName);
 			Assert.That(result, Is.EqualTo(expectedFilePath));
 		}

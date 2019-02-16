@@ -9,29 +9,31 @@ namespace Relativity.Export.Client.NUnit
     using System;
     using System.Collections.Generic;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export;
     using kCura.WinEDDS.Exporters;
-    
-    using Moq;
 
-    using global::NUnit.Framework;
+    using Moq;
 
     using Relativity;
 
-    public class ExportFileFormatterSetUp<T> where T : ExportFileFormatterBase
+    public class ExportFileFormatterSetUp<T>
+	    where T : ExportFileFormatterBase
 	{
-		protected T SubjectUnderTest;
+		protected const string FileName1 = "Name1";
+		protected const string FieldName2 = "Name2";
+		protected const char RecordDelimiter = ',';
+		protected const char QuoteDelimiter = '"';
 
-		protected Mock<IFieldNameProvider> FieldNameProviderMock;
-		protected ExportFile ExpFile;
-		protected kCura.WinEDDS.ViewFieldInfo[] Fields;
+		protected T SubjectUnderTest { get; set; }
 
-		protected const string FIELD_NAME_1 = "Name1";
-		protected const string FIELD_NAME_2 = "Name2";
+		protected Mock<IFieldNameProvider> FieldNameProviderMock { get; set; }
 
-		protected const char RECORD_DELIMITER = ',';
-		protected const char QUOTE_DELIMITER = '"';
+		protected ExportFile ExpFile { get; set; }
+
+		protected kCura.WinEDDS.ViewFieldInfo[] Fields { get; set; }
 
 		[SetUp]
 		public void Init()
@@ -42,21 +44,21 @@ namespace Relativity.Export.Client.NUnit
 		protected virtual void InitTestCase()
 		{
 			FieldNameProviderMock = new Mock<IFieldNameProvider>();
-            
+
 			FieldNameProviderMock.Setup(mock => mock.GetDisplayName(It.IsAny<kCura.WinEDDS.ViewFieldInfo>()))
 				.Returns((kCura.WinEDDS.ViewFieldInfo field) => field.DisplayName);
 
 			int index = 1;
 			Fields = ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(new List<Tuple<int, string>>
 			{
-				Tuple.Create(index++, FIELD_NAME_1),
-				Tuple.Create(index, FIELD_NAME_2)
+				Tuple.Create(index++, FileName1),
+				Tuple.Create(index, FieldName2)
 			});
 
-			ExpFile = new ExportFile((int)ArtifactType.Document);
-
-			ExpFile.QuoteDelimiter = QUOTE_DELIMITER;
-			ExpFile.RecordDelimiter = RECORD_DELIMITER;
+			ExpFile = new ExportFile((int)ArtifactType.Document)
+				          {
+					          QuoteDelimiter = QuoteDelimiter, RecordDelimiter = RecordDelimiter
+				          };
 		}
 	}
 }

@@ -12,7 +12,9 @@ namespace Relativity.Export.Client.NUnit
     using System.Threading;
     using System.Threading.Tasks;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
@@ -20,14 +22,15 @@ namespace Relativity.Export.Client.NUnit
 
     using Moq;
 
-    using global::NUnit.Framework;
-
     using Relativity.Logging;
     using Relativity.Transfer;
 
     [TestFixture]
 	public class PhysicalFilesDownloaderTests
 	{
+		private const int _DEFAULT_FILES_PER_FILESHARE = 3;
+		private const int _DEFAULT_TASK_COUNT = 2;
+		private readonly object _lockToken = new object();
 		private Dictionary<string, IRelativityFileShareSettings> _fileShareSettingsCache;
 		private ILog _logger;
 		private List<Mock<IDownloadTapiBridge>> _mockTapiBridges;
@@ -37,9 +40,6 @@ namespace Relativity.Export.Client.NUnit
 		private PhysicalFilesDownloader _downloader;
 		private SafeIncrement _safeIncrement;
 		private string[] _availableFileShares;
-		private const int _DEFAULT_FILES_PER_FILESHARE = 3;
-		private const int _DEFAULT_TASK_COUNT = 2;
-		private readonly object _lockToken = new object();
 
 		[SetUp]
 		public void SetUp()
