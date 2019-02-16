@@ -9,9 +9,9 @@
 
 namespace Relativity.Import.Client.NUnit.Integration
 {
-	using kCura.OI.FileID;
-
 	using global::NUnit.Framework;
+
+	using kCura.OI.FileID;
 
 	using Relativity.ImportExport.UnitTestFramework;
 
@@ -88,8 +88,10 @@ namespace Relativity.Import.Client.NUnit.Integration
 		[Category(TestCategories.Integration)]
 		public void ItShouldThrowWhenTheFileIsLocked()
 		{
-			using (System.IO.FileStream stream =
-				System.IO.File.Open(this.tempFile, System.IO.FileMode.Open, System.IO.FileAccess.Read,
+			using (System.IO.File.Open(
+					this.tempFile,
+					System.IO.FileMode.Open,
+					System.IO.FileAccess.Read,
 					System.IO.FileShare.None))
 			{
 				FileIDIdentificationException exception =

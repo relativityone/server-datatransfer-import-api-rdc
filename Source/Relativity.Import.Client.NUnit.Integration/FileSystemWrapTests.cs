@@ -19,7 +19,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 	using Relativity.ImportExport.UnitTestFramework;
 
 	/// <summary>
-	/// Represents <see cref="FileSystemWrap"/> tests. 
+	/// Represents <see cref="FileSystemWrap"/> tests.
 	/// </summary>
 	[TestFixture]
     public class FileSystemWrapTests
@@ -127,7 +127,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		public void ShouldCreateTheDirectoryInfo()
 		{
 			string folderName = GenerateUniqueFolderName();
-			string directory = GenerateUniqueDirectoryPath(folderName);
+			string directory = this.GenerateUniqueDirectoryPath(folderName);
 			IDirectoryInfo info = this.fileSystem.CreateDirectoryInfo(directory);
 			Assert.That(info, Is.Not.Null);
 			Assert.That(info.Exists, Is.False);
@@ -148,7 +148,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		public void ShouldCreateTheDirectory(bool useDirectoryObj)
 		{
 			string folderName = GenerateUniqueFolderName();
-			string directory = GenerateUniqueDirectoryPath(folderName);
+			string directory = this.GenerateUniqueDirectoryPath(folderName);
 			if (useDirectoryObj)
 			{
 				this.fileSystem.Directory.CreateDirectory(directory);
@@ -171,7 +171,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		public void ShouldGetTheDirectoryParent(bool directoryExists)
 		{
 			string expected = GetUniqueDirectory();
-			string directory = GenerateUniqueDirectoryPath();
+			string directory = this.GenerateUniqueDirectoryPath();
 			if (!directoryExists)
 			{
 				expected = System.IO.Path.Combine(directory, "dummy");
@@ -404,7 +404,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 
 		private string GenerateUniqueDirectoryPath()
 		{
-			return GenerateUniqueDirectoryPath(GenerateUniqueFolderName());
+			return this.GenerateUniqueDirectoryPath(GenerateUniqueFolderName());
 		}
 
 		private string GenerateUniqueDirectoryPath(string folder)

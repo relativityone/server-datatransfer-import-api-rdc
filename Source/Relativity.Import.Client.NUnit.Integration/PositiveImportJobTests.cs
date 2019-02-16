@@ -9,9 +9,9 @@
 
 namespace Relativity.Import.Client.NUnit.Integration
 {
-	using kCura.WinEDDS.TApi;
-
 	using global::NUnit.Framework;
+
+	using kCura.WinEDDS.TApi;
 
 	using Relativity.ImportExport.UnitTestFramework;
 
@@ -45,8 +45,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 			bool disableNativeLocationValidation,
 			bool disableNativeValidation)
 		{
-			if (client == TapiClient.Aspera && this.TestParameters.SkipAsperaModeTests ||
-			    client == TapiClient.Direct && this.TestParameters.SkipDirectModeTests)
+			if ((client == TapiClient.Aspera && this.TestParameters.SkipAsperaModeTests) ||
+			    (client == TapiClient.Direct && this.TestParameters.SkipDirectModeTests))
 			{
 				Assert.Ignore(DtxTestParameters.SkipTestMessage, $"{client}");
 			}

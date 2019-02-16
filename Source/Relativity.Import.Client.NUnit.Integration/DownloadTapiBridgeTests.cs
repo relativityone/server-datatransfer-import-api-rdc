@@ -13,9 +13,9 @@ namespace Relativity.Import.Client.NUnit.Integration
 	using System.Net;
 	using System.Threading;
 
-	using kCura.WinEDDS.TApi;
-
 	using global::NUnit.Framework;
+
+	using kCura.WinEDDS.TApi;
 
 	using Relativity.ImportExport.UnitTestFramework;
 	using Relativity.Transfer;
@@ -32,7 +32,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 	{
 		private DownloadTapiBridge tapiBridge;
 
-		protected override TapiBridgeBase NativeFileTransfer => tapiBridge;
+		protected override TapiBridgeBase NativeFileTransfer => this.tapiBridge;
 
 		/// <summary>
 		/// Tests the download bridge.
@@ -75,7 +75,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 				{
 					Order = order,
 					SourcePath = sourcePath,
-					TargetPath = tapiBridge.TargetPath
+					TargetPath = this.tapiBridge.TargetPath
 				});
 			}
 

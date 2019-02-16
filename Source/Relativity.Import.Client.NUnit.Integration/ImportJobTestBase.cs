@@ -18,10 +18,10 @@ namespace Relativity.Import.Client.NUnit.Integration
 	using System.Linq;
 	using System.Text;
 
+	using global::NUnit.Framework;
+
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
-
-	using global::NUnit.Framework;
 
 	using Relativity.ImportExport.UnitTestFramework;
 
@@ -93,7 +93,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		protected override void OnSetup()
 		{
 			base.OnSetup();
-			this.SourceData = new DataTable {  Locale = CultureInfo.InvariantCulture };
+			this.SourceData = new DataTable { Locale = CultureInfo.InvariantCulture };
 			this.SourceData.Columns.Add(WellKnownFields.ControlNumber, typeof(string));
 			this.SourceData.Columns.Add(WellKnownFields.FilePath, typeof(string));
 			this.jobMessages.Clear();
@@ -274,6 +274,9 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// <summary>
 		/// Then the import messages contains the specified message.
 		/// </summary>
+		/// <param name="message">
+		/// The message to check.
+		/// </param>
 		protected void ThenTheImportMessagesContains(string message)
 		{
 			Assert.That(this.jobMessages.Any(x => x.Contains(message)), Is.True);

@@ -3,3 +3,4 @@ moq
 newtonsoft.json
 nunit
 relativity.importexport
+stylecop.analyzers

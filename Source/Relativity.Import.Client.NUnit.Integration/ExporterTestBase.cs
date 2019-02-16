@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------------------------------------
-// <copyright file="ExporterTests.cs" company="Relativity ODA LLC">
+// <copyright file="ExporterTestBase.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
@@ -17,15 +17,15 @@ namespace Relativity.Import.Client.NUnit.Integration
 	using System.Text;
 	using System.Threading.Tasks;
 
+	using global::NUnit.Framework;
+
+	using kCura.Windows.Process;
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Core.Export;
 	using kCura.WinEDDS.Exporters;
-	using kCura.Windows.Process;
 	using kCura.WinEDDS.Service.Export;
 
 	using Moq;
-
-	using global::NUnit.Framework;
 
 	using Relativity.ImportExport.UnitTestFramework;
 	using Relativity.Logging;
@@ -333,13 +333,16 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// <param name="caseInfo">
 		/// The workspace info.
 		/// </param>
+		/// <returns>
+		/// The <see cref="Task"/> instance.
+		/// </returns>
 		protected async Task WhenCreatingTheExportFileAsync(Relativity.CaseInfo caseInfo)
 		{
 			using (var searchManager = new kCura.WinEDDS.Service.SearchManager(this.credentials, this.cookieContainer))
 			using (var productionManager =
 				new kCura.WinEDDS.Service.ProductionManager(this.credentials, this.cookieContainer))
 			{
-				this.exportFile = new kCura.WinEDDS.ExtendedExportFile((int) ArtifactType.Document)
+				this.exportFile = new kCura.WinEDDS.ExtendedExportFile((int)ArtifactType.Document)
 				{
 					ArtifactID = this.selectedFolderId,
 					CaseInfo = caseInfo,
@@ -383,7 +386,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 						break;
 
 					default:
-						this.exportFile.DataTable = this.GetSearchExportDataSourceAsync(searchManager,
+						this.exportFile.DataTable = this.GetSearchExportDataSourceAsync(
+							searchManager,
 							this.exportType == kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch,
 							this.exportFile.ArtifactTypeID);
 						break;
@@ -392,13 +396,13 @@ namespace Relativity.Import.Client.NUnit.Integration
 				List<int> artifactIds = new List<int>();
 				foreach (System.Data.DataRow row in this.exportFile.DataTable.Rows)
 				{
-					artifactIds.Add((int) row["ArtifactID"]);
+					artifactIds.Add((int)row["ArtifactID"]);
 				}
 
 				var fields = this.GetFieldsAsync(this.exportFile.ArtifactTypeID);
 				foreach (DocumentField field in fields)
 				{
-					if (field.FieldTypeID == (int) Relativity.FieldTypeHelper.FieldType.File)
+					if (field.FieldTypeID == (int)Relativity.FieldTypeHelper.FieldType.File)
 					{
 						this.exportFile.FileField = field;
 						break;
@@ -413,7 +417,9 @@ namespace Relativity.Import.Client.NUnit.Integration
 				else
 				{
 					this.exportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(
-						this.workspaceId, this.exportFile.ArtifactTypeID, artifactIds.ToArray(),
+						this.workspaceId,
+						this.exportFile.ArtifactTypeID,
+						artifactIds.ToArray(),
 						this.exportType == kCura.WinEDDS.ExportFile.ExportType.Production);
 					this.exportFile.AllExportableFields =
 						searchManager.RetrieveAllExportableViewFields(this.workspaceId, this.exportFile.ArtifactTypeID);
@@ -502,7 +508,9 @@ namespace Relativity.Import.Client.NUnit.Integration
 			int artifactType)
 		{
 			System.Data.DataSet dataset =
-				searchManager.RetrieveViewsByContextArtifactID(this.workspaceId, artifactType,
+				searchManager.RetrieveViewsByContextArtifactID(
+					this.workspaceId,
+					artifactType,
 					isArtifactSearch);
 			return dataset.Tables[0];
 		}

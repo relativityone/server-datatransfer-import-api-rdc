@@ -30,7 +30,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 	{
 		private UploadTapiBridge tapiBridge;
 
-		protected override TapiBridgeBase NativeFileTransfer => tapiBridge;
+		protected override TapiBridgeBase NativeFileTransfer => this.tapiBridge;
 
 		/// <summary>
 		/// Tests the upload bridge.

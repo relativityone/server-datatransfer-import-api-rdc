@@ -12,9 +12,9 @@ namespace Relativity.Import.Client.NUnit.Integration
 	using System.Text;
 	using System.Threading.Tasks;
 
-	using kCura.WinEDDS;
-
 	using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
 
 	using Relativity.ImportExport.UnitTestFramework;
 

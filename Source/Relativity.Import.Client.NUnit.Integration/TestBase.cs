@@ -14,10 +14,10 @@ namespace Relativity.Import.Client.NUnit.Integration
 	using System.Net;
 	using System.Security.AccessControl;
 	using System.Security.Principal;
-	
-	using kCura.WinEDDS.TApi;
 
 	using global::NUnit.Framework;
+
+	using kCura.WinEDDS.TApi;
 
 	using Relativity.ImportExport.UnitTestFramework;
 	using Relativity.Transfer;
@@ -28,7 +28,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 	public abstract class TestBase
 	{
 		/// <summary>
-		/// Gets or sets the temp directory.
+		/// Gets the temp directory.
 		/// </summary>
 		/// <value>
 		/// The temp directory.
@@ -52,7 +52,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		/// <summary>
-		/// Gets or sets the test timestamp.
+		/// Gets the test timestamp.
 		/// </summary>
 		/// <value>
 		/// The <see cref="DateTime"/> instance.
@@ -106,7 +106,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 					this.TempDirectory = null;
 				}
 			}
-			
+
 			this.OnTearDown();
 		}
 
