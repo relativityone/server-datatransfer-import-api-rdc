@@ -21,7 +21,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 	/// </summary>
 	public static class RdoHelper
 	{
-        public static int CreateObjectType(DtxTestParameters parameters, string objectTypeName)
+        public static int CreateObjectType(IntegrationTestParameters parameters, string objectTypeName)
         {
 	        if (parameters == null)
 	        {
@@ -60,7 +60,7 @@ namespace Relativity.ImportExport.UnitTestFramework
         }
 
         public static int CreateObjectTypeInstance(
-	        DtxTestParameters parameters,
+	        IntegrationTestParameters parameters,
             int artifactTypeId,
             IDictionary<string, object> fields)
         {
@@ -95,7 +95,7 @@ namespace Relativity.ImportExport.UnitTestFramework
             }
         }
 
-        public static void DeleteObject(DtxTestParameters parameters, int artifactId)
+        public static void DeleteObject(IntegrationTestParameters parameters, int artifactId)
         {
 	        if (parameters == null)
 	        {
@@ -118,7 +118,7 @@ namespace Relativity.ImportExport.UnitTestFramework
             }
         }
 
-        public static int QueryArtifactTypeId(DtxTestParameters parameters, string objectTypeName)
+        public static int QueryArtifactTypeId(IntegrationTestParameters parameters, string objectTypeName)
         {
 	        if (parameters == null)
 	        {
@@ -145,7 +145,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 	        }
         }
 
-        public static int QueryRelativityObjectCount(DtxTestParameters parameters, int artifactTypeId)
+        public static int QueryRelativityObjectCount(IntegrationTestParameters parameters, int artifactTypeId)
         {
 	        if (parameters == null)
 	        {
@@ -167,7 +167,7 @@ namespace Relativity.ImportExport.UnitTestFramework
             }
         }
 
-        public static int QueryObjectType(DtxTestParameters parameters, string objectTypeName)
+        public static int QueryObjectType(IntegrationTestParameters parameters, string objectTypeName)
         {
 	        if (parameters == null)
 	        {
@@ -188,7 +188,7 @@ namespace Relativity.ImportExport.UnitTestFramework
         }
 
         public static IList<RelativityObject> QueryRelativityObjects(
-	        DtxTestParameters parameters,
+	        IntegrationTestParameters parameters,
             int artifactTypeId,
             IEnumerable<string> fields)
         {
@@ -213,7 +213,7 @@ namespace Relativity.ImportExport.UnitTestFramework
             }
         }
 
-        public static int QueryWorkspaceObjectTypeDescriptorId(DtxTestParameters parameters, int artifactId)
+        public static int QueryWorkspaceObjectTypeDescriptorId(IntegrationTestParameters parameters, int artifactId)
         {
 	        if (parameters == null)
 	        {
@@ -245,7 +245,7 @@ namespace Relativity.ImportExport.UnitTestFramework
         }
 
         public static RelativityObject ReadRelativityObject(
-	        DtxTestParameters parameters,
+	        IntegrationTestParameters parameters,
             int artifactId,
             IEnumerable<string> fields)
         {

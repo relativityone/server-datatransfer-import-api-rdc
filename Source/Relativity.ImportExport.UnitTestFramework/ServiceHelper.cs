@@ -28,12 +28,12 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// The type of service to retrieve.
 		/// </typeparam>
 		/// <param name="parameters">
-		/// The data transfer test parameters.
+		/// The integration test parameters.
 		/// </param>
 		/// <returns>
 		/// The <typeparamref name="T"/> instance.
 		/// </returns>
-		public static T GetServiceProxy<T>(DtxTestParameters parameters)
+		public static T GetServiceProxy<T>(IntegrationTestParameters parameters)
 			where T : class, IDisposable
 		{
 			if (parameters == null)

@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="AssemblySetupHelper.cs" company="Relativity ODA LLC">
+// <copyright file="IntegrationTestHelper.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -20,9 +20,9 @@ namespace Relativity.ImportExport.UnitTestFramework
 	using Relativity.Transfer;
 
 	/// <summary>
-	/// Represents a global assembly-wide setup routine that's guaranteed to be executed before ANY NUnit test.
+	/// Defines static methods to setup and teardown integration tests.
 	/// </summary>
-	public static class AssemblySetupHelper
+	public static class IntegrationTestHelper
 	{
 		/// <summary>
 		/// Gets the Relativity logging instance.
@@ -37,15 +37,15 @@ namespace Relativity.ImportExport.UnitTestFramework
 		}
 
 		/// <summary>
-		/// The main setup method.
+		/// Create the integration test environment with a new test workspace and returns the test parameters.
 		/// </summary>
 		/// <returns>
-		/// The <see cref="DtxTestParameters"/> instance.
+		/// The <see cref="IntegrationTestParameters"/> instance.
 		/// </returns>
-		public static DtxTestParameters Setup()
+		public static IntegrationTestParameters Create()
 		{
 			// Note: don't create the logger until all parameters have been retrieved.
-			DtxTestParameters parameters = GetDtxTestParameters();
+			IntegrationTestParameters parameters = GetIntegrationTestParameters();
 			SetupLogger(parameters);
 			if (parameters.SkipIntegrationTests)
 			{
@@ -72,12 +72,12 @@ namespace Relativity.ImportExport.UnitTestFramework
 		}
 
 		/// <summary>
-		/// The main teardown method.
+		/// Destroy the integration test environment that was previously created.
 		/// </summary>
 		/// <param name="parameters">
-		/// The data transfer test parameters used to perform the teardown.
+		/// The integration test parameters.
 		/// </param>
-		public static void TearDown(DtxTestParameters parameters)
+		public static void Destroy(IntegrationTestParameters parameters)
 		{
 			if (parameters == null)
 			{
@@ -136,10 +136,10 @@ END";
 			}
 		}
 
-		private static DtxTestParameters GetDtxTestParameters()
+		private static IntegrationTestParameters GetIntegrationTestParameters()
 		{
-			Console.WriteLine("Retrieving all DTX test parameters...");
-			DtxTestParameters parameters = new DtxTestParameters
+			Console.WriteLine("Retrieving all integration test parameters...");
+			IntegrationTestParameters parameters = new IntegrationTestParameters
 				                               {
 					                               RelativityUserName = GetConfigurationStringValue("RelativityUserName"),
 					                               RelativityPassword = GetConfigurationStringValue("RelativityPassword"),
@@ -163,8 +163,8 @@ END";
 						                               GetConfigurationStringValue("SkipIntegrationTests")),
 					                               WorkspaceTemplate = GetConfigurationStringValue("WorkspaceTemplate")
 				                               };
-			Console.WriteLine("Retrieved all DTX test parameters.");
-			Console.WriteLine("Dumping all DTX test parameters.");
+			Console.WriteLine("Retrieved all integration test parameters.");
+			Console.WriteLine("Dumping all integration test parameters.");
 			foreach (var prop in parameters.GetType().GetProperties())
 			{
 				DebuggerBrowsableAttribute attribute = prop.GetCustomAttribute<DebuggerBrowsableAttribute>();
@@ -178,7 +178,7 @@ END";
 				}
 			}
 
-			Console.WriteLine("Dumped all DTX test parameters.");
+			Console.WriteLine("Dumped all integration test parameters.");
 			return parameters;
 		}
 
@@ -212,7 +212,7 @@ END";
 			throw new InvalidOperationException($"The '{key}' app.config setting or '{envVariable}' environment variable is not specified.");
 		}
 
-		private static void SetupLogger(DtxTestParameters parameters)
+		private static void SetupLogger(IntegrationTestParameters parameters)
 		{
 			Logging.LoggerOptions loggerOptions = new Logging.LoggerOptions
 			{

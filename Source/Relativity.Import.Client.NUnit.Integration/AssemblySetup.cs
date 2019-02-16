@@ -17,12 +17,12 @@ namespace Relativity.Import.Client.NUnit.Integration
 	public class AssemblySetup
     {
 	    /// <summary>
-	    /// Gets the data transfer test parameters for all tests within the current assembly.
+	    /// Gets the test parameters used by all integration tests within the current assembly.
 	    /// </summary>
 	    /// <value>
-	    /// The <see cref="DtxTestParameters"/> instance.
+	    /// The <see cref="IntegrationTestParameters"/> instance.
 	    /// </value>
-	    public static DtxTestParameters GlobalDtxTestParameters
+	    public static IntegrationTestParameters TestParameters
 	    {
 		    get;
 		    private set;
@@ -34,7 +34,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		[OneTimeSetUp]
 		public void Setup()
         {
-            GlobalDtxTestParameters = AssemblySetupHelper.Setup();
+            TestParameters = IntegrationTestHelper.Create();
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Relativity.Import.Client.NUnit.Integration
         [OneTimeTearDown]
         public void TearDown()
         {
-            AssemblySetupHelper.TearDown(GlobalDtxTestParameters);
+            IntegrationTestHelper.Destroy(TestParameters);
         }
     }
 }

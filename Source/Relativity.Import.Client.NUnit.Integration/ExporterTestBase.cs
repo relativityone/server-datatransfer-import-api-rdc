@@ -60,12 +60,12 @@ namespace Relativity.Import.Client.NUnit.Integration
 		private ExtendedExportFile exportFile;
 
 		/// <summary>
-		/// Gets data transfer test parameters.
+		/// Gets integration test parameters.
 		/// </summary>
 		/// <value>
-		/// The <see cref="DtxTestParameters"/> value.
+		/// The <see cref="IntegrationTestParameters"/> value.
 		/// </value>
-		protected DtxTestParameters TestParameters
+		protected IntegrationTestParameters TestParameters
 		{
 			get;
 			private set;
@@ -142,7 +142,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		{
 			if (this.TestParameters == null)
 			{
-				this.TestParameters = AssemblySetup.GlobalDtxTestParameters.DeepCopy();
+				this.TestParameters = AssemblySetup.TestParameters.DeepCopy();
 			}
 		}
 

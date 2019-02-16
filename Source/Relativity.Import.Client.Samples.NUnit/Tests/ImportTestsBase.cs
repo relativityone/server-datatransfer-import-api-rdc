@@ -106,7 +106,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
         /// Initializes a new instance of the <see cref="ImportTestsBase"/> class.
         /// </summary>
         protected ImportTestsBase()
-			: this(AssemblySetupHelper.Logger)
+			: this(IntegrationTestHelper.Logger)
 		{
 			// Assume that AssemblySetup has already setup the singleton.
 		}
@@ -308,12 +308,12 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		}
 
 		/// <summary>
-		/// Gets data transfer test parameters.
+		/// Gets integration test parameters.
 		/// </summary>
 		/// <value>
-		/// The <see cref="DtxTestParameters"/> instance.
+		/// The <see cref="IntegrationTestParameters"/> instance.
 		/// </value>
-		protected DtxTestParameters TestParameters
+		protected IntegrationTestParameters TestParameters
 		{
 			get;
 			private set;
@@ -549,7 +549,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		{
 			if (this.TestParameters == null)
 			{
-				this.TestParameters = AssemblySetup.GlobalTestParameters.DeepCopy();
+				this.TestParameters = AssemblySetup.TestParameters.DeepCopy();
 			}
 		}
 

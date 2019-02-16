@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="DtxTestParameters.cs" company="Relativity ODA LLC">
+// <copyright file="IntegrationTestParameters.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -7,12 +7,11 @@
 namespace Relativity.ImportExport.UnitTestFramework
 {
 	using System;
-	using System.Diagnostics;
 
 	/// <summary>
-	/// Represents the data transfer test settings.
+	/// Represents the parameters used by all integration tests.
 	/// </summary>
-	public class DtxTestParameters
+	public class IntegrationTestParameters
 	{
 		/// <summary>
 		/// The maximum folder length.
@@ -20,14 +19,9 @@ namespace Relativity.ImportExport.UnitTestFramework
 		public const int MaxFolderLength = 255;
 
 		/// <summary>
-		/// The standard skip test message.
+		/// Initializes a new instance of the <see cref="IntegrationTestParameters"/> class.
 		/// </summary>
-		public const string SkipTestMessage = "This test is conditionally skipped - Reason: {0}";
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="DtxTestParameters"/> class.
-		/// </summary>
-		public DtxTestParameters()
+		public IntegrationTestParameters()
 		{
 			this.WorkspaceId = 0;
 			this.FileShareUncPath = null;
@@ -43,12 +37,12 @@ namespace Relativity.ImportExport.UnitTestFramework
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DtxTestParameters"/> class.
+		/// Initializes a new instance of the <see cref="IntegrationTestParameters"/> class.
 		/// </summary>
 		/// <param name="copy">
 		/// The object to copy.
 		/// </param>
-		public DtxTestParameters(DtxTestParameters copy)
+		public IntegrationTestParameters(IntegrationTestParameters copy)
 		{
 			if (copy == null)
 			{
@@ -270,11 +264,11 @@ namespace Relativity.ImportExport.UnitTestFramework
 		/// Performs a deep copy of this instance.
 		/// </summary>
 		/// <returns>
-		/// The <see cref="DtxTestParameters"/> instance.
+		/// The <see cref="IntegrationTestParameters"/> instance.
 		/// </returns>
-		public DtxTestParameters DeepCopy()
+		public IntegrationTestParameters DeepCopy()
 		{
-			return new DtxTestParameters(this);
+			return new IntegrationTestParameters(this);
 		}
 	}
 }

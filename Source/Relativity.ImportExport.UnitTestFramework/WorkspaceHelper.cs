@@ -19,7 +19,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 	/// </summary>
     public static class WorkspaceHelper
     {
-        public static void CreateTestWorkspace(DtxTestParameters parameters, Relativity.Logging.ILog logger)
+        public static void CreateTestWorkspace(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
         {
 	        if (parameters == null)
 	        {
@@ -72,7 +72,7 @@ namespace Relativity.ImportExport.UnitTestFramework
             }
         }
 
-        public static void DeleteTestWorkspace(DtxTestParameters parameters, Relativity.Logging.ILog logger)
+        public static void DeleteTestWorkspace(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
         {
 	        if (parameters == null)
 	        {
@@ -100,7 +100,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 	        }
         }
 
-        public static IList<string> QueryWorkspaceFolders(DtxTestParameters parameters, Relativity.Logging.ILog logger)
+        public static IList<string> QueryWorkspaceFolders(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
         {
 	        if (parameters == null)
 	        {

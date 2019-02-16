@@ -24,7 +24,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		/// Initializes a new instance of the <see cref="DocImportTestsBase"/> class.
 		/// </summary>
 		protected DocImportTestsBase()
-			: base(AssemblySetupHelper.Logger)
+			: base(IntegrationTestHelper.Logger)
 		{
 			// Assume that AssemblySetup has already setup the singleton.
 		}
@@ -68,7 +68,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			StringBuilder sb = new StringBuilder();
 			for (var i = 0; i < maxDepth; i++)
 			{
-				string folderName = $"\\{Guid.NewGuid()}-{RandomHelper.NextString(20, DtxTestParameters.MaxFolderLength - 36)}";
+				string folderName = $"\\{Guid.NewGuid()}-{RandomHelper.NextString(20, IntegrationTestParameters.MaxFolderLength - 36)}";
 				sb.Append(folderName);
 			}
 

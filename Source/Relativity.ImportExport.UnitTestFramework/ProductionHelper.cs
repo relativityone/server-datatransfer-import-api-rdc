@@ -14,7 +14,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 	public static class ProductionHelper
 	{
 		public static int CreateProduction(
-			DtxTestParameters parameters,
+			IntegrationTestParameters parameters,
 			string productionName,
 			string batesPrefix,
 			Relativity.Logging.ILog logger)
@@ -57,7 +57,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 			}
 		}
 
-		public static Relativity.Productions.Services.Production QueryProduction(DtxTestParameters parameters, int productionId)
+		public static Relativity.Productions.Services.Production QueryProduction(IntegrationTestParameters parameters, int productionId)
         {
 	        if (parameters == null)
 	        {

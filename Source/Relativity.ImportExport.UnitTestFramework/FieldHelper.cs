@@ -22,7 +22,7 @@ namespace Relativity.ImportExport.UnitTestFramework
 	public static class FieldHelper
 	{
         public static void CreateField(
-	        DtxTestParameters parameters,
+	        IntegrationTestParameters parameters,
             int workspaceObjectTypeId,
             kCura.Relativity.Client.DTOs.Field field)
         {
@@ -64,7 +64,7 @@ namespace Relativity.ImportExport.UnitTestFramework
             }
         }
 
-        public static int QueryIdentifierFieldId(DtxTestParameters parameters, string artifactTypeName)
+        public static int QueryIdentifierFieldId(IntegrationTestParameters parameters, string artifactTypeName)
         {
 	        if (parameters == null)
 	        {
@@ -75,7 +75,7 @@ namespace Relativity.ImportExport.UnitTestFramework
             return ro.ArtifactID;
         }
 
-        public static string QueryIdentifierFieldName(DtxTestParameters parameters, string artifactTypeName)
+        public static string QueryIdentifierFieldName(IntegrationTestParameters parameters, string artifactTypeName)
         {
 	        if (parameters == null)
 	        {
@@ -86,7 +86,7 @@ namespace Relativity.ImportExport.UnitTestFramework
             return ro.FieldValues[0].Value as string;
         }
 
-        private static RelativityObject QueryIdentifierRelativityObject(DtxTestParameters parameters, string artifactTypeName)
+        private static RelativityObject QueryIdentifierRelativityObject(IntegrationTestParameters parameters, string artifactTypeName)
         {
 	        using (IObjectManager client = ServiceHelper.GetServiceProxy<IObjectManager>(parameters))
 	        {

@@ -52,7 +52,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 			if ((client == TapiClient.Aspera && this.TestParameters.SkipAsperaModeTests) ||
 			    (client == TapiClient.Direct && this.TestParameters.SkipDirectModeTests))
 			{
-				Assert.Ignore(DtxTestParameters.SkipTestMessage, $"{client}");
+				Assert.Ignore(TestStrings.SkipTestMessage, $"{client}");
 			}
 
 			// Intentionally provide an invalid file before adding valid ones.
