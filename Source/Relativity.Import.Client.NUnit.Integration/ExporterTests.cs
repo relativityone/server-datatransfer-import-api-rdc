@@ -38,6 +38,10 @@ namespace Relativity.Import.Client.NUnit.Integration
 			this.WhenExecutingTheExportSearch();
 			this.ThenTheSearchResultShouldEqual(true);
 			this.ThenTheAlertCriticalErrorsCountShouldEqual(0);
+			this.ThenTheAlertsCountShouldEqual(0);
+			this.ThenTheAlertWarningSkippablesCountShouldEqual(0);
+			this.ThenTheFatalErrorsCountShouldEqual(0);
+			this.ThenTheStatusMessagesCountShouldBeNonZero();
 		}
 	}
 }

@@ -25,6 +25,14 @@ namespace Relativity.ImportExport.UnitTestFramework
 	public static class IntegrationTestHelper
 	{
 		/// <summary>
+		/// Gets or sets a value indicating whether environment variables are enabled.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> when environment variables are enabled; otherwise, <see langword="false" />.
+		/// </value>
+		public static bool EnvironmentVariablesEnabled { get; set; } = true;
+
+		/// <summary>
 		/// Gets the Relativity logging instance.
 		/// </summary>
 		/// <value>
@@ -185,21 +193,22 @@ END";
 		private static string GetConfigurationStringValue(string key)
 		{
 			string envVariable = $"IAPI_INTEGRATION_{key.ToUpperInvariant()}";
-
-			// Note: these targets are intentionally ordered to favor process vars!
-			IEnumerable<EnvironmentVariableTarget> targets = new[]
-				{
-				 EnvironmentVariableTarget.Process,
-				 EnvironmentVariableTarget.User,
-				 EnvironmentVariableTarget.Machine
-				};
-
-			foreach (EnvironmentVariableTarget target in targets)
+			if (EnvironmentVariablesEnabled)
 			{
-				string envValue = Environment.GetEnvironmentVariable(envVariable, target);
-				if (!string.IsNullOrEmpty(envValue))
+				// Note: these targets are intentionally ordered to favor process vars!
+				IEnumerable<EnvironmentVariableTarget> targets = new[]
+					                                                 {
+						                                                 EnvironmentVariableTarget.Process,
+						                                                 EnvironmentVariableTarget.User,
+						                                                 EnvironmentVariableTarget.Machine
+					                                                 };
+				foreach (EnvironmentVariableTarget target in targets)
 				{
-					return envValue;
+					string envValue = Environment.GetEnvironmentVariable(envVariable, target);
+					if (!string.IsNullOrEmpty(envValue))
+					{
+						return envValue;
+					}
 				}
 			}
 

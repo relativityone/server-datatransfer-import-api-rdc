@@ -49,7 +49,6 @@ namespace Relativity.ImportExport.UnitTestFramework
 				throw new ArgumentNullException(nameof(copy));
 			}
 
-			this.WorkspaceId = copy.WorkspaceId;
 			this.FileShareUncPath = copy.FileShareUncPath;
 			this.RelativityPassword = copy.RelativityPassword;
 			this.RelativityRestUrl = new Uri(copy.RelativityRestUrl.ToString());
@@ -60,6 +59,11 @@ namespace Relativity.ImportExport.UnitTestFramework
 			this.SkipAsperaModeTests = copy.SkipAsperaModeTests;
 			this.SkipDirectModeTests = copy.SkipDirectModeTests;
 			this.SkipIntegrationTests = copy.SkipIntegrationTests;
+			this.SqlAdminPassword = copy.SqlAdminPassword;
+			this.SqlAdminUserName = copy.SqlAdminUserName;
+			this.SqlDropWorkspaceDatabase = copy.SqlDropWorkspaceDatabase;
+			this.SqlInstanceName = copy.SqlInstanceName;
+			this.WorkspaceId = copy.WorkspaceId;
 		}
 
 		/// <summary>

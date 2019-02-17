@@ -54,7 +54,6 @@ namespace Relativity.Import.Client.NUnit.Integration
 		private ExportFile.ExportType exportType;
 		private string identifierColumnName;
 		private Encoding encoding;
-		private int workspaceId;
 		private bool searchResult;
 		private Mock<Relativity.Logging.ILog> logger;
 		private ExtendedExportFile exportFile;
@@ -119,7 +118,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 					this.alertWarningSkippables.Add(msg);
 					Console.WriteLine($"Alert warning skipped: {msg}");
 				}).Returns(true);
-			this.workspaceId = this.TestParameters.WorkspaceId;
+			kCura.WinEDDS.Config.WebServiceURL = this.TestParameters.RelativityWebApiUrl.ToString();
 		}
 
 		/// <summary>
@@ -295,7 +294,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		{
 			using (var caseManager = new kCura.WinEDDS.Service.CaseManager(this.credentials, this.cookieContainer))
 			{
-				var caseInfo = caseManager.Read(this.workspaceId);
+				var caseInfo = caseManager.Read(this.TestParameters.WorkspaceId);
 				return Task.FromResult(caseInfo);
 			}
 		}
@@ -382,7 +381,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 				{
 					case ExportFile.ExportType.Production:
 						this.exportFile.DataTable = productionManager
-							.RetrieveProducedByContextArtifactID(this.workspaceId).Tables[0];
+							.RetrieveProducedByContextArtifactID(this.TestParameters.WorkspaceId).Tables[0];
 						break;
 
 					default:
@@ -417,12 +416,12 @@ namespace Relativity.Import.Client.NUnit.Integration
 				else
 				{
 					this.exportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(
-						this.workspaceId,
+						this.TestParameters.WorkspaceId,
 						this.exportFile.ArtifactTypeID,
 						artifactIds.ToArray(),
 						this.exportType == kCura.WinEDDS.ExportFile.ExportType.Production);
 					this.exportFile.AllExportableFields =
-						searchManager.RetrieveAllExportableViewFields(this.workspaceId, this.exportFile.ArtifactTypeID);
+						searchManager.RetrieveAllExportableViewFields(this.TestParameters.WorkspaceId, this.exportFile.ArtifactTypeID);
 				}
 			}
 		}
@@ -469,6 +468,47 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		/// <summary>
+		/// Then the alert warning skippables count should equal the specified count.
+		/// </summary>
+		/// <param name="expected">
+		/// The expected count.
+		/// </param>
+		protected void ThenTheAlertWarningSkippablesCountShouldEqual(int expected)
+		{
+			Assert.That(this.alertWarningSkippables.Count, Is.EqualTo(expected));
+		}
+
+		/// <summary>
+		/// Then the alerts count should equal the specified count.
+		/// </summary>
+		/// <param name="expected">
+		/// The expected count.
+		/// </param>
+		protected void ThenTheAlertsCountShouldEqual(int expected)
+		{
+			Assert.That(this.alerts.Count, Is.EqualTo(expected));
+		}
+
+		/// <summary>
+		/// Then the fatal errors count should equal the specified count.
+		/// </summary>
+		/// <param name="expected">
+		/// The expected count.
+		/// </param>
+		protected void ThenTheFatalErrorsCountShouldEqual(int expected)
+		{
+			Assert.That(this.fatalErrors.Count, Is.EqualTo(expected));
+		}
+
+		/// <summary>
+		/// Then the status messages count should be non-zero.
+		/// </summary>
+		protected void ThenTheStatusMessagesCountShouldBeNonZero()
+		{
+			Assert.That(this.statusMessages.Count, Is.Positive);
+		}
+
+		/// <summary>
 		/// Then the search result should equal the specified result.
 		/// </summary>
 		/// <param name="expected">
@@ -484,7 +524,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 			using (var objectTypeManager =
 				new kCura.WinEDDS.Service.ObjectTypeManager(this.credentials, this.cookieContainer))
 			{
-				var dataset = objectTypeManager.RetrieveAllUploadable(this.workspaceId);
+				var dataset = objectTypeManager.RetrieveAllUploadable(this.TestParameters.WorkspaceId);
 				var rows = dataset.Tables[0].Rows;
 				foreach (System.Data.DataRow row in rows)
 				{
@@ -509,7 +549,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		{
 			System.Data.DataSet dataset =
 				searchManager.RetrieveViewsByContextArtifactID(
-					this.workspaceId,
+					this.TestParameters.WorkspaceId,
 					artifactType,
 					isArtifactSearch);
 			return dataset.Tables[0];
@@ -520,7 +560,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 			var fields = new DocumentFieldCollection();
 			using (var fieldQuery = new kCura.WinEDDS.Service.FieldQuery(this.credentials, this.cookieContainer))
 			{
-				foreach (var field in fieldQuery.RetrieveAllAsArray(this.workspaceId, artifactTypeId))
+				foreach (var field in fieldQuery.RetrieveAllAsArray(this.TestParameters.WorkspaceId, artifactTypeId))
 				{
 					fields.Add(new DocumentField(
 						field.DisplayName,
