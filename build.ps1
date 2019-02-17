@@ -10,8 +10,16 @@ This script is responsible for all build processes.
 Build the solution.
 
 .EXAMPLE
+.\build.ps1 -ExtendedCodeAnalysis
+Build the solution and run extended code analysis checks.
+
+.EXAMPLE
 .\build.ps1 -UnitTests
 Builds the solution and then executes all unit tests.
+
+.EXAMPLE
+.\build.ps1 -SkipBuild -ExtendedCodeAnalysis
+Skips building the solution and only run extended code analysis checks.
 
 .EXAMPLE
 .\build.ps1 -SkipBuild -UnitTests
@@ -53,6 +61,9 @@ Timeout for NUnit tests (in milliseconds).
 .PARAMETER SkipBuild
 An optional switch to skip building the master solution.
 
+.PARAMETER ExtendedCodeAnalysis
+An optional switch to run extended code analysis checks.
+
 .PARAMETER TestParametersFile
 An optional test parameters JSON file that conforms to the standard App.Config file (e.g. Scripts\test-settings-sample.json)
 
@@ -61,6 +72,9 @@ An optional switch to execute all integration tests on a TestVM. If TestVMName i
 
 .PARAMETER TestVMName
 The TestVM used to execute all integration tests.
+
+.PARAMETER ForceDeleteTools
+An optional switch to force deleting all downloadable tools when the script completes.
 #>
 
 #Requires -Version 5.0
@@ -88,11 +102,15 @@ param(
     [Alias("skip")]
     [Switch]$SkipBuild,
     [Parameter()]
+    [Switch]$ExtendedCodeAnalysis,
+    [Parameter()]
     [String]$TestParametersFile,
     [Parameter()]
     [Switch]$TestVM,
     [Parameter()]
-    [String]$TestVMName
+    [String]$TestVMName,
+    [Parameter()]
+    [Switch]$ForceDeleteTools
 )
 
 $BaseDir = $PSScriptRoot
@@ -106,15 +124,17 @@ if (-Not (Test-Path $PaketDir -PathType Container)) {
     New-Item -ItemType directory -Path $PaketDir
 }
 
-if (Test-Path $PaketExe -PathType Leaf) {
+if ($ForceDeleteTools -and (Test-Path $PaketExe -PathType Leaf)) {
     Remove-Item $PaketExe
 }
 
-if (Test-Path $PaketBootstrapperExe -PathType Leaf) {
+if ($ForceDeleteTools -and (Test-Path $PaketBootstrapperExe -PathType Leaf)) {
     Remove-Item $PaketBootstrapperExe
 }
 
-Invoke-WebRequest "https://github.com/fsprojects/Paket/releases/download/5.196.2/paket.exe" -OutFile $PaketExe
+if (-Not (Test-Path $PaketExe -PathType Leaf)) {
+    Invoke-WebRequest "https://github.com/fsprojects/Paket/releases/download/5.196.2/paket.exe" -OutFile $PaketExe
+}
 
 $PaketVerbosity = if ($VerbosePreference -gt "SilentlyContinue") { "--verbose" } else { "" }
 Write-Verbose "Restoring packages via paket for $MasterSolution"
@@ -126,6 +146,9 @@ if ($LASTEXITCODE -ne 0)
 
 $TaskList = New-Object System.Collections.ArrayList($null)
 $TaskList.Add("Build")
+if ($ExtendedCodeAnalysis) {
+    $TaskList.Add("ExtendedCodeAnalysis")
+}
 
 # This task must be added before the Test task.
 if ($TestVM) {
@@ -155,6 +178,7 @@ $Params = @{
         UnitTests = $UnitTests
         IntegrationTests = $IntegrationTests
         SkipBuild = $SkipBuild
+        ExtendedCodeAnalysis = $ExtendedCodeAnalysis
         TestParametersFile = $TestParametersFile
         TestVMName = $TestVMName
     }
@@ -186,11 +210,11 @@ Finally
     Remove-Module psake -Force -ErrorAction SilentlyContinue
 	
 	# Removing paket eliminates a VS paket extension conflict.
-	if (Test-Path $PaketExe -PathType Leaf) {
+	if ($ForceDeleteTools -and (Test-Path $PaketExe -PathType Leaf)) {
         Remove-Item $PaketExe
     }
     
-    if (Test-Path $PaketBootstrapperExe -PathType Leaf) {
+    if ($ForceDeleteTools -and (Test-Path $PaketBootstrapperExe -PathType Leaf)) {
         Remove-Item $PaketBootstrapperExe
     }
 }

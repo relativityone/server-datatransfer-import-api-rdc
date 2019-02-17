@@ -4,6 +4,7 @@ properties {
     $LogsDir = Join-Path $Root "Logs"
     $MasterSolution = Join-Path $root "Source/Relativity.ImportAPI-RDC.sln"
     $NumberOfProcessors = (Get-ChildItem env:"NUMBER_OF_PROCESSORS").Value
+    $ScriptsDir = Join-Path $Root "Scripts"
 
     # Properties below this line are defined in build.ps1
     $Target = $Null
@@ -50,6 +51,11 @@ task CompileMasterSolution {
             "/flp2:errorsonly;LogFile=`"$ErrorFilePath`""
         }
     }
+}
+
+task ExtendedCodeAnalysis -Description "Perform extended code analysis checks." {
+
+    & "$ScriptsDir\Invoke-ExtendedCodeAnalysis.ps1" -SolutionFile $MasterSolution
 }
 
 task Help -Alias ? -Description "Display task information" {
