@@ -21,11 +21,19 @@ Skips building the solution and only executes all unit tests.
 .\build.ps1 -SkipBuild -UnitTests -IntegrationTests
 Skips building the solution and executes all unit and integration tests.
 
+.EXAMPLE
+.\build.ps1 -SkipBuild -UnitTests -IntegrationTests -TestVM -TestVMName "P-DV-VM-SAD3ERA"
+Skips building the solution, setup the integration test parameters using the specified TestVM, and executes all unit and integration tests.
+
+.EXAMPLE
+.\build.ps1 -SkipBuild -UnitTests -IntegrationTests -TestParametersFile ".\Scripts\test-settings-e2e.json"
+Skips building the solution, setup the integration test parameters using the specified JSON file, and executes all unit and integration tests.
+
 .PARAMETER Target
 The target to build (e.g. Build, Rebuild, or Clean).
 
 .PARAMETER Configuration
-Use this switch to choose the build configuration (e.g. Debug or Release).
+The build configuration (e.g. Debug or Release).
 
 .PARAMETER AssemblyVersion
 Version of assemblies produced by the build.
@@ -34,19 +42,25 @@ Version of assemblies produced by the build.
 The verbosity of the build log.
 
 .PARAMETER UnitTests
-Executes all unit tests.
+An optional switch to execute all unit tests.
 
 .PARAMETER IntegrationTests
-Executes all integration tests.
+An optional switch to execute all integration tests.
 
 .PARAMETER TestTimeoutInMS
 Timeout for NUnit tests (in milliseconds).
 
 .PARAMETER SkipBuild
-Skips building the master solution.
+An optional switch to skip building the master solution.
 
 .PARAMETER TestParametersFile
 An optional test parameters JSON file that conforms to the standard App.Config file (e.g. Scripts\test-settings-sample.json)
+
+.PARAMETER TestVM
+An optional switch to execute all integration tests on a TestVM. If TestVMName is not specified, the first TestVM is used.
+
+.PARAMETER TestVMName
+The TestVM used to execute all integration tests.
 #>
 
 #Requires -Version 5.0
@@ -74,7 +88,11 @@ param(
     [Alias("skip")]
     [Switch]$SkipBuild,
     [Parameter()]
-    [String]$TestParametersFile
+    [String]$TestParametersFile,
+    [Parameter()]
+    [Switch]$TestVM,
+    [Parameter()]
+    [String]$TestVMName
 )
 
 $BaseDir = $PSScriptRoot
@@ -108,6 +126,12 @@ if ($LASTEXITCODE -ne 0)
 
 $TaskList = New-Object System.Collections.ArrayList($null)
 $TaskList.Add("Build")
+
+# This task must be added before the Test task.
+if ($TestVM) {
+    $TaskList.Add("TestVMSetup")
+}
+
 if ($UnitTests -or $IntegrationTests)
 {
     $TaskList.Add("Test")
@@ -132,6 +156,7 @@ $Params = @{
         IntegrationTests = $IntegrationTests
         SkipBuild = $SkipBuild
         TestParametersFile = $TestParametersFile
+        TestVMName = $TestVMName
     }
 
     Verbose = $VerbosePreference
