@@ -189,7 +189,7 @@ namespace Relativity.Export.Client.NUnit
 		}
 
 		[Test]
-		public void ItShouldReturnEmptyNativeCellWhenArtifactIsNotDocumentAndFileIDLessThan0()
+		public void ItShouldReturnEmptyNativeCellWhenArtifactIsNotDocumentAndFileIsIsLessThanZero()
 		{
 			ExportFile settings = new ExportFile((int)ArtifactType.Field)
 			{

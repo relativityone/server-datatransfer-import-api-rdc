@@ -30,11 +30,11 @@ namespace Relativity.Import.Client.NUnit.Integration
 		public async Task ShouldExportAsync()
 		{
 			this.GivenTheExportType(ExportFile.ExportType.ParentSearch);
-			Relativity.CaseInfo caseInfo = await this.WhenGettingTheWorkspaceInfoAsync();
+			Relativity.CaseInfo caseInfo = await this.WhenGettingTheWorkspaceInfoAsync().ConfigureAwait(false);
 			this.GivenTheSelectedFolderId(caseInfo.RootFolderID);
 			this.GivenTheIdentifierColumnName(WellKnownFields.ControlNumber);
 			this.GivenTheEncoding(Encoding.Unicode);
-			await this.WhenCreatingTheExportFileAsync(caseInfo);
+			await this.WhenCreatingTheExportFileAsync(caseInfo).ConfigureAwait(false);
 			this.WhenExecutingTheExportSearch();
 			this.ThenTheSearchResultShouldEqual(true);
 			this.ThenTheAlertCriticalErrorsCountShouldEqual(0);

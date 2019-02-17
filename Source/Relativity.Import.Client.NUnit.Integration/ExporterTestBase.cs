@@ -376,7 +376,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 					}
 				};
 
-				this.exportFile.ObjectTypeName = await this.GetObjectTypeNameAsync(this.exportFile.ArtifactTypeID);
+				this.exportFile.ObjectTypeName =
+					await this.GetObjectTypeNameAsync(this.exportFile.ArtifactTypeID).ConfigureAwait(false);
 				switch (this.exportType)
 				{
 					case ExportFile.ExportType.Production:
