@@ -242,7 +242,5 @@
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA1027" Action="None" />
     <Rule Id="SA1309" Action="None" />
-    <Rule Id="SA1404" Action="Error" />
-    <Rule Id="SA1600" Action="Error" />
   </Rules>
 </RuleSet>

@@ -167,7 +167,7 @@ task Test -Description "Run NUnit on Master solution" {
 task UpdateAssemblyInfo -Precondition { $AssemblyVersion -ne "1.0.0.0" } -Description "Update the AssemblyInfo files in \Version\" {
     $VersionPath = Join-Path $Root "Version"
     $ScriptPath = Join-Path $VersionPath "Update-AssemblyInfo.ps1"
-    exec { & $ScriptPath -assembly_version $AssemblyVersion -path_to_version_folder $VersionPath }
+    exec { & $ScriptPath -Version $AssemblyVersion -VersionFolderPath $VersionPath }
 }
 
 Function Initialize-Folder {
