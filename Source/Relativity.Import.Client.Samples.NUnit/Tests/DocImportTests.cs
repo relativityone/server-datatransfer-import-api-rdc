@@ -12,7 +12,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-    using Relativity.ImportExport.UnitTestFramework;
+    using Relativity.Import.Export.TestFramework;
 
     /// <summary>
     /// Represents a test that imports native documents and validates the results.

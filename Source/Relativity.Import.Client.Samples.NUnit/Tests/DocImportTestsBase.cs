@@ -13,7 +13,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-    using Relativity.ImportExport.UnitTestFramework;
+    using Relativity.Import.Export.TestFramework;
 
     /// <summary>
     /// Represents an abstract test class object that imports native documents and validates the results.

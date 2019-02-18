@@ -11,7 +11,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-    using Relativity.ImportExport.UnitTestFramework;
+    using Relativity.Import.Export.TestFramework;
 
     /// <summary>
     /// Represents tests that fails to import objects and validates the results.

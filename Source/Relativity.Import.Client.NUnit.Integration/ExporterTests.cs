@@ -16,7 +16,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 
 	using kCura.WinEDDS;
 
-	using Relativity.ImportExport.UnitTestFramework;
+	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>
 	/// Represents <see cref="Exporter"/> tests.

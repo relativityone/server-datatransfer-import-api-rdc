@@ -23,7 +23,7 @@ namespace Relativity.Export.Client.NUnit
 
     using Moq;
 
-    using Relativity.ImportExport.UnitTestFramework;
+    using Relativity.Import.Export.TestFramework;
     using Relativity.Logging;
 
     using ExportConstants = Relativity.Export.Constants;

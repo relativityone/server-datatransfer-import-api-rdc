@@ -22,7 +22,7 @@ namespace Relativity.Import.Client.NUnit
 
 	using Moq;
 
-	using Relativity.ImportExport.UnitTestFramework;
+	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>
 	/// Represents <see cref="FolderCache"/> tests.

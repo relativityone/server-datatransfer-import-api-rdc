@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.ImportExport.UnitTestFramework
+namespace Relativity.Import.Export.TestFramework
 {
 	using System;
 

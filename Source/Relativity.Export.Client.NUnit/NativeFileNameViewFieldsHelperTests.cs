@@ -13,7 +13,7 @@ namespace Relativity.Export.Client.NUnit
 	using kCura.WinEDDS;
     using kCura.WinEDDS.FileNaming.CustomFileNaming;
 
-    using Relativity.ImportExport.UnitTestFramework;
+    using Relativity.Import.Export.TestFramework;
 
     public class NativeFileNameViewFieldsHelperTests
 	{

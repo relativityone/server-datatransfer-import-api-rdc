@@ -11,7 +11,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
     using kCura.EDDS.WebAPI.BulkImportManagerBase;
 
-    using Relativity.ImportExport.UnitTestFramework;
+    using Relativity.Import.Export.TestFramework;
 
     /// <summary>
     /// Represents an abstract test class object that imports images and validates the results.

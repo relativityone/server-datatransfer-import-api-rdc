@@ -8,7 +8,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 {
 	using global::NUnit.Framework;
 
-    using Relativity.ImportExport.UnitTestFramework;
+    using Relativity.Import.Export.TestFramework;
 
     /// <summary>
     /// Represents a global assembly-wide setup routine that's guaranteed to be executed before ANY NUnit test.

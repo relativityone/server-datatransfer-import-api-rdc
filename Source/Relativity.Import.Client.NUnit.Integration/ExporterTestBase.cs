@@ -27,7 +27,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 
 	using Moq;
 
-	using Relativity.ImportExport.UnitTestFramework;
+	using Relativity.Import.Export.TestFramework;
 	using Relativity.Logging;
 	using Relativity.Transfer;
 

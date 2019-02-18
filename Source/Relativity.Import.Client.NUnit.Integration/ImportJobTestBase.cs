@@ -23,7 +23,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
 
-	using Relativity.ImportExport.UnitTestFramework;
+	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>
 	/// Represents an abstract load-file base class.
