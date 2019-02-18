@@ -133,6 +133,7 @@ if ($ForceDeleteTools -and (Test-Path $PaketBootstrapperExe -PathType Leaf)) {
 }
 
 if (-Not (Test-Path $PaketExe -PathType Leaf)) {
+	[Net.ServicePointManager]::SecurityProtocol = ([Net.SecurityProtocolType]::Tls12)
     Invoke-WebRequest "https://github.com/fsprojects/Paket/releases/download/5.196.2/paket.exe" -OutFile $PaketExe
 }
 

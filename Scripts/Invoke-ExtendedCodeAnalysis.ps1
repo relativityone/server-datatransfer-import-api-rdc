@@ -42,6 +42,7 @@ $cliExtractedtDir = "$rootResharperDir\Extracted"
 
 if (-Not (Test-Path $cliDownloadFile)) {
     Write-Output "Downloading package $CliDownloadUrl to $cliDownloadFile..."
+	[Net.ServicePointManager]::SecurityProtocol = ([Net.SecurityProtocolType]::Tls12)
     Invoke-WebRequest -Uri $CliDownloadUrl -OutFile $cliDownloadFile
 }
 
@@ -56,6 +57,7 @@ $nugetPackageFile = "$rootResharperDir\Extracted\tools\ConfigureAwaitChecker.v9.
 if (-Not (Test-Path $nugetPackageFile)) {
     Write-Output "Downloading package $NuGetPackageUrl to $nugetPackageFile..."
     try {
+		[Net.ServicePointManager]::SecurityProtocol = ([Net.SecurityProtocolType]::Tls12)
         Invoke-WebRequest -Uri $NuGetPackageUrl -OutFile $nugetPackageFile
     }
     catch {
