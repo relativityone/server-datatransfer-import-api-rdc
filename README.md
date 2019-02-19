@@ -66,6 +66,7 @@ The project structure is similar to other repos. Important folders and files are
 │   ├───Relativity.Desktop.Client.NUnit.Integration
 │   ├───Relativity.Export.Client
 │   ├───Relativity.Export.Client.NUnit
+│   ├───Relativity.Export.Client.NUnit.Integration
 │   ├───Relativity.Import.Client
 │   ├───Relativity.Import.Client.Legacy.NUnit
 │   ├───Relativity.Import.Client.NUnit
@@ -97,6 +98,7 @@ The project structure is similar to other repos. Important folders and files are
 |Relativity.Desktop.Client.NUnit.Integration    |     C#     |         |The RDC integration test project.                                                                                           |
 |Relativity.Export.Client                       |     C#     |         |The export API project.                                                                                                     |
 |Relativity.Export.Client.NUnit                 |     C#     |         |The export API unit test project.                                                                                           |
+|Relativity.Export.Client.NUnit.Integration     |     C#     |         |The export API integration test project.                                                                                    |
 |Relativity.Import.Client                       |     C#     |    X    |The import API project.                                                                                                     |
 |Relativity.Import.Client.Legacy.NUnit          |   VB.NET   |         |The import API unit test project.                                                                                           |
 |Relativity.Import.Client.NUnit                 |     C#     |         |The import API unit test project.                                                                                           |

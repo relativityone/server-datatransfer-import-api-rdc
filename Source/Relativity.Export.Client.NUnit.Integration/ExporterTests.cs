@@ -7,7 +7,7 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.NUnit.Integration
+namespace Relativity.Export.Client.NUnit.Integration
 {
 	using System.Text;
 	using System.Threading.Tasks;
