@@ -398,7 +398,8 @@ Namespace kCura.WinEDDS
 					If _cancellationTokenSource.IsCancellationRequested Then Exit While
 				End While
 
-				ValidateExportedRecordCount(lastRecordCount, Me.TotalExportArtifactCount)
+				' REL-292896: nextRecordIndex represents the total number of records and should match.
+				ValidateExportedRecordCount(nextRecordIndex, Me.TotalExportArtifactCount)
 
 				Me.WriteStatusLine(EventType.Status, FileDownloader.TotalWebTime.ToString, True)
 				_timekeeper.GenerateCsvReportItemsAsRows()
