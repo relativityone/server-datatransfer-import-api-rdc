@@ -19,9 +19,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			TapiBridgeParameters parameters = new TapiBridgeParameters
 			{
 				Application = Config.ApplicationName,
+				AsperaBcpRootFolder = Config.TapiAsperaBcpRootFolder,
+				AsperaDocRootLevels = Config.TapiAsperaNativeDocRootLevels,
+				BadPathErrorsRetry = Config.BadPathErrorsRetry,
 				ClientRequestId = Guid.NewGuid(),
 				Credentials = _exportSettings.Credential,
-				AsperaDocRootLevels = Config.TapiAsperaNativeDocRootLevels,
 				FileShare = _exportSettings.CaseInfo.DocumentPath,
 				ForceAsperaClient = Config.TapiForceAsperaClient,
 				ForceClientCandidates = Config.TapiForceClientCandidates,
@@ -32,6 +34,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 				MaxJobParallelism = Config.TapiMaxJobParallelism,
 				MaxJobRetryAttempts = _exportConfig.ExportIOErrorNumberOfRetries,
 				MinDataRateMbps = Config.TapiMinDataRateMbps,
+				PermissionErrorsRetry = Config.PermissionErrorsRetry,
 				SubmitApmMetrics = Config.TapiSubmitApmMetrics,
 				TargetPath = string.Empty,
 				TargetDataRateMbps = Config.TapiTargetDataRateMbps,
@@ -41,6 +44,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 				WebServiceUrl = Config.WebServiceURL,
 				WorkspaceId = _exportSettings.CaseInfo.ArtifactID,
 			};
+
 			return parameters;
 		}
 	}

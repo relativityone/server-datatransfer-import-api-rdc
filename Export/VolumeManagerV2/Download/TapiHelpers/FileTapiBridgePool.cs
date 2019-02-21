@@ -109,7 +109,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		{
 			ITapiBridgeWrapperFactory tapiBridgeWrapperFactory =
 				new FilesTapiBridgeWrapperFactory(_tapiBridgeParametersFactory, _logger, fileshareSettings, token);
-			var smartTapiBridge = new SmartTapiBridge(_exportConfig, tapiBridgeWrapperFactory, token);
+			var smartTapiBridge = new SmartTapiBridge(_exportConfig, tapiBridgeWrapperFactory, _logger, token);
 
 			IProgressHandler progressHandler = new FileDownloadProgressHandler(_downloadProgressManager, _logger);
 			var downloadTapiBridgeForFiles = new DownloadTapiBridgeForFiles(smartTapiBridge, progressHandler, _messageHandler, _filesStatistics, _transferClientHandler, _logger);

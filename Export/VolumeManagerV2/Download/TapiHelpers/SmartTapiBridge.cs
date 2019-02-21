@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using kCura.WinEDDS.TApi;
+using Relativity.Logging;
 using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
@@ -15,6 +16,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		private readonly CancellationToken _token;
 		private readonly int _maximumFilesForTapiBridge;
 		private readonly ITapiBridgeWrapperFactory _tapiBridgeWrapperFactory;
+		private readonly ILog _logger;
 		private readonly object _lockToken = new object();
 		private readonly TimeSpan _tapiBridgeExportTransferWaitingTime;
 
@@ -32,10 +34,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 
 		public event EventHandler<TapiMessageEventArgs> TapiFatalError;
 
-		public SmartTapiBridge(IExportConfig exportConfig, ITapiBridgeWrapperFactory tapiBridgeWrapperFactory,
+		public SmartTapiBridge(
+			IExportConfig exportConfig,
+			ITapiBridgeWrapperFactory tapiBridgeWrapperFactory,
+			ILog logger,
 			CancellationToken token)
 		{
 			_tapiBridgeWrapperFactory = tapiBridgeWrapperFactory;
+			_logger = logger;
 			_token = token;
 			_tapiBridgeExportTransferWaitingTime =
 				TimeSpan.FromSeconds(exportConfig.TapiBridgeExportTransferWaitingTimeInSeconds);
@@ -50,6 +56,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			{
 				CreateTapiBridge();
 			}
+
 			_downloadRequestCounter++;
 			return _tapiBridge.AddPath(transferPath);
 		}
@@ -60,6 +67,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 			{
 				return;
 			}
+
 			_tapiBridge.TapiProgress -= OnTapiBridgeProgress;
 			_tapiBridge.TapiClientChanged -= OnTapiBridgeClientChanged;
 			_tapiBridge.TapiErrorMessage -= OnTapiBridgeErrorMessage;
@@ -86,18 +94,19 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 
 		private void OnTapiBridgeProgress(object sender, TapiProgressEventArgs e)
 		{
-			if (e.DidTransferSucceed)
+			lock (_lockToken)
 			{
-				lock (_lockToken)
+				if (e.DidTransferSucceed)
 				{
 					_downloadedFilesCounter++;
 					if (_downloadedFilesCounter == _downloadRequestCounter)
 					{
+						// The handle only gets released when ALL files are transferred.
 						_autoResetEvent.Set();
 					}
 				}
-
 			}
+
 			TapiProgress?.Invoke(sender, e);
 		}
 
@@ -133,6 +142,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 
 		public void WaitForTransferJob()
 		{
+			if (_tapiBridge == null)
+			{
+				throw new InvalidOperationException(
+					"This operation cannot be performed because an unexpected failure occurred waiting for all file transfers to complete. " +
+					"Try again. If the problem persists, please contact your system administrator for assistance.");
+			}
+
 			lock (_lockToken)
 			{
 				if (_downloadRequestCounter != _downloadedFilesCounter)
@@ -141,20 +157,36 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 				}
 			}
 
-			if(!_autoResetEvent.WaitOne(_tapiBridgeExportTransferWaitingTime, _token))
+			if (!_autoResetEvent.WaitOne(_tapiBridgeExportTransferWaitingTime, _token))
 			{
+				_logger.LogInformation("The TAPI bridge WaitOne call exceeded the maximum transfer timeout {TimeoutSeconds} seconds.",
+					_tapiBridgeExportTransferWaitingTime.TotalSeconds);
 				_tapiBridge.WaitForTransferJob();
 				RemoveTapiBridge();
 			}
 
-			_totalFilesDownloadedUsingTapiBridge += _downloadedFilesCounter;
-			_downloadedFilesCounter = 0;
-			_downloadRequestCounter = 0;
-
-			if (_totalFilesDownloadedUsingTapiBridge >= _maximumFilesForTapiBridge)
+			lock (_lockToken)
 			{
+				_totalFilesDownloadedUsingTapiBridge += _downloadedFilesCounter;
+				_downloadedFilesCounter = 0;
+				_downloadRequestCounter = 0;
+				if (_totalFilesDownloadedUsingTapiBridge < _maximumFilesForTapiBridge)
+				{
+					_logger.LogInformation("All export files have been successfully downloaded.");
+					return;
+				}
+			}
+
+			if (_tapiBridge != null)
+			{
+				_logger.LogInformation("Awaiting for all remaining files to download.");
 				_tapiBridge.WaitForTransferJob();
 				RemoveTapiBridge();
+			}
+			else
+			{
+				_logger.LogWarning(
+					"There are remaining files to download but the TAPI bridge is null. Assuming these files failed to transfer.");
 			}
 		}
 
