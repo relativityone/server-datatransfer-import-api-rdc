@@ -26,6 +26,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Client.Sa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Export.Client.NUnit.Integration", "Relativity.Export.Client.NUnit.Integration\Relativity.Export.Client.NUnit.Integration.csproj", "{5AEF327E-1D3A-4231-B4C6-041769248B33}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Export.Core", "Relativity.Import.Export.Core\Relativity.Import.Export.Core.csproj", "{A91F3CCC-CCD1-46BB-A0F3-AD31F8853E31}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Export.NUnit.Integration", "Relativity.Import.Export.NUnit.Integration\Relativity.Import.Export.NUnit.Integration.csproj", "{B6E34ED3-1C41-4DB9-9BD7-24A256A05663}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +72,14 @@ Global
 		{5AEF327E-1D3A-4231-B4C6-041769248B33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AEF327E-1D3A-4231-B4C6-041769248B33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5AEF327E-1D3A-4231-B4C6-041769248B33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A91F3CCC-CCD1-46BB-A0F3-AD31F8853E31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A91F3CCC-CCD1-46BB-A0F3-AD31F8853E31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A91F3CCC-CCD1-46BB-A0F3-AD31F8853E31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A91F3CCC-CCD1-46BB-A0F3-AD31F8853E31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6E34ED3-1C41-4DB9-9BD7-24A256A05663}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6E34ED3-1C41-4DB9-9BD7-24A256A05663}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6E34ED3-1C41-4DB9-9BD7-24A256A05663}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6E34ED3-1C41-4DB9-9BD7-24A256A05663}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

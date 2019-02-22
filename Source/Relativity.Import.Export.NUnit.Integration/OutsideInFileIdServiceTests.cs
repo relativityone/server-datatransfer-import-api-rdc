@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------------------------------------
-// <copyright file="FileIDServiceTests.cs" company="Relativity ODA LLC">
+// <copyright file="OutsideInFileIdServiceTests.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
@@ -7,21 +7,25 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.NUnit.Integration
+namespace Relativity.Import.Export.NUnit.Integration
 {
 	using global::NUnit.Framework;
 
-	using kCura.OI.FileID;
-
+	using Relativity.Import.Export;
 	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>
-	/// Represents <see cref="FileIDService"/> tests.
+	/// Represents <see cref="OutsideInFileIdService"/> tests.
 	/// </summary>
 	[TestFixture]
-	public class FileIDServiceTests
+	[System.Diagnostics.CodeAnalysis.SuppressMessage(
+		"Microsoft.Design",
+		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
+		Justification = "The test class handles the disposal.")]
+	public class OutsideInFileIdServiceTests
 	{
-        private FileIDService service;
+		private const int Timeout = 35;
+		private IFileIdService service;
 		private string tempFile;
 
 		[SetUp]
@@ -34,7 +38,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 				System.Guid.NewGuid().ToString("D").ToUpperInvariant());
 			this.tempFile = System.IO.Path.Combine(tempDirectory, fileName);
 			System.IO.File.WriteAllText(this.tempFile, "Hello World");
-			this.service = new FileIDService();
+			this.service = new OutsideInFileIdService(Timeout);
 		}
 
 		[TearDown]
@@ -56,16 +60,16 @@ namespace Relativity.Import.Client.NUnit.Integration
 		[Test]
 		[Category(TestCategories.OutsideIn)]
 		[Category(TestCategories.Integration)]
-		public void ItShouldIdentifyTheFile()
+		public void ShouldIdentifyTheFile()
 		{
 			for (int i = 0; i < 2; i++)
 			{
 				// Reinitializing should have no impact.
 				this.service.Reinitialize();
-				FileIDData fileIdData = this.service.Identify(this.tempFile);
+				FileIdInfo fileIdData = this.service.Identify(this.tempFile);
 				Assert.That(fileIdData, Is.Not.Null);
-				Assert.That(fileIdData.FileID, Is.GreaterThan(0));
-				Assert.That(fileIdData.FileType, Is.Not.Null.Or.Empty);
+				Assert.That(fileIdData.Id, Is.GreaterThan(0));
+				Assert.That(fileIdData.Description, Is.Not.Null.Or.Empty);
 			}
 
 			this.ValidateConfigInfo();
@@ -74,7 +78,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		[Test]
 		[Category(TestCategories.OutsideIn)]
 		[Category(TestCategories.Integration)]
-		public void ItShouldThrowWhenTheFileDoesNotExist()
+		public void ShouldThrowWhenTheFileDoesNotExist()
 		{
 			string tempDirectory = System.IO.Path.GetTempPath();
 			string fileName = System.Guid.NewGuid().ToString("D").ToUpperInvariant();
@@ -86,7 +90,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		[Test]
 		[Category(TestCategories.OutsideIn)]
 		[Category(TestCategories.Integration)]
-		public void ItShouldThrowWhenTheFileIsLocked()
+		public void ShouldThrowWhenTheFileIsLocked()
 		{
 			using (System.IO.File.Open(
 					this.tempFile,
@@ -94,9 +98,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 					System.IO.FileAccess.Read,
 					System.IO.FileShare.None))
 			{
-				FileIDIdentificationException exception =
-					Assert.Throws<FileIDIdentificationException>(() => this.service.Identify(this.tempFile));
-				Assert.That(exception.ErrorCode, Is.EqualTo(FileIDService.FilePermissionErrorCode));
+				FileIdException exception = Assert.Throws<FileIdException>(() => this.service.Identify(this.tempFile));
+				Assert.That(exception.Error, Is.EqualTo(FileIdError.Permissions));
 				this.ValidateConfigInfo();
 			}
 		}
@@ -104,7 +107,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		[Test]
 		[Category(TestCategories.OutsideIn)]
 		[Category(TestCategories.Integration)]
-		public void ItShouldGetTheConfigInfo()
+		public void ShouldGetTheConfigInfo()
 		{
 			for (int i = 0; i < 5; i++)
 			{
@@ -118,12 +121,13 @@ namespace Relativity.Import.Client.NUnit.Integration
 
 		private void ValidateConfigInfo()
 		{
-			var configInfo = this.service.GetConfigInfo();
-			Assert.That(configInfo, Is.Not.Null);
-			Assert.That(configInfo.InstallLocation, Does.Exist);
-			Assert.That(configInfo.Version, Is.Not.Null.Or.Empty);
-			Assert.That(configInfo.Exception, Is.Null);
-			Assert.That(configInfo.HasError, Is.False);
+			var configuration = this.service.Configuration;
+			Assert.That(configuration, Is.Not.Null);
+			Assert.That(configuration.InstallDirectory, Does.Exist);
+			Assert.That(configuration.Version, Is.Not.Null.Or.Empty);
+			Assert.That(configuration.Exception, Is.Null);
+			Assert.That(configuration.HasError, Is.False);
+			Assert.That(configuration.Timeout, Is.EqualTo(Timeout));
 		}
 	}
 }
