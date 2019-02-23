@@ -30,6 +30,11 @@ namespace Relativity.Import.Export.TestFramework
 		public const string Folder = "Folder";
 
 		/// <summary>
+		/// The Framework test category.
+		/// </summary>
+		public const string Framework = "Framework";
+
+		/// <summary>
 		/// The import document test category.
 		/// </summary>
 		public const string ImportDoc = "ImportDoc";

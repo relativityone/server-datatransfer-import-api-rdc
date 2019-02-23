@@ -61,6 +61,43 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Image identification cannot be performed on &apos;{0}&apos; because the file cannot be found..
+        /// </summary>
+        internal static string ImageFileNotFoundError {
+            get {
+                return ResourceManager.GetString("ImageFileNotFoundError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The image file &apos;{0}&apos; is of type &apos;{1}&apos; and isn&apos;t a valid TIFF or JPEG..
+        /// </summary>
+        internal static string ImageFormatNotSupportedError {
+            get {
+                return ResourceManager.GetString("ImageFormatNotSupportedError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The image file &apos;{0}&apos; cannot be read due to possible file corruption..
+        /// </summary>
+        internal static string ImageReadError {
+            get {
+                return ResourceManager.GetString("ImageReadError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The image file &apos;{0}&apos; is zero bytes.
+        ///.
+        /// </summary>
+        internal static string ImageZeroBytesError {
+            get {
+                return ResourceManager.GetString("ImageZeroBytesError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to initialize Outside In file identification library..
         /// </summary>
         internal static string OutsideInConfigurationError {
@@ -93,6 +130,42 @@ namespace Relativity.Import.Export.Resources {
         internal static string OutsideInFileNotFoundError {
             get {
                 return ResourceManager.GetString("OutsideInFileNotFoundError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The TIFF image file &apos;{0}&apos; is encoded with &apos;{1}&apos; but only &apos;{2}&apos; is supported..
+        /// </summary>
+        internal static string TiffEncodingNotSupportedError {
+            get {
+                return ResourceManager.GetString("TiffEncodingNotSupportedError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The TIFF image file &apos;{0}&apos; is {1} bits. Only 1 bit TIFFs are supported..
+        /// </summary>
+        internal static string TiffImageNotOneBitError {
+            get {
+                return ResourceManager.GetString("TiffImageNotOneBitError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The TIFF image file &apos;{0}&apos; is an unsupported or malformed TIFF..
+        /// </summary>
+        internal static string TiffImageNotSupportedError {
+            get {
+                return ResourceManager.GetString("TiffImageNotSupportedError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The TIFF image file &apos;{0}&apos; is an unsupported multi-page TIFF..
+        /// </summary>
+        internal static string TiffMultiPageNotSupportedError {
+            get {
+                return ResourceManager.GetString("TiffMultiPageNotSupportedError", resourceCulture);
             }
         }
     }
