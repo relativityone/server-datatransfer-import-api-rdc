@@ -26,17 +26,17 @@ namespace Relativity.Import.Export.NUnit.Integration
 	{
 		private const int Timeout = 35;
 		private IFileIdService service;
+		private TempDirectory tempDirectory;
 		private string tempFile;
 
 		[SetUp]
 		public void Setup()
 		{
-			string tempDirectory = System.IO.Path.GetTempPath();
-			string fileName = string.Join(
-				"-",
-				System.DateTime.Now.ToString("yyyyMMddHHmmss", System.Globalization.CultureInfo.InvariantCulture),
+			this.tempDirectory = new TempDirectory();
+			this.tempDirectory.Create();
+			this.tempFile = System.IO.Path.Combine(
+				this.tempDirectory.Directory,
 				System.Guid.NewGuid().ToString("D").ToUpperInvariant());
-			this.tempFile = System.IO.Path.Combine(tempDirectory, fileName);
 			System.IO.File.WriteAllText(this.tempFile, "Hello World");
 			this.service = new OutsideInFileIdService(Timeout);
 		}
@@ -44,12 +44,7 @@ namespace Relativity.Import.Export.NUnit.Integration
 		[TearDown]
 		public void Teardown()
 		{
-			if (!string.IsNullOrEmpty(this.tempFile) && System.IO.File.Exists(this.tempFile))
-			{
-				System.IO.File.Delete(this.tempFile);
-				this.tempFile = null;
-			}
-
+			this.tempDirectory.Dispose();
 			if (this.service != null)
 			{
 				this.service.Dispose();
@@ -76,13 +71,22 @@ namespace Relativity.Import.Export.NUnit.Integration
 		}
 
 		[Test]
+		[TestCase(null)]
+		[TestCase("")]
+		[Category(TestCategories.OutsideIn)]
+		[Category(TestCategories.Integration)]
+		public void ShouldThrowWhenTheFileIsNullOrEmpty(string file)
+		{
+			Assert.Throws<System.ArgumentNullException>(() => this.service.Identify(file));
+		}
+
+		[Test]
 		[Category(TestCategories.OutsideIn)]
 		[Category(TestCategories.Integration)]
 		public void ShouldThrowWhenTheFileDoesNotExist()
 		{
-			string tempDirectory = System.IO.Path.GetTempPath();
 			string fileName = System.Guid.NewGuid().ToString("D").ToUpperInvariant();
-			string invalidFile = System.IO.Path.Combine(tempDirectory, fileName);
+			string invalidFile = System.IO.Path.Combine(this.tempDirectory.Directory, fileName);
 			Assert.Throws<System.IO.FileNotFoundException>(() => this.service.Identify(invalidFile));
 			this.ValidateConfigInfo();
 		}
