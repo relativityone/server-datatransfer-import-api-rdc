@@ -52,12 +52,17 @@
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IAppSettings.cs" />
     <Compile Include="ByteOrdering.cs" />
+    <Compile Include="AppSettingsConstants.cs" />
+    <Compile Include="AppSettings.cs" />
+    <Compile Include="DictionaryExtensions.cs" />
     <Compile Include="ImageConstants.cs" />
     <Compile Include="TempDirectory.cs" />
     <Content Include="oi\docs\fileids_values_only_sorted.txt">
@@ -187,4 +192,5 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
 </Project>
