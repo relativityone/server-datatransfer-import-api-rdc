@@ -1,8 +1,4 @@
-Imports kCura.Windows.Forms
-Imports System.Drawing
-Imports System.Collections.Generic
-
-Namespace kCura.WinEDDS.UIControls
+Namespace Relativity.Desktop.Client.Legacy.Controls
 
 	Public Class FieldMap
 		Inherits System.Windows.Forms.UserControl
@@ -40,14 +36,14 @@ Namespace kCura.WinEDDS.UIControls
 		'Do not modify it using the code editor.
 		Friend WithEvents _fieldColumnsLabel As System.Windows.Forms.Label
 		Friend WithEvents _loadFileColumnsLabel As System.Windows.Forms.Label
-		Friend WithEvents _fieldColumns As kCura.Windows.Forms.TwoListBox
-		Friend WithEvents _loadFileColumns As kCura.Windows.Forms.TwoListBox
+		Friend WithEvents _fieldColumns As Relativity.Desktop.Client.Legacy.Controls.TwoListBox
+		Friend WithEvents _loadFileColumns As Relativity.Desktop.Client.Legacy.Controls.TwoListBox
 
 		Private Sub InitializeComponent()
 			Me._fieldColumnsLabel = New System.Windows.Forms.Label
 			Me._loadFileColumnsLabel = New System.Windows.Forms.Label
-			Me._fieldColumns = New kCura.Windows.Forms.TwoListBox
-			Me._loadFileColumns = New kCura.Windows.Forms.TwoListBox
+			Me._fieldColumns = New Relativity.Desktop.Client.Legacy.Controls.TwoListBox
+			Me._loadFileColumns = New Relativity.Desktop.Client.Legacy.Controls.TwoListBox
 			Me.SuspendLayout()
 			Me.DoubleBuffered = True
 			'
@@ -82,7 +78,7 @@ Namespace kCura.WinEDDS.UIControls
 			Me._fieldColumns.LeftOrderControlsVisible = False
 			Me._fieldColumns.RightOrderControlVisible = True
 			Me._fieldColumns.TabIndex = 8
-			Me._fieldColumns.OuterBox = kCura.Windows.Forms.ListBoxLocation.Left
+			Me._fieldColumns.OuterBox = Relativity.Desktop.Client.Legacy.Controls.ListBoxLocation.Left
 			'
 			'_loadFileColumns
 			'
@@ -94,7 +90,7 @@ Namespace kCura.WinEDDS.UIControls
 			Me._loadFileColumns.LeftOrderControlsVisible = True
 			Me._loadFileColumns.RightOrderControlVisible = False
 			Me._loadFileColumns.TabIndex = 9
-			Me._loadFileColumns.OuterBox = kCura.Windows.Forms.ListBoxLocation.Right
+			Me._loadFileColumns.OuterBox = Relativity.Desktop.Client.Legacy.Controls.ListBoxLocation.Right
 			'
 			'FieldMap
 			'
@@ -194,20 +190,20 @@ Namespace kCura.WinEDDS.UIControls
 
 #Region "Properties"
 
-		Public Property FieldColumns() As kCura.Windows.Forms.TwoListBox
+		Public Property FieldColumns() As Relativity.Desktop.Client.Legacy.Controls.TwoListBox
 			Get
 				Return _fieldColumns
 			End Get
-			Set(ByVal Value As kCura.Windows.Forms.TwoListBox)
+			Set(ByVal Value As Relativity.Desktop.Client.Legacy.Controls.TwoListBox)
 				_fieldColumns = Value
 			End Set
 		End Property
 
-		Public Property LoadFileColumns() As kCura.Windows.Forms.TwoListBox
+		Public Property LoadFileColumns() As Relativity.Desktop.Client.Legacy.Controls.TwoListBox
 			Get
 				Return _loadFileColumns
 			End Get
-			Set(ByVal Value As kCura.Windows.Forms.TwoListBox)
+			Set(ByVal Value As Relativity.Desktop.Client.Legacy.Controls.TwoListBox)
 				_loadFileColumns = Value
 			End Set
 		End Property

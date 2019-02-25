@@ -47,6 +47,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -69,6 +71,12 @@
       <Link>My Project\AssemblySharedInfo.vb</Link>
     </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="FieldMap.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <EmbeddedResource Include="FieldMap.resx">
+      <DependentUpon>FieldMap.vb</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>
