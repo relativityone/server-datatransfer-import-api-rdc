@@ -77,38 +77,38 @@
     <Compile Include="ErrorDialog.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Extensions\ListBoxExtensions.vb" />
+    <Compile Include="HighlightItemEventArgs.vb" />
+    <Compile Include="LayoutPropertyType.vb" />
+    <Compile Include="ListBox.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ListBoxExtensions.vb" />
+    <Compile Include="ListBoxLocation.vb" />
+    <Compile Include="MoveDirection.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="FieldMap.vb">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="OutputRichTextBox.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="RelativeLayoutData.vb" />
     <Compile Include="RichTextBox.vb">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Specialized\HighlightItemEventArgs.vb" />
-    <Compile Include="Specialized\LayoutPropertyType.vb" />
-    <Compile Include="Specialized\ListBox.vb">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Specialized\ListBoxLocation.vb" />
-    <Compile Include="Specialized\MoveDirection.vb" />
-    <Compile Include="Specialized\OutputRichTextBox.vb">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Specialized\RelativeLayoutData.vb" />
-    <Compile Include="Specialized\SearchableList.Designer.vb">
+    <Compile Include="SearchableList.Designer.vb">
       <DependentUpon>SearchableList.vb</DependentUpon>
     </Compile>
-    <Compile Include="Specialized\SearchableList.vb">
+    <Compile Include="SearchableList.vb">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Specialized\SearchListSelector.Designer.vb">
+    <Compile Include="SearchListSelector.Designer.vb">
       <DependentUpon>SearchListSelector.vb</DependentUpon>
     </Compile>
-    <Compile Include="Specialized\SearchListSelector.vb">
+    <Compile Include="SearchListSelector.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Specialized\TwoListBox.vb">
+    <Compile Include="TwoListBox.vb">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Win32API.vb" />
@@ -121,16 +121,16 @@
     <EmbeddedResource Include="FieldMap.resx">
       <DependentUpon>FieldMap.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Specialized\OutputRichTextBox.resx">
+    <EmbeddedResource Include="OutputRichTextBox.resx">
       <DependentUpon>OutputRichTextBox.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Specialized\SearchableList.resx">
+    <EmbeddedResource Include="SearchableList.resx">
       <DependentUpon>SearchableList.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Specialized\SearchListSelector.resx">
+    <EmbeddedResource Include="SearchListSelector.resx">
       <DependentUpon>SearchListSelector.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Specialized\TwoListBox.resx">
+    <EmbeddedResource Include="TwoListBox.resx">
       <DependentUpon>TwoListBox.vb</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
