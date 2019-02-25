@@ -42,6 +42,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExportAPI", "ExportAPI", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{5391709D-41F8-48A8-B4A3-58B1E9AC084F}"
 EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Relativity.Desktop.Client.Legacy.Controls", "Relativity.Desktop.Client.Legacy.Controls\Relativity.Desktop.Client.Legacy.Controls.vbproj", "{267AC175-3DAD-4348-9058-D5DB19DEAA57}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -100,6 +102,10 @@ Global
 		{49CDE7EB-9385-41D9-8CD9-687C09C46996}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49CDE7EB-9385-41D9-8CD9-687C09C46996}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49CDE7EB-9385-41D9-8CD9-687C09C46996}.Release|Any CPU.Build.0 = Release|Any CPU
+		{267AC175-3DAD-4348-9058-D5DB19DEAA57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{267AC175-3DAD-4348-9058-D5DB19DEAA57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{267AC175-3DAD-4348-9058-D5DB19DEAA57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{267AC175-3DAD-4348-9058-D5DB19DEAA57}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -117,6 +123,7 @@ Global
 		{B6E34ED3-1C41-4DB9-9BD7-24A256A05663} = {5391709D-41F8-48A8-B4A3-58B1E9AC084F}
 		{EBDD2E81-9CF1-4070-823D-6ACDF08CDEEE} = {5391709D-41F8-48A8-B4A3-58B1E9AC084F}
 		{49CDE7EB-9385-41D9-8CD9-687C09C46996} = {272C7D84-8FCE-4F14-8D39-E0422E0FF922}
+		{267AC175-3DAD-4348-9058-D5DB19DEAA57} = {272C7D84-8FCE-4F14-8D39-E0422E0FF922}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B030F56A-9600-4DC6-B33D-A81BE2C63205}
