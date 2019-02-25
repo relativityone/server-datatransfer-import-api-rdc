@@ -54,16 +54,30 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ImportExportException.cs" />
     <Compile Include="IAppSettings.cs" />
     <Compile Include="ByteOrdering.cs" />
     <Compile Include="AppSettingsConstants.cs" />
     <Compile Include="AppSettings.cs" />
     <Compile Include="DictionaryExtensions.cs" />
     <Compile Include="ImageConstants.cs" />
+    <Compile Include="Process\NullProcessErrorWriter.cs" />
+    <Compile Include="Process\IProcessErrorWriter.cs" />
+    <Compile Include="Process\ProcessCompleteEventArgs.cs" />
+    <Compile Include="Process\ProcessEndEventArgs.cs" />
+    <Compile Include="Process\ProcessErrorReportEventArgs.cs" />
+    <Compile Include="Process\ProcessRecordCountEventArgs.cs" />
+    <Compile Include="Process\StatusBarEventArgs.cs" />
+    <Compile Include="Process\ProcessProgressEventArgs.cs" />
+    <Compile Include="Process\ProcessEventArgs.cs" />
+    <Compile Include="Process\ProcessFatalExceptionEventArgs.cs" />
+    <Compile Include="Process\ProcessPool.cs" />
+    <Compile Include="Process\ProcessEventType.cs" />
+    <Compile Include="Process\ProcessContext.cs" />
+    <Compile Include="Process\ProcessBase.cs" />
+    <Compile Include="Process\IRunnable.cs" />
     <Compile Include="TempDirectory.cs" />
     <Content Include="oi\docs\fileids_values_only_sorted.txt">
       <Paket>True</Paket>
@@ -183,6 +197,17 @@
       </ItemGroup>
     </When>
   </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Logging.Interfaces">
+          <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
   <ItemGroup>
     <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll">
@@ -192,5 +217,4 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
-  <ItemGroup />
 </Project>

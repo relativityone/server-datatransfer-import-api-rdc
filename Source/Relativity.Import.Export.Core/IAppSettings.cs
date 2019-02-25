@@ -23,6 +23,14 @@ namespace Relativity.Import.Export
 		bool CreateErrorForInvalidDate { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to disable throwing exceptions when illegal characters are found within a path.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to disable throwing an exception; otherwise, <see langword="false" />.
+		/// </value>
+		bool DisableThrowOnIllegalCharacters { get; set; }
+
+		/// <summary>
 		/// Gets or sets the number of retry attempts for export related fault tolerant methods.
 		/// </summary>
 		/// <value>

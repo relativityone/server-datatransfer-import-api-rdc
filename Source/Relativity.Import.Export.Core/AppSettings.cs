@@ -19,11 +19,6 @@ namespace Relativity.Import.Export
 	public sealed class AppSettings : IAppSettings
 	{
 		/// <summary>
-		/// The application settings singleton instance.
-		/// </summary>
-		private static readonly IAppSettings Instance = new AppSettings();
-
-		/// <summary>
 		/// The concurrent dictionary that caches all settings.
 		/// </summary>
 		private readonly ConcurrentDictionary<string, object> cachedSettings = new ConcurrentDictionary<string, object>();
@@ -46,6 +41,18 @@ namespace Relativity.Import.Export
 		{
 			get => Instance.CreateErrorForInvalidDate;
 			set => Instance.CreateErrorForInvalidDate = value;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to disable throwing exceptions when illegal characters are found within a path.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to disable throwing an exception; otherwise, <see langword="false" />.
+		/// </value>
+		public static bool DisableThrowOnIllegalCharacters
+		{
+			get => Instance.DisableThrowOnIllegalCharacters;
+			set => Instance.DisableThrowOnIllegalCharacters = value;
 		}
 
 		/// <summary>
@@ -168,6 +175,16 @@ namespace Relativity.Import.Export
 					AppSettingsConstants.CreateErrorForInvalidDateKey,
 					AppSettingsConstants.CreateErrorForInvalidDateDefaultValue);
 			set => this.cachedSettings[AppSettingsConstants.CreateErrorForInvalidDateKey] = value;
+		}
+
+		/// <inheritdoc />
+		bool IAppSettings.DisableThrowOnIllegalCharacters
+		{
+			get =>
+				this.cachedSettings.GetBooleanValue(
+					AppSettingsConstants.DisableThrowOnIllegalCharactersKey,
+					AppSettingsConstants.DisableThrowOnIllegalCharactersDefaultValue);
+			set => this.cachedSettings[AppSettingsConstants.DisableThrowOnIllegalCharactersKey] = value;
 		}
 
 		/// <inheritdoc />
@@ -316,6 +333,11 @@ namespace Relativity.Import.Export
 					AppSettingsConstants.WebApiServiceUrl,
 					value != null ? value.ToString() : string.Empty);
 		}
+
+		/// <summary>
+		/// Gets the application settings singleton instance.
+		/// </summary>
+		internal static IAppSettings Instance { get; } = new AppSettings();
 
 		/// <summary>
 		/// Gets or sets the Registry sub-key name.

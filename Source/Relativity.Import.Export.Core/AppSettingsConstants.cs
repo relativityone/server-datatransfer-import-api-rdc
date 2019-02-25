@@ -13,6 +13,7 @@ namespace Relativity.Import.Export
 	{
 		// All keys go here.
 		public const string CreateErrorForInvalidDateKey = "CreateErrorForInvalidDate";
+		public const string DisableThrowOnIllegalCharactersKey = "DisableNativeLocationValidation";
 		public const string ExportErrorNumberOfRetriesKey = "ExportErrorNumberOfRetries";
 		public const string ExportErrorWaitTimeInSecondsKey = "ExportErrorWaitTimeInSeconds";
 		public const string ForceFolderPreviewKey = "ForceFolderPreview";
@@ -25,6 +26,7 @@ namespace Relativity.Import.Export
 
 		// All default values go here.
 		public const bool CreateErrorForInvalidDateDefaultValue = true;
+		public const bool DisableThrowOnIllegalCharactersDefaultValue = false;
 		public const int ExportErrorNumberOfRetriesDefaultValue = 20;
 		public const int ExportErrorWaitTimeInSecondsDefaultValue = 30;
 		public const bool ForceFolderPreviewDefaultValue = true;
