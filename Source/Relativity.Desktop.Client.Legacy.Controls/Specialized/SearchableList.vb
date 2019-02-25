@@ -1,13 +1,7 @@
-﻿Imports System.Collections
-Imports System.Collections.Generic
-Imports System.Drawing
-Imports System.Linq
-Imports System.Windows.Controls
+﻿Imports System.Drawing
 Imports System.Windows.Forms
-Imports System.Windows.Media
-Imports kCura.Windows.Forms
 
-Namespace kCura.Windows.Forms.Specialized
+Namespace Relativity.Desktop.Client.Legacy.Controls
 	Public Class SearchableList
 		Private _timer As Timer
 		Private _dataSource As New List(Of Object)
@@ -208,7 +202,7 @@ Namespace kCura.Windows.Forms.Specialized
 #Region "Properties"
 		Public Property IsListSortable As Boolean = True
 
-		Public ReadOnly Property Listbox() As kCura.Windows.Forms.ListBox
+		Public ReadOnly Property Listbox() As ListBox
 			Get
 				Return _listBox
 			End Get

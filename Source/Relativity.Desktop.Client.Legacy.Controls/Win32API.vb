@@ -1,6 +1,6 @@
 Imports System.Runtime.InteropServices
 
-Namespace kCura.Windows.Forms
+Namespace Relativity.Desktop.Client.Legacy.Controls
 	Public Class Win32API
 
 #Region " Constants "

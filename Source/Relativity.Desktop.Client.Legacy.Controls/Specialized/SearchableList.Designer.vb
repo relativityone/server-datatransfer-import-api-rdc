@@ -1,7 +1,6 @@
 ﻿Imports System.Windows.Forms
-Imports kCura.Windows.Forms
 
-Namespace kCura.Windows.Forms.Specialized
+Namespace Relativity.Desktop.Client.Legacy.Controls
 	<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 	Partial Class SearchableList
 		Inherits System.Windows.Forms.UserControl
@@ -27,7 +26,7 @@ Namespace kCura.Windows.Forms.Specialized
 		<System.Diagnostics.DebuggerStepThrough()>
 		Private Sub InitializeComponent()
 		Me._textBox = New System.Windows.Forms.TextBox()
-		Me._listBox = New kCura.Windows.Forms.ListBox()
+		Me._listBox = New Relativity.Desktop.Client.Legacy.Controls.ListBox()
 		Me.SuspendLayout
 		'
 		'_textBox

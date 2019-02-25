@@ -1,12 +1,8 @@
-﻿Imports System
-Imports System.Collections
-Imports System.ComponentModel
-Imports System.Drawing
+﻿Imports System.ComponentModel
 Imports System.Windows.Forms
 Imports System.Runtime.InteropServices
-Imports System.Drawing.Drawing2D
 
-Namespace kCura.Windows.Forms
+Namespace Relativity.Desktop.Client.Legacy.Controls
 	Public Class ListBox
 		Inherits System.Windows.Forms.ListBox
 

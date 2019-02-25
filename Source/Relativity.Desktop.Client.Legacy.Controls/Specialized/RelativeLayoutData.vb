@@ -1,6 +1,6 @@
 ﻿Imports System.Windows.Forms
-Imports System.Linq
-Namespace kCura.Windows.Forms
+
+Namespace Relativity.Desktop.Client.Legacy.Controls
 	Public Class RelativeLayoutData
 		Public Property BaseControl() As Control
 		Public Property BaseControlPropertyTypeForDifference() As LayoutBasePropertyTypeForDifference

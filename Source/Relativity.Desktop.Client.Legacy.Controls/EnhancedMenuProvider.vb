@@ -2,9 +2,8 @@ Imports System.Drawing
 Imports System.Windows.Forms
 Imports System.ComponentModel
 Imports System.Drawing.Drawing2D
-Imports System.Collections
 
-Namespace kCura.Windows.Forms
+Namespace Relativity.Desktop.Client.Legacy.Controls
 
     <ProvideProperty("ImageIndex", GetType(MenuItem)), _
      ProvideProperty("ImageList", GetType(MenuItem)), _

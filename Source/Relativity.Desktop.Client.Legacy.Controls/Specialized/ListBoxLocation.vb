@@ -1,4 +1,4 @@
-﻿Namespace kCura.Windows.Forms
+﻿Namespace Relativity.Desktop.Client.Legacy.Controls
 	''' <summary>
 	''' Used to describe which side a ListBox control is on
 	''' </summary>

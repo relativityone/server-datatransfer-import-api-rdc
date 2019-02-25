@@ -1,11 +1,7 @@
-﻿Imports System.Collections.Generic
-Imports System.Data
-Imports System.Drawing
-Imports System.Linq
+﻿Imports System.Drawing
 Imports System.Windows.Forms
 
-
-Namespace kCura.Windows.Forms.Specialized
+Namespace Relativity.Desktop.Client.Legacy.Controls
 	Public Class SearchListSelector
 		Inherits Form
 		Private ReadOnly _dataSource As DataTable

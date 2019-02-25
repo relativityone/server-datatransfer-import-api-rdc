@@ -3,7 +3,7 @@ Imports System.Drawing
 Imports System.Windows.Forms
 Imports System.Runtime.InteropServices
 
-Namespace kCura.Windows.Forms
+Namespace Relativity.Desktop.Client.Legacy.Controls
   <System.ComponentModel.DesignerCategoryAttribute("UserControl")> _
   Public Class RichTextBox
     Inherits System.Windows.Forms.RichTextBox

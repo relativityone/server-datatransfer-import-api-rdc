@@ -1,3 +1,5 @@
+Imports System.Drawing
+
 Namespace Relativity.Desktop.Client.Legacy.Controls
 
 	Public Class FieldMap

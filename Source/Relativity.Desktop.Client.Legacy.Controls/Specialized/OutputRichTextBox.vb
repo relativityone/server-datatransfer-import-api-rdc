@@ -1,7 +1,4 @@
-' TODO : Change namespace of this control
-Imports System.Collections.Generic
-
-Namespace kCura.Windows.Forms
+Namespace Relativity.Desktop.Client.Legacy.Controls
   Public Class OutputRichTextBox
     Inherits System.Windows.Forms.UserControl
 

@@ -1,11 +1,7 @@
-Imports System.Collections
 Imports System.Windows.Forms
 Imports System.Drawing
-Imports System.Collections.Generic
-Imports kCura.Windows.Forms.Specialized
 
-' TODO : Change namespace of this control
-Namespace kCura.Windows.Forms
+Namespace Relativity.Desktop.Client.Legacy.Controls
 
 	Public Class TwoListBox
 		Inherits System.Windows.Forms.UserControl
@@ -42,8 +38,8 @@ Namespace kCura.Windows.Forms
 		Friend WithEvents _moveRightSelectedItemDown As System.Windows.Forms.Button
 		Friend WithEvents _moveRightSelectedItemUp As System.Windows.Forms.Button
 		Friend WithEvents _moveLeftSelectedItemDown As System.Windows.Forms.Button
-		Friend WithEvents _searchableListLeft As Specialized.SearchableList
-		Friend WithEvents _searchableListRight As Specialized.SearchableList
+		Friend WithEvents _searchableListLeft As SearchableList
+		Friend WithEvents _searchableListRight As SearchableList
 		Friend WithEvents _moveLeftSelectedItemUp As System.Windows.Forms.Button
 
 		Private Sub InitializeComponent()
@@ -56,8 +52,8 @@ Namespace kCura.Windows.Forms
 		Me._moveRightSelectedItemUp = New System.Windows.Forms.Button()
 		Me._moveLeftSelectedItemDown = New System.Windows.Forms.Button()
 		Me._moveLeftSelectedItemUp = New System.Windows.Forms.Button()
-		Me._searchableListRight = New Specialized.SearchableList()
-		Me._searchableListLeft = New Specialized.SearchableList()
+		Me._searchableListRight = New SearchableList()
+		Me._searchableListLeft = New SearchableList()
 		Me.SuspendLayout
 		'
 		'_moveAllFieldsLeft
@@ -472,7 +468,7 @@ End Sub
 
 		End Sub
 
-		Private Sub EnsureHorizontalScrollbarForBox(ByVal box As kCura.Windows.Forms.ListBox)
+		Private Sub EnsureHorizontalScrollbarForBox(ByVal box As ListBox)
 			If _AlternateRowColors Then
 				Using g As System.Drawing.Graphics = Me.CreateGraphics()
 					box.HorizontalExtent = 0
@@ -602,13 +598,13 @@ End Sub
 #Region " Highlight methods and event handlers "
 
 		Public Sub ClearHighlight(ByVal location As ListBoxLocation)
-			Dim listbox As kCura.Windows.Forms.ListBox = If(location = ListBoxLocation.Left, _searchableListLeft.Listbox, _searchableListRight.Listbox)
+			Dim listbox As ListBox = If(location = ListBoxLocation.Left, _searchableListLeft.Listbox, _searchableListRight.Listbox)
 			listbox.HighlightIndex = -1
 			listbox.Refresh()
 		End Sub
 
 		Public Sub ClearSelection(ByVal location As ListBoxLocation)
-			Dim listbox As kCura.Windows.Forms.ListBox = If(location = ListBoxLocation.Left, _searchableListLeft.Listbox, _searchableListRight.Listbox)
+			Dim listbox As ListBox = If(location = ListBoxLocation.Left, _searchableListLeft.Listbox, _searchableListRight.Listbox)
 			listbox.SelectedItem = Nothing
 			listbox.SelectionMode = SelectionMode.None
 			listbox.SelectionMode = SelectionMode.MultiExtended
@@ -616,7 +612,7 @@ End Sub
 		End Sub
 
 		Public Sub HighlightItembyIndex(ByVal index As Int32, ByVal location As ListBoxLocation)
-			Dim listbox As kCura.Windows.Forms.ListBox = If(location = ListBoxLocation.Left, _searchableListLeft.Listbox, _searchableListRight.Listbox)
+			Dim listbox As ListBox = If(location = ListBoxLocation.Left, _searchableListLeft.Listbox, _searchableListRight.Listbox)
 			listbox.HighlightIndex = index
 			listbox.Refresh()
 		End Sub
@@ -624,7 +620,7 @@ End Sub
 		Private Sub HighlightMouseOverItem(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs, ByVal location As ListBoxLocation)
 			Dim raiseEventLocation As ListBoxLocation = If(location = ListBoxLocation.Left, ListBoxLocation.Right, ListBoxLocation.Left)
 
-			Dim listbox As kCura.Windows.Forms.ListBox = DirectCast(sender, kCura.Windows.Forms.ListBox)
+			Dim listbox As ListBox = DirectCast(sender, ListBox)
 			Dim g As System.Drawing.Graphics = System.Drawing.Graphics.FromHwnd(Me.Handle)
 			Dim index As Int32 = listbox.IndexFromPoint(New System.Drawing.Point(e.X, e.Y))
 			If index >= 0 Then  'mouse is over an item
