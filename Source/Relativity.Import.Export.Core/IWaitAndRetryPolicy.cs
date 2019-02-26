@@ -1,12 +1,13 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-//   kCura Corp (C) 2017 All Rights Reserved.
+﻿// ----------------------------------------------------------------------------
+// <copyright file="IWaitAndRetryPolicy.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
 //   Represents an abstract object to support resiliency and retry policies.
 // </summary>
-// --------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.TApi
+namespace Relativity.Import.Export
 {
     using System;
 	using System.Threading;
@@ -61,8 +62,9 @@ namespace kCura.WinEDDS.TApi
         void WaitAndRetry<TException>(
             Func<int, TimeSpan> retryDuration,
             Action<Exception, TimeSpan> retryAction,
-            Action<CancellationToken> execFunc, 
-			CancellationToken token) where TException : Exception;
+            Action<CancellationToken> execFunc,
+			CancellationToken token)
+	        where TException : Exception;
 
         /// <summary>
         /// Performs the synchronous retry operation for the specified exception type and retry duration function.
@@ -89,8 +91,9 @@ namespace kCura.WinEDDS.TApi
             int maxRetryCount,
             Func<int, TimeSpan> retryDuration,
             Action<Exception, TimeSpan> retryAction,
-			Action<CancellationToken> execFunc, 
-			CancellationToken token) where TException : Exception;
+			Action<CancellationToken> execFunc,
+			CancellationToken token)
+	        where TException : Exception;
 
 		/// <summary>
 		/// Performs the synchronous retry operation for the specified exception type and retry duration function and return a value.
@@ -110,7 +113,7 @@ namespace kCura.WinEDDS.TApi
 		/// <param name="execFunc">
 		/// The main function executed.
 		/// </param>
-		/// <param name="token"> 
+		/// <param name="token">
 		/// A token which is used to cancel current task.</param>
 		/// <returns>
 		/// The <typeparamref name="TResult"/> value.
@@ -144,7 +147,7 @@ namespace kCura.WinEDDS.TApi
 		/// <param name="execFunc">
 		/// The main function executed.
 		/// </param>
-		/// <param name="token"> 
+		/// <param name="token">
 		/// A token which is used to cancel current task.</param>
 		/// <returns>
 		/// The <typeparamref name="TResult"/> value.

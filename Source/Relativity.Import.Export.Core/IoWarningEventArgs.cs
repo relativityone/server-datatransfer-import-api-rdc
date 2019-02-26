@@ -1,31 +1,47 @@
-﻿
+﻿// ----------------------------------------------------------------------------
+// <copyright file="IoWarningEventArgs.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-using System;
-
-namespace kCura.WinEDDS.TApi
+namespace Relativity.Import.Export.Io
 {
+	using System;
+
 	/// <summary>
 	/// Class for IO warning event arguments
 	/// </summary>
 	public class IoWarningEventArgs : EventArgs
 	{
 		/// <summary>
-		/// Contructor for IoWarningEventArgs
+		/// Initializes a new instance of the <see cref="IoWarningEventArgs"/> class.
 		/// </summary>
-		public IoWarningEventArgs(string message, long currentLineNumber)
+		/// <param name="message">
+		/// The warning message.
+		/// </param>
+		/// <param name="lineNumber">
+		/// The line number.
+		/// </param>
+		public IoWarningEventArgs(string message, long lineNumber)
 		{
-			Message = message;
-			CurrentLineNumber = currentLineNumber;
+			this.Message = message;
+			this.CurrentLineNumber = lineNumber;
 		}
 
 		/// <summary>
-		/// Current line number
+		/// Gets the current line number
 		/// </summary>
+		/// <value>
+		/// The line number.
+		/// </value>
 		public long CurrentLineNumber { get; }
 
 		/// <summary>
-		/// Message
+		/// Gets the warning message.
 		/// </summary>
+		/// <value>
+		/// The message.
+		/// </value>
 		public string Message { get; }
 	}
 }

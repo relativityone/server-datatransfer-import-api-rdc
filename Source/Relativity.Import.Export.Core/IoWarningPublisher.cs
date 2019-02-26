@@ -1,11 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="IoWarningPublisher.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.TApi
+namespace Relativity.Import.Export.Io
 {
+	using System;
+
 	/// <summary>
 	/// Publisher fot IO Warning event
 	/// </summary>
@@ -17,12 +19,14 @@ namespace kCura.WinEDDS.TApi
 		public event EventHandler<IoWarningEventArgs> IoWarningEvent;
 
 		/// <summary>
-		/// Raises IO Warning event.
+		/// Publishes the I/O warning event.
 		/// </summary>
-		/// <param name="eventArgs"></param>
+		/// <param name="eventArgs">
+		/// The event arguments.
+		/// </param>
 		public void PublishIoWarningEvent(IoWarningEventArgs eventArgs)
 		{
-			IoWarningEvent?.Invoke(this, eventArgs);
+			this.IoWarningEvent?.Invoke(this, eventArgs);
 		}
 	}
 }

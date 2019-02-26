@@ -1,18 +1,19 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-
-// <copyright file="WaitAndRetryPolicy.cs" company="kCura Corp">
-//   kCura Corp (C) 2017 All Rights Reserved.
+// <copyright file="WaitAndRetryPolicy.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
 //   Represents a class object to support resiliency and retry policies.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace kCura.WinEDDS.TApi
+namespace Relativity.Import.Export
 {
     using System;
     using System.Threading;
     using Polly;
+
+    using Relativity.Import.Export.Io;
 
     /// <summary>
     /// Represents a wait and retry policy class objects with a default back-off time strategy.
@@ -67,17 +68,27 @@ namespace kCura.WinEDDS.TApi
         }
 
         /// <inheritdoc />
-		public void WaitAndRetry<TException>(Func<int, TimeSpan> retryDuration, Action<Exception, TimeSpan> retryAction, Action<CancellationToken> execFunc, CancellationToken token) where TException : Exception
+        public void WaitAndRetry<TException>(
+	        Func<int, TimeSpan> retryDuration,
+	        Action<Exception, TimeSpan> retryAction,
+	        Action<CancellationToken> execFunc,
+	        CancellationToken token)
+	        where TException : Exception
         {
-            this.WaitAndRetry<TException>(this.MaxRetryAttempts, retryDuration, retryAction, execFunc, token);
+	        this.WaitAndRetry<TException>(this.MaxRetryAttempts, retryDuration, retryAction, execFunc, token);
         }
 
         /// <inheritdoc />
-		public void WaitAndRetry<TException>(int maxRetryCount, Func<int, TimeSpan> retryDuration, Action<Exception, TimeSpan> retryAction, Action<CancellationToken> execFunc, CancellationToken token) where TException : Exception
+        public void WaitAndRetry<TException>(
+	        int maxRetryCount,
+	        Func<int, TimeSpan> retryDuration,
+	        Action<Exception, TimeSpan> retryAction,
+	        Action<CancellationToken> execFunc,
+	        CancellationToken token)
+	        where TException : Exception
         {
-            Policy.Handle<TException>(ex => !(ex is FileInfoInvalidPathException))
-                .WaitAndRetry(maxRetryCount, retryDuration, retryAction)
-                .Execute(execFunc, token);
+	        Policy.Handle<TException>(ex => !(ex is FileInfoInvalidPathException))
+		        .WaitAndRetry(maxRetryCount, retryDuration, retryAction).Execute(execFunc, token);
         }
 
         /// <inheritdoc />
@@ -88,31 +99,33 @@ namespace kCura.WinEDDS.TApi
 	        Func<CancellationToken, TResult> execFunc,
 	        CancellationToken token)
         {
-	        return Policy.Handle(exceptionPredicate)
-		        .WaitAndRetry(this.MaxRetryAttempts, retryDuration, retryAction)
+	        return Policy.Handle(exceptionPredicate).WaitAndRetry(this.MaxRetryAttempts, retryDuration, retryAction)
 		        .Execute(execFunc, token);
         }
 
         /// <inheritdoc />
-		public TResult WaitAndRetry<TResult, TException>(Func<int, TimeSpan> retryDuration, Action<Exception, TimeSpan> retryAction, Func<CancellationToken, TResult> execFunc,
-            CancellationToken token) where TException : Exception
+        public TResult WaitAndRetry<TResult, TException>(
+	        Func<int, TimeSpan> retryDuration,
+	        Action<Exception, TimeSpan> retryAction,
+	        Func<CancellationToken, TResult> execFunc,
+	        CancellationToken token)
+	        where TException : Exception
         {
-            return Policy.Handle<TException>().WaitAndRetry(
-		            this.MaxRetryAttempts,
-		            retryDuration,
-		            retryAction)
-                .Execute(execFunc, token);
+	        return Policy.Handle<TException>().WaitAndRetry(this.MaxRetryAttempts, retryDuration, retryAction)
+		        .Execute(execFunc, token);
         }
 
         /// <inheritdoc />
-        public TResult WaitAndRetry<TResult, TException>(int maxRetryCount, Func<int, TimeSpan> retryDuration, Action<Exception, TimeSpan> retryAction, Func<CancellationToken, TResult> execFunc,
-            CancellationToken token) where TException : Exception
+        public TResult WaitAndRetry<TResult, TException>(
+	        int maxRetryCount,
+	        Func<int, TimeSpan> retryDuration,
+	        Action<Exception, TimeSpan> retryAction,
+	        Func<CancellationToken, TResult> execFunc,
+	        CancellationToken token)
+	        where TException : Exception
         {
-            return Policy.Handle<TException>().WaitAndRetry(
-		            maxRetryCount,
-		            retryDuration,
-		            retryAction)
-            .Execute(execFunc, token);
+	        return Policy.Handle<TException>().WaitAndRetry(maxRetryCount, retryDuration, retryAction)
+		        .Execute(execFunc, token);
         }
     }
 }
