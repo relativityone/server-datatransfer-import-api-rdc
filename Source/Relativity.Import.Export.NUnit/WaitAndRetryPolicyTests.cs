@@ -7,14 +7,12 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.NUnit
+namespace Relativity.Import.Export.NUnit
 {
 	using System;
 	using System.Threading;
 
 	using global::NUnit.Framework;
-
-	using kCura.WinEDDS.TApi;
 
 	[TestFixture]
 	public class WaitAndRetryPolicyTests
@@ -91,7 +89,7 @@ namespace Relativity.Import.Client.NUnit
 			this.GivenTheExecFunc((token) =>
 			{
 				this.actualExecFuncCallCount++;
-				throw new WaitAndRetryPolicyException();
+				throw new InvalidOperationException();
 			});
 
 			this.WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParamsThenThwowsException(maxRetryCount);
@@ -114,7 +112,7 @@ namespace Relativity.Import.Client.NUnit
 			this.GivenTheExecFunc((token) =>
 			{
 				this.actualExecFuncCallCount++;
-				throw new WaitAndRetryPolicyException();
+				throw new InvalidOperationException();
 			});
 
 			this.WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParamsThenThrowsException(maxRetryCount);
@@ -138,7 +136,7 @@ namespace Relativity.Import.Client.NUnit
 				this.actualExecFuncCallCount++;
 				if (this.actualExecFuncCallCount <= succesAfterRetryNum)
 				{
-					throw new WaitAndRetryPolicyException();
+					throw new InvalidOperationException();
 				}
 			});
 
@@ -163,7 +161,7 @@ namespace Relativity.Import.Client.NUnit
 				this.actualExecFuncCallCount++;
 				if (this.actualExecFuncCallCount <= succesAfterRetryNum)
 				{
-					throw new WaitAndRetryPolicyException();
+					throw new InvalidOperationException();
 				}
 			});
 
@@ -173,14 +171,14 @@ namespace Relativity.Import.Client.NUnit
 			this.ThenTheActualExecFuncCallCountShouldEqual();
 		}
 
-		private void GivenTheExpectedRetryCallCount(int expectedRetryCallCount)
+		private void GivenTheExpectedRetryCallCount(int count)
 		{
-			this.expectedRetryCallCount = expectedRetryCallCount;
+			this.expectedRetryCallCount = count;
 		}
 
-		private void GivenTheExpectedExecFuncCallCount(int expectedExecFuncCallCount)
+		private void GivenTheExpectedExecFuncCallCount(int count)
 		{
-			this.expectedExecFuncCallCount = expectedExecFuncCallCount;
+			this.expectedExecFuncCallCount = count;
 		}
 
 		private void GivenTheRetryDuration()
@@ -201,7 +199,7 @@ namespace Relativity.Import.Client.NUnit
 		private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParams(int maxRetryCount)
 		{
 			var waitAndRetryPolicy = new WaitAndRetryPolicy(maxRetryCount, this.waitTimeMillisecondsBetweenRetryAttempts);
-			waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(
+			waitAndRetryPolicy.WaitAndRetry<InvalidOperationException>(
 				this.retryDuration,
 				this.retryAction,
 				this.execFunc,
@@ -212,18 +210,18 @@ namespace Relativity.Import.Client.NUnit
 		{
 			var waitAndRetryPolicy = new WaitAndRetryPolicy(maxRetryCount, this.waitTimeMillisecondsBetweenRetryAttempts);
 			Assert.That(
-				() => waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(
+				() => waitAndRetryPolicy.WaitAndRetry<InvalidOperationException>(
 					this.retryDuration,
 					this.retryAction,
 					this.execFunc,
 					CancellationToken.None),
-				Throws.Exception.TypeOf<WaitAndRetryPolicyException>());
+				Throws.Exception.TypeOf<InvalidOperationException>());
 		}
 
 		private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsMethodParams(int maxRetryCount)
 		{
 			var waitAndRetryPolicy = new WaitAndRetryPolicy();
-			waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(
+			waitAndRetryPolicy.WaitAndRetry<InvalidOperationException>(
 				maxRetryCount,
 				this.retryDuration,
 				this.retryAction,
@@ -235,13 +233,13 @@ namespace Relativity.Import.Client.NUnit
 		{
 			var waitAndRetryPolicy = new WaitAndRetryPolicy();
 			Assert.That(
-				() => waitAndRetryPolicy.WaitAndRetry<WaitAndRetryPolicyException>(
+				() => waitAndRetryPolicy.WaitAndRetry<InvalidOperationException>(
 					maxRetryCount,
 					this.retryDuration,
 					this.retryAction,
 					this.execFunc,
 					CancellationToken.None),
-				Throws.Exception.TypeOf<WaitAndRetryPolicyException>());
+				Throws.Exception.TypeOf<InvalidOperationException>());
 		}
 
 		private void ThenTheActualRetryCallCountShouldEqual()
@@ -252,10 +250,6 @@ namespace Relativity.Import.Client.NUnit
 		private void ThenTheActualExecFuncCallCountShouldEqual()
 		{
 			Assert.That(this.actualExecFuncCallCount, Is.EqualTo(this.expectedExecFuncCallCount));
-		}
-
-		private class WaitAndRetryPolicyException : Exception
-		{
 		}
 	}
 }

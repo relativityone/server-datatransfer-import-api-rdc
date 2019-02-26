@@ -56,10 +56,13 @@
     <Compile Include="..\..\Version\AssemblySharedInfo.cs">
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
+    <Compile Include="IoReporterTests.cs" />
+    <Compile Include="IoWarningPublisherTests.cs" />
     <Compile Include="ProcessContextTests.cs" />
     <Compile Include="GlobalSuppressions.cs">
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WaitAndRetryPolicyTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\buildtools\stylecop.json">

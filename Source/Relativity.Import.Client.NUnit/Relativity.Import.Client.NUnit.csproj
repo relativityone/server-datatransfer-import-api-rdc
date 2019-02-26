@@ -53,7 +53,6 @@
     <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="WaitAndRetryPolicyTests.cs" />
     <Content Include="LICENSE.txt">
       <Paket>True</Paket>
     </Content>
@@ -114,8 +113,6 @@
     <Compile Include="DataReaderReaderTests.cs" />
     <Compile Include="ExceptionSerializationTests.cs" />
     <Compile Include="FolderCacheTests.cs" />
-    <Compile Include="IoReporterTests.cs" />
-    <Compile Include="IoWarningPublisherTests.cs" />
     <Compile Include="LoadFileReaderTests.cs" />
     <Compile Include="..\..\Version\AssemblySharedInfo.cs">
       <Link>Properties\AssemblySharedInfo.cs</Link>

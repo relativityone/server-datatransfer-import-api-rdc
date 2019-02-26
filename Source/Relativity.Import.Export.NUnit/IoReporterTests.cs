@@ -7,7 +7,7 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.NUnit
+namespace Relativity.Import.Export.NUnit
 {
     using System;
     using System.Collections;
@@ -15,10 +15,9 @@ namespace Relativity.Import.Client.NUnit
 
     using global::NUnit.Framework;
 
-	using kCura.WinEDDS.TApi;
-
 	using Moq;
 
+    using Relativity.Import.Export.Io;
     using Relativity.Logging;
 
     /// <summary>
@@ -327,21 +326,21 @@ namespace Relativity.Import.Client.NUnit
 
 			// Verify copying a file.
 			Assert.Throws(testException.GetType(), this.WhenCallingTheFileCopyReporterMethod);
-			bool expectedException = !testDisableNativeLocationValidation;
-			this.ThenTheLoggerErrorShouldBeInvoked(0, expectedException);
-			this.ThenTheLoggerWarningShouldBeInvoked(testExpectedRetryCount, expectedException);
+			bool localExpectedException = !testDisableNativeLocationValidation;
+			this.ThenTheLoggerErrorShouldBeInvoked(0, localExpectedException);
+			this.ThenTheLoggerWarningShouldBeInvoked(testExpectedRetryCount, localExpectedException);
 			this.ResetMockLogger();
 
 			// Verify retrieving the file length.
 			Assert.Throws(testException.GetType(), this.WhenCallingTheFileLengthReporterMethod);
-			this.ThenTheLoggerErrorShouldBeInvoked(0, expectedException);
-			this.ThenTheLoggerWarningShouldBeInvoked(testExpectedRetryCount, expectedException);
+			this.ThenTheLoggerErrorShouldBeInvoked(0, localExpectedException);
+			this.ThenTheLoggerWarningShouldBeInvoked(testExpectedRetryCount, localExpectedException);
 			this.ResetMockLogger();
 
 			// Verify retrieving the file exists flag.
 			Assert.Throws(testException.GetType(), this.WhenCallingTheGetFileExistsReporterMethod);
-			this.ThenTheLoggerErrorShouldBeInvoked(0, expectedException);
-			this.ThenTheLoggerWarningShouldBeInvoked(testExpectedRetryCount, expectedException);
+			this.ThenTheLoggerErrorShouldBeInvoked(0, localExpectedException);
+			this.ThenTheLoggerWarningShouldBeInvoked(testExpectedRetryCount, localExpectedException);
             this.ResetMockLogger();
 		}
 
@@ -512,12 +511,12 @@ namespace Relativity.Import.Client.NUnit
             Assert.That(this.actualFileExists, Is.EqualTo(expectedFileExists));
         }
 
-        private void ThenTheLoggerWarningShouldBeInvoked(int expectedCount, bool expectedException)
+        private void ThenTheLoggerWarningShouldBeInvoked(int expectedCount, bool expectedLogException)
 		{
 			this.mockLogger.Verify(logger => logger.LogWarning(It.IsAny<Exception>(), It.IsAny<string>()), Times.Exactly(expectedCount));
 			if (expectedCount == 0)
 			{
-				if (expectedException)
+				if (expectedLogException)
 				{
 					Assert.That(this.actualLoggedWarningException, Is.Null);
 				}
@@ -526,7 +525,7 @@ namespace Relativity.Import.Client.NUnit
 			}
 			else
 			{
-				if (expectedException)
+				if (expectedLogException)
 				{
 					Assert.That(this.actualLoggedWarningException, Is.Not.Null);
 				}
@@ -543,12 +542,12 @@ namespace Relativity.Import.Client.NUnit
 				expectedCount == 0 ? Is.Null.Or.Empty : Is.Not.Null.Or.Empty);
 		}
 
-		private void ThenTheLoggerErrorShouldBeInvoked(int expectedCount, bool expectedException)
+		private void ThenTheLoggerErrorShouldBeInvoked(int expectedCount, bool expectedLogException)
 		{
 			this.mockLogger.Verify(logger => logger.LogError(It.IsAny<Exception>(), It.IsAny<string>()), Times.Exactly(expectedCount));
 			if (expectedCount == 0)
 			{
-				if (expectedException)
+				if (expectedLogException)
 				{
 					Assert.That(this.actualLoggedErrorException, Is.Null);
 				}
@@ -557,7 +556,7 @@ namespace Relativity.Import.Client.NUnit
 			}
 			else
 			{
-				if (expectedException)
+				if (expectedLogException)
 				{
 					Assert.That(this.actualLoggedErrorException, Is.Not.Null);
 				}

@@ -7,14 +7,14 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.NUnit
+namespace Relativity.Import.Export.NUnit
 {
     using System;
     using System.Collections.Generic;
 
     using global::NUnit.Framework;
 
-	using kCura.WinEDDS.TApi;
+    using Relativity.Import.Export.Io;
 
     [TestFixture]
     public class IoWarningPublisherTests

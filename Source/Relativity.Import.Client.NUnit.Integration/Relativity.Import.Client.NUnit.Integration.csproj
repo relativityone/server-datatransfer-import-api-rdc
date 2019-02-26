@@ -57,7 +57,6 @@
     <Compile Include="DownloadTapiBridgeTests.cs" />
     <Compile Include="FileLockedImportJobTests.cs" />
     <Compile Include="FileNotFoundImportJobTests.cs" />
-    <Compile Include="FileSystemWrapTests.cs" />
     <Compile Include="ImportJobTest.cs" />
     <Compile Include="TapiBridgeTestBase.cs" />
     <Compile Include="TestBase.cs" />

@@ -114,6 +114,7 @@
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
     <Compile Include="AppSettingsTests.cs" />
+    <Compile Include="FileSystemWrapTests.cs" />
     <Compile Include="GlobalSuppressions.cs">
     </Compile>
     <Compile Include="FreeImageIdServiceTests.cs" />

@@ -7,10 +7,11 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.NUnit.Integration
+namespace Relativity.Import.Export.NUnit.Integration
 {
 	using System;
 	using System.Collections.Generic;
+	using System.IO;
 
 	using global::NUnit.Framework;
 
@@ -50,8 +51,9 @@ namespace Relativity.Import.Client.NUnit.Integration
 					    System.IO.Directory.Delete(path, true);
 				    }
 			    }
-			    catch
+			    catch (IOException e)
 			    {
+				    Console.WriteLine("Failed to delete the {0} path. Exception: {1}", path, e);
 			    }
 		    }
 
