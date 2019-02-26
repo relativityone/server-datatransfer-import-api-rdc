@@ -117,6 +117,99 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="RetryJobMessage" xml:space="preserve">
+    <value>Retrying transfer job - attempt {0} of {1}.</value>
+  </data>
+  <data name="TransferFileDownloadWarningMessage" xml:space="preserve">
+    <value>{0} download failed: {1} - Retrying in {2} seconds. {3} tries left.</value>
+  </data>
+  <data name="TransferFileUploadWarningMessage" xml:space="preserve">
+    <value>{0} upload failed: {1} - Retrying in {2} seconds. {3} tries left.</value>
+  </data>
+  <data name="TransferJobEndedMessage" xml:space="preserve">
+    <value>File transfer job ended.</value>
+  </data>
+  <data name="TransferJobEndedMaxRetryMessage" xml:space="preserve">
+    <value>File transfer job exceeded the max number of retries.</value>
+  </data>
+  <data name="TransferJobCanceledMessage" xml:space="preserve">
+    <value>File transfer job was canceled.</value>
+  </data>
+  <data name="TransferJobExceptionMessage" xml:space="preserve">
+    <value>A serious error occurred transferring the requested files.</value>
+  </data>
+  <data name="TransferJobNullExceptionMessage" xml:space="preserve">
+    <value>This operation cannot be performed because the file transfer job hasn't been created.</value>
+  </data>
+  <data name="TransferJobStartedMessage" xml:space="preserve">
+    <value>File transfer job started.</value>
+  </data>
+  <data name="WorkspaceExceptionMessage" xml:space="preserve">
+    <value>The workspace artifact must be specified.</value>
+  </data>
+  <data name="HttpFallbackExceptionMessage" xml:space="preserve">
+    <value>A serious error has occurred attempting to transfer files over HTTP.</value>
+  </data>
+  <data name="ClientInitializing" xml:space="preserve">
+    <value>Initializing</value>
+  </data>
+  <data name="TransferClientChangedBestFitMessage" xml:space="preserve">
+    <value>Created transfer client '{0}' using a best-fit strategy.</value>
+  </data>
+  <data name="TransferClientChangedDefaultMessage" xml:space="preserve">
+    <value>Created transfer client '{0}' using a default strategy.</value>
+  </data>
+  <data name="TransferClientChangedForceConfigMessage" xml:space="preserve">
+    <value>Created transfer client '{0}' using a forced configuration setting strategy.</value>
+  </data>
+  <data name="TransferClientChangedHttpFallbackMessage" xml:space="preserve">
+    <value>Created transfer client '{0}' using a fallback strategy due to excessive errors.</value>
+  </data>
+  <data name="TransferClientChangedMessage" xml:space="preserve">
+    <value>Transfer client changed - {0}</value>
+  </data>
+  <data name="ObjectDisposedExceptionMessage" xml:space="preserve">
+    <value>This operation cannot be performed because this instance has already been disposed.</value>
+  </data>
+  <data name="ClientIdNotFoundExceptionMessage" xml:space="preserve">
+    <value>The Transfer API client identifier '{0}' does not exist. Check to make sure the value was entered correctly.</value>
+  </data>
+  <data name="TransferFileDownloadFatalMessage" xml:space="preserve">
+    <value>Error downloading file: {0}</value>
+  </data>
+  <data name="TransferFileUploadFatalMessage" xml:space="preserve">
+    <value>Error uploading file: {0}</value>
+  </data>
+  <data name="CompleteJobExceptionMessage" xml:space="preserve">
+    <value>An unexpected error has occurred attempting to wait for the transfer job to complete.</value>
+  </data>
+  <data name="TransferJobDownloadWarningMessage" xml:space="preserve">
+    <value>{0} download job issue: {1} - Retrying in {2} seconds - {3} tries left.</value>
+  </data>
+  <data name="TransferJobUploadWarningMessage" xml:space="preserve">
+    <value>{0} upload job issue: {1} - Retrying in {2} seconds - {3} tries left.</value>
+  </data>
+  <data name="HttpFallbackWarningMessage" xml:space="preserve">
+    <value>Switching to the HTTP client due to a serious error within the '{0}' transfer client. Error: {1}</value>
+  </data>
+  <data name="IoReporterWarningMessageWithException" xml:space="preserve">
+    <value>Import error - Retrying in {0} seconds. Error: {1}</value>
+  </data>
+  <data name="IoReporterWarningMessageWithExceptionAndRetryInfo" xml:space="preserve">
+    <value>Import error - Retrying in {0} seconds - {1} tries left. Error: {2}</value>
+  </data>
+  <data name="IoReporterWarningMessageWithoutException" xml:space="preserve">
+    <value>Import error - Retrying in {0} seconds. Error details are not available.</value>
+  </data>
+  <data name="IoReporterWarningMessageWithoutExceptionAndRetryInfo" xml:space="preserve">
+    <value>Import error - Retrying in {0} seconds - {1} tries left. Error details are not available.</value>
+  </data>
+  <data name="LineNumberOutOfRangeExceptionMessage" xml:space="preserve">
+    <value>The value of {0} must be non-negative.</value>
+  </data>
+  <data name="ImportInvalidPathCharactersExceptionMessage" xml:space="preserve">
+    <value>The file {0} cannot be imported because it contains illegal characters within the path.</value>
+  </data>
   <data name="ImageFileNotFoundError" xml:space="preserve">
     <value>Image identification cannot be performed on '{0}' because the file cannot be found.</value>
   </data>
@@ -127,8 +220,7 @@
     <value>The image file '{0}' cannot be read due to possible file corruption.</value>
   </data>
   <data name="ImageZeroBytesError" xml:space="preserve">
-    <value>The image file '{0}' is zero bytes.
-</value>
+    <value>The image file '{0}' is zero bytes.</value>
   </data>
   <data name="OutsideInConfigurationError" xml:space="preserve">
     <value>Failed to initialize Outside In file identification library.</value>

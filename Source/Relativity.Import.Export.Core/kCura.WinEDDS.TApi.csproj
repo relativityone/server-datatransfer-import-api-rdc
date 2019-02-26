@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{896F332D-F38D-4BF9-8977-FD04E577EEF5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>kCura.WinEDDS.TApi</RootNamespace>
+    <AssemblyName>kCura.WinEDDS.TApi</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>bin\kCura.WinEDDS.TApi.xml</DocumentationFile>
+    <CodeAnalysisRuleSet>..\..\kCura\DevelopmentScripts\AllErrors.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>bin\kCura.WinEDDS.TApi.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FaspManager, Version=3.7.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\relativity.faspmanager.3.7.2.0\lib\net40\FaspManager.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Polly, Version=5.7.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\Polly.5.7.0\lib\net45\Polly.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Logging">
+      <HintPath>..\..\packages\Relativity.Logging.2018.11.8\lib\net462\Relativity.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Logging.Interfaces">
+      <HintPath>..\..\packages\Relativity.Logging.Interfaces.2018.11.8\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client, Version=5.0.2.35, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.5.0.2\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.Aspera, Version=5.0.2.35, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.5.0.2\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.Core, Version=5.0.2.35, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.5.0.2\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.FileShare, Version=5.0.2.35, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.5.0.2\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.Http, Version=5.0.2.35, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\relativity.transfer.client.5.0.2\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SSH.NET.2016.0.0\lib\net40\Renci.SshNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Web.Services" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Version\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="DirectoryWrap.cs" />
+    <Compile Include="DirectoryInfoWrap.cs" />
+    <Compile Include="FileSystem.cs" />
+    <Compile Include="IDirectory.cs" />
+    <Compile Include="IDirectoryInfo.cs" />
+    <Compile Include="StreamWriterWrap.cs" />
+    <Compile Include="IStreamWriter.cs" />
+    <Compile Include="IFileSystem.cs" />
+    <Compile Include="FileSystemWrap.cs" />
+    <Compile Include="FileInfoWrap.cs" />
+    <Compile Include="NullIoReporter.cs" />
+    <Compile Include="PathWrap.cs" />
+    <Compile Include="FileWrap.cs" />
+    <Compile Include="IPath.cs" />
+    <Compile Include="IFile.cs" />
+    <Compile Include="IFileInfo.cs" />
+    <Compile Include="RelativityManagerService.cs" />
+    <Compile Include="RelativityTransferLog.cs" />
+    <Compile Include="ClientChangeReason.cs" />
+    <Compile Include="DownloadTapiBridge.cs" />
+    <Compile Include="FileInfoInvalidPathException.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="IIoReporter.cs" />
+    <Compile Include="IoReporter.cs" />
+    <Compile Include="IoReporterFactory.cs" />
+    <Compile Include="IoWarningEventArgs.cs" />
+    <Compile Include="IoWarningPublisher.cs" />
+    <Compile Include="IWaitAndRetryPolicy.cs" />
+    <Compile Include="RetryOptions.cs" />
+    <Compile Include="TapiBridgeFactory.cs" />
+    <Compile Include="TapiBridgeParameters.cs" />
+    <Compile Include="Properties\AssemblyInfoLocal.cs" />
+    <Compile Include="FileSharePathManager.cs" />
+    <Compile Include="TapiBridgeBase.cs" />
+    <Compile Include="Resources\Strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="TapiWinEddsHelper.cs" />
+    <Compile Include="TapiConstants.cs" />
+    <Compile Include="TapiClient.cs" />
+    <Compile Include="TapiClientEventArgs.cs" />
+    <Compile Include="EventListeners\TransferPathIssueListener.cs" />
+    <Compile Include="EventListeners\TransferPathProgressListener.cs" />
+    <Compile Include="EventListeners\TransferJobRetryListener.cs" />
+    <Compile Include="EventListeners\TransferListenerBase.cs" />
+    <Compile Include="TapiMessageEventArgs.cs" />
+    <Compile Include="EventListeners\TransferRequestListener.cs" />
+    <Compile Include="EventListeners\TransferStatisticsListener.cs" />
+    <Compile Include="TapiProgressEventArgs.cs" />
+    <Compile Include="TapiStatisticsEventArgs.cs" />
+    <Compile Include="UploadTapiBridge.cs" />
+    <Compile Include="RetryExceptionHelper.cs" />
+    <Compile Include="WaitAndRetryPolicy.cs" />
+    <Compile Include="UploadTapiBridgeParameters.cs" />
+    <Compile Include="WebApiServiceBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
