@@ -58,7 +58,6 @@
     <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileInfoInvalidPathException.cs" />
     <Compile Include="ImportExportException.cs" />
     <Compile Include="IAppSettings.cs" />
     <Compile Include="ByteOrdering.cs" />
@@ -66,10 +65,9 @@
     <Compile Include="AppSettings.cs" />
     <Compile Include="DictionaryExtensions.cs" />
     <Compile Include="ImageConstants.cs" />
-    <Compile Include="IoWarningEventArgs.cs" />
-    <Compile Include="IoWarningPublisher.cs" />
     <Compile Include="Io\DirectoryInfoWrap.cs" />
     <Compile Include="Io\DirectoryWrap.cs" />
+    <Compile Include="Io\FileInfoInvalidPathException.cs" />
     <Compile Include="Io\FileInfoWrap.cs" />
     <Compile Include="Io\FileSharePathManager.cs" />
     <Compile Include="Io\FileSystem.cs" />
@@ -83,6 +81,8 @@
     <Compile Include="Io\IIoReporter.cs" />
     <Compile Include="Io\IoReporter.cs" />
     <Compile Include="Io\IoReporterFactory.cs" />
+    <Compile Include="Io\IoWarningEventArgs.cs" />
+    <Compile Include="Io\IoWarningPublisher.cs" />
     <Compile Include="Io\IPath.cs" />
     <Compile Include="Io\IStreamWriter.cs" />
     <Compile Include="Io\NullIoReporter.cs" />
