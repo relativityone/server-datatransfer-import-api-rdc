@@ -1,4 +1,4 @@
-Namespace kCura.Windows.Process
+Namespace Relativity.Desktop.Client.Legacy.Controls
 	Public Class MessageBoxForm
 		Inherits System.Windows.Forms.Form
 

@@ -1,7 +1,11 @@
-Imports kCura.Windows.Forms
+Imports System.Drawing
+Imports System.Windows.Forms
+Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Process
+Imports Relativity.Desktop.Client.Legacy.Controls
 
-Namespace kCura.Windows.Process
-	Public Class ProgressForm
+Namespace Relativity.Desktop.Client
+	Public Class ProcessForm
 		Inherits System.Windows.Forms.Form
 
 #Region " Windows Form Designer generated code "
@@ -42,12 +46,12 @@ Namespace kCura.Windows.Process
 		Friend WithEvents SummaryTab As System.Windows.Forms.TabPage
 		Friend WithEvents WarningsTab As System.Windows.Forms.TabPage
 		Friend WithEvents ErrorsTab As System.Windows.Forms.TabPage
-		Friend WithEvents _outputTextBox As kCura.Windows.Forms.OutputRichTextBox
+		Friend WithEvents _outputTextBox As Relativity.Desktop.Client.Legacy.Controls.OutputRichTextBox
 		Friend WithEvents _Tabs As System.Windows.Forms.TabControl
 		Friend WithEvents _summaryOutput As System.Windows.Forms.TextBox
 		Friend WithEvents _currentMessageStatus As System.Windows.Forms.Label
-		Friend WithEvents _warningsOutputTextBox As kCura.Windows.Forms.OutputRichTextBox
-		Friend WithEvents _errorsOutputTextBox As kCura.Windows.Forms.OutputRichTextBox
+		Friend WithEvents _warningsOutputTextBox As Relativity.Desktop.Client.Legacy.Controls.OutputRichTextBox
+		Friend WithEvents _errorsOutputTextBox As Relativity.Desktop.Client.Legacy.Controls.OutputRichTextBox
 
 		Friend WithEvents _statusBar As System.Windows.Forms.Label
 		Friend WithEvents ErrorReportTab As System.Windows.Forms.TabPage
@@ -58,7 +62,7 @@ Namespace kCura.Windows.Process
 		Friend WithEvents _exportErrorFileDialog As System.Windows.Forms.SaveFileDialog
 		Friend WithEvents _exportErrorFilesTo As System.Windows.Forms.FolderBrowserDialog
 		<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-		Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ProgressForm))
+		Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ProcessForm))
 		Me._stopImportButton = New System.Windows.Forms.Button()
 		Me._showDetailButton = New System.Windows.Forms.Button()
 		Me._progressBar = New System.Windows.Forms.ProgressBar()
@@ -70,11 +74,11 @@ Namespace kCura.Windows.Process
 		Me.SummaryTab = New System.Windows.Forms.TabPage()
 		Me._summaryOutput = New System.Windows.Forms.TextBox()
 		Me.ErrorsTab = New System.Windows.Forms.TabPage()
-		Me._errorsOutputTextBox = New kCura.Windows.Forms.OutputRichTextBox()
+		Me._errorsOutputTextBox = New Relativity.Desktop.Client.Legacy.Controls.OutputRichTextBox()
 		Me.ProgressTab = New System.Windows.Forms.TabPage()
-		Me._outputTextBox = New kCura.Windows.Forms.OutputRichTextBox()
+		Me._outputTextBox = New Relativity.Desktop.Client.Legacy.Controls.OutputRichTextBox()
 		Me.WarningsTab = New System.Windows.Forms.TabPage()
-		Me._warningsOutputTextBox = New kCura.Windows.Forms.OutputRichTextBox()
+		Me._warningsOutputTextBox = New Relativity.Desktop.Client.Legacy.Controls.OutputRichTextBox()
 		Me.ErrorReportTab = New System.Windows.Forms.TabPage()
 		Me._exportErrorFileButton = New System.Windows.Forms.Button()
 		Me._exportErrorReportBtn = New System.Windows.Forms.Button()
@@ -342,8 +346,7 @@ End Sub
 #End Region
 
 		Protected _processId As Guid
-		Protected WithEvents _processObserver As kCura.Windows.Process.ProcessObserver
-		Protected WithEvents _controller As kCura.Windows.Process.Controller
+		Protected WithEvents _processContext As ProcessContext
 		Private Property FatalException As System.Exception
 		Private _inSafeMode As Boolean
 		Private _errorsDataSource As System.Data.DataTable
@@ -384,21 +387,12 @@ End Sub
 			End Set
 		End Property
 
-		Public Property ProcessObserver() As kCura.Windows.Process.ProcessObserver
+		Public Property ProcessObserver() As ProcessContext
 			Get
-				Return _processObserver
+				Return _processContext
 			End Get
-			Set(ByVal value As kCura.Windows.Process.ProcessObserver)
-				_processObserver = value
-			End Set
-		End Property
-
-		Public Property ProcessController() As kCura.Windows.Process.Controller
-			Get
-				Return _controller
-			End Get
-			Set(ByVal value As kCura.Windows.Process.Controller)
-				_controller = value
+			Set(ByVal value As ProcessContext)
+				_processContext = value
 			End Set
 		End Property
 
@@ -409,7 +403,7 @@ End Sub
 			Set(ByVal value As Boolean)
 				_inSafeMode = value
 				_outputTextBox.InSafeMode = Me.InSafeMode
-				_processObserver.InSafeMode = Me.InSafeMode
+				_processContext.SafeMode = Me.InSafeMode
 			End Set
 		End Property
 
@@ -425,7 +419,7 @@ End Sub
 		Private Sub _stopImportButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _stopImportButton.Click
 			Try
 				If _stopImportButton.Text = "Stop" Then
-					ProcessController.HaltProcess(_processId)
+					_processContext.PublishHaltProcess(_processId)
 					_stopImportButton.Enabled = False
 					_currentRecordLabel.Text = "Process halting"
 					_hasClickedStop = True
@@ -483,22 +477,22 @@ End Sub
 		End Sub
 
 		Private Sub _saveFileDialog_FileOk(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _saveFileDialog.FileOk
-			_processObserver.SaveOutputFile(_saveFileDialog.FileName)
+			_processContext.SaveOutputFile(_saveFileDialog.FileName)
 		End Sub
 
 #Region " Process Observer"
 
-		Private Sub _processObserver_OnProcessEvent(ByVal evt As kCura.Windows.Process.ProcessEvent) Handles _processObserver.OnProcessEvent
-			If Not _hasClickedStop Then _currentRecordLabel.Text = evt.RecordInfo
-			_currentMessageStatus.Text = evt.Message
-			Select Case evt.Type
-				Case kCura.Windows.Process.ProcessEventTypeEnum.Status
-					_outputTextBox.WriteLine(evt.Message + " " + evt.RecordInfo)
-					If evt.Message.ToLower = "cancel import" Then _cancelled = True
-				Case kCura.Windows.Process.ProcessEventTypeEnum.Error
-					_errorsOutputTextBox.WriteLine(evt.Message)
-				Case kCura.Windows.Process.ProcessEventTypeEnum.Warning
-					_warningsOutputTextBox.WriteLine(evt.Message)
+		Private Sub _processContext_OnProcessEvent(ByVal sender As Object, ByVal e As ProcessEventArgs) Handles _processContext.ProcessEvent
+			If Not _hasClickedStop Then _currentRecordLabel.Text = e.RecordInfo
+			_currentMessageStatus.Text = e.Message
+			Select Case e.EventType
+				Case ProcessEventType.Status
+					_outputTextBox.WriteLine(e.Message + " " + e.RecordInfo)
+					If e.Message.ToLower = "cancel import" Then _cancelled = True
+				Case ProcessEventType.Error
+					_errorsOutputTextBox.WriteLine(e.Message)
+				Case ProcessEventType.Warning
+					_warningsOutputTextBox.WriteLine(e.Message)
 			End Select
 		End Sub
 
@@ -509,7 +503,7 @@ End Sub
 			End If
 			Return retval
 		End Function
-		Private _lastEvent As kCura.Windows.Process.ProcessProgressEvent
+		Private _lastEvent As ProcessProgressEventArgs
 		Public Property StatusRefreshRate As Long
 		Protected ReadOnly Property DeJitter As Boolean
 			Get
@@ -519,8 +513,8 @@ End Sub
 		Private _lastStatusMessageTs As Long = 0
 		Private _timer As System.Windows.Forms.Timer
 
-		Sub _processObserver_OnProcessProgressEvent(ByVal evt As kCura.Windows.Process.ProcessProgressEvent) Handles _processObserver.OnProcessProgressEvent
-			_lastEvent = evt
+		Sub _processContext_OnProcessProgressEvent(ByVal sender As Object, ByVal e As ProcessProgressEventArgs) Handles _processContext.Progress
+			_lastEvent = e
 			Dim redrawSummary As Boolean = True
 
 			If DeJitter Then
@@ -538,20 +532,20 @@ End Sub
 				End If
 				redrawSummary = hasIntervalElapsed
 			End If
-			If redrawSummary Then BuildOutSummary(evt)
+			If redrawSummary Then BuildOutSummary(e)
 		End Sub
 
-		Private Sub BuildOutSummary(evt As kCura.Windows.Process.ProcessProgressEvent)
+		Private Sub BuildOutSummary(args As ProcessProgressEventArgs)
 			SyncLock (_summaryLock)
-				If evt Is Nothing Then evt = _lastEvent
+				If args Is Nothing Then args = _lastEvent
 				Dim stubDate As DateTime
 				Dim totalRecords, totalRecordsProcessed As Int32
-				If evt.TotalRecords > Int32.MaxValue Then
-					totalRecordsProcessed = CType((evt.TotalRecordsProcessed / evt.TotalRecords) * Int32.MaxValue, Int32)
+				If args.TotalRecords > Int32.MaxValue Then
+					totalRecordsProcessed = CType((args.TotalProcessedRecords / args.TotalRecords) * Int32.MaxValue, Int32)
 					totalRecords = Int32.MaxValue
 				Else
-					totalRecords = CType(evt.TotalRecords, Int32)
-					totalRecordsProcessed = CType(evt.TotalRecordsProcessed, Int32)
+					totalRecords = CType(args.TotalRecords, Int32)
+					totalRecordsProcessed = CType(args.TotalProcessedRecords, Int32)
 				End If
 
 				If totalRecordsProcessed > totalRecords Or totalRecordsProcessed < 0 Then
@@ -561,45 +555,45 @@ End Sub
 				_progressBar.Minimum = 0
 				_progressBar.Maximum = totalRecords
 				_progressBar.Value = totalRecordsProcessed
-				_overalProgressLabel.Text = evt.TotalRecordsProcessedDisplay + " of " + evt.TotalRecordsDisplay + " processed"
+				_overalProgressLabel.Text = args.TotalProcessedRecordsDisplay + " of " + args.TotalRecordsDisplay + " processed"
 
-				NumberOfWarnings = evt.TotalRecordsProcessedWithWarnings
+				NumberOfWarnings = args.TotalProcessedWarningRecords
 
 				'_summaryOutput.Text = ""
-				WriteSummaryLine("Start Time: " + evt.StartTime.ToLongTimeString)
-				If evt.EndTime <> stubDate Then
-					WriteSummaryLine("Finish Time: " + evt.EndTime.ToLongTimeString)
-					WriteSummaryLine("Duration: " + (Me.GetTimeSpanString(evt.EndTime.Subtract(evt.StartTime))))
+				WriteSummaryLine("Start Time: " + args.StartTime.ToLongTimeString)
+				If args.Timestamp <> stubDate Then
+					WriteSummaryLine("Finish Time: " + args.Timestamp.ToLongTimeString)
+					WriteSummaryLine("Duration: " + (Me.GetTimeSpanString(args.Timestamp.Subtract(args.StartTime))))
 				Else
-					Dim duration As TimeSpan = DateTime.Now.Subtract(evt.StartTime)
+					Dim duration As TimeSpan = DateTime.Now.Subtract(args.StartTime)
 					WriteSummaryLine("Duration: " + (Me.GetTimeSpanString(duration)))
 					WriteSummaryLine("")
-					If evt.TotalRecordsProcessed > 0 Then
-						Dim timeToCompletionString As String = Me.GetTimeSpanString(New TimeSpan(CType(duration.Ticks / CType(evt.TotalRecordsProcessed, Double) * CType((evt.TotalRecords - evt.TotalRecordsProcessed), Double), Long)))
+					If args.TotalProcessedRecords > 0 Then
+						Dim timeToCompletionString As String = Me.GetTimeSpanString(New TimeSpan(CType(duration.Ticks / CType(args.TotalProcessedRecords, Double) * CType((args.TotalRecords - args.TotalProcessedRecords), Double), Long)))
 						WriteSummaryLine("Time Left to Completion: " + timeToCompletionString)
 					End If
 				End If
 				WriteSummaryLine("")
-				WriteSummaryLine("Total Records: " + evt.TotalRecords.ToString)
-				WriteSummaryLine("Total Processed: " + evt.TotalRecordsProcessed.ToString)
-				WriteSummaryLine("Total Processed w/Warnings: " + evt.TotalRecordsProcessedWithWarnings.ToString)
-				If evt.TotalRecordsProcessedWithErrors > 0 Then
+				WriteSummaryLine("Total Records: " + args.TotalRecords.ToString)
+				WriteSummaryLine("Total Processed: " + args.TotalProcessedRecords.ToString)
+				WriteSummaryLine("Total Processed w/Warnings: " + args.TotalProcessedWarningRecords.ToString)
+				If args.TotalProcessedErrorRecords > 0 Then
 					_summaryOutput.ForeColor = System.Drawing.Color.Red
 				End If
-				WriteSummaryLine("Total Processed w/Errors: " + evt.TotalRecordsProcessedWithErrors.ToString)
-				If Not evt.StatusSuffixEntries Is Nothing Then
+				WriteSummaryLine("Total Processed w/Errors: " + args.TotalProcessedErrorRecords .ToString)
+				If Not args.Metadata Is Nothing Then
 					WriteSummaryLine("")
-					For Each title As String In evt.StatusSuffixEntries.Keys
-						WriteSummaryLine(String.Format("{0}: {1}", title, evt.StatusSuffixEntries(title).ToString))
+					For Each title As String In args.Metadata.Keys
+						WriteSummaryLine(String.Format("{0}: {1}", title, args.Metadata(title).ToString))
 					Next
 				End If
 				UpdateSummaryText()
 			End SyncLock
 		End Sub
 
-		Private Sub _processObserver_OnProcessComplete(ByVal closeForm As Boolean, ByVal exportFilePath As String, ByVal exportLog As Boolean) Handles _processObserver.OnProcessComplete
+		Private Sub _processContext_OnProcessComplete(ByVal sender As Object, ByVal e As ProcessCompleteEventArgs) Handles _processContext.ProcessCompleted
 			If _lastEvent IsNot Nothing Then BuildOutSummary(_lastEvent)
-			If closeForm Then
+			If e.CloseForm Then
 				Me.Close()
 			Else
 				If _cancelled Then Me.Close()
@@ -612,18 +606,18 @@ End Sub
 				_currentMessageStatus.Text = ""
 				_stopImportButton.Text = "Close"
 				_stopImportButton.Enabled = True
-				_saveOutputButton.Enabled = Config.LogAllEvents
-				If exportFilePath <> "" Then
+				_saveOutputButton.Enabled = AppSettings.LogAllEvents
+				If e.ExportFilePath <> "" Then
 					ShowWarningPopup = False
 					_exportErrorFileButton.Visible = True
 					Try
-						Dim x As New System.Guid(exportFilePath)
-						If System.IO.File.Exists(exportFilePath) Then _exportErrorFileLocation = exportFilePath
+						Dim x As New System.Guid(e.ExportFilePath)
+						If System.IO.File.Exists(e.ExportFilePath) Then _exportErrorFileLocation = e.ExportFilePath
 					Catch
-						_exportErrorFileLocation = exportFilePath
+						_exportErrorFileLocation = e.ExportFilePath
 					End Try
 					If MsgBox("Errors have occurred. Export error files?", MsgBoxStyle.OkCancel, "Relativity Desktop Client") = MsgBoxResult.Ok Then
-						If exportLog Then
+						If e.ExportLog Then
 							Me.ExportErrorFiles()
 						Else
 							_exportErrorFileDialog.ShowDialog()
@@ -643,15 +637,15 @@ End Sub
 			Dim folderPath As String = _exportErrorFilesTo.SelectedPath
 			If Not folderPath = "" Then
 				folderPath = folderPath.TrimEnd("\"c) & "\"
-				_controller.ExportServerErrors(folderPath)
+				_processContext.PublishExportServerErrors(folderPath)
 			End If
 		End Sub
 
-		Private Sub _processObserver_OnProcessFatalException(ByVal ex As System.Exception) Handles _processObserver.OnProcessFatalException
+		Private Sub _processContext_OnProcessFatalException(ByVal sender As Object, ByVal e As ProcessFatalExceptionEventArgs) Handles _processContext.FatalException
 			If _lastEvent IsNot Nothing Then BuildOutSummary(_lastEvent)
-			Dim errorFriendlyMessage As String = ex.Message
-			Dim errorFullMessage As String = ex.ToString
-			Me.FatalException = ex
+			Dim errorFriendlyMessage As String = e.FatalException.Message
+			Dim errorFullMessage As String = e.FatalException.ToString
+			Me.FatalException = e.FatalException
 
 			If errorFullMessage.ToLower.IndexOf("soapexception") <> -1 Then
 				errorFullMessage = System.Web.HttpUtility.HtmlDecode(errorFullMessage)
@@ -673,7 +667,7 @@ End Sub
 			_hasReceivedFatalError = True
 			'_stopImportButton.Text = "Stop"
 			_stopImportButton.Text = "Close"
-			_saveOutputButton.Enabled = Config.LogAllEvents
+			_saveOutputButton.Enabled = AppSettings.LogAllEvents
 			_summaryOutput.ForeColor = System.Drawing.Color.Red
 			Me.ShowDetail()
 		End Sub
@@ -695,9 +689,9 @@ End Sub
 			SummaryString.Remove(0, _summaryString.Length)
 		End Sub
 
-		Private Sub _processObserver_StatusBarEvent(ByVal message As String, ByVal popupText As String) Handles _processObserver.StatusBarEvent
-			_statusBar.Text = message
-			_statusBarPopupText = popupText
+		Private Sub _processContext_StatusBarEvent(ByVal sender As Object, ByVal e As StatusBarEventArgs) Handles _processContext.StatusBarUpdate
+			_statusBar.Text = e.Message
+			_statusBarPopupText = e.PopupText
 			If _statusBarPopupText Is Nothing Then _statusBarPopupText = ""
 			If _statusBarPopupText = "" Then
 				_statusBar.ForeColor = System.Drawing.Color.Black
@@ -710,16 +704,16 @@ End Sub
 			End If
 		End Sub
 
-		Private Sub _processObserver_ShowReportEvent(ByVal datasource As System.Data.DataTable, ByVal maxlengthExceeded As Boolean) Handles _processObserver.ShowReportEvent
-			_errorsDataSource = datasource
-		End Sub
+		'Private Sub _processContext_ShowReportEvent(ByVal datasource As System.Data.DataTable, ByVal maxlengthExceeded As Boolean) Handles _processContext.ShowReportEvent
+		'	_errorsDataSource = datasource
+		'End Sub
 
 		Private Sub _exportErrorReportBtn_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _exportErrorReportBtn.Click
 			_exportErrorsDialog.FileName = ""
 			_exportErrorsDialog.Filter = "CSV Files|*.csv|All Files|*.*"
 			_exportErrorsDialog.ShowDialog()
 			If Not _exportErrorsDialog.FileName Is Nothing AndAlso Not _exportErrorsDialog.FileName = "" Then
-				_controller.ExportErrorReport(_exportErrorsDialog.FileName)
+				_processContext.PublishExportErrorReport(_exportErrorsDialog.FileName)
 			End If
 		End Sub
 
@@ -729,22 +723,20 @@ End Sub
 			_exportErrorsDialog.Filter = errorFileExtension.ToUpper & " Files|*." & errorFileExtension.ToLower & "|All Files|*.*"
 			_exportErrorsDialog.ShowDialog()
 			If Not _exportErrorsDialog.FileName Is Nothing AndAlso Not _exportErrorsDialog.FileName = "" Then
-				_controller.ExportErrorFile(_exportErrorsDialog.FileName)
+				_processContext.PublishExportErrorFile(_exportErrorsDialog.FileName)
 			End If
 		End Sub
 
 		Private Sub ProgressForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
-			If Not Me.ProcessController Is Nothing Then
-				ProcessController.HaltProcess(_processId)
-				ProcessController.ParentFormClosing(_processId)
-			End If
+			_processContext.PublishHaltProcess(_processId)
+			_processContext.PublishParentFormClosing(_processId)
 		End Sub
 
-		Private Sub _processObserver_ErrorReportEvent(ByVal row As System.Collections.IDictionary) Handles _processObserver.ErrorReportEvent
+		Private Sub _processContext_ErrorReportEvent(ByVal sender As Object, ByVal e As ProcessErrorReportEventArgs) Handles _processContext.ErrorReport
 			If DirectCast(_reportDataGrid, System.ComponentModel.ISynchronizeInvoke).InvokeRequired Then
-				Me.Invoke(New DoErrorReportFromThread(AddressOf DoErrorReport), New Object() {row})
+				Me.Invoke(New DoErrorReportFromThread(AddressOf DoErrorReport), New Object() { e.Error })
 			Else
-				Me.DoErrorReport(row)
+				Me.DoErrorReport(e.Error)
 			End If
 		End Sub
 
@@ -775,7 +767,7 @@ End Sub
 			End If
 		End Sub
 
-		Private Sub _observer_ShutdownEvent() Handles _processObserver.ShutdownEvent
+		Private Sub _observer_ShutdownEvent(ByVal sender As Object, ByVal e As System.EventArgs) Handles _processContext.Shutdown
 			Me.Close()
 		End Sub
 
