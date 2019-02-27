@@ -2,5 +2,6 @@ moq
 nbuilder
 newtonsoft.json
 nunit
-relativity.importexport
+relativity.logging.interfaces
+relativity.transfer.client
 stylecop.analyzers

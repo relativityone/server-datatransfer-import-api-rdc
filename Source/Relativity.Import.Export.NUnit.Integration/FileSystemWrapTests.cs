@@ -15,8 +15,7 @@ namespace Relativity.Import.Export.NUnit.Integration
 
 	using global::NUnit.Framework;
 
-    using kCura.WinEDDS.TApi;
-
+	using Relativity.Import.Export.Io;
 	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>
