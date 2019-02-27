@@ -24,22 +24,49 @@ namespace Relativity.Import.Export.Transfer
 		private readonly TapiBridgeParameters parameters;
 
 		/// <summary>
-		///     Initializes a new instance of the <see cref="DownloadTapiBridge" /> class.
+		/// Initializes a new instance of the <see cref="DownloadTapiBridge"/> class.
 		/// </summary>
 		/// <param name="parameters">
-		///     The native file transfer parameters.
+		/// The native file transfer parameters.
 		/// </param>
 		/// <param name="log">
-		///     The transfer log.
+		/// The transfer log.
 		/// </param>
 		/// <param name="token">
-		///     The cancellation token.
+		/// The cancellation token.
 		/// </param>
 		/// <remarks>
-		///     Don't expose Transfer API objects to WinEDDS - at least not yet. This is reserved for integration tests.
+		/// Don't expose Transfer API objects to WinEDDS - at least not yet. This is reserved for integration tests.
 		/// </remarks>
 		public DownloadTapiBridge(TapiBridgeParameters parameters, ITransferLog log, CancellationToken token)
-			: base(parameters, TransferDirection.Download, log, token)
+			: this(new TapiObjectService(), parameters, log, token)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DownloadTapiBridge" /> class.
+		/// </summary>
+		/// <param name="factory">
+		/// The Transfer API object factory.
+		/// </param>
+		/// <param name="parameters">
+		/// The native file transfer parameters.
+		/// </param>
+		/// <param name="log">
+		/// The transfer log.
+		/// </param>
+		/// <param name="token">
+		/// The cancellation token.
+		/// </param>
+		/// <remarks>
+		/// Don't expose Transfer API objects to WinEDDS - at least not yet. This is reserved for integration tests.
+		/// </remarks>
+		public DownloadTapiBridge(
+			ITapiObjectService factory,
+			TapiBridgeParameters parameters,
+			ITransferLog log,
+			CancellationToken token)
+			: base(factory, parameters, TransferDirection.Download, log, token)
 		{
 			this.parameters = parameters;
 		}

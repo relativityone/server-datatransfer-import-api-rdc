@@ -3,4 +3,5 @@ nbuilder
 newtonsoft.json
 nunit
 relativity.logging.interfaces
+relativity.transfer.client
 stylecop.analyzers

@@ -316,6 +316,11 @@ namespace Relativity.Import.Export.NUnit
 		[TestCaseSourceAttribute(nameof(RetryExceptionTestCases))]
 		public void ItShouldExerciseRetryExceptionTestCases(RetryOptions testOptions, bool testDisableNativeLocationValidation, Exception testException, int testExpectedRetryCount)
 		{
+			if (testException == null)
+			{
+				throw new ArgumentNullException(nameof(testException));
+			}
+
 			const int MaxRetryCount = 5;
 			this.GivenTheRetryOptions(testOptions);
 			this.GivenTheRealWaitAndRetryPolicy(MaxRetryCount);

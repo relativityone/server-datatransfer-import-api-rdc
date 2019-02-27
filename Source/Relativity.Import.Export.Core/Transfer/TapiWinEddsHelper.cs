@@ -1,7 +1,10 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="TapiWinEddsHelper.cs" company="Relativity ODA LLC">
+// <copyright file="TapiObjectService.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
+// <summary>
+//   Represents a class to create Transfer API objects.
+// </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace Relativity.Import.Export.Transfer
@@ -16,17 +19,23 @@ namespace Relativity.Import.Export.Transfer
 	using Relativity.Transfer;
 
 	/// <summary>
-	/// Defines helper methods to provide WinEDDS compatibility functionality.
+	/// Represents a class object to provide Transfer API object services to the transfer bridges.
 	/// </summary>
-	public static class TapiWinEddsHelper
+	public class TapiObjectService : ITapiObjectService
 	{
 		/// <summary>
-		/// Searches for all available clients and builds the documentation text from the discovered metadata.
+		/// The singleton instance.
 		/// </summary>
-		/// <returns>
-		/// The documentation text.
-		/// </returns>
-		public static string BuildDocText()
+		private static readonly IFileSystemService Instance = new FileSystemService();
+
+		/// <inheritdoc />
+		public IFileSystemService CreateFileSystemService()
+		{
+			return Instance;
+		}
+
+		/// <inheritdoc />
+		public string BuildDocText()
 		{
 			using (var transferLog = new RelativityTransferLog())
 			{
@@ -50,39 +59,6 @@ namespace Relativity.Import.Export.Transfer
 		}
 
 		/// <summary>
-		/// Gets the client display name associated with the specified transfer client identifier.
-		/// </summary>
-		/// <param name="clientId">
-		/// The transfer client identifier.
-		/// </param>
-		/// <returns>
-		/// The client display name.
-		/// </returns>
-		/// <exception cref="System.ArgumentException">
-		/// Thrown when the client doesn't exist.
-		/// </exception>
-		public static string GetClientDisplayName(Guid clientId)
-		{
-			if (clientId == Guid.Empty)
-			{
-				throw new ArgumentException("The client unique identifier must be non-empty.", nameof(clientId));
-			}
-
-			using (var transferLog = new RelativityTransferLog())
-			{
-				foreach (var clientMetadata in TransferClientHelper.SearchAvailableClients(transferLog))
-				{
-					if (new Guid(clientMetadata.Id) == clientId)
-					{
-						return clientMetadata.DisplayName;
-					}
-				}
-
-				throw new ArgumentException(Strings.ClientIdNotFoundExceptionMessage);
-			}
-		}
-
-		/// <summary>
 		/// Creates a Relativity connection information object.
 		/// </summary>
 		/// <param name="parameters">
@@ -91,7 +67,7 @@ namespace Relativity.Import.Export.Transfer
 		/// <returns>
 		/// The <see cref="RelativityConnectionInfo"/> instance.
 		/// </returns>
-		public static RelativityConnectionInfo CreateRelativityConnectionInfo(TapiBridgeParameters parameters)
+		public RelativityConnectionInfo CreateRelativityConnectionInfo(TapiBridgeParameters parameters)
 		{
 			if (parameters == null)
 			{
@@ -142,16 +118,36 @@ namespace Relativity.Import.Export.Transfer
 				new Uri(parameters.WebServiceUrl));
 		}
 
-		/// <summary>
-		/// Gets the client identifier.
-		/// </summary>
-		/// <param name="parameters">
-		/// The parameters.
-		/// </param>
-		/// <returns>
-		/// The <see cref="Guid"/> value.
-		/// </returns>
-		public static Guid GetClientId(TapiBridgeParameters parameters)
+		/// <inheritdoc />
+		public IRelativityTransferHost CreateRelativityTransferHost(RelativityConnectionInfo connectionInfo, ITransferLog log)
+		{
+			return new RelativityTransferHost(connectionInfo, log);
+		}
+
+		/// <inheritdoc />
+		public string GetClientDisplayName(Guid clientId)
+		{
+			if (clientId == Guid.Empty)
+			{
+				throw new ArgumentException("The client unique identifier must be non-empty.", nameof(clientId));
+			}
+
+			using (var transferLog = new RelativityTransferLog())
+			{
+				foreach (var clientMetadata in TransferClientHelper.SearchAvailableClients(transferLog))
+				{
+					if (new Guid(clientMetadata.Id) == clientId)
+					{
+						return clientMetadata.DisplayName;
+					}
+				}
+
+				throw new ArgumentException(Strings.ClientIdNotFoundExceptionMessage);
+			}
+		}
+
+		/// <inheritdoc />
+		public Guid GetClientId(TapiBridgeParameters parameters)
 		{
 			if (parameters == null)
 			{
@@ -175,33 +171,36 @@ namespace Relativity.Import.Export.Transfer
 			return clientId;
 		}
 
-		/// <summary>
-		/// Asynchronously gets the Transfer API client display name that will be used for the given workspace.
-		/// </summary>
-		/// <param name="parameters">
-		/// The bridge connection parameters.
-		/// </param>
-		/// <returns>
-		/// The client display name.
-		/// </returns>
-		public static async Task<string> GetWorkspaceClientDisplayNameAsync(TapiBridgeParameters parameters)
+		/// <inheritdoc />
+		public TapiClient GetTapiClient(Guid clientId)
 		{
-			ITransferClient transferClient = await GetWorkspaceClientAsync(parameters).ConfigureAwait(false);
+			switch (clientId.ToString("D").ToUpperInvariant())
+			{
+				case TransferClientConstants.AsperaClientId:
+					return TapiClient.Aspera;
+
+				case TransferClientConstants.FileShareClientId:
+					return TapiClient.Direct;
+
+				case TransferClientConstants.HttpClientId:
+					return TapiClient.Web;
+
+				default:
+					return TapiClient.None;
+			}
+		}
+
+		/// <inheritdoc />
+		public async Task<string> GetWorkspaceClientDisplayNameAsync(TapiBridgeParameters parameters)
+		{
+			ITransferClient transferClient = await this.GetWorkspaceClientAsync(parameters).ConfigureAwait(false);
 			return transferClient.DisplayName;
 		}
 
-		/// <summary>
-		/// Asynchronously gets the Transfer API client Id that will be used for the given workspace.
-		/// </summary>
-		/// <param name="parameters">
-		/// The bridge connection parameters.
-		/// </param>
-		/// <returns>
-		/// The client display name.
-		/// </returns>
-		public static async Task<Guid> GetWorkspaceClientIdAsync(TapiBridgeParameters parameters)
+		/// <inheritdoc />
+		public async Task<Guid> GetWorkspaceClientIdAsync(TapiBridgeParameters parameters)
 		{
-			ITransferClient transferClient = await GetWorkspaceClientAsync(parameters).ConfigureAwait(false);
+			ITransferClient transferClient = await this.GetWorkspaceClientAsync(parameters).ConfigureAwait(false);
 			return transferClient.Id;
 		}
 
@@ -214,16 +213,17 @@ namespace Relativity.Import.Export.Transfer
 		/// <returns>
 		/// The <see cref="ITransferClient"/> instance.
 		/// </returns>
-		private static async Task<ITransferClient> GetWorkspaceClientAsync(TapiBridgeParameters parameters)
+		private async Task<ITransferClient> GetWorkspaceClientAsync(TapiBridgeParameters parameters)
 		{
 			var configuration = new ClientConfiguration
 			{
 				CookieContainer = parameters.WebCookieContainer,
-				ClientId = GetClientId(parameters)
+				ClientId = this.GetClientId(parameters)
 			};
+
 			try
 			{
-				var connectionInfo = CreateRelativityConnectionInfo(parameters);
+				var connectionInfo = this.CreateRelativityConnectionInfo(parameters);
 				using (var transferLog = new RelativityTransferLog())
 				using (var transferHost = new RelativityTransferHost(connectionInfo, transferLog))
 				{

@@ -48,7 +48,34 @@ namespace Relativity.Import.Export.Transfer
 		/// Don't expose Transfer API objects to WinEDDS - at least not yet. This is reserved for integration tests.
 		/// </remarks>
 		public UploadTapiBridge(UploadTapiBridgeParameters parameters, ITransferLog log, CancellationToken token)
-			: base(parameters, TransferDirection.Upload, log, token)
+			: this(new TapiObjectService(), parameters, log, token)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UploadTapiBridge"/> class.
+		/// </summary>
+		/// <param name="factory">
+		/// The Transfer API object factory.
+		/// </param>
+		/// <param name="parameters">
+		/// The native file transfer parameters.
+		/// </param>
+		/// <param name="log">
+		/// The transfer log.
+		/// </param>
+		/// <param name="token">
+		/// The cancellation token.
+		/// </param>
+		/// <remarks>
+		/// Don't expose Transfer API objects to WinEDDS - at least not yet. This is reserved for integration tests.
+		/// </remarks>
+		public UploadTapiBridge(
+			ITapiObjectService factory,
+			UploadTapiBridgeParameters parameters,
+			ITransferLog log,
+			CancellationToken token)
+			: base(factory, parameters, TransferDirection.Upload, log, token)
 		{
 			this.parameters = parameters;
 			this.pathManager = new FileSharePathManager(parameters.MaxFilesPerFolder);
@@ -94,8 +121,16 @@ namespace Relativity.Import.Export.Transfer
 		/// <returns>
 		/// The file name.
 		/// </returns>
+		/// <exception cref="ArgumentNullException">
+		/// Thrown when <paramref name="sourceFile" /> is <see langword="null" /> or empty.
+		/// </exception>
 		public string AddPath(string sourceFile, string targetFileName, int order)
 		{
+			if (string.IsNullOrEmpty(sourceFile))
+			{
+				throw new ArgumentNullException(nameof(sourceFile));
+			}
+
 			var transferPath = new TransferPath
 			{
 				SourcePath = sourceFile,

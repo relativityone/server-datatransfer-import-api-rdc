@@ -29,10 +29,15 @@ namespace Relativity.Import.Export.Transfer
     /// <seealso cref="System.IDisposable" />
     public abstract class TapiBridgeBase : IDisposable
     {
-        /// <summary>
-        /// The cancellation token source.
-        /// </summary>
-        private readonly CancellationToken cancellationToken;
+		/// <summary>
+		/// The Transfer API object service.
+		/// </summary>
+		private readonly ITapiObjectService tapiObjectService;
+
+		/// <summary>
+		/// The cancellation token source.
+		/// </summary>
+		private readonly CancellationToken cancellationToken;
 
 		/// <summary>
 		/// The context used for transfer events.
@@ -47,7 +52,7 @@ namespace Relativity.Import.Export.Transfer
         /// <summary>
         /// The file system service used to wrap up all IO API's.
         /// </summary>
-        private readonly IFileSystemService fileSystemService = new FileSystemService();
+        private readonly IFileSystemService fileSystemService;
 
         /// <summary>
         /// The list of transfer event listeners.
@@ -78,7 +83,7 @@ namespace Relativity.Import.Export.Transfer
         /// The lazy constructed transfer client. Always call <see cref="CreateTransferHost"/>
         /// to get the reference instead of directly accessing this field.
         /// </summary>
-		private RelativityTransferHost relativityTransferHost;
+		private IRelativityTransferHost relativityTransferHost;
 
 		/// <summary>
 		/// The transfer client.
@@ -93,6 +98,9 @@ namespace Relativity.Import.Export.Transfer
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TapiBridgeBase"/> class.
 		/// </summary>
+		/// <param name="service">
+		/// The Transfer API object service.
+		/// </param>
 		/// <param name="parameters">
 		/// The native file transfer parameters.
 		/// </param>
@@ -109,13 +117,19 @@ namespace Relativity.Import.Export.Transfer
 		/// Don't expose Transfer API objects to WinEDDS - at least not yet. This is reserved for integration tests.
 		/// </remarks>
 		internal TapiBridgeBase(
+			ITapiObjectService service,
             TapiBridgeParameters parameters,
             TransferDirection direction,
             ITransferLog log,
             CancellationToken token)
         {
-            // Note: Do NOT argument check TargetPath. This is null for metadata-only transfers.
-            if (parameters == null)
+	        if (service == null)
+	        {
+		        throw new ArgumentNullException(nameof(service));
+	        }
+
+			// Note: Do NOT argument check TargetPath. This is null for metadata-only transfers.
+			if (parameters == null)
             {
                 throw new ArgumentNullException(nameof(parameters));
             }
@@ -135,6 +149,8 @@ namespace Relativity.Import.Export.Transfer
                 parameters.WebCookieContainer = new CookieContainer();
             }
 
+            this.tapiObjectService = service;
+            this.fileSystemService = service.CreateFileSystemService();
             this.currentDirection = direction;
             this.parameters = parameters;
             this.TargetPath = parameters.TargetPath;
@@ -192,27 +208,15 @@ namespace Relativity.Import.Export.Transfer
         /// <value>
         /// The <see cref="TapiClient"/> value.
         /// </value>
-        public TapiClient Client
-        {
-            get
-            {
-                // Note: for backwards compatibility only.
-                switch (this.ClientId.ToString())
-                {
-                    case TransferClientConstants.AsperaClientId:
-                        return TapiClient.Aspera;
+        public TapiClient Client => this.tapiObjectService.GetTapiClient(this.ClientId);
 
-                    case TransferClientConstants.FileShareClientId:
-                        return TapiClient.Direct;
-
-                    case TransferClientConstants.HttpClientId:
-                        return TapiClient.Web;
-
-                    default:
-                        return TapiClient.None;
-                }
-            }
-        }
+		/// <summary>
+		/// Gets the current transfer client unique identifier.
+		/// </summary>
+		/// <value>
+		/// The <see cref="Guid"/> value.
+		/// </value>
+		public Guid ClientId => this.transferClient?.Id ?? Guid.Empty;
 
         /// <summary>
         /// Gets or sets the target path.
@@ -222,17 +226,9 @@ namespace Relativity.Import.Export.Transfer
         /// </value>
         public string TargetPath
         {
-            get;
-            set;
+	        get;
+	        set;
         }
-
-        /// <summary>
-        /// Gets the current transfer client unique identifier.
-        /// </summary>
-        /// <value>
-        /// The <see cref="Guid"/> value.
-        /// </value>
-        protected Guid ClientId => this.transferClient?.Id ?? Guid.Empty;
 
 		/// <summary>
 		/// Gets the transfer job.
@@ -261,14 +257,22 @@ namespace Relativity.Import.Export.Transfer
 		/// <summary>
 		/// Adds the path to a transfer job.
 		/// </summary>
-		/// <param name="transferPath">
+		/// <param name="path">
 		/// The path to add to the job.
 		/// </param>
 		/// <returns>
 		/// The file name.
 		/// </returns>
-		public string AddPath(TransferPath transferPath)
+		/// <exception cref="ArgumentNullException">
+		/// Thrown when <paramref name="path" /> is <see langword="null" />.
+		/// </exception>
+		public string AddPath(TransferPath path)
         {
+	        if (path == null)
+	        {
+				throw new ArgumentNullException(nameof(path));
+	        }
+
             this.CheckDispose();
             this.CreateTransferJob(false);
             if (this.TransferJob == null)
@@ -284,22 +288,22 @@ namespace Relativity.Import.Export.Transfer
                     RetryAttempts,
                     (exception, count) =>
                         {
-                            // This will automatically add add paths.
+                            // This will automatically add paths.
                             transferException = exception;
                             this.TransferLog.LogError(exception, "Failed to add a path to the transfer job.");
-                            this.FallbackHttpClient(exception, transferPath);
+                            this.FallbackHttpClient(exception, path);
                         }).Execute(
                         () =>
                         {
                             // Fallback automatically attempts to add paths. Make sure the path isn't added twice.
-                            if (transferException == null || !this.GetIsTransferPathInJobQueue(transferPath))
+                            if (transferException == null || !this.GetIsTransferPathInJobQueue(path))
                             {
-                                this.TransferJob.AddPath(transferPath);
+                                this.TransferJob.AddPath(path, this.cancellationToken);
                             }
 
-                            return !string.IsNullOrEmpty(transferPath.TargetFileName)
-                                       ? transferPath.TargetFileName
-                                       : this.fileSystemService.GetFileName(transferPath.SourcePath);
+                            return !string.IsNullOrEmpty(path.TargetFileName)
+                                       ? path.TargetFileName
+                                       : this.fileSystemService.GetFileName(path.SourcePath);
                         });
                 return result;
             }
@@ -309,21 +313,21 @@ namespace Relativity.Import.Export.Transfer
                 this.TransferLog.LogWarning(
                     e,
                     "There was a problem adding the '{SourceFile}' source file to the transfer job.",
-                    transferPath.SourcePath);
-                throw new FileNotFoundException(e.Message, transferPath.SourcePath);
+                    path.SourcePath);
+                throw new FileNotFoundException(e.Message, path.SourcePath);
             }
             catch (FileNotFoundException e)
             {
                 // Ensure this exception is accounted for.
-                this.TransferLog.LogWarning(e, "The '{SourceFile}' source file doesn't exist.", transferPath.SourcePath);
+                this.TransferLog.LogWarning(e, "The '{SourceFile}' source file doesn't exist.", path.SourcePath);
                 throw;
             }
             catch (OperationCanceledException)
             {
                 this.LogCancelRequest();
-                return !string.IsNullOrEmpty(transferPath.TargetFileName)
-                           ? transferPath.TargetFileName
-                           : this.fileSystemService.GetFileName(transferPath.SourcePath);
+                return !string.IsNullOrEmpty(path.TargetFileName)
+                           ? path.TargetFileName
+                           : this.fileSystemService.GetFileName(path.SourcePath);
             }
         }
 
@@ -339,10 +343,9 @@ namespace Relativity.Import.Export.Transfer
         /// </summary>
         public virtual void DumpInfo()
         {
-            var windEddsVersion = this.GetType().Assembly.GetName().Version;
+            var importExportCoreVersion = this.GetType().Assembly.GetName().Version;
             var tapiVersion = typeof(ITransferClient).Assembly.GetName().Version;
-
-			this.TransferLog.LogInformation("WinEDDS - Version: {WinEDDSVersion}", windEddsVersion);
+			this.TransferLog.LogInformation("Import/Export Core - Version: {WinEDDSVersion}", importExportCoreVersion);
 			this.TransferLog.LogInformation("TAPI - Version: {TapiVersion}", tapiVersion);
 	        this.TransferLog.LogInformation("Application: {ClientRequestId}", this.parameters.Application);
 			this.TransferLog.LogInformation("Client request id: {ClientRequestId}", this.parameters.ClientRequestId);
@@ -553,7 +556,7 @@ namespace Relativity.Import.Export.Transfer
 
 			try
             {
-                var clientId = TapiWinEddsHelper.GetClientId(this.parameters);
+                var clientId = this.tapiObjectService.GetClientId(this.parameters);
                 if (clientId != Guid.Empty)
                 {
                     configuration.ClientId = clientId;
@@ -607,16 +610,17 @@ namespace Relativity.Import.Export.Transfer
 		/// Creates the <see cref="RelativityTransferHost"/> instance if not already constructed.
 		/// </summary>
 		/// <returns>
-		/// The <see cref="RelativityTransferHost"/> instance.
+		/// The <see cref="IRelativityTransferHost"/> instance.
 		/// </returns>
-		private RelativityTransferHost CreateTransferHost()
+		private IRelativityTransferHost CreateTransferHost()
         {
 			// REL-281370: Lazy construct to avoid lengthy construction
 			//             and exceptions getting thrown via constructor.
 			if (this.relativityTransferHost == null)
 			{
-				var connectionInfo = TapiWinEddsHelper.CreateRelativityConnectionInfo(this.parameters);
-				this.relativityTransferHost = new RelativityTransferHost(connectionInfo, this.TransferLog);
+				var connectionInfo = this.tapiObjectService.CreateRelativityConnectionInfo(this.parameters);
+				this.relativityTransferHost =
+					this.tapiObjectService.CreateRelativityTransferHost(connectionInfo, this.TransferLog);
 			}
 
 			return this.relativityTransferHost;
