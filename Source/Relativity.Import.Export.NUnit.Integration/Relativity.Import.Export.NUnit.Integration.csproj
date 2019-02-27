@@ -55,12 +55,16 @@
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
     <Compile Include="AppSettingsTests.cs" />
+    <Compile Include="AssemblySetup.cs" />
+    <Compile Include="DownloadTapiBridgeTests.cs" />
     <Compile Include="FileSystemWrapTests.cs" />
     <Compile Include="GlobalSuppressions.cs">
     </Compile>
     <Compile Include="FreeImageIdServiceTests.cs" />
     <Compile Include="OutsideInFileIdServiceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TapiBridgeTestBase.cs" />
+    <Compile Include="UploadTapiBridgeTests.cs" />
     <Content Include="Resources\Jpeg\w3c_home.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

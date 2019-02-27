@@ -54,15 +54,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblySetup.cs" />
-    <Compile Include="DownloadTapiBridgeTests.cs" />
     <Compile Include="FileLockedImportJobTests.cs" />
     <Compile Include="FileNotFoundImportJobTests.cs" />
     <Compile Include="ImportJobTest.cs" />
-    <Compile Include="TapiBridgeTestBase.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="ImportJobTestBase.cs" />
     <Compile Include="PositiveImportJobTests.cs" />
-    <Compile Include="UploadTapiBridgeTests.cs" />
     <Content Include="LICENSE.txt">
       <Paket>True</Paket>
     </Content>

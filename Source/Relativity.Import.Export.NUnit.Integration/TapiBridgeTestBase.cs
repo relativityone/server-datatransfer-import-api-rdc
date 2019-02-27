@@ -7,24 +7,21 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.NUnit.Integration
+namespace Relativity.Import.Export.NUnit.Integration
 {
 	using System;
 	using System.Net;
 
 	using global::NUnit.Framework;
 
-	using kCura.WinEDDS.TApi;
-
-	using Moq;
-
 	using Relativity.Import.Export.TestFramework;
+	using Relativity.Import.Export.Transfer;
 	using Relativity.Transfer;
 
 	/// <summary>
 	/// Represents the <see cref="TapiBridgeBase"/> base test class.
 	/// </summary>
-	public abstract class TapiBridgeTestBase : TestBase
+	public abstract class TapiBridgeTestBase
 	{
 		/// <summary>
 		/// The minimum test file length [1KB]
@@ -106,12 +103,24 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		/// <summary>
+		/// Gets the temp directory.
+		/// </summary>
+		/// <value>
+		/// The <see cref="TempDirectory"/> instance.
+		/// </value>
+		protected TempDirectory TempDirectory
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Gets the mock transfer log.
 		/// </summary>
 		/// <value>
-		/// The mock <see cref="ITransferLog"/> instance.
+		/// The <see cref="ITransferLog"/> instance.
 		/// </value>
-		protected Mock<ITransferLog> TransferLog
+		protected ITransferLog TransferLog
 		{
 			get;
 			private set;
@@ -130,11 +139,33 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		/// <summary>
+		/// Gets the integration test parameters.
+		/// </summary>
+		/// <value>
+		/// The <see cref="IntegrationTestParameters"/> value.
+		/// </value>
+		protected IntegrationTestParameters TestParameters
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// The test setup.
 		/// </summary>
-		protected override void OnSetup()
+		[SetUp]
+		public void Setup()
 		{
-			base.OnSetup();
+			ServicePointManager.SecurityProtocol =
+				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
+				| SecurityProtocolType.Tls12;
+			this.AssignTestSettings();
+			Assert.That(
+				this.TestParameters.WorkspaceId,
+				Is.Positive,
+				() => "The test workspace must be created or specified in order to run this integration test.");
+			this.TempDirectory = new TempDirectory();
+			this.TempDirectory.Create();
 			this.SourcePaths = new global::System.Collections.Generic.List<string>();
 			this.MaxFilesPerFolder = 1000;
 			this.TargetPath = null;
@@ -143,13 +174,24 @@ namespace Relativity.Import.Client.NUnit.Integration
 			this.filesTransferred = 0;
 			this.fatalErrors = 0;
 			this.warnings = 0;
-			this.TransferLog = new Mock<ITransferLog>();
+			this.TransferLog = new RelativityTransferLog();
 		}
 
-		protected override void OnTearDown()
+		[TearDown]
+		public void Teardown()
 		{
-			base.OnTearDown();
 			this.NativeFileTransfer?.Dispose();
+		}
+
+		/// <summary>
+		/// Assign the test parameters. This should always be called from methods with <see cref="SetUpAttribute"/> or <see cref="OneTimeSetUpAttribute"/>.
+		/// </summary>
+		protected void AssignTestSettings()
+		{
+			if (this.TestParameters == null)
+			{
+				this.TestParameters = AssemblySetup.TestParameters.DeepCopy();
+			}
 		}
 
 		/// <summary>
