@@ -174,7 +174,7 @@ namespace Relativity.Import.Export.NUnit.Integration
 			this.filesTransferred = 0;
 			this.fatalErrors = 0;
 			this.warnings = 0;
-			this.TransferLog = new RelativityTransferLog();
+			this.TransferLog = new RelativityTransferLog(IntegrationTestHelper.Logger, false);
 		}
 
 		[TearDown]
