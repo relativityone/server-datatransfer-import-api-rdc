@@ -121,13 +121,13 @@
     <Compile Include="Transfer\TapiJobRetryListener.cs" />
     <Compile Include="Transfer\TapiListenerBase.cs" />
     <Compile Include="Transfer\TapiMessageEventArgs.cs" />
+    <Compile Include="Transfer\TapiObjectService.cs" />
     <Compile Include="Transfer\TapiPathIssueListener.cs" />
     <Compile Include="Transfer\TapiPathProgressListener.cs" />
     <Compile Include="Transfer\TapiProgressEventArgs.cs" />
     <Compile Include="Transfer\TapiRequestListener.cs" />
     <Compile Include="Transfer\TapiStatisticsEventArgs.cs" />
     <Compile Include="Transfer\TapiStatisticsListener.cs" />
-    <Compile Include="Transfer\TapiWinEddsHelper.cs" />
     <Compile Include="Transfer\UploadTapiBridge.cs" />
     <Compile Include="Transfer\UploadTapiBridgeParameters.cs" />
     <Compile Include="Transfer\WebApiServiceBase.cs" />
