@@ -22,14 +22,44 @@ namespace Relativity.Import.Export.Io
 		/// <summary>
 		/// Create a new <see cref="IoReporter"/> instance.
 		/// </summary>
-		/// <param name="maxRetryAttempts">
-		/// The maximum number of retry attempts.
+		/// <param name="options">
+		/// The configurable retry options.
 		/// </param>
-		/// <param name="waitTimeSecondsBetweenRetryAttempts">
-		/// The total number of seconds to wait between each retry attempty.
+		/// <param name="logger">
+		/// The Relativity logger.
 		/// </param>
-		/// <param name="disableNativeLocationValidation">
-		/// <see langword="true" /> to throw <see cref="FileInfoInvalidPathException"/> when illegal characters are found within the path.
+		/// <param name="publisher">
+		/// The warning publisher.
+		/// </param>
+		/// <param name="token">
+		/// A token which is used to cancel current task.
+		/// </param>
+		/// <returns>
+		/// The <see cref="IoReporter"/> instance.
+		/// </returns>
+		public static IIoReporter CreateIoReporter(
+		    RetryOptions options,
+		    ILog logger,
+		    IoWarningPublisher publisher,
+		    CancellationToken token)
+	    {
+		    return CreateIoReporter(
+			    AppSettings.Instance,
+			    FileSystem.Instance.DeepCopy(),
+			    options,
+			    logger,
+			    publisher,
+			    token);
+	    }
+
+		/// <summary>
+		/// Create a new <see cref="IoReporter"/> instance.
+		/// </summary>
+		/// <param name="appSettings">
+		/// The application settings.
+		/// </param>
+		/// <param name="fileSystem">
+		/// The file system.
 		/// </param>
 		/// <param name="options">
 		/// The configurable retry options.
@@ -40,22 +70,31 @@ namespace Relativity.Import.Export.Io
 		/// <param name="publisher">
 		/// The warning publisher.
 		/// </param>
-		/// <param name="cancellationToken">
+		/// <param name="token">
 		/// A token which is used to cancel current task.
 		/// </param>
 		/// <returns>
 		/// The <see cref="IoReporter"/> instance.
 		/// </returns>
 		public static IIoReporter CreateIoReporter(
-		    int maxRetryAttempts,
-		    int waitTimeSecondsBetweenRetryAttempts,
-		    bool disableNativeLocationValidation,
+		    IAppSettings appSettings,
+			IFileSystem fileSystem,
 			RetryOptions options,
 			ILog logger,
 		    IoWarningPublisher publisher,
-		    CancellationToken cancellationToken)
+		    CancellationToken token)
 	    {
-            if (logger == null)
+		    if (appSettings == null)
+		    {
+			    throw new ArgumentNullException(nameof(appSettings));
+		    }
+
+		    if (fileSystem == null)
+		    {
+			    throw new ArgumentNullException(nameof(fileSystem));
+		    }
+
+			if (logger == null)
             {
                 throw new ArgumentNullException(nameof(logger));
             }
@@ -65,16 +104,7 @@ namespace Relativity.Import.Export.Io
 		        throw new ArgumentNullException(nameof(publisher));
 	        }
 
-	        IWaitAndRetryPolicy waitAndRetryPolicy = new WaitAndRetryPolicy(maxRetryAttempts, waitTimeSecondsBetweenRetryAttempts);
-	        IFileSystem fileSystem = FileSystem.Instance.DeepCopy();
-			return new IoReporter(
-				fileSystem,
-                waitAndRetryPolicy,
-                logger,
-                publisher,
-				disableNativeLocationValidation,
-				options,
-	            cancellationToken);
-        }
+			return new IoReporter(appSettings, fileSystem, publisher, options, logger, token);
+	    }
     }
 }

@@ -110,12 +110,12 @@ namespace Relativity.Import.Export.NUnit
 		[Test]
 		public void ShouldPublishTheProcessCompletedEvent()
 		{
-			this.context.PublishProcessCompleted(false, string.Empty, false);
+			this.context.PublishProcessComplete(false, string.Empty, false);
 			Assert.That(this.processCompleteEvents.Count, Is.EqualTo(1));
 
 			// Assert that null events are handled.
 			this.context.ProcessCompleted -= this.OnProcessCompleted;
-			this.context.PublishProcessCompleted(false, string.Empty, false);
+			this.context.PublishProcessComplete(false, string.Empty, false);
 			Assert.That(this.processCompleteEvents.Count, Is.EqualTo(1));
 		}
 

@@ -1,0 +1,248 @@
+﻿// ----------------------------------------------------------------------------
+// <copyright file="NullableTypesHelper.cs" company="Relativity ODA LLC">
+//   © Relativity All Rights Reserved.
+// </copyright>
+// ----------------------------------------------------------------------------
+
+namespace Relativity.Import.Export
+{
+	using System;
+	using System.Globalization;
+
+	/// <summary>
+	/// Defines static helper methods to convert nullable types.
+	/// </summary>
+	public static class NullableTypesHelper
+	{
+		/// <summary>
+		/// Casts the provided string to a nullable boolean.
+		/// </summary>
+		/// <param name="value">
+		/// The value to consider.
+		/// </param>
+		/// <returns>
+		/// A nullable boolean representation of <see param="value"/>.
+		/// </returns>
+		public static bool? GetNullableBoolean(string value)
+		{
+			if (value == null || value.Trim().Length == 0)
+			{
+				return null;
+			}
+
+			switch (value.Trim().ToLowerInvariant())
+			{
+				case "yes":
+				case "y":
+				case "1":
+				case "t":
+					value = "True";
+					break;
+
+				case "no":
+				case "n":
+				case "0":
+				case "f":
+					value = "False";
+					break;
+
+				case "true":
+					value = "True";
+					break;
+
+				case "false":
+					value = "False";
+					break;
+
+				default:
+					if (value != string.Empty)
+					{
+						int parsedValue;
+						if (int.TryParse(value, out parsedValue))
+						{
+							value = parsedValue == 0 ? "False" : "True";
+						}
+						else
+						{
+							value = "False";
+						}
+					}
+
+					break;
+			}
+
+			return ToNullableBoolean(value);
+		}
+
+		public static DateTime? GetNullableDateTime(string value)
+		{
+			if (value == null || value.Trim().Length == 0)
+			{
+				return null;
+			}
+
+			DateTime? nullableDateValue;
+
+			try
+			{
+				const bool UseUniversalFormat = false;
+				nullableDateValue = ToNullableDateTime(value, UseUniversalFormat);
+			}
+			catch (Exception)
+			{
+				switch (value.Trim())
+				{
+					case "00/00/0000":
+					case "0/0/0000":
+					case "0/0/00":
+					case "00/00/00":
+					case "0/00":
+					case "0/0000":
+					case "00/00":
+					case "00/0000":
+					case "0":
+						nullableDateValue = null;
+						if (AppSettings.CreateErrorForInvalidDate)
+						{
+							throw new SystemException("Invalid date.");
+						}
+
+						break;
+
+					default:
+
+						try
+						{
+							if (System.Text.RegularExpressions.Regex.IsMatch(value.Trim(), @"\d\d\d\d\d\d\d\d"))
+							{
+								if (value.Trim() == "00000000")
+								{
+									nullableDateValue = null;
+									throw new SystemException("Invalid date.");
+								}
+
+								string v = value.Trim();
+								int year = int.Parse(v.Substring(0, 4));
+								int month = int.Parse(v.Substring(4, 2));
+								int day = int.Parse(v.Substring(6, 2));
+
+								try
+								{
+									nullableDateValue = new System.DateTime(year, month, day);
+								}
+								catch (Exception e2)
+								{
+									throw new SystemException("Invalid date.", e2);
+								}
+							}
+							else
+							{
+								throw new SystemException("Invalid date.");
+							}
+						}
+						catch (Exception e2)
+						{
+							throw new SystemException("Invalid date.", e2);
+						}
+
+						break;
+				}
+			}
+
+			try
+			{
+				if (nullableDateValue == null)
+				{
+					return null;
+				}
+
+				DateTime dateValue = nullableDateValue.Value;
+				if (dateValue < System.DateTime.Parse("1/1/1753"))
+				{
+					throw new SystemException("Invalid date.");
+				}
+
+				return dateValue;
+			}
+			catch (Exception e)
+			{
+				throw new SystemException("Invalid date.", e);
+			}
+		}
+
+		/// <summary>
+		/// Casts the provided string to a nullable decimal, utilizing the provided format type.
+		/// </summary>
+		/// <param name="value">
+		/// The string to convert.
+		/// </param>
+		/// <param name="style">
+		/// The type of decimal number style to respect during parsing.
+		/// </param>
+		/// <returns>
+		/// A nullable decimal representation of <see param="value" />.
+		/// </returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Design",
+			"CA1026:DefaultParametersShouldNotBeUsed",
+			Justification ="For backwards compatibility concerns.")]
+		public static decimal? ToNullableDecimal(string value, NumberStyles style = NumberStyles.Number | NumberStyles.AllowCurrencySymbol)
+		{
+			return !string.IsNullOrWhiteSpace(value)
+				       ? new decimal?(decimal.Parse(value, style, (IFormatProvider)CultureInfo.InvariantCulture))
+				       : null;
+		}
+
+		/// <summary>
+		/// Casts the provided string to a nullable boolean.
+		/// </summary>
+		/// <param name="value">
+		/// The string to consider.
+		/// </param>
+		/// <returns>
+		/// A nullable <see cref="bool"/> representation of <see param="value" />.
+		/// </returns>
+		public static bool? ToNullableBoolean(string value)
+		{
+			return string.IsNullOrWhiteSpace(value) ? null : new bool?(bool.Parse(value));
+		}
+
+		/// <summary>
+		/// Casts the provided string to a nullable date, utilizing the provided format string.
+		/// </summary>
+		/// <param name="value">
+		/// The string to consider.
+		/// </param>
+		/// <param name="useUniversalFormat">
+		/// <see langword="true" /> to parse the string in a culture-independent way; otherwise, <see langword="false" />.
+		/// </param>
+		/// <returns>
+		/// A nullable <see cref="DateTime"/> representation of <see param="value" />.
+		/// </returns>
+		public static DateTime? ToNullableDateTime(string value, bool useUniversalFormat)
+		{
+			if (string.IsNullOrWhiteSpace(value))
+			{
+				return null;
+			}
+
+			return !useUniversalFormat
+				       ? System.DateTime.Parse(value)
+				       : System.DateTime.Parse(value, System.Globalization.DateTimeFormatInfo.InvariantInfo);
+		}
+
+		/// <summary>
+		/// Gets the string representation of the provided string.
+		/// </summary>
+		/// <param name="value">
+		/// The string to consider.
+		/// </param>
+		/// <returns>
+		/// Nothing if <see param="convertMe" /> is null or empty; otherwise, <see param="convertMe" />.
+		/// </returns>
+		public static string ToString(string value)
+		{
+			return string.IsNullOrWhiteSpace(value) ? null : value;
+		}
+	}
+}

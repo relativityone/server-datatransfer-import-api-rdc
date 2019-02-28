@@ -246,4 +246,34 @@
   <data name="TiffMultiPageNotSupportedError" xml:space="preserve">
     <value>The TIFF image file '{0}' is an unsupported multi-page TIFF.</value>
   </data>
+  <data name="ReinitializeReaderNotFileStreamError" xml:space="preserve">
+    <value>This operation cannot be performed because re-initializing the delimited file reader requires a file stream.</value>
+  </data>
+  <data name="BooleanImporterErrorAdditionalInfo" xml:space="preserve">
+    <value>Invalid boolean.</value>
+  </data>
+  <data name="CellImporterErrorAdditionalInfo" xml:space="preserve">
+    <value>Error reading cell. Please check format.</value>
+  </data>
+  <data name="DateImporterErrorAdditionalInfo" xml:space="preserve">
+    <value>Invalid date.</value>
+  </data>
+  <data name="DecimalImporterErrorAdditionalInfo" xml:space="preserve">
+    <value>Invalid decimal.</value>
+  </data>
+  <data name="ImporterStandardError" xml:space="preserve">
+    <value>Error in line {0}, column "{1}". {2}</value>
+  </data>
+  <data name="ObjectNameImporterMaxLengthErrorAdditionalInfo" xml:space="preserve">
+    <value>Input length exceeds maximum set length of {0} for the associated object field {1}.</value>
+  </data>
+  <data name="StringImporterMaxLengthWithoutFieldErrorAdditionalInfo" xml:space="preserve">
+    <value>Input length exceeds maximum set length of {0} for this VarChar field.</value>
+  </data>
+  <data name="StringImporterMaxLengthWithFieldErrorAdditionalInfo" xml:space="preserve">
+    <value>Input length exceeds maximum set length of {0} for the {1} field.</value>
+  </data>
+  <data name="ImporterStandardFieldError" xml:space="preserve">
+    <value>Error in row {0}, field "{1}". {2}"</value>
+  </data>
 </root>

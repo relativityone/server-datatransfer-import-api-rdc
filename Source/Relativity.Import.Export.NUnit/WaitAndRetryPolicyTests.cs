@@ -82,7 +82,7 @@ namespace Relativity.Import.Export.NUnit
 		public void ItShouldWaitAndRetryWithMethodParamsAlwaysFails(int maxRetryCount)
 		{
 			this.GivenTheExpectedRetryCallCount(maxRetryCount);
-			this.GivenTheExpectedExecFuncCallCount(maxRetryCount + 1);
+			this.GivenTheExpectedExecFuncCallCount(checked(maxRetryCount + 1));
 
 			this.GivenTheRetryDuration();
 			this.GivenTheRetryAction();
@@ -105,7 +105,7 @@ namespace Relativity.Import.Export.NUnit
 		public void ItShouldWaitAndRetryWithConstructorParamsAlwaysFails(int maxRetryCount)
 		{
 			this.GivenTheExpectedRetryCallCount(maxRetryCount);
-			this.GivenTheExpectedExecFuncCallCount(maxRetryCount + 1);
+			this.GivenTheExpectedExecFuncCallCount(checked(maxRetryCount + 1));
 
 			this.GivenTheRetryDuration();
 			this.GivenTheRetryAction();
@@ -198,7 +198,10 @@ namespace Relativity.Import.Export.NUnit
 
 		private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParams(int maxRetryCount)
 		{
-			var waitAndRetryPolicy = new WaitAndRetryPolicy(maxRetryCount, this.waitTimeMillisecondsBetweenRetryAttempts);
+			IAppSettings appSettings = new AppSettings();
+			appSettings.IoErrorNumberOfRetries = maxRetryCount;
+			appSettings.IoErrorWaitTimeInSeconds = this.waitTimeMillisecondsBetweenRetryAttempts;
+			WaitAndRetryPolicy waitAndRetryPolicy = new WaitAndRetryPolicy(appSettings);
 			waitAndRetryPolicy.WaitAndRetry<InvalidOperationException>(
 				this.retryDuration,
 				this.retryAction,
@@ -208,7 +211,10 @@ namespace Relativity.Import.Export.NUnit
 
 		private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParamsThenThrowsException(int maxRetryCount)
 		{
-			var waitAndRetryPolicy = new WaitAndRetryPolicy(maxRetryCount, this.waitTimeMillisecondsBetweenRetryAttempts);
+			IAppSettings appSettings = new AppSettings();
+			appSettings.IoErrorNumberOfRetries = maxRetryCount;
+			appSettings.IoErrorWaitTimeInSeconds = this.waitTimeMillisecondsBetweenRetryAttempts;
+			WaitAndRetryPolicy waitAndRetryPolicy = new WaitAndRetryPolicy(appSettings);
 			Assert.That(
 				() => waitAndRetryPolicy.WaitAndRetry<InvalidOperationException>(
 					this.retryDuration,

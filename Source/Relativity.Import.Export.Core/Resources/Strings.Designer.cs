@@ -61,6 +61,24 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid boolean..
+        /// </summary>
+        internal static string BooleanImporterErrorAdditionalInfo {
+            get {
+                return ResourceManager.GetString("BooleanImporterErrorAdditionalInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error reading cell. Please check format..
+        /// </summary>
+        internal static string CellImporterErrorAdditionalInfo {
+            get {
+                return ResourceManager.GetString("CellImporterErrorAdditionalInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Transfer API client identifier &apos;{0}&apos; does not exist. Check to make sure the value was entered correctly..
         /// </summary>
         internal static string ClientIdNotFoundExceptionMessage {
@@ -84,6 +102,24 @@ namespace Relativity.Import.Export.Resources {
         internal static string CompleteJobExceptionMessage {
             get {
                 return ResourceManager.GetString("CompleteJobExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid date..
+        /// </summary>
+        internal static string DateImporterErrorAdditionalInfo {
+            get {
+                return ResourceManager.GetString("DateImporterErrorAdditionalInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid decimal..
+        /// </summary>
+        internal static string DecimalImporterErrorAdditionalInfo {
+            get {
+                return ResourceManager.GetString("DecimalImporterErrorAdditionalInfo", resourceCulture);
             }
         }
         
@@ -138,6 +174,24 @@ namespace Relativity.Import.Export.Resources {
         internal static string ImageZeroBytesError {
             get {
                 return ResourceManager.GetString("ImageZeroBytesError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error in line {0}, column &quot;{1}&quot;. {2}.
+        /// </summary>
+        internal static string ImporterStandardError {
+            get {
+                return ResourceManager.GetString("ImporterStandardError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error in row {0}, field &quot;{1}&quot;. {2}&quot;.
+        /// </summary>
+        internal static string ImporterStandardFieldError {
+            get {
+                return ResourceManager.GetString("ImporterStandardFieldError", resourceCulture);
             }
         }
         
@@ -205,6 +259,15 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Input length exceeds maximum set length of {0} for the associated object field {1}..
+        /// </summary>
+        internal static string ObjectNameImporterMaxLengthErrorAdditionalInfo {
+            get {
+                return ResourceManager.GetString("ObjectNameImporterMaxLengthErrorAdditionalInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to initialize Outside In file identification library..
         /// </summary>
         internal static string OutsideInConfigurationError {
@@ -241,11 +304,38 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This operation cannot be performed because re-initializing the delimited file reader requires a file stream..
+        /// </summary>
+        internal static string ReinitializeReaderNotFileStreamError {
+            get {
+                return ResourceManager.GetString("ReinitializeReaderNotFileStreamError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Retrying transfer job - attempt {0} of {1}..
         /// </summary>
         internal static string RetryJobMessage {
             get {
                 return ResourceManager.GetString("RetryJobMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Input length exceeds maximum set length of {0} for the {1} field..
+        /// </summary>
+        internal static string StringImporterMaxLengthWithFieldErrorAdditionalInfo {
+            get {
+                return ResourceManager.GetString("StringImporterMaxLengthWithFieldErrorAdditionalInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Input length exceeds maximum set length of {0} for this VarChar field..
+        /// </summary>
+        internal static string StringImporterMaxLengthWithoutFieldErrorAdditionalInfo {
+            get {
+                return ResourceManager.GetString("StringImporterMaxLengthWithoutFieldErrorAdditionalInfo", resourceCulture);
             }
         }
         

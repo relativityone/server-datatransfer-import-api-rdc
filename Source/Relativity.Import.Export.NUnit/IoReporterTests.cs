@@ -36,13 +36,13 @@ namespace Relativity.Import.Export.NUnit
 		private IIoReporter ioReporterInstance;
         private Mock<IFileSystem> mockFileSystem;
         private Mock<IWaitAndRetryPolicy> mockWaitAndRetryPolicy;
-        private IWaitAndRetryPolicy waitAndRetry;
+        private Mock<IAppSettings> mockAppSettings;
+		private IWaitAndRetryPolicy waitAndRetry;
         private Mock<ILog> mockLogger;
         private IoWarningPublisher publisher;
         private long actualFileLength;
         private Func<int, TimeSpan> actualRetryDuractionFunc = null;
         private Exception expectedException;
-		private bool disableNativeLocationValidation;
 		private RetryOptions retryOptions;
 		private bool actualFileExists;
 		private Exception actualLoggedWarningException;
@@ -51,6 +51,10 @@ namespace Relativity.Import.Export.NUnit
 		private string actualLoggedErrorMessage;
 		private string actualLoggedInformationMessage;
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Performance",
+			"CA1811:AvoidUncalledPrivateCode",
+			Justification = "This is used via NUnit's TestCaseSource feature.")]
 		private static IEnumerable RetryExceptionTestCases
 		{
 			get
@@ -116,6 +120,7 @@ namespace Relativity.Import.Export.NUnit
 			this.actualLoggedWarningException = null;
 			this.actualLoggedWarningMessage = null;
 			this.actualRetryDuractionFunc = null;
+			this.mockAppSettings = new Mock<IAppSettings>();
 			this.mockFileSystem = new Mock<IFileSystem>();
             this.mockWaitAndRetryPolicy = new Mock<IWaitAndRetryPolicy>();
             this.waitAndRetry = null;
@@ -144,59 +149,76 @@ namespace Relativity.Import.Export.NUnit
 
 			this.publisher = new IoWarningPublisher();
 			this.retryOptions = RetryOptions.Io;
-			this.disableNativeLocationValidation = false;
+			this.mockAppSettings.SetupGet(x => x.DisableThrowOnIllegalCharacters).Returns(false);
 		}
 
 		[Test]
 		public void ItShouldThrowWhenTheConstructorArgAreInvalid()
 		{
-			Assert.Throws<ArgumentNullException>(() =>
-			{
-				this.ioReporterInstance = new IoReporter(
-					null,
-					this.mockWaitAndRetryPolicy.Object,
-					this.mockLogger.Object,
-					this.publisher,
-					false,
-					RetryOptions.All,
-					CancellationToken.None);
-			});
+			Assert.Throws<ArgumentNullException>(
+				() =>
+					{
+						this.ioReporterInstance = new IoReporter(
+							null,
+							this.mockAppSettings.Object,
+							this.mockFileSystem.Object,
+							this.publisher,
+							RetryOptions.All,
+							this.mockLogger.Object,
+							CancellationToken.None);
+					});
 
-			Assert.Throws<ArgumentNullException>(() =>
-			{
-				this.ioReporterInstance = new IoReporter(
-					this.mockFileSystem.Object,
-					null,
-					this.mockLogger.Object,
-					this.publisher,
-					false,
-					RetryOptions.All,
-					CancellationToken.None);
-			});
+			Assert.Throws<ArgumentNullException>(
+				() =>
+					{
+						this.ioReporterInstance = new IoReporter(
+							this.mockWaitAndRetryPolicy.Object,
+							null,
+							this.mockFileSystem.Object,
+							this.publisher,
+							RetryOptions.All,
+							this.mockLogger.Object,
+							CancellationToken.None);
+					});
 
-			Assert.Throws<ArgumentNullException>(() =>
-			{
-				this.ioReporterInstance = new IoReporter(
-					this.mockFileSystem.Object,
-					this.mockWaitAndRetryPolicy.Object,
-					null,
-					this.publisher,
-					false,
-					RetryOptions.All,
-					CancellationToken.None);
-			});
+			Assert.Throws<ArgumentNullException>(
+				() =>
+					{
+						this.ioReporterInstance = new IoReporter(
+							this.mockWaitAndRetryPolicy.Object,
+							this.mockAppSettings.Object,
+							null,
+							this.publisher,
+							RetryOptions.All,
+							this.mockLogger.Object,
+							CancellationToken.None);
+					});
 
-			Assert.Throws<ArgumentNullException>(() =>
-			{
-				this.ioReporterInstance = new IoReporter(
-					this.mockFileSystem.Object,
-					this.mockWaitAndRetryPolicy.Object,
-					this.mockLogger.Object,
-					null,
-					false,
-					RetryOptions.All,
-					CancellationToken.None);
-			});
+			Assert.Throws<ArgumentNullException>(
+				() =>
+					{
+						this.ioReporterInstance = new IoReporter(
+							this.mockWaitAndRetryPolicy.Object,
+							this.mockAppSettings.Object,
+							this.mockFileSystem.Object,
+							null,
+							RetryOptions.All,
+							this.mockLogger.Object,
+							CancellationToken.None);
+					});
+
+			Assert.Throws<ArgumentNullException>(
+				() =>
+					{
+						this.ioReporterInstance = new IoReporter(
+							this.mockWaitAndRetryPolicy.Object,
+							this.mockAppSettings.Object,
+							this.mockFileSystem.Object,
+							this.publisher,
+							RetryOptions.All,
+							null,
+							CancellationToken.None);
+					});
 		}
 
 		[Test]
@@ -388,7 +410,9 @@ namespace Relativity.Import.Export.NUnit
 		/// </param>
 		private void GivenTheRealWaitAndRetryPolicy(int maxRetryAttempts)
 		{
-            this.waitAndRetry = new WaitAndRetryPolicy(maxRetryAttempts, 0);
+			this.mockAppSettings.SetupGet(x => x.IoErrorNumberOfRetries).Returns(maxRetryAttempts);
+			this.mockAppSettings.SetupGet(x => x.IoErrorWaitTimeInSeconds).Returns(0);
+			this.waitAndRetry = new WaitAndRetryPolicy(this.mockAppSettings.Object);
         }
 
         private void GivenTheMockWaitAndRetryPolicyCallback()
@@ -462,7 +486,7 @@ namespace Relativity.Import.Export.NUnit
 
 		private void GivenTheDisableNativeLocationValidationConfigSetting(bool value)
 		{
-			this.disableNativeLocationValidation = value;
+			this.mockAppSettings.SetupGet(x => x.DisableThrowOnIllegalCharacters).Returns(value);
 		}
 
 		private void GivenTheRetryOptions(RetryOptions value)
@@ -474,12 +498,12 @@ namespace Relativity.Import.Export.NUnit
 		{
 			IWaitAndRetryPolicy policy = this.waitAndRetry ?? this.mockWaitAndRetryPolicy.Object;
 			this.ioReporterInstance = new IoReporter(
-				this.mockFileSystem.Object,
 				policy,
-				this.mockLogger.Object,
+				this.mockAppSettings.Object,
+				this.mockFileSystem.Object,
 				this.publisher,
-				this.disableNativeLocationValidation,
 				this.retryOptions,
+				this.mockLogger.Object,
 				this.cancellationTokenSource.Token);
 		}
 

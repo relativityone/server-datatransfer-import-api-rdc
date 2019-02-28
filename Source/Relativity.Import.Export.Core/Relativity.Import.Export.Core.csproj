@@ -25,7 +25,7 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591</NoWarn>
+    <NoWarn>1591;0649</NoWarn>
     <DocumentationFile>bin\Relativity.Import.Export.Core.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -54,10 +54,21 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Importer\ObjectNameImporterException.cs" />
+    <Compile Include="Importer\StringImporterException.cs" />
+    <Compile Include="Importer\ConditionalArrayList.cs" />
+    <Compile Include="Importer\ConditionalStringBuilder.cs" />
+    <Compile Include="Importer\CellImporterException.cs" />
+    <Compile Include="Importer\DecimalImporterException.cs" />
+    <Compile Include="Importer\DateImporterException.cs" />
+    <Compile Include="Importer\GenericCsvReader.cs" />
+    <Compile Include="Io\IoWarningPublisher.cs" />
+    <Compile Include="NullableTypesHelper.cs" />
     <Compile Include="ImportExportException.cs" />
     <Compile Include="IAppSettings.cs" />
     <Compile Include="ByteOrdering.cs" />
@@ -65,6 +76,11 @@
     <Compile Include="AppSettings.cs" />
     <Compile Include="DictionaryExtensions.cs" />
     <Compile Include="ImageConstants.cs" />
+    <Compile Include="Importer\ImporterException.cs" />
+    <Compile Include="Importer\DelimitedFileImporter.cs" />
+    <Compile Include="Importer\BooleanImporterException.cs" />
+    <Compile Include="Io\IoWarningType.cs" />
+    <Compile Include="Importer\TrimOption.cs" />
     <Compile Include="Io\DirectoryInfoWrap.cs" />
     <Compile Include="Io\DirectoryWrap.cs" />
     <Compile Include="Io\FileInfoInvalidPathException.cs" />
@@ -82,15 +98,16 @@
     <Compile Include="Io\IoReporter.cs" />
     <Compile Include="Io\IoReporterFactory.cs" />
     <Compile Include="Io\IoWarningEventArgs.cs" />
-    <Compile Include="Io\IoWarningPublisher.cs" />
     <Compile Include="Io\IPath.cs" />
     <Compile Include="Io\IStreamWriter.cs" />
     <Compile Include="Io\NullIoReporter.cs" />
     <Compile Include="Io\PathWrap.cs" />
     <Compile Include="Io\RetryExceptionHelper.cs" />
+    <Compile Include="Importer\DelimitedMode.cs" />
     <Compile Include="Io\RetryOptions.cs" />
     <Compile Include="Io\StreamWriterWrap.cs" />
     <Compile Include="IWaitAndRetryPolicy.cs" />
+    <Compile Include="Process\ErrorFileReader.cs" />
     <Compile Include="Process\NullProcessErrorWriter.cs" />
     <Compile Include="Process\IProcessErrorWriter.cs" />
     <Compile Include="Process\ProcessCompleteEventArgs.cs" />
@@ -237,6 +254,7 @@
     <EmbeddedResource Include="Resources\Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Choose>

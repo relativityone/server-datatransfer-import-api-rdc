@@ -56,6 +56,11 @@
     <Compile Include="..\..\Version\AssemblySharedInfo.cs">
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
+    <Compile Include="DelimitedFileImporterTestCases.cs" />
+    <Compile Include="DelimitedFileImporterTests.cs" />
+    <Compile Include="ImporterExceptionSerializationTests.cs" />
+    <Compile Include="MockDelimitedFileImport.cs" />
+    <Compile Include="NullableTypesHelperTests.cs" />
     <Compile Include="TapiBridgeTestsBase.cs" />
     <Compile Include="DownloadTapiBridgeTests.cs" />
     <Compile Include="UploadTapiBridgeTests.cs" />

@@ -186,7 +186,7 @@ namespace Relativity.Import.Export.Process
 		/// <param name="exportLog">
 		/// Specify whether logs were exported.
 		/// </param>
-		public void PublishProcessCompleted(bool closeForm, string exportFilePath, bool exportLog)
+		public void PublishProcessComplete(bool closeForm, string exportFilePath, bool exportLog)
 		{
 			this.ProcessCompleted?.Invoke(this, new ProcessCompleteEventArgs(closeForm, exportFilePath, exportLog));
 		}

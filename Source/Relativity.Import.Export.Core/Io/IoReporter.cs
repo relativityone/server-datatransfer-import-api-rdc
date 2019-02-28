@@ -12,13 +12,14 @@ namespace Relativity.Import.Export.Io
 	using System;
 	using System.Globalization;
 	using System.Threading;
+
 	using Relativity.Import.Export.Resources;
 	using Relativity.Logging;
 
 	/// <summary>
 	/// Represents a class object to perform I/O operations, publish warning messages, and retry the operation.
 	/// </summary>
-	public class IoReporter : IIoReporter
+	public class IoReporter : IWaitAndRetryPolicy, IIoReporter
 	{
 		/// <summary>
 		/// The value that indicates no retry information is provided.
@@ -26,53 +27,87 @@ namespace Relativity.Import.Export.Io
 		private const int NoRetryInfo = -1;
 
 		private readonly IFileSystem fileSystem;
-		private readonly IWaitAndRetryPolicy waitAndRetryPolicy;
+		private readonly IWaitAndRetryPolicy retryPolicy;
 		private readonly ILog logger;
 		private readonly IoWarningPublisher publisher;
-		private readonly bool disableNativeLocationValidation;
-		private readonly RetryOptions retryOptions;
-		private readonly CancellationToken cancellationToken;
+		private readonly bool cachedDisableThrowOnIllegalCharacters;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IoReporter"/> class.
 		/// </summary>
+		/// <param name="appSettings">
+		/// The application settings.
+		/// </param>
 		/// <param name="fileSystem">
 		/// The file system wrapper.
-		/// </param>
-		/// <param name="waitAndRetry">
-		/// The resiliency component.
-		/// </param>
-		/// <param name="logger">
-		/// The Relativity logger.
 		/// </param>
 		/// <param name="publisher">
 		/// The I/O warning publisher.
 		/// </param>
-		/// <param name="disableNativeLocationValidation">
-		/// <see langword="true" /> to throw <see cref="FileInfoInvalidPathException"/> when illegal characters are found within the path.
+		/// <param name="options">
+		/// The configurable retry options.
+		/// </param>
+		/// <param name="logger">
+		/// The Relativity logger.
+		/// </param>
+		/// <param name="token">
+		/// The Cancel Token used to stop the process a any requested time.</param>
+		public IoReporter(
+			IAppSettings appSettings,
+			IFileSystem fileSystem,
+			IoWarningPublisher publisher,
+			RetryOptions options,
+			ILog logger,
+			CancellationToken token)
+			: this(new WaitAndRetryPolicy(appSettings), appSettings, fileSystem, publisher, options, logger, token)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="IoReporter"/> class.
+		/// </summary>
+		/// <param name="retryPolicy">
+		/// The retry policy.
+		/// </param>
+		/// <param name="appSettings">
+		/// The application settings.
+		/// </param>
+		/// <param name="fileSystem">
+		/// The file system wrapper.
+		/// </param>
+		/// <param name="publisher">
+		/// The I/O warning publisher.
 		/// </param>
 		/// <param name="options">
 		/// The configurable retry options.
 		/// </param>
-		/// <param name="cancellationToken">
+		/// <param name="logger">
+		/// The Relativity logger.
+		/// </param>
+		/// <param name="token">
 		/// The Cancel Token used to stop the process a any requested time.</param>
 		public IoReporter(
+			IWaitAndRetryPolicy retryPolicy,
+			IAppSettings appSettings,
 			IFileSystem fileSystem,
-            IWaitAndRetryPolicy waitAndRetry,
-            ILog logger,
 			IoWarningPublisher publisher,
-			bool disableNativeLocationValidation,
 			RetryOptions options,
-			CancellationToken cancellationToken)
+			ILog logger,
+			CancellationToken token)
 		{
+			if (retryPolicy == null)
+			{
+				throw new ArgumentNullException(nameof(retryPolicy));
+			}
+
+			if (appSettings == null)
+			{
+				throw new ArgumentNullException(nameof(appSettings));
+			}
+
 			if (fileSystem == null)
 			{
 				throw new ArgumentNullException(nameof(fileSystem));
-			}
-
-			if (waitAndRetry == null)
-			{
-				throw new ArgumentNullException(nameof(waitAndRetry));
 			}
 
 			if (logger == null)
@@ -85,13 +120,59 @@ namespace Relativity.Import.Export.Io
 				throw new ArgumentNullException(nameof(publisher));
 			}
 
+			this.retryPolicy = retryPolicy;
+			this.cachedDisableThrowOnIllegalCharacters = appSettings.DisableThrowOnIllegalCharacters;
 			this.fileSystem = fileSystem;
-            this.waitAndRetryPolicy = waitAndRetry;
-            this.logger = logger;
-            this.publisher = publisher;
-			this.disableNativeLocationValidation = disableNativeLocationValidation;
-            this.retryOptions = options;
-			this.cancellationToken = cancellationToken;
+			this.logger = logger;
+			this.publisher = publisher;
+			this.RetryOptions = options;
+			this.CancellationToken = token;
+		}
+
+		/// <summary>
+		/// Gets or sets the maximum number of retry attempts. This defaults to <see cref="IAppSettings.IoErrorNumberOfRetries"/>.
+		/// </summary>
+		/// <value>
+		/// The retry attempts.
+		/// </value>
+		public int MaxRetryAttempts
+		{
+			get => this.retryPolicy.MaxRetryAttempts;
+			set => this.retryPolicy.MaxRetryAttempts = value;
+		}
+
+		/// <summary>
+		/// Gets or sets the total wait time, in seconds, between retry attempts. This defaults to <see cref="IAppSettings.IoErrorWaitTimeInSeconds"/>.
+		/// </summary>
+		/// <value>
+		/// The total seconds.
+		/// </value>
+		public int WaitTimeSecondsBetweenRetryAttempts
+		{
+			get => this.retryPolicy.WaitTimeSecondsBetweenRetryAttempts;
+			set => this.retryPolicy.WaitTimeSecondsBetweenRetryAttempts = value;
+		}
+
+		/// <summary>
+		/// Gets the cancellation token.
+		/// </summary>
+		/// <value>
+		/// The <see cref="CancellationToken"/> value.
+		/// </value>
+		protected CancellationToken CancellationToken
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Gets the retry options.
+		/// </summary>
+		/// <value>
+		/// The <see cref="RetryOptions"/> value.
+		/// </value>
+		protected RetryOptions RetryOptions
+		{
+			get;
 		}
 
 		/// <summary>
@@ -260,9 +341,71 @@ namespace Relativity.Import.Export.Io
 			this.logger.LogWarning(args.Message);
 		}
 
+		/// <inheritdoc />
+		public void WaitAndRetry<TException>(
+			Func<int, TimeSpan> retryDuration,
+			Action<Exception, TimeSpan> retryAction,
+			Action<CancellationToken> execFunc,
+			CancellationToken token)
+			where TException : Exception
+		{
+			this.retryPolicy.WaitAndRetry<TException>(retryDuration, retryAction, execFunc, token);
+		}
+
+		/// <inheritdoc />
+		public void WaitAndRetry<TException>(
+			int maxRetryCount,
+			Func<int, TimeSpan> retryDuration,
+			Action<Exception, TimeSpan> retryAction,
+			Action<CancellationToken> execFunc,
+			CancellationToken token)
+			where TException : Exception
+		{
+			this.retryPolicy.WaitAndRetry<TException>(maxRetryCount, retryDuration, retryAction, execFunc, token);
+		}
+
+		/// <inheritdoc />
+		public TResult WaitAndRetry<TResult, TException>(
+			Func<int, TimeSpan> retryDuration,
+			Action<Exception, TimeSpan> retryAction,
+			Func<CancellationToken, TResult> execFunc,
+			CancellationToken token)
+			where TException : Exception
+		{
+			return this.retryPolicy.WaitAndRetry<TResult, TException>(retryDuration, retryAction, execFunc, token);
+		}
+
+		/// <inheritdoc />
+		public TResult WaitAndRetry<TResult>(
+			Func<Exception, bool> exceptionPredicate,
+			Func<int, TimeSpan> retryDuration,
+			Action<Exception, TimeSpan> retryAction,
+			Func<CancellationToken, TResult> execFunc,
+			CancellationToken token)
+		{
+			return this.retryPolicy.WaitAndRetry(exceptionPredicate, retryDuration, retryAction, execFunc, token);
+		}
+
+		/// <inheritdoc />
+		public TResult WaitAndRetry<TResult, TException>(
+			int maxRetryCount,
+			Func<int, TimeSpan> retryDuration,
+			Action<Exception, TimeSpan> retryAction,
+			Func<CancellationToken, TResult> execFunc,
+			CancellationToken token)
+			where TException : Exception
+		{
+			return this.retryPolicy.WaitAndRetry<TResult, TException>(
+				maxRetryCount,
+				retryDuration,
+				retryAction,
+				execFunc,
+				token);
+		}
+
 		private bool ShouldThrowFileInfoInvalidPathException(Exception exception)
 		{
-			return this.disableNativeLocationValidation && RetryExceptionHelper.IsIllegalCharactersInPathException(exception);
+			return this.cachedDisableThrowOnIllegalCharacters && RetryExceptionHelper.IsIllegalCharactersInPathException(exception);
 		}
 
         private FileInfoInvalidPathException CreateFileInfoInvalidPathException(Exception exception, string fileName)
@@ -283,15 +426,15 @@ namespace Relativity.Import.Export.Io
 		{
 			try
 			{
-				int maxRetryAttempts = this.waitAndRetryPolicy.MaxRetryAttempts;
+				int maxRetryAttempts = this.MaxRetryAttempts;
 				int currentRetryAttempt = 0;
-				return this.waitAndRetryPolicy.WaitAndRetry(
-					RetryExceptionHelper.CreateRetryPredicate(this.retryOptions),
+				return this.WaitAndRetry(
+					RetryExceptionHelper.CreateRetryPredicate(this.RetryOptions),
 					retryAttempt =>
 						{
 							currentRetryAttempt = retryAttempt;
 							return TimeSpan.FromSeconds(
-								retryAttempt == 1 ? 0 : this.waitAndRetryPolicy.WaitTimeSecondsBetweenRetryAttempts);
+								retryAttempt == 1 ? 0 : this.WaitTimeSecondsBetweenRetryAttempts);
 						},
 					(exception, timeSpan) =>
 						{
@@ -318,7 +461,7 @@ namespace Relativity.Import.Export.Io
 								throw;
 							}
 						},
-					this.cancellationToken);
+					this.CancellationToken);
 			}
 			catch (OperationCanceledException)
 			{

@@ -20,43 +20,35 @@ namespace Relativity.Import.Export
     /// </summary>
     public class WaitAndRetryPolicy : IWaitAndRetryPolicy
     {
-        /// <summary>
-        /// The default number of retries.
-        /// </summary>
-        private const int DefaultNumberOfRetries = 1;
-
-        /// <summary>
-        /// The default wait time in seconds.
-        /// </summary>
-        private const int DefaultWaitTimeSeconds = 1;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WaitAndRetryPolicy"/> class.
-        /// </summary>
-        public WaitAndRetryPolicy()
-            : this(DefaultNumberOfRetries, DefaultWaitTimeSeconds)
-        {
-        }
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WaitAndRetryPolicy"/> class.
 		/// </summary>
-		/// <param name="maxRetryAttempts">
-		/// The maximum number of retries.
+		public WaitAndRetryPolicy()
+		    : this(AppSettings.Instance)
+	    {
+	    }
+
+	    /// <summary>
+		/// Initializes a new instance of the <see cref="WaitAndRetryPolicy"/> class.
+		/// </summary>
+		/// <param name="settings">
+		/// The application settings.
 		/// </param>
-		/// <param name="waitTimeSecondsBetweenRetryAttempts">
-		/// The number of seconds to wait between retry attempts.
-		/// </param>
-		public WaitAndRetryPolicy(int maxRetryAttempts, int waitTimeSecondsBetweenRetryAttempts)
+		public WaitAndRetryPolicy(IAppSettings settings)
         {
-            this.MaxRetryAttempts = maxRetryAttempts;
-            this.WaitTimeSecondsBetweenRetryAttempts = waitTimeSecondsBetweenRetryAttempts;
+	        if (settings == null)
+	        {
+				throw new ArgumentNullException(nameof(settings));
+	        }
+
+	        this.MaxRetryAttempts = settings.IoErrorNumberOfRetries;
+	        this.WaitTimeSecondsBetweenRetryAttempts = settings.IoErrorWaitTimeInSeconds;
         }
 
         /// <inheritdoc />
         public int MaxRetryAttempts
         {
-            get;
+	        get;
             set;
         }
 

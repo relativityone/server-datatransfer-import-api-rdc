@@ -17,25 +17,25 @@ namespace Relativity.Import.Export
     /// </summary>
     public interface IWaitAndRetryPolicy
     {
-        /// <summary>
-        /// Gets or sets the maximum number of retry attempts.
-        /// </summary>
-        /// <value>
-        /// The retry attempts.
-        /// </value>
-        int MaxRetryAttempts
+		/// <summary>
+		/// Gets or sets the maximum number of retry attempts. This defaults to <see cref="IAppSettings.IoErrorNumberOfRetries"/>.
+		/// </summary>
+		/// <value>
+		/// The retry attempts.
+		/// </value>
+		int MaxRetryAttempts
         {
             get;
             set;
         }
 
-        /// <summary>
-        /// Gets or sets the total wait time, in seconds, between retry attempts
-        /// </summary>
-        /// <value>
-        /// The total seconds.
-        /// </value>
-        int WaitTimeSecondsBetweenRetryAttempts
+		/// <summary>
+		/// Gets or sets the total wait time, in seconds, between retry attempts. This defaults to <see cref="IAppSettings.IoErrorWaitTimeInSeconds"/>.
+		/// </summary>
+		/// <value>
+		/// The total seconds.
+		/// </value>
+		int WaitTimeSecondsBetweenRetryAttempts
         {
             get;
             set;
