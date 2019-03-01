@@ -59,13 +59,13 @@
     <Compile Include="DelimitedFileImporterTestCases.cs" />
     <Compile Include="DelimitedFileImporterTests.cs" />
     <Compile Include="ImporterExceptionSerializationTests.cs" />
+    <Compile Include="IoReporterContextTests.cs" />
     <Compile Include="MockDelimitedFileImport.cs" />
     <Compile Include="NullableTypesHelperTests.cs" />
     <Compile Include="TapiBridgeTestsBase.cs" />
     <Compile Include="DownloadTapiBridgeTests.cs" />
     <Compile Include="UploadTapiBridgeTests.cs" />
     <Compile Include="IoReporterTests.cs" />
-    <Compile Include="IoWarningPublisherTests.cs" />
     <Compile Include="ProcessContextTests.cs" />
     <Compile Include="GlobalSuppressions.cs">
     </Compile>

@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------------------------------------
-// <copyright file="IoWarningPublisherTests.cs" company="Relativity ODA LLC">
+// <copyright file="IoReporterContextTests.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
@@ -17,7 +17,7 @@ namespace Relativity.Import.Export.NUnit
     using Relativity.Import.Export.Io;
 
     [TestFixture]
-    public class IoWarningPublisherTests
+    public class IoReporterContextTests
 	{
         private IoReporterContext context;
 		private Dictionary<long, string> results;
