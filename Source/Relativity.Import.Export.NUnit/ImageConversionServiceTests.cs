@@ -7,18 +7,16 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit.Integration
+namespace Relativity.Import.Export.NUnit
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using System.Threading;
 
 	using global::NUnit.Framework;
 
 	using Relativity.Import.Export;
 	using Relativity.Import.Export.TestFramework;
-	using Relativity.Import.Export.Transfer;
 
 	/// <summary>
 	/// Represents <see cref="IImageConversionService"/> tests.

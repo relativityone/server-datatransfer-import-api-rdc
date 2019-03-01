@@ -7,7 +7,7 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit.Integration
+namespace Relativity.Import.Export.NUnit
 {
 	using global::NUnit.Framework;
 
@@ -54,7 +54,6 @@ namespace Relativity.Import.Export.NUnit.Integration
 
 		[Test]
 		[Category(TestCategories.OutsideIn)]
-		[Category(TestCategories.Integration)]
 		public void ShouldIdentifyTheFile()
 		{
 			for (int i = 0; i < 2; i++)
@@ -74,7 +73,6 @@ namespace Relativity.Import.Export.NUnit.Integration
 		[TestCase(null)]
 		[TestCase("")]
 		[Category(TestCategories.OutsideIn)]
-		[Category(TestCategories.Integration)]
 		public void ShouldThrowWhenTheFileIsNullOrEmpty(string file)
 		{
 			Assert.Throws<System.ArgumentNullException>(() => this.service.Identify(file));
@@ -82,7 +80,6 @@ namespace Relativity.Import.Export.NUnit.Integration
 
 		[Test]
 		[Category(TestCategories.OutsideIn)]
-		[Category(TestCategories.Integration)]
 		public void ShouldThrowWhenTheFileDoesNotExist()
 		{
 			string fileName = System.Guid.NewGuid().ToString("D").ToUpperInvariant();
@@ -93,7 +90,6 @@ namespace Relativity.Import.Export.NUnit.Integration
 
 		[Test]
 		[Category(TestCategories.OutsideIn)]
-		[Category(TestCategories.Integration)]
 		public void ShouldThrowWhenTheFileIsLocked()
 		{
 			using (System.IO.File.Open(
@@ -110,7 +106,6 @@ namespace Relativity.Import.Export.NUnit.Integration
 
 		[Test]
 		[Category(TestCategories.OutsideIn)]
-		[Category(TestCategories.Integration)]
 		public void ShouldGetTheConfigInfo()
 		{
 			for (int i = 0; i < 5; i++)

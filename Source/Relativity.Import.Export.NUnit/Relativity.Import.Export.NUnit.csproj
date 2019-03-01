@@ -53,16 +53,75 @@
     <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="oi\docs\fileids_values_only_sorted.txt">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\docs\fileids_values_strs.txt">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\cmmap000.bin">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\oilink.exe">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\oilink.jar">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccca-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccch-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccda-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccex-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfa-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfi-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfmt-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfnt-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfut-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccind-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\scclo-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccut-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\wvcore-R1.dll">
+      <Paket>True</Paket>
+    </Content>
     <Compile Include="..\..\Version\AssemblySharedInfo.cs">
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
+    <Compile Include="AppSettingsTests.cs" />
     <Compile Include="DelimitedFileImporterTestCases.cs" />
     <Compile Include="DelimitedFileImporterTests.cs" />
+    <Compile Include="FileSystemWrapTests.cs" />
+    <Compile Include="FreeImageIdServiceTests.cs" />
+    <Compile Include="ImageConversionServiceTests.cs" />
     <Compile Include="ImporterExceptionSerializationTests.cs" />
     <Compile Include="CollectionExtensionsTests.cs" />
     <Compile Include="IoReporterContextTests.cs" />
     <Compile Include="MockDelimitedFileImport.cs" />
     <Compile Include="NullableTypesHelperTests.cs" />
+    <Compile Include="OutsideInFileIdServiceTests.cs" />
     <Compile Include="TapiBridgeTestsBase.cs" />
     <Compile Include="DownloadTapiBridgeTests.cs" />
     <Compile Include="UploadTapiBridgeTests.cs" />
@@ -107,6 +166,89 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Content Include="Resources\Jpeg\w3c_home.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Jpeg\w3c_home_2.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Jpeg\w3c_home_256.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Jpeg\w3c_home_gray.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Png\w3c_home.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Png\w3c_home_2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Png\w3c_home_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Png\w3c_home_gray.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Tiff\CCITT_1.TIF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Tiff\CCITT_2.TIF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Tiff\CCITT_3.TIF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Tiff\CCITT_4.TIF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Tiff\CCITT_5.TIF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Tiff\CCITT_6.TIF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Tiff\CCITT_7.TIF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Tiff\CCITT_8.TIF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Tiff\FLAG_T24.TIF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Tiff\G31D.TIF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Tiff\G31DS.TIF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Tiff\G32D.TIF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Tiff\G32DS.TIF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Tiff\G4.TIF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Tiff\G4S.TIF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Tiff\GMARBLES.TIF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Tiff\MARBIBM.TIF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Tiff\MARBLES.TIF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Tiff\XING_T24.TIF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -115,6 +257,17 @@
         </Reference>
         <Reference Include="Castle.Core">
           <HintPath>..\..\packages\Castle.Core\lib\net45\Castle.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="oi">
+          <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32\lib\net40\oi.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -244,6 +397,7 @@
       </ItemGroup>
     </When>
   </Choose>
+  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
   <ItemGroup>
     <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll">
       <Paket>True</Paket>
@@ -274,4 +428,7 @@
       </ItemGroup>
     </When>
   </Choose>
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(SolutionDir)..\Vendor\FreeImage\3.18.0\x64\FreeImage.dll" $(TargetDir)</PostBuildEvent>
+  </PropertyGroup>
 </Project>

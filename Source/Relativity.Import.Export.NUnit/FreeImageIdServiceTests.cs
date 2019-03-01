@@ -7,7 +7,7 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.NUnit.Integration
+namespace Relativity.Import.Export.NUnit
 {
 	using System;
 	using System.IO;
@@ -49,7 +49,6 @@ namespace Relativity.Import.Export.NUnit.Integration
 		[TestCase("w3c_home_256.jpg")]
 		[TestCase("w3c_home_gray.jpg")]
 		[Category(TestCategories.Framework)]
-		[Category(TestCategories.Integration)]
 		public void ShouldValidateAndIdentifyTheJpegImage(string fileName)
 		{
 			string file = ResourceFileHelper.GetResourceFilePath("Jpeg", fileName);
@@ -67,7 +66,6 @@ namespace Relativity.Import.Export.NUnit.Integration
 		[TestCase("CCITT_6.TIF")]
 		[TestCase("CCITT_7.TIF")]
 		[Category(TestCategories.Framework)]
-		[Category(TestCategories.Integration)]
 		public void ShouldValidateAndIdentifyTheTiffImage(string fileName)
 		{
 			string file = ResourceFileHelper.GetResourceFilePath("Tiff", fileName);
@@ -84,7 +82,6 @@ namespace Relativity.Import.Export.NUnit.Integration
 		[TestCase("G4.TIF")]
 		[TestCase("G4S.TIF")]
 		[Category(TestCategories.Framework)]
-		[Category(TestCategories.Integration)]
 		public void ShouldThrowWhenTheTiffEncodingIsNotSupported(string fileName)
 		{
 			string file = ResourceFileHelper.GetResourceFilePath("Tiff", fileName);
@@ -101,7 +98,6 @@ namespace Relativity.Import.Export.NUnit.Integration
 		[TestCase("XING_T24.TIF")]
 		[TestCase("FLAG_T24.TIF")]
 		[Category(TestCategories.Framework)]
-		[Category(TestCategories.Integration)]
 		public void ShouldThrowWhenTheTiffHeaderBitCountIsGreaterThanOne(string fileName)
 		{
 			string file = ResourceFileHelper.GetResourceFilePath("Tiff", fileName);
@@ -117,7 +113,6 @@ namespace Relativity.Import.Export.NUnit.Integration
 		[TestCase("w3c_home_256.png")]
 		[TestCase("w3c_home_gray.png")]
 		[Category(TestCategories.Framework)]
-		[Category(TestCategories.Integration)]
 		public void ShouldThrowWhenThePngImageFormatIsNotSupported(string fileName)
 		{
 			string file = ResourceFileHelper.GetResourceFilePath("Png", fileName);
@@ -131,7 +126,6 @@ namespace Relativity.Import.Export.NUnit.Integration
 		[TestCase(null)]
 		[TestCase("")]
 		[Category(TestCategories.Framework)]
-		[Category(TestCategories.Integration)]
 		public void ShouldThrowWhenTheFileIsNullOrEmpty(string file)
 		{
 			Assert.Throws<System.ArgumentNullException>(() => this.service.Validate(file));
@@ -139,7 +133,6 @@ namespace Relativity.Import.Export.NUnit.Integration
 
 		[Test]
 		[Category(TestCategories.Framework)]
-		[Category(TestCategories.Integration)]
 		public void ShouldThrowWhenTheImageFileDoesNotExist()
 		{
 			string file = ResourceFileHelper.GetResourceFilePath("Png", $"{Guid.NewGuid()}.png");
@@ -148,7 +141,6 @@ namespace Relativity.Import.Export.NUnit.Integration
 
 		[Test]
 		[Category(TestCategories.Framework)]
-		[Category(TestCategories.Integration)]
 		public void ShouldThrowWhenTheImageFileIsZeroBytes()
 		{
 			string file = RandomHelper.NextBinaryFile(0, 0, this.tempDirectory.Directory);
