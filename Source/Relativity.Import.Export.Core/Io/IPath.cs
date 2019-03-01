@@ -132,6 +132,32 @@ namespace Relativity.Import.Export.Io
 		string GetFileName(string path);
 
 		/// <summary>
+		/// Returns the absolute path for the specified path string.
+		/// </summary>
+		/// <param name="path">
+		/// The file or directory for which to obtain absolute path information.
+		/// </param>
+		/// <returns>
+		/// The fully qualified location of <paramref name="path" />, such as "C:\MyFile.txt".
+		/// </returns>
+		/// <exception cref="T:System.ArgumentException">
+		/// <paramref name="path" /> is a zero-length string, contains only white space, or contains one or more of the invalid characters defined in <see cref="M:System.IO.Path.GetInvalidPathChars" />.-or- The system could not retrieve the absolute path.
+		/// </exception>
+		/// <exception cref="T:System.Security.SecurityException">
+		/// The caller does not have the required permissions.
+		/// </exception>
+		/// <exception cref="T:System.ArgumentNullException">
+		/// <paramref name="path" /> is <see langword="null" />.
+		/// </exception>
+		/// <exception cref="T:System.NotSupportedException">
+		/// <paramref name="path" /> contains a colon (":") that is not part of a volume identifier (for example, "c:\").
+		/// </exception>
+		/// <exception cref="T:System.IO.PathTooLongException">
+		/// The specified path, file name, or both exceed the system-defined maximum length. For example, on Windows-based platforms, paths must be less than 248 characters, and file names must be less than 260 characters.
+		/// </exception>
+		string GetFullPath(string path);
+
+		/// <summary>
 		/// Gets a uniquely named, zero-byte temporary file on disk and returns the full path of that file.
 		/// </summary>
 		/// <returns>

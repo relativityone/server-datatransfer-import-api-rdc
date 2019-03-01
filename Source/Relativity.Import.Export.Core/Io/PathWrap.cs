@@ -140,6 +140,14 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <inheritdoc />
+		public string GetFullPath(string path)
+		{
+			path = this.NormalizePath(path);
+			string fullPath = TryGetFullPath(path);
+			return string.IsNullOrEmpty(fullPath) ? path : fullPath;
+		}
+
+		/// <inheritdoc />
 		public string GetTempPath()
 		{
 			string value = this.CustomTempPath;

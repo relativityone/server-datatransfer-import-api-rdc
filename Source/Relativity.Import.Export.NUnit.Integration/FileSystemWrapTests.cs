@@ -230,6 +230,18 @@ namespace Relativity.Import.Export.NUnit.Integration
 		}
 
 		[Test]
+		[TestCase(@"C:\Windows", @"C:\Windows")]
+		[TestCase(@"\\kcura.corp\shares\Engineering", @"\\kcura.corp\shares\Engineering")]
+		[Category(TestCategories.FileSystem)]
+		[Category(TestCategories.Integration)]
+		public void ShouldGetTheFullPath(string path, string expected)
+		{
+			string returnedPath = this.fileSystem.Path.GetFullPath(path);
+			Assert.That(returnedPath, Is.Not.Null);
+			Assert.That(returnedPath, Is.EqualTo(expected));
+		}
+
+		[Test]
 		[Category(TestCategories.FileSystem)]
 		[Category(TestCategories.Integration)]
 		[TestCase(@"C:\", "temp.txt", @"C:\temp.txt")]
