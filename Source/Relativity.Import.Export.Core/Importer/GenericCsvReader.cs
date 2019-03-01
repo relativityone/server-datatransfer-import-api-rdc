@@ -29,32 +29,22 @@ namespace Relativity.Import.Export.Importer
 		/// <param name="encoding">
 		/// The encoding of the file.
 		/// </param>
-		/// <param name="publisher">
-		/// The I/O warning publisher.
-		/// </param>
-		/// <param name="options">
-		/// The configurable retry options.
+		/// <param name="context">
+		/// The I/O reporter context.
 		/// </param>
 		/// <param name="logger">
 		/// The Relativity logger.
 		/// </param>
 		/// <param name="token">
-		/// The cancellation token used to stop the process a any requested time.</param>
+		/// The cancellation token used to stop the process upon request.
+		/// </param>
 		public GenericCsvReader(
 			string file,
 			System.Text.Encoding encoding,
-			IoWarningPublisher publisher,
-			RetryOptions options,
+			IoReporterContext context,
 			ILog logger,
 			CancellationToken token)
-			: base(
-				",",
-				"\"",
-				Conversions.ToString(Microsoft.VisualBasic.Strings.ChrW(10)),
-				publisher,
-				options,
-				logger,
-				token)
+			: base(",", "\"", Conversions.ToString(Microsoft.VisualBasic.Strings.ChrW(10)), context, logger, token)
 		{
 			this.Reader = new StreamReader(file, encoding);
 		}

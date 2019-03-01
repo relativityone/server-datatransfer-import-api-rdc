@@ -21,6 +21,11 @@ namespace Relativity.Import.Export
     public class WaitAndRetryPolicy : IWaitAndRetryPolicy
     {
 		/// <summary>
+		/// The cached application settings.
+		/// </summary>
+		private readonly AppSettingsDto cachedAppSettings;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="WaitAndRetryPolicy"/> class.
 		/// </summary>
 		public WaitAndRetryPolicy()
@@ -41,22 +46,7 @@ namespace Relativity.Import.Export
 				throw new ArgumentNullException(nameof(settings));
 	        }
 
-	        this.MaxRetryAttempts = settings.IoErrorNumberOfRetries;
-	        this.WaitTimeSecondsBetweenRetryAttempts = settings.IoErrorWaitTimeInSeconds;
-        }
-
-        /// <inheritdoc />
-        public int MaxRetryAttempts
-        {
-	        get;
-            set;
-        }
-
-        /// <inheritdoc />
-        public int WaitTimeSecondsBetweenRetryAttempts
-        {
-            get;
-            set;
+	        this.cachedAppSettings = settings.DeepCopy();
         }
 
         /// <inheritdoc />
@@ -67,7 +57,12 @@ namespace Relativity.Import.Export
 	        CancellationToken token)
 	        where TException : Exception
         {
-	        this.WaitAndRetry<TException>(this.MaxRetryAttempts, retryDuration, retryAction, execFunc, token);
+	        this.WaitAndRetry<TException>(
+		        this.cachedAppSettings.IoErrorNumberOfRetries,
+		        retryDuration,
+		        retryAction,
+		        execFunc,
+		        token);
         }
 
         /// <inheritdoc />
@@ -91,8 +86,10 @@ namespace Relativity.Import.Export
 	        Func<CancellationToken, TResult> execFunc,
 	        CancellationToken token)
         {
-	        return Policy.Handle(exceptionPredicate).WaitAndRetry(this.MaxRetryAttempts, retryDuration, retryAction)
-		        .Execute(execFunc, token);
+	        return Policy.Handle(exceptionPredicate).WaitAndRetry(
+		        this.cachedAppSettings.IoErrorNumberOfRetries,
+		        retryDuration,
+		        retryAction).Execute(execFunc, token);
         }
 
         /// <inheritdoc />
@@ -103,7 +100,8 @@ namespace Relativity.Import.Export
 	        CancellationToken token)
 	        where TException : Exception
         {
-	        return Policy.Handle<TException>().WaitAndRetry(this.MaxRetryAttempts, retryDuration, retryAction)
+	        return Policy.Handle<TException>()
+		        .WaitAndRetry(this.cachedAppSettings.IoErrorNumberOfRetries, retryDuration, retryAction)
 		        .Execute(execFunc, token);
         }
 

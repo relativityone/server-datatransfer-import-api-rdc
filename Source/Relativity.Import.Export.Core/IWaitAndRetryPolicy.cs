@@ -18,76 +18,52 @@ namespace Relativity.Import.Export
     public interface IWaitAndRetryPolicy
     {
 		/// <summary>
-		/// Gets or sets the maximum number of retry attempts. This defaults to <see cref="IAppSettings.IoErrorNumberOfRetries"/>.
+		/// Performs the synchronous retry operation using the specified retry duration function.
 		/// </summary>
-		/// <value>
-		/// The retry attempts.
-		/// </value>
-		int MaxRetryAttempts
-        {
-            get;
-            set;
-        }
-
-		/// <summary>
-		/// Gets or sets the total wait time, in seconds, between retry attempts. This defaults to <see cref="IAppSettings.IoErrorWaitTimeInSeconds"/>.
-		/// </summary>
-		/// <value>
-		/// The total seconds.
-		/// </value>
-		int WaitTimeSecondsBetweenRetryAttempts
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Performs the synchronous retry operation using the specified retry duration function.
-        /// </summary>
-        /// <typeparam name="TException">
-        /// The exception type to handle.
-        /// </typeparam>
-        /// <param name="retryDuration">
-        /// The duration between retry attempts.
-        /// </param>
-        /// <param name="retryAction">
-        /// The action performed when a retry occurs.
-        /// </param>
-        /// <param name="execFunc">
-        /// The main function executed.
-        /// </param>
-		/// <param name="token">
-		/// A token which is used to cancell current task.
+		/// <typeparam name="TException">
+		/// The exception type to handle.
+		/// </typeparam>
+		/// <param name="retryDuration">
+		/// The duration between retry attempts.
 		/// </param>
-        void WaitAndRetry<TException>(
+		/// <param name="retryAction">
+		/// The action performed when a retry occurs.
+		/// </param>
+		/// <param name="execFunc">
+		/// The main function executed.
+		/// </param>
+		/// <param name="token">
+		/// The cancellation token used to stop the process upon request.
+		/// </param>
+		void WaitAndRetry<TException>(
             Func<int, TimeSpan> retryDuration,
             Action<Exception, TimeSpan> retryAction,
             Action<CancellationToken> execFunc,
 			CancellationToken token)
 	        where TException : Exception;
 
-        /// <summary>
-        /// Performs the synchronous retry operation for the specified exception type and retry duration function.
-        /// </summary>
-        /// <typeparam name="TException">
-        /// The exception type to handle.
-        /// </typeparam>
-        /// <param name="maxRetryCount">
-        /// The maximum retry count.
-        /// </param>
-        /// <param name="retryDuration">
-        /// The duration between retry attempts.
-        /// </param>
-        /// <param name="retryAction">
-        /// The action performed when a retry occurs.
-        /// </param>
-        /// <param name="execFunc">
-        /// The main function executed.
-        /// </param>
-		/// <param name="token">
-		/// A token which is used to cancel current task.
+		/// <summary>
+		/// Performs the synchronous retry operation for the specified exception type and retry duration function.
+		/// </summary>
+		/// <typeparam name="TException">
+		/// The exception type to handle.
+		/// </typeparam>
+		/// <param name="maxRetryCount">
+		/// The maximum retry count.
 		/// </param>
-        void WaitAndRetry<TException>(
+		/// <param name="retryDuration">
+		/// The duration between retry attempts.
+		/// </param>
+		/// <param name="retryAction">
+		/// The action performed when a retry occurs.
+		/// </param>
+		/// <param name="execFunc">
+		/// The main function executed.
+		/// </param>
+		/// <param name="token">
+		/// The cancellation token used to stop the process upon request.
+		/// </param>
+		void WaitAndRetry<TException>(
             int maxRetryCount,
             Func<int, TimeSpan> retryDuration,
             Action<Exception, TimeSpan> retryAction,
@@ -114,7 +90,8 @@ namespace Relativity.Import.Export
 		/// The main function executed.
 		/// </param>
 		/// <param name="token">
-		/// A token which is used to cancel current task.</param>
+		/// The cancellation token used to stop the process upon request.
+		/// </param>
 		/// <returns>
 		/// The <typeparamref name="TResult"/> value.
 		/// </returns>
@@ -148,7 +125,8 @@ namespace Relativity.Import.Export
 		/// The main function executed.
 		/// </param>
 		/// <param name="token">
-		/// A token which is used to cancel current task.</param>
+		/// The cancellation token used to stop the process upon request.
+		/// </param>
 		/// <returns>
 		/// The <typeparamref name="TResult"/> value.
 		/// </returns>
@@ -185,7 +163,7 @@ namespace Relativity.Import.Export
 		/// The main function executed.
 		/// </param>
 		/// <param name="token">
-		/// A token which is used to cancell current task.
+		/// The cancellation token used to stop the process upon request.
 		/// </param>
 		/// <returns>
 		/// The <typeparamref name="TResult"/> value.

@@ -59,6 +59,7 @@
     <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppSettingsDto.cs" />
     <Compile Include="Importer\ObjectNameImporterException.cs" />
     <Compile Include="Importer\StringImporterException.cs" />
     <Compile Include="Importer\ConditionalArrayList.cs" />
@@ -67,7 +68,7 @@
     <Compile Include="Importer\DecimalImporterException.cs" />
     <Compile Include="Importer\DateImporterException.cs" />
     <Compile Include="Importer\GenericCsvReader.cs" />
-    <Compile Include="Io\IoWarningPublisher.cs" />
+    <Compile Include="Io\IoReporterContext.cs" />
     <Compile Include="NullableTypesHelper.cs" />
     <Compile Include="ImportExportException.cs" />
     <Compile Include="IAppSettings.cs" />

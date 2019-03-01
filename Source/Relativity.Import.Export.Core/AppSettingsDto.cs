@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="IAppSettings.cs" company="Relativity ODA LLC">
+// <copyright file="AppSettingsDto.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -10,17 +10,69 @@ namespace Relativity.Import.Export
 	using System.Collections.Generic;
 
 	/// <summary>
-	/// Represents an abstract object that provides thread-safe application settings.
+	/// Represents a class object that provide a thread-safe copy of all application settings.
 	/// </summary>
-	public interface IAppSettings
+	[Serializable]
+	public sealed class AppSettingsDto
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AppSettingsDto"/> class.
+		/// </summary>
+		public AppSettingsDto()
+		{
+			this.CreateErrorForInvalidDate = AppSettingsConstants.CreateErrorForInvalidDateDefaultValue;
+			this.DisableThrowOnIllegalCharacters = AppSettingsConstants.DisableThrowOnIllegalCharactersDefaultValue;
+			this.ExportErrorNumberOfRetries = AppSettingsConstants.ExportErrorNumberOfRetriesDefaultValue;
+			this.ExportErrorWaitTimeInSeconds = AppSettingsConstants.ExportErrorWaitTimeInSecondsDefaultValue;
+			this.ForceFolderPreview = AppSettingsConstants.ForceFolderPreviewDefaultValue;
+			this.IoErrorNumberOfRetries = AppSettingsConstants.IoErrorNumberOfRetriesDefaultValue;
+			this.IoErrorWaitTimeInSeconds = AppSettingsConstants.IoErrorWaitTimeInSecondsDefaultValue;
+			this.LogAllEvents = AppSettingsConstants.LogAllEventsDefaultValue;
+			this.ObjectFieldIdListContainsArtifactId = null;
+			this.ProgrammaticWebApiServiceUrl = null;
+			this.WebApiServiceUrl = null;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AppSettingsDto"/> class.
+		/// </summary>
+		/// <param name="settings">
+		/// The settings.
+		/// </param>
+		/// <exception cref="ArgumentNullException">
+		/// Thrown when <paramref name="settings"/> is <see langword="null" />.
+		/// </exception>
+		public AppSettingsDto(IAppSettings settings)
+		{
+			if (settings == null)
+			{
+				throw new ArgumentNullException(nameof(settings));
+			}
+
+			this.CreateErrorForInvalidDate = settings.CreateErrorForInvalidDate;
+			this.DisableThrowOnIllegalCharacters = settings.DisableThrowOnIllegalCharacters;
+			this.ExportErrorNumberOfRetries = settings.ExportErrorNumberOfRetries;
+			this.ExportErrorWaitTimeInSeconds = settings.ExportErrorWaitTimeInSeconds;
+			this.ForceFolderPreview = settings.ForceFolderPreview;
+			this.IoErrorNumberOfRetries = settings.IoErrorNumberOfRetries;
+			this.IoErrorWaitTimeInSeconds = settings.IoErrorWaitTimeInSeconds;
+			this.LogAllEvents = settings.LogAllEvents;
+			if (settings.ObjectFieldIdListContainsArtifactId != null)
+			{
+				this.ObjectFieldIdListContainsArtifactId = new List<int>(settings.ObjectFieldIdListContainsArtifactId);
+			}
+
+			this.ProgrammaticWebApiServiceUrl = settings.ProgrammaticWebApiServiceUrl;
+			this.WebApiServiceUrl = settings.WebApiServiceUrl;
+		}
+
 		/// <summary>
 		/// Gets or sets a value indicating whether to create an error for an invalid date.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to create an error; otherwise, <see langword="false" />.
 		/// </value>
-		bool CreateErrorForInvalidDate
+		public bool CreateErrorForInvalidDate
 		{
 			get;
 			set;
@@ -32,7 +84,7 @@ namespace Relativity.Import.Export
 		/// <value>
 		/// <see langword="true" /> to disable throwing an exception; otherwise, <see langword="false" />.
 		/// </value>
-		bool DisableThrowOnIllegalCharacters
+		public bool DisableThrowOnIllegalCharacters
 		{
 			get;
 			set;
@@ -44,7 +96,7 @@ namespace Relativity.Import.Export
 		/// <value>
 		/// The total number of retries.
 		/// </value>
-		int ExportErrorNumberOfRetries
+		public int ExportErrorNumberOfRetries
 		{
 			get;
 			set;
@@ -56,7 +108,7 @@ namespace Relativity.Import.Export
 		/// <value>
 		/// The total number of seconds.
 		/// </value>
-		int ExportErrorWaitTimeInSeconds
+		public int ExportErrorWaitTimeInSeconds
 		{
 			get;
 			set;
@@ -68,7 +120,7 @@ namespace Relativity.Import.Export
 		/// <value>
 		/// <see langword="true" /> to force a folder preview; otherwise, <see langword="false" />.
 		/// </value>
-		bool ForceFolderPreview
+		public bool ForceFolderPreview
 		{
 			get;
 			set;
@@ -80,7 +132,7 @@ namespace Relativity.Import.Export
 		/// <value>
 		/// The total number of retries.
 		/// </value>
-		int IoErrorNumberOfRetries
+		public int IoErrorNumberOfRetries
 		{
 			get;
 			set;
@@ -92,7 +144,7 @@ namespace Relativity.Import.Export
 		/// <value>
 		/// The total number of seconds.
 		/// </value>
-		int IoErrorWaitTimeInSeconds
+		public int IoErrorWaitTimeInSeconds
 		{
 			get;
 			set;
@@ -104,7 +156,7 @@ namespace Relativity.Import.Export
 		/// <value>
 		/// <see langword="true" /> to log all the I/O events; otherwise, <see langword="false" />.
 		/// </value>
-		bool LogAllEvents
+		public bool LogAllEvents
 		{
 			get;
 			set;
@@ -120,7 +172,7 @@ namespace Relativity.Import.Export
 			"Microsoft.Usage",
 			"CA2227:CollectionPropertiesShouldBeReadOnly",
 			Justification = "This is required for backwards compatibility.")]
-		IList<int> ObjectFieldIdListContainsArtifactId
+		public IList<int> ObjectFieldIdListContainsArtifactId
 		{
 			get;
 			set;
@@ -132,7 +184,7 @@ namespace Relativity.Import.Export
 		/// <value>
 		/// The <see cref="Uri"/> instance.
 		/// </value>
-		Uri ProgrammaticWebApiServiceUrl
+		public Uri ProgrammaticWebApiServiceUrl
 		{
 			get;
 			set;
@@ -144,23 +196,10 @@ namespace Relativity.Import.Export
 		/// <value>
 		/// The <see cref="Uri"/> instance.
 		/// </value>
-		Uri WebApiServiceUrl
+		public Uri WebApiServiceUrl
 		{
 			get;
 			set;
 		}
-
-		/// <summary>
-		/// Performs a deep copy of this instance to a cached copy of all settings.
-		/// </summary>
-		/// <returns>
-		/// The <see cref="AppSettingsDto"/> instance.
-		/// </returns>
-		AppSettingsDto DeepCopy();
-
-		/// <summary>
-		/// Clears all settings and retrieve the latest values.
-		/// </summary>
-		void Refresh();
 	}
 }

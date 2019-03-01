@@ -23,28 +23,20 @@ namespace Relativity.Import.Export.Process
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ErrorFileReader"/> class.
 		/// </summary>
+		/// <param name="context">
+		/// The I/O reporter context.
+		/// </param>
 		/// <param name="logger">
 		/// The Relativity logger.
 		/// </param>
-		/// <param name="publisher">
-		/// The I/O warning publisher.
-		/// </param>
-		/// <param name="options">
-		/// The configurable retry options.
-		/// </param>
 		/// <param name="cancellationToken">
 		/// The Cancel Token used to stop the process a any requested time.</param>
-		public ErrorFileReader(
-			ILog logger,
-			IoWarningPublisher publisher,
-			RetryOptions options,
-			CancellationToken cancellationToken)
+		public ErrorFileReader(IoReporterContext context, ILog logger, CancellationToken cancellationToken)
 			: base(
 				",",
 				"\"",
 				Conversions.ToString(Microsoft.VisualBasic.Strings.ChrW(20)),
-				publisher,
-				options,
+				context,
 				logger,
 				cancellationToken)
 		{

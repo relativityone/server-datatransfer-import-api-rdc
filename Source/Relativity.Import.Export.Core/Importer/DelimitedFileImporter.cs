@@ -48,27 +48,23 @@ namespace Relativity.Import.Export.Importer
 		/// <param name="newlineProxy">
 		/// The string with which to replace system newline characters (ClRf). Only the first character will be used.
 		/// </param>
-		/// <param name="publisher">
-		/// The I/O warning publisher.
-		/// </param>
-		/// <param name="options">
-		/// The configurable retry options.
+		/// <param name="context">
+		/// The I/O reporter context.
 		/// </param>
 		/// <param name="logger">
 		/// The Relativity logger.
 		/// </param>
 		/// <param name="token">
-		/// The cancellation token used to stop the process a any requested time.
+		/// The cancellation token used to stop the process upon request.
 		/// </param>
 		protected DelimitedFileImporter(
 			string delimiter,
 			string bound,
 			string newlineProxy,
-			IoWarningPublisher publisher,
-			RetryOptions options,
+			IoReporterContext context,
 			ILog logger,
 			CancellationToken token)
-			: base(AppSettings.Instance, FileSystem.Instance.DeepCopy(), publisher, options, logger, token)
+			: base(context, logger, token)
 		{
 			if (string.IsNullOrWhiteSpace(delimiter))
 			{
@@ -114,27 +110,23 @@ namespace Relativity.Import.Export.Importer
 		/// <param name="newlineProxy">
 		/// An array of characters with which to replace system newline characters (ClRf). Only the first character will be used.
 		/// </param>
-		/// <param name="publisher">
-		/// The I/O warning publisher.
-		/// </param>
-		/// <param name="options">
-		/// The configurable retry options.
+		/// <param name="context">
+		/// The I/O reporter context.
 		/// </param>
 		/// <param name="logger">
 		/// The Relativity logger.
 		/// </param>
 		/// <param name="token">
-		/// The cancellation token used to stop the process a any requested time.
+		/// The cancellation token used to stop the process upon request.
 		/// </param>
 		protected DelimitedFileImporter(
 			char[] delimiter,
 			char[] bound,
 			char[] newlineProxy,
-			IoWarningPublisher publisher,
-			RetryOptions options,
+			IoReporterContext context,
 			ILog logger,
 			CancellationToken token)
-			: base(AppSettings.Instance, FileSystem.Instance.DeepCopy(), publisher, options, logger, token)
+			: base(context, logger, token)
 		{
 			if (delimiter == null)
 			{
@@ -591,19 +583,19 @@ namespace Relativity.Import.Export.Importer
 		protected int GetChar(bool advance)
 		{
 			bool reInitReader = false;
-			int result = this.WaitAndRetry<int, Exception>(
-				this.RetryOptions == RetryOptions.None ? 0 : this.MaxRetryAttempts,
-				i => i == 0 ? TimeSpan.Zero : TimeSpan.FromSeconds(this.WaitTimeSecondsBetweenRetryAttempts),
+			int result = this.Context.WaitAndRetryPolicy.WaitAndRetry<int, Exception>(
+				this.Context.RetryOptions == RetryOptions.None ? 0 : this.CachedAppSettings.IoErrorNumberOfRetries,
+				i => i == 0 ? TimeSpan.Zero : TimeSpan.FromSeconds(this.CachedAppSettings.IoErrorWaitTimeInSeconds),
 				(exception, span) =>
 					{
 						IoWarningEventArgs args = new IoWarningEventArgs(
-							this.WaitTimeSecondsBetweenRetryAttempts,
+							this.CachedAppSettings.IoErrorWaitTimeInSeconds,
 							exception,
 							this.CurrentLineNumber);
 						this.PublishWarningMessage(args);
 						if (this.Reader.BaseStream is System.IO.FileStream && exception is System.IO.IOException
-																		   && exception.ToString().ToLowerInvariant()
-																			   .IndexOf("network") != -1)
+						                                                   && exception.ToString().ToLowerInvariant()
+							                                                   .IndexOf("network") != -1)
 						{
 							reInitReader = true;
 						}

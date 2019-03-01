@@ -26,8 +26,7 @@ namespace Relativity.Import.Export.NUnit
 				",",
 				"\"",
 				System.Convert.ToString((char)10),
-				new IoWarningPublisher(),
-				RetryOptions.None,
+				new IoReporterContext(),
 				new NullLogger(),
 				CancellationToken.None)
 		{

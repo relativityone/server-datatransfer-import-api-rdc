@@ -22,89 +22,51 @@ namespace Relativity.Import.Export.Io
 		/// <summary>
 		/// Create a new <see cref="IoReporter"/> instance.
 		/// </summary>
-		/// <param name="options">
-		/// The configurable retry options.
-		/// </param>
 		/// <param name="logger">
 		/// The Relativity logger.
 		/// </param>
-		/// <param name="publisher">
-		/// The warning publisher.
-		/// </param>
 		/// <param name="token">
-		/// A token which is used to cancel current task.
+		/// The cancellation token used to stop the process upon request.
 		/// </param>
 		/// <returns>
 		/// The <see cref="IoReporter"/> instance.
 		/// </returns>
-		public static IIoReporter CreateIoReporter(
-		    RetryOptions options,
-		    ILog logger,
-		    IoWarningPublisher publisher,
-		    CancellationToken token)
+		public static IIoReporter CreateIoReporter(ILog logger, CancellationToken token)
 	    {
-		    return CreateIoReporter(
-			    AppSettings.Instance,
-			    FileSystem.Instance.DeepCopy(),
-			    options,
-			    logger,
-			    publisher,
-			    token);
+		    return CreateIoReporter(new IoReporterContext(), logger, token);
 	    }
 
 		/// <summary>
 		/// Create a new <see cref="IoReporter"/> instance.
 		/// </summary>
-		/// <param name="appSettings">
-		/// The application settings.
-		/// </param>
-		/// <param name="fileSystem">
-		/// The file system.
-		/// </param>
-		/// <param name="options">
-		/// The configurable retry options.
+		/// <param name="context">
+		/// The I/O reporter context.
 		/// </param>
 		/// <param name="logger">
 		/// The Relativity logger.
 		/// </param>
-		/// <param name="publisher">
-		/// The warning publisher.
-		/// </param>
 		/// <param name="token">
-		/// A token which is used to cancel current task.
+		/// The cancellation token used to stop the process upon request.
 		/// </param>
 		/// <returns>
 		/// The <see cref="IoReporter"/> instance.
 		/// </returns>
 		public static IIoReporter CreateIoReporter(
-		    IAppSettings appSettings,
-			IFileSystem fileSystem,
-			RetryOptions options,
-			ILog logger,
-		    IoWarningPublisher publisher,
-		    CancellationToken token)
+			IoReporterContext context,
+		    ILog logger,
+			CancellationToken token)
 	    {
-		    if (appSettings == null)
-		    {
-			    throw new ArgumentNullException(nameof(appSettings));
-		    }
-
-		    if (fileSystem == null)
-		    {
-			    throw new ArgumentNullException(nameof(fileSystem));
-		    }
+			if (context == null)
+			{
+				throw new ArgumentNullException(nameof(context));
+			}
 
 			if (logger == null)
             {
                 throw new ArgumentNullException(nameof(logger));
             }
 
-			if (publisher == null)
-	        {
-		        throw new ArgumentNullException(nameof(publisher));
-	        }
-
-			return new IoReporter(appSettings, fileSystem, publisher, options, logger, token);
+			return new IoReporter(context, logger, token);
 	    }
     }
 }

@@ -19,95 +19,38 @@ namespace Relativity.Import.Export.Io
 	/// <summary>
 	/// Represents a class object to perform I/O operations, publish warning messages, and retry the operation.
 	/// </summary>
-	public class IoReporter : IWaitAndRetryPolicy, IIoReporter
+	public class IoReporter : IIoReporter
 	{
 		/// <summary>
 		/// The value that indicates no retry information is provided.
 		/// </summary>
 		private const int NoRetryInfo = -1;
 
-		private readonly IFileSystem fileSystem;
-		private readonly IWaitAndRetryPolicy retryPolicy;
+		/// <summary>
+		/// The Relativity logger instance.
+		/// </summary>
 		private readonly ILog logger;
-		private readonly IoWarningPublisher publisher;
-		private readonly bool cachedDisableThrowOnIllegalCharacters;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IoReporter"/> class.
 		/// </summary>
-		/// <param name="appSettings">
-		/// The application settings.
-		/// </param>
-		/// <param name="fileSystem">
-		/// The file system wrapper.
-		/// </param>
-		/// <param name="publisher">
-		/// The I/O warning publisher.
-		/// </param>
-		/// <param name="options">
-		/// The configurable retry options.
+		/// <param name="context">
+		/// The I/O reporter context.
 		/// </param>
 		/// <param name="logger">
 		/// The Relativity logger.
 		/// </param>
 		/// <param name="token">
-		/// The Cancel Token used to stop the process a any requested time.</param>
+		/// The cancellation token used to stop the process upon request.
+		/// </param>
 		public IoReporter(
-			IAppSettings appSettings,
-			IFileSystem fileSystem,
-			IoWarningPublisher publisher,
-			RetryOptions options,
-			ILog logger,
-			CancellationToken token)
-			: this(new WaitAndRetryPolicy(appSettings), appSettings, fileSystem, publisher, options, logger, token)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="IoReporter"/> class.
-		/// </summary>
-		/// <param name="retryPolicy">
-		/// The retry policy.
-		/// </param>
-		/// <param name="appSettings">
-		/// The application settings.
-		/// </param>
-		/// <param name="fileSystem">
-		/// The file system wrapper.
-		/// </param>
-		/// <param name="publisher">
-		/// The I/O warning publisher.
-		/// </param>
-		/// <param name="options">
-		/// The configurable retry options.
-		/// </param>
-		/// <param name="logger">
-		/// The Relativity logger.
-		/// </param>
-		/// <param name="token">
-		/// The Cancel Token used to stop the process a any requested time.</param>
-		public IoReporter(
-			IWaitAndRetryPolicy retryPolicy,
-			IAppSettings appSettings,
-			IFileSystem fileSystem,
-			IoWarningPublisher publisher,
-			RetryOptions options,
+			IoReporterContext context,
 			ILog logger,
 			CancellationToken token)
 		{
-			if (retryPolicy == null)
+			if (context == null)
 			{
-				throw new ArgumentNullException(nameof(retryPolicy));
-			}
-
-			if (appSettings == null)
-			{
-				throw new ArgumentNullException(nameof(appSettings));
-			}
-
-			if (fileSystem == null)
-			{
-				throw new ArgumentNullException(nameof(fileSystem));
+				throw new ArgumentNullException(nameof(context));
 			}
 
 			if (logger == null)
@@ -115,42 +58,26 @@ namespace Relativity.Import.Export.Io
 				throw new ArgumentNullException(nameof(logger));
 			}
 
-			if (publisher == null)
+			if (context == null)
 			{
-				throw new ArgumentNullException(nameof(publisher));
+				throw new ArgumentNullException(nameof(context));
 			}
 
-			this.retryPolicy = retryPolicy;
-			this.cachedDisableThrowOnIllegalCharacters = appSettings.DisableThrowOnIllegalCharacters;
-			this.fileSystem = fileSystem;
 			this.logger = logger;
-			this.publisher = publisher;
-			this.RetryOptions = options;
+			this.Context = context;
 			this.CancellationToken = token;
+			this.CachedAppSettings = context.AppSettings.DeepCopy();
 		}
 
 		/// <summary>
-		/// Gets or sets the maximum number of retry attempts. This defaults to <see cref="IAppSettings.IoErrorNumberOfRetries"/>.
+		/// Gets the cached settings.
 		/// </summary>
 		/// <value>
-		/// The retry attempts.
+		/// The <see cref="AppSettingsDto"/> instance.
 		/// </value>
-		public int MaxRetryAttempts
+		protected AppSettingsDto CachedAppSettings
 		{
-			get => this.retryPolicy.MaxRetryAttempts;
-			set => this.retryPolicy.MaxRetryAttempts = value;
-		}
-
-		/// <summary>
-		/// Gets or sets the total wait time, in seconds, between retry attempts. This defaults to <see cref="IAppSettings.IoErrorWaitTimeInSeconds"/>.
-		/// </summary>
-		/// <value>
-		/// The total seconds.
-		/// </value>
-		public int WaitTimeSecondsBetweenRetryAttempts
-		{
-			get => this.retryPolicy.WaitTimeSecondsBetweenRetryAttempts;
-			set => this.retryPolicy.WaitTimeSecondsBetweenRetryAttempts = value;
+			get;
 		}
 
 		/// <summary>
@@ -165,12 +92,12 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <summary>
-		/// Gets the retry options.
+		/// Gets the I/O reporter context.
 		/// </summary>
 		/// <value>
-		/// The <see cref="RetryOptions"/> value.
+		/// The <see cref="IoReporterContext"/> instance.
 		/// </value>
-		protected RetryOptions RetryOptions
+		protected IoReporterContext Context
 		{
 			get;
 		}
@@ -268,7 +195,7 @@ namespace Relativity.Import.Export.Io
 
 			this.Exec(lineNumber, sourceFileName, "Copy File", () =>
 			{
-				this.fileSystem.File.Copy(sourceFileName, destFileName, overwrite);
+				this.Context.FileSystem.File.Copy(sourceFileName, destFileName, overwrite);
 				return 0;
 			});
 		}
@@ -290,7 +217,7 @@ namespace Relativity.Import.Export.Io
 
 			return this.Exec(lineNumber, fileName, "File Exists", () =>
 			{
-				IFileInfo fileInfo = this.fileSystem.CreateFileInfo(fileName);
+				IFileInfo fileInfo = this.Context.FileSystem.CreateFileInfo(fileName);
 				bool fileExists = fileInfo.Exists;
 				return fileExists;
 			});
@@ -313,7 +240,7 @@ namespace Relativity.Import.Export.Io
 
             return this.Exec(lineNumber, fileName, "File Length", () =>
             {
-	            IFileInfo fileInfo = this.fileSystem.CreateFileInfo(fileName);
+	            IFileInfo fileInfo = this.Context.FileSystem.CreateFileInfo(fileName);
 
 				// We want any exceptions that occur when accessing properties to get thrown.
 	            long fileLength = fileInfo.Length;
@@ -325,7 +252,7 @@ namespace Relativity.Import.Export.Io
 		public void PublishRetryMessage(Exception exception, TimeSpan timeSpan, int retryCount, int totalRetryCount, long lineNumber)
 		{
 			var warningMessage = BuildIoReporterWarningMessage(exception, timeSpan.TotalSeconds, retryCount, totalRetryCount);
-			this.publisher.PublishIoWarningEvent(new IoWarningEventArgs(warningMessage, lineNumber));
+			this.Context.PublishIoWarningEvent(new IoWarningEventArgs(warningMessage, lineNumber));
 			this.logger.LogWarning(exception, warningMessage);
 		}
 
@@ -337,75 +264,14 @@ namespace Relativity.Import.Export.Io
 				throw new ArgumentNullException(nameof(args));
 			}
 
-			this.publisher.PublishIoWarningEvent(args);
+			this.Context.PublishIoWarningEvent(args);
 			this.logger.LogWarning(args.Message);
 		}
 
-		/// <inheritdoc />
-		public void WaitAndRetry<TException>(
-			Func<int, TimeSpan> retryDuration,
-			Action<Exception, TimeSpan> retryAction,
-			Action<CancellationToken> execFunc,
-			CancellationToken token)
-			where TException : Exception
+		private bool ThrowFileInfoInvalidPathException(Exception exception)
 		{
-			this.retryPolicy.WaitAndRetry<TException>(retryDuration, retryAction, execFunc, token);
-		}
-
-		/// <inheritdoc />
-		public void WaitAndRetry<TException>(
-			int maxRetryCount,
-			Func<int, TimeSpan> retryDuration,
-			Action<Exception, TimeSpan> retryAction,
-			Action<CancellationToken> execFunc,
-			CancellationToken token)
-			where TException : Exception
-		{
-			this.retryPolicy.WaitAndRetry<TException>(maxRetryCount, retryDuration, retryAction, execFunc, token);
-		}
-
-		/// <inheritdoc />
-		public TResult WaitAndRetry<TResult, TException>(
-			Func<int, TimeSpan> retryDuration,
-			Action<Exception, TimeSpan> retryAction,
-			Func<CancellationToken, TResult> execFunc,
-			CancellationToken token)
-			where TException : Exception
-		{
-			return this.retryPolicy.WaitAndRetry<TResult, TException>(retryDuration, retryAction, execFunc, token);
-		}
-
-		/// <inheritdoc />
-		public TResult WaitAndRetry<TResult>(
-			Func<Exception, bool> exceptionPredicate,
-			Func<int, TimeSpan> retryDuration,
-			Action<Exception, TimeSpan> retryAction,
-			Func<CancellationToken, TResult> execFunc,
-			CancellationToken token)
-		{
-			return this.retryPolicy.WaitAndRetry(exceptionPredicate, retryDuration, retryAction, execFunc, token);
-		}
-
-		/// <inheritdoc />
-		public TResult WaitAndRetry<TResult, TException>(
-			int maxRetryCount,
-			Func<int, TimeSpan> retryDuration,
-			Action<Exception, TimeSpan> retryAction,
-			Func<CancellationToken, TResult> execFunc,
-			CancellationToken token)
-			where TException : Exception
-		{
-			return this.retryPolicy.WaitAndRetry<TResult, TException>(
-				maxRetryCount,
-				retryDuration,
-				retryAction,
-				execFunc,
-				token);
-		}
-
-		private bool ShouldThrowFileInfoInvalidPathException(Exception exception)
-		{
-			return this.cachedDisableThrowOnIllegalCharacters && RetryExceptionHelper.IsIllegalCharactersInPathException(exception);
+			return this.CachedAppSettings.DisableThrowOnIllegalCharacters
+			       && RetryExceptionHelper.IsIllegalCharactersInPathException(exception);
 		}
 
         private FileInfoInvalidPathException CreateFileInfoInvalidPathException(Exception exception, string fileName)
@@ -426,15 +292,15 @@ namespace Relativity.Import.Export.Io
 		{
 			try
 			{
-				int maxRetryAttempts = this.MaxRetryAttempts;
+				int maxRetryAttempts = this.CachedAppSettings.IoErrorNumberOfRetries;
 				int currentRetryAttempt = 0;
-				return this.WaitAndRetry(
-					RetryExceptionHelper.CreateRetryPredicate(this.RetryOptions),
+				return this.Context.WaitAndRetryPolicy.WaitAndRetry(
+					RetryExceptionHelper.CreateRetryPredicate(this.Context.RetryOptions),
 					retryAttempt =>
 						{
 							currentRetryAttempt = retryAttempt;
 							return TimeSpan.FromSeconds(
-								retryAttempt == 1 ? 0 : this.WaitTimeSecondsBetweenRetryAttempts);
+								retryAttempt == 1 ? 0 : this.CachedAppSettings.IoErrorWaitTimeInSeconds);
 						},
 					(exception, timeSpan) =>
 						{
@@ -453,7 +319,7 @@ namespace Relativity.Import.Export.Io
 							}
 							catch (Exception exception)
 							{
-								if (this.ShouldThrowFileInfoInvalidPathException(exception))
+								if (this.ThrowFileInfoInvalidPathException(exception))
 								{
 									throw this.CreateFileInfoInvalidPathException(exception, fileName);
 								}

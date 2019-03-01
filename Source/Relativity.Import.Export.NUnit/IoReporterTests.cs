@@ -39,17 +39,17 @@ namespace Relativity.Import.Export.NUnit
         private Mock<IAppSettings> mockAppSettings;
 		private IWaitAndRetryPolicy waitAndRetry;
         private Mock<ILog> mockLogger;
-        private IoWarningPublisher publisher;
+        private IoReporterContext context;
         private long actualFileLength;
         private Func<int, TimeSpan> actualRetryDuractionFunc = null;
         private Exception expectedException;
-		private RetryOptions retryOptions;
 		private bool actualFileExists;
 		private Exception actualLoggedWarningException;
 		private string actualLoggedWarningMessage;
 		private Exception actualLoggedErrorException;
 		private string actualLoggedErrorMessage;
 		private string actualLoggedInformationMessage;
+		private AppSettingsDto cachedAppSettings;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
 			"Microsoft.Performance",
@@ -112,6 +112,7 @@ namespace Relativity.Import.Export.NUnit
 		[SetUp]
 		public void Setup()
 		{
+			this.cachedAppSettings = new AppSettingsDto();
 			this.actualFileExists = false;
 			this.actualFileLength = 0;
 			this.actualLoggedErrorException = null;
@@ -121,6 +122,18 @@ namespace Relativity.Import.Export.NUnit
 			this.actualLoggedWarningMessage = null;
 			this.actualRetryDuractionFunc = null;
 			this.mockAppSettings = new Mock<IAppSettings>();
+			this.mockAppSettings.SetupGet(x => x.DisableThrowOnIllegalCharacters).Returns(false);
+			this.mockAppSettings.Setup(x => x.DeepCopy()).Callback(
+				() =>
+					{
+						// Must sync the key I/O settings since deep copies are used.
+						this.cachedAppSettings.IoErrorNumberOfRetries =
+							this.mockAppSettings.Object.IoErrorNumberOfRetries;
+						this.cachedAppSettings.IoErrorWaitTimeInSeconds =
+							this.mockAppSettings.Object.IoErrorWaitTimeInSeconds;
+						this.cachedAppSettings.DisableThrowOnIllegalCharacters =
+							this.mockAppSettings.Object.DisableThrowOnIllegalCharacters;
+					}).Returns(this.cachedAppSettings);
 			this.mockFileSystem = new Mock<IFileSystem>();
             this.mockWaitAndRetryPolicy = new Mock<IWaitAndRetryPolicy>();
             this.waitAndRetry = null;
@@ -146,10 +159,10 @@ namespace Relativity.Import.Export.NUnit
 				{
 					this.actualLoggedInformationMessage = logInformationMessage;
 				});
-
-			this.publisher = new IoWarningPublisher();
-			this.retryOptions = RetryOptions.Io;
-			this.mockAppSettings.SetupGet(x => x.DisableThrowOnIllegalCharacters).Returns(false);
+			this.context = new IoReporterContext(
+				               this.mockFileSystem.Object,
+				               this.mockAppSettings.Object,
+				               this.mockWaitAndRetryPolicy.Object) { RetryOptions = RetryOptions.Io };
 		}
 
 		[Test]
@@ -158,66 +171,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.Throws<ArgumentNullException>(
 				() =>
 					{
-						this.ioReporterInstance = new IoReporter(
-							null,
-							this.mockAppSettings.Object,
-							this.mockFileSystem.Object,
-							this.publisher,
-							RetryOptions.All,
-							this.mockLogger.Object,
-							CancellationToken.None);
-					});
-
-			Assert.Throws<ArgumentNullException>(
-				() =>
-					{
-						this.ioReporterInstance = new IoReporter(
-							this.mockWaitAndRetryPolicy.Object,
-							null,
-							this.mockFileSystem.Object,
-							this.publisher,
-							RetryOptions.All,
-							this.mockLogger.Object,
-							CancellationToken.None);
-					});
-
-			Assert.Throws<ArgumentNullException>(
-				() =>
-					{
-						this.ioReporterInstance = new IoReporter(
-							this.mockWaitAndRetryPolicy.Object,
-							this.mockAppSettings.Object,
-							null,
-							this.publisher,
-							RetryOptions.All,
-							this.mockLogger.Object,
-							CancellationToken.None);
-					});
-
-			Assert.Throws<ArgumentNullException>(
-				() =>
-					{
-						this.ioReporterInstance = new IoReporter(
-							this.mockWaitAndRetryPolicy.Object,
-							this.mockAppSettings.Object,
-							this.mockFileSystem.Object,
-							null,
-							RetryOptions.All,
-							this.mockLogger.Object,
-							CancellationToken.None);
-					});
-
-			Assert.Throws<ArgumentNullException>(
-				() =>
-					{
-						this.ioReporterInstance = new IoReporter(
-							this.mockWaitAndRetryPolicy.Object,
-							this.mockAppSettings.Object,
-							this.mockFileSystem.Object,
-							this.publisher,
-							RetryOptions.All,
-							null,
-							CancellationToken.None);
+						this.ioReporterInstance = new IoReporter(null, this.mockLogger.Object, CancellationToken.None);
 					});
 		}
 
@@ -399,7 +353,7 @@ namespace Relativity.Import.Export.NUnit
 
 		private void GivenTheMockWaitAndRetryReturns(int waitTimeBetweenRetryAttempts)
 		{
-            this.mockWaitAndRetryPolicy.Setup(obj => obj.WaitTimeSecondsBetweenRetryAttempts).Returns(waitTimeBetweenRetryAttempts);
+			this.mockAppSettings.SetupGet(x => x.IoErrorWaitTimeInSeconds).Returns(waitTimeBetweenRetryAttempts);
 		}
 
 		/// <summary>
@@ -491,18 +445,14 @@ namespace Relativity.Import.Export.NUnit
 
 		private void GivenTheRetryOptions(RetryOptions value)
 		{
-			this.retryOptions = value;
+			this.context.RetryOptions = value;
 		}
 
 		private void GivenTheIoReportInstanceIsConstructed()
 		{
-			IWaitAndRetryPolicy policy = this.waitAndRetry ?? this.mockWaitAndRetryPolicy.Object;
+			this.context.WaitAndRetryPolicy = this.waitAndRetry ?? this.mockWaitAndRetryPolicy.Object;
 			this.ioReporterInstance = new IoReporter(
-				policy,
-				this.mockAppSettings.Object,
-				this.mockFileSystem.Object,
-				this.publisher,
-				this.retryOptions,
+				this.context,
 				this.mockLogger.Object,
 				this.cancellationTokenSource.Token);
 		}

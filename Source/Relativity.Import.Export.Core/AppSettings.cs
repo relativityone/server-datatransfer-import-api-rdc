@@ -15,6 +15,9 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Represents a class object that provides thread-safe application settings.
 	/// </summary>
+	/// <remarks>
+	/// Ensure that <see cref="AppSettingsDto"/> is updated when adding new settings.
+	/// </remarks>
 	[Serializable]
 	public sealed class AppSettings : IAppSettings
 	{
@@ -356,6 +359,12 @@ namespace Relativity.Import.Export
 		public static void Refresh()
 		{
 			Instance.Refresh();
+		}
+
+		/// <inheritdoc />
+		AppSettingsDto IAppSettings.DeepCopy()
+		{
+			return new AppSettingsDto(this);
 		}
 
 		/// <inheritdoc />

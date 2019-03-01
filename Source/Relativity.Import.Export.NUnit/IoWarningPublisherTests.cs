@@ -19,7 +19,7 @@ namespace Relativity.Import.Export.NUnit
     [TestFixture]
     public class IoWarningPublisherTests
 	{
-        private IoWarningPublisher ioWarningPublisher;
+        private IoReporterContext context;
 		private Dictionary<long, string> results;
 
         [SetUp]
@@ -40,17 +40,17 @@ namespace Relativity.Import.Export.NUnit
 
 		private void WhenEventOccursWithMessageAndLineNumber(string message, long lineNumber)
 		{
-			this.ioWarningPublisher.PublishIoWarningEvent(new IoWarningEventArgs(message, lineNumber));
+			this.context.PublishIoWarningEvent(new IoWarningEventArgs(message, lineNumber));
 		}
 
 		private void GivenTheMethodWhichHandlesTheEvent(EventHandler<IoWarningEventArgs> testEventHandler)
 		{
-			this.ioWarningPublisher.IoWarningEvent += testEventHandler;
+			this.context.IoWarningEvent += testEventHandler;
 		}
 
 		private void GivenTheInstanceOfPublisher()
 		{
-			this.ioWarningPublisher = new IoWarningPublisher();
+			this.context = new IoReporterContext();
 		}
 
 		private void TestEventHandler(object sender, IoWarningEventArgs eventArgs)
