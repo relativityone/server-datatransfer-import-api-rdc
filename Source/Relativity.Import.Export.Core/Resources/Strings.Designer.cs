@@ -106,6 +106,15 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An error has occurred processing file [{0}] (page {1} of {2}).
+        /// </summary>
+        internal static string ConvertToMultiPageTiffOrPdfError {
+            get {
+                return ResourceManager.GetString("ConvertToMultiPageTiffOrPdfError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid date..
         /// </summary>
         internal static string DateImporterErrorAdditionalInfo {
@@ -138,6 +147,15 @@ namespace Relativity.Import.Export.Resources {
         internal static string HttpFallbackWarningMessage {
             get {
                 return ResourceManager.GetString("HttpFallbackWarningMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The image conversion failed because a TIFF image codec doesn&apos;t exist within this Operating System..
+        /// </summary>
+        internal static string ImageConversionTiffCodecNotFoundMessage {
+            get {
+                return ResourceManager.GetString("ImageConversionTiffCodecNotFoundMessage", resourceCulture);
             }
         }
         

@@ -49,6 +49,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="LogConfig.xml">
@@ -118,6 +119,7 @@
     <Compile Include="GlobalSuppressions.cs">
     </Compile>
     <Compile Include="FreeImageIdServiceTests.cs" />
+    <Compile Include="ImageConversionServiceTests.cs" />
     <Compile Include="OutsideInFileIdServiceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TapiBridgeTestBase.cs" />
@@ -238,6 +240,9 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(SolutionDir)..\Vendor\FreeImage\3.18.0\x64\FreeImage.dll" $(TargetDir)</PostBuildEvent>
+  </PropertyGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -417,7 +422,4 @@
       </ItemGroup>
     </When>
   </Choose>
-  <PropertyGroup>
-    <PostBuildEvent>copy "$(SolutionDir)..\Vendor\FreeImage\3.18.0\x64\FreeImage.dll" $(TargetDir)</PostBuildEvent>
-  </PropertyGroup>
 </Project>

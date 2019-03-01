@@ -2,6 +2,7 @@ framework: net462
 source https://nuget.org/api/v2
 
 nuget castle.windsor = 3.3.0
+nuget itextsharp = 5.5.13
 nuget microsoft.build.logging.structuredlogger = 1.0.89
 nuget moq = 4.10.1
 nuget nbuilder = 6.0.0

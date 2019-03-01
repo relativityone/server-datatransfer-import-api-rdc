@@ -279,4 +279,10 @@
   <data name="ImporterStandardFieldError" xml:space="preserve">
     <value>Error in row {0}, field "{1}". {2}"</value>
   </data>
+  <data name="ConvertToMultiPageTiffOrPdfError" xml:space="preserve">
+    <value>An error has occurred processing file [{0}] (page {1} of {2})</value>
+  </data>
+  <data name="ImageConversionTiffCodecNotFoundMessage" xml:space="preserve">
+    <value>The image conversion failed because a TIFF image codec doesn't exist within this Operating System.</value>
+  </data>
 </root>

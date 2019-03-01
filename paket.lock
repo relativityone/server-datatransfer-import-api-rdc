@@ -5,6 +5,7 @@ NUGET
     Castle.Core (4.3.1)
     Castle.Windsor (3.3)
       Castle.Core (>= 3.3)
+    iTextSharp (5.5.13)
     Microsoft.Build.Logging.StructuredLogger (1.0.89)
     Moq (4.10.1)
       Castle.Core (>= 4.3.1)

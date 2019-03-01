@@ -55,12 +55,18 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppSettingsDto.cs" />
     <Compile Include="CollectionExtensions.cs" />
+    <Compile Include="ConvertToMultiPagePdfException.cs" />
+    <Compile Include="ConvertToMultiPageTiffException.cs" />
+    <Compile Include="ImageConversionService.cs" />
+    <Compile Include="IImageConversionService.cs" />
+    <Compile Include="ImageRollupException.cs" />
     <Compile Include="Importer\ObjectNameImporterException.cs" />
     <Compile Include="Importer\StringImporterException.cs" />
     <Compile Include="Importer\ConditionalArrayList.cs" />
@@ -259,6 +265,17 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="itextsharp">
+          <HintPath>..\..\packages\iTextSharp\lib\itextsharp.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
