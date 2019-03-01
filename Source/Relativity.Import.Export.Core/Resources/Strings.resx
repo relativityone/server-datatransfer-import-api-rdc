@@ -273,6 +273,9 @@
   <data name="StringImporterMaxLengthWithFieldErrorAdditionalInfo" xml:space="preserve">
     <value>Input length exceeds maximum set length of {0} for the {1} field.</value>
   </data>
+  <data name="StringImporterMaxLengthExWithFieldErrorAdditionalInfo" xml:space="preserve">
+    <value>The input value from the {0} source field has a length of {1} character(s). This exceeds the limit for the {0} destination field, which is currently set to {2} character(s).</value>
+  </data>
   <data name="ImporterStandardFieldError" xml:space="preserve">
     <value>Error in row {0}, field "{1}". {2}"</value>
   </data>

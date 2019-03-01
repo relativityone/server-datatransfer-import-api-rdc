@@ -61,6 +61,33 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		[TestCase("12345", "12345")]
+		[TestCase("abcde", "abcde")]
+		[TestCase("", null)]
+		[TestCase(null, null)]
+		public void ShouldGetTheNullableFixedStringValue(string value, string expected)
+		{
+			string result = this.importer.GetNullableFixedString(value, 1, 100, "TargetPath");
+			Assert.That(result, Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void ShouldThrowWhenTheNullableFixedStringExceedsTheMaxLength()
+		{
+			StringImporterException exception = Assert.Throws<StringImporterException>(
+				() =>
+					{
+						this.importer.GetNullableFixedString("abcde", 1, 3, "TargetPath");
+					});
+			string additionalInfoMessage = StringImporterException.GetAdditionalInfoMessage(5, 3, "TargetPath");
+			string errorMessage = ImporterException.GetErrorMessage(
+				this.importer.CurrentLineNumber,
+				"TargetPath",
+				additionalInfoMessage);
+			Assert.That(exception.Message, Is.EqualTo(errorMessage));
+		}
+
+		[Test]
 		public void ShouldThrowWhenGettingTheNullableDecimalValue()
 		{
 			Assert.Throws<DecimalImporterException>(() => this.importer.GetNullableDecimal("1000000000000000.43", 1));

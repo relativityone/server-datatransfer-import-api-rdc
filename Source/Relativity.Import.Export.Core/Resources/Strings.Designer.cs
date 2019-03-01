@@ -322,6 +322,15 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The input value from the {0} source field has a length of {1} character(s). This exceeds the limit for the {0} destination field, which is currently set to {2} character(s)..
+        /// </summary>
+        internal static string StringImporterMaxLengthExWithFieldErrorAdditionalInfo {
+            get {
+                return ResourceManager.GetString("StringImporterMaxLengthExWithFieldErrorAdditionalInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Input length exceeds maximum set length of {0} for the {1} field..
         /// </summary>
         internal static string StringImporterMaxLengthWithFieldErrorAdditionalInfo {

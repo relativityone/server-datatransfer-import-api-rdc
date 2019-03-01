@@ -158,6 +158,18 @@ namespace Relativity.Import.Export.Importer
 		}
 
 		/// <summary>
+		/// Gets the current line number.
+		/// </summary>
+		/// <value>
+		/// The line number.
+		/// </value>
+		public long CurrentLineNumber
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Gets the bound.
 		/// </summary>
 		/// <value>
@@ -176,14 +188,6 @@ namespace Relativity.Import.Export.Importer
 			get;
 			private set;
 		}
-
-		/// <summary>
-		/// Gets the current line number.
-		/// </summary>
-		/// <value>
-		/// The line number.
-		/// </value>
-		protected long CurrentLineNumber { get; private set; }
 
 		/// <summary>
 		/// Gets the character delimiter.
@@ -470,17 +474,20 @@ namespace Relativity.Import.Export.Importer
 		/// <param name="column">
 		/// The column to report, should an exception occur.
 		/// </param>
-		/// <param name="fieldLength">
-		/// The field length to report, should an exception occur.
+		/// <param name="maxLength">
+		/// The maximum field length to report, should an exception occur.
+		/// </param>
+		/// <param name="displayName">
+		/// The display name of the field to report, should an exception occur.
 		/// </param>
 		/// <returns>
 		/// null if <see param="value"/> is null or empty; otherwise, <see param="value"/>.
 		/// </returns>
-		public string GetNullableFixedString(string value, int column, int fieldLength)
+		public string GetNullableFixedString(string value, int column, int maxLength, string displayName)
 		{
-			if (value != null && value.Length > fieldLength)
+			if (value != null && value.Length > maxLength)
 			{
-				throw new StringImporterException(this.CurrentLineNumber, column, fieldLength);
+				throw new StringImporterException(this.CurrentLineNumber, column, value.Length, maxLength, displayName);
 			}
 
 			return NullableTypesHelper.ToString(value);

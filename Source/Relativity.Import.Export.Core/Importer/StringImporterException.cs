@@ -90,6 +90,34 @@ namespace Relativity.Import.Export.Importer
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StringImporterException"/> class.
 		/// </summary>
+		/// <param name="row">
+		/// The index of the row causing the exception.
+		/// </param>
+		/// <param name="column">
+		/// The index of the column causing the exception.
+		/// </param>
+		/// <param name="sourceLength">
+		/// The length of the source string value.
+		/// </param>
+		/// <param name="destinationMaxLength">
+		/// The length of the destination string value causing the exception.
+		/// </param>
+		/// <param name="fieldName">
+		/// The name of the field causing the exception.
+		/// </param>
+		public StringImporterException(
+			long row,
+			int column,
+			int sourceLength,
+			int destinationMaxLength,
+			string fieldName)
+			: base(row, column, fieldName, GetAdditionalInfoMessage(sourceLength, destinationMaxLength, fieldName))
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StringImporterException"/> class.
+		/// </summary>
 		/// <param name="info">
 		/// The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.
 		/// </param>
@@ -143,6 +171,31 @@ namespace Relativity.Import.Export.Importer
 				Strings.StringImporterMaxLengthWithFieldErrorAdditionalInfo,
 				length,
 				fieldName);
+		}
+
+		/// <summary>
+		/// Gets the additional information message.
+		/// </summary>
+		/// <param name="sourceLength">
+		/// The length of the source string value.
+		/// </param>
+		/// <param name="destinationMaxLength">
+		/// The length of the destination string value causing the exception.
+		/// </param>
+		/// <param name="fieldName">
+		/// The name of the field causing the exception.
+		/// </param>
+		/// <returns>
+		/// The error message.
+		/// </returns>
+		internal static string GetAdditionalInfoMessage(int sourceLength, int destinationMaxLength, string fieldName)
+		{
+			return string.Format(
+				CultureInfo.CurrentCulture,
+				Strings.StringImporterMaxLengthExWithFieldErrorAdditionalInfo,
+				fieldName,
+				sourceLength,
+				destinationMaxLength);
 		}
 	}
 }
