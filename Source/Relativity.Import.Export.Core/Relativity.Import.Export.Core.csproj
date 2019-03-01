@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppSettingsDto.cs" />
+    <Compile Include="CollectionExtensions.cs" />
     <Compile Include="Importer\ObjectNameImporterException.cs" />
     <Compile Include="Importer\StringImporterException.cs" />
     <Compile Include="Importer\ConditionalArrayList.cs" />

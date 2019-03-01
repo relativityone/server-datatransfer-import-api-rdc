@@ -59,6 +59,7 @@
     <Compile Include="DelimitedFileImporterTestCases.cs" />
     <Compile Include="DelimitedFileImporterTests.cs" />
     <Compile Include="ImporterExceptionSerializationTests.cs" />
+    <Compile Include="CollectionExtensionsTests.cs" />
     <Compile Include="IoReporterContextTests.cs" />
     <Compile Include="MockDelimitedFileImport.cs" />
     <Compile Include="NullableTypesHelperTests.cs" />
