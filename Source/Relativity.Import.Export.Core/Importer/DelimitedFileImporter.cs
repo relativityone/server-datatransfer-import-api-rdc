@@ -635,7 +635,7 @@ namespace Relativity.Import.Export.Importer
 		/// The value to parse.
 		/// </param>
 		/// <returns>
-		/// The nullable decimal value.
+		/// The nullable <see cref="decimal"/> value.
 		/// </returns>
 		protected virtual decimal? ParseNullableDecimal(string value)
 		{
@@ -668,18 +668,37 @@ namespace Relativity.Import.Export.Importer
 			}
 		}
 
+		/// <summary>
+		/// Converts all newline characters within the specified input string builder instance.
+		/// </summary>
+		/// <param name="input">
+		/// The input string contained within the string builder to convert.
+		/// </param>
+		/// <returns>
+		/// The converted input string.
+		/// </returns>
 		private string ConvertNewLine(StringBuilder input)
 		{
 			return this.ConvertNewLine(input.ToString());
 		}
 
+		/// <summary>
+		/// Converts all newline characters within the specified input string.
+		/// </summary>
+		/// <param name="input">
+		/// The input string to convert.
+		/// </param>
+		/// <returns>
+		/// The converted input string.
+		/// </returns>
 		private string ConvertNewLine(string input)
 		{
 			if (this.NewlineProxy != null)
 			{
-				input = input.Replace("\r\n", Conversions.ToString(this.NewlineProxy[0]));
-				input = input.Replace('\r', this.NewlineProxy[0]);
-				input = input.Replace('\n', this.NewlineProxy[0]);
+				string newlineProxyString = Conversions.ToString(this.NewlineProxy[0]);
+				input = input.Replace(VisualBasicConstants.VbNewLine, newlineProxyString);
+				input = input.Replace(VisualBasicConstants.VbCr, newlineProxyString);
+				input = input.Replace(VisualBasicConstants.VbLf, newlineProxyString);
 			}
 
 			switch (this.TrimOption)
