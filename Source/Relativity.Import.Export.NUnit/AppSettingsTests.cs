@@ -198,6 +198,46 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		public void ShouldGetAndSetTheMaxNumberOfFileExportTasksSetting()
+		{
+			// Verify global settings.
+			Assert.That(
+				AppSettings.MaxNumberOfFileExportTasks,
+				Is.EqualTo(AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue));
+			int expectedGlobalValue = RandomHelper.NextInt32(10, 1000);
+			AppSettings.MaxNumberOfFileExportTasks = expectedGlobalValue;
+			Assert.That(AppSettings.MaxNumberOfFileExportTasks, Is.EqualTo(expectedGlobalValue));
+
+			// Verify interface settings.
+			Assert.That(
+				this.settings.MaxNumberOfFileExportTasks,
+				Is.EqualTo(AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue));
+			int expectedInterfaceValue = RandomHelper.NextInt32(10, 1000);
+			this.settings.MaxNumberOfFileExportTasks = expectedInterfaceValue;
+			Assert.That(this.settings.MaxNumberOfFileExportTasks, Is.EqualTo(expectedInterfaceValue));
+		}
+
+		[Test]
+		public void ShouldGetAndSetTheMaximumFilesForTapiBridgeSetting()
+		{
+			// Verify global settings.
+			Assert.That(
+				AppSettings.MaximumFilesForTapiBridge,
+				Is.EqualTo(AppSettingsConstants.MaximumFilesForTapiBridgeDefaultValue));
+			int expectedGlobalValue = RandomHelper.NextInt32(10, 1000);
+			AppSettings.MaximumFilesForTapiBridge = expectedGlobalValue;
+			Assert.That(AppSettings.MaximumFilesForTapiBridge, Is.EqualTo(expectedGlobalValue));
+
+			// Verify interface settings.
+			Assert.That(
+				this.settings.MaximumFilesForTapiBridge,
+				Is.EqualTo(AppSettingsConstants.MaximumFilesForTapiBridgeDefaultValue));
+			int expectedInterfaceValue = RandomHelper.NextInt32(10, 1000);
+			this.settings.MaximumFilesForTapiBridge = expectedInterfaceValue;
+			Assert.That(this.settings.MaximumFilesForTapiBridge, Is.EqualTo(expectedInterfaceValue));
+		}
+
+		[Test]
 		public void ShouldGetAndSetTheObjectFieldIdListContainsArtifactIdSetting()
 		{
 			List<int> testList = new List<int> { 1, 2, 3, 4, 5 };
@@ -236,6 +276,26 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		public void ShouldGetAndSetTheTapiBridgeExportTransferWaitingTimeInSecondsSetting()
+		{
+			// Verify global settings.
+			Assert.That(
+				AppSettings.TapiBridgeExportTransferWaitingTimeInSeconds,
+				Is.EqualTo(AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue));
+			int expectedGlobalValue = RandomHelper.NextInt32(10, 1000);
+			AppSettings.TapiBridgeExportTransferWaitingTimeInSeconds = expectedGlobalValue;
+			Assert.That(AppSettings.TapiBridgeExportTransferWaitingTimeInSeconds, Is.EqualTo(expectedGlobalValue));
+
+			// Verify interface settings.
+			Assert.That(
+				this.settings.TapiBridgeExportTransferWaitingTimeInSeconds,
+				Is.EqualTo(AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue));
+			int expectedInterfaceValue = RandomHelper.NextInt32(10, 1000);
+			this.settings.TapiBridgeExportTransferWaitingTimeInSeconds = expectedInterfaceValue;
+			Assert.That(this.settings.TapiBridgeExportTransferWaitingTimeInSeconds, Is.EqualTo(expectedInterfaceValue));
+		}
+
+		[Test]
 		public void ShouldGetAndSetTheWebApiServiceUrlSetting()
 		{
 			// Verify global settings.
@@ -268,6 +328,30 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		public void ShouldMakeSettingsDeepCopy()
+		{
+			this.settings.CreateErrorForInvalidDate = RandomHelper.NextBoolean();
+			this.settings.ExportErrorNumberOfRetries = RandomHelper.NextInt32(10, 100);
+			this.settings.ExportErrorWaitTimeInSeconds = RandomHelper.NextInt32(10, 100);
+			this.settings.IoErrorNumberOfRetries = RandomHelper.NextInt32(10, 100);
+			this.settings.IoErrorWaitTimeInSeconds = RandomHelper.NextInt32(10, 100);
+			this.settings.MaximumFilesForTapiBridge = RandomHelper.NextInt32(10, 100);
+			this.settings.MaxNumberOfFileExportTasks = RandomHelper.NextInt32(10, 100);
+			this.settings.LogAllEvents = RandomHelper.NextBoolean();
+			this.settings.TapiBridgeExportTransferWaitingTimeInSeconds = RandomHelper.NextInt32(10, 100);
+			AppSettingsDto copy = this.settings.DeepCopy();
+			Assert.That(copy.CreateErrorForInvalidDate, Is.EqualTo(this.settings.CreateErrorForInvalidDate));
+			Assert.That(copy.ExportErrorNumberOfRetries, Is.EqualTo(this.settings.ExportErrorNumberOfRetries));
+			Assert.That(copy.ExportErrorWaitTimeInSeconds, Is.EqualTo(this.settings.ExportErrorWaitTimeInSeconds));
+			Assert.That(copy.IoErrorNumberOfRetries, Is.EqualTo(this.settings.IoErrorNumberOfRetries));
+			Assert.That(copy.IoErrorWaitTimeInSeconds, Is.EqualTo(this.settings.IoErrorWaitTimeInSeconds));
+			Assert.That(copy.MaximumFilesForTapiBridge, Is.EqualTo(this.settings.MaximumFilesForTapiBridge));
+			Assert.That(copy.MaxNumberOfFileExportTasks, Is.EqualTo(this.settings.MaxNumberOfFileExportTasks));
+			Assert.That(copy.LogAllEvents, Is.EqualTo(this.settings.LogAllEvents));
+			Assert.That(copy.TapiBridgeExportTransferWaitingTimeInSeconds, Is.EqualTo(this.settings.TapiBridgeExportTransferWaitingTimeInSeconds));
+		}
+
+		[Test]
 		public void ShouldSerializeAndDeserializeTheSettings()
 		{
 			this.settings.CreateErrorForInvalidDate = true;
@@ -275,7 +359,10 @@ namespace Relativity.Import.Export.NUnit
 			this.settings.ExportErrorWaitTimeInSeconds = int.MaxValue - 2;
 			this.settings.IoErrorNumberOfRetries = int.MaxValue - 3;
 			this.settings.IoErrorWaitTimeInSeconds = int.MaxValue - 4;
+			this.settings.MaximumFilesForTapiBridge = int.MaxValue - 5;
+			this.settings.MaxNumberOfFileExportTasks = int.MaxValue - 6;
 			this.settings.LogAllEvents = true;
+			this.settings.TapiBridgeExportTransferWaitingTimeInSeconds = int.MaxValue - 7;
 			IFormatter formatter = new BinaryFormatter();
 			using (MemoryStream stream = new MemoryStream())
 			{
@@ -288,7 +375,10 @@ namespace Relativity.Import.Export.NUnit
 				Assert.That(deserializedGeneralConfiguration.ExportErrorWaitTimeInSeconds, Is.EqualTo(int.MaxValue - 2));
 				Assert.That(deserializedGeneralConfiguration.IoErrorNumberOfRetries, Is.EqualTo(int.MaxValue - 3));
 				Assert.That(deserializedGeneralConfiguration.IoErrorWaitTimeInSeconds, Is.EqualTo(int.MaxValue - 4));
+				Assert.That(deserializedGeneralConfiguration.MaximumFilesForTapiBridge, Is.EqualTo(int.MaxValue - 5));
+				Assert.That(deserializedGeneralConfiguration.MaxNumberOfFileExportTasks, Is.EqualTo(int.MaxValue - 6));
 				Assert.That(deserializedGeneralConfiguration.LogAllEvents, Is.True);
+				Assert.That(deserializedGeneralConfiguration.TapiBridgeExportTransferWaitingTimeInSeconds, Is.EqualTo(int.MaxValue - 7));
 			}
 		}
 

@@ -111,6 +111,30 @@ namespace Relativity.Import.Export
 		}
 
 		/// <summary>
+		/// Gets or sets the maximum number of files for each Transfer API bridge instance.
+		/// </summary>
+		/// <value>
+		/// The maximum number of files.
+		/// </value>
+		int MaximumFilesForTapiBridge
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the maximum number of file export tasks.
+		/// </summary>
+		/// <value>
+		/// The maximum number of tasks.
+		/// </value>
+		int MaxNumberOfFileExportTasks
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets the list of artifacts to use for object field mapping.
 		/// </summary>
 		/// <value>
@@ -133,6 +157,18 @@ namespace Relativity.Import.Export
 		/// The <see cref="Uri"/> instance.
 		/// </value>
 		Uri ProgrammaticWebApiServiceUrl
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the time, in seconds, that a Transfer API bridge waits before releasing the wait handle.
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		int TapiBridgeExportTransferWaitingTimeInSeconds
 		{
 			get;
 			set;

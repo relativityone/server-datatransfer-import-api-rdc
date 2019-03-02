@@ -27,9 +27,12 @@ namespace Relativity.Import.Export
 			this.ForceFolderPreview = AppSettingsConstants.ForceFolderPreviewDefaultValue;
 			this.IoErrorNumberOfRetries = AppSettingsConstants.IoErrorNumberOfRetriesDefaultValue;
 			this.IoErrorWaitTimeInSeconds = AppSettingsConstants.IoErrorWaitTimeInSecondsDefaultValue;
+			this.MaxNumberOfFileExportTasks = AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue;
+			this.MaximumFilesForTapiBridge = AppSettingsConstants.MaximumFilesForTapiBridgeDefaultValue;
 			this.LogAllEvents = AppSettingsConstants.LogAllEventsDefaultValue;
 			this.ObjectFieldIdListContainsArtifactId = null;
 			this.ProgrammaticWebApiServiceUrl = null;
+			this.TapiBridgeExportTransferWaitingTimeInSeconds = AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue;
 			this.WebApiServiceUrl = null;
 		}
 
@@ -57,13 +60,23 @@ namespace Relativity.Import.Export
 			this.IoErrorNumberOfRetries = settings.IoErrorNumberOfRetries;
 			this.IoErrorWaitTimeInSeconds = settings.IoErrorWaitTimeInSeconds;
 			this.LogAllEvents = settings.LogAllEvents;
+			this.MaxNumberOfFileExportTasks = settings.MaxNumberOfFileExportTasks;
+			this.MaximumFilesForTapiBridge = settings.MaximumFilesForTapiBridge;
 			if (settings.ObjectFieldIdListContainsArtifactId != null)
 			{
 				this.ObjectFieldIdListContainsArtifactId = new List<int>(settings.ObjectFieldIdListContainsArtifactId);
 			}
 
-			this.ProgrammaticWebApiServiceUrl = settings.ProgrammaticWebApiServiceUrl;
-			this.WebApiServiceUrl = settings.WebApiServiceUrl;
+			if (settings.ProgrammaticWebApiServiceUrl != null)
+			{
+				this.ProgrammaticWebApiServiceUrl = new Uri(settings.ProgrammaticWebApiServiceUrl.ToString());
+			}
+
+			this.TapiBridgeExportTransferWaitingTimeInSeconds = settings.TapiBridgeExportTransferWaitingTimeInSeconds;
+			if (settings.WebApiServiceUrl != null)
+			{
+				this.WebApiServiceUrl = new Uri(settings.WebApiServiceUrl.ToString());
+			}
 		}
 
 		/// <summary>
@@ -157,6 +170,42 @@ namespace Relativity.Import.Export
 		/// <see langword="true" /> to log all the I/O events; otherwise, <see langword="false" />.
 		/// </value>
 		public bool LogAllEvents
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the maximum number of files for each Transfer API bridge instance.
+		/// </summary>
+		/// <value>
+		/// The maximum number of files.
+		/// </value>
+		public int MaximumFilesForTapiBridge
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the maximum number of file export tasks.
+		/// </summary>
+		/// <value>
+		/// The maximum number of tasks.
+		/// </value>
+		public int MaxNumberOfFileExportTasks
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the time, in seconds, that a Transfer API bridge waits before releasing the wait handle.
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		public int TapiBridgeExportTransferWaitingTimeInSeconds
 		{
 			get;
 			set;

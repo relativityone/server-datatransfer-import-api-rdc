@@ -20,8 +20,11 @@ namespace Relativity.Import.Export
 		public const string IoErrorNumberOfRetriesKey = "IOErrorNumberOfRetriesKey";
 		public const string IoErrorWaitTimeInSecondsKey = "IOErrorWaitTimeInSeconds";
 		public const string LogAllEventsKey = "LogAllEvents";
+		public const string MaxNumberOfFileExportTasksKey = "MaxNumberOfFileExportTasks";
+		public const string MaximumFilesForTapiBridgeKey = "MaximumFilesForTapiBridge";
 		public const string ObjectFieldIdListContainsArtifactIdKey = "ObjectFieldIdListContainsArtifactId";
 		public const string ProgrammaticWebApiServiceUrlKey = "ProgrammaticWebApiServiceUrl";
+		public const string TapiBridgeExportTransferWaitingTimeInSecondsKey = "TapiBridgeExportTransferWaitingTimeInSeconds";
 		public const string WebApiServiceUrl = "WebServiceURL";
 
 		// All default values go here.
@@ -33,5 +36,8 @@ namespace Relativity.Import.Export
 		public const int IoErrorNumberOfRetriesDefaultValue = 20;
 		public const int IoErrorWaitTimeInSecondsDefaultValue = 30;
 		public const bool LogAllEventsDefaultValue = false;
+		public const int MaximumFilesForTapiBridgeDefaultValue = 10000;
+		public const int MaxNumberOfFileExportTasksDefaultValue = 2;
+		public const int TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue = 600;
 	}
 }

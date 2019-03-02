@@ -131,6 +131,30 @@ namespace Relativity.Import.Export
 		}
 
 		/// <summary>
+		/// Gets or sets the maximum number of files for each Transfer API bridge instance.
+		/// </summary>
+		/// <value>
+		/// The maximum number of files.
+		/// </value>
+		public static int MaximumFilesForTapiBridge
+		{
+			get => Instance.MaximumFilesForTapiBridge;
+			set => Instance.MaximumFilesForTapiBridge = value;
+		}
+
+		/// <summary>
+		/// Gets or sets the maximum number of file export tasks.
+		/// </summary>
+		/// <value>
+		/// The maximum number of tasks.
+		/// </value>
+		public static int MaxNumberOfFileExportTasks
+		{
+			get => Instance.MaxNumberOfFileExportTasks;
+			set => Instance.MaxNumberOfFileExportTasks = value;
+		}
+
+		/// <summary>
 		/// Gets or sets the list of artifacts to use for object field mapping instead of the name field.
 		/// </summary>
 		/// <value>
@@ -156,6 +180,18 @@ namespace Relativity.Import.Export
 		{
 			get => Instance.ProgrammaticWebApiServiceUrl;
 			set => Instance.ProgrammaticWebApiServiceUrl = value;
+		}
+
+		/// <summary>
+		/// Gets or sets the time, in seconds, that a Transfer API bridge waits before releasing the wait handle.
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		public static int TapiBridgeExportTransferWaitingTimeInSeconds
+		{
+			get => Instance.TapiBridgeExportTransferWaitingTimeInSeconds;
+			set => Instance.TapiBridgeExportTransferWaitingTimeInSeconds = value;
 		}
 
 		/// <summary>
@@ -268,6 +304,26 @@ namespace Relativity.Import.Export
 		}
 
 		/// <inheritdoc />
+		int IAppSettings.MaximumFilesForTapiBridge
+		{
+			get =>
+				this.cachedSettings.GetInt32Value(
+					AppSettingsConstants.MaximumFilesForTapiBridgeKey,
+					AppSettingsConstants.MaximumFilesForTapiBridgeDefaultValue);
+			set => this.cachedSettings[AppSettingsConstants.MaximumFilesForTapiBridgeKey] = value;
+		}
+
+		/// <inheritdoc />
+		int IAppSettings.MaxNumberOfFileExportTasks
+		{
+			get =>
+				this.cachedSettings.GetInt32Value(
+					AppSettingsConstants.MaxNumberOfFileExportTasksKey,
+					AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue);
+			set => this.cachedSettings[AppSettingsConstants.MaxNumberOfFileExportTasksKey] = value;
+		}
+
+		/// <inheritdoc />
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
 			"Microsoft.Usage",
 			"CA2227:CollectionPropertiesShouldBeReadOnly",
@@ -301,6 +357,16 @@ namespace Relativity.Import.Export
 		{
 			get => this.cachedSettings.GetUriValue(AppSettingsConstants.ProgrammaticWebApiServiceUrlKey, null);
 			set => this.cachedSettings[AppSettingsConstants.ProgrammaticWebApiServiceUrlKey] = value;
+		}
+
+		/// <inheritdoc />
+		int IAppSettings.TapiBridgeExportTransferWaitingTimeInSeconds
+		{
+			get =>
+				this.cachedSettings.GetInt32Value(
+					AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsKey,
+					AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue);
+			set => this.cachedSettings[AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsKey] = value;
 		}
 
 		/// <inheritdoc />

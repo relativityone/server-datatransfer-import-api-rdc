@@ -226,19 +226,30 @@ namespace Relativity.Import.Export.TestFramework
             }
         }
 
-        /// <summary>
-        /// Gets the next random string value between <paramref name="minValue"/> and <paramref name="maxValue"/>.
-        /// </summary>
-        /// <param name="minValue">
-        /// The minimum value.
-        /// </param>
-        /// <param name="maxValue">
-        /// The maximum value.
-        /// </param>
-        /// <returns>
-        /// The random string value.
-        /// </returns>
-        public static string NextString(int minValue, int maxValue)
+		/// <summary>
+		/// Gets the next random boolean value.
+		/// </summary>
+		/// <returns>
+		/// The random boolean value.
+		/// </returns>
+		public static bool NextBoolean()
+        {
+	        return RandomInstance.NextDouble() >= 0.5;
+        }
+
+		/// <summary>
+		/// Gets the next random string value between <paramref name="minValue"/> and <paramref name="maxValue"/>.
+		/// </summary>
+		/// <param name="minValue">
+		/// The minimum value.
+		/// </param>
+		/// <param name="maxValue">
+		/// The maximum value.
+		/// </param>
+		/// <returns>
+		/// The random string value.
+		/// </returns>
+		public static string NextString(int minValue, int maxValue)
         {
             return RandomGeneratorInstance.NextString(minValue, maxValue);
         }
