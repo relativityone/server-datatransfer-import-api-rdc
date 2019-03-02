@@ -71,6 +71,32 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		[TestCase("0.125", 0.125d)]
+		[TestCase("1.2", 1.2d)]
+		[TestCase("", null)]
+		[TestCase(null, null)]
+		public static void ShouldConvertTheDecimalValue(string value, decimal? expected)
+		{
+			Assert.That(NullableTypesHelper.ToNullableDecimal(value), Is.EqualTo(expected));
+		}
+
+		[Test]
+		public static void ShouldConvertTheDateTimeToAnEmptyStringOrValue()
+		{
+			DateTime? value = DateTime.Now;
+			string convertedValue = NullableTypesHelper.ToEmptyStringOrValue(value);
+			Assert.That(convertedValue, Is.EqualTo(value.ToString()));
+			convertedValue = NullableTypesHelper.ToEmptyStringOrValue(value, false);
+			Assert.That(convertedValue, Is.EqualTo(value.ToString()));
+			convertedValue = NullableTypesHelper.ToEmptyStringOrValue(value, true);
+			Assert.That(convertedValue, Is.EqualTo(value.Value.ToSqlCultureNeutralString()));
+			convertedValue = NullableTypesHelper.ToEmptyStringOrValue(null, false);
+			Assert.That(convertedValue, Is.EqualTo(string.Empty));
+			convertedValue = NullableTypesHelper.ToEmptyStringOrValue(null, true);
+			Assert.That(convertedValue, Is.EqualTo(string.Empty));
+		}
+
+		[Test]
 		[TestCase("123/25/1985")]
 		[TestCase("plugh")]
 		[TestCase("052585")]

@@ -74,6 +74,18 @@ namespace Relativity.Import.Export
 			return ToNullableBoolean(value);
 		}
 
+		/// <summary>
+		/// Casts the provided string to a nullable date, utilizing the provided format string.
+		/// </summary>
+		/// <param name="value">
+		/// The value to convert.
+		/// </param>
+		/// <returns>
+		/// A nullable boolean representation of <see paramref="value"/>.
+		/// </returns>
+		/// <exception cref="System.SystemException">
+		/// Thrown when <paramref name="value"/> is not a valid string representation of a date and time.
+		/// </exception>
 		public static DateTime? GetNullableDateTime(string value)
 		{
 			if (value == null || value.Trim().Length == 0)
@@ -85,8 +97,7 @@ namespace Relativity.Import.Export
 
 			try
 			{
-				const bool UseUniversalFormat = false;
-				nullableDateValue = ToNullableDateTime(value, UseUniversalFormat);
+				nullableDateValue = ToNullableDateTime(value);
 			}
 			catch (Exception)
 			{
@@ -171,6 +182,43 @@ namespace Relativity.Import.Export
 		}
 
 		/// <summary>
+		/// Casts the provided nullable date to a string.
+		/// </summary>
+		/// <param name="value">
+		/// The nullable date or time to convert.
+		/// </param>
+		/// <returns>
+		/// <see cref="string.Empty"/> if <see paramref="value"/> is <see langword="null" />; otherwise, <see paramref="value"/>.
+		/// </returns>
+		public static string ToEmptyStringOrValue(DateTime? value)
+		{
+			const bool UseUniversalFormat = false;
+			return ToEmptyStringOrValue(value, UseUniversalFormat);
+		}
+
+		/// <summary>
+		/// Casts the provided nullable date to a string.
+		/// </summary>
+		/// <param name="value">
+		/// The nullable date or time to convert.
+		/// </param>
+		/// <param name="useUniversalFormat">
+		/// <see langword="true" /> to parse the string in a culture-independent way; otherwise, <see langword="false" />.
+		/// </param>
+		/// <returns>
+		/// <see cref="string.Empty"/> if <see paramref="value"/> is <see langword="null" />; otherwise, <see paramref="value"/>.
+		/// </returns>
+		public static string ToEmptyStringOrValue(DateTime? value, bool useUniversalFormat)
+		{
+			if (value == null)
+			{
+				return string.Empty;
+			}
+
+			return !useUniversalFormat ? value.Value.ToString() : value.Value.ToSqlCultureNeutralString();
+		}
+
+		/// <summary>
 		/// Casts the provided string to a nullable decimal, utilizing the provided format type.
 		/// </summary>
 		/// <param name="value">
@@ -205,6 +253,21 @@ namespace Relativity.Import.Export
 		public static bool? ToNullableBoolean(string value)
 		{
 			return string.IsNullOrWhiteSpace(value) ? null : new bool?(bool.Parse(value));
+		}
+
+		/// <summary>
+		/// Casts the provided string to a nullable date, utilizing the provided culture-independent format string.
+		/// </summary>
+		/// <param name="value">
+		/// The string to consider.
+		/// </param>
+		/// <returns>
+		/// A nullable <see cref="DateTime"/> representation of <see param="value" />.
+		/// </returns>
+		public static DateTime? ToNullableDateTime(string value)
+		{
+			const bool UseUniversalFormat = false;
+			return ToNullableDateTime(value, UseUniversalFormat);
 		}
 
 		/// <summary>
