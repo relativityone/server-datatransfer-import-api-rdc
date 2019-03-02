@@ -14,7 +14,6 @@ namespace Relativity.Import.Export.Io
 
 	using Microsoft.VisualBasic.CompilerServices;
 
-	using Relativity.Import.Export.Io;
 	using Relativity.Import.Export.Resources;
 	using Relativity.Logging;
 
