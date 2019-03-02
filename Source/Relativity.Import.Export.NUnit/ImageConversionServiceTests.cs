@@ -61,6 +61,11 @@ namespace Relativity.Import.Export.NUnit
 					{
 						this.service.ConvertImagesToMultiPagePdf(new[] { "a" }, null);
 					});
+			Assert.Throws<ArgumentOutOfRangeException>(
+				() =>
+					{
+						this.service.ConvertImagesToMultiPagePdf(new string[] { }, "a");
+					});
 			Assert.Throws<ArgumentNullException>(
 				() =>
 					{
@@ -71,6 +76,11 @@ namespace Relativity.Import.Export.NUnit
 				() =>
 					{
 						this.service.ConvertTiffsToMultiPageTiff(new[] { "a" }, null);
+					});
+			Assert.Throws<ArgumentOutOfRangeException>(
+				() =>
+					{
+						this.service.ConvertTiffsToMultiPageTiff(new string[] { }, "a");
 					});
 			Assert.Throws<ArgumentNullException>(
 				() =>
