@@ -5,6 +5,8 @@ NUGET
     Castle.Core (4.3.1)
     Castle.Windsor (3.3)
       Castle.Core (>= 3.3)
+    CsvHelper (12.1.2)
+      System.ValueTuple (>= 4.4)
     iTextSharp (5.5.13)
     Microsoft.Build.Logging.StructuredLogger (1.0.89)
     Moq (4.10.1)
@@ -30,6 +32,7 @@ NUGET
     System.Runtime.CompilerServices.Unsafe (4.5.2)
     System.Threading.Tasks.Extensions (4.5.2)
       System.Runtime.CompilerServices.Unsafe (>= 4.5.2)
+    System.ValueTuple (4.5)
     ZetaLongPaths (1.0.0.27)
   remote: https://proget.kcura.corp/NuGet/NuGet
     kCura (10.2.32.58-DEV)
