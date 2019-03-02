@@ -6,6 +6,7 @@
 
 namespace Relativity.Import.Export.Io
 {
+	using System;
 	using System.IO;
 	using System.Text;
 
@@ -130,6 +131,17 @@ namespace Relativity.Import.Export.Io
 		public override void WriteLine(string format, params object[] arg)
 		{
 			this.instance.WriteLine(format, arg);
+		}
+
+		/// <inheritdoc cref="T:TextWriter.Dispose" />
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				this.instance.Dispose();
+			}
+
+			base.Dispose(disposing);
 		}
 	}
 }

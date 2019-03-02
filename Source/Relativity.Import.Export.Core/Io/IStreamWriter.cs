@@ -16,7 +16,7 @@ namespace Relativity.Import.Export.Io
 	/// Represents an abstract wrapper for the <see cref="T:System.IO.StreamWriter"/> class.
 	/// </summary>
 	[CLSCompliant(false)]
-	public interface IStreamWriter
+	public interface IStreamWriter : IDisposable
 	{
 		/// <summary>
 		/// Gets or sets a value indicating whether the <see cref="T:System.IO.StreamWriter" /> will flush its buffer to the underlying stream after every call to <see cref="M:System.IO.StreamWriter.Write(System.Char)" />.
