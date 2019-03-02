@@ -12,7 +12,6 @@ namespace Relativity.Import.Export.NUnit
 	using System.IO;
 	using System.Threading;
 
-	using Relativity.Import.Export.Importer;
 	using Relativity.Import.Export.Io;
 	using Relativity.Logging;
 

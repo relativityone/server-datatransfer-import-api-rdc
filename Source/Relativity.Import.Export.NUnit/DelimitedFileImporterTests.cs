@@ -14,7 +14,7 @@ namespace Relativity.Import.Export.NUnit
 
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export.Importer;
+	using Relativity.Import.Export.Io;
 
 	/// <summary>
 	/// Represents <see cref="DelimitedFileImporter"/> tests.

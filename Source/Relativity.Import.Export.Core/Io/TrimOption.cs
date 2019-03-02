@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Importer
+namespace Relativity.Import.Export.Io
 {
 	/// <summary>
 	/// Represents the supported whitespace trip options.

@@ -8,14 +8,13 @@ namespace Relativity.Import.Export.NUnit
 {
 	using System;
 	using System.Collections;
-	using System.Globalization;
 	using System.IO;
 	using System.Runtime.Serialization;
 	using System.Runtime.Serialization.Formatters.Binary;
 
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export.Importer;
+	using Relativity.Import.Export.Io;
 
 	[TestFixture]
 	public static class ImporterExceptionSerializationTests

@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.Importer
+namespace Relativity.Import.Export.Io
 {
 	using System;
 	using System.Runtime.Serialization;
