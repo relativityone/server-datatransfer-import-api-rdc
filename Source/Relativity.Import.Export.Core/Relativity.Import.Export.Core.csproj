@@ -62,6 +62,19 @@
   <ItemGroup>
     <Compile Include="AppSettingsDto.cs" />
     <Compile Include="DateTimeExtensions.cs" />
+    <Compile Include="Io\BooleanImporterException.cs" />
+    <Compile Include="Io\CellImporterException.cs" />
+    <Compile Include="Io\ConditionalArrayList.cs" />
+    <Compile Include="Io\ConditionalStringBuilder.cs" />
+    <Compile Include="Io\DateImporterException.cs" />
+    <Compile Include="Io\DecimalImporterException.cs" />
+    <Compile Include="Io\DelimitedFileImporter.cs" />
+    <Compile Include="Io\DelimitedMode.cs" />
+    <Compile Include="Io\GenericCsvReader.cs" />
+    <Compile Include="Io\ImporterException.cs" />
+    <Compile Include="Io\ObjectNameImporterException.cs" />
+    <Compile Include="Io\StringImporterException.cs" />
+    <Compile Include="Io\TrimOption.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="TimekeeperEntry.cs" />
     <Compile Include="Timekeeper.cs" />
@@ -72,14 +85,6 @@
     <Compile Include="ImageConversionService.cs" />
     <Compile Include="IImageConversionService.cs" />
     <Compile Include="ImageRollupException.cs" />
-    <Compile Include="Importer\ObjectNameImporterException.cs" />
-    <Compile Include="Importer\StringImporterException.cs" />
-    <Compile Include="Importer\ConditionalArrayList.cs" />
-    <Compile Include="Importer\ConditionalStringBuilder.cs" />
-    <Compile Include="Importer\CellImporterException.cs" />
-    <Compile Include="Importer\DecimalImporterException.cs" />
-    <Compile Include="Importer\DateImporterException.cs" />
-    <Compile Include="Importer\GenericCsvReader.cs" />
     <Compile Include="Io\IoReporterContext.cs" />
     <Compile Include="NullableTypesHelper.cs" />
     <Compile Include="ImportExportException.cs" />
@@ -89,11 +94,7 @@
     <Compile Include="AppSettings.cs" />
     <Compile Include="DictionaryExtensions.cs" />
     <Compile Include="ImageConstants.cs" />
-    <Compile Include="Importer\ImporterException.cs" />
-    <Compile Include="Importer\DelimitedFileImporter.cs" />
-    <Compile Include="Importer\BooleanImporterException.cs" />
     <Compile Include="Io\IoWarningType.cs" />
-    <Compile Include="Importer\TrimOption.cs" />
     <Compile Include="Io\DirectoryInfoWrap.cs" />
     <Compile Include="Io\DirectoryWrap.cs" />
     <Compile Include="Io\FileInfoInvalidPathException.cs" />
@@ -116,7 +117,6 @@
     <Compile Include="Io\NullIoReporter.cs" />
     <Compile Include="Io\PathWrap.cs" />
     <Compile Include="Io\RetryExceptionHelper.cs" />
-    <Compile Include="Importer\DelimitedMode.cs" />
     <Compile Include="Io\RetryOptions.cs" />
     <Compile Include="Io\StreamWriterWrap.cs" />
     <Compile Include="IWaitAndRetryPolicy.cs" />
@@ -406,5 +406,8 @@
     <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.dll">
       <Paket>True</Paket>
     </Analyzer>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Importer\" />
   </ItemGroup>
 </Project>
