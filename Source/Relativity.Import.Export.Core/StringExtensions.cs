@@ -7,6 +7,7 @@
 namespace Relativity.Import.Export
 {
 	using System;
+	using System.Text.RegularExpressions;
 
 	/// <summary>
 	/// Defines static <see cref="string"/> extension methods.
@@ -67,6 +68,20 @@ namespace Relativity.Import.Export
 		public static string ToCsvCellContents(this string input)
 		{
 			return ToDelimitedFileCellContents(input, "\"", "\n");
+		}
+
+		/// <summary>
+		/// Converts the input string to a SQL friendly name by removing all non-word characters.
+		/// </summary>
+		/// <param name="input">
+		/// The input to convert.
+		/// </param>
+		/// <returns>
+		/// A manipulated representation of <see param="input"/> with non-word characters removed.
+		/// </returns>
+		public static string ToSqlFriendlyName(this string input)
+		{
+			return Regex.Replace(input ?? string.Empty, "[\\W]+", string.Empty);
 		}
 	}
 }

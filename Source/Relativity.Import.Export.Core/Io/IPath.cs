@@ -158,6 +158,23 @@ namespace Relativity.Import.Export.Io
 		string GetFullPath(string path);
 
 		/// <summary>
+		/// Gets the fully qualified path using the provided relative and base path.
+		/// </summary>
+		/// <param name="baseUri">
+		/// The base path.
+		/// </param>
+		/// <param name="path">
+		/// The relative path.
+		/// </param>
+		/// <returns>
+		/// The fully qualified path.
+		/// </returns>
+		/// <exception cref="NullReferenceException">
+		/// Thrown when <paramref name="path"/> or <paramref name="baseUri"/> is <see langword="null" />.
+		/// </exception>
+		string GetFullyQualifiedPath(Uri baseUri, string path);
+
+		/// <summary>
 		/// Gets a uniquely named, zero-byte temporary file on disk and returns the full path of that file.
 		/// </summary>
 		/// <returns>
@@ -202,6 +219,17 @@ namespace Relativity.Import.Export.Io
 			"CA1024:UsePropertiesWhereAppropriate",
 			Justification = "The method name must match the original.")]
 		string GetTempPath();
+
+		/// <summary>
+		/// Determines whether the supplied path is fully qualified.
+		/// </summary>
+		/// <param name="path">
+		/// The path to test.
+		/// </param>
+		/// <returns>
+		/// <see langword="true" /> if <paramref name="path" /> is fully qualified; otherwise, <see langword="false" />.
+		/// </returns>
+		bool IsPathFullyQualified(string path);
 
 		/// <summary>
 		/// Gets a value indicating whether the specified path string contains a root.

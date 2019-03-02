@@ -231,6 +231,24 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		[TestCase("https://kcura.relativity.one", "Relativity.Distributed")]
+		[TestCase("https://kcura.relativity.one", "/Relativity.Distributed")]
+		[TestCase("https://kcura.relativity.one", "/Relativity.Distributed/")]
+		[TestCase("https://kcura.relativity.one/", "Relativity.Distributed")]
+		[TestCase("https://kcura.relativity.one/", "/Relativity.Distributed")]
+		[TestCase("https://kcura.relativity.one/", "/Relativity.Distributed/")]
+		[TestCase("https://kcura.relativity.one/RelativityWebAPI/", "/Relativity.Distributed/")]
+		[TestCase("https://kcura.relativity.one/RelativityWebAPI/", "Relativity.Distributed")]
+		[TestCase("https://kcura.relativity.one/RelativityWebAPI/", "/Relativity.Distributed")]
+		[TestCase("https://kcura.relativity.one/RelativityWebAPI/", "/Relativity.Distributed/")]
+		[Category(TestCategories.FileSystem)]
+		public void ShouldGetTheFullyQualifiedPath(string basePath, string path)
+		{
+			string returnedPath = this.fileSystem.Path.GetFullyQualifiedPath(new Uri(basePath), path);
+			Assert.That(returnedPath, Is.EqualTo("https://kcura.relativity.one/Relativity.Distributed/"));
+		}
+
+		[Test]
 		[TestCase(@"C:\", "temp.txt", @"C:\temp.txt")]
 		[TestCase(@"C:\Windows", "temp", @"C:\Windows\temp")]
 		[TestCase(@"\\abc\def", "temp.txt", @"\\abc\def\temp.txt")]
@@ -283,6 +301,26 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		[TestCase(@"http://kcura.relativity.one", true)]
+		[TestCase(@"http://kcura.relativity.one/", true)]
+		[TestCase(@"http://kcura.relativity.one/RelativityWebAPI", true)]
+		[TestCase(@"https://kcura.relativity.one", true)]
+		[TestCase(@"https://kcura.relativity.one/", true)]
+		[TestCase(@"https://kcura.relativity.one/RelativityWebAPI", true)]
+		[TestCase(@"\\kcura\shares\Engineering", false)]
+		[TestCase(@"\\?\UNC\kcura\shares\Engineering", false)]
+		[TestCase(@"C:", false)]
+		[TestCase(@"C:\", false)]
+		[TestCase(@"C:\Windows", false)]
+		[TestCase(@"C:\Windows\", false)]
+		[Category(TestCategories.FileSystem)]
+		public void ShouldGetTheIsPathFullyQualifiedValue(string path, bool expected)
+		{
+			bool fullyQualified = this.fileSystem.Path.IsPathFullyQualified(path);
+			Assert.That(fullyQualified, Is.EqualTo(expected));
+		}
+
+		[Test]
 		[TestCase(@"dnsapi.dll", false, false)]
 		[TestCase(@"C:", true, false)]
 		[TestCase(@"C:\", true, false)]
@@ -294,7 +332,7 @@ namespace Relativity.Import.Export.NUnit
 		[TestCase(@"\\?\UNC\def\", true, true)]
 		[TestCase(@"\\?\UNC\def\dnsapi.dll", true, true)]
 		[Category(TestCategories.FileSystem)]
-		public void ShouldGetTheIsPathValues(string path, bool rootedExpected, bool uncExpected)
+		public void ShouldGetTheIsPathRootedAndUncValues(string path, bool rootedExpected, bool uncExpected)
 		{
 			bool rooted = this.fileSystem.Path.IsPathRooted(path);
 			Assert.That(rooted, Is.EqualTo(rootedExpected));

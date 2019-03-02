@@ -70,5 +70,19 @@ namespace Relativity.Import.Export.NUnit
 			string value = input.ToCsvCellContents();
 			Assert.That(value, Is.EqualTo(expected));
 		}
+
+		[Test]
+		[TestCase("ABCDEF123", "ABCDEF123")]
+		[TestCase("ABC DEF 123", "ABCDEF123")]
+		[TestCase("ABC.DEF.123", "ABCDEF123")]
+		[TestCase("ABCDEF123!@#", "ABCDEF123")]
+		[TestCase("ABC.DEF.123.!@#", "ABCDEF123")]
+		[TestCase(null, "")]
+		[Category(TestCategories.ExtensionMethods)]
+		public static void ShouldConvertToSqlFriendlyName(string input, string expected)
+		{
+			string value = input.ToSqlFriendlyName();
+			Assert.That(value, Is.EqualTo(expected));
+		}
 	}
 }

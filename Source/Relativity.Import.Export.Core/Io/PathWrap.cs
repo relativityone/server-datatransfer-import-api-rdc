@@ -8,6 +8,7 @@ namespace Relativity.Import.Export.Io
 {
 	using System;
 	using System.Globalization;
+	using System.Text.RegularExpressions;
 
 	/// <summary>
 	/// Represents a class object wrapper for the <see cref="T:System.IO.Path"/> class.
@@ -148,6 +149,36 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <inheritdoc />
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Design",
+			"CA1062:Validate arguments of public methods",
+			Justification = "The original implementation was explicitly designed to throw NullReferenceException.")]
+		public string GetFullyQualifiedPath(Uri baseUri, string path)
+		{
+			if (this.IsPathFullyQualified(path))
+			{
+				if (!path.EndsWith("/", StringComparison.OrdinalIgnoreCase))
+				{
+					path += "/";
+				}
+
+				return path;
+			}
+
+			if (!path.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+			{
+				path = "/" + path;
+			}
+
+			if (!path.EndsWith("/", StringComparison.OrdinalIgnoreCase))
+			{
+				path += "/";
+			}
+
+			return baseUri.Scheme + Uri.SchemeDelimiter + baseUri.Host + path;
+		}
+
+		/// <inheritdoc />
 		public string GetTempPath()
 		{
 			string value = this.CustomTempPath;
@@ -200,6 +231,12 @@ namespace Relativity.Import.Export.Io
 			}
 
 			return file;
+		}
+
+		/// <inheritdoc />
+		public bool IsPathFullyQualified(string path)
+		{
+			return new Regex("\\w+:\\/\\/", RegexOptions.IgnoreCase).Matches(path).Count > 0;
 		}
 
 		/// <inheritdoc />
