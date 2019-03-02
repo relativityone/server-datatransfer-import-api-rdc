@@ -20,6 +20,11 @@ namespace Relativity.Import.Export.TestFramework
 		public const string Export = "Export";
 
 		/// <summary>
+		/// The ExtensionMethods test category.
+		/// </summary>
+		public const string ExtensionMethods = "ExtensionMethods";
+
+		/// <summary>
 		/// The file system test category.
 		/// </summary>
 		public const string FileSystem = "FileSystem";

@@ -61,6 +61,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppSettingsDto.cs" />
+    <Compile Include="DateTimeExtensions.cs" />
+    <Compile Include="StringExtensions.cs" />
+    <Compile Include="VisualBasicConstants.cs" />
     <Compile Include="CollectionExtensions.cs" />
     <Compile Include="ConvertToMultiPagePdfException.cs" />
     <Compile Include="ConvertToMultiPageTiffException.cs" />

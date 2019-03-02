@@ -111,6 +111,8 @@
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
     <Compile Include="AppSettingsTests.cs" />
+    <Compile Include="StringExtensionsTests.cs" />
+    <Compile Include="DateTimeExtensionsTests.cs" />
     <Compile Include="DelimitedFileImporterTestCases.cs" />
     <Compile Include="DelimitedFileImporterTests.cs" />
     <Compile Include="FileSystemWrapTests.cs" />

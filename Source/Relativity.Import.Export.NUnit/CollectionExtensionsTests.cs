@@ -15,6 +15,7 @@ namespace Relativity.Import.Export.NUnit
 	using global::NUnit.Framework;
 
 	using Relativity.Import.Export;
+	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>
 	/// Represents <see cref="CollectionExtensions"/> tests.
@@ -23,7 +24,8 @@ namespace Relativity.Import.Export.NUnit
     public static class CollectionExtensionsTests
 	{
         [Test]
-        public static void ShouldGetTheCsvString()
+        [Category(TestCategories.ExtensionMethods)]
+		public static void ShouldGetTheCsvString()
         {
 	        IEnumerable<string> sequence = new[] { "a", "b", "c", "d" };
 	        string value1 = sequence.ToCsv();
@@ -36,6 +38,7 @@ namespace Relativity.Import.Export.NUnit
 		}
 
         [Test]
+        [Category(TestCategories.ExtensionMethods)]
 		public static void ShouldGetTheDelimitedString()
         {
 	        IEnumerable<string> sequence = new[] { "a", "b", "c", "d" };
@@ -52,6 +55,7 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		[Category(TestCategories.ExtensionMethods)]
 		public static void ShouldGetTheIsNullOrEmptyValue()
 		{
 			IEnumerable<string> sequence = new[] { "1", "2", "3", "4" };
@@ -63,6 +67,7 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		[Category(TestCategories.ExtensionMethods)]
 		public static void ShouldGetTheInCollectionValue()
 		{
 			int[] sequence = { 1, 2, 3, 4 };
