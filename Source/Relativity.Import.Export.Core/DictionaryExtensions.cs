@@ -61,6 +61,29 @@ namespace Relativity.Import.Export
         /// </returns>
         public static int GetInt32Value(this IDictionary<string, object> dictionary, string name, int defaultValue)
         {
+	        return GetInt32Value(dictionary, name, defaultValue, null);
+        }
+
+		/// <summary>
+		/// Gets the 32-bit integer value.
+		/// </summary>
+		/// <param name="dictionary">
+		/// The dictionary.
+		/// </param>
+		/// <param name="name">
+		/// The property name.
+		/// </param>
+		/// <param name="defaultValue">
+		/// The default value if not contained within this instance.
+		/// </param>
+		/// <param name="minValue">
+		/// The minimum value allowed for this setting. If the current value is invalid, the <paramref name="defaultValue"/> is used.
+		/// </param>
+		/// <returns>
+		/// The value.
+		/// </returns>
+		public static int GetInt32Value(this IDictionary<string, object> dictionary, string name, int defaultValue, int? minValue)
+		{
             if (dictionary == null)
             {
                 throw new ArgumentNullException(nameof(dictionary));
@@ -71,6 +94,11 @@ namespace Relativity.Import.Export
                 int value;
                 if (int.TryParse(dictionary[name].ToString(), out value))
                 {
+	                if (minValue.HasValue && value < minValue)
+	                {
+		                return defaultValue;
+					}
+
                     return value;
                 }
             }

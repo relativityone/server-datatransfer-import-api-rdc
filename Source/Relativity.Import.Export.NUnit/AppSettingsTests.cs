@@ -79,7 +79,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(
 				AppSettings.ExportErrorNumberOfRetries,
 				Is.EqualTo(AppSettingsConstants.ExportErrorNumberOfRetriesDefaultValue));
-			int expectedGlobalValue = RandomHelper.NextInt32(10, 1000);
+			int expectedGlobalValue = RandomHelper.NextInt32(AppSettingsConstants.ExportErrorNumberOfRetriesMinValue, 1000);
 			AppSettings.ExportErrorNumberOfRetries = expectedGlobalValue;
 			Assert.That(AppSettings.ExportErrorNumberOfRetries, Is.EqualTo(expectedGlobalValue));
 
@@ -87,7 +87,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(
 				this.settings.ExportErrorNumberOfRetries,
 				Is.EqualTo(AppSettingsConstants.ExportErrorNumberOfRetriesDefaultValue));
-			int expectedInterfaceValue = RandomHelper.NextInt32(10, 1000);
+			int expectedInterfaceValue = RandomHelper.NextInt32(AppSettingsConstants.ExportErrorNumberOfRetriesMinValue, 1000);
 			this.settings.ExportErrorNumberOfRetries = expectedInterfaceValue;
 			Assert.That(this.settings.ExportErrorNumberOfRetries, Is.EqualTo(expectedInterfaceValue));
 		}
@@ -99,7 +99,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(
 				AppSettings.ExportErrorWaitTimeInSeconds,
 				Is.EqualTo(AppSettingsConstants.ExportErrorWaitTimeInSecondsDefaultValue));
-			int expectedGlobalValue = RandomHelper.NextInt32(10, 1000);
+			int expectedGlobalValue = RandomHelper.NextInt32(AppSettingsConstants.ExportErrorWaitTimeInSecondsMinValue, 1000);
 			AppSettings.ExportErrorWaitTimeInSeconds = expectedGlobalValue;
 			Assert.That(AppSettings.ExportErrorWaitTimeInSeconds, Is.EqualTo(expectedGlobalValue));
 
@@ -107,7 +107,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(
 				this.settings.ExportErrorWaitTimeInSeconds,
 				Is.EqualTo(AppSettingsConstants.ExportErrorWaitTimeInSecondsDefaultValue));
-			int expectedInterfaceValue = RandomHelper.NextInt32(10, 1000);
+			int expectedInterfaceValue = RandomHelper.NextInt32(AppSettingsConstants.ExportErrorWaitTimeInSecondsMinValue, 1000);
 			this.settings.ExportErrorWaitTimeInSeconds = expectedInterfaceValue;
 			Assert.That(this.settings.ExportErrorWaitTimeInSeconds, Is.EqualTo(expectedInterfaceValue));
 		}
@@ -119,7 +119,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(
 				AppSettings.IoErrorNumberOfRetries,
 				Is.EqualTo(AppSettingsConstants.IoErrorNumberOfRetriesDefaultValue));
-			int expectedGlobalValue = RandomHelper.NextInt32(10, 1000);
+			int expectedGlobalValue = RandomHelper.NextInt32(AppSettingsConstants.IoErrorNumberOfRetriesMinValue, 1000);
 			AppSettings.IoErrorNumberOfRetries = expectedGlobalValue;
 			Assert.That(AppSettings.IoErrorNumberOfRetries, Is.EqualTo(expectedGlobalValue));
 
@@ -127,7 +127,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(
 				this.settings.IoErrorNumberOfRetries,
 				Is.EqualTo(AppSettingsConstants.IoErrorNumberOfRetriesDefaultValue));
-			int expectedInterfaceValue = RandomHelper.NextInt32(10, 1000);
+			int expectedInterfaceValue = RandomHelper.NextInt32(AppSettingsConstants.IoErrorNumberOfRetriesMinValue, 1000);
 			this.settings.IoErrorNumberOfRetries = expectedInterfaceValue;
 			Assert.That(this.settings.IoErrorNumberOfRetries, Is.EqualTo(expectedInterfaceValue));
 		}
@@ -139,7 +139,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(
 				AppSettings.IoErrorWaitTimeInSeconds,
 				Is.EqualTo(AppSettingsConstants.IoErrorWaitTimeInSecondsDefaultValue));
-			int expectedGlobalValue = RandomHelper.NextInt32(10, 1000);
+			int expectedGlobalValue = RandomHelper.NextInt32(AppSettingsConstants.IoErrorWaitTimeInSecondsMinValue, 1000);
 			AppSettings.IoErrorWaitTimeInSeconds = expectedGlobalValue;
 			Assert.That(AppSettings.IoErrorWaitTimeInSeconds, Is.EqualTo(expectedGlobalValue));
 
@@ -147,7 +147,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(
 				this.settings.IoErrorWaitTimeInSeconds,
 				Is.EqualTo(AppSettingsConstants.IoErrorWaitTimeInSecondsDefaultValue));
-			int expectedInterfaceValue = RandomHelper.NextInt32(10, 1000);
+			int expectedInterfaceValue = RandomHelper.NextInt32(AppSettingsConstants.IoErrorWaitTimeInSecondsMinValue, 1000);
 			this.settings.IoErrorWaitTimeInSeconds = expectedInterfaceValue;
 			Assert.That(this.settings.IoErrorWaitTimeInSeconds, Is.EqualTo(expectedInterfaceValue));
 		}
@@ -204,7 +204,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(
 				AppSettings.MaxNumberOfFileExportTasks,
 				Is.EqualTo(AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue));
-			int expectedGlobalValue = RandomHelper.NextInt32(10, 1000);
+			int expectedGlobalValue = RandomHelper.NextInt32(AppSettingsConstants.MaxNumberOfFileExportTasksMinValue, 1000);
 			AppSettings.MaxNumberOfFileExportTasks = expectedGlobalValue;
 			Assert.That(AppSettings.MaxNumberOfFileExportTasks, Is.EqualTo(expectedGlobalValue));
 
@@ -212,7 +212,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(
 				this.settings.MaxNumberOfFileExportTasks,
 				Is.EqualTo(AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue));
-			int expectedInterfaceValue = RandomHelper.NextInt32(10, 1000);
+			int expectedInterfaceValue = RandomHelper.NextInt32(AppSettingsConstants.MaxNumberOfFileExportTasksMinValue, 1000);
 			this.settings.MaxNumberOfFileExportTasks = expectedInterfaceValue;
 			Assert.That(this.settings.MaxNumberOfFileExportTasks, Is.EqualTo(expectedInterfaceValue));
 		}
@@ -224,7 +224,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(
 				AppSettings.MaximumFilesForTapiBridge,
 				Is.EqualTo(AppSettingsConstants.MaximumFilesForTapiBridgeDefaultValue));
-			int expectedGlobalValue = RandomHelper.NextInt32(10, 1000);
+			int expectedGlobalValue = RandomHelper.NextInt32(AppSettingsConstants.MaximumFilesForTapiBridgeMinValue, 1000);
 			AppSettings.MaximumFilesForTapiBridge = expectedGlobalValue;
 			Assert.That(AppSettings.MaximumFilesForTapiBridge, Is.EqualTo(expectedGlobalValue));
 
@@ -232,7 +232,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(
 				this.settings.MaximumFilesForTapiBridge,
 				Is.EqualTo(AppSettingsConstants.MaximumFilesForTapiBridgeDefaultValue));
-			int expectedInterfaceValue = RandomHelper.NextInt32(10, 1000);
+			int expectedInterfaceValue = RandomHelper.NextInt32(AppSettingsConstants.MaximumFilesForTapiBridgeMinValue, 1000);
 			this.settings.MaximumFilesForTapiBridge = expectedInterfaceValue;
 			Assert.That(this.settings.MaximumFilesForTapiBridge, Is.EqualTo(expectedInterfaceValue));
 		}
@@ -282,7 +282,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(
 				AppSettings.TapiBridgeExportTransferWaitingTimeInSeconds,
 				Is.EqualTo(AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue));
-			int expectedGlobalValue = RandomHelper.NextInt32(10, 1000);
+			int expectedGlobalValue = RandomHelper.NextInt32(AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsMinValue, 1000);
 			AppSettings.TapiBridgeExportTransferWaitingTimeInSeconds = expectedGlobalValue;
 			Assert.That(AppSettings.TapiBridgeExportTransferWaitingTimeInSeconds, Is.EqualTo(expectedGlobalValue));
 
@@ -290,7 +290,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(
 				this.settings.TapiBridgeExportTransferWaitingTimeInSeconds,
 				Is.EqualTo(AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue));
-			int expectedInterfaceValue = RandomHelper.NextInt32(10, 1000);
+			int expectedInterfaceValue = RandomHelper.NextInt32(AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsMinValue, 1000);
 			this.settings.TapiBridgeExportTransferWaitingTimeInSeconds = expectedInterfaceValue;
 			Assert.That(this.settings.TapiBridgeExportTransferWaitingTimeInSeconds, Is.EqualTo(expectedInterfaceValue));
 		}
@@ -330,15 +330,7 @@ namespace Relativity.Import.Export.NUnit
 		[Test]
 		public void ShouldMakeSettingsDeepCopy()
 		{
-			this.settings.CreateErrorForInvalidDate = RandomHelper.NextBoolean();
-			this.settings.ExportErrorNumberOfRetries = RandomHelper.NextInt32(10, 100);
-			this.settings.ExportErrorWaitTimeInSeconds = RandomHelper.NextInt32(10, 100);
-			this.settings.IoErrorNumberOfRetries = RandomHelper.NextInt32(10, 100);
-			this.settings.IoErrorWaitTimeInSeconds = RandomHelper.NextInt32(10, 100);
-			this.settings.MaximumFilesForTapiBridge = RandomHelper.NextInt32(10, 100);
-			this.settings.MaxNumberOfFileExportTasks = RandomHelper.NextInt32(10, 100);
-			this.settings.LogAllEvents = RandomHelper.NextBoolean();
-			this.settings.TapiBridgeExportTransferWaitingTimeInSeconds = RandomHelper.NextInt32(10, 100);
+			AssignRandomValues(this.settings);
 			AppSettingsDto copy = this.settings.DeepCopy();
 			Assert.That(copy.CreateErrorForInvalidDate, Is.EqualTo(this.settings.CreateErrorForInvalidDate));
 			Assert.That(copy.ExportErrorNumberOfRetries, Is.EqualTo(this.settings.ExportErrorNumberOfRetries));
@@ -354,15 +346,7 @@ namespace Relativity.Import.Export.NUnit
 		[Test]
 		public void ShouldSerializeAndDeserializeTheSettings()
 		{
-			this.settings.CreateErrorForInvalidDate = true;
-			this.settings.ExportErrorNumberOfRetries = int.MaxValue - 1;
-			this.settings.ExportErrorWaitTimeInSeconds = int.MaxValue - 2;
-			this.settings.IoErrorNumberOfRetries = int.MaxValue - 3;
-			this.settings.IoErrorWaitTimeInSeconds = int.MaxValue - 4;
-			this.settings.MaximumFilesForTapiBridge = int.MaxValue - 5;
-			this.settings.MaxNumberOfFileExportTasks = int.MaxValue - 6;
-			this.settings.LogAllEvents = true;
-			this.settings.TapiBridgeExportTransferWaitingTimeInSeconds = int.MaxValue - 7;
+			AssignRandomValues(this.settings);
 			IFormatter formatter = new BinaryFormatter();
 			using (MemoryStream stream = new MemoryStream())
 			{
@@ -370,16 +354,52 @@ namespace Relativity.Import.Export.NUnit
 				stream.Seek(0, SeekOrigin.Begin);
 				IAppSettings deserializedGeneralConfiguration = (IAppSettings)formatter.Deserialize(stream);
 				Assert.IsNotNull(deserializedGeneralConfiguration);
-				Assert.That(deserializedGeneralConfiguration.CreateErrorForInvalidDate, Is.True);
-				Assert.That(deserializedGeneralConfiguration.ExportErrorNumberOfRetries, Is.EqualTo(int.MaxValue - 1));
-				Assert.That(deserializedGeneralConfiguration.ExportErrorWaitTimeInSeconds, Is.EqualTo(int.MaxValue - 2));
-				Assert.That(deserializedGeneralConfiguration.IoErrorNumberOfRetries, Is.EqualTo(int.MaxValue - 3));
-				Assert.That(deserializedGeneralConfiguration.IoErrorWaitTimeInSeconds, Is.EqualTo(int.MaxValue - 4));
-				Assert.That(deserializedGeneralConfiguration.MaximumFilesForTapiBridge, Is.EqualTo(int.MaxValue - 5));
-				Assert.That(deserializedGeneralConfiguration.MaxNumberOfFileExportTasks, Is.EqualTo(int.MaxValue - 6));
-				Assert.That(deserializedGeneralConfiguration.LogAllEvents, Is.True);
-				Assert.That(deserializedGeneralConfiguration.TapiBridgeExportTransferWaitingTimeInSeconds, Is.EqualTo(int.MaxValue - 7));
+				Assert.That(deserializedGeneralConfiguration.CreateErrorForInvalidDate, Is.EqualTo(this.settings.CreateErrorForInvalidDate));
+				Assert.That(deserializedGeneralConfiguration.ExportErrorNumberOfRetries, Is.EqualTo(this.settings.ExportErrorNumberOfRetries));
+				Assert.That(deserializedGeneralConfiguration.ExportErrorWaitTimeInSeconds, Is.EqualTo(this.settings.ExportErrorWaitTimeInSeconds));
+				Assert.That(deserializedGeneralConfiguration.IoErrorNumberOfRetries, Is.EqualTo(this.settings.IoErrorNumberOfRetries));
+				Assert.That(deserializedGeneralConfiguration.IoErrorWaitTimeInSeconds, Is.EqualTo(this.settings.IoErrorWaitTimeInSeconds));
+				Assert.That(deserializedGeneralConfiguration.MaximumFilesForTapiBridge, Is.EqualTo(this.settings.MaximumFilesForTapiBridge));
+				Assert.That(deserializedGeneralConfiguration.MaxNumberOfFileExportTasks, Is.EqualTo(this.settings.MaxNumberOfFileExportTasks));
+				Assert.That(deserializedGeneralConfiguration.LogAllEvents, Is.EqualTo(this.settings.LogAllEvents));
+				Assert.That(deserializedGeneralConfiguration.ObjectFieldIdListContainsArtifactId, Is.EquivalentTo(this.settings.ObjectFieldIdListContainsArtifactId));
+				Assert.That(deserializedGeneralConfiguration.ProgrammaticWebApiServiceUrl, Is.EqualTo(this.settings.ProgrammaticWebApiServiceUrl));
+				Assert.That(deserializedGeneralConfiguration.TapiBridgeExportTransferWaitingTimeInSeconds, Is.EqualTo(this.settings.TapiBridgeExportTransferWaitingTimeInSeconds));
+				Assert.That(deserializedGeneralConfiguration.WebApiServiceUrl, Is.EqualTo(this.settings.WebApiServiceUrl));
 			}
+		}
+
+		private static void AssignRandomValues(IAppSettings settings)
+		{
+			settings.CreateErrorForInvalidDate = RandomHelper.NextBoolean();
+			settings.ExportErrorNumberOfRetries = RandomHelper.NextInt32(
+				AppSettingsConstants.ExportErrorNumberOfRetriesMinValue,
+				AppSettingsConstants.ExportErrorNumberOfRetriesDefaultValue);
+			settings.ExportErrorWaitTimeInSeconds = RandomHelper.NextInt32(
+				AppSettingsConstants.ExportErrorWaitTimeInSecondsMinValue,
+				AppSettingsConstants.ExportErrorWaitTimeInSecondsDefaultValue);
+			settings.IoErrorNumberOfRetries = RandomHelper.NextInt32(
+				AppSettingsConstants.IoErrorNumberOfRetriesMinValue,
+				AppSettingsConstants.IoErrorNumberOfRetriesDefaultValue);
+			settings.IoErrorWaitTimeInSeconds = RandomHelper.NextInt32(
+				AppSettingsConstants.IoErrorWaitTimeInSecondsMinValue,
+				AppSettingsConstants.IoErrorWaitTimeInSecondsDefaultValue);
+			settings.MaximumFilesForTapiBridge = RandomHelper.NextInt32(
+				AppSettingsConstants.MaximumFilesForTapiBridgeMinValue,
+				AppSettingsConstants.MaximumFilesForTapiBridgeDefaultValue);
+			settings.MaxNumberOfFileExportTasks = RandomHelper.NextInt32(
+				AppSettingsConstants.MaxNumberOfFileExportTasksMinValue,
+				AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue);
+			settings.MaxNumberOfFileExportTasks = RandomHelper.NextInt32(
+				AppSettingsConstants.MaxNumberOfFileExportTasksMinValue,
+				AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue);
+			settings.LogAllEvents = RandomHelper.NextBoolean();
+			settings.TapiBridgeExportTransferWaitingTimeInSeconds = RandomHelper.NextInt32(
+				AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsMinValue,
+				AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue);
+			settings.ObjectFieldIdListContainsArtifactId = new List<int> { 1, 2, 3 };
+			settings.ProgrammaticWebApiServiceUrl = new Uri("https://www.relativity.com/");
+			settings.WebApiServiceUrl = new Uri("https://platform.relativity.com");
 		}
 
 		private static void DeleteTestSubKey()

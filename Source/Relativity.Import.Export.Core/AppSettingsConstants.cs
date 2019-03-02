@@ -31,13 +31,20 @@ namespace Relativity.Import.Export
 		public const bool CreateErrorForInvalidDateDefaultValue = true;
 		public const bool DisableThrowOnIllegalCharactersDefaultValue = false;
 		public const int ExportErrorNumberOfRetriesDefaultValue = 20;
+		public const int ExportErrorNumberOfRetriesMinValue = 1;
 		public const int ExportErrorWaitTimeInSecondsDefaultValue = 30;
+		public const int ExportErrorWaitTimeInSecondsMinValue = 1;
 		public const bool ForceFolderPreviewDefaultValue = true;
 		public const int IoErrorNumberOfRetriesDefaultValue = 20;
+		public const int IoErrorNumberOfRetriesMinValue = 1;
 		public const int IoErrorWaitTimeInSecondsDefaultValue = 30;
+		public const int IoErrorWaitTimeInSecondsMinValue = 1;
 		public const bool LogAllEventsDefaultValue = false;
 		public const int MaximumFilesForTapiBridgeDefaultValue = 10000;
+		public const int MaximumFilesForTapiBridgeMinValue = 1;
 		public const int MaxNumberOfFileExportTasksDefaultValue = 2;
+		public const int MaxNumberOfFileExportTasksMinValue = 2;
 		public const int TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue = 600;
+		public const int TapiBridgeExportTransferWaitingTimeInSecondsMinValue = 1;
 	}
 }

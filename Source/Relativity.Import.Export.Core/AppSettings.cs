@@ -232,7 +232,8 @@ namespace Relativity.Import.Export
 			get =>
 				this.cachedSettings.GetInt32Value(
 					AppSettingsConstants.ExportErrorNumberOfRetriesKey,
-					AppSettingsConstants.ExportErrorNumberOfRetriesDefaultValue);
+					AppSettingsConstants.ExportErrorNumberOfRetriesDefaultValue,
+					AppSettingsConstants.ExportErrorNumberOfRetriesMinValue);
 			set => this.cachedSettings[AppSettingsConstants.ExportErrorNumberOfRetriesKey] = value;
 		}
 
@@ -242,7 +243,8 @@ namespace Relativity.Import.Export
 			get =>
 				this.cachedSettings.GetInt32Value(
 					AppSettingsConstants.ExportErrorWaitTimeInSecondsKey,
-					AppSettingsConstants.ExportErrorWaitTimeInSecondsDefaultValue);
+					AppSettingsConstants.ExportErrorWaitTimeInSecondsDefaultValue,
+					AppSettingsConstants.ExportErrorWaitTimeInSecondsMinValue);
 			set => this.cachedSettings[AppSettingsConstants.ExportErrorWaitTimeInSecondsKey] = value;
 		}
 
@@ -279,7 +281,8 @@ namespace Relativity.Import.Export
 			get =>
 				this.cachedSettings.GetInt32Value(
 					AppSettingsConstants.IoErrorNumberOfRetriesKey,
-					AppSettingsConstants.IoErrorNumberOfRetriesDefaultValue);
+					AppSettingsConstants.IoErrorNumberOfRetriesDefaultValue,
+					AppSettingsConstants.IoErrorNumberOfRetriesMinValue);
 			set => this.cachedSettings[AppSettingsConstants.IoErrorNumberOfRetriesKey] = value;
 		}
 
@@ -289,7 +292,8 @@ namespace Relativity.Import.Export
 			get =>
 				this.cachedSettings.GetInt32Value(
 					AppSettingsConstants.IoErrorWaitTimeInSecondsKey,
-					AppSettingsConstants.IoErrorWaitTimeInSecondsDefaultValue);
+					AppSettingsConstants.IoErrorWaitTimeInSecondsDefaultValue,
+					AppSettingsConstants.IoErrorWaitTimeInSecondsMinValue);
 			set => this.cachedSettings[AppSettingsConstants.IoErrorWaitTimeInSecondsKey] = value;
 		}
 
@@ -309,7 +313,8 @@ namespace Relativity.Import.Export
 			get =>
 				this.cachedSettings.GetInt32Value(
 					AppSettingsConstants.MaximumFilesForTapiBridgeKey,
-					AppSettingsConstants.MaximumFilesForTapiBridgeDefaultValue);
+					AppSettingsConstants.MaximumFilesForTapiBridgeDefaultValue,
+					AppSettingsConstants.MaximumFilesForTapiBridgeMinValue);
 			set => this.cachedSettings[AppSettingsConstants.MaximumFilesForTapiBridgeKey] = value;
 		}
 
@@ -319,7 +324,8 @@ namespace Relativity.Import.Export
 			get =>
 				this.cachedSettings.GetInt32Value(
 					AppSettingsConstants.MaxNumberOfFileExportTasksKey,
-					AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue);
+					AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue,
+					AppSettingsConstants.MaxNumberOfFileExportTasksMinValue);
 			set => this.cachedSettings[AppSettingsConstants.MaxNumberOfFileExportTasksKey] = value;
 		}
 
@@ -365,7 +371,8 @@ namespace Relativity.Import.Export
 			get =>
 				this.cachedSettings.GetInt32Value(
 					AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsKey,
-					AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue);
+					AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue,
+					AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsMinValue);
 			set => this.cachedSettings[AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsKey] = value;
 		}
 
