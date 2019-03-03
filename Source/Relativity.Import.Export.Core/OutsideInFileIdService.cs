@@ -17,7 +17,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Represents a file identification service class object using Outside In technology.
 	/// </summary>
-	public class OutsideInFileIdService : IFileIdService
+	internal class OutsideInFileIdService : IFileIdService
 	{
 		/// <summary>
 		/// The file identification configuration.

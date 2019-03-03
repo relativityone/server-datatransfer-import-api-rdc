@@ -13,7 +13,7 @@ namespace Relativity.Import.Export
     /// <summary>
     /// Represents a disposable temporary directory class object.
     /// </summary>
-    public class TempDirectory : IDisposable
+    internal class TempDirectory : IDisposable
     {
         /// <summary>
         /// The disposed backing.

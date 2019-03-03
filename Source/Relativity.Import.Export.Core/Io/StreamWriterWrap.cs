@@ -6,14 +6,13 @@
 
 namespace Relativity.Import.Export.Io
 {
-	using System;
 	using System.IO;
 	using System.Text;
 
 	/// <summary>
 	/// Represents a <see cref="T:System.IO.StreamWriter"/> class object wrapper.
 	/// </summary>
-	public class StreamWriterWrap : TextWriter, IStreamWriter
+	internal class StreamWriterWrap : TextWriter, IStreamWriter
 	{
 		/// <summary>
 		/// The wrapped stream writer instance.

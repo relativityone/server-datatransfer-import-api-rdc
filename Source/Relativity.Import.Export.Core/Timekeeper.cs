@@ -17,7 +17,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Represents a class object that tracks operational metrics.
 	/// </summary>
-	public class Timekeeper
+	internal class Timekeeper
 	{
 		/// <summary>
 		/// The default thread when one isn't specified.

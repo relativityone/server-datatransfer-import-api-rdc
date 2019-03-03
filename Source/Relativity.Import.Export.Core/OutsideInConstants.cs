@@ -9,7 +9,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Defines Outside In constants.
 	/// </summary>
-	public static class OutsideInConstants
+	internal static class OutsideInConstants
 	{
 		/// <summary>
 		/// The OI error code that doesn't represent an actual error.

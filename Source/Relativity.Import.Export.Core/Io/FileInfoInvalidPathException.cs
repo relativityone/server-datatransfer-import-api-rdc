@@ -13,7 +13,7 @@ namespace Relativity.Import.Export.Io
 	/// Represent the error that occurs when there are illegal characters in the file path.
 	/// </summary>
 	[Serializable]
-	public class FileInfoInvalidPathException : Exception
+	public sealed class FileInfoInvalidPathException : Exception
     {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FileInfoInvalidPathException" /> class.
@@ -52,7 +52,7 @@ namespace Relativity.Import.Export.Io
 		/// </summary>
 		/// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
 		/// <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
-		protected FileInfoInvalidPathException(SerializationInfo info, StreamingContext context)
+		private FileInfoInvalidPathException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
 		}

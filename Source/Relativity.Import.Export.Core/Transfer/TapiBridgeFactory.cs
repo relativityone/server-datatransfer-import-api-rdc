@@ -18,7 +18,7 @@ namespace Relativity.Import.Export.Transfer
     /// <summary>
     /// Represents a class to create <see cref="TapiBridgeBase"/> instances.
     /// </summary>
-    public static class TapiBridgeFactory
+    internal static class TapiBridgeFactory
     {
 		/// <summary>
 		/// Creates a <see cref="UploadTapiBridge"/> instance that supports native file upload transfers.

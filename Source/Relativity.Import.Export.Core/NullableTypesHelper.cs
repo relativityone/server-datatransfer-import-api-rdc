@@ -12,7 +12,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Defines static helper methods to convert nullable types.
 	/// </summary>
-	public static class NullableTypesHelper
+	internal static class NullableTypesHelper
 	{
 		/// <summary>
 		/// Casts the provided string to a nullable boolean.

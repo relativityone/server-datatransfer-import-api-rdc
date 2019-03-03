@@ -19,7 +19,7 @@ namespace Relativity.Import.Export.Io
 	/// <summary>
 	/// Represents a class object to perform I/O operations, publish warning messages, and retry the operation.
 	/// </summary>
-	public class IoReporter : IIoReporter
+	internal class IoReporter : IIoReporter
 	{
 		/// <summary>
 		/// The value that indicates no retry information is provided.

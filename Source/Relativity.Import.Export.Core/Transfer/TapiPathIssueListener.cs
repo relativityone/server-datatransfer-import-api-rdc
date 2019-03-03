@@ -14,7 +14,7 @@ namespace Relativity.Import.Export.Transfer
 	/// <summary>
 	/// Represents an object that listens for Transfer API path issue events.
 	/// </summary>
-	public class TapiPathIssueListener : TapiListenerBase
+	public sealed class TapiPathIssueListener : TapiListenerBase
 	{
         /// <summary>
         /// The transfer direction.

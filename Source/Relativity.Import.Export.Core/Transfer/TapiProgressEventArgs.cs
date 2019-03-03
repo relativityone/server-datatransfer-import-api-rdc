@@ -16,7 +16,7 @@ namespace Relativity.Import.Export.Transfer
 	/// Represents Transfer API progress event arguments data.
 	/// </summary>
 	/// <seealso cref="System.EventArgs" />
-	public class TapiProgressEventArgs : EventArgs
+	public sealed class TapiProgressEventArgs : EventArgs
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TapiProgressEventArgs"/> class.

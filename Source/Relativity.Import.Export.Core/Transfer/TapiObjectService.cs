@@ -21,7 +21,7 @@ namespace Relativity.Import.Export.Transfer
 	/// <summary>
 	/// Represents a class object to provide Transfer API object services to the transfer bridges.
 	/// </summary>
-	public class TapiObjectService : ITapiObjectService
+	public sealed class TapiObjectService : ITapiObjectService
 	{
 		/// <summary>
 		/// The singleton instance.

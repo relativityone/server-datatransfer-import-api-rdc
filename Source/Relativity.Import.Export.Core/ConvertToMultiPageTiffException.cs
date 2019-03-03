@@ -13,7 +13,7 @@ namespace Relativity.Import.Export
 	/// The exception thrown when a serious failure occurs attempting to convert a multi-page TIFF.
 	/// </summary>
 	[Serializable]
-	public class ConvertToMultiPageTiffException : ImageRollupException
+	public sealed class ConvertToMultiPageTiffException : ImageRollupException
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ConvertToMultiPageTiffException"/> class.
@@ -76,7 +76,7 @@ namespace Relativity.Import.Export
 		/// <param name="context">
 		/// The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.
 		/// </param>
-		protected ConvertToMultiPageTiffException(SerializationInfo info, StreamingContext context)
+		private ConvertToMultiPageTiffException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
 		}

@@ -17,7 +17,7 @@ namespace Relativity.Import.Export.Io
 	/// <summary>
 	/// Represents an exception that occured while attempting to import data.
 	/// </summary>
-	public class GenericCsvReader : DelimitedFileImporter
+	internal class GenericCsvReader : DelimitedFileImporter
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GenericCsvReader"/> class.

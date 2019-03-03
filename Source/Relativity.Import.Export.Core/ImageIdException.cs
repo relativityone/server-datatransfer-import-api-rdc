@@ -13,7 +13,7 @@ namespace Relativity.Import.Export
 	/// The exception thrown when a serious image identification error occurs.
 	/// </summary>
 	[Serializable]
-	public class ImageIdException : Exception
+	public sealed class ImageIdException : Exception
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ImageIdException"/> class.
@@ -52,7 +52,7 @@ namespace Relativity.Import.Export
 		/// </summary>
 		/// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
 		/// <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
-		protected ImageIdException(SerializationInfo info, StreamingContext context)
+		private ImageIdException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
 		}

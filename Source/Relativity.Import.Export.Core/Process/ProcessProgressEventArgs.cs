@@ -8,7 +8,6 @@ namespace Relativity.Import.Export.Process
 {
 	using System;
 	using System.Collections;
-	using System.Collections.Generic;
 
 	/// <summary>
 	/// Represents the process progress event argument data.

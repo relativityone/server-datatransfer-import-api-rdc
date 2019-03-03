@@ -14,7 +14,7 @@ namespace Relativity.Import.Export.Io
 	/// <summary>
 	/// Defines commonly used static retry helper functions to decide whether an exception should be retried.
 	/// </summary>
-	public static class RetryExceptionHelper
+	internal static class RetryExceptionHelper
 	{
 		/// <summary>
 		/// The handle disk full HResult value.

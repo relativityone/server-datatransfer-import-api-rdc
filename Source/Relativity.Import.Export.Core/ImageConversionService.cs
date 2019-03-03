@@ -16,7 +16,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Represents a class object service to convert images to their multi-page representation.
 	/// </summary>
-	public class ImageConversionService : IImageConversionService
+	internal class ImageConversionService : IImageConversionService
 	{
 		/// <summary>
 		/// The file system wrapper.

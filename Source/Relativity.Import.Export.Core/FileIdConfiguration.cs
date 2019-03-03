@@ -11,7 +11,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Represents the file identification configuration class object.
 	/// </summary>
-	public class FileIdConfiguration
+	public sealed class FileIdConfiguration
 	{
 		/// <summary>
 		/// Gets the file identification configuration exception.

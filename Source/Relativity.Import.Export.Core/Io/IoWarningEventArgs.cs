@@ -11,7 +11,7 @@ namespace Relativity.Import.Export.Io
 	/// <summary>
 	/// Class for IO warning event arguments
 	/// </summary>
-	public class IoWarningEventArgs : EventArgs
+	public sealed class IoWarningEventArgs : EventArgs
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IoWarningEventArgs"/> class.

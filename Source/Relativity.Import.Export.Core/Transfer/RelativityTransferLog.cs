@@ -20,7 +20,7 @@ namespace Relativity.Import.Export.Transfer
     /// <remarks>
     /// This is an alternative implementation of Relativity Logging <see cref="ITransferLog"/> and can be used in client-side scenarios.
     /// </remarks>
-    public class RelativityTransferLog : ITransferLog
+    public sealed class RelativityTransferLog : ITransferLog
     {
         /// <summary>
         /// The Relativity log backing.

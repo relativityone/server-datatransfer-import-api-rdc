@@ -13,7 +13,7 @@ namespace Relativity.Import.Export
 	/// The exception thrown when a serious failure occurs attempting to convert a multi-page PDF.
 	/// </summary>
 	[Serializable]
-	public class ConvertToMultiPagePdfException : ImageRollupException
+	public sealed class ConvertToMultiPagePdfException : ImageRollupException
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ConvertToMultiPagePdfException"/> class.
@@ -76,7 +76,7 @@ namespace Relativity.Import.Export
 		/// <param name="context">
 		/// The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.
 		/// </param>
-		protected ConvertToMultiPagePdfException(SerializationInfo info, StreamingContext context)
+		private ConvertToMultiPagePdfException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
 		}

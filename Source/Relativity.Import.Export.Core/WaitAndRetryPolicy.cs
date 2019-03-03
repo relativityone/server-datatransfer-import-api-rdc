@@ -18,7 +18,7 @@ namespace Relativity.Import.Export
     /// <summary>
     /// Represents a wait and retry policy class objects with a default back-off time strategy.
     /// </summary>
-    public class WaitAndRetryPolicy : IWaitAndRetryPolicy
+    internal class WaitAndRetryPolicy : IWaitAndRetryPolicy
     {
 		/// <summary>
 		/// The cached application settings.

@@ -15,7 +15,7 @@ namespace Relativity.Import.Export.Transfer
     /// Represents the Transfer API client event arguments data.
     /// </summary>
     /// <seealso cref="System.EventArgs" />
-    public class TapiClientEventArgs : EventArgs
+    public sealed class TapiClientEventArgs : EventArgs
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TapiClientEventArgs"/> class.

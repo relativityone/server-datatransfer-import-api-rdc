@@ -13,7 +13,7 @@ namespace Relativity.Import.Export
 	/// The exception thrown when a serious file identification error occurs.
 	/// </summary>
 	[Serializable]
-	public class FileIdException : Exception
+	public sealed class FileIdException : Exception
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FileIdException"/> class.
@@ -70,7 +70,7 @@ namespace Relativity.Import.Export
 		/// </summary>
 		/// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
 		/// <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
-		protected FileIdException(SerializationInfo info, StreamingContext context)
+		private FileIdException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
 			this.Error = (FileIdError)info.GetValue(nameof(this.Error), typeof(FileIdError));

@@ -9,7 +9,7 @@ namespace Relativity.Import.Export.Process
 	/// <summary>
 	/// Represents a class object that provides standard null object behavior by skipping writing process errors to a file.
 	/// </summary>
-	public class NullProcessErrorWriter : IProcessErrorWriter
+	public sealed class NullProcessErrorWriter : IProcessErrorWriter
 	{
 		/// <inheritdoc />
 		public void Write(string key, string description)

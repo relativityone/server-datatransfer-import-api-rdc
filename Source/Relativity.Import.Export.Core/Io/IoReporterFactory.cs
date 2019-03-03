@@ -17,7 +17,7 @@ namespace Relativity.Import.Export.Io
     /// <summary>
     /// Represents a factory to create <see cref="IoReporter"/> instances.
     /// </summary>
-    public static class IoReporterFactory
+    internal static class IoReporterFactory
     {
 		/// <summary>
 		/// Create a new <see cref="IoReporter"/> instance.

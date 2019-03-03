@@ -14,7 +14,7 @@ namespace Relativity.Import.Export.Io
 	/// <summary>
 	/// Represents a <see langword="null" /> design pattern for occasions where a valid <see cref="IIoReporter"/> is used wherever the object is <see langword="null" />.
 	/// </summary>
-	public class NullIoReporter : IIoReporter
+	internal class NullIoReporter : IIoReporter
 	{
 		private readonly IFileSystem fileSystem;
 

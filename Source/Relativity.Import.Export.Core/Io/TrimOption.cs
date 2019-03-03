@@ -12,7 +12,7 @@ namespace Relativity.Import.Export.Io
 	/// <summary>
 	/// Represents the supported whitespace trip options.
 	/// </summary>
-	public enum TrimOption
+	internal enum TrimOption
 	{
 		/// <summary>
 		/// No whitespace is trimmed.

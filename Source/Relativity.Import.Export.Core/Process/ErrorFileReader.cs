@@ -17,7 +17,7 @@ namespace Relativity.Import.Export.Process
 	/// <summary>
 	/// Represents a class object that can read error information from a delimited file.
 	/// </summary>
-	public class ErrorFileReader : DelimitedFileImporter
+	internal class ErrorFileReader : DelimitedFileImporter
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ErrorFileReader"/> class.

@@ -9,7 +9,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Defines constants used by legacy code VB.NET ported from Relativity.
 	/// </summary>
-	public static class VisualBasicConstants
+	internal static class VisualBasicConstants
 	{
 		/// <summary>
 		/// Represents a carriage-return character combined with a linefeed character for print and display functions.

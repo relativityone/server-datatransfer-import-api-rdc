@@ -13,7 +13,7 @@ namespace Relativity.Import.Export.Io
 	/// Represents an exception that occured while attempting to import a boolean.
 	/// </summary>
 	[Serializable]
-	public class DecimalImporterException : ImporterException
+	public sealed class DecimalImporterException : ImporterException
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DecimalImporterException" /> class.
@@ -69,7 +69,7 @@ namespace Relativity.Import.Export.Io
 		/// </summary>
 		/// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
 		/// <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
-		protected DecimalImporterException(SerializationInfo info, StreamingContext context)
+		private DecimalImporterException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
 		}

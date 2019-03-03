@@ -18,7 +18,7 @@ namespace Relativity.Import.Export.NUnit
 	/// <summary>
 	/// Represents a mock <see cref="DelimitedFileImporter" /> implementation for testing purposes.
 	/// </summary>
-	public class MockDelimitedFileImport : DelimitedFileImporter
+	internal class MockDelimitedFileImport : DelimitedFileImporter
 	{
 		public MockDelimitedFileImport()
 			: base(

@@ -17,7 +17,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Represents a service class object to identify an image file using the FreeImage native library.
 	/// </summary>
-	public class FreeImageIdService : IImageIdService
+	internal class FreeImageIdService : IImageIdService
 	{
 		/// <inheritdoc />
 		public ImageFormat Identify(string file)

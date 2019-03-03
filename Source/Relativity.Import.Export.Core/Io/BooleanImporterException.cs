@@ -15,7 +15,7 @@ namespace Relativity.Import.Export.Io
 	/// Represents an exception that occured while attempting to import a boolean.
 	/// </summary>
 	[Serializable]
-	public class BooleanImporterException : ImporterException
+	public sealed class BooleanImporterException : ImporterException
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="BooleanImporterException" /> class.
@@ -75,7 +75,7 @@ namespace Relativity.Import.Export.Io
 		/// <param name="context">
 		/// The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.
 		/// </param>
-		protected BooleanImporterException(SerializationInfo info, StreamingContext context)
+		private BooleanImporterException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
 		}

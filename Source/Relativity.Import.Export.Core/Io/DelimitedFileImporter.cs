@@ -20,7 +20,7 @@ namespace Relativity.Import.Export.Io
 	/// <summary>
 	/// Represents an abstract representation of a file importer that operates over delimited files.
 	/// </summary>
-	public abstract class DelimitedFileImporter : IoReporter
+	internal abstract class DelimitedFileImporter : IoReporter
 	{
 		/// <summary>
 		/// The maximum column count for line.

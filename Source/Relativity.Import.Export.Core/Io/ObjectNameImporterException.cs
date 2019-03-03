@@ -16,7 +16,7 @@ namespace Relativity.Import.Export.Io
 	/// Represents an exception that occured while attempting to import an object name.
 	/// </summary>
 	[Serializable]
-	public class ObjectNameImporterException : ImporterException
+	public sealed class ObjectNameImporterException : ImporterException
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ObjectNameImporterException" /> class.
@@ -79,7 +79,7 @@ namespace Relativity.Import.Export.Io
 		/// <param name="context">
 		/// The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.
 		/// </param>
-		protected ObjectNameImporterException(SerializationInfo info, StreamingContext context)
+		private ObjectNameImporterException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
 		}

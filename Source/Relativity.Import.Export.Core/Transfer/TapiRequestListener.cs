@@ -12,7 +12,7 @@ namespace Relativity.Import.Export.Transfer
 	/// <summary>
 	/// Represents an object that listens for Transfer API request events.
 	/// </summary>
-	public class TapiRequestListener : TapiListenerBase
+	public sealed class TapiRequestListener : TapiListenerBase
 	{
         /// <summary>
         /// Initializes a new instance of the <see cref="TapiRequestListener"/> class.
