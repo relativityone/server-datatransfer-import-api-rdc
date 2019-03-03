@@ -70,12 +70,12 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <summary>
-		/// Gets the cached settings.
+		/// Gets the cached application settings.
 		/// </summary>
 		/// <value>
-		/// The <see cref="AppSettingsDto"/> instance.
+		/// The <see cref="IAppSettings"/> instance.
 		/// </value>
-		protected AppSettingsDto CachedAppSettings
+		protected IAppSettings CachedAppSettings
 		{
 			get;
 		}

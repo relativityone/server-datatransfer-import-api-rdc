@@ -23,7 +23,7 @@ namespace Relativity.Import.Export
 		/// <summary>
 		/// The cached application settings.
 		/// </summary>
-		private readonly AppSettingsDto cachedAppSettings;
+		private readonly IAppSettings cachedAppSettings;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WaitAndRetryPolicy"/> class.

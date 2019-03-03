@@ -49,7 +49,7 @@ namespace Relativity.Import.Export.NUnit
 		private Exception actualLoggedErrorException;
 		private string actualLoggedErrorMessage;
 		private string actualLoggedInformationMessage;
-		private AppSettingsDto cachedAppSettings;
+		private IAppSettings cachedAppSettings;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
 			"Microsoft.Performance",
@@ -112,7 +112,7 @@ namespace Relativity.Import.Export.NUnit
 		[SetUp]
 		public void Setup()
 		{
-			this.cachedAppSettings = new AppSettingsDto();
+			this.cachedAppSettings = new AppDotNetSettings();
 			this.actualFileExists = false;
 			this.actualFileLength = 0;
 			this.actualLoggedErrorException = null;

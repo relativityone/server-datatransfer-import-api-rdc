@@ -7,32 +7,25 @@
 namespace Relativity.Import.Export
 {
 	using System;
-	using System.Collections.Concurrent;
 	using System.Collections.Generic;
-	using System.Configuration;
-	using System.Linq;
 
 	/// <summary>
-	/// Represents a class object that provides thread-safe application settings.
+	/// Defines static properties to obtain application settings.
 	/// </summary>
 	/// <remarks>
-	/// Ensure that <see cref="AppSettingsDto"/> is updated when adding new settings.
+	/// Always favor constructor injecting <see cref="IAppSettings"/>. This is intended for legacy code only.
 	/// </remarks>
-	[Serializable]
-	public sealed class AppSettings : IAppSettings
+	public static class AppSettings
 	{
 		/// <summary>
-		/// The concurrent dictionary that caches all settings.
+		/// The thread synchronization object.
 		/// </summary>
-		private readonly ConcurrentDictionary<string, object> cachedSettings = new ConcurrentDictionary<string, object>();
+		private static readonly object SyncRoot = new object();
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AppSettings"/> class.
+		/// The singleton backing field.
 		/// </summary>
-		public AppSettings()
-		{
-			((IAppSettings)this).Refresh();
-		}
+		private static IAppSettings instance;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to create an error for an invalid date.
@@ -206,366 +199,61 @@ namespace Relativity.Import.Export
 			set => Instance.WebApiServiceUrl = value;
 		}
 
-		/// <inheritdoc />
-		bool IAppSettings.CreateErrorForInvalidDate
-		{
-			get =>
-				this.cachedSettings.GetBooleanValue(
-					AppSettingsConstants.CreateErrorForInvalidDateKey,
-					AppSettingsConstants.CreateErrorForInvalidDateDefaultValue);
-			set => this.cachedSettings[AppSettingsConstants.CreateErrorForInvalidDateKey] = value;
-		}
-
-		/// <inheritdoc />
-		bool IAppSettings.DisableThrowOnIllegalCharacters
-		{
-			get =>
-				this.cachedSettings.GetBooleanValue(
-					AppSettingsConstants.DisableThrowOnIllegalCharactersKey,
-					AppSettingsConstants.DisableThrowOnIllegalCharactersDefaultValue);
-			set => this.cachedSettings[AppSettingsConstants.DisableThrowOnIllegalCharactersKey] = value;
-		}
-
-		/// <inheritdoc />
-		int IAppSettings.ExportErrorNumberOfRetries
-		{
-			get =>
-				this.cachedSettings.GetInt32Value(
-					AppSettingsConstants.ExportErrorNumberOfRetriesKey,
-					AppSettingsConstants.ExportErrorNumberOfRetriesDefaultValue,
-					AppSettingsConstants.ExportErrorNumberOfRetriesMinValue);
-			set => this.cachedSettings[AppSettingsConstants.ExportErrorNumberOfRetriesKey] = value;
-		}
-
-		/// <inheritdoc />
-		int IAppSettings.ExportErrorWaitTimeInSeconds
-		{
-			get =>
-				this.cachedSettings.GetInt32Value(
-					AppSettingsConstants.ExportErrorWaitTimeInSecondsKey,
-					AppSettingsConstants.ExportErrorWaitTimeInSecondsDefaultValue,
-					AppSettingsConstants.ExportErrorWaitTimeInSecondsMinValue);
-			set => this.cachedSettings[AppSettingsConstants.ExportErrorWaitTimeInSecondsKey] = value;
-		}
-
-		/// <inheritdoc />
-		[System.Diagnostics.CodeAnalysis.SuppressMessage(
-			"Microsoft.Globalization",
-			"CA1308:NormalizeStringsToUppercase",
-			Justification = "This is required for backwards compatibility.")]
-		bool IAppSettings.ForceFolderPreview
+		/// <summary>
+		/// Gets the application settings singleton instance.
+		/// </summary>
+		internal static IAppSettings Instance
 		{
 			get
 			{
-				string value = GetRegistryKeyValue(AppSettingsConstants.ForceFolderPreviewKey);
-				if (string.IsNullOrEmpty(value))
+				if (instance == null)
 				{
-					SetRegistryKeyValue(
-						AppSettingsConstants.ForceFolderPreviewKey,
-						AppSettingsConstants.ForceFolderPreviewDefaultValue.ToString().ToLowerInvariant());
-					return AppSettingsConstants.ForceFolderPreviewDefaultValue;
-				}
-
-				return string.Compare(value, bool.TrueString, StringComparison.OrdinalIgnoreCase) == 0;
-			}
-
-			set =>
-				SetRegistryKeyValue(
-					AppSettingsConstants.ForceFolderPreviewKey,
-					value.ToString().ToLowerInvariant());
-		}
-
-		/// <inheritdoc />
-		int IAppSettings.IoErrorNumberOfRetries
-		{
-			get =>
-				this.cachedSettings.GetInt32Value(
-					AppSettingsConstants.IoErrorNumberOfRetriesKey,
-					AppSettingsConstants.IoErrorNumberOfRetriesDefaultValue,
-					AppSettingsConstants.IoErrorNumberOfRetriesMinValue);
-			set => this.cachedSettings[AppSettingsConstants.IoErrorNumberOfRetriesKey] = value;
-		}
-
-		/// <inheritdoc />
-		int IAppSettings.IoErrorWaitTimeInSeconds
-		{
-			get =>
-				this.cachedSettings.GetInt32Value(
-					AppSettingsConstants.IoErrorWaitTimeInSecondsKey,
-					AppSettingsConstants.IoErrorWaitTimeInSecondsDefaultValue,
-					AppSettingsConstants.IoErrorWaitTimeInSecondsMinValue);
-			set => this.cachedSettings[AppSettingsConstants.IoErrorWaitTimeInSecondsKey] = value;
-		}
-
-		/// <inheritdoc />
-		bool IAppSettings.LogAllEvents
-		{
-			get =>
-				this.cachedSettings.GetBooleanValue(
-					AppSettingsConstants.LogAllEventsKey,
-					AppSettingsConstants.LogAllEventsDefaultValue);
-			set => this.cachedSettings[AppSettingsConstants.LogAllEventsKey] = value;
-		}
-
-		/// <inheritdoc />
-		int IAppSettings.MaximumFilesForTapiBridge
-		{
-			get =>
-				this.cachedSettings.GetInt32Value(
-					AppSettingsConstants.MaximumFilesForTapiBridgeKey,
-					AppSettingsConstants.MaximumFilesForTapiBridgeDefaultValue,
-					AppSettingsConstants.MaximumFilesForTapiBridgeMinValue);
-			set => this.cachedSettings[AppSettingsConstants.MaximumFilesForTapiBridgeKey] = value;
-		}
-
-		/// <inheritdoc />
-		int IAppSettings.MaxNumberOfFileExportTasks
-		{
-			get =>
-				this.cachedSettings.GetInt32Value(
-					AppSettingsConstants.MaxNumberOfFileExportTasksKey,
-					AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue,
-					AppSettingsConstants.MaxNumberOfFileExportTasksMinValue);
-			set => this.cachedSettings[AppSettingsConstants.MaxNumberOfFileExportTasksKey] = value;
-		}
-
-		/// <inheritdoc />
-		[System.Diagnostics.CodeAnalysis.SuppressMessage(
-			"Microsoft.Usage",
-			"CA2227:CollectionPropertiesShouldBeReadOnly",
-			Justification = "This is required for backwards compatibility.")]
-		IList<int> IAppSettings.ObjectFieldIdListContainsArtifactId
-		{
-			get
-			{
-				string value = GetRegistryKeyValue(AppSettingsConstants.ObjectFieldIdListContainsArtifactIdKey);
-				if (string.IsNullOrEmpty(value))
-				{
-					SetRegistryKeyValue(
-						AppSettingsConstants.ObjectFieldIdListContainsArtifactIdKey,
-						string.Empty);
-					return new List<int>();
-				}
-
-				return value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList();
-			}
-
-			set
-			{
-				SetRegistryKeyValue(
-					AppSettingsConstants.ObjectFieldIdListContainsArtifactIdKey,
-					string.Join(",", value.Select(x => x.ToString())));
-			}
-		}
-
-		/// <inheritdoc />
-		Uri IAppSettings.ProgrammaticWebApiServiceUrl
-		{
-			get => this.cachedSettings.GetUriValue(AppSettingsConstants.ProgrammaticWebApiServiceUrlKey, null);
-			set => this.cachedSettings[AppSettingsConstants.ProgrammaticWebApiServiceUrlKey] = value;
-		}
-
-		/// <inheritdoc />
-		int IAppSettings.TapiBridgeExportTransferWaitingTimeInSeconds
-		{
-			get =>
-				this.cachedSettings.GetInt32Value(
-					AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsKey,
-					AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue,
-					AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsMinValue);
-			set => this.cachedSettings[AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsKey] = value;
-		}
-
-		/// <inheritdoc />
-		Uri IAppSettings.WebApiServiceUrl
-		{
-			get
-			{
-				Uri value = ((IAppSettings)this).ProgrammaticWebApiServiceUrl;
-				if (value == null)
-				{
-					value = this.cachedSettings.GetUriValue(AppSettingsConstants.WebApiServiceUrl, null);
-				}
-
-				if (value == null)
-				{
-					string url = GetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrl);
-					if (!string.IsNullOrEmpty(url))
+					lock (SyncRoot)
 					{
-						url = ValidateUriFormat(url);
-						if (!string.IsNullOrEmpty(url))
+						if (instance == null)
 						{
-							value = new Uri(url, UriKind.Absolute);
+							instance = Create();
 						}
 					}
 				}
 
-				return value;
+				return instance;
 			}
-
-			// This is only stored within the Registry.
-			set =>
-				SetRegistryKeyValue(
-					AppSettingsConstants.WebApiServiceUrl,
-					value != null ? value.ToString() : string.Empty);
 		}
 
 		/// <summary>
-		/// Gets the application settings singleton instance.
+		/// Create a new application settings instance and reads all values from their respective sources.
 		/// </summary>
-		internal static IAppSettings Instance { get; } = new AppSettings();
+		/// <returns>
+		/// The <see cref="IAppSettings"/> instance.
+		/// </returns>
+		public static IAppSettings Create()
+		{
+			return AppSettingsReader.Read();
+		}
 
 		/// <summary>
-		/// Gets or sets the Registry sub-key name.
-		/// </summary>
-		/// <value>
-		/// The sub-key name.
-		/// </value>
-		/// <remarks>
-		/// This is provided strictly for testing purposes.
-		/// </remarks>
-		internal static string RegistrySubKeyName { get; set; } = @"Software\kCura\Relativity";
-
-		/// <summary>
-		/// Clears all settings and retrieve the latest values.
+		/// Refreshes the current application settings from their respective sources.
 		/// </summary>
 		public static void Refresh()
 		{
-			Instance.Refresh();
-		}
-
-		/// <inheritdoc />
-		AppSettingsDto IAppSettings.DeepCopy()
-		{
-			return new AppSettingsDto(this);
-		}
-
-		/// <inheritdoc />
-		void IAppSettings.Refresh()
-		{
-			this.cachedSettings.Clear();
-
-			// For backwards compatibility, support all legacy sections.
-			this.ReadSectionValues("kCura.Windows.Process");
-			this.ReadSectionValues("kCura.Config");
-			this.ReadSectionValues("kCura.Utility");
-			this.ReadSectionValues("kCura.WinEDDS");
-			this.ReadSectionValues("Relativity.Import.Export");
+			Refresh(Instance);
 		}
 
 		/// <summary>
-		/// Sets the registry key value.
+		/// Refreshes the specified application settings from their respective sources.
 		/// </summary>
-		/// <param name="keyName">
-		/// The Registry key name.
+		/// <param name="settings">
+		/// The application settings to refresh.
 		/// </param>
-		/// <param name="value">
-		/// The setting value.
-		/// </param>
-		internal static void SetRegistryKeyValue(string keyName, string value)
+		public static void Refresh(IAppSettings settings)
 		{
-			const bool Write = true;
-			using (Microsoft.Win32.RegistryKey key = GetRegistryKey(Write))
+			if (settings == null)
 			{
-				key.SetValue(keyName, value);
-			}
-		}
-
-		/// <summary>
-		/// Gets the registry key.
-		/// </summary>
-		/// <param name="write">
-		/// Specify whether write access is required.
-		/// </param>
-		/// <returns>
-		/// The <see cref="Microsoft.Win32.RegistryKey"/> instance.
-		/// </returns>
-		internal static Microsoft.Win32.RegistryKey GetRegistryKey(bool write)
-		{
-			Microsoft.Win32.RegistryKey key =
-				Microsoft.Win32.Registry.CurrentUser.OpenSubKey(RegistrySubKeyName, write);
-			if (key != null)
-			{
-				return key;
+				throw new ArgumentNullException(nameof(settings));
 			}
 
-			Microsoft.Win32.Registry.CurrentUser.CreateSubKey(RegistrySubKeyName);
-			key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(RegistrySubKeyName, write);
-			return key;
-		}
-
-		/// <summary>
-		/// Gets the registry key value.
-		/// </summary>
-		/// <param name="keyName">
-		/// The Registry key name.
-		/// </param>
-		/// <returns>
-		/// The key value.
-		/// </returns>
-		private static string GetRegistryKeyValue(string keyName)
-		{
-			const bool Write = false;
-			using (Microsoft.Win32.RegistryKey key = GetRegistryKey(Write))
-			{
-				string value = key.GetValue(keyName, string.Empty) as string;
-				return value;
-			}
-		}
-
-		/// <summary>
-		/// Validates to ensure the URI format is proper.
-		/// </summary>
-		/// <param name="value">
-		/// The string representation of the URI.
-		/// </param>
-		/// <returns>
-		/// The validated URI string.
-		/// </returns>
-		private static string ValidateUriFormat(string value)
-		{
-			if (!string.IsNullOrEmpty(value) && !value.Trim().EndsWith("/", StringComparison.OrdinalIgnoreCase))
-			{
-				value = value.Trim() + "/";
-			}
-
-			Uri result;
-			if (Uri.TryCreate(value, UriKind.Absolute, out result))
-			{
-				return value;
-			}
-
-			return string.Empty;
-		}
-
-		/// <summary>
-		/// Reads the app config section name/value pairs and add to the dictionary.
-		/// </summary>
-		/// <param name="sectionName">
-		/// Name of the section.
-		/// </param>
-		private void ReadSectionValues(string sectionName)
-		{
-			try
-			{
-				System.Collections.Hashtable section =
-					ConfigurationManager.GetSection(sectionName) as System.Collections.Hashtable;
-				if (section == null)
-				{
-					return;
-				}
-
-				Dictionary<string, object> sectionDictionary = section.Cast<System.Collections.DictionaryEntry>()
-					.ToDictionary(n => n.Key.ToString(), n => n.Value);
-				foreach (var key in sectionDictionary.Keys)
-				{
-					this.cachedSettings[key] = sectionDictionary[key];
-				}
-			}
-			catch (ConfigurationErrorsException)
-			{
-				// Due to legacy concerns, never allow configuration errors to throw.
-			}
+			AppSettingsReader.Refresh(settings);
 		}
 	}
 }

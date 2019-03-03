@@ -25,7 +25,7 @@ namespace Relativity.Import.Export
 		public const string ObjectFieldIdListContainsArtifactIdKey = "ObjectFieldIdListContainsArtifactId";
 		public const string ProgrammaticWebApiServiceUrlKey = "ProgrammaticWebApiServiceUrl";
 		public const string TapiBridgeExportTransferWaitingTimeInSecondsKey = "TapiBridgeExportTransferWaitingTimeInSeconds";
-		public const string WebApiServiceUrl = "WebServiceURL";
+		public const string WebApiServiceUrlKey = "WebServiceURL";
 
 		// All default values go here.
 		public const bool CreateErrorForInvalidDateDefaultValue = true;

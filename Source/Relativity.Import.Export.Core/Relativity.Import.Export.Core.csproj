@@ -60,7 +60,8 @@
     <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppSettingsDto.cs" />
+    <Compile Include="AppSettingsReader.cs" />
+    <Compile Include="AppDotNetSettings.cs" />
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="Io\BooleanImporterException.cs" />
     <Compile Include="Io\CellImporterException.cs" />

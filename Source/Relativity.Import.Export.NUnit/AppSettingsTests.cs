@@ -36,16 +36,16 @@ namespace Relativity.Import.Export.NUnit
 		[SetUp]
 		public void Setup()
 		{
-			AppSettings.RegistrySubKeyName = TestRegistrySubKey;
+			AppSettingsReader.RegistrySubKeyName = TestRegistrySubKey;
 			DeleteTestSubKey();
 			AppSettings.Refresh();
-			this.settings = new AppSettings();
+			this.settings = new AppDotNetSettings();
 		}
 
 		[TearDown]
 		public void Teardown()
 		{
-			AppSettings.RegistrySubKeyName = TestRegistrySubKey;
+			AppSettingsReader.RegistrySubKeyName = TestRegistrySubKey;
 			DeleteTestSubKey();
 			this.settings = null;
 		}
@@ -307,7 +307,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(AppSettings.WebApiServiceUrl, Is.Null);
 
 			// This simulates the scenario where the URL comes from the RDC/Registry.
-			AppSettings.SetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrl, "http://www.espn.com");
+			AppSettingsReader.SetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrlKey, "http://www.espn.com");
 			Assert.That(AppSettings.WebApiServiceUrl, Is.EqualTo(new Uri("http://www.espn.com")));
 			DeleteTestSubKey();
 			Assert.That(AppSettings.WebApiServiceUrl, Is.Null);
@@ -321,7 +321,7 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(this.settings.WebApiServiceUrl, Is.Null);
 
 			// This simulates the scenario where the URL comes from the RDC/Registry.
-			AppSettings.SetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrl, "http://www.espn.com");
+			AppSettingsReader.SetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrlKey, "http://www.espn.com");
 			Assert.That(this.settings.WebApiServiceUrl, Is.EqualTo(new Uri("http://www.espn.com")));
 			DeleteTestSubKey();
 			Assert.That(this.settings.WebApiServiceUrl, Is.Null);
@@ -331,7 +331,7 @@ namespace Relativity.Import.Export.NUnit
 		public void ShouldMakeSettingsDeepCopy()
 		{
 			AssignRandomValues(this.settings);
-			AppSettingsDto copy = this.settings.DeepCopy();
+			IAppSettings copy = this.settings.DeepCopy();
 			Assert.That(copy.CreateErrorForInvalidDate, Is.EqualTo(this.settings.CreateErrorForInvalidDate));
 			Assert.That(copy.ExportErrorNumberOfRetries, Is.EqualTo(this.settings.ExportErrorNumberOfRetries));
 			Assert.That(copy.ExportErrorWaitTimeInSeconds, Is.EqualTo(this.settings.ExportErrorWaitTimeInSeconds));

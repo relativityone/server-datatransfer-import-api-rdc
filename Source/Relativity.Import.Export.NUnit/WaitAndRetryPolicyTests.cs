@@ -198,7 +198,7 @@ namespace Relativity.Import.Export.NUnit
 
 		private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParams(int maxRetryCount)
 		{
-			IAppSettings appSettings = new AppSettings();
+			IAppSettings appSettings = new AppDotNetSettings();
 			appSettings.IoErrorNumberOfRetries = maxRetryCount;
 			appSettings.IoErrorWaitTimeInSeconds = this.waitTimeMillisecondsBetweenRetryAttempts;
 			WaitAndRetryPolicy waitAndRetryPolicy = new WaitAndRetryPolicy(appSettings);
@@ -211,7 +211,7 @@ namespace Relativity.Import.Export.NUnit
 
 		private void WhenExecutingTheWaitAndRetryWithRetryCountAndDurationAsConstructorParamsThenThrowsException(int maxRetryCount)
 		{
-			IAppSettings appSettings = new AppSettings();
+			IAppSettings appSettings = new AppDotNetSettings();
 			appSettings.IoErrorNumberOfRetries = maxRetryCount;
 			appSettings.IoErrorWaitTimeInSeconds = this.waitTimeMillisecondsBetweenRetryAttempts;
 			WaitAndRetryPolicy waitAndRetryPolicy = new WaitAndRetryPolicy(appSettings);

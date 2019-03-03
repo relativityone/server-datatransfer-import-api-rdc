@@ -10,8 +10,11 @@ namespace Relativity.Import.Export
 	using System.Collections.Generic;
 
 	/// <summary>
-	/// Represents an abstract object that provides thread-safe application settings.
+	/// Represents an abstract object that provides thread-safe general import/export application settings.
 	/// </summary>
+	/// <remarks>
+	/// Consider exposing this object to Import API.
+	/// </remarks>
 	public interface IAppSettings
 	{
 		/// <summary>
@@ -187,16 +190,11 @@ namespace Relativity.Import.Export
 		}
 
 		/// <summary>
-		/// Performs a deep copy of this instance to a cached copy of all settings.
+		/// Performs a deep copy of this instance.
 		/// </summary>
 		/// <returns>
-		/// The <see cref="AppSettingsDto"/> instance.
+		/// The <see cref="IAppSettings"/> instance.
 		/// </returns>
-		AppSettingsDto DeepCopy();
-
-		/// <summary>
-		/// Clears all settings and retrieve the latest values.
-		/// </summary>
-		void Refresh();
+		IAppSettings DeepCopy();
 	}
 }
