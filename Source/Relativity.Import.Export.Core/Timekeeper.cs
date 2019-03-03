@@ -104,7 +104,7 @@ namespace Relativity.Import.Export
 				return;
 			}
 
-			entry.Count += 1;
+			entry.Count++;
 			entry.Length += (System.DateTime.Now.Ticks - entry.StartTime) / 10000;
 			entry.StartTime = System.DateTime.Now.Ticks;
 		}

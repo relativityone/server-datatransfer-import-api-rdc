@@ -60,20 +60,25 @@ namespace Relativity.Import.Export.NUnit
 		[Category(TestCategories.Framework)]
 		public void ShouldOnlyTrackTimeWhenTheLogAllEventsSettingIsTrue(bool logAllEvents)
         {
-	        this.mockAppSettings.SetupGet(x => x.LogAllEvents).Returns(logAllEvents);
+	        this.mockAppSettings.Invocations.Clear();
+			this.mockAppSettings.SetupGet(x => x.LogAllEvents).Returns(logAllEvents);
 			this.timekeeper.MarkStart("a");
+			System.Threading.Thread.Sleep(100);
 			this.timekeeper.MarkEnd("a");
 			Assert.That(this.timekeeper.Count, !logAllEvents ? Is.Zero : Is.EqualTo(1));
 			Assert.That(this.timekeeper.GetEntry("a"), !logAllEvents ? Is.Null : Is.Not.Null);
 			this.timekeeper.MarkStart("a");
+			System.Threading.Thread.Sleep(100);
 			this.timekeeper.MarkEnd("a");
 			Assert.That(this.timekeeper.Count, !logAllEvents ? Is.Zero : Is.EqualTo(1));
 			Assert.That(this.timekeeper.GetEntry("a"), !logAllEvents ? Is.Null : Is.Not.Null);
 			this.timekeeper.MarkStart("b", 1);
+			System.Threading.Thread.Sleep(100);
 			this.timekeeper.MarkEnd("b", 1);
 			Assert.That(this.timekeeper.Count, !logAllEvents ? Is.Zero : Is.EqualTo(2));
 			Assert.That(this.timekeeper.GetEntry("b", 1), !logAllEvents ? Is.Null : Is.Not.Null);
 			this.timekeeper.MarkStart("b", 1);
+			System.Threading.Thread.Sleep(100);
 			this.timekeeper.MarkEnd("b", 1);
 			Assert.That(this.timekeeper.Count, !logAllEvents ? Is.Zero : Is.EqualTo(2));
 			Assert.That(this.timekeeper.GetEntry("b", 1), !logAllEvents ? Is.Null : Is.Not.Null);
@@ -85,10 +90,13 @@ namespace Relativity.Import.Export.NUnit
 		[Category(TestCategories.Framework)]
 		public void ShouldOnlyGenerateTheCsvReportWhenTheLogAllEventsSettingIsTrue(bool logAllEvents)
 		{
+			this.mockAppSettings.Invocations.Clear();
 			this.mockAppSettings.SetupGet(x => x.LogAllEvents).Returns(logAllEvents);
 			this.timekeeper.MarkStart("a");
+			System.Threading.Thread.Sleep(100);
 			this.timekeeper.MarkEnd("a");
 			this.timekeeper.MarkStart("a", 1);
+			System.Threading.Thread.Sleep(100);
 			this.timekeeper.MarkEnd("a", 1);
 			this.timekeeper.GenerateCsvReportItemsAsRows("import-api", this.tempDirectory.Directory);
 			List<string> files = System.IO.Directory.GetFiles(this.tempDirectory.Directory).ToList();
