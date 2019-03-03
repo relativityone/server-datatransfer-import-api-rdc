@@ -81,7 +81,12 @@ namespace Relativity.Import.Export.Transfer
         /// <inheritdoc />
         protected override void OnTransferStatisticsEvent(object sender, TransferStatisticsEventArgs e)
         {
-            var key = e.Request.JobId.Value;
+	        if (e == null)
+	        {
+		        throw new ArgumentNullException(nameof(e));
+	        }
+
+			var key = e.Request.JobId.Value;
             if (!this.totalStatistics.ContainsKey(key))
             {
                 this.totalStatistics.TryAdd(key, e);

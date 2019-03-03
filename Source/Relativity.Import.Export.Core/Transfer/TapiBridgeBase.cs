@@ -42,7 +42,7 @@ namespace Relativity.Import.Export.Transfer
 		/// <summary>
 		/// The context used for transfer events.
 		/// </summary>
-		private readonly TransferContext context;
+		private readonly TransferContext transferContext;
 
 		/// <summary>
 		/// The native file transfer parameters.
@@ -157,7 +157,7 @@ namespace Relativity.Import.Export.Transfer
             this.cancellationToken = token;
             this.TransferLog = log;
             this.currentJobNumber = 0;
-            this.context = new TransferContext
+            this.transferContext = new TransferContext
                                {
                                    StatisticsRateSeconds = 1.0,
                                    LargeFileProgressEnabled = parameters.LargeFileProgressEnabled
@@ -428,7 +428,7 @@ namespace Relativity.Import.Export.Transfer
                                         lineNumber = lastIssue.Path.Order > 0 ? lastIssue.Path.Order : ValidLineNumber;
                                     }
 
-                                    this.RaiseStatusMessage(message, lineNumber);
+                                    this.PublishStatusMessage(message, lineNumber);
                                     if (handledException == null)
                                     {
                                         // Force the fallback.
@@ -436,7 +436,7 @@ namespace Relativity.Import.Export.Transfer
                                     }
 
                                     // Gracefully terminate.
-                                    this.RaiseFatalError(message, lineNumber);
+                                    this.PublishFatalError(message, lineNumber);
                                     break;
 
                                 case TransferStatus.Failed:
@@ -561,7 +561,7 @@ namespace Relativity.Import.Export.Transfer
                 {
                     configuration.ClientId = clientId;
                     this.CreateTransferClient(configuration);
-                    this.RaiseClientChanged(ClientChangeReason.ForceConfig);
+                    this.PublishClientChanged(ClientChangeReason.ForceConfig);
                 }
                 else
                 {
@@ -590,7 +590,7 @@ namespace Relativity.Import.Export.Transfer
                     this.TransferLog.LogInformation(
                         "TAPI created the {Client} client via best-fit strategy.",
                         this.transferClient.DisplayName);
-                    this.RaiseClientChanged(ClientChangeReason.BestFit);
+                    this.PublishClientChanged(ClientChangeReason.BestFit);
                 }
             }
             catch (Exception e)
@@ -598,7 +598,7 @@ namespace Relativity.Import.Export.Transfer
                 this.TransferLog.LogError(e, "The transfer client construction failed.");
                 configuration.ClientId = new Guid(TransferClientConstants.HttpClientId);
                 this.CreateTransferClient(configuration);
-                this.RaiseClientChanged(ClientChangeReason.HttpFallback);
+                this.PublishClientChanged(ClientChangeReason.HttpFallback);
             }
             finally
             {
@@ -662,7 +662,7 @@ namespace Relativity.Import.Export.Transfer
             this.CreateTransferClient();
             this.currentJobNumber++;
             this.currentJobId = Guid.NewGuid();
-            this.jobRequest = this.CreateTransferRequestForJob(this.context);
+            this.jobRequest = this.CreateTransferRequestForJob(this.transferContext);
 	        this.jobRequest.Application = this.parameters.Application;
 	        if (string.IsNullOrEmpty(this.jobRequest.Application))
 	        {
@@ -731,7 +731,7 @@ namespace Relativity.Import.Export.Transfer
         private void CreateJobRetryListener()
         {
             this.transferListeners.Add(
-                new TapiJobRetryListener(this.TransferLog, this.parameters.MaxJobRetryAttempts, this.context));
+                new TapiJobRetryListener(this.TransferLog, this.parameters.MaxJobRetryAttempts, this.transferContext));
         }
 
 		/// <summary>
@@ -743,7 +743,7 @@ namespace Relativity.Import.Export.Transfer
                 new TapiPathIssueListener(
                     this.TransferLog,
                     this.currentDirection,
-                    this.context));
+                    this.transferContext));
         }
 
 		/// <summary>
@@ -751,7 +751,7 @@ namespace Relativity.Import.Export.Transfer
 		/// </summary>
 		private void CreatePathProgressListener()
         {
-            var listener = new TapiPathProgressListener(this.TransferLog, this.context);
+            var listener = new TapiPathProgressListener(this.TransferLog, this.transferContext);
             listener.ProgressEvent += (sender, args) =>
                 {
                     this.TapiProgress?.Invoke(sender, args);
@@ -764,7 +764,7 @@ namespace Relativity.Import.Export.Transfer
 		/// </summary>
 		private void CreateRequestListener()
         {
-            this.transferListeners.Add(new TapiRequestListener(this.TransferLog, this.context));
+            this.transferListeners.Add(new TapiRequestListener(this.TransferLog, this.transferContext));
         }
 
 		/// <summary>
@@ -772,7 +772,7 @@ namespace Relativity.Import.Export.Transfer
 		/// </summary>
 		private void CreateStatisticsListener()
         {
-            var listener = new TapiStatisticsListener(this.TransferLog, this.context);
+            var listener = new TapiStatisticsListener(this.TransferLog, this.transferContext);
             listener.StatisticsEvent += (sender, args) => this.TapiStatistics?.Invoke(sender, args);
             this.transferListeners.Add(listener);
         }
@@ -889,7 +889,7 @@ namespace Relativity.Import.Export.Transfer
                 Strings.HttpFallbackWarningMessage,
                 this.ClientDisplayName,
                 exception.Message);
-            this.RaiseWarningMessage(message, TapiConstants.NoLineNumber);
+            this.PublishWarningMessage(message, TapiConstants.NoLineNumber);
             var retryablePaths = this.GetRetryableTransferPaths().ToList();
             if (addedPath != null && !retryablePaths.Any(x => x.Equals(addedPath)))
             {
@@ -900,7 +900,7 @@ namespace Relativity.Import.Export.Transfer
             this.DestroyTransferJob();
             this.DestroyTransferClient();
             this.CreateHttpClient();
-            this.RaiseClientChanged(ClientChangeReason.HttpFallback);
+            this.PublishClientChanged(ClientChangeReason.HttpFallback);
             this.CreateTransferJob(true);
 
             // Restore the original path before adding to the HTTP-based job.
@@ -987,13 +987,13 @@ namespace Relativity.Import.Export.Transfer
             }
         }
 
-        /// <summary>
-        /// Raises a client changed event.
-        /// </summary>
-        /// <param name="reason">
-        /// The reason for the client change.
-        /// </param>
-        private void RaiseClientChanged(ClientChangeReason reason)
+		/// <summary>
+		/// Publish a client changed event.
+		/// </summary>
+		/// <param name="reason">
+		/// The reason for the client change.
+		/// </param>
+		private void PublishClientChanged(ClientChangeReason reason)
         {
             this.CheckDispose();
             string message;
@@ -1028,52 +1028,52 @@ namespace Relativity.Import.Export.Transfer
                     break;
             }
 
-            this.RaiseStatusMessage(message, TapiConstants.NoLineNumber);
+            this.PublishStatusMessage(message, TapiConstants.NoLineNumber);
             var eventArgs = new TapiClientEventArgs(this.ClientDisplayName, this.Client);
             this.TapiClientChanged?.Invoke(this, eventArgs);
 	        this.UpdateAllTransferListenersClientName();
 		}
 
-        /// <summary>
-        /// Raises a fatal error.
-        /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="lineNumber">
-        /// The line number.
-        /// </param>
-        private void RaiseFatalError(string message, int lineNumber)
+		/// <summary>
+		/// Publish a fatal error.
+		/// </summary>
+		/// <param name="message">
+		/// The message.
+		/// </param>
+		/// <param name="lineNumber">
+		/// The line number.
+		/// </param>
+		private void PublishFatalError(string message, int lineNumber)
         {
             this.CheckDispose();
             this.TapiFatalError?.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
         }
 
-        /// <summary>
-        /// Raises a status message event.
-        /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="lineNumber">
-        /// The line number.
-        /// </param>
-        private void RaiseStatusMessage(string message, int lineNumber)
+		/// <summary>
+		/// Publish a status message event.
+		/// </summary>
+		/// <param name="message">
+		/// The message.
+		/// </param>
+		/// <param name="lineNumber">
+		/// The line number.
+		/// </param>
+		private void PublishStatusMessage(string message, int lineNumber)
         {
             this.CheckDispose();
             this.TapiStatusMessage?.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
         }
 
-        /// <summary>
-        /// Raises a warning message event.
-        /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="lineNumber">
-        /// The line number.
-        /// </param>
-        private void RaiseWarningMessage(string message, int lineNumber)
+		/// <summary>
+		/// Publish a warning message event.
+		/// </summary>
+		/// <param name="message">
+		/// The message.
+		/// </param>
+		/// <param name="lineNumber">
+		/// The line number.
+		/// </param>
+		private void PublishWarningMessage(string message, int lineNumber)
         {
             this.CheckDispose();
             this.TapiWarningMessage?.Invoke(this, new TapiMessageEventArgs(message, lineNumber));

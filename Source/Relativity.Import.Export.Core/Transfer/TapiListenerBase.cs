@@ -117,58 +117,58 @@ namespace Relativity.Import.Export.Transfer
             GC.SuppressFinalize(this);
         }
 
-        /// <summary>
-        /// Raises a status message event.
-        /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="lineNumber">
-        /// The line number.
-        /// </param>
-        protected void RaiseStatusMessage(string message, int lineNumber)
+		/// <summary>
+		/// Publish a status message event.
+		/// </summary>
+		/// <param name="message">
+		/// The message.
+		/// </param>
+		/// <param name="lineNumber">
+		/// The line number.
+		/// </param>
+		protected void PublishStatusMessage(string message, int lineNumber)
         {
             this.StatusMessage?.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
         }
 
-        /// <summary>
-        /// Raises an error message event.
-        /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="lineNumber">
-        /// The line number.
-        /// </param>
-        protected void RaiseErrorMessage(string message, int lineNumber)
+		/// <summary>
+		/// Publish an error message event.
+		/// </summary>
+		/// <param name="message">
+		/// The message.
+		/// </param>
+		/// <param name="lineNumber">
+		/// The line number.
+		/// </param>
+		protected void PublishErrorMessage(string message, int lineNumber)
         {
             this.ErrorMessage?.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
         }
 
-        /// <summary>
-        /// Raises a warning message event.
-        /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="lineNumber">
-        /// The line number.
-        /// </param>
-        protected void RaiseWarningMessage(string message, int lineNumber)
+		/// <summary>
+		/// Publish a warning message event.
+		/// </summary>
+		/// <param name="message">
+		/// The message.
+		/// </param>
+		/// <param name="lineNumber">
+		/// The line number.
+		/// </param>
+		protected void PublishWarningMessage(string message, int lineNumber)
         {
             this.WarningMessage?.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
         }
 
-        /// <summary>
-        /// Raises a fatal error event.
-        /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="lineNumber">
-        /// The line number.
-        /// </param>
-        protected void RaiseFatalError(string message, int lineNumber)
+		/// <summary>
+		/// Publish a fatal error event.
+		/// </summary>
+		/// <param name="message">
+		/// The message.
+		/// </param>
+		/// <param name="lineNumber">
+		/// The line number.
+		/// </param>
+		protected void PublishFatalError(string message, int lineNumber)
         {
             this.FatalError?.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
         }

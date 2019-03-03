@@ -6,7 +6,8 @@
 
 namespace Relativity.Import.Export.Transfer
 {
-    using System.Globalization;
+	using System;
+	using System.Globalization;
 
 	using Relativity.Import.Export.Resources;
 	using Relativity.Transfer;
@@ -42,6 +43,11 @@ namespace Relativity.Import.Export.Transfer
         /// <inheritdoc />
         protected override void OnTransferPathIssue(object sender, TransferPathIssueEventArgs e)
         {
+	        if (e == null)
+	        {
+				throw new ArgumentNullException(nameof(e));
+	        }
+
             var triesLeft = e.Issue.MaxRetryAttempts - e.Issue.RetryAttempt - 1;
             var retryCalculation = e.Request.RetryStrategy.Calculation;
             var retryTimeSpan = retryCalculation(e.Issue.RetryAttempt);
@@ -59,7 +65,7 @@ namespace Relativity.Import.Export.Transfer
                     e.Issue.Message,
                     retryTimeSpan.TotalSeconds,
                     triesLeft);
-                this.RaiseWarningMessage(message, TapiConstants.NoLineNumber);
+                this.PublishWarningMessage(message, TapiConstants.NoLineNumber);
                 this.TransferLog.LogWarning(
                     "A transfer warning has occurred. LineNumber={LineNumber}, SourcePath={SourcePath}, Attributes={Attributes}.",
                     TapiConstants.NoLineNumber,
@@ -92,7 +98,7 @@ namespace Relativity.Import.Export.Transfer
                     e.Issue.Message,
                     retryTimeSpan.TotalSeconds,
                     triesLeft);
-                this.RaiseWarningMessage(message, e.Issue.Path.Order);
+                this.PublishWarningMessage(message, e.Issue.Path.Order);
                 this.TransferLog.LogWarning(
                     "A transfer warning has occurred. Message={Message}, LineNumber={LineNumber}, SourcePath={SourcePath}, Attributes={Attributes}.",
                     e.Issue.Message,

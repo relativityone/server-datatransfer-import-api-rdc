@@ -6,7 +6,9 @@
 
 namespace Relativity.Import.Export.Transfer
 {
-    using Relativity.Import.Export.Resources;
+	using System;
+
+	using Relativity.Import.Export.Resources;
 	using Relativity.Transfer;
 
 	/// <summary>
@@ -31,8 +33,13 @@ namespace Relativity.Import.Export.Transfer
         /// <inheritdoc />
         protected override void OnTransferRequestEvent(object sender, TransferRequestEventArgs e)
         {
-            // Note: due to RDC's coupling of messages to lines, sending all messages to just the transfer log.
-            switch (e.Status)
+	        if (e == null)
+	        {
+		        throw new ArgumentNullException(nameof(e));
+	        }
+
+			// Note: due to RDC's coupling of messages to lines, sending all messages to just the transfer log.
+			switch (e.Status)
             {
                 case TransferRequestStatus.Started:
                     this.TransferLog.LogInformation(Strings.TransferJobStartedMessage);

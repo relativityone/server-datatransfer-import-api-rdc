@@ -47,7 +47,7 @@ namespace Relativity.Import.Export.Transfer
                 Strings.RetryJobMessage,
                 e.Count,
                 this.maxRetryCount);
-            this.RaiseStatusMessage(message, TapiConstants.NoLineNumber);
+            this.PublishStatusMessage(message, TapiConstants.NoLineNumber);
         }
     }
 }

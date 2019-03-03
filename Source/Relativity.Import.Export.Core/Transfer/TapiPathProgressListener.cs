@@ -38,10 +38,15 @@ namespace Relativity.Import.Export.Transfer
         /// <inheritdoc />
         protected override void OnLargeFileProgress(object sender, LargeFileProgressEventArgs e)
         {
-            base.OnLargeFileProgress(sender, e);
+	        if (e == null)
+	        {
+		        throw new ArgumentNullException(nameof(e));
+	        }
+
+			base.OnLargeFileProgress(sender, e);
             if (e.TotalChunks > 0)
             {
-                this.RaiseStatusMessage(
+                this.PublishStatusMessage(
                     $"Large file transfer progress: {(int)(((double)e.ChunkNumber / (double)e.TotalChunks) * 100)}%.",
                     e.Path.Order);
             }
@@ -50,7 +55,12 @@ namespace Relativity.Import.Export.Transfer
         /// <inheritdoc />
         protected override void OnTransferPathProgress(object sender, TransferPathProgressEventArgs e)
         {
-            if (e.Status != TransferPathStatus.Successful)
+	        if (e == null)
+	        {
+		        throw new ArgumentNullException(nameof(e));
+	        }
+
+			if (e.Status != TransferPathStatus.Successful)
             {
                 return;
             }

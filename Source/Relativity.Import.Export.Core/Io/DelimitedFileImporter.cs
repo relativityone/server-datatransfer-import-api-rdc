@@ -601,7 +601,10 @@ namespace Relativity.Import.Export.Io
 						this.PublishWarningMessage(args);
 						if (this.Reader.BaseStream is System.IO.FileStream && exception is System.IO.IOException
 						                                                   && exception.ToString().ToLowerInvariant()
-							                                                   .IndexOf("network") != -1)
+							                                                   .IndexOf(
+								                                                   "network",
+								                                                   StringComparison.OrdinalIgnoreCase)
+						                                                   != -1)
 						{
 							reInitReader = true;
 						}
