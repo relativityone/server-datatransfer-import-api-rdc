@@ -8,6 +8,9 @@ namespace Relativity.Import.Export.Process
 {
 	using System;
 	using System.Collections;
+	using System.Threading;
+
+	using Relativity.Import.Export.Resources;
 
 	/// <summary>
 	/// Represents a thread-safe context for a <see cref="IRunnable"/> process to publish events. This class cannot be inherited.
@@ -110,6 +113,11 @@ namespace Relativity.Import.Export.Process
 		public event EventHandler<ProcessRecordCountEventArgs> RecordCountIncremented;
 
 		/// <summary>
+		/// Occurs when the error report is displayed.
+		/// </summary>
+		public event EventHandler<ProcessShowReportEventArgs> ShowReportEvent;
+
+		/// <summary>
 		/// Occurs when the process has shutdown.
 		/// </summary>
 		public event EventHandler<EventArgs> Shutdown;
@@ -189,6 +197,19 @@ namespace Relativity.Import.Export.Process
 		public void PublishProcessComplete(bool closeForm, string exportFilePath, bool exportLog)
 		{
 			this.ProcessCompleted?.Invoke(this, new ProcessCompleteEventArgs(closeForm, exportFilePath, exportLog));
+			this.errorWriter.Close();
+			if (!closeForm && this.errorWriter.HasErrors)
+			{
+				ProcessErrorReport report = this.errorWriter.BuildErrorReport(CancellationToken.None);
+				if (report == null)
+				{
+					throw new InvalidOperationException(Strings.BuildErrorReportArgError);
+				}
+
+				this.ShowReportEvent?.Invoke(
+					this,
+					new ProcessShowReportEventArgs(report.Report, report.MaxLengthExceeded));
+			}
 		}
 
 		/// <summary>

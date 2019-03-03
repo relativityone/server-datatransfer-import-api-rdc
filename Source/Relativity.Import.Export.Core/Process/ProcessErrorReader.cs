@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="ErrorFileReader.cs" company="Relativity ODA LLC">
+// <copyright file="ProcessErrorReader.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -17,10 +17,35 @@ namespace Relativity.Import.Export.Process
 	/// <summary>
 	/// Represents a class object that can read error information from a delimited file.
 	/// </summary>
-	internal class ErrorFileReader : DelimitedFileImporter
+	internal class ProcessErrorReader : DelimitedFileImporter
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ErrorFileReader"/> class.
+		/// The key column name.
+		/// </summary>
+		public const string ColumnKey = "Key";
+
+		/// <summary>
+		/// The status column name.
+		/// </summary>
+		public const string ColumnStatus = "Status";
+
+		/// <summary>
+		/// The description column name.
+		/// </summary>
+		public const string ColumnDescription = "Description";
+
+		/// <summary>
+		/// The timestamp column name.
+		/// </summary>
+		public const string ColumnTimestamp = "Timestamp";
+
+		/// <summary>
+		/// The maximum number of rows.
+		/// </summary>
+		public const int MaxRows = 1000;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ProcessErrorReader"/> class.
 		/// </summary>
 		/// <param name="context">
 		/// The I/O reporter context.
@@ -30,7 +55,7 @@ namespace Relativity.Import.Export.Process
 		/// </param>
 		/// <param name="cancellationToken">
 		/// The Cancel Token used to stop the process a any requested time.</param>
-		public ErrorFileReader(IoReporterContext context, ILog logger, CancellationToken cancellationToken)
+		public ProcessErrorReader(IoReporterContext context, ILog logger, CancellationToken cancellationToken)
 			: base(
 				",",
 				"\"",
@@ -46,12 +71,11 @@ namespace Relativity.Import.Export.Process
 		{
 			this.Reader = new System.IO.StreamReader(path);
 			System.Data.DataTable table = new System.Data.DataTable { Locale = CultureInfo.CurrentCulture };
-			table.Columns.Add("Key");
-			table.Columns.Add("Status");
-			table.Columns.Add("Description");
-			table.Columns.Add("Timestamp");
+			table.Columns.Add(ColumnKey);
+			table.Columns.Add(ColumnStatus);
+			table.Columns.Add(ColumnDescription);
+			table.Columns.Add(ColumnTimestamp);
 			int totalRows = 0;
-			const int MaxRows = 1000;
 			while (!this.HasReachedEof && totalRows < MaxRows)
 			{
 				table.Rows.Add(this.GetLine());
@@ -59,7 +83,7 @@ namespace Relativity.Import.Export.Process
 			}
 
 			this.Close();
-			return new object[2] { table, totalRows >= 1000 };
+			return new ProcessErrorReport { Report = table, MaxLengthExceeded = totalRows >= 1000 };
 		}
 	}
 }

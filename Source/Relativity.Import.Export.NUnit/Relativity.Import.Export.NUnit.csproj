@@ -51,6 +51,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="oi\docs\fileids_values_only_sorted.txt">
@@ -111,6 +112,7 @@
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
     <Compile Include="AppSettingsTests.cs" />
+    <Compile Include="ProcessErrorWriterTests.cs" />
     <Compile Include="TimekeeperTests.cs" />
     <Compile Include="StringExtensionsTests.cs" />
     <Compile Include="DateTimeExtensionsTests.cs" />

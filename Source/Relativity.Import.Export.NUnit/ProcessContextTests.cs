@@ -11,7 +11,10 @@ namespace Relativity.Import.Export.NUnit
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Data;
+	using System.Globalization;
 	using System.Linq;
+	using System.Threading;
 
 	using global::NUnit.Framework;
 
@@ -35,6 +38,7 @@ namespace Relativity.Import.Export.NUnit
 		private readonly List<ProcessEndEventArgs> processEndEvents = new List<ProcessEndEventArgs>();
 		private readonly List<ProcessEventArgs> processEvents = new List<ProcessEventArgs>();
 		private readonly List<ProcessProgressEventArgs> progressEvents = new List<ProcessProgressEventArgs>();
+		private readonly List<ProcessShowReportEventArgs> processShowReportEvents = new List<ProcessShowReportEventArgs>();
 		private readonly List<EventArgs> shutdownEvents = new List<EventArgs>();
 		private readonly List<ProcessRecordCountEventArgs> recordCountIncrementedEvents = new List<ProcessRecordCountEventArgs>();
 		private readonly List<StatusBarEventArgs> statusBarEvents = new List<StatusBarEventArgs>();
@@ -47,6 +51,7 @@ namespace Relativity.Import.Export.NUnit
 		public void Setup()
 		{
 			this.mockProcessWriter = new Mock<IProcessErrorWriter>();
+			this.mockProcessWriter.SetupGet(x => x.HasErrors).Returns(false);
 			this.mockAppSettings = new Mock<IAppSettings>();
 			this.mockAppSettings.SetupGet(settings => settings.LogAllEvents).Returns(true);
 			this.mockLogger = new Mock<Relativity.Logging.ILog>();
@@ -61,6 +66,7 @@ namespace Relativity.Import.Export.NUnit
 			this.processEndEvents.Clear();
 			this.processEvents.Clear();
 			this.progressEvents.Clear();
+			this.processShowReportEvents.Clear();
 			this.shutdownEvents.Clear();
 			this.recordCountIncrementedEvents.Clear();
 			this.statusBarEvents.Clear();
@@ -274,6 +280,34 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		public void ShouldPublishTheShowReportEvent()
+		{
+			// This event is only raised when "closeForm" is false and there are errors.
+			this.context.PublishProcessComplete(false, "a", false);
+			Assert.That(this.processShowReportEvents.Count, Is.EqualTo(0));
+			this.context.PublishProcessComplete(true, "a", false);
+			Assert.That(this.processShowReportEvents.Count, Is.EqualTo(0));
+
+			// This should now publish the event.
+			using (DataTable table = new DataTable())
+			{
+				table.Locale = CultureInfo.CurrentCulture;
+				ProcessErrorReport report =
+					new ProcessErrorReport { MaxLengthExceeded = false, Report = table };
+				this.mockProcessWriter.Invocations.Clear();
+				this.mockProcessWriter.SetupGet(x => x.HasErrors).Returns(true);
+				this.mockProcessWriter.Setup(x => x.BuildErrorReport(It.IsAny<CancellationToken>())).Returns(report);
+				this.context.PublishProcessComplete(false, "a", false);
+				Assert.That(this.processShowReportEvents.Count, Is.EqualTo(1));
+			}
+
+			// Assert that null events are handled.
+			this.context.ShowReportEvent -= this.OnShowReportEvents;
+			this.context.PublishProcessComplete(false, "a", false);
+			Assert.That(this.processShowReportEvents.Count, Is.EqualTo(1));
+		}
+
+		[Test]
 		public void ShouldPublishTheShutdownEvent()
 		{
 			this.context.PublishShutdown();
@@ -339,6 +373,11 @@ namespace Relativity.Import.Export.NUnit
 			this.recordCountIncrementedEvents.Add(e);
 		}
 
+		private void OnShowReportEvents(object sender, ProcessShowReportEventArgs e)
+		{
+			this.processShowReportEvents.Add(e);
+		}
+
 		private void OnStatusBarUpdate(object sender, StatusBarEventArgs e)
 		{
 			this.statusBarEvents.Add(e);
@@ -364,6 +403,7 @@ namespace Relativity.Import.Export.NUnit
 			this.context.Progress += this.OnProgress;
 			this.context.ProcessEvent += this.OnProcessEvent;
 			this.context.RecordCountIncremented += this.OnRecordCountIncremented;
+			this.context.ShowReportEvent += this.OnShowReportEvents;
 			this.context.StatusBarUpdate += this.OnStatusBarUpdate;
 			this.context.Shutdown += this.OnShutdown;
 		}

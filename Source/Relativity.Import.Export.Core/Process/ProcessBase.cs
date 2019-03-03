@@ -11,7 +11,7 @@ namespace Relativity.Import.Export.Process
 	/// <summary>
 	/// Defines an abstract object that performs a runnable process.
 	/// </summary>
-	public abstract class ProcessBase : IRunnable
+	public abstract class ProcessBase : IRunnable, IDisposable
 	{
 		/// <summary>
 		/// The context used to publish events.
@@ -22,6 +22,16 @@ namespace Relativity.Import.Export.Process
 		/// The logger instance.
 		/// </summary>
 		private readonly Relativity.Logging.ILog logger;
+
+		/// <summary>
+		/// The process error writer.
+		/// </summary>
+		private readonly ProcessErrorWriter errorWriter;
+
+		/// <summary>
+		/// The disposed backing.
+		/// </summary>
+		private bool disposed;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProcessBase"/> class.
@@ -45,7 +55,8 @@ namespace Relativity.Import.Export.Process
 			}
 
 			this.logger = logger;
-			this.context = new ProcessContext(new NullProcessErrorWriter(), settings, logger);
+			this.errorWriter = new ProcessErrorWriter(logger);
+			this.context = new ProcessContext(this.errorWriter, settings, logger);
 			this.ProcessId = Guid.NewGuid();
 		}
 
@@ -59,6 +70,13 @@ namespace Relativity.Import.Export.Process
 		{
 			get;
 			set;
+		}
+
+		/// <inheritdoc />
+		public void Dispose()
+		{
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 
 		/// <summary>
@@ -91,6 +109,27 @@ namespace Relativity.Import.Export.Process
 					this.ProcessId);
 				this.context.PublishFatalException(e);
 			}
+		}
+
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources.
+		/// </summary>
+		/// <param name="disposing">
+		/// <see langword="true" /> to release both managed and unmanaged resources; <see langword="false" /> to release only unmanaged resources.
+		/// </param>
+		protected virtual void Dispose(bool disposing)
+		{
+			if (this.disposed)
+			{
+				return;
+			}
+
+			if (disposing)
+			{
+				this.errorWriter.Dispose();
+			}
+
+			this.disposed = true;
 		}
 
 		/// <summary>

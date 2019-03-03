@@ -76,6 +76,8 @@
     <Compile Include="Io\ObjectNameImporterException.cs" />
     <Compile Include="Io\StringImporterException.cs" />
     <Compile Include="Io\TrimOption.cs" />
+    <Compile Include="Process\ProcessErrorReport.cs" />
+    <Compile Include="Process\ProcessShowReportEventArgs.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="TimekeeperEntry.cs" />
     <Compile Include="Timekeeper.cs" />
@@ -121,8 +123,8 @@
     <Compile Include="Io\RetryOptions.cs" />
     <Compile Include="Io\StreamWriterWrap.cs" />
     <Compile Include="IWaitAndRetryPolicy.cs" />
-    <Compile Include="Process\ErrorFileReader.cs" />
-    <Compile Include="Process\NullProcessErrorWriter.cs" />
+    <Compile Include="Process\ProcessErrorReader.cs" />
+    <Compile Include="Process\ProcessErrorWriter.cs" />
     <Compile Include="Process\IProcessErrorWriter.cs" />
     <Compile Include="Process\ProcessCompleteEventArgs.cs" />
     <Compile Include="Process\ProcessEndEventArgs.cs" />

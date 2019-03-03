@@ -70,6 +70,15 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This operation cannot be completed because the error report data source is invalid..
+        /// </summary>
+        internal static string BuildErrorReportArgError {
+            get {
+                return ResourceManager.GetString("BuildErrorReportArgError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error reading cell. Please check format..
         /// </summary>
         internal static string CellImporterErrorAdditionalInfo {

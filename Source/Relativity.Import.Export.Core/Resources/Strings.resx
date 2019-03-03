@@ -285,4 +285,7 @@
   <data name="ImageConversionTiffCodecNotFoundMessage" xml:space="preserve">
     <value>The image conversion failed because a TIFF image codec doesn't exist within this Operating System.</value>
   </data>
+  <data name="BuildErrorReportArgError" xml:space="preserve">
+    <value>This operation cannot be completed because the error report data source is invalid.</value>
+  </data>
 </root>
