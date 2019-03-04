@@ -78,7 +78,7 @@
 			<File Id="kCuraEDDSWinFormEXEConfig" Name="kCura.EDDS.WinForm.exe.config" DiskId="1" Source="$(var.kCura.EDDS.WinForm.TargetDir)\kCura.EDDS.WinForm.exe.config" />
 		</Component>
 		<Component Id="RDCFirewall" Directory="INSTALLDIR" Guid="{31BF5FEF-EAC6-4554-B397-16BCD75B6B94}" KeyPath="yes">
-			<Condition>SETFIREWALL</Condition>
+			<Condition>SETFIREWALL=1</Condition>
 			<!--Adding firewall exceptions to support Aspera. -->
 			<fw:FirewallException
 				Id="RdcClientTCPInbound"
