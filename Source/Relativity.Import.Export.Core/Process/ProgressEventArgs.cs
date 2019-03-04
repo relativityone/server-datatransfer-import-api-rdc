@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="ProcessProgressEventArgs.cs" company="Relativity ODA LLC">
+// <copyright file="ProgressEventArgs.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -10,13 +10,13 @@ namespace Relativity.Import.Export.Process
 	using System.Collections;
 
 	/// <summary>
-	/// Represents the process progress event argument data.
+	/// Represents the progress event argument data.
 	/// </summary>
 	[Serializable]
-	public sealed class ProcessProgressEventArgs : EventArgs
+	public sealed class ProgressEventArgs : EventArgs
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ProcessProgressEventArgs"/> class.
+		/// Initializes a new instance of the <see cref="ProgressEventArgs"/> class.
 		/// </summary>
 		/// <param name="processId">
 		/// The process unique identifier.
@@ -54,7 +54,7 @@ namespace Relativity.Import.Export.Process
 		/// <param name="nativeFileThroughput">
 		/// The native file throughput in MB/sec units.
 		/// </param>
-		public ProcessProgressEventArgs(
+		public ProgressEventArgs(
 			Guid processId,
 			IDictionary metadata,
 			DateTime startTime,

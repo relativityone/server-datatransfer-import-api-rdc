@@ -40,7 +40,10 @@ namespace Relativity.Import.Export.Process
 		/// <value>
 		/// The <see cref="ProcessEventType"/> value.
 		/// </value>
-		public ProcessEventType EventType { get; }
+		public ProcessEventType EventType
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Gets the event message.
@@ -48,7 +51,10 @@ namespace Relativity.Import.Export.Process
 		/// <value>
 		/// The message.
 		/// </value>
-		public string Message { get; }
+		public string Message
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Gets the record information associated with this event.
@@ -56,7 +62,10 @@ namespace Relativity.Import.Export.Process
 		/// <value>
 		/// The record information.
 		/// </value>
-		public string RecordInfo { get; }
+		public string RecordInfo
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Gets the event timestamp.
@@ -64,6 +73,9 @@ namespace Relativity.Import.Export.Process
 		/// <value>
 		/// The <see cref="DateTime"/> value.
 		/// </value>
-		public DateTime Timestamp { get; }
+		public DateTime Timestamp
+		{
+			get;
+		}
 	}
 }

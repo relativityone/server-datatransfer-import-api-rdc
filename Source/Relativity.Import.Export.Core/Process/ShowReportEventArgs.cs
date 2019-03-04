@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="ProcessShowReportEventArgs.cs" company="Relativity ODA LLC">
+// <copyright file="ShowReportEventArgs.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -12,10 +12,10 @@ namespace Relativity.Import.Export.Process
 	/// <summary>
 	/// Represents the show report event argument data.
 	/// </summary>
-	public sealed class ProcessShowReportEventArgs : EventArgs
+	public sealed class ShowReportEventArgs : EventArgs
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ProcessShowReportEventArgs"/> class.
+		/// Initializes a new instance of the <see cref="ShowReportEventArgs"/> class.
 		/// </summary>
 		/// <param name="report">
 		/// The report data source.
@@ -23,7 +23,7 @@ namespace Relativity.Import.Export.Process
 		/// <param name="maxLengthExceeded">
 		/// The value indicating whether the max length has been exceeded.
 		/// </param>
-		public ProcessShowReportEventArgs(DataTable report, bool maxLengthExceeded)
+		public ShowReportEventArgs(DataTable report, bool maxLengthExceeded)
 		{
 			if (report == null)
 			{

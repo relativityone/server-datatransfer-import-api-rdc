@@ -14,11 +14,6 @@ namespace Relativity.Import.Export.Process
 	public abstract class ProcessBase : IRunnable, IDisposable
 	{
 		/// <summary>
-		/// The context used to publish events.
-		/// </summary>
-		private readonly ProcessContext context;
-
-		/// <summary>
 		/// The logger instance.
 		/// </summary>
 		private readonly Relativity.Logging.ILog logger;
@@ -56,7 +51,7 @@ namespace Relativity.Import.Export.Process
 
 			this.logger = logger;
 			this.errorWriter = new ProcessErrorWriter(logger);
-			this.context = new ProcessContext(this.errorWriter, settings, logger);
+			this.Context = new ProcessContext(this.errorWriter, settings, logger);
 			this.ProcessId = Guid.NewGuid();
 		}
 
@@ -70,6 +65,17 @@ namespace Relativity.Import.Export.Process
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Gets the process context used to publish events.
+		/// </summary>
+		/// <value>
+		/// The <see cref="ProcessContext"/> instance.
+		/// </value>
+		protected ProcessContext Context
+		{
+			get;
 		}
 
 		/// <inheritdoc />
@@ -107,7 +113,7 @@ namespace Relativity.Import.Export.Process
 					"The runnable process {ProcessType}-{ProcessId} experienced a fatal exception.",
 					this.GetType(),
 					this.ProcessId);
-				this.context.PublishFatalException(e);
+				this.Context.PublishFatalException(e);
 			}
 		}
 

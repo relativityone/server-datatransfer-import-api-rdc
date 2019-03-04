@@ -39,7 +39,10 @@ namespace Relativity.Import.Export.Process
 		/// <value>
 		/// <see langword="true" /> to close the form; otherwise, <see langword="false" />.
 		/// </value>
-		public bool CloseForm { get; }
+		public bool CloseForm
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Gets the full path to the exported process file.
@@ -47,7 +50,10 @@ namespace Relativity.Import.Export.Process
 		/// <value>
 		/// The full path.
 		/// </value>
-		public string ExportFilePath { get; }
+		public string ExportFilePath
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Gets a value indicating whether logs were exported.
@@ -55,6 +61,9 @@ namespace Relativity.Import.Export.Process
 		/// <value>
 		/// <see langword="true" /> when logs were exported; otherwise, <see langword="false" />.
 		/// </value>
-		public bool ExportLog { get; }
+		public bool ExportLog
+		{
+			get;
+		}
 	}
 }

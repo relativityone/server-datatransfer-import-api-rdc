@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="ProcessErrorReportEventArgs.cs" company="Relativity ODA LLC">
+// <copyright file="ErrorReportEventArgs.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -10,18 +10,18 @@ namespace Relativity.Import.Export.Process
 	using System.Collections;
 
 	/// <summary>
-	/// Represents the process error report event argument data.
+	/// Represents the error report event argument data.
 	/// </summary>
 	[Serializable]
-	public sealed class ProcessErrorReportEventArgs : EventArgs
+	public sealed class ErrorReportEventArgs : EventArgs
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ProcessErrorReportEventArgs"/> class.
+		/// Initializes a new instance of the <see cref="ErrorReportEventArgs"/> class.
 		/// </summary>
 		/// <param name="error">
 		/// The dictionary containing the error information.
 		/// </param>
-		public ProcessErrorReportEventArgs(IDictionary error)
+		public ErrorReportEventArgs(IDictionary error)
 		{
 			this.Error = error;
 		}
@@ -32,6 +32,9 @@ namespace Relativity.Import.Export.Process
 		/// <value>
 		/// The <see cref="IDictionary"/> instance.
 		/// </value>
-		public IDictionary Error { get; }
+		public IDictionary Error
+		{
+			get;
+		}
 	}
 }

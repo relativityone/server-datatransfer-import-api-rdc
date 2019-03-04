@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="ProcessRecordCountEventArgs.cs" company="Relativity ODA LLC">
+// <copyright file="RecordCountEventArgs.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -9,17 +9,17 @@ namespace Relativity.Import.Export.Process
 	using System;
 
 	/// <summary>
-	/// Represents the process record count event argument data.
+	/// Represents the record count event argument data.
 	/// </summary>
-	public sealed class ProcessRecordCountEventArgs : EventArgs
+	public sealed class RecordCountEventArgs : EventArgs
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ProcessRecordCountEventArgs"/> class.
+		/// Initializes a new instance of the <see cref="RecordCountEventArgs"/> class.
 		/// </summary>
 		/// <param name="count">
 		/// The record count.
 		/// </param>
-		public ProcessRecordCountEventArgs(int count)
+		public RecordCountEventArgs(int count)
 		{
 			this.Count = count;
 		}
@@ -30,6 +30,9 @@ namespace Relativity.Import.Export.Process
 		/// <value>
 		/// The total number of records.
 		/// </value>
-		public int Count { get; }
+		public int Count
+		{
+			get;
+		}
 	}
 }

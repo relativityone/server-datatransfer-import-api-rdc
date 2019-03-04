@@ -419,7 +419,7 @@ End Sub
 		Private Sub _stopImportButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _stopImportButton.Click
 			Try
 				If _stopImportButton.Text = "Stop" Then
-					_processContext.PublishHaltProcess(_processId)
+					_processContext.PublishCancellationRequest(_processId)
 					_stopImportButton.Enabled = False
 					_currentRecordLabel.Text = "Process halting"
 					_hasClickedStop = True
@@ -503,7 +503,7 @@ End Sub
 			End If
 			Return retval
 		End Function
-		Private _lastEvent As ProcessProgressEventArgs
+		Private _lastEvent As ProgressEventArgs
 		Public Property StatusRefreshRate As Long
 		Protected ReadOnly Property DeJitter As Boolean
 			Get
@@ -513,7 +513,7 @@ End Sub
 		Private _lastStatusMessageTs As Long = 0
 		Private _timer As System.Windows.Forms.Timer
 
-		Sub _processContext_OnProcessProgressEvent(ByVal sender As Object, ByVal e As ProcessProgressEventArgs) Handles _processContext.Progress
+		Sub _processContext_OnProcessProgressEvent(ByVal sender As Object, ByVal e As ProgressEventArgs) Handles _processContext.Progress
 			_lastEvent = e
 			Dim redrawSummary As Boolean = True
 
@@ -535,7 +535,7 @@ End Sub
 			If redrawSummary Then BuildOutSummary(e)
 		End Sub
 
-		Private Sub BuildOutSummary(args As ProcessProgressEventArgs)
+		Private Sub BuildOutSummary(args As ProgressEventArgs)
 			SyncLock (_summaryLock)
 				If args Is Nothing Then args = _lastEvent
 				Dim stubDate As DateTime
@@ -641,7 +641,7 @@ End Sub
 			End If
 		End Sub
 
-		Private Sub _processContext_OnProcessFatalException(ByVal sender As Object, ByVal e As ProcessFatalExceptionEventArgs) Handles _processContext.FatalException
+		Private Sub _processContext_OnProcessFatalException(ByVal sender As Object, ByVal e As FatalExceptionEventArgs) Handles _processContext.FatalException
 			If _lastEvent IsNot Nothing Then BuildOutSummary(_lastEvent)
 			Dim errorFriendlyMessage As String = e.FatalException.Message
 			Dim errorFullMessage As String = e.FatalException.ToString
@@ -689,7 +689,7 @@ End Sub
 			SummaryString.Remove(0, _summaryString.Length)
 		End Sub
 
-		Private Sub _processContext_StatusBarEvent(ByVal sender As Object, ByVal e As StatusBarEventArgs) Handles _processContext.StatusBarUpdate
+		Private Sub _processContext_StatusBarEvent(ByVal sender As Object, ByVal e As StatusBarEventArgs) Handles _processContext.StatusBarChanged
 			_statusBar.Text = e.Message
 			_statusBarPopupText = e.PopupText
 			If _statusBarPopupText Is Nothing Then _statusBarPopupText = ""
@@ -728,11 +728,11 @@ End Sub
 		End Sub
 
 		Private Sub ProgressForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
-			_processContext.PublishHaltProcess(_processId)
+			_processContext.PublishCancellationRequest(_processId)
 			_processContext.PublishParentFormClosing(_processId)
 		End Sub
 
-		Private Sub _processContext_ErrorReportEvent(ByVal sender As Object, ByVal e As ProcessErrorReportEventArgs) Handles _processContext.ErrorReport
+		Private Sub _processContext_ErrorReportEvent(ByVal sender As Object, ByVal e As ErrorReportEventArgs) Handles _processContext.ErrorReport
 			If DirectCast(_reportDataGrid, System.ComponentModel.ISynchronizeInvoke).InvokeRequired Then
 				Me.Invoke(New DoErrorReportFromThread(AddressOf DoErrorReport), New Object() { e.Error })
 			Else

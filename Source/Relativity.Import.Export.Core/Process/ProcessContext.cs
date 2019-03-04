@@ -78,14 +78,44 @@ namespace Relativity.Import.Export.Process
 		}
 
 		/// <summary>
-		/// Occurs when a runnable process non-fatal error is reported.
+		/// Occurs when the runnable process has been requested for cancellation.
 		/// </summary>
-		public event EventHandler<ProcessErrorReportEventArgs> ErrorReport;
+		public event EventHandler<CancellationRequestEventArgs> CancellationRequest;
+
+		/// <summary>
+		/// Occurs when the runnable process non-fatal error is reported.
+		/// </summary>
+		public event EventHandler<ErrorReportEventArgs> ErrorReport;
+
+		/// <summary>
+		/// Occurs when the runnable process requests the export server errors file.
+		/// </summary>
+		public event EventHandler<ExportErrorEventArgs> ExportServerErrors;
+
+		/// <summary>
+		/// Occurs when the runnable process requests an export error report file.
+		/// </summary>
+		public event EventHandler<ExportErrorEventArgs> ExportErrorReport;
+
+		/// <summary>
+		/// Occurs when the runnable process requests an export error file.
+		/// </summary>
+		public event EventHandler<ExportErrorEventArgs> ExportErrorFile;
 
 		/// <summary>
 		/// Occurs when the runnable process throws a fatal exception.
 		/// </summary>
-		public event EventHandler<ProcessFatalExceptionEventArgs> FatalException;
+		public event EventHandler<FatalExceptionEventArgs> FatalException;
+
+		/// <summary>
+		/// Occurs when the runnable process has mapped a source field to a target field.
+		/// </summary>
+		public event EventHandler<FieldMappedEventArgs> FieldMapped;
+
+		/// <summary>
+		/// Occurs when the runnable process associated with a parent form is closing.
+		/// </summary>
+		public event EventHandler<ParentFormClosingEventArgs> ParentFormClosing;
 
 		/// <summary>
 		/// Occurs when the runnable process has completed.
@@ -98,34 +128,51 @@ namespace Relativity.Import.Export.Process
 		public event EventHandler<ProcessEndEventArgs> ProcessEnded;
 
 		/// <summary>
-		/// Occurs when a runnable process event takes place.
+		/// Occurs when the runnable process event takes place.
 		/// </summary>
 		public event EventHandler<ProcessEventArgs> ProcessEvent;
 
 		/// <summary>
-		/// Occurs when a runnable process progress event takes place.
+		/// Occurs when the runnable process progress event takes place.
 		/// </summary>
-		public event EventHandler<ProcessProgressEventArgs> Progress;
+		public event EventHandler<ProgressEventArgs> Progress;
 
 		/// <summary>
-		/// Occurs when the record count is incremented.
+		/// Occurs when the runnable process increments the record count.
 		/// </summary>
-		public event EventHandler<ProcessRecordCountEventArgs> RecordCountIncremented;
+		public event EventHandler<RecordCountEventArgs> RecordCountIncremented;
 
 		/// <summary>
-		/// Occurs when the error report is displayed.
+		/// Occurs when the runnable process has completed processing a single record.
 		/// </summary>
-		public event EventHandler<ProcessShowReportEventArgs> ShowReportEvent;
+		public event EventHandler<RecordNumberEventArgs> RecordProcessed;
 
 		/// <summary>
-		/// Occurs when the process has shutdown.
+		/// Occurs when the runnable process is requested to show the error report.
+		/// </summary>
+		public event EventHandler<ShowReportEventArgs> ShowReportEvent;
+
+		/// <summary>
+		/// Occurs when the runnable process has shutdown.
 		/// </summary>
 		public event EventHandler<EventArgs> Shutdown;
 
 		/// <summary>
-		/// Occurs when a status bar update takes place.
+		/// Occurs when a status bar change takes place.
 		/// </summary>
-		public event EventHandler<StatusBarEventArgs> StatusBarUpdate;
+		public event EventHandler<StatusBarEventArgs> StatusBarChanged;
+
+		/// <summary>
+		/// Gets or sets input arguments.
+		/// </summary>
+		/// <value>
+		/// The input arguments.
+		/// </value>
+		public object InputArgs
+		{
+			get;
+			set;
+		}
 
 		/// <summary>
 		/// Gets or sets a value indicating whether safe mode is enabled.
@@ -141,16 +188,52 @@ namespace Relativity.Import.Export.Process
 		public void Clear()
 		{
 			this.recordCount = 0;
+			this.CancellationRequest = null;
 			this.ErrorReport = null;
+			this.ExportErrorFile = null;
+			this.ExportErrorReport = null;
+			this.ExportServerErrors = null;
 			this.FatalException = null;
+			this.FieldMapped = null;
+			this.ParentFormClosing = null;
 			this.ProcessCompleted = null;
 			this.ProcessEnded = null;
 			this.ProcessEvent = null;
 			this.Progress = null;
 			this.RecordCountIncremented = null;
+			this.ShowReportEvent = null;
 			this.Shutdown = null;
-			this.StatusBarUpdate = null;
+			this.StatusBarChanged = null;
 			this.cachedLogAllEvents = null;
+		}
+
+		/// <summary>
+		/// Halts the runnable process with the specified process unique identifier.
+		/// </summary>
+		/// <param name="processId">
+		/// The process unique identifier.
+		/// </param>
+		public void PublishCancellationRequest(Guid processId)
+		{
+			CancellationRequestEventArgs args = new CancellationRequestEventArgs(processId);
+			this.CancellationRequest?.Invoke(this, args);
+		}
+
+		/// <summary>
+		/// Publishes an event indicating the runnable process has handled a non-fatal error.
+		/// </summary>
+		/// <param name="recordInfo">
+		/// The current record information.
+		/// </param>
+		/// <param name="message">
+		/// The event message.
+		/// </param>
+		public void PublishErrorEvent(string recordInfo, string message)
+		{
+			ProcessEventArgs args = new ProcessEventArgs(ProcessEventType.Error, recordInfo, message);
+			this.ProcessEvent?.Invoke(this, args);
+			this.LogProcessEvent(args);
+			this.WriteError(recordInfo, message);
 		}
 
 		/// <summary>
@@ -161,7 +244,59 @@ namespace Relativity.Import.Export.Process
 		/// </param>
 		public void PublishErrorReport(IDictionary error)
 		{
-			this.ErrorReport?.Invoke(this, new ProcessErrorReportEventArgs(error));
+			ErrorReportEventArgs args = new ErrorReportEventArgs(error);
+			this.ErrorReport?.Invoke(this, args);
+		}
+
+		/// <summary>
+		/// Publishes an event indicating the runnable process requests an export error file.
+		/// </summary>
+		/// <param name="file">
+		/// The full path to the export error file.
+		/// </param>
+		public void PublishExportErrorFile(string file)
+		{
+			ExportErrorEventArgs args = new ExportErrorEventArgs(file);
+			this.ExportErrorFile?.Invoke(this, args);
+		}
+
+		/// <summary>
+		/// Publishes an event indicating the runnable process requests an export error report file.
+		/// </summary>
+		/// <param name="file">
+		/// The full path to the export error report file.
+		/// </param>
+		public void PublishExportErrorReport(string file)
+		{
+			ExportErrorEventArgs args = new ExportErrorEventArgs(file);
+			this.ExportErrorReport?.Invoke(this, args);
+		}
+
+		/// <summary>
+		/// Publishes an event indicating the runnable process requests the export server errors file.
+		/// </summary>
+		/// <param name="file">
+		/// The full path to the export server errors file.
+		/// </param>
+		public void PublishExportServerErrors(string file)
+		{
+			ExportErrorEventArgs args = new ExportErrorEventArgs(file);
+			this.ExportServerErrors?.Invoke(this, args);
+		}
+
+		/// <summary>
+		/// Publishes an event indicating the runnable process has mapped a source field to a target field.
+		/// </summary>
+		/// <param name="sourceField">
+		/// The source field name.
+		/// </param>
+		/// <param name="targetField">
+		/// The target field name.
+		/// </param>
+		public void PublishFieldMapped(string sourceField, string targetField)
+		{
+			FieldMappedEventArgs args = new FieldMappedEventArgs(sourceField, targetField);
+			this.FieldMapped?.Invoke(this, args);
 		}
 
 		/// <summary>
@@ -177,9 +312,61 @@ namespace Relativity.Import.Export.Process
 				throw new ArgumentNullException(nameof(exception));
 			}
 
-			this.FatalException?.Invoke(this, new ProcessFatalExceptionEventArgs(exception));
+			FatalExceptionEventArgs args = new FatalExceptionEventArgs(exception);
+			this.FatalException?.Invoke(this, args);
 			this.WriteError("FATAL ERROR", exception.ToString());
 			this.LogFatalException(exception);
+		}
+
+		/// <summary>
+		/// Publishes an event indicating the runnable process associated with a parent form is closing
+		/// </summary>
+		/// <param name="processId">
+		/// The process unique identifier.
+		/// </param>
+		public void PublishParentFormClosing(Guid processId)
+		{
+			ParentFormClosingEventArgs args = new ParentFormClosingEventArgs(processId);
+			this.ParentFormClosing?.Invoke(this, args);
+		}
+
+		/// <summary>
+		/// Publishes an event indicating the runnable process has completed. By default,
+		/// <code>closeForm</code> is <see langword="false" />,
+		/// <code>exportFilePath</code> is <see cref="string.Empty"/>,
+		/// and <code>exportLog</code> is <see langword="false" />.
+		/// </summary>
+		public void PublishProcessCompleted()
+		{
+			this.PublishProcessCompleted(false, string.Empty, false);
+		}
+
+		/// <summary>
+		/// Publishes an event indicating the runnable process has completed. By default,
+		/// <code>exportFilePath</code> is <see cref="string.Empty"/>
+		/// and <code>exportLog</code> is <see langword="false" />.
+		/// </summary>
+		/// <param name="closeForm">
+		/// Specify whether to close any form that started the runnable process.
+		/// </param>
+		public void PublishProcessCompleted(bool closeForm)
+		{
+			this.PublishProcessCompleted(closeForm, string.Empty, false);
+		}
+
+		/// <summary>
+		/// Publishes an event indicating the runnable process has completed. By default,
+		/// <code>exportLog</code> is <see langword="false" />.
+		/// </summary>
+		/// <param name="closeForm">
+		/// Specify whether to close any form that started the runnable process.
+		/// </param>
+		/// <param name="exportFilePath">
+		/// The full path to the exported process file.
+		/// </param>
+		public void PublishProcessCompleted(bool closeForm, string exportFilePath)
+		{
+			this.PublishProcessCompleted(closeForm, exportFilePath, false);
 		}
 
 		/// <summary>
@@ -194,9 +381,10 @@ namespace Relativity.Import.Export.Process
 		/// <param name="exportLog">
 		/// Specify whether logs were exported.
 		/// </param>
-		public void PublishProcessComplete(bool closeForm, string exportFilePath, bool exportLog)
+		public void PublishProcessCompleted(bool closeForm, string exportFilePath, bool exportLog)
 		{
-			this.ProcessCompleted?.Invoke(this, new ProcessCompleteEventArgs(closeForm, exportFilePath, exportLog));
+			ProcessCompleteEventArgs args1 = new ProcessCompleteEventArgs(closeForm, exportFilePath, exportLog);
+			this.ProcessCompleted?.Invoke(this, args1);
 			this.errorWriter.Close();
 			if (!closeForm && this.errorWriter.HasErrors)
 			{
@@ -206,9 +394,8 @@ namespace Relativity.Import.Export.Process
 					throw new InvalidOperationException(Strings.BuildErrorReportArgError);
 				}
 
-				this.ShowReportEvent?.Invoke(
-					this,
-					new ProcessShowReportEventArgs(report.Report, report.MaxLengthExceeded));
+				ShowReportEventArgs args2 = new ShowReportEventArgs(report.Report, report.MaxLengthExceeded);
+				this.ShowReportEvent?.Invoke(this, args2);
 			}
 		}
 
@@ -223,56 +410,8 @@ namespace Relativity.Import.Export.Process
 		/// </param>
 		public void PublishProcessEnded(long nativeFileBytes, long metadataBytes)
 		{
-			this.ProcessEnded?.Invoke(this, new ProcessEndEventArgs(nativeFileBytes, metadataBytes));
-		}
-
-		/// <summary>
-		/// Publishes an event indicating the runnable process has handled a non-fatal error.
-		/// </summary>
-		/// <param name="recordInfo">
-		/// The current record information.
-		/// </param>
-		/// <param name="message">
-		/// The event message.
-		/// </param>
-		public void PublishProcessErrorEvent(string recordInfo, string message)
-		{
-			ProcessEventArgs args = new ProcessEventArgs(ProcessEventType.Error, recordInfo, message);
-			this.ProcessEvent?.Invoke(this, args);
-			this.LogProcessEvent(args);
-			this.WriteError(recordInfo, message);
-		}
-
-		/// <summary>
-		/// Publishes a process warning event.
-		/// </summary>
-		/// <param name="recordInfo">
-		/// The current record information.
-		/// </param>
-		/// <param name="message">
-		/// The event message.
-		/// </param>
-		public void PublishProcessWarningEvent(string recordInfo, string message)
-		{
-			ProcessEventArgs args = new ProcessEventArgs(ProcessEventType.Warning, recordInfo, message);
-			this.ProcessEvent?.Invoke(this, args);
-			this.LogProcessEvent(args);
-		}
-
-		/// <summary>
-		/// Publishes a process status event.
-		/// </summary>
-		/// <param name="recordInfo">
-		/// The current record information.
-		/// </param>
-		/// <param name="message">
-		/// The event message.
-		/// </param>
-		public void PublishProcessStatusEvent(string recordInfo, string message)
-		{
-			ProcessEventArgs args = new ProcessEventArgs(ProcessEventType.Status, recordInfo, message);
-			this.ProcessEvent?.Invoke(this, args);
-			this.LogProcessEvent(args);
+			ProcessEndEventArgs args = new ProcessEndEventArgs(nativeFileBytes, metadataBytes);
+			this.ProcessEnded?.Invoke(this, args);
 		}
 
 		/// <summary>
@@ -332,7 +471,7 @@ namespace Relativity.Import.Export.Process
 			string totalProcessedRecordsDisplay = null,
 			IDictionary metadata = null)
 		{
-			ProcessProgressEventArgs args = new ProcessProgressEventArgs(
+			ProgressEventArgs args = new ProgressEventArgs(
 				processId,
 				metadata,
 				startTime,
@@ -354,7 +493,20 @@ namespace Relativity.Import.Export.Process
 		public void PublishRecordCountIncremented()
 		{
 			this.recordCount++;
-			this.RecordCountIncremented?.Invoke(this, new ProcessRecordCountEventArgs(this.recordCount));
+			RecordCountEventArgs args = new RecordCountEventArgs(this.recordCount);
+			this.RecordCountIncremented?.Invoke(this, args);
+		}
+
+		/// <summary>
+		/// Publishes an event indicating the runnable process has completed processing a single record.
+		/// </summary>
+		/// <param name="recordNumber">
+		/// The record number.
+		/// </param>
+		public void PublishRecordProcessed(long recordNumber)
+		{
+			RecordNumberEventArgs args = new RecordNumberEventArgs(recordNumber);
+			this.RecordProcessed?.Invoke(this, args);
 		}
 
 		/// <summary>
@@ -366,7 +518,7 @@ namespace Relativity.Import.Export.Process
 		}
 
 		/// <summary>
-		/// Publishes a status bar update event.
+		/// Publishes a status bar change event.
 		/// </summary>
 		/// <param name="message">
 		/// The status bar message
@@ -374,69 +526,26 @@ namespace Relativity.Import.Export.Process
 		/// <param name="popupText">
 		/// The status bar popup text.
 		/// </param>
-		public void PublishStatusBarUpdate(string message, string popupText)
+		public void PublishStatusBarChanged(string message, string popupText)
 		{
-			this.StatusBarUpdate?.Invoke(this, new StatusBarEventArgs(message, popupText));
+			StatusBarEventArgs args = new StatusBarEventArgs(message, popupText);
+			this.StatusBarChanged?.Invoke(this, args);
 		}
 
 		/// <summary>
-		/// Halts the runnable process with the specified process unique identifier.
+		/// Publishes a status event.
 		/// </summary>
-		/// <param name="processId">
-		/// The process unique identifier.
+		/// <param name="recordInfo">
+		/// The current record information.
 		/// </param>
-		public void PublishHaltProcess(Guid processId)
-		{
-			// TODO: Implement once the kCura assembly is migrated.
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
-		/// Terminate the runnable process with the specified process unique identifier.
-		/// </summary>
-		/// <param name="processId">
-		/// The process unique identifier.
+		/// <param name="message">
+		/// The event message.
 		/// </param>
-		public void PublishParentFormClosing(Guid processId)
+		public void PublishStatusEvent(string recordInfo, string message)
 		{
-			// TODO: Implement once the kCura assembly is migrated.
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
-		/// Exports the error file to the specified file.
-		/// </summary>
-		/// <param name="file">
-		/// The full path to the export error file.
-		/// </param>
-		public void PublishExportErrorFile(string file)
-		{
-			// TODO: Implement once the kCura assembly is migrated.
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
-		/// Exports the error report to the specified file.
-		/// </summary>
-		/// <param name="file">
-		/// The full path to the export error report file.
-		/// </param>
-		public void PublishExportErrorReport(string file)
-		{
-			// TODO: Implement once the kCura assembly is migrated.
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
-		/// Exports the server errors file to the specified file.
-		/// </summary>
-		/// <param name="file">
-		/// The full path to the export server errors file.
-		/// </param>
-		public void PublishExportServerErrors(string file)
-		{
-			// TODO: Implement once the kCura assembly is migrated.
-			throw new NotImplementedException();
+			ProcessEventArgs args = new ProcessEventArgs(ProcessEventType.Status, recordInfo, message);
+			this.ProcessEvent?.Invoke(this, args);
+			this.LogProcessEvent(args);
 		}
 
 		/// <summary>
@@ -447,8 +556,24 @@ namespace Relativity.Import.Export.Process
 		/// </param>
 		public void SaveOutputFile(string file)
 		{
-			// TODO: Implement once the kCura assembly is migrated.
-			throw new NotImplementedException();
+			// TODO: Implement file logging.
+			throw new NotImplementedException("Must add in file logging.");
+		}
+
+		/// <summary>
+		/// Publishes a warning event.
+		/// </summary>
+		/// <param name="recordInfo">
+		/// The current record information.
+		/// </param>
+		/// <param name="message">
+		/// The event message.
+		/// </param>
+		public void PublishWarningEvent(string recordInfo, string message)
+		{
+			ProcessEventArgs args = new ProcessEventArgs(ProcessEventType.Warning, recordInfo, message);
+			this.ProcessEvent?.Invoke(this, args);
+			this.LogProcessEvent(args);
 		}
 
 		/// <summary>
