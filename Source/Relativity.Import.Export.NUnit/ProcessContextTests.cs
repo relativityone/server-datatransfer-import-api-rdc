@@ -21,6 +21,7 @@ namespace Relativity.Import.Export.NUnit
 	using Moq;
 
 	using Relativity.Import.Export.Process;
+	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>
 	/// Represents <see cref="ProcessContext"/> tests.
@@ -32,15 +33,20 @@ namespace Relativity.Import.Export.NUnit
 		Justification = "The test class handles the disposal.")]
 	public class ProcessContextTests
 	{
-		private readonly List<ProcessErrorReportEventArgs> errorReportEvents = new List<ProcessErrorReportEventArgs>();
-		private readonly List<ProcessFatalExceptionEventArgs> fatalExceptionEvents = new List<ProcessFatalExceptionEventArgs>();
+		private readonly List<CancellationRequestEventArgs> cancellationRequestEvents = new List<CancellationRequestEventArgs>();
+		private readonly List<ErrorReportEventArgs> errorReportEvents = new List<ErrorReportEventArgs>();
+		private readonly List<ExportErrorEventArgs> exportErrorEvents = new List<ExportErrorEventArgs>();
+		private readonly List<FatalExceptionEventArgs> fatalExceptionEvents = new List<FatalExceptionEventArgs>();
+		private readonly List<FieldMappedEventArgs> fieldMappedEvents = new List<FieldMappedEventArgs>();
+		private readonly List<ParentFormClosingEventArgs> parentFormClosingEvents = new List<ParentFormClosingEventArgs>();
 		private readonly List<ProcessCompleteEventArgs> processCompleteEvents = new List<ProcessCompleteEventArgs>();
 		private readonly List<ProcessEndEventArgs> processEndEvents = new List<ProcessEndEventArgs>();
 		private readonly List<ProcessEventArgs> processEvents = new List<ProcessEventArgs>();
-		private readonly List<ProcessProgressEventArgs> progressEvents = new List<ProcessProgressEventArgs>();
-		private readonly List<ProcessShowReportEventArgs> processShowReportEvents = new List<ProcessShowReportEventArgs>();
+		private readonly List<ProgressEventArgs> processProgressEvents = new List<ProgressEventArgs>();
+		private readonly List<RecordCountEventArgs> recordCountIncrementedEvents = new List<RecordCountEventArgs>();
+		private readonly List<RecordNumberEventArgs> recordProcessedEvents = new List<RecordNumberEventArgs>();
+		private readonly List<ShowReportEventArgs> showReportEvents = new List<ShowReportEventArgs>();
 		private readonly List<EventArgs> shutdownEvents = new List<EventArgs>();
-		private readonly List<ProcessRecordCountEventArgs> recordCountIncrementedEvents = new List<ProcessRecordCountEventArgs>();
 		private readonly List<StatusBarEventArgs> statusBarEvents = new List<StatusBarEventArgs>();
 		private Mock<IProcessErrorWriter> mockProcessWriter;
 		private Mock<IAppSettings> mockAppSettings;
@@ -60,15 +66,20 @@ namespace Relativity.Import.Export.NUnit
 				this.mockAppSettings.Object,
 				this.mockLogger.Object);
 			this.SetupEvents();
+			this.cancellationRequestEvents.Clear();
 			this.errorReportEvents.Clear();
+			this.exportErrorEvents.Clear();
 			this.fatalExceptionEvents.Clear();
+			this.fieldMappedEvents.Clear();
+			this.parentFormClosingEvents.Clear();
 			this.processCompleteEvents.Clear();
 			this.processEndEvents.Clear();
 			this.processEvents.Clear();
-			this.progressEvents.Clear();
-			this.processShowReportEvents.Clear();
+			this.processProgressEvents.Clear();
+			this.showReportEvents.Clear();
 			this.shutdownEvents.Clear();
 			this.recordCountIncrementedEvents.Clear();
+			this.recordProcessedEvents.Clear();
 			this.statusBarEvents.Clear();
 		}
 
@@ -76,6 +87,20 @@ namespace Relativity.Import.Export.NUnit
 		public void Teardown()
 		{
 			this.context = null;
+		}
+
+		[Test]
+		public void ShouldPublishTheCancellationRequestEvent()
+		{
+			Guid processId = Guid.NewGuid();
+			this.context.PublishCancellationRequest(processId);
+			Assert.That(this.cancellationRequestEvents.Count, Is.EqualTo(1));
+			Assert.That(this.cancellationRequestEvents.All(x => x.ProcessId == processId), Is.True);
+
+			// Assert that null events are handled.
+			this.context.CancellationRequest -= this.OnCancellationRequest;
+			this.context.PublishCancellationRequest(processId);
+			Assert.That(this.cancellationRequestEvents.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -88,6 +113,42 @@ namespace Relativity.Import.Export.NUnit
 			this.context.ErrorReport -= this.OnErrorReport;
 			this.context.PublishErrorReport(new Dictionary<string, string>());
 			Assert.That(this.errorReportEvents.Count, Is.EqualTo(1));
+		}
+
+		[Test]
+		public void ShouldPublishTheExportErrorFileEvent()
+		{
+			this.context.PublishExportErrorFile("a");
+			Assert.That(this.exportErrorEvents.Count, Is.EqualTo(1));
+
+			// Assert that null events are handled.
+			this.context.ExportErrorFile -= this.OnExportErrorFile;
+			this.context.PublishExportErrorFile("a");
+			Assert.That(this.exportErrorEvents.Count, Is.EqualTo(1));
+		}
+
+		[Test]
+		public void ShouldPublishTheExportErrorReportEvent()
+		{
+			this.context.PublishExportErrorReport("a");
+			Assert.That(this.exportErrorEvents.Count, Is.EqualTo(1));
+
+			// Assert that null events are handled.
+			this.context.ExportErrorReport -= this.OnExportErrorReport;
+			this.context.PublishExportErrorReport("a");
+			Assert.That(this.exportErrorEvents.Count, Is.EqualTo(1));
+		}
+
+		[Test]
+		public void ShouldPublishTheExportServerErrorsEvent()
+		{
+			this.context.PublishExportServerErrors("a");
+			Assert.That(this.exportErrorEvents.Count, Is.EqualTo(1));
+
+			// Assert that null events are handled.
+			this.context.ExportServerErrors -= this.OnExportServerErrors;
+			this.context.PublishExportServerErrors("a");
+			Assert.That(this.exportErrorEvents.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -114,15 +175,63 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		public void ShouldPublishTheFieldMappedEvent()
+		{
+			string sourceField = RandomHelper.NextString(5, 25);
+			string targetField = RandomHelper.NextString(5, 25);
+			this.context.PublishFieldMapped(sourceField, targetField);
+			Assert.That(this.fieldMappedEvents.Count, Is.EqualTo(1));
+			Assert.That(
+				this.fieldMappedEvents.All(x => x.SourceField == sourceField && x.TargetField == targetField),
+				Is.True);
+
+			// Assert that null events are handled.
+			this.context.FieldMapped -= this.OnFieldMapped;
+			this.context.PublishFieldMapped(sourceField, targetField);
+			Assert.That(this.fieldMappedEvents.Count, Is.EqualTo(1));
+		}
+
+		[Test]
 		public void ShouldPublishTheProcessCompletedEvent()
 		{
-			this.context.PublishProcessComplete(false, string.Empty, false);
+			this.context.PublishProcessCompleted();
 			Assert.That(this.processCompleteEvents.Count, Is.EqualTo(1));
+			Assert.That(
+				this.processCompleteEvents.All(
+					x => x.CloseForm == false && x.ExportLog == false && string.IsNullOrEmpty(x.ExportFilePath)),
+				Is.True);
+			this.context.PublishProcessCompleted(false);
+			Assert.That(this.processCompleteEvents.Count, Is.EqualTo(2));
+			Assert.That(
+				this.processCompleteEvents.All(
+					x => x.CloseForm == false && x.ExportLog == false && string.IsNullOrEmpty(x.ExportFilePath)),
+				Is.True);
+			this.context.PublishProcessCompleted(false, string.Empty);
+			Assert.That(this.processCompleteEvents.Count, Is.EqualTo(3));
+			Assert.That(
+				this.processCompleteEvents.All(
+					x => x.CloseForm == false && x.ExportLog == false && string.IsNullOrEmpty(x.ExportFilePath)),
+				Is.True);
+			this.context.PublishProcessCompleted(false, string.Empty, false);
+			Assert.That(this.processCompleteEvents.Count, Is.EqualTo(4));
+			Assert.That(
+				this.processCompleteEvents.All(
+					x => x.CloseForm == false && x.ExportLog == false && string.IsNullOrEmpty(x.ExportFilePath)),
+				Is.True);
+			this.context.PublishProcessCompleted(true, "a", true);
+			Assert.That(this.processCompleteEvents.Count, Is.EqualTo(5));
+			Assert.That(
+				this.processCompleteEvents.Any(
+					x => x.CloseForm == true && x.ExportLog == true && x.ExportFilePath == "a"),
+				Is.True);
 
 			// Assert that null events are handled.
 			this.context.ProcessCompleted -= this.OnProcessCompleted;
-			this.context.PublishProcessComplete(false, string.Empty, false);
-			Assert.That(this.processCompleteEvents.Count, Is.EqualTo(1));
+			this.context.PublishProcessCompleted();
+			this.context.PublishProcessCompleted(false);
+			this.context.PublishProcessCompleted(false, string.Empty);
+			this.context.PublishProcessCompleted(false, string.Empty, false);
+			Assert.That(this.processCompleteEvents.Count, Is.EqualTo(5));
 		}
 
 		[Test]
@@ -148,7 +257,7 @@ namespace Relativity.Import.Export.NUnit
 			this.mockLogger.Invocations.Clear();
 			this.mockAppSettings.Invocations.Clear();
 			this.mockAppSettings.SetupGet(settings => settings.LogAllEvents).Returns(logEvents);
-			this.context.PublishProcessErrorEvent("a", "b");
+			this.context.PublishErrorEvent("a", "b");
 			Assert.That(this.processEvents.Count, Is.EqualTo(1));
 			Assert.That(
 				this.processEvents.Any(
@@ -157,7 +266,7 @@ namespace Relativity.Import.Export.NUnit
 			this.mockLogger.Verify(
 				log => log.LogInformation(It.IsAny<string>(), It.IsAny<object[]>()),
 				logEvents ? Times.Exactly(1) : Times.Never());
-			this.context.PublishProcessWarningEvent("c", "d");
+			this.context.PublishWarningEvent("c", "d");
 			Assert.That(this.processEvents.Count, Is.EqualTo(2));
 			Assert.That(
 				this.processEvents.Any(
@@ -166,7 +275,7 @@ namespace Relativity.Import.Export.NUnit
 			this.mockLogger.Verify(
 				log => log.LogInformation(It.IsAny<string>(), It.IsAny<object[]>()),
 				logEvents ? Times.Exactly(2) : Times.Never());
-			this.context.PublishProcessStatusEvent("e", "f");
+			this.context.PublishStatusEvent("e", "f");
 			Assert.That(this.processEvents.Count, Is.EqualTo(3));
 			Assert.That(
 				this.processEvents.Any(
@@ -178,9 +287,9 @@ namespace Relativity.Import.Export.NUnit
 
 			// Assert that null events are handled.
 			this.context.ProcessEvent -= this.OnProcessEvent;
-			this.context.PublishProcessErrorEvent("g", "h");
-			this.context.PublishProcessWarningEvent("i", "j");
-			this.context.PublishProcessStatusEvent("k", "l");
+			this.context.PublishErrorEvent("g", "h");
+			this.context.PublishWarningEvent("i", "j");
+			this.context.PublishStatusEvent("k", "l");
 			Assert.That(this.processEvents.Count, Is.EqualTo(3));
 			this.mockLogger.Verify(
 				log => log.LogInformation(It.IsAny<string>(), It.IsAny<object[]>()),
@@ -209,8 +318,8 @@ namespace Relativity.Import.Export.NUnit
 				totalRecordsDisplay,
 				totalProcessedRecordsDisplay,
 				metadata);
-			Assert.That(this.progressEvents.Count, Is.EqualTo(1));
-			ProcessProgressEventArgs eventArgs = this.progressEvents[0];
+			Assert.That(this.processProgressEvents.Count, Is.EqualTo(1));
+			ProgressEventArgs eventArgs = this.processProgressEvents[0];
 			Assert.That(eventArgs.Metadata, Is.Not.Null);
 			Assert.That(eventArgs.Metadata.Contains("a"), Is.True);
 			Assert.That(eventArgs.Metadata.Contains("b"), Is.True);
@@ -236,8 +345,8 @@ namespace Relativity.Import.Export.NUnit
 				5.0,
 				8.0,
 				processId);
-			Assert.That(this.progressEvents.Count, Is.EqualTo(2));
-			eventArgs = this.progressEvents[1];
+			Assert.That(this.processProgressEvents.Count, Is.EqualTo(2));
+			eventArgs = this.processProgressEvents[1];
 			Assert.That(eventArgs.Metadata, Is.Null);
 			Assert.That(eventArgs.TotalProcessedRecordsDisplay, Is.EqualTo("20"));
 			Assert.That(eventArgs.TotalRecordsDisplay, Is.EqualTo("100"));
@@ -257,7 +366,7 @@ namespace Relativity.Import.Export.NUnit
 				totalRecordsDisplay,
 				totalProcessedRecordsDisplay,
 				metadata);
-			Assert.That(this.progressEvents.Count, Is.EqualTo(2));
+			Assert.That(this.processProgressEvents.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -280,13 +389,32 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		public void ShouldPublishTheRecordProcessedEvent()
+		{
+			this.context.PublishRecordProcessed(1);
+			Assert.That(this.recordProcessedEvents.Count, Is.EqualTo(1));
+			Assert.That(this.recordProcessedEvents.Any(x => x.RecordNumber == 1), Is.True);
+			this.context.PublishRecordProcessed(2);
+			Assert.That(this.recordProcessedEvents.Count, Is.EqualTo(2));
+			Assert.That(this.recordProcessedEvents.Any(x => x.RecordNumber == 2), Is.True);
+			this.context.PublishRecordProcessed(3);
+			Assert.That(this.recordProcessedEvents.Count, Is.EqualTo(3));
+			Assert.That(this.recordProcessedEvents.Any(x => x.RecordNumber == 3), Is.True);
+
+			// Assert that null events are handled.
+			this.context.RecordProcessed -= this.OnRecordProcessed;
+			this.context.PublishRecordProcessed(4);
+			Assert.That(this.recordProcessedEvents.Count, Is.EqualTo(3));
+		}
+
+		[Test]
 		public void ShouldPublishTheShowReportEvent()
 		{
 			// This event is only raised when "closeForm" is false and there are errors.
-			this.context.PublishProcessComplete(false, "a", false);
-			Assert.That(this.processShowReportEvents.Count, Is.EqualTo(0));
-			this.context.PublishProcessComplete(true, "a", false);
-			Assert.That(this.processShowReportEvents.Count, Is.EqualTo(0));
+			this.context.PublishProcessCompleted(false, "a", false);
+			Assert.That(this.showReportEvents.Count, Is.EqualTo(0));
+			this.context.PublishProcessCompleted(true, "a", false);
+			Assert.That(this.showReportEvents.Count, Is.EqualTo(0));
 
 			// This should now publish the event.
 			using (DataTable table = new DataTable())
@@ -297,14 +425,28 @@ namespace Relativity.Import.Export.NUnit
 				this.mockProcessWriter.Invocations.Clear();
 				this.mockProcessWriter.SetupGet(x => x.HasErrors).Returns(true);
 				this.mockProcessWriter.Setup(x => x.BuildErrorReport(It.IsAny<CancellationToken>())).Returns(report);
-				this.context.PublishProcessComplete(false, "a", false);
-				Assert.That(this.processShowReportEvents.Count, Is.EqualTo(1));
+				this.context.PublishProcessCompleted(false, "a", false);
+				Assert.That(this.showReportEvents.Count, Is.EqualTo(1));
 			}
 
 			// Assert that null events are handled.
 			this.context.ShowReportEvent -= this.OnShowReportEvents;
-			this.context.PublishProcessComplete(false, "a", false);
-			Assert.That(this.processShowReportEvents.Count, Is.EqualTo(1));
+			this.context.PublishProcessCompleted(false, "a", false);
+			Assert.That(this.showReportEvents.Count, Is.EqualTo(1));
+		}
+
+		[Test]
+		public void ShouldPublishTheParentFormClosingEvent()
+		{
+			Guid processId = Guid.NewGuid();
+			this.context.PublishParentFormClosing(processId);
+			Assert.That(this.parentFormClosingEvents.Count, Is.EqualTo(1));
+			Assert.That(this.parentFormClosingEvents.All(x => x.ProcessId == processId), Is.True);
+
+			// Assert that null events are handled.
+			this.context.ParentFormClosing -= this.OnParentFormClosing;
+			this.context.PublishParentFormClosing(processId);
+			Assert.That(this.parentFormClosingEvents.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -322,30 +464,60 @@ namespace Relativity.Import.Export.NUnit
 		[Test]
 		public void ShouldPublishTheStatusBarEvent()
 		{
-			this.context.PublishStatusBarUpdate("a", "b");
+			this.context.PublishStatusBarChanged("a", "b");
 			Assert.That(this.statusBarEvents.Count, Is.EqualTo(1));
 			Assert.That(this.statusBarEvents.Any(x => x.Message == "a" && x.PopupText == "b"), Is.True);
-			this.context.PublishStatusBarUpdate("c", "d");
+			this.context.PublishStatusBarChanged("c", "d");
 			Assert.That(this.statusBarEvents.Count, Is.EqualTo(2));
 			Assert.That(this.statusBarEvents.Any(x => x.Message == "c" && x.PopupText == "d"), Is.True);
-			this.context.PublishStatusBarUpdate("e", "f");
+			this.context.PublishStatusBarChanged("e", "f");
 			Assert.That(this.statusBarEvents.Count, Is.EqualTo(3));
 			Assert.That(this.statusBarEvents.Any(x => x.Message == "e" && x.PopupText == "f"), Is.True);
 
 			// Assert that null events are handled.
-			this.context.StatusBarUpdate -= this.OnStatusBarUpdate;
-			this.context.PublishStatusBarUpdate("g", "h");
+			this.context.StatusBarChanged -= this.OnStatusBarChanged;
+			this.context.PublishStatusBarChanged("g", "h");
 			Assert.That(this.statusBarEvents.Count, Is.EqualTo(3));
 		}
 
-		private void OnErrorReport(object sender, ProcessErrorReportEventArgs e)
+		private void OnCancellationRequest(object sender, CancellationRequestEventArgs e)
+		{
+			this.cancellationRequestEvents.Add(e);
+		}
+
+		private void OnErrorReport(object sender, ErrorReportEventArgs e)
 		{
 			this.errorReportEvents.Add(e);
 		}
 
-		private void OnFatalException(object sender, ProcessFatalExceptionEventArgs e)
+		private void OnExportErrorFile(object sender, ExportErrorEventArgs e)
+		{
+			this.exportErrorEvents.Add(e);
+		}
+
+		private void OnExportErrorReport(object sender, ExportErrorEventArgs e)
+		{
+			this.exportErrorEvents.Add(e);
+		}
+
+		private void OnExportServerErrors(object sender, ExportErrorEventArgs e)
+		{
+			this.exportErrorEvents.Add(e);
+		}
+
+		private void OnFatalException(object sender, FatalExceptionEventArgs e)
 		{
 			this.fatalExceptionEvents.Add(e);
+		}
+
+		private void OnFieldMapped(object sender, FieldMappedEventArgs e)
+		{
+			this.fieldMappedEvents.Add(e);
+		}
+
+		private void OnParentFormClosing(object sender, ParentFormClosingEventArgs e)
+		{
+			this.parentFormClosingEvents.Add(e);
 		}
 
 		private void OnProcessCompleted(object sender, ProcessCompleteEventArgs e)
@@ -363,22 +535,27 @@ namespace Relativity.Import.Export.NUnit
 			this.processEvents.Add(e);
 		}
 
-		private void OnProgress(object sender, ProcessProgressEventArgs e)
+		private void OnProgress(object sender, ProgressEventArgs e)
 		{
-			this.progressEvents.Add(e);
+			this.processProgressEvents.Add(e);
 		}
 
-		private void OnRecordCountIncremented(object sender, ProcessRecordCountEventArgs e)
+		private void OnRecordCountIncremented(object sender, RecordCountEventArgs e)
 		{
 			this.recordCountIncrementedEvents.Add(e);
 		}
 
-		private void OnShowReportEvents(object sender, ProcessShowReportEventArgs e)
+		private void OnRecordProcessed(object sender, RecordNumberEventArgs e)
 		{
-			this.processShowReportEvents.Add(e);
+			this.recordProcessedEvents.Add(e);
 		}
 
-		private void OnStatusBarUpdate(object sender, StatusBarEventArgs e)
+		private void OnShowReportEvents(object sender, ShowReportEventArgs e)
+		{
+			this.showReportEvents.Add(e);
+		}
+
+		private void OnStatusBarChanged(object sender, StatusBarEventArgs e)
 		{
 			this.statusBarEvents.Add(e);
 		}
@@ -396,15 +573,22 @@ namespace Relativity.Import.Export.NUnit
 
 		private void SetupEvents()
 		{
+			this.context.CancellationRequest += this.OnCancellationRequest;
 			this.context.ErrorReport += this.OnErrorReport;
+			this.context.ExportErrorFile += this.OnExportErrorFile;
+			this.context.ExportErrorReport += this.OnExportErrorReport;
+			this.context.ExportServerErrors += this.OnExportServerErrors;
 			this.context.FatalException += this.OnFatalException;
+			this.context.FieldMapped += this.OnFieldMapped;
+			this.context.ParentFormClosing += this.OnParentFormClosing;
 			this.context.ProcessCompleted += this.OnProcessCompleted;
 			this.context.ProcessEnded += this.OnProcessEnded;
-			this.context.Progress += this.OnProgress;
 			this.context.ProcessEvent += this.OnProcessEvent;
+			this.context.Progress += this.OnProgress;
 			this.context.RecordCountIncremented += this.OnRecordCountIncremented;
+			this.context.RecordProcessed += this.OnRecordProcessed;
 			this.context.ShowReportEvent += this.OnShowReportEvents;
-			this.context.StatusBarUpdate += this.OnStatusBarUpdate;
+			this.context.StatusBarChanged += this.OnStatusBarChanged;
 			this.context.Shutdown += this.OnShutdown;
 		}
 	}
