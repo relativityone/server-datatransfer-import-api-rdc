@@ -19,17 +19,12 @@ namespace Relativity.Import.Export.Io
 	/// <summary>
 	/// Represents a class object to perform I/O operations, publish warning messages, and retry the operation.
 	/// </summary>
-	internal class IoReporter : IIoReporter
+	public class IoReporter : IIoReporter
 	{
 		/// <summary>
 		/// The value that indicates no retry information is provided.
 		/// </summary>
 		private const int NoRetryInfo = -1;
-
-		/// <summary>
-		/// The Relativity logger instance.
-		/// </summary>
-		private readonly ILog logger;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IoReporter"/> class.
@@ -63,10 +58,21 @@ namespace Relativity.Import.Export.Io
 				throw new ArgumentNullException(nameof(context));
 			}
 
-			this.logger = logger;
+			this.Logger = logger;
 			this.Context = context;
 			this.CancellationToken = token;
 			this.CachedAppSettings = context.AppSettings.DeepCopy();
+		}
+
+		/// <summary>
+		/// Gets the I/O reporter context.
+		/// </summary>
+		/// <value>
+		/// The <see cref="IoReporterContext"/> instance.
+		/// </value>
+		public IoReporterContext Context
+		{
+			get;
 		}
 
 		/// <summary>
@@ -92,12 +98,12 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <summary>
-		/// Gets the I/O reporter context.
+		/// Gets the Relativity logger.
 		/// </summary>
 		/// <value>
-		/// The <see cref="IoReporterContext"/> instance.
+		/// The <see cref="Relativity.Logging.ILog"/> instance.
 		/// </value>
-		protected IoReporterContext Context
+		protected Relativity.Logging.ILog Logger
 		{
 			get;
 		}
@@ -174,7 +180,7 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <inheritdoc />
-		public void CopyFile(string sourceFileName, string destFileName, bool overwrite, int lineNumber)
+		public virtual void CopyFile(string sourceFileName, string destFileName, bool overwrite, int lineNumber)
 		{
 			if (string.IsNullOrEmpty(sourceFileName))
 			{
@@ -201,7 +207,7 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <inheritdoc />
-		public bool GetFileExists(string fileName, int lineNumber)
+		public virtual bool GetFileExists(string fileName, int lineNumber)
 		{
 			if (string.IsNullOrEmpty(fileName))
 			{
@@ -224,7 +230,7 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <inheritdoc />
-		public long GetFileLength(string fileName, int lineNumber)
+		public virtual long GetFileLength(string fileName, int lineNumber)
         {
             if (string.IsNullOrEmpty(fileName))
             {
@@ -249,15 +255,15 @@ namespace Relativity.Import.Export.Io
         }
 
 		/// <inheritdoc />
-		public void PublishRetryMessage(Exception exception, TimeSpan timeSpan, int retryCount, int totalRetryCount, long lineNumber)
+		public virtual void PublishRetryMessage(Exception exception, TimeSpan timeSpan, int retryCount, int totalRetryCount, long lineNumber)
 		{
 			var warningMessage = BuildIoReporterWarningMessage(exception, timeSpan.TotalSeconds, retryCount, totalRetryCount);
 			this.Context.PublishIoWarningEvent(new IoWarningEventArgs(warningMessage, lineNumber));
-			this.logger.LogWarning(exception, warningMessage);
+			this.Logger.LogWarning(exception, warningMessage);
 		}
 
 		/// <inheritdoc />
-		public void PublishWarningMessage(IoWarningEventArgs args)
+		public virtual void PublishWarningMessage(IoWarningEventArgs args)
 		{
 			if (args == null)
 			{
@@ -265,7 +271,7 @@ namespace Relativity.Import.Export.Io
 			}
 
 			this.Context.PublishIoWarningEvent(args);
-			this.logger.LogWarning(args.Message);
+			this.Logger.LogWarning(args.Message);
 		}
 
 		private bool ThrowFileInfoInvalidPathException(Exception exception)
@@ -280,7 +286,7 @@ namespace Relativity.Import.Export.Io
 		        CultureInfo.CurrentCulture,
 		        Strings.ImportInvalidPathCharactersExceptionMessage,
 		        fileName);
-	        this.logger.LogError(exception, message);
+	        this.Logger.LogError(exception, message);
 	        return new FileInfoInvalidPathException(message);
 		}
 
@@ -331,7 +337,7 @@ namespace Relativity.Import.Export.Io
 			}
 			catch (OperationCanceledException)
 			{
-				this.logger.LogInformation(
+				this.Logger.LogInformation(
 					$"The {description} I/O operation for file {fileName} and line number {lineNumber} has been canceled.");
 				return default(T);
 			}

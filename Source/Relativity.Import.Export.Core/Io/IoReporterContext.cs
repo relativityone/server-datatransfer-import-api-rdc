@@ -11,7 +11,7 @@ namespace Relativity.Import.Export.Io
 	/// <summary>
 	/// Represents a thread-safe context for <see cref="IIoReporter"/> to publish events. This class cannot be inherited.
 	/// </summary>
-	internal class IoReporterContext
+	public sealed class IoReporterContext
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IoReporterContext"/> class.
