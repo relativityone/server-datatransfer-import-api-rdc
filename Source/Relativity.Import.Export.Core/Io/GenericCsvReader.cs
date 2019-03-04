@@ -8,6 +8,7 @@ namespace Relativity.Import.Export.Io
 {
 	using System;
 	using System.IO;
+	using System.Text;
 	using System.Threading;
 
 	using Microsoft.VisualBasic.CompilerServices;
@@ -19,6 +20,43 @@ namespace Relativity.Import.Export.Io
 	/// </summary>
 	internal class GenericCsvReader : DelimitedFileImporter
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GenericCsvReader"/> class.
+		/// </summary>
+		/// <param name="file">
+		/// The full path to the CSV file.
+		/// </param>
+		/// <param name="logger">
+		/// The Relativity logger.
+		/// </param>
+		/// <param name="token">
+		/// The cancellation token used to stop the process upon request.
+		/// </param>
+		public GenericCsvReader(string file, ILog logger, CancellationToken token)
+			: this(file, Encoding.Default, new IoReporterContext(), logger, token)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GenericCsvReader"/> class.
+		/// </summary>
+		/// <param name="file">
+		/// The full path to the CSV file.
+		/// </param>
+		/// <param name="context">
+		/// The I/O reporter context.
+		/// </param>
+		/// <param name="logger">
+		/// The Relativity logger.
+		/// </param>
+		/// <param name="token">
+		/// The cancellation token used to stop the process upon request.
+		/// </param>
+		public GenericCsvReader(string file, IoReporterContext context, ILog logger, CancellationToken token)
+			: this(file, Encoding.Default, context, logger, token)
+		{
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GenericCsvReader"/> class.
 		/// </summary>

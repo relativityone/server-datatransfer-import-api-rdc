@@ -74,10 +74,19 @@
     <Compile Include="Io\GenericCsvReader.cs" />
     <Compile Include="Io\ImporterException.cs" />
     <Compile Include="Io\ObjectNameImporterException.cs" />
+    <Compile Include="Io\IntegerImporterException.cs" />
     <Compile Include="Io\StringImporterException.cs" />
     <Compile Include="Io\TrimOption.cs" />
+    <Compile Include="Process\FieldMappedEventArgs.cs" />
+    <Compile Include="Process\CancellationRequestEventArgs.cs" />
+    <Compile Include="Process\ErrorReportEventArgs.cs" />
+    <Compile Include="Process\FatalExceptionEventArgs.cs" />
+    <Compile Include="Process\ParentFormClosingEventArgs.cs" />
     <Compile Include="Process\ProcessErrorReport.cs" />
-    <Compile Include="Process\ProcessShowReportEventArgs.cs" />
+    <Compile Include="Process\ExportErrorEventArgs.cs" />
+    <Compile Include="Process\EventType.cs" />
+    <Compile Include="Process\RecordNumberEventArgs.cs" />
+    <Compile Include="Process\ShowReportEventArgs.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="TimekeeperEntry.cs" />
     <Compile Include="Timekeeper.cs" />
@@ -128,12 +137,10 @@
     <Compile Include="Process\IProcessErrorWriter.cs" />
     <Compile Include="Process\ProcessCompleteEventArgs.cs" />
     <Compile Include="Process\ProcessEndEventArgs.cs" />
-    <Compile Include="Process\ProcessErrorReportEventArgs.cs" />
-    <Compile Include="Process\ProcessRecordCountEventArgs.cs" />
+    <Compile Include="Process\RecordCountEventArgs.cs" />
     <Compile Include="Process\StatusBarEventArgs.cs" />
-    <Compile Include="Process\ProcessProgressEventArgs.cs" />
+    <Compile Include="Process\ProgressEventArgs.cs" />
     <Compile Include="Process\ProcessEventArgs.cs" />
-    <Compile Include="Process\ProcessFatalExceptionEventArgs.cs" />
     <Compile Include="Process\ProcessPool.cs" />
     <Compile Include="Process\ProcessEventType.cs" />
     <Compile Include="Process\ProcessContext.cs" />
@@ -325,11 +332,6 @@
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="Relativity.Logging.Interfaces">
-          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
       </ItemGroup>
     </When>
   </Choose>
@@ -410,5 +412,4 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
-  <ItemGroup />
 </Project>

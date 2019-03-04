@@ -288,4 +288,7 @@
   <data name="BuildErrorReportArgError" xml:space="preserve">
     <value>This operation cannot be completed because the error report data source is invalid.</value>
   </data>
+  <data name="IntegerImporterErrorAdditionalInfo" xml:space="preserve">
+    <value>Invalid integer.</value>
+  </data>
 </root>

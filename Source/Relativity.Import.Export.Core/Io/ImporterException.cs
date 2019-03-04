@@ -21,6 +21,11 @@ namespace Relativity.Import.Export.Io
 	public class ImporterException : Exception
 	{
 		/// <summary>
+		/// The maximum column ordinal before the Excel-style ordinal requires more than 1 character.
+		/// </summary>
+		public const int ExcelSingleCharMaxOrdinal = 26;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="ImporterException" /> class.
 		/// </summary>
 		public ImporterException()
@@ -181,7 +186,7 @@ namespace Relativity.Import.Export.Io
 		/// The exception that caused this exception.
 		/// </param>
 		protected ImporterException(long row, int column, string additionalInfo, Exception innerException)
-			: base(GetErrorMessage(row, column, additionalInfo), innerException)
+			: base(GetExcelStyleErrorMessage(row, column, additionalInfo), innerException)
 		{
 			this.Row = row;
 			this.Column = column;
@@ -212,7 +217,11 @@ namespace Relativity.Import.Export.Io
 		/// <value>
 		/// The additional information.
 		/// </value>
-		public string AdditionalInfo { get; set; }
+		public string AdditionalInfo
+		{
+			get;
+			set;
+		}
 
 		/// <summary>
 		/// Gets or sets the index of the column causing the exception.
@@ -220,7 +229,11 @@ namespace Relativity.Import.Export.Io
 		/// <value>
 		/// The column number.
 		/// </value>
-		public int Column { get; set; }
+		public int Column
+		{
+			get;
+			set;
+		}
 
 		/// <summary>
 		/// Gets or sets the name of the field causing the exception.
@@ -228,7 +241,11 @@ namespace Relativity.Import.Export.Io
 		/// <value>
 		/// The field name.
 		/// </value>
-		public string FieldName { get; set; }
+		public string FieldName
+		{
+			get;
+			set;
+		}
 
 		/// <summary>
 		/// Gets or sets the index of the row causing the exception.
@@ -236,7 +253,11 @@ namespace Relativity.Import.Export.Io
 		/// <value>
 		/// The row number.
 		/// </value>
-		public long Row { get; set; }
+		public long Row
+		{
+			get;
+			set;
+		}
 
 		/// <inheritdoc />
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -280,6 +301,7 @@ namespace Relativity.Import.Export.Io
 
 		/// <summary>
 		/// Gets an error message that includes row, column, and additional information.
+		/// The <paramref name="column"/> is automatically transformed into an Excel-based column string if greater than 26.
 		/// </summary>
 		/// <param name="row">
 		/// The index of the row causing the exception.
@@ -293,13 +315,33 @@ namespace Relativity.Import.Export.Io
 		/// <returns>
 		/// The error message.
 		/// </returns>
-		internal static string GetErrorMessage(long row, int column, string additionalInfo)
+		internal static string GetExcelStyleErrorMessage(long row, int column, string additionalInfo)
+		{
+			return GetFormattedErrorMessage(row, GetExcelStyleColumnOrdinal(column), additionalInfo);
+		}
+
+		/// <summary>
+		/// Gets a formatted error message that includes row, column, and additional information.
+		/// </summary>
+		/// <param name="row">
+		/// The index of the row causing the exception.
+		/// </param>
+		/// <param name="column">
+		/// The column ordinal or name causing the exception.
+		/// </param>
+		/// <param name="additionalInfo">
+		/// Additional information describing this failure.
+		/// </param>
+		/// <returns>
+		/// The error message.
+		/// </returns>
+		internal static string GetFormattedErrorMessage(long row, string column, string additionalInfo)
 		{
 			return string.Format(
 				CultureInfo.CurrentCulture,
 				Strings.ImporterStandardError,
 				row,
-				GetExcelStyleColumnOrdinal(column),
+				column,
 				additionalInfo);
 		}
 
@@ -312,15 +354,14 @@ namespace Relativity.Import.Export.Io
 		/// <returns>
 		/// The column ordinal string.
 		/// </returns>
-		private static string GetExcelStyleColumnOrdinal(int column)
+		internal static string GetExcelStyleColumnOrdinal(int column)
 		{
-			if (column < 26)
+			if (column < ExcelSingleCharMaxOrdinal)
 			{
 				return Conversions.ToString(Microsoft.VisualBasic.Strings.ChrW(checked(column + 65)));
 			}
 
-			return GetExcelStyleColumnOrdinal(
-				       checked((int)Math.Round(Math.Floor(unchecked((double)column / 26.0))) - 1))
+			return GetExcelStyleColumnOrdinal(checked((int)Math.Round(Math.Floor(column / 26.0)) - 1))
 			       + GetExcelStyleColumnOrdinal(column % 26);
 		}
 	}

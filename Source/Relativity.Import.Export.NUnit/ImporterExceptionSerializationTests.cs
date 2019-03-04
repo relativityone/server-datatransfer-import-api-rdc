@@ -34,6 +34,7 @@ namespace Relativity.Import.Export.NUnit
 				Action<Exception> validateCellException = ValidateCellException;
 				Action<Exception> validateDateException = ValidateDateException;
 				Action<Exception> validateDecimalException = ValidateDecimalException;
+				Action<Exception> validateIntegerException = ValidateIntegerException;
 				Action<Exception> validateObjectNameException = ValidateObjectNameException;
 				Action<Exception> validateStringWithoutFieldInfoException = ValidateStringWithoutFieldInfoException;
 				Action<Exception> validateStringWithFieldInfoException = ValidateStringWithFieldInfoException;
@@ -62,6 +63,12 @@ namespace Relativity.Import.Export.NUnit
 				yield return new TestCaseData(
 					new DecimalImporterException(TestRowNumber, TestColumnNumber, innerException),
 					validateDecimalException);
+				yield return new TestCaseData(new IntegerImporterException(), validateNoOp);
+				yield return new TestCaseData(new IntegerImporterException("a"), validateNoOp);
+				yield return new TestCaseData(new IntegerImporterException("a", innerException), validateNoOp);
+				yield return new TestCaseData(
+					new IntegerImporterException(TestRowNumber, TestColumnNumber, innerException),
+					validateIntegerException);
 				yield return new TestCaseData(new ObjectNameImporterException(), validateNoOp);
 				yield return new TestCaseData(new ObjectNameImporterException("a"), validateNoOp);
 				yield return new TestCaseData(new ObjectNameImporterException("a", innerException), validateNoOp);
@@ -137,6 +144,14 @@ namespace Relativity.Import.Export.NUnit
 				Relativity.Import.Export.Resources.Strings.DecimalImporterErrorAdditionalInfo);
 		}
 
+		private static void ValidateIntegerException(Exception exception)
+		{
+			Assert.That(exception, Is.TypeOf<IntegerImporterException>());
+			ValidateImporterException(
+				exception as IntegerImporterException,
+				Relativity.Import.Export.Resources.Strings.IntegerImporterErrorAdditionalInfo);
+		}
+
 		private static void ValidateObjectNameException(Exception exception)
 		{
 			Assert.That(exception, Is.TypeOf<ObjectNameImporterException>());
@@ -160,7 +175,7 @@ namespace Relativity.Import.Export.NUnit
 		{
 			Assert.That(exception, Is.TypeOf<StringImporterException>());
 			string expectedAdditionalInfoMessage = StringImporterException.GetAdditionalInfoMessage(TestLength);
-			string expectedErrorMessage = ImporterException.GetErrorMessage(
+			string expectedErrorMessage = ImporterException.GetExcelStyleErrorMessage(
 				TestRowNumber,
 				TestColumnNumber,
 				expectedAdditionalInfoMessage);
@@ -192,7 +207,7 @@ namespace Relativity.Import.Export.NUnit
 			ImporterException exception,
 			string expectedAdditionalInfo)
 		{
-			string expectedErrorMessage = ImporterException.GetErrorMessage(
+			string expectedErrorMessage = ImporterException.GetExcelStyleErrorMessage(
 				TestRowNumber,
 				TestColumnNumber,
 				expectedAdditionalInfo);

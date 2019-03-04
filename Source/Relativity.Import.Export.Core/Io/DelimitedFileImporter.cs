@@ -20,7 +20,7 @@ namespace Relativity.Import.Export.Io
 	/// <summary>
 	/// Represents an abstract representation of a file importer that operates over delimited files.
 	/// </summary>
-	internal abstract class DelimitedFileImporter : IoReporter
+	public abstract class DelimitedFileImporter : IoReporter
 	{
 		/// <summary>
 		/// The maximum column count for line.
@@ -34,6 +34,23 @@ namespace Relativity.Import.Export.Io
 		private readonly char[] delimiter;
 		private readonly char[] bound;
 		private char[] metaDelimiter;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DelimitedFileImporter"/> class.
+		/// </summary>
+		/// <param name="delimiter">
+		/// The delimiter string to use while splitting lines.
+		/// </param>
+		/// <param name="bound">
+		/// The bounding string surrounding each delimiter.
+		/// </param>
+		/// <param name="newlineProxy">
+		/// The string with which to replace system newline characters (ClRf). Only the first character will be used.
+		/// </param>
+		protected DelimitedFileImporter(string delimiter, string bound, string newlineProxy)
+			: this(delimiter, bound, newlineProxy, new IoReporterContext(), new NullLogger(), CancellationToken.None)
+		{
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DelimitedFileImporter"/> class.
@@ -103,6 +120,30 @@ namespace Relativity.Import.Export.Io
 		/// <param name="delimiter">
 		/// The delimiter character array to use while splitting lines.
 		/// </param>
+		/// <param name="context">
+		/// The I/O reporter context.
+		/// </param>
+		/// <param name="logger">
+		/// The Relativity logger.
+		/// </param>
+		/// <param name="token">
+		/// The cancellation token used to stop the process upon request.
+		/// </param>
+		protected DelimitedFileImporter(
+			char[] delimiter,
+			IoReporterContext context,
+			ILog logger,
+			CancellationToken token)
+			: this(delimiter, null, null, context, logger, token)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DelimitedFileImporter"/> class.
+		/// </summary>
+		/// <param name="delimiter">
+		/// The delimiter character array to use while splitting lines.
+		/// </param>
 		/// <param name="bound">
 		/// The bounding characters surrounding each delimiter.
 		/// </param>
@@ -139,12 +180,8 @@ namespace Relativity.Import.Export.Io
 					"The delimiter array parameter must define at least 1 character.");
 			}
 
-			if (bound == null)
-			{
-				throw new ArgumentNullException(nameof(bound));
-			}
-
-			if (bound.Length < 1)
+			// The bound can be null.
+			if (bound != null && bound.Length < 1)
 			{
 				throw new ArgumentOutOfRangeException(
 					nameof(delimiter),
@@ -162,7 +199,7 @@ namespace Relativity.Import.Export.Io
 		/// <value>
 		/// The line number.
 		/// </value>
-		public long CurrentLineNumber
+		public int CurrentLineNumber
 		{
 			get;
 			private set;
@@ -493,6 +530,46 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <summary>
+		/// Gets a nullable integer from the provided string.
+		/// </summary>
+		/// <param name="value">
+		/// The value to parse.
+		/// </param>
+		/// <param name="column">
+		/// The column to report, should an exception occur.
+		/// </param>
+		/// <returns>
+		/// A nullable integer representation of <see paramref="value" />.
+		/// </returns>
+		/// <exception cref="IntegerImporterException">
+		/// Thrown when <paramref name="value"/> exceeds the bounds of an integer
+		/// or the <paramref name="value"/> format doesn't comply with <see cref="NumberStyles.Integer"/> or <see cref="NumberStyles.AllowThousands"/>.
+		/// </exception>
+		public int? GetNullableInteger(string value, int column)
+		{
+			try
+			{
+				return NullableTypesHelper.ToNullableInt32(value);
+			}
+			catch (Exception e)
+			{
+				throw new IntegerImporterException(this.CurrentLineNumber, column, e);
+			}
+		}
+
+		/// <summary>
+		/// Peeks at the next character of the file without advancing the underlying file cursor.
+		/// </summary>
+		/// <returns>
+		/// The character value.
+		/// </returns>
+		public virtual int Peek()
+		{
+			const bool Advance = false;
+			return this.GetChar(Advance);
+		}
+
+		/// <summary>
 		/// Resets the current line being read to the first line of the file.
 		/// </summary>
 		public void ResetLineCounter()
@@ -563,18 +640,6 @@ namespace Relativity.Import.Export.Io
 			}
 
 			return retval;
-		}
-
-		/// <summary>
-		/// Peeks at the current character.
-		/// </summary>
-		/// <returns>
-		/// The character value.
-		/// </returns>
-		protected int Peek()
-		{
-			const bool Advance = false;
-			return this.GetChar(Advance);
 		}
 
 		/// <summary>

@@ -232,6 +232,15 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid integer..
+        /// </summary>
+        internal static string IntegerImporterErrorAdditionalInfo {
+            get {
+                return ResourceManager.GetString("IntegerImporterErrorAdditionalInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Import error - Retrying in {0} seconds. Error: {1}.
         /// </summary>
         internal static string IoReporterWarningMessageWithException {

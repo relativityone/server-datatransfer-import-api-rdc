@@ -20,14 +20,77 @@ namespace Relativity.Import.Export.NUnit
 	/// </summary>
 	internal class MockDelimitedFileImport : DelimitedFileImporter
 	{
+		public const char DefaultDelimiter = ',';
+		public const char DefaultBound = '\"';
+		public const char DefaultNewline = (char)10;
+
 		public MockDelimitedFileImport()
-			: base(
-				",",
-				"\"",
-				System.Convert.ToString((char)10),
+			: this(DefaultDelimiter.ToString(), DefaultBound.ToString(), DefaultNewline.ToString())
+		{
+		}
+
+		public MockDelimitedFileImport(string delimiter)
+			: this(delimiter, DefaultBound.ToString())
+		{
+		}
+
+		public MockDelimitedFileImport(string delimiter, string bound)
+			: this(
+				delimiter,
+				bound,
+				DefaultNewline.ToString(),
 				new IoReporterContext(),
 				new NullLogger(),
 				CancellationToken.None)
+		{
+		}
+
+		public MockDelimitedFileImport(string delimiter, string bound, string newlineProxy)
+			: this(
+				delimiter,
+				bound,
+				newlineProxy,
+				new IoReporterContext(),
+				new NullLogger(),
+				CancellationToken.None)
+		{
+		}
+
+		public MockDelimitedFileImport(
+			string delimiter,
+			string bound,
+			string newlineProxy,
+			IoReporterContext context,
+			Relativity.Logging.ILog logger,
+			CancellationToken token)
+			: base(delimiter, bound, newlineProxy, context, logger, token)
+		{
+			this.TrimOption = TrimOption.Both;
+		}
+
+		public MockDelimitedFileImport(char[] delimiter)
+			: this(delimiter, new[] { DefaultBound }, new[] { DefaultNewline })
+		{
+		}
+
+		public MockDelimitedFileImport(char[] delimiter, char[] bound)
+			: this(delimiter, bound, new[] { DefaultNewline })
+		{
+		}
+
+		public MockDelimitedFileImport(char[] delimiter, char[] bound, char[] newlineProxy)
+			: this(delimiter, bound, newlineProxy, new IoReporterContext(), new NullLogger(), CancellationToken.None)
+		{
+		}
+
+		public MockDelimitedFileImport(
+			char[] delimiter,
+			char[] bound,
+			char[] newlineProxy,
+			IoReporterContext context,
+			Relativity.Logging.ILog logger,
+			CancellationToken token)
+			: base(delimiter, bound, newlineProxy, context, logger, token)
 		{
 			this.TrimOption = TrimOption.Both;
 		}
