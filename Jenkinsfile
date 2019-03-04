@@ -37,11 +37,7 @@ timestamps
 
                 stage('Compile')
                 {
-                    version = powershell(returnStdout:true, script: "(.\\DevelopmentScripts\\Increment-ProductVersion.ps1 -Version (Get-Content .\\Version\\version.txt) -Force).ToString()")
-                    version = version.trim()
-                    echo "Building version $version"
-
-                    powershell ".\\build.ps1 -$AssemblyVersion '$version'"
+                    powershell ".\\build.ps1"
                 }
 
                 stage ('Build package')
