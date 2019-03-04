@@ -17,7 +17,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Represents a class object that tracks operational metrics.
 	/// </summary>
-	internal class Timekeeper
+	public sealed class Timekeeper
 	{
 		/// <summary>
 		/// The default thread when one isn't specified.
@@ -71,45 +71,6 @@ namespace Relativity.Import.Export
 		public int Count => this.dictionary.Count;
 
 		/// <summary>
-		/// Captures the ending time of an operation.
-		/// </summary>
-		/// <param name="key">
-		/// The operation key.
-		/// </param>
-		public virtual void MarkEnd(string key)
-		{
-			this.MarkEnd(key, DefaultThread);
-		}
-
-		/// <summary>
-		/// Captures the ending time of an operation.
-		/// </summary>
-		/// <param name="key">
-		/// The operation key.
-		/// </param>
-		/// <param name="thread">
-		/// The thread key associated with the import operation.
-		/// </param>
-		public virtual void MarkEnd(string key, int thread)
-		{
-			if (!this.LogAllEvents())
-			{
-				return;
-			}
-
-			ConcurrentDictionary<int, TimekeeperEntry> entries = this.dictionary[key];
-			TimekeeperEntry entry = entries?[thread];
-			if (entry == null)
-			{
-				return;
-			}
-
-			entry.Count++;
-			entry.Length += (System.DateTime.Now.Ticks - entry.StartTime) / 10000;
-			entry.StartTime = System.DateTime.Now.Ticks;
-		}
-
-		/// <summary>
 		/// Retrieves the entry for the specified operation key.
 		/// </summary>
 		/// <param name="key">
@@ -147,12 +108,51 @@ namespace Relativity.Import.Export
 		}
 
 		/// <summary>
+		/// Captures the ending time of an operation.
+		/// </summary>
+		/// <param name="key">
+		/// The operation key.
+		/// </param>
+		public void MarkEnd(string key)
+		{
+			this.MarkEnd(key, DefaultThread);
+		}
+
+		/// <summary>
+		/// Captures the ending time of an operation.
+		/// </summary>
+		/// <param name="key">
+		/// The operation key.
+		/// </param>
+		/// <param name="thread">
+		/// The thread key associated with the import operation.
+		/// </param>
+		public void MarkEnd(string key, int thread)
+		{
+			if (!this.LogAllEvents())
+			{
+				return;
+			}
+
+			ConcurrentDictionary<int, TimekeeperEntry> entries = this.dictionary[key];
+			TimekeeperEntry entry = entries?[thread];
+			if (entry == null)
+			{
+				return;
+			}
+
+			entry.Count++;
+			entry.Length += (System.DateTime.Now.Ticks - entry.StartTime) / 10000;
+			entry.StartTime = System.DateTime.Now.Ticks;
+		}
+
+		/// <summary>
 		/// Captures the starting time of an operation.
 		/// </summary>
 		/// <param name="key">
 		/// The operation key.
 		/// </param>
-		public virtual void MarkStart(string key)
+		public void MarkStart(string key)
 		{
 			this.MarkStart(key, 0);
 		}
@@ -166,7 +166,7 @@ namespace Relativity.Import.Export
 		/// <param name="thread">
 		/// The thread key associated with the operation.
 		/// </param>
-		public virtual void MarkStart(string key, int thread)
+		public void MarkStart(string key, int thread)
 		{
 			if (!this.LogAllEvents())
 			{
