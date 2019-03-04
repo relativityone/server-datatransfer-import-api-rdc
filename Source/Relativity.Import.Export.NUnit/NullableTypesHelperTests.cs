@@ -97,6 +97,64 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		public static void ShouldOnlyReturnNullWhenTheValueIsDBNull()
+		{
+			Assert.That(NullableTypesHelper.DBNullString("abc"), Is.EqualTo("abc"));
+			Assert.That(NullableTypesHelper.DBNullString(1), Is.EqualTo("1"));
+			Assert.That(NullableTypesHelper.DBNullString(1L), Is.EqualTo("1"));
+			Assert.That(NullableTypesHelper.DBNullString(1.5d), Is.EqualTo("1.5"));
+			Assert.That(NullableTypesHelper.DBNullString(DBNull.Value), Is.Null);
+			Assert.That(NullableTypesHelper.DBNullString(null), Is.Null);
+		}
+
+		[Test]
+		public static void ShouldOnlyConvertToNullableWhenTheValueIsNotDBNull()
+		{
+			// Verified using VB.NET NUnit code + the kCura assembly that these behaviors are identical.
+			Assert.That(NullableTypesHelper.DBNullConvertToNullable<long>(DBNull.Value), Is.Null);
+			int? intTest = 1;
+			Assert.That(NullableTypesHelper.DBNullConvertToNullable<int>(intTest), Is.EqualTo(1));
+			intTest = null;
+			Assert.Throws<NullReferenceException>(
+				() => { NullableTypesHelper.DBNullConvertToNullable<int>(intTest); });
+			bool? boolTest = true;
+			Assert.That(NullableTypesHelper.DBNullConvertToNullable<bool>(boolTest), Is.True);
+			boolTest = false;
+			Assert.That(NullableTypesHelper.DBNullConvertToNullable<bool>(boolTest), Is.False);
+			boolTest = null;
+			Assert.Throws<NullReferenceException>(
+				() => { NullableTypesHelper.DBNullConvertToNullable<bool>(boolTest); });
+			double? doubleTest = 1.25d;
+			Assert.That(NullableTypesHelper.DBNullConvertToNullable<double>(doubleTest), Is.EqualTo(1.25d));
+			doubleTest = null;
+			Assert.Throws<NullReferenceException>(
+				() => { NullableTypesHelper.DBNullConvertToNullable<double>(doubleTest); });
+			decimal? decimalTest = 1.75m;
+			Assert.That(NullableTypesHelper.DBNullConvertToNullable<decimal>(decimalTest), Is.EqualTo(1.75d));
+			decimalTest = null;
+			Assert.Throws<NullReferenceException>(
+				() => { NullableTypesHelper.DBNullConvertToNullable<decimal>(decimalTest); });
+			DateTime? dateTimeTest = DateTime.Now;
+			Assert.That(NullableTypesHelper.DBNullConvertToNullable<DateTime>(dateTimeTest), Is.EqualTo(dateTimeTest));
+			dateTimeTest = null;
+			Assert.Throws<NullReferenceException>(
+				() => { NullableTypesHelper.DBNullConvertToNullable<DateTime>(dateTimeTest); });
+
+			// Verify cast exceptions
+			dateTimeTest = DateTime.Now;
+			Assert.Throws<InvalidCastException>(
+				() => { NullableTypesHelper.DBNullConvertToNullable<int>(dateTimeTest); });
+			Assert.Throws<InvalidCastException>(
+				() => { NullableTypesHelper.DBNullConvertToNullable<bool>(dateTimeTest); });
+			Assert.Throws<InvalidCastException>(
+				() => { NullableTypesHelper.DBNullConvertToNullable<double>(dateTimeTest); });
+			Assert.Throws<InvalidCastException>(
+				() => { NullableTypesHelper.DBNullConvertToNullable<decimal>(dateTimeTest); });
+			Assert.Throws<InvalidCastException>(
+				() => { NullableTypesHelper.DBNullConvertToNullable<long>(dateTimeTest); });
+		}
+
+		[Test]
 		[TestCase("123/25/1985")]
 		[TestCase("plugh")]
 		[TestCase("052585")]

@@ -9,11 +9,56 @@ namespace Relativity.Import.Export
 	using System;
 	using System.Globalization;
 
+	using Microsoft.VisualBasic.CompilerServices;
+
 	/// <summary>
 	/// Defines static helper methods to convert nullable types.
 	/// </summary>
 	internal static class NullableTypesHelper
 	{
+		/// <summary>
+		/// Casts the provided object, if it is not <see cref="F:System.DBNull.Value" />, to a nullable object of the specified type.
+		/// </summary>
+		/// <typeparam name="T">
+		/// The type of the nullable result.
+		/// </typeparam>
+		/// <param name="value">
+		/// The item to convert.
+		/// </param>
+		/// <returns>
+		/// A nullable representation of <see paramref="value" /> that has been cast to <typeparamref name="T"/>.
+		/// </returns>
+		/// <exception cref="InvalidCastException">
+		/// The cast of <paramref name="value"/> for type <typeparamref name="T"/> failed.
+		/// </exception>
+		/// <exception cref="NullReferenceException">
+		/// The <paramref name="value"/> is <see langword="null" />.
+		/// </exception>
+		public static T? DBNullConvertToNullable<T>(object value)
+			where T : struct
+		{
+			if (value == DBNull.Value)
+			{
+				return null;
+			}
+
+			return (T)value;
+		}
+
+		/// <summary>
+		/// Casts the provided object, if it is not <see cref="F:System.DBNull.Value" />, to a string.
+		/// </summary>
+		/// <param name="item">
+		/// The item to convert.
+		/// </param>
+		/// <returns>
+		/// A string representation of <see param="Item" />.
+		/// </returns>
+		public static string DBNullString(object item)
+		{
+			return item == DBNull.Value ? null : Conversions.ToString(item);
+		}
+
 		/// <summary>
 		/// Casts the provided string to a nullable boolean.
 		/// </summary>
@@ -182,6 +227,48 @@ namespace Relativity.Import.Export
 		}
 
 		/// <summary>
+		/// Casts the provided nullable boolean to a string, utilizing the provided format string.
+		/// </summary>
+		/// <param name="value">
+		/// The nullable boolean to convert.
+		/// </param>
+		/// <returns>
+		/// A string representation of <paramref name="value"/>.
+		/// </returns>
+		public static string ToEmptyStringOrValue(bool? value)
+		{
+			return value == null ? string.Empty : value.Value.ToString();
+		}
+
+		/// <summary>
+		/// Casts the provided nullable decimal to a string, utilizing the provided format string.
+		/// </summary>
+		/// <param name="value">
+		/// The nullable decimal to convert.
+		/// </param>
+		/// <returns>
+		/// A string representation of <paramref name="value"/>.
+		/// </returns>
+		public static string ToEmptyStringOrValue(decimal? value)
+		{
+			return !value.HasValue ? string.Empty : value.Value.ToString();
+		}
+
+		/// <summary>
+		/// Casts the provided nullable integer to a string, utilizing the provided format string.
+		/// </summary>
+		/// <param name="value">
+		/// The nullable boolean to convert.
+		/// </param>
+		/// <returns>
+		/// A string representation of <paramref name="value"/>.
+		/// </returns>
+		public static string ToEmptyStringOrValue(int? value)
+		{
+			return value == null ? string.Empty : value.Value.ToString();
+		}
+
+		/// <summary>
 		/// Casts the provided nullable date to a string.
 		/// </summary>
 		/// <param name="value">
@@ -219,26 +306,17 @@ namespace Relativity.Import.Export
 		}
 
 		/// <summary>
-		/// Casts the provided string to a nullable decimal, utilizing the provided format type.
+		/// Casts the provided string to <see cref="string.Empty"/> if it is null.
 		/// </summary>
 		/// <param name="value">
-		/// The string to convert.
-		/// </param>
-		/// <param name="style">
-		/// The type of decimal number style to respect during parsing.
+		/// The nullable string to convert.
 		/// </param>
 		/// <returns>
-		/// A nullable decimal representation of <see param="value" />.
+		/// <see cref="string.Empty"/> if <see paramref="value"/> is <see langword="null" />; otherwise, <see paramref="value"/>.
 		/// </returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage(
-			"Microsoft.Design",
-			"CA1026:DefaultParametersShouldNotBeUsed",
-			Justification ="For backwards compatibility concerns.")]
-		public static decimal? ToNullableDecimal(string value, NumberStyles style = NumberStyles.Number | NumberStyles.AllowCurrencySymbol)
+		public static string ToEmptyStringOrValue(string value)
 		{
-			return !string.IsNullOrWhiteSpace(value)
-				       ? new decimal?(decimal.Parse(value, style, (IFormatProvider)CultureInfo.InvariantCulture))
-				       : null;
+			return string.IsNullOrWhiteSpace(value) ? string.Empty : value;
 		}
 
 		/// <summary>
@@ -292,6 +370,76 @@ namespace Relativity.Import.Export
 			return !useUniversalFormat
 				       ? System.DateTime.Parse(value)
 				       : System.DateTime.Parse(value, System.Globalization.DateTimeFormatInfo.InvariantInfo);
+		}
+
+		/// <summary>
+		/// Casts the provided string to a nullable decimal, utilizing the provided format type.
+		/// </summary>
+		/// <param name="value">
+		/// The string to convert.
+		/// </param>
+		/// <param name="style">
+		/// The type of decimal number style to respect during parsing.
+		/// </param>
+		/// <returns>
+		/// A nullable decimal representation of <see param="value" />.
+		/// </returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Design",
+			"CA1026:DefaultParametersShouldNotBeUsed",
+			Justification = "For backwards compatibility concerns.")]
+		public static decimal? ToNullableDecimal(string value, NumberStyles style = NumberStyles.Number | NumberStyles.AllowCurrencySymbol)
+		{
+			return !string.IsNullOrWhiteSpace(value)
+				       ? new decimal?(decimal.Parse(value, style, (IFormatProvider)CultureInfo.InvariantCulture))
+				       : null;
+		}
+
+		/// <summary>
+		/// Casts the provided string to a nullable decimal, utilizing the current culture.
+		/// </summary>
+		/// <param name="value">
+		/// The string to convert.
+		/// </param>
+		/// <param name="style">
+		/// The type of decimal number style to respect during parsing.
+		/// </param>
+		/// <returns>
+		/// A nullable decimal representation of <see param="value" />.
+		/// </returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Design",
+			"CA1026:DefaultParametersShouldNotBeUsed",
+			Justification = "For backwards compatibility concerns.")]
+		public static decimal? ToNullableDecimalUsingCurrentCulture(
+			string value,
+			NumberStyles style = NumberStyles.Number | NumberStyles.AllowCurrencySymbol)
+		{
+			return !string.IsNullOrWhiteSpace(value)
+				       ? new decimal?(decimal.Parse(value, style, (IFormatProvider)CultureInfo.CurrentCulture))
+				       : null;
+		}
+
+		/// <summary>
+		/// Casts the provided string to a nullable integer.
+		/// </summary>
+		/// <param name="value">
+		/// The string to convert.
+		/// </param>
+		/// <returns>
+		/// A nullable integer representation of <see param="convertMe" />.
+		/// </returns>
+		/// <exception cref="T:System.OverflowException">
+		/// Thrown when <paramref name="value"/> represents a value outside the bounds of
+		/// <see cref="int.MinValue"/> and <see cref="int.MaxValue"/> or
+		/// the format of <paramref name="value"/> does not comply with
+		/// <see cref="NumberStyles.Integer"/> or <see cref="NumberStyles.AllowThousands"/>.
+		/// </exception>
+		public static int? ToNullableInt32(string value)
+		{
+			return !string.IsNullOrWhiteSpace(value)
+				       ? int.Parse(value, NumberStyles.Integer | NumberStyles.AllowThousands)
+				       : default(int?);
 		}
 
 		/// <summary>
