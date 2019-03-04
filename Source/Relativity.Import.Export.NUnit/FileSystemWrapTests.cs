@@ -13,6 +13,8 @@ namespace Relativity.Import.Export.NUnit
 	using System.Collections.Generic;
 	using System.IO;
 
+	using Castle.Components.DictionaryAdapter;
+
 	using global::NUnit.Framework;
 
 	using Relativity.Import.Export.Io;
@@ -175,6 +177,64 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(parent, Is.Not.Null);
 			expected = this.fileSystem.Path.TrimTrailingSlash(expected);
 			Assert.That(parent.FullName, Is.EqualTo(expected));
+		}
+
+		[Test]
+		[Category(TestCategories.FileSystem)]
+		public void ShouldGetTheFileSize()
+		{
+			string sourceFileName = GenerateUniqueFolderName();
+			string sourceFile = this.GenerateUniqueFilePath(sourceFileName);
+			string text = RandomHelper.NextString(100, 1000);
+			System.IO.File.WriteAllText(sourceFile, text);
+			long fileSize = this.fileSystem.File.GetFileSize(sourceFile);
+			Assert.That(fileSize, Is.EqualTo(text.Length));
+		}
+
+		[Test]
+		[Category(TestCategories.FileSystem)]
+		public void ShouldCountTheLinesInFile()
+		{
+			string sourceFileName = GenerateUniqueFolderName();
+			string sourceFile = this.GenerateUniqueFilePath(sourceFileName);
+			List<string> lines = new List<string>();
+			int expectedLineCount = RandomHelper.NextInt(10, 1000);
+			for (var i = 0; i < expectedLineCount; i++)
+			{
+				lines.Add(RandomHelper.NextString(5, 25).Trim());
+			}
+
+			System.IO.File.WriteAllLines(sourceFile, lines);
+			int linesInFile = this.fileSystem.File.CountLinesInFile(sourceFile);
+			Assert.That(linesInFile, Is.EqualTo(expectedLineCount));
+		}
+
+		[Test]
+		[TestCase("\\")]
+		[TestCase("/")]
+		[TestCase("?")]
+		[TestCase(":")]
+		[TestCase("*")]
+		[TestCase(">")]
+		[TestCase("<")]
+		[TestCase("|")]
+		[TestCase("\"")]
+		[Category(TestCategories.FileSystem)]
+		public void ShouldConvertIllegalCharactersInFilename(string illegalCharacter)
+		{
+			string fileName = $"fil{illegalCharacter}ename.e{illegalCharacter}t";
+
+			// Verify the conversion replaces using an underscore.
+			string replacement1 = "_";
+			string expectedWithDefault = $"fil{replacement1}ename.e{replacement1}t";
+			string convertedWithDefault = this.fileSystem.Path.ConvertIllegalCharactersInFilename(fileName);
+			Assert.That(convertedWithDefault, Is.EqualTo(expectedWithDefault));
+
+			// Verify the conversion replaces using the specified .
+			string replacement2 = "-";
+			string expectedWithSuppliedChar = $"fil{replacement2}ename.e{replacement2}t";
+			string convertedWithSuppliedChar = this.fileSystem.Path.ConvertIllegalCharactersInFilename(fileName, replacement2);
+			Assert.That(convertedWithSuppliedChar, Is.EqualTo(expectedWithSuppliedChar));
 		}
 
 		[Test]

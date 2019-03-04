@@ -87,6 +87,37 @@ namespace Relativity.Import.Export.Io
 		string Combine(string path1, string path2);
 
 		/// <summary>
+		/// Replace known illegal characters in the provided string with underscores.
+		/// </summary>
+		/// <param name="fileName">
+		/// The file name to scrub.
+		/// </param>
+		/// <returns>
+		/// <see param="input" /> with illegal characters replaced.
+		/// </returns>
+		/// <exception cref="T:System.NullReferenceException">
+		/// The <paramref name="fileName"/> is null.
+		/// </exception>
+		string ConvertIllegalCharactersInFilename(string fileName);
+
+		/// <summary>
+		/// Replace known illegal characters in the provided string with the provided conversion string.
+		/// </summary>
+		/// <param name="fileName">
+		/// The file name to scrub.
+		/// </param>
+		/// <param name="replacement">
+		/// The value with which to replace illegal characters.
+		/// </param>
+		/// <returns>
+		/// <see param="input" /> with illegal characters replaced.
+		/// </returns>
+		/// <exception cref="T:System.NullReferenceException">
+		/// The <paramref name="fileName"/> is null.
+		/// </exception>
+		string ConvertIllegalCharactersInFilename(string fileName, string replacement);
+
+		/// <summary>
 		/// Returns the directory information for the specified path string.
 		/// </summary>
 		/// <param name="path">

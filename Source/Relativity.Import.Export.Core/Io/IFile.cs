@@ -55,6 +55,38 @@ namespace Relativity.Import.Export.Io
 		void Copy(string sourceFileName, string destFileName, bool overwrite);
 
 		/// <summary>
+		/// Counts the number of lines in the file specified by the provided path.
+		/// </summary>
+		/// <param name="path">
+		/// The path to count lines.
+		/// </param>
+		/// <returns>
+		/// The number of lines in the file.
+		/// </returns>
+		/// <exception cref="T:System.ArgumentException">
+		/// The <paramref name="path"/> is empty, contains only white spaces, or contains invalid characters.
+		/// </exception>
+		/// <exception cref="T:System.ArgumentNullException">
+		/// The <paramref name="path"/> is null.
+		/// </exception>
+		/// <exception cref="T:System.IO.FileNotFoundException">
+		/// The <paramref name="path"/> does not exist.
+		/// </exception>
+		/// <exception cref="T:System.NotSupportedException">
+		/// The <paramref name="path"/> is in an invalid format.
+		/// </exception>
+		/// <exception cref="T:System.Security.SecurityException">
+		/// The caller does not have the required permission.
+		/// </exception>
+		/// <exception cref="T:System.UnauthorizedAccessException">
+		/// Access to <paramref name="path"/> is denied.
+		/// </exception>
+		/// <exception cref="T:System.IO.PathTooLongException">
+		/// The <paramref name="path"/> is too long (greater than 260 characters).
+		/// </exception>
+		int CountLinesInFile(string path);
+
+		/// <summary>
 		/// Creates or overwrites a file in the specified path.
 		/// </summary>
 		/// <param name="path">
@@ -157,5 +189,20 @@ namespace Relativity.Import.Export.Io
 		/// <see langword="true" /> if the caller has the required permissions and path contains the name of an existing file; otherwise, <see langword="false" />. This method also returns <see langword="false" /> if path is a null reference (Nothing in Visual Basic), an invalid path, or a zero-length string. If the caller does not have sufficient permissions to read the specified file, no exception is thrown and the method returns false regardless of the existence of path.
 		/// </returns>
 		bool Exists(string path);
+
+		/// <summary>
+		/// Gets the size of the file.
+		/// </summary>
+		/// <param name="fileName">Name of the file.</param>
+		/// <returns>
+		/// The size of the file in bytes.
+		/// </returns>
+		/// <exception cref="T:System.IO.IOException">
+		/// A serious I/O error occurred attempting to access the file.
+		/// </exception>
+		/// <exception cref="T:System.IO.FileNotFoundException">
+		/// The file does not exist.
+		/// </exception>
+		long GetFileSize(string fileName);
 	}
 }

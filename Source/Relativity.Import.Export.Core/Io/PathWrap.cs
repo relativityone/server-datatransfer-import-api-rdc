@@ -120,6 +120,21 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <inheritdoc />
+		public string ConvertIllegalCharactersInFilename(string fileName)
+		{
+			const string DefaultReplacement = "_";
+			return this.ConvertIllegalCharactersInFilename(fileName, DefaultReplacement);
+		}
+
+		/// <inheritdoc />
+		public string ConvertIllegalCharactersInFilename(string fileName, string replacement = "_")
+		{
+			return string.Copy(fileName).Replace("\\", replacement).Replace("/", replacement).Replace("?", replacement)
+				.Replace(":", replacement).Replace("*", replacement).Replace(">", replacement).Replace("<", replacement)
+				.Replace("|", replacement).Replace("\"", replacement);
+		}
+
+		/// <inheritdoc />
 		public string GetDirectoryName(string path)
 		{
 			path = this.NormalizePath(path);

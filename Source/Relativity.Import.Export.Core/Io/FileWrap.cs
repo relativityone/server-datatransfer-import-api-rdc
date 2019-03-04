@@ -7,6 +7,7 @@
 namespace Relativity.Import.Export.Io
 {
 	using System;
+	using System.IO;
 
 	/// <summary>
 	/// Represents a class object wrapper for the <see cref="T:System.IO.File"/> class.
@@ -47,6 +48,21 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <inheritdoc />
+		public int CountLinesInFile(string path)
+		{
+			using (System.IO.StreamReader streamReader = new System.IO.StreamReader(path))
+			{
+				int num = 0;
+				while (streamReader.ReadLine() != null)
+				{
+					++num;
+				}
+
+				return num;
+			}
+		}
+
+		/// <inheritdoc />
 		public System.IO.FileStream Create(string path)
 		{
 			path = this.instance.NormalizePath(path);
@@ -72,6 +88,14 @@ namespace Relativity.Import.Export.Io
 		{
 			path = this.instance.NormalizePath(path);
 			return System.IO.File.Exists(path);
+		}
+
+		/// <inheritdoc />
+		public long GetFileSize(string fileName)
+		{
+			fileName = this.instance.NormalizePath(fileName);
+			FileInfo fi = new FileInfo(fileName);
+			return fi.Length;
 		}
 	}
 }
