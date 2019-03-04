@@ -30,16 +30,18 @@ timestamps
         {
             node("PolandBuild")
             {
-                stage ('Checkout and Version')
+                stage ('Checkout')
                 {
-                    //checkout source code here
-
-                    //call versioning script here
+                    checkout scm
                 }
 
-                stage ('Compile Solutions')
+                stage('Compile')
                 {
-                    // call the build script here
+                    version = powershell(returnStdout:true, script: "(.\\DevelopmentScripts\\Increment-ProductVersion.ps1 -Version (Get-Content .\\Version\\version.txt) -Force).ToString()")
+                    version = version.trim()
+                    echo "Building version $version"
+
+                    powershell ".\\build.ps1 -$AssemblyVersion '$version'"
                 }
 
                 stage ('Build package')
@@ -55,10 +57,10 @@ timestamps
                     parallel (
                         Deploy:
                         {
-                            build = getBuildArtifactsPath(this, "Relativity", env.BRANCH_NAME, build, params.type, sessionID)
-                            currentBuild.description = "Relativity: " + env.BRANCH_NAME + " " + build
+                            build = getBuildArtifactsPath(this, "Relativity", "develop", build, params.type, sessionID)
+                            currentBuild.description = "Relativity: " + "develop" + " " + build
 
-                            uploadEnvironmentFile(this, sut.name, build, env.BRANCH_NAME, params.type, "N/A", "N/A", getCookbooks(), 'fluidOn:1,cdonprem:1', knife, "N/A", "N/A", sessionID, true, false, false)
+                            uploadEnvironmentFile(this, sut.name, build, "develop", params.type, "N/A", "N/A", getCookbooks(), 'fluidOn:1,cdonprem:1', knife, "N/A", "N/A", sessionID, true, false, false)
                             addRunlist(this, sessionID, sut.name, sut.domain, sut.ip, createRunList(true, false, false, false), knife, profile, eventHash, "", "")
                         },
                         ProvisionNodes:
