@@ -419,6 +419,23 @@ namespace Relativity.Import.Export.NUnit
 
 		[Test]
 		[Category(TestCategories.FileSystem)]
+		public void ShouldMoveTheFile()
+		{
+			string sourceFileName = GenerateUniqueFolderName();
+			string sourceFile = this.GenerateUniqueFilePath(sourceFileName);
+			string destinationFileName = GenerateUniqueFolderName();
+			string destinationFile = System.IO.Path.Combine(GetUniqueDirectory(), destinationFileName);
+			System.IO.File.WriteAllText(sourceFile, "@");
+			Assert.That(sourceFile, Does.Exist);
+			Assert.That(destinationFile, Does.Not.Exist);
+			this.AddPathsForDeletion(destinationFile);
+			this.fileSystem.File.Move(sourceFile, destinationFile);
+			Assert.That(sourceFile, Does.Not.Exist);
+			Assert.That(destinationFile, Does.Exist);
+		}
+
+		[Test]
+		[Category(TestCategories.FileSystem)]
 		public void ShouldMakeReferenceDeepCopy()
 		{
 			IFileSystem source = this.fileSystem;

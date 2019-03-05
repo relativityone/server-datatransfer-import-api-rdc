@@ -70,6 +70,42 @@ namespace Relativity.Import.Export.Io
 		IFileInfo CreateFileInfo(string fileName);
 
 		/// <summary>
+		/// Creates a new <see cref="IStreamWriter"/> instance for the specified file on the specified path, UTF-8 encoding, and default buffer size. If the file exists, it can be either overwritten or appended to. If the file does not exist, a new file is created.
+		/// </summary>
+		/// <param name="path">
+		/// The complete file path to write to.
+		/// </param>
+		/// <param name="append">
+		/// <see langword="true" /> to append data to the file; <see langword="false" /> to overwrite the file. If the specified file does not exist, this parameter has no effect, and the constructor creates a new file.
+		/// </param>
+		/// <returns>
+		/// The <see cref="IStreamWriter"/> instance.
+		/// </returns>
+		/// <exception cref="T:System.UnauthorizedAccessException">
+		/// Access is denied.
+		/// </exception>
+		/// <exception cref="T:System.ArgumentException">
+		/// <paramref name="path" /> is empty. -or-
+		/// <paramref name="path" /> contains the name of a system device (com1, com2, and so on).
+		/// </exception>
+		/// <exception cref="T:System.ArgumentNullException">
+		/// <paramref name="path" /> is <see langword="null" />.
+		/// </exception>
+		/// <exception cref="T:System.IO.DirectoryNotFoundException">
+		/// The specified path is invalid (for example, it is on an unmapped drive).
+		/// </exception>
+		/// <exception cref="T:System.IO.IOException">
+		/// <paramref name="path" /> includes an incorrect or invalid syntax for file name, directory name, or volume label syntax.
+		/// </exception>
+		/// <exception cref="T:System.IO.PathTooLongException">
+		/// The specified path, file name, or both exceed the system-defined maximum length. For example, on Windows-based platforms, paths must not exceed 248 characters, and file names must not exceed 260 characters.
+		/// </exception>
+		/// <exception cref="T:System.Security.SecurityException">
+		/// The caller does not have the required permission.
+		/// </exception>
+		IStreamWriter CreateStreamWriter(string path, bool append);
+
+		/// <summary>
 		/// Creates a new <see cref="IStreamWriter"/> instance for the specified file on the specified path, using the specified encoding and default buffer size. If the file exists, it can be either overwritten or appended to. If the file does not exist, a new file is created.
 		/// </summary>
 		/// <param name="path">

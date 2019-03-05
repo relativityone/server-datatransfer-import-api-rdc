@@ -7,6 +7,8 @@
 namespace Relativity.Import.Export.Io
 {
 	using System;
+	using System.IO;
+	using System.Text;
 
 	/// <summary>
 	/// Represents a <see cref="System.IO"/> class object wrapper to access and create file system related objects.
@@ -54,6 +56,17 @@ namespace Relativity.Import.Export.Io
 		{
 			string path = this.Path.NormalizePath(fileName);
 			return new FileInfoWrap(path);
+		}
+
+		/// <inheritdoc />
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Reliability",
+			"CA2000:Dispose objects before losing scope",
+			Justification = "This is an appropriate construction pattern.")]
+		public IStreamWriter CreateStreamWriter(string path, bool append)
+		{
+			path = this.Path.NormalizePath(path);
+			return new StreamWriterWrap(this.Path.NormalizePath(path), append, new UTF8Encoding(false, true));
 		}
 
 		/// <inheritdoc />

@@ -204,5 +204,38 @@ namespace Relativity.Import.Export.Io
 		/// The file does not exist.
 		/// </exception>
 		long GetFileSize(string fileName);
+
+		/// <summary>
+		/// Moves a specified file to a new location, providing the option to specify a new file name.
+		/// </summary>
+		/// <param name="sourceFileName">
+		/// The name of the file to move. Can include a relative or absolute path.
+		/// </param>
+		/// <param name="destFileName">
+		/// The new path and name for the file.
+		/// </param>
+		/// <exception cref="T:System.IO.IOException">
+		/// The destination file already exists.-or-
+		/// <paramref name="sourceFileName" /> was not found.
+		/// </exception>
+		/// <exception cref="T:System.ArgumentNullException">
+		/// <paramref name="sourceFileName" /> or <paramref name="destFileName" /> is <see langword="null" />.
+		/// </exception>
+		/// <exception cref="T:System.ArgumentException">
+		/// <paramref name="sourceFileName" /> or <paramref name="destFileName" /> is a zero-length string, contains only white space, or contains invalid characters as defined in <see cref="F:System.IO.Path.InvalidPathChars" />.
+		/// </exception>
+		/// <exception cref="T:System.UnauthorizedAccessException">
+		/// The caller does not have the required permission.
+		/// </exception>
+		/// <exception cref="T:System.IO.PathTooLongException">
+		/// The specified path, file name, or both exceed the system-defined maximum length. For example, on Windows-based platforms, paths must be less than 248 characters, and file names must be less than 260 characters.
+		/// </exception>
+		/// <exception cref="T:System.IO.DirectoryNotFoundException">
+		/// The path specified in <paramref name="sourceFileName" /> or <paramref name="destFileName" /> is invalid, (for example, it is on an unmapped drive).
+		/// </exception>
+		/// <exception cref="T:System.NotSupportedException">
+		/// <paramref name="sourceFileName" /> or <paramref name="destFileName" /> is in an invalid format.
+		/// </exception>
+		void Move(string sourceFileName, string destFileName);
 	}
 }

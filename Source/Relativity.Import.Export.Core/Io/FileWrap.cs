@@ -97,5 +97,11 @@ namespace Relativity.Import.Export.Io
 			FileInfo fi = new FileInfo(fileName);
 			return fi.Length;
 		}
+
+		/// <inheritdoc />
+		public void Move(string sourceFileName, string destFileName)
+		{
+			System.IO.File.Move(sourceFileName, destFileName);
+		}
 	}
 }
