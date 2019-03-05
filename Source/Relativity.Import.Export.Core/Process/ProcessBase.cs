@@ -8,20 +8,23 @@ namespace Relativity.Import.Export.Process
 {
 	using System;
 
+	using Relativity.Import.Export.Io;
+	using Relativity.Logging;
+
 	/// <summary>
 	/// Defines an abstract object that performs a runnable process.
 	/// </summary>
 	public abstract class ProcessBase : IRunnable, IDisposable
 	{
 		/// <summary>
-		/// The logger instance.
-		/// </summary>
-		private readonly Relativity.Logging.ILog logger;
-
-		/// <summary>
 		/// The process error writer.
 		/// </summary>
-		private readonly ProcessErrorWriter errorWriter;
+		private readonly ProcessErrorWriter processErrorWriter;
+
+		/// <summary>
+		/// The process event writer.
+		/// </summary>
+		private readonly ProcessEventWriter processEventWriter;
 
 		/// <summary>
 		/// The disposed backing.
@@ -31,14 +34,33 @@ namespace Relativity.Import.Export.Process
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProcessBase"/> class.
 		/// </summary>
+		protected ProcessBase()
+			: this(
+				Relativity.Import.Export.Io.FileSystem.Instance,
+				Relativity.Import.Export.AppSettings.Instance,
+				new NullLogger())
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ProcessBase"/> class.
+		/// </summary>
+		/// <param name="fileSystem">
+		/// The file system wrapper.
+		/// </param>
 		/// <param name="settings">
 		/// The application settings.
 		/// </param>
 		/// <param name="logger">
 		/// The logger instance.
 		/// </param>
-		protected ProcessBase(IAppSettings settings, Relativity.Logging.ILog logger)
+		protected ProcessBase(IFileSystem fileSystem, IAppSettings settings, Relativity.Logging.ILog logger)
 		{
+			if (fileSystem == null)
+			{
+				throw new ArgumentNullException(nameof(fileSystem));
+			}
+
 			if (settings == null)
 			{
 				throw new ArgumentNullException(nameof(settings));
@@ -49,9 +71,12 @@ namespace Relativity.Import.Export.Process
 				throw new ArgumentNullException(nameof(logger));
 			}
 
-			this.logger = logger;
-			this.errorWriter = new ProcessErrorWriter(logger);
-			this.Context = new ProcessContext(this.errorWriter, settings, logger);
+			this.AppSettings = settings;
+			this.FileSystem = fileSystem;
+			this.Logger = logger;
+			this.processErrorWriter = new ProcessErrorWriter(fileSystem, logger);
+			this.processEventWriter = new ProcessEventWriter(fileSystem);
+			this.Context = new ProcessContext(this.processEventWriter, this.processErrorWriter, settings, logger);
 			this.ProcessId = Guid.NewGuid();
 		}
 
@@ -68,12 +93,45 @@ namespace Relativity.Import.Export.Process
 		}
 
 		/// <summary>
+		/// Gets the application settings.
+		/// </summary>
+		/// <value>
+		/// The <see cref="IAppSettings"/> instance.
+		/// </value>
+		protected IAppSettings AppSettings
+		{
+			get;
+		}
+
+		/// <summary>
 		/// Gets the process context used to publish events.
 		/// </summary>
 		/// <value>
 		/// The <see cref="ProcessContext"/> instance.
 		/// </value>
 		protected ProcessContext Context
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Gets the file system wrapper.
+		/// </summary>
+		/// <value>
+		/// The <see cref="IFileSystem"/> instance.
+		/// </value>
+		protected IFileSystem FileSystem
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Gets the Relativity logger.
+		/// </summary>
+		/// <value>
+		/// The <see cref="Relativity.Logging.ILog"/> instance.
+		/// </value>
+		protected Relativity.Logging.ILog Logger
 		{
 			get;
 		}
@@ -96,19 +154,19 @@ namespace Relativity.Import.Export.Process
 		{
 			try
 			{
-				this.logger.LogInformation(
+				this.Logger.LogInformation(
 					"The runnable process {ProcessType}-{ProcessId} has started.",
 					this.GetType(),
 					this.ProcessId);
 				this.OnExecute();
-				this.logger.LogInformation(
+				this.Logger.LogInformation(
 					"The runnable process {ProcessType}-{ProcessId} successfully started.",
 					this.GetType(),
 					this.ProcessId);
 			}
 			catch (Exception e)
 			{
-				this.logger.LogError(
+				this.Logger.LogError(
 					e,
 					"The runnable process {ProcessType}-{ProcessId} experienced a fatal exception.",
 					this.GetType(),
@@ -132,7 +190,15 @@ namespace Relativity.Import.Export.Process
 
 			if (disposing)
 			{
-				this.errorWriter.Dispose();
+				if (this.processErrorWriter != null)
+				{
+					this.processErrorWriter.Dispose();
+				}
+
+				if (this.processEventWriter != null)
+				{
+					this.processEventWriter.Dispose();
+				}
 			}
 
 			this.disposed = true;

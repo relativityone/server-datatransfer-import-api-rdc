@@ -16,11 +16,12 @@ namespace Relativity.Import.Export.NUnit
 
 	using Moq;
 
+	using Relativity.Import.Export.Io;
 	using Relativity.Import.Export.Process;
 	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>
-	/// Represents <see cref="ProcessErrorReader"/> tests.
+	/// Represents <see cref="ProcessErrorWriter"/> tests.
 	/// </summary>
 	[TestFixture]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -29,14 +30,16 @@ namespace Relativity.Import.Export.NUnit
 		Justification = "The test class handles the disposal.")]
 	public class ProcessErrorWriterTests
 	{
+		private IFileSystem fileSystem;
 		private Mock<Relativity.Logging.ILog> logger;
 		private ProcessErrorWriter writer;
 
 		[SetUp]
 		public void Setup()
 		{
+			this.fileSystem = new FileSystemWrap();
 			this.logger = new Mock<Relativity.Logging.ILog>();
-			this.writer = new ProcessErrorWriter(this.logger.Object);
+			this.writer = new ProcessErrorWriter(this.fileSystem, this.logger.Object);
 		}
 
 		[TearDown]
@@ -54,7 +57,14 @@ namespace Relativity.Import.Export.NUnit
 					{
 						Relativity.Logging.ILog log = this.logger.Object;
 						log = null;
-						using (new ProcessErrorWriter(log))
+						using (new ProcessErrorWriter(this.fileSystem, log))
+						{
+						}
+					});
+			Assert.Throws<ArgumentNullException>(
+				() =>
+					{
+						using (new ProcessErrorWriter(null, this.logger.Object))
 						{
 						}
 					});

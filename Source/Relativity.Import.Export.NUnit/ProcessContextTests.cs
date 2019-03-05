@@ -48,7 +48,8 @@ namespace Relativity.Import.Export.NUnit
 		private readonly List<ShowReportEventArgs> showReportEvents = new List<ShowReportEventArgs>();
 		private readonly List<EventArgs> shutdownEvents = new List<EventArgs>();
 		private readonly List<StatusBarEventArgs> statusBarEvents = new List<StatusBarEventArgs>();
-		private Mock<IProcessErrorWriter> mockProcessWriter;
+		private Mock<IProcessErrorWriter> mockProcessErrorWriter;
+		private Mock<IProcessEventWriter> mockProcessEventWriter;
 		private Mock<IAppSettings> mockAppSettings;
 		private Mock<Relativity.Logging.ILog> mockLogger;
 		private ProcessContext context;
@@ -56,13 +57,16 @@ namespace Relativity.Import.Export.NUnit
 		[SetUp]
 		public void Setup()
 		{
-			this.mockProcessWriter = new Mock<IProcessErrorWriter>();
-			this.mockProcessWriter.SetupGet(x => x.HasErrors).Returns(false);
+			this.mockProcessErrorWriter = new Mock<IProcessErrorWriter>();
+			this.mockProcessErrorWriter.SetupGet(x => x.HasErrors).Returns(false);
+			this.mockProcessEventWriter = new Mock<IProcessEventWriter>();
+			this.mockProcessEventWriter.SetupGet(x => x.File).Returns(string.Empty);
 			this.mockAppSettings = new Mock<IAppSettings>();
 			this.mockAppSettings.SetupGet(settings => settings.LogAllEvents).Returns(true);
 			this.mockLogger = new Mock<Relativity.Logging.ILog>();
 			this.context = new ProcessContext(
-				this.mockProcessWriter.Object,
+				this.mockProcessEventWriter.Object,
+				this.mockProcessErrorWriter.Object,
 				this.mockAppSettings.Object,
 				this.mockLogger.Object);
 			this.SetupEvents();
@@ -168,7 +172,7 @@ namespace Relativity.Import.Export.NUnit
 			this.context.FatalException -= this.OnFatalException;
 			this.context.PublishFatalException(new InvalidOperationException());
 			Assert.That(this.fatalExceptionEvents.Count, Is.EqualTo(1));
-			this.mockProcessWriter.Verify(writer => writer.Write(It.IsAny<string>(), It.IsAny<string>()));
+			this.mockProcessErrorWriter.Verify(writer => writer.Write(It.IsAny<string>(), It.IsAny<string>()));
 			this.mockLogger.Verify(
 				log => log.LogFatal(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object[]>()),
 				Times.Exactly(2));
@@ -250,40 +254,41 @@ namespace Relativity.Import.Export.NUnit
 		[Test]
 		[TestCase(true)]
 		[TestCase(false)]
-		public void ShouldPublishTheProcessEvents(bool logEvents)
+		public void ShouldPublishTheProcessEvents(bool writeEvents)
 		{
 			// Note: process events are only logged when configured.
 			this.ClearContext();
 			this.mockLogger.Invocations.Clear();
 			this.mockAppSettings.Invocations.Clear();
-			this.mockAppSettings.SetupGet(settings => settings.LogAllEvents).Returns(logEvents);
+			this.mockAppSettings.SetupGet(settings => settings.LogAllEvents).Returns(writeEvents);
+			this.context.SafeMode = false;
 			this.context.PublishErrorEvent("a", "b");
 			Assert.That(this.processEvents.Count, Is.EqualTo(1));
 			Assert.That(
 				this.processEvents.Any(
 					x => x.EventType == ProcessEventType.Error && x.RecordInfo == "a" && x.Message == "b"),
 				Is.True);
-			this.mockLogger.Verify(
-				log => log.LogInformation(It.IsAny<string>(), It.IsAny<object[]>()),
-				logEvents ? Times.Exactly(1) : Times.Never());
+			this.mockProcessEventWriter.Verify(
+				writer => writer.Write(It.IsAny<ProcessEventDto>()),
+				writeEvents ? Times.Exactly(1) : Times.Never());
 			this.context.PublishWarningEvent("c", "d");
 			Assert.That(this.processEvents.Count, Is.EqualTo(2));
 			Assert.That(
 				this.processEvents.Any(
 					x => x.EventType == ProcessEventType.Warning && x.RecordInfo == "c" && x.Message == "d"),
 				Is.True);
-			this.mockLogger.Verify(
-				log => log.LogInformation(It.IsAny<string>(), It.IsAny<object[]>()),
-				logEvents ? Times.Exactly(2) : Times.Never());
+			this.mockProcessEventWriter.Verify(
+				writer => writer.Write(It.IsAny<ProcessEventDto>()),
+				writeEvents ? Times.Exactly(2) : Times.Never());
 			this.context.PublishStatusEvent("e", "f");
 			Assert.That(this.processEvents.Count, Is.EqualTo(3));
 			Assert.That(
 				this.processEvents.Any(
 					x => x.EventType == ProcessEventType.Status && x.RecordInfo == "e" && x.Message == "f"),
 				Is.True);
-			this.mockLogger.Verify(
-				log => log.LogInformation(It.IsAny<string>(), It.IsAny<object[]>()),
-				logEvents ? Times.Exactly(3) : Times.Never());
+			this.mockProcessEventWriter.Verify(
+				writer => writer.Write(It.IsAny<ProcessEventDto>()),
+				writeEvents ? Times.Exactly(3) : Times.Never());
 
 			// Assert that null events are handled.
 			this.context.ProcessEvent -= this.OnProcessEvent;
@@ -291,9 +296,9 @@ namespace Relativity.Import.Export.NUnit
 			this.context.PublishWarningEvent("i", "j");
 			this.context.PublishStatusEvent("k", "l");
 			Assert.That(this.processEvents.Count, Is.EqualTo(3));
-			this.mockLogger.Verify(
-				log => log.LogInformation(It.IsAny<string>(), It.IsAny<object[]>()),
-				logEvents ? Times.Exactly(6) : Times.Never());
+			this.mockProcessEventWriter.Verify(
+				writer => writer.Write(It.IsAny<ProcessEventDto>()),
+				writeEvents ? Times.Exactly(6) : Times.Never());
 		}
 
 		[Test]
@@ -422,9 +427,9 @@ namespace Relativity.Import.Export.NUnit
 				table.Locale = CultureInfo.CurrentCulture;
 				ProcessErrorReport report =
 					new ProcessErrorReport { MaxLengthExceeded = false, Report = table };
-				this.mockProcessWriter.Invocations.Clear();
-				this.mockProcessWriter.SetupGet(x => x.HasErrors).Returns(true);
-				this.mockProcessWriter.Setup(x => x.BuildErrorReport(It.IsAny<CancellationToken>())).Returns(report);
+				this.mockProcessErrorWriter.Invocations.Clear();
+				this.mockProcessErrorWriter.SetupGet(x => x.HasErrors).Returns(true);
+				this.mockProcessErrorWriter.Setup(x => x.BuildErrorReport(It.IsAny<CancellationToken>())).Returns(report);
 				this.context.PublishProcessCompleted(false, "a", false);
 				Assert.That(this.showReportEvents.Count, Is.EqualTo(1));
 			}
@@ -478,6 +483,14 @@ namespace Relativity.Import.Export.NUnit
 			this.context.StatusBarChanged -= this.OnStatusBarChanged;
 			this.context.PublishStatusBarChanged("g", "h");
 			Assert.That(this.statusBarEvents.Count, Is.EqualTo(3));
+		}
+
+		[Test]
+		public void ShouldSaveTheOutputFile()
+		{
+			string targetFile = RandomHelper.NextString(10, 200);
+			this.context.SaveOutputFile(targetFile);
+			this.mockProcessEventWriter.Verify(x => x.Save(targetFile));
 		}
 
 		private void OnCancellationRequest(object sender, CancellationRequestEventArgs e)

@@ -58,6 +58,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppSettingsReader.cs" />
@@ -81,6 +82,9 @@
     <Compile Include="Process\CancellationRequestEventArgs.cs" />
     <Compile Include="Process\ErrorReportEventArgs.cs" />
     <Compile Include="Process\FatalExceptionEventArgs.cs" />
+    <Compile Include="Process\ProcessEventDto.cs" />
+    <Compile Include="Process\ProcessEventWriter.cs" />
+    <Compile Include="Process\IProcessEventWriter.cs" />
     <Compile Include="Process\ParentFormClosingEventArgs.cs" />
     <Compile Include="Process\ProcessErrorReport.cs" />
     <Compile Include="Process\ExportErrorEventArgs.cs" />

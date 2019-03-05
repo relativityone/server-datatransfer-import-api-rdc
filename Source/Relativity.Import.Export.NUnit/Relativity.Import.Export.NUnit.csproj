@@ -112,6 +112,7 @@
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
     <Compile Include="AppSettingsTests.cs" />
+    <Compile Include="ProcessEventWriterTests.cs" />
     <Compile Include="ProcessErrorWriterTests.cs" />
     <Compile Include="TimekeeperTests.cs" />
     <Compile Include="StringExtensionsTests.cs" />

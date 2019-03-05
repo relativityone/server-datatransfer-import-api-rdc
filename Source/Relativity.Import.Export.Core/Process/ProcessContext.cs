@@ -23,6 +23,11 @@ namespace Relativity.Import.Export.Process
 		private readonly IProcessErrorWriter errorWriter;
 
 		/// <summary>
+		/// The process event writer backing.
+		/// </summary>
+		private readonly IProcessEventWriter eventWriter;
+
+		/// <summary>
 		/// The logger instance backing.
 		/// </summary>
 		private readonly Relativity.Logging.ILog logger;
@@ -33,11 +38,6 @@ namespace Relativity.Import.Export.Process
 		private readonly IAppSettings settings;
 
 		/// <summary>
-		/// The cached setting to log all events.
-		/// </summary>
-		private bool? cachedLogAllEvents;
-
-		/// <summary>
 		/// The record count backing.
 		/// </summary>
 		private int recordCount;
@@ -45,6 +45,9 @@ namespace Relativity.Import.Export.Process
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProcessContext"/> class.
 		/// </summary>
+		/// <param name="eventWriter">
+		/// The process event writer.
+		/// </param>
 		/// <param name="errorWriter">
 		/// The process error writer.
 		/// </param>
@@ -54,8 +57,17 @@ namespace Relativity.Import.Export.Process
 		/// <param name="logger">
 		/// The logger instance.
 		/// </param>
-		public ProcessContext(IProcessErrorWriter errorWriter, IAppSettings settings, Relativity.Logging.ILog logger)
+		public ProcessContext(
+			IProcessEventWriter eventWriter,
+			IProcessErrorWriter errorWriter,
+			IAppSettings settings,
+			Relativity.Logging.ILog logger)
 		{
+			if (eventWriter == null)
+			{
+				throw new ArgumentNullException(nameof(eventWriter));
+			}
+
 			if (errorWriter == null)
 			{
 				throw new ArgumentNullException(nameof(errorWriter));
@@ -71,6 +83,7 @@ namespace Relativity.Import.Export.Process
 				throw new ArgumentNullException(nameof(logger));
 			}
 
+			this.eventWriter = eventWriter;
 			this.errorWriter = errorWriter;
 			this.settings = settings;
 			this.logger = logger;
@@ -180,7 +193,11 @@ namespace Relativity.Import.Export.Process
 		/// <value>
 		/// <see langword="true" /> when safe mode is enabled; otherwise, <see langword="false" />.
 		/// </value>
-		public bool SafeMode { get; set; }
+		public bool SafeMode
+		{
+			get;
+			set;
+		}
 
 		/// <summary>
 		/// Clears this instance and assigns <see langword="null" /> to all events.
@@ -204,7 +221,6 @@ namespace Relativity.Import.Export.Process
 			this.ShowReportEvent = null;
 			this.Shutdown = null;
 			this.StatusBarChanged = null;
-			this.cachedLogAllEvents = null;
 		}
 
 		/// <summary>
@@ -315,6 +331,7 @@ namespace Relativity.Import.Export.Process
 			FatalExceptionEventArgs args = new FatalExceptionEventArgs(exception);
 			this.FatalException?.Invoke(this, args);
 			this.WriteError("FATAL ERROR", exception.ToString());
+			this.LogProcessEvent(new ProcessEventArgs(ProcessEventType.Error, string.Empty, exception.ToString()));
 			this.LogFatalException(exception);
 		}
 
@@ -556,8 +573,7 @@ namespace Relativity.Import.Export.Process
 		/// </param>
 		public void SaveOutputFile(string file)
 		{
-			// TODO: Implement file logging.
-			throw new NotImplementedException("Must add in file logging.");
+			this.eventWriter.Save(file);
 		}
 
 		/// <summary>
@@ -584,19 +600,10 @@ namespace Relativity.Import.Export.Process
 		/// </param>
 		private void LogProcessEvent(ProcessEventArgs args)
 		{
-			if (this.cachedLogAllEvents == null)
+			if (this.settings.LogAllEvents && !this.SafeMode)
 			{
-				this.cachedLogAllEvents = this.settings.LogAllEvents;
-			}
-
-			if (this.cachedLogAllEvents == true)
-			{
-				this.logger.LogInformation(
-					"Event type: {EventType}, Message: {Message}, Record info: {RecordInfo}, Event timestamp: {Timestamp}",
-					args.EventType,
-					args.Message,
-					args.RecordInfo,
-					args.Timestamp);
+				this.eventWriter.Write(
+					new ProcessEventDto(args.EventType, args.RecordInfo, args.Message, args.Timestamp));
 			}
 		}
 

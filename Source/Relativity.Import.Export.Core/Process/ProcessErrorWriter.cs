@@ -18,27 +18,37 @@ namespace Relativity.Import.Export.Process
 	/// </summary>
 	internal sealed class ProcessErrorWriter : IProcessErrorWriter
 	{
+		private readonly IFileSystem fileSystem;
 		private readonly Relativity.Logging.ILog logger;
 		private string errorsFile;
-		private System.IO.StreamWriter streamWriter;
+		private IStreamWriter streamWriter;
 		private bool disposed;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProcessErrorWriter"/> class.
 		/// </summary>
+		/// <param name="fileSystem">
+		/// The file system.
+		/// </param>
 		/// <param name="logger">
 		/// The Relativity logger.
 		/// </param>
 		/// <exception cref="ArgumentNullException">
-		/// Thrown when <paramref name="logger"/> is <see langword="null" />.
+		/// Thrown when <paramref name="fileSystem"/> or <paramref name="logger"/> is <see langword="null" />.
 		/// </exception>
-		public ProcessErrorWriter(Relativity.Logging.ILog logger)
+		public ProcessErrorWriter(IFileSystem fileSystem, Relativity.Logging.ILog logger)
 		{
+			if (fileSystem == null)
+			{
+				throw new ArgumentNullException(nameof(fileSystem));
+			}
+
 			if (logger == null)
 			{
 				throw new ArgumentNullException(nameof(logger));
 			}
 
+			this.fileSystem = fileSystem;
 			this.logger = logger;
 		}
 
@@ -92,7 +102,7 @@ namespace Relativity.Import.Export.Process
 
 			if (this.streamWriter?.BaseStream == null)
 			{
-				this.streamWriter = new StreamWriter(this.errorsFile, false);
+				this.streamWriter = this.fileSystem.CreateStreamWriter(this.errorsFile, false);
 			}
 
 			key = key.Replace("\"", "\"\"");
@@ -123,6 +133,12 @@ namespace Relativity.Import.Export.Process
 				// Duplicated to avoid CA warning.
 				this.streamWriter.Close();
 				this.streamWriter = null;
+			}
+
+			// Always delete that which you create!
+			if (!string.IsNullOrEmpty(this.errorsFile) && this.fileSystem.File.Exists(this.errorsFile))
+			{
+				this.fileSystem.File.Delete(this.errorsFile);
 			}
 
 			this.disposed = true;
