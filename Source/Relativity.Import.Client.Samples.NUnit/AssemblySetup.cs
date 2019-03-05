@@ -8,7 +8,7 @@ namespace Relativity.Import.Client.Samples.NUnit
 {
     using global::NUnit.Framework;
 
-    using Relativity.ImportExport.UnitTestFramework;
+    using Relativity.Import.Export.TestFramework;
 
     /// <summary>
     /// Represents a global assembly-wide setup routine that's guaranteed to be executed before ANY NUnit test.
@@ -16,13 +16,25 @@ namespace Relativity.Import.Client.Samples.NUnit
     [SetUpFixture]
     public class AssemblySetup
     {
+		/// <summary>
+		/// Gets the test parameters used by all integration tests within the current assembly.
+		/// </summary>
+		/// <value>
+		/// The <see cref="IntegrationTestParameters"/> instance.
+		/// </value>
+		public static IntegrationTestParameters TestParameters
+	    {
+		    get;
+		    private set;
+	    }
+
         /// <summary>
         /// The main setup method.
         /// </summary>
         [OneTimeSetUp]
         public void Setup()
         {
-            AssemblySetupHelper.Setup();
+	        TestParameters = IntegrationTestHelper.Create();
         }
 
         /// <summary>
@@ -31,7 +43,7 @@ namespace Relativity.Import.Client.Samples.NUnit
         [OneTimeTearDown]
         public void TearDown()
         {
-            AssemblySetupHelper.TearDown();
+	        IntegrationTestHelper.Destroy(TestParameters);
         }
     }
 }

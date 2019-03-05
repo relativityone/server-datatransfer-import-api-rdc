@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------------------------------------
-// <copyright file="LoadFileMetadataBuilderTests.cs" company="Relativity ODA LLC">
+// <copyright file="LoadFileTestHelpers.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // -----------------------------------------------------------------------------------------------------

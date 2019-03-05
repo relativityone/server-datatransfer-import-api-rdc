@@ -11,13 +11,13 @@ namespace Relativity.Export.Client.NUnit
     using System.Linq;
     using System.Threading;
 
-    using kCura.Vendor.Castle.Core.Internal;
+    using global::NUnit.Framework;
+
+	using kCura.Vendor.Castle.Core.Internal;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
     using kCura.WinEDDS.Exporters;
 
-    using Moq;
-
-    using global::NUnit.Framework;
+	using Moq;
 
     using Relativity.Logging;
 
@@ -45,10 +45,10 @@ namespace Relativity.Export.Client.NUnit
 			ObjectExportInfo[] artifacts = new ObjectExportInfo[1];
 			VolumePredictions[] predictions = new VolumePredictions[1];
 
-			//ACT
+			// ACT
 			_instance.ValidateExportedBatch(artifacts, predictions, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			_validatorMocks.ForEach(x => x.Verify(v => v.ValidateExportedBatch(artifacts, predictions, CancellationToken.None)));
 		}
 
@@ -60,10 +60,10 @@ namespace Relativity.Export.Client.NUnit
 
 			_validatorMocks[1].Setup(x => x.ValidateExportedBatch(artifacts, predictions, CancellationToken.None)).Throws<Exception>();
 
-			//ACT & ASSERT
+			// ACT & ASSERT
 			Assert.Throws<Exception>(() => _instance.ValidateExportedBatch(artifacts, predictions, CancellationToken.None));
 
-			//ASSERT
+			// ASSERT
 			_validatorMocks[2].Verify(x => x.ValidateExportedBatch(artifacts, predictions, CancellationToken.None), Times.Never);
 		}
 	}

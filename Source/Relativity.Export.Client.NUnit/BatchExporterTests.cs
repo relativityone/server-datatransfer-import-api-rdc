@@ -8,7 +8,9 @@ namespace Relativity.Export.Client.NUnit
 {
     using System.Threading;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
@@ -16,9 +18,7 @@ namespace Relativity.Export.Client.NUnit
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
     using kCura.WinEDDS.Exporters;
 
-    using Moq;
-
-    using global::NUnit.Framework;
+	using Moq;
 
     [TestFixture]
 	public class BatchExporterTests
@@ -45,10 +45,10 @@ namespace Relativity.Export.Client.NUnit
 		{
 			ObjectExportInfo[] artifacts = new ObjectExportInfo[1];
 
-			//ACT
+			// ACT
 			_instance.Export(artifacts, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			_downloader.Verify(x => x.DownloadFilesForArtifacts(CancellationToken.None), Times.Once);
 			_imagesRollupManager.Verify(x => x.RollupImagesForArtifacts(artifacts, CancellationToken.None), Times.Once);
 			_imageLoadFile.Verify(x => x.Create(artifacts, CancellationToken.None), Times.Once);

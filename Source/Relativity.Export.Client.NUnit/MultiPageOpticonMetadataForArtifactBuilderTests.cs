@@ -9,11 +9,11 @@ namespace Relativity.Export.Client.NUnit
     using System.Collections;
     using System.Threading;
 
-    using kCura.WinEDDS.Exporters;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Exporters;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     [TestFixture]
 	public class MultiPageOpticonMetadataForArtifactBuilderTests : MultiPageMetadataForArtifactBuilderTests
@@ -53,10 +53,10 @@ namespace Relativity.Export.Client.NUnit
 			FilePathTransformer.Setup(x => x.TransformPath(It.IsAny<string>())).Returns((string s) => $"{s}_transformed");
 			ImageLoadFileEntry.Setup(x => x.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>())).Returns(loadFileEntry);
 
-			//ACT
+			// ACT
 			Instance.WriteLoadFileEntry(artifact, Writer.Object, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			FullTextLoadFileEntry.Verify(x => x.WriteFullTextLine(artifact, image1.BatesNumber, 0, It.IsAny<long>(), Writer.Object, CancellationToken.None), Times.Once);
 			ImageLoadFileEntry.Verify(x => x.Create(image1.BatesNumber, $"{image1.TempLocation}_transformed", artifact.DestinationVolume, 1, numberOfImages), Times.Once);
 

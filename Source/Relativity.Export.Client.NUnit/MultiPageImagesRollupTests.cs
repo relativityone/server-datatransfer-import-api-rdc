@@ -10,13 +10,13 @@ namespace Relativity.Export.Client.NUnit
     using System.Collections;
     using System.IO;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     [TestFixture]
 	public abstract class MultiPageImagesRollupTests
@@ -56,7 +56,7 @@ namespace Relativity.Export.Client.NUnit
 				Images = new ArrayList()
 			};
 
-			//ACT & ASSERT
+			// ACT & ASSERT
 			Assert.DoesNotThrow(() => _instance.RollupImages(artifact));
 		}
 
@@ -82,10 +82,10 @@ namespace Relativity.Export.Client.NUnit
 			artifact.Images.Add(image1);
 			artifact.Images.Add(image2);
 
-			//ACT
+			// ACT
 			_instance.RollupImages(artifact);
 
-			//ASSERT
+			// ASSERT
 			_fileHelper.Verify(x => x.Delete(image1Location), Times.Once);
 			_fileHelper.Verify(x => x.Delete(image2Location), Times.Once);
 		}
@@ -114,10 +114,10 @@ namespace Relativity.Export.Client.NUnit
 			artifact.Images.Add(image1);
 			artifact.Images.Add(image2);
 
-			//ACT
+			// ACT
 			_instance.RollupImages(artifact);
 
-			//ASSERT
+			// ASSERT
 			string expectedLocation = Path.ChangeExtension(image1Location, Extension());
 			_fileHelper.Verify(x => x.Move(It.IsAny<string>(), expectedLocation));
 			Assert.That(image1.TempLocation, Is.EqualTo(expectedLocation));
@@ -148,10 +148,10 @@ namespace Relativity.Export.Client.NUnit
 
 			_fileHelper.Setup(x => x.Exists(newImagePath)).Returns(true);
 
-			//ACT
+			// ACT
 			_instance.RollupImages(artifact);
 
-			//ASSERT
+			// ASSERT
 			_fileHelper.Verify(x => x.Move(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
 			_fileHelper.Verify(x => x.Delete(newImagePath), Times.Never);
 			_fileHelper.Verify(x => x.Delete(It.Is<string>(y => y.EndsWith(".tmp"))), Times.Once);
@@ -181,10 +181,10 @@ namespace Relativity.Export.Client.NUnit
 
 			_fileHelper.Setup(x => x.Exists(newImagePath)).Returns(true);
 
-			//ACT
+			// ACT
 			_instance.RollupImages(artifact);
 
-			//ASSERT
+			// ASSERT
 			_fileHelper.Verify(x => x.Delete(newImagePath), Times.Once);
 			_fileHelper.Verify(x => x.Move(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 		}
@@ -212,10 +212,10 @@ namespace Relativity.Export.Client.NUnit
 				_imageConverter.Setup(x => x.ConvertTIFFsToMultiPage(It.IsAny<string[]>(), It.IsAny<string>())).Throws<ImageException>();
 			}
 
-			//ACT
+			// ACT
 			_instance.RollupImages(artifact);
 
-			//ASSERT
+			// ASSERT
 			return image1.SuccessfulRollup;
 		}
 
@@ -239,10 +239,10 @@ namespace Relativity.Export.Client.NUnit
 
 			_fileHelper.Setup(x => x.Exists(It.IsAny<string>())).Returns(true);
 
-			//ACT
+			// ACT
 			_instance.RollupImages(artifact);
 
-			//ASSERT
+			// ASSERT
 			_fileHelper.Verify(x => x.Delete(It.Is<string>(y => y.EndsWith(".tmp"))), Times.Once);
 			_status.Verify(x => x.WriteImgProgressError(artifact, It.IsAny<int>(), It.IsAny<Exception>(), It.IsAny<string>()));
 		}

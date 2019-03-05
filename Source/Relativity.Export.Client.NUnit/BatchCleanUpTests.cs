@@ -10,14 +10,14 @@ namespace Relativity.Export.Client.NUnit
     using System.Collections.Generic;
     using System.Linq;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
 
     using Moq;
 
-    using global::NUnit.Framework;
-
-    using Relativity.Logging;
+	using Relativity.Logging;
 
     [TestFixture]
 	public class BatchCleanUpTests
@@ -44,10 +44,10 @@ namespace Relativity.Export.Client.NUnit
 		{
 			_repositoryMocks[1].Setup(x => x.Clear()).Throws<Exception>();
 
-			//ACT
+			// ACT
 			_instance.CleanUp();
 
-			//ASSERT
+			// ASSERT
 			foreach (var repositoryMock in _repositoryMocks)
 			{
 				repositoryMock.Verify(x => x.Clear());

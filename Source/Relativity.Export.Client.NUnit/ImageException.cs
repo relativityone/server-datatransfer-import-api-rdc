@@ -10,7 +10,8 @@ namespace Relativity.Export.Client.NUnit
 
     public class ImageException : Image.ImageRollupException
 	{
-		public ImageException() : base("", null)
+		public ImageException()
+			: base(string.Empty, null)
 		{
 		}
 	}

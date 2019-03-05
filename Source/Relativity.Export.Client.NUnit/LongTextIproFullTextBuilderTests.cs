@@ -9,14 +9,14 @@ namespace Relativity.Export.Client.NUnit
     using System.Collections.Generic;
     using System.Threading;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
     using RelativityConstants = Relativity.Constants;
@@ -44,17 +44,14 @@ namespace Relativity.Export.Client.NUnit
 		{
 			const string notTooLongText = "not too long text";
 
-			ObjectExportInfo artifact = new ObjectExportInfo
-			{
-				Metadata = new object[] {notTooLongText}
-			};
+			ObjectExportInfo artifact = new ObjectExportInfo { Metadata = new object[] { notTooLongText } };
 
 			_fieldService.Setup(x => x.GetOrdinalIndex(LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME)).Returns(0);
 
-			//ACT
+			// ACT
 			IList<LongText> actualResult = _instance.CreateLongText(artifact, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(actualResult.Count, Is.EqualTo(1));
 			Assert.That(actualResult[0].ExportRequest, Is.Null);
 			Assert.That(actualResult[0].FieldArtifactId, Is.EqualTo(-1));
@@ -65,17 +62,14 @@ namespace Relativity.Export.Client.NUnit
 		{
 			const string tooLongText = RelativityConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 
-			ObjectExportInfo artifact = new ObjectExportInfo
-			{
-				Metadata = new object[] {tooLongText}
-			};
+			ObjectExportInfo artifact = new ObjectExportInfo { Metadata = new object[] { tooLongText } };
 
 			_fieldService.Setup(x => x.GetOrdinalIndex(LongTextHelper.EXTRACTED_TEXT_COLUMN_NAME)).Returns(0);
 
-			//ACT
+			// ACT
 			IList<LongText> actualResult = _instance.CreateLongText(artifact, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(actualResult.Count, Is.EqualTo(1));
 			Assert.That(actualResult[0].ExportRequest, Is.Not.Null);
 			Assert.That(actualResult[0].ExportRequest.FullText, Is.True);

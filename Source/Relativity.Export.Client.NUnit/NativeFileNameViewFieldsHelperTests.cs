@@ -8,12 +8,12 @@ namespace Relativity.Export.Client.NUnit
 {
     using FileNaming.CustomFileNaming;
 
-    using kCura.WinEDDS;
-    using kCura.WinEDDS.FileNaming.CustomFileNaming;
-
     using global::NUnit.Framework;
 
-    using Relativity.ImportExport.UnitTestFramework;
+	using kCura.WinEDDS;
+    using kCura.WinEDDS.FileNaming.CustomFileNaming;
+
+    using Relativity.Import.Export.TestFramework;
 
     public class NativeFileNameViewFieldsHelperTests
 	{
@@ -22,7 +22,7 @@ namespace Relativity.Export.Client.NUnit
 		[Test]
 		public void ShouldPopulateSelectedNativesFieldInExportFileGivenGoodData()
 		{
-			ViewFieldInfo[] fields = {new QueryFieldFactory().GetArtifactIdField()};
+			ViewFieldInfo[] fields = { new QueryFieldFactory().GetArtifactIdField() };
 
 			var part = new FirstFieldDescriptorPart(fields[0].FieldArtifactId);
 			var model = new CustomFileNameDescriptorModel(part);
@@ -42,7 +42,7 @@ namespace Relativity.Export.Client.NUnit
 		{
 			const int numOfFields = 2;
 			var qf = new QueryFieldFactory();
-			ViewFieldInfo[] fields = {qf.GetExtractedTextField(), qf.GetArtifactIdField()};
+			ViewFieldInfo[] fields = { qf.GetExtractedTextField(), qf.GetArtifactIdField() };
 
 			var field1 = new FirstFieldDescriptorPart(fields[0].FieldArtifactId);
 			var part2 = new FieldDescriptorPart(fields[1].FieldArtifactId);
@@ -62,7 +62,6 @@ namespace Relativity.Export.Client.NUnit
 			Assert.AreEqual("Artifact ID", exportFile.SelectedNativesNameViewFields[1].DisplayName);
 		}
 
-
 		[Test]
 		public void ShouldLeaveEmptyListWhenCustomFileNamingIsDisabled()
 		{
@@ -71,7 +70,6 @@ namespace Relativity.Export.Client.NUnit
 			_helper.PopulateNativeFileNameViewFields(exportFile);
 			Assert.AreEqual(0, exportFile.SelectedNativesNameViewFields.Count);
 		}
-
 
 		[Test]
 		public void ShouldLeaveEmptyListWhenFieldDoesntExistInExportFile()

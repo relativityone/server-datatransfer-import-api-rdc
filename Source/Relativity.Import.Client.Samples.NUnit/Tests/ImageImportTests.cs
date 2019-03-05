@@ -11,7 +11,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-    using Relativity.ImportExport.UnitTestFramework;
+    using Relativity.Import.Export.TestFramework;
 
     /// <summary>
     /// Represents a test that imports images and validates the results.
@@ -20,15 +20,17 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 	public class ImageImportTests : ImageImportTestsBase
 	{
         [Test]
+        [Category(TestCategories.ImportImage)]
+        [Category(TestCategories.Integration)]
 		[TestCaseSource(nameof(AllSampleImageFileNames))]
 		public void ShouldImportTheImage(string fileName)
 		{
 			// Arrange
-			kCura.Relativity.ImportAPI.ImportAPI importApi = CreateImportApiObject();
+			kCura.Relativity.ImportAPI.ImportAPI importApi = this.CreateImportApiObject();
 			kCura.Relativity.DataReaderClient.ImageImportBulkArtifactJob job = importApi.NewImageImportJob();
             this.ConfigureJobSettings(job);
             this.ConfigureJobEvents(job);
-			string file = TestHelper.GetImagesResourceFilePath(fileName);
+			string file = ResourceFileHelper.GetImagesResourceFilePath(fileName);
             this.DataSource.Columns.AddRange(new[]
             {
 				new DataColumn(WellKnownFields.BatesNumber, typeof(string)),

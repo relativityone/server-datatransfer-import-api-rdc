@@ -11,26 +11,24 @@ namespace Relativity.Export.Client.NUnit
 
     using FileNaming.CustomFileNaming;
 
+	using global::NUnit.Framework;
+
     using kCura.WinEDDS;
     using kCura.WinEDDS.FileNaming.CustomFileNaming;
 
     using Moq;
 
-    using global::NUnit.Framework;
-
     using Relativity;
 
     public class FieldFileNamePartProviderTests
 	{
-		private FieldFileNamePartProvider _subjectUnderTest;
-		private ExtendedObjectExportInfo _extendedObjectExportInfo;
-		private Mock<IFieldLookupService> _fieldLookupServiceMock;
-
 		private const int _AVF_ID = 1;
 		private const string _NAME = "ColName";
 		private const int _COL_INDEX = 1;
-
 		private readonly ViewFieldInfoMockFactory _fieldInfoMockFactory = new ViewFieldInfoMockFactory();
+		private FieldFileNamePartProvider _subjectUnderTest;
+		private ExtendedObjectExportInfo _extendedObjectExportInfo;
+		private Mock<IFieldLookupService> _fieldLookupServiceMock;
 
 		[SetUp]
 		public void SetUp()
@@ -60,7 +58,9 @@ namespace Relativity.Export.Client.NUnit
 			_extendedObjectExportInfo.Metadata = new object[]
 			{
 				"Some Control Number",
-				fieldValue //_COL_INDEX
+
+				// _COL_INDEX
+				fieldValue
 			};
 
 			// assumption: one column selected by user (Control Number)
@@ -90,7 +90,9 @@ namespace Relativity.Export.Client.NUnit
 			_extendedObjectExportInfo.Metadata = new object[]
 			{
 				"Some Control Number",
-				fieldValue //_COL_INDEX
+
+				// _COL_INDEX
+				fieldValue
 			};
 
 			// assumption: one column selected by user (Control Number)
@@ -107,9 +109,8 @@ namespace Relativity.Export.Client.NUnit
 		[Test]
 		[TestCase("True", "Has Native")]
 		[TestCase("False", "")]
-		public void ItShouldReturnFieldDisplayTextWhenGivenBooleanField(String fieldValue, String expectedValue)
+		public void ItShouldReturnFieldDisplayTextWhenGivenBooleanField(string fieldValue, string expectedValue)
 		{
-
 			string displayName = "Has Native";
             kCura.WinEDDS.ViewFieldInfo viewFieldInfo = _fieldInfoMockFactory
 				.Build()
@@ -122,7 +123,7 @@ namespace Relativity.Export.Client.NUnit
 			_extendedObjectExportInfo.Metadata = new object[]
 			{
 				"Some Control Number",
-				fieldValue 
+				fieldValue
 			};
 
 			_extendedObjectExportInfo.SelectedNativeFileNameViewFields = new List<kCura.WinEDDS.ViewFieldInfo>

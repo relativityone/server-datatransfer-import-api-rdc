@@ -6,9 +6,9 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
+	using global::NUnit.Framework;
 
-    using global::NUnit.Framework;
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
 
     using Relativity.Logging;
 

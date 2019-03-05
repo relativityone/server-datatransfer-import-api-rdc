@@ -6,13 +6,13 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation;
+	using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation;
     using kCura.WinEDDS.Service;
     using kCura.WinEDDS.Service.Export;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
 

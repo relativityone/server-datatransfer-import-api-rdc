@@ -6,14 +6,14 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using kCura.Windows.Process;
+	using global::NUnit.Framework;
+
+	using kCura.Windows.Process;
     using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
 
@@ -52,7 +52,7 @@ namespace Relativity.Export.Client.NUnit
 			_fileHelper.Setup(x => x.Exists(filePath)).Returns(fileExists);
 			_exportSettings.Overwrite = overwrite;
 
-			//ACT & ASSERT
+			// ACT & ASSERT
 			return _instance.CanExport(filePath, string.Empty);
 		}
 
@@ -64,10 +64,10 @@ namespace Relativity.Export.Client.NUnit
 			_fileHelper.Setup(x => x.Exists(filePath)).Returns(true);
 			_exportSettings.Overwrite = false;
 
-			//ACT
+			// ACT
 			_instance.CanExport(filePath, string.Empty);
 
-			//ASSERT
+			// ASSERT
 			_status.Verify(x => x.WriteWarning(It.IsAny<string>()));
 		}
 
@@ -79,10 +79,10 @@ namespace Relativity.Export.Client.NUnit
 			_fileHelper.Setup(x => x.Exists(filePath)).Returns(true);
 			_exportSettings.Overwrite = true;
 
-			//ACT
+			// ACT
 			_instance.CanExport(filePath, string.Empty);
 
-			//ASSERT
+			// ASSERT
 			_status.Verify(x => x.WriteStatusLine(EventType.Status, It.IsAny<string>(), false));
 			_fileHelper.Verify(x => x.Delete(filePath));
 		}
@@ -95,10 +95,10 @@ namespace Relativity.Export.Client.NUnit
 			_exportRequestRepository.Setup(repository => repository.AnyRequestForLocation(filePath)).Returns(true);
 			_exportSettings.Overwrite = false;
 
-			//ACT
+			// ACT
 			bool canExport = _instance.CanExport(filePath, string.Empty);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(canExport, Is.False);
 			_status.Verify(x => x.WriteWarning(It.IsAny<string>()));
 		}
@@ -111,10 +111,10 @@ namespace Relativity.Export.Client.NUnit
 			_exportRequestRepository.Setup(repository => repository.AnyRequestForLocation(filePath)).Returns(true);
 			_exportSettings.Overwrite = true;
 
-			//ACT
+			// ACT
 			bool canExport = _instance.CanExport(filePath, string.Empty);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(canExport, Is.False);
 			_status.Verify(x => x.WriteStatusLine(EventType.Status, It.IsAny<string>(), false));
 			_fileHelper.Verify(x => x.Delete(filePath), Times.Never);

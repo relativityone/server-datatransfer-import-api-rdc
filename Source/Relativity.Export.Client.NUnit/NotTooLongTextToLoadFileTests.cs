@@ -8,7 +8,9 @@ namespace Relativity.Export.Client.NUnit
 {
     using System.Text;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
@@ -17,9 +19,7 @@ namespace Relativity.Export.Client.NUnit
 
     using Moq;
 
-    using global::NUnit.Framework;
-
-    using Relativity.ImportExport.UnitTestFramework;
+    using Relativity.Import.Export.TestFramework;
     using Relativity.Logging;
 
     [TestFixture]
@@ -65,10 +65,10 @@ namespace Relativity.Export.Client.NUnit
 
 			DeferredEntry lineEntry = new DeferredEntry();
 
-			//ACT
+			// ACT
 			_instance.HandleLongText(artifact, field, lineEntry);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(lineEntry.GetTextFromEntry(), Is.EqualTo(expectedText));
 		}
 	}

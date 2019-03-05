@@ -11,7 +11,9 @@ namespace Relativity.Export.Client.NUnit
     using System.Text;
     using System.Threading;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
@@ -20,8 +22,6 @@ namespace Relativity.Export.Client.NUnit
 
     using Moq;
 
-    using global::NUnit.Framework;
-
     using Polly;
 
     using Relativity.Logging;
@@ -29,19 +29,14 @@ namespace Relativity.Export.Client.NUnit
     [TestFixture]
 	public class RetryableStreamWriterTestsRetries
 	{
+		private const string _FILE_PATH = "file_path";
 		private RetryableStreamWriter _instance;
-
 		private StreamWriter _streamWriter;
-
 		private Mock<IWritersRetryPolicy> _writersRetryPolicy;
 		private Mock<IStreamFactory> _streamFactory;
 		private Mock<IProcessingStatistics> _processingStatistics;
-
 		private Action<Exception, TimeSpan, int, Context> _retryAction;
-
 		private bool _hasRetryBeenExecuted;
-
-		private const string _FILE_PATH = "file_path";
 
 		[SetUp]
 		public void SetUp()
@@ -73,7 +68,7 @@ namespace Relativity.Export.Client.NUnit
 
 		private void OnRetry(Exception arg1, int arg2)
 		{
-			_retryAction.Invoke(new Exception(), new TimeSpan(), 1, new Context(""));
+			_retryAction.Invoke(new Exception(), TimeSpan.Zero, 1, new Context(string.Empty));
 			_hasRetryBeenExecuted = true;
 		}
 
@@ -82,11 +77,11 @@ namespace Relativity.Export.Client.NUnit
 		{
 			const string loadFileEntry = "loadFileEntry";
 
-			//ACT
+			// ACT
 			_instance.WriteEntry(loadFileEntry, CancellationToken.None);
 			_instance.WriteEntry(loadFileEntry, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_hasRetryBeenExecuted, Is.True);
 			_streamFactory.Verify(x => x.Create(_streamWriter, loadFileEntry.Length, _FILE_PATH, Encoding.Default, true), Times.Once);
 		}

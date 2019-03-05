@@ -3,7 +3,7 @@
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   Represents an abstract load-file base class.
+//   Represents an abstract integration test base class.
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
@@ -14,20 +14,21 @@ namespace Relativity.Import.Client.NUnit.Integration
 	using System.Net;
 	using System.Security.AccessControl;
 	using System.Security.Principal;
-	
-	using kCura.WinEDDS.TApi;
 
 	using global::NUnit.Framework;
 
+	using kCura.WinEDDS.TApi;
+
+	using Relativity.Import.Export.TestFramework;
 	using Relativity.Transfer;
 
 	/// <summary>
-	/// Represents an abstract load-file base class.
+	/// Represents an abstract integration test base class.
 	/// </summary>
 	public abstract class TestBase
 	{
 		/// <summary>
-		/// Gets or sets the temp directory.
+		/// Gets the temp directory.
 		/// </summary>
 		/// <value>
 		/// The temp directory.
@@ -39,7 +40,19 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		/// <summary>
-		/// Gets or sets the test timestamp.
+		/// Gets the integration test parameters.
+		/// </summary>
+		/// <value>
+		/// The <see cref="IntegrationTestParameters"/> value.
+		/// </value>
+		protected IntegrationTestParameters TestParameters
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Gets the test timestamp.
 		/// </summary>
 		/// <value>
 		/// The <see cref="DateTime"/> instance.
@@ -59,6 +72,11 @@ namespace Relativity.Import.Client.NUnit.Integration
 			ServicePointManager.SecurityProtocol =
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
+			this.AssignTestSettings();
+			Assert.That(
+				this.TestParameters.WorkspaceId,
+				Is.Positive,
+				() => "The test workspace must be created or specified in order to run this integration test.");
 			this.Timestamp = DateTime.Now;
 			this.TempDirectory = new TempDirectory { ClearReadOnlyAttributes = true };
 			this.TempDirectory.Create();
@@ -88,7 +106,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 					this.TempDirectory = null;
 				}
 			}
-			
+
 			this.OnTearDown();
 		}
 
@@ -140,7 +158,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		/// <summary>
-		/// Given the standard configuration settings.
+		/// Given the standard configuration parameters.
 		/// </summary>
 		protected static void GivenTheStandardConfigSettings()
 		{
@@ -154,7 +172,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		/// <summary>
-		/// Given the standard configuration settings.
+		/// Given the standard configuration parameters.
 		/// </summary>
 		/// <param name="forceClient">
 		/// Specify which client to force.
@@ -381,6 +399,17 @@ namespace Relativity.Import.Client.NUnit.Integration
 			if (value == 0)
 			{
 				kCura.Utility.Config.ConfigSettings["IOErrorNumberOfRetries"] = 0;
+			}
+		}
+
+		/// <summary>
+		/// Assign the test parameters. This should always be called from methods with <see cref="SetUpAttribute"/> or <see cref="OneTimeSetUpAttribute"/>.
+		/// </summary>
+		protected void AssignTestSettings()
+		{
+			if (this.TestParameters == null)
+			{
+				this.TestParameters = AssemblySetup.TestParameters.DeepCopy();
 			}
 		}
 

@@ -8,11 +8,11 @@ namespace Relativity.Export.Client.NUnit
 {
     using System.Collections.Generic;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings;
 
-    using global::NUnit.Framework;
-    
     using Relativity.Logging;
 
     using ExportConstants = Relativity.Export.Constants;
@@ -34,10 +34,10 @@ namespace Relativity.Export.Client.NUnit
 		{
 			ExportFile exportSettings = new ExportFile(1);
 
-			//ACT
+			// ACT
 			Dictionary<string, int> ordinalLookup = _instance.CreateOrdinalLookup(exportSettings, columnsInOrder);
 
-			//ASSERT
+			// ASSERT
 			for (int i = 0; i < columnsInOrder.Length; i++)
 			{
 				Assert.That(i, Is.EqualTo(ordinalLookup[columnsInOrder[i]]));
@@ -55,10 +55,10 @@ namespace Relativity.Export.Client.NUnit
 				SelectedTextFields = new ViewFieldInfo[1]
 			};
 
-			//ACT
+			// ACT
 			Dictionary<string, int> ordinalLookup = _instance.CreateOrdinalLookup(exportSettings, columnsInOrder);
 
-			//ASSERT
+			// ASSERT
 			for (int i = 0; i < columnsInOrder.Length; i++)
 			{
 				Assert.That(i, Is.EqualTo(ordinalLookup[columnsInOrder[i]]));
@@ -72,9 +72,9 @@ namespace Relativity.Export.Client.NUnit
 
 		private static IEnumerable<string[]> ColumnsInOrderSets()
 		{
-			yield return new[] {"Column"};
-			yield return new[] {"Column1", "Column2", "Column3"};
-			yield return new[] {"Column3", "Column2", "Column1"};
+			yield return new[] { "Column" };
+			yield return new[] { "Column1", "Column2", "Column3" };
+			yield return new[] { "Column3", "Column2", "Column1" };
 			yield return new string[0];
 		}
 	}

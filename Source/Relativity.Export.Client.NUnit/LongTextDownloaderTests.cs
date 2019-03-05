@@ -10,13 +10,13 @@ namespace Relativity.Export.Client.NUnit
     using System.Threading;
     using System.Threading.Tasks;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
     using Relativity.Transfer;

@@ -10,14 +10,14 @@ namespace Relativity.Export.Client.NUnit
     using System.Collections;
     using System.Threading;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
 
@@ -25,15 +25,17 @@ namespace Relativity.Export.Client.NUnit
 	public class ImageFileBatchValidatorTests
 	{
 		private IBatchValidator _instance;
-		protected Mock<IErrorFileWriter> _errorFileWriter;
-		protected Mock<IFileHelper> _fileHelper;
 		private Mock<IStatus> _status;
+
+		protected Mock<IErrorFileWriter> ErrorFileWriter { get; set; }
+
+		protected Mock<IFileHelper> FileHelper { get; set; }
 
 		[SetUp]
 		public void SetUp()
 		{
-			_errorFileWriter = new Mock<IErrorFileWriter>();
-			_fileHelper = new Mock<IFileHelper>();
+			ErrorFileWriter = new Mock<IErrorFileWriter>();
+			FileHelper = new Mock<IFileHelper>();
 			_status = new Mock<IStatus>();
 
 			_instance = CreateSut();
@@ -41,7 +43,7 @@ namespace Relativity.Export.Client.NUnit
 
 		protected virtual IBatchValidator CreateSut()
 		{
-			return new ImageFileBatchValidator(_errorFileWriter.Object, _fileHelper.Object, _status.Object, new NullLogger());
+			return new ImageFileBatchValidator(ErrorFileWriter.Object, FileHelper.Object, _status.Object, new NullLogger());
 		}
 
 		[Test]
@@ -49,11 +51,11 @@ namespace Relativity.Export.Client.NUnit
 		{
 			ObjectExportInfo[] artifacts = { new ObjectExportInfo() };
 
-			//ACT
+			// ACT
 			_instance.ValidateExportedBatch(artifacts, new VolumePredictions[1], CancellationToken.None);
 
-			//ASSERT
-			_errorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+			// ASSERT
+			ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
 			_status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
@@ -65,11 +67,11 @@ namespace Relativity.Export.Client.NUnit
 			ObjectExportInfo[] artifacts = { CreateWithEmptyGuid(successfulRollup) };
 			VolumePredictions[] volumePredictions = { new VolumePredictions() };
 
-			//ACT
+			// ACT
 			_instance.ValidateExportedBatch(artifacts, volumePredictions, CancellationToken.None);
 
-			//ASSERT
-			_errorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+			// ASSERT
+			ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
 			_status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
@@ -82,14 +84,14 @@ namespace Relativity.Export.Client.NUnit
 
 			ObjectExportInfo[] artifacts = { CreateSingleWithLocation(location) };
 
-			_fileHelper.Setup(x => x.Exists(location)).Returns(exists);
-			_fileHelper.Setup(x => x.GetFileSize(location)).Returns(size);
+			FileHelper.Setup(x => x.Exists(location)).Returns(exists);
+			FileHelper.Setup(x => x.GetFileSize(location)).Returns(size);
 
-			//ACT
+			// ACT
 			_instance.ValidateExportedBatch(artifacts, new VolumePredictions[1], CancellationToken.None);
 
-			//ASSERT
-			_errorFileWriter.Verify(x => x.Write(ErrorFileWriter.ExportFileType.Image, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+			// ASSERT
+			ErrorFileWriter.Verify(x => x.Write(kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType.Image, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 			_status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
@@ -108,14 +110,14 @@ namespace Relativity.Export.Client.NUnit
 				}
 			};
 
-			_fileHelper.Setup(x => x.Exists(location)).Returns(true);
-			_fileHelper.Setup(x => x.GetFileSize(location)).Returns(fileSize - 1);
+			FileHelper.Setup(x => x.Exists(location)).Returns(true);
+			FileHelper.Setup(x => x.GetFileSize(location)).Returns(fileSize - 1);
 
-			//ACT
+			// ACT
 			_instance.ValidateExportedBatch(artifacts, volumePredictions, CancellationToken.None);
 
-			//ASSERT
-			_errorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+			// ASSERT
+			ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
 			_status.Verify(x => x.WriteUpdate(It.IsAny<string>(), true), Times.Never);
 		}
 
@@ -134,14 +136,14 @@ namespace Relativity.Export.Client.NUnit
 				}
 			};
 
-			_fileHelper.Setup(x => x.Exists(location)).Returns(true);
-			_fileHelper.Setup(x => x.GetFileSize(location)).Returns(fileSize + 1);
+			FileHelper.Setup(x => x.Exists(location)).Returns(true);
+			FileHelper.Setup(x => x.GetFileSize(location)).Returns(fileSize + 1);
 
-			//ACT
+			// ACT
 			_instance.ValidateExportedBatch(artifacts, volumePredictions, CancellationToken.None);
 
-			//ASSERT
-			_errorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+			// ASSERT
+			ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
 			_status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
@@ -155,17 +157,17 @@ namespace Relativity.Export.Client.NUnit
 
 			ObjectExportInfo[] artifacts = { CreateTwoImagesWithLocations(location1, location2) };
 
-			_fileHelper.Setup(x => x.Exists(location1)).Returns(true);
-			_fileHelper.Setup(x => x.GetFileSize(location1)).Returns(1);
+			FileHelper.Setup(x => x.Exists(location1)).Returns(true);
+			FileHelper.Setup(x => x.GetFileSize(location1)).Returns(1);
 
-			_fileHelper.Setup(x => x.Exists(location2)).Returns(exists);
-			_fileHelper.Setup(x => x.GetFileSize(location2)).Returns(size);
+			FileHelper.Setup(x => x.Exists(location2)).Returns(exists);
+			FileHelper.Setup(x => x.GetFileSize(location2)).Returns(size);
 
-			//ACT
+			// ACT
 			_instance.ValidateExportedBatch(artifacts, new VolumePredictions[1], CancellationToken.None);
 
-			//ASSERT
-			_errorFileWriter.Verify(x => x.Write(ErrorFileWriter.ExportFileType.Image, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+			// ASSERT
+			ErrorFileWriter.Verify(x => x.Write(kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType.Image, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 			_status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
@@ -187,21 +189,19 @@ namespace Relativity.Export.Client.NUnit
 				}
 			};
 
-			_fileHelper.Setup(x => x.Exists(location1)).Returns(true);
-			_fileHelper.Setup(x => x.GetFileSize(location1)).Returns(size1);
+			FileHelper.Setup(x => x.Exists(location1)).Returns(true);
+			FileHelper.Setup(x => x.GetFileSize(location1)).Returns(size1);
 
-			_fileHelper.Setup(x => x.Exists(location2)).Returns(true);
-			_fileHelper.Setup(x => x.GetFileSize(location2)).Returns(size2);
+			FileHelper.Setup(x => x.Exists(location2)).Returns(true);
+			FileHelper.Setup(x => x.GetFileSize(location2)).Returns(size2);
 
-			//ACT
+			// ACT
 			_instance.ValidateExportedBatch(artifacts, volumePredictions, CancellationToken.None);
 
-			//ASSERT
-			_errorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+			// ASSERT
+			ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
 			_status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
-
-		#region Create helpers
 
 		private ObjectExportInfo CreateTwoImagesWithLocations(string location1, string location2)
 		{
@@ -262,7 +262,5 @@ namespace Relativity.Export.Client.NUnit
 				Images = images
 			};
 		}
-
-		#endregion
 	}
 }

@@ -1,19 +1,19 @@
 ﻿// -----------------------------------------------------------------------------------------------------
-// <copyright file="IdentifierExportFileNameProviderTest.cs" company="Relativity ODA LLC">
+// <copyright file="IdentifierExportFileNameProviderTests.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
 namespace Relativity.Export.Client.NUnit
 {
-    using kCura.WinEDDS;
+	using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
 
-    using global::NUnit.Framework;
-
-    public class IdentifierExportFileNameProviderTest
+    public class IdentifierExportFileNameProviderTests
 	{
 		private const int _ARTIFACT_ID = 10;
 		private ExportFile _exportFileMock;
@@ -55,8 +55,5 @@ namespace Relativity.Export.Client.NUnit
 
 			Assert.AreEqual(expected, actual, "GetTextName should call FullTextFileName method with AppendOriginalFileName value and return proper result.");
 		}
-
-
 	}
-
 }

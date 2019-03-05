@@ -8,20 +8,21 @@ namespace Relativity.Export.Client.NUnit
 {
     using System.Threading;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 
     using Moq;
 
-    using global::NUnit.Framework;
-
     using Relativity.Logging;
 
     [TestFixture]
 	public class FileTapiBridgePoolTests
 	{
+		private const int _DOCUMENT_ARTIFACT_TYPE = 10;
 		private FileTapiBridgePool _uut;
 
 		// UUT dependencies
@@ -33,7 +34,6 @@ namespace Relativity.Export.Client.NUnit
 		private Mock<ITransferClientHandler> _transferClientHandler;
 		private Mock<ILog> _logger;
 
-
 		// Indirect dependencies
 		private ExportFile _exportFile;
 		private NativeRepository _nativeRepository;
@@ -42,8 +42,6 @@ namespace Relativity.Export.Client.NUnit
 		private Mock<IFileHelper> _fileHelper;
 		private Mock<IStatus> _status;
 		private kCura.WinEDDS.Statistics _statistics;
-
-		private const int _DOCUMENT_ARTIFACT_TYPE = 10;
 
 		[SetUp]
 		public void Setup()

@@ -10,14 +10,14 @@ namespace Relativity.Export.Client.NUnit
     using System.Linq;
     using System.Threading;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
 
@@ -25,11 +25,9 @@ namespace Relativity.Export.Client.NUnit
 	public class NativeRepositoryBuilderTests
 	{
 		private NativeRepositoryBuilder _instance;
-
 		private NativeRepository _nativeRepository;
-
 		private Mock<ILabelManagerForArtifact> _labelManager;
-		private Mock<IExportRequestBuilder> _ExportRequestBuilder;
+		private Mock<IExportRequestBuilder> _exportRequestBuilder;
 
 		[SetUp]
 		public void SetUp()
@@ -37,9 +35,9 @@ namespace Relativity.Export.Client.NUnit
 			_nativeRepository = new NativeRepository();
 
 			_labelManager = new Mock<ILabelManagerForArtifact>();
-			_ExportRequestBuilder = new Mock<IExportRequestBuilder>();
+			this._exportRequestBuilder = new Mock<IExportRequestBuilder>();
 
-			_instance = new NativeRepositoryBuilder(_nativeRepository, _labelManager.Object, _ExportRequestBuilder.Object, new NullLogger());
+			_instance = new NativeRepositoryBuilder(_nativeRepository, _labelManager.Object, this._exportRequestBuilder.Object, new NullLogger());
 		}
 
 		[Test]
@@ -48,14 +46,14 @@ namespace Relativity.Export.Client.NUnit
 			const string volumeLabel = "volume_label";
 
 			_labelManager.Setup(x => x.GetVolumeLabel(It.IsAny<int>())).Returns(volumeLabel);
-			_ExportRequestBuilder.Setup(x => x.Create(It.IsAny<ObjectExportInfo>(), CancellationToken.None)).Returns(new List<ExportRequest>());
+			this._exportRequestBuilder.Setup(x => x.Create(It.IsAny<ObjectExportInfo>(), CancellationToken.None)).Returns(new List<ExportRequest>());
 
 			ObjectExportInfo artifact = new ObjectExportInfo();
 
-			//ACT
+			// ACT
 			_instance.AddToRepository(artifact, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(artifact.DestinationVolume, Is.EqualTo(volumeLabel));
 		}
 
@@ -68,12 +66,12 @@ namespace Relativity.Export.Client.NUnit
 				ArtifactID = artifactId1
 			};
 
-			_ExportRequestBuilder.Setup(x => x.Create(artifact, CancellationToken.None)).Returns(new List<ExportRequest>());
+			this._exportRequestBuilder.Setup(x => x.Create(artifact, CancellationToken.None)).Returns(new List<ExportRequest>());
 
-			//ACT
+			// ACT
 			_instance.AddToRepository(artifact, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_nativeRepository.GetNative(artifactId1).HasBeenDownloaded, Is.True);
 		}
 
@@ -86,15 +84,15 @@ namespace Relativity.Export.Client.NUnit
 				ArtifactID = artifactId1
 			};
 
-			_ExportRequestBuilder.Setup(x => x.Create(artifact, CancellationToken.None)).Returns(new List<ExportRequest>
+			this._exportRequestBuilder.Setup(x => x.Create(artifact, CancellationToken.None)).Returns(new List<ExportRequest>
 			{
-				new PhysicalFileExportRequest(artifact, "")
+				new PhysicalFileExportRequest(artifact, string.Empty)
 			});
 
-			//ACT
+			// ACT
 			_instance.AddToRepository(artifact, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_nativeRepository.GetNative(artifactId1).HasBeenDownloaded, Is.False);
 			CollectionAssert.IsNotEmpty(_nativeRepository.GetExportRequests());
 			Assert.That(_nativeRepository.GetExportRequests().ToList()[0].ArtifactId, Is.EqualTo(artifact.ArtifactID));
@@ -114,17 +112,17 @@ namespace Relativity.Export.Client.NUnit
 				ArtifactID = artifactId2
 			};
 
-			_ExportRequestBuilder.Setup(x => x.Create(artifact1, CancellationToken.None)).Returns(new List<ExportRequest>
+			this._exportRequestBuilder.Setup(x => x.Create(artifact1, CancellationToken.None)).Returns(new List<ExportRequest>
 			{
-				new PhysicalFileExportRequest(artifact1, "")
+				new PhysicalFileExportRequest(artifact1, string.Empty)
 			});
-			_ExportRequestBuilder.Setup(x => x.Create(artifact2, CancellationToken.None)).Returns(new List<ExportRequest>());
+			this._exportRequestBuilder.Setup(x => x.Create(artifact2, CancellationToken.None)).Returns(new List<ExportRequest>());
 
-			//ACT
+			// ACT
 			_instance.AddToRepository(artifact1, CancellationToken.None);
 			_instance.AddToRepository(artifact2, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			Native native1 = _nativeRepository.GetNative(artifactId1);
 			Native native2 = _nativeRepository.GetNative(artifactId2);
 

@@ -11,19 +11,19 @@ namespace Relativity.Export.Client.NUnit
     using System.Text;
     using System.Threading;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
     using kCura.WinEDDS.Exporters;
-    
+
     using Moq;
 
-    using global::NUnit.Framework;
-
-    using Relativity.ImportExport.UnitTestFramework;
+    using Relativity.Import.Export.TestFramework;
     using Relativity.Logging;
 
     using ExportConstants = Relativity.Export.Constants;
@@ -49,10 +49,10 @@ namespace Relativity.Export.Client.NUnit
 		{
 			_textPrecedence = new QueryFieldFactory().GetArtifactIdField();
 			_exportSettings = new ExportFile(1)
-			{
-				SelectedTextFields = new[] {_textPrecedence},
-				TextFileEncoding = Encoding.Default
-			};
+				                  {
+					                  SelectedTextFields = new[] { _textPrecedence },
+					                  TextFileEncoding = Encoding.Default
+				                  };
 
 			_filePathProvider = new Mock<IFilePathProvider>();
 			_fieldService = new Mock<IFieldService>();
@@ -67,8 +67,15 @@ namespace Relativity.Export.Client.NUnit
 
 			LongTextHelper longTextHelper = new LongTextHelper(_exportSettings, _fieldService.Object, new LongTextRepository(null, new NullLogger()));
 
-			_instance = new LongTextPrecedenceBuilder(_exportSettings, _filePathProvider.Object, _fieldService.Object, longTextHelper, _fileNameProvider.Object, new NullLogger(),
-				_exportFileValidator.Object, _metadataProcessingStatistics.Object);
+			_instance = new LongTextPrecedenceBuilder(
+				_exportSettings,
+				_filePathProvider.Object,
+				_fieldService.Object,
+				longTextHelper,
+				_fileNameProvider.Object,
+				new NullLogger(),
+				_exportFileValidator.Object,
+				_metadataProcessingStatistics.Object);
 		}
 
 		[TearDown]
@@ -96,10 +103,10 @@ namespace Relativity.Export.Client.NUnit
 				}
 			};
 
-			//ACT
+			// ACT
 			IList<LongText> actualResult = _instance.CreateLongText(artifact, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(actualResult.Count, Is.EqualTo(1));
 			Assert.That(actualResult[0].ExportRequest, Is.Null);
 			Assert.That(actualResult[0].RequireDeletion, Is.False);
@@ -125,10 +132,10 @@ namespace Relativity.Export.Client.NUnit
 			_exportFileValidator.Setup(x => x.CanExport(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
 			_filePathProvider.Setup(x => x.GetPathForFile(It.IsAny<string>(), It.IsAny<int>())).Returns(_fileToDelete);
 
-			//ACT
+			// ACT
 			IList<LongText> actualResult = _instance.CreateLongText(artifact, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(actualResult.Count, Is.EqualTo(1));
 			Assert.That(actualResult[0].ExportRequest, Is.Null);
 			Assert.That(actualResult[0].RequireDeletion, Is.False);
@@ -154,10 +161,10 @@ namespace Relativity.Export.Client.NUnit
 				}
 			};
 
-			//ACT
+			// ACT
 			IList<LongText> actualResult = _instance.CreateLongText(artifact, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(actualResult.Count, Is.EqualTo(1));
 			Assert.That(actualResult[0].ExportRequest, Is.Not.Null);
 			Assert.That(actualResult[0].RequireDeletion, Is.True);
@@ -182,10 +189,10 @@ namespace Relativity.Export.Client.NUnit
 			_exportFileValidator.Setup(x => x.CanExport(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
 			_filePathProvider.Setup(x => x.GetPathForFile(It.IsAny<string>(), It.IsAny<int>())).Returns(_fileToDelete);
 
-			//ACT
+			// ACT
 			IList<LongText> actualResult = _instance.CreateLongText(artifact, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(actualResult.Count, Is.EqualTo(1));
 			Assert.That(actualResult[0].ExportRequest, Is.Not.Null);
 			Assert.That(actualResult[0].RequireDeletion, Is.False);
@@ -210,10 +217,10 @@ namespace Relativity.Export.Client.NUnit
 			_exportFileValidator.Setup(x => x.CanExport(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
 			_filePathProvider.Setup(x => x.GetPathForFile(It.IsAny<string>(), It.IsAny<int>())).Returns(_fileToDelete);
 
-			//ACT
+			// ACT
 			IList<LongText> actualResult = _instance.CreateLongText(artifact, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(actualResult.Count, Is.EqualTo(1));
 			Assert.That(actualResult[0].ExportRequest, Is.Null);
 			Assert.That(actualResult[0].RequireDeletion, Is.False);

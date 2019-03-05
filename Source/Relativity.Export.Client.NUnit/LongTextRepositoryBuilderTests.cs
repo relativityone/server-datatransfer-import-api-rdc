@@ -9,13 +9,13 @@ namespace Relativity.Export.Client.NUnit
     using System.Collections.Generic;
     using System.Threading;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
 
@@ -39,7 +39,11 @@ namespace Relativity.Export.Client.NUnit
 
 			_longTextRepository = new LongTextRepository(null, new NullLogger());
 
-			_instance = new LongTextRepositoryBuilder(_longTextPrecedenceBuilder.Object, _longTextFieldBuilder.Object, _longTextIproFullTextBuilder.Object, _longTextRepository,
+			_instance = new LongTextRepositoryBuilder(
+				_longTextPrecedenceBuilder.Object,
+				_longTextFieldBuilder.Object,
+				_longTextIproFullTextBuilder.Object,
+				_longTextRepository,
 				new NullLogger());
 		}
 
@@ -55,15 +59,28 @@ namespace Relativity.Export.Client.NUnit
 
 			ObjectExportInfo artifact = new ObjectExportInfo();
 
-			_longTextPrecedenceBuilder.Setup(x => x.CreateLongText(artifact, CancellationToken.None)).Returns(new List<LongText> {longText1, longText3, longText5, longText5});
-			_longTextFieldBuilder.Setup(x => x.CreateLongText(artifact, CancellationToken.None)).Returns(new List<LongText> {longText2, longText4});
-			_longTextIproFullTextBuilder.Setup(x => x.CreateLongText(artifact, CancellationToken.None)).Returns(new List<LongText> {longText4, longText6});
+			_longTextPrecedenceBuilder.Setup(x => x.CreateLongText(artifact, CancellationToken.None))
+				.Returns(new List<LongText> { longText1, longText3, longText5, longText5 });
+			_longTextFieldBuilder.Setup(x => x.CreateLongText(artifact, CancellationToken.None))
+				.Returns(new List<LongText> { longText2, longText4 });
+			_longTextIproFullTextBuilder.Setup(x => x.CreateLongText(artifact, CancellationToken.None))
+				.Returns(new List<LongText> { longText4, longText6 });
 
-			//ACT
+			// ACT
 			_instance.AddToRepository(artifact, CancellationToken.None);
 
-			//ASSERT
-			CollectionAssert.AreEquivalent(new List<LongText> {longText1, longText2, longText3, longText4, longText5, longText6}, _longTextRepository.GetLongTexts());
+			// ASSERT
+			CollectionAssert.AreEquivalent(
+				new List<LongText>
+					{
+						longText1,
+						longText2,
+						longText3,
+						longText4,
+						longText5,
+						longText6
+					},
+				_longTextRepository.GetLongTexts());
 		}
 	}
 }

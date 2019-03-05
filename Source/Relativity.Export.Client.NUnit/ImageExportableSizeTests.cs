@@ -8,23 +8,21 @@ namespace Relativity.Export.Client.NUnit
 {
     using System;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize;
     using kCura.WinEDDS.Exporters;
-
-    using global::NUnit.Framework;
 
     [TestFixture]
 	public class ImageExportableSizeTests
 	{
-		private ExportFile _exportSettings;
-		private VolumePredictions _volumePredictions;
-
-		private ImageExportableSize _instance;
-
 		private const long _IMAGE_FILE_SIZE = 505718;
 		private const long _IMAGE_FILE_COUNT = 959625;
 		private const double _PDF_MERGE_SIZE_ERROR_THRESHOLD = 1.03;
+		private ExportFile _exportSettings;
+		private VolumePredictions _volumePredictions;
+		private ImageExportableSize _instance;
 
 		[SetUp]
 		public void SetUp()
@@ -49,10 +47,10 @@ namespace Relativity.Export.Client.NUnit
 			_exportSettings.ExportImages = false;
 			_exportSettings.VolumeInfo.CopyImageFilesFromRepository = true;
 
-			//ACT
+			// ACT
 			_instance.CalculateImagesSize(_volumePredictions);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_volumePredictions.ImageFileCount, Is.Zero);
 			Assert.That(_volumePredictions.ImageFilesSize, Is.Zero);
 		}
@@ -63,10 +61,10 @@ namespace Relativity.Export.Client.NUnit
 			_exportSettings.ExportImages = true;
 			_exportSettings.VolumeInfo.CopyImageFilesFromRepository = false;
 
-			//ACT
+			// ACT
 			_instance.CalculateImagesSize(_volumePredictions);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_volumePredictions.ImageFileCount, Is.Zero);
 			Assert.That(_volumePredictions.ImageFilesSize, Is.Zero);
 		}
@@ -80,10 +78,10 @@ namespace Relativity.Export.Client.NUnit
 			_exportSettings.VolumeInfo.CopyImageFilesFromRepository = true;
 			_exportSettings.TypeOfImage = imageType;
 
-			//ACT
+			// ACT
 			_instance.CalculateImagesSize(_volumePredictions);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_volumePredictions.ImageFilesSize, Is.EqualTo(_IMAGE_FILE_SIZE));
 		}
 
@@ -94,10 +92,10 @@ namespace Relativity.Export.Client.NUnit
 			_exportSettings.VolumeInfo.CopyImageFilesFromRepository = true;
 			_exportSettings.TypeOfImage = ExportFile.ImageType.Pdf;
 
-			//ACT
+			// ACT
 			_instance.CalculateImagesSize(_volumePredictions);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_volumePredictions.ImageFilesSize, Is.EqualTo(Math.Ceiling(_IMAGE_FILE_SIZE * _PDF_MERGE_SIZE_ERROR_THRESHOLD)));
 		}
 
@@ -110,10 +108,10 @@ namespace Relativity.Export.Client.NUnit
 			_exportSettings.VolumeInfo.CopyImageFilesFromRepository = true;
 			_exportSettings.TypeOfImage = imageType;
 
-			//ACT
+			// ACT
 			_instance.CalculateImagesSize(_volumePredictions);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_volumePredictions.ImageFileCount, Is.EqualTo(1));
 		}
 
@@ -124,10 +122,10 @@ namespace Relativity.Export.Client.NUnit
 			_exportSettings.VolumeInfo.CopyImageFilesFromRepository = true;
 			_exportSettings.TypeOfImage = ExportFile.ImageType.SinglePage;
 
-			//ACT
+			// ACT
 			_instance.CalculateImagesSize(_volumePredictions);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_volumePredictions.ImageFileCount, Is.EqualTo(_IMAGE_FILE_COUNT));
 		}
 
@@ -141,10 +139,10 @@ namespace Relativity.Export.Client.NUnit
 			_exportSettings.TypeOfImage = imageType;
 			_volumePredictions.ImageFileCount = 0;
 
-			//ACT
+			// ACT
 			_instance.CalculateImagesSize(_volumePredictions);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_volumePredictions.ImageFileCount, Is.Zero);
 		}
 	}

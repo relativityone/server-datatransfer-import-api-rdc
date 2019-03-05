@@ -6,11 +6,11 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using kCura.WinEDDS;
+	using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
     using kCura.WinEDDS.Exporters;
-
-    using global::NUnit.Framework;
 
     [TestFixture]
 	public class SubdirectoryManagerTests
@@ -43,13 +43,13 @@ namespace Relativity.Export.Client.NUnit
 				NativeFileCount = 10
 			};
 
-			//ACT
+			// ACT
 			_instance.MoveNext(predictions);
 			_instance.MoveNext(predictions);
 
 			_instance.RestartSubdirectoryCounting();
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_instance.CurrentSubdirectoryNumber, Is.EqualTo(startNumber));
 		}
 
@@ -71,11 +71,11 @@ namespace Relativity.Export.Client.NUnit
 				TextFileCount = text
 			};
 
-			//ACT
+			// ACT
 			_instance.MoveNext(predictions);
 			_instance.MoveNext(predictions);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_instance.CurrentSubdirectoryNumber, Is.EqualTo(startNumber + 1));
 		}
 
@@ -106,12 +106,12 @@ namespace Relativity.Export.Client.NUnit
 				TextFileCount = 2
 			};
 
-			//ACT
+			// ACT
 			_instance.MoveNext(predictionsNatives);
 			_instance.MoveNext(predictionsImages);
 			_instance.MoveNext(predictionsText);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_instance.CurrentSubdirectoryNumber, Is.EqualTo(startNumber));
 		}
 
@@ -133,10 +133,10 @@ namespace Relativity.Export.Client.NUnit
 				TextFileCount = text
 			};
 
-			//ACT
+			// ACT
 			_instance.MoveNext(predictions);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_instance.CurrentSubdirectoryNumber, Is.EqualTo(startNumber));
 		}
 
@@ -158,7 +158,7 @@ namespace Relativity.Export.Client.NUnit
 				TextFileCount = text
 			};
 
-			//ACT
+			// ACT
 			_instance.MoveNext(predictions);
 			_instance.MoveNext(predictions);
 
@@ -166,7 +166,7 @@ namespace Relativity.Export.Client.NUnit
 
 			_instance.MoveNext(predictions);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_instance.CurrentSubdirectoryNumber, Is.EqualTo(startNumber));
 		}
 	}

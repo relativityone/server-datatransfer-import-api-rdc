@@ -289,18 +289,21 @@ build/
 /paket-files
 /Logs/*
 /PDBs/*
-/Source/Relativity.ImportAPI-RDC.sln.DotSettings
 errors.xml
 
 # Ignore everything in BuildTools
 buildtools/*
 
+# But not these files...
+!buildtools/AllErrors.ruleset
+!buildtools/Legacy.ruleset
+!buildtools/CustomDictionary.xml
+!buildtools/packages.config
+!buildtools/stylecop.json
+!buildtools/Test-PackageUpgrade.ps1
+
 # Outside In nuget package
 **/oi/
 
-# But not these files...
-!buildtools/packages.config
-!buildtools/AllErrors.ruleset
-!buildtools/CustomDictionary.xml
-!buildtools/Test-PackageUpgrade.ps1
-/.vscode/settings.json
+# Visual Studio Code
+/.vscode/*

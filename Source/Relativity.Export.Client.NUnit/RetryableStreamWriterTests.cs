@@ -11,7 +11,9 @@ namespace Relativity.Export.Client.NUnit
     using System.Text;
     using System.Threading;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
@@ -19,8 +21,6 @@ namespace Relativity.Export.Client.NUnit
 
     using Moq;
 
-    using global::NUnit.Framework;
-    
     using Polly;
     using Polly.NoOp;
 
@@ -29,15 +29,12 @@ namespace Relativity.Export.Client.NUnit
     [TestFixture]
 	public class RetryableStreamWriterTests
 	{
+		private const string _FILE_PATH = "file_path";
 		private RetryableStreamWriter _instance;
-
 		private StreamWriter _streamWriter;
-
 		private Mock<IWritersRetryPolicy> _writersRetryPolicy;
 		private Mock<IStreamFactory> _streamFactory;
 		private Mock<IProcessingStatistics> _processingStatistics;
-
-		private const string _FILE_PATH = "file_path";
 
 		[SetUp]
 		public void SetUp()
@@ -57,18 +54,17 @@ namespace Relativity.Export.Client.NUnit
 			_processingStatistics = new Mock<IProcessingStatistics>();
 			Mock<IStatus> status = new Mock<IStatus>();
 
-
 			_instance = new RetryableStreamWriter(_writersRetryPolicy.Object, _streamFactory.Object, destinationPath.Object, _processingStatistics.Object, status.Object, new NullLogger());
 		}
 
 		[Test]
 		public void ItShouldSkipRestoringWhenStreamHasNotBeenInitialized()
 		{
-			//ACT
+			// ACT
 			_instance.SaveState();
 			_instance.RestoreLastState();
 
-			//ASSERT
+			// ASSERT
 			_streamFactory.Verify(x => x.Create(It.IsAny<StreamWriter>(), It.IsAny<long>(), _FILE_PATH, Encoding.Default, true), Times.Never);
 		}
 
@@ -77,23 +73,23 @@ namespace Relativity.Export.Client.NUnit
 		{
 			const string loadFileEntry = "loadFileEntry";
 
-			//ACT
+			// ACT
 			_instance.WriteEntry(loadFileEntry, CancellationToken.None);
 			_instance.SaveState();
 			_instance.WriteEntry("additional_entry", CancellationToken.None);
 			_instance.RestoreLastState();
 
-			//ASSERT
+			// ASSERT
 			_streamFactory.Verify(x => x.Create(_streamWriter, loadFileEntry.Length, _FILE_PATH, Encoding.Default, true), Times.Once);
 		}
 
 		[Test]
 		public void ItShouldUpdateStatistics()
 		{
-			//ACT
+			// ACT
 			_instance.WriteEntry("load_file_entry", CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			_processingStatistics.Verify(x => x.UpdateStatisticsForFile(_FILE_PATH), Times.Once);
 		}
 	}

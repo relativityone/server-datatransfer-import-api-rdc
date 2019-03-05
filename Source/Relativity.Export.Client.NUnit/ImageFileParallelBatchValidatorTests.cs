@@ -6,9 +6,9 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
+	using global::NUnit.Framework;
 
-    using global::NUnit.Framework;
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
 
     using Relativity.Logging;
 
@@ -17,7 +17,7 @@ namespace Relativity.Export.Client.NUnit
 	{
 		protected override IBatchValidator CreateSut()
 		{
-			return new ImageFileParallelBatchValidator(_errorFileWriter.Object, _fileHelper.Object, new NullLogger());
+			return new ImageFileParallelBatchValidator(ErrorFileWriter.Object, FileHelper.Object, new NullLogger());
 		}
 	}
 }

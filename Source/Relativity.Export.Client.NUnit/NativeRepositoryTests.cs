@@ -8,11 +8,11 @@ namespace Relativity.Export.Client.NUnit
 {
     using System.Collections.Generic;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
     using kCura.WinEDDS.Exporters;
-
-    using global::NUnit.Framework;
 
     [TestFixture]
 	public class NativeRepositoryTests
@@ -36,12 +36,12 @@ namespace Relativity.Export.Client.NUnit
 		[Test]
 		public void ItShouldGetNativeByArtifactId()
 		{
-			//ACT
+			// ACT
 			Native native1 = _instance.GetNative(1);
 			Native native2 = _instance.GetNative(2);
 			Native native3 = _instance.GetNative(3);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(native1, Is.EqualTo(_natives[0]));
 			Assert.That(native2, Is.EqualTo(_natives[1]));
 			Assert.That(native3, Is.EqualTo(_natives[2]));
@@ -50,10 +50,10 @@ namespace Relativity.Export.Client.NUnit
 		[Test]
 		public void ItShouldGetAllNatives()
 		{
-			//ACT
+			// ACT
 			IList<Native> natives = _instance.GetNatives();
 
-			//ASSERT
+			// ASSERT
 			CollectionAssert.AreEquivalent(_natives, natives);
 		}
 
@@ -66,22 +66,22 @@ namespace Relativity.Export.Client.NUnit
 				_natives[2].ExportRequest
 			};
 
-			//ACT
+			// ACT
 			IEnumerable<ExportRequest> exportRequests = _instance.GetExportRequests();
 
-			//ASSERT
+			// ASSERT
 			CollectionAssert.AreEquivalent(expectedExportRequests, exportRequests);
 		}
 
 		[Test]
 		public void ItShouldGetNativeByUniqueId()
 		{
-			//ACT
+			// ACT
 			Native native1 = _instance.GetByLineNumber(1);
 			Native native2 = _instance.GetByLineNumber(2);
 			Native native3 = _instance.GetByLineNumber(3);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(native1, Is.EqualTo(_natives[0]));
 			Assert.That(native2, Is.Null);
 			Assert.That(native3, Is.EqualTo(_natives[2]));
@@ -90,15 +90,13 @@ namespace Relativity.Export.Client.NUnit
 		[Test]
 		public void ItShouldClearRepository()
 		{
-			//ACT
+			// ACT
 			_instance.Clear();
 			IList<Native> natives = _instance.GetNatives();
 
-			//ASSERT
+			// ASSERT
 			CollectionAssert.IsEmpty(natives);
 		}
-
-		#region DataSet
 
 		private List<Native> CreateDataSet()
 		{
@@ -109,7 +107,7 @@ namespace Relativity.Export.Client.NUnit
 			Native native1 = new Native(artifact1)
 			{
 				HasBeenDownloaded = false,
-				ExportRequest = new PhysicalFileExportRequest(artifact1, "")
+				ExportRequest = new PhysicalFileExportRequest(artifact1, string.Empty)
 				{
 					FileName = "filename_1",
 					Order = 1
@@ -125,7 +123,6 @@ namespace Relativity.Export.Client.NUnit
 				HasBeenDownloaded = true
 			};
 
-
 			ObjectExportInfo artifact3 = new ObjectExportInfo
 			{
 				ArtifactID = 3
@@ -133,17 +130,14 @@ namespace Relativity.Export.Client.NUnit
 			Native native3 = new Native(artifact3)
 			{
 				HasBeenDownloaded = false,
-				ExportRequest = new PhysicalFileExportRequest(artifact3, "")
+				ExportRequest = new PhysicalFileExportRequest(artifact3, string.Empty)
 				{
 					FileName = "filename_3",
 					Order = 3
 				}
 			};
 
-
-			return new List<Native> {native1, native2, native3};
+			return new List<Native> { native1, native2, native3 };
 		}
-
-		#endregion
 	}
 }

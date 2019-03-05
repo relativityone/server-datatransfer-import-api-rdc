@@ -9,24 +9,22 @@ namespace Relativity.Export.Client.NUnit
     using System.IO;
     using System.Text;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
 
     [TestFixture]
 	public class FromFieldToLoadFileWriterTests
 	{
-		private FromFieldToLoadFileWriter _instance;
-
-		private MemoryStream _memoryStream;
-		private StreamWriter _streamWriter;
-
 		private const char _QUOTE_DELIMITER = 'Q';
 		private const char _NEWLINE_DELIMITER = 'N';
+		private FromFieldToLoadFileWriter _instance;
+		private MemoryStream _memoryStream;
+		private StreamWriter _streamWriter;
 
 		[SetUp]
 		public void SetUp()
@@ -49,10 +47,10 @@ namespace Relativity.Export.Client.NUnit
 		[TestCase("", "")]
 		public void ItShouldWriteFormattedText(string text, string expectedResult)
 		{
-			//ACT
+			// ACT
 			_instance.WriteLongTextFileToDatFile(_streamWriter, text, Encoding.Default);
 
-			//ASSERT
+			// ASSERT
 			string actualResult = GetWrittenText();
 			Assert.That(actualResult, Is.EqualTo(expectedResult));
 		}

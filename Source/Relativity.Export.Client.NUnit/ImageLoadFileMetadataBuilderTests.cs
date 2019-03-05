@@ -9,13 +9,13 @@ namespace Relativity.Export.Client.NUnit
     using System.Collections;
     using System.Threading;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
 
@@ -60,12 +60,13 @@ namespace Relativity.Export.Client.NUnit
 				}
 			};
 
-			//ACT
-			_instance.CreateLoadFileEntries(new[] {artifact}, CancellationToken.None);
+			// ACT
+			_instance.CreateLoadFileEntries(new[] { artifact }, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			_forArtifactBuilder.Verify(x => x.WriteLoadFileEntry(artifact, _writer.Object, CancellationToken.None), expectingCallToSuccessfulRollupBuilder ? Times.Once() : Times.Never());
-			_unsuccessfulRollupForArtifactBuilder.Verify(x => x.WriteLoadFileEntry(artifact, _writer.Object, CancellationToken.None),
+			_unsuccessfulRollupForArtifactBuilder.Verify(
+				x => x.WriteLoadFileEntry(artifact, _writer.Object, CancellationToken.None),
 				expectingCallToSuccessfulRollupBuilder ? Times.Never() : Times.Once());
 		}
 
@@ -93,12 +94,16 @@ namespace Relativity.Export.Client.NUnit
 				}
 			};
 
-			//ACT
-			_instance.CreateLoadFileEntries(new[] {artifact1, artifact2}, CancellationToken.None);
+			// ACT
+			_instance.CreateLoadFileEntries(new[] { artifact1, artifact2 }, CancellationToken.None);
 
-			//ASSERT
-			_forArtifactBuilder.Verify(x => x.WriteLoadFileEntry(artifact1, _writer.Object, CancellationToken.None), Times.Once);
-			_unsuccessfulRollupForArtifactBuilder.Verify(x => x.WriteLoadFileEntry(artifact2, _writer.Object, CancellationToken.None), Times.Once);
+			// ASSERT
+			_forArtifactBuilder.Verify(
+				x => x.WriteLoadFileEntry(artifact1, _writer.Object, CancellationToken.None),
+				Times.Once);
+			_unsuccessfulRollupForArtifactBuilder.Verify(
+				x => x.WriteLoadFileEntry(artifact2, _writer.Object, CancellationToken.None),
+				Times.Once);
 		}
 
 		[Test]
@@ -109,8 +114,8 @@ namespace Relativity.Export.Client.NUnit
 				Images = new ArrayList()
 			};
 
-			//ACT & ASSERT
-			Assert.DoesNotThrow(() => _instance.CreateLoadFileEntries(new[] {artifact}, CancellationToken.None));
+			// ACT & ASSERT
+			Assert.DoesNotThrow(() => _instance.CreateLoadFileEntries(new[] { artifact }, CancellationToken.None));
 
 			_forArtifactBuilder.Verify(x => x.WriteLoadFileEntry(artifact, _writer.Object, CancellationToken.None), Times.Never);
 			_unsuccessfulRollupForArtifactBuilder.Verify(x => x.WriteLoadFileEntry(artifact, _writer.Object, CancellationToken.None), Times.Never);

@@ -13,11 +13,11 @@ namespace Relativity.Export.Client.NUnit
 
     public class LongTextFilePathProviderTests : FilePathProviderTests
 	{
+		protected override string Subdirectory => "text_sub";
+
 		protected override FilePathProvider CreateInstance(IDirectoryHelper directoryHelper, ILabelManagerForArtifact labelManager, ExportFile exportSettings)
 		{
 			return new LongTextFilePathProvider(labelManager, exportSettings, directoryHelper, new NullLogger());
 		}
-
-		protected override string Subdirectory => "text_sub";
 	}
 }

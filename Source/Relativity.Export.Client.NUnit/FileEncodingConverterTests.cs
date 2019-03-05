@@ -10,11 +10,11 @@ namespace Relativity.Export.Client.NUnit
     using System.Text;
     using System.Threading;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
 
@@ -41,10 +41,10 @@ namespace Relativity.Export.Client.NUnit
 			Encoding sourceEncoding = Encoding.Unicode;
 			Encoding destinationEncoding = Encoding.UTF8;
 
-			//ACT
+			// ACT
 			_instance.Convert(filePath, sourceEncoding, destinationEncoding, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			_encodingRewrite.Verify(x => x.RewriteFile(filePath, GetTempFilePath(filePath), sourceEncoding, destinationEncoding, CancellationToken.None));
 			_fileHelper.Verify(x => x.Delete(filePath));
 			_fileHelper.Verify(x => x.Move(GetTempFilePath(filePath), filePath));
@@ -60,7 +60,7 @@ namespace Relativity.Export.Client.NUnit
 			_encodingRewrite.Setup(x => x.RewriteFile(filePath, GetTempFilePath(filePath), sourceEncoding, destinationEncoding, CancellationToken.None)).Throws<Exception>();
 			_fileHelper.Setup(x => x.Exists(GetTempFilePath(filePath))).Returns(true);
 
-			//ACT & ASSERT
+			// ACT & ASSERT
 			Assert.Throws<Exception>(() => _instance.Convert(filePath, sourceEncoding, destinationEncoding, CancellationToken.None));
 
 			_fileHelper.Verify(x => x.Delete(GetTempFilePath(filePath)));

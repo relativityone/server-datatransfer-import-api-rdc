@@ -13,11 +13,11 @@ namespace Relativity.Export.Client.NUnit
 
     public class NativeFilePathProviderTests : FilePathProviderTests
 	{
+		protected override string Subdirectory => "native_sub";
+
 		protected override FilePathProvider CreateInstance(IDirectoryHelper directoryHelper, ILabelManagerForArtifact labelManager, ExportFile exportSettings)
 		{
 			return new NativeFilePathProvider(labelManager, exportSettings, directoryHelper, new NullLogger());
 		}
-
-		protected override string Subdirectory => "native_sub";
 	}
 }

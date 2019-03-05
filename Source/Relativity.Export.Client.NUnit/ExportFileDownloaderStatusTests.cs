@@ -6,14 +6,14 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using kCura.WinEDDS;
+	using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
     using kCura.WinEDDS.TApi;
 
-    using Moq;
-
-    using global::NUnit.Framework;
+	using Moq;
 
     using Relativity.Logging;
 
@@ -46,10 +46,10 @@ namespace Relativity.Export.Client.NUnit
 			_instance.Attach(_tapiBridge.Object);
 			_instance.UploadModeChangeEvent += s => mode = s;
 
-			//ACT
+			// ACT
 			_tapiBridge.Raise(x => x.TapiClientChanged += null, new TapiClientEventArgs(clientName, 0));
 
-			//ASSERT
+			// ASSERT
 			Assert.That(mode, Is.EqualTo(type.ToString()));
 			Assert.That(_instance.UploaderType, Is.EqualTo(type));
 		}
@@ -64,14 +64,14 @@ namespace Relativity.Export.Client.NUnit
 			_instance.Attach(_tapiBridge.Object);
 			_instance.UploadModeChangeEvent += s => mode = s;
 
-			//ACT
+			// ACT
 			_tapiBridge.Raise(x => x.TapiClientChanged += null, new TapiClientEventArgs(aspera, 0));
 
 			_instance.Detach();
 
 			_tapiBridge.Raise(x => x.TapiClientChanged += null, new TapiClientEventArgs(web, 0));
 
-			//ASSERT
+			// ASSERT
 			Assert.That(mode, Is.EqualTo(aspera));
 			Assert.That(_instance.UploaderType, Is.EqualTo(FileDownloader.FileAccessType.Aspera));
 		}

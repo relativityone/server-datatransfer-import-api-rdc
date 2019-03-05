@@ -12,13 +12,13 @@ namespace Relativity.Import.Client.NUnit.Integration
 	using System;
 	using System.Net;
 
+	using global::NUnit.Framework;
+
 	using kCura.WinEDDS.TApi;
 
 	using Moq;
 
-	using global::NUnit.Framework;
-
-	using Relativity.ImportExport.UnitTestFramework;
+	using Relativity.Import.Export.TestFramework;
 	using Relativity.Transfer;
 
 	/// <summary>
@@ -62,6 +62,74 @@ namespace Relativity.Import.Client.NUnit.Integration
 		private int fatalErrors;
 
 		/// <summary>
+		/// Gets the cookie container.
+		/// </summary>
+		/// <value>
+		/// The <see cref="CookieContainer"/> instance.
+		/// </value>
+		protected CookieContainer CookieContainer
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Gets the maximum number of files per folder.
+		/// </summary>
+		/// <value>
+		/// The file count.
+		/// </value>
+		protected int MaxFilesPerFolder
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Gets the native file transfer class.
+		/// </summary>
+		protected abstract TapiBridgeBase NativeFileTransfer
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Gets the target path.
+		/// </summary>
+		/// <value>
+		/// The full path.
+		/// </value>
+		protected string TargetPath
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Gets the mock transfer log.
+		/// </summary>
+		/// <value>
+		/// The mock <see cref="ITransferLog"/> instance.
+		/// </value>
+		protected Mock<ITransferLog> TransferLog
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Gets the list of source paths.
+		/// </summary>
+		/// <value>
+		/// The full paths.
+		/// </value>
+		protected System.Collections.Generic.IList<string> SourcePaths
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// The test setup.
 		/// </summary>
 		protected override void OnSetup()
@@ -82,71 +150,6 @@ namespace Relativity.Import.Client.NUnit.Integration
 		{
 			base.OnTearDown();
 			this.NativeFileTransfer?.Dispose();
-		}
-
-		/// <summary>
-		/// The cookie container.
-		/// </summary>
-		/// <value>
-		/// The <see cref="CookieContainer"/> instance.
-		/// </value>
-		protected CookieContainer CookieContainer
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// The maximum number of files per folder.
-		/// </summary>
-		/// <value>
-		/// The file count.
-		/// </value>
-		protected int MaxFilesPerFolder
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// The native file transfer class.
-		/// </summary>
-		protected abstract TapiBridgeBase NativeFileTransfer
-		{
-			get;
-		}
-
-		/// <summary>
-		/// The target path.
-		/// </summary>
-		/// <value>
-		/// The full path.
-		/// </value>
-		protected string TargetPath
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// The mock transfer log.
-		/// </summary>
-		/// <value>
-		/// The mock <see cref="ITransferLog"/> instance.
-		/// </value>
-		protected Mock<ITransferLog> TransferLog
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// The list of source paths.
-		/// </summary>
-		protected System.Collections.Generic.IList<string> SourcePaths
-		{
-			get;
-			private set;
 		}
 
 		/// <summary>
@@ -186,7 +189,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 
 			for (var i = 0; i < this.fileCount; i++)
 			{
-				var file = TestHelper.NextTextFile(
+				var file = RandomHelper.NextTextFile(
 					MinTestFileLength,
 					MaxTestFileLength,
 					directory,

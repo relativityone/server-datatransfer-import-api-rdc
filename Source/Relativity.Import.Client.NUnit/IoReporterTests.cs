@@ -13,26 +13,28 @@ namespace Relativity.Import.Client.NUnit
     using System.Collections;
 	using System.Threading;
 
-    using kCura.WinEDDS.TApi;
-
-    using Moq;
-
     using global::NUnit.Framework;
 
-    using global::Relativity.Logging;
+	using kCura.WinEDDS.TApi;
 
+	using Moq;
+
+    using Relativity.Logging;
 
     /// <summary>
     /// Represents <see cref="IoReporter"/> tests.
     /// </summary>
     [TestFixture]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Microsoft.Design", 
+        "Microsoft.Design",
         "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
         Justification = "The test class handles the disposal.")]
     public class IoReporterTests
 	{
-        private IIoReporter ioReporterInstance;
+		private const string TestFileName = "TestFileName";
+		private const string ExpectedDefaultExceptionMessage = "Expected exception message";
+		private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+		private IIoReporter ioReporterInstance;
         private Mock<IFileSystem> mockFileSystem;
         private Mock<IWaitAndRetryPolicy> mockWaitAndRetryPolicy;
         private IWaitAndRetryPolicy waitAndRetry;
@@ -41,9 +43,6 @@ namespace Relativity.Import.Client.NUnit
         private long actualFileLength;
         private Func<int, TimeSpan> actualRetryDuractionFunc = null;
         private Exception expectedException;
-		private const string _FILE_NAME = "TestFileName";
-		private const string _EXPECTED_DEFAULT_EXCEPTION_MESSAGE = "Expected exception message";
-		private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 		private bool disableNativeLocationValidation;
 		private RetryOptions retryOptions;
 		private bool actualFileExists;
@@ -61,29 +60,29 @@ namespace Relativity.Import.Client.NUnit
 				const int NoExpectedRetryCount = 0;
 
 				// Test Case: exception type should never retry.
-				yield return new TestCaseData(RetryOptions.All, false, new InvalidOperationException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, false, new InvalidOperationException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.None, false, new InvalidOperationException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, false, new InvalidOperationException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, false, new InvalidOperationException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.None, false, new InvalidOperationException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
 
 				// Test Case: disk full scenario 1 follow the options.
-				yield return new TestCaseData(RetryOptions.All, false, new System.IO.IOException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE, RetryExceptionHelper.DiskFullHResultHResult), MaxExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, false, new System.IO.IOException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE, RetryExceptionHelper.DiskFullHResultHResult), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.DiskFull, false, new System.IO.IOException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE, RetryExceptionHelper.DiskFullHResultHResult), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, RetryExceptionHelper.DiskFullHResultHResult), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, RetryExceptionHelper.DiskFullHResultHResult), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.DiskFull, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, RetryExceptionHelper.DiskFullHResultHResult), MaxExpectedRetryCount);
 
 				// Test Case: disk full scenario 2 follow the options.
-				yield return new TestCaseData(RetryOptions.All, false, new System.IO.IOException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE, RetryExceptionHelper.HandleDiskFullHResult), MaxExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.DiskFull, false, new System.IO.IOException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE, RetryExceptionHelper.HandleDiskFullHResult), MaxExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, false, new System.IO.IOException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE, RetryExceptionHelper.HandleDiskFullHResult), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, RetryExceptionHelper.HandleDiskFullHResult), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.DiskFull, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, RetryExceptionHelper.HandleDiskFullHResult), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, RetryExceptionHelper.HandleDiskFullHResult), NoExpectedRetryCount);
 
 				// Test Case: file does not exist follow the options.
-				yield return new TestCaseData(RetryOptions.All, false, new System.IO.FileNotFoundException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE), MaxExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.FileNotFound, false, new System.IO.FileNotFoundException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE), MaxExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, false, new System.IO.FileNotFoundException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, false, new System.IO.FileNotFoundException(ExpectedDefaultExceptionMessage), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.FileNotFound, false, new System.IO.FileNotFoundException(ExpectedDefaultExceptionMessage), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, false, new System.IO.FileNotFoundException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
 
 				// Test Case: path too long should never retry.
-				yield return new TestCaseData(RetryOptions.All, false, new System.IO.PathTooLongException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, false, new System.IO.PathTooLongException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.None, false, new System.IO.PathTooLongException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, false, new System.IO.PathTooLongException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, false, new System.IO.PathTooLongException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.None, false, new System.IO.PathTooLongException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
 
 				// Test Case: illegal characters in the path should never retry.
 				yield return new TestCaseData(RetryOptions.None, false, new ArgumentException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
@@ -100,10 +99,10 @@ namespace Relativity.Import.Client.NUnit
 				yield return new TestCaseData(RetryOptions.Io, true, new FileInfoInvalidPathException(RetryExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
 
 				// Test Case: permission errors follow the options.
-				yield return new TestCaseData(RetryOptions.All, false, new UnauthorizedAccessException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE), MaxExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Permissions, false, new UnauthorizedAccessException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE), MaxExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, false, new UnauthorizedAccessException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.None, false, new UnauthorizedAccessException(_EXPECTED_DEFAULT_EXCEPTION_MESSAGE), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, false, new UnauthorizedAccessException(ExpectedDefaultExceptionMessage), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Permissions, false, new UnauthorizedAccessException(ExpectedDefaultExceptionMessage), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, false, new UnauthorizedAccessException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.None, false, new UnauthorizedAccessException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
 			}
 		}
 
@@ -265,7 +264,7 @@ namespace Relativity.Import.Client.NUnit
 			this.GivenTheDisableNativeLocationValidationConfigSetting(false);
 			this.GivenTheRetryOptions(RetryOptions.Io);
 			this.GivenTheIoReportInstanceIsConstructed();
-			this.WhenCallingTheFileLengthReporterMethod();            
+			this.WhenCallingTheFileLengthReporterMethod();
             this.ThenTheActualFileLengthShouldEqual(expectedLength);
 		}
 
@@ -296,7 +295,7 @@ namespace Relativity.Import.Client.NUnit
 			this.GivenTheDisableNativeLocationValidationConfigSetting(false);
 			this.GivenTheRetryOptions(RetryOptions.Io);
 			this.GivenTheIoReportInstanceIsConstructed();
-			this.WhenCallingTheFileLengthReporterMethod();            
+			this.WhenCallingTheFileLengthReporterMethod();
             this.ThenTheActualRetryDurationShouldCalculated(retryAttempt, waitTimeBetweenRetryAttempts);
 		}
 
@@ -320,7 +319,7 @@ namespace Relativity.Import.Client.NUnit
 		{
 			const int MaxRetryCount = 5;
 			this.GivenTheRetryOptions(testOptions);
-			this.GivenTheRealWaitAndRetryPolicy(MaxRetryCount);			
+			this.GivenTheRealWaitAndRetryPolicy(MaxRetryCount);
 			this.GivenTheMockFileSystemCreateFileInfoThrows(testException);
 			this.GivenTheMockFileSystemCopyThrows(testException);
 			this.GivenTheDisableNativeLocationValidationConfigSetting(testDisableNativeLocationValidation);
@@ -417,7 +416,7 @@ namespace Relativity.Import.Client.NUnit
 			var mockFileInfo = new Mock<IFileInfo>();
 			mockFileInfo.Setup(x => x.Length).Returns(expectedLength);
             mockFileInfo.Setup(x => x.Exists).Returns(expectedFileExists);
-            this.mockFileSystem.Setup(x => x.CreateFileInfo(_FILE_NAME)).Returns(mockFileInfo.Object);
+            this.mockFileSystem.Setup(x => x.CreateFileInfo(TestFileName)).Returns(mockFileInfo.Object);
 		}
 
         private void GivenTheMockFileSystemCreateFileInfoThrows(Exception exception)
@@ -446,7 +445,7 @@ namespace Relativity.Import.Client.NUnit
 			        Func<CancellationToken, long>, CancellationToken>(
 			        (exceptionPredicate, retryDuration, retryAction, execFunc, token) =>
 			        {
-				        actualRetryDuractionFunc = retryDuration;
+						this.actualRetryDuractionFunc = retryDuration;
 				        retryAction(null, TimeSpan.Zero);
 				        execFunc(token);
 			        });
@@ -466,6 +465,7 @@ namespace Relativity.Import.Client.NUnit
 		{
 			this.retryOptions = value;
 		}
+
 		private void GivenTheIoReportInstanceIsConstructed()
 		{
 			IWaitAndRetryPolicy policy = this.waitAndRetry ?? this.mockWaitAndRetryPolicy.Object;
@@ -476,17 +476,17 @@ namespace Relativity.Import.Client.NUnit
 				this.publisher,
 				this.disableNativeLocationValidation,
 				this.retryOptions,
-				cancellationTokenSource.Token);
+				this.cancellationTokenSource.Token);
 		}
 
 		private void WhenCallingTheFileLengthReporterMethod()
 		{
-            this.actualFileLength = this.ioReporterInstance.GetFileLength(_FILE_NAME, 0);
+            this.actualFileLength = this.ioReporterInstance.GetFileLength(TestFileName, 0);
 		}
 
 		private void WhenCallingTheGetFileExistsReporterMethod()
 		{
-			this.actualFileExists = this.ioReporterInstance.GetFileExists(_FILE_NAME, 0);
+			this.actualFileExists = this.ioReporterInstance.GetFileExists(TestFileName, 0);
 		}
 
 		private void WhenCallingTheFileCopyReporterMethod()
@@ -498,10 +498,8 @@ namespace Relativity.Import.Client.NUnit
 		{
             TimeSpan actualRetryDuraction = this.actualRetryDuractionFunc(retryAttempt);
             Assert.That(
-                actualRetryDuraction,
-				retryAttempt == 1
-					? Is.EqualTo(TimeSpan.FromSeconds(0))
-					: Is.EqualTo(TimeSpan.FromSeconds(waitTimeBetweenRetryAttempts)));
+	            actualRetryDuraction,
+	            retryAttempt == 1 ? Is.EqualTo(TimeSpan.FromSeconds(0)) : Is.EqualTo(TimeSpan.FromSeconds(waitTimeBetweenRetryAttempts)));
 		}
 
 		private void ThenTheActualFileLengthShouldEqual(int expectedLength)
@@ -540,7 +538,8 @@ namespace Relativity.Import.Client.NUnit
 		private void ThenTheLoggerInformationShouldBeInvoked(int expectedCount)
 		{
 			this.mockLogger.Verify(logger => logger.LogInformation(It.IsAny<string>()), Times.Exactly(expectedCount));
-			Assert.That(this.actualLoggedInformationMessage,
+			Assert.That(
+				this.actualLoggedInformationMessage,
 				expectedCount == 0 ? Is.Null.Or.Empty : Is.Not.Null.Or.Empty);
 		}
 

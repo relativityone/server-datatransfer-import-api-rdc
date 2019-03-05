@@ -9,17 +9,17 @@ namespace Relativity.Export.Client.NUnit
     using System.Linq;
     using System.Threading;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 
     using Moq;
 
-    using global::NUnit.Framework;
-
     using Relativity.Logging;
 
     [TestFixture]
-	public class ParallelBatchInitializationTests: BatchInitializationTests
+	public class ParallelBatchInitializationTests : BatchInitializationTests
 	{
 		protected Mock<ILabelManagerForArtifact> LabelManagerForArtifact { get; private set; }
 
@@ -38,10 +38,10 @@ namespace Relativity.Export.Client.NUnit
 		[Test]
 		public void ItShouldInitializeLabelManagerForArtifact()
 		{
-			//ACT
+			// ACT
 			Instance.PrepareBatch(Artifacts, VolumePredictions, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			LabelManagerForArtifact.Verify(lm => lm.InitializeFor(Artifacts, VolumePredictions, CancellationToken.None), Times.Once);
 		}
 	}

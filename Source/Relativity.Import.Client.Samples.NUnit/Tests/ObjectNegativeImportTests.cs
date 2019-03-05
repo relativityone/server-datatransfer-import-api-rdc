@@ -11,7 +11,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-    using Relativity.ImportExport.UnitTestFramework;
+    using Relativity.Import.Export.TestFramework;
 
     /// <summary>
     /// Represents tests that fails to import objects and validates the results.
@@ -19,15 +19,21 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
     [TestFixture]
 	public class ObjectNegativeImportTests : ObjectImportTestsBase
 	{
-		private static IEnumerable<TestCaseData> TestCases
-		{
-			get
-			{
-				yield return new TestCaseData("Negative-Transfer-1", "Negative-Detail-1", "Negative-DataSourceName-1");
-			}
-		}
+		/// <summary>
+		/// Gets the test case data.
+		/// </summary>
+		/// <value>
+		/// The <see cref="TestCaseData"/> instances.
+		/// </value>
+		private static IEnumerable<TestCaseData> TestCases =>
+			new List<TestCaseData>
+				{
+					new TestCaseData("Negative-Transfer-1", "Negative-Detail-1", "Negative-DataSourceName-1")
+				};
 
 		[Test]
+		[Category(TestCategories.ImportObject)]
+		[Category(TestCategories.Integration)]
 		[TestCaseSource(nameof(TestCases))]
 		public void ShouldNotImportDuplicateSingleObjectFields(
 			string name,
@@ -39,10 +45,10 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			this.CreateAssociatedDetailInstance(detailName);
 			this.CreateAssociatedDataSourceInstance(dataSourceName);
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = this.CreateImportBulkArtifactJob();
-			string description = TestHelper.NextString(50, 450);
-			decimal requestBytes = TestHelper.NextDecimal(10, 1000000);
+			string description = RandomHelper.NextString(50, 450);
+			decimal requestBytes = RandomHelper.NextDecimal(10, 1000000);
 			DateTime requestDate = DateTime.Now;
-			decimal requestFiles = TestHelper.NextDecimal(1000, 10000);
+			decimal requestFiles = RandomHelper.NextDecimal(1000, 10000);
 			this.DataSource.Rows.Add(
 				name,
 				description,
@@ -74,6 +80,8 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		}
 
 		[Test]
+		[Category(TestCategories.ImportObject)]
+		[Category(TestCategories.Integration)]
 		[TestCaseSource(nameof(TestCases))]
 		public void ShouldNotImportDuplicateMultiObjectFields(
 			string name,
@@ -85,10 +93,10 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			this.CreateAssociatedDataSourceInstance(dataSourceName);
 			this.CreateAssociatedDataSourceInstance(dataSourceName);
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = this.CreateImportBulkArtifactJob();
-			string description = TestHelper.NextString(50, 450);
-			decimal requestBytes = TestHelper.NextDecimal(10, 1000000);
+			string description = RandomHelper.NextString(50, 450);
+			decimal requestBytes = RandomHelper.NextDecimal(10, 1000000);
 			DateTime requestDate = DateTime.Now;
-			decimal requestFiles = TestHelper.NextDecimal(1000, 10000);
+			decimal requestFiles = RandomHelper.NextDecimal(1000, 10000);
 			this.DataSource.Rows.Add(
 				name,
 				description,

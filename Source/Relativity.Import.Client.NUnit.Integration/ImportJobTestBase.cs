@@ -7,25 +7,23 @@
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 
-using System.Globalization;
-
 namespace Relativity.Import.Client.NUnit.Integration
 {
 	using System;
 	using System.Collections;
 	using System.Data;
 	using System.Diagnostics;
+	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Text;
 
+	using global::NUnit.Framework;
+
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
 
-	using global::NUnit.Framework;
-
-	using Relativity.ImportExport.UnitTestFramework;
-	using Relativity.Transfer;
+	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>
 	/// Represents an abstract load-file base class.
@@ -95,7 +93,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		protected override void OnSetup()
 		{
 			base.OnSetup();
-			this.SourceData = new DataTable {  Locale = CultureInfo.InvariantCulture };
+			this.SourceData = new DataTable { Locale = CultureInfo.InvariantCulture };
 			this.SourceData.Columns.Add(WellKnownFields.ControlNumber, typeof(string));
 			this.SourceData.Columns.Add(WellKnownFields.FilePath, typeof(string));
 			this.jobMessages.Clear();
@@ -154,12 +152,12 @@ namespace Relativity.Import.Client.NUnit.Integration
 		protected void GivenTheImportJob()
 		{
 			var iapi = new ImportAPI(
-				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword,
-				TestSettings.RelativityWebApiUrl.ToString());
+				this.TestParameters.RelativityUserName,
+				this.TestParameters.RelativityPassword,
+				this.TestParameters.RelativityWebApiUrl.ToString());
 			this.importJob = iapi.NewNativeDocumentImportJob();
-			this.importJob.Settings.WebServiceURL = TestSettings.RelativityWebApiUrl.ToString();
-			this.importJob.Settings.CaseArtifactId = TestSettings.WorkspaceId;
+			this.importJob.Settings.WebServiceURL = this.TestParameters.RelativityWebApiUrl.ToString();
+			this.importJob.Settings.CaseArtifactId = this.TestParameters.WorkspaceId;
 			this.importJob.Settings.ArtifactTypeId = 10;
 			this.importJob.Settings.ExtractedTextFieldContainsFilePath = false;
 			this.importJob.Settings.NativeFilePathSourceFieldName = WellKnownFields.FilePath;
@@ -276,6 +274,9 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// <summary>
 		/// Then the import messages contains the specified message.
 		/// </summary>
+		/// <param name="message">
+		/// The message to check.
+		/// </param>
 		protected void ThenTheImportMessagesContains(string message)
 		{
 			Assert.That(this.jobMessages.Any(x => x.Contains(message)), Is.True);
@@ -308,7 +309,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		{
 			for (var i = 0; i < maxFiles; i++)
 			{
-				TestHelper.NextTextFile(
+				RandomHelper.NextTextFile(
 					MinTestFileLength,
 					MaxTestFileLength,
 					this.TempDirectory.Directory,

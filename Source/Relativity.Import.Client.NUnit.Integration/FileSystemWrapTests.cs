@@ -16,8 +16,10 @@ namespace Relativity.Import.Client.NUnit.Integration
 
     using kCura.WinEDDS.TApi;
 
+	using Relativity.Import.Export.TestFramework;
+
 	/// <summary>
-	/// Represents <see cref="FileSystemWrap"/> tests. 
+	/// Represents <see cref="FileSystemWrap"/> tests.
 	/// </summary>
 	[TestFixture]
     public class FileSystemWrapTests
@@ -57,24 +59,32 @@ namespace Relativity.Import.Client.NUnit.Integration
 	    }
 
 	    [Test]
-	    public void ShouldGetTheNonNullDirectoryInstance()
+	    [Category(TestCategories.FileSystem)]
+	    [Category(TestCategories.Integration)]
+		public void ShouldGetTheNonNullDirectoryInstance()
 	    {
 		    Assert.That(this.fileSystem.Directory, Is.Not.Null);
 	    }
 
 	    [Test]
-	    public void ShouldGetTheNonNullFileInstance()
+	    [Category(TestCategories.FileSystem)]
+	    [Category(TestCategories.Integration)]
+		public void ShouldGetTheNonNullFileInstance()
 	    {
 		    Assert.That(this.fileSystem.File, Is.Not.Null);
 	    }
 
 	    [Test]
-	    public void ShouldGetTheNonNullPathInstance()
+	    [Category(TestCategories.FileSystem)]
+	    [Category(TestCategories.Integration)]
+		public void ShouldGetTheNonNullPathInstance()
 	    {
 			Assert.That(this.fileSystem.Path, Is.Not.Null);
 	    }
 
 	    [Test]
+	    [Category(TestCategories.FileSystem)]
+	    [Category(TestCategories.Integration)]
 		public void ShouldCreateTheFileInfo()
 		{
 			string fileName = GenerateUniqueFileName();
@@ -97,6 +107,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		[Test]
+		[Category(TestCategories.FileSystem)]
+		[Category(TestCategories.Integration)]
 		public void ShouldCreateTheFile()
 		{
 			string fileName = GenerateUniqueFileName();
@@ -110,10 +122,12 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		[Test]
+		[Category(TestCategories.FileSystem)]
+		[Category(TestCategories.Integration)]
 		public void ShouldCreateTheDirectoryInfo()
 		{
 			string folderName = GenerateUniqueFolderName();
-			string directory = GenerateUniqueDirectoryPath(folderName);
+			string directory = this.GenerateUniqueDirectoryPath(folderName);
 			IDirectoryInfo info = this.fileSystem.CreateDirectoryInfo(directory);
 			Assert.That(info, Is.Not.Null);
 			Assert.That(info.Exists, Is.False);
@@ -127,12 +141,14 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		[Test]
+		[Category(TestCategories.FileSystem)]
+		[Category(TestCategories.Integration)]
 		[TestCase(true)]
 		[TestCase(false)]
 		public void ShouldCreateTheDirectory(bool useDirectoryObj)
 		{
 			string folderName = GenerateUniqueFolderName();
-			string directory = GenerateUniqueDirectoryPath(folderName);
+			string directory = this.GenerateUniqueDirectoryPath(folderName);
 			if (useDirectoryObj)
 			{
 				this.fileSystem.Directory.CreateDirectory(directory);
@@ -148,12 +164,14 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		[Test]
+		[Category(TestCategories.FileSystem)]
+		[Category(TestCategories.Integration)]
 		[TestCase(false)]
 		[TestCase(true)]
 		public void ShouldGetTheDirectoryParent(bool directoryExists)
 		{
 			string expected = GetUniqueDirectory();
-			string directory = GenerateUniqueDirectoryPath();
+			string directory = this.GenerateUniqueDirectoryPath();
 			if (!directoryExists)
 			{
 				expected = System.IO.Path.Combine(directory, "dummy");
@@ -167,6 +185,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		[Test]
+		[Category(TestCategories.FileSystem)]
+		[Category(TestCategories.Integration)]
 		public void ShouldAddAndTrimTheBackSlashes()
 		{
 			// UNC path
@@ -193,6 +213,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		[Test]
+		[Category(TestCategories.FileSystem)]
+		[Category(TestCategories.Integration)]
 		public void ShouldGetTheDirectoryName()
 		{
 			// UNC path
@@ -207,6 +229,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		[Test]
+		[Category(TestCategories.FileSystem)]
+		[Category(TestCategories.Integration)]
 		[TestCase(@"C:\", "temp.txt", @"C:\temp.txt")]
 		[TestCase(@"C:\Windows", "temp", @"C:\Windows\temp")]
 		[TestCase(@"\\abc\def", "temp.txt", @"\\abc\def\temp.txt")]
@@ -218,6 +242,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		[Test]
+		[Category(TestCategories.FileSystem)]
+		[Category(TestCategories.Integration)]
 		[TestCase(@"\\abc\temp.txt", @".txt")]
 		[TestCase(@"\\abc\temp", "")]
 		[TestCase(@"C:\Windows\temp.bin", @".bin")]
@@ -229,6 +255,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		[Test]
+		[Category(TestCategories.FileSystem)]
+		[Category(TestCategories.Integration)]
 		public void ShouldChangeTheFileExtension()
 		{
 			string fileNameNoExt = "import-api-test";
@@ -242,6 +270,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		[Test]
+		[Category(TestCategories.FileSystem)]
+		[Category(TestCategories.Integration)]
 		[TestCase(@"C:\Windows\System32\dnsapi.dll", "dnsapi.dll")]
 		[TestCase(@"C:\Windows\System32\", "")]
 		[TestCase(@"C:\Windows\System32", "System32")]
@@ -255,6 +285,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		[Test]
+		[Category(TestCategories.FileSystem)]
+		[Category(TestCategories.Integration)]
 		[TestCase(@"dnsapi.dll", false, false)]
 		[TestCase(@"C:", true, false)]
 		[TestCase(@"C:\", true, false)]
@@ -274,6 +306,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		[Test]
+		[Category(TestCategories.FileSystem)]
+		[Category(TestCategories.Integration)]
 		public void ShouldCopyTheFile()
 		{
 			string sourceFileName = GenerateUniqueFolderName();
@@ -290,6 +324,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		[Test]
+		[Category(TestCategories.FileSystem)]
+		[Category(TestCategories.Integration)]
 		public void ShouldMakeReferenceDeepCopy()
 		{
 			IFileSystem source = this.fileSystem;
@@ -301,6 +337,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		[Test]
+		[Category(TestCategories.FileSystem)]
+		[Category(TestCategories.Integration)]
 		public void ShouldDeleteTheFile()
 		{
 			string sourceFileName = GenerateUniqueFolderName();
@@ -315,6 +353,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 		}
 
 		[Test]
+		[Category(TestCategories.FileSystem)]
+		[Category(TestCategories.Integration)]
 		public void ShouldCreateTheStreamWriter()
 		{
 			string sourceFileName = GenerateUniqueFolderName();
@@ -364,7 +404,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 
 		private string GenerateUniqueDirectoryPath()
 		{
-			return GenerateUniqueDirectoryPath(GenerateUniqueFolderName());
+			return this.GenerateUniqueDirectoryPath(GenerateUniqueFolderName());
 		}
 
 		private string GenerateUniqueDirectoryPath(string folder)

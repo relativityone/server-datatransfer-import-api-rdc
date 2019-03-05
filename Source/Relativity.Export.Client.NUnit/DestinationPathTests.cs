@@ -8,11 +8,11 @@ namespace Relativity.Export.Client.NUnit
 {
     using System.Text;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
     using kCura.WinEDDS.Exceptions;
-
-    using global::NUnit.Framework;
 
     [TestFixture]
 	public class DestinationPathTests
@@ -36,7 +36,7 @@ namespace Relativity.Export.Client.NUnit
 
 			var instance = new LoadFileDestinationPath(exportSettings);
 
-			//ACT
+			// ACT
 			Assert.That(instance.DestinationFileType, Is.EqualTo(FileWriteException.DestinationFile.Load));
 			Assert.That(instance.Encoding, Is.EqualTo(encoding));
 			return instance.Path;
@@ -58,7 +58,7 @@ namespace Relativity.Export.Client.NUnit
 
 			var instance = new ImageLoadFileDestinationPath(exportSettings);
 
-			//ACT
+			// ACT
 			Assert.That(instance.DestinationFileType, Is.EqualTo(FileWriteException.DestinationFile.Image));
 			return instance.Path;
 		}
@@ -76,7 +76,7 @@ namespace Relativity.Export.Client.NUnit
 
 			var instance = new ImageLoadFileDestinationPath(exportSettings);
 
-			//ACT
+			// ACT
 			Assert.That(instance.Encoding, Is.EqualTo(Encoding.Default));
 		}
 
@@ -95,7 +95,7 @@ namespace Relativity.Export.Client.NUnit
 
 			var instance = new ImageLoadFileDestinationPath(exportSettings);
 
-			//ACT
+			// ACT
 			Assert.That(instance.Encoding, Is.EqualTo(Encoding.UTF8));
 		}
 
@@ -115,7 +115,7 @@ namespace Relativity.Export.Client.NUnit
 
 			var instance = new ImageLoadFileDestinationPath(exportSettings);
 
-			//ACT
+			// ACT
 			Assert.That(instance.Encoding, Is.EqualTo(encoding));
 		}
 	}

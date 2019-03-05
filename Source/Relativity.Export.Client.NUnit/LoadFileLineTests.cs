@@ -8,13 +8,13 @@ namespace Relativity.Export.Client.NUnit
 {
     using System;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
     using kCura.WinEDDS.Exporters;
     using kCura.WinEDDS.LoadFileEntry;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
 
@@ -57,10 +57,10 @@ namespace Relativity.Export.Client.NUnit
 			_nativeFilePath.Setup(x => x.AddNativeFilePath(It.IsAny<DeferredEntry>(), It.IsAny<ObjectExportInfo>()))
 				.Callback((DeferredEntry l, ObjectExportInfo a) => l.AddStringEntry(nativeFilePath));
 
-			//ACT
+			// ACT
 			ILoadFileEntry loadFileEntry = _instance.CreateLine(new ObjectExportInfo());
 
-			//ASSERT
+			// ASSERT
 			DeferredEntry entry = loadFileEntry as DeferredEntry;
 			Assert.That(entry, Is.Not.Null);
 

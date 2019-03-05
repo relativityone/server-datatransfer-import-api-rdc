@@ -1,12 +1,16 @@
 framework: net462
 source https://nuget.org/api/v2
 
-# Note: periodically update NUnit to the latest version.
 nuget castle.windsor = 3.3.0
 nuget microsoft.build.logging.structuredlogger = 1.0.89
 nuget moq = 4.10.1
 nuget nbuilder = 6.0.0
+
+# Be even more careful with this library. This resolves a package conflict with the Azure Data Movement library.
+nuget newtonsoft.json = 6.0.8
 nuget nsubstitute = 3.1.0
+
+# Note: periodically update NUnit to the latest version.
 nuget nunit = 3.11.0
 nuget nunit.consolerunner = 3.9.0
 nuget nunit.extension.vsprojectloader = 3.8.0
@@ -15,6 +19,7 @@ nuget nunit.extension.vsprojectloader = 3.8.0
 nuget polly = 5.7.0.0
 nuget psake = 4.7.4
 nuget rhinomocks  = 3.6.0
+nuget stylecop.analyzers = 1.0.2
 
 # Proget packages are below.
 source https://proget.kcura.corp/NuGet/NuGet

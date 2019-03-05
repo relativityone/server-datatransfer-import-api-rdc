@@ -6,15 +6,15 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using kCura.Windows.Process;
+	using global::NUnit.Framework;
+
+	using kCura.Windows.Process;
     using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 
-    using Moq;
-
-    using global::NUnit.Framework;
+	using Moq;
 
     using Relativity.Logging;
 
@@ -53,7 +53,7 @@ namespace Relativity.Export.Client.NUnit
 
 			_status.Setup(x => x.UpdateDocumentExportedCount(It.IsAny<int>())).Callback((int x) => actualDocumentExportedCount = x);
 
-			//ACT
+			// ACT
 			_instance.MarkFileAsDownloaded(native1.ExportRequest.FileName, native1.ExportRequest.Order);
 
 			_instance.SaveState();
@@ -62,14 +62,14 @@ namespace Relativity.Export.Client.NUnit
 
 			_instance.RestoreLastState();
 
-			//ASSERT
+			// ASSERT
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(1));
 		}
 
 		[Test]
 		public void ItShouldUpdateProgress()
 		{
-			//DATA SET
+			// DATA SET
 			Native nativeWithoutImagesOrText_A = ModelFactory.GetNative(_nativeRepository);
 
 			Native nativeWithTwoImages_B = ModelFactory.GetNative(_nativeRepository);
@@ -82,7 +82,6 @@ namespace Relativity.Export.Client.NUnit
 			Native nativeWithImageAndText_D = ModelFactory.GetNative(_nativeRepository);
 			Image image_D = ModelFactory.GetImage(nativeWithImageAndText_D.Artifact.ArtifactID, _imageRepository);
 			LongText text_D = ModelFactory.GetLongText(nativeWithImageAndText_D.Artifact.ArtifactID, _longTextRepository);
-			//********
 
 			int actualDocumentExportedCount = 0;
 			string actualLine = string.Empty;
@@ -90,8 +89,7 @@ namespace Relativity.Export.Client.NUnit
 			_status.Setup(x => x.WriteStatusLine(It.IsAny<EventType>(), It.IsAny<string>(), It.IsAny<bool>()))
 				.Callback((EventType eventType, string line, bool isEssential) => actualLine = line);
 
-			//ACT
-
+			// ACT
 			_instance.MarkFileAsDownloaded(image1_B.ExportRequest.FileName, image1_B.ExportRequest.Order);
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(0));
 			Assert.That(actualLine, Does.Contain(string.Empty));

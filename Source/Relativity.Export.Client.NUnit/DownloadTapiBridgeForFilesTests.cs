@@ -6,12 +6,12 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
+	using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
 
@@ -27,7 +27,12 @@ namespace Relativity.Export.Client.NUnit
 
 			_transferClientHandler = new Mock<ITransferClientHandler>();
 
-			Instance = new DownloadTapiBridgeForFiles(TapiBridge.Object, ProgressHandler.Object, MessagesHandler.Object, TransferStatistics.Object, _transferClientHandler.Object,
+			Instance = new DownloadTapiBridgeForFiles(
+				TapiBridge.Object,
+				ProgressHandler.Object,
+				MessagesHandler.Object,
+				TransferStatistics.Object,
+				_transferClientHandler.Object,
 				new NullLogger());
 		}
 
@@ -36,7 +41,7 @@ namespace Relativity.Export.Client.NUnit
 		{
 			Instance.Dispose();
 
-			//ASSERT
+			// ASSERT
 			_transferClientHandler.Verify(x => x.Detach());
 		}
 	}

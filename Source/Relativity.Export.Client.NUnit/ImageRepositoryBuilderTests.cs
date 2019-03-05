@@ -11,13 +11,13 @@ namespace Relativity.Export.Client.NUnit
     using System.Linq;
     using System.Threading;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
 
@@ -61,10 +61,10 @@ namespace Relativity.Export.Client.NUnit
 
 			_imageExportRequestBuilder.Setup(x => x.Create(artifact, CancellationToken.None)).Returns(new List<ExportRequest>());
 
-			//ACT
+			// ACT
 			_instance.AddToRepository(artifact, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_imageRepository.GetImage(artifactId1, batesNumber).HasBeenDownloaded, Is.True);
 		}
 
@@ -94,10 +94,10 @@ namespace Relativity.Export.Client.NUnit
 				new PhysicalFileExportRequest(artifact, tempLocation)
 			});
 
-			//ACT
+			// ACT
 			_instance.AddToRepository(artifact, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(_imageRepository.GetImage(artifactId1, batesNumber).HasBeenDownloaded, Is.False);
 			CollectionAssert.IsNotEmpty(_imageRepository.GetExportRequests());
 			Assert.That(_imageRepository.GetExportRequests().ToList()[0].ArtifactId, Is.EqualTo(artifactId1));
@@ -162,11 +162,11 @@ namespace Relativity.Export.Client.NUnit
 			};
 			_imageExportRequestBuilder.Setup(x => x.Create(artifact2, CancellationToken.None)).Returns(exportRequests2);
 
-			//ACT
+			// ACT
 			_instance.AddToRepository(artifact1, CancellationToken.None);
 			_instance.AddToRepository(artifact2, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			Image image1 = _imageRepository.GetImage(artifactId1, bates1);
 			Image image2 = _imageRepository.GetImage(artifactId1, bates2);
 			Image image3 = _imageRepository.GetImage(artifactId2, bates3);

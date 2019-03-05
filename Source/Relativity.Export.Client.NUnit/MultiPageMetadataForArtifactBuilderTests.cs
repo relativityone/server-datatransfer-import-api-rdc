@@ -9,7 +9,9 @@ namespace Relativity.Export.Client.NUnit
     using System.Collections;
     using System.Threading;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
@@ -17,14 +19,14 @@ namespace Relativity.Export.Client.NUnit
 
     using Moq;
 
-    using global::NUnit.Framework;
-
     using Relativity.Logging;
 
     [TestFixture]
 	public class MultiPageMetadataForArtifactBuilderTests : ImageLoadFileMetadataForArtifactBuilderTests
 	{
-		protected override ImageLoadFileMetadataForArtifactBuilder CreateInstance(ExportFile exportSettings, IFilePathTransformer filePathTransformer,
+		protected override ImageLoadFileMetadataForArtifactBuilder CreateInstance(
+			ExportFile exportSettings,
+			IFilePathTransformer filePathTransformer,
 			IImageLoadFileEntry imageLoadFileEntry,
 			IFullTextLoadFileEntry fullTextLoadFileEntry)
 		{
@@ -59,12 +61,12 @@ namespace Relativity.Export.Client.NUnit
 				}
 			};
 
-			//ACT
+			// ACT
 			Instance.WriteLoadFileEntry(artifact, Writer.Object, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			FullTextLoadFileEntry.Verify(x => x.WriteFullTextLine(artifact, image1.BatesNumber, 0, long.MinValue, Writer.Object, CancellationToken.None), Times.Once);
-			FullTextLoadFileEntry.Verify(x => x.WriteFullTextLine(artifact, image2.BatesNumber, 1, (long) image3.PageOffset, Writer.Object, CancellationToken.None), Times.Never());
+			FullTextLoadFileEntry.Verify(x => x.WriteFullTextLine(artifact, image2.BatesNumber, 1, (long)image3.PageOffset, Writer.Object, CancellationToken.None), Times.Never());
 			FullTextLoadFileEntry.Verify(x => x.WriteFullTextLine(artifact, image3.BatesNumber, 2, long.MinValue, Writer.Object, CancellationToken.None), Times.Never());
 		}
 
@@ -81,15 +83,12 @@ namespace Relativity.Export.Client.NUnit
 				BatesNumber = "image2",
 				PageOffset = null
 			};
-			ObjectExportInfo artifact = new ObjectExportInfo
-			{
-				Images = new ArrayList {image1, image2}
-			};
+			ObjectExportInfo artifact = new ObjectExportInfo { Images = new ArrayList { image1, image2 } };
 
-			//ACT
+			// ACT
 			Instance.WriteLoadFileEntry(artifact, Writer.Object, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			FullTextLoadFileEntry.Verify(x => x.WriteFullTextLine(artifact, image1.BatesNumber, 0, long.MinValue, Writer.Object, CancellationToken.None), Times.Once);
 			FullTextLoadFileEntry.Verify(x => x.WriteFullTextLine(artifact, image2.BatesNumber, 1, long.MinValue, Writer.Object, CancellationToken.None), Times.Never());
 		}

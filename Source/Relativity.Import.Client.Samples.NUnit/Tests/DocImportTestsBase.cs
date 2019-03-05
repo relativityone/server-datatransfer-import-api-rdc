@@ -13,7 +13,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-    using Relativity.ImportExport.UnitTestFramework;
+    using Relativity.Import.Export.TestFramework;
 
     /// <summary>
     /// Represents an abstract test class object that imports native documents and validates the results.
@@ -24,7 +24,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		/// Initializes a new instance of the <see cref="DocImportTestsBase"/> class.
 		/// </summary>
 		protected DocImportTestsBase()
-			: base(AssemblySetupHelper.Logger)
+			: base(IntegrationTestHelper.Logger)
 		{
 			// Assume that AssemblySetup has already setup the singleton.
 		}
@@ -68,7 +68,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			StringBuilder sb = new StringBuilder();
 			for (var i = 0; i < maxDepth; i++)
 			{
-				string folderName = $"\\{Guid.NewGuid()}-{TestHelper.NextString(20, TestSettings.MaxFolderLength - 36)}";
+				string folderName = $"\\{Guid.NewGuid()}-{RandomHelper.NextString(20, IntegrationTestParameters.MaxFolderLength - 36)}";
 				sb.Append(folderName);
 			}
 
@@ -81,17 +81,17 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			string folder,
 			string fileName)
 		{
-			string file = TestHelper.GetDocsResourceFilePath(fileName);
+			string file = ResourceFileHelper.GetDocsResourceFilePath(fileName);
 			DocImportRecord record = new DocImportRecord { ControlNumber = controlNumber, File = file, Folder = folder };
-			return this.ArrangeImportJob(new[] { record  });
+			return this.ArrangeImportJob(new[] { record });
 		}
 
 		protected kCura.Relativity.DataReaderClient.ImportBulkArtifactJob ArrangeImportJob(IEnumerable<DocImportRecord> records)
 		{
 			// Arrange
-			kCura.Relativity.ImportAPI.ImportAPI importApi = CreateImportApiObject();
+			kCura.Relativity.ImportAPI.ImportAPI importApi = this.CreateImportApiObject();
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = importApi.NewNativeDocumentImportJob();
-            ConfigureJobSettings(
+			this.ConfigureJobSettings(
 				job,
 				this.ArtifactTypeId,
 				this.IdentifierFieldId,
@@ -211,27 +211,6 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			{
 				this.PublishedProgressRows.Add(row);
 			};
-		}
-	}
-
-	public class DocImportRecord
-	{
-		public string ControlNumber
-		{
-			get;
-			set;
-		}
-
-		public string Folder
-		{
-			get;
-			set;
-		}
-
-		public string File
-		{
-			get;
-			set;
 		}
 	}
 }

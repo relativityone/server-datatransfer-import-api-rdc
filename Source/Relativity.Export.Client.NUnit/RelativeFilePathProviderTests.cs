@@ -6,10 +6,10 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
+	using global::NUnit.Framework;
 
-    using global::NUnit.Framework;
+	using kCura.WinEDDS;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 
     using Relativity.Logging;
 
@@ -30,10 +30,10 @@ namespace Relativity.Export.Client.NUnit
 
 			var instance = new RelativeFilePathTransformer(exportSettings, new FilePathHelper(new NullLogger()));
 
-			//ACT
+			// ACT
 			string relativePath = instance.TransformPath(absolutePath);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(relativePath, Is.EqualTo(result));
 		}
 	}

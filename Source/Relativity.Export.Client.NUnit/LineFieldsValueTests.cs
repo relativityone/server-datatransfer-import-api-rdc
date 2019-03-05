@@ -9,7 +9,9 @@ namespace Relativity.Export.Client.NUnit
     using System.Collections.Generic;
     using System.Linq;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
     using kCura.WinEDDS.Exporters;
@@ -17,23 +19,19 @@ namespace Relativity.Export.Client.NUnit
 
     using Moq;
 
-    using global::NUnit.Framework;
-
     using Relativity;
-    using Relativity.ImportExport.UnitTestFramework;
+    using Relativity.Import.Export.TestFramework;
     using Relativity.Logging;
 
     [TestFixture]
 	public class LineFieldsValueTests
 	{
-		private LineFieldsValue _instance;
-		private QueryFieldFactory _queryFieldFactory;
-
-		private Mock<IFieldService> _fieldLookupService;
-		private Mock<ILongTextHandler> _longTextHandler;
-
 		private const char _QUOTE_DELIMITER = 'Q';
 		private const char _RECORD_DELIMITER = 'R';
+		private LineFieldsValue _instance;
+		private QueryFieldFactory _queryFieldFactory;
+		private Mock<IFieldService> _fieldLookupService;
+		private Mock<ILongTextHandler> _longTextHandler;
 
 		[SetUp]
 		public void SetUp()
@@ -49,8 +47,13 @@ namespace Relativity.Export.Client.NUnit
 			_fieldLookupService = new Mock<IFieldService>();
 			_longTextHandler = new Mock<ILongTextHandler>();
 
-			_instance = new LineFieldsValue(_fieldLookupService.Object, _longTextHandler.Object, new LongTextHelper(null, null, null),
-				new NonTextFieldHandler(_fieldLookupService.Object, new DelimitedCellFormatter(exportSettings), exportSettings, new NullLogger()), exportSettings, new NullLogger());
+			_instance = new LineFieldsValue(
+				_fieldLookupService.Object,
+				_longTextHandler.Object,
+				new LongTextHelper(null, null, null),
+				new NonTextFieldHandler(_fieldLookupService.Object, new DelimitedCellFormatter(exportSettings), exportSettings, new NullLogger()),
+				exportSettings,
+				new NullLogger());
 		}
 
 		[Test]
@@ -58,22 +61,17 @@ namespace Relativity.Export.Client.NUnit
 		{
 			kCura.WinEDDS.ViewFieldInfo artifactIdField = _queryFieldFactory.GetArtifactIdField();
             kCura.WinEDDS.ViewFieldInfo extractedTextField = _queryFieldFactory.GetExtractedTextField();
+            ObjectExportInfo artifact = new ObjectExportInfo { Metadata = new object[] { string.Empty } };
 
-
-			ObjectExportInfo artifact = new ObjectExportInfo
-			{
-				Metadata = new object[] {""}
-			};
-
-			_fieldLookupService.Setup(x => x.GetColumns()).Returns(new[] {artifactIdField, extractedTextField});
+            _fieldLookupService.Setup(x => x.GetColumns()).Returns(new[] { artifactIdField, extractedTextField });
 			_fieldLookupService.Setup(x => x.GetOrdinalIndex(It.IsAny<string>())).Returns(0);
 
 			DeferredEntry lineEntry = new DeferredEntry();
 
-			//ACT
+			// ACT
 			_instance.AddFieldsValue(lineEntry, artifact);
 
-			//ASSERT
+			// ASSERT
 			_longTextHandler.Verify(x => x.HandleLongText(artifact, extractedTextField, lineEntry), Times.Once);
 			_longTextHandler.Verify(x => x.HandleLongText(artifact, artifactIdField, lineEntry), Times.Never);
 		}
@@ -89,10 +87,10 @@ namespace Relativity.Export.Client.NUnit
 			IEnumerable<string> fieldsEntries = fields.Select(FormatFieldValue);
 			string expectedResult = string.Join(_RECORD_DELIMITER.ToString(), fieldsEntries);
 
-			//ACT
+			// ACT
 			_instance.AddFieldsValue(loadFileEntry, artifact);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(LoadFileTestHelpers.GetStringFromEntry(loadFileEntry), Is.EqualTo(expectedResult));
 		}
 

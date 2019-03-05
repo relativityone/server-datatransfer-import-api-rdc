@@ -10,26 +10,25 @@ namespace Relativity.Export.Client.NUnit
     using System.Threading;
     using System.Threading.Tasks;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
     using kCura.WinEDDS.TApi;
 
     using Moq;
 
-    using global::NUnit.Framework;
-    
     using Relativity.Transfer;
 
     [TestFixture]
 	public class SmartTapiBridgeTests
 	{
+		private const long _FILE_BYTES = 512;
+		private const int _LINE_NUMBER = 10;
 		private Mock<IExportConfig> _config;
 		private Mock<ITapiBridgeWrapperFactory> _wrapperFactory;
 		private Mock<ITapiBridgeWrapper> _innerTapiBridge;
 		private SmartTapiBridge _bridge;
-		
-		private const long _FILE_BYTES = 512;
-		private const int _LINE_NUMBER = 10;
 
 		[SetUp]
 		public void SetUp()
@@ -38,7 +37,6 @@ namespace Relativity.Export.Client.NUnit
 			_innerTapiBridge = new Mock<ITapiBridgeWrapper>();
 			_wrapperFactory = new Mock<ITapiBridgeWrapperFactory>();
 			_wrapperFactory.Setup(factory => factory.Create()).Returns(_innerTapiBridge.Object);
-			
 			_bridge = new SmartTapiBridge(_config.Object, _wrapperFactory.Object, CancellationToken.None);
 		}
 
@@ -151,7 +149,6 @@ namespace Relativity.Export.Client.NUnit
 			Assert.IsTrue(eventRaised);
 		}
 
-
 		[Test]
 		public void ItShouldForwardTapiProgress()
 		{
@@ -200,7 +197,6 @@ namespace Relativity.Export.Client.NUnit
 			{
 				_innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
 				_innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
-
 			});
 
 			_bridge.WaitForTransferJob();
@@ -226,7 +222,6 @@ namespace Relativity.Export.Client.NUnit
 			{
 				_innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
 				_innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
-
 			});
 
 			_bridge.WaitForTransferJob();
@@ -252,7 +247,6 @@ namespace Relativity.Export.Client.NUnit
 			{
 				_innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
 				_innerTapiBridge.Raise(b => b.TapiProgress += null, new TapiProgressEventArgs("file name", true, TransferPathStatus.Successful, _LINE_NUMBER, _FILE_BYTES, DateTime.Now, DateTime.Now));
-
 			});
 
 			_bridge.WaitForTransferJob();

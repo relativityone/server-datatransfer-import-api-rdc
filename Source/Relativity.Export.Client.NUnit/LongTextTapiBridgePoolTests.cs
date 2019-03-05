@@ -8,11 +8,11 @@ namespace Relativity.Export.Client.NUnit
 {
     using System.Threading;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
 

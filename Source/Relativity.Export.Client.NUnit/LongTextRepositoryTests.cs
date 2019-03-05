@@ -9,7 +9,9 @@ namespace Relativity.Export.Client.NUnit
     using System.Collections.Generic;
     using System.Text;
 
-    using kCura.Utility.Extensions;
+    using global::NUnit.Framework;
+
+	using kCura.Utility.Extensions;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
@@ -17,8 +19,6 @@ namespace Relativity.Export.Client.NUnit
     using kCura.WinEDDS.Exporters;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
 
@@ -45,12 +45,12 @@ namespace Relativity.Export.Client.NUnit
 		[Test]
 		public void ItShouldSearchLongTextByArtifactIdAndFieldArtifactId()
 		{
-			//ACT
+			// ACT
 			LongText image1 = _instance.GetLongText(1, 10);
 			LongText image2 = _instance.GetLongText(1, 20);
 			LongText image3 = _instance.GetLongText(2, 30);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(image1, Is.EqualTo(_longTexts[0]));
 			Assert.That(image2, Is.EqualTo(_longTexts[1]));
 			Assert.That(image3, Is.EqualTo(_longTexts[2]));
@@ -59,11 +59,11 @@ namespace Relativity.Export.Client.NUnit
 		[Test]
 		public void ItShouldGetLongTextsForArtifact()
 		{
-			//ACT
+			// ACT
 			IEnumerable<LongText> images1 = _instance.GetArtifactLongTexts(1);
 			IEnumerable<LongText> images2 = _instance.GetArtifactLongTexts(2);
 
-			//ASSERT
+			// ASSERT
 			CollectionAssert.AreEquivalent(_longTexts.GetRange(0, 2), images1);
 			CollectionAssert.AreEquivalent(_longTexts[2].InList(), images2);
 		}
@@ -71,10 +71,10 @@ namespace Relativity.Export.Client.NUnit
 		[Test]
 		public void ItShouldGetAllImages()
 		{
-			//ACT
+			// ACT
 			IList<LongText> images = _instance.GetLongTexts();
 
-			//ASSERT
+			// ASSERT
 			CollectionAssert.AreEquivalent(_longTexts, images);
 		}
 
@@ -87,22 +87,22 @@ namespace Relativity.Export.Client.NUnit
 				_longTexts[2].ExportRequest
 			};
 
-			//ACT
+			// ACT
 			IEnumerable<LongTextExportRequest> exportRequests = _instance.GetExportRequests();
 
-			//ASSERT
+			// ASSERT
 			CollectionAssert.AreEquivalent(expectedExportRequests, exportRequests);
 		}
 
 		[Test]
 		public void ItShouldGetLongTextByUniqueId()
 		{
-			//ACT
+			// ACT
 			LongText image1 = _instance.GetByLineNumber(1);
 			LongText image2 = _instance.GetByLineNumber(2);
 			LongText image3 = _instance.GetByLineNumber(3);
 
-			//ASSERT
+			// ASSERT
 			Assert.That(image1, Is.EqualTo(_longTexts[0]));
 			Assert.That(image2, Is.Null);
 			Assert.That(image3, Is.EqualTo(_longTexts[2]));
@@ -111,17 +111,15 @@ namespace Relativity.Export.Client.NUnit
 		[Test]
 		public void ItShouldClearRepository()
 		{
-			//ACT
+			// ACT
 			_instance.Clear();
 			IList<LongText> images = _instance.GetLongTexts();
 
-			//ASSERT
+			// ASSERT
 			CollectionAssert.IsEmpty(images);
 			_fileHelper.Verify(x => x.Delete("require_deletion"), Times.Once);
 			_fileHelper.Verify(x => x.Delete("do_not_require_deletion"), Times.Never);
 		}
-
-		#region DataSet
 
 		private List<LongText> CreateDataSet()
 		{
@@ -141,14 +139,15 @@ namespace Relativity.Export.Client.NUnit
 				ArtifactID = 2
 			};
 
-			LongText longText3 =
-				LongText.CreateFromMissingFile(artifact2.ArtifactID, 30, LongTextExportRequest.CreateRequestForFullText(artifact2, 30, "do_not_require_deletion"), Encoding.Default,
-					Encoding.Default);
+			LongText longText3 = LongText.CreateFromMissingFile(
+				artifact2.ArtifactID,
+				30,
+				LongTextExportRequest.CreateRequestForFullText(artifact2, 30, "do_not_require_deletion"),
+				Encoding.Default,
+				Encoding.Default);
 			longText3.ExportRequest.Order = 3;
 
-			return new List<LongText> {longText1, longText2, longText3};
+			return new List<LongText> { longText1, longText2, longText3 };
 		}
-
-		#endregion
 	}
 }

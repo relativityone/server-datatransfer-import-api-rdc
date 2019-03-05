@@ -6,14 +6,14 @@
 
 namespace Relativity.Export.Client.NUnit
 {
-    using kCura.WinEDDS;
+	using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
 
@@ -34,7 +34,7 @@ namespace Relativity.Export.Client.NUnit
 
 			var exportSettings = new ExportFile(1)
 			{
-				FolderPath = "",
+				FolderPath = string.Empty,
 				LoadFilesPrefix = "PREF_",
 				LoadFileExtension = ".dat",
 				LogFileFormat = LoadFileType.FileFormat.Opticon
@@ -146,9 +146,13 @@ namespace Relativity.Export.Client.NUnit
 		public class FilesOverwriteTestData
 		{
 			public bool Overwrite { get; set; }
+
 			public bool ExportImages { get; set; }
+
 			public bool LoadFileExists { get; set; }
+
 			public bool ImageLoadFileExists { get; set; }
+
 			public bool ExpectedResult { get; set; }
 		}
 	}

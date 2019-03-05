@@ -10,15 +10,15 @@ namespace Relativity.Export.Client.NUnit
     using System.Text;
     using System.Threading;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
     using kCura.WinEDDS.TApi;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
     using Relativity.Transfer;
@@ -51,7 +51,7 @@ namespace Relativity.Export.Client.NUnit
 			LongText longText = ModelFactory.GetLongTextWithLocationAndEncoding(1, _longTextRepository, fileName, Encoding.Unicode);
 			longText.SourceEncoding = Encoding.ASCII;
 
-			//ACT
+			// ACT
 			_instance.StartListening(_tapiBridge.Object);
 			_instance.StopListening(_tapiBridge.Object);
 
@@ -59,7 +59,7 @@ namespace Relativity.Export.Client.NUnit
 
 			_instance.WaitForConversionCompletion();
 
-			//ASSERT
+			// ASSERT
 			_fileEncodingConverter.Verify(x => x.Convert(It.IsAny<string>(), It.IsAny<Encoding>(), It.IsAny<Encoding>(), CancellationToken.None), Times.Never);
 		}
 
@@ -71,7 +71,7 @@ namespace Relativity.Export.Client.NUnit
 			LongText longText = ModelFactory.GetLongTextWithLocationAndEncoding(1, _longTextRepository, fileName, Encoding.Unicode);
 			longText.SourceEncoding = Encoding.Unicode;
 
-			//ACT
+			// ACT
 			_instance.StartListening(_tapiBridge.Object);
 
 			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, TransferPathStatus.Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
@@ -80,7 +80,7 @@ namespace Relativity.Export.Client.NUnit
 
 			_instance.WaitForConversionCompletion();
 
-			//ASSERT
+			// ASSERT
 			_fileEncodingConverter.Verify(x => x.Convert(It.IsAny<string>(), It.IsAny<Encoding>(), It.IsAny<Encoding>(), CancellationToken.None), Times.Never);
 		}
 
@@ -92,7 +92,7 @@ namespace Relativity.Export.Client.NUnit
 			LongText longText = ModelFactory.GetLongTextWithLocationAndEncoding(1, _longTextRepository, fileName, Encoding.Unicode);
 			longText.SourceEncoding = Encoding.UTF8;
 
-			//ACT
+			// ACT
 			_instance.StartListening(_tapiBridge.Object);
 
 			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, TransferPathStatus.Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
@@ -101,7 +101,7 @@ namespace Relativity.Export.Client.NUnit
 
 			_instance.WaitForConversionCompletion();
 
-			//ASSERT
+			// ASSERT
 			_fileEncodingConverter.Verify(x => x.Convert(fileName, Encoding.UTF8, Encoding.Unicode, CancellationToken.None), Times.Once);
 			Assert.That(longText.SourceEncoding, Is.EqualTo(longText.DestinationEncoding));
 		}
@@ -122,7 +122,7 @@ namespace Relativity.Export.Client.NUnit
 				waited = true;
 			});
 
-			//ACT
+			// ACT
 			_instance.StartListening(_tapiBridge.Object);
 
 			_tapiBridge.Raise(x => x.TapiProgress += null, new TapiProgressEventArgs(fileName, true, TransferPathStatus.Successful, 1, 1, DateTime.MinValue, DateTime.MaxValue));
@@ -131,7 +131,7 @@ namespace Relativity.Export.Client.NUnit
 
 			_instance.WaitForConversionCompletion();
 
-			//ASSERT
+			// ASSERT
 			Assert.That(waited, Is.True);
 		}
 	}

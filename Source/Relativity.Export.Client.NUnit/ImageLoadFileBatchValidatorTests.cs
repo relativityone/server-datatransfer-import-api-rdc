@@ -9,14 +9,14 @@ namespace Relativity.Export.Client.NUnit
     using System.Collections;
     using System.Threading;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     using Relativity.Logging;
 
@@ -44,10 +44,10 @@ namespace Relativity.Export.Client.NUnit
 		{
 			_fileHelper.Setup(x => x.Exists(_destinationPath.Object.Path)).Returns(false);
 
-			//ACT
+			// ACT
 			_instance.ValidateExportedBatch(null, null, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			_status.Verify(x => x.WriteError(It.IsAny<string>()));
 		}
 
@@ -57,7 +57,7 @@ namespace Relativity.Export.Client.NUnit
 			_fileHelper.Setup(x => x.Exists(_destinationPath.Object.Path)).Returns(true);
 			_fileHelper.Setup(x => x.GetFileSize(_destinationPath.Object.Path)).Returns(0);
 
-			ArrayList images = new ArrayList {new ImageExportInfo()};
+			ArrayList images = new ArrayList { new ImageExportInfo() };
 			ObjectExportInfo[] artifacts =
 			{
 				new ObjectExportInfo
@@ -66,10 +66,10 @@ namespace Relativity.Export.Client.NUnit
 				}
 			};
 
-			//ACT
+			// ACT
 			_instance.ValidateExportedBatch(artifacts, null, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			_status.Verify(x => x.WriteError(It.IsAny<string>()));
 		}
 
@@ -79,10 +79,10 @@ namespace Relativity.Export.Client.NUnit
 			_fileHelper.Setup(x => x.Exists(_destinationPath.Object.Path)).Returns(true);
 			_fileHelper.Setup(x => x.GetFileSize(_destinationPath.Object.Path)).Returns(1);
 
-			//ACT
+			// ACT
 			_instance.ValidateExportedBatch(null, null, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			_status.Verify(x => x.WriteError(It.IsAny<string>()), Times.Never);
 		}
 
@@ -100,10 +100,10 @@ namespace Relativity.Export.Client.NUnit
 				}
 			};
 
-			//ACT
+			// ACT
 			_instance.ValidateExportedBatch(artifacts, null, CancellationToken.None);
 
-			//ASSERT
+			// ASSERT
 			_status.Verify(x => x.WriteError(It.IsAny<string>()), Times.Never);
 		}
 	}

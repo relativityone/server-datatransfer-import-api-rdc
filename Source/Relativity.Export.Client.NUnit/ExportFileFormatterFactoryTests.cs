@@ -8,13 +8,13 @@ namespace Relativity.Export.Client.NUnit
 {
     using System;
 
-    using kCura.WinEDDS;
+    using global::NUnit.Framework;
+
+	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
-
-    using global::NUnit.Framework;
 
     public class ExportFileFormatterFactoryTests
 	{
@@ -29,12 +29,12 @@ namespace Relativity.Export.Client.NUnit
 			_subjectUnderTest = new ExportFileFormatterFactory(_fieldNameProviderMock.Object);
 		}
 
-		[TestCase(typeof (ExportFileFormatter), false)]
-		[TestCase(typeof (HtmlExportFileFormatter), true)]
+		[TestCase(typeof(ExportFileFormatter), false)]
+		[TestCase(typeof(HtmlExportFileFormatter), true)]
 		public void ItShouldReturnCorrectFormatterType(Type formatterType, bool isHtml)
 		{
 			// Arrange
-			ExportFile exportFile = new ExportFile((int) ArtifactType.Document)
+			ExportFile exportFile = new ExportFile((int)ArtifactType.Document)
 			{
 				LoadFileIsHtml = isHtml
 			};

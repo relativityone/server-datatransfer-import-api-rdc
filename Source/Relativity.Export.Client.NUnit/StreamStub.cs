@@ -10,8 +10,8 @@ namespace Relativity.Export.Client.NUnit
 
     public class StreamStub : MemoryStream
 	{
-		private int _counter;
 		private readonly int _failOn;
+		private int _counter;
 
 		public StreamStub(int failOn)
 		{
