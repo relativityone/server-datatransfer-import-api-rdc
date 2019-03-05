@@ -82,7 +82,7 @@ timestamps
                             "IAPI_INTEGRATION_RELATIVITYWEBAPIURL=https://${sut.name}.kcura.corp/relativitywebapi",
                             "IAPI_INTEGRATION_RELATIVITYUSERNAME=relativity.admin@kcura.com",
                             "IAPI_INTEGRATION_RELATIVITYPASSWORD=Test1234!",
-                            "IAPI_INTEGRATION_SQLINSTANCENAME=${sut.name}.kcura.corp\EDDSINSTANCE001",
+                            "IAPI_INTEGRATION_SQLINSTANCENAME=${sut.name}.kcura.corp\\EDDSINSTANCE001",
                             "IAPI_INTEGRATION_SQLADMINUSERNAME=sa",
                             "IAPI_INTEGRATION_SQLADMINPASSWORD=P@ssw0rd@1"
                         ]) 
