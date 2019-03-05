@@ -41,7 +41,7 @@ timestamps
                     version = version.trim()
                     echo "Building version $version"
 
-                    powershell ".\\build.ps1 -$AssemblyVersion '$version'"
+                    powershell ".\\build.ps1 -AssemblyVersion '$version'"
                 }
 
                 stage ('Unit Tests')
