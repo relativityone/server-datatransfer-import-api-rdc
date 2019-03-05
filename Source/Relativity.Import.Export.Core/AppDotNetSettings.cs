@@ -41,6 +41,7 @@ namespace Relativity.Import.Export
 			thisSettings.MaximumFilesForTapiBridge = AppSettingsConstants.MaximumFilesForTapiBridgeDefaultValue;
 			thisSettings.LogAllEvents = AppSettingsConstants.LogAllEventsDefaultValue;
 			thisSettings.ObjectFieldIdListContainsArtifactId = null;
+			thisSettings.PermissionErrorsRetry = AppSettingsConstants.PermissionErrorsRetryKeyDefaultValue;
 			thisSettings.ProgrammaticWebApiServiceUrl = null;
 			thisSettings.TapiBridgeExportTransferWaitingTimeInSeconds = AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue;
 			this.webApiServiceUrl = null;
@@ -78,6 +79,7 @@ namespace Relativity.Import.Export
 				thisSettings.ObjectFieldIdListContainsArtifactId = new List<int>(settings.ObjectFieldIdListContainsArtifactId);
 			}
 
+			thisSettings.PermissionErrorsRetry = settings.PermissionErrorsRetry;
 			if (settings.ProgrammaticWebApiServiceUrl != null)
 			{
 				thisSettings.ProgrammaticWebApiServiceUrl = new Uri(settings.ProgrammaticWebApiServiceUrl.ToString());
@@ -213,10 +215,37 @@ namespace Relativity.Import.Export
 		}
 
 		/// <inheritdoc />
+		bool IAppSettings.PermissionErrorsRetry
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
 		Uri IAppSettings.ProgrammaticWebApiServiceUrl
 		{
 			get;
 			set;
+		}
+
+		/// <inheritdoc />
+		Relativity.Import.Export.Io.RetryOptions IAppSettings.RetryOptions
+		{
+			get
+			{
+				// Always use other settings to drive these enum switches.
+				Relativity.Import.Export.Io.RetryOptions value = AppSettingsConstants.RetryOptionsDefaultValue;
+				if (((IAppSettings)this).PermissionErrorsRetry)
+				{
+					value |= Relativity.Import.Export.Io.RetryOptions.Permissions;
+				}
+				else
+				{
+					value &= ~Relativity.Import.Export.Io.RetryOptions.Permissions;
+				}
+
+				return value;
+			}
 		}
 
 		/// <inheritdoc />

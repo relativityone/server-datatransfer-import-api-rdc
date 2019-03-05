@@ -126,7 +126,6 @@
     <Compile Include="Io\IFileSystem.cs" />
     <Compile Include="Io\IIoReporter.cs" />
     <Compile Include="Io\IoReporter.cs" />
-    <Compile Include="Io\IoReporterFactory.cs" />
     <Compile Include="Io\IoWarningEventArgs.cs" />
     <Compile Include="Io\IPath.cs" />
     <Compile Include="Io\IStreamWriter.cs" />

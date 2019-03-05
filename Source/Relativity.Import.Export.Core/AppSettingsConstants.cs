@@ -23,6 +23,7 @@ namespace Relativity.Import.Export
 		public const string MaxNumberOfFileExportTasksKey = "MaxNumberOfFileExportTasks";
 		public const string MaximumFilesForTapiBridgeKey = "MaximumFilesForTapiBridge";
 		public const string ObjectFieldIdListContainsArtifactIdKey = "ObjectFieldIdListContainsArtifactId";
+		public const string PermissionErrorsRetryKey = "PermissionErrorsRetry";
 		public const string ProgrammaticWebApiServiceUrlKey = "ProgrammaticWebApiServiceUrl";
 		public const string TapiBridgeExportTransferWaitingTimeInSecondsKey = "TapiBridgeExportTransferWaitingTimeInSeconds";
 		public const string WebApiServiceUrlKey = "WebServiceURL";
@@ -44,6 +45,8 @@ namespace Relativity.Import.Export
 		public const int MaximumFilesForTapiBridgeMinValue = 1;
 		public const int MaxNumberOfFileExportTasksDefaultValue = 2;
 		public const int MaxNumberOfFileExportTasksMinValue = 2;
+		public const bool PermissionErrorsRetryKeyDefaultValue = false;
+		public const Relativity.Import.Export.Io.RetryOptions RetryOptionsDefaultValue = Relativity.Import.Export.Io.RetryOptions.Io;
 		public const int TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue = 600;
 		public const int TapiBridgeExportTransferWaitingTimeInSecondsMinValue = 1;
 	}

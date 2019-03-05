@@ -12,12 +12,14 @@ namespace Relativity.Import.Export.NUnit
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
+	using System.Net.Security;
 	using System.Runtime.Serialization;
 	using System.Runtime.Serialization.Formatters.Binary;
 
 	using global::NUnit.Framework;
 
 	using Relativity.Import.Export;
+	using Relativity.Import.Export.Io;
 	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>
@@ -255,6 +257,29 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(this.settings.ObjectFieldIdListContainsArtifactId, Is.EquivalentTo(testList));
 			this.settings.ObjectFieldIdListContainsArtifactId = new List<int>();
 			Assert.That(this.settings.ObjectFieldIdListContainsArtifactId, Is.Empty);
+		}
+
+		[Test]
+		public void ShouldGetAndSetThePermissionErrorsRetrySetting()
+		{
+			// Note: This value also enables and disables the RetryOptions.Permissions value.
+			// Verify global settings.
+			Assert.That(AppSettings.PermissionErrorsRetry, Is.EqualTo(AppSettingsConstants.PermissionErrorsRetryKeyDefaultValue));
+			AppSettings.PermissionErrorsRetry = true;
+			Assert.That(AppSettings.PermissionErrorsRetry, Is.True);
+			Assert.That(AppSettings.RetryOptions.HasFlag(RetryOptions.Permissions), Is.True);
+			AppSettings.PermissionErrorsRetry = false;
+			Assert.That(AppSettings.PermissionErrorsRetry, Is.False);
+			Assert.That(AppSettings.RetryOptions.HasFlag(RetryOptions.Permissions), Is.False);
+
+			// Verify interface settings.
+			Assert.That(this.settings.PermissionErrorsRetry, Is.EqualTo(AppSettingsConstants.PermissionErrorsRetryKeyDefaultValue));
+			this.settings.PermissionErrorsRetry = true;
+			Assert.That(this.settings.PermissionErrorsRetry, Is.True);
+			Assert.That(this.settings.RetryOptions.HasFlag(RetryOptions.Permissions), Is.True);
+			this.settings.PermissionErrorsRetry = false;
+			Assert.That(this.settings.PermissionErrorsRetry, Is.False);
+			Assert.That(this.settings.RetryOptions.HasFlag(RetryOptions.Permissions), Is.False);
 		}
 
 		[Test]

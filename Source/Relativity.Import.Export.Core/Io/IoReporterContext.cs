@@ -59,7 +59,7 @@ namespace Relativity.Import.Export.Io
 			this.FileSystem = fileSystem;
 			this.AppSettings = settings;
 			this.WaitAndRetryPolicy = waitAndRetryPolicy;
-			this.RetryOptions = RetryOptions.Io;
+			this.RetryOptions = settings.RetryOptions;
 		}
 
 		/// <summary>

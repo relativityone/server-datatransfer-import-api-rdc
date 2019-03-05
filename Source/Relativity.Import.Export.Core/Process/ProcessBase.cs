@@ -7,6 +7,7 @@
 namespace Relativity.Import.Export.Process
 {
 	using System;
+	using System.Threading;
 
 	using Relativity.Import.Export.Io;
 	using Relativity.Logging;
@@ -38,7 +39,8 @@ namespace Relativity.Import.Export.Process
 			: this(
 				Relativity.Import.Export.Io.FileSystem.Instance,
 				Relativity.Import.Export.AppSettings.Instance,
-				new NullLogger())
+				new NullLogger(),
+				CancellationToken.None)
 		{
 		}
 
@@ -54,7 +56,10 @@ namespace Relativity.Import.Export.Process
 		/// <param name="logger">
 		/// The logger instance.
 		/// </param>
-		protected ProcessBase(IFileSystem fileSystem, IAppSettings settings, Relativity.Logging.ILog logger)
+		/// <param name="token">
+		/// The cancellation token.
+		/// </param>
+		protected ProcessBase(IFileSystem fileSystem, IAppSettings settings, Relativity.Logging.ILog logger, CancellationToken token)
 		{
 			if (fileSystem == null)
 			{
@@ -72,6 +77,7 @@ namespace Relativity.Import.Export.Process
 			}
 
 			this.AppSettings = settings;
+			this.CancellationToken = token;
 			this.FileSystem = fileSystem;
 			this.Logger = logger;
 			this.processErrorWriter = new ProcessErrorWriter(fileSystem, logger);
@@ -99,6 +105,17 @@ namespace Relativity.Import.Export.Process
 		/// The <see cref="IAppSettings"/> instance.
 		/// </value>
 		protected IAppSettings AppSettings
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Gets the cancellation token.
+		/// </summary>
+		/// <value>
+		/// The <see cref="CancellationToken"/> value.
+		/// </value>
+		protected CancellationToken CancellationToken
 		{
 			get;
 		}
@@ -173,6 +190,20 @@ namespace Relativity.Import.Export.Process
 					this.ProcessId);
 				this.Context.PublishFatalException(e);
 			}
+		}
+
+		/// <summary>
+		/// Creates the I/O reporter instance.
+		/// </summary>
+		/// <returns>
+		/// The <see cref="IIoReporter"/> instance.
+		/// </returns>
+		protected IIoReporter CreateIoReporter()
+		{
+			return new IoReporter(
+				new IoReporterContext(this.FileSystem, this.AppSettings, new WaitAndRetryPolicy(this.AppSettings)),
+				this.Logger,
+				this.CancellationToken);
 		}
 
 		/// <summary>

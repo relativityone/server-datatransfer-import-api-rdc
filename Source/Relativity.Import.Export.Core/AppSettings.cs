@@ -9,6 +9,8 @@ namespace Relativity.Import.Export
 	using System;
 	using System.Collections.Generic;
 
+	using Relativity.Import.Export.Io;
+
 	/// <summary>
 	/// Defines static properties to obtain application settings.
 	/// </summary>
@@ -164,6 +166,18 @@ namespace Relativity.Import.Export
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether permission specific errors are retried.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to retry permissions specific errors; otherwise, <see langword="false" />.
+		/// </value>
+		public static bool PermissionErrorsRetry
+		{
+			get => Instance.PermissionErrorsRetry;
+			set => Instance.PermissionErrorsRetry = value;
+		}
+
+		/// <summary>
 		/// Gets or sets the programmatic Relativity Web API service URL.
 		/// </summary>
 		/// <value>
@@ -174,6 +188,14 @@ namespace Relativity.Import.Export
 			get => Instance.ProgrammaticWebApiServiceUrl;
 			set => Instance.ProgrammaticWebApiServiceUrl = value;
 		}
+
+		/// <summary>
+		/// Gets the retry options used by all retry policy blocks. This value is set through a combination of other setting values.
+		/// </summary>
+		/// <value>
+		/// The <see cref="RetryOptions"/> value.
+		/// </value>
+		public static RetryOptions RetryOptions => Instance.RetryOptions;
 
 		/// <summary>
 		/// Gets or sets the time, in seconds, that a Transfer API bridge waits before releasing the wait handle.

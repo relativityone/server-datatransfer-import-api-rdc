@@ -154,6 +154,18 @@ namespace Relativity.Import.Export
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether permission specific errors are retried.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to retry permissions specific errors; otherwise, <see langword="false" />.
+		/// </value>
+		bool PermissionErrorsRetry
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets the programmatic Relativity Web API service URL.
 		/// </summary>
 		/// <value>
@@ -163,6 +175,17 @@ namespace Relativity.Import.Export
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Gets the retry options used by all retry policy blocks. This value is read-only because the value is driven by a combination of other setting values such as <see cref="PermissionErrorsRetry"/>.
+		/// </summary>
+		/// <value>
+		/// The <see cref="RetryOptions"/> value.
+		/// </value>
+		Relativity.Import.Export.Io.RetryOptions RetryOptions
+		{
+			get;
 		}
 
 		/// <summary>
