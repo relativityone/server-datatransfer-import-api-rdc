@@ -9,7 +9,7 @@ properties([
     parameters([
         choice(choices: 'DEV\nGOLD', description: 'The type of Relativity build to install', name: 'type'),
         string(defaultValue: '', description: 'The Relativity build to install', name: 'build'),
-        string(defaultValue: '#slackchannelnamehere', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel')
+        string(defaultValue: '#import-api-rdc-build', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel')
     ])
 ])
 
@@ -40,9 +40,9 @@ timestamps
                     powershell ".\\build.ps1"
                 }
 
-                stage ('Build package')
+                stage ('Unit Tests')
                 {
-                    // call the script to build the package here
+                    powershell ".\\build.ps1 -SkipBuild -UnitTests"
                 }
 
                 stage('Install RAID')
@@ -67,9 +67,12 @@ timestamps
                     )
                 }
 
-                stage('Tests')
+                stage('Integration Tests')
                 {
-                    // call your tests here
+                    if(sut?.name)
+                    {
+                        powershell ".\\build.ps1 -SkipBuild -IntegrationTests -TestVM -TestVMName \"${sut.name}\""
+                    }
                 }
             }
         }
