@@ -75,7 +75,20 @@ timestamps
                 {
                     if(sut?.name)
                     {
-                        powershell ".\\build.ps1 -SkipBuild -IntegrationTests -TestVM -TestVMName \"${sut.name}\""
+                        withEnv([
+                            "IAPI_INTEGRATION_RELATIVITYURL=https://${sut.name}.kcura.corp",
+                            "IAPI_INTEGRATION_RELATIVITYRESTURL=https://${sut.name}.kcura.corp/relativity.rest/api",
+                            "IAPI_INTEGRATION_RELATIVITYSERVICEURL=https://${sut.name}.kcura.corp/relativity.services",
+                            "IAPI_INTEGRATION_RELATIVITYWEBAPIURL=https://${sut.name}.kcura.corp/relativitywebapi",
+                            "IAPI_INTEGRATION_RELATIVITYUSERNAME=relativity.admin@kcura.com",
+                            "IAPI_INTEGRATION_RELATIVITYPASSWORD=Test1234!",
+                            "IAPI_INTEGRATION_SQLINSTANCENAME=${sut.name}.kcura.corp\EDDSINSTANCE001",
+                            "IAPI_INTEGRATION_SQLADMINUSERNAME=sa",
+                            "IAPI_INTEGRATION_SQLADMINPASSWORD=P@ssw0rd@1"
+                        ]) 
+                        {
+                            powershell ".\\build.ps1 -SkipBuild -IntegrationTests"
+                        }
                     }
                 }
             }
