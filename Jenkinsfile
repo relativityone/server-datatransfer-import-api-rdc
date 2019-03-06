@@ -80,8 +80,7 @@ timestamps
                 {
                     if(sut?.name)
                     {
-                        File testParameters = new File(".\\test-parameters.json")
-                        testParameters.write """{
+                        writeFile file: ".\\test-parameters.json", text: """{
                             "RelativityUrl" : "https://${sut.name}.kcura.corp",
                             "RelativityRestUrl" : "https://${sut.name}.kcura.corp/relativity.rest/api",
                             "RelativityServicesUrl" : "https://${sut.name}.kcura.corp/relativity.services",
@@ -99,7 +98,6 @@ timestamps
                         }"""
                         
                         powershell ".\\build.ps1 -SkipBuild -IntegrationTests -TestParametersFile .\\test-parameters.json"
-                        testParameters.delete()
                     }
                 }
 
