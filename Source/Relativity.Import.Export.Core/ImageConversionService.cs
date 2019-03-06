@@ -115,6 +115,7 @@ namespace Relativity.Import.Export
 					else
 					{
 						encoderParams.Dispose();
+						encoderParams = null;
 						encoderParams = new System.Drawing.Imaging.EncoderParameters(2);
 						encoderParams.Param[0] = new System.Drawing.Imaging.EncoderParameter(
 							saveFlag,
