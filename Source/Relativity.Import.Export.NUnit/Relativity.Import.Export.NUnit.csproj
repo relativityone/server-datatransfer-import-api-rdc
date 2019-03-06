@@ -114,6 +114,7 @@
     <Compile Include="AppSettingsTests.cs" />
     <Compile Include="ProcessEventWriterTests.cs" />
     <Compile Include="ProcessErrorWriterTests.cs" />
+    <Compile Include="SqlDataViewTests.cs" />
     <Compile Include="TimekeeperTests.cs" />
     <Compile Include="StringExtensionsTests.cs" />
     <Compile Include="DateTimeExtensionsTests.cs" />
