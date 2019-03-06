@@ -78,41 +78,43 @@ timestamps
 
                 stage('Integration Tests')
                 {
-                    //if(sut?.name)
-                    //{
-                    //    withEnv([
-                    //        "IAPI_INTEGRATION_RELATIVITYURL=https://${sut.name}.kcura.corp",
-                    //        "IAPI_INTEGRATION_RELATIVITYRESTURL=https://${sut.name}.kcura.corp/relativity.rest/api",
-                    //        "IAPI_INTEGRATION_RELATIVITYSERVICEURL=https://${sut.name}.kcura.corp/relativity.services",
-                    //        "IAPI_INTEGRATION_RELATIVITYWEBAPIURL=https://${sut.name}.kcura.corp/relativitywebapi",
-                    //        "IAPI_INTEGRATION_RELATIVITYUSERNAME=relativity.admin@kcura.com",
-                    //        "IAPI_INTEGRATION_RELATIVITYPASSWORD=Test1234!",
-                    //        "IAPI_INTEGRATION_SQLINSTANCENAME=${sut.name}.kcura.corp\\EDDSINSTANCE001",
-                    //        "IAPI_INTEGRATION_SQLADMINUSERNAME=sa",
-                    //        "IAPI_INTEGRATION_SQLADMINPASSWORD=P@ssw0rd@1"
-                    //    ]) 
-                    //    {
-                    //        powershell ".\\build.ps1 -SkipBuild -IntegrationTests"
-                    //    }
-                    //}
+                    if(sut?.name)
+                    {
+                        withEnv([
+                            "IAPI_INTEGRATION_RELATIVITYURL=https://${sut.name}.kcura.corp",
+                            "IAPI_INTEGRATION_RELATIVITYRESTURL=https://${sut.name}.kcura.corp/relativity.rest/api",
+                            "IAPI_INTEGRATION_RELATIVITYSERVICEURL=https://${sut.name}.kcura.corp/relativity.services",
+                            "IAPI_INTEGRATION_RELATIVITYWEBAPIURL=https://${sut.name}.kcura.corp/relativitywebapi",
+                            "IAPI_INTEGRATION_RELATIVITYUSERNAME=relativity.admin@kcura.com",
+                            "IAPI_INTEGRATION_RELATIVITYPASSWORD=Test1234!",
+                            "IAPI_INTEGRATION_SQLINSTANCENAME=${sut.name}.kcura.corp\\EDDSINSTANCE001",
+                            "IAPI_INTEGRATION_SQLADMINUSERNAME=sa",
+                            "IAPI_INTEGRATION_SQLADMINPASSWORD=P@ssw0rd@1"
+                        ]) 
+                        {
+                            powershell "echo $env:IAPI_INTEGRATION_RELATIVITYURL"
+                            //powershell ".\\build.ps1 -SkipBuild -IntegrationTests"
+                        }
+                    }
                 }
 
                 stage ('Publish to bld-pkgs')
                 {
-                    //$productName = "IAPI";
-                    //
-                    //withCredentials([usernamePassword(credentialsId: 'jenkins_packages_svc', passwordVariable: 'BLDPKGSPASSWORD', usernameVariable: 'BLDPKGSUSERNAME')])
-                    //{
-                    //    def sourcePath = "${env.WORKSPACE}\\publishPackage.zip";
-                    //    def destinationPath = "\\\\BLD-PKGS.kcura.corp\\Packages\\DataTransfer\\${ProductName}\\${env.BRANCH_NAME}\\${buildNumber}"
-                    //    
-                    //    powershell """
-                    //        net use \\\\bld-pkgs.kcura.corp\\Packages\\DataTransfer\\$ProductName "$BLDPKGSPASSWORD" /user:kcura\\$BLDPKGSUSERNAME 
-                    //            mkdir ${destinationPath} -Force
-                    //            Copy-Item $sourcePath ${destinationPath} -recurse -force
-                    //        net use \\\\bld-pkgs.kcura.corp\\Packages\\DataTransfer\\$ProductName /DELETE /Y
-                    //    """
-                    //}
+                    $productName = "IAPI";
+                    
+                    withCredentials([usernamePassword(credentialsId: 'jenkins_packages_svc', passwordVariable: 'BLDPKGSPASSWORD', usernameVariable: 'BLDPKGSUSERNAME')])
+                    {
+                        powershell "echo $env:BLDPKGSUSERNAME"
+                        //def sourcePath = "${env.WORKSPACE}\\publishPackage.zip";
+                        //def destinationPath = "\\\\BLD-PKGS.kcura.corp\\Packages\\DataTransfer\\${ProductName}\\${env.BRANCH_NAME}\\${buildNumber}"
+                        //
+                        //powershell """
+                        //    net use \\\\bld-pkgs.kcura.corp\\Packages\\DataTransfer\\$ProductName "$BLDPKGSPASSWORD" /user:kcura\\$BLDPKGSUSERNAME 
+                        //        mkdir ${destinationPath} -Force
+                        //        Copy-Item $sourcePath ${destinationPath} -recurse -force
+                        //    net use \\\\bld-pkgs.kcura.corp\\Packages\\DataTransfer\\$ProductName /DELETE /Y
+                        //"""
+                    }
                 }
             }
         }
