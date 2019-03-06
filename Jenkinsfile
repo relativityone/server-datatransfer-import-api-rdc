@@ -91,7 +91,7 @@ timestamps
                             "SkipDirectModeTests" : "False",
                             "SkipIntegrationTests" : "False",
                             "SqlDropWorkspaceDatabase" : "True",
-                            "SqlInstanceName" : "${sut.name}.kcura.corp\\EDDSINSTANCE001",
+                            "SqlInstanceName" : "${sut.name}.kcura.corp\\\\EDDSINSTANCE001",
                             "SqlAdminUserName" : "sa",
                             "SqlAdminPassword" : "P@ssw0rd@1",
                             "WorkspaceTemplate" : "Relativity Starter Template"
