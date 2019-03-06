@@ -198,6 +198,16 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Shared ReadOnly Property HttpTimeoutSeconds() As Int32
+			Get
+				Try
+					Return CType(ConfigSettings("HttpTimeoutSeconds"), Int32)
+				Catch ex As Exception
+					Return 300
+				End Try
+			End Get
+		End Property
+
 		Public Shared ReadOnly Property WebAPIOperationTimeout() As Int32
 			Get
 				Try
@@ -407,6 +417,13 @@ Namespace kCura.WinEDDS
 		Public Shared ReadOnly Property TapiTargetDataRateMbps() As Int32
 			Get
 				Return CType(ConfigSettings("TapiTargetDataRateMbps"), Int32)
+			End Get
+		End Property
+
+		' This enables or disables preserving file timestamps.
+		Public Shared ReadOnly Property TapiPreserveFileTimestamps() As Boolean
+			Get
+				Return CType(ConfigSettings("TapiPreserveFileTimestamps"), Boolean)
 			End Get
 		End Property
 
@@ -640,11 +657,10 @@ Namespace kCura.WinEDDS
 			If Not tempDict.Contains("TapiLargeFileProgressEnabled") Then tempDict.Add("TapiLargeFileProgressEnabled", "False")
 			If Not tempDict.Contains("TapiMaxJobParallelism") Then tempDict.Add("TapiMaxJobParallelism", "10")
 			If Not tempDict.Contains("TapiAsperaNativeDocRootLevels") Then tempDict.Add("TapiAsperaNativeDocRootLevels", "1")
-			If Not tempDict.Contains("DisableAspera") Then tempDict.Add("DisableAspera", "True")
+			If Not tempDict.Contains("TapiPreserveFileTimestamps") Then tempDict.Add("TapiPreserveFileTimestamps", "False")
+			If Not tempDict.Contains("HttpTimeoutSeconds") Then tempDict.Add("HttpTimeoutSeconds", "300")
 			If Not tempDict.Contains("RestUrl") Then tempDict.Add("RestUrl", "/Relativity.REST/api")
 			If Not tempDict.Contains("ServicesUrl") Then tempDict.Add("ServicesUrl", "/Relativity.Services/")
-			If Not tempDict.Contains("AsperaBcpPathRootFolder") Then tempDict.Add("AsperaBcpPathRootFolder", "BCPPath")
-			If Not tempDict.Contains("AsperaNativeFilesRootFolder") Then tempDict.Add("AsperaNativeFilesRootFolder", "Files")
 			If Not tempDict.Contains("LogConfigFile") Then tempDict.Add("LogConfigFile", "LogConfig.xml")
 			If Not tempDict.Contains("SuppressCertificateCheckOnClient") Then tempDict.Add("SuppressCertificateCheckOnClient", "False")
 			If Not tempDict.Contains(_ENABLE_CASE_SENSITIVE_SEARCH_KEY) Then tempDict.Add(_ENABLE_CASE_SENSITIVE_SEARCH_KEY, "True")

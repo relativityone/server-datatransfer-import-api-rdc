@@ -22,6 +22,7 @@ Namespace kCura.WinEDDS
 
 			Dim parameters As kCura.WinEDDS.TApi.TapiBridgeParameters = New kCura.WinEDDS.TApi.TapiBridgeParameters
 			parameters.Credentials = _credential
+			parameters.TimeoutSeconds = Config.HttpTimeoutSeconds
 			parameters.WebCookieContainer = _cookieContainer
 			parameters.WebServiceUrl = Config.WebServiceURL
 			parameters.WorkspaceId = _caseInfo.ArtifactID

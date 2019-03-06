@@ -259,12 +259,14 @@ Namespace kCura.WinEDDS
 			nativeParameters.SubmitApmMetrics = Config.TapiSubmitApmMetrics
 			nativeParameters.TargetPath = Me._defaultDestinationFolderPath
 			nativeParameters.TargetDataRateMbps = Config.TapiTargetDataRateMbps
+			nativeParameters.TimeoutSeconds = Config.HttpTimeoutSeconds
 			nativeParameters.TransferLogDirectory = Config.TapiTransferLogDirectory
 			nativeParameters.WaitTimeBetweenRetryAttempts = Me.WaitTimeBetweenRetryAttempts
 			nativeParameters.WebCookieContainer = args.CookieContainer
 			nativeParameters.WebServiceUrl = Config.WebServiceURL
 			nativeParameters.WorkspaceId = args.CaseInfo.ArtifactID
 			nativeParameters.PermissionErrorsRetry = Config.PermissionErrorsRetry
+			nativeParameters.PreserveFileTimestamps = Config.TapiPreserveFileTimestamps
 			nativeParameters.BadPathErrorsRetry = Config.BadPathErrorsRetry
 
 			' Copying the parameters and tweaking just a few BCP specific parameters.
@@ -275,7 +277,8 @@ Namespace kCura.WinEDDS
 			bcpParameters.SortIntoVolumes = False
 			bcpParameters.ForceHttpClient = bcpParameters.ForceHttpClient Or Config.TapiForceBcpHttpClient
 
-			' Ensure that one instance is used for both TAPI objects.
+			' Never preserve timestamps for BCP load files.
+			bcpParameters.PreserveFileTimestamps = false
 			CreateTapiBridges(nativeParameters, bcpParameters)
 		End Sub
 

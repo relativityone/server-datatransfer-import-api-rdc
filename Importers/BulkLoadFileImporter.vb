@@ -479,9 +479,11 @@ Namespace kCura.WinEDDS
 			nativeParameters.MaxJobParallelism = Config.TapiMaxJobParallelism
 			nativeParameters.MaxJobRetryAttempts = Me.NumberOfRetries
 			nativeParameters.MinDataRateMbps = Config.TapiMinDataRateMbps
+			nativeParameters.PreserveFileTimestamps = Config.TapiPreserveFileTimestamps
 			nativeParameters.SubmitApmMetrics = Config.TapiSubmitApmMetrics
 			nativeParameters.TargetPath = Me._defaultDestinationFolderPath
 			nativeParameters.TargetDataRateMbps = Config.TapiTargetDataRateMbps
+			nativeParameters.TimeoutSeconds = Config.HttpTimeoutSeconds
 			nativeParameters.TransferLogDirectory = Config.TapiTransferLogDirectory
 			nativeParameters.WaitTimeBetweenRetryAttempts = Me.WaitTimeBetweenRetryAttempts
 			nativeParameters.WebCookieContainer = args.CookieContainer
@@ -499,6 +501,8 @@ Namespace kCura.WinEDDS
 			bcpParameters.SortIntoVolumes = False
 			bcpParameters.ForceHttpClient = bcpParameters.ForceHttpClient Or Config.TapiForceBcpHttpClient
 
+			' Never preserve timestamps for BCP load files.
+			bcpParameters.PreserveFileTimestamps = false
 			CreateTapiBridges(nativeParameters, bcpParameters)
 		End Sub
 
