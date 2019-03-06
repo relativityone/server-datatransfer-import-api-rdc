@@ -526,6 +526,7 @@ Namespace kCura.EDDS.WinForm
             parameters.ForceClientCandidates = WinEDDS.Config.TapiForceClientCandidates
             parameters.ForceFileShareClient = WinEDDS.Config.TapiForceFileShareClient
             parameters.ForceHttpClient = WinEDDS.Config.ForceWebUpload OrElse WinEDDS.Config.TapiForceHttpClient
+            parameters.TimeoutSeconds = WinEDDS.Config.HttpTimeoutSeconds
             parameters.WebCookieContainer = Me.CookieContainer
             parameters.WebServiceUrl = WinEDDS.Config.WebServiceURL
             parameters.WorkspaceId = Me.SelectedCaseInfo.ArtifactID
