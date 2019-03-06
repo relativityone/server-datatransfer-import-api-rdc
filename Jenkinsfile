@@ -80,21 +80,26 @@ timestamps
                 {
                     if(sut?.name)
                     {
-                        withEnv([
-                            "IAPI_INTEGRATION_RELATIVITYURL=https://${sut.name}.kcura.corp",
-                            "IAPI_INTEGRATION_RELATIVITYRESTURL=https://${sut.name}.kcura.corp/relativity.rest/api",
-                            "IAPI_INTEGRATION_RELATIVITYSERVICEURL=https://${sut.name}.kcura.corp/relativity.services",
-                            "IAPI_INTEGRATION_RELATIVITYWEBAPIURL=https://${sut.name}.kcura.corp/relativitywebapi",
-                            "IAPI_INTEGRATION_RELATIVITYUSERNAME=relativity.admin@kcura.com",
-                            "IAPI_INTEGRATION_RELATIVITYPASSWORD=Test1234!",
-                            "IAPI_INTEGRATION_SQLINSTANCENAME=${sut.name}.kcura.corp\\EDDSINSTANCE001",
-                            "IAPI_INTEGRATION_SQLADMINUSERNAME=sa",
-                            "IAPI_INTEGRATION_SQLADMINPASSWORD=P@ssw0rd@1"
-                        ]) 
-                        {
-                            powershell "echo $env:IAPI_INTEGRATION_RELATIVITYURL"
-                            //powershell ".\\build.ps1 -SkipBuild -IntegrationTests"
-                        }
+                        File testParameters = new File(".\\test-parameters.json")
+                        testParameters.write """{
+                            "RelativityUrl" : "https://${sut.name}.kcura.corp",
+                            "RelativityRestUrl" : "https://${sut.name}.kcura.corp/relativity.rest/api",
+                            "RelativityServicesUrl" : "https://${sut.name}.kcura.corp/relativity.services",
+                            "RelativityWebApiUrl" : "https://${sut.name}.kcura.corp/relativitywebapi",
+                            "RelativityUserName" : "relativity.admin@kcura.com",
+                            "RelativityPassword" : "Test1234!",
+                            "SkipAsperaModeTests" : "False",
+                            "SkipDirectModeTests" : "False",
+                            "SkipIntegrationTests" : "False",
+                            "SqlDropWorkspaceDatabase" : "True",
+                            "SqlInstanceName" : "${sut.name}.kcura.corp\\EDDSINSTANCE001",
+                            "SqlAdminUserName" : "sa",
+                            "SqlAdminPassword" : "P@ssw0rd@1",
+                            "WorkspaceTemplate" : "Relativity Starter Template"
+                        }"""
+                        
+                        powershell ".\\build.ps1 -SkipBuild -IntegrationTests -TestParametersFile .\\test-parameters.json"
+                        testParameters.delete()
                     }
                 }
 
