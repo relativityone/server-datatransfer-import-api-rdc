@@ -56,6 +56,32 @@ namespace Relativity.Import.Export.Io
 		/// Initializes a new instance of the <see cref="DelimitedFileImporter"/> class.
 		/// </summary>
 		/// <param name="delimiter">
+		/// The delimiter character array to use while splitting lines.
+		/// </param>
+		/// <param name="bound">
+		/// The bounding string surrounding each delimiter.
+		/// </param>
+		/// <param name="newlineProxy">
+		/// The string with which to replace system newline characters (ClRf). Only the first character will be used.
+		/// </param>
+		/// <param name="retry">
+		/// Specify whether retry behavior is required. This flag was added for backwards compatibility with legacy code.
+		/// </param>
+		protected DelimitedFileImporter(string delimiter, string bound, string newlineProxy, bool retry)
+			: this(
+				delimiter,
+				bound,
+				newlineProxy,
+				new IoReporterContext { RetryOptions = retry ? RetryOptions.Io : RetryOptions.None },
+				new NullLogger(),
+				CancellationToken.None)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DelimitedFileImporter"/> class.
+		/// </summary>
+		/// <param name="delimiter">
 		/// The delimiter string to use while splitting lines.
 		/// </param>
 		/// <param name="bound">
@@ -112,6 +138,26 @@ namespace Relativity.Import.Export.Io
 			{
 				this.NewlineProxy = newlineProxy.ToCharArray();
 			}
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DelimitedFileImporter"/> class.
+		/// </summary>
+		/// <param name="delimiter">
+		/// The delimiter character array to use while splitting lines.
+		/// </param>
+		/// <param name="retry">
+		/// Specify whether retry behavior is required. This flag was added for backwards compatibility with legacy code.
+		/// </param>
+		protected DelimitedFileImporter(char[] delimiter, bool retry)
+			: this(
+				delimiter,
+				null,
+				null,
+				new IoReporterContext { RetryOptions = retry ? RetryOptions.Io : RetryOptions.None },
+				new NullLogger(),
+				CancellationToken.None)
+		{
 		}
 
 		/// <summary>

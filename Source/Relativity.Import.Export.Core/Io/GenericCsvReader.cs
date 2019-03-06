@@ -26,6 +26,42 @@ namespace Relativity.Import.Export.Io
 		/// <param name="file">
 		/// The full path to the CSV file.
 		/// </param>
+		/// <param name="retry">
+		/// Specify whether retry behavior is required. This flag was added for backwards compatibility with legacy code.
+		/// </param>
+		public GenericCsvReader(string file, bool retry)
+			: this(file, Encoding.Default, retry)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GenericCsvReader"/> class.
+		/// </summary>
+		/// <param name="file">
+		/// The full path to the CSV file.
+		/// </param>
+		/// <param name="encoding">
+		/// The encoding of the file.
+		/// </param>
+		/// <param name="retry">
+		/// Specify whether retry behavior is required. This flag was added for backwards compatibility with legacy code.
+		/// </param>
+		public GenericCsvReader(string file, Encoding encoding, bool retry)
+			: this(
+				file,
+				encoding,
+				new IoReporterContext { RetryOptions = retry ? RetryOptions.Io : RetryOptions.None },
+				new NullLogger(),
+				CancellationToken.None)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GenericCsvReader"/> class.
+		/// </summary>
+		/// <param name="file">
+		/// The full path to the CSV file.
+		/// </param>
 		/// <param name="logger">
 		/// The Relativity logger.
 		/// </param>
