@@ -117,5 +117,16 @@ namespace Relativity.Import.Export.Transfer
 		/// The <see cref="Guid"/> value.
 		/// </returns>
 		Task<Guid> GetWorkspaceClientIdAsync(TapiBridgeParameters parameters);
-    }
+
+		/// <summary>
+		/// Sets the appropriate flags on <paramref name="parameters"/> to match the target Transfer API client.
+		/// </summary>
+		/// <param name="parameters">
+		/// The parameters to set.
+		/// </param>
+		/// <param name="targetClient">
+		/// The target Transfer API client.
+		/// </param>
+		void SetTapiClient(TapiBridgeParameters parameters, TapiClient targetClient);
+	}
 }

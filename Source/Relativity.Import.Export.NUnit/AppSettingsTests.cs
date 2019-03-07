@@ -115,6 +115,26 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		public void ShouldGetAndSetTheHttpTimeoutSecondsSetting()
+		{
+			// Verify global settings.
+			Assert.That(
+				AppSettings.HttpTimeoutSeconds,
+				Is.EqualTo(AppSettingsConstants.HttpTimeoutSecondsDefaultValue));
+			int expectedGlobalValue = RandomHelper.NextInt32(AppSettingsConstants.HttpTimeoutSecondsMinValue, 1000);
+			AppSettings.HttpTimeoutSeconds = expectedGlobalValue;
+			Assert.That(AppSettings.HttpTimeoutSeconds, Is.EqualTo(expectedGlobalValue));
+
+			// Verify interface settings.
+			Assert.That(
+				this.settings.HttpTimeoutSeconds,
+				Is.EqualTo(AppSettingsConstants.HttpTimeoutSecondsDefaultValue));
+			int expectedInterfaceValue = RandomHelper.NextInt32(AppSettingsConstants.HttpTimeoutSecondsMinValue, 1000);
+			this.settings.HttpTimeoutSeconds = expectedInterfaceValue;
+			Assert.That(this.settings.HttpTimeoutSeconds, Is.EqualTo(expectedInterfaceValue));
+		}
+
+		[Test]
 		public void ShouldGetAndSetTheIoErrorNumberOfRetriesSetting()
 		{
 			// Verify global settings.
@@ -318,6 +338,28 @@ namespace Relativity.Import.Export.NUnit
 			int expectedInterfaceValue = RandomHelper.NextInt32(AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsMinValue, 1000);
 			this.settings.TapiBridgeExportTransferWaitingTimeInSeconds = expectedInterfaceValue;
 			Assert.That(this.settings.TapiBridgeExportTransferWaitingTimeInSeconds, Is.EqualTo(expectedInterfaceValue));
+		}
+
+		[Test]
+		public void ShouldGetAndSetTheTapiPreserveFileTimestampsSetting()
+		{
+			// Verify global settings.
+			Assert.That(
+				AppSettings.TapiPreserveFileTimestamps,
+				Is.EqualTo(AppSettingsConstants.TapiPreserveFileTimestampsDefaultValue));
+			AppSettings.TapiPreserveFileTimestamps = true;
+			Assert.That(AppSettings.TapiPreserveFileTimestamps, Is.True);
+			AppSettings.TapiPreserveFileTimestamps = false;
+			Assert.That(AppSettings.TapiPreserveFileTimestamps, Is.False);
+
+			// Verify interface settings.
+			Assert.That(
+				this.settings.TapiPreserveFileTimestamps,
+				Is.EqualTo(AppSettingsConstants.TapiPreserveFileTimestampsDefaultValue));
+			this.settings.TapiPreserveFileTimestamps = true;
+			Assert.That(this.settings.TapiPreserveFileTimestamps, Is.True);
+			this.settings.TapiPreserveFileTimestamps = false;
+			Assert.That(this.settings.TapiPreserveFileTimestamps, Is.False);
 		}
 
 		[Test]

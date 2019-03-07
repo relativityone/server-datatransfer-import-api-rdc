@@ -200,8 +200,37 @@ namespace Relativity.Import.Export.Transfer
 		/// <inheritdoc />
 		public async Task<Guid> GetWorkspaceClientIdAsync(TapiBridgeParameters parameters)
 		{
+			if (parameters == null)
+			{
+				throw new ArgumentNullException(nameof(parameters));
+			}
+
 			ITransferClient transferClient = await this.GetWorkspaceClientAsync(parameters).ConfigureAwait(false);
 			return transferClient.Id;
+		}
+
+		/// <inheritdoc />
+		public void SetTapiClient(TapiBridgeParameters parameters, TapiClient targetClient)
+		{
+			if (parameters == null)
+			{
+				throw new ArgumentNullException(nameof(parameters));
+			}
+
+			switch (targetClient)
+			{
+				case TapiClient.Aspera:
+					parameters.ForceAsperaClient = true;
+					break;
+
+				case TapiClient.Direct:
+					parameters.ForceFileShareClient = true;
+					break;
+
+				case TapiClient.Web:
+					parameters.ForceHttpClient = true;
+					break;
+			}
 		}
 
 		/// <summary>

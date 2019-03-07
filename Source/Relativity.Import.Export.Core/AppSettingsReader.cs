@@ -84,6 +84,10 @@ namespace Relativity.Import.Export
 			settings.ForceFolderPreview = dictionary.GetBooleanValue(
 				AppSettingsConstants.ForceFolderPreviewKey,
 				AppSettingsConstants.ForceFolderPreviewDefaultValue);
+			settings.HttpTimeoutSeconds = dictionary.GetInt32Value(
+				AppSettingsConstants.HttpTimeoutSecondsKey,
+				AppSettingsConstants.HttpTimeoutSecondsDefaultValue,
+				AppSettingsConstants.HttpTimeoutSecondsMinValue);
 			settings.IoErrorNumberOfRetries = dictionary.GetInt32Value(
 				AppSettingsConstants.IoErrorNumberOfRetriesKey,
 				AppSettingsConstants.IoErrorNumberOfRetriesDefaultValue,
@@ -107,6 +111,9 @@ namespace Relativity.Import.Export
 				AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsKey,
 				AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue,
 				AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsMinValue);
+			settings.TapiPreserveFileTimestamps = dictionary.GetBooleanValue(
+				AppSettingsConstants.TapiPreserveFileTimestampsKey,
+				AppSettingsConstants.TapiPreserveFileTimestampsDefaultValue);
 
 			// This complexity is due to 3 possible values including the Windows Registry.
 			AppDotNetSettings dotNetSettings = settings as AppDotNetSettings;

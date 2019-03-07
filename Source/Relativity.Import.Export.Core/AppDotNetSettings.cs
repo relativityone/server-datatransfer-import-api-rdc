@@ -35,6 +35,7 @@ namespace Relativity.Import.Export
 			thisSettings.ExportErrorNumberOfRetries = AppSettingsConstants.ExportErrorNumberOfRetriesDefaultValue;
 			thisSettings.ExportErrorWaitTimeInSeconds = AppSettingsConstants.ExportErrorWaitTimeInSecondsDefaultValue;
 			thisSettings.ForceFolderPreview = AppSettingsConstants.ForceFolderPreviewDefaultValue;
+			thisSettings.HttpTimeoutSeconds = AppSettingsConstants.HttpTimeoutSecondsDefaultValue;
 			thisSettings.IoErrorNumberOfRetries = AppSettingsConstants.IoErrorNumberOfRetriesDefaultValue;
 			thisSettings.IoErrorWaitTimeInSeconds = AppSettingsConstants.IoErrorWaitTimeInSecondsDefaultValue;
 			thisSettings.MaxNumberOfFileExportTasks = AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue;
@@ -44,6 +45,7 @@ namespace Relativity.Import.Export
 			thisSettings.PermissionErrorsRetry = AppSettingsConstants.PermissionErrorsRetryKeyDefaultValue;
 			thisSettings.ProgrammaticWebApiServiceUrl = null;
 			thisSettings.TapiBridgeExportTransferWaitingTimeInSeconds = AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue;
+			thisSettings.TapiPreserveFileTimestamps = AppSettingsConstants.TapiPreserveFileTimestampsDefaultValue;
 			this.webApiServiceUrl = null;
 		}
 
@@ -69,6 +71,7 @@ namespace Relativity.Import.Export
 			thisSettings.ExportErrorNumberOfRetries = settings.ExportErrorNumberOfRetries;
 			thisSettings.ExportErrorWaitTimeInSeconds = settings.ExportErrorWaitTimeInSeconds;
 			thisSettings.ForceFolderPreview = settings.ForceFolderPreview;
+			thisSettings.HttpTimeoutSeconds = settings.HttpTimeoutSeconds;
 			thisSettings.IoErrorNumberOfRetries = settings.IoErrorNumberOfRetries;
 			thisSettings.IoErrorWaitTimeInSeconds = settings.IoErrorWaitTimeInSeconds;
 			thisSettings.LogAllEvents = settings.LogAllEvents;
@@ -86,6 +89,7 @@ namespace Relativity.Import.Export
 			}
 
 			thisSettings.TapiBridgeExportTransferWaitingTimeInSeconds = settings.TapiBridgeExportTransferWaitingTimeInSeconds;
+			thisSettings.TapiPreserveFileTimestamps = settings.TapiPreserveFileTimestamps;
 			if (settings.WebApiServiceUrl != null)
 			{
 				this.webApiServiceUrl = new Uri(settings.WebApiServiceUrl.ToString());
@@ -145,6 +149,13 @@ namespace Relativity.Import.Export
 				AppSettingsReader.SetRegistryKeyValue(
 					AppSettingsConstants.ForceFolderPreviewKey,
 					value.ToString().ToLowerInvariant());
+		}
+
+		/// <inheritdoc />
+		int IAppSettings.HttpTimeoutSeconds
+		{
+			get;
+			set;
 		}
 
 		/// <inheritdoc />
@@ -250,6 +261,13 @@ namespace Relativity.Import.Export
 
 		/// <inheritdoc />
 		int IAppSettings.TapiBridgeExportTransferWaitingTimeInSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		bool IAppSettings.TapiPreserveFileTimestamps
 		{
 			get;
 			set;

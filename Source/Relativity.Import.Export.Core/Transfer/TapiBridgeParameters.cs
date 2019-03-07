@@ -42,7 +42,8 @@ namespace Relativity.Import.Export.Transfer
             this.MaxJobRetryAttempts = 3;
             this.MinDataRateMbps = 0;
             this.PermissionErrorsRetry = false;
-            this.SubmitApmMetrics = true;
+            this.PreserveFileTimestamps = false;
+			this.SubmitApmMetrics = true;
             this.SupportCheckPath = null;
             this.TargetDataRateMbps = 100;
             this.TargetPath = null;
@@ -86,7 +87,8 @@ namespace Relativity.Import.Export.Transfer
             this.MaxJobRetryAttempts = copy.MaxJobRetryAttempts;
             this.MinDataRateMbps = copy.MinDataRateMbps;
             this.PermissionErrorsRetry = copy.PermissionErrorsRetry;
-            this.SubmitApmMetrics = copy.SubmitApmMetrics;
+            this.PreserveFileTimestamps = copy.PreserveFileTimestamps;
+			this.SubmitApmMetrics = copy.SubmitApmMetrics;
             this.SupportCheckPath = copy.SupportCheckPath;
             this.TargetPath = copy.TargetPath;
             this.TimeoutSeconds = copy.TimeoutSeconds;
@@ -313,13 +315,25 @@ namespace Relativity.Import.Export.Transfer
             set;
         }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether to submit APM metrics to Relativity once the transfer job completes. This is <see langword="true" /> by default.
-        /// </summary>
-        /// <value>
-        /// <see langword="true" /> to submit APM metrics; otherwise, <see langword="false" />.
-        /// </value>
-        public bool SubmitApmMetrics
+		/// <summary>
+		/// Gets or sets a value indicating whether to preserve import and export file timestamps.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to preserve file timestamps; otherwise, <see langword="false" />.
+		/// </value>
+		public bool PreserveFileTimestamps
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to submit APM metrics to Relativity once the transfer job completes. This is <see langword="true" /> by default.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to submit APM metrics; otherwise, <see langword="false" />.
+		/// </value>
+		public bool SubmitApmMetrics
         {
             get;
             set;
