@@ -44,7 +44,7 @@ timestamps
                     version = powershell(returnStdout:true, script: "(.\\Version\\Increment-ProductVersion.ps1 -Version (Get-Content .\\Version\\version.txt) -Force).ToString()")
                     version = version.trim()
                     echo "Building version $version"
-                    output = powershell ".\\build.ps1 -AssemblyVersion '$version' -Configuration '${params.buildConfig} -ExtendedCodeAnalysis -ForceDeleteTools -ForceDeletePackages  -Verbosity 'normal'"
+                    output = powershell ".\\build.ps1 -AssemblyVersion '$version' -Configuration '${params.buildConfig} -ExtendedCodeAnalysis -ForceDeleteTools -ForceDeletePackages -Verbosity 'normal'"
                     echo output
                 }
 
