@@ -118,7 +118,7 @@ $PackagesDir = Join-Path $BaseDir "packages"
 $PaketDir = Join-Path $BaseDir ".paket"
 $PaketExe = Join-Path $PaketDir 'paket.exe'
 $PaketBootstrapperExe = Join-Path $PaketDir 'paket.bootstrapper.exe'
-Write-Verbose "BaseDir resolves to $BaseDir"
+Write-Verbose "The base directory resolves to $BaseDir"
 Write-Verbose "Checking for Paket in the .paket sub-directory..."
 if (-Not (Test-Path $PaketDir -PathType Container)) {
     New-Item -ItemType directory -Path $PaketDir
