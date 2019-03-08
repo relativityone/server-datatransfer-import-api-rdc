@@ -94,11 +94,11 @@ timestamps
         {
             try
             {
-                def(passedTests, failedTests, ignoredTests) = getTestCounts(this)
-                node(sessionID)
-                {
-                    sendCDSlackNotification(this, "", build, env.BRANCH_NAME, params.type, params.slackChannel, "", failedTests, passedTests, ignoredTests, env.BUILD_TAG)
-                }
+                //def(passedTests, failedTests, ignoredTests) = getTestCounts(this)
+                //node(sessionID)
+                //{
+                //    sendCDSlackNotification(this, "", build, env.BRANCH_NAME, params.type, params.slackChannel, "", failedTests, passedTests, ignoredTests, env.BUILD_TAG)
+                //}
             }
             catch (err)  // Just catch everything here, if reporting/cleanup is the only thing that failed, let's not fail out the pipeline.
             {
