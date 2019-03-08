@@ -78,6 +78,18 @@ namespace Relativity.Import.Export
 		}
 
 		/// <summary>
+		/// Gets or sets the HTTP timeout in seconds.
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		int HttpTimeoutSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets the number of retry attempts for I/O related fault tolerant methods.
 		/// </summary>
 		/// <value>
@@ -195,6 +207,18 @@ namespace Relativity.Import.Export
 		/// The total number of seconds.
 		/// </value>
 		int TapiBridgeExportTransferWaitingTimeInSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to preserve import and export file timestamps.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to preserve file timestamps; otherwise, <see langword="false" />.
+		/// </value>
+		bool TapiPreserveFileTimestamps
 		{
 			get;
 			set;

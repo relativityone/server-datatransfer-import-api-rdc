@@ -12,7 +12,6 @@ namespace Relativity.Import.Export.NUnit
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
-	using System.Net.Security;
 	using System.Runtime.Serialization;
 	using System.Runtime.Serialization.Formatters.Binary;
 
@@ -75,6 +74,28 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		public void ShouldGetAndSetTheDisableThrowOnIllegalCharactersSetting()
+		{
+			// Verify global settings.
+			Assert.That(
+				AppSettings.DisableThrowOnIllegalCharacters,
+				Is.EqualTo(AppSettingsConstants.DisableThrowOnIllegalCharactersDefaultValue));
+			AppSettings.DisableThrowOnIllegalCharacters = true;
+			Assert.That(AppSettings.DisableThrowOnIllegalCharacters, Is.True);
+			AppSettings.DisableThrowOnIllegalCharacters = false;
+			Assert.That(AppSettings.DisableThrowOnIllegalCharacters, Is.False);
+
+			// Verify interface settings.
+			Assert.That(
+				this.settings.DisableThrowOnIllegalCharacters,
+				Is.EqualTo(AppSettingsConstants.DisableThrowOnIllegalCharactersDefaultValue));
+			this.settings.DisableThrowOnIllegalCharacters = true;
+			Assert.That(this.settings.DisableThrowOnIllegalCharacters, Is.True);
+			this.settings.DisableThrowOnIllegalCharacters = false;
+			Assert.That(this.settings.DisableThrowOnIllegalCharacters, Is.False);
+		}
+
+		[Test]
 		public void ShouldGetAndSetTheExportErrorNumberOfRetriesSetting()
 		{
 			// Verify global settings.
@@ -112,6 +133,26 @@ namespace Relativity.Import.Export.NUnit
 			int expectedInterfaceValue = RandomHelper.NextInt32(AppSettingsConstants.ExportErrorWaitTimeInSecondsMinValue, 1000);
 			this.settings.ExportErrorWaitTimeInSeconds = expectedInterfaceValue;
 			Assert.That(this.settings.ExportErrorWaitTimeInSeconds, Is.EqualTo(expectedInterfaceValue));
+		}
+
+		[Test]
+		public void ShouldGetAndSetTheHttpTimeoutSecondsSetting()
+		{
+			// Verify global settings.
+			Assert.That(
+				AppSettings.HttpTimeoutSeconds,
+				Is.EqualTo(AppSettingsConstants.HttpTimeoutSecondsDefaultValue));
+			int expectedGlobalValue = RandomHelper.NextInt32(AppSettingsConstants.HttpTimeoutSecondsMinValue, 1000);
+			AppSettings.HttpTimeoutSeconds = expectedGlobalValue;
+			Assert.That(AppSettings.HttpTimeoutSeconds, Is.EqualTo(expectedGlobalValue));
+
+			// Verify interface settings.
+			Assert.That(
+				this.settings.HttpTimeoutSeconds,
+				Is.EqualTo(AppSettingsConstants.HttpTimeoutSecondsDefaultValue));
+			int expectedInterfaceValue = RandomHelper.NextInt32(AppSettingsConstants.HttpTimeoutSecondsMinValue, 1000);
+			this.settings.HttpTimeoutSeconds = expectedInterfaceValue;
+			Assert.That(this.settings.HttpTimeoutSeconds, Is.EqualTo(expectedInterfaceValue));
 		}
 
 		[Test]
@@ -321,6 +362,28 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		public void ShouldGetAndSetTheTapiPreserveFileTimestampsSetting()
+		{
+			// Verify global settings.
+			Assert.That(
+				AppSettings.TapiPreserveFileTimestamps,
+				Is.EqualTo(AppSettingsConstants.TapiPreserveFileTimestampsDefaultValue));
+			AppSettings.TapiPreserveFileTimestamps = true;
+			Assert.That(AppSettings.TapiPreserveFileTimestamps, Is.True);
+			AppSettings.TapiPreserveFileTimestamps = false;
+			Assert.That(AppSettings.TapiPreserveFileTimestamps, Is.False);
+
+			// Verify interface settings.
+			Assert.That(
+				this.settings.TapiPreserveFileTimestamps,
+				Is.EqualTo(AppSettingsConstants.TapiPreserveFileTimestampsDefaultValue));
+			this.settings.TapiPreserveFileTimestamps = true;
+			Assert.That(this.settings.TapiPreserveFileTimestamps, Is.True);
+			this.settings.TapiPreserveFileTimestamps = false;
+			Assert.That(this.settings.TapiPreserveFileTimestamps, Is.False);
+		}
+
+		[Test]
 		public void ShouldGetAndSetTheWebApiServiceUrlSetting()
 		{
 			// Verify global settings.
@@ -358,14 +421,23 @@ namespace Relativity.Import.Export.NUnit
 			AssignRandomValues(this.settings);
 			IAppSettings copy = this.settings.DeepCopy();
 			Assert.That(copy.CreateErrorForInvalidDate, Is.EqualTo(this.settings.CreateErrorForInvalidDate));
+			Assert.That(copy.DisableThrowOnIllegalCharacters, Is.EqualTo(this.settings.DisableThrowOnIllegalCharacters));
 			Assert.That(copy.ExportErrorNumberOfRetries, Is.EqualTo(this.settings.ExportErrorNumberOfRetries));
 			Assert.That(copy.ExportErrorWaitTimeInSeconds, Is.EqualTo(this.settings.ExportErrorWaitTimeInSeconds));
+			Assert.That(copy.HttpTimeoutSeconds, Is.EqualTo(this.settings.HttpTimeoutSeconds));
 			Assert.That(copy.IoErrorNumberOfRetries, Is.EqualTo(this.settings.IoErrorNumberOfRetries));
 			Assert.That(copy.IoErrorWaitTimeInSeconds, Is.EqualTo(this.settings.IoErrorWaitTimeInSeconds));
+			Assert.That(copy.LogAllEvents, Is.EqualTo(this.settings.LogAllEvents));
 			Assert.That(copy.MaximumFilesForTapiBridge, Is.EqualTo(this.settings.MaximumFilesForTapiBridge));
 			Assert.That(copy.MaxNumberOfFileExportTasks, Is.EqualTo(this.settings.MaxNumberOfFileExportTasks));
-			Assert.That(copy.LogAllEvents, Is.EqualTo(this.settings.LogAllEvents));
+			Assert.That(
+				copy.ObjectFieldIdListContainsArtifactId,
+				Is.EquivalentTo(this.settings.ObjectFieldIdListContainsArtifactId));
+			Assert.That(copy.PermissionErrorsRetry, Is.EqualTo(this.settings.PermissionErrorsRetry));
+			Assert.That(copy.ProgrammaticWebApiServiceUrl, Is.EqualTo(this.settings.ProgrammaticWebApiServiceUrl));
+			Assert.That(copy.TapiPreserveFileTimestamps, Is.EqualTo(this.settings.TapiPreserveFileTimestamps));
 			Assert.That(copy.TapiBridgeExportTransferWaitingTimeInSeconds, Is.EqualTo(this.settings.TapiBridgeExportTransferWaitingTimeInSeconds));
+			Assert.That(copy.WebApiServiceUrl, Is.EqualTo(this.settings.WebApiServiceUrl));
 		}
 
 		[Test]
@@ -379,30 +451,62 @@ namespace Relativity.Import.Export.NUnit
 				stream.Seek(0, SeekOrigin.Begin);
 				IAppSettings deserializedGeneralConfiguration = (IAppSettings)formatter.Deserialize(stream);
 				Assert.IsNotNull(deserializedGeneralConfiguration);
-				Assert.That(deserializedGeneralConfiguration.CreateErrorForInvalidDate, Is.EqualTo(this.settings.CreateErrorForInvalidDate));
-				Assert.That(deserializedGeneralConfiguration.ExportErrorNumberOfRetries, Is.EqualTo(this.settings.ExportErrorNumberOfRetries));
-				Assert.That(deserializedGeneralConfiguration.ExportErrorWaitTimeInSeconds, Is.EqualTo(this.settings.ExportErrorWaitTimeInSeconds));
-				Assert.That(deserializedGeneralConfiguration.IoErrorNumberOfRetries, Is.EqualTo(this.settings.IoErrorNumberOfRetries));
-				Assert.That(deserializedGeneralConfiguration.IoErrorWaitTimeInSeconds, Is.EqualTo(this.settings.IoErrorWaitTimeInSeconds));
-				Assert.That(deserializedGeneralConfiguration.MaximumFilesForTapiBridge, Is.EqualTo(this.settings.MaximumFilesForTapiBridge));
-				Assert.That(deserializedGeneralConfiguration.MaxNumberOfFileExportTasks, Is.EqualTo(this.settings.MaxNumberOfFileExportTasks));
+				Assert.That(
+					deserializedGeneralConfiguration.CreateErrorForInvalidDate,
+					Is.EqualTo(this.settings.CreateErrorForInvalidDate));
+				Assert.That(
+					deserializedGeneralConfiguration.ExportErrorNumberOfRetries,
+					Is.EqualTo(this.settings.ExportErrorNumberOfRetries));
+				Assert.That(
+					deserializedGeneralConfiguration.ExportErrorWaitTimeInSeconds,
+					Is.EqualTo(this.settings.ExportErrorWaitTimeInSeconds));
+				Assert.That(
+					deserializedGeneralConfiguration.HttpTimeoutSeconds,
+					Is.EqualTo(this.settings.HttpTimeoutSeconds));
+				Assert.That(
+					deserializedGeneralConfiguration.IoErrorNumberOfRetries,
+					Is.EqualTo(this.settings.IoErrorNumberOfRetries));
+				Assert.That(
+					deserializedGeneralConfiguration.IoErrorWaitTimeInSeconds,
+					Is.EqualTo(this.settings.IoErrorWaitTimeInSeconds));
+				Assert.That(
+					deserializedGeneralConfiguration.MaximumFilesForTapiBridge,
+					Is.EqualTo(this.settings.MaximumFilesForTapiBridge));
+				Assert.That(
+					deserializedGeneralConfiguration.MaxNumberOfFileExportTasks,
+					Is.EqualTo(this.settings.MaxNumberOfFileExportTasks));
 				Assert.That(deserializedGeneralConfiguration.LogAllEvents, Is.EqualTo(this.settings.LogAllEvents));
-				Assert.That(deserializedGeneralConfiguration.ObjectFieldIdListContainsArtifactId, Is.EquivalentTo(this.settings.ObjectFieldIdListContainsArtifactId));
-				Assert.That(deserializedGeneralConfiguration.ProgrammaticWebApiServiceUrl, Is.EqualTo(this.settings.ProgrammaticWebApiServiceUrl));
-				Assert.That(deserializedGeneralConfiguration.TapiBridgeExportTransferWaitingTimeInSeconds, Is.EqualTo(this.settings.TapiBridgeExportTransferWaitingTimeInSeconds));
-				Assert.That(deserializedGeneralConfiguration.WebApiServiceUrl, Is.EqualTo(this.settings.WebApiServiceUrl));
+				Assert.That(
+					deserializedGeneralConfiguration.ObjectFieldIdListContainsArtifactId,
+					Is.EquivalentTo(this.settings.ObjectFieldIdListContainsArtifactId));
+				Assert.That(
+					deserializedGeneralConfiguration.ProgrammaticWebApiServiceUrl,
+					Is.EqualTo(this.settings.ProgrammaticWebApiServiceUrl));
+				Assert.That(
+					deserializedGeneralConfiguration.TapiBridgeExportTransferWaitingTimeInSeconds,
+					Is.EqualTo(this.settings.TapiBridgeExportTransferWaitingTimeInSeconds));
+				Assert.That(
+					deserializedGeneralConfiguration.TapiPreserveFileTimestamps,
+					Is.EqualTo(this.settings.TapiPreserveFileTimestamps));
+				Assert.That(
+					deserializedGeneralConfiguration.WebApiServiceUrl,
+					Is.EqualTo(this.settings.WebApiServiceUrl));
 			}
 		}
 
 		private static void AssignRandomValues(IAppSettings settings)
 		{
 			settings.CreateErrorForInvalidDate = RandomHelper.NextBoolean();
+			settings.DisableThrowOnIllegalCharacters = RandomHelper.NextBoolean();
 			settings.ExportErrorNumberOfRetries = RandomHelper.NextInt32(
 				AppSettingsConstants.ExportErrorNumberOfRetriesMinValue,
 				AppSettingsConstants.ExportErrorNumberOfRetriesDefaultValue);
 			settings.ExportErrorWaitTimeInSeconds = RandomHelper.NextInt32(
 				AppSettingsConstants.ExportErrorWaitTimeInSecondsMinValue,
 				AppSettingsConstants.ExportErrorWaitTimeInSecondsDefaultValue);
+			settings.HttpTimeoutSeconds = RandomHelper.NextInt32(
+				AppSettingsConstants.HttpTimeoutSecondsMinValue,
+				AppSettingsConstants.HttpTimeoutSecondsDefaultValue);
 			settings.IoErrorNumberOfRetries = RandomHelper.NextInt32(
 				AppSettingsConstants.IoErrorNumberOfRetriesMinValue,
 				AppSettingsConstants.IoErrorNumberOfRetriesDefaultValue);
@@ -419,11 +523,13 @@ namespace Relativity.Import.Export.NUnit
 				AppSettingsConstants.MaxNumberOfFileExportTasksMinValue,
 				AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue);
 			settings.LogAllEvents = RandomHelper.NextBoolean();
+			settings.ObjectFieldIdListContainsArtifactId = new List<int> { 1, 2, 3 };
+			settings.PermissionErrorsRetry = RandomHelper.NextBoolean();
+			settings.ProgrammaticWebApiServiceUrl = new Uri("https://www.relativity.com/");
 			settings.TapiBridgeExportTransferWaitingTimeInSeconds = RandomHelper.NextInt32(
 				AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsMinValue,
 				AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue);
-			settings.ObjectFieldIdListContainsArtifactId = new List<int> { 1, 2, 3 };
-			settings.ProgrammaticWebApiServiceUrl = new Uri("https://www.relativity.com/");
+			settings.TapiPreserveFileTimestamps = RandomHelper.NextBoolean();
 			settings.WebApiServiceUrl = new Uri("https://platform.relativity.com");
 		}
 

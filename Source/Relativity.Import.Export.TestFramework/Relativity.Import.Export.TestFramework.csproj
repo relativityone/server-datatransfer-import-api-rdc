@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="IntegrationTestHelper.cs" />
     <Compile Include="FieldHelper.cs" />
+    <Compile Include="IntegrationTestParameterAttribute.cs" />
     <Compile Include="TestStrings.cs" />
     <Compile Include="ServiceHelper.cs" />
     <Compile Include="ProductionHelper.cs" />

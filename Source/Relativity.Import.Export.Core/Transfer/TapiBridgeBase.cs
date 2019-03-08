@@ -347,7 +347,7 @@ namespace Relativity.Import.Export.Transfer
             var tapiVersion = typeof(ITransferClient).Assembly.GetName().Version;
 			this.TransferLog.LogInformation("Import/Export Core - Version: {WinEDDSVersion}", importExportCoreVersion);
 			this.TransferLog.LogInformation("TAPI - Version: {TapiVersion}", tapiVersion);
-	        this.TransferLog.LogInformation("Application: {ClientRequestId}", this.parameters.Application);
+			this.TransferLog.LogInformation("Application: {Application}", this.parameters.Application);
 			this.TransferLog.LogInformation("Client request id: {ClientRequestId}", this.parameters.ClientRequestId);
 			this.TransferLog.LogInformation("Aspera doc root level: {AsperaDocRootLevels}", this.parameters.AsperaDocRootLevels);
 			this.TransferLog.LogInformation("File share: {FileShare}", this.parameters.FileShare);
@@ -355,10 +355,12 @@ namespace Relativity.Import.Export.Transfer
 			this.TransferLog.LogInformation("Force Fileshare client: {ForceFileShareClient}", this.parameters.ForceFileShareClient);
 			this.TransferLog.LogInformation("Force HTTP client: {ForceHttpClient}", this.parameters.ForceHttpClient);
 			this.TransferLog.LogInformation("Force client candidates: {ForceClientCandidates}", this.parameters.ForceClientCandidates);
+			this.TransferLog.LogInformation("HTTP timeout: {HttpTimeoutSeconds} seconds", this.parameters.TimeoutSeconds);
 			this.TransferLog.LogInformation("Max job parallelism: {MaxJobParallelism}", this.parameters.MaxJobParallelism);
 			this.TransferLog.LogInformation("Max job retry attempts: {MaxJobRetryAttempts}", this.parameters.MaxJobRetryAttempts);
 			this.TransferLog.LogInformation("Min data rate: {MinDataRateMbps} Mbps", this.parameters.MinDataRateMbps);
-            this.TransferLog.LogInformation("Retry on file permission error: {PermissionErrorsRetry}", this.parameters.PermissionErrorsRetry);
+			this.TransferLog.LogInformation("Preserve file timestamps: {PreserveFileTimestamps}", this.parameters.PreserveFileTimestamps);
+			this.TransferLog.LogInformation("Retry on file permission error: {PermissionErrorsRetry}", this.parameters.PermissionErrorsRetry);
             this.TransferLog.LogInformation("Retry on bad path error: {BadPathErrorsRetry}", this.parameters.BadPathErrorsRetry);
 	        this.TransferLog.LogInformation("Submit APM metrics: {SubmitApmMetrics}", this.parameters.SubmitApmMetrics);
 			this.TransferLog.LogInformation("Target data rate: {TargetDataRateMbps} Mbps", this.parameters.TargetDataRateMbps);
@@ -486,7 +488,9 @@ namespace Relativity.Import.Export.Transfer
 			                            MinDataRateMbps = this.parameters.MinDataRateMbps,
 			                            PermissionErrorsRetry = this.parameters.PermissionErrorsRetry,
 			                            PreCalculateJobSize = false,
-			                            PreserveDates = false,
+
+			                            // REL-298418: preserving file timestamps are now driven by a configurable setting.
+			                            PreserveDates = this.parameters.PreserveFileTimestamps,
 			                            SupportCheckPath = this.parameters.SupportCheckPath,
 			                            TargetDataRateMbps = this.parameters.TargetDataRateMbps,
 			                            TransferLogDirectory = this.parameters.TransferLogDirectory,
@@ -878,8 +882,8 @@ namespace Relativity.Import.Export.Transfer
             // If we're already using the HTTP client, it's hopeless.
             if (this.transferClient.Id == new Guid(TransferClientConstants.HttpClientId))
             {
-                throw new TransferException(Strings.HttpFallbackExceptionMessage);
-            }
+				throw new TransferException(Strings.HttpFallbackExceptionMessage, exception);
+			}
 
             this.TransferLog.LogInformation(exception, "Preparing to fallback to the HTTP client due to an unexpected error.");
 
@@ -972,17 +976,14 @@ namespace Relativity.Import.Export.Transfer
             switch (this.transferClient.Id.ToString().ToUpperInvariant())
             {
                 case TransferClientConstants.FileShareClientId:
-                    this.transferClient.Configuration.PreserveDates = false;
                     break;
 
                 case TransferClientConstants.HttpClientId:
                     this.transferClient.Configuration.MaxJobParallelism = 1;
-                    this.transferClient.Configuration.PreserveDates = false;
                     break;
 
                 case TransferClientConstants.AsperaClientId:
                     this.transferClient.Configuration.MaxJobParallelism = 1;
-                    this.transferClient.Configuration.PreserveDates = false;
                     break;
             }
         }

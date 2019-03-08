@@ -8,9 +8,9 @@ namespace Relativity.Import.Export.TestFramework
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Configuration;
 	using System.Data;
 	using System.Data.SqlClient;
-	using System.Diagnostics;
 	using System.IO;
 	using System.Net;
 	using System.Reflection;
@@ -55,6 +55,7 @@ namespace Relativity.Import.Export.TestFramework
 			// Note: don't create the logger until all parameters have been retrieved.
 			IntegrationTestParameters parameters = GetIntegrationTestParameters();
 			SetupLogger(parameters);
+			SetupServerCertificateValidation(parameters);
 			if (parameters.SkipIntegrationTests)
 			{
 				Console.WriteLine("Skipping test workspace creation.");
@@ -146,37 +147,37 @@ END";
 
 		private static IntegrationTestParameters GetIntegrationTestParameters()
 		{
-			Console.WriteLine("Retrieving all integration test parameters...");
-			IntegrationTestParameters parameters = new IntegrationTestParameters
-				                               {
-					                               RelativityUserName = GetConfigurationStringValue("RelativityUserName"),
-					                               RelativityPassword = GetConfigurationStringValue("RelativityPassword"),
-					                               RelativityRestUrl =
-						                               new Uri(GetConfigurationStringValue("RelativityRestUrl")),
-					                               RelativityServicesUrl =
-						                               new Uri(GetConfigurationStringValue("RelativityServicesUrl")),
-					                               RelativityUrl = new Uri(GetConfigurationStringValue("RelativityUrl")),
-					                               RelativityWebApiUrl =
-						                               new Uri(GetConfigurationStringValue("RelativityWebApiUrl")),
-					                               SqlInstanceName = GetConfigurationStringValue("SqlInstanceName"),
-					                               SqlAdminUserName = GetConfigurationStringValue("SqlAdminUserName"),
-					                               SqlAdminPassword = GetConfigurationStringValue("SqlAdminPassword"),
-					                               SqlDropWorkspaceDatabase =
-						                               bool.Parse(GetConfigurationStringValue("SqlDropWorkspaceDatabase")),
-					                               SkipAsperaModeTests =
-						                               bool.Parse(GetConfigurationStringValue("SkipAsperaModeTests")),
-					                               SkipDirectModeTests =
-						                               bool.Parse(GetConfigurationStringValue("SkipDirectModeTests")),
-					                               SkipIntegrationTests = bool.Parse(
-						                               GetConfigurationStringValue("SkipIntegrationTests")),
-					                               WorkspaceTemplate = GetConfigurationStringValue("WorkspaceTemplate")
-				                               };
-			Console.WriteLine("Retrieved all integration test parameters.");
-			Console.WriteLine("Dumping all integration test parameters.");
+			Console.WriteLine("Retrieving and dumping all integration test parameters...");
+			IntegrationTestParameters parameters = new IntegrationTestParameters();
 			foreach (var prop in parameters.GetType().GetProperties())
 			{
-				DebuggerBrowsableAttribute attribute = prop.GetCustomAttribute<DebuggerBrowsableAttribute>();
-				if (attribute != null && attribute.State == DebuggerBrowsableState.Never)
+				IntegrationTestParameterAttribute attribute = prop.GetCustomAttribute<IntegrationTestParameterAttribute>();
+				if (attribute == null || !attribute.IsMapped)
+				{
+					continue;
+				}
+
+				string value = GetConfigurationStringValue(prop.Name);
+				if (prop.PropertyType == typeof(string))
+				{
+					prop.SetValue(parameters, value);
+				}
+				else if (prop.PropertyType == typeof(bool))
+				{
+					prop.SetValue(parameters, bool.Parse(value));
+				}
+				else if (prop.PropertyType == typeof(Uri))
+				{
+					prop.SetValue(parameters, new Uri(value));
+				}
+				else
+				{
+					string message =
+						$"The integration test parameter '{prop.Name}' of type '{prop.PropertyType}' isn't supported by the integration test helper.";
+					throw new ConfigurationErrorsException(message);
+				}
+
+				if (attribute.IsSecret)
 				{
 					Console.WriteLine("{0}=[Obfuscated]", prop.Name);
 				}
@@ -186,7 +187,7 @@ END";
 				}
 			}
 
-			Console.WriteLine("Dumped all integration test parameters.");
+			Console.WriteLine("Retrieved and dumped all integration test parameters.");
 			return parameters;
 		}
 
@@ -219,6 +220,15 @@ END";
 			}
 
 			throw new InvalidOperationException($"The '{key}' app.config setting or '{envVariable}' environment variable is not specified.");
+		}
+
+		private static void SetupServerCertificateValidation(IntegrationTestParameters parameters)
+		{
+			if (!parameters.ServerCertificateValidation)
+			{
+				ServicePointManager.ServerCertificateValidationCallback +=
+					(sender, certificate, chain, sslPolicyErrors) => true;
+			}
 		}
 
 		private static void SetupLogger(IntegrationTestParameters parameters)
