@@ -23,7 +23,6 @@ namespace Relativity.Import.Export.TestFramework
 		/// </summary>
 		public IntegrationTestParameters()
 		{
-			this.WorkspaceId = 0;
 			this.FileShareUncPath = null;
 			this.RelativityPassword = null;
 			this.RelativityRestUrl = null;
@@ -31,9 +30,11 @@ namespace Relativity.Import.Export.TestFramework
 			this.RelativityUrl = null;
 			this.RelativityUserName = null;
 			this.RelativityWebApiUrl = null;
+			this.ServerCertificateValidation = false;
 			this.SkipAsperaModeTests = false;
 			this.SkipDirectModeTests = false;
 			this.SkipIntegrationTests = false;
+			this.WorkspaceId = 0;
 		}
 
 		/// <summary>
@@ -56,6 +57,7 @@ namespace Relativity.Import.Export.TestFramework
 			this.RelativityUrl = new Uri(copy.RelativityUrl.ToString());
 			this.RelativityUserName = copy.RelativityUserName;
 			this.RelativityWebApiUrl = new Uri(copy.RelativityWebApiUrl.ToString());
+			this.ServerCertificateValidation = copy.ServerCertificateValidation;
 			this.SkipAsperaModeTests = copy.SkipAsperaModeTests;
 			this.SkipDirectModeTests = copy.SkipDirectModeTests;
 			this.SkipIntegrationTests = copy.SkipIntegrationTests;
@@ -72,6 +74,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The full path.
 		/// </value>
+		[IntegrationTestParameter(false)]
 		public string FileShareUncPath
 		{
 			get;
@@ -84,8 +87,11 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The password.
 		/// </value>
-#if !DEBUG
-        [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
+#if DEBUG
+		[IntegrationTestParameter(true, false)]
+#else
+		[IntegrationTestParameter(true, true)]
+		[System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
 #endif
 		public string RelativityPassword
 		{
@@ -99,6 +105,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The <see cref="Uri"/> instance.
 		/// </value>
+		[IntegrationTestParameter(true)]
 		public Uri RelativityRestUrl
 		{
 			get;
@@ -111,6 +118,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The <see cref="Uri"/> instance.
 		/// </value>
+		[IntegrationTestParameter(true)]
 		public Uri RelativityServicesUrl
 		{
 			get;
@@ -123,6 +131,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The <see cref="Uri"/> instance.
 		/// </value>
+		[IntegrationTestParameter(true)]
 		public Uri RelativityUrl
 		{
 			get;
@@ -135,6 +144,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The user name.
 		/// </value>
+		[IntegrationTestParameter(true)]
 		public string RelativityUserName
 		{
 			get;
@@ -147,7 +157,21 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The <see cref="Uri"/> instance.
 		/// </value>
+		[IntegrationTestParameter(true)]
 		public Uri RelativityWebApiUrl
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to enforce server certificate validation errors.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to enforce server certificate validation errors; otherwise, <see langword="false" />.
+		/// </value>
+		[IntegrationTestParameter(true)]
+		public bool ServerCertificateValidation
 		{
 			get;
 			set;
@@ -159,8 +183,11 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The password.
 		/// </value>
-#if !DEBUG
-        [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
+#if DEBUG
+		[IntegrationTestParameter(true, false)]
+#else
+		[IntegrationTestParameter(true, true)]
+		[System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
 #endif
 		public string SqlAdminPassword
 		{
@@ -174,6 +201,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The user name.
 		/// </value>
+		[IntegrationTestParameter(true)]
 		public string SqlAdminUserName
 		{
 			get;
@@ -186,6 +214,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// <see langword="true" /> to drop the workspace SQL database; otherwise, <see langword="false" />.
 		/// </value>
+		[IntegrationTestParameter(true)]
 		public bool SqlDropWorkspaceDatabase
 		{
 			get;
@@ -198,6 +227,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The SQL instance name.
 		/// </value>
+		[IntegrationTestParameter(true)]
 		public string SqlInstanceName
 		{
 			get;
@@ -210,6 +240,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// <see langword="true" /> to skip the tests; otherwise, <see langword="false" />.
 		/// </value>
+		[IntegrationTestParameter(true)]
 		public bool SkipAsperaModeTests
 		{
 			get;
@@ -222,6 +253,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// <see langword="true" /> to skip the tests; otherwise, <see langword="false" />.
 		/// </value>
+		[IntegrationTestParameter(true)]
 		public bool SkipDirectModeTests
 		{
 			get;
@@ -234,6 +266,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// <see langword="true" /> to skip the integration tests; otherwise, <see langword="false" />.
 		/// </value>
+		[IntegrationTestParameter(true)]
 		public bool SkipIntegrationTests
 		{
 			get;
@@ -246,6 +279,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The artifact identifier.
 		/// </value>
+		[IntegrationTestParameter(false)]
 		public int WorkspaceId
 		{
 			get;
@@ -258,6 +292,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The template name.
 		/// </value>
+		[IntegrationTestParameter(true)]
 		public string WorkspaceTemplate
 		{
 			get;

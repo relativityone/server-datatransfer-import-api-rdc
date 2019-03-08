@@ -220,8 +220,6 @@ namespace Relativity.Import.Export.NUnit.Integration
 		[SetUp]
 		public void Setup()
 		{
-			ServicePointManager.ServerCertificateValidationCallback +=
-				(sender, certificate, chain, sslPolicyErrors) => true;
 			ServicePointManager.SecurityProtocol =
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
