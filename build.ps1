@@ -75,6 +75,9 @@ The TestVM used to execute all integration tests.
 
 .PARAMETER ForceDeleteTools
 An optional switch to force deleting all downloadable tools when the script completes.
+
+.PARAMETER ForceDeletePackages
+An optional switch to force deleting all packages.
 #>
 
 #Requires -Version 5.0
@@ -110,7 +113,9 @@ param(
     [Parameter()]
     [String]$TestVMName,
     [Parameter()]
-    [Switch]$ForceDeleteTools
+    [Switch]$ForceDeleteTools,
+    [Parameter()]
+    [Switch]$ForceDeletePackages
 )
 
 $BaseDir = $PSScriptRoot
@@ -130,6 +135,10 @@ if ($ForceDeleteTools -and (Test-Path $PaketExe -PathType Leaf)) {
 
 if ($ForceDeleteTools -and (Test-Path $PaketBootstrapperExe -PathType Leaf)) {
     Remove-Item $PaketBootstrapperExe
+}
+
+if ($ForceDeletePackages -and (Test-Path $PackagesDir -PathType Leaf)) {
+    Remove-Item -Recurse -Force $PackagesDir
 }
 
 if (-Not (Test-Path $PaketExe -PathType Leaf)) {

@@ -7,8 +7,7 @@ library 'SlackHelpers@3.0.0'
 properties([
     [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30']],
     parameters([
-        choice(choices: 'DEV\nGOLD', description: 'The type of Relativity build to install', name: 'type'),
-        string(defaultValue: '', description: 'The Relativity build to install', name: 'build'),
+        choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         string(defaultValue: '#import-api-rdc-build', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel')
     ])
 ])
@@ -34,34 +33,35 @@ timestamps
                     checkout scm
                 }
 
+                stage('Clean')
+                {
+                    output = powershell ".\\build.ps1 -Target 'Clean' -Verbosity 'normal'"
+                    echo output
+                }
+
                 stage('Compile')
                 {
                     version = powershell(returnStdout:true, script: "(.\\Version\\Increment-ProductVersion.ps1 -Version (Get-Content .\\Version\\version.txt) -Force).ToString()")
                     version = version.trim()
                     echo "Building version $version"
-
-                    powershell ".\\build.ps1 -AssemblyVersion '$version'"
+                    output = powershell ".\\build.ps1 -AssemblyVersion '$version' -Configuration '${params.buildConfig} -ExtendedCodeAnalysis -ForceDeleteTools -ForceDeletePackages  -Verbosity 'normal'"
+                    echo output
                 }
 
                 stage ('Unit Tests')
                 {
-                    powershell ".\\build.ps1 -SkipBuild -UnitTests"
-                }
-
-                stage ('Code Analysis')
-                {
-                    powershell ".\\build.ps1 -ExtendedCodeAnalysis"
+                    output = powershell ".\\build.ps1 -SkipBuild -UnitTests"
+                    echo output
                 }
 
                 stage ('Publish to bld-pkgs')
                 {
-                    $productName = "IAPI";
-                    
+                    $productName = "IAPI";                    
                     withCredentials([usernamePassword(credentialsId: 'jenkins_packages_svc', passwordVariable: 'BLDPKGSPASSWORD', usernameVariable: 'BLDPKGSUSERNAME')])
                     {
                         powershell "echo $env:BLDPKGSUSERNAME"
                         //def sourcePath = "${env.WORKSPACE}\\publishPackage.zip";
-                        //def destinationPath = "\\\\BLD-PKGS.kcura.corp\\Packages\\DataTransfer\\${ProductName}\\${env.BRANCH_NAME}\\${buildNumber}"
+                        //def destinationPath = "\\\\BLD-PKGS.kcura.corp\\Packages\\DataTransfer\\Import-API-RDC\\${env.BRANCH_NAME}\\${buildNumber}"
                         //
                         //powershell """
                         //    net use \\\\bld-pkgs.kcura.corp\\Packages\\DataTransfer\\$ProductName "$BLDPKGSPASSWORD" /user:kcura\\$BLDPKGSUSERNAME 
@@ -77,6 +77,14 @@ timestamps
         {
             echo err.toString()
             currentBuild.result = "FAILURE"
+            if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master')
+            {
+               sendEmailAboutFailureToTeam()            
+            }
+            else
+            {
+               sendEmailAboutFailureToAuthor() 
+            }
         }
         finally
         {
@@ -106,4 +114,43 @@ timestamps
             }
         }
     }
+}
+
+def sendEmailAboutFailure()
+{
+   def commiterDetails = bat ( 
+      script: 'git --no-pager show -s --format=%%ae', 
+      returnStdout: true
+   )
+
+   def recipients = extractCommiterEmail(commiterDetails)
+   sendEmailAboutFailure(recipients)
+}
+
+def sendEmailAboutFailureToTeam()
+{
+   def recipients = 'thegoodthebadandtheugly@relativity.com'
+   sendEmailAboutFailure(recipients)
+}
+
+def sendEmailAboutFailure(String recipients)
+{
+   def subject = "${env.JOB_NAME} - Build ${env.BUILD_DISPLAY_NAME} - Failed! On branch ${env.BRANCH_NAME}"
+   def body = """${env.JOB_NAME} - Build - Failed:
+
+Check console output at ${env.BUILD_URL} to view the results."""
+   sendEmail(body, subject, recipients)
+}
+
+def sendEmail(String body, String subject, String recipients)
+{
+   // TODO: Add attachments via 'attachmentsPattern'
+   emailext attachLog: true, body: body, subject: subject, to: recipients
+}
+
+def extractCommiterEmail(details) {
+    
+   def arr = details.tokenize('\n')
+   def email = arr[2].trim()
+   return email
 }
