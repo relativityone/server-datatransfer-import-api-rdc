@@ -108,7 +108,7 @@ namespace Relativity.Import.Export.NUnit
 			// Force somebody to review this test should the number of logged entries change.
 			this.MockTransferLogger.Verify(
 				log => log.LogInformation(It.IsAny<string>(), It.IsAny<object[]>()),
-				Times.Exactly(19));
+				Times.Exactly(21));
 		}
 
 		[Test]
