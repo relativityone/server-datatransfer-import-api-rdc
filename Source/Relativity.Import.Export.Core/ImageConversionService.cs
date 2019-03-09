@@ -283,9 +283,11 @@ namespace Relativity.Import.Export
 				throw new ArgumentNullException(nameof(file));
 			}
 
-			System.Drawing.Image image = this.GetImage(file);
-			int count = image.GetFrameCount(System.Drawing.Imaging.FrameDimension.Page);
-			return count;
+			using (System.Drawing.Image image = this.GetImage(file))
+			{
+				int count = image.GetFrameCount(System.Drawing.Imaging.FrameDimension.Page);
+				return count;
+			}
 		}
 
 		/// <inheritdoc />

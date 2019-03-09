@@ -21,6 +21,7 @@ namespace Relativity.Import.Export.NUnit
 	/// <summary>
 	/// Represents <see cref="IImageConversionService"/> tests.
 	/// </summary>
+	[TestFixture]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
@@ -161,6 +162,7 @@ namespace Relativity.Import.Export.NUnit
 			candidateFiles.AddRange(CandidateJpegImages);
 			candidateFiles.AddRange(CandidatePngImages);
 			candidateFiles.AddRange(CandidateTiffImages);
+			Assert.That(candidateFiles.Count, Is.Positive);
 			IList<string> inputFileNames = new List<string>();
 			for (int i = 0; i < pageCount; i++)
 			{
@@ -173,8 +175,10 @@ namespace Relativity.Import.Export.NUnit
 
 		private static IList<string> GetTiffInputFiles(int frameCount)
 		{
+			GetAllCandidateFiles();
 			List<string> candidateFiles = new List<string>();
 			candidateFiles.AddRange(CandidateTiffImages);
+			Assert.That(candidateFiles.Count, Is.Positive);
 			IList<string> inputFileNames = new List<string>();
 			for (int i = 0; i < frameCount; i++)
 			{
