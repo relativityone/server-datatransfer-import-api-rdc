@@ -131,9 +131,9 @@ namespace Relativity.Import.Export
                     }
                     catch (IOException e)
                     {
-                        Debug.WriteLine(
-                            $"Failed to tear down the '{this.Directory}' temp directory due to an I/O issue. Exception: "
-                            + e);
+	                    System.Diagnostics.Trace.WriteLine(
+		                    $"Failed to tear down the '{this.Directory}' temp directory due to an I/O issue. Exception: "
+		                    + e);
                     }
                     catch (UnauthorizedAccessException e)
                     {
