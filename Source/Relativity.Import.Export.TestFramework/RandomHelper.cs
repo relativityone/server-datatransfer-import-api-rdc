@@ -136,6 +136,30 @@ namespace Relativity.Import.Export.TestFramework
         }
 
 		/// <summary>
+		/// Creates a new random text file whose file size is between <paramref name="minValue"/> and <paramref name="maxValue"/>.
+		/// </summary>
+		/// <param name="minValue">
+		/// The minimum value.
+		/// </param>
+		/// <param name="maxValue">
+		/// The maximum value.
+		/// </param>
+		/// <param name="file">
+		/// The full path to the file to create.
+		/// </param>
+		public static void NextTextFile(int minValue, int maxValue, string file)
+		{
+			string directory = System.IO.Path.GetDirectoryName(file);
+			if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+			{
+				Directory.CreateDirectory(directory);
+			}
+
+			var text = NextString(minValue, maxValue);
+			File.WriteAllText(file, text);
+		}
+
+		/// <summary>
 		/// Creates a new random text file whose file size is between <paramref name="minLength"/> and <paramref name="maxLength"/>.
 		/// </summary>
 		/// <param name="minLength">
@@ -147,33 +171,13 @@ namespace Relativity.Import.Export.TestFramework
 		/// <param name="directory">
 		/// The directory to create the file.
 		/// </param>
+		/// <param name="readOnly">
+		/// Specify whether to set the file read-only attribute.
+		/// </param>
 		/// <returns>
 		/// The file.
 		/// </returns>
-		public static string NextTextFile(int minLength, int maxLength, string directory)
-        {
-            return NextTextFile(minLength, maxLength, directory, false);
-        }
-
-        /// <summary>
-        /// Creates a new random text file whose file size is between <paramref name="minLength"/> and <paramref name="maxLength"/>.
-        /// </summary>
-        /// <param name="minLength">
-        /// The minimum file length.
-        /// </param>
-        /// <param name="maxLength">
-        /// The maximum file length.
-        /// </param>
-        /// <param name="directory">
-        /// The directory to create the file.
-        /// </param>
-        /// <param name="readOnly">
-        /// Specify whether to set the file read-only attribute.
-        /// </param>
-        /// <returns>
-        /// The file.
-        /// </returns>
-        public static string NextTextFile(int minLength, int maxLength, string directory, bool readOnly)
+		public static string NextTextFile(int minLength, int maxLength, string directory, bool readOnly)
         {
             var fileName = "Iapi_TestFile_" + DateTime.Now.Ticks + "_" + Guid.NewGuid().ToString("D");
             var file = NextTextFile(minLength, maxLength, directory, fileName);

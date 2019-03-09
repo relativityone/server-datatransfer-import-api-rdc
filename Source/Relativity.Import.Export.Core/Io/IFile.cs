@@ -15,6 +15,40 @@ namespace Relativity.Import.Export.Io
 	public interface IFile
 	{
 		/// <summary>
+		/// Copies an existing file to a new file. Overwriting a file of the same name is not allowed.
+		/// </summary>
+		/// <param name="sourceFileName">
+		/// The file to copy.
+		/// </param>
+		/// <param name="destFileName">
+		/// The name of the destination file. This cannot be a directory or an existing file.
+		/// </param>
+		/// <exception cref="T:System.UnauthorizedAccessException">
+		/// The caller does not have the required permission.
+		/// </exception>
+		/// <exception cref="T:System.ArgumentException">
+		/// <paramref name="sourceFileName" /> or <paramref name="destFileName" /> is a zero-length string, contains only white space, or contains one or more invalid characters as defined by <see cref="F:System.IO.Path.InvalidPathChars" />.-or-
+		/// <paramref name="sourceFileName" /> or <paramref name="destFileName" /> specifies a directory.
+		/// </exception>
+		/// <exception cref="T:System.ArgumentNullException">
+		/// <paramref name="sourceFileName" /> or <paramref name="destFileName" /> is <see langword="null" />.
+		/// </exception>
+		/// <exception cref="T:System.IO.PathTooLongException">The specified path, file name, or both exceed the system-defined maximum length. For example, on Windows-based platforms, paths must be less than 248 characters, and file names must be less than 260 characters.
+		/// </exception>
+		/// <exception cref="T:System.IO.DirectoryNotFoundException">The path specified in <paramref name="sourceFileName" /> or <paramref name="destFileName" /> is invalid (for example, it is on an unmapped drive).
+		/// </exception>
+		/// <exception cref="T:System.IO.FileNotFoundException">
+		/// <paramref name="sourceFileName" /> was not found.
+		/// </exception>
+		/// <exception cref="T:System.IO.IOException">
+		/// <paramref name="destFileName" /> exists.-or- An I/O error has occurred.
+		/// </exception>
+		/// <exception cref="T:System.NotSupportedException">
+		/// <paramref name="sourceFileName" /> or <paramref name="destFileName" /> is in an invalid format.
+		/// </exception>
+		void Copy(string sourceFileName, string destFileName);
+
+		/// <summary>
 		/// Copies an existing file to a new file. Overwriting a file of the same name is allowed.
 		/// </summary>
 		/// <param name="sourceFileName">
@@ -118,6 +152,88 @@ namespace Relativity.Import.Export.Io
 		/// <paramref name="path" /> is in an invalid format.
 		/// </exception>
 		System.IO.FileStream Create(string path);
+
+		/// <summary>
+		/// Creates or overwrites a file in the specified path.
+		/// </summary>
+		/// <param name="path">
+		/// The path and name of the file to create.
+		/// </param>
+		/// <param name="append">
+		/// <see langword="true" /> to append data to this file; otherwise, <see langword="false" />.
+		/// </param>
+		/// <returns>
+		/// A <see cref="T:System.IO.FileStream" /> that provides read/write access to the file specified in <paramref name="path" />.
+		/// </returns>
+		/// <exception cref="T:System.UnauthorizedAccessException">
+		/// The caller does not have the required permission.-or-
+		/// <paramref name="path" /> specified a file that is read-only.
+		/// </exception>
+		/// <exception cref="T:System.ArgumentException">
+		/// <paramref name="path" /> is a zero-length string, contains only white space, or contains one or more invalid characters as defined by <see cref="F:System.IO.Path.InvalidPathChars" />.
+		/// </exception>
+		/// <exception cref="T:System.ArgumentNullException">
+		/// <paramref name="path" /> is <see langword="null" />.
+		/// </exception>
+		/// <exception cref="T:System.IO.PathTooLongException">
+		/// The specified path, file name, or both exceed the system-defined maximum length. For example, on Windows-based platforms, paths must be less than 248 characters, and file names must be less than 260 characters.
+		/// </exception>
+		/// <exception cref="T:System.IO.DirectoryNotFoundException">
+		/// The specified path is invalid (for example, it is on an unmapped drive).
+		/// </exception>
+		/// <exception cref="T:System.IO.IOException">
+		/// An I/O error occurred while creating the file.
+		/// </exception>
+		/// <exception cref="T:System.NotSupportedException">
+		/// <paramref name="path" /> is in an invalid format.
+		/// </exception>
+		System.IO.FileStream Create(string path, bool append);
+
+		/// <summary>
+		/// Creates or overwrites a file in the specified path.
+		/// </summary>
+		/// <param name="path">
+		/// The path and name of the file to create.
+		/// </param>
+		/// <param name="mode">
+		/// A constant that determines how to open or create the file.
+		/// </param>
+		/// <param name="access">
+		/// A constant that determines how the file can be accessed by the <see langword="FileStream" /> object. This also determines the values returned by the <see cref="P:System.IO.FileStream.CanRead" /> and <see cref="P:System.IO.FileStream.CanWrite" /> properties of the <see langword="FileStream" /> object. <see cref="P:System.IO.FileStream.CanSeek" /> is <see langword="true" /> if <paramref name="path" /> specifies a disk file.
+		/// </param>
+		/// <param name="share">
+		/// A constant that determines how the file will be shared by processes.
+		/// </param>
+		/// <returns>
+		/// A <see cref="T:System.IO.FileStream" /> that provides read/write access to the file specified in <paramref name="path" />.
+		/// </returns>
+		/// <exception cref="T:System.UnauthorizedAccessException">
+		/// The caller does not have the required permission.-or-
+		/// <paramref name="path" /> specified a file that is read-only.
+		/// </exception>
+		/// <exception cref="T:System.ArgumentException">
+		/// <paramref name="path" /> is a zero-length string, contains only white space, or contains one or more invalid characters as defined by <see cref="F:System.IO.Path.InvalidPathChars" />.
+		/// </exception>
+		/// <exception cref="T:System.ArgumentNullException">
+		/// <paramref name="path" /> is <see langword="null" />.
+		/// </exception>
+		/// <exception cref="T:System.IO.PathTooLongException">
+		/// The specified path, file name, or both exceed the system-defined maximum length. For example, on Windows-based platforms, paths must be less than 248 characters, and file names must be less than 260 characters.
+		/// </exception>
+		/// <exception cref="T:System.IO.DirectoryNotFoundException">
+		/// The specified path is invalid (for example, it is on an unmapped drive).
+		/// </exception>
+		/// <exception cref="T:System.IO.IOException">
+		/// An I/O error occurred while creating the file.
+		/// </exception>
+		/// <exception cref="T:System.NotSupportedException">
+		/// <paramref name="path" /> is in an invalid format.
+		/// </exception>
+		System.IO.FileStream Create(
+			string path,
+			System.IO.FileMode mode,
+			System.IO.FileAccess access,
+			System.IO.FileShare share);
 
 		/// <summary>
 		/// Creates or opens a file for writing UTF-8 encoded text.
@@ -237,5 +353,19 @@ namespace Relativity.Import.Export.Io
 		/// <paramref name="sourceFileName" /> or <paramref name="destFileName" /> is in an invalid format.
 		/// </exception>
 		void Move(string sourceFileName, string destFileName);
+
+		/// <summary>
+		/// Reopens a file stream and truncates the stream to the specified length.
+		/// </summary>
+		/// <param name="fileName">
+		/// The name of the file to reopen.
+		/// </param>
+		/// <param name="length">
+		/// The new length of the stream.
+		/// </param>
+		/// <returns>
+		/// The <see cref="System.IO.FileStream"/> instance.
+		/// </returns>
+		System.IO.FileStream ReopenAndTruncate(string fileName, long length);
 	}
 }

@@ -46,6 +46,18 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <inheritdoc />
+		public void Delete(string path)
+		{
+			System.IO.Directory.Delete(path);
+		}
+
+		/// <inheritdoc />
+		public void Delete(string path, bool recursive)
+		{
+			System.IO.Directory.Delete(path, recursive);
+		}
+
+		/// <inheritdoc />
 		public IDirectoryInfo GetParent(string path)
 		{
 			path = this.instance.NormalizePath(path);

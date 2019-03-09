@@ -45,6 +45,61 @@ namespace Relativity.Import.Export.Io
 		void CreateDirectory(string path);
 
 		/// <summary>
+		/// Deletes an empty directory from a specified path.
+		/// </summary>
+		/// <param name="path">
+		/// The name of the empty directory to remove. This directory must be writable and empty.
+		/// </param>
+		/// <exception cref="T:System.IO.IOException">
+		/// A file with the same name and location specified by <paramref name="path" /> exists.-or-The directory is the application's current working directory.-or-The directory specified by <paramref name="path" /> is not empty.-or-The directory is read-only or contains a read-only file.-or-The directory is being used by another process.
+		/// </exception>
+		/// <exception cref="T:System.UnauthorizedAccessException">
+		/// The caller does not have the required permission.
+		/// </exception>
+		/// <exception cref="T:System.ArgumentException">
+		/// <paramref name="path" /> is a zero-length string, contains only white space, or contains one or more invalid characters. You can query for invalid characters by using the <see cref="M:System.IO.Path.GetInvalidPathChars" /> method.
+		/// </exception>
+		/// <exception cref="T:System.ArgumentNullException">
+		/// <paramref name="path" /> is <see langword="null" />.
+		/// </exception>
+		/// <exception cref="T:System.IO.PathTooLongException">
+		/// The specified path, file name, or both exceed the system-defined maximum length. For example, on Windows-based platforms, paths must be less than 248 characters and file names must be less than 260 characters.
+		/// </exception>
+		/// <exception cref="T:System.IO.DirectoryNotFoundException">
+		/// <paramref name="path" /> does not exist or could not be found.-or-The specified path is invalid (for example, it is on an unmapped drive).
+		/// </exception>
+		void Delete(string path);
+
+		/// <summary>
+		/// Deletes the specified directory and, if indicated, any subdirectories and files in the directory.
+		/// </summary>
+		/// <param name="path">
+		/// The name of the directory to remove.
+		/// </param>
+		/// <param name="recursive">
+		/// <see langword="true" /> to remove directories, subdirectories, and files in <paramref name="path" />; otherwise, <see langword="false" />.
+		/// </param>
+		/// <exception cref="T:System.IO.IOException">
+		/// A file with the same name and location specified by <paramref name="path" /> exists.-or-The directory specified by <paramref name="path" /> is read-only, or <paramref name="recursive" /> is <see langword="false" /> and <paramref name="path" /> is not an empty directory. -or-The directory is the application's current working directory. -or-The directory contains a read-only file.-or-The directory is being used by another process.
+		/// </exception>
+		/// <exception cref="T:System.UnauthorizedAccessException">
+		/// The caller does not have the required permission.
+		/// </exception>
+		/// <exception cref="T:System.ArgumentException">
+		/// <paramref name="path" /> is a zero-length string, contains only white space, or contains one or more invalid characters. You can query for invalid characters by using the <see cref="M:System.IO.Path.GetInvalidPathChars" /> method.
+		/// </exception>
+		/// <exception cref="T:System.ArgumentNullException">
+		/// <paramref name="path" /> is <see langword="null" />.
+		/// </exception>
+		/// <exception cref="T:System.IO.PathTooLongException">
+		/// The specified path, file name, or both exceed the system-defined maximum length. For example, on Windows-based platforms, paths must be less than 248 characters and file names must be less than 260 characters.
+		/// </exception>
+		/// <exception cref="T:System.IO.DirectoryNotFoundException">
+		/// <paramref name="path" /> does not exist or could not be found.-or-The specified path is invalid (for example, it is on an unmapped drive).
+		/// </exception>
+		void Delete(string path, bool recursive);
+
+		/// <summary>
 		/// Retrieves the parent directory of the specified path, including both absolute and relative paths.
 		/// </summary>
 		/// <param name="path">

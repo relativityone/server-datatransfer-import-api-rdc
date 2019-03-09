@@ -40,11 +40,43 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <inheritdoc />
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Design",
+			"CA1031:DoNotCatchGeneralExceptionTypes",
+			Justification = "The try/catch retry implementation is for backwards compatibility only.")]
+		public void Copy(string sourceFileName, string destFileName)
+		{
+			sourceFileName = this.instance.NormalizePath(sourceFileName);
+			destFileName = this.instance.NormalizePath(destFileName);
+
+			try
+			{
+				System.IO.File.Copy(sourceFileName, destFileName);
+			}
+			catch (Exception)
+			{
+				System.IO.File.Copy(sourceFileName, destFileName);
+			}
+		}
+
+		/// <inheritdoc />
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Design",
+			"CA1031:DoNotCatchGeneralExceptionTypes",
+			Justification = "The try/catch retry implementation is for backwards compatibility only.")]
 		public void Copy(string sourceFileName, string destFileName, bool overwrite)
 		{
 			sourceFileName = this.instance.NormalizePath(sourceFileName);
 			destFileName = this.instance.NormalizePath(destFileName);
-			System.IO.File.Copy(sourceFileName, destFileName, overwrite);
+
+			try
+			{
+				System.IO.File.Copy(sourceFileName, destFileName, overwrite);
+			}
+			catch (Exception)
+			{
+				System.IO.File.Copy(sourceFileName, destFileName, overwrite);
+			}
 		}
 
 		/// <inheritdoc />
@@ -63,10 +95,49 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <inheritdoc />
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Design",
+			"CA1031:DoNotCatchGeneralExceptionTypes",
+			Justification = "The try/catch retry implementation is for backwards compatibility only.")]
 		public System.IO.FileStream Create(string path)
 		{
 			path = this.instance.NormalizePath(path);
-			return System.IO.File.Create(path);
+
+			try
+			{
+				return System.IO.File.Create(path);
+			}
+			catch (Exception)
+			{
+				return System.IO.File.Create(path);
+			}
+		}
+
+		/// <inheritdoc />
+		public System.IO.FileStream Create(string path, bool append)
+		{
+			System.IO.FileMode mode = append ? System.IO.FileMode.Append : System.IO.FileMode.Create;
+			System.IO.FileAccess access = append ? System.IO.FileAccess.Write : System.IO.FileAccess.ReadWrite;
+			return this.Create(path, mode, access, FileShare.None);
+		}
+
+		/// <inheritdoc />
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Design",
+			"CA1031:DoNotCatchGeneralExceptionTypes",
+			Justification = "The try/catch retry implementation is for backwards compatibility only.")]
+		public System.IO.FileStream Create(string path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share)
+		{
+			path = this.instance.NormalizePath(path);
+
+			try
+			{
+				return new System.IO.FileStream(path, mode, access, share);
+			}
+			catch (Exception)
+			{
+				return new System.IO.FileStream(path, mode, access, share);
+			}
 		}
 
 		/// <inheritdoc />
@@ -77,10 +148,28 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <inheritdoc />
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Design",
+			"CA1031:DoNotCatchGeneralExceptionTypes",
+			Justification = "The try/catch retry implementation is for backwards compatibility only.")]
 		public void Delete(string path)
 		{
 			path = this.instance.NormalizePath(path);
-			System.IO.File.Delete(path);
+
+			try
+			{
+				if (System.IO.File.Exists(path))
+				{
+					System.IO.File.Delete(path);
+				}
+			}
+			catch (Exception)
+			{
+				if (System.IO.File.Exists(path))
+				{
+					System.IO.File.Delete(path);
+				}
+			}
 		}
 
 		/// <inheritdoc />
@@ -91,17 +180,74 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <inheritdoc />
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Design",
+			"CA1031:DoNotCatchGeneralExceptionTypes",
+			Justification = "The try/catch retry implementation is for backwards compatibility only.")]
 		public long GetFileSize(string fileName)
 		{
 			fileName = this.instance.NormalizePath(fileName);
-			FileInfo fi = new FileInfo(fileName);
-			return fi.Length;
+
+			try
+			{
+				System.IO.FileInfo fi = new System.IO.FileInfo(fileName);
+				return fi.Length;
+			}
+			catch (Exception)
+			{
+				System.IO.FileInfo fi = new System.IO.FileInfo(fileName);
+				return fi.Length;
+			}
 		}
 
 		/// <inheritdoc />
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Design",
+			"CA1031:DoNotCatchGeneralExceptionTypes",
+			Justification = "The try/catch retry implementation is for backwards compatibility only.")]
 		public void Move(string sourceFileName, string destFileName)
 		{
-			System.IO.File.Move(sourceFileName, destFileName);
+			try
+			{
+				System.IO.File.Move(sourceFileName, destFileName);
+			}
+			catch (Exception)
+			{
+				System.IO.File.Move(sourceFileName, destFileName);
+			}
+		}
+
+		/// <inheritdoc />
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Reliability",
+			"CA2000:Dispose objects before losing scope",
+			Justification = "This is OK.")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Design",
+			"CA1031:DoNotCatchGeneralExceptionTypes",
+			Justification = "The try/catch retry implementation is for backwards compatibility only.")]
+		public System.IO.FileStream ReopenAndTruncate(string fileName, long length)
+		{
+			try
+			{
+				System.IO.FileStream fileStream = new System.IO.FileStream(
+					fileName,
+					System.IO.FileMode.OpenOrCreate,
+					System.IO.FileAccess.ReadWrite,
+					System.IO.FileShare.None);
+				fileStream.SetLength(length);
+				return fileStream;
+			}
+			catch (Exception)
+			{
+				System.IO.FileStream fileStream = new System.IO.FileStream(
+					fileName,
+					System.IO.FileMode.OpenOrCreate,
+					System.IO.FileAccess.ReadWrite,
+					System.IO.FileShare.None);
+				fileStream.SetLength(length);
+				return fileStream;
+			}
 		}
 	}
 }
