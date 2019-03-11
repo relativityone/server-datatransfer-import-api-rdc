@@ -87,6 +87,17 @@ namespace Relativity.Import.Export.Process
 		}
 
 		/// <summary>
+		/// Gets the process context used to publish events.
+		/// </summary>
+		/// <value>
+		/// The <see cref="ProcessContext"/> instance.
+		/// </value>
+		public ProcessContext Context
+		{
+			get;
+		}
+
+		/// <summary>
 		/// Gets or sets the process unique identifier.
 		/// </summary>
 		/// <value>
@@ -116,17 +127,6 @@ namespace Relativity.Import.Export.Process
 		/// The <see cref="CancellationToken"/> value.
 		/// </value>
 		protected CancellationToken CancellationToken
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Gets the process context used to publish events.
-		/// </summary>
-		/// <value>
-		/// The <see cref="ProcessContext"/> instance.
-		/// </value>
-		protected ProcessContext Context
 		{
 			get;
 		}

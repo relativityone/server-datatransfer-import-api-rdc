@@ -11,7 +11,7 @@ namespace Relativity.Import.Export
 	/// <summary>
 	/// Represents a class object that describes the file identification information for a specific file.
 	/// </summary>
-	public sealed class FileIdInfo
+	public class FileIdInfo
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FileIdInfo"/> class.
