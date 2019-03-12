@@ -10,9 +10,9 @@
 namespace Relativity.Import.Export.NUnit
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading;
-
 	using global::NUnit.Framework;
 
 	using Moq;
@@ -28,7 +28,7 @@ namespace Relativity.Import.Export.NUnit
 	[TestFixture]
 	public class DelimitedFileImporterTests
 	{
-		private DelimitedFileImporter importer;
+		private MockDelimitedFileImport importer;
 		private Mock<Relativity.Logging.ILog> mockLogger;
 
 		[SetUp]
@@ -260,12 +260,13 @@ namespace Relativity.Import.Export.NUnit
 
 		[Test]
 		[TestCaseSource(typeof(DelimitedFileImporterTestCases), nameof(DelimitedFileImporterTestCases.ReadFileTestCaseSource))]
-		public void ShouldValidateTheTestData(string testName, string input, string[] expectedOutput)
+		public void ShouldValidateTheTestData(string testName, string input, string[][] expectedOutput)
 		{
-			System.Collections.ArrayList outputObj = this.importer.ReadFile(input) as System.Collections.ArrayList;
-			string[] outputStringArray = outputObj.Cast<string>().ToArray();
+			List<string[]> actualOutput = (List<string[]>)this.importer.ReadFile(input);
 			Console.WriteLine("Test: " + testName);
-			CollectionAssert.AreEqual(expectedOutput, outputStringArray);
+			CollectionAssert.AreEqual(expectedOutput, actualOutput);
+
+			this.importer.SetTrim(TrimOption.None);
 		}
 
 		private static int GetRandomColumnOrdinal(bool excelSingleCharOrdinal)
