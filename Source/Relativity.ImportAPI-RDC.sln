@@ -26,21 +26,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Client.Sa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Export.Client.NUnit.Integration", "Relativity.Export.Client.NUnit.Integration\Relativity.Export.Client.NUnit.Integration.csproj", "{5AEF327E-1D3A-4231-B4C6-041769248B33}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Export.Core", "Relativity.Import.Export.Core\Relativity.Import.Export.Core.csproj", "{A91F3CCC-CCD1-46BB-A0F3-AD31F8853E31}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Export", "Relativity.Import.Export\Relativity.Import.Export.csproj", "{A91F3CCC-CCD1-46BB-A0F3-AD31F8853E31}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Export.NUnit.Integration", "Relativity.Import.Export.NUnit.Integration\Relativity.Import.Export.NUnit.Integration.csproj", "{B6E34ED3-1C41-4DB9-9BD7-24A256A05663}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Export.NUnit", "Relativity.Import.Export.NUnit\Relativity.Import.Export.NUnit.csproj", "{EBDD2E81-9CF1-4070-823D-6ACDF08CDEEE}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{272C7D84-8FCE-4F14-8D39-E0422E0FF922}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Rdc", "Rdc", "{272C7D84-8FCE-4F14-8D39-E0422E0FF922}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{5F3863F0-E6C9-439F-A371-6B95DB928BDE}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{5F3863F0-E6C9-439F-A371-6B95DB928BDE}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Relativity.Desktop.Client.Legacy.Controls", "Relativity.Desktop.Client.Legacy.Controls\Relativity.Desktop.Client.Legacy.Controls.vbproj", "{267AC175-3DAD-4348-9058-D5DB19DEAA57}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Relativity.Desktop.Client.Controls.Legacy", "Relativity.Desktop.Client.Controls.Legacy\Relativity.Desktop.Client.Controls.Legacy.vbproj", "{267AC175-3DAD-4348-9058-D5DB19DEAA57}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Relativity.Desktop.Client", "Relativity.Desktop.Client\Relativity.Desktop.Client.vbproj", "{49CDE7EB-9385-41D9-8CD9-687C09C46996}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{6A19CA81-0AB4-418F-8EAF-804B80465542}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Relativity.Desktop.Client.Legacy", "Relativity.Desktop.Client.Legacy\Relativity.Desktop.Client.Legacy.vbproj", "{49CDE7EB-9385-41D9-8CD9-687C09C46996}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api-Import", "Api-Import", "{D46C8AE9-2431-43EC-9AC6-3CB06EE99453}"
 EndProject
@@ -126,7 +124,7 @@ Global
 		{A68791C3-A2A3-46C5-8C59-AF6FE6516662} = {272C7D84-8FCE-4F14-8D39-E0422E0FF922}
 		{CC6156D2-ACE3-42A1-A5B8-6AFCCA5583B4} = {272C7D84-8FCE-4F14-8D39-E0422E0FF922}
 		{4BC26612-C72D-45D9-9902-88562017EDA0} = {D46C8AE9-2431-43EC-9AC6-3CB06EE99453}
-		{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE} = {6A19CA81-0AB4-418F-8EAF-804B80465542}
+		{B0A6B0A0-137F-47E7-B1B2-DEA9859378BE} = {D46C8AE9-2431-43EC-9AC6-3CB06EE99453}
 		{5AEF327E-1D3A-4231-B4C6-041769248B33} = {1114F579-C126-48A5-8182-50AB87366325}
 		{A91F3CCC-CCD1-46BB-A0F3-AD31F8853E31} = {5F3863F0-E6C9-439F-A371-6B95DB928BDE}
 		{B6E34ED3-1C41-4DB9-9BD7-24A256A05663} = {5F3863F0-E6C9-439F-A371-6B95DB928BDE}
