@@ -606,7 +606,7 @@ End Sub
 				_currentMessageStatus.Text = ""
 				_stopImportButton.Text = "Close"
 				_stopImportButton.Enabled = True
-				_saveOutputButton.Enabled = AppSettings.LogAllEvents
+				_saveOutputButton.Enabled = AppSettings.Instance.LogAllEvents
 				If e.ExportFilePath <> "" Then
 					ShowWarningPopup = False
 					_exportErrorFileButton.Visible = True
@@ -667,7 +667,7 @@ End Sub
 			_hasReceivedFatalError = True
 			'_stopImportButton.Text = "Stop"
 			_stopImportButton.Text = "Close"
-			_saveOutputButton.Enabled = AppSettings.LogAllEvents
+			_saveOutputButton.Enabled = AppSettings.Instance.LogAllEvents
 			_summaryOutput.ForeColor = System.Drawing.Color.Red
 			Me.ShowDetail()
 		End Sub

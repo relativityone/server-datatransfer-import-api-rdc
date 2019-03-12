@@ -158,7 +158,7 @@ namespace Relativity.Import.Export
 					case "00/0000":
 					case "0":
 						nullableDateValue = null;
-						if (AppSettings.CreateErrorForInvalidDate)
+						if (AppSettings.Instance.CreateErrorForInvalidDate)
 						{
 							throw new SystemException("Invalid date.");
 						}

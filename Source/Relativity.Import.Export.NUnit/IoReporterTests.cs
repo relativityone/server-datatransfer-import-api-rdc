@@ -112,7 +112,11 @@ namespace Relativity.Import.Export.NUnit
 		[SetUp]
 		public void Setup()
 		{
+			AppSettings.Instance.EnforceMinRetryCount = false;
+			AppSettings.Instance.EnforceMinWaitTime = false;
 			this.cachedAppSettings = new AppDotNetSettings();
+			this.cachedAppSettings.EnforceMinRetryCount = false;
+			this.cachedAppSettings.EnforceMinWaitTime = false;
 			this.actualFileExists = false;
 			this.actualFileLength = 0;
 			this.actualLoggedErrorException = null;
@@ -271,7 +275,8 @@ namespace Relativity.Import.Export.NUnit
 			this.GivenTheRetryOptions(RetryOptions.Io);
 			this.GivenTheIoReportInstanceIsConstructed();
 			this.WhenCallingTheFileLengthReporterMethod();
-            this.ThenTheActualRetryDurationShouldCalculated(retryAttempt, waitTimeBetweenRetryAttempts);
+			int expectedWaitTimeBetweenRetryAttempts = waitTimeBetweenRetryAttempts;
+			this.ThenTheActualRetryDurationShouldCalculated(retryAttempt, expectedWaitTimeBetweenRetryAttempts);
 		}
 
 		[Test]

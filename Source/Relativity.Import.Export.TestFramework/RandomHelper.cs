@@ -9,6 +9,8 @@ namespace Relativity.Import.Export.TestFramework
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
+    using System.Security.Cryptography;
 
     using FizzWare.NBuilder;
 
@@ -255,11 +257,65 @@ namespace Relativity.Import.Export.TestFramework
 		/// </returns>
 		public static string NextString(int minValue, int maxValue)
         {
-            return RandomGeneratorInstance.NextString(minValue, maxValue);
+			return RandomGeneratorInstance.NextString(minValue, maxValue);
+        }
+
+		/// <summary>
+		/// Gets the next random Uri.
+		/// </summary>
+		/// <returns>
+		/// The random <see cref="Uri"/> instance.
+		/// </returns>
+		public static Uri NextUri()
+		{
+			const string availableChars =
+				"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+			using (var generator = new RNGCryptoServiceProvider())
+			{
+				var bytes = new byte[16];
+				generator.GetBytes(bytes);
+				var chars = bytes
+					.Select(b => availableChars[b % availableChars.Length]);
+				var token = new string(chars.ToArray());
+				return new Uri($"https://www.{token}.com");
+			}
+		}
+
+		/// <summary>
+		/// Gets the next random enumeration value.
+		/// </summary>
+		/// <param name="enumType">
+		/// The enumeration type.
+		/// </param>
+		/// <returns>
+		/// The random enumeration value.
+		/// </returns>
+		public static int NextEnum(Type enumType)
+		{
+			Array enumValues = Enum.GetValues(enumType);
+			int randomValue = (int)enumValues.GetValue(RandomInstance.Next(enumValues.Length));
+			return randomValue;
+		}
+
+		/// <summary>
+		/// Gets the next random integer value between <paramref name="minValue"/> and <paramref name="maxValue"/>.
+		/// </summary>
+		/// <param name="minValue">
+		/// The minimum value.
+		/// </param>
+		/// <param name="maxValue">
+		/// The maximum value.
+		/// </param>
+		/// <returns>
+		/// The random integer value.
+		/// </returns>
+		public static int NextInt32(int minValue, int maxValue)
+        {
+            return RandomInstance.Next(minValue, maxValue);
         }
 
         /// <summary>
-        /// Gets the next random integer value between <paramref name="minValue"/> and <paramref name="maxValue"/>.
+        /// Gets the next random long value between <paramref name="minValue"/> and <paramref name="maxValue"/>.
         /// </summary>
         /// <param name="minValue">
         /// The minimum value.
@@ -268,32 +324,33 @@ namespace Relativity.Import.Export.TestFramework
         /// The maximum value.
         /// </param>
         /// <returns>
-        /// The random integer value.
+        /// The random long value.
         /// </returns>
-        public static int NextInt32(int minValue, int maxValue)
+        public static long NextInt64(long minValue, long maxValue)
         {
-            return RandomInstance.Next(minValue, maxValue);
+	        long value = minValue + (long)(RandomInstance.NextDouble() * (maxValue - minValue));
+	        return value;
         }
 
-        /// <summary>
-        /// Gets a random list using the specified constraints.
-        /// </summary>
-        /// <param name="min">
-        /// The minimum value.
-        /// </param>
-        /// <param name="max">
-        /// The maximum value.
-        /// </param>
-        /// <param name="targetSum">
-        /// The target sum.
-        /// </param>
-        /// <param name="totalNumbers">
-        /// The total number of randomly generated numbers to create.
-        /// </param>
-        /// <returns>
-        /// The numbers.
-        /// </returns>
-        public static IEnumerable<int> GetRandomNumbers(int min, int max, int targetSum, int totalNumbers)
+		/// <summary>
+		/// Gets a random list using the specified constraints.
+		/// </summary>
+		/// <param name="min">
+		/// The minimum value.
+		/// </param>
+		/// <param name="max">
+		/// The maximum value.
+		/// </param>
+		/// <param name="targetSum">
+		/// The target sum.
+		/// </param>
+		/// <param name="totalNumbers">
+		/// The total number of randomly generated numbers to create.
+		/// </param>
+		/// <returns>
+		/// The numbers.
+		/// </returns>
+		public static IEnumerable<int> GetRandomNumbers(int min, int max, int targetSum, int totalNumbers)
         {
             var ret = new List<int>(totalNumbers);
             var random = new Random();

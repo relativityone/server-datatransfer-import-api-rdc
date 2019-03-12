@@ -52,6 +52,7 @@
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -61,11 +62,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppSettingsConstants.cs" />
     <Compile Include="AppSettingsReader.cs" />
     <Compile Include="AppDotNetSettings.cs" />
     <Compile Include="Data\SqlDataRow.cs" />
     <Compile Include="Data\SqlDataView.cs" />
     <Compile Include="DateTimeExtensions.cs" />
+    <Compile Include="AppSettingAttribute.cs" />
     <Compile Include="Io\BooleanImporterException.cs" />
     <Compile Include="Io\CellImporterException.cs" />
     <Compile Include="Io\ConditionalArrayList.cs" />
@@ -108,7 +111,6 @@
     <Compile Include="ImportExportException.cs" />
     <Compile Include="IAppSettings.cs" />
     <Compile Include="ByteOrdering.cs" />
-    <Compile Include="AppSettingsConstants.cs" />
     <Compile Include="AppSettings.cs" />
     <Compile Include="DictionaryExtensions.cs" />
     <Compile Include="ImageConstants.cs" />
@@ -334,11 +336,6 @@
       <ItemGroup>
         <Reference Include="Relativity.Logging">
           <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Logging.Interfaces">
-          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
