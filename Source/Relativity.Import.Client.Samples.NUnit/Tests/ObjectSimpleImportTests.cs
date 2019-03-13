@@ -87,17 +87,17 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 			// Assert - the imported object exists.
 			Relativity.Services.Objects.DataContracts.RelativityObject importedTransfer
-				= FindRelativityObject(transfers, TransferFieldName, name);
+				= SearchRelativityObject(transfers, TransferFieldName, name);
 			Assert.That(importedTransfer, Is.Not.Null);
 
 			// Assert - all standard field values matches the expected values.
-			string descriptionFieldValue = FindStringFieldValue(importedTransfer, TransferFieldDescription);
+			string descriptionFieldValue = GetStringFieldValue(importedTransfer, TransferFieldDescription);
 			Assert.That(descriptionFieldValue, Is.EqualTo(description));
-			decimal requestBytesFieldValue = FindDecimalFieldValue(importedTransfer, TransferFieldRequestBytes);
+			decimal requestBytesFieldValue = GetDecimalFieldValue(importedTransfer, TransferFieldRequestBytes);
 			Assert.That(requestBytesFieldValue, Is.EqualTo(requestBytes));
-			decimal requestFilesFieldValue = FindDecimalFieldValue(importedTransfer, TransferFieldRequestFiles);
+			decimal requestFilesFieldValue = GetDecimalFieldValue(importedTransfer, TransferFieldRequestFiles);
 			Assert.That(requestFilesFieldValue, Is.EqualTo(requestFiles));
-			DateTime requestDateFieldValue = FindDateFieldValue(importedTransfer, TransferFieldRequestDate);
+			DateTime requestDateFieldValue = GetDateFieldValue(importedTransfer, TransferFieldRequestDate);
 			Assert.That(requestDateFieldValue, Is.EqualTo(requestDate).Within(5).Seconds);
 		}
 	}
