@@ -31,9 +31,9 @@ namespace Relativity.Import.Export.Io
 		/// Appends a string to the end of the string being built.
 		/// </summary>
 		/// <param name="input">
-		/// The string to append.
+		/// The character to append.
 		/// </param>
-		public void Append(string input)
+		public void Append(char input)
 		{
 			if (!this.saveData)
 			{
