@@ -48,6 +48,12 @@ timestamps
                     echo output
                 }
 
+                stage ('Digitally Sign Binaries')
+                {
+                    output = powershell ".\\build.ps1 -SkipBuild -DigitallySign -Verbosity 'normal'"
+                    echo output
+                }
+
                 stage ('Unit Tests')
                 {
                     output = powershell ".\\build.ps1 -SkipBuild -UnitTests"

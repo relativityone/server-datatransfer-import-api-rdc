@@ -1,9 +1,12 @@
 ﻿FormatTaskName "------- Executing Task: {0} -------"
+Framework "4.6" #.NET framework version
 
 properties {
     $LogsDir = Join-Path $Root "Logs"
-    $MasterSolution = Join-Path $root "Source/Relativity.ImportAPI-RDC.sln"
+    $MasterSolution = Join-Path $Root "Source/Relativity.ImportAPI-RDC.sln"
     $NumberOfProcessors = (Get-ChildItem env:"NUMBER_OF_PROCESSORS").Value
+    $BuildArtifactsDir = Join-Path $Root "Artifacts"
+    $BinariesArtifactsDir = Join-Path $BuildArtifactsDir "binaries"
     $ScriptsDir = Join-Path $Root "Scripts"
 
     # Properties below this line are defined in build.ps1
@@ -169,6 +172,54 @@ task UpdateAssemblyInfo -Precondition { $AssemblyVersion -ne "1.0.0.0" } -Descri
     $VersionPath = Join-Path $Root "Version"
     $ScriptPath = Join-Path $VersionPath "Update-AssemblyInfo.ps1"
     exec { & $ScriptPath -Version $AssemblyVersion -VersionFolderPath $VersionPath }
+}
+
+task DigitallySignBinaries -Description "Digitally sign all binaries"   {
+    $sites = @("http://timestamp.comodoca.com/authenticode",
+               "http://timestamp.verisign.com/scripts/timstamp.dll",
+               "http://tsa.starfieldtech.com")
+    $signtool = [System.IO.Path]::Combine(${env:ProgramFiles(x86)}, "Microsoft SDKs", "Windows", "v7.1A", "Bin", "signtool.exe")
+    $retryAttempts = 3
+    Write-Output "Signing all assemblies in $BinariesArtifactsDir"
+    $directoriesToSign = Get-ChildItem -Path $BinariesArtifactsDir
+    $dllNamePrefix = "Relativity"
+    foreach($directory in $directoriesToSign)
+    {
+        Write-Output "Signing assemblies in $directory"
+        $filesToSign = Get-ChildItem -Path $directory.FullName -Recurse -Include @("*.dll","*.exe","*.msi") | Where-Object { $_.Name.StartsWith($dllNamePrefix) }
+        foreach($fileToSign in $filesToSign)
+        {
+            & $signtool verify /pa /q $fileToSign
+            $signed = $?
+
+            if (-not $signed) {
+
+                For ($i =0; $i -lt $retryAttempts; $i++) {
+                    ForEach ($site in $sites){
+                        Write-Host "Attempting to sign" $dll "using" $site "..."
+                        & $signtool sign /a /t $site /d "Relativity" /du "http://www.kcura.com" $dll
+                        $signed = $?                    
+                        if ($signed) {
+                            Write-Host "Signed" $dll "Successfully!"
+                            break
+                        }
+                    }  
+                    
+                    if ($signed) {
+                        break
+                    }
+                }
+        
+                if (-not $signed) {
+                    Write-Error "Failed to sign the dlls. See the error above.";
+                    exit 1
+                }
+            }
+            else {
+                Write-Host $dll "is already signed!"
+            }
+        }
+    }
 }
 
 Function Initialize-Folder {

@@ -157,6 +157,21 @@
   <PropertyGroup>
     <PostBuildEvent>copy "$(SolutionDir)..\Vendor\FreeImage\3.18.0\x64\FreeImage.dll" $(TargetDir)</PostBuildEvent>
   </PropertyGroup>
+  <Target Name="AfterBuild">
+    <ItemGroup>
+      <SourceBintFiles Include="$(TargetDir)\*.*" />
+    </ItemGroup>
+    <Copy 
+      SourceFiles="@(SourceBintFiles)" 
+      DestinationFiles="@(SourceBintFiles->'$(SolutionDir)..\Artifacts\binaries\$(ProjectName)\%(RecursiveDir)%(Filename)%(Extension)')" 
+      SkipUnchangedFiles="true" 
+      OverwriteReadOnlyFiles="true" 
+      Retries="3" 
+      RetryDelayMilliseconds="300" />
+  </Target>
+  <Target Name="AfterClean">
+    <RemoveDir Directories="$(SolutionDir)..\Artifacts\binaries\$(ProjectName)" />
+  </Target>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
