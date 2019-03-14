@@ -189,18 +189,19 @@ task DigitallySignBinaries -Description "Digitally sign all binaries"   {
         $filesToSign = Get-ChildItem -Path $directory.FullName -Recurse -Include @("*.dll","*.exe","*.msi") | Where-Object { $_.Name.StartsWith($dllNamePrefix) }
         foreach($fileToSign in $filesToSign)
         {
-            & $signtool verify /pa /q $fileToSign
+            $file = $fileToSign.FullName
+            & $signtool verify /pa /q $file
             $signed = $?
 
             if (-not $signed) {
 
                 For ($i =0; $i -lt $retryAttempts; $i++) {
                     ForEach ($site in $sites){
-                        Write-Host "Attempting to sign" $dll "using" $site "..."
-                        & $signtool sign /a /t $site /d "Relativity" /du "http://www.kcura.com" $dll
+                        Write-Host "Attempting to sign" $file "using" $site "..."
+                        & $signtool sign /a /t $site /d "Relativity" /du "http://www.kcura.com" $file
                         $signed = $?                    
                         if ($signed) {
-                            Write-Host "Signed" $dll "Successfully!"
+                            Write-Host "Signed" $file "Successfully!"
                             break
                         }
                     }  
@@ -216,7 +217,7 @@ task DigitallySignBinaries -Description "Digitally sign all binaries"   {
                 }
             }
             else {
-                Write-Host $dll "is already signed!"
+                Write-Host $file "is already signed!"
             }
         }
     }
