@@ -55,6 +55,9 @@ An optional switch to digitally sign the binaries.
 .PARAMETER PublishBuildArtifacts
 An optional switch to publish the build artifacts to the corporate build file share.
 
+.PARAMETER Branch
+An optional branch name. This is only required for the PublishBuildArtifacts command.
+
 .PARAMETER UnitTests
 An optional switch to execute all unit tests.
 
@@ -105,6 +108,8 @@ param(
     [Switch]$DigitallySign,
     [Parameter()]
     [Switch]$PublishBuildArtifacts,
+    [Parameter()]
+    [String]$Branch,
     [Parameter()]
     [Switch]$UnitTests,
     [Parameter()]
@@ -188,7 +193,9 @@ if ($UnitTests -or $IntegrationTests)
     $TaskList.Add("Test")
 }
 
-$Branch = git rev-parse --abbrev-ref HEAD
+if (!$Branch) {
+    $Branch = git rev-parse --abbrev-ref HEAD
+}
 
 $Params = @{
     buildFile = Join-Path $BaseDir "default.ps1"

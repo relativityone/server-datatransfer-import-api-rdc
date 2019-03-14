@@ -35,7 +35,7 @@ timestamps
 
                 stage('Clean')
                 {
-                    output = powershell ".\\build.ps1 -Target 'Clean' -Verbosity 'normal'"
+                    output = powershell ".\\build.ps1 -Target 'Clean' -Verbosity 'normal' -Branch '${env.BRANCH_NAME}'"
                     echo output
                 }
 
@@ -44,25 +44,25 @@ timestamps
                     version = powershell(returnStdout:true, script: "(.\\Version\\Increment-ProductVersion.ps1 -Version (Get-Content .\\Version\\version.txt) -Force).ToString()")
                     version = version.trim()
                     echo "Building version $version"
-                    output = powershell ".\\build.ps1 -Version '$version' -Configuration '${params.buildConfig}' -ExtendedCodeAnalysis -ForceDeleteTools -ForceDeletePackages -Verbosity 'normal'"
+                    output = powershell ".\\build.ps1 -Version '$version' -Configuration '${params.buildConfig}' -ExtendedCodeAnalysis -ForceDeleteTools -ForceDeletePackages -Verbosity 'normal' -Branch '${env.BRANCH_NAME}'"
                     echo output
                 }
 
                 stage ('Digitally Sign Binaries')
                 {
-                    output = powershell ".\\build.ps1 -SkipBuild -DigitallySign -Verbosity 'normal'"
+                    output = powershell ".\\build.ps1 -SkipBuild -DigitallySign -Verbosity 'normal' -Branch '${env.BRANCH_NAME}'"
                     echo output
                 }
 
                 stage ('Unit Tests')
                 {
-                    output = powershell ".\\build.ps1 -SkipBuild -UnitTests"
+                    output = powershell ".\\build.ps1 -SkipBuild -UnitTests -Branch '${env.BRANCH_NAME}'"
                     echo output
                 }
 
                 stage ('Publish to bld-pkgs')
                 {
-                    output = powershell ".\\build.ps1 -SkipBuild -Version '$version' -PublishBuildArtifacts"
+                    output = powershell ".\\build.ps1 -SkipBuild -Version '$version' -PublishBuildArtifacts -Branch '${env.BRANCH_NAME}'"
                     echo output
                 }
             }
