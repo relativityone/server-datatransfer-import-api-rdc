@@ -15,7 +15,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-    using Relativity.Import.Export.TestFramework;
+	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>
     /// Represents an abstract base class object to provide common functionality and helper methods.
@@ -354,7 +354,53 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		}
 
 		/// <summary>
-		/// Finds the date field value within the supplied Relativity object.
+		/// Gets the boolean field value for the supplied RDO.
+		/// </summary>
+		/// <param name="relativityObject">
+		/// The relativity object.
+		/// </param>
+		/// <param name="name">
+		/// The field name to search.
+		/// </param>
+		/// <returns>
+		/// The <see cref="bool"/> value.
+		/// </returns>
+		protected static bool GetBooleanFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
+		{
+			object field = GetObjectFieldValue(relativityObject, name);
+			if (field == null)
+			{
+				throw new InvalidOperationException($"The field '{name}' is expected to be a boolean field but was null.");
+			}
+
+			return Convert.ToBoolean(field);
+		}
+
+		/// <summary>
+		/// Gets the choice field value for the supplied RDO.
+		/// </summary>
+		/// <param name="relativityObject">
+		/// The relativity object.
+		/// </param>
+		/// <param name="name">
+		/// The field name to search.
+		/// </param>
+		/// <returns>
+		/// The <see cref="Relativity.Services.Objects.DataContracts.Choice"/> instance.
+		/// </returns>
+		protected static Relativity.Services.Objects.DataContracts.Choice GetChoiceField(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
+		{
+			object value = GetObjectFieldValue(relativityObject, name);
+			if (value == null)
+			{
+				throw new InvalidOperationException($"The field '{name}' is expected to be a choice field but is null.");
+			}
+
+			return value as Relativity.Services.Objects.DataContracts.Choice;
+		}
+
+		/// <summary>
+		/// Gets the date field value for the supplied RDO.
 		/// </summary>
 		/// <param name="relativityObject">
 		/// The relativity object.
@@ -365,13 +411,19 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		/// <returns>
 		/// The <see cref="DateTime"/> value.
 		/// </returns>
-		protected static DateTime FindDateFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
+		protected static DateTime GetDateFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
 		{
-			return (DateTime)FindFieldValue(relativityObject, name);
+			object value = GetObjectFieldValue(relativityObject, name);
+			if (value == null)
+			{
+				throw new InvalidOperationException($"The field '{name}' is expected to be a Date-Time field but is null.");
+			}
+
+			return Convert.ToDateTime(value);
 		}
 
 		/// <summary>
-		/// Finds the decimal field value within the supplied Relativity object.
+		/// Gets the decimal field value for the supplied RDO.
 		/// </summary>
 		/// <param name="relativityObject">
 		/// The relativity object.
@@ -382,13 +434,19 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		/// <returns>
 		/// The <see cref="decimal"/> value.
 		/// </returns>
-		protected static decimal FindDecimalFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
+		protected static decimal GetDecimalFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
 		{
-			return (decimal)FindFieldValue(relativityObject, name);
+			object value = GetObjectFieldValue(relativityObject, name);
+			if (value == null)
+			{
+				throw new InvalidOperationException($"The field '{name}' is expected to be a decimal field but is null.");
+			}
+
+			return Convert.ToDecimal(value);
 		}
 
 		/// <summary>
-		/// Finds the single-object field value within the supplied Relativity object.
+		/// Gets the 32-bit integer field value for the supplied RDO.
 		/// </summary>
 		/// <param name="relativityObject">
 		/// The relativity object.
@@ -397,15 +455,21 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		/// The field name to search.
 		/// </param>
 		/// <returns>
-		/// The <see cref="Relativity.Services.Objects.DataContracts.RelativityObjectValue"/> instance.
+		/// The nullable <see cref="int"/> value.
 		/// </returns>
-		protected static Relativity.Services.Objects.DataContracts.RelativityObjectValue FindSingleObjectFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
+		protected static int? GetInt32FieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
 		{
-			return FindFieldValue(relativityObject, name) as Relativity.Services.Objects.DataContracts.RelativityObjectValue;
+			object field = GetObjectFieldValue(relativityObject, name);
+			if (field == null)
+			{
+				return null;
+			}
+
+			return Convert.ToInt32(field);
 		}
 
 		/// <summary>
-		/// Finds the multi-object field values within the supplied Relativity object.
+		/// Gets the multi-object field value for the supplied RDO.
 		/// </summary>
 		/// <param name="relativityObject">
 		/// The relativity object.
@@ -416,13 +480,19 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		/// <returns>
 		/// The <see cref="Relativity.Services.Objects.DataContracts.RelativityObjectValue"/> instances.
 		/// </returns>
-		protected static List<Relativity.Services.Objects.DataContracts.RelativityObjectValue> FindMultiObjectFieldValues(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
+		protected static List<Relativity.Services.Objects.DataContracts.RelativityObjectValue> GetMultiObjectFieldValues(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
 		{
-			return FindFieldValue(relativityObject, name) as List<Relativity.Services.Objects.DataContracts.RelativityObjectValue>;
+			object value = GetObjectFieldValue(relativityObject, name);
+			if (value == null)
+			{
+				throw new InvalidOperationException($"The field '{name}' is expected to be a multi-object field but is null.");
+			}
+
+			return value as List<Relativity.Services.Objects.DataContracts.RelativityObjectValue>;
 		}
 
 		/// <summary>
-		/// Finds the object field value within the supplied Relativity object.
+		/// Gets the object field value for the supplied RDO.
 		/// </summary>
 		/// <param name="relativityObject">
 		/// The relativity object.
@@ -433,37 +503,37 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		/// <returns>
 		/// The field value.
 		/// </returns>
-		protected static object FindFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
+		protected static object GetObjectFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
 		{
 			Relativity.Services.Objects.DataContracts.FieldValuePair pair = relativityObject.FieldValues.FirstOrDefault(x => x.Field.Name == name);
 			return pair?.Value;
 		}
 
 		/// <summary>
-		/// Finds the object whose identity name and value match the specified values.
+		/// Gets the single-object field value for the supplied RDO.
 		/// </summary>
-		/// <param name="objects">
+		/// <param name="relativityObject">
 		/// The relativity object.
 		/// </param>
-		/// <param name="identityFieldName">
-		/// The identity field name to search.
-		/// </param>
-		/// <param name="identityFieldValue">
-		/// The identity field value to search.
+		/// <param name="name">
+		/// The field name to search.
 		/// </param>
 		/// <returns>
-		/// The <see cref="Relativity.Services.Objects.DataContracts.RelativityObject"/> instance.
+		/// The <see cref="Relativity.Services.Objects.DataContracts.RelativityObjectValue"/> instance.
 		/// </returns>
-		protected static Relativity.Services.Objects.DataContracts.RelativityObject FindRelativityObject(IList<Relativity.Services.Objects.DataContracts.RelativityObject> objects, string identityFieldName, string identityFieldValue)
+		protected static Relativity.Services.Objects.DataContracts.RelativityObjectValue GetSingleObjectFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
 		{
-			return (from obj in objects
-				from pair in obj.FieldValues
-				where pair.Field.Name == identityFieldName && pair.Value.ToString() == identityFieldValue
-				select obj).FirstOrDefault();
+			object value = GetObjectFieldValue(relativityObject, name);
+			if (value == null)
+			{
+				throw new InvalidOperationException($"The field '{name}' is expected to be a single-object field but is null.");
+			}
+
+			return value as Relativity.Services.Objects.DataContracts.RelativityObjectValue;
 		}
 
 		/// <summary>
-		/// Finds the string field value within the supplied Relativity object.
+		/// Gets the string field value for the supplied RDO.
 		/// </summary>
 		/// <param name="relativityObject">
 		/// The relativity object.
@@ -474,12 +544,13 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		/// <returns>
 		/// The field value.
 		/// </returns>
-		protected static string FindStringFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
+		protected static string GetStringFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
 		{
-			return FindFieldValue(relativityObject, name) as string;
+			// This can be null.
+			return GetObjectFieldValue(relativityObject, name) as string;
 		}
 
-        /// <summary>
+		/// <summary>
         /// Generates a unique production set name.
         /// </summary>
         /// <returns>
@@ -540,6 +611,32 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			{
 				System.Console.WriteLine($"{key}={value}");
 			}
+		}
+
+		/// <summary>
+		/// Searches the list of RDO's for the object whose field name and value match the specified parameters.
+		/// </summary>
+		/// <param name="objects">
+		/// The relativity object.
+		/// </param>
+		/// <param name="fieldName">
+		/// The field name to search.
+		/// </param>
+		/// <param name="fieldValue">
+		/// The field value to search.
+		/// </param>
+		/// <returns>
+		/// The <see cref="Relativity.Services.Objects.DataContracts.RelativityObject"/> instance.
+		/// </returns>
+		protected static Relativity.Services.Objects.DataContracts.RelativityObject SearchRelativityObject(
+			IList<Relativity.Services.Objects.DataContracts.RelativityObject> objects,
+			string fieldName,
+			string fieldValue)
+		{
+			return (from obj in objects
+			        from pair in obj.FieldValues
+			        where pair.Field.Name == fieldName && pair.Value.ToString() == fieldValue
+			        select obj).FirstOrDefault();
 		}
 
 		/// <summary>
@@ -639,6 +736,21 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			};
 
 			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
+		}
+
+		/// <summary>
+		/// Creates the export search manager.
+		/// </summary>
+		/// <returns>
+		/// The <see cref="kCura.WinEDDS.Service.Export.ISearchManager"/> instance.
+		/// </returns>
+		/// <remarks>
+		/// The <see cref="kCura.WinEDDS.Service.Export.ISearchManager"/> service is not officially supported and should NEVER be used in production code.
+		/// </remarks>
+		protected kCura.WinEDDS.Service.Export.ISearchManager CreateExportSearchManager()
+		{
+			var credentials = new NetworkCredential(this.TestParameters.RelativityUserName, this.TestParameters.RelativityPassword);
+			return new kCura.WinEDDS.Service.SearchManager(credentials, new CookieContainer());
 		}
 
 		protected void CreateFixedLengthTextField(int workspaceObjectTypeId, string fieldName, int length)
@@ -826,7 +938,77 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
             return FieldHelper.QueryIdentifierFieldName(this.TestParameters, artifactTypeName);
         }
 
-        protected Tuple<string, string> QueryProductionBatesNumbers(int productionId)
+		/// <summary>
+		/// Queries for the list of file information associated with the specified imported image.
+		/// </summary>
+		/// <param name="artifactId">
+		/// The imported image artifact unique identifier.
+		/// </param>
+		/// <returns>
+		/// The <see cref="FileDto"/> instances.
+		/// </returns>
+		/// <remarks>
+		/// The <see cref="kCura.WinEDDS.Service.Export.ISearchManager"/> service is not officially supported and should NEVER be used in production code.
+		/// </remarks>
+		protected IEnumerable<FileDto> QueryImageFileInfo(int artifactId)
+        {
+			using (kCura.WinEDDS.Service.Export.ISearchManager searchManager = this.CreateExportSearchManager())
+			{
+				var ds = searchManager.RetrieveImagesForDocuments(
+					this.TestParameters.WorkspaceId,
+					new[] { artifactId });
+		        if (ds == null || ds.Tables.Count == 0)
+		        {
+			        return new List<FileDto>();
+		        }
+
+		        DataTable table = ds.Tables[0];
+				return table.Rows.Cast<DataRow>().Select(x => new FileDto(x));
+	        }
+        }
+
+		/// <summary>
+		/// Queries for the file information associated with the specified native document.
+		/// </summary>
+		/// <param name="artifactId">
+		/// The imported document artifact unique identifier.
+		/// </param>
+		/// <returns>
+		/// The <see cref="FileDto"/> instance.
+		/// </returns>
+		/// <remarks>
+		/// The <see cref="kCura.WinEDDS.Service.Export.ISearchManager"/> service is not officially supported and should NEVER be used in production code.
+		/// </remarks>
+		protected FileDto QueryNativeFileInfo(int artifactId)
+		{
+			using (kCura.WinEDDS.Service.Export.ISearchManager searchManager = this.CreateExportSearchManager())
+			{
+				var ds = searchManager.RetrieveNativesForSearch(this.TestParameters.WorkspaceId, artifactId.ToString());
+				if (ds == null || ds.Tables.Count == 0)
+				{
+					return null;
+				}
+
+				DataTable table = ds.Tables[0];
+				if (table.Rows.Count != 1)
+				{
+					throw new InvalidOperationException("The search manager natives endpoint was expected to return exactly 1 row.");
+				}
+
+				return table.Rows.Cast<DataRow>().Select(x => new FileDto(x)).Single();
+			}
+		}
+
+		/// <summary>
+		/// Queries for a structure that provides the first and last Bates numbers for the specified production.
+		/// </summary>
+		/// <param name="productionId">
+		/// The production artifact identifier.
+		/// </param>
+		/// <returns>
+		/// The tuple.
+		/// </returns>
+		protected Tuple<string, string> QueryProductionBatesNumbers(int productionId)
         {
             var production = ProductionHelper.QueryProduction(this.TestParameters, productionId);
             Tuple<string, string> batesNumbers =
@@ -834,11 +1016,58 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
             return batesNumbers;
         }
 
-        protected int QueryRelativityObjectCount(int artifactTypeId)
+		/// <summary>
+		/// Queries for the total number of objects for the specified RDO type.
+		/// </summary>
+		/// <param name="artifactTypeId">
+		/// The RDO artifact type identifier.
+		/// </param>
+		/// <returns>
+		/// The total number of objects.
+		/// </returns>
+		protected int QueryRelativityObjectCount(int artifactTypeId)
 		{
 			return RdoHelper.QueryRelativityObjectCount(this.TestParameters, artifactTypeId);
 		}
 
+		/// <summary>
+		/// Queries for the list of document RDO's and includes the standard well-known fields.
+		/// </summary>
+		/// <returns>
+		/// The <see cref="Relativity.Services.Objects.DataContracts.RelativityObject"/> instance.
+		/// </returns>
+		protected IList<Relativity.Services.Objects.DataContracts.RelativityObject> QueryDocuments()
+		{
+			return this.QueryDocuments(
+				new string[]
+					{
+						WellKnownFields.ArtifactId, WellKnownFields.ControlNumber, WellKnownFields.HasImages,
+						WellKnownFields.HasNative, WellKnownFields.BatesNumber, WellKnownFields.RelativityImageCount
+					});
+		}
+
+		/// <summary>
+		/// Queries for the list of document RDO's and includes the specified list of fields.
+		/// </summary>
+		/// <param name="fields">The fields.</param>
+		/// <returns>
+		/// The <see cref="Relativity.Services.Objects.DataContracts.RelativityObject"/> instance.
+		/// </returns>
+		protected IList<Relativity.Services.Objects.DataContracts.RelativityObject> QueryDocuments(IEnumerable<string> fields)
+		{
+			return this.QueryRelativityObjects(WellKnownArtifactTypes.DocumentArtifactTypeId, fields);
+		}
+
+		/// <summary>
+		/// Queries for the list of RDO's of the specified type and includes the specified list of fields.
+		/// </summary>
+		/// <param name="artifactTypeId">
+		/// The artifact type identifier that specifies the RDO type.
+		/// </param>
+		/// <param name="fields">The fields.</param>
+		/// <returns>
+		/// The <see cref="Relativity.Services.Objects.DataContracts.RelativityObject"/> instance.
+		/// </returns>
 		protected IList<Relativity.Services.Objects.DataContracts.RelativityObject> QueryRelativityObjects(int artifactTypeId, IEnumerable<string> fields)
 		{
 			return RdoHelper.QueryRelativityObjects(this.TestParameters, artifactTypeId, fields);
