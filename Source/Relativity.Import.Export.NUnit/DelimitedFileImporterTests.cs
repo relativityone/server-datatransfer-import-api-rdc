@@ -51,33 +51,16 @@ namespace Relativity.Import.Export.NUnit
 			//       character array and string parameters and the rules on null
 			//       are very particular.
 			const string NeverExecuteMessage = "This should never execute!";
-			char[] nullCharDelimiter = null;
-			char[] nullCharBound = null;
-			char[] nullCharNewline = null;
 			string nullStringDelimiter = null;
 			string nullStringBound = null;
 			string nullStringNewline = null;
 			Assert.That(
 				() =>
 					{
-						DelimitedFileImporter temp = new MockDelimitedFileImport(nullCharDelimiter);
-						Assert.That(temp, Is.Null, NeverExecuteMessage);
-					},
-				Throws.TypeOf<ArgumentNullException>().With.Property("ParamName").EqualTo("delimiter"));
-			Assert.That(
-				() =>
-					{
-						DelimitedFileImporter temp = new MockDelimitedFileImport(nullCharDelimiter, nullCharBound);
-						Assert.That(temp, Is.Null, NeverExecuteMessage);
-					},
-				Throws.TypeOf<ArgumentNullException>().With.Property("ParamName").EqualTo("delimiter"));
-			Assert.That(
-				() =>
-					{
 						DelimitedFileImporter temp = new MockDelimitedFileImport(
-							new[] { MockDelimitedFileImport.DefaultDelimiter },
-							nullCharBound,
-							nullCharNewline,
+							MockDelimitedFileImport.DefaultDelimiter,
+							MockDelimitedFileImport.DefaultBound,
+							MockDelimitedFileImport.DefaultNewline,
 							null,
 							this.mockLogger.Object,
 							CancellationToken.None);
@@ -88,9 +71,9 @@ namespace Relativity.Import.Export.NUnit
 				() =>
 					{
 						DelimitedFileImporter temp = new MockDelimitedFileImport(
-							new[] { MockDelimitedFileImport.DefaultDelimiter },
-							nullCharBound,
-							nullCharNewline,
+							MockDelimitedFileImport.DefaultDelimiter,
+							MockDelimitedFileImport.DefaultBound,
+							MockDelimitedFileImport.DefaultNewline,
 							new IoReporterContext(),
 							null,
 							CancellationToken.None);
@@ -107,10 +90,24 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(
 				() =>
 					{
-						DelimitedFileImporter temp = new MockDelimitedFileImport(nullStringDelimiter, nullStringBound);
+						DelimitedFileImporter temp = new MockDelimitedFileImport(",;");
 						Assert.That(temp, Is.Null, NeverExecuteMessage);
 					},
-				Throws.TypeOf<ArgumentNullException>().With.Property("ParamName").EqualTo("delimiter"));
+				Throws.TypeOf<ArgumentOutOfRangeException>().With.Property("ParamName").EqualTo("delimiter"));
+			Assert.That(
+				() =>
+					{
+						DelimitedFileImporter temp = new MockDelimitedFileImport(",", nullStringBound);
+						Assert.That(temp, Is.Null, NeverExecuteMessage);
+					},
+				Throws.TypeOf<ArgumentNullException>().With.Property("ParamName").EqualTo("bound"));
+			Assert.That(
+				() =>
+					{
+						DelimitedFileImporter temp = new MockDelimitedFileImport(";", "ab");
+						Assert.That(temp, Is.Null, NeverExecuteMessage);
+					},
+				Throws.TypeOf<ArgumentOutOfRangeException>().With.Property("ParamName").EqualTo("bound"));
 			Assert.That(
 				() =>
 					{
