@@ -180,13 +180,18 @@ task DigitallySignBinaries -Description "Digitally sign all binaries"   {
                "http://tsa.starfieldtech.com")
     $signtool = [System.IO.Path]::Combine(${env:ProgramFiles(x86)}, "Microsoft SDKs", "Windows", "v7.1A", "Bin", "signtool.exe")
     $retryAttempts = 3
-    Write-Output "Signing all assemblies in $BinariesArtifactsDir"
-    $directoriesToSign = Get-ChildItem -Path $BinariesArtifactsDir
+    $directoriesToSign = New-Object System.Collections.ArrayList($null)
+    $directoriesToSign.Add((Join-Path $BinariesArtifactsDir "Relativity.Import.Client"))
     $dllNamePrefix = "Relativity"
     foreach($directory in $directoriesToSign)
     {
         Write-Output "Signing assemblies in $directory"
         $filesToSign = Get-ChildItem -Path $directory.FullName -Recurse -Include @("*.dll","*.exe","*.msi") | Where-Object { $_.Name.StartsWith($dllNamePrefix) }
+        if ($filesToSign.Length -eq 0)
+        {
+            Throw "The $directory contains zero files to sign. Verify the build script and project files are in agreement."
+        }
+
         foreach($fileToSign in $filesToSign)
         {
             $file = $fileToSign.FullName
