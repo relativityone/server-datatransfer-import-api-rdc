@@ -340,6 +340,15 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This operation cannot be performed because the Outside In file identification library isn&apos;t available and suggests a serious configuration or environmental issue..
+        /// </summary>
+        internal static string OutsideInNotAvailableError {
+            get {
+                return ResourceManager.GetString("OutsideInNotAvailableError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This operation cannot be performed because re-initializing the delimited file reader requires a file stream..
         /// </summary>
         internal static string ReinitializeReaderNotFileStreamError {

@@ -291,4 +291,7 @@
   <data name="IntegerImporterErrorAdditionalInfo" xml:space="preserve">
     <value>Invalid integer.</value>
   </data>
+  <data name="OutsideInNotAvailableError" xml:space="preserve">
+    <value>This operation cannot be performed because the Outside In file identification library isn't available and suggests a serious configuration or environmental issue.</value>
+  </data>
 </root>

@@ -20,6 +20,11 @@ namespace Relativity.Import.Export
 	internal class OutsideInFileIdService : IFileIdService
 	{
 		/// <summary>
+		/// The default idle timeout value.
+		/// </summary>
+		public const int DefaultIdleTimeout = 10000;
+
+		/// <summary>
 		/// The file identification configuration.
 		/// </summary>
 		private readonly FileIdConfiguration configuration = new FileIdConfiguration();
@@ -27,7 +32,7 @@ namespace Relativity.Import.Export
 		/// <summary>
 		/// The optional timeout.
 		/// </summary>
-		private readonly int? timeout;
+		private readonly int timeout;
 
 		/// <summary>
 		/// The OI exporter instance.
@@ -55,7 +60,7 @@ namespace Relativity.Import.Export
 		/// </param>
 		public OutsideInFileIdService(int? timeout)
 		{
-			this.timeout = timeout;
+			this.timeout = timeout ?? DefaultIdleTimeout;
 			this.disposed = false;
 			this.exporter = null;
 		}
@@ -193,22 +198,22 @@ namespace Relativity.Import.Export
 			{
 				this.configuration.HasError = false;
 				this.configuration.Exception = null;
-				OutsideInVersion version = OutsideIn.GetCoreVersion();
-				this.configuration.Version = version.GetVersion();
-				OutsideInConfig oiConfiguration =
-					new OutsideInConfig { InstallLocation = new System.IO.DirectoryInfo(path) };
-				if (this.timeout != null)
-				{
-					oiConfiguration.IdleWorkerTimeout = Convert.ToUInt32(this.timeout);
-				}
-
+				var oiConfiguration = new OutsideInConfig
+					                      {
+						                      InstallLocation = new System.IO.DirectoryInfo(path),
+						                      IdleWorkerTimeout = Convert.ToUInt32(this.timeout)
+					                      };
+				OutsideIn.SetConfiguration(oiConfiguration);
 				this.configuration.Timeout = Convert.ToInt32(oiConfiguration.IdleWorkerTimeout);
 				this.configuration.InstallDirectory = oiConfiguration.InstallLocation.ToString();
-				OutsideIn.SetConfiguration(oiConfiguration);
+				this.ApplyVersion();
 			}
 			catch (OutsideInException e) when (e.ErrorCode == OutsideInConstants.NoErrorCode)
 			{
 				// OI is already configured.
+				this.configuration.Timeout = this.timeout;
+				this.configuration.InstallDirectory = path;
+				this.ApplyVersion();
 			}
 			catch (OutsideInException e)
 			{
@@ -224,6 +229,20 @@ namespace Relativity.Import.Export
 
 			// Allow this to potentially throw.
 			this.exporter = OutsideIn.NewLocalExporter();
+		}
+
+		/// <summary>
+		/// Applies the OI version to the configuration object.
+		/// </summary>
+		private void ApplyVersion()
+		{
+			OutsideInVersion version = OutsideIn.GetCoreVersion();
+			if (version == null)
+			{
+				throw new InvalidOperationException(Strings.OutsideInNotAvailableError);
+			}
+
+			this.configuration.Version = version.GetVersion();
 		}
 	}
 }

@@ -122,9 +122,9 @@ namespace Relativity.Import.Export.NUnit
 		{
 			var configuration = this.service.Configuration;
 			Assert.That(configuration, Is.Not.Null);
+			Assert.That(configuration.Exception, Is.Null);
 			Assert.That(configuration.InstallDirectory, Does.Exist);
 			Assert.That(configuration.Version, Is.Not.Null.Or.Empty);
-			Assert.That(configuration.Exception, Is.Null);
 			Assert.That(configuration.HasError, Is.False);
 			Assert.That(configuration.Timeout, Is.EqualTo(Timeout));
 		}
