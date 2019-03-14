@@ -57,12 +57,14 @@ timestamps
                 stage ('Unit Tests')
                 {
                     output = powershell ".\\build.ps1 -SkipBuild -UnitTests -Branch '${env.BRANCH_NAME}'"
+                    archiveArtifacts artifacts: 'TestResults/**/*.*'
                     echo output
                 }
 
                 stage ('Publish to bld-pkgs')
                 {
                     output = powershell ".\\build.ps1 -SkipBuild -Version '$version' -PublishBuildArtifacts -Branch '${env.BRANCH_NAME}'"
+                    archiveArtifacts artifacts: 'Logs/**/*.*'
                     echo output
                 }
             }
