@@ -410,7 +410,6 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
   <ItemGroup>
     <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll">
       <Paket>True</Paket>
@@ -419,19 +418,6 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
-  <Target Name="AfterBuild">
-    <ItemGroup>
-      <SourceBintFiles Include="$(TargetDir)\*.*" />
-    </ItemGroup>
-    <Copy 
-      SourceFiles="@(SourceBintFiles)" 
-      DestinationFiles="@(SourceBintFiles->'$(SolutionDir)..\Artifacts\binaries\$(ProjectName)\%(RecursiveDir)%(Filename)%(Extension)')" 
-      SkipUnchangedFiles="true" 
-      OverwriteReadOnlyFiles="true" 
-      Retries="3" 
-      RetryDelayMilliseconds="300" />
-  </Target>
-  <Target Name="AfterClean">
-    <RemoveDir Directories="$(SolutionDir)..\Artifacts\binaries\$(ProjectName)" />
-  </Target>
+  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
+  <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
 </Project>
