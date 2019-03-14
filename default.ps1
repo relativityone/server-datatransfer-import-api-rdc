@@ -219,8 +219,7 @@ task DigitallySign -Description "Digitally sign all binaries"   {
                 }
         
                 if (-not $signed) {
-                    Write-Error "Failed to sign the dlls. See the error above.";
-                    exit 1
+                    Throw "Failed to sign the dlls. See the error above."
                 }
             }
             else {
@@ -232,9 +231,9 @@ task DigitallySign -Description "Digitally sign all binaries"   {
 
 task PublishBuildArtifacts -Description "Publish build artifacts"  {
     Assert ($Branch -ne "") "Branch is a required argument for saving build artifacts."
-    Assert ($Version -ne "") "Version is a required argument for saving build artifacts."
-    $uniqueBuildPackagesDir = "$BuildPackagesDir\$Branch\$Version\"
-    Write-Output "Copying the build artifacts to $uniqueBuildPackagesDir"
+    Assert ($Version -ne "") "Version is a required argument for saving build artifacts."    
+    $targetDir = "$BuildPackagesDir\$Branch\$Version\"
+    Copy-Folder -Folder "binaries" -SourceDir $BinariesArtifactsDir -TargetDir $targetDir
 }
 
 Function Initialize-Folder {
@@ -256,4 +255,18 @@ Function Initialize-Folder {
     }
 
     New-Item -Type Directory $Path -Force -ErrorAction Stop -Verbose:$VerbosePreference
+}
+
+Function Copy-Folder {
+    param(
+        [String] $Folder,
+        [String] $SourceDir,
+        [String] $TargetDir
+    )
+
+    $robocopy = "robocopy.exe"
+    $sourceDirWithFolder = Join-Path $SourceDir $Folder
+    $targetDirWithFolder = Join-Path $TargetDir $Folder
+    Write-Output "Copying the build artifacts from $sourceDirWithFolder to $targetDirWithFolder"
+    & $robocopy "$sourceDirWithFolder" "$targetDirWithFolder" /MIR /is
 }
