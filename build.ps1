@@ -87,6 +87,9 @@ An optional switch to force deleting all downloadable tools when the script comp
 
 .PARAMETER ForceDeletePackages
 An optional switch to force deleting all packages.
+
+.PARAMETER ForceDeleteArtifacts
+An optional switch to force deleting all build artifacts.
 #>
 
 #Requires -Version 5.0
@@ -130,10 +133,13 @@ param(
     [Parameter()]
     [Switch]$ForceDeleteTools,
     [Parameter()]
-    [Switch]$ForceDeletePackages
+    [Switch]$ForceDeletePackages,
+    [Parameter()]
+    [Switch]$ForceDeleteArtifacts
 )
 
 $BaseDir = $PSScriptRoot
+$BuildArtifactsDir = Join-Path $BaseDir "Artifacts"
 $PackagesDir = Join-Path $BaseDir "packages"
 $PaketDir = Join-Path $BaseDir ".paket"
 $PaketExe = Join-Path $PaketDir 'paket.exe'
@@ -152,8 +158,12 @@ if ($ForceDeleteTools -and (Test-Path $PaketBootstrapperExe -PathType Leaf)) {
     Remove-Item $PaketBootstrapperExe
 }
 
-if ($ForceDeletePackages -and (Test-Path $PackagesDir -PathType Leaf)) {
+if ($ForceDeletePackages -and (Test-Path $PackagesDir -PathType Container)) {
     Remove-Item -Recurse -Force $PackagesDir
+}
+
+if ($ForceDeleteArtifacts -and (Test-Path $BuildArtifactsDir -PathType Container)) {
+    Remove-Item -Recurse -Force $BuildArtifactsDir
 }
 
 if (-Not (Test-Path $PaketExe -PathType Leaf)) {
@@ -254,6 +264,14 @@ Finally
     
     if ($ForceDeleteTools -and (Test-Path $PaketBootstrapperExe -PathType Leaf)) {
         Remove-Item $PaketBootstrapperExe
+    }
+
+    if ($ForceDeletePackages -and (Test-Path $PackagesDir -PathType Leaf)) {
+        Remove-Item -Recurse -Force $PackagesDir
+    }
+    
+    if ($ForceDeleteArtifacts -and (Test-Path $BuildArtifactsDir -PathType Leaf)) {
+        Remove-Item -Recurse -Force $BuildArtifactsDir
     }
 }
 
