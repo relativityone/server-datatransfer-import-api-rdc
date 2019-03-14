@@ -3,6 +3,7 @@ source https://nuget.org/api/v2
 
 nuget castle.windsor = 3.3.0
 nuget csvhelper = 12.1.2
+nuget extent = 0.0.3
 nuget itextsharp = 5.5.13
 nuget microsoft.build.logging.structuredlogger = 1.0.89
 nuget moq = 4.10.1

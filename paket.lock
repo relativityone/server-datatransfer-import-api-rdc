@@ -7,6 +7,7 @@ NUGET
       Castle.Core (>= 3.3)
     CsvHelper (12.1.2)
       System.ValueTuple (>= 4.4)
+    extent (0.0.3)
     iTextSharp (5.5.13)
     Microsoft.Build.Logging.StructuredLogger (1.0.89)
     Moq (4.10.1)

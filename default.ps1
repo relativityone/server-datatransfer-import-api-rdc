@@ -3,12 +3,15 @@ Framework "4.6" #.NET framework version
 
 properties {
     $LogsDir = Join-Path $Root "Logs"
+    $PackagesDir = Join-Path $Root "packages"
     $MasterSolution = Join-Path $Root "Source/Relativity.ImportAPI-RDC.sln"
     $NumberOfProcessors = (Get-ChildItem env:"NUMBER_OF_PROCESSORS").Value
     $BuildArtifactsDir = Join-Path $Root "Artifacts"
     $BinariesArtifactsDir = Join-Path $BuildArtifactsDir "binaries"
     $ScriptsDir = Join-Path $Root "Scripts"
-    $BuildPackagesDir = "\\bld-pkgs\Packages\Import-API-RDC\"
+    $BuildPackagesDir = "\\bld-pkgs\Packages\Import-Api-RDC\"
+    $TestResultsDir = Join-Path $Root "TestResults"
+    $ExtentCliExe  = Join-Path $PackagesDir "extent\tools\extent.exe"
 
     # Properties below this line are defined in build.ps1
     $Target = $Null
@@ -115,19 +118,9 @@ task TestVMSetup -Description "Setup the test parameters for TestVM" {
 
 task Test -Description "Run NUnit on Master solution" {
     $NUnit3 = Join-Path $PackagesDir "NUnit.ConsoleRunner\tools\nunit3-console.exe"
-    $ResultsFile = Join-Path $LogsDir "Test_Results.xml"
-    $OutputFile = Join-Path $LogsDir "Test_Output.txt"
-    Initialize-Folder $LogsDir -Safe    
-    if (Test-Path $ResultsFile)
-    {
-        Remove-Item $ResultsFile
-    }
-
-    if (Test-Path $OutputFile)
-    {
-        Remove-Item $OutputFile
-    }
-    
+    Initialize-Folder $TestResultsDir
+    $TestResultsXmlFile = Join-Path $TestResultsDir "Test_Results.xml"
+    $OutputFile = Join-Path $TestResultsDir "Test_Output.txt"
     $testCategoryFilter = $Null
     if ($IntegrationTests -and -not $UnitTests) {
         $testCategoryFilter = "--where=`"cat==Integration`""
@@ -164,10 +157,13 @@ task Test -Description "Run NUnit on Master solution" {
         "--agents=$NumberOfProcessors" `
         "--skipnontestassemblies" `
         "--timeout=$TestTimeoutInMS" `
-        "--result=$ResultsFile" `
+        "--result=$TestResultsXmlFile" `
         "--out=$OutputFile" `
         $testCategoryFilter `
-     }
+    }
+
+    # This will generate index.html within the test results directory.
+    exec { & $ExtentCliExe -i $TestResultsXmlFile -o $TestResultsDir -r v3html } -errorMessage "There was an error generating the test report."
 }
 
 task UpdateAssemblyInfo -Precondition { $Version -ne "1.0.0.0" } -Description "Update the AssemblyInfo files in \Version\" {
@@ -241,6 +237,7 @@ task PublishBuildArtifacts -Description "Publish build artifacts"  {
     $targetDir = "$BuildPackagesDir\$Branch\$Version"
     Copy-Folder -SourceDir $LogsDir -TargetDir "$targetDir\logs"
     Copy-Folder -SourceDir $BinariesArtifactsDir -TargetDir "$targetDir\binaries"
+    Copy-Folder -SourceDir $TestResultsDir -TargetDir "$targetDir\test-results"
 }
 
 Function Initialize-Folder {
@@ -253,15 +250,18 @@ Function Initialize-Folder {
 
     if ((Test-Path $Path) -and $Safe)
     {
+        Write-Host "The directory '$Path' already exists."
         Return
     }
 
     if (Test-Path $Path)
     {
         Remove-Item -Recurse -Force $Path -ErrorAction Stop
+        Write-Host "Deleted the '$Path' directory."
     }
 
-    New-Item -Type Directory $Path -Force -ErrorAction Stop -Verbose:$VerbosePreference
+    New-Item -Type Directory $Path -Force -ErrorAction Stop | Out-Null
+    Write-Host "Created the '$Path' directory."
 }
 
 Function Copy-Folder {
