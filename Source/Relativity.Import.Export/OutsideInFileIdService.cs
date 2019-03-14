@@ -75,6 +75,32 @@ namespace Relativity.Import.Export
 			}
 		}
 
+		/// <summary>
+		/// Gets the OI installation path.
+		/// </summary>
+		/// <returns>
+		/// The full path.
+		/// </returns>
+		public static string GetInstallPath()
+		{
+			string assemblyPath = new System.Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath;
+			string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(assemblyPath), "oi");
+			if (!string.IsNullOrEmpty(path))
+			{
+				path = path.Replace("%20", " ");
+			}
+
+			return path;
+		}
+
+		/// <summary>
+		/// Shutdown the OI link monitor.
+		/// </summary>
+		public static void Shutdown()
+		{
+			OutsideIn.Shutdown();
+		}
+
 		/// <inheritdoc />
 		public void Dispose()
 		{
@@ -187,12 +213,7 @@ namespace Relativity.Import.Export
 				return;
 			}
 
-			string assemblyPath = new System.Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath;
-			string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(assemblyPath), "oi");
-			if (!string.IsNullOrEmpty(path))
-			{
-				path = path.Replace("%20", " ");
-			}
+			string path = GetInstallPath();
 
 			try
 			{
