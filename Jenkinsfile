@@ -41,11 +41,20 @@ timestamps
 
                 stage('Compile')
                 {
-                    version = powershell(returnStdout:true, script: "(.\\Version\\Increment-ProductVersion.ps1 -Version (Get-Content .\\Version\\version.txt) -Force).ToString()")
-                    version = version.trim()
-                    echo "Building version $version"
-                    output = powershell ".\\build.ps1 -Version '$version' -Configuration '${params.buildConfig}' -ExtendedCodeAnalysis -ForceDeleteTools -ForceDeletePackages -Verbosity 'normal' -Branch '${env.BRANCH_NAME}'"
-                    echo output
+                    try
+                    {
+                        // Wrapped in a try/catch to ensure the logs are archived.
+                        version = powershell(returnStdout:true, script: "(.\\Version\\Increment-ProductVersion.ps1 -Version (Get-Content .\\Version\\version.txt) -Force).ToString()")
+                        version = version.trim()
+                        echo "Building version $version"
+                        output = powershell ".\\build.ps1 -Version '$version' -Configuration '${params.buildConfig}' -ExtendedCodeAnalysis -ForceDeleteTools -ForceDeletePackages -Verbosity 'normal' -Branch '${env.BRANCH_NAME}'"
+                        echo output
+                    }
+                    catch (err)
+                    {
+                        archiveArtifacts artifacts: 'Logs/**/*.*'
+                        throw err
+                    }
                 }
 
                 stage ('Digitally Sign Binaries')
@@ -56,9 +65,15 @@ timestamps
 
                 stage ('Unit Tests')
                 {
-                    output = powershell ".\\build.ps1 -SkipBuild -UnitTests -Branch '${env.BRANCH_NAME}'"
-                    archiveArtifacts artifacts: 'TestResults/**/*.*'
-                    echo output
+                    try
+                    {
+                        // Wrapped in a try/finally to ensure the results are archived.
+                        output = powershell ".\\build.ps1 -SkipBuild -UnitTests -Branch '${env.BRANCH_NAME}'"
+                        echo output
+                    }
+                    finally {
+                        archiveArtifacts artifacts: 'TestResults/**/*.*'
+                    }
                 }
 
                 stage ('Publish to bld-pkgs')
