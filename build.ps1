@@ -43,14 +43,17 @@ The target to build (e.g. Build, Rebuild, or Clean).
 .PARAMETER Configuration
 The build configuration (e.g. Debug or Release).
 
-.PARAMETER AssemblyVersion
-Version of assemblies produced by the build.
+.PARAMETER Version
+The build version.
 
 .PARAMETER Verbosity
 The verbosity of the build log.
 
 .PARAMETER DigitallySign
 An optional switch to digitally sign the binaries.
+
+.PARAMETER PublishBuildArtifacts
+An optional switch to publish the build artifacts to the corporate build file share.
 
 .PARAMETER UnitTests
 An optional switch to execute all unit tests.
@@ -94,12 +97,14 @@ param(
     [ValidateSet("Debug", "Release")]
     [String]$Configuration = "Release",
     [Parameter()]
-    [Version]$AssemblyVersion = "1.0.0.0",
+    [Version]$Version = "1.0.0.0",
     [Parameter()]
     [ValidateSet("quiet", "minimal", "normal", "detailed", "diagnostic")]
     [String]$Verbosity = "quiet",
     [Parameter()]
     [Switch]$DigitallySign,
+    [Parameter()]
+    [Switch]$PublishBuildArtifacts,
     [Parameter()]
     [Switch]$UnitTests,
     [Parameter()]
@@ -166,7 +171,11 @@ if ($ExtendedCodeAnalysis) {
 }
 
 if ($DigitallySign) {
-    $TaskList.Add("DigitallySignBinaries")
+    $TaskList.Add("DigitallySign")
+}
+
+if ($PublishBuildArtifacts) {
+    $TaskList.Add("PublishBuildArtifacts")
 }
 
 # This task must be added before the Test task.
@@ -178,6 +187,8 @@ if ($UnitTests -or $IntegrationTests)
 {
     $TaskList.Add("Test")
 }
+
+$Branch = git rev-parse --abbrev-ref HEAD
 
 $Params = @{
     buildFile = Join-Path $BaseDir "default.ps1"
@@ -191,7 +202,8 @@ $Params = @{
     properties = @{
         Target = $Target
         Configuration = $Configuration
-        AssemblyVersion = $AssemblyVersion        
+        Version = $Version
+        Branch = $Branch
         Verbosity = $Verbosity
         TestTimeoutInMS = $TestTimeoutInMS
         UnitTests = $UnitTests

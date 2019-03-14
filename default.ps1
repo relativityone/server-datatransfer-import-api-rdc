@@ -8,11 +8,13 @@ properties {
     $BuildArtifactsDir = Join-Path $Root "Artifacts"
     $BinariesArtifactsDir = Join-Path $BuildArtifactsDir "binaries"
     $ScriptsDir = Join-Path $Root "Scripts"
+    $BuildPackagesDir = "\\bld-pkgs\Packages\Import-API-RDC\"
 
     # Properties below this line are defined in build.ps1
     $Target = $Null
     $Configuration = $Null
-    $AssemblyVersion = $Null
+    $Version = $Null
+    $Branch = $Null
     $Verbosity = $Null
     $TestTimeoutInMS = $Null
     $UnitTests = $Null
@@ -168,13 +170,13 @@ task Test -Description "Run NUnit on Master solution" {
      }
 }
 
-task UpdateAssemblyInfo -Precondition { $AssemblyVersion -ne "1.0.0.0" } -Description "Update the AssemblyInfo files in \Version\" {
+task UpdateAssemblyInfo -Precondition { $Version -ne "1.0.0.0" } -Description "Update the AssemblyInfo files in \Version\" {
     $VersionPath = Join-Path $Root "Version"
     $ScriptPath = Join-Path $VersionPath "Update-AssemblyInfo.ps1"
-    exec { & $ScriptPath -Version $AssemblyVersion -VersionFolderPath $VersionPath }
+    exec { & $ScriptPath -Version $Version -VersionFolderPath $VersionPath }
 }
 
-task DigitallySignBinaries -Description "Digitally sign all binaries"   {
+task DigitallySign -Description "Digitally sign all binaries"   {
     $sites = @("http://timestamp.comodoca.com/authenticode",
                "http://timestamp.verisign.com/scripts/timstamp.dll",
                "http://tsa.starfieldtech.com")
@@ -226,6 +228,13 @@ task DigitallySignBinaries -Description "Digitally sign all binaries"   {
             }
         }
     }
+}
+
+task PublishBuildArtifacts -Description "Publish build artifacts"  {
+    Assert ($Branch -ne "") "Branch is a required argument for saving build artifacts."
+    Assert ($Version -ne "") "Version is a required argument for saving build artifacts."
+    $uniqueBuildPackagesDir = "$BuildPackagesDir\$Branch\$Version\"
+    Write-Output "Copying the build artifacts to $uniqueBuildPackagesDir"
 }
 
 Function Initialize-Folder {

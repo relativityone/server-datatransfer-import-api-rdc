@@ -44,7 +44,7 @@ timestamps
                     version = powershell(returnStdout:true, script: "(.\\Version\\Increment-ProductVersion.ps1 -Version (Get-Content .\\Version\\version.txt) -Force).ToString()")
                     version = version.trim()
                     echo "Building version $version"
-                    output = powershell ".\\build.ps1 -AssemblyVersion '$version' -Configuration '${params.buildConfig}' -ExtendedCodeAnalysis -ForceDeleteTools -ForceDeletePackages -Verbosity 'normal'"
+                    output = powershell ".\\build.ps1 -Version '$version' -Configuration '${params.buildConfig}' -ExtendedCodeAnalysis -ForceDeleteTools -ForceDeletePackages -Verbosity 'normal'"
                     echo output
                 }
 
@@ -62,20 +62,8 @@ timestamps
 
                 stage ('Publish to bld-pkgs')
                 {
-                    $productName = "IAPI";                    
-                    withCredentials([usernamePassword(credentialsId: 'jenkins_packages_svc', passwordVariable: 'BLDPKGSPASSWORD', usernameVariable: 'BLDPKGSUSERNAME')])
-                    {
-                        powershell "echo $env:BLDPKGSUSERNAME"
-                        //def sourcePath = "${env.WORKSPACE}\\publishPackage.zip";
-                        //def destinationPath = "\\\\BLD-PKGS.kcura.corp\\Packages\\DataTransfer\\Import-API-RDC\\${env.BRANCH_NAME}\\${buildNumber}"
-                        //
-                        //powershell """
-                        //    net use \\\\bld-pkgs.kcura.corp\\Packages\\DataTransfer\\$ProductName "$BLDPKGSPASSWORD" /user:kcura\\$BLDPKGSUSERNAME 
-                        //        mkdir ${destinationPath} -Force
-                        //        Copy-Item $sourcePath ${destinationPath} -recurse -force
-                        //    net use \\\\bld-pkgs.kcura.corp\\Packages\\DataTransfer\\$ProductName /DELETE /Y
-                        //"""
-                    }
+                    output = powershell ".\\build.ps1 -SkipBuild -Version '$version' -PublishBuildArtifacts"
+                    echo output
                 }
             }
         }
