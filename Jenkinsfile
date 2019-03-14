@@ -127,7 +127,7 @@ timestamps
     }
 }
 
-def sendEmailAboutFailure()
+def sendEmailAboutFailureToAuthor()
 {
    def commiterDetails = bat ( 
       script: 'git --no-pager show -s --format=%%ae', 
@@ -155,8 +155,7 @@ Check console output at ${env.BUILD_URL} to view the results."""
 
 def sendEmail(String body, String subject, String recipients)
 {
-   // TODO: Add attachments via 'attachmentsPattern'
-   emailext attachLog: true, body: body, subject: subject, to: recipients
+    emailext attachLog: true, attachmentsPattern: 'TestResults/**/*.*', body: body, subject: subject, to: recipients
 }
 
 def extractCommiterEmail(details) {
