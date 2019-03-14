@@ -188,7 +188,7 @@ task DigitallySign -Description "Digitally sign all binaries"   {
     foreach($directory in $directoriesToSign)
     {
         Write-Output "Signing assemblies in $directory"
-        $filesToSign = Get-ChildItem -Path $directory.FullName -Recurse -Include @("*.dll","*.exe","*.msi") | Where-Object { $_.Name.StartsWith($dllNamePrefix) }
+        $filesToSign = Get-ChildItem -Path $directory.FullName -Include @("*.dll","*.exe","*.msi") | Where-Object { $_.Name.StartsWith($dllNamePrefix) }
         if ($filesToSign.Length -eq 0)
         {
             Throw "The $directory contains zero files to sign. Verify the build script and project files are in agreement."
@@ -232,8 +232,9 @@ task DigitallySign -Description "Digitally sign all binaries"   {
 task PublishBuildArtifacts -Description "Publish build artifacts"  {
     Assert ($Branch -ne "") "Branch is a required argument for saving build artifacts."
     Assert ($Version -ne "") "Version is a required argument for saving build artifacts."    
-    $targetDir = "$BuildPackagesDir\$Branch\$Version\"
-    Copy-Folder -Folder "binaries" -SourceDir $BinariesArtifactsDir -TargetDir $targetDir
+    $targetDir = "$BuildPackagesDir\$Branch\$Version"
+    Copy-Folder -SourceDir $LogsDir -TargetDir "$targetDir\logs"
+    Copy-Folder -SourceDir $BinariesArtifactsDir -TargetDir "$targetDir\binaries"
 }
 
 Function Initialize-Folder {
@@ -259,14 +260,15 @@ Function Initialize-Folder {
 
 Function Copy-Folder {
     param(
-        [String] $Folder,
         [String] $SourceDir,
         [String] $TargetDir
     )
 
     $robocopy = "robocopy.exe"
-    $sourceDirWithFolder = Join-Path $SourceDir $Folder
-    $targetDirWithFolder = Join-Path $TargetDir $Folder
-    Write-Output "Copying the build artifacts from $sourceDirWithFolder to $targetDirWithFolder"
-    & $robocopy "$sourceDirWithFolder" "$targetDirWithFolder" /MIR /is
+    Write-Output "Copying the build artifacts from $SourceDir to $TargetDir"
+    & $robocopy "$SourceDir" "$TargetDir" /MIR /is
+    if ($LASTEXITCODE -ne 1) 
+    {
+	    Throw "An error occured while copying the build artifacts from $SourceDir to $TargetDir"
+    }
 }
