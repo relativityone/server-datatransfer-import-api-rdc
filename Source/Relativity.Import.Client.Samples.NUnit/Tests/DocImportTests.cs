@@ -14,7 +14,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
     using Relativity.Import.Export.TestFramework;
 
-    /// <summary>
+	/// <summary>
     /// Represents a test that imports native documents and validates the results.
     /// </summary>
     [TestFixture]
@@ -89,12 +89,11 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			Assert.That(actualDocCount, Is.EqualTo(expectedDocCount));
 
 			// Assert - the imported document exists.
-			IList<Relativity.Services.Objects.DataContracts.RelativityObject> docs =
-				this.QueryRelativityObjects(this.ArtifactTypeId, new[] { WellKnownFields.ControlNumber });
+			IList<Relativity.Services.Objects.DataContracts.RelativityObject> docs = this.QueryDocuments();
 			Assert.That(docs, Is.Not.Null);
 			Assert.That(docs.Count, Is.EqualTo(expectedDocCount));
 			Relativity.Services.Objects.DataContracts.RelativityObject importedObj
-				= FindRelativityObject(docs, WellKnownFields.ControlNumber, controlNumber);
+				= SearchRelativityObject(docs, WellKnownFields.ControlNumber, controlNumber);
 			Assert.That(importedObj, Is.Not.Null);
 
 			// Assert - the workspace doesn't include duplicate folders.
@@ -103,6 +102,33 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 				IEnumerable<string> folders = SplitFolderPath(folderPath);
 				this.AssertDistinctFolders(folders.ToArray());
 			}
+
+			// Assert the field values match the expected values.
+			Relativity.Services.Objects.DataContracts.RelativityObject document = SearchRelativityObject(
+				docs,
+				WellKnownFields.ControlNumber,
+				controlNumber);
+			Assert.That(document, Is.Not.Null);
+			Relativity.Services.Objects.DataContracts.Choice hasImagesField = GetChoiceField(document, WellKnownFields.HasImages);
+			Assert.That(hasImagesField, Is.Not.Null);
+			Assert.That(hasImagesField.Name, Is.Not.Null);
+			Assert.That(hasImagesField.Name, Is.EqualTo("No"));
+			bool hasNativeField = GetBooleanFieldValue(document, WellKnownFields.HasNative);
+			Assert.That(hasNativeField, Is.True);
+			int? relativityImageCount = GetInt32FieldValue(document, WellKnownFields.RelativityImageCount);
+			Assert.That(relativityImageCount, Is.Null);
+
+			// Assert that importing adds a file record and all properties match the expected values.
+			FileDto documentFile = this.QueryNativeFileInfo(document.ArtifactID);
+			Assert.That(documentFile, Is.Not.Null);
+			Assert.That(documentFile.DocumentArtifactId, Is.EqualTo(document.ArtifactID));
+			Assert.That(documentFile.FileId, Is.Positive);
+			Assert.That(documentFile.FileName, Is.EqualTo(fileName));
+			Assert.That(documentFile.FileType, Is.EqualTo((int)FileType.Native));
+			Assert.That(documentFile.Identifier, Is.Not.Null.Or.Empty);
+			Assert.That(documentFile.InRepository, Is.True);
+			Assert.That(documentFile.Path, Is.Not.Null.Or.Empty);
+			Assert.That(documentFile.Size, Is.Positive);
 		}
 	}
 }

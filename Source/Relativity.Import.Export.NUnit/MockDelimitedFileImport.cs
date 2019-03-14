@@ -9,7 +9,8 @@
 
 namespace Relativity.Import.Export.NUnit
 {
-    using System.IO;
+	using System.Collections.Generic;
+	using System.IO;
     using System.Threading;
 
     using Relativity.Import.Export.Io;
@@ -86,11 +87,11 @@ namespace Relativity.Import.Export.NUnit
 
                 try
                 {
-                    var lines = new System.Collections.ArrayList();
+					var lines = new List<string[]>();
                     while (!this.HasReachedEof)
                     {
                         string[] line = this.GetLine();
-                        lines.AddRange(line);
+						lines.Add(line);
                     }
 
                     return lines;
@@ -101,5 +102,10 @@ namespace Relativity.Import.Export.NUnit
                 }
             }
         }
+
+		public void SetTrim(TrimOption trimOption)
+		{
+			this.TrimOption = trimOption;
+		}
     }
 }

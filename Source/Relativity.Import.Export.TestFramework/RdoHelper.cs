@@ -201,7 +201,7 @@ namespace Relativity.Import.Export.TestFramework
 			{
 				QueryRequest queryRequest = new QueryRequest
 					                            {
-						                            Fields = fields.Select(x => new FieldRef { Name = x }),
+						                            Fields = fields?.Select(x => new FieldRef { Name = x }),
 						                            ObjectType = new ObjectTypeRef { ArtifactTypeID = artifactTypeId }
 					                            };
                 Services.Objects.DataContracts.QueryResult result = client.QueryAsync(

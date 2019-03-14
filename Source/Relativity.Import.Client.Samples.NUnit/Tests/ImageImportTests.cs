@@ -8,12 +8,13 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 {
 	using System.Collections.Generic;
 	using System.Data;
+	using System.Linq;
 
 	using global::NUnit.Framework;
 
     using Relativity.Import.Export.TestFramework;
 
-    /// <summary>
+	/// <summary>
     /// Represents a test that imports images and validates the results.
     /// </summary>
     [TestFixture]
@@ -77,10 +78,39 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			Assert.That(actualDocCount, Is.EqualTo(expectedDocCount));
 
 			// Assert - the imported document exists.
-			IList<Relativity.Services.Objects.DataContracts.RelativityObject> docs =
-				this.QueryRelativityObjects(this.ArtifactTypeId, new[] { WellKnownFields.ControlNumber });
+			IList<Relativity.Services.Objects.DataContracts.RelativityObject> docs = this.QueryDocuments();
 			Assert.That(docs, Is.Not.Null);
 			Assert.That(docs.Count, Is.EqualTo(expectedDocCount));
+
+			// Assert the field values match the expected values.
+			Relativity.Services.Objects.DataContracts.RelativityObject document =
+				SearchRelativityObject(docs, WellKnownFields.ControlNumber, controlNumber) ?? SearchRelativityObject(
+					docs,
+					WellKnownFields.ControlNumber,
+					batesNumber);
+			Assert.That(document, Is.Not.Null);
+			Relativity.Services.Objects.DataContracts.Choice hasImagesField = GetChoiceField(document, WellKnownFields.HasImages);
+			Assert.That(hasImagesField, Is.Not.Null);
+			Assert.That(hasImagesField.Name, Is.Not.Null);
+			Assert.That(hasImagesField.Name, Is.EqualTo("Yes"));
+			bool hasNativeField = GetBooleanFieldValue(document, WellKnownFields.HasNative);
+			Assert.That(hasNativeField, Is.False);
+			int? relativityImageCount = GetInt32FieldValue(document, WellKnownFields.RelativityImageCount);
+			Assert.That(relativityImageCount, Is.Positive);
+
+			// Assert that importing adds a file record and all properties match the expected values.
+			IList<FileDto> documentImages = this.QueryImageFileInfo(document.ArtifactID).ToList();
+			Assert.That(documentImages, Is.Not.Null);
+			Assert.That(documentImages.Count, Is.EqualTo(1));
+			FileDto imageFile = documentImages[0];
+			Assert.That(imageFile.DocumentArtifactId, Is.EqualTo(document.ArtifactID));
+			Assert.That(imageFile.FileId, Is.Positive);
+			Assert.That(imageFile.FileName, Is.EqualTo(fileName));
+			Assert.That(imageFile.FileType, Is.EqualTo((int)FileType.Tif));
+			Assert.That(imageFile.Identifier, Is.EqualTo(controlNumber).Or.EqualTo(batesNumber));
+			Assert.That(imageFile.InRepository, Is.True);
+			Assert.That(imageFile.Path, Is.Not.Null.Or.Empty);
+			Assert.That(imageFile.Size, Is.Positive);
 		}
 	}
 }
