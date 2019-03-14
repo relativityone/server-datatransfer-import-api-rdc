@@ -10,6 +10,8 @@
 namespace Relativity.Import.Export.NUnit
 {
 	using System;
+	using System.Collections.Generic;
+	using System.Linq;
 
 	using global::NUnit.Framework;
 
@@ -182,9 +184,18 @@ namespace Relativity.Import.Export.NUnit
 
 			string path = OutsideInFileIdService.GetInstallPath();
 			Console.WriteLine($"A serious OI error has occurred. Dumping the list of OI binaries found within the '{path}' install directory.");
-			foreach (string file in System.IO.Directory.GetFiles(path))
+			List<string> files = System.IO.Directory.GetFiles(path).ToList();
+			if (files.Count > 0)
 			{
-				Console.WriteLine($"OI binary: {file}");
+				foreach (string file in files)
+				{
+					Console.WriteLine($"OI binary: {file}");
+				}
+			}
+			else
+			{
+				Console.WriteLine($"No OI binaries were found within the '{path}' install directory.");
+				Console.WriteLine("Check the build scripts logs for build warnings.");
 			}
 
 			dumpBinaries = true;
