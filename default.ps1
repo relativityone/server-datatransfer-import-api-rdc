@@ -188,7 +188,7 @@ task DigitallySign -Description "Digitally sign all binaries"   {
     foreach($directory in $directoriesToSign)
     {
         Write-Output "Signing assemblies in $directory"
-        $filesToSign = Get-ChildItem -Path $directory.FullName -Include @("*.dll","*.exe","*.msi") | Where-Object { $_.Name.StartsWith($dllNamePrefix) }
+        $filesToSign = Get-ChildItem -Path $directory | Where-Object { $_.Name.StartsWith($dllNamePrefix) }
         if ($filesToSign.Length -eq 0)
         {
             Throw "The $directory contains zero files to sign. Verify the build script and project files are in agreement."
@@ -196,6 +196,12 @@ task DigitallySign -Description "Digitally sign all binaries"   {
 
         foreach($fileToSign in $filesToSign)
         {
+            if (-not ($fileToSign.Extension -eq ".dll") -and
+                -not ($fileToSign.Extension -eq ".exe") -and
+                -not ($fileToSign.Extension -eq ".msi")) {
+                continue;
+            }
+
             $file = $fileToSign.FullName
             & $signtool verify /pa /q $file
             $signed = $?
