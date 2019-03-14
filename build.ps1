@@ -141,6 +141,7 @@ param(
 $BaseDir = $PSScriptRoot
 $BuildArtifactsDir = Join-Path $BaseDir "Artifacts"
 $PackagesDir = Join-Path $BaseDir "packages"
+$PaketFilesDir = Join-Path $BaseDir "paket-files"
 $PaketDir = Join-Path $BaseDir ".paket"
 $PaketExe = Join-Path $PaketDir 'paket.exe'
 $PaketBootstrapperExe = Join-Path $PaketDir 'paket.bootstrapper.exe'
@@ -160,6 +161,10 @@ if ($ForceDeleteTools -and (Test-Path $PaketBootstrapperExe -PathType Leaf)) {
 
 if ($ForceDeletePackages -and (Test-Path $PackagesDir -PathType Container)) {
     Remove-Item -Recurse -Force $PackagesDir
+}
+
+if ($ForceDeletePackages -and (Test-Path $PaketFilesDir -PathType Container)) {
+    Remove-Item -Recurse -Force $PaketFilesDir
 }
 
 if ($ForceDeleteArtifacts -and (Test-Path $BuildArtifactsDir -PathType Container)) {
@@ -266,11 +271,15 @@ Finally
         Remove-Item $PaketBootstrapperExe
     }
 
-    if ($ForceDeletePackages -and (Test-Path $PackagesDir -PathType Leaf)) {
+    if ($ForceDeletePackages -and (Test-Path $PackagesDir -PathType Container)) {
         Remove-Item -Recurse -Force $PackagesDir
     }
+
+    if ($ForceDeletePackages -and (Test-Path $PaketFilesDir -PathType Container)) {
+        Remove-Item -Recurse -Force $PaketFilesDir
+    }
     
-    if ($ForceDeleteArtifacts -and (Test-Path $BuildArtifactsDir -PathType Leaf)) {
+    if ($ForceDeleteArtifacts -and (Test-Path $BuildArtifactsDir -PathType Container)) {
         Remove-Item -Recurse -Force $BuildArtifactsDir
     }
 }
