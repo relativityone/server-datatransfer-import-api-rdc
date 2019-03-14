@@ -304,7 +304,7 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to initialize Outside In file identification library..
+        ///   Looks up a localized string similar to This operation cannot be performed because the Outside In file identification library located at &apos;{0}&apos; failed to initialize and suggests a serious configuration or environmental issue..
         /// </summary>
         internal static string OutsideInConfigurationError {
             get {
@@ -340,7 +340,7 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This operation cannot be performed because the Outside In file identification library isn&apos;t available and suggests a serious configuration or environmental issue..
+        ///   Looks up a localized string similar to This operation cannot be performed because the Outside In file identification library located at &apos;{0}&apos; isn&apos;t available and suggests a serious configuration or environmental issue..
         /// </summary>
         internal static string OutsideInNotAvailableError {
             get {

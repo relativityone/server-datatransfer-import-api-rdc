@@ -206,14 +206,14 @@ namespace Relativity.Import.Export
 				OutsideIn.SetConfiguration(oiConfiguration);
 				this.configuration.Timeout = Convert.ToInt32(oiConfiguration.IdleWorkerTimeout);
 				this.configuration.InstallDirectory = oiConfiguration.InstallLocation.ToString();
-				this.ApplyVersion();
+				this.ApplyVersion(path);
 			}
 			catch (OutsideInException e) when (e.ErrorCode == OutsideInConstants.NoErrorCode)
 			{
 				// OI is already configured.
 				this.configuration.Timeout = this.timeout;
 				this.configuration.InstallDirectory = path;
-				this.ApplyVersion();
+				this.ApplyVersion(path);
 			}
 			catch (OutsideInException e)
 			{
@@ -224,7 +224,11 @@ namespace Relativity.Import.Export
 			{
 				this.configuration.HasError = true;
 				this.configuration.Exception = e;
-				throw new FileIdException(Strings.OutsideInConfigurationError, e);
+				string message = string.Format(
+					CultureInfo.CurrentCulture,
+					Strings.OutsideInConfigurationError,
+					path);
+				throw new FileIdException(message, e);
 			}
 
 			// Allow this to potentially throw.
@@ -234,12 +238,19 @@ namespace Relativity.Import.Export
 		/// <summary>
 		/// Applies the OI version to the configuration object.
 		/// </summary>
-		private void ApplyVersion()
+		/// <param name="path">
+		/// The OI configuration directory.
+		/// </param>
+		private void ApplyVersion(string path)
 		{
 			OutsideInVersion version = OutsideIn.GetCoreVersion();
 			if (version == null)
 			{
-				throw new InvalidOperationException(Strings.OutsideInNotAvailableError);
+				string message = string.Format(
+					CultureInfo.CurrentCulture,
+					Strings.OutsideInNotAvailableError,
+					path);
+				throw new InvalidOperationException(message);
 			}
 
 			this.configuration.Version = version.GetVersion();
