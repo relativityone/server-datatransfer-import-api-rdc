@@ -43,17 +43,16 @@ timestamps
                 {
                     try
                     {
-                        // Wrapped in a try/catch to ensure the logs are archived.
+                        // Wrapped in a try/finally to ensure the logs are archived.
                         version = powershell(returnStdout:true, script: "(.\\Version\\Increment-ProductVersion.ps1 -Version (Get-Content .\\Version\\version.txt) -Force).ToString()")
                         version = version.trim()
                         echo "Building version $version"
                         output = powershell ".\\build.ps1 -Version '$version' -Configuration '${params.buildConfig}' -ExtendedCodeAnalysis -ForceDeleteTools -ForceDeletePackages -ForceDeleteArtifacts -Verbosity 'normal' -Branch '${env.BRANCH_NAME}'"
                         echo output
                     }
-                    catch (err)
+                    finally
                     {
                         archiveArtifacts artifacts: 'Logs/**/*.*'
-                        throw err
                     }
                 }
 
@@ -78,9 +77,17 @@ timestamps
 
                 stage ('Publish to bld-pkgs')
                 {
-                    output = powershell ".\\build.ps1 -SkipBuild -Version '$version' -PublishBuildArtifacts -Branch '${env.BRANCH_NAME}'"
-                    archiveArtifacts artifacts: 'Logs/**/*.*'
-                    echo output
+                    try
+                    {
+                        // Wrapped in a try/finally to ensure the logs are archived.
+                        output = powershell ".\\build.ps1 -SkipBuild -Version '$version' -PublishBuildArtifacts -Branch '${env.BRANCH_NAME}'"
+                        archiveArtifacts artifacts: 'Logs/**/*.*'
+                        echo output
+                    }
+                    finally
+                    {
+                        archiveArtifacts artifacts: 'Logs/**/*.*'
+                    }
                 }
             }
         }

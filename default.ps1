@@ -16,6 +16,7 @@ properties {
     # Properties below this line are defined in build.ps1
     $Target = $Null
     $Configuration = $Null
+    $BuildPlatform = $Null
     $Version = $Null
     $Branch = $Null
     $Verbosity = $Null
@@ -30,7 +31,17 @@ properties {
 task Build -Description "Builds the source code" -Depends UpdateAssemblyInfo, CompileMasterSolution -Precondition { -not $SkipBuild } {
 }
 
-task CompileMasterSolution {
+task CompileMasterSolution -Description "Compile the solution" {
+
+    if (!$BuildPlatform) {
+        $BuildPlatform = "Any CPU"
+    }
+
+    Write-Output "Solution: $MasterSolution"
+    Write-Output "Configuration: $Configuration"
+    Write-Output "Build platform: $BuildPlatform"
+    Write-Output "Verbosity: $Verbosity"
+
     $LogFilePath = Join-Path $LogsDir "buildsummary.log"
     $ErrorFilePath = Join-Path $LogsDir "builderrors.log"
     $MSBuildTarget = $Target
@@ -40,7 +51,7 @@ task CompileMasterSolution {
         exec { msbuild $MasterSolution `
             "/t:$MSBuildTarget" `
             "/verbosity:$Verbosity" `
-            "/property:Configuration=$Configuration" `
+            "/p:Configuration=$Configuration" `
             "/nologo" `
         }
     }
@@ -49,10 +60,10 @@ task CompileMasterSolution {
         exec { msbuild $MasterSolution `
             "/t:$MSBuildTarget" `
             "/verbosity:$Verbosity" `
-            "/property:Configuration=$Configuration" `
-            "/property:PublishWebProjects=True" `
+            "/p:Platform=$BuildPlatform" `
+            "/p:Configuration=$Configuration" `
             "/clp:Summary"`
-            "/nodeReuse:False" `
+            "/nodeReuse:false" `
             "/nologo" `
             "/maxcpucount" `
             "/flp1:LogFile=`"$LogFilePath`";Verbosity=$Verbosity" `

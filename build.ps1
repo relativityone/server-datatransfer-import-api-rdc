@@ -58,6 +58,9 @@ An optional switch to publish the build artifacts to the corporate build file sh
 .PARAMETER Branch
 An optional branch name. This is only required for the PublishBuildArtifacts command.
 
+.PARAMETER BuildPlatform
+An optional build platform. (e.g. 'Any CPU', 'x86', 'x64')
+
 .PARAMETER UnitTests
 An optional switch to execute all unit tests.
 
@@ -113,6 +116,8 @@ param(
     [Switch]$PublishBuildArtifacts,
     [Parameter()]
     [String]$Branch,
+    [Parameter()]
+    [String]$BuildPlatform = "Any CPU",
     [Parameter()]
     [Switch]$UnitTests,
     [Parameter()]
@@ -226,6 +231,7 @@ $Params = @{
         Configuration = $Configuration
         Version = $Version
         Branch = $Branch
+        BuildPlatform = $BuildPlatform
         Verbosity = $Verbosity
         TestTimeoutInMS = $TestTimeoutInMS
         UnitTests = $UnitTests
