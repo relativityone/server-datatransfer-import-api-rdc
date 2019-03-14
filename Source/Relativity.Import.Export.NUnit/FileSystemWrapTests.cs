@@ -12,8 +12,7 @@ namespace Relativity.Import.Export.NUnit
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
-
-	using Castle.Components.DictionaryAdapter;
+	using System.Text;
 
 	using global::NUnit.Framework;
 
@@ -24,41 +23,27 @@ namespace Relativity.Import.Export.NUnit
 	/// Represents <see cref="FileSystemWrap"/> tests.
 	/// </summary>
 	[TestFixture]
-    public class FileSystemWrapTests
+	[System.Diagnostics.CodeAnalysis.SuppressMessage(
+		"Microsoft.Design",
+		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
+		Justification = "The test class handles the disposal.")]
+	public class FileSystemWrapTests
     {
-	    private readonly List<string> pathsForDeletion = new List<string>();
+		private TempDirectory tempDirectory;
 		private IFileSystem fileSystem;
 
 		[SetUp]
 	    public void Setup()
         {
-            this.fileSystem = FileSystem.Instance.DeepCopy();
-			this.pathsForDeletion.Clear();
+			this.tempDirectory = new TempDirectory();
+			this.tempDirectory.Create();
+			this.fileSystem = FileSystem.Instance.DeepCopy();
 		}
 
 		[TearDown]
 	    public void Teardown()
 	    {
-		    foreach (var path in this.pathsForDeletion)
-		    {
-			    try
-			    {
-				    if (System.IO.File.Exists(path))
-				    {
-					    System.IO.File.Delete(path);
-				    }
-				    else if (System.IO.Directory.Exists(path))
-				    {
-					    System.IO.Directory.Delete(path, true);
-				    }
-			    }
-			    catch (IOException e)
-			    {
-				    Console.WriteLine("Failed to delete the {0} path. Exception: {1}", path, e);
-			    }
-		    }
-
-		    this.pathsForDeletion.Clear();
+			this.tempDirectory.Dispose();
 	    }
 
 	    [Test]
@@ -86,7 +71,7 @@ namespace Relativity.Import.Export.NUnit
 	    [Category(TestCategories.FileSystem)]
 		public void ShouldCreateTheFileInfo()
 		{
-			string fileName = GenerateUniqueFileName();
+			string fileName = GenerateUniqueTextFileName();
 			string file = this.GenerateUniqueFilePath(fileName);
 		    IFileInfo info = this.fileSystem.CreateFileInfo(file);
 			Assert.That(info, Is.Not.Null);
@@ -109,8 +94,7 @@ namespace Relativity.Import.Export.NUnit
 		[Category(TestCategories.FileSystem)]
 		public void ShouldCreateTheFile()
 		{
-			string fileName = GenerateUniqueFileName();
-			string file = this.GenerateUniqueFilePath(fileName);
+			string file = this.GenerateUniqueFilePath();
 			using (this.fileSystem.File.Create(file))
 			{
 			}
@@ -163,9 +147,22 @@ namespace Relativity.Import.Export.NUnit
 		[TestCase(false)]
 		[TestCase(true)]
 		[Category(TestCategories.FileSystem)]
+		public void ShouldDeleteTheDirectory(bool recursive)
+		{
+			string folderName = GenerateUniqueFolderName();
+			string directory = this.GenerateUniqueDirectoryPath(folderName);
+			this.fileSystem.Directory.CreateDirectory(directory);
+			this.fileSystem.Directory.Delete(directory, recursive);
+			Assert.That(directory, Does.Not.Exist);
+		}
+
+		[Test]
+		[TestCase(false)]
+		[TestCase(true)]
+		[Category(TestCategories.FileSystem)]
 		public void ShouldGetTheDirectoryParent(bool directoryExists)
 		{
-			string expected = GetUniqueDirectory();
+			string expected = this.tempDirectory.Directory;
 			string directory = this.GenerateUniqueDirectoryPath();
 			if (!directoryExists)
 			{
@@ -183,8 +180,7 @@ namespace Relativity.Import.Export.NUnit
 		[Category(TestCategories.FileSystem)]
 		public void ShouldGetTheFileSize()
 		{
-			string sourceFileName = GenerateUniqueFolderName();
-			string sourceFile = this.GenerateUniqueFilePath(sourceFileName);
+			string sourceFile = this.GenerateUniqueFilePath();
 			string text = RandomHelper.NextString(100, 1000);
 			System.IO.File.WriteAllText(sourceFile, text);
 			long fileSize = this.fileSystem.File.GetFileSize(sourceFile);
@@ -195,8 +191,7 @@ namespace Relativity.Import.Export.NUnit
 		[Category(TestCategories.FileSystem)]
 		public void ShouldCountTheLinesInFile()
 		{
-			string sourceFileName = GenerateUniqueFolderName();
-			string sourceFile = this.GenerateUniqueFilePath(sourceFileName);
+			string sourceFile = this.GenerateUniqueFilePath();
 			List<string> lines = new List<string>();
 			int expectedLineCount = RandomHelper.NextInt(10, 1000);
 			for (var i = 0; i < expectedLineCount; i++)
@@ -401,34 +396,34 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		[TestCase(false)]
+		[TestCase(true)]
 		[Category(TestCategories.FileSystem)]
-		public void ShouldCopyTheFile()
+		public void ShouldCopyTheFile(bool overwrite)
 		{
-			string sourceFileName = GenerateUniqueFolderName();
-			string sourceFile = this.GenerateUniqueFilePath(sourceFileName);
-			string destinationFileName = GenerateUniqueFolderName();
-			string destinationFile = System.IO.Path.Combine(GetUniqueDirectory(), destinationFileName);
+			string sourceFile = this.GenerateUniqueFilePath();
+			string destinationFile = this.GenerateUniqueFilePath();
 			System.IO.File.WriteAllText(sourceFile, "@");
 			Assert.That(sourceFile, Does.Exist);
 			Assert.That(destinationFile, Does.Not.Exist);
-			this.AddPathsForDeletion(destinationFile);
-			this.fileSystem.File.Copy(sourceFile, destinationFile, true);
+			this.fileSystem.File.Copy(sourceFile, destinationFile, overwrite);
 			Assert.That(sourceFile, Does.Exist);
 			Assert.That(destinationFile, Does.Exist);
+			if (!overwrite)
+			{
+				Assert.Throws<IOException>(() => this.fileSystem.File.Copy(sourceFile, destinationFile, false));
+			}
 		}
 
 		[Test]
 		[Category(TestCategories.FileSystem)]
 		public void ShouldMoveTheFile()
 		{
-			string sourceFileName = GenerateUniqueFolderName();
-			string sourceFile = this.GenerateUniqueFilePath(sourceFileName);
-			string destinationFileName = GenerateUniqueFolderName();
-			string destinationFile = System.IO.Path.Combine(GetUniqueDirectory(), destinationFileName);
+			string sourceFile = this.GenerateUniqueFilePath();
+			string destinationFile = this.GenerateUniqueFilePath();
 			System.IO.File.WriteAllText(sourceFile, "@");
 			Assert.That(sourceFile, Does.Exist);
 			Assert.That(destinationFile, Does.Not.Exist);
-			this.AddPathsForDeletion(destinationFile);
 			this.fileSystem.File.Move(sourceFile, destinationFile);
 			Assert.That(sourceFile, Does.Not.Exist);
 			Assert.That(destinationFile, Does.Exist);
@@ -450,8 +445,7 @@ namespace Relativity.Import.Export.NUnit
 		[Category(TestCategories.FileSystem)]
 		public void ShouldDeleteTheFile()
 		{
-			string sourceFileName = GenerateUniqueFolderName();
-			string sourceFile = this.GenerateUniqueFilePath(sourceFileName);
+			string sourceFile = this.GenerateUniqueFilePath();
 			System.IO.File.WriteAllText(sourceFile, "ABC123");
 			Assert.That(sourceFile, Does.Exist);
 			this.fileSystem.File.Delete(sourceFile);
@@ -465,8 +459,7 @@ namespace Relativity.Import.Export.NUnit
 		[Category(TestCategories.FileSystem)]
 		public void ShouldCreateTheStreamWriter()
 		{
-			string sourceFileName = GenerateUniqueFolderName();
-			string sourceFile = this.GenerateUniqueFilePath(sourceFileName);
+			string sourceFile = this.GenerateUniqueFilePath();
 			IStreamWriter writer = this.fileSystem.CreateStreamWriter(sourceFile, false, System.Text.Encoding.UTF8);
 			Assert.That(writer, Is.Not.Null);
 			Assert.That(writer.BaseStream, Is.Not.Null);
@@ -490,7 +483,59 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(lines[2], Is.EqualTo("Line3"));
 		}
 
-		private static string GenerateUniqueFileName()
+		[Test]
+		public void ShouldReopenAndTruncateTheFile()
+		{
+			string sourceFile = this.GenerateUniqueFilePath();
+			const int OldFileLength = 100;
+			RandomHelper.NextTextFile(OldFileLength, OldFileLength, sourceFile);
+			using (System.IO.FileStream stream = this.fileSystem.File.Create(sourceFile, true))
+			{
+				Assert.That(stream.Length, Is.EqualTo(OldFileLength));
+			}
+
+			const int NewFileLength = OldFileLength - 10;
+			using (System.IO.FileStream stream = this.fileSystem.File.ReopenAndTruncate(sourceFile, NewFileLength))
+			{
+				Assert.That(stream.Length, Is.EqualTo(NewFileLength));
+			}
+		}
+
+		[Test]
+		public void ShouldCreateTheFileStream()
+		{
+			string sourceFile = this.GenerateUniqueFilePath();
+			using (System.IO.FileStream stream = this.fileSystem.File.Create(
+				sourceFile,
+				FileMode.Create,
+				FileAccess.ReadWrite,
+				FileShare.None))
+			{
+				stream.Write(Encoding.ASCII.GetBytes("ABC"), 0, 3);
+			}
+
+			using (System.IO.FileStream stream = this.fileSystem.File.Create(
+				sourceFile,
+				FileMode.Append,
+				FileAccess.Write,
+				FileShare.None))
+			{
+				stream.Write(Encoding.ASCII.GetBytes("DEF"), 0, 3);
+			}
+
+			using (System.IO.FileStream stream = this.fileSystem.File.Create(
+				sourceFile,
+				FileMode.Open,
+				FileAccess.Read,
+				FileShare.ReadWrite))
+			{
+			}
+
+			string readText = System.IO.File.ReadAllText(sourceFile);
+			Assert.That(readText.Length, Is.EqualTo(6));
+		}
+
+		private static string GenerateUniqueTextFileName()
 		{
 			return Guid.NewGuid() + ".txt";
 		}
@@ -500,16 +545,6 @@ namespace Relativity.Import.Export.NUnit
 			return $"reldir-{Guid.NewGuid()}";
 		}
 
-		private static string GetUniqueDirectory()
-		{
-			return System.IO.Path.GetTempPath();
-		}
-
-		private void AddPathsForDeletion(string path)
-		{
-			this.pathsForDeletion.Add(path);
-		}
-
 		private string GenerateUniqueDirectoryPath()
 		{
 			return this.GenerateUniqueDirectoryPath(GenerateUniqueFolderName());
@@ -517,15 +552,18 @@ namespace Relativity.Import.Export.NUnit
 
 		private string GenerateUniqueDirectoryPath(string folder)
 		{
-			string file = System.IO.Path.Combine(GetUniqueDirectory(), folder);
-			this.AddPathsForDeletion(file);
+			string file = System.IO.Path.Combine(this.tempDirectory.Directory, folder);
 			return file;
+		}
+
+		private string GenerateUniqueFilePath()
+		{
+			return this.GenerateUniqueFilePath(GenerateUniqueTextFileName());
 		}
 
 		private string GenerateUniqueFilePath(string fileName)
 		{
-			string file = System.IO.Path.Combine(GetUniqueDirectory(), fileName);
-			this.AddPathsForDeletion(file);
+			string file = System.IO.Path.Combine(this.tempDirectory.Directory, fileName);
 			return file;
 		}
 	}

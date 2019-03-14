@@ -12,6 +12,11 @@ namespace Relativity.Import.Export.TestFramework
 	public static class WellKnownFields
 	{
 		/// <summary>
+		/// The artifact identifier field name.
+		/// </summary>
+		public const string ArtifactId = "artifact id";
+
+		/// <summary>
 		/// The bates number field name.
 		/// </summary>
 		public const string BatesNumber = "bates number";
@@ -37,14 +42,24 @@ namespace Relativity.Import.Export.TestFramework
 		public const string FilePath = "file path";
 
 		/// <summary>
-		/// The native file size field.
-		/// </summary>
-		public const string NativeFileSize = "NativeFileSize";
-
-		/// <summary>
 		/// The folder name field.
 		/// </summary>
 		public const string FolderName = "folder name";
+
+		/// <summary>
+		/// The 'Has Images' field.
+		/// </summary>
+		public const string HasImages = "has images";
+
+		/// <summary>
+		/// The 'Has Native' field.
+		/// </summary>
+		public const string HasNative = "has native";
+
+		/// <summary>
+		/// The native file size field.
+		/// </summary>
+		public const string NativeFileSize = "NativeFileSize";
 
 		/// <summary>
 		/// The Outside In file identifier field.
@@ -55,5 +70,10 @@ namespace Relativity.Import.Export.TestFramework
 		/// The Outside In file type name field.
 		/// </summary>
 		public const string OutsideInFileType = "OutsideInFileType";
+
+		/// <summary>
+		/// The relativity image count
+		/// </summary>
+		public const string RelativityImageCount = "relativity image count";
 	}
 }
