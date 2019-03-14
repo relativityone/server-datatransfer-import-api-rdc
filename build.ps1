@@ -261,27 +261,6 @@ Finally
 
     Remove-Module PSBuildTools -Force -ErrorAction SilentlyContinue
     Remove-Module psake -Force -ErrorAction SilentlyContinue
-	
-	# Removing paket eliminates a VS paket extension conflict.
-	if ($ForceDeleteTools -and (Test-Path $PaketExe -PathType Leaf)) {
-        Remove-Item $PaketExe
-    }
-    
-    if ($ForceDeleteTools -and (Test-Path $PaketBootstrapperExe -PathType Leaf)) {
-        Remove-Item $PaketBootstrapperExe
-    }
-
-    if ($ForceDeletePackages -and (Test-Path $PackagesDir -PathType Container)) {
-        Remove-Item -Recurse -Force $PackagesDir
-    }
-
-    if ($ForceDeletePackages -and (Test-Path $PaketFilesDir -PathType Container)) {
-        Remove-Item -Recurse -Force $PaketFilesDir
-    }
-    
-    if ($ForceDeleteArtifacts -and (Test-Path $BuildArtifactsDir -PathType Container)) {
-        Remove-Item -Recurse -Force $BuildArtifactsDir
-    }
 }
 
 Exit $ExitCode
