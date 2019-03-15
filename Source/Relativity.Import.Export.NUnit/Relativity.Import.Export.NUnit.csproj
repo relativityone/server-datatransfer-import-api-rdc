@@ -259,6 +259,7 @@
   <PropertyGroup>
     <PostBuildEvent>copy "$(SolutionDir)..\Vendor\FreeImage\3.18.0\x64\FreeImage.dll" $(TargetDir)</PostBuildEvent>
   </PropertyGroup>
+  <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -466,5 +467,4 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
 </Project>

@@ -74,7 +74,8 @@
   </Target>
   <Target Name="AfterBuild">
   </Target>
-  --> 
+  -->
+  <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -86,5 +87,4 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
 </Project>
