@@ -74,6 +74,8 @@ param(
     [Parameter()]
     [Version]$Version = "1.0.0.0",
     [Parameter()]
+    [string]$PackageVersion = "1.0.0-alpha000000",
+    [Parameter()]
     [ValidateSet("quiet", "minimal", "normal", "detailed", "diagnostic")]
     [String]$Verbosity = "quiet",
     [Parameter()]
@@ -155,6 +157,7 @@ $Params = @{
         Target = $Target
         Configuration = $Configuration
         Version = $Version
+        PackageVersion = $PackageVersion
         Branch = $Branch
         BuildPlatform = $BuildPlatform
         BuildUrl = $BuildUrl

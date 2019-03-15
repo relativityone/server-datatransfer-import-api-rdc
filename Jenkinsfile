@@ -106,6 +106,11 @@ timestamps
                     echo output
                 }
 
+                stage ('Publish packages to proget')
+                {
+                    powershell ".\\build.ps1 PublishPackages -PackageVersion '$packageVersion' -Branch '${env.BRANCH_NAME}'"
+                }
+
                 stage('Publish build artifacts')
                 {
                     try

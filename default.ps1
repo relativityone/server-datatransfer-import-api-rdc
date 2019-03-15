@@ -4,16 +4,21 @@ Framework "4.6" #.NET framework version
 properties {
     $LogsDir = Join-Path $Root "Logs"
     $PackagesDir = Join-Path $Root "packages"
+    $PaketDir = Join-Path $Root ".paket"
     $MasterSolution = Join-Path $Root "Source/Relativity.ImportAPI-RDC.sln"
     $NumberOfProcessors = (Get-ChildItem env:"NUMBER_OF_PROCESSORS").Value
     $BuildArtifactsDir = Join-Path $Root "Artifacts"
     $BinariesArtifactsDir = Join-Path $BuildArtifactsDir "binaries"
+    $PackagesArtifactsDir = Join-Path $BuildArtifactsDir "packages"
     $ScriptsDir = Join-Path $Root "Scripts"
     $BuildPackagesDir = "\\bld-pkgs\Packages\Import-Api-RDC\"
     $TestResultsDir = Join-Path $Root "TestResults"
     $ExtentCliExe  = Join-Path $PackagesDir "extent\tools\extent.exe"
     $GitVersionExe = Join-Path $PackagesDir "GitVersion.CommandLine\tools\GitVersion.exe"
     $NunitExe = Join-Path $PackagesDir "NUnit.ConsoleRunner\tools\nunit3-console.exe"
+    $PaketExe = Join-Path $PaketDir "paket.exe"
+    $ProgetUrl = "https://proget.kcura.corp/nuget/NuGet"
+    $ProgetApiKey = "03abad83-912d-4f24-ae99-03b15444eec8"
 
     # Properties below this line are defined in build.ps1
     $Target = $Null
@@ -21,6 +26,7 @@ properties {
     $BuildPlatform = $Null
     $BuildUrl = $Null
     $Version = $Null
+    $PackageVersion = $Null
     $Branch = $Null
     $Verbosity = $Null
     $TestTimeoutInMS = $Null
@@ -184,7 +190,7 @@ task IntegrationTests -Description "Run all integration tests" {
         "--result=$TestResultsXmlFile" `
         "--out=$OutputFile" `
         $testCategoryFilter `
-    }
+    } -errorMessage "There was an error running the integration tests."
 }
 
 task PackageVersion -Description "Retrieves package version from GitVersion" {
@@ -201,7 +207,51 @@ task PublishBuildArtifacts -Description "Publish build artifacts"  {
     $targetDir = "$BuildPackagesDir\$Branch\$Version"
     Copy-Folder -SourceDir $LogsDir -TargetDir "$targetDir\logs"
     Copy-Folder -SourceDir $BinariesArtifactsDir -TargetDir "$targetDir\binaries"
+    Copy-Folder -SourceDir $PackagesArtifactsDir -TargetDir "$targetDir\packages"
     Copy-Folder -SourceDir $TestResultsDir -TargetDir "$targetDir\test-results"
+}
+
+task PublishPackages -Depends PublishPackagesInternal
+
+task PublishPackagesInternal -Description "Pushes package to NuGet feed" {
+    Assert ($Branch -ne "") "Branch is a required argument for publishing packages"
+    Assert ($PackageVersion -ne "") "PackageVersion is a required argument for publishing packages"
+
+    Initialize-Folder $LogsDir
+    Initialize-Folder $PackagesArtifactsDir
+    $preReleaseLabel = & $GitVersionExe /output json /showvariable PreReleaseLabel
+    Write-Host "Branch name: $Branch"
+    Write-Host "Pre-release label: $preReleaseLabel"
+    if (($Branch -ne "master" -and (-not $Branch -like "hotfix-*")) -and [string]::IsNullOrWhiteSpace($preReleaseLabel))
+    {
+        Write-Warning "PPP: Current branch '$Branch' has version that appears to be a release version and is not master. Packing and publishing will not occur. Exiting..."
+        exit 0
+    }
+
+    $packageLogFile = Join-Path $LogsDir "package-build.log"
+    Write-Host "Creating packagess for all package templates contained within '$PaketDir' matching '$templateRegex' with version '$PackageVersion' and outputting to '$PackagesArtifactsDir'."
+    foreach ($file in Get-ChildItem $PaketDir)
+    {
+        if (!($file.Name -match [regex]"paket.template.*$"))
+        {
+            continue
+        }
+
+        $templateFile = $file.FullName
+        exec { & $PaketExe pack --template `"$templateFile`" --version $PackageVersion --symbols `"$PackagesArtifactsDir`" --log-file `"$packageLogFile`" } -errorMessage "There was an error creating the package."
+    }
+
+    Write-Host "Pushing all .nupkg files contained within '$PaketDir' to '$ProgetUrl'."
+    foreach($file in Get-ChildItem $PackagesArtifactsDir)
+    {
+        if ($file.Extension -ne '.nupkg')
+        {
+            continue
+        }
+
+        $packageFile = $file.FullName
+        exec { & $PaketExe push `"$packageFile`" --url `"$ProgetUrl`" --api-key `"$ProgetApiKey`" --verbose --log-file `"$packageLogFile`" } -errorMessage "There was an error pushing the packages."
+    }
 }
 
 task SemanticVersions -Depends BuildVersion, PackageVersion -Description "Calculate and retrieve the semantic build and package versions" {
