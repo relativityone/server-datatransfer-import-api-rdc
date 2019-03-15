@@ -1,0 +1,56 @@
+next-version: 1.0.0
+assembly-versioning-scheme: MajorMinorPatch
+mode: ContinuousDeployment
+continuous-delivery-fallback-tag: ''
+branches:
+  (origin/)?rel-.*$:
+    tag: alpha
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    increment: none
+  origin/develop$:
+    tag: beta
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    increment: none
+  dev(elop)?(ment)?$:
+    tag: beta
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    increment: none
+  origin/release.*$:
+    tag: rc
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    increment: none
+  releases?[/-]:
+    tag: rc
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    increment: none
+  origin/master$:
+    tag: ''
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    increment: none
+  master:
+    tag: ''
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    increment: none
+  origin/hotfix-.*$:
+    tag: ''
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    increment: none
+  hotfix(es)?[/-]:
+    tag: ''
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    increment: none
+legacy-semver-padding: 6
+build-metadata-padding: 6
+commits-since-version-source-padding: 6
+commit-message-incrementing: Enabled
+ignore:
+  sha: []
