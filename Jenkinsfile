@@ -36,9 +36,15 @@ timestamps
                     checkout scm
                 }
 
-                stage ('Set Assembly and Package Build Number')
+                stage('Clean')
+                {
+                    output = powershell ".\\build.ps1 Clean -ForceDeleteTools -ForceDeletePackages -ForceDeleteArtifacts -Verbosity '${params.buildVerbosity}'"
+                    echo output
+                }
+
+                stage ('Retrieve semantic versions')
                 {   
-                    def outputString = runCommandWithOutput(".\\build.ps1 -SkipBuild -GitVersion -BuildUrl ${BUILD_URL}")            
+                    def outputString = runCommandWithOutput(".\\build.ps1 SemanticVersions -BuildUrl ${BUILD_URL} -Verbosity '${params.buildVerbosity}'"
                     buildVersion = extractValue("buildVersion", outputString)
                     packageVersion = extractValue("packageVersion", outputString)
                     echo "Build URL: ${BUILD_URL}"
@@ -47,19 +53,13 @@ timestamps
                     currentBuild.displayName = buildVersion
                 }
 
-                stage('Clean')
-                {
-                    output = powershell ".\\build.ps1 -Target 'Clean' -ForceDeleteTools -ForceDeletePackages -ForceDeleteArtifacts -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
-                    echo output
-                }
-
-                stage('Compile')
+                stage('Build')
                 {
                     try
                     {
                         // Wrapped in a try/finally to ensure the logs are archived.
                         echo "Building version $buildVersion"
-                        output = powershell ".\\build.ps1 -Version '$buildVersion' -Configuration '${params.buildConfig}' -ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
+                        output = powershell ".\\build.ps1 Build -Configuration '${params.buildConfig}' -Version '$buildVersion' -Verbosity '${params.buildVerbosity}'"
                         echo output
                     }
                     finally
@@ -68,32 +68,48 @@ timestamps
                     }
                 }
 
-                stage ('Digitally Sign Binaries')
-                {
-                    output = powershell ".\\build.ps1 -SkipBuild -DigitallySign -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
-                    echo output
-                }
-
-                stage ('Unit Tests')
-                {
-                    try
-                    {
-                        // Wrapped in a try/finally to ensure the results are archived.
-                        output = powershell ".\\build.ps1 -SkipBuild -UnitTests -Branch '${env.BRANCH_NAME}'"
-                        echo output
-                    }
-                    finally {
-                        archiveArtifacts artifacts: 'TestResults/**/*.*'
-                    }
-                }
-
-                stage ('Publish to bld-pkgs')
+                stage('Extended code analysis')
                 {
                     try
                     {
                         // Wrapped in a try/finally to ensure the logs are archived.
-                        output = powershell ".\\build.ps1 -SkipBuild -Version '$buildVersion' -PublishBuildArtifacts -Branch '${env.BRANCH_NAME}'"
+                        echo "Extending code analysis"
+                        output = powershell ".\\build.ps1 ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}'"
+                        echo output
+                    }
+                    finally
+                    {
                         archiveArtifacts artifacts: 'Logs/**/*.*'
+                    }
+                }
+
+                stage ('Run unit tests')
+                {
+                    try
+                    {
+                        // Wrapped in a try/finally to ensure the results are archived.
+                        output = powershell ".\\build.ps1 UnitTests"
+                        echo output
+                    }
+                    finally
+                    {
+                        powershell ".\\build.ps1 GenerateTestReport"
+                        archiveArtifacts artifacts: 'TestResults/**/*.*'
+                    }
+                }
+
+                stage ('Digitally sign binaries')
+                {
+                    output = powershell ".\\build.ps1 DigitallySign -Verbosity '${params.buildVerbosity}'"
+                    echo output
+                }
+
+                stage ('Publish build artifacts')
+                {
+                    try
+                    {
+                        // Wrapped in a try/finally to ensure the logs are archived.
+                        output = powershell ".\\build.ps1 PublishBuildArtifacts -Version '$buildVersion' -Branch '${env.BRANCH_NAME}'"
                         echo output
                     }
                     finally
