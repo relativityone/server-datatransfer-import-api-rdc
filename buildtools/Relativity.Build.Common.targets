@@ -1,5 +1,5 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Target Name="AfterBuild">
+  <Target Name="CopyArtifactsAfterBuild" AfterTargets="CoreCompile">
     <ItemGroup>
       <SourceBinaries Include="$(TargetDir)\*.*" />
     </ItemGroup>
@@ -11,7 +11,7 @@
       Retries="3" 
       RetryDelayMilliseconds="300" />
   </Target>
-  <Target Name="AfterClean">
+  <Target Name="CopyArtifactsAfterClean" AfterTargets="Clean">
     <RemoveDir Directories="$(SolutionDir)..\Artifacts\binaries\$(ProjectName)" />
   </Target>
 </Project>

@@ -182,23 +182,38 @@ namespace Relativity.Import.Export.NUnit
 				return;
 			}
 
-			string path = OutsideInFileIdService.GetInstallPath();
-			Console.WriteLine($"A serious OI error has occurred. Dumping the list of OI binaries found within the '{path}' install directory.");
-			List<string> files = System.IO.Directory.GetFiles(path).ToList();
-			if (files.Count > 0)
+			try
 			{
-				foreach (string file in files)
+				string path = OutsideInFileIdService.GetInstallPath();
+				Console.WriteLine(
+					$"A serious OI error has occurred. Dumping the list of OI binaries found within the '{path}' install directory.");
+				if (!System.IO.Directory.Exists(path))
 				{
-					Console.WriteLine($"OI binary: {file}");
+					Console.WriteLine($"The OI '{path}' install directory doesn't exist.");
+					Console.WriteLine(
+						"Check the project file and custom OI target to ensure the OI binaries are properly copied to the target path.");
+				}
+				else
+				{
+					List<string> files = System.IO.Directory.GetFiles(path).ToList();
+					if (files.Count > 0)
+					{
+						foreach (string file in files)
+						{
+							Console.WriteLine($"OI binary: {file}");
+						}
+					}
+					else
+					{
+						Console.WriteLine($"No OI binaries were found within the '{path}' install directory.");
+						Console.WriteLine("Check the build scripts and logs for build warnings.");
+					}
 				}
 			}
-			else
+			finally
 			{
-				Console.WriteLine($"No OI binaries were found within the '{path}' install directory.");
-				Console.WriteLine("Check the build scripts logs for build warnings.");
+				dumpBinaries = true;
 			}
-
-			dumpBinaries = true;
 		}
 
 		private void ValidateConfigInfo()
