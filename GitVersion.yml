@@ -1,56 +1,128 @@
-next-version: 1.0.0
 assembly-versioning-scheme: MajorMinorPatch
 mode: ContinuousDeployment
+increment: Inherit
 continuous-delivery-fallback-tag: ''
+next-version: 1.0.0
 branches:
-  (origin/)?rel-.*$:
-    tag: alpha
-    prevent-increment-of-merged-branch-version: true
-    track-merge-target: false
-    increment: none
-  origin/develop$:
-    tag: beta
-    prevent-increment-of-merged-branch-version: true
-    track-merge-target: false
-    increment: none
-  dev(elop)?(ment)?$:
-    tag: beta
-    prevent-increment-of-merged-branch-version: true
-    track-merge-target: false
-    increment: none
-  origin/release.*$:
-    tag: rc
-    prevent-increment-of-merged-branch-version: true
-    track-merge-target: false
-    increment: none
-  releases?[/-]:
-    tag: rc
-    prevent-increment-of-merged-branch-version: true
-    track-merge-target: false
-    increment: none
-  origin/master$:
-    tag: ''
-    prevent-increment-of-merged-branch-version: true
-    track-merge-target: false
-    increment: none
   master:
     tag: ''
+    increment: None
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
-    increment: none
-  origin/hotfix-.*$:
+    regex: origin/master$
+  develop:
+    tag: beta
+    increment: None
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    regex: origin/develop$
+  feature:
+    tag: alpha
+    increment: None
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    regex: (origin/)?rel-.*$
+  hotfix:
     tag: ''
+    increment: None
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
-    increment: none
-  hotfix(es)?[/-]:
-    tag: ''
+    regex: origin/hotfix-.*$
+  release:
+    tag: rc
+    increment: None
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
-    increment: none
-legacy-semver-padding: 6
-build-metadata-padding: 6
-commits-since-version-source-padding: 6
-commit-message-incrementing: Enabled
+    regex: origin/release.*$
 ignore:
-  sha: []
+  sha:
+    - 800092ac0fcf383d8cd945b68e09b09b58d7675f
+    - 6506e8e24586480bd24d87769f747cbdb256eaa3
+    - 9ffe7588393f92c622d26cc741ac1927e7dedb0e
+    - 5da893fcd7e4ac3e166f8a52ccf76a7c9089889d
+    - 4200b572aee2d44c07d75fd9f6161a1c7950b9b9
+    - 7ed821e4d4413dcccf6add6465cecccc7fcafea8
+    - e2f769abb59087b6b164cc930fef0a5dba3c3214
+    - 6ea7f1ec69c294d45715a56857389d2b2ff97f44
+    - 11e91e8802cb7c0356ad1480db368c6dcc825c4a
+    - 963397622c5cc03f057bc9db7199d462f293fedc
+    - 565f873e918089f099444dec56ab14f735c4c213
+    - 7e362a670e1a33d1c9be4be0c279d412f02efcaa
+    - 47972c90e58ea4f87a5a3216d797fe0af549f922
+    - 838cbff039fcc08a8d29028e7027ad39eafcaccf
+    - da6ce727c137dc0935e7554ea040121b34663e3b
+    - d4a17e35b873fc8d808924a9188d91d0b8498442
+    - c569e7658b05ab75564b2823b455e7a0cf57dea3
+    - 93edbc5651f1f58a8890522f82d2ff71a529e804
+    - 0ef6de1fdfe86da0c147d7148fbd66327858a9e8
+    - 8f9aaa05086d63a583a71acdc70c4f995efd0d0b
+    - 8ffdb392e5150813c5fc275b2eaaa7427055616a
+    - 4d07d6f81fb5e80f556a75256e516175501a2b71
+    - fa5ea00fcac2f2cf0c7899329fa0938bc9f1931e
+    - 136e59277618c3bb94d1add2009311d16145cc86
+    - bf3b7deb1da1c1f07becd37a47072589b6384f70
+    - c36d4901cae869a6aadd202cb4d7e7801d404d81
+    - b0036fb3e7b27dc0c12fd531d038c8e7be48871f
+    - b0043f17b9bf5a3fda879bbc2815789f2910f1c9
+    - a8e18c87b2da85cd65d3a2b75c6ddb7fda2dd642
+    - 5cdd3ac751cb4d3015790c2446f40235ae0f62d8
+    - 22e3c802c96a779b4906aee657318ca693f6e013
+    - 0ad0ced3988466492358dc80dc13bc78e187e574
+    - 32cf3216d126aa9f9e0c76c5830bff89343df1be
+    - 3bb874f852a108b30f1b0b0d1569f7c8fbfdee00
+    - 07c5c8854c3c7921562bd3bc848c4e5a57ac7b3f
+    - 3995f6de7cda3b58cae86c0959563e147fe019ff
+    - f250daef4776416bb62d4538283bce66d4e6a8c2
+    - d8652749720468d17a30d98fbb151cb2aa13eb44
+    - 09632b1026adc585f69305060d08a8f71de9a343
+    - 4a28a0b6a0f933cf2d00dd972302d43bfef89a8c
+    - fccff2eb9ac3659b93db1c657369c0b6182cc8ee
+    - 24f893d10c1ffbbabda51cdf3df7c5edf6e7e05d
+    - 2d4cf68e04ac3c8991523f1d674c397aa0874712
+    - 59600d4a820cfe581c1c68865ae3b2db0b6de8e6
+    - e927d7fff25d3f33c6ee29db5a0089b6a451324c
+    - 99a5150585a6df219da6cf967c23038b2219b673
+    - b0eba19716f9de5356fb878f4bf27c596e3caacb
+    - f1d249f5e5cb61563953d260359dc0d262b6cbce
+    - 8d45f6ccd1e489b55fdf27fb53ec17e7267ec43b
+    - 6033f92fa789841f73d7b0a101a5015a2d8dab5f
+    - 21c3ac6f1b903bd020622cfa2426b8abd6280864
+    - 99ae78b82e806f8ad8879a18065d34af7ba3d60a
+    - 8f563f55f63feecc744675cfacc9ab9ffa83a58c
+    - fc363a6efbacb79f02fe590059b291fc54ee7820
+    - b25bca0dc97fad4961e675b722a5e2674c117387
+    - 8db7c0e00bd177c3c15c84029a3f2ca01ff5a0db
+    - e7f084594c1c80ed747c086c96791277b6a24029
+    - aaffc183a3c7b9e6552c6ca9bd54ab8b2a3c2b3c
+    - 9fc0dacb1e81e3cb5297d1616c347197a6b98f81
+    - a9c424b64d593d1491d56051f6d8c99a6bb3c602
+    - a45e3bc60286740b3dcc7fb43b87bfea0009fd0a
+    - 650950f0b5b756ffffab68abe582efd164e70409
+    - c1bb2aa80d3aed2ed617f24d35da3c08ee6f142a
+    - 967c1fe999ca3016b9f37177d72db7687268a3ba
+    - e875399c9ccaa1890e352a5ef69d085139da6421
+    - 00d258a104674c34b03b925da9857153106e4f51
+    - 83afdb2168a36d929e046d44b8764eb67e90d79b
+    - bc4a57193d727715dfde018a2dae4f2c8cab2776
+    - f60e98e051de890c35ef28c45b996a7abe9539aa
+    - 8a4faeba29dd54e8815808301f394bd927f78e88
+    - 29981d878276c2e35e5e244fd16eaa8665df9c45
+    - d64a1043a6c957998f84fdf4083ebd8dd0082f2d
+    - 078e143d1d7b3c376201c2a545db0cb88b989667
+    - c6d24767e6e1d3dcdcfcafa0a03e269e6003bdf0
+    - 78326f60fb8f89b2f962cafa5607efae4a52ad44
+    - a12d2db3a24d601560c199b29bdb17b86365f563
+    - bc04a9eb3ab217846c944ad6d4afa90153fa5468
+    - 9a3afd33c5d8f2b8fd01ac28a40866f5eb43b185
+    - 441862c1671314f11a323693c37a806d00ab81d6
+    - f4faa95ea8fc51ba74b7ab8a81ebbed4d81d4f75
+    - f7c98e4930a8fd2bd1715e93cb1d70fda6c33302
+    - 16fb85ff4e41652ba8ba84ca2a426f64e8b03b98
+    - a551e96f1d5d813f4515333ed90753155c253c3e
+
+
+
+
+
+
+
