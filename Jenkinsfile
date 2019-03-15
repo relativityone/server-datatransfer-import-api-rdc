@@ -31,7 +31,7 @@ timestamps
         {
             node("PolandBuild")
             {
-                stage ('Checkout')
+                stage('Checkout')
                 {
                     checkout scm
                 }
@@ -42,9 +42,11 @@ timestamps
                     echo output
                 }
 
-                stage ('Retrieve semantic versions')
-                {   
+                stage('Retrieve semantic versions')
+                { 
+                    echo "Retrieving the semantic versions"
                     def outputString = runCommandWithOutput(".\\build.ps1 SemanticVersions -BuildUrl ${BUILD_URL} -Verbosity '${params.buildVerbosity}'"
+                    echo "Retrieved the semantic versions"
                     buildVersion = extractValue("buildVersion", outputString)
                     packageVersion = extractValue("packageVersion", outputString)
                     echo "Build URL: ${BUILD_URL}"
@@ -83,7 +85,7 @@ timestamps
                     }
                 }
 
-                stage ('Run unit tests')
+                stage('Run unit tests')
                 {
                     try
                     {
@@ -98,13 +100,13 @@ timestamps
                     }
                 }
 
-                stage ('Digitally sign binaries')
+                stage('Digitally sign binaries')
                 {
                     output = powershell ".\\build.ps1 DigitallySign -Verbosity '${params.buildVerbosity}'"
                     echo output
                 }
 
-                stage ('Publish build artifacts')
+                stage('Publish build artifacts')
                 {
                     try
                     {
