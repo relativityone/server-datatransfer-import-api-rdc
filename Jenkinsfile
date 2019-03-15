@@ -8,6 +8,7 @@ properties([
     [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30']],
     parameters([
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
+        choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
         string(defaultValue: '#import-api-rdc-build', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel')
     ])
 ])
@@ -35,7 +36,7 @@ timestamps
 
                 stage('Clean')
                 {
-                    output = powershell ".\\build.ps1 -Target 'Clean' -Verbosity 'normal' -Branch '${env.BRANCH_NAME}'"
+                    output = powershell ".\\build.ps1 -Target 'Clean' -ForceDeleteTools -ForceDeletePackages -ForceDeleteArtifacts -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
                     echo output
                 }
 
@@ -47,7 +48,7 @@ timestamps
                         version = powershell(returnStdout:true, script: "(.\\Version\\Increment-ProductVersion.ps1 -Version (Get-Content .\\Version\\version.txt) -Force).ToString()")
                         version = version.trim()
                         echo "Building version $version"
-                        output = powershell ".\\build.ps1 -Version '$version' -Configuration '${params.buildConfig}' -ExtendedCodeAnalysis -ForceDeleteTools -ForceDeletePackages -ForceDeleteArtifacts -Verbosity 'normal' -Branch '${env.BRANCH_NAME}'"
+                        output = powershell ".\\build.ps1 -Version '$version' -Configuration '${params.buildConfig}' -ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
                         echo output
                     }
                     finally
@@ -58,7 +59,7 @@ timestamps
 
                 stage ('Digitally Sign Binaries')
                 {
-                    output = powershell ".\\build.ps1 -SkipBuild -DigitallySign -Verbosity 'normal' -Branch '${env.BRANCH_NAME}'"
+                    output = powershell ".\\build.ps1 -SkipBuild -DigitallySign -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
                     echo output
                 }
 
