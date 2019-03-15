@@ -40,7 +40,8 @@ timestamps
                 {   
                     def outputString = runCommandWithOutput(".\\build.ps1 -SkipBuild -GitVersion -BuildUrl ${BUILD_URL}")            
                     buildVersion = extractValue("buildVersion", outputString)
-                    packageVersion = extractValue("packageVersion", outputString)    
+                    packageVersion = extractValue("packageVersion", outputString)
+                    echo "Build URL: ${BUILD_URL}"
                     echo "Build version: $buildVersion"
                     echo "Package version: $packageVersion"
                     currentBuild.displayName = buildVersion
