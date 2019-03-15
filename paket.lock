@@ -8,7 +8,7 @@ NUGET
     CsvHelper (12.1.2)
       System.ValueTuple (>= 4.4)
     extent (0.0.3)
-    GitVersion.CommandLine (4.0)
+    GitVersion.CommandLine (3.6.4)
     iTextSharp (5.5.13)
     Microsoft.Build.Logging.StructuredLogger (1.0.89)
     Moq (4.10.1)

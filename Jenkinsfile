@@ -19,6 +19,8 @@ def knife = 'C:\\Python27\\Lib\\site-packages\\jeeves\\knife.rb'
 def sessionID = System.currentTimeMillis().toString()
 def eventHash = java.security.MessageDigest.getInstance("MD5").digest(env.JOB_NAME.bytes).encodeHex().toString()
 def NUnit = nunit()
+def buildVersion = ""
+def packageVersion = ""
 build = params.build
 
 timestamps
@@ -34,6 +36,16 @@ timestamps
                     checkout scm
                 }
 
+                stage ('Set Assembly and Package Build Number')
+                {   
+                    def outputString = runCommandWithOutput(".\\build.ps1 -SkipBuild -GitVersion -BuildUrl ${BUILD_URL}")            
+                    buildVersion = extractValue("buildVersion", outputString)
+                    packageVersion = extractValue("packageVersion", outputString)    
+                    echo "Build version: $buildVersion"
+                    echo "Package version: $packageVersion"
+                    currentBuild.displayName = buildVersion
+                }
+
                 stage('Clean')
                 {
                     output = powershell ".\\build.ps1 -Target 'Clean' -ForceDeleteTools -ForceDeletePackages -ForceDeleteArtifacts -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
@@ -45,10 +57,8 @@ timestamps
                     try
                     {
                         // Wrapped in a try/finally to ensure the logs are archived.
-                        version = powershell(returnStdout:true, script: "(.\\Version\\Increment-ProductVersion.ps1 -Version (Get-Content .\\Version\\version.txt) -Force).ToString()")
-                        version = version.trim()
-                        echo "Building version $version"
-                        output = powershell ".\\build.ps1 -Version '$version' -Configuration '${params.buildConfig}' -ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
+                        echo "Building version $buildVersion"
+                        output = powershell ".\\build.ps1 -Version '$buildVersion' -Configuration '${params.buildConfig}' -ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}' -Branch '${env.BRANCH_NAME}'"
                         echo output
                     }
                     finally
@@ -81,7 +91,7 @@ timestamps
                     try
                     {
                         // Wrapped in a try/finally to ensure the logs are archived.
-                        output = powershell ".\\build.ps1 -SkipBuild -Version '$version' -PublishBuildArtifacts -Branch '${env.BRANCH_NAME}'"
+                        output = powershell ".\\build.ps1 -SkipBuild -Version '$buildVersion' -PublishBuildArtifacts -Branch '${env.BRANCH_NAME}'"
                         archiveArtifacts artifacts: 'Logs/**/*.*'
                         echo output
                     }
@@ -171,4 +181,23 @@ def extractCommiterEmail(details) {
    def arr = details.tokenize('\n')
    def email = arr[2].trim()
    return email
+}
+
+def extractValue(String value, String output)
+{
+    def matcher = output =~ "$value=(.*)"
+    $result =  matcher[0][0].split("=")[1]
+    matcher = null
+    return $result
+}
+
+def runCommandWithOutput(String command)
+{
+    def outputString = powershell(returnStdout: true, script: command).trim()
+    if (!outputString) 
+    {
+        error("$command command returned empty output!")
+    }
+
+    return outputString
 }

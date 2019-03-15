@@ -12,11 +12,13 @@ properties {
     $BuildPackagesDir = "\\bld-pkgs\Packages\Import-Api-RDC\"
     $TestResultsDir = Join-Path $Root "TestResults"
     $ExtentCliExe  = Join-Path $PackagesDir "extent\tools\extent.exe"
+    $GitVersionExe = Join-Path $PackagesDir "GitVersion.CommandLine\tools\GitVersion.exe"
 
     # Properties below this line are defined in build.ps1
     $Target = $Null
     $Configuration = $Null
     $BuildPlatform = $Null
+    $BuildUrl = $Null
     $Version = $Null
     $Branch = $Null
     $Verbosity = $Null
@@ -249,6 +251,39 @@ task PublishBuildArtifacts -Description "Publish build artifacts"  {
     Copy-Folder -SourceDir $LogsDir -TargetDir "$targetDir\logs"
     Copy-Folder -SourceDir $BinariesArtifactsDir -TargetDir "$targetDir\binaries"
     Copy-Folder -SourceDir $TestResultsDir -TargetDir "$targetDir\test-results"
+}
+
+task GitVersion -Depends BuildVersion, PackageVersion -Description "Retrieves incremented build and package version from GitVersion" {
+    Assert ($BuildUrl -ne $null -and $BuildUrl -ne "") "BuildUrl must be provided"
+}
+
+task BuildVersion -Description "Retrieves build version from GitVersion" {
+    Write-Output "Importing GitVersion properties.."
+
+    $buildVersionMajor = & $GitVersionExe /output json /showvariable Major
+    $buildVersionMinor = & $GitVersionExe /output json /showvariable Minor
+    $buildVersionPatch = & $GitVersionExe /output json /showvariable Patch
+    $buildVersionCommitNumber = & $GitVersionExe /output json /showvariable CommitsSinceVersionSource
+
+    Write-Output "Build Url: $BuildUrl"
+    Write-Output "Version major: $buildVersionMajor"
+    Write-Output "Version minor: $buildVersionMinor"
+    Write-Output "Version patch: $buildVersionPatch"
+    Write-Output "Version commits number: $buildVersionCommitNumber"
+
+    $version = "$buildVersionMajor.$buildVersionMinor.$buildVersionPatch.$buildVersionCommitNumber"
+    $global:BuildVersion = $version
+
+    # So Jenkins can get the version number
+    Write-Output "buildVersion=$version"
+}
+
+task PackageVersion -Description "Retrieves package version from GitVersion" {	
+    $version = & $GitVersionExe /output json /showvariable NuGetVersion
+    $global:PackageVersion = $version
+
+    # So Jenkins can get the package version number
+    Write-Output "packageVersion=$version"
 }
 
 Function Initialize-Folder {

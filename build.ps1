@@ -61,6 +61,12 @@ An optional branch name. This is only required for the PublishBuildArtifacts com
 .PARAMETER BuildPlatform
 An optional build platform. (e.g. 'Any CPU', 'x86', 'x64')
 
+.PARAMETER GitVersion
+An optional switch to retrieve the version from GitVersion.
+
+.PARAMETER BuildUrl
+An optional build URL. This is only required for GitVersion related commands.
+
 .PARAMETER UnitTests
 An optional switch to execute all unit tests.
 
@@ -118,6 +124,10 @@ param(
     [String]$Branch,
     [Parameter()]
     [String]$BuildPlatform = "Any CPU",
+    [Parameter()]
+    [Switch]$GitVersion,
+    [Parameter()]
+    [string]$BuildUrl = "localhost",
     [Parameter()]
     [Switch]$UnitTests,
     [Parameter()]
@@ -203,6 +213,10 @@ if ($PublishBuildArtifacts) {
     $TaskList.Add("PublishBuildArtifacts")
 }
 
+if ($GitVersion) {
+    $TaskList.Add("GitVersion")
+}
+
 # This task must be added before the Test task.
 if ($TestVM) {
     $TaskList.Add("TestVMSetup")
@@ -232,6 +246,7 @@ $Params = @{
         Version = $Version
         Branch = $Branch
         BuildPlatform = $BuildPlatform
+        BuildUrl = $BuildUrl
         Verbosity = $Verbosity
         TestTimeoutInMS = $TestTimeoutInMS
         UnitTests = $UnitTests
