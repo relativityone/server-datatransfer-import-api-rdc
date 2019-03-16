@@ -108,7 +108,14 @@ timestamps
 
                 stage ('Publish packages to proget')
                 {
-                    powershell ".\\build.ps1 PublishPackages -PackageVersion '$packageVersion' -Branch '${env.BRANCH_NAME}'"
+                    try
+                    {
+                        powershell ".\\build.ps1 PublishPackages -PackageVersion '$packageVersion' -Branch '${env.BRANCH_NAME}'"
+                    }
+                    finally
+                    {
+                        archiveArtifacts artifacts: 'Logs/**/*.*'
+                    }
                 }
 
                 stage('Publish build artifacts')

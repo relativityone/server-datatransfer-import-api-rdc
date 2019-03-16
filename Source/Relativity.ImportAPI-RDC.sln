@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{44D52970-C80E-4D2F-A986-2EB046DCB96B}"
 	ProjectSection(SolutionItems) = preProject
 		..\paket.dependencies = ..\paket.dependencies
+		..\.paket\paket.template.relativity.import.client = ..\.paket\paket.template.relativity.import.client
 	EndProjectSection
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Relativity.Import.Client.Legacy.NUnit", "Relativity.Import.Client.Legacy.NUnit\Relativity.Import.Client.Legacy.NUnit.vbproj", "{6B2E3939-E33B-4672-B420-F3B6021DDA78}"

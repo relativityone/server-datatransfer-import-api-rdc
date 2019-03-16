@@ -31,6 +31,7 @@ tags
 files
 	../Artifacts/binaries/Relativity.Import.Client/Relativity.Import.Client.dll ==> lib/net462
 	../Artifacts/binaries/Relativity.Import.Client/Relativity.Import.Client.xml ==> lib/net462
+	../Artifacts/binaries/Relativity.Import.Export/Relativity.Import.Export.dll ==> lib/net462
 dependencies
   framework: net462
 	Newtonsoft.Json >= 6.0.8

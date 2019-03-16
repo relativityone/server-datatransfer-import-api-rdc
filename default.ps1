@@ -86,11 +86,14 @@ task CompileMasterSolution -Description "Compile the solution" {
     Initialize-Folder $LogsDir -Safe
     $LogFilePath = Join-Path $LogsDir "buildsummary.log"
     $ErrorFilePath = Join-Path $LogsDir "builderrors.log"
+
+	# Always force binaries to get copied when building via build script.
     exec { msbuild $MasterSolution `
         "/t:$Target" `
         "/verbosity:$Verbosity" `
         "/p:Platform=$BuildPlatform" `
         "/p:Configuration=$Configuration" `
+        "/p:CopyArtifacts=true" `
         "/clp:Summary"`
         "/nodeReuse:false" `
         "/nologo" `
@@ -111,21 +114,16 @@ task DigitallySign -Description "Digitally sign all binaries"   {
     $dllNamePrefix = "Relativity"
     foreach($directory in $directoriesToSign)
     {
-        Write-Output "Signing assemblies in $directory"
-        $filesToSign = Get-ChildItem -Path $directory | Where-Object { $_.Name.StartsWith($dllNamePrefix) }
-        if ($filesToSign.Length -eq 0)
+        $filesToSign = Get-ChildItem -Path $directory -Include *.dll,*.exe,*.msi | Where-Object { $_.Name.StartsWith($dllNamePrefix) }
+        $totalFilesToSign = $filesToSign.Length
+        if ($totalFilesToSign -eq 0)
         {
             Throw "The $directory contains zero files to sign. Verify the build script and project files are in agreement."
         }
 
+        Write-Output "Signing $totalFilesToSign total assemblies in $directory"
         foreach($fileToSign in $filesToSign)
         {
-            if (-not ($fileToSign.Extension -eq ".dll") -and
-                -not ($fileToSign.Extension -eq ".exe") -and
-                -not ($fileToSign.Extension -eq ".msi")) {
-                continue;
-            }
-
             $file = $fileToSign.FullName
             & $signtool verify /pa /q $file
             $signed = $?
@@ -222,6 +220,7 @@ task PublishPackagesInternal -Description "Pushes package to NuGet feed" {
     $preReleaseLabel = & $GitVersionExe /output json /showvariable PreReleaseLabel
     Write-Host "Branch name: $Branch"
     Write-Host "Pre-release label: $preReleaseLabel"
+    Write-Host "Working directory: $PSScriptRoot"
     if (($Branch -ne "master" -and (-not $Branch -like "hotfix-*")) -and [string]::IsNullOrWhiteSpace($preReleaseLabel))
     {
         Write-Warning "PPP: Current branch '$Branch' has version that appears to be a release version and is not master. Packing and publishing will not occur. Exiting..."
@@ -229,7 +228,7 @@ task PublishPackagesInternal -Description "Pushes package to NuGet feed" {
     }
 
     $packageLogFile = Join-Path $LogsDir "package-build.log"
-    Write-Host "Creating packagess for all package templates contained within '$PaketDir' matching '$templateRegex' with version '$PackageVersion' and outputting to '$PackagesArtifactsDir'."
+    Write-Host "Creating packages for all package templates contained within '$PaketDir' matching '$templateRegex' with version '$PackageVersion' and outputting to '$PackagesArtifactsDir'."
     foreach ($file in Get-ChildItem $PaketDir)
     {
         if (!($file.Name -match [regex]"paket.template.*$"))
@@ -238,6 +237,7 @@ task PublishPackagesInternal -Description "Pushes package to NuGet feed" {
         }
 
         $templateFile = $file.FullName
+        Write-Host "Creating package for template '$templateFile' and outputting to '$PackagesArtifactsDir'."
         exec { & $PaketExe pack --template `"$templateFile`" --version $PackageVersion --symbols `"$PackagesArtifactsDir`" --log-file `"$packageLogFile`" } -errorMessage "There was an error creating the package."
     }
 
