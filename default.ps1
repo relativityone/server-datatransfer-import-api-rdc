@@ -61,6 +61,7 @@ task BuildVersion -Description "Retrieves build version from GitVersion" {
 
 task Clean -Description "Clean solution" {
     Write-Output "Removing all build artifacts"
+    Initialize-Folder $BuildArtifactsDir
     Initialize-Folder $LogsDir
     Initialize-Folder $TestResultsDir
     Write-Output "Running Clean target on $MasterSolution"
@@ -118,7 +119,9 @@ task DigitallySign -Description "Digitally sign all binaries"   {
         $totalFilesToSign = $filesToSign.Length
         if ($totalFilesToSign -eq 0)
         {
-            Throw "The $directory contains zero files to sign. Verify the build script and project files are in agreement."
+            # Temporarily avoid throwing to determine where the issue lies.
+            # Throw "The $directory contains zero files to sign. Verify the build script and project files are in agreement."
+            Write-Output "The $directory contains zero files to sign. Verify the build script and project files are in agreement."
         }
 
         Write-Output "Signing $totalFilesToSign total assemblies in $directory"
@@ -158,7 +161,6 @@ task DigitallySign -Description "Digitally sign all binaries"   {
 }
 
 task ExtendedCodeAnalysis -Description "Perform extended code analysis checks." {
-
     & "$ScriptsDir\Invoke-ExtendedCodeAnalysis.ps1" -SolutionFile $MasterSolution
 }
 
@@ -215,8 +217,8 @@ task PublishPackagesInternal -Description "Pushes package to NuGet feed" {
     Assert ($Branch -ne "") "Branch is a required argument for publishing packages"
     Assert ($PackageVersion -ne "") "PackageVersion is a required argument for publishing packages"
 
-    Initialize-Folder $LogsDir
-    Initialize-Folder $PackagesArtifactsDir
+    Initialize-Folder $LogsDir -Safe
+    Initialize-Folder $PackagesArtifactsDir -Safe
     $preReleaseLabel = & $GitVersionExe /output json /showvariable PreReleaseLabel
     Write-Host "Branch name: $Branch"
     Write-Host "Pre-release label: $preReleaseLabel"

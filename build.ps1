@@ -92,7 +92,6 @@ param(
 )
 
 $BaseDir = $PSScriptRoot
-$BuildArtifactsDir = Join-Path $BaseDir "Artifacts"
 $PackagesDir = Join-Path $BaseDir "packages"
 $PaketFilesDir = Join-Path $BaseDir "paket-files"
 $PaketDir = Join-Path $BaseDir ".paket"
@@ -114,16 +113,8 @@ if ("Clean" -in $TaskList) {
         Remove-Item $PaketBootstrapperExe
     }
 
-    if (Test-Path $PackagesDir -PathType Container) {
-        Remove-Item -Recurse -Force $PackagesDir
-    }
-
     if (Test-Path $PaketFilesDir -PathType Container) {
         Remove-Item -Recurse -Force $PaketFilesDir
-    }
-
-    if (Test-Path $BuildArtifactsDir -PathType Container) {
-        Remove-Item -Recurse -Force $BuildArtifactsDir
     }
 }
 
