@@ -105,21 +105,26 @@ task CompileMasterSolution -Description "Compile the solution" {
 }
 
 task DigitallySign -Description "Digitally sign all binaries"   {
+    $retryAttempts = 3
     $sites = @("http://timestamp.comodoca.com/authenticode",
                "http://timestamp.verisign.com/scripts/timstamp.dll",
                "http://tsa.starfieldtech.com")
     $signtool = [System.IO.Path]::Combine(${env:ProgramFiles(x86)}, "Microsoft SDKs", "Windows", "v7.1A", "Bin", "signtool.exe")
-    $retryAttempts = 3
-    $directoriesToSign = New-Object System.Collections.ArrayList($null)
-    $directoriesToSign.Add((Join-Path $BinariesArtifactsDir "Relativity.Import.Client"))
-    $dllNamePrefix = "Relativity"
-    foreach($directory in $directoriesToSign)
+    
+    # To reduce spending 5 minutes blindly signing unnecessary files, limit to just the RDC/IAPI and use directory/file counts to verify.
+    $folderNameCandidates = @("Relativity.Desktop.Client.Legacy", "Relativity.Import.Client")
+    foreach($folder in $folderNameCandidates)
     {
-        $filesToSign = Get-ChildItem -Path $directory -Recurse -Include *.dll,*.exe,*.msi | Where-Object { $_.Name.StartsWith($dllNamePrefix) }
+        $directory = Join-Path $BinariesArtifactsDir $folder
+        if (-Not (Test-Path $directory -PathType Container)) {
+            Throw "The '$directory' can't be digitally signed because the directory doesn't exist. Verify the build script and project files are in agreement."
+        }
+
+        $filesToSign = Get-ChildItem -Path $directory -Recurse -Include *.dll,*.exe,*.msi | Where-Object { $_.Name -Match ".*Relativity.*|.*kCura.*" }
         $totalFilesToSign = $filesToSign.Length
         if ($totalFilesToSign -eq 0)
         {
-            Throw "The $directory contains zero files to sign. Verify the build script and project files are in agreement."
+            Throw "The '$directory' can't be digitally signed because there aren't any candidate files within the directory. Verify the build script and project files are in agreement."
         }
 
         Write-Output "Signing $totalFilesToSign total assemblies in $directory"
