@@ -101,6 +101,13 @@ task CompileMasterSolution -Description "Compile the solution" {
         "/maxcpucount" `
         "/flp1:LogFile=`"$LogFilePath`";Verbosity=$Verbosity" `
         "/flp2:errorsonly;LogFile=`"$ErrorFilePath`""
+    } -errorMessage "There was an error building the master solution."
+
+    # Remove the error log when none exist.
+    if (Test-Path $ErrorFilePath -PathType Leaf) {
+        if ((Get-Item $ErrorFilePath).length -eq 0) {
+            Remove-Item $ErrorFilePath
+        }
     }
 }
 
