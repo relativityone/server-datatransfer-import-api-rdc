@@ -205,7 +205,7 @@ task IntegrationTests -Description "Run all integration tests" {
 }
 
 task IntegrationTestsResults -Description "Retrieve the integration test results from the Xml file" {
-    Write-TestResults $IntegrationTestResultsXmlFile
+    Write-TestResultsOutput $IntegrationTestResultsXmlFile
 }
 
 task PackageVersion -Description "Retrieves the package version from GitVersion" {
@@ -340,7 +340,7 @@ task UnitTests -Description "Run all unit tests" {
 }
 
 task UnitTestResults -Description "Retrieve the unit test results from the Xml file" {
-    Write-TestResults $UnitTestResultsXmlFile
+    Write-TestResultsOutput $UnitTestResultsXmlFile
 }
 
 task UpdateAssemblyInfo -Precondition { $Version -ne "1.0.0.0" } -Description "Update the AssemblyInfo files in \Version\" {
@@ -413,7 +413,7 @@ Function Invoke-SetTestParametersByFile {
     }
 }
 
-Function Write-TestResults {
+Function Write-TestResultsOutput {
     param(
         [String] $TestResultsXmlFile
     )
@@ -428,7 +428,7 @@ Function Write-TestResults {
     $skipped = $xml.'test-run'.skipped
 
     # So Jenkins can get the results
-    Write-Host "testResultsPassed=$passed"
-    Write-Host "testResultsFailed=$failed"
-    Write-Host "testResultsSkipped=$skipped"
+    Write-Output "testResultsPassed=$passed"
+    Write-Output "testResultsFailed=$failed"
+    Write-Output "testResultsSkipped=$skipped"
 }
