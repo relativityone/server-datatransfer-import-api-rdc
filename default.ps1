@@ -428,7 +428,7 @@ Function Write-TestResults {
     $skipped = $xml.'test-run'.skipped
 
     # So Jenkins can get the results
-    Write-Host "testResultsPassed: $passed"
-    Write-Host "testResultsFailed: $failed"
-    Write-Host "testResultsSkipped: $skipped"
+    Write-Host "testResultsPassed=$passed"
+    Write-Host "testResultsFailed=$failed"
+    Write-Host "testResultsSkipped=$skipped"
 }
