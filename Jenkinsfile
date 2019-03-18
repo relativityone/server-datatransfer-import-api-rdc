@@ -97,6 +97,7 @@ timestamps
                     {
                         powershell ".\\build.ps1 GenerateTestReport"
                         archiveArtifacts artifacts: 'TestResults/**/*.*'
+                        nunit testResultsPattern: 'TestResults/**/unit-test-results.xml'
                     }
                 }
 
