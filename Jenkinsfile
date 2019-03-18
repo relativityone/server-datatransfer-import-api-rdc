@@ -57,46 +57,29 @@ timestamps
 
                 stage('Build')
                 {
-                    try
-                    {
-                        // Wrapped in a try/finally to ensure the logs are archived.
-                        echo "Building version $buildVersion"
-                        output = powershell ".\\build.ps1 Build -Configuration '${params.buildConfig}' -Version '$buildVersion' -Verbosity '${params.buildVerbosity}'"
-                        echo output
-                    }
-                    finally
-                    {
-                        archiveArtifacts artifacts: 'Logs/**/*.*'
-                    }
+                    echo "Building version $buildVersion"
+                    output = powershell ".\\build.ps1 Build -Configuration '${params.buildConfig}' -Version '$buildVersion' -Verbosity '${params.buildVerbosity}'"
+                    echo output
                 }
 
                 stage('Extended code analysis')
                 {
-                    try
-                    {
-                        // Wrapped in a try/finally to ensure the logs are archived.
-                        echo "Extending code analysis"
-                        output = powershell ".\\build.ps1 ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}'"
-                        echo output
-                    }
-                    finally
-                    {
-                        archiveArtifacts artifacts: 'Logs/**/*.*'
-                    }
+                    echo "Extending code analysis"
+                    output = powershell ".\\build.ps1 ExtendedCodeAnalysis -Verbosity '${params.buildVerbosity}'"
+                    echo output
                 }
 
                 stage('Run unit tests')
                 {
                     try
                     {
-                        // Wrapped in a try/finally to ensure the results are archived.
+                        // Wrapped in a try/finally to ensure the test results are generated.
                         output = powershell ".\\build.ps1 UnitTests"
                         echo output
                     }
                     finally
                     {
                         powershell ".\\build.ps1 GenerateTestReport"
-                        archiveArtifacts artifacts: 'TestResults/**/*.*'
                     }
                 }
 
@@ -108,28 +91,13 @@ timestamps
 
                 stage ('Publish packages to proget')
                 {
-                    try
-                    {
-                        powershell ".\\build.ps1 PublishPackages -PackageVersion '$packageVersion' -Branch '${env.BRANCH_NAME}'"
-                    }
-                    finally
-                    {
-                        archiveArtifacts artifacts: 'Logs/**/*.*'
-                    }
+                    powershell ".\\build.ps1 PublishPackages -PackageVersion '$packageVersion' -Branch '${env.BRANCH_NAME}'"
                 }
 
                 stage('Publish build artifacts')
                 {
-                    try
-                    {
-                        // Wrapped in a try/finally to ensure the logs are archived.
-                        output = powershell ".\\build.ps1 PublishBuildArtifacts -Version '$buildVersion' -Branch '${env.BRANCH_NAME}'"
-                        echo output
-                    }
-                    finally
-                    {
-                        archiveArtifacts artifacts: 'Logs/**/*.*'
-                    }
+                    output = powershell ".\\build.ps1 PublishBuildArtifacts -Version '$buildVersion' -Branch '${env.BRANCH_NAME}'"
+                    echo output
                 }
             }
         }
@@ -139,7 +107,7 @@ timestamps
             currentBuild.result = "FAILURE"
             if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master')
             {
-               sendEmailAboutFailureToTeam()            
+               sendEmailAboutFailureToTeam()
             }
             else
             {
@@ -150,6 +118,8 @@ timestamps
         {
             try
             {
+                archiveArtifacts artifacts: 'Logs/**/*.*'
+                archiveArtifacts artifacts: 'TestResults/**/*.*'
                 NUnit.publish(this, sessionID)
             }
             catch (err)
@@ -162,11 +132,8 @@ timestamps
         {
             try
             {
-                //def(passedTests, failedTests, ignoredTests) = getTestCounts(this)
-                //node(sessionID)
-                //{
-                //    sendCDSlackNotification(this, "", build, env.BRANCH_NAME, params.type, params.slackChannel, "", failedTests, passedTests, ignoredTests, env.BUILD_TAG)
-                //}
+                def(passedTests, failedTests, ignoredTests) = getTestCounts(this)
+                sendCDSlackNotification(this, "", build, env.BRANCH_NAME, "", params.slackChannel, "", failedTests, passedTests, ignoredTests, env.BUILD_TAG)
             }
             catch (err)  // Just catch everything here, if reporting/cleanup is the only thing that failed, let's not fail out the pipeline.
             {
@@ -178,13 +145,13 @@ timestamps
 
 def sendEmailAboutFailureToAuthor()
 {
-   def commiterDetails = bat ( 
-      script: 'git --no-pager show -s --format=%%ae', 
-      returnStdout: true
-   )
+    def commiterDetails = bat (
+        script: 'git --no-pager show -s --format=%%ae', 
+        returnStdout: true
+    )
 
-   def recipients = extractCommiterEmail(commiterDetails)
-   sendEmailAboutFailure(recipients)
+    def recipients = extractCommiterEmail(commiterDetails)
+    sendEmailAboutFailure(recipients)
 }
 
 def sendEmailAboutFailureToTeam()
@@ -195,11 +162,12 @@ def sendEmailAboutFailureToTeam()
 
 def sendEmailAboutFailure(String recipients)
 {
-   def subject = "${env.JOB_NAME} - Build ${env.BUILD_DISPLAY_NAME} - Failed! On branch ${env.BRANCH_NAME}"
-   def body = """${env.JOB_NAME} - Build - Failed:
+    echo "Sending ${env.BRANCH_NAME} build failure to $recipients"
+    def subject = "${env.JOB_NAME} - Build ${env.BUILD_DISPLAY_NAME} - Failed! On branch ${env.BRANCH_NAME}"
+    def body = """${env.JOB_NAME} - Build - Failed:
 
 Check console output at ${env.BUILD_URL} to view the results."""
-   sendEmail(body, subject, recipients)
+    sendEmail(body, subject, recipients)
 }
 
 def sendEmail(String body, String subject, String recipients)
@@ -209,9 +177,9 @@ def sendEmail(String body, String subject, String recipients)
 
 def extractCommiterEmail(details) {
     
-   def arr = details.tokenize('\n')
-   def email = arr[2].trim()
-   return email
+    def arr = details.tokenize('\n')
+    def email = arr[2].trim()
+    return email
 }
 
 def extractValue(String value, String output)
