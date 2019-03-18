@@ -13,6 +13,8 @@ properties {
     $ScriptsDir = Join-Path $Root "Scripts"
     $BuildPackagesDir = "\\bld-pkgs\Packages\Import-Api-RDC\"
     $TestResultsDir = Join-Path $Root "TestResults"
+    $UnitTestResultsXmlFile = Join-Path $TestResultsDir "unit-test-results.xml"
+    $IntegrationTestResultsXmlFile = Join-Path $TestResultsDir "integration-test-results.xml"
     $ExtentCliExe  = Join-Path $PackagesDir "extent\tools\extent.exe"
     $GitVersionExe = Join-Path $PackagesDir "GitVersion.CommandLine\tools\GitVersion.exe"
     $NunitExe = Join-Path $PackagesDir "NUnit.ConsoleRunner\tools\nunit3-console.exe"
@@ -37,7 +39,7 @@ properties {
 task Build -Description "Builds the source code" -Depends UpdateAssemblyInfo, CompileMasterSolution {
 }
 
-task BuildVersion -Description "Retrieves build version from GitVersion" {
+task BuildVersion -Description "Retrieves the build version from GitVersion" {
     Assert ($BuildUrl -ne $null -and $BuildUrl -ne "") "BuildUrl must be provided"
     Write-Output "Importing GitVersion properties.."
 
@@ -185,7 +187,6 @@ task Help -Alias ? -Description "Display task information" {
 
 task IntegrationTests -Description "Run all integration tests" {
     Initialize-Folder $TestResultsDir -Safe
-    $TestResultsXmlFile = Join-Path $TestResultsDir "integration-test-results.xml"
     $OutputFile = Join-Path $TestResultsDir "integration-test-output.txt"
     $testCategoryFilter = "--where=`"cat==Integration`""
     [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPINTEGRATIONTESTS", "false", "Process")
@@ -197,13 +198,17 @@ task IntegrationTests -Description "Run all integration tests" {
         "--agents=$NumberOfProcessors" `
         "--skipnontestassemblies" `
         "--timeout=$TestTimeoutInMS" `
-        "--result=$TestResultsXmlFile" `
+        "--result=$IntegrationTestResultsXmlFile" `
         "--out=$OutputFile" `
         $testCategoryFilter `
     } -errorMessage "There was an error running the integration tests."
 }
 
-task PackageVersion -Description "Retrieves package version from GitVersion" {
+task IntegrationTestsResults -Description "Retrieve the integration test results from the Xml file" {
+    Write-TestResults $IntegrationTestResultsXmlFile
+}
+
+task PackageVersion -Description "Retrieves the package version from GitVersion" {
     $version = & $GitVersionExe /output json /showvariable NuGetVersion
     $global:PackageVersion = $version
 
@@ -317,7 +322,6 @@ task TestVMSetup -Description "Setup the test parameters for TestVM" {
 
 task UnitTests -Description "Run all unit tests" {
     Initialize-Folder $TestResultsDir -Safe
-    $TestResultsXmlFile = Join-Path $TestResultsDir "unit-test-results.xml"
     $OutputFile = Join-Path $TestResultsDir "unit-test-output.txt"
     $testCategoryFilter = "--where=`"cat!=Integration`""
     [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPINTEGRATIONTESTS", "true", "Process")
@@ -329,10 +333,14 @@ task UnitTests -Description "Run all unit tests" {
         "--agents=$NumberOfProcessors" `
         "--skipnontestassemblies" `
         "--timeout=$TestTimeoutInMS" `
-        "--result=$TestResultsXmlFile" `
+        "--result=$UnitTestResultsXmlFile" `
         "--out=$OutputFile" `
         $testCategoryFilter `
     }
+}
+
+task UnitTestResults -Description "Retrieve the unit test results from the Xml file" {
+    Write-TestResults $UnitTestResultsXmlFile
 }
 
 task UpdateAssemblyInfo -Precondition { $Version -ne "1.0.0.0" } -Description "Update the AssemblyInfo files in \Version\" {
@@ -403,4 +411,24 @@ Function Invoke-SetTestParametersByFile {
             [Environment]::SetEnvironmentVariable($name, $value , "Process")
         }
     }
+}
+
+Function Write-TestResults {
+    param(
+        [String] $TestResultsXmlFile
+    )
+
+    if (-Not (Test-Path $TestResultsXmlFile -PathType Leaf)) {
+        Throw "The test results cannot be retrieved because the Xml tests file '$TestResultsXmlFile' doesn't exist."
+    }
+
+    $xml = [xml] (Get-Content $TestResultsXmlFile)
+    $passed = $xml.'test-run'.passed
+    $failed = $xml.'test-run'.failed
+    $skipped = $xml.'test-run'.skipped
+
+    # So Jenkins can get the results
+    Write-Host "testResultsPassed: $passed"
+    Write-Host "testResultsFailed: $failed"
+    Write-Host "testResultsSkipped: $skipped"
 }
