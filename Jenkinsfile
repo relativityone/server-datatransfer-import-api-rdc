@@ -96,9 +96,13 @@ timestamps
                     {
                         echo "Retrieving the unit test results"
                         def outputString = runCommandWithOutput(".\\build.ps1 UnitTestResults -Verbosity '${params.buildVerbosity}'")
+                        echo "Retrieved the unit test results"
+
+                        echo "Extracting the unit test result parameters"
                         testResultsPassed = extractValue("testResultsPassed", outputString)
                         testResultsFailed = extractValue("testResultsFailed", outputString)
                         testResultsSkipped = extractValue("testResultsSkipped", outputString)
+                        echo "Extracted the unit test result parameters"
                         echo "Total passed: $testResultsPassed"
                         echo "Total failed: $testResultsFailed"
                         echo "Total skipped: $testResultsSkipped"
