@@ -154,7 +154,7 @@ timestamps
         {
             stage('Reporting and Cleanup')
             {
-                node(sessionID)
+                node("PolandBuild")
                 {
                     parallel(
                         SlackNotification: 
