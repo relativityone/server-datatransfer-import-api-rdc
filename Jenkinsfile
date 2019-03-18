@@ -150,17 +150,30 @@ timestamps
             }
         }
 
-        stage('Reporting and Cleanup')
+        try
         {
-            try
+            stage('Reporting and Cleanup')
             {
-                sendCDSlackNotification(this, "", build, env.BRANCH_NAME, params.buildType, params.slackChannel, "", testResultsFailed, testResultsPassed, testResultsSkipped, env.BUILD_TAG)
+                node(sessionID)
+                {
+                    parallel(
+                        SlackNotification: 
+                        {
+                            sendCDSlackNotification(this, "", build, env.BRANCH_NAME, params.buildType, params.slackChannel, "", failedTests, passedTests, ignoredTests, env.BUILD_TAG)
+                        },
+                        // StashNotifier second call, passes currentBuild.result to BitBucket as build status 
+                        BitBucketNotification:
+                        { 
+                            notifyBitbucket(ignoreUnverifiedSSLPeer: true, considerUnstableAsSuccess: true)
+                        }
+                    )
+                }
             }
-            catch (err)
-            {
-                // Just catch everything here, if reporting/cleanup is the only thing that failed, let's not fail out the pipeline.
-                echo err.toString()
-            }
+        }
+        catch (err)
+        {
+            // Just catch everything here, if reporting/cleanup is the only thing that failed, let's not fail out the pipeline.
+            echo err.toString()
         }
     }
 }
@@ -206,6 +219,11 @@ def extractCommiterEmail(details) {
 
 def extractValue(String value, String output)
 {
+    if (value == null || value.isEmpty())
+    {
+        return ""
+    }
+
     def matcher = output =~ "$value=(.*)"
     $result =  matcher[0][0].split("=")[1]
     matcher = null
