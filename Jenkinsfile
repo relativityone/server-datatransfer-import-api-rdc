@@ -159,7 +159,7 @@ timestamps
                     parallel(
                         SlackNotification: 
                         {
-                            sendCDSlackNotification(this, "", build, env.BRANCH_NAME, params.buildType, params.slackChannel, "", failedTests, passedTests, ignoredTests, env.BUILD_TAG)
+                            sendCDSlackNotification(this, "", build, env.BRANCH_NAME, params.buildType, params.slackChannel, "", testResultsFailed, testResultsPassed, testResultsSkipped, env.BUILD_TAG)
                         },
                         // StashNotifier second call, passes currentBuild.result to BitBucket as build status 
                         BitBucketNotification:
