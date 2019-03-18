@@ -88,16 +88,20 @@ timestamps
                         finally
                         {
                             echo "Generating unit test results"
-                            powershell ".\\build.ps1 GenerateTestReport"                            
-                            echo "Retrieving the unit test results"
-                            def outputString = runCommandWithOutput(".\\build.ps1 UnitTestResults -Verbosity '${params.buildVerbosity}'")
-                            testResultsPassed = extractValue("testResultsPassed", outputString)
-                            testResultsFailed = extractValue("testResultsFailed", outputString)
-                            testResultsSkipped = extractValue("testResultsSkipped", outputString)
-                            echo "Total passed: $testResultsPassed"
-                            echo "Total failed: $testResultsFailed"
-                            echo "Total skipped: $testResultsSkipped"
+                            powershell ".\\build.ps1 GenerateTestReport"
                         }
+                    }
+
+                    stage('Retrieve unit test results')
+                    {
+                        echo "Retrieving the unit test results"
+                        def outputString = runCommandWithOutput(".\\build.ps1 UnitTestResults -Verbosity '${params.buildVerbosity}'")
+                        testResultsPassed = extractValue("testResultsPassed", outputString)
+                        testResultsFailed = extractValue("testResultsFailed", outputString)
+                        testResultsSkipped = extractValue("testResultsSkipped", outputString)
+                        echo "Total passed: $testResultsPassed"
+                        echo "Total failed: $testResultsFailed"
+                        echo "Total skipped: $testResultsSkipped"
                     }
 
                     stage('Digitally sign binaries')
