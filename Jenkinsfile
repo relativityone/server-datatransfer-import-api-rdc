@@ -186,6 +186,7 @@ timestamps
                                 "\n" + "message: " + message +
                                 "\n" +
                                 "\n*************************************************"
+
                             sendCDSlackNotification(script, serverUnderTestName, buildVersion, branch, buildType, slackChannel, email, testResultsFailed, testResultsPassed, testResultsSkipped, message)
                         },
                         // StashNotifier second call, passes currentBuild.result to BitBucket as build status 
