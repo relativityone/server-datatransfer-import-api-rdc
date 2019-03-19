@@ -9,7 +9,8 @@
 
 namespace Relativity.Export.Client.NUnit.Integration
 {
-	using System.Text;
+    using System.Collections.Generic;
+    using System.Text;
 	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
@@ -24,13 +25,22 @@ namespace Relativity.Export.Client.NUnit.Integration
 	[TestFixture]
 	public class ExporterTests : ExporterTestBase
 	{
-		[Test]
+        /// <summary>
+        /// The sample PDF file name that's available for testing within the output directory.
+        /// </summary>
+        protected const string SampleDocPdfFileName = "EDRM-Sample1.pdf";
+
+        [Test]
 		[Category(TestCategories.Export)]
 		[Category(TestCategories.Integration)]
 		public async Task ShouldExportAsync()
 		{
-			this.GivenTheExportType(ExportFile.ExportType.ParentSearch);
+            IReadOnlyList<string> sampleDocFileNames =
+                new List<string> { ResourceFileHelper.GetDocsResourceFilePath(SampleDocPdfFileName) };
+
+            this.GivenTheExportType(ExportFile.ExportType.ParentSearch);
 			Relativity.CaseInfo caseInfo = await this.WhenGettingTheWorkspaceInfoAsync().ConfigureAwait(false);
+            this.GivenTheFilesAreImported(sampleDocFileNames);
 			this.GivenTheSelectedFolderId(caseInfo.RootFolderID);
 			this.GivenTheIdentifierColumnName(WellKnownFields.ControlNumber);
 			this.GivenTheEncoding(Encoding.Unicode);
