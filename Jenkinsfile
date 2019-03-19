@@ -164,10 +164,14 @@ timestamps
                         {
                             def script = this
                             def String serverUnderTestName = ""
+                            def String version = buildVersion
                             def String branch = env.BRANCH_NAME
                             def String buildType = params.buildType
                             def String slackChannel = params.slackChannel
                             def String email = "slack_svc@relativity.com"
+                            def int numberOfFailedTests = testResultsFailed
+                            def int numberOfPassedTests = testResultsPassed
+                            def int numberOfSkippedTests = testResultsSkipped
                             def String message = env.BUILD_TAG
                             echo "*************************************************" +
                                 "\n" +
@@ -175,19 +179,18 @@ timestamps
                                 "\n" +
                                 "\n" + "script: " + script +
                                 "\n" + "serverUnderTestName: " + serverUnderTestName +
-                                "\n" + "build version: " + buildVersion +
+                                "\n" + "version: " + version +
                                 "\n" + "branch: " + branch +
                                 "\n" + "buildType: " + buildType +
                                 "\n" + "slackChannel: " + slackChannel +
                                 "\n" + "email: " + email +
-                                "\n" + "testResultsFailed: " + testResultsFailed +
-                                "\n" + "testResultsPassed: " + testResultsPassed +
-                                "\n" + "testResultsSkipped: " + testResultsSkipped +
+                                "\n" + "numberOfFailedTests: " + numberOfFailedTests +
+                                "\n" + "numberOfPassedTests: " + numberOfPassedTests +
+                                "\n" + "numberOfSkippedTests: " + numberOfSkippedTests +
                                 "\n" + "message: " + message +
                                 "\n" +
                                 "\n*************************************************"
-
-                            sendCDSlackNotification(script, serverUnderTestName, buildVersion, branch, buildType, slackChannel, email, testResultsFailed, testResultsPassed, testResultsSkipped, message)
+                            sendCDSlackNotification(script, serverUnderTestName, version, branch, buildType, slackChannel, email, numberOfFailedTests, numberOfPassedTests, numberOfSkippedTests, message)
                         },
                         // StashNotifier second call, passes currentBuild.result to BitBucket as build status 
                         BitBucketNotification:
