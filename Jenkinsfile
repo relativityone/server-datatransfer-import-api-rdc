@@ -39,6 +39,7 @@ timestamps
                 stage('Checkout')
                 {
                     checkout scm
+                    this.notifyBitbucket('INPROGRESS')
                 }
 
                 try
@@ -128,6 +129,8 @@ timestamps
                         output = powershell ".\\build.ps1 PublishBuildArtifacts -Version '$buildVersion' -Branch '${env.BRANCH_NAME}'"
                         echo output
                     }
+
+                    this.notifyBitbucket('SUCCESS')
                 }
                 finally
                 {
@@ -139,7 +142,7 @@ timestamps
         catch(err)
         {
             echo err.toString()
-            currentBuild.result = "FAILURE"
+            this.notifyBitbucket('FAILURE')
             if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master')
             {
                sendEmailAboutFailureToTeam()
@@ -159,7 +162,35 @@ timestamps
                     parallel(
                         SlackNotification: 
                         {
-                            sendCDSlackNotification(this, "", build, env.BRANCH_NAME, params.buildType, params.slackChannel, "", testResultsFailed, testResultsPassed, testResultsSkipped, env.BUILD_TAG)
+                            def script = this
+                            def String serverUnderTestName = ""
+                            def String version = build
+                            def String branch = env.BRANCH_NAME
+                            def String buildType = params.buildType
+                            def String slackChannel = params.slackChannel
+                            def String email = "slack_svc@relativity.com"
+                            def int numberOfFailedTests = testResultsFailed
+                            def int numberOfPassedTests = testResultsPassed
+                            def int numberOfSkippedTests = testResultsSkipped
+                            def String message = env.BUILD_TAG
+                            echo "*************************************************" +
+                                "\n" +
+                                "\n" + "sendCDSlackNotification Parameters: " +
+                                "\n" +
+                                "\n" + "script: " + script +
+                                "\n" + "serverUnderTestName: " + serverUnderTestName +
+                                "\n" + "version: " + version +
+                                "\n" + "branch: " + branch +
+                                "\n" + "buildType: " + buildType +
+                                "\n" + "slackChannel: " + slackChannel +
+                                "\n" + "email: " + email +
+                                "\n" + "numberOfFailedTests: " + numberOfFailedTests +
+                                "\n" + "numberOfPassedTests: " + numberOfPassedTests +
+                                "\n" + "numberOfSkippedTests: " + numberOfSkippedTests +
+                                "\n" + "message: " + message +
+                                "\n" +
+                                "\n*************************************************"
+                            sendCDSlackNotification(script, serverUnderTestName, version, branch, buildType, slackChannel, email, numberOfFailedTests, numberOfPassedTests, numberOfSkippedTests, message)
                         },
                         // StashNotifier second call, passes currentBuild.result to BitBucket as build status 
                         BitBucketNotification:
@@ -178,10 +209,24 @@ timestamps
     }
 }
 
+def setBuildState(String state)
+{
+    if ('SUCCESS' == state || 'FAILURE' == state) 
+    {
+        currentBuild.result = state 
+    }
+}
+
+def notifyBitbucket(String state) 
+{
+    setBuildState(state)
+    step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true]) 
+}
+
 def sendEmailAboutFailureToAuthor()
 {
     def commiterDetails = bat (
-        script: 'git --no-pager show -s --format=%%ae', 
+        script: 'git --no-pager show -s --format=%ae', 
         returnStdout: true
     )
 
