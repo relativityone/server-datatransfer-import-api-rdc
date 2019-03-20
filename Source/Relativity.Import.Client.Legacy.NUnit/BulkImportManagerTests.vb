@@ -22,6 +22,7 @@ Namespace Relativity.Import.Client.NUnit
 #Region " Setup "
 
 		<SetUp()> Public Sub SetUp()
+			kCura.WinEDDS.Config.ProgrammaticServiceURL = "https://r1.kcura.com/RelativityWebAPI/"
 			_keyPathExistsAlready = RegKeyHelper.SubKeyPathExists(RegKeyHelper.RelativityKeyPath)
 			_keyValExistsAlready = False
 			If _keyPathExistsAlready = True Then

@@ -9,6 +9,10 @@
 
 namespace Relativity.Import.Export.NUnit
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+
 	using global::NUnit.Framework;
 
 	using Relativity.Import.Export;
@@ -25,6 +29,7 @@ namespace Relativity.Import.Export.NUnit
 	public class OutsideInFileIdServiceTests
 	{
 		private const int Timeout = 35;
+		private static bool dumpBinaries;
 		private IFileIdService service;
 		private TempDirectory tempDirectory;
 		private string tempFile;
@@ -38,6 +43,17 @@ namespace Relativity.Import.Export.NUnit
 				this.tempDirectory.Directory,
 				System.Guid.NewGuid().ToString("D").ToUpperInvariant());
 			System.IO.File.WriteAllText(this.tempFile, "Hello World");
+
+			try
+			{
+				OutsideInFileIdService.Shutdown();
+			}
+			catch
+			{
+				DumpBinaries();
+				throw;
+			}
+
 			this.service = new OutsideInFileIdService(Timeout);
 		}
 
@@ -56,17 +72,25 @@ namespace Relativity.Import.Export.NUnit
 		[Category(TestCategories.OutsideIn)]
 		public void ShouldIdentifyTheFile()
 		{
-			for (int i = 0; i < 2; i++)
+			try
 			{
-				// Reinitializing should have no impact.
-				this.service.Reinitialize();
-				FileIdInfo fileIdData = this.service.Identify(this.tempFile);
-				Assert.That(fileIdData, Is.Not.Null);
-				Assert.That(fileIdData.Id, Is.GreaterThan(0));
-				Assert.That(fileIdData.Description, Is.Not.Null.Or.Empty);
-			}
+				for (int i = 0; i < 2; i++)
+				{
+					// Reinitializing should have no impact.
+					this.service.Reinitialize();
+					FileIdInfo fileIdData = this.service.Identify(this.tempFile);
+					Assert.That(fileIdData, Is.Not.Null);
+					Assert.That(fileIdData.Id, Is.GreaterThan(0));
+					Assert.That(fileIdData.Description, Is.Not.Null.Or.Empty);
+				}
 
-			this.ValidateConfigInfo();
+				this.ValidateConfigInfo();
+			}
+			catch
+			{
+				DumpBinaries();
+				throw;
+			}
 		}
 
 		[Test]
@@ -75,17 +99,33 @@ namespace Relativity.Import.Export.NUnit
 		[Category(TestCategories.OutsideIn)]
 		public void ShouldThrowWhenTheFileIsNullOrEmpty(string file)
 		{
-			Assert.Throws<System.ArgumentNullException>(() => this.service.Identify(file));
+			try
+			{
+				Assert.Throws<System.ArgumentNullException>(() => this.service.Identify(file));
+			}
+			catch
+			{
+				DumpBinaries();
+				throw;
+			}
 		}
 
 		[Test]
 		[Category(TestCategories.OutsideIn)]
 		public void ShouldThrowWhenTheFileDoesNotExist()
 		{
-			string fileName = System.Guid.NewGuid().ToString("D").ToUpperInvariant();
-			string invalidFile = System.IO.Path.Combine(this.tempDirectory.Directory, fileName);
-			Assert.Throws<System.IO.FileNotFoundException>(() => this.service.Identify(invalidFile));
-			this.ValidateConfigInfo();
+			try
+			{
+				string fileName = System.Guid.NewGuid().ToString("D").ToUpperInvariant();
+				string invalidFile = System.IO.Path.Combine(this.tempDirectory.Directory, fileName);
+				Assert.Throws<System.IO.FileNotFoundException>(() => this.service.Identify(invalidFile));
+				this.ValidateConfigInfo();
+			}
+			catch
+			{
+				DumpBinaries();
+				throw;
+			}
 		}
 
 		[Test]
@@ -98,9 +138,18 @@ namespace Relativity.Import.Export.NUnit
 					System.IO.FileAccess.Read,
 					System.IO.FileShare.None))
 			{
-				FileIdException exception = Assert.Throws<FileIdException>(() => this.service.Identify(this.tempFile));
-				Assert.That(exception.Error, Is.EqualTo(FileIdError.Permissions));
-				this.ValidateConfigInfo();
+				try
+				{
+					FileIdException exception =
+						Assert.Throws<FileIdException>(() => this.service.Identify(this.tempFile));
+					Assert.That(exception.Error, Is.EqualTo(FileIdError.Permissions));
+					this.ValidateConfigInfo();
+				}
+				catch
+				{
+					DumpBinaries();
+					throw;
+				}
 			}
 		}
 
@@ -110,11 +159,60 @@ namespace Relativity.Import.Export.NUnit
 		{
 			for (int i = 0; i < 5; i++)
 			{
-				this.ValidateConfigInfo();
-				this.service.Identify(this.tempFile);
-				this.ValidateConfigInfo();
-				this.service.Reinitialize();
-				this.ValidateConfigInfo();
+				try
+				{
+					this.ValidateConfigInfo();
+					this.service.Identify(this.tempFile);
+					this.ValidateConfigInfo();
+					this.service.Reinitialize();
+					this.ValidateConfigInfo();
+				}
+				catch
+				{
+					DumpBinaries();
+					throw;
+				}
+			}
+		}
+
+		private static void DumpBinaries()
+		{
+			if (dumpBinaries)
+			{
+				return;
+			}
+
+			try
+			{
+				string path = OutsideInFileIdService.GetInstallPath();
+				Console.WriteLine(
+					$"A serious OI error has occurred. Dumping the list of OI binaries found within the '{path}' install directory.");
+				if (!System.IO.Directory.Exists(path))
+				{
+					Console.WriteLine($"The OI '{path}' install directory doesn't exist.");
+					Console.WriteLine(
+						"Check the project file and custom OI target to ensure the OI binaries are properly copied to the target path.");
+				}
+				else
+				{
+					List<string> files = System.IO.Directory.GetFiles(path).ToList();
+					if (files.Count > 0)
+					{
+						foreach (string file in files)
+						{
+							Console.WriteLine($"OI binary: {file}");
+						}
+					}
+					else
+					{
+						Console.WriteLine($"No OI binaries were found within the '{path}' install directory.");
+						Console.WriteLine("Check the build scripts and logs for build warnings.");
+					}
+				}
+			}
+			finally
+			{
+				dumpBinaries = true;
 			}
 		}
 
@@ -122,9 +220,9 @@ namespace Relativity.Import.Export.NUnit
 		{
 			var configuration = this.service.Configuration;
 			Assert.That(configuration, Is.Not.Null);
+			Assert.That(configuration.Exception, Is.Null);
 			Assert.That(configuration.InstallDirectory, Does.Exist);
 			Assert.That(configuration.Version, Is.Not.Null.Or.Empty);
-			Assert.That(configuration.Exception, Is.Null);
 			Assert.That(configuration.HasError, Is.False);
 			Assert.That(configuration.Timeout, Is.EqualTo(Timeout));
 		}

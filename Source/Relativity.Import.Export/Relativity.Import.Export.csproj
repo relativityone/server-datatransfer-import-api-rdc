@@ -287,6 +287,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
+  <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -419,19 +420,4 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
-  <Target Name="AfterBuild">
-    <ItemGroup>
-      <SourceBintFiles Include="$(TargetDir)\*.*" />
-    </ItemGroup>
-    <Copy 
-      SourceFiles="@(SourceBintFiles)" 
-      DestinationFiles="@(SourceBintFiles->'$(SolutionDir)..\Artifacts\binaries\$(ProjectName)\%(RecursiveDir)%(Filename)%(Extension)')" 
-      SkipUnchangedFiles="true" 
-      OverwriteReadOnlyFiles="true" 
-      Retries="3" 
-      RetryDelayMilliseconds="300" />
-  </Target>
-  <Target Name="AfterClean">
-    <RemoveDir Directories="$(SolutionDir)..\Artifacts\binaries\$(ProjectName)" />
-  </Target>
 </Project>

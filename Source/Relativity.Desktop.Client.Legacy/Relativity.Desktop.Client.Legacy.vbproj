@@ -108,19 +108,5 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
-  <Target Name="AfterBuild">
-    <ItemGroup>
-      <SourceBintFiles Include="$(TargetDir)\*.*" />
-    </ItemGroup>
-    <Copy 
-      SourceFiles="@(SourceBintFiles)" 
-      DestinationFiles="@(SourceBintFiles->'$(SolutionDir)..\Artifacts\binaries\$(ProjectName)\%(RecursiveDir)%(Filename)%(Extension)')" 
-      SkipUnchangedFiles="true" 
-      OverwriteReadOnlyFiles="true" 
-      Retries="3" 
-      RetryDelayMilliseconds="300" />
-  </Target>
-  <Target Name="AfterClean">
-    <RemoveDir Directories="$(SolutionDir)..\Artifacts\binaries\$(ProjectName)" />
-  </Target>
+  <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
 </Project>

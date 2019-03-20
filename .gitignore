@@ -286,22 +286,11 @@ build/
 # build artifacts
 /.paket/paket*.exe
 /.paket/Paket.Restore.targets
+/buildtools/Resharper-CA
 /paket-files
 /Logs/*
 /PDBs/*
 errors.xml
-
-# Ignore everything in BuildTools
-buildtools/*
-
-# But not these files...
-!buildtools/AllErrors.ruleset
-!buildtools/Legacy.ruleset
-!buildtools/Tests.ruleset
-!buildtools/CustomDictionary.xml
-!buildtools/packages.config
-!buildtools/stylecop.json
-!buildtools/Test-PackageUpgrade.ps1
 
 # Outside In nuget package
 **/oi/

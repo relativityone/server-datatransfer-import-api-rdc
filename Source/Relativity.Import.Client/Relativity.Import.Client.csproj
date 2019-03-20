@@ -43,11 +43,68 @@
     <DocumentationFile>bin\Relativity.Import.Client.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FreeImageNET">
+      <HintPath>..\..\Vendor\FreeImage\3.18.0\x64\FreeImageNET.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="oi\docs\fileids_values_only_sorted.txt">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\docs\fileids_values_strs.txt">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\cmmap000.bin">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\oilink.exe">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\oilink.jar">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccca-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccch-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccda-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccex-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfa-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfi-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfmt-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfnt-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfut-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccind-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\scclo-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccut-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\wvcore-R1.dll">
+      <Paket>True</Paket>
+    </Content>
     <Compile Include="..\..\Version\AssemblySharedInfo.cs">
       <Link>Properties\AssemblySharedInfo.cs</Link>
     </Compile>
@@ -59,22 +116,239 @@
     </CodeAnalysisDictionary>
   </ItemGroup>
   <ItemGroup>
+    <AdditionalFiles Include="..\..\buildtools\stylecop.json">
+      <Link>stylecop.json</Link>
+    </AdditionalFiles>
     <None Include="paket.references" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="AfterBuild">
-    <ItemGroup>
-      <SourceBintFiles Include="$(TargetDir)\*.*" />
-    </ItemGroup>
-    <Copy 
-      SourceFiles="@(SourceBintFiles)" 
-      DestinationFiles="@(SourceBintFiles->'$(SolutionDir)..\Artifacts\binaries\$(ProjectName)\%(RecursiveDir)%(Filename)%(Extension)')" 
-      SkipUnchangedFiles="true" 
-      OverwriteReadOnlyFiles="true" 
-      Retries="3" 
-      RetryDelayMilliseconds="300" />
-  </Target>
-  <Target Name="AfterClean">
-    <RemoveDir Directories="$(SolutionDir)..\Artifacts\binaries\$(ProjectName)" />
-  </Target>
+  <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(SolutionDir)..\Vendor\FreeImage\3.18.0\x64\FreeImage.dll" $(TargetDir)</PostBuildEvent>
+  </PropertyGroup>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="oi">
+          <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32\lib\net40\oi.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Newtonsoft.Json">
+          <HintPath>..\..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Polly">
+          <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.DataTransfer.MessageService">
+          <HintPath>..\..\packages\Relativity.DataTransfer.MessageService\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Kepler">
+          <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.ServiceProxy">
+          <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Logging.Interfaces">
+          <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.OAuth2Client">
+          <HintPath>..\..\packages\Relativity.OAuth2Client\lib\net462\Relativity.OAuth2Client.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.OAuth2Client.IdentityModel">
+          <HintPath>..\..\packages\Relativity.OAuth2Client\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.OAuth2Client.Implicit">
+          <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces">
+          <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.OAuth2Client.Interfaces">
+          <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Telemetry.DataContracts.Shared">
+          <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Telemetry.Services.Interface">
+          <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="FaspManager">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\FaspManager.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Transfer.Client">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Transfer.Client.Aspera">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Transfer.Client.AzureBlob">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.AzureBlob.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Transfer.Client.AzureFiles">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.AzureFiles.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Transfer.Client.Core">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Transfer.Client.FileShare">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Transfer.Client.Http">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Renci.SshNet">
+          <HintPath>..\..\packages\SSH.NET\lib\net40\Renci.SshNet.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
+  <ItemGroup>
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Relativity.Import.Export\Relativity.Import.Export.csproj">
+      <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
+      <Name>Relativity.Import.Export</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="ZetaLongPaths">
+          <HintPath>..\..\packages\ZetaLongPaths\lib\net452-full\ZetaLongPaths.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
 </Project>

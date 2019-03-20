@@ -20,6 +20,11 @@ namespace Relativity.Import.Export
 	internal class OutsideInFileIdService : IFileIdService
 	{
 		/// <summary>
+		/// The default idle timeout value.
+		/// </summary>
+		public const int DefaultIdleTimeout = 10000;
+
+		/// <summary>
 		/// The file identification configuration.
 		/// </summary>
 		private readonly FileIdConfiguration configuration = new FileIdConfiguration();
@@ -27,7 +32,7 @@ namespace Relativity.Import.Export
 		/// <summary>
 		/// The optional timeout.
 		/// </summary>
-		private readonly int? timeout;
+		private readonly int timeout;
 
 		/// <summary>
 		/// The OI exporter instance.
@@ -55,7 +60,7 @@ namespace Relativity.Import.Export
 		/// </param>
 		public OutsideInFileIdService(int? timeout)
 		{
-			this.timeout = timeout;
+			this.timeout = timeout ?? DefaultIdleTimeout;
 			this.disposed = false;
 			this.exporter = null;
 		}
@@ -68,6 +73,32 @@ namespace Relativity.Import.Export
 				this.Initialize();
 				return this.configuration;
 			}
+		}
+
+		/// <summary>
+		/// Gets the OI installation path.
+		/// </summary>
+		/// <returns>
+		/// The full path.
+		/// </returns>
+		public static string GetInstallPath()
+		{
+			string assemblyPath = new System.Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath;
+			string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(assemblyPath), "oi");
+			if (!string.IsNullOrEmpty(path))
+			{
+				path = path.Replace("%20", " ");
+			}
+
+			return path;
+		}
+
+		/// <summary>
+		/// Shutdown the OI link monitor.
+		/// </summary>
+		public static void Shutdown()
+		{
+			OutsideIn.Shutdown();
 		}
 
 		/// <inheritdoc />
@@ -182,33 +213,28 @@ namespace Relativity.Import.Export
 				return;
 			}
 
-			string assemblyPath = new System.Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath;
-			string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(assemblyPath), "oi");
-			if (!string.IsNullOrEmpty(path))
-			{
-				path = path.Replace("%20", " ");
-			}
+			string path = GetInstallPath();
 
 			try
 			{
 				this.configuration.HasError = false;
 				this.configuration.Exception = null;
-				OutsideInVersion version = OutsideIn.GetCoreVersion();
-				this.configuration.Version = version.GetVersion();
-				OutsideInConfig oiConfiguration =
-					new OutsideInConfig { InstallLocation = new System.IO.DirectoryInfo(path) };
-				if (this.timeout != null)
-				{
-					oiConfiguration.IdleWorkerTimeout = Convert.ToUInt32(this.timeout);
-				}
-
+				var oiConfiguration = new OutsideInConfig
+					                      {
+						                      InstallLocation = new System.IO.DirectoryInfo(path),
+						                      IdleWorkerTimeout = Convert.ToUInt32(this.timeout)
+					                      };
+				OutsideIn.SetConfiguration(oiConfiguration);
 				this.configuration.Timeout = Convert.ToInt32(oiConfiguration.IdleWorkerTimeout);
 				this.configuration.InstallDirectory = oiConfiguration.InstallLocation.ToString();
-				OutsideIn.SetConfiguration(oiConfiguration);
+				this.ApplyVersion(path);
 			}
 			catch (OutsideInException e) when (e.ErrorCode == OutsideInConstants.NoErrorCode)
 			{
 				// OI is already configured.
+				this.configuration.Timeout = this.timeout;
+				this.configuration.InstallDirectory = path;
+				this.ApplyVersion(path);
 			}
 			catch (OutsideInException e)
 			{
@@ -219,11 +245,36 @@ namespace Relativity.Import.Export
 			{
 				this.configuration.HasError = true;
 				this.configuration.Exception = e;
-				throw new FileIdException(Strings.OutsideInConfigurationError, e);
+				string message = string.Format(
+					CultureInfo.CurrentCulture,
+					Strings.OutsideInConfigurationError,
+					path);
+				throw new FileIdException(message, e);
 			}
 
 			// Allow this to potentially throw.
 			this.exporter = OutsideIn.NewLocalExporter();
+		}
+
+		/// <summary>
+		/// Applies the OI version to the configuration object.
+		/// </summary>
+		/// <param name="path">
+		/// The OI configuration directory.
+		/// </param>
+		private void ApplyVersion(string path)
+		{
+			OutsideInVersion version = OutsideIn.GetCoreVersion();
+			if (version == null)
+			{
+				string message = string.Format(
+					CultureInfo.CurrentCulture,
+					Strings.OutsideInNotAvailableError,
+					path);
+				throw new InvalidOperationException(message);
+			}
+
+			this.configuration.Version = version.GetVersion();
 		}
 	}
 }
