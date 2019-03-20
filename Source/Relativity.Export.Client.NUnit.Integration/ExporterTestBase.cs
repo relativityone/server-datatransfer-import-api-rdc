@@ -345,41 +345,47 @@ namespace Relativity.Export.Client.NUnit.Integration
 			{
                 this.exportFile = new kCura.WinEDDS.ExtendedExportFile((int)ArtifactType.Document)
                 {
+                    // general settings
                     ArtifactID = this.selectedFolderId,
                     CaseInfo = caseInfo,
                     CookieContainer = this.cookieContainer,
                     Credential = this.credentials,
-                    ExportNative = true,
-                    ExportImages = true,
+                    TypeOfExport = this.exportType,
                     FolderPath = this.tempDirectory.Directory,
+
+                    // settings for exporting natives
+                    ExportNative = true,
+                    TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Absolute,
                     IdentifierColumnName = this.identifierColumnName,
-                    LoadFileExtension = "dat",
                     LoadFileEncoding = this.encoding,
                     LoadFilesPrefix = "Documents",
-                    LogFileFormat = LoadFileType.FileFormat.Opticon,
+                    LoadFileExtension = "dat",
                     MultiRecordDelimiter = ';',
                     NestedValueDelimiter = '\\',
                     NewlineDelimiter = '@',
-                    SelectedViewFields = new ViewFieldInfo[] { },
-                    SubdirectoryDigitPadding = 3,
                     QuoteDelimiter = 'þ',
-                    TextFileEncoding = this.encoding,
-                    TypeOfExport = this.exportType,
-                    TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Absolute,
+                    ViewID = 1003684,
+                    SelectedViewFields = new ViewFieldInfo[] { },
+
+                    // settings for exporting images
+                    ExportImages = true,
+                    LogFileFormat = LoadFileType.FileFormat.Opticon,
                     TypeOfImage = ExportFile.ImageType.Pdf,
                     ImagePrecedence = new Pair[]
                     {
                         new Pair("-1", "Original"),
                         new Pair("-1", "Original")
                     },
-                    ViewID = 1003684,
-					VolumeDigitPadding = 2,
+
+                    // settings for volumes and subdirectories
+                    SubdirectoryDigitPadding = 3,
+                    VolumeDigitPadding = 2,
 					VolumeInfo = new VolumeInfo
 					{
 						CopyImageFilesFromRepository = true,
 						CopyNativeFilesFromRepository = true,
-						SubdirectoryMaxSize = 500,
                         SubdirectoryStartNumber = 1,
+                        SubdirectoryMaxSize = 500,
                         VolumeStartNumber = 1,
                         VolumeMaxSize = 650,
 						VolumePrefix = "VOL"
