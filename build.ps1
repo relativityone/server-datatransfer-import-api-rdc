@@ -49,6 +49,9 @@ Version of assemblies produced by the build.
 .PARAMETER Verbosity
 The verbosity of the build log.
 
+.PARAMETER DigitallySign
+An optional switch to digitally sign the binaries.
+
 .PARAMETER UnitTests
 An optional switch to execute all unit tests.
 
@@ -95,6 +98,8 @@ param(
     [Parameter()]
     [ValidateSet("quiet", "minimal", "normal", "detailed", "diagnostic")]
     [String]$Verbosity = "quiet",
+    [Parameter()]
+    [Switch]$DigitallySign,
     [Parameter()]
     [Switch]$UnitTests,
     [Parameter()]
@@ -158,6 +163,10 @@ $TaskList = New-Object System.Collections.ArrayList($null)
 $TaskList.Add("Build")
 if ($ExtendedCodeAnalysis) {
     $TaskList.Add("ExtendedCodeAnalysis")
+}
+
+if ($DigitallySign) {
+    $TaskList.Add("DigitallySignBinaries")
 }
 
 # This task must be added before the Test task.

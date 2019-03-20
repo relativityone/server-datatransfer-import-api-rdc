@@ -297,6 +297,7 @@ buildtools/*
 # But not these files...
 !buildtools/AllErrors.ruleset
 !buildtools/Legacy.ruleset
+!buildtools/Tests.ruleset
 !buildtools/CustomDictionary.xml
 !buildtools/packages.config
 !buildtools/stylecop.json
