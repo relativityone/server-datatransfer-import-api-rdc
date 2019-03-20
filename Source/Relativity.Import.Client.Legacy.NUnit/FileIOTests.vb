@@ -26,6 +26,7 @@ Namespace Relativity.Import.Client.NUnit
 
 		<SetUp>
 		Public Sub SetUp()
+			kCura.WinEDDS.Config.ProgrammaticServiceURL = "https://r1.kcura.com/RelativityWebAPI/"
 			_mockRepo = New MockRepository()
 			_mockCredentials = _mockRepo.DynamicMock(Of ICredentials)()
 			_mockCookieContainer = _mockRepo.DynamicMock(Of CookieContainer)()

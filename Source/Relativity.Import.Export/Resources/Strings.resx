@@ -223,7 +223,7 @@
     <value>The image file '{0}' is zero bytes.</value>
   </data>
   <data name="OutsideInConfigurationError" xml:space="preserve">
-    <value>Failed to initialize Outside In file identification library.</value>
+    <value>This operation cannot be performed because the Outside In file identification library located at '{0}' failed to initialize and suggests a serious configuration or environmental issue.</value>
   </data>
   <data name="OutsideInFileIdError" xml:space="preserve">
     <value>The source file '{0}' cannot be identified because an Outside In error '{1}' occurred.</value>
@@ -290,5 +290,8 @@
   </data>
   <data name="IntegerImporterErrorAdditionalInfo" xml:space="preserve">
     <value>Invalid integer.</value>
+  </data>
+  <data name="OutsideInNotAvailableError" xml:space="preserve">
+    <value>This operation cannot be performed because the Outside In file identification library located at '{0}' isn't available and suggests a serious configuration or environmental issue.</value>
   </data>
 </root>
