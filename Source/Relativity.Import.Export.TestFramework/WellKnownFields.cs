@@ -24,7 +24,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <summary>
 		/// The control number field name.
 		/// </summary>
-		public const string ControlNumber = "control number";
+		public const string ControlNumber = "Control Number";
 
 		/// <summary>
 		/// The control number field identifier.

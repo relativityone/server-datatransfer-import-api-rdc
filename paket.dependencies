@@ -1,6 +1,7 @@
 framework: net462
 source https://nuget.org/api/v2
 
+# TODO: Once the export source is migrated, upgrade Castle to avoid unnecessary conflict with Moq.
 nuget castle.windsor = 3.3.0
 nuget csvhelper = 12.1.2
 nuget extent = 0.0.3
@@ -43,10 +44,11 @@ nuget relativity.telemetry.services.interface = 2019.1.0
 nuget relativity.transfer.client = 5.0.2
 
 # Note: all of the dependencies below are required once kCura.WinEDDS is migrated.
-# group LegacyCastle
-# 	source https://nuget.org/api/v2
-# 	nuget castle.core = 3.3.3
-# 	nuget castle.windsor = 3.3.0
+group LegacyCastle
+	source https://nuget.org/api/v2
+ 	nuget castle.core = 3.3.3
+ 	nuget castle.windsor = 3.3.0
+	nuget moq = 4.5.0
 # nuget relativity.dataTransfer.messageService = 10.2.0
 # nuget relativity.kepler = 1.0.1.609
 # nuget relativity.kepler.client = 1.0.1.609
