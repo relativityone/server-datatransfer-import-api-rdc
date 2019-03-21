@@ -88,12 +88,8 @@ timestamps
 
                     stage('Run unit tests')
                     {
-                        when {
-                            expression {
-                                return params.run-unit-tests
-                            }
-                        }
-                        steps {
+                        if (params.run-unit-tests)
+                        {
                             try
                             {
                                 // Wrapped in a try/finally to ensure the test results are generated.
@@ -111,12 +107,8 @@ timestamps
 
                     stage('Retrieve unit test results')
                     {
-                        when {
-                            expression {
-                                return params.run-unit-tests
-                            }
-                        }
-                        steps {
+                        if (params.run-unit-tests)
+                        {
                             // Let the build script retrieve the values.
                             echo "Retrieving the unit test results"
                             def outputString = runCommandWithOutput(".\\build.ps1 UnitTestResults -Verbosity '${params.buildVerbosity}'")
