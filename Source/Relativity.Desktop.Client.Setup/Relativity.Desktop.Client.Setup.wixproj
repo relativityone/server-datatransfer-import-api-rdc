@@ -6,15 +6,15 @@
     <ProductVersion>3.10</ProductVersion>
     <ProjectGuid>a25301be-f37c-48a4-9554-e7b12c57ff69</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName Condition="'$(Platform)' == 'x86'">kCura.WinEDDS.Setup</OutputName>
-    <OutputName Condition="'$(Platform)' == 'x64'">kCura.WinEDDS64.Setup</OutputName>
+    <OutputName Condition="'$(Platform)' == 'x86'">Relativity.Desktop.Client.x86</OutputName>
+    <OutputName Condition="'$(Platform)' == 'x64'">Relativity.Desktop.Client.x64</OutputName>
     <OutputType>Package</OutputType>
-    <AssemblyVersion>10.2.0.0</AssemblyVersion>
-    <ProductVersion>10.2.00001</ProductVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <ProductVersion>1.0.00001</ProductVersion>
     <SignOutput>false</SignOutput>
     <LicensesPath>$(MSBuildProjectDirectory)\..\..\Vendor\Licenses</LicensesPath>
-    <WinEDDSPath>$(MSBuildProjectDirectory)\..\..\EDDS\kCura.EDDS.WinForm\bin</WinEDDSPath>
-    <DefineConstants>$(DefineConstants);LicensesPath=$(LicensesPath);WinEDDSPath=$(WinEDDSPath);SignOutput=$(SignOutput);AssemblyVersion=$(AssemblyVersion);ProductVersion=$(ProductVersion)</DefineConstants>
+    <RelativityDesktopClientPath>$(MSBuildProjectDirectory)\..\Relativity.Desktop.Client.Legacy\bin</RelativityDesktopClientPath>
+    <DefineConstants>$(DefineConstants);LicensesPath=$(LicensesPath);RelativityDesktopClientPath=$(RelativityDesktopClientPath);SignOutput=$(SignOutput);AssemblyVersion=$(AssemblyVersion);ProductVersion=$(ProductVersion)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <WixToolPath>..\..\Vendor\WiX\</WixToolPath>
@@ -22,12 +22,14 @@
     <WixTasksPath>wixtasks.dll</WixTasksPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <OutputPath>..\MSI\</OutputPath>
+    <OutputPath>..\..\Artifacts\installers\</OutputPath>
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
+    <SuppressAllWarnings>False</SuppressAllWarnings>
+    <Pedantic>True</Pedantic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>..\MSI\</OutputPath>
+    <OutputPath>..\..\Artifacts\installers\</OutputPath>
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>$(DefineConstants)</DefineConstants>
   </PropertyGroup>
@@ -39,26 +41,26 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
-    <OutputPath>..\MSI\</OutputPath>
+    <OutputPath>..\..\Artifacts\installers\</OutputPath>
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
     <SuppressAllWarnings>False</SuppressAllWarnings>
     <Pedantic>True</Pedantic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <DefineConstants>$(DefineConstants)</DefineConstants>
-    <OutputPath>..\MSI\</OutputPath>
+    <OutputPath>..\..\Artifacts\installers\</OutputPath>
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Components\EventLogEntries.wxs" />
     <Compile Include="Dialogs\FirewallDlg.wxs" />
     <Compile Include="Dialogs\WixUI_MondoNoLicense.wxs" />
-    <Compile Include="kCura.WinEDDS.Setup.wxs" />
+    <Compile Include="Relativity.Desktop.Client.Setup.wxs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.md" />
     <Content Include="Variables.wxi" />
-    <Content Include="WinEDDSTransform.xsl" />
+    <Content Include="Relativity.Desktop.Client.Setup.xsl" />
   </ItemGroup>
   <ItemGroup>
     <HarvestDirectory Include="$(LicensesPath)">
@@ -69,14 +71,14 @@
       <PreprocessorVariable>var.LicensesPath</PreprocessorVariable>
       <Visible>false</Visible>
     </HarvestDirectory>
-    <HarvestDirectory Include="$(WinEDDSPath)">
+    <HarvestDirectory Include="$(RelativityDesktopClientPath)">
       <ComponentGroupName>PrimaryComponentGroup</ComponentGroupName>
       <SuppressRegistry>True</SuppressRegistry>
       <SuppressRootDirectory>True</SuppressRootDirectory>
       <DirectoryRefId>INSTALLDIR</DirectoryRefId>
-      <PreprocessorVariable>var.WinEDDSPath</PreprocessorVariable>
+      <PreprocessorVariable>var.RelativityDesktopClientPath</PreprocessorVariable>
       <Visible>false</Visible>
-      <Transforms>WinEDDSTransform.xsl</Transforms>
+      <Transforms>Relativity.Desktop.Client.Setup.xsl</Transforms>
     </HarvestDirectory>
   </ItemGroup>
   <ItemGroup>
@@ -98,21 +100,21 @@
     </WixExtension>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\EDDS\kCura.EDDS.WinForm\kCura.EDDS.WinForm.vbproj">
-      <Name>kCura.EDDS.WinForm</Name>
-      <Project>{cdeb4462-2d7b-4244-8640-11bc743cd002}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Dialogs\FirewallDlg.en-us.wxl" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Components" />
     <Folder Include="Dialogs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Relativity.Desktop.Client.Legacy\Relativity.Desktop.Client.Legacy.vbproj">
+      <Name>Relativity.Desktop.Client.Legacy</Name>
+      <Project>{49cde7eb-9385-41d9-8cd9-687c09c46996}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <Target Name="SignMsi">
