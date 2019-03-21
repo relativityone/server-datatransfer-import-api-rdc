@@ -1,8 +1,8 @@
 #!groovy
 
-@Library('PipelineTools@master')
-@library('SCVMMHelpers@3.3.0')
-@library('SlackHelpers@3.0.0')
+library 'PipelineTools@RMT-9.3.2'
+library 'SCVMMHelpers@3.3.0'
+library 'SlackHelpers@3.0.0'
 
 def buildTypeCoicesStr = (env.BRANCH_NAME in ["master"]) ? 'GOLD\nDEV' : 'DEV\nGOLD'
 
