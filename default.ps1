@@ -5,10 +5,12 @@ properties {
     $LogsDir = Join-Path $Root "Logs"
     $PackagesDir = Join-Path $Root "packages"
     $PaketDir = Join-Path $Root ".paket"
+    $InstallersSolution = Join-Path $Root "Source/Installers.sln"
     $MasterSolution = Join-Path $Root "Source/Relativity.ImportAPI-RDC.sln"
     $NumberOfProcessors = (Get-ChildItem env:"NUMBER_OF_PROCESSORS").Value
     $BuildArtifactsDir = Join-Path $Root "Artifacts"
     $BinariesArtifactsDir = Join-Path $BuildArtifactsDir "binaries"
+    $InstallersArtifactsDir = Join-Path $BuildArtifactsDir "installers"
     $PackagesArtifactsDir = Join-Path $BuildArtifactsDir "packages"
     $ScriptsDir = Join-Path $Root "Scripts"
     $BuildPackagesDir = "\\bld-pkgs\Packages\Import-Api-RDC\"
@@ -37,6 +39,9 @@ properties {
 }
 
 task Build -Description "Builds the source code" -Depends UpdateAssemblyInfo, CompileMasterSolution {
+}
+
+task BuildInstallers -Description "Builds all installers" -Depends CompileInstallerSolution {
 }
 
 task BuildVersion -Description "Retrieves the build version from GitVersion" {
@@ -73,9 +78,16 @@ task Clean -Description "Clean solution" {
         "/p:Configuration=$Configuration" `
         "/nologo" `
     }
+
+    exec { msbuild $InstallersSolution `
+        "/t:Clean" `
+        "/verbosity:$Verbosity" `
+        "/p:Configuration=$Configuration" `
+        "/nologo" `
+    }
 }
 
-task CompileMasterSolution -Description "Compile the solution" {
+task CompileMasterSolution -Description "Compile the master solution" {
 
     if (!$BuildPlatform) {
         $BuildPlatform = "Any CPU"
@@ -85,12 +97,9 @@ task CompileMasterSolution -Description "Compile the solution" {
     Write-Output "Configuration: $Configuration"
     Write-Output "Build platform: $BuildPlatform"
     Write-Output "Verbosity: $Verbosity"
-
     Initialize-Folder $LogsDir -Safe
-    $LogFilePath = Join-Path $LogsDir "buildsummary.log"
-    $ErrorFilePath = Join-Path $LogsDir "builderrors.log"
-
-	# Always force binaries to get copied when building via build script.
+    $LogFilePath = Join-Path $LogsDir "master-buildsummary.log"
+    $ErrorFilePath = Join-Path $LogsDir "master-builderrors.log"
     exec { msbuild $MasterSolution `
         "/t:$Target" `
         "/verbosity:$Verbosity" `
@@ -105,11 +114,35 @@ task CompileMasterSolution -Description "Compile the solution" {
         "/flp2:errorsonly;LogFile=`"$ErrorFilePath`""
     } -errorMessage "There was an error building the master solution."
 
-    # Remove the error log when none exist.
-    if (Test-Path $ErrorFilePath -PathType Leaf) {
-        if ((Get-Item $ErrorFilePath).length -eq 0) {
-            Remove-Item $ErrorFilePath
-        }
+    Remove-EmptyLogFile $ErrorFilePath
+}
+
+task CompileInstallerSolution -Description "Compile the installer solution" {
+    Initialize-Folder $LogsDir -Safe
+    $BuildPlatforms = @("x86", "x64")
+    foreach($platform in $BuildPlatforms)
+    {
+        Write-Output "Solution: $InstallersSolution"
+        Write-Output "Configuration: $Configuration"
+        Write-Output "Build platform: $platform"
+        Write-Output "Verbosity: $Verbosity"
+        $LogFilePath = Join-Path $LogsDir "installers-buildsummary-$platform.log"
+        $ErrorFilePath = Join-Path $LogsDir "installers-builderrors-$platform.log"
+        exec { msbuild $InstallersSolution `
+            "/t:$Target" `
+            "/verbosity:$Verbosity" `
+            "/p:Platform=$platform" `
+            "/p:Configuration=$Configuration" `
+            "/p:CopyArtifacts=true" `
+            "/clp:Summary"`
+            "/nodeReuse:false" `
+            "/nologo" `
+            "/maxcpucount" `
+            "/flp1:LogFile=`"$LogFilePath`";Verbosity=$Verbosity" `
+            "/flp2:errorsonly;LogFile=`"$ErrorFilePath`""
+        } -errorMessage "There was an error building the installer solution."
+
+        Remove-EmptyLogFile $ErrorFilePath
     }
 }
 
@@ -222,6 +255,7 @@ task PublishBuildArtifacts -Description "Publish build artifacts"  {
     $targetDir = "$BuildPackagesDir\$Branch\$Version"
     Copy-Folder -SourceDir $LogsDir -TargetDir "$targetDir\logs"
     Copy-Folder -SourceDir $BinariesArtifactsDir -TargetDir "$targetDir\binaries"
+    Copy-Folder -SourceDir $InstallersArtifactsDir -TargetDir "$targetDir\installers"
     Copy-Folder -SourceDir $PackagesArtifactsDir -TargetDir "$targetDir\packages"
     Copy-Folder -SourceDir $TestResultsDir -TargetDir "$targetDir\test-results"
 }
@@ -385,6 +419,19 @@ Function Copy-Folder {
     if ($LASTEXITCODE -ne 1) 
     {
 	    Throw "An error occured while copying the build artifacts from $SourceDir to $TargetDir"
+    }
+}
+
+Function Remove-EmptyLogFile {
+    param(
+        [String] $LogFile
+    )
+
+    # Remove the error log when none exist.
+    if (Test-Path $LogFile -PathType Leaf) {
+        if ((Get-Item $LogFile).length -eq 0) {
+            Remove-Item $LogFile
+        }
     }
 }
 

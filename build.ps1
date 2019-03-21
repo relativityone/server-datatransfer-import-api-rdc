@@ -57,7 +57,7 @@ Timeout for NUnit tests (in milliseconds).
 An optional test parameters JSON file that conforms to the standard App.Config file (e.g. Scripts\test-settings-sample.json)
 
 .PARAMETER TestVMName
-The TestVM used to execute all integration tests.
+The optional TestVM used to execute all integration tests. This is only relevant for the IntegrationTests task.
 #>
 
 #Requires -Version 5.0

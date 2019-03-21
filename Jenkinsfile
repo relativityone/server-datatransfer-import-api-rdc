@@ -63,10 +63,17 @@ timestamps
                         currentBuild.displayName = buildVersion
                     }
 
-                    stage('Build')
+                    stage('Build binaries')
                     {
-                        echo "Building version $buildVersion"
+                        echo "Building the binaries for version $buildVersion"
                         output = powershell ".\\build.ps1 Build -Configuration '${params.buildConfig}' -Version '$buildVersion' -Verbosity '${params.buildVerbosity}'"
+                        echo output
+                    }
+
+                    stage('Build installers')
+                    {
+                        echo "Building the installers for version $buildVersion"
+                        output = powershell ".\\build.ps1 BuildInstallers -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}'"
                         echo output
                     }
 
