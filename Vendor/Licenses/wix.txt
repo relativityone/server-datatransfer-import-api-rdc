@@ -1,0 +1,3 @@
+http://wixtoolset.org/
+http://wixtoolset.org/about/license/
+http://opensource.org/licenses/ms-rl
