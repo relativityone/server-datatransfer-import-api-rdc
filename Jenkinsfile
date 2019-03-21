@@ -12,9 +12,7 @@ properties([
         choice(choices: buildTypeCoicesStr, description: 'The type of build to execute', name: 'buildType'),
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
-        string(defaultValue: '#import-api-rdc-build', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
-        booleanParam(name: 'Run_Unit_Tests', defaultValue: true, description: "Uncheck if dont want to run the unit test stage"),
-        booleanParam(name: 'Run_Integration_Tests', defaultValue: false, description: "Uncheck if don't want to run the integration test stage")
+        string(defaultValue: '#import-api-rdc-build', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel')
     ])
 ])
 
@@ -86,22 +84,19 @@ timestamps
                         echo output
                     }
 
-                    if (params.Run_Unit_Tests)
+                    stage('Run unit tests')
                     {
-                        stage('Run unit tests')
+                        try
                         {
-                            try
-                            {
-                                // Wrapped in a try/finally to ensure the test results are generated.
-                                echo "Running the unit tests"
-                                output = powershell ".\\build.ps1 UnitTests"
-                                echo output
-                            }
-                            finally
-                            {
-                                echo "Generating unit test results"
-                                powershell ".\\build.ps1 GenerateTestReport"
-                            }
+                            // Wrapped in a try/finally to ensure the test results are generated.
+                            echo "Running the unit tests"
+                            output = powershell ".\\build.ps1 UnitTests"
+                            echo output
+                        }
+                        finally
+                        {
+                            echo "Generating unit test results"
+                            powershell ".\\build.ps1 GenerateTestReport"
                         }
                     }
 
@@ -149,16 +144,8 @@ timestamps
                 }
                 finally
                 {
-                    if (params.Run_Integration_Tests) {
-                        echo "Gathering integration test results"
-                        nunit testResultsPattern: "test-results-integration.xml"
-                    }
-
-                    if (params.Run_Unit_Tests) {
-                        echo "Gathering unit test results"
-                        nunit testResultsPattern: "test-results-unit.xml"
-                    }
-
+                    echo "Gathering unit test results"
+                    nunit testResultsPattern: "test-results-unit.xml"
                     archiveArtifacts artifacts: 'Logs/**/*.*'
                     archiveArtifacts artifacts: 'TestResults/**/*.*'
                 }                    
