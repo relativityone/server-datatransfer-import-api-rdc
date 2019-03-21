@@ -13,8 +13,8 @@ properties([
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
         string(defaultValue: '#import-api-rdc-build', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
-        booleanParam(name: 'run-unit-tests', defaultValue: true, description: "Uncheck if don't want to run the unit test stage"),
-		booleanParam(name: 'run-integration-tests', defaultValue: false, description: "Uncheck if don't want to run the integration test stage")
+        booleanParam(name: 'Run_Unit_Tests', defaultValue: true, description: "Uncheck if dont want to run the unit test stage"),
+        booleanParam(name: 'Run_Integration_Tests', defaultValue: false, description: "Uncheck if don't want to run the integration test stage")
     ])
 ])
 
@@ -86,9 +86,9 @@ timestamps
                         echo output
                     }
 
-                    stage('Run unit tests')
+                    if (params.Run_Unit_Tests)
                     {
-                        if (params.run-unit-tests)
+                        stage('Run unit tests')
                         {
                             try
                             {
@@ -105,9 +105,9 @@ timestamps
                         }
                     }
 
-                    stage('Retrieve unit test results')
+                    if (params.Run_Unit_Tests)
                     {
-                        if (params.run-unit-tests)
+                        stage('Retrieve unit test results')
                         {
                             // Let the build script retrieve the values.
                             echo "Retrieving the unit test results"
@@ -149,12 +149,12 @@ timestamps
                 }
                 finally
                 {
-                    if (params.run-integration-tests) {
+                    if (params.Run_Integration_Tests) {
                         echo "Gathering integration test results"
                         nunit testResultsPattern: "test-results-integration.xml"
                     }
 
-                    if (params.run-unit-tests) {
+                    if (params.Run_Unit_Tests) {
                         echo "Gathering unit test results"
                         nunit testResultsPattern: "test-results-unit.xml"
                     }
