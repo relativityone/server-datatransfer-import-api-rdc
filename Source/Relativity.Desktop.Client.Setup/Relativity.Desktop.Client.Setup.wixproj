@@ -55,7 +55,7 @@
     <Compile Include="Components\EventLogEntries.wxs" />
     <Compile Include="Dialogs\FirewallDlg.wxs" />
     <Compile Include="Dialogs\WixUI_MondoNoLicense.wxs" />
-    <Compile Include="Relativity.Desktop.Client.Setup.wxs" />
+    <Compile Include="Product.wxs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.md" />
