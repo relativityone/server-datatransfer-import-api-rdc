@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
+[assembly: AssemblyProduct("Relativity Import Export Test Framework")]
 [assembly: AssemblyTitle("Relativity.Import.Export.TestFramework")]
 [assembly: AssemblyDescription("A Relativity import export test framework library.")]
 
