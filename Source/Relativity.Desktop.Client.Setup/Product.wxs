@@ -3,10 +3,25 @@
 		 xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension"
 		 xmlns:fw="http://schemas.microsoft.com/wix/FirewallExtension">
   <?include $(sys.CURRENTDIR)\Variables.wxi ?>
-  <Product Id="*" Name="$(var.ProductName)" Codepage="1252" Language="1033" Version="$(var.ProductVersion)" Manufacturer="Relativity ODA LLC" UpgradeCode="$(var.UpgradeCode)">
-    <Package Id="*" Description="$(var.ProductName) Installer package" Comments="$(var.ProductName) Windows Installer database"
-             Manufacturer="Relativity ODA LLC" InstallerVersion="300" Compressed="yes" Platform="$(var.Platform)"
+  <Product Id="*"
+           Name="$(var.ProductName)"
+           Codepage="1252"
+           Language="1033"
+           Version="!(bind.FileVersion.Relativity.Desktop.Client.exe)"
+           Manufacturer="Relativity ODA LLC"
+           UpgradeCode="$(var.UpgradeCode)">
+    <Package Description="$(var.ProductName) Installer package"
+             Comments="$(var.ProductName) Windows Installer database"
+             Manufacturer="Relativity ODA LLC"
+             InstallPrivileges="elevated"
+             InstallerVersion="405"
+             Compressed="yes"
 		         InstallScope="perMachine"  />
+    <Condition Message="!(loc.AdminPrivilegesRequired)">Privileged</Condition>
+
+    <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeErrorMessage)" AllowSameVersionUpgrades="no"
+                  Schedule="afterInstallInitialize" AllowDowngrades="no"/>
+
     <!-- UI Extensions -->
     <UIRef Id="WixUI_MondoNoLicense" />
     <UIRef Id="WixUI_ErrorProgressText" />
@@ -24,14 +39,26 @@
     <Property Id="ARPPRODUCTICON" Value="relativity_1.exe" />
     <Property Id="REINSTALLMODE" Value="amus"/>
     <Property Id="SETFIREWALL" Value="1" />
+    <Property Id="AppProcessName" Value="$(var.ProcessName)"/>
+
+    <!-- We always want verbose logging -->
+    <Property Id="MsiLogging" Value="v" />
+
     <!-- Perform the proper upgrade checks -->
-    <Property Id="NEWERPRODUCTFOUND" Secure="yes" />
-    <Upgrade Id="$(var.UpgradeCode)">
-      <UpgradeVersion Maximum="$(var.ProductVersion)" IncludeMinimum="yes" Language="1033" Property="PREVIOUSVERSIONSINSTALLED" />
-      <UpgradeVersion Minimum="$(var.ProductVersion)" IncludeMinimum="yes" OnlyDetect="yes" Language="1033" Property="NEWERPRODUCTFOUND" />
-    </Upgrade>
-    <Media Id="1" Cabinet="WinEDDS.cab" EmbedCab="yes" />
+    <Media Id="1" Cabinet="Relativity.Desktop.Client.cab" EmbedCab="yes" />
     <Property Id="DiskPrompt" Value="kCura $(var.ProductName) $(var.ProductVersion) Installation [1]" />
+    <Property Id="SOURCEAPPCONFIGFILE" Secure="yes">
+      <RegistrySearch Id="InstallDirSearch"
+                      Root="HKLM"
+                      Key="$(var.RegistryKey)"
+                      Name="InstallDir"
+                      Type="directory">
+        <DirectorySearch Id='InstallPathDirectory' Depth='0'>
+          <FileSearch Id='InstallPathFile' Name='$(var.ConfigFile)'/>
+        </DirectorySearch>
+      </RegistrySearch>
+    </Property>
+
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="DesktopFolder" />
       <Directory Id="ProgramMenuFolder">
@@ -56,7 +83,7 @@
       <Shortcut Id="RdcDesktop"
                 Directory="DesktopFolder"
                 Name="$(var.ProductName)"
-                Target="[#RelativityDesktopClientEXE]"
+                Target="[#Relativity.Desktop.Client.exe]"
                 Icon="relativity_1.exe"
                 Description="desktop"
                 IconIndex="0" />
@@ -66,22 +93,24 @@
     <Component Id="AppStartMenuShortcut" Directory="ProgramMenuDir" Guid="{D2A7F341-1DE6-40A0-AC26-8DE59892001F}">
       <Shortcut Id="RdcStartMenu"
                 Directory="ProgramMenuFolder"
-                Target="[#RelativityDesktopClientEXE]"
+                Target="[#Relativity.Desktop.Client.exe]"
                 Name="$(var.ProductName)"
                 Icon="relativity_1.exe" IconIndex="0" />
       <RemoveFolder Id="ProgramMenuDir" On="uninstall" />
       <RegistryValue Root="HKCU" Key="$(var.RegistryKey)" Name="AppMenuShortcut" Type="integer" Value="1" KeyPath="yes" />
     </Component>
-    <Component Id="MainExecutable" Directory="INSTALLDIR" Guid="{878031B1-50D3-48DD-9856-AE3DA2C43463}">
-      <File Id="RelativityDesktopClientEXE" Name="Relativity.Desktop.Client.exe" DiskId="1" Source="$(var.Relativity.Desktop.Client.Legacy.TargetPath)" KeyPath="yes"/>
-      <File Id="Relativity.Desktop.ClientEXEConfig" Name="Relativity.Desktop.Client.exe.config" DiskId="1" Source="$(var.Relativity.Desktop.Client.Legacy.TargetDir)\Relativity.Desktop.Client.exe.config" />
+    <Component Id="Relativity.Desktop.Client.exe" Directory="INSTALLDIR" Guid="{878031B1-50D3-48DD-9856-AE3DA2C43463}">
+      <File Id="Relativity.Desktop.Client.exe" Name="Relativity.Desktop.Client.exe" DiskId="1" Source="$(var.Relativity.Desktop.Client.Legacy.TargetPath)" KeyPath="yes"/>
+    </Component>
+    <Component Id='Relativity.Desktop.Client.Config' Directory="INSTALLDIR" Guid='{4D607A93-7721-4EC6-A2EE-FD8FE79F2178}' KeyPath='yes'>
+      <File Id='Relativity.Desktop.Client.Config' Source='$(var.Relativity.Desktop.Client.Legacy.TargetPath).config' Vital='yes' />
     </Component>
     <Component Id="RDCFirewall" Directory="INSTALLDIR" Guid="{31BF5FEF-EAC6-4554-B397-16BCD75B6B94}" KeyPath="yes">
       <Condition>SETFIREWALL=1</Condition>
       <!--Adding firewall exceptions to support Aspera. -->
       <fw:FirewallException
 				Id="RdcClientTCPInbound"
-				File="RelativityDesktopClientEXE"
+				File="Relativity.Desktop.Client.exe"
 				Protocol="tcp"
 				Name="Relativity Desktop Client TCP"
 				Port="*"
@@ -90,7 +119,7 @@
 				Profile="all"/>
       <fw:FirewallException
 				Id="RdcClientUDPInbound"
-				File="RelativityDesktopClientEXE"
+				File="Relativity.Desktop.Client.exe"
 				Protocol="udp"
 				Name="Relativity Desktop Client UDP"
 				Port="*"
@@ -106,6 +135,7 @@
     <Component Id="RegistryEntries"  Directory="INSTALLDIR" Guid="{A20005D6-52D7-485B-9A2D-D0C335B0302B}">
       <RegistryKey Root="HKLM" Key="$(var.RegistryKey)" ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
         <RegistryValue Type="string" Name="Path" Value="[INSTALLDIR]Relativity.Desktop.Client.exe" KeyPath="yes" />
+        <RegistryValue Type="string" Name="InstallDir" Value="[INSTALLDIR]" KeyPath="no" />
       </RegistryKey>
     </Component>
     <Component Id="ImagesComponent" Directory="Images" Guid="{F1A3AE41-6B1C-4C3F-804D-03AA128CB748}" KeyPath="yes">
@@ -118,7 +148,8 @@
       <Feature Id="MainProgram" Title="Program Files" Description="Main Relativity executable files." Level="1" Absent="disallow">
         <ComponentRef Id="NativeDependencies" />
         <ComponentRef Id="RegistryEntries" />
-        <ComponentRef Id="MainExecutable" />
+        <ComponentRef Id="Relativity.Desktop.Client.exe" />
+        <ComponentRef Id="Relativity.Desktop.Client.Config" />
         <ComponentRef Id="AppStartMenuShortcut" />
         <ComponentRef Id="AppDesktopShortcut"/>
         <ComponentRef Id="ImagesComponent" />
@@ -158,10 +189,37 @@
     <!-- Prevent downgrading -->
     <CustomAction Id="PreventDowngrading" Error="Unable to install because a newer version of this product is already installed." />
 
+    <!-- Set properties for all common workflows -->
+    <SetProperty After="FindRelatedProducts" Id="FirstInstall" Value="true">NOT Installed AND NOT WIX_UPGRADE_DETECTED AND NOT WIX_DOWNGRADE_DETECTED</SetProperty>
+    <SetProperty After="SetFirstInstall" Id="Upgrading" Value="true">WIX_UPGRADE_DETECTED AND NOT (REMOVE="ALL")</SetProperty>
+    <SetProperty After="RemoveExistingProducts" Id="RemovingForUpgrade" Sequence="execute" Value="true">(REMOVE="ALL") AND UPGRADINGPRODUCTCODE</SetProperty>
+    <SetProperty After="SetUpgrading" Id="Uninstalling" Value="true">Installed AND (REMOVE="ALL") AND NOT (WIX_UPGRADE_DETECTED OR UPGRADINGPRODUCTCODE)</SetProperty>
+    <SetProperty After="SetUninstalling" Id="Maintenance" Value="true">Installed AND NOT Upgrading AND NOT Uninstalling AND NOT UPGRADINGPRODUCTCODE</SetProperty>
+
+    <!-- Don't overwrite the existing app.config during the upgrade! -->
+    <SetProperty Id="BackupConfiguration"
+                 Value="SOURCEAPPCONFIGFILE=[SOURCEAPPCONFIGFILE]"
+                 Before="BackupConfiguration"
+                 Sequence="execute"><![CDATA[Upgrading= "true"]]></SetProperty>
+    <SetProperty Id="RestoreConfiguration" 
+                 Value="SOURCEAPPCONFIGFILE=[SOURCEAPPCONFIGFILE];TARGETAPPCONFIGFILE=[#Relativity.Desktop.Client.Config];UILevel=[UILevel];ProductName=[ProductName]"
+                 Before="RestoreConfiguration"
+                 Sequence="execute"><![CDATA[Upgrading= "true"]]></SetProperty>
+    <SetProperty Id="Cleanup"
+                 Value="SOURCEAPPCONFIGFILE=[SOURCEAPPCONFIGFILE]"
+                 Before="Cleanup"
+                 Sequence="execute"><![CDATA[Upgrading= "true"]]></SetProperty>
+    <SetProperty Id="CloseRunningApplications"
+                 Value="APP_PROCESS_NAME=[APP_PROCESS_NAME];UILevel=[UILevel];ProductName=[ProductName]"
+                 Before="CloseRunningApplications"
+                 Sequence="execute"/>
+
     <!-- Sequences -->
-    <InstallExecuteSequence>
-      <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWERPRODUCTFOUND</Custom>
-      <RemoveExistingProducts After="InstallInitialize" />
+    <InstallExecuteSequence>     
+      <Custom Action="CloseRunningApplications" After="InstallInitialize">1</Custom>
+      <Custom Action="BackupConfiguration" After="CloseRunningApplications"><![CDATA[Upgrading = "true"]]></Custom>
+      <Custom Action="RestoreConfiguration" After="WriteRegistryValues"><![CDATA[Upgrading = "true"]]></Custom>
+      <Custom Action="Cleanup" After="RestoreConfiguration"><![CDATA[Upgrading = "true"]]></Custom>
     </InstallExecuteSequence>
   </Product>
 </Wix>

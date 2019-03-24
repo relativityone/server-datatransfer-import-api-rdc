@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>3.10</ProductVersion>
+    <ProductVersion>1.00</ProductVersion>
     <ProjectGuid>a25301be-f37c-48a4-9554-e7b12c57ff69</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
     <OutputName Condition="'$(Platform)' == 'x86'">Relativity.Desktop.Client.x86</OutputName>
@@ -53,6 +53,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Components\EventLogEntries.wxs" />
+    <Compile Include="CustomActions.wxs" />
     <Compile Include="Dialogs\FirewallDlg.wxs" />
     <Compile Include="Dialogs\WixUI_MondoNoLicense.wxs" />
     <Compile Include="Product.wxs" />
@@ -101,12 +102,22 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Dialogs\FirewallDlg.en-us.wxl" />
+    <EmbeddedResource Include="Localization\Strings.en-us.wxl" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Components" />
     <Folder Include="Dialogs" />
+    <Folder Include="Localization" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Relativity.Desktop.Client.CustomActions\Relativity.Desktop.Client.CustomActions.csproj">
+      <Name>Relativity.Desktop.Client.CustomActions</Name>
+      <Project>{b57c3966-8ef3-4952-ae19-3455c0b049a8}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
     <ProjectReference Include="..\Relativity.Desktop.Client.Legacy\Relativity.Desktop.Client.Legacy.vbproj">
       <Name>Relativity.Desktop.Client.Legacy</Name>
       <Project>{49cde7eb-9385-41d9-8cd9-687c09c46996}</Project>
