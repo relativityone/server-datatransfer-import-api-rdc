@@ -1,64 +1,1439 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2022E24B-46A1-46DA-A715-36D137436B3A}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2022E24B-46A1-46DA-A715-36D137436B3A}</ProjectGuid>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>kCura.WinEDDS</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyMode>None</AssemblyOriginatorKeyMode>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
     <OutputType>Library</OutputType>
-    <RootNamespace>Relativity.Import.Export.Legacy</RootNamespace>
-    <AssemblyName>Relativity.Import.Export.Legacy</AssemblyName>
-    <FileAlignment>512</FileAlignment>
+    <OptionCompare>Binary</OptionCompare>
+    <OptionExplicit>On</OptionExplicit>
+    <OptionStrict>On</OptionStrict>
+    <RootNamespace>
+    </RootNamespace>
+    <StartupObject>
+    </StartupObject>
+    <WebReference_EnableProperties>true</WebReference_EnableProperties>
+    <WebReference_EnableSQLTypes>false</WebReference_EnableSQLTypes>
+    <WebReference_EnableLegacyEventingModel>true</WebReference_EnableLegacyEventingModel>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
     <MyType>Windows</MyType>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
-    <Deterministic>true</Deterministic>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+    <Injections>EnableInjections</Injections>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
+    <OutputPath>bin\</OutputPath>
+    <DocumentationFile>bin\kCura.WinEDDS.xml</DocumentationFile>
+    <BaseAddress>285212672</BaseAddress>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>$(Injections)</DefineConstants>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <OutputPath>bin\</OutputPath>
-    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
-    <PlatformTarget>x64</PlatformTarget>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>..\..\buildtools\Legacy.ruleset</CodeAnalysisRuleSet>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>1</WarningLevel>
+    <NoWarn>
+    </NoWarn>
+    <DebugType>full</DebugType>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <OutputPath>bin\</OutputPath>
+    <DocumentationFile>bin\kCura.WinEDDS.xml</DocumentationFile>
+    <BaseAddress>285212672</BaseAddress>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>$(Injections)</DefineConstants>
     <DefineDebug>false</DefineDebug>
     <DefineTrace>true</DefineTrace>
+    <DebugSymbols>false</DebugSymbols>
     <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>1</WarningLevel>
+    <NoWarn>
+    </NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionInfer>Off</OptionInfer>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Documentation|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\</OutputPath>
-    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
-    <PlatformTarget>x64</PlatformTarget>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>..\..\buildtools\Legacy.ruleset</CodeAnalysisRuleSet>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
-  <PropertyGroup>
-    <OptionExplicit>On</OptionExplicit>
-  </PropertyGroup>
-  <PropertyGroup>
-    <OptionCompare>Binary</OptionCompare>
-  </PropertyGroup>
-  <PropertyGroup>
-    <OptionStrict>Off</OptionStrict>
-  </PropertyGroup>
-  <PropertyGroup>
-    <OptionInfer>On</OptionInfer>
+    <BaseAddress>285212672</BaseAddress>
+    <DocumentationFile>bin\kCura.WinEDDS.xml</DocumentationFile>
+    <WarningLevel>1</WarningLevel>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
+    <CodeAnalysisLogFile>bin\kCura.WinEDDS.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.vb</CodeAnalysisModuleSuppressionsFile>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Collections" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.Serialization.Formatters.Soap">
+      <Name>System.Runtime.Serialization.Formatters.Soap</Name>
+    </Reference>
+    <Reference Include="System.Web">
+      <Name>System.Web</Name>
+    </Reference>
+    <Reference Include="System.Web.Services">
+      <Name>system.web.services</Name>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
     <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Data" />
+    <Import Include="System.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Version\AssemblySharedInfo.vb">
+      <Link>My Project\AssemblySharedInfo.vb</Link>
+    </Compile>
+    <Compile Include="API\ArtifactField.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="API\ArtifactFieldCollection.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="API\DataSourcePrepEventArgs.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="API\ExtendedFileIdData.vb" />
+    <Compile Include="API\FileIDData.vb" />
+    <Compile Include="API\IArtifactReader.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="API\IHasOixFileType.vb" />
+    <Compile Include="API\IHasSupportedByViewer.vb" />
+    <Compile Include="API\IImageReader.vb" />
+    <Compile Include="API\ImageRecord.vb" />
+    <Compile Include="API\IoWarningEventArgs.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="API\LoginHelper.vb" />
+    <Compile Include="Config.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Credentials\Constants.vb" />
+    <Compile Include="Credentials\CredentialsNotSetException.vb" />
+    <Compile Include="Credentials\ICredentialsProvider.vb" />
+    <Compile Include="Credentials\IntegratedAuthenticationOAuthCredentialsProvider.vb" />
+    <Compile Include="Credentials\OAuth2ClientCredentials.vb" />
+    <Compile Include="Credentials\OAuth2ImplicitCredentials.vb" />
+    <Compile Include="Credentials\OAuth2ImplicitCredentialsHelper.vb" />
+    <Compile Include="Credentials\RelativityWebApiCredentialsProvider.vb" />
+    <Compile Include="Credentials\UserCredentialsProvider.vb" />
+    <Compile Include="Event\AppEvent.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Event\LoadCaseEvent.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Event\NewFolderEvent.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Exceptions\CodeCreationFailedException.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Exceptions\CredentialsNotSupportedException.vb" />
+    <Compile Include="Exceptions\ErrorMessage.vb" />
+    <Compile Include="Exceptions\ExportBaseException.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Exceptions\FieldValueImportException.vb" />
+    <Compile Include="Exceptions\FileWriteError.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Exceptions\ImportIOException.vb" />
+    <Compile Include="Exceptions\InvalidLoginException.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Exceptions\RelativityVersionMismatchException.vb" />
+    <Compile Include="Helpers\ExceptionHelper.vb" />
+    <Compile Include="Exceptions\WebApiException.vb" />
+    <Compile Include="Exceptions\WebDownloadCorruptException.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Exporters\Container\ContainerFactoryProvider.vb" />
+    <Compile Include="Exporters\Container\IContainerFactory.vb" />
+    <Compile Include="Exporters\ExportConfig.vb" />
+    <Compile Include="Exporters\ExtendedExporter.vb" />
+    <Compile Include="Exporters\ExtendedExportFile.vb" />
+    <Compile Include="Exporters\ExtendedObjectExportInfo.vb" />
+    <Compile Include="Exporters\IBatch.vb" />
+    <Compile Include="Exporters\IErrorFile.vb" />
+    <Compile Include="Exporters\IExportConfig.vb" />
+    <Compile Include="Exporters\IExporter.vb" />
+    <Compile Include="Exporters\IExporterStatusNotification.vb" />
+    <Compile Include="Exporters\IFieldLookupService.vb" />
+    <Compile Include="Exporters\IFieldService.vb" />
+    <Compile Include="Exporters\IObjectExportableSize.vb" />
+    <Compile Include="Exporters\IStatus.vb" />
+    <Compile Include="Exporters\IUserNotification.vb" />
+    <Compile Include="Exporters\LoadFileCellFormatters\IFieldNameProvider.vb" />
+    <Compile Include="Exporters\LoadFileCellFormatters\ILoadFileHeaderFormatterFactory.vb" />
+    <Compile Include="Exporters\LoadFileCellFormatters\ILoadFileHeaderFormatter.vb" />
+    <Compile Include="Exporters\LoadFileEntry\CompletedEntry.vb" />
+    <Compile Include="Exporters\LoadFileEntry\DeferredEntry.vb" />
+    <Compile Include="Exporters\LoadFileEntry\ILoadFileEntry.vb" />
+    <Compile Include="Exporters\LoadFileEntry\ILongTextEntryWriter.vb" />
+    <Compile Include="Exporters\NullUserNotification.vb" />
+    <Compile Include="Exporters\OpticonFilenameComparer.vb" />
+    <Compile Include="Exporters\OriginalFileNameProvider.vb" />
+    <Compile Include="Exporters\TempTextFileDeletor.vb" />
+    <Compile Include="Exporters\LoadFileCellFormatters\DelimitedCellFormatter.vb" />
+    <Compile Include="Exporters\LoadFileCellFormatters\HtmlCellFormatter.vb" />
+    <Compile Include="Exporters\LoadFileCellFormatters\ILoadFileCellFormatter.vb" />
+    <Compile Include="Exporters\ILongTextStreamFormatter.vb" />
+    <Compile Include="Exporters\LineFactory\ObjectLineFactoryBase.vb" />
+    <Compile Include="Exporters\ObjectExportInfo.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Exporters\Exporter.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Exporters\ImageExportInfo.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Exporters\LineFactory\ImageLineFactoryBase.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Exporters\LineFactory\LineFactoryBase.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Exporters\LineFactory\SimpleIproImageLineFactory.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Exporters\UserNotificationRedirectToMessage.vb" />
+    <Compile Include="Exporters\Validator\ExportInitializationValidator.vb" />
+    <Compile Include="Exporters\Validator\IExportValidation.vb" />
+    <Compile Include="Exporters\Validator\PaddingWarningValidator.vb" />
+    <Compile Include="Exporters\VolumeInfo.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Exporters\VolumeManager.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Exporters\VolumePredictions.vb" />
+    <Compile Include="FieldProviderCache.vb" />
+    <Compile Include="FileDownloader.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FileNaming\CustomFileNaming\CustomFileNameProvider.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\CustomTextFileNamePartProvider.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\FieldFileNamePartProvider.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\FileNamePartProvider.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\FileNamePartProviderContainer.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\FirstFieldDescriptorPart.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\FirstFieldFileNamePartProvider.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\INativeFileNameViewFieldsHelper.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\NativeFileNameViewFieldsHelper.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\SeparatorFileNamePartProvider.vb" />
+    <Compile Include="FileNaming\IdentifierExportFileNameProvider.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\IFileNamePartProvider.vb" />
+    <Compile Include="FileNaming\CustomFileNaming\IFileNamePartProviderContainer.vb" />
+    <Compile Include="FileNaming\IFileNameProvider.vb" />
+    <Compile Include="FileNaming\ProductionExportFileNameProvider.vb" />
+    <Compile Include="FileNaming\FileNameProviderContainer.vb" />
+    <Compile Include="FileObjects\ErrorExportFile.vb" />
+    <Compile Include="FileObjects\ExportFile.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FileObjects\ExportFileSerializer.vb" />
+    <Compile Include="FileObjects\ImageLoadFile.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FileObjects\LoadFile.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FileUploader.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Helpers\CaseInsensitiveFilePathHelper.vb" />
+    <Compile Include="Helpers\CaseSensitiveFilePathHelper.vb" />
+    <Compile Include="Helpers\ConfigurableFilePathHelper.vb" />
+    <Compile Include="Helpers\FieldValueHelper.vb" />
+    <Compile Include="Helpers\FileNameHelper.vb" />
+    <Compile Include="Helpers\IFilePathHelper.vb" />
+    <Compile Include="IFieldProviderCache.vb" />
+    <Compile Include="Importers\BulkImageFileImporter.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Importers\BulkLoadFileImporter.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Importers\CodeValidator\Base.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Importers\CodeValidator\CodeCreationException.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Importers\CodeValidator\SingleImporter.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Importers\CodeValidator\SinglePreviewer.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Importers\FolderCache.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Importers\IFolderCache.vb" />
+    <Compile Include="Importers\IImportConfig.vb" />
+    <Compile Include="Importers\IImportJob.vb" />
+    <Compile Include="Importers\ImageFilePreviewer.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Importers\ImportConfig.vb" />
+    <Compile Include="Importers\ImportExportTapiBase.vb" />
+    <Compile Include="Importers\LoadFileBase.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Importers\LoadFilePreProcessor.vb" />
+    <Compile Include="Importers\LoadFilePreviewer.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Importers\LoadFileReader.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Importers\MetaDocument.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Importers\NestedArtifactCache.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Importers\OpticonFileReader.vb" />
+    <Compile Include="Exceptions\InvalidPackageException.vb" />
+    <Compile Include="Importers\OutputFileWriter.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="TempFileConstants.vb" />
+    <Compile Include="TempFileBuilder.vb" />
+    <Compile Include="Importers\TimeKeeper\DefaultTimeKeeperManager.vb" />
+    <Compile Include="Importers\TimeKeeper\DefaultTimerKeeper.vb" />
+    <Compile Include="Importers\TimeKeeper\ImportTimeKeeperBase.vb" />
+    <Compile Include="Importers\TimeKeeper\ITimeKeeperManager.vb" />
+    <Compile Include="IO\FileStreamFactory.vb" />
+    <Compile Include="IO\IFileStreamFactory.vb" />
+    <Compile Include="Monitoring\Sinks\IMetricsConfig.vb" />
+    <Compile Include="Monitoring\Sinks\JobApmEndOfLifeSink.vb" />
+    <Compile Include="Monitoring\Sinks\JobSumEndOfLifeSink.vb" />
+    <Compile Include="Monitoring\MetricMetadataExtensions.vb" />
+    <Compile Include="Monitoring\Sinks\JobLifetimeSink.vb" />
+    <Compile Include="Monitoring\Sinks\JobLiveMetricSink.vb" />
+    <Compile Include="Monitoring\Sinks\MetricSinkBase.vb" />
+    <Compile Include="Monitoring\TransferJobProgressMessage.vb" />
+    <Compile Include="Monitoring\TransferJobCompletedRecordsCountMessage.vb" />
+    <Compile Include="Monitoring\TransferJobFailedMessage.vb" />
+    <Compile Include="Monitoring\TransferJobMessageBase.vb" />
+    <Compile Include="Monitoring\TransferJobCompletedMessage.vb" />
+    <Compile Include="Monitoring\TransferJobStatisticsMessage.vb" />
+    <Compile Include="Monitoring\TransferJobStartedMessage.vb" />
+    <Compile Include="Monitoring\TransferJobThroughputMessage.vb" />
+    <Compile Include="Monitoring\TransferJobTotalRecordsCountMessage.vb" />
+    <Compile Include="Process\MonitoredProcessBase.vb" />
+    <Compile Include="Process\StatusEventArgs.vb" />
+    <Compile Include="RelativityLogFactory.vb" />
+    <Compile Include="My Project\Settings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="PackageHelper.vb" />
+    <Compile Include="PreviewChoicesHelper.vb" />
+    <Compile Include="Process\ConnectionDetailsProcess.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Process\ExportSearchProcess.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Process\ExportStatistics.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Process\ImportImageFileProcess.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Process\ImportLoadFileProcess.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Process\PreviewImageFileProcess.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Process\PreviewLoadFileProcess.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Process\Statistics.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PropertyExtractor\EML.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PropertyExtractor\File.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ReadFromExisting.vb" />
+    <Compile Include="ServiceFactoryFactory.vb" />
+    <Compile Include="Service\AuditManager.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Service\BulkImportManager.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Service\CaseManager.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Service\CodeManager.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Service\DocumentManager.vb">
+      <SubType>code</SubType>
+    </Compile>
+    <Compile Include="Service\ExportManager.vb" />
+    <Compile Include="Service\Export\IExportFileDownloaderStatus.vb" />
+    <Compile Include="Service\Export\IExportManager.vb" />
+    <Compile Include="Service\Export\IFieldManager.vb" />
+    <Compile Include="Service\Export\IAuditManager.vb" />
+    <Compile Include="Service\Export\IExportFileDownloader.vb" />
+    <Compile Include="Service\Export\IProductionManager.vb" />
+    <Compile Include="Service\Export\ISearchManager.vb" />
+    <Compile Include="Service\Export\IServiceFactory.vb" />
+    <Compile Include="Service\Export\WebApiServiceFactory.vb" />
+    <Compile Include="Service\FieldManager.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Service\FieldQuery.vb">
+      <SubType>code</SubType>
+    </Compile>
+    <Compile Include="Service\FieldSpecificCodeManager.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Service\FieldSpecificCodePreviewer.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Service\FileIO.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Service\FileManager.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Service\FolderManager.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Service\Helper.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Service\Export\ICaseManager.vb" />
+    <Compile Include="Service\IHierarchicArtifactManager.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Service\ObjectManager.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Service\ObjectTypeManager.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Service\ProductionManager.vb">
+      <SubType>code</SubType>
+    </Compile>
+    <Compile Include="Service\RelativityManager.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Service\SearchManager.vb">
+      <SubType>code</SubType>
+    </Compile>
+    <Compile Include="Service\UserManager.vb">
+      <SubType>code</SubType>
+    </Compile>
+    <Compile Include="Service\WebServiceExtensions.vb" />
+    <Compile Include="Settings.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SettingsFactories\DynamicObjectSettingsFactory.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SettingsFactories\ImageSettingsFactory.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SettingsFactories\NativeSettingsFactory.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SettingsFactories\SettingsFactoryBase.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Types\ClientSideErrorCollection.vb" />
+    <Compile Include="Types\CoalescedTextViewField.vb" />
+    <Compile Include="Types\LoadFilePreviewColumnItem.vb" />
+    <Compile Include="Types\DocumentField.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Types\DocumentFieldCollection.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Types\EncodingListItem.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Types\ExportEventArgs.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Types\ExportNativeWithFilenameFrom.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Types\FileInfo.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Types\FolderInfo.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Types\ImportStatusMessagePriority.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Types\LoadFileFieldMap.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Types\LoadFileType.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Types\ObjectTypeListItem.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Types\Pair.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Types\SingleChoiceCollection.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Types\UserCollection.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Types\ViewFieldInfo.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Utility.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ValueThrower.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web References\kCura.EDDS.WebAPI.AuditManagerBase\Reference.vb">
+      <DependentUpon>Reference.map</DependentUpon>
+      <SubType>code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\Reference.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+    <Compile Include="Web References\kCura.EDDS.WebAPI.CaseManagerBase\Reference.vb">
+      <DependentUpon>Reference.map</DependentUpon>
+      <SubType>code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Web References\kCura.EDDS.WebAPI.CodeManagerBase\Reference.vb">
+      <DependentUpon>Reference.map</DependentUpon>
+      <SubType>code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Web References\kCura.EDDS.WebAPI.DocumentManagerBase\Reference.vb">
+      <DependentUpon>Reference.map</DependentUpon>
+      <SubType>code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Web References\kCura.EDDS.WebAPI.ExportManagerBase\Reference.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+    <Compile Include="Web References\kCura.EDDS.WebAPI.FieldManagerBase\Reference.vb">
+      <DependentUpon>Reference.map</DependentUpon>
+      <SubType>code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Web References\kCura.EDDS.WebAPI.FieldQueryBase\Reference.vb">
+      <DependentUpon>Reference.map</DependentUpon>
+      <SubType>Code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Web References\kCura.EDDS.WebAPI.FileIOBase\Reference.vb">
+      <DependentUpon>Reference.map</DependentUpon>
+      <SubType>code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Web References\kCura.EDDS.WebAPI.FileManagerBase\Reference.vb">
+      <DependentUpon>Reference.map</DependentUpon>
+      <SubType>Code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Web References\kCura.EDDS.WebAPI.FolderManagerBase\Reference.vb">
+      <DependentUpon>Reference.map</DependentUpon>
+      <SubType>Code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Web References\kCura.EDDS.WebAPI.ObjectManagerBase\Reference.vb">
+      <DependentUpon>Reference.map</DependentUpon>
+      <SubType>code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Web References\kCura.EDDS.WebAPI.ObjectTypeManagerBase\Reference.vb">
+      <DependentUpon>Reference.map</DependentUpon>
+      <SubType>code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Web References\kCura.EDDS.WebAPI.ProductionManagerBase\Reference.vb">
+      <DependentUpon>Reference.map</DependentUpon>
+      <SubType>Code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Web References\kCura.EDDS.WebAPI.RelativityManagerBase\Reference.vb">
+      <DependentUpon>Reference.map</DependentUpon>
+      <SubType>code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Web References\kCura.EDDS.WebAPI.SearchManagerBase\Reference.vb">
+      <DependentUpon>Reference.map</DependentUpon>
+      <SubType>Code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Web References\kCura.EDDS.WebAPI.UserManagerBase\Reference.vb">
+      <DependentUpon>Reference.map</DependentUpon>
+      <SubType>code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <None Include="paket.references" />
+    <None Include="Resources\oldkwx.kwx" />
+    <None Include="Web References\kCura.EDDS.WebAPI.AuditManagerBase\AuditManager.disco" />
+    <None Include="Web References\kCura.EDDS.WebAPI.AuditManagerBase\AuditManager.wsdl">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.AuditManagerBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\BulkImportManager.wsdl" />
+    <None Include="Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\ErrorFileKey.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\MassImportResults.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.CaseManagerBase\CaseInfo.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.CaseManagerBase\CaseManager.disco" />
+    <None Include="Web References\kCura.EDDS.WebAPI.CaseManagerBase\CaseManager.wsdl" />
+    <None Include="Web References\kCura.EDDS.WebAPI.CaseManagerBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.CodeManagerBase\ChoiceInfo.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.CodeManagerBase\CodeManager.disco" />
+    <None Include="Web References\kCura.EDDS.WebAPI.CodeManagerBase\CodeManager.wsdl" />
+    <None Include="Web References\kCura.EDDS.WebAPI.CodeManagerBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.DocumentManagerBase\Document.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.DocumentManagerBase\DocumentManager.disco" />
+    <None Include="Web References\kCura.EDDS.WebAPI.DocumentManagerBase\DocumentManager.wsdl" />
+    <None Include="Web References\kCura.EDDS.WebAPI.DocumentManagerBase\File.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.DocumentManagerBase\NameValuePair.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.DocumentManagerBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.FieldManagerBase\Field.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.FieldManagerBase\FieldManager.disco" />
+    <None Include="Web References\kCura.EDDS.WebAPI.FieldManagerBase\FieldManager.wsdl" />
+    <None Include="Web References\kCura.EDDS.WebAPI.FieldManagerBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.FieldQueryBase\FieldQuery.disco" />
+    <None Include="Web References\kCura.EDDS.WebAPI.FieldQueryBase\FieldQuery.wsdl" />
+    <None Include="Web References\kCura.EDDS.WebAPI.FieldQueryBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.FileIOBase\FileIO.disco" />
+    <None Include="Web References\kCura.EDDS.WebAPI.FileIOBase\FileIO.wsdl" />
+    <None Include="Web References\kCura.EDDS.WebAPI.FileIOBase\IoResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.FileIOBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.FileManagerBase\File.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.FileManagerBase\FileManager.disco" />
+    <None Include="Web References\kCura.EDDS.WebAPI.FileManagerBase\FileManager.wsdl" />
+    <None Include="Web References\kCura.EDDS.WebAPI.FileManagerBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.FolderManagerBase\Folder.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.FolderManagerBase\FolderManager.disco" />
+    <None Include="Web References\kCura.EDDS.WebAPI.FolderManagerBase\FolderManager.wsdl" />
+    <None Include="Web References\kCura.EDDS.WebAPI.FolderManagerBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.ObjectManagerBase\ObjectManager.disco" />
+    <None Include="Web References\kCura.EDDS.WebAPI.ObjectManagerBase\ObjectManager.wsdl" />
+    <None Include="Web References\kCura.EDDS.WebAPI.ObjectManagerBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.ObjectTypeManagerBase\ObjectTypeManager.disco" />
+    <None Include="Web References\kCura.EDDS.WebAPI.ObjectTypeManagerBase\ObjectTypeManager.wsdl" />
+    <None Include="Web References\kCura.EDDS.WebAPI.ObjectTypeManagerBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.ProductionManagerBase\ProductionInfo.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.ProductionManagerBase\ProductionManager.disco" />
+    <None Include="Web References\kCura.EDDS.WebAPI.ProductionManagerBase\ProductionManager.wsdl" />
+    <None Include="Web References\kCura.EDDS.WebAPI.ProductionManagerBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.RelativityManagerBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.RelativityManagerBase\RelativityManager.disco" />
+    <None Include="Web References\kCura.EDDS.WebAPI.RelativityManagerBase\RelativityManager.wsdl" />
+    <None Include="Web References\kCura.EDDS.WebAPI.SearchManagerBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.SearchManagerBase\SearchManager.disco" />
+    <None Include="Web References\kCura.EDDS.WebAPI.SearchManagerBase\SearchManager.wsdl" />
+    <None Include="Web References\kCura.EDDS.WebAPI.UserManagerBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.UserManagerBase\UserManager.disco" />
+    <None Include="Web References\kCura.EDDS.WebAPI.UserManagerBase\UserManager.wsdl" />
+    <WebReferenceUrl Include="http://localhost/RelativityWebApi/AuditManager.asmx">
+      <RelPath>Web References\kCura.EDDS.WebAPI.AuditManagerBase\</RelPath>
+      <UrlBehavior>Static</UrlBehavior>
+      <UpdateFromURL>http://localhost/RelativityWebApi/AuditManager.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>
+      </CachedAppSettingsObjectName>
+      <CachedSettingsPropName>
+      </CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://localhost/RelativityWebApi/BulkImportManager.asmx">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\</RelPath>
+      <UpdateFromURL>http://localhost/RelativityWebApi/BulkImportManager.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>MySettings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>kCura_WinEDDS_kCura_EDDS_WebAPI_BulkImportManagerBase_BulkImportManager</CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://localhost/RelativityWebApi/CaseManager.asmx">
+      <RelPath>Web References\kCura.EDDS.WebAPI.CaseManagerBase\</RelPath>
+      <UrlBehavior>Static</UrlBehavior>
+      <UpdateFromURL>http://localhost/RelativityWebApi/CaseManager.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>
+      </CachedAppSettingsObjectName>
+      <CachedSettingsPropName>
+      </CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://localhost/RelativityWebApi/CodeManager.asmx">
+      <RelPath>Web References\kCura.EDDS.WebAPI.CodeManagerBase\</RelPath>
+      <UrlBehavior>Static</UrlBehavior>
+      <UpdateFromURL>http://localhost/RelativityWebApi/CodeManager.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>
+      </CachedAppSettingsObjectName>
+      <CachedSettingsPropName>
+      </CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://localhost/RelativityWebApi/DocumentManager.asmx">
+      <RelPath>Web References\kCura.EDDS.WebAPI.DocumentManagerBase\</RelPath>
+      <UrlBehavior>Static</UrlBehavior>
+      <UpdateFromURL>http://localhost/RelativityWebApi/DocumentManager.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>
+      </CachedAppSettingsObjectName>
+      <CachedSettingsPropName>
+      </CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://localhost/RelativityWebApi/ExportManager.asmx">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\kCura.EDDS.WebAPI.ExportManagerBase\</RelPath>
+      <UpdateFromURL>http://localhost/RelativityWebApi/ExportManager.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>MySettings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>kCura_WinEDDS_kCura_EDDS_WebAPI_ExportManagerBase_ExportManager</CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://localhost/RelativityWebApi/FieldManager.asmx">
+      <RelPath>Web References\kCura.EDDS.WebAPI.FieldManagerBase\</RelPath>
+      <UrlBehavior>Static</UrlBehavior>
+      <UpdateFromURL>http://localhost/RelativityWebApi/FieldManager.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>
+      </CachedAppSettingsObjectName>
+      <CachedSettingsPropName>
+      </CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://localhost/RelativityWebApi/FieldQuery.asmx">
+      <RelPath>Web References\kCura.EDDS.WebAPI.FieldQueryBase\</RelPath>
+      <UrlBehavior>Static</UrlBehavior>
+      <UpdateFromURL>http://localhost/RelativityWebApi/FieldQuery.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>
+      </CachedAppSettingsObjectName>
+      <CachedSettingsPropName>
+      </CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://localhost/RelativityWebApi/FileIO.asmx">
+      <RelPath>Web References\kCura.EDDS.WebAPI.FileIOBase\</RelPath>
+      <UrlBehavior>Static</UrlBehavior>
+      <UpdateFromURL>http://localhost/RelativityWebApi/FileIO.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>
+      </CachedAppSettingsObjectName>
+      <CachedSettingsPropName>
+      </CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://localhost/RelativityWebApi/FileManager.asmx">
+      <RelPath>Web References\kCura.EDDS.WebAPI.FileManagerBase\</RelPath>
+      <UrlBehavior>Static</UrlBehavior>
+      <UpdateFromURL>http://localhost/RelativityWebApi/FileManager.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>
+      </CachedAppSettingsObjectName>
+      <CachedSettingsPropName>
+      </CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://localhost/RelativityWebApi/FolderManager.asmx">
+      <RelPath>Web References\kCura.EDDS.WebAPI.FolderManagerBase\</RelPath>
+      <UrlBehavior>Static</UrlBehavior>
+      <UpdateFromURL>http://localhost/RelativityWebApi/FolderManager.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>
+      </CachedAppSettingsObjectName>
+      <CachedSettingsPropName>
+      </CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://localhost/RelativityWebApi/ObjectManager.asmx">
+      <RelPath>Web References\kCura.EDDS.WebAPI.ObjectManagerBase\</RelPath>
+      <UrlBehavior>Static</UrlBehavior>
+      <UpdateFromURL>http://localhost/RelativityWebApi/ObjectManager.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>
+      </CachedAppSettingsObjectName>
+      <CachedSettingsPropName>
+      </CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://localhost/RelativityWebApi/ObjectTypeManager.asmx">
+      <RelPath>Web References\kCura.EDDS.WebAPI.ObjectTypeManagerBase\</RelPath>
+      <UrlBehavior>Static</UrlBehavior>
+      <UpdateFromURL>http://localhost/RelativityWebApi/ObjectTypeManager.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>
+      </CachedAppSettingsObjectName>
+      <CachedSettingsPropName>
+      </CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://localhost/RelativityWebApi/ProductionManager.asmx">
+      <RelPath>Web References\kCura.EDDS.WebAPI.ProductionManagerBase\</RelPath>
+      <UrlBehavior>Static</UrlBehavior>
+      <UpdateFromURL>http://localhost/RelativityWebApi/ProductionManager.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>
+      </CachedAppSettingsObjectName>
+      <CachedSettingsPropName>
+      </CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://localhost/RelativityWebApi/RelativityManager.asmx">
+      <RelPath>Web References\kCura.EDDS.WebAPI.RelativityManagerBase\</RelPath>
+      <UrlBehavior>Static</UrlBehavior>
+      <UpdateFromURL>http://localhost/RelativityWebApi/RelativityManager.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>
+      </CachedAppSettingsObjectName>
+      <CachedSettingsPropName>
+      </CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://localhost/RelativityWebApi/SearchManager.asmx">
+      <RelPath>Web References\kCura.EDDS.WebAPI.SearchManagerBase\</RelPath>
+      <UrlBehavior>Static</UrlBehavior>
+      <UpdateFromURL>http://localhost/RelativityWebApi/SearchManager.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>
+      </CachedAppSettingsObjectName>
+      <CachedSettingsPropName>
+      </CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://localhost/RelativityWebApi/UserManager.asmx">
+      <RelPath>Web References\kCura.EDDS.WebAPI.UserManagerBase\</RelPath>
+      <UrlBehavior>Static</UrlBehavior>
+      <UpdateFromURL>http://localhost/RelativityWebApi/UserManager.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>
+      </CachedAppSettingsObjectName>
+      <CachedSettingsPropName>
+      </CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferences Include="Web References\" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+  <ItemGroup>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="My Project\Settings.settings">
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Web References\kCura.EDDS.WebAPI.ExportManagerBase\ExportManager.disco" />
+    <None Include="Web References\kCura.EDDS.WebAPI.ExportManagerBase\ExportManager.wsdl" />
+    <None Include="Web References\kCura.EDDS.WebAPI.ExportManagerBase\InitializationResults.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.ExportManagerBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Web References\kCura.EDDS.WebAPI.BulkImportManagerBase\BulkImportManager.disco" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FileNaming\CustomFileNaming\CustomFileNameDescriptorModel.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FileNaming\CustomFileNaming\CustomTextDescriptorPart.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FileNaming\CustomFileNaming\DescriptorPart.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FileNaming\CustomFileNaming\ExtendedDescriptorPart.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FileNaming\CustomFileNaming\FieldDescriptorPart.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FileNaming\CustomFileNaming\SeparatorDescriptorPart.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FileNaming\CustomFileNaming\ValueDescriptorPart.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Relativity.Import.Export\Relativity.Import.Export.csproj">
+      <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
+      <Name>Relativity.Import.Export</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v3.5'">
+      <ItemGroup>
+        <Reference Include="Castle.Core">
+          <HintPath>..\..\packages\legacycastle\Castle.Core\lib\net35\Castle.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.0.3')">
+      <ItemGroup>
+        <Reference Include="Castle.Core">
+          <HintPath>..\..\packages\legacycastle\Castle.Core\lib\net40-client\Castle.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2' Or $(TargetFrameworkVersion) == 'v4.6.3' Or $(TargetFrameworkVersion) == 'v4.7' Or $(TargetFrameworkVersion) == 'v4.7.1' Or $(TargetFrameworkVersion) == 'v4.7.2')">
+      <ItemGroup>
+        <Reference Include="Castle.Core">
+          <HintPath>..\..\packages\legacycastle\Castle.Core\lib\net45\Castle.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == 'Silverlight' And $(TargetFrameworkVersion) == 'v4.0'">
+      <ItemGroup>
+        <Reference Include="Castle.Core">
+          <HintPath>..\..\packages\legacycastle\Castle.Core\lib\sl4\Castle.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == 'Silverlight' And $(TargetFrameworkVersion) == 'v5.0'">
+      <ItemGroup>
+        <Reference Include="Castle.Core">
+          <HintPath>..\..\packages\legacycastle\Castle.Core\lib\sl5\Castle.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v3.5'">
+      <ItemGroup>
+        <Reference Include="Castle.Windsor">
+          <HintPath>..\..\packages\legacycastle\Castle.Windsor\lib\net35\Castle.Windsor.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.0.3')">
+      <ItemGroup>
+        <Reference Include="Castle.Windsor">
+          <HintPath>..\..\packages\legacycastle\Castle.Windsor\lib\net40\Castle.Windsor.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2' Or $(TargetFrameworkVersion) == 'v4.6.3' Or $(TargetFrameworkVersion) == 'v4.7' Or $(TargetFrameworkVersion) == 'v4.7.1' Or $(TargetFrameworkVersion) == 'v4.7.2')">
+      <ItemGroup>
+        <Reference Include="Castle.Windsor">
+          <HintPath>..\..\packages\legacycastle\Castle.Windsor\lib\net45\Castle.Windsor.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == 'Silverlight' And $(TargetFrameworkVersion) == 'v4.0'">
+      <ItemGroup>
+        <Reference Include="System.Windows">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Castle.Windsor">
+          <HintPath>..\..\packages\legacycastle\Castle.Windsor\lib\sl4\Castle.Windsor.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == 'Silverlight' And $(TargetFrameworkVersion) == 'v5.0'">
+      <ItemGroup>
+        <Reference Include="System.Windows">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Castle.Windsor">
+          <HintPath>..\..\packages\legacycastle\Castle.Windsor\lib\sl5\Castle.Windsor.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Newtonsoft.Json">
+          <HintPath>..\..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Polly">
+          <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity">
+          <HintPath>..\..\packages\Relativity\lib\net462\Relativity.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.DataTransfer.MessageService">
+          <HintPath>..\..\packages\Relativity.DataTransfer.MessageService\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Kepler">
+          <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.ServiceProxy">
+          <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Logging">
+          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Logging.Interfaces">
+          <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.OAuth2Client">
+          <HintPath>..\..\packages\Relativity.OAuth2Client\lib\net462\Relativity.OAuth2Client.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.OAuth2Client.IdentityModel">
+          <HintPath>..\..\packages\Relativity.OAuth2Client\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.OAuth2Client.Implicit">
+          <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces">
+          <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.OAuth2Client.Interfaces">
+          <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Telemetry.APM">
+          <HintPath>..\..\packages\Relativity.Telemetry.APM\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Telemetry.DataContracts.Shared">
+          <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Telemetry.Services.Interface">
+          <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="FaspManager">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\FaspManager.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Transfer.Client">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Transfer.Client.Aspera">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Transfer.Client.AzureBlob">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.AzureBlob.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Transfer.Client.AzureFiles">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.AzureFiles.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Transfer.Client.Core">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Transfer.Client.FileShare">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Transfer.Client.Http">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Renci.SshNet">
+          <HintPath>..\..\packages\SSH.NET\lib\net40\Renci.SshNet.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
 </Project>
