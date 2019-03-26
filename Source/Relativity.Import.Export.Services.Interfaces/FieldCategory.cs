@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Import.Export.Services
 {
-	public enum FieldCategory : int
+	public enum FieldCategory
 	{
 
 		Generic = 0,

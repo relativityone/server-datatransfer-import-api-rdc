@@ -1,159 +1,27 @@
 ﻿namespace Relativity.Import.Export.Services
 {
-	public partial class CaseInfo
+	public class CaseInfo
 	{
-		private int _ArtifactIDField;
+		public int ArtifactID { get; set; }
 
-		private bool _AsImportAllowedField;
+		public bool AsImportAllowed { get; set; }
 
-		private string _DownloadHandlerURLField;
+		public string DownloadHandlerURL { get; set; }
 
-		private bool _EnableDataGridField;
+		public bool EnableDataGrid { get; set; }
 
-		private bool _ExportAllowedField;
+		public bool ExportAllowed { get; set; }
 
-		private int _MatterArtifactIDField;
+		public int MatterArtifactID { get; set; }
 
-		private string _NameField;
+		public string Name { get; set; }
 
-		private int _RootArtifactIDField;
+		public int RootArtifactID { get; set; }
 
-		private int _RootFolderIDField;
+		public int RootFolderID { get; set; }
 
-		private int _StatusCodeArtifactIDField;
+		public int StatusCodeArtifactID { get; set; }
 
-		private string _documentPathField;
-
-		public int _ArtifactID
-		{
-			get
-			{
-				return this._ArtifactIDField;
-			}
-			set
-			{
-				this._ArtifactIDField = value;
-			}
-		}
-
-		public bool _AsImportAllowed
-		{
-			get
-			{
-				return this._AsImportAllowedField;
-			}
-			set
-			{
-				this._AsImportAllowedField = value;
-			}
-		}
-
-		public string _DownloadHandlerURL
-		{
-			get
-			{
-				return this._DownloadHandlerURLField;
-			}
-			set
-			{
-				this._DownloadHandlerURLField = value;
-			}
-		}
-
-		public bool _EnableDataGrid
-		{
-			get
-			{
-				return this._EnableDataGridField;
-			}
-			set
-			{
-				this._EnableDataGridField = value;
-			}
-		}
-
-		public bool _ExportAllowed
-		{
-			get
-			{
-				return this._ExportAllowedField;
-			}
-			set
-			{
-				this._ExportAllowedField = value;
-			}
-		}
-
-		public int _MatterArtifactID
-		{
-			get
-			{
-				return this._MatterArtifactIDField;
-			}
-			set
-			{
-				this._MatterArtifactIDField = value;
-			}
-		}
-
-		public string _Name
-		{
-			get
-			{
-				return this._NameField;
-			}
-			set
-			{
-				this._NameField = value;
-			}
-		}
-
-		public int _RootArtifactID
-		{
-			get
-			{
-				return this._RootArtifactIDField;
-			}
-			set
-			{
-				this._RootArtifactIDField = value;
-			}
-		}
-
-		public int _RootFolderID
-		{
-			get
-			{
-				return this._RootFolderIDField;
-			}
-			set
-			{
-				this._RootFolderIDField = value;
-			}
-		}
-
-		public int _StatusCodeArtifactID
-		{
-			get
-			{
-				return this._StatusCodeArtifactIDField;
-			}
-			set
-			{
-				this._StatusCodeArtifactIDField = value;
-			}
-		}
-
-		public string _documentPath
-		{
-			get
-			{
-				return this._documentPathField;
-			}
-			set
-			{
-				this._documentPathField = value;
-			}
-		}
+		public string DocumentPath { get; set; }
 	}
 }

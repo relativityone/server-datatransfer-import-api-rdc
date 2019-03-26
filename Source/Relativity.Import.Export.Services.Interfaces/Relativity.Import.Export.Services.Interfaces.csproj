@@ -55,6 +55,7 @@
     <Compile Include="ArtifactType.cs" />
     <Compile Include="ChoiceInfo.cs" />
     <Compile Include="CaseInfo.cs" />
+    <Compile Include="ColumnSourceType.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ErrorFileKey.cs" />
     <Compile Include="ExecutionSource.cs" />
@@ -65,7 +66,6 @@
     <Compile Include="FolderInfo.cs" />
     <Compile Include="ImportOverwriteType.cs" />
     <Compile Include="ImportStatus.cs" />
-    <Compile Include="IUserManager.cs" />
     <Compile Include="ParentReflectionType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SoapExceptionDetail.cs" />

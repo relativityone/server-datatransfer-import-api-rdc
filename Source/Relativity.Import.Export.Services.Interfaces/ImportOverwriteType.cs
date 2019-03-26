@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Import.Export.Services
 {
-	public enum ImportOverwriteType : int
+	public enum ImportOverwriteType
 	{
 
 		Append = 0,

@@ -14,15 +14,15 @@ namespace Relativity.Import.Export.Services
 		public const Int32 ADMIN_WORKSPACE_ARTIFACTID = -1;
 
 		/// <summary>
-		/// 		''' The default field delimiter to use when no other value is set.
-		/// 		''' </summary>
-		/// 		''' <remarks>The document loader is configurable, but the image loader is not</remarks>
+		/// The default field delimiter to use when no other value is set.
+		/// </summary>
+		/// <remarks>The document loader is configurable, but the image loader is not</remarks>
 		public const string DEFAULT_FIELD_DELIMITER = "þþKþþ";
 
 		/// <summary>
-		/// 		''' The value used at the end of a line by the image loader.
-		/// 		''' </summary>
-		/// 		''' <remarks>The document loader is configurable, but the image loader is not</remarks>
+		/// The value used at the end of a line by the image loader.
+		/// </summary>
+		/// <remarks>The document loader is configurable, but the image loader is not</remarks>
 		public const string ENDLINETERMSTRING = DEFAULT_FIELD_DELIMITER + Microsoft.VisualBasic.Constants.vbCrLf;
 
 		public const string LICENSE_AGREEMENT_TEXT = "The programs included herein are subject to a restricted use license and can only be used in conjunction with this application.";
@@ -141,9 +141,10 @@ namespace Relativity.Import.Export.Services
 		public class Export
 		{
 			/// <summary>
-			/// 		''' Used to pick out the COALESCED text field from export precedence
-			/// 		''' </summary>
-			/// 		''' <remarks>Spaces are here to ensure that there will never be a a sql column name conflict, because we strip all punctuation out of non-generated fields' column names for query results</remarks>
+			/// Used to pick out the COALESCED text field from export precedence
+			/// </summary>
+			/// <remarks>Spaces are here to ensure that there will never be a a sql column name conflict, because we strip all punctuation out of non-generated fields' column names for query results</remarks>
+			///
 			public const string TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME = "Text Precedence";
 			public const string TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME = "KCURA FULL TEXT SOURCE";
 			public const string TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_INDEX_AVF_COLUMN_NAME = "KCURA FULL TEXT SOURCE INDEX";

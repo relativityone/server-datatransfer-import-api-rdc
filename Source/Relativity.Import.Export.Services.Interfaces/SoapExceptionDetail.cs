@@ -1,75 +1,15 @@
 ﻿namespace Relativity.Import.Export.Services
 {
-	public partial class SoapExceptionDetail
+	public class SoapExceptionDetail
 	{
-		private string[] _DetailsField;
+		public string[] Details { get; set; }
 
-		private string _ExceptionFullTextField;
+		public string ExceptionFullText { get; set; }
 
-		private string _ExceptionMessageField;
+		public string ExceptionMessage { get; set; }
 
-		private string _ExceptionTraceField;
+		public string ExceptionTrace { get; set; }
 
-		private string _ExceptionTypeField;
-
-		public string[] _Details
-		{
-			get
-			{
-				return this._DetailsField;
-			}
-			set
-			{
-				this._DetailsField = value;
-			}
-		}
-
-		public string _ExceptionFullText
-		{
-			get
-			{
-				return this._ExceptionFullTextField;
-			}
-			set
-			{
-				this._ExceptionFullTextField = value;
-			}
-		}
-
-		public string _ExceptionMessage
-		{
-			get
-			{
-				return this._ExceptionMessageField;
-			}
-			set
-			{
-				this._ExceptionMessageField = value;
-			}
-		}
-
-		public string _ExceptionTrace
-		{
-			get
-			{
-				return this._ExceptionTraceField;
-			}
-			set
-			{
-				this._ExceptionTraceField = value;
-			}
-		}
-
-		public string _ExceptionType
-		{
-			get
-			{
-				return this._ExceptionTypeField;
-			}
-			set
-			{
-				this._ExceptionTypeField = value;
-			}
-		}
+		public string ExceptionType { get; set; }
 	}
 }

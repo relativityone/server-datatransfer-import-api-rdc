@@ -1,33 +1,9 @@
 ﻿namespace Relativity.Import.Export.Services
 {
-	public partial class ErrorFileKey
+	public class ErrorFileKey
 	{
-		private string LogKeyField;
+		public string LogKey { get; set; }
 
-		private string OpticonKeyField;
-
-		public string LogKey
-		{
-			get
-			{
-				return this.LogKeyField;
-			}
-			set
-			{
-				this.LogKeyField = value;
-			}
-		}
-
-		public string OpticonKey
-		{
-			get
-			{
-				return this.OpticonKeyField;
-			}
-			set
-			{
-				this.OpticonKeyField = value;
-			}
-		}
+		public string OpticonKey { get; set; }
 	}
 }

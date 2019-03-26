@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Import.Export.Services
 {
-	public enum ArtifactType : int
+	public enum ArtifactType
 	{
 
 		System = 1,

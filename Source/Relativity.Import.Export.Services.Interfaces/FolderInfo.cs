@@ -2,60 +2,12 @@
 {
 	public partial class FolderInfo
 	{
-		private int ArtifactIDField;
+		public int ArtifactID { get; set; }
 
-		private string NameField;
+		public string Name { get; set; }
 
-		private Relativity.Import.Export.Services.FolderInfo ParentField;
+		public Relativity.Import.Export.Services.FolderInfo Parent { get; set; }
 
-		private int ParentArtifactIDField;
-
-		public int ArtifactID
-		{
-			get
-			{
-				return this.ArtifactIDField;
-			}
-			set
-			{
-				this.ArtifactIDField = value;
-			}
-		}
-
-		public string Name
-		{
-			get
-			{
-				return this.NameField;
-			}
-			set
-			{
-				this.NameField = value;
-			}
-		}
-
-		public Relativity.Import.Export.Services.FolderInfo Parent
-		{
-			get
-			{
-				return this.ParentField;
-			}
-			set
-			{
-				this.ParentField = value;
-			}
-		}
-
-		public int ParentArtifactID
-		{
-			get
-			{
-				return this.ParentArtifactIDField;
-			}
-			set
-			{
-				this.ParentArtifactIDField = value;
-			}
-		}
+		public int ParentArtifactID { get; set; }
 	}
 }

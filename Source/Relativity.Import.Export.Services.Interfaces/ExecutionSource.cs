@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Import.Export.Services
 {
-	public enum ExecutionSource : int
+	public enum ExecutionSource
 	{
 
 		Unknown = 0,

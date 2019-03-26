@@ -1,61 +1,13 @@
 ﻿namespace Relativity.Import.Export.Services
 {
-	public partial class FileInfoBase
+	public class FileInfoBase
 	{
-		private string _fileGuidField;
+		public string FileGuid { get; set; }
 
-		private string _fileNameField;
+		public string FileName { get; set; }
 
-		private string _identifierField;
+		public string Identifier { get; set; }
 
-		private string _locationField;
-
-		public string _fileGuid
-		{
-			get
-			{
-				return this._fileGuidField;
-			}
-			set
-			{
-				this._fileGuidField = value;
-			}
-		}
-
-		public string _fileName
-		{
-			get
-			{
-				return this._fileNameField;
-			}
-			set
-			{
-				this._fileNameField = value;
-			}
-		}
-
-		public string _identifier
-		{
-			get
-			{
-				return this._identifierField;
-			}
-			set
-			{
-				this._identifierField = value;
-			}
-		}
-
-		public string _location
-		{
-			get
-			{
-				return this._locationField;
-			}
-			set
-			{
-				this._locationField = value;
-			}
-		}
+		public string Location { get; set; }
 	}
 }
