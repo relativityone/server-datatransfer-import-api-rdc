@@ -1,5 +1,8 @@
 ﻿namespace Relativity.Import.Export.Services
 {
+	using System;
+
+	[Flags]
 	public enum ImportStatus : long
 	{
 

@@ -25,7 +25,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DocumentationFile>bin\Relativity.Import.Export.Services.Interfaces.xml</DocumentationFile>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\buildtools\Autogen.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -35,7 +35,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\buildtools\Autogen.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1591</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DocumentationFile>bin\Relativity.Import.Export.Services.Interfaces.xml</DocumentationFile>
@@ -52,10 +52,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Version\AssemblySharedInfo.cs">
+      <Link>Properties\AssemblySharedInfo.cs</Link>
+    </Compile>
     <Compile Include="ArtifactType.cs" />
     <Compile Include="ChoiceInfo.cs" />
     <Compile Include="CaseInfo.cs" />
     <Compile Include="ColumnSourceType.cs" />
+    <Compile Include="AppGuidConstants.cs" />
+    <Compile Include="ExportConstants.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ErrorFileKey.cs" />
     <Compile Include="ExecutionSource.cs" />
