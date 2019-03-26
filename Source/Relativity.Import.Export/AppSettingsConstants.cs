@@ -20,6 +20,7 @@ namespace Relativity.Import.Export
 		// All Registry keys go here.
 		public const string ForceFolderPreviewRegistryKey = "ForceFolderPreview";
 		public const string ObjectFieldIdListContainsArtifactIdRegistryKey = "ObjectFieldIdListContainsArtifactId";
+		public const string OpenIdConnectHomeRealmDiscoveryHintKey = "HRDHint";
 		public const string WebApiServiceUrlRegistryKey = "WebServiceURL";
 
 		// All default values go here.
@@ -27,11 +28,15 @@ namespace Relativity.Import.Export
 		public const bool CreateErrorForEmptyNativeFileDefaultValue = false;
 		public const bool CreateErrorForInvalidDateDefaultValue = true;
 		public const bool CreateFoldersInWebApiDefaultValue = true;
+		public const int DefaultMaxErrorCountDefaultValue = 1000;
 		public const bool DisableImageLocationValidationDefaultValue = false;
 		public const bool DisableImageTypeValidationDefaultValue = false;
+		public const bool DisableOutsideInFileIdentificationDefaultValue = false;
+		public const bool DisableTextFileEncodingCheckDefaultValue = false;
 		public const bool DisableThrowOnIllegalCharactersDefaultValue = false;
 		public const bool DynamicBatchResizingOnDefaultValue = true;
 		public const bool EnableCaseSensitiveSearchOnImportDefaultValue = true;
+		public const bool EnableSingleModeImportDefaultValue = false;
 		public const int ExportBatchSizeDefaultValue = 1000;
 		public const int ExportErrorNumberOfRetriesDefaultValue = 20;
 		public const int ExportErrorWaitTimeInSecondsDefaultValue = 30;
@@ -53,6 +58,7 @@ namespace Relativity.Import.Export
 		public const int MinBatchSizeDefaultValue = 100;
 		public const int MaximumReloginTriesDefaultValue = 4;
 		public const bool PermissionErrorsRetryDefaultValue = false;
+		public const int PreviewThresholdDefaultValue = 1000;
 		public const int ProcessFormRefreshRateDefaultValue = 0;
 		public const string RestUrlDefaultValue = "/Relativity.REST/api";
 		public const string ServicesUrlDefaultValue = "/Relativity.Services/";
@@ -73,6 +79,9 @@ namespace Relativity.Import.Export
 		public const int TapiTargetDataRateMbpsDefaultValue = 100;
 		public const bool UseOldExportDefaultValue = false;
 		public const bool UsePipeliningForNativeAndObjectImportsDefaultValue = true;
+		public const int WaitBeforeReconnectDefaultValue = 2000;
 		public const int WebApiOperationTimeoutDefaultValue = 600000;
+		public const int WebBasedFileDownloadChunkSizeDefaultValue = 1048576;
+		public const int WebBasedFileDownloadChunkSizeMinValue = 1024;
 	}
 }

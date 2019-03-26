@@ -22,3 +22,4 @@ using System.Runtime.InteropServices;
 [assembly: CLSCompliant(false)]
 [assembly: InternalsVisibleTo("Relativity.Import.Export.NUnit")]
 [assembly: InternalsVisibleTo("Relativity.Import.Export.NUnit.Integration")]
+[assembly: InternalsVisibleTo("Relativity.Import.Export.Legacy")]

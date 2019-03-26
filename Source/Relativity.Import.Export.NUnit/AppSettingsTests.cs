@@ -131,6 +131,17 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		public void ShouldGetAndSetTheDefaultMaxErrorCountSetting()
+		{
+			Assert.That(
+				this.settings.DefaultMaxErrorCount,
+				Is.EqualTo(AppSettingsConstants.DefaultMaxErrorCountDefaultValue));
+			int expectedValue = RandomHelper.NextInt32(1, 1000);
+			this.settings.DefaultMaxErrorCount = expectedValue;
+			Assert.That(this.settings.DefaultMaxErrorCount, Is.EqualTo(expectedValue));
+		}
+
+		[Test]
 		public void ShouldGetAndSetTheDisableImageLocationValidationSetting()
 		{
 			Assert.That(
@@ -154,6 +165,19 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(this.settings.DisableImageTypeValidation, Is.EqualTo(expectedValue));
 			this.settings.DisableImageTypeValidation = !expectedValue;
 			Assert.That(this.settings.DisableImageTypeValidation, Is.EqualTo(!expectedValue));
+		}
+
+		[Test]
+		public void ShouldGetAndSetTheDisableTextFileEncodingCheckSetting()
+		{
+			Assert.That(
+				this.settings.DisableTextFileEncodingCheck,
+				Is.EqualTo(AppSettingsConstants.DisableTextFileEncodingCheckDefaultValue));
+			bool expectedValue = RandomHelper.NextBoolean();
+			this.settings.DisableTextFileEncodingCheck = expectedValue;
+			Assert.That(this.settings.DisableTextFileEncodingCheck, Is.EqualTo(expectedValue));
+			this.settings.DisableTextFileEncodingCheck = !expectedValue;
+			Assert.That(this.settings.DisableTextFileEncodingCheck, Is.EqualTo(!expectedValue));
 		}
 
 		[Test]
@@ -193,6 +217,19 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(this.settings.EnableCaseSensitiveSearchOnImport, Is.EqualTo(expectedValue));
 			this.settings.EnableCaseSensitiveSearchOnImport = !expectedValue;
 			Assert.That(this.settings.EnableCaseSensitiveSearchOnImport, Is.EqualTo(!expectedValue));
+		}
+
+		[Test]
+		public void ShouldGetAndSetTheEnableSingleModeImportSetting()
+		{
+			Assert.That(
+				this.settings.EnableSingleModeImport,
+				Is.EqualTo(AppSettingsConstants.EnableSingleModeImportDefaultValue));
+			bool expectedValue = RandomHelper.NextBoolean();
+			this.settings.EnableSingleModeImport = expectedValue;
+			Assert.That(this.settings.EnableSingleModeImport, Is.EqualTo(expectedValue));
+			this.settings.EnableSingleModeImport = !expectedValue;
+			Assert.That(this.settings.EnableSingleModeImport, Is.EqualTo(!expectedValue));
 		}
 
 		[Test]
@@ -438,6 +475,20 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		public void ShouldGetTheOpenIdConnectHomeRealmDiscoveryHintSetting()
+		{
+			Assert.That(this.settings.OpenIdConnectHomeRealmDiscoveryHint, Is.Empty);
+			AppSettingsReader.SetRegistryKeyValue(AppSettingsConstants.OpenIdConnectHomeRealmDiscoveryHintKey, string.Empty);
+			Assert.That(this.settings.OpenIdConnectHomeRealmDiscoveryHint, Is.Empty);
+			AppSettingsReader.SetRegistryKeyValue(AppSettingsConstants.OpenIdConnectHomeRealmDiscoveryHintKey, "HRD-HINT-VALUE");
+			Assert.That(this.settings.OpenIdConnectHomeRealmDiscoveryHint, Is.EqualTo("HRD-HINT-VALUE"));
+
+			// Ensure that we don't fail when the key/value doesn't exist.
+			DeleteTestSubKey();
+			Assert.That(this.settings.OpenIdConnectHomeRealmDiscoveryHint, Is.Empty);
+		}
+
+		[Test]
 		public void ShouldGetAndSetThePermissionErrorsRetrySetting()
 		{
 			// Note: This value also enables and disables the RetryOptions.Permissions value.
@@ -449,6 +500,17 @@ namespace Relativity.Import.Export.NUnit
 			this.settings.PermissionErrorsRetry = !expectedValue;
 			Assert.That(this.settings.PermissionErrorsRetry, Is.EqualTo(!expectedValue));
 			Assert.That(this.settings.RetryOptions.HasFlag(RetryOptions.Permissions), Is.EqualTo(!expectedValue));
+		}
+
+		[Test]
+		public void ShouldGetAndSetThePreviewThresholdSetting()
+		{
+			Assert.That(
+				this.settings.PreviewThreshold,
+				Is.EqualTo(AppSettingsConstants.PreviewThresholdDefaultValue));
+			int expectedValue = RandomHelper.NextInt32(1, 1000);
+			this.settings.PreviewThreshold = expectedValue;
+			Assert.That(this.settings.PreviewThreshold, Is.EqualTo(expectedValue));
 		}
 
 		[Test]
@@ -466,8 +528,8 @@ namespace Relativity.Import.Export.NUnit
 		public void ShouldGetAndSetTheProgrammaticWebApiServiceUrlSetting()
 		{
 			Assert.That(this.settings.ProgrammaticWebApiServiceUrl, Is.Null);
-			this.settings.ProgrammaticWebApiServiceUrl = new Uri("http://www.cnn.com");
-			Assert.That(this.settings.ProgrammaticWebApiServiceUrl, Is.EqualTo(new Uri("http://www.cnn.com")));
+			this.settings.ProgrammaticWebApiServiceUrl = "http://www.cnn.com";
+			Assert.That(this.settings.ProgrammaticWebApiServiceUrl, Is.EqualTo("http://www.cnn.com"));
 			this.settings.ProgrammaticWebApiServiceUrl = null;
 			Assert.That(this.settings.ProgrammaticWebApiServiceUrl, Is.Null);
 		}
@@ -712,6 +774,30 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		public void ShouldGetAndSetTheUsePipeliningForNativeAndObjectImportsSetting()
+		{
+			Assert.That(
+				this.settings.UsePipeliningForNativeAndObjectImports,
+				Is.EqualTo(AppSettingsConstants.UsePipeliningForNativeAndObjectImportsDefaultValue));
+			bool expectedValue = RandomHelper.NextBoolean();
+			this.settings.UsePipeliningForNativeAndObjectImports = expectedValue;
+			Assert.That(this.settings.UsePipeliningForNativeAndObjectImports, Is.EqualTo(expectedValue));
+			this.settings.UsePipeliningForNativeAndObjectImports = !expectedValue;
+			Assert.That(this.settings.UsePipeliningForNativeAndObjectImports, Is.EqualTo(!expectedValue));
+		}
+
+		[Test]
+		public void ShouldGetAndSetTheWaitBeforeReconnectSetting()
+		{
+			Assert.That(
+				this.settings.WaitBeforeReconnect,
+				Is.EqualTo(AppSettingsConstants.WaitBeforeReconnectDefaultValue));
+			int expectedValue = RandomHelper.NextInt32(1, 1000);
+			this.settings.WaitBeforeReconnect = expectedValue;
+			Assert.That(this.settings.WaitBeforeReconnect, Is.EqualTo(expectedValue));
+		}
+
+		[Test]
 		public void ShouldGetAndSetTheWebApiOperationTimeoutSetting()
 		{
 			Assert.That(
@@ -726,36 +812,32 @@ namespace Relativity.Import.Export.NUnit
 		public void ShouldGetAndSetTheWebApiServiceUrlSetting()
 		{
 			this.settings.WebApiServiceUrl = null;
-			Assert.That(this.settings.WebApiServiceUrl, Is.Null);
-			this.settings.ProgrammaticWebApiServiceUrl = new Uri("http://www.cnn.com");
-			Assert.That(this.settings.WebApiServiceUrl, Is.EqualTo(new Uri("http://www.cnn.com")));
-			this.settings.ProgrammaticWebApiServiceUrl = null;
-			Assert.That(this.settings.WebApiServiceUrl, Is.Null);
+			Assert.That(this.settings.WebApiServiceUrl, Is.Empty);
+			this.settings.WebApiServiceUrl = "http://www.cnn.com";
+
+			// The trailing slash is automatically added.
+			Assert.That(this.settings.WebApiServiceUrl, Is.EqualTo("http://www.cnn.com/"));
+			this.settings.WebApiServiceUrl = null;
+			Assert.That(this.settings.WebApiServiceUrl, Is.Empty);
 
 			// This simulates the scenario where the URL comes from the RDC/Registry.
 			AppSettingsReader.SetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrlRegistryKey, "http://www.espn.com");
-			Assert.That(this.settings.WebApiServiceUrl, Is.EqualTo(new Uri("http://www.espn.com")));
+			Assert.That(this.settings.WebApiServiceUrl, Is.EqualTo("http://www.espn.com/"));
 			DeleteTestSubKey();
-			Assert.That(this.settings.WebApiServiceUrl, Is.Null);
+			Assert.That(this.settings.WebApiServiceUrl, Is.Empty);
 		}
 
 		[Test]
-		public void ShouldGetAndSetTheWebApiServiceUrlStringSetting()
+		public void ShouldGetAndSetTheWebBasedFileDownloadChunkSizeSetting()
 		{
-			this.settings.WebApiServiceUrl = null;
-			Assert.That(this.settings.WebApiServiceUrlString, Is.Empty);
-			this.settings.WebApiServiceUrlString = "http://www.cnn.com";
-
-			// The trailing slash is automatically added.
-			Assert.That(this.settings.WebApiServiceUrlString, Is.EqualTo("http://www.cnn.com/"));
-			this.settings.WebApiServiceUrlString = null;
-			Assert.That(this.settings.WebApiServiceUrlString, Is.Empty);
-
-			// This simulates the scenario where the URL comes from the RDC/Registry.
-			AppSettingsReader.SetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrlRegistryKey, "http://www.espn.com");
-			Assert.That(this.settings.WebApiServiceUrlString, Is.EqualTo("http://www.espn.com/"));
-			DeleteTestSubKey();
-			Assert.That(this.settings.WebApiServiceUrlString, Is.Empty);
+			Assert.That(
+				this.settings.WebBasedFileDownloadChunkSize,
+				Is.EqualTo(AppSettingsConstants.WebBasedFileDownloadChunkSizeDefaultValue));
+			int expectedValue = RandomHelper.NextInt32(
+				AppSettingsConstants.WebBasedFileDownloadChunkSizeMinValue,
+				AppSettingsConstants.WebBasedFileDownloadChunkSizeMinValue + 100000);
+			this.settings.WebBasedFileDownloadChunkSize = expectedValue;
+			Assert.That(this.settings.WebBasedFileDownloadChunkSize, Is.EqualTo(expectedValue));
 		}
 
 		[Test]
@@ -802,16 +884,23 @@ namespace Relativity.Import.Export.NUnit
 				Assert.That(this.settings.ApplicationName, Is.EqualTo("Custom App"));
 				Assert.That(this.settings.TapiBadPathErrorsRetry, Is.False);
 				Assert.That(this.settings.CreateErrorForEmptyNativeFile, Is.True);
+				Assert.That(this.settings.DefaultMaxErrorCount, Is.EqualTo(555));
+				Assert.That(this.settings.DisableImageLocationValidation, Is.True);
+				Assert.That(this.settings.DisableImageTypeValidation, Is.True);
+				Assert.That(this.settings.DisableTextFileEncodingCheck, Is.True);
+				Assert.That(this.settings.DisableThrowOnIllegalCharacters, Is.True);
 				Assert.That(this.settings.DynamicBatchResizingOn, Is.False);
 				Assert.That(this.settings.ExportBatchSize, Is.EqualTo(255));
 				Assert.That(this.settings.ExportThreadCount, Is.EqualTo(3));
 				Assert.That(this.settings.ForceParallelismInNewExport, Is.False);
+				Assert.That(this.settings.ForceWebUpload, Is.True);
 				Assert.That(this.settings.ImportBatchMaxVolume, Is.EqualTo(12345));
 				Assert.That(this.settings.ImportBatchSize, Is.EqualTo(102));
 				Assert.That(this.settings.JobCompleteBatchSize, Is.EqualTo(999));
 				Assert.That(this.settings.LogConfigXmlFileName, Is.EqualTo("CustomLog.xml"));
 				Assert.That(this.settings.MinBatchSize, Is.EqualTo(29));
 				Assert.That(this.settings.PermissionErrorsRetry, Is.False);
+				Assert.That(this.settings.PreviewThreshold, Is.EqualTo(49));
 				Assert.That(this.settings.SuppressServerCertificateValidation, Is.True);
 				Assert.That(this.settings.TapiAsperaBcpRootFolder, Is.EqualTo("Root"));
 				Assert.That(this.settings.TapiForceAsperaClient, Is.True);
@@ -827,11 +916,31 @@ namespace Relativity.Import.Export.NUnit
 				Assert.That(this.settings.TapiTransferLogDirectory, Is.EqualTo(@"%temp%\IAPI_log\"));
 				Assert.That(this.settings.TempDirectory, Is.EqualTo(@"C:\"));
 				Assert.That(this.settings.UseOldExport, Is.True);
+				Assert.That(this.settings.UsePipeliningForNativeAndObjectImports, Is.False);
 				Assert.That(this.settings.WebApiOperationTimeout, Is.EqualTo(333));
+				Assert.That(this.settings.WebBasedFileDownloadChunkSize, Is.EqualTo(11111));
 
 				// The kCura.Windows.Process section asserts go here.
 				Assert.That(this.settings.LogAllEvents, Is.True);
 			}
+		}
+
+		[Test]
+		[TestCase(null, "")]
+		[TestCase("", "")]
+		[TestCase("/sample.txt", "")]
+		[TestCase("/sample.txt/", "")]
+		[TestCase("/relativity.one.com", "")]
+		[TestCase("/relativity.one.com/", "")]
+		[TestCase("//relativity.one.com", "//relativity.one.com/")]
+		[TestCase("//relativity.one.com/", "//relativity.one.com/")]
+		[TestCase("https://relativity.one.com", "https://relativity.one.com/")]
+		[TestCase("https://relativity.one.com/", "https://relativity.one.com/")]
+		public void ShouldValidateTheUriFormat(string value, string expected)
+		{
+			// Note: 2 leading forward slashes are considered file-based URI's.
+			string actual = this.settings.ValidateUriFormat(value);
+			Assert.That(actual, Is.EqualTo(expected));
 		}
 
 		private static void AssignRandomValues(IAppSettings settings)

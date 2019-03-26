@@ -199,11 +199,16 @@ namespace Relativity.Import.Export
 
 			// This complexity is due to 3 possible values including the Windows Registry.
 			AppDotNetSettings dotNetSettings = settings as AppDotNetSettings;
-			Uri webApiServiceUrl = null;
+			string webApiServiceUrl = null;
 			if (sectionDictionaries.ContainsKey(AppSettingsConstants.SectionLegacyWinEdds))
 			{
 				var sectionDictionary = sectionDictionaries[AppSettingsConstants.SectionLegacyWinEdds];
-				webApiServiceUrl = sectionDictionary.GetUriValue(AppSettingsConstants.WebApiServiceUrlRegistryKey, null);
+				webApiServiceUrl = sectionDictionary.GetStringValue(AppSettingsConstants.WebApiServiceUrlRegistryKey, null);
+			}
+			else if (sectionDictionaries.ContainsKey(AppSettingsConstants.Section))
+			{
+				var sectionDictionary = sectionDictionaries[AppSettingsConstants.Section];
+				webApiServiceUrl = sectionDictionary.GetStringValue(AppSettingsConstants.WebApiServiceUrlRegistryKey, null);
 			}
 
 			if (dotNetSettings != null)

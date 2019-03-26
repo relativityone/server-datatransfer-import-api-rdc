@@ -34,7 +34,8 @@ namespace Relativity.Import.Export
 		private int tapiMinDataRateMbps;
 		private int tapiMaxJobParallelism;
 		private int tapiTargetDataRateMbps;
-		private Uri webApiServiceUrl;
+		private int webBasedFileDownloadChunkSize;
+		private string webApiServiceUrl;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AppDotNetSettings"/> class.
@@ -79,12 +80,12 @@ namespace Relativity.Import.Export
 
 			if (settings.ProgrammaticWebApiServiceUrl != null)
 			{
-				thisSettings.ProgrammaticWebApiServiceUrl = new Uri(settings.ProgrammaticWebApiServiceUrl.ToString());
+				thisSettings.ProgrammaticWebApiServiceUrl = settings.ProgrammaticWebApiServiceUrl;
 			}
 
 			if (settings.WebApiServiceUrl != null)
 			{
-				this.webApiServiceUrl = new Uri(settings.WebApiServiceUrl.ToString());
+				this.webApiServiceUrl = settings.WebApiServiceUrl.ToString();
 			}
 
 			this.EnforceMinRetryCount = settings.EnforceMinRetryCount;
@@ -149,6 +150,17 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
+			"DefaultMaxErrorCount",
+			AppSettingsConstants.DefaultMaxErrorCountDefaultValue)]
+		int IAppSettings.DefaultMaxErrorCount
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionLegacyWinEdds,
 			"DisableImageLocationValidation",
 			AppSettingsConstants.DisableImageLocationValidationDefaultValue)]
 		bool IAppSettings.DisableImageLocationValidation
@@ -163,6 +175,28 @@ namespace Relativity.Import.Export
 			"DisableImageTypeValidation",
 			AppSettingsConstants.DisableImageTypeValidationDefaultValue)]
 		bool IAppSettings.DisableImageTypeValidation
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionLegacyWinEdds,
+			"DisableNativeValidation",
+			AppSettingsConstants.DisableOutsideInFileIdentificationDefaultValue)]
+		bool IAppSettings.DisableOutsideInFileIdentification
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionLegacyWinEdds,
+			"DisableTextFileEncodingCheck",
+			AppSettingsConstants.DisableTextFileEncodingCheckDefaultValue)]
+		bool IAppSettings.DisableTextFileEncodingCheck
 		{
 			get;
 			set;
@@ -196,6 +230,17 @@ namespace Relativity.Import.Export
 			"EnableCaseSensitiveSearchOnImport",
 			AppSettingsConstants.EnableCaseSensitiveSearchOnImportDefaultValue)]
 		bool IAppSettings.EnableCaseSensitiveSearchOnImport
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionLegacyWinEdds,
+			"EnableSingleModeImport",
+			AppSettingsConstants.EnableSingleModeImportDefaultValue)]
+		bool IAppSettings.EnableSingleModeImport
 		{
 			get;
 			set;
@@ -330,6 +375,17 @@ namespace Relativity.Import.Export
 		}
 
 		/// <inheritdoc />
+		[AppSetting]
+		string IAppSettings.OpenIdConnectHomeRealmDiscoveryHint
+		{
+			get
+			{
+				string value = AppSettingsReader.GetRegistryKeyValue(AppSettingsConstants.OpenIdConnectHomeRealmDiscoveryHintKey);
+				return value;
+			}
+		}
+
+		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
 			"HttpTimeoutSeconds",
@@ -354,7 +410,7 @@ namespace Relativity.Import.Export
 			AppSettingsConstants.SectionLegacyWinEdds,
 			"ImportBatchMaxVolume",
 			AppSettingsConstants.ImportBatchMaxVolumeDefaultValue)]
-		long IAppSettings.ImportBatchMaxVolume
+		int IAppSettings.ImportBatchMaxVolume
 		{
 			get;
 			set;
@@ -576,6 +632,17 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
+			"PreviewThreshold",
+			AppSettingsConstants.PreviewThresholdDefaultValue)]
+		int IAppSettings.PreviewThreshold
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionLegacyWinEdds,
 			"ProcessFormRefreshRate",
 			AppSettingsConstants.ProcessFormRefreshRateDefaultValue)]
 		int IAppSettings.ProcessFormRefreshRate
@@ -586,7 +653,7 @@ namespace Relativity.Import.Export
 
 		/// <inheritdoc />
 		[AppSetting]
-		Uri IAppSettings.ProgrammaticWebApiServiceUrl
+		string IAppSettings.ProgrammaticWebApiServiceUrl
 		{
 			get;
 			set;
@@ -889,6 +956,16 @@ namespace Relativity.Import.Export
 			set;
 		}
 
+		[AppSetting(
+			AppSettingsConstants.SectionLegacyWinEdds,
+			"WaitBeforeReconnect",
+			AppSettingsConstants.WaitBeforeReconnectDefaultValue)]
+		int IAppSettings.WaitBeforeReconnect
+		{
+			get;
+			set;
+		}
+
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
@@ -904,55 +981,46 @@ namespace Relativity.Import.Export
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
 			"WebServiceURL")]
-		Uri IAppSettings.WebApiServiceUrl
+		string IAppSettings.WebApiServiceUrl
 		{
 			get
 			{
-				string value = ((IAppSettings)this).WebApiServiceUrlString;
-				if (!string.IsNullOrEmpty(value))
+				IAppSettings dotNetSettings = this;
+				string returnValue = null;
+				if (!string.IsNullOrWhiteSpace(dotNetSettings.ProgrammaticWebApiServiceUrl))
 				{
-					Uri result;
-					if (Uri.TryCreate(value, UriKind.RelativeOrAbsolute, out result))
-					{
-						return result;
-					}
+					returnValue = dotNetSettings.ProgrammaticWebApiServiceUrl;
+				}
+				else if (!string.IsNullOrWhiteSpace(this.webApiServiceUrl))
+				{
+					returnValue = this.webApiServiceUrl;
 				}
 
-				return null;
+				if (string.IsNullOrWhiteSpace(returnValue))
+				{
+					returnValue = AppSettingsReader.GetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrlRegistryKey);
+				}
+
+				return dotNetSettings.ValidateUriFormat(returnValue);
 			}
 
-			set => ((IAppSettings)this).WebApiServiceUrlString = value != null ? value.ToString() : null;
+			set
+			{
+				IAppSettings dotNetSettings = this;
+				string validatedUri = dotNetSettings.ValidateUriFormat(value);
+				AppSettingsReader.SetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrlRegistryKey, validatedUri);
+			}
 		}
 
 		/// <inheritdoc />
-		[AppSetting]
-		string IAppSettings.WebApiServiceUrlString
+		[AppSetting(
+			AppSettingsConstants.SectionLegacyWinEdds,
+			"WebBasedFileDownloadChunkSize",
+			AppSettingsConstants.WebBasedFileDownloadChunkSizeDefaultValue)]
+		int IAppSettings.WebBasedFileDownloadChunkSize
 		{
-			get
-			{
-				Uri value = ((IAppSettings)this).ProgrammaticWebApiServiceUrl;
-				if (value == null)
-				{
-					value = this.webApiServiceUrl;
-				}
-
-				if (value == null)
-				{
-					string url = AppSettingsReader.GetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrlRegistryKey);
-					if (!string.IsNullOrEmpty(url))
-					{
-						url = AppSettingsReader.ValidateUriFormat(url);
-						if (!string.IsNullOrEmpty(url))
-						{
-							value = new Uri(url, UriKind.Absolute);
-						}
-					}
-				}
-
-				return value != null ? value.ToString() : string.Empty;
-			}
-
-			set => AppSettingsReader.SetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrlRegistryKey, value ?? string.Empty);
+			get => System.Math.Max(this.webBasedFileDownloadChunkSize, AppSettingsConstants.WebBasedFileDownloadChunkSizeMinValue);
+			set => this.webBasedFileDownloadChunkSize = value;
 		}
 
 		/// <inheritdoc />
@@ -967,10 +1035,35 @@ namespace Relativity.Import.Export
 		/// <param name="value">
 		/// The value.
 		/// </param>
-		public void RefreshWebApiServiceUrl(Uri value)
+		public void RefreshWebApiServiceUrl(string value)
 		{
 			// This method avoids setting WebApiServiceUrl during a refresh.
 			this.webApiServiceUrl = value;
+		}
+
+		/// <inheritdoc />
+		string IAppSettings.ValidateUriFormat(string value)
+		{
+			if (!string.IsNullOrEmpty(value) && !value.Trim().EndsWith("/", StringComparison.OrdinalIgnoreCase))
+			{
+				value = value.Trim() + "/";
+			}
+
+			try
+			{
+				// NOTE: This is here for validation; an improper URI will cause this to throw an
+				// exception. We set it then to 'Nothing' to avoid a warning-turned-error about
+				// having an unused variable. -Phil S. 12/05/2011
+				// fixed 1/24/2012 - slm - return an empty string if invalid uri format.  this will cause the
+				// rdc to pop up its dialog prompting the user to enter a valid address
+				Uri uriObj = new Uri(value);
+				uriObj = null;
+				return value;
+			}
+			catch
+			{
+				return string.Empty;
+			}
 		}
 	}
 }

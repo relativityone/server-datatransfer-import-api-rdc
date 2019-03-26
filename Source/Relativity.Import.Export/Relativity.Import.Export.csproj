@@ -178,6 +178,7 @@
     <Compile Include="Transfer\UploadTapiBridge.cs" />
     <Compile Include="Transfer\UploadTapiBridgeParameters.cs" />
     <Compile Include="Transfer\WebApiServiceBase.cs" />
+    <Compile Include="RelativityLogFactory.cs" />
     <Compile Include="WaitAndRetryPolicy.cs" />
     <Content Include="oi\docs\fileids_values_only_sorted.txt">
       <Paket>True</Paket>
