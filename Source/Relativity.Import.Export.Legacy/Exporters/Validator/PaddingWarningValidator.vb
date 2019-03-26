@@ -1,5 +1,4 @@
-﻿
-Namespace kCura.WinEDDS.Exporters.Validator
+﻿Namespace kCura.WinEDDS.Exporters.Validator
 	Public Class PaddingWarningValidator
 		Private _messages As String = String.Empty
 		Public ReadOnly Property ErrorMessages As String

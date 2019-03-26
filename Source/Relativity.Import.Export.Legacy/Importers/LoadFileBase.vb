@@ -1,8 +1,8 @@
 Imports System.Threading
-Imports kCura.Utility.Extensions.Enumerable
-Imports kCura.WinEDDS.Helpers
-Imports kCura.WinEDDS.TApi
 Imports Relativity
+Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Data
+Imports Relativity.Import.Export.Io
 Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
@@ -27,8 +27,8 @@ Namespace kCura.WinEDDS
 		Protected _firstLineContainsColumnNames As Boolean
 		Protected _docFields As DocumentField()
 		Protected _multiValueSeparator As Char()
-		Protected _allCodes As kCura.Data.DataView
-		Protected _allCodeTypes As kCura.Data.DataView
+		Protected _allCodes As SqlDataView
+		Protected _allCodeTypes As SqlDataView
 		Protected _folderID As Int32 'The destination folder id
 		Protected _caseSystemID As Int32
 		Protected _caseArtifactID As Int32
@@ -69,22 +69,22 @@ Namespace kCura.WinEDDS
 
 #Region "Accessors"
 
-		Public Property AllCodes() As kCura.Data.DataView
+		Public Property AllCodes() As SqlDataView
 			Get
 				InitializeCodeTables()
 				Return _allCodes
 			End Get
-			Set(ByVal value As kCura.Data.DataView)
+			Set(ByVal value As SqlDataView)
 				_allCodes = value
 			End Set
 		End Property
 
-		Public Property AllCodeTypes() As kCura.Data.DataView
+		Public Property AllCodeTypes() As SqlDataView
 			Get
 				InitializeCodeTables()
 				Return _allCodeTypes
 			End Get
-			Set(ByVal value As kCura.Data.DataView)
+			Set(ByVal value As SqlDataView)
 				_allCodeTypes = value
 			End Set
 		End Property
@@ -235,8 +235,8 @@ Namespace kCura.WinEDDS
 			If _autoDetect Then
 				If _allCodes Is Nothing Then
 					Dim ds As DataSet = _codeManager.RetrieveCodesAndTypesForCase(_caseArtifactID)
-					_allCodes = New kCura.Data.DataView(ds.Tables("AllCodes"))
-					_allCodeTypes = New kCura.Data.DataView(ds.Tables("AllCodeTypes"))
+					_allCodes = New SqlDataView(ds.Tables("AllCodes"))
+					_allCodeTypes = New SqlDataView(ds.Tables("AllCodeTypes"))
 				End If
 			End If
 		End Sub
@@ -323,7 +323,7 @@ Namespace kCura.WinEDDS
 			Dim objectDisplayNames As String() = DirectCast(goodObjects.ToArray(GetType(String)), String())
 			Dim nameIDPairs As New System.Collections.Hashtable
 			For Each objectName As String In objectDisplayNames
-				If objectName.Length > field.TextLength Then Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(Me.CurrentLineNumber, column, field.TextLength, field.DisplayName, objectName.Length)
+				If objectName.Length > field.TextLength Then Throw New StringImporterException(Me.CurrentLineNumber, column, field.TextLength, objectName.Length, field.DisplayName)
 				nameIDPairs(objectName) = Me.LookupArtifactIDForName(objectName, associatedObjectTypeID)
 			Next
 			Return nameIDPairs
@@ -361,7 +361,7 @@ Namespace kCura.WinEDDS
 			Dim nameIDPairs As New System.Collections.Hashtable
 
 			For Each objectArtifactId As String In objectArtifactIds
-				If objectArtifactId.Length > field.TextLength Then Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(Me.CurrentLineNumber, column, field.TextLength, field.DisplayName, objectArtifactId.Length)
+				If objectArtifactId.Length > field.TextLength Then Throw New StringImporterException(Me.CurrentLineNumber, column, field.TextLength, objectArtifactId.Length, field.DisplayName)
 				nameIDPairs(objectArtifactId) = Me.LookupNameForArtifactID(CInt(objectArtifactId), associatedObjectTypeID)
 			Next
 			Return nameIDPairs
@@ -385,16 +385,16 @@ Namespace kCura.WinEDDS
 
 			Select Case field.Type
 				Case Relativity.FieldTypeHelper.FieldType.Boolean
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of Boolean)))
+					field.Value = NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of Boolean)))
 
 				Case Relativity.FieldTypeHelper.FieldType.Integer
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of Int32)))
+					field.Value = NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of Int32)))
 
 				Case Relativity.FieldTypeHelper.FieldType.Currency, Relativity.FieldTypeHelper.FieldType.Decimal
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of Decimal)))
+					field.Value = NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of Decimal)))
 
 				Case Relativity.FieldTypeHelper.FieldType.Date
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of DateTime)), True)
+					field.Value = NullableTypesHelper.ToEmptyStringOrValue(CType(field.Value, Nullable(Of DateTime)), True)
 
 				Case Relativity.FieldTypeHelper.FieldType.User
 					Dim previewValue As String = String.Empty
@@ -402,7 +402,7 @@ Namespace kCura.WinEDDS
 						field.Value = String.Empty
 					ElseIf field.Value.ToString <> String.Empty Then
 						previewValue = field.ValueAsString
-						field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetUserArtifactID(field.Value.ToString, columnIndex))
+						field.Value = NullableTypesHelper.ToEmptyStringOrValue(Me.GetUserArtifactID(field.Value.ToString, columnIndex))
 					End If
 					If forPreview Then field.Value = previewValue
 
@@ -415,7 +415,7 @@ Namespace kCura.WinEDDS
 					End If
 					Dim fieldDisplayValue As String = String.Copy(fieldValue)
 					Dim code As Nullable(Of Int32) = GetCode(fieldValue, columnIndex, field, forPreview)
-					fieldValue = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(code)
+					fieldValue = NullableTypesHelper.ToEmptyStringOrValue(code)
 					If forPreview Then
 						If fieldValue = "-1" Then
 							fieldValue = "[new code]"
@@ -429,8 +429,8 @@ Namespace kCura.WinEDDS
 						fieldValue = ChrW(11) & fieldDisplayValue & ChrW(11)
 						field.Value = fieldValue
 						If Not fieldDisplayValue = String.Empty Then
-							DirectCast(Me, BulkLoadFileImporter).WriteCodeLineToTempFile(identityValue, Int32.Parse(kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(code)), field.CodeTypeID)
-							field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(code)
+							DirectCast(Me, BulkLoadFileImporter).WriteCodeLineToTempFile(identityValue, Int32.Parse(NullableTypesHelper.ToEmptyStringOrValue(code)), field.CodeTypeID)
+							field.Value = NullableTypesHelper.ToEmptyStringOrValue(code)
 						Else
 							field.Value = String.Empty
 						End If
@@ -457,7 +457,7 @@ Namespace kCura.WinEDDS
 							End If
 							If codeValues.Length > 1 Then
 								For i = 1 To codeValues.Length - 1
-									codeName = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(codeValues(i))
+									codeName = NullableTypesHelper.ToEmptyStringOrValue(codeValues(i))
 									If forPreview And codeName = "-1" Then
 										codeName = "[new code]"
 									End If
@@ -491,16 +491,16 @@ Namespace kCura.WinEDDS
 
 				Case Relativity.FieldTypeHelper.FieldType.Varchar
 					If field.Value Is Nothing Then field.Value = String.Empty
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(field.ValueAsString, columnIndex, field.TextLength, field.DisplayName))
+					field.Value = NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(field.ValueAsString, columnIndex, field.TextLength, field.DisplayName))
 					If field.Category = Relativity.FieldCategory.Relational Then
 						If field.Value.ToString = String.Empty AndAlso importBehavior.HasValue AndAlso importBehavior.Value = EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
-							field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(identityValue, columnIndex, field.TextLength, field.DisplayName))
+							field.Value = NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(identityValue, columnIndex, field.TextLength, field.DisplayName))
 						End If
 					End If
 
 				Case Relativity.FieldTypeHelper.FieldType.Object
 					If field.Value Is Nothing Then field.Value = String.Empty
-					field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(GetNullableAssociatedObjectName(field.Value.ToString, columnIndex, field.TextLength, field.DisplayName))
+					field.Value = NullableTypesHelper.ToEmptyStringOrValue(GetNullableAssociatedObjectName(field.Value.ToString, columnIndex, field.TextLength, field.DisplayName))
 					If forPreview Then field.Value = field.Value.ToString.Trim
 
 				Case Relativity.FieldTypeHelper.FieldType.Objects
@@ -522,20 +522,18 @@ Namespace kCura.WinEDDS
 						Try
 							' Prevent nested retry operations.
 							Const retry As Boolean = False
-							Dim maxRetryAttempts As Integer = kCura.Utility.Config.IOErrorNumberOfRetries
+							Dim maxRetryAttempts As Integer = AppSettings.Instance.IoErrorNumberOfRetries
 							Dim currentRetryAttempt As Integer = 0
 
 							' REL-272765: Added I/O resiliency and support document level errors.
-							Dim policy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(
-								kCura.Utility.Config.IOErrorNumberOfRetries, _
-								kCura.Utility.Config.IOErrorWaitTimeInSeconds)
+							Dim policy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(AppSettings.Instance)
 
 							' Note: a lambda can't modify a ref param; therefore, a policy block return value is used.
 							Dim returnCodePage As Integer? = policy.WaitAndRetry(
 								RetryExceptionHelper.CreateRetryPredicate(Me.RetryOptions),
 								Function(count)
 									currentRetryAttempt = count
-									Return TimeSpan.FromSeconds(kCura.Utility.Config.IOErrorWaitTimeInSeconds)
+									Return TimeSpan.FromSeconds(AppSettings.Instance.IoErrorWaitTimeInSeconds)
 								End Function,
 								Sub(exception, span)
 									Me.PublishIoRetryMessage(exception, span, currentRetryAttempt, maxRetryAttempts)
@@ -749,17 +747,17 @@ Namespace kCura.WinEDDS
 
 		Public Function GetNullableFixedString(ByVal value As String, ByVal column As Int32, ByVal fieldLength As Int32, ByVal displayName As String) As String
 			If value.Length > fieldLength Then
-				Throw New kCura.Utility.DelimitedFileImporter.InputStringExceedsFixedLengthException(CurrentLineNumber, column, fieldLength, displayName, value.Length)
+				Throw New StringImporterException(CurrentLineNumber, column, fieldLength, value.Length, displayName)
 			Else
-				Return kCura.Utility.NullableTypesHelper.DBNullString(value)
+				Return NullableTypesHelper.DBNullString(value)
 			End If
 		End Function
 
 		Public Function GetNullableAssociatedObjectName(ByVal value As String, ByVal column As Int32, ByVal fieldLength As Int32, ByVal fieldName As String) As String
 			If value.Length > fieldLength Then
-				Throw New kCura.Utility.DelimitedFileImporter.InputObjectNameExceedsFixedLengthException(CurrentLineNumber, column, fieldLength, fieldName)
+				Throw New ObjectNameImporterException(CurrentLineNumber, column, fieldLength, fieldName)
 			Else
-				Return kCura.Utility.NullableTypesHelper.DBNullString(value)
+				Return NullableTypesHelper.DBNullString(value)
 			End If
 		End Function
 
@@ -772,7 +770,7 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		<Serializable>
 		Public Class ExtractedTextTooLargeException
-			Inherits kCura.Utility.ImporterExceptionBase
+			Inherits ImporterException
 
 			''' <summary>
 			''' Initializes a new instance of the <see cref="ExtractedTextTooLargeException"/> class.
@@ -793,7 +791,7 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		<Serializable>
 		Public Class IdentifierOverlapException
-			Inherits kCura.Utility.ImporterExceptionBase
+			Inherits ImporterException
 
 			''' <summary>
 			''' Initializes a new instance of the <see cref="IdentifierOverlapException"/> class.
@@ -820,7 +818,7 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		<Serializable>
 		Public Class MissingFullTextFileException
-			Inherits kCura.Utility.ImporterExceptionBase
+			Inherits ImporterException
 
 			''' <summary>
 			''' Initializes a new instance of the <see cref="MissingFullTextFileException"/> class.
@@ -847,7 +845,7 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		<Serializable>
 		Public Class MissingUserException
-			Inherits kCura.Utility.ImporterExceptionBase
+			Inherits ImporterException
 
 			''' <summary>
 			''' Initializes a new instance of the <see cref="MissingUserException"/> class.
@@ -877,7 +875,7 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		<Serializable>
 		Public Class CodeCreationException
-			Inherits kCura.Utility.ImporterExceptionBase
+			Inherits ImporterException
 
 			''' <summary>
 			''' Initializes a new instance of the <see cref="CodeCreationException"/> class.
@@ -927,7 +925,7 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		<Serializable>
 		Public Class ColumnCountMismatchException
-			Inherits kCura.Utility.ImporterExceptionBase
+			Inherits ImporterException
 
 			''' <summary>
 			''' Initializes a new instance of the <see cref="ColumnCountMismatchException"/> class.
@@ -957,7 +955,7 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		<Serializable>
 		Public Class DuplicateObjectReferenceException
-			Inherits kCura.Utility.ImporterExceptionBase
+			Inherits ImporterException
 
 			''' <summary>
 			''' Initializes a new instance of the <see cref="DuplicateObjectReferenceException"/> class.
@@ -987,7 +985,7 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		<Serializable>
 		Public Class NonExistentParentException
-			Inherits kCura.Utility.ImporterExceptionBase
+			Inherits ImporterException
 
 			''' <summary>
 			''' Initializes a new instance of the <see cref="NonExistentParentException"/> class.
@@ -1017,7 +1015,7 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		<Serializable>
 		Public Class ParentObjectReferenceRequiredException
-			Inherits kCura.Utility.ImporterExceptionBase
+			Inherits ImporterException
 
 			''' <summary>
 			''' Initializes a new instance of the <see cref="ParentObjectReferenceRequiredException"/> class.
@@ -1044,7 +1042,7 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		<Serializable>
 		Public Class BcpPathAccessException
-			Inherits kCura.Utility.ImporterExceptionBase
+			Inherits ImporterException
 
 			''' <summary>
 			''' Initializes a new instance of the <see cref="BcpPathAccessException"/> class.
@@ -1068,7 +1066,7 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		<Serializable>
 		Public Class DuplicateMulticodeValueException
-			Inherits kCura.Utility.ImporterExceptionBase
+			Inherits ImporterException
 
 			''' <summary>
 			''' Initializes a new instance of the <see cref="DuplicateMulticodeValueException"/> class.
@@ -1095,7 +1093,7 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-		Private Sub _artifactReader_OnIoWarning(ByVal e As Api.IoWarningEventArgs) Handles _artifactReader.OnIoWarning
+		Private Sub _artifactReader_OnIoWarning(ByVal e As IoWarningEventArgs) Handles _artifactReader.OnIoWarning
 			If e.Exception Is Nothing Then
 				Me.PublishIoWarningEvent(new IoWarningEventArgs(e.Message, e.CurrentLineNumber))
 			Else

@@ -1,6 +1,6 @@
-﻿
-Namespace kCura.WinEDDS.Helpers
+﻿Imports Relativity.Import.Export
 
+Namespace kCura.WinEDDS.Helpers
 
 Public Module FieldValueHelper
 
@@ -14,7 +14,7 @@ Public Module FieldValueHelper
 				val = DirectCast(val, System.DateTime).ToString(field.FormatString)
 			End If
 		End If
-		Dim fieldValue As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(val))
+		Dim fieldValue As String = NullableTypesHelper.ToEmptyStringOrValue(NullableTypesHelper.DBNullString(val))
 		If field.IsMultiValueField Then
 			fieldValue = GetMultivalueString(fieldValue, field, multiRecordDelimiter)
 		ElseIf field.IsCodeOrMulticodeField Then
@@ -63,7 +63,7 @@ Public Module FieldValueHelper
 	End Function
 
 	Public Function ToExportableDateString(ByVal val As Object, ByVal formatString As String) As String
-			Dim datetime As String = kCura.Utility.NullableTypesHelper.DBNullString(val)
+			Dim datetime As String = NullableTypesHelper.DBNullString(val)
 			Dim retval As String
 			If datetime Is Nothing OrElse datetime.Trim = "" Then
 				retval = ""

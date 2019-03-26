@@ -1,4 +1,5 @@
-Imports System.IO
+Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Transfer
 
 Namespace kCura.WinEDDS
 	Public Class FileUploader
@@ -11,7 +12,7 @@ Namespace kCura.WinEDDS
 
 		Private _gateway As kCura.WinEDDS.Service.FileIO
 		Private _credentials As Net.NetworkCredential
-		Private _type As kCura.WinEDDS.TApi.TapiClient
+		Private _type As TapiClient
 		Private _destinationFolderPath As String
 		Private _caseArtifactID As Int32
 		Private _isBulkEnabled As Boolean = True
@@ -36,13 +37,13 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable ReadOnly Property NumberOfRetries() As Int32
 			Get
-				Return kCura.Utility.Config.IOErrorNumberOfRetries
+				Return AppSettings.Instance.IoErrorNumberOfRetries
 			End Get
 		End Property
 
 		Protected Overridable ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
 			Get
-				Return kCura.Utility.Config.IOErrorWaitTimeInSeconds
+				Return AppSettings.Instance.IoErrorWaitTimeInSeconds
 			End Get
 		End Property
 
@@ -72,8 +73,8 @@ Namespace kCura.WinEDDS
 
 		Private Sub SetType(ByVal destFolderPath As String)
 			Try
-				If Config.ForceWebUpload Then
-					Me.UploaderType = TApi.TapiClient.Web
+				If AppSettings.Instance.ForceWebUpload Then
+					Me.UploaderType = TapiClient.Web
 				Else
 					Dim dummyText As String = System.Guid.NewGuid().ToString().Replace("-", String.Empty).Substring(0, 5)
 					'If the destination folder path is empty, we only need to test file Read/Write permissions
@@ -84,10 +85,10 @@ Namespace kCura.WinEDDS
 					End If
 					System.IO.File.Create(destFolderPath & dummyText).Close()
 					System.IO.File.Delete(destFolderPath & dummyText)
-					Me.UploaderType = TApi.TapiClient.Direct
+					Me.UploaderType = TapiClient.Direct
 				End If
 			Catch ex As System.Exception
-				Me.UploaderType = TApi.TapiClient.Web
+				Me.UploaderType = TapiClient.Web
 			End Try
 		End Sub
 
@@ -100,7 +101,7 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Public Property UploaderType() As TApi.TapiClient
+		Public Property UploaderType() As TapiClient
 			Get
 				Return _type
 			End Get
@@ -157,12 +158,12 @@ Namespace kCura.WinEDDS
 					Throw
 				Catch ex As System.Exception
 					RaiseEvent UploadWarningEvent("Error accessing BCP Path, could be caused by network connectivity issues: " & ex.ToString)
-					If Config.EnableSingleModeImport AndAlso tries < 19 Then
+					If AppSettings.Instance.EnableSingleModeImport AndAlso tries < 19 Then
 						Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.UploadError, "Error accessing BCP Path, could be caused by network connectivity issues: " & ex.Message)
-					ElseIf Not Config.EnableSingleModeImport AndAlso tries = 3 AndAlso Not upload Then
+					ElseIf Not AppSettings.Instance.EnableSingleModeImport AndAlso tries = 3 AndAlso Not upload Then
 						Return New FileUploadReturnArgs(FileUploadReturnArgs.FileUploadReturnType.UploadError, "Error accessing BCP Path, could be caused by network connectivity issues: " & ex.Message)
 					End If
-					If tries = 1 AndAlso Not Config.EnableSingleModeImport Then
+					If tries = 1 AndAlso Not AppSettings.Instance.EnableSingleModeImport Then
 						RaiseEvent UploadWarningEvent("Retrying bulk upload")
 					Else
 						RaiseEvent UploadWarningEvent("Retrying bulk upload in " & WaitTimeBetweenRetryAttempts & " seconds")
@@ -177,7 +178,7 @@ Namespace kCura.WinEDDS
 			Dim oldDestinationFolderPath As String = String.Copy(_destinationFolderPath)
 			Try
 				_destinationFolderPath = _gateway.GetBcpSharePath(appID)
-				If Me.UploaderType = TApi.TapiClient.Direct Then
+				If Me.UploaderType = TapiClient.Direct Then
 					If Not System.IO.Directory.Exists(_destinationFolderPath) Then
 						System.IO.Directory.CreateDirectory(_destinationFolderPath)
 					End If
@@ -224,7 +225,7 @@ Namespace kCura.WinEDDS
 			Dim tries As Int32 = NumberOfRetries
 			While tries > 0 And (DoRetry OrElse tries = NumberOfRetries)
 				Try
-					If Me.UploaderType = TApi.TapiClient.Web Then
+					If Me.UploaderType = TapiClient.Web Then
 						Return Me.WebUploadFile(New System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read), contextArtifactID, newFileName)
 					Else
 						Return Me.DirectUploadFile(filePath, contextArtifactID, newFileName, internalUse, tries < NumberOfRetries)
@@ -240,7 +241,7 @@ Namespace kCura.WinEDDS
 						RaiseEvent UploadWarningEvent(String.Format("{0} upload failed: {1} - Retrying in {2} seconds.  {3} tries left.", Me.UploaderType.ToString, ex.Message, wait, tries))
 						System.Threading.Thread.CurrentThread.Join(wait * 1000)
 					Else
-						If Me.UploaderType = TApi.TapiClient.Direct And _sortIntoVolumes Then _repositoryPathManager.Rollback()
+						If Me.UploaderType = TapiClient.Direct And _sortIntoVolumes Then _repositoryPathManager.Rollback()
 						If internalUse Then
 							Throw
 						Else
@@ -262,8 +263,8 @@ Namespace kCura.WinEDDS
 		'End Function
 
 		Private Function IsWarningException(ByVal ex As System.Exception) As Boolean
-			If Me.UploaderType = TApi.TapiClient.Direct And TypeOf ex Is System.IO.IOException Then Return True
-			If Me.UploaderType = TApi.TapiClient.Web Then Return True
+			If Me.UploaderType = TapiClient.Direct And TypeOf ex Is System.IO.IOException Then Return True
+			If Me.UploaderType = TapiClient.Web Then Return True
 			Return False
 		End Function
 
@@ -276,11 +277,11 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Function UploadTextAsFile(ByVal content As String, ByVal contextArtifactID As Int32, ByVal fileGuid As String) As String
-			If Me.UploaderType = TApi.TapiClient.Web Then
-				Me.UploaderType = TApi.TapiClient.Web
+			If Me.UploaderType = TapiClient.Web Then
+				Me.UploaderType = TapiClient.Web
 				Return WebUploadFile(New System.IO.MemoryStream(System.Text.Encoding.Unicode.GetBytes(content)), contextArtifactID, fileGuid)
 			Else
-				Me.UploaderType = TApi.TapiClient.Direct
+				Me.UploaderType = TapiClient.Direct
 				Dim newFileName As String = System.Guid.NewGuid.ToString
 				Try
 					Dim sw As New System.IO.StreamWriter(String.Format("{0}{1}", _destinationFolderPath, newFileName), False, System.Text.Encoding.Unicode)

@@ -5,13 +5,13 @@ Namespace kCura.WinEDDS.Helpers
 		Implements IFilePathHelper
 
 		Private ReadOnly _importConfig As IImportConfig
-		Private ReadOnly _fileSystem As kCura.WinEDDS.TApi.IFileSystem
+		Private ReadOnly _fileSystem As Relativity.Import.Export.Io.IFileSystem
 
 		Public Sub New()
-			Me.New(new ImportConfig(), kCura.WinEDDS.TApi.FileSystem.Instance)
+			Me.New(new ImportConfig(), Relativity.Import.Export.Io.FileSystem.Instance)
 		End Sub
 
-		Public Sub New(importConfig As IImportConfig, fileSystem As kCura.WinEDDS.TApi.IFileSystem)
+		Public Sub New(importConfig As IImportConfig, fileSystem As Relativity.Import.Export.Io.IFileSystem)
 			_importConfig = importConfig
 			_fileSystem = fileSystem
 		End Sub

@@ -1,3 +1,5 @@
+Imports Relativity.Import.Export
+
 Namespace kCura.WinEDDS.Service
 	Public Class ObjectTypeManager
 		Inherits kCura.EDDS.WebAPI.ObjectTypeManagerBase.ObjectTypeManager
@@ -15,7 +17,7 @@ Namespace kCura.WinEDDS.Service
 
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}ObjectTypeManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
+			Me.Url = String.Format("{0}ObjectTypeManager.asmx", AppSettings.Instance.WebApiServiceUrl)
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 

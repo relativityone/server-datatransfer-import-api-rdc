@@ -1,5 +1,5 @@
-Imports kCura.Utility.NullableTypesHelper
-Imports System.Runtime.Remoting.Lifetime
+Imports Relativity.Import.Export
+
 Namespace kCura.WinEDDS.Service
 	Public Class DocumentManager
 		Inherits kCura.EDDS.WebAPI.DocumentManagerBase.DocumentManager
@@ -9,7 +9,7 @@ Namespace kCura.WinEDDS.Service
 
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}DocumentManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
+			Me.Url = String.Format("{0}DocumentManager.asmx", AppSettings.Instance.WebApiServiceUrl)
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 
@@ -47,12 +47,12 @@ Namespace kCura.WinEDDS.Service
 
 		Public Shadows Function ReadFromIdentifier(ByVal caseContextArtifactID As Int32, ByVal fieldDisplayName As String, ByVal identifier As String, ByVal fieldArtifactIds As Int32()) As kCura.EDDS.WebAPI.DocumentManagerBase.Document
 			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
+			While tries < AppSettings.Instance.MaxReloginTries
 				Try
 					tries += 1
 					Return MyBase.ReadFromIdentifier(caseContextArtifactID, fieldDisplayName, identifier, fieldArtifactIds)
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < AppSettings.Instance.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					ElseIf TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("ResetFieldIdCacheException") <> -1 Then
 
@@ -78,12 +78,12 @@ Namespace kCura.WinEDDS.Service
 
 		Public Shadows Function RetrieveDocumentCount(ByVal caseContextArtifactID As Int32) As Int32
 			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
+			While tries < AppSettings.Instance.MaxReloginTries
 				Try
 					tries += 1
 					Return MyBase.RetrieveDocumentCount(caseContextArtifactID)
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < AppSettings.Instance.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw
@@ -95,12 +95,12 @@ Namespace kCura.WinEDDS.Service
 
 		Public Shadows Function RetrieveDocumentLimit(ByVal caseContextArtifactID As Int32) As Int32
 			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
+			While tries < AppSettings.Instance.MaxReloginTries
 				Try
 					tries += 1
 					Return MyBase.RetrieveDocumentLimit(caseContextArtifactID)
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < AppSettings.Instance.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Throw

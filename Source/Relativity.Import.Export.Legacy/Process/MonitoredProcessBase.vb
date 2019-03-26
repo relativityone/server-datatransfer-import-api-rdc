@@ -1,10 +1,11 @@
 ﻿Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Monitoring
-Imports kCura.WinEDDS.TApi
 Imports Relativity.DataTransfer.MessageService
+Imports Relativity.Import.Export.Process
+Imports Relativity.Import.Export.Transfer
 
 Public MustInherit Class MonitoredProcessBase
-	Inherits kCura.Windows.Process.ProcessBase
+	Inherits ProcessBase
 
 	Private ReadOnly _messageThrottling As TimeSpan
 	Protected Property JobGuid As System.Guid = System.Guid.NewGuid()
@@ -25,7 +26,7 @@ Public MustInherit Class MonitoredProcessBase
 		Me.MessageService = messageService
 	End Sub
 
-	Protected Overrides Sub Execute()
+	Protected Overrides Sub OnExecute()
 		Initialize()
 		If Run() Then
 			If HasErrors() Then
@@ -49,7 +50,7 @@ Public MustInherit Class MonitoredProcessBase
 
 	Protected Overridable Sub OnFatalError()
 		SetEndTime()
-		Me.ProcessObserver.RaiseStatusEvent("", $"{JobType} aborted")
+		Me.Context.PublishStatusEvent("", $"{JobType} aborted")
 	End Sub
 
 	Protected Overridable Sub OnSuccess()
@@ -138,7 +139,7 @@ Public MustInherit Class MonitoredProcessBase
 		message.JobType = JobType
 		message.TransferMode = TapiClientName
 		message.CorrelationID = JobGuid.ToString()
-		message.CustomData.Add("UseOldExport", Config.UseOldExport)
+		message.CustomData.Add("UseOldExport", Me.AppSettings.UseOldExport)
 		message.UnitOfMeasure = "Bytes(s)"
 		If Not (CaseInfo Is Nothing) Then
 			message.WorkspaceID = CaseInfo.ArtifactID

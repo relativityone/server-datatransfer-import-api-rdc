@@ -1,3 +1,5 @@
+Imports Relativity.Import.Export.Io
+
 Namespace kCura.WinEDDS.Exceptions
 
 	''' <summary>
@@ -5,7 +7,7 @@ Namespace kCura.WinEDDS.Exceptions
 	''' </summary>
 	<Serializable>
 	Public Class ImportIOException
-		Inherits kCura.Utility.ImporterExceptionBase
+		Inherits ImporterException
 
 		''' <summary>
 		''' Initializes a new instance of the <see cref="ImportIOException"/> class.

@@ -1,6 +1,8 @@
-Imports System.Threading
-Imports kCura.WinEDDS.TApi
 Imports Relativity.DataTransfer.MessageService
+Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Io
+Imports Relativity.Import.Export.Process
+Imports Relativity.Import.Export.Transfer
 
 Namespace kCura.WinEDDS
 
@@ -9,7 +11,7 @@ Namespace kCura.WinEDDS
 
 		Public LoadFile As LoadFile
 		Protected WithEvents _loadFileImporter As BulkLoadFileImporter
-		Protected WithEvents _ioWarningPublisher As IoWarningPublisher
+		Protected WithEvents _IoReporterContext As IoReporterContext
 		Private _errorCount As Int32
 		Private _warningCount As Int32
 		Private _timeZoneOffset As Int32
@@ -103,21 +105,11 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Overridable Function GetImporter() As kCura.WinEDDS.BulkLoadFileImporter
-			Dim tokenSource As CancellationTokenSource = New CancellationTokenSource()
-			_ioWarningPublisher = New IoWarningPublisher()
-
-			Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.WinEDDSSubSystem)
-			Dim reporter As IIoReporter = IoReporterFactory.CreateIoReporter(
-				kCura.Utility.Config.IOErrorNumberOfRetries, _
-				kCura.Utility.Config.IOErrorWaitTimeInSeconds, _ 
-				WinEDDS.Config.DisableNativeLocationValidation, _
-				WinEDDS.Config.RetryOptions, _
-				logger, _
-				_ioWarningPublisher, _
-				tokenSource.Token)
+			_IoReporterContext = New IoReporterContext(Me.FileSystem, Me.AppSettings, New WaitAndRetryPolicy(Me.AppSettings))
+			Dim reporter As IIoReporter = Me.CreateIoReporter(_IoReporterContext)
 			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(
 				LoadFile, _
-				ProcessController, _
+				Me.Context, _
 				reporter, _
 				logger, _
 				_timeZoneOffset, _
@@ -126,7 +118,7 @@ Namespace kCura.WinEDDS
 				True, _
 				BulkLoadFileFieldDelimiter, _
 				EnforceDocumentLimit, _
-				tokenSource, _
+				Me.CancellationTokenSource, _
 				ExecutionSource)
 			Return returnImporter
 		End Function
@@ -141,14 +133,14 @@ Namespace kCura.WinEDDS
 			MyBase.OnSuccess()
 			SendJobStatistics(_loadFileImporter.Statistics)
 			SendTransferJobCompletedMessage()
-			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
+			Me.Context.PublishProcessCompleted(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
 			SendJobStatistics(_loadFileImporter.Statistics)
 			SendTransferJobCompletedMessage()
-			Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
+			Me.Context.PublishProcessCompleted(False, System.Guid.NewGuid.ToString, True)
 		End Sub
 
 		Protected Overrides Function HasErrors() As Boolean
@@ -180,7 +172,7 @@ Namespace kCura.WinEDDS
 			If SkipExtractedTextEncodingCheck.HasValue AndAlso SkipExtractedTextEncodingCheck Then
 				_loadFileImporter.SkipExtractedTextEncodingCheck = True
 			End If
-			_loadFileImporter.SkipExtractedTextEncodingCheck = (_loadFileImporter.SkipExtractedTextEncodingCheck OrElse Config.DisableTextFileEncodingCheck)
+			_loadFileImporter.SkipExtractedTextEncodingCheck = (_loadFileImporter.SkipExtractedTextEncodingCheck OrElse Me.AppSettings.DisableTextFileEncodingCheck)
 
 			_loadFileImporter.DisableExtractedTextFileLocationValidation = DisableExtractedTextFileLocationValidation
 			_loadFileImporter.AuditLevel = _auditLevel
@@ -192,8 +184,8 @@ Namespace kCura.WinEDDS
 			_loadFileImporter.FileSizeMapped = FileSizeMapped
 			_loadFileImporter.FileNameColumn = FileNameColumn
 			_loadFileImporter.SupportedByViewerColumn = SupportedByViewerColumn
-			_loadFileImporter.LoadImportedFullTextFromServer = (Me.LoadImportedFullTextFromServer OrElse Config.LoadImportedFullTextFromServer)
-			Me.ProcessObserver.InputArgs = LoadFile.FilePath
+			_loadFileImporter.LoadImportedFullTextFromServer = (Me.LoadImportedFullTextFromServer OrElse Me.AppSettings.LoadImportedFullTextFromServer)
+			Me.Context.InputArgs = LoadFile.FilePath
 		End Sub
 
 		Private Sub AuditRun(ByVal success As Boolean, ByVal runID As String)
@@ -270,10 +262,10 @@ Namespace kCura.WinEDDS
 
 				If LoadFile.CopyFilesToDocumentRepository Then
 					Select Case _loadFileImporter.UploadConnection
-						Case TApi.TapiClient.Direct
+						Case TapiClient.Direct
 							retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Direct
-						Case TApi.TapiClient.Aspera
-						Case TApi.TapiClient.Web
+						Case TapiClient.Aspera
+						Case TapiClient.Web
 							retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Web
 					End Select
 					retval.TotalFileSize = _loadFileImporter.Statistics.FileBytes
@@ -290,54 +282,54 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _loadFileImporter_FieldMapped(ByVal sourceField As String, ByVal workspaceField As String) Handles _loadFileImporter.FieldMapped
-			Me.ProcessObserver.RaiseFieldMapped(sourceField, workspaceField)
+			Me.Context.PublishFieldMapped(sourceField, workspaceField)
 		End Sub
 
 		Private Sub _loadFileImporter_StatusMessage(ByVal e As StatusEventArgs) Handles _loadFileImporter.StatusMessage
-			SyncLock Me.ProcessObserver
+			SyncLock Me.Context
 				Dim statisticsDictionary As IDictionary = Nothing
 				If Not e.AdditionalInfo Is Nothing Then statisticsDictionary = DirectCast(e.AdditionalInfo, IDictionary)
 				Select Case e.EventType
-					Case kCura.Windows.Process.EventType.End
-						Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, System.DateTime.Now, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
-						Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-						Me.ProcessObserver.RaiseEndEvent(e.Statistics.FileBytes, e.Statistics.MetadataBytes)
-					Case kCura.Windows.Process.EventType.Error
+					Case EventType.End
+						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, System.DateTime.Now, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
+						Me.Context.PublishProcessEnded(e.Statistics.FileBytes, e.Statistics.MetadataBytes)
+					Case EventType.Error
 						_errorCount += 1
-						Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
-						Me.ProcessObserver.RaiseErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Case kCura.Windows.Process.EventType.Progress
+						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+						Me.Context.PublishErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
+					Case EventType.Progress
 						TotalRecords = e.TotalRecords
 						CompletedRecordsCount = e.CurrentRecordIndex
-						Me.ProcessObserver.RaiseRecordProcessed(e.CurrentRecordIndex)
-						Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
-						Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Case kCura.Windows.Process.EventType.Statistics
+						Me.Context.PublishRecordProcessed(e.CurrentRecordIndex)
+						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
+					Case EventType.Statistics
 						SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
-					Case kCura.Windows.Process.EventType.ResetProgress
+					Case EventType.ResetProgress
 						' Do NOT raise RaiseRecordProcessed for this event. 
 						CompletedRecordsCount = 0
-						Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
-						Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Case kCura.Windows.Process.EventType.Status
-						Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Case kCura.Windows.Process.EventType.Warning
+						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
+					Case EventType.Status
+						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
+					Case EventType.Warning
 						_warningCount += 1
-						Me.ProcessObserver.RaiseWarningEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Case Windows.Process.EventType.ResetStartTime
+						Me.Context.PublishWarningEvent(e.CurrentRecordIndex.ToString, e.Message)
+					Case EventType.ResetStartTime
 						SetStartTime()
-					Case Windows.Process.EventType.Count
-						Me.ProcessObserver.RaiseCountEvent()
+					Case EventType.Count
+						Me.Context.PublishRecordCountIncremented()
 				End Select
 			End SyncLock
-			'Me.ProcessObserver.RaiseProgressEvent(e.TotalLines, e.CurrentRecordIndex, 0, 0, _startTime, System.DateTime.Now)
+			'Me.Context.PublishProgress(e.TotalLines, e.CurrentRecordIndex, 0, 0, _startTime, System.DateTime.Now)
 		End Sub
 
 		Private Sub _loadFileImporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception, ByVal runID As String) Handles _loadFileImporter.FatalErrorEvent
-			SyncLock Me.ProcessObserver
-				Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
+			SyncLock Me.Context
+				Me.Context.PublishFatalException(ex)
 				'TODO: _loadFileImporter.ErrorLogFileName
-				Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
+				Me.Context.PublishProcessCompleted(False, "", True)
 				_hasFatalErrorOccured = True
 			End SyncLock
 			Me.AuditRun(False, runID)
@@ -345,19 +337,20 @@ Namespace kCura.WinEDDS
 
 		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal statusBarText As String, ByVal tapiClientName As String, ByVal isBulkEnabled As Boolean) Handles _loadFileImporter.UploadModeChangeEvent
 			If _uploadModeText Is Nothing Then
-				_uploadModeText = Config.FileTransferModeExplanationText(True)
+				Dim tapiObjectService As ITapiObjectService = New TapiObjectService
+				_uploadModeText = tapiObjectService.BuildFileTransferModeDocText(True)
 			End If
 			Dim statusBarMessage As String = $"{statusBarText} - SQL Insert Mode: {If(isBulkEnabled, "Bulk", "Single")}"
 
 			SendTransferJobStartedMessage()
 
-			Me.ProcessObserver.RaiseStatusBarEvent(statusBarMessage, _uploadModeText)
+			Me.Context.PublishStatusBarChanged(statusBarMessage, _uploadModeText)
 		End Sub
 
 
 
 		Private Sub _loadFileImporter_DataSourcePrepEvent(ByVal e As Api.DataSourcePrepEventArgs) Handles _loadFileImporter.DataSourcePrepEvent
-			SyncLock Me.ProcessObserver
+			SyncLock Me.Context
 				Dim totaldisplay As String
 				Dim processeddisplay As String
 				If e.TotalBytes >= 1048576 Then
@@ -372,24 +365,24 @@ Namespace kCura.WinEDDS
 				End If
 				Select Case e.Type
 					Case Api.DataSourcePrepEventArgs.EventType.Close
-						Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.TotalBytes, 0, 0, e.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
+						Me.Context.PublishProgress(e.TotalBytes, e.TotalBytes, 0, 0, e.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
 					Case Api.DataSourcePrepEventArgs.EventType.Open
-						Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
-						Me.ProcessObserver.RaiseStatusEvent("", "Preparing file for import")
+						Me.Context.PublishProgress(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
+						Me.Context.PublishStatusEvent("", "Preparing file for import")
 					Case Api.DataSourcePrepEventArgs.EventType.ReadEvent
-						Me.ProcessObserver.RaiseProgressEvent(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
-						Me.ProcessObserver.RaiseStatusEvent("", "Preparing file for import")
+						Me.Context.PublishProgress(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
+						Me.Context.PublishStatusEvent("", "Preparing file for import")
 				End Select
 			End SyncLock
 		End Sub
 
 		Private Sub _loadFileImporter_ReportErrorEvent(ByVal row As System.Collections.IDictionary) Handles _loadFileImporter.ReportErrorEvent
-			Me.ProcessObserver.RaiseReportErrorEvent(row)
+			Me.Context.PublishErrorReport(row)
 		End Sub
 
-		Private Sub _loadFileImporter_IoErrorEvent(ByVal sender As Object, ByVal e As IoWarningEventArgs) Handles _ioWarningPublisher.IoWarningEvent
-			SyncLock Me.ProcessObserver
-				Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, e.Message)
+		Private Sub _loadFileImporter_IoErrorEvent(ByVal sender As Object, ByVal e As IoWarningEventArgs) Handles _IoReporterContext.IoWarningEvent
+			SyncLock Me.Context
+				Me.Context.PublishWarningEvent((e.CurrentLineNumber + 1).ToString, e.Message)
 			End SyncLock
 		End Sub
 

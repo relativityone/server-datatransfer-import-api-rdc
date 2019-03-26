@@ -1,8 +1,7 @@
-﻿
-Namespace kCura.WinEDDS.Service.Export
+﻿Namespace kCura.WinEDDS.Service.Export
 	Public Interface IExportFileDownloader
 		Inherits IExportFileDownloaderStatus
-		Property FileHelper() As IFileHelper
+		Property FileHelper() As Relativity.Import.Export.Io.IFile
 		Function DownloadFullTextFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean
 		Function DownloadLongTextFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal field As ViewFieldInfo, ByVal appId As String) As Boolean
 		Function DownloadFileForDocument(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal remoteLocation As String, ByVal artifactID As Int32, ByVal appID As String) As Boolean

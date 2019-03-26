@@ -1,4 +1,5 @@
 ﻿Imports kCura.WinEDDS.Service.Export
+Imports Relativity.Import.Export
 
 Namespace kCura.WinEDDS.Service
 	Public Class ExportManager
@@ -15,7 +16,7 @@ Namespace kCura.WinEDDS.Service
 			MyBase.New()
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}ExportManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
+			Me.Url = String.Format("{0}ExportManager.asmx", AppSettings.Instance.WebApiServiceUrl)
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 

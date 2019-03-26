@@ -1,5 +1,4 @@
 ﻿Imports System.Collections.Generic
-Imports System.IO
 Imports System.Text
 Imports FileNaming.CustomFileNaming
 Imports kCura.WinEDDS.Exporters
@@ -26,7 +25,7 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 			Else
 				name = GetNameWithNativeExtension(name, exportObjectInfo)
 			End If
-			Return kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(name.ToString())
+			Return Relativity.Import.Export.Io.FileSystem.Instance.Path.ConvertIllegalCharactersInFilename(name.ToString())
 		End Function
 
 		Public Function GetTextName(exportObjectInfo As ObjectExportInfo) As String Implements IFileNameProvider.GetTextName
@@ -39,7 +38,7 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 				nameAsString = GetNameWithTextExtension(name)
 			End If
 
-			Return kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(nameAsString)
+			Return Relativity.Import.Export.Io.FileSystem.Instance.Path.ConvertIllegalCharactersInFilename(nameAsString)
 		End Function
 
 		Private Function CreateFileName(objectExportInfo As ObjectExportInfo) As StringBuilder

@@ -7,6 +7,8 @@ Imports kCura.WinEDDS.Exporters
 Imports kCura.WinEDDS.Helpers
 Imports kCura.WinEDDS.LoadFileEntry
 Imports kCura.WinEDDS.IO
+Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Process
 Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
@@ -44,16 +46,16 @@ Namespace kCura.WinEDDS
 		Private _hasWrittenColumnHeaderString As Boolean = False
 		Private _encoding As System.Text.Encoding
 		Private _errorFileLocation As String = ""
-		Private _timekeeper As kCura.Utility.Timekeeper
+		Private _timekeeper As Timekeeper
 		Private _statistics As kCura.WinEDDS.Statistics
 		Private _totalExtractedTextFileLength As Int64 = 0
 		Private _halt As Boolean = False
 		Private _ordinalLookup As New System.Collections.Generic.Dictionary(Of String, Int32)
 		Private _loadFileFormatter As Exporters.ILoadFileCellFormatter
 
-		Private _fileHelper As IFileHelper
+		Private _fileHelper As Relativity.Import.Export.Io.IFile
 		Private _fileStreamFactory As IFileStreamFactory
-		Private _directoryHelper As IDirectoryHelper
+		Private _directoryHelper As Relativity.Import.Export.Io.IDirectory
 		Private _fileNameProvider As IFileNameProvider
 		
 		Private _logger As ILog
@@ -138,7 +140,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Sub New(ByVal settings As ExportFile, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As Service.Export.IExportFileDownloader, ByVal t As kCura.Utility.Timekeeper, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics, fileHelper As IFileHelper, directoryHelper As IDirectoryHelper, fileNameProvider As IFileNameProvider)
+		Public Sub New(ByVal settings As ExportFile, ByVal totalFiles As Int64, ByVal parent As WinEDDS.Exporter, ByVal downloadHandler As Service.Export.IExportFileDownloader, ByVal t As Timekeeper, ByVal columnNamesInOrder As String(), ByVal statistics As kCura.WinEDDS.ExportStatistics, fileHelper As Relativity.Import.Export.Io.IFile, directoryHelper As Relativity.Import.Export.Io.IDirectory, fileNameProvider As IFileNameProvider)
 			_settings = settings
 			_statistics = statistics
 			_parent = parent
@@ -357,7 +359,7 @@ Namespace kCura.WinEDDS
 					_errorWriter = New System.IO.StreamWriter(errorFileStream, _encoding)
 					_errorWriter.WriteLine("""File Type"",""Document Identifier"",""File Guid"",""Error Description""")
 				End If
-				_errorWriter.WriteLine(String.Format("""{0}"",""{1}"",""{2}"",""{3}""", type.ToString, recordIdentifier, fileLocation, kCura.Utility.Strings.ToCsvCellContents(errorText)))
+				_errorWriter.WriteLine(String.Format("""{0}"",""{1}"",""{2}"",""{3}""", type.ToString, recordIdentifier, fileLocation, errorText.ToCsvCellContents()))
 			Catch ex As System.IO.IOException
 				Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Errors, ex)
 			End Try
@@ -433,13 +435,15 @@ Namespace kCura.WinEDDS
 				imageList(i) = DirectCast(artifact.Images(i), Exporters.ImageExportInfo).TempLocation
 			Next
 			Dim tempLocation As String = Me.Settings.FolderPath.TrimEnd("\"c) & "\" & System.Guid.NewGuid.ToString & ".tmp"
-			Dim converter As New kCura.Utility.Image
+			Dim imageConversionService As New ImageConversionService
 			Try
 				Select Case Me.Settings.TypeOfImage
 					Case ExportFile.ImageType.MultiPageTiff
-						converter.ConvertTIFFsToMultiPage(imageList, tempLocation)
+						imageConversionService.ConvertTiffsToMultiPageTiff(imageList, tempLocation)
 					Case ExportFile.ImageType.Pdf
-						If Not tempLocation Is Nothing AndAlso Not tempLocation = "" Then converter.ConvertImagesToMultiPagePdf(imageList, tempLocation)
+						If Not tempLocation Is Nothing AndAlso Not tempLocation = "" Then
+							imageConversionService.ConvertImagesToMultiPagePdf(imageList, tempLocation)
+						End If
 				End Select
 				imageCount = 1
 				For Each imageLocation As String In imageList
@@ -471,13 +475,13 @@ Namespace kCura.WinEDDS
 				Else
 					_fileHelper.Move(tempLocation, DirectCast(artifact.Images(0), Exporters.ImageExportInfo).TempLocation)
 				End If
-			Catch ex As kCura.Utility.Image.ImageRollupException
+			Catch ex As ImageRollupException
 				successfulRollup = False
 				Try
 					If Not tempLocation Is Nothing AndAlso Not tempLocation = "" Then
 						_fileHelper.Delete(tempLocation)
 					End If
-					_parent.WriteImgProgressError(artifact, ex.ImageIndex, ex, "Document exported in single-page image mode.")
+					_parent.WriteImgProgressError(artifact, ex.PageNumber, ex, "Document exported in single-page image mode.")
 				Catch ioex As System.IO.IOException
 					Throw New kCura.WinEDDS.Exceptions.FileWriteException(Exceptions.FileWriteException.DestinationFile.Errors, ioex)
 				End Try
@@ -602,10 +606,10 @@ Namespace kCura.WinEDDS
 								Exit While
 							Catch ex As System.Exception
 								If tries = 1 Then
-									_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & artifact.IdentifierValue, True)
+									_parent.WriteStatusLine(EventType.Warning, "Second attempt to download full text for document " & artifact.IdentifierValue, True)
 								ElseIf tries < maxTries Then
 									Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
-									_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
+									_parent.WriteStatusLine(EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
 									System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 								Else
 									Throw
@@ -719,11 +723,11 @@ Namespace kCura.WinEDDS
 					Dim secs As Double = Math.Round(webServiceRequestTime.ElapsedMilliseconds / 1000, 2)
 
 					If tries = 1 Then
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download full text for document " & 
+						_parent.WriteStatusLine(EventType.Warning, "Second attempt to download full text for document " & 
 							artifact.IdentifierValue & ". Previous request took " & secs & " (secs)", True)
 					ElseIf tries < maxTries Then
 						Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds. " &
+						_parent.WriteStatusLine(EventType.Warning, "Additional attempt to download full text for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds. " &
 							"Previous request took " & secs & " (secs)", True)
 						System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 					Else
@@ -871,7 +875,7 @@ Namespace kCura.WinEDDS
 			If _fileHelper.Exists(tempFile) Then
 				If _settings.Overwrite Then
 					_fileHelper.Delete(tempFile)
-					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting image for {0}.", image.BatesNumber), False)
+					_parent.WriteStatusLine(EventType.Status, String.Format("Overwriting image for {0}.", image.BatesNumber), False)
 				Else
 					_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", tempFile))
 					Return 0
@@ -887,10 +891,10 @@ Namespace kCura.WinEDDS
 					Exit While
 				Catch ex As System.Exception
 					If tries = 1 Then
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download image " & image.BatesNumber & " - exact error: " & ex.ToString, True)
+						_parent.WriteStatusLine(EventType.Warning, "Second attempt to download image " & image.BatesNumber & " - exact error: " & ex.ToString, True)
 					ElseIf tries < maxTries Then
 						Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download image " & image.BatesNumber & " failed - retrying in " & waitTime.ToString() & " seconds - exact error: " & ex.ToString, True)
+						_parent.WriteStatusLine(EventType.Warning, "Additional attempt to download image " & image.BatesNumber & " failed - retrying in " & waitTime.ToString() & " seconds - exact error: " & ex.ToString, True)
 						System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 					Else
 						Throw
@@ -906,21 +910,21 @@ Namespace kCura.WinEDDS
 				If _fileHelper.Exists(fileName) Then
 					If _settings.Overwrite Then
 						_fileHelper.Delete(fileName)
-						_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document image {0}.", batesNumber), False)
+						_parent.WriteStatusLine(EventType.Status, String.Format("Overwriting document image {0}.", batesNumber), False)
 						_fileHelper.Move(tempFileLocation, fileName)
 					Else
 						_parent.WriteWarning(String.Format("{0}.tif already exists. Skipping file export.", batesNumber))
 					End If
 				Else
 					_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_WriteStatus", threadNumber)
-					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document image {0}.", batesNumber), False)
+					_parent.WriteStatusLine(EventType.Status, String.Format("Now exporting document image {0}.", batesNumber), False)
 					_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_WriteStatus", threadNumber)
 					_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_MoveFile", threadNumber)
 					_fileHelper.Move(tempFileLocation, fileName)
 					_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_MoveFile", threadNumber)
 				End If
 				_timekeeper.MarkStart("VolumeManager_ExportDocumentImage_WriteStatus", threadNumber)
-				_parent.WriteStatusLine(Windows.Process.EventType.Status, String.Format("Finished exporting document image {0}.", batesNumber), False)
+				_parent.WriteStatusLine(EventType.Status, String.Format("Finished exporting document image {0}.", batesNumber), False)
 				_timekeeper.MarkEnd("VolumeManager_ExportDocumentImage_WriteStatus", threadNumber)
 			End If
 			'_parent.DocumentsExported += 1
@@ -1009,14 +1013,14 @@ Namespace kCura.WinEDDS
 				If _fileHelper.Exists(exportFileName) Then
 					If _settings.Overwrite Then
 						_fileHelper.Delete(exportFileName)
-						_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.", systemFileName), False)
+						_parent.WriteStatusLine(EventType.Status, String.Format("Overwriting document {0}.", systemFileName), False)
 						_fileHelper.Move(tempLocation, exportFileName)
 					Else
 						_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", systemFileName))
 					End If
 				Else
 					_timekeeper.MarkStart("VolumeManager_ExportNative_WriteStatus", threadNumber)
-					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Now exporting document {0}.", systemFileName), False)
+					_parent.WriteStatusLine(EventType.Status, String.Format("Now exporting document {0}.", systemFileName), False)
 					_timekeeper.MarkEnd("VolumeManager_ExportNative_WriteStatus", threadNumber)
 					_timekeeper.MarkStart("VolumeManager_ExportNative_MoveFile", threadNumber)
 					_fileHelper.Move(tempLocation, exportFileName)
@@ -1036,7 +1040,7 @@ Namespace kCura.WinEDDS
 			If _fileHelper.Exists(tempFile) Then
 				If Settings.Overwrite Then
 					_fileHelper.Delete(tempFile)
-					_parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, String.Format("Overwriting document {0}.", nativeFileName), False)
+					_parent.WriteStatusLine(EventType.Status, String.Format("Overwriting document {0}.", nativeFileName), False)
 				Else
 					_parent.WriteWarning(String.Format("{0} already exists. Skipping file export.", tempFile))
 					artifact.NativeTempLocation = tempFile
@@ -1057,10 +1061,10 @@ Namespace kCura.WinEDDS
 					Exit While
 				Catch ex As System.Exception
 					If tries = 1 Then
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Second attempt to download native for document " & artifact.IdentifierValue, True)
+						_parent.WriteStatusLine(EventType.Warning, "Second attempt to download native for document " & artifact.IdentifierValue, True)
 					ElseIf tries < maxTries Then
 						Dim waitTime As Int32 = WaitTimeBetweenRetryAttempts
-						_parent.WriteStatusLine(Windows.Process.EventType.Warning, "Additional attempt to download native for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
+						_parent.WriteStatusLine(EventType.Warning, "Additional attempt to download native for document " & artifact.IdentifierValue & " failed - retrying in " & waitTime.ToString() & " seconds", True)
 						System.Threading.Thread.CurrentThread.Join(waitTime * 1000)
 					Else
 						Throw
@@ -1141,7 +1145,7 @@ Namespace kCura.WinEDDS
 				If destinationPathExists AndAlso Not _settings.Overwrite Then 'Skip export instead of overwriting file
 					_parent.WriteWarning(destinationFilePath & " already exists. Skipping file export.")
 				Else 'Overwrite existing text file
-					If destinationPathExists Then _parent.WriteStatusLine(kCura.Windows.Process.EventType.Status, "Overwriting: " & destinationFilePath, False)
+					If destinationPathExists Then _parent.WriteStatusLine(EventType.Status, "Overwriting: " & destinationFilePath, False)
 					Dim destinationFileStream As FileStream = _fileStreamFactory.Create(destinationFilePath, False)
 					destination = New System.IO.StreamWriter(destinationFileStream, Me.Settings.TextFileEncoding)
 				End If
@@ -1264,7 +1268,7 @@ Namespace kCura.WinEDDS
 			End If
 			Dim formatter As Exporters.ILongTextStreamFormatter = GetLongTextStreamFormatter(source)
 			If Not fileWriter Is Nothing Then Me.WriteLongText(source, fileWriter, formatter)
-			If Not String.IsNullOrEmpty(longTextPath) Then kCura.Utility.File.Instance.Delete(longTextPath)
+			If Not String.IsNullOrEmpty(longTextPath) Then Relativity.Import.Export.Io.FileSystem.Instance.File.Delete(longTextPath)
 		End Sub
 
 		Public Sub WriteDatFile(ByVal linesToWriteDat As ConcurrentDictionary(Of Int32, ILoadFileEntry), ByVal artifacts As Exporters.ObjectExportInfo())
@@ -1304,7 +1308,7 @@ Namespace kCura.WinEDDS
 					'Save file writer stream position in case we need to rollback on retry attempts
 					If Not _nativeFileWriter Is Nothing Then
 						_nativeFileWriterPosition = _nativeFileWriter.BaseStream.Position
-						loadFileBytes += kCura.Utility.File.Instance.GetFileSize(DirectCast(_nativeFileWriter.BaseStream, System.IO.FileStream).Name)
+						loadFileBytes += Relativity.Import.Export.Io.FileSystem.Instance.File.GetFileSize(DirectCast(_nativeFileWriter.BaseStream, System.IO.FileStream).Name)
 					End If
 
 					'Store statistics
@@ -1377,7 +1381,7 @@ Namespace kCura.WinEDDS
 					'Save file writer stream position in case we need to rollback on retry attempts
 					If Not _imageFileWriter Is Nothing Then
 						_imageFileWriterPosition = _imageFileWriter.BaseStream.Position
-						loadFileBytes += kCura.Utility.File.Instance.GetFileSize(DirectCast(_imageFileWriter.BaseStream, System.IO.FileStream).Name)
+						loadFileBytes += Relativity.Import.Export.Io.FileSystem.Instance.File.GetFileSize(DirectCast(_imageFileWriter.BaseStream, System.IO.FileStream).Name)
 					End If
 
 					'Store statistics

@@ -1,6 +1,5 @@
 ﻿Imports System.Collections.Generic
-Imports System.Linq
-Imports System.Windows.Forms
+Imports Relativity.Import.Export
 
 Namespace kCura.WinEDDS
 	Public Class LoadFilePreProcessor
@@ -178,7 +177,7 @@ Namespace kCura.WinEDDS
 			'Parse up to the first X lines in the file and track the folders and choices that will be created
 			Dim warningDialogShown As Boolean = False
 			While Not Me.HasReachedEOF And _continue
-				If Me.RecordCount > kCura.WinEDDS.Config.PREVIEW_THRESHOLD Then
+				If Me.RecordCount > AppSettings.Instance.PreviewThreshold Then
 					AdvanceLine()
 					currentRun = System.DateTime.Now.Ticks
 					If currentRun - lastRun > 10000000 Then
@@ -216,7 +215,7 @@ Namespace kCura.WinEDDS
 				End If
 
 				'Display warning message to user about folders and choices
-				If Me.RecordCount = kCura.WinEDDS.Config.PREVIEW_THRESHOLD Then
+				If Me.RecordCount = AppSettings.Instance.PreviewThreshold Then
 					If Not DisplayFolderAndChoiceWarning(checkFolders, checkChoices) Then
 						Me.ProcessCancel(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
 						Return Nothing

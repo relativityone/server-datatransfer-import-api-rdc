@@ -1,5 +1,6 @@
 Imports System.Runtime.Serialization
 Imports System.Collections.Generic
+Imports Relativity.Import.Export
 
 Namespace kCura.WinEDDS
 	<Serializable()> Public Class DocumentField
@@ -186,7 +187,7 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Public Function ToDisplayString() As String
-			Return String.Format("DocumentField[{0},{1},{2},{3},'{4}']", FieldCategoryID, FieldID, FieldName, FieldTypeID, kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(CodeTypeID))
+			Return String.Format("DocumentField[{0},{1},{2},{3},'{4}']", FieldCategoryID, FieldID, FieldName, FieldTypeID, NullableTypesHelper.ToEmptyStringOrValue(CodeTypeID))
 		End Function
 
 		Public Overrides Function ToString() As String

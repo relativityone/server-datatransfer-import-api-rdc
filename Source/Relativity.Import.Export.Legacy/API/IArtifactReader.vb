@@ -1,3 +1,5 @@
+Imports Relativity.Import.Export.Io
+
 Namespace kCura.WinEDDS.Api
 	Public Interface IArtifactReader
 		ReadOnly Property HasMoreRecords() As Boolean
@@ -16,7 +18,7 @@ Namespace kCura.WinEDDS.Api
 		Sub OnFatalErrorState()
 		Sub Halt()
 
-		Event OnIoWarning(ByVal e As kCura.WinEDDS.Api.IoWarningEventArgs)
+		Event OnIoWarning(ByVal e As IoWarningEventArgs)
 		Event DataSourcePrep(ByVal e As Api.DataSourcePrepEventArgs)
 		Event StatusMessage(ByVal message As String)
 		Event FieldMapped(ByVal sourceField As String, ByVal workspaceField As String)

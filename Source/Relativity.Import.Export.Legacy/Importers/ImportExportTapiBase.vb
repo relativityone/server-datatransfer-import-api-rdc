@@ -6,8 +6,11 @@
 
 Imports System.Threading
 Imports kCura.WinEDDS.Helpers
-Imports kCura.WinEDDS.TApi
 Imports Polly
+Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Io
+Imports Relativity.Import.Export.Process
+Imports Relativity.Import.Export.Transfer
 Imports Relativity.Logging
 Imports Relativity.Transfer
 
@@ -21,7 +24,7 @@ Namespace kCura.WinEDDS
 #Region "Members"
 		Private ReadOnly _ioReporter As IIoReporter
 		Private ReadOnly _syncRoot As Object = New Object
-		Private ReadOnly _fileSystem As kCura.WinEDDS.TApi.IFileSystem
+		Private ReadOnly _fileSystem As Relativity.Import.Export.Io.IFileSystem
 		Private ReadOnly _cancellationTokenSource As CancellationTokenSource
 		Private ReadOnly _statistics As New Statistics
 		Private WithEvents _bulkLoadTapiBridge As UploadTapiBridge
@@ -45,7 +48,7 @@ Namespace kCura.WinEDDS
 
 			' TODO: Refactor all core constructors to use a single config object
 			' TODO: once IAPI/RDC is moved into the new repo.
-			_fileSystem = kCura.WinEDDS.TApi.FileSystem.Instance.DeepCopy()
+			_fileSystem = Relativity.Import.Export.Io.FileSystem.Instance.DeepCopy()
 			If reporter Is Nothing Then
 				reporter = New NullIoReporter(_fileSystem)
 			End If
@@ -126,7 +129,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Property DisableNativeLocationValidation As Boolean = Config.DisableNativeLocationValidation
+		Public Property DisableNativeLocationValidation As Boolean = AppSettings.Instance.DisableThrowOnIllegalCharacters
 
 		Protected Property FileTapiProgressCount As Int32
 
@@ -142,20 +145,20 @@ Namespace kCura.WinEDDS
 		''' Gets the configurable retry options.
 		''' </summary>
 		''' <value>
-		''' The <see cref="kCura.WinEDDS.TApi.RetryOptions"/> value.
+		''' The <see cref="RetryOptions"/> value.
 		''' </value>
 		''' <remarks>
 		''' The config value is already cached.
 		''' </remarks>
-		Protected ReadOnly Property RetryOptions As kCura.WinEDDS.TApi.RetryOptions = kCura.WinEDDS.Config.RetryOptions
+		Protected ReadOnly Property RetryOptions As RetryOptions = AppSettings.Instance.RetryOptions
 
 		''' <summary>
 		''' Gets the file system instance.
 		''' </summary>
 		''' <value>
-		''' The <see cref="kCura.WinEDDS.TApi.IFileSystem"/> instance.
+		''' The <see cref="Relativity.Import.Export.Io.IFileSystem"/> instance.
 		''' </value>
-		Protected ReadOnly Property FileSystem As kCura.WinEDDS.TApi.IFileSystem
+		Protected ReadOnly Property FileSystem As Relativity.Import.Export.Io.IFileSystem
 			Get
 				Return _fileSystem
 			End Get
@@ -245,16 +248,14 @@ Namespace kCura.WinEDDS
 				Return _filePathHelper.GetExistingFilePath(path)
 			Else
 				' REL-272765: Added I/O resiliency and support document level errors.
-				Dim maxRetryAttempts As Integer = kCura.Utility.Config.IOErrorNumberOfRetries
+				Dim maxRetryAttempts As Integer = AppSettings.Instance.IoErrorNumberOfRetries
 				Dim currentRetryAttempt As Integer = 0
-				Dim policy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(
-					maxRetryAttempts, _
-					kCura.Utility.Config.IOErrorWaitTimeInSeconds)
+				Dim policy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(AppSettings.Instance)
 				Dim returnExistingPath As String = policy.WaitAndRetry(
 					RetryExceptionHelper.CreateRetryPredicate(Me.RetryOptions),
 					Function(count)
 						currentRetryAttempt = count
-						Return TimeSpan.FromSeconds(kCura.Utility.Config.IOErrorWaitTimeInSeconds)
+						Return TimeSpan.FromSeconds(AppSettings.Instance.IoErrorWaitTimeInSeconds)
 					End Function,
 					Sub(exception, span)
 						Me.PublishIoRetryMessage(exception, span, currentRetryAttempt, maxRetryAttempts)
@@ -303,7 +304,7 @@ Namespace kCura.WinEDDS
 			If Not retry Then
 				' Note: this is always non-null even if the file doesn't exist.
 				' Note: always allow the System.IO.FileNotFoundException to throw.
-				Dim fileInfo As kCura.WinEDDS.TApi.IFileInfo = _fileSystem.CreateFileInfo(path)
+				Dim fileInfo As Relativity.Import.Export.Io.IFileInfo = _fileSystem.CreateFileInfo(path)
 				Return fileInfo.Length
 			Else
 				Return _ioReporter.GetFileLength(path, Me.CurrentLineNumber)
@@ -335,15 +336,15 @@ Namespace kCura.WinEDDS
 		''' <param name="args">
 		''' The warning event data.
 		''' </param>
-		Protected Sub PublishIoWarningEvent(args As TApi.IoWarningEventArgs)
+		Protected Sub PublishIoWarningEvent(args As IoWarningEventArgs)
 			_ioReporter.PublishWarningMessage(args)
 		End Sub
 
 		Protected Sub CompletePendingPhysicalFileTransfers(waitingMessage As String, completedMessage As String, errorMessage As String)
 			Try
-				Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, waitingMessage, 0, 0)
+				Me.OnWriteStatusMessage(EventType.Status, waitingMessage, 0, 0)
 				Me.FileTapiBridge.WaitForTransferJob()
-				Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, completedMessage, 0, 0)
+				Me.OnWriteStatusMessage(EventType.Status, completedMessage, 0, 0)
 			Catch ex As Exception
 				Me.LogError(ex, errorMessage)
 				Throw
@@ -352,9 +353,9 @@ Namespace kCura.WinEDDS
 
 		Protected Sub CompletePendingBulkLoadFileTransfers()
 			Try
-				Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "Waiting for the bulk load job to complete...", 0, 0)
+				Me.OnWriteStatusMessage(EventType.Status, "Waiting for the bulk load job to complete...", 0, 0)
 				Me.BulkLoadTapiBridge.WaitForTransferJob()
-				Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "Bulk load file job completed.", 0, 0)
+				Me.OnWriteStatusMessage(EventType.Status, "Bulk load file job completed.", 0, 0)
 			Catch ex As Exception
 				Me.LogError(ex, "Failed to complete all pending bulk load file transfers.")
 				Throw
@@ -472,11 +473,11 @@ Namespace kCura.WinEDDS
 			Logger.LogWarning($"Tapi client has been changed.")
 		End Sub
 
-		Protected Overridable Sub OnWriteStatusMessage(ByVal eventType As kCura.Windows.Process.EventType, ByVal message As String)
+		Protected Overridable Sub OnWriteStatusMessage(ByVal eventType As EventType, ByVal message As String)
 			'TODO Log this action and call from the derivered class.
 		End Sub
 
-		Protected Overridable Sub OnWriteStatusMessage(ByVal eventType As kCura.Windows.Process.EventType, ByVal message As String, ByVal progressLineNumber As Int32, ByVal physicalLineNumber As Int32)
+		Protected Overridable Sub OnWriteStatusMessage(ByVal eventType As EventType, ByVal message As String, ByVal progressLineNumber As Int32, ByVal physicalLineNumber As Int32)
 			'TODO Log this action and call from the derivered class.
 		End Sub
 
@@ -490,7 +491,7 @@ Namespace kCura.WinEDDS
 				OnStopImport()
 				_cancellationTokenSource.Cancel()
 			Catch ex As Exception
-				OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, "Error occured while stopping the job.")
+				OnWriteStatusMessage(EventType.Status, "Error occured while stopping the job.")
 				Throw
 			End Try
 		End Sub
@@ -500,7 +501,7 @@ Namespace kCura.WinEDDS
 			If updateCurrentStats OrElse force Then
 				CurrentStatisticsSnapshot = Me.Statistics.ToDictionary()
 				_statisticsLastUpdated = time
-				Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Statistics, "", 0, 0)
+				Me.OnWriteStatusMessage(EventType.Statistics, "", 0, 0)
 			End If
 		End Sub
 
@@ -557,7 +558,7 @@ Namespace kCura.WinEDDS
 		Private Sub OnTapiErrorMessage(ByVal sender As Object, ByVal e As TapiMessageEventArgs)
 			SyncLock _syncRoot
 				If ShouldImport Then
-					Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Error, e.Message, e.LineNumber, e.LineNumber)
+					Me.OnWriteStatusMessage(EventType.Error, e.Message, e.LineNumber, e.LineNumber)
 					Me.LogError(e.Message)
 				End If
 			End SyncLock
@@ -566,7 +567,7 @@ Namespace kCura.WinEDDS
 		Private Sub OnTapiWarningMessage(ByVal sender As Object, ByVal e As TapiMessageEventArgs)
 			SyncLock _syncRoot
 				If ShouldImport Then
-					Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Warning, e.Message, e.LineNumber, e.LineNumber)
+					Me.OnWriteStatusMessage(EventType.Warning, e.Message, e.LineNumber, e.LineNumber)
 					Me.LogWarning(e.Message)
 				End If
 			End SyncLock
@@ -583,13 +584,13 @@ Namespace kCura.WinEDDS
 		Private Sub OnTapiStatusEvent(ByVal sender As Object, ByVal e As TapiMessageEventArgs)
 			SyncLock _syncRoot
 				If ShouldImport Then
-					Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, e.Message, e.LineNumber, e.LineNumber)
+					Me.OnWriteStatusMessage(EventType.Status, e.Message, e.LineNumber, e.LineNumber)
 				End If
 			End SyncLock
 		End Sub
 
 		Private Sub WriteTapiProgressMessage(ByVal message As String, ByVal lineNumber As Int32)
-			Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Progress, message, FileTapiProgressCount, lineNumber)
+			Me.OnWriteStatusMessage(EventType.Progress, message, FileTapiProgressCount, lineNumber)
 		End Sub
 
 		Protected Function GetLineMessage(ByVal line As String, ByVal lineNumber As Int32) As String
@@ -656,7 +657,7 @@ Namespace kCura.WinEDDS
 					Return TimeSpan.FromMilliseconds(waitBetweenRetries)
 				End Function)
 
-			Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, startMessage, 0, 0)
+			Me.OnWriteStatusMessage(EventType.Status, startMessage, 0, 0)
 
 			retryPolicy.Execute(Function()
 									waitSuccess = retryFunction()
@@ -664,7 +665,7 @@ Namespace kCura.WinEDDS
 									Return waitSuccess
 								End Function, _cancellationTokenSource.Token)
 
-			Me.OnWriteStatusMessage(kCura.Windows.Process.EventType.Status, stopMessage, 0, 0)
+			Me.OnWriteStatusMessage(EventType.Status, stopMessage, 0, 0)
 
 			If Not waitSuccess Then
 				Me.LogWarning(errorMessage)

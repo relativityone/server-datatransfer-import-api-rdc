@@ -1,17 +1,18 @@
 Imports System.IO
-Imports kCura.Utility
-Imports kCura.Windows.Process
 Imports kCura.WinEDDS.Api
 Imports kCura.WinEDDS.Helpers
+Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Io
+Imports Relativity.Import.Export.Process
 
 Namespace kCura.WinEDDS
 	Public Class ImageFilePreviewer
 		Inherits DelimitedFileImporter
 		
-		Private ReadOnly _imageValidator As kCura.ImageValidator.IImageValidator
+		Private ReadOnly _imageValidator As IImageIdService
 		Private _fileLineCount As Int32
 		Private _continue As Boolean
-		Private WithEvents _processController As Controller
+		Private WithEvents _processContext As ProcessContext
 		Private ReadOnly _filePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
 
 		Private Enum Columns
@@ -28,10 +29,10 @@ Namespace kCura.WinEDDS
 
 		Public Event StatusMessage(ByVal args As StatusEventArgs)
 
-		Public Sub New(ByVal controller As Controller, ByVal doRetryLogic As Boolean, imageValidator As kCura.ImageValidator.IImageValidator)
-			MyBase.New(New Char() {","c}, doRetryLogic)
+		Public Sub New(ByVal context As ProcessContext, ByVal doRetryLogic As Boolean, imageValidator As IImageIdService)
+			MyBase.New(","c, doRetryLogic)
 			
-			_processController = controller
+			_processContext = context
 			_imageValidator = imageValidator
 			_continue = True
 		End Sub
@@ -39,7 +40,7 @@ Namespace kCura.WinEDDS
 
 		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
 			Try
-				_fileLineCount = kCura.Utility.File.Instance.CountLinesInFile(path)
+				_fileLineCount = Relativity.Import.Export.Io.FileSystem.Instance.File.CountLinesInFile(path)
 				Reader = New StreamReader(path)
 				RaiseStatusEvent(EventType.Progress, "Begin Image Upload")
 
@@ -135,7 +136,7 @@ Namespace kCura.WinEDDS
 
 		Private Function ValidateImage(path As String) As Boolean
 			Try
-				_imageValidator.ValidateImage(path)
+				_imageValidator.Validate(path)
 				Return True
 			Catch ex As Exception
 				RaiseStatusEvent(EventType.Error, ex.Message)
@@ -158,7 +159,7 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-		Private Sub _processObserver_CancelImport(ByVal processID As Guid) Handles _processController.HaltProcessEvent
+		Private Sub _processObserver_CancelImport(ByVal sender As Object, ByVal e As CancellationRequestEventArgs) Handles _processContext.CancellationRequest
 			_continue = False
 		End Sub
 

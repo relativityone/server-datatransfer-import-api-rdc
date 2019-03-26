@@ -1,3 +1,5 @@
+Imports Relativity.Import.Export
+
 Namespace kCura.WinEDDS.Service
 	Public Class FieldManager
 		Inherits kCura.EDDS.WebAPI.FieldManagerBase.FieldManager
@@ -23,7 +25,7 @@ Namespace kCura.WinEDDS.Service
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
 			_query = New kCura.WinEDDS.Service.FieldQuery(credentials, Me.CookieContainer)
-			Me.Url = String.Format("{0}FieldManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
+			Me.Url = String.Format("{0}FieldManager.asmx", AppSettings.Instance.WebApiServiceUrl)
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 
@@ -34,7 +36,7 @@ Namespace kCura.WinEDDS.Service
 			If retval.FieldCategoryID = Relativity.FieldCategory.FullText Then
 				retval.Value = System.Text.ASCIIEncoding.ASCII.GetString(DirectCast(dto.Value, Byte()))
 			ElseIf retval.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Code OrElse retval.FieldTypeID = Relativity.FieldTypeHelper.FieldType.MultiCode Then
-				retval.Value = kCura.Utility.Array.ToCsv(DirectCast(dto.Value, Int32())).Replace(",", ";")
+				retval.Value = (DirectCast(dto.Value, Int32())).ToCsv().Replace(",", ";")
 			Else
 				retval.Value = dto.Value.ToString
 			End If

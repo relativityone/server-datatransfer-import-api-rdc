@@ -1,5 +1,4 @@
 ﻿Imports System.IO
-Imports System.IO.Ports
 
 Namespace kCura.WinEDDS.LoadFileEntry
 

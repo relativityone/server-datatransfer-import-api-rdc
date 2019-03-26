@@ -1,4 +1,5 @@
 Imports System.Web
+Imports Relativity.Import.Export
 
 Namespace kCura.WinEDDS.Service
 	Public Class CodeManager
@@ -9,7 +10,7 @@ Namespace kCura.WinEDDS.Service
 
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}CodeManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
+			Me.Url = String.Format("{0}CodeManager.asmx", AppSettings.Instance.WebApiServiceUrl)
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 
@@ -44,7 +45,7 @@ Namespace kCura.WinEDDS.Service
 			Dim encode As Boolean = True
 			Dim name As String = code.Name
 			Dim nameEncoded As String = HttpServerUtility.UrlTokenEncode(System.Text.Encoding.UTF8.GetBytes(code.Name))
-			While tries < Config.MaxReloginTries
+			While tries < AppSettings.Instance.MaxReloginTries
 				tries += 1
 				Try
 					If encode Then
@@ -55,7 +56,7 @@ Namespace kCura.WinEDDS.Service
 						Return MyBase.Create(caseContextArtifactID, code)
 					End If
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < AppSettings.Instance.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					ElseIf TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.Message.IndexOf("Server did not recognize the value of HTTP Header") <> -1 AndAlso encode Then
 						'DAM202: This error only occurs if the RDC is newer than the RelativityWebAPI and the new method (CreateEncoded) does not exist in the WebAPI.
@@ -73,7 +74,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Function ReadID(ByVal caseContextArtifactID As Int32, ByVal parentArtifactID As Int32, ByVal codeTypeID As Int32, ByVal name As String) As Int32
 			Dim tries As Int32 = 0
 			Dim encode As Boolean = True
-			While tries < Config.MaxReloginTries
+			While tries < AppSettings.Instance.MaxReloginTries
 				tries += 1
 				Try
 					If encode Then
@@ -82,7 +83,7 @@ Namespace kCura.WinEDDS.Service
 						Return MyBase.ReadID(caseContextArtifactID, parentArtifactID, codeTypeID, name)
 					End If
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < AppSettings.Instance.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					ElseIf TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.Message.IndexOf("Server did not recognize the value of HTTP Header") <> -1 AndAlso encode Then
 						tries -= 1
@@ -126,7 +127,7 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Function RetrieveCodeByNameAndTypeID(ByVal caseContextArtifactID As Int32, ByVal codeTypeID As Int32, ByVal name As String) As Relativity.ChoiceInfo
 			Dim tries As Int32 = 0
 			Dim encode As Boolean = True
-			While tries < Config.MaxReloginTries
+			While tries < AppSettings.Instance.MaxReloginTries
 				tries += 1
 				Try
 					If encode Then
@@ -135,7 +136,7 @@ Namespace kCura.WinEDDS.Service
 						Return Convert(MyBase.RetrieveCodeByNameAndTypeID(caseContextArtifactID, codeTypeID, name))
 					End If
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < AppSettings.Instance.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					ElseIf TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.Message.IndexOf("Server did not recognize the value of HTTP Header") <> -1 AndAlso encode Then
 						tries -= 1

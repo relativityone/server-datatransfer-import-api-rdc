@@ -1,4 +1,4 @@
-﻿Imports kCura.Utility
+﻿Imports Relativity.Import.Export
 
 Namespace kCura.WinEDDS
 	Public Class DefaultTimeKeeperManager

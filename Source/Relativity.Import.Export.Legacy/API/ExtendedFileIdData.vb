@@ -1,6 +1,8 @@
-﻿Namespace kCura.WinEDDS.Api
-	Public Class ExtendedFileIdData
-		Inherits FileIDData
+﻿Imports Relativity.Import.Export
+
+Namespace kCura.WinEDDS.Api
+	Public Class ExtendedFileIdInfo
+		Inherits FileIdInfo
 		Implements IHasSupportedByViewer
 
 		Private ReadOnly _supportedByViewer As Boolean

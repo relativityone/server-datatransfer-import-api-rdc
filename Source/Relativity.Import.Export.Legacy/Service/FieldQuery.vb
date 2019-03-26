@@ -1,5 +1,7 @@
 Imports System.Collections.Generic
-Imports kCura.Utility.NullableTypesHelper
+Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Data
+
 Namespace kCura.WinEDDS.Service
 	Public Class FieldQuery
 		Inherits kCura.EDDS.WebAPI.FieldQueryBase.FieldQuery
@@ -9,7 +11,7 @@ Namespace kCura.WinEDDS.Service
 
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}FieldQuery.asmx", kCura.WinEDDS.Config.WebServiceURL)
+			Me.Url = String.Format("{0}FieldQuery.asmx", AppSettings.Instance.WebApiServiceUrl)
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 
@@ -21,7 +23,7 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 		Public Function RetrieveAllAsArray(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32, Optional ByVal includeUnmappable As Boolean = False) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
-			Dim dv As New kCura.Data.DataView(RetrieveAllMappable(caseContextArtifactID, artifactTypeID))
+			Dim dv As New SqlDataView(RetrieveAllMappable(caseContextArtifactID, artifactTypeID))
 			Dim fields As New System.Collections.ArrayList
 			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
 			Dim unmappableFields As New System.Collections.Specialized.StringCollection
@@ -49,7 +51,7 @@ Namespace kCura.WinEDDS.Service
 						With field
 							.ArtifactID = CType(dv(i)("ArtifactID"), Int32)
 							.ArtifactViewFieldID = CType(dv(i)("ArtifactViewFieldID"), Int32)
-							.CodeTypeID = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dv(i)("CodeTypeID"))
+							.CodeTypeID = NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dv(i)("CodeTypeID"))
 							.DisplayName = CType(dv(i)("DisplayName"), String)
 							.FieldCategoryID = CType(dv(i)("FieldCategoryID"), Int32)
 							.FieldCategory = CType(dv(i)("FieldCategoryID"), kCura.EDDS.WebAPI.DocumentManagerBase.FieldCategory)
@@ -57,13 +59,13 @@ Namespace kCura.WinEDDS.Service
 							.FieldTypeID = CInt(dv(i)("FieldTypeID"))
 							.IsEditable = CType(dv(i)("IsEditable"), Boolean)
 							.IsRequired = CType(dv(i)("IsRequired"), Boolean)
-							.MaxLength = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dv(i)("FieldLength"))
+							.MaxLength = NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dv(i)("FieldLength"))
 							.IsRemovable = CType(dv(i)("IsRemovable"), Boolean)
 							.IsVisible = CType(dv(i)("IsVisible"), Boolean)
 							.UseUnicodeEncoding = CType(dv(i)("UseUnicodeEncoding"), Boolean)
 							.AllowHtml = CType(dv(i)("AllowHTML"), Boolean)
-							.AssociativeArtifactTypeID = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dv(i)("AssociativeArtifactTypeID"))
-							.ImportBehavior = Me.ConvertImportBehaviorEnum(kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dv(i)("ImportBehavior")))
+							.AssociativeArtifactTypeID = NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dv(i)("AssociativeArtifactTypeID"))
+							.ImportBehavior = Me.ConvertImportBehaviorEnum(NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dv(i)("ImportBehavior")))
 							.EnableDataGrid = CBool(dv(i)("EnableDataGrid"))
 							.Guids = guids.ToArray()
 						End With

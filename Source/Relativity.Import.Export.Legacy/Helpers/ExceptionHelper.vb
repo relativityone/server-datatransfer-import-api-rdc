@@ -1,6 +1,7 @@
 ﻿Imports System.Collections.Generic
 Imports System.Security
 Imports System.Threading
+Imports Relativity.Import.Export.Io
 
 Namespace kCura.WinEDDS.Helpers
 
@@ -75,7 +76,7 @@ Namespace kCura.WinEDDS.Helpers
 
 			SyncLock SyncRoot
 				Dim exceptionType As Type = exception.GetType()
-				Dim result As Boolean = FatalExceptionCandidates.Any(function(type) exceptionType = type) OrElse kCura.WinEDDS.TApi.RetryExceptionHelper.IsOutOfDiskSpaceException(exception)
+				Dim result As Boolean = FatalExceptionCandidates.Any(function(type) exceptionType = type) OrElse RetryExceptionHelper.IsOutOfDiskSpaceException(exception)
 				Return result
 			End SyncLock
 		End Function

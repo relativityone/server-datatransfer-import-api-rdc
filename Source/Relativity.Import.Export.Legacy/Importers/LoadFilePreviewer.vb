@@ -1,7 +1,7 @@
 Imports System.Threading
-Imports kCura.Utility
-Imports kCura.WinEDDS.Helpers
-Imports kCura.WinEDDS.TApi
+Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Io
+Imports Relativity.Import.Export.Process
 Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
@@ -11,7 +11,7 @@ Namespace kCura.WinEDDS
 
 #Region "Members"
 		Private _errorsOnly As Boolean
-		Private WithEvents _processController As kCura.Windows.Process.Controller
+		Private WithEvents _processContext As ProcessContext
 		Private _continue As Boolean = True
 		Private _nativeFileCheckColumnName As String = ""
 		Private _selectedCaseArtifactID As Int32
@@ -29,7 +29,7 @@ Namespace kCura.WinEDDS
 		               errorsOnly As Boolean, _
 		               doRetryLogic As Boolean, _
 		               tokenSource As CancellationTokenSource,
-		               Optional ByVal processController As kCura.Windows.Process.Controller = Nothing)
+		               Optional ByVal context As ProcessContext = Nothing)
 			MyBase.New(args, _
 			           reporter, _
 			           logger, _
@@ -39,7 +39,7 @@ Namespace kCura.WinEDDS
 			           tokenSource)
 			_selectedCaseArtifactID = args.CaseInfo.ArtifactID
 			_errorsOnly = errorsOnly
-			_processController = processController
+			_processContext = context
 		End Sub
 
 #End Region
@@ -131,12 +131,12 @@ Namespace kCura.WinEDDS
 			Dim i As Int32 = 0
 			i = 0
 			While _artifactReader.HasMoreRecords AndAlso _continue
-				If fieldArrays.Count < kCura.WinEDDS.Config.PREVIEW_THRESHOLD Then
+				If fieldArrays.Count < AppSettings.Instance.PreviewThreshold Then
 					Try
 						Dim record As Api.ArtifactFieldCollection = _artifactReader.ReadArtifact
 						Dim x As Api.ArtifactField() = CheckLine(record, formType)
 						If Not x Is Nothing Then fieldArrays.Add(x)
-					Catch ex As ImporterExceptionBase
+					Catch ex As ImporterException
 						fieldArrays.Add(ex)
 					End Try
 					i += 1
@@ -218,7 +218,7 @@ Namespace kCura.WinEDDS
 				If Not identifierField Is Nothing And _artifactTypeID = Relativity.ArtifactType.Document Then
 					For Each field As Api.ArtifactField In unmappedRelationalNoBlankFields.Values
 						If record.IdentifierField IsNot Nothing Then
-							field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(record.IdentifierField.ValueAsString, -1, field.TextLength, field.DisplayName))
+							field.Value = NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(record.IdentifierField.ValueAsString, -1, field.TextLength, field.DisplayName))
 						End If
 						lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, -1, identifierField.ValueAsString, -1, Nothing)
 						retval.Add(field)
@@ -324,13 +324,13 @@ Namespace kCura.WinEDDS
 			Try
 				SetFieldValue(field, column, True, identityValue, extractedTextCodePageId, importBehavior)
 				Return TypeOf field.Value Is System.Exception
-			Catch ex As ImporterExceptionBase
+			Catch ex As ImporterException
 				field.Value = New Exceptions.ErrorMessage(ex.Message)
 				Return True
 			End Try
 		End Function
 
-		Private Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles _processController.HaltProcessEvent
+		Private Sub _processContext_HaltProcessEvent(ByVal sender As Object, ByVal e As CancellationRequestEventArgs) Handles _processContext.CancellationRequest
 			_continue = False
 		End Sub
 

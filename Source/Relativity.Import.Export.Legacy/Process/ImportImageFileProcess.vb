@@ -1,7 +1,8 @@
-Imports System.Threading
-Imports kCura.Windows.Process
-Imports kCura.WinEDDS.TApi
 Imports Relativity.DataTransfer.MessageService
+Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Io
+Imports Relativity.Import.Export.Process
+Imports Relativity.Import.Export.Transfer
 
 Namespace kCura.WinEDDS
 	Public Class ImportImageFileProcess
@@ -9,13 +10,13 @@ Namespace kCura.WinEDDS
 
 		Public ImageLoadFile As ImageLoadFile
 		Private WithEvents _imageFileImporter As kCura.WinEDDS.BulkImageFileImporter
-		Protected WithEvents _ioWarningPublisher As IoWarningPublisher
+		Protected WithEvents _ioReporterContext As IoReporterContext
 		Private _errorCount As Int32
 		Private _warningCount As Int32
 		Private _uploadModeText As String = Nothing
 
 		Private _disableUserSecurityCheck As Boolean
-		Private _importAuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = WinEDDS.Config.AuditLevel
+		Private _importAuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = Config.AuditLevel
 		Private _disableImageTypeValidation As Boolean?
 		Private _disableImageLocationValidation As Boolean?
 
@@ -91,14 +92,14 @@ Namespace kCura.WinEDDS
 			MyBase.OnSuccess()
 			SendJobStatistics(_imageFileImporter.Statistics)
 			SendTransferJobCompletedMessage()
-			Me.ProcessObserver.RaiseProcessCompleteEvent(False, "", True)
+			Me.Context.PublishProcessCompleted(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
 			SendJobStatistics(_imageFileImporter.Statistics)
 			SendTransferJobCompletedMessage()
-			Me.ProcessObserver.RaiseProcessCompleteEvent(False, System.Guid.NewGuid.ToString, True)
+			Me.Context.PublishProcessCompleted(False, System.Guid.NewGuid.ToString, True)
 		End Sub
 
 		Protected Overrides Sub Initialize()
@@ -106,7 +107,7 @@ Namespace kCura.WinEDDS
 			MyBase.Initialize()
 			_warningCount = 0
 			_errorCount = 0
-			Me.ProcessObserver.InputArgs = ImageLoadFile.FileName
+			Me.Context.InputArgs = ImageLoadFile.FileName
 			_imageFileImporter = Me.GetImageFileImporter
 
 			If _disableImageTypeValidation.HasValue Then _imageFileImporter.DisableImageTypeValidation = _disableImageTypeValidation.Value
@@ -126,27 +127,18 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Function GetImageFileImporter() As kCura.WinEDDS.BulkImageFileImporter
-			Dim tokenSource As CancellationTokenSource = New CancellationTokenSource()
-		    _ioWarningPublisher = New IoWarningPublisher()
-		    Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.WinEDDSSubSystem)
-		    Dim reporter As IIoReporter = IoReporterFactory.CreateIoReporter(
-			    kCura.Utility.Config.IOErrorNumberOfRetries, _
-			    kCura.Utility.Config.IOErrorWaitTimeInSeconds, _ 
-			    WinEDDS.Config.DisableNativeLocationValidation, _
-			    WinEDDS.Config.RetryOptions, _
-			    logger, _
-			    _ioWarningPublisher, _
-			    tokenSource.Token)
+		    _ioReporterContext = New IoReporterContext(Me.FileSystem, Me.AppSettings, New WaitAndRetryPolicy(Me.AppSettings))
+		    Dim reporter As IIoReporter = Me.CreateIoReporter(_ioReporterContext)
             Dim returnImporter As BulkImageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(
 	            ImageLoadFile.DestinationFolderID, _
 	            ImageLoadFile, _
-	            ProcessController, _
+	            Me.Context, _
 	            reporter, _
 	            logger, _
 	            Me.ProcessID, _
 	            True, _
-				EnforceDocumentLimit, _
-	            tokenSource, _
+	            EnforceDocumentLimit, _
+	            Me.CancellationTokenSource, _
 	            ExecutionSource)
 			Return returnImporter
 		End Function
@@ -182,10 +174,10 @@ Namespace kCura.WinEDDS
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Append
 				End Select
 				Select Case _imageFileImporter.UploadConnection
-					Case TApi.TapiClient.Aspera
-					Case TApi.TapiClient.Web
+					Case TapiClient.Aspera
+					Case TapiClient.Web
 						retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Web
-					Case TApi.TapiClient.Direct
+					Case TapiClient.Direct
 						retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Direct
 				End Select
 				retval.RunTimeInMilliseconds = CType(System.DateTime.Now.Subtract(StartTime).TotalMilliseconds, Int32)
@@ -202,61 +194,62 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _imageFileImporter_StatusMessage(ByVal e As StatusEventArgs) Handles _imageFileImporter.StatusMessage
-			SyncLock Me.ProcessObserver
+			SyncLock Me.Context
 				Dim additionalInfo As IDictionary = Nothing
 				If Not e.AdditionalInfo Is Nothing Then additionalInfo = DirectCast(e.AdditionalInfo, IDictionary)
 				Select Case e.EventType
-					Case kCura.Windows.Process.EventType.Error
+					Case EventType.Error
 						If e.CountsTowardsTotal Then _errorCount += 1
-						Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
-						Me.ProcessObserver.RaiseErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Case kCura.Windows.Process.EventType.Progress
+						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
+						Me.Context.PublishErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
+					Case EventType.Progress
 						TotalRecords = e.TotalRecords
 						CompletedRecordsCount = e.CurrentRecordIndex
-						Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-						Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
-						Me.ProcessObserver.RaiseRecordProcessed(e.CurrentRecordIndex)
-					Case kCura.Windows.Process.EventType.Statistics
+						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
+						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
+						Me.Context.PublishRecordProcessed(e.CurrentRecordIndex)
+					Case EventType.Statistics
 						SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
-					Case kCura.Windows.Process.EventType.Status
-						Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Case kCura.Windows.Process.EventType.Warning
+					Case EventType.Status
+						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
+					Case EventType.Warning
 						If e.CountsTowardsTotal Then _warningCount += 1
-						Me.ProcessObserver.RaiseWarningEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Case Windows.Process.EventType.Count
-						Me.ProcessObserver.RaiseCountEvent()
-					Case Windows.Process.EventType.ResetStartTime
+						Me.Context.PublishWarningEvent(e.CurrentRecordIndex.ToString, e.Message)
+					Case EventType.Count
+						Me.Context.PublishRecordCountIncremented()
+					Case EventType.ResetStartTime
 						SetStartTime()
 				End Select
 			End SyncLock
 		End Sub
 
 		Private Sub _imageFileImporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Handles _imageFileImporter.FatalErrorEvent
-			SyncLock Me.ProcessObserver
-				Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
-				Me.ProcessObserver.RaiseProcessCompleteEvent(False, _imageFileImporter.ErrorLogFileName, True)
+			SyncLock Me.Context
+				Me.Context.PublishFatalException(ex)
+				Me.Context.PublishProcessCompleted(False, _imageFileImporter.ErrorLogFileName, True)
 				_hasFatalErrorOccured = True
 			End SyncLock
 		End Sub
 
 		Private Sub _imageFileImporter_ReportErrorEvent(ByVal row As System.Collections.IDictionary) Handles _imageFileImporter.ReportErrorEvent
-			Me.ProcessObserver.RaiseReportErrorEvent(row)
+			Me.Context.PublishErrorReport(row)
 		End Sub
 
 		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal statusBarText As String, ByVal tapiClientName As String, ByVal isBulkEnabled As Boolean) Handles _imageFileImporter.UploadModeChangeEvent
 			If _uploadModeText Is Nothing Then
-				_uploadModeText = Config.FileTransferModeExplanationText(True)
+				Dim tapiObjectService As ITapiObjectService = New TapiObjectService
+				_uploadModeText = tapiObjectService.BuildFileTransferModeDocText(True)
 			End If
 			Dim statusBarMessage As String = $"{statusBarText} - SQL Insert Mode: {If(isBulkEnabled, "Bulk", "Single")}"
 
 			SendTransferJobStartedMessage()
 
-			Me.ProcessObserver.RaiseStatusBarEvent(statusBarMessage, _uploadModeText)
+			Me.Context.PublishStatusBarChanged(statusBarMessage, _uploadModeText)
 		End Sub
 
-		Private Sub _imageFileImporter_IoErrorEvent(ByVal sender As Object, ByVal e As IoWarningEventArgs) Handles _ioWarningPublisher.IoWarningEvent
-			SyncLock Me.ProcessObserver
-				Me.ProcessObserver.RaiseWarningEvent((e.CurrentLineNumber + 1).ToString, e.Message)
+		Private Sub _imageFileImporter_IoErrorEvent(ByVal sender As Object, ByVal e As IoWarningEventArgs) Handles _ioReporterContext.IoWarningEvent
+			SyncLock Me.Context
+				Me.Context.PublishWarningEvent((e.CurrentLineNumber + 1).ToString, e.Message)
 			End SyncLock
 		End Sub
 

@@ -1,5 +1,5 @@
 ﻿Imports System.Net
-Imports kCura.WinEDDS.Service.Export
+Imports Relativity.Import.Export
 Imports Relativity.Services.ServiceProxy
 
 Namespace kCura.WinEDDS
@@ -13,7 +13,7 @@ Namespace kCura.WinEDDS
 			Else
 				relativityCredentials = New UsernamePasswordCredentials(credentials.UserName, credentials.Password)
             End If
-			Dim webServiceUri As New Uri(Config.WebServiceURL)
+			Dim webServiceUri As New Uri(AppSettings.Instance.WebApiServiceUrl)
 			Dim baseUri As New Uri(webServiceUri.GetLeftPart(UriPartial.Authority))
 			Dim settings As New ServiceFactorySettings(New Uri(baseUri, "/Relativity.Services"), New Uri(baseUri, "/Relativity.Rest/api"), relativityCredentials)
 			Dim factory As Relativity.Services.ServiceProxy.IServiceFactory = New ServiceFactory(settings)

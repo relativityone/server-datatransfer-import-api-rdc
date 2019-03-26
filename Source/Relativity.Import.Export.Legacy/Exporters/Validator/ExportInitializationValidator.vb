@@ -1,5 +1,4 @@
 ﻿Namespace kCura.WinEDDS.Exporters.Validator
-
 	Public Class ExportInitializationValidator
 		Public Function IsValid(ByVal settings As ExportFile) As String
 			Dim msg As New System.Text.StringBuilder

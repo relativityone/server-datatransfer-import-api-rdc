@@ -1,5 +1,4 @@
-﻿
-Imports System.Threading.Tasks
+﻿Imports System.Threading.Tasks
 
 Namespace kCura.WinEDDS.Credentials
 	Public Interface ICredentialsProvider

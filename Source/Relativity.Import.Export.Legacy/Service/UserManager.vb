@@ -1,11 +1,11 @@
-Imports kCura.WinEDDS.Credentials
+Imports Relativity.Import.Export
 
 Namespace kCura.WinEDDS.Service
 	Public Class UserManager
 		Inherits kCura.EDDS.WebAPI.UserManagerBase.UserManager
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
-			Me.New(credentials, cookieContainer, kCura.WinEDDS.Config.WebServiceURL)
+			Me.New(credentials, cookieContainer, AppSettings.Instance.WebApiServiceUrl)
 		End Sub
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, ByVal webServiceUrl As String)
@@ -13,7 +13,7 @@ Namespace kCura.WinEDDS.Service
 
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}UserManager.asmx", kCura.WinEDDS.Config.ValidateURIFormat(webServiceUrl))
+			Me.Url = String.Format("{0}UserManager.asmx", AppSettings.Instance.ValidateUriFormat(webServiceUrl))
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 
@@ -52,7 +52,7 @@ Namespace kCura.WinEDDS.Service
 
 		Public Function AttemptReLogin(Optional ByVal retryOnFailure As Boolean = True) As Boolean
 			Try
-				System.Threading.Thread.CurrentThread.Join(Config.WaitBeforeReconnect)
+				System.Threading.Thread.CurrentThread.Join(AppSettings.Instance.WaitBeforeReconnect)
 				Dim cred As System.Net.NetworkCredential = DirectCast(Me.Credentials, System.Net.NetworkCredential)
 				If Not Me.Credentials Is System.Net.CredentialCache.DefaultCredentials Then
 					If String.IsNullOrEmpty(cred.Password) Then

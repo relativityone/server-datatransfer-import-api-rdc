@@ -1,5 +1,4 @@
-﻿
-Imports System.Net
+﻿Imports System.Net
 Imports System.Threading
 Imports System.Threading.Tasks
 Imports Relativity.OAuth2Client.TokenProviders.ProviderFactories

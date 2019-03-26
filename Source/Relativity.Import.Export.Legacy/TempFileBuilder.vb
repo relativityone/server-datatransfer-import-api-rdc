@@ -1,4 +1,6 @@
-﻿Namespace kCura.WinEDDS
+﻿Imports Relativity.Import.Export
+
+Namespace kCura.WinEDDS
 
 	''' <summary>
 	''' Provides static methods to build temporary files that are easier to debug and sort than <see cref="System.IO.Path.GetTempFileName"/> and employ unique file names to avoid collisions.
@@ -8,7 +10,7 @@
 	''' </remarks>
 	Public Class TempFileBuilder
 
-		Private Shared _fileSystem As kCura.WinEDDS.TApi.IFileSystem
+		Private Shared _fileSystem As Relativity.Import.Export.Io.IFileSystem
 
 		''' <summary>
 		''' Gets a uniquely named, zero-byte temporary file on disk and returns the full path of that file.
@@ -34,12 +36,12 @@
 			Return FileSystem.Path.GetTempFileName(fileNameSuffix)
 		End Function
 
-		Private Shared ReadOnly Property FileSystem As kCura.WinEDDS.TApi.IFileSystem
+		Private Shared ReadOnly Property FileSystem As Relativity.Import.Export.Io.IFileSystem
 			Get
 				' Limiting custom temp directory configuration to just this class.
 				If _fileSystem Is Nothing
-					_fileSystem = kCura.WinEDDS.TApi.FileSystem.Instance.DeepCopy()
-					_fileSystem.Path.CustomTempPath = kCura.WinEDDS.Config.TempDirectory
+					_fileSystem = Relativity.Import.Export.Io.FileSystem.Instance.DeepCopy()
+					_fileSystem.Path.CustomTempPath = AppSettings.Instance.TempDirectory
 				End If
 
 				Return _fileSystem

@@ -4,9 +4,9 @@ Namespace kCura.WinEDDS.Helpers
 	Public Class CaseSensitiveFilePathHelper
 		Implements IFilePathHelper
 
-		Private ReadOnly _fileSystem As kCura.WinEDDS.TApi.IFileSystem
+		Private ReadOnly _fileSystem As Relativity.Import.Export.Io.IFileSystem
 
-		Public Sub New(fileSystem As kCura.WinEDDS.TApi.IFileSystem)
+		Public Sub New(fileSystem As Relativity.Import.Export.Io.IFileSystem)
 			_fileSystem = fileSystem
 		End Sub
 

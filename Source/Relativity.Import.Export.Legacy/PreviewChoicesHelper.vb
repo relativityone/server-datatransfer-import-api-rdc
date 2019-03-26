@@ -1,5 +1,4 @@
 ﻿Imports System.Collections.Generic
-Imports kCura.WinEDDS.Api
 
 Namespace kCura.WinEDDS
 	Public Class PreviewChoicesHelper

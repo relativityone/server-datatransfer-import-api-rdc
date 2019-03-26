@@ -1,7 +1,3 @@
-Imports System.Collections.Generic
-Imports System.Runtime.CompilerServices
-Imports System.Runtime.Serialization
-
 Namespace kCura.WinEDDS
 	<Serializable()> Public Class ViewFieldInfo
 		Inherits Relativity.ViewFieldInfo

@@ -1,3 +1,5 @@
+Imports Relativity.Import.Export
+
 Namespace kCura.WinEDDS.Service
 	Public Class AuditManager
 		Inherits kCura.EDDS.WebAPI.AuditManagerBase.AuditManager
@@ -9,7 +11,7 @@ Namespace kCura.WinEDDS.Service
 
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}AuditManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
+			Me.Url = String.Format("{0}AuditManager.asmx", AppSettings.Instance.WebApiServiceUrl)
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 

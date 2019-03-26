@@ -1,4 +1,5 @@
 Imports Relativity
+
 Namespace kCura.WinEDDS.Api
 	Public Class ArtifactField
 		Inherits Relativity.FieldInfoBase

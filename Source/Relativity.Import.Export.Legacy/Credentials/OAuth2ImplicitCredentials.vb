@@ -2,7 +2,7 @@
 Imports System.Net.Security
 Imports System.Threading
 Imports System.Threading.Tasks
-Imports Relativity.Constant
+Imports Relativity.Import.Export
 Imports Relativity.OAuth2Client
 Imports Relativity.OAuth2Client.Implicit
 Imports Relativity.OAuth2Client.Implicit.LoginForms
@@ -10,7 +10,6 @@ Imports Relativity.OAuth2Client.Implicit.LoginView
 Imports Relativity.OAuth2Client.Interfaces.Events
 
 Namespace kCura.WinEDDS.Credentials
-
 	Public Class  OAuth2ImplicitCredentials
 		Implements ICredentialsProvider
 
@@ -62,8 +61,8 @@ Namespace kCura.WinEDDS.Credentials
 
 		Private Sub CreateTokenProvider()
 			Dim oAuthConfig As OAuth2ClientConfiguration = New OAuth2ClientConfiguration(_clientId) With { .TimeOut = TimeSpan.FromMinutes(15) }
-			Dim homeRealmKey As String = Config.GetRegistryKeyValue(RegistryKeys.HomeRealmKey)
-			_loginView = New LoginView(_stsUri, New Uri(_REDIRECT_URI), oAuthConfig, Function() new LoginForm(), homeRealmKey)
+			Dim openIdLoginHint As String = AppSettings.Instance.OpenIdConnectHomeRealmDiscoveryHint
+			_loginView = New LoginView(_stsUri, New Uri(_REDIRECT_URI), oAuthConfig, Function() new LoginForm(), openIdLoginHint)
 			Dim providerFactory As Relativity.OAuth2Client.Interfaces.ITokenProviderFactory = New ImplicitTokenProviderFactory(_loginView)
 			Dim tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider = providerFactory.GetTokenProvider("WebApi", New String() {"UserInfoAccess"})
 			_tokenProvider = tokenProvider

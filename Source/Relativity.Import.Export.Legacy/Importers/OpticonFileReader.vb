@@ -1,6 +1,9 @@
-﻿Namespace kCura.WinEDDS
+﻿Imports Relativity.Import.Export.Io
+Imports Relativity.Import.Export.Process
+
+Namespace kCura.WinEDDS
 	Public Class OpticonFileReader
-		Inherits kCura.Utility.DelimitedFileImporter
+		Inherits DelimitedFileImporter
 		Implements Api.IImageReader
 		Private _settings As ImageLoadFile
 		Public ReadOnly Property Settings() As ImageLoadFile
@@ -10,8 +13,8 @@
 		End Property
 
 
-		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal processID As Guid, ByVal doRetryLogic As Boolean)
-			MyBase.New(New Char() {","c}, doRetryLogic)
+		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal context As ProcessContext, ByVal processID As Guid, ByVal doRetryLogic As Boolean)
+			MyBase.New(","c, doRetryLogic)
 			_settings = args
 			'_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
 			'_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
@@ -43,7 +46,7 @@
 			'_overwrite = args.Overwrite
 			'_replaceFullText = args.ReplaceFullText
 			'_selectedIdentifierField = args.ControlKeyField
-			'_processController = controller
+			'_processContext = controller
 			'_copyFilesToRepository = args.CopyFilesToDocumentRepository
 			'_continue = True
 			'_autoNumberImages = args.AutoNumberImages
@@ -94,11 +97,11 @@
 		End Function
 
 		Public Function CountRecords() As Long Implements Api.IImageReader.CountRecords
-			Return kCura.Utility.File.Instance.CountLinesInFile(Me.Settings.FileName)
+			Return Relativity.Import.Export.Io.FileSystem.Instance.File.CountLinesInFile(Me.Settings.FileName)
 		End Function
 
 		Public Sub Cancel() Implements Api.IImageReader.Cancel
-			Me.DoRetryLogic = False
+			Me.Context.RetryOptions = RetryOptions.None
 		End Sub
 
 #Region " Exceptions - Fatal "

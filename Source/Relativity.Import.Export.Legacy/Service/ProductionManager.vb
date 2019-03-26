@@ -1,10 +1,12 @@
+Imports Relativity.Import.Export
+
 Namespace kCura.WinEDDS.Service
 	Public Class ProductionManager
 		Inherits kCura.EDDS.WebAPI.ProductionManagerBase.ProductionManager
 		Implements Export.IProductionManager
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
-			Me.New(credentials, cookieContainer, kCura.WinEDDS.Config.WebServiceURL)
+			Me.New(credentials, cookieContainer, AppSettings.Instance.WebApiServiceUrl)
 		End Sub
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, webServiceUrl As String)
@@ -12,7 +14,7 @@ Namespace kCura.WinEDDS.Service
 
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}ProductionManager.asmx", kCura.WinEDDS.Config.ValidateURIFormat(webServiceUrl))
+			Me.Url = String.Format("{0}ProductionManager.asmx", AppSettings.Instance.ValidateUriFormat(webServiceUrl))
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 

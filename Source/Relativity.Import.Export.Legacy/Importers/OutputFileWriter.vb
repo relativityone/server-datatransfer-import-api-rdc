@@ -3,7 +3,7 @@
 		Implements IDisposable
 
 		Private ReadOnly _syncRoot As Object = New Object
-		Private ReadOnly _fileSystem As kCura.WinEDDS.TApi.IFileSystem
+		Private ReadOnly _fileSystem As Relativity.Import.Export.Io.IFileSystem
 		Private _nativeFileWriterRollbackPos As Long
 		Private _dataGridFileWriterRollbackPos As Long
 		Private _disposed As Boolean
@@ -12,7 +12,7 @@
 		''' Initializes a new instance of the <see cref="OutputFileWriter"/> class.
 		''' </summary>
 		Public Sub New()
-			Me.New(kCura.WinEDDS.TApi.FileSystem.Instance)
+			Me.New(Relativity.Import.Export.Io.FileSystem.Instance)
 		End Sub
 
 		''' <summary>
@@ -21,7 +21,7 @@
 		''' <param name="fileSystem">
 		''' The file system instance.
 		''' </param>
-		Public Sub New(fileSystem As kCura.WinEDDS.TApi.IFileSystem)
+		Public Sub New(fileSystem As Relativity.Import.Export.Io.IFileSystem)
 			If (fileSystem Is Nothing) Then
 				Throw New ArgumentNullException(NameOf(fileSystem))
 			End If
@@ -72,7 +72,7 @@
 		''' <value>
 		''' The <see cref="System.IO.StreamWriter"/> instance.
 		''' </value>
-		Public Property OutputNativeFileWriter As kCura.WinEDDS.TApi.IStreamWriter
+		Public Property OutputNativeFileWriter As Relativity.Import.Export.Io.IStreamWriter
 
 		''' <summary>
 		''' Gets or sets the stream writer that writes to the data grid load file.
@@ -80,7 +80,7 @@
 		''' <value>
 		''' The <see cref="System.IO.StreamWriter"/> instance.
 		''' </value>
-		Public Property OutputDataGridFileWriter As kCura.WinEDDS.TApi.IStreamWriter
+		Public Property OutputDataGridFileWriter As Relativity.Import.Export.Io.IStreamWriter
 
 		''' <summary>
 		''' Gets or sets the stream writer that writes to the code load file.
@@ -88,7 +88,7 @@
 		''' <value>
 		''' The <see cref="System.IO.StreamWriter"/> instance.
 		''' </value>
-		Public Property OutputCodeFileWriter As kCura.WinEDDS.TApi.IStreamWriter
+		Public Property OutputCodeFileWriter As Relativity.Import.Export.Io.IStreamWriter
 
 		''' <summary>
 		''' Gets or sets the stream writer that writes to the object load file.
@@ -96,7 +96,7 @@
 		''' <value>
 		''' The <see cref="System.IO.StreamWriter"/> instance.
 		''' </value>
-		Public Property OutputObjectFileWriter As kCura.WinEDDS.TApi.IStreamWriter
+		Public Property OutputObjectFileWriter As Relativity.Import.Export.Io.IStreamWriter
 
 		''' <summary>
 		''' Deletes all load files and retains the original file names.

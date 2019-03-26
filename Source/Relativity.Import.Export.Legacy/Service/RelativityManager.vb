@@ -1,9 +1,11 @@
+Imports Relativity.Import.Export
+
 Namespace kCura.WinEDDS.Service
 	Public Class RelativityManager
 		Inherits kCura.EDDS.WebAPI.RelativityManagerBase.RelativityManager
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
-			Me.New(credentials, cookieContainer, kCura.WinEDDS.Config.WebServiceURL)
+			Me.New(credentials, cookieContainer, AppSettings.Instance.WebApiServiceUrl)
 		End Sub
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer, ByVal webServiceUrl As String)
@@ -11,7 +13,7 @@ Namespace kCura.WinEDDS.Service
 
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}RelativityManager.asmx", kCura.WinEDDS.Config.ValidateURIFormat(webServiceUrl))
+			Me.Url = String.Format("{0}RelativityManager.asmx", AppSettings.Instance.ValidateUriFormat(webServiceUrl))
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 

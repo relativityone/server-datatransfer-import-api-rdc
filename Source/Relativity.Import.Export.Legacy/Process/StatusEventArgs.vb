@@ -1,4 +1,4 @@
-Imports kCura.Windows.Process
+Imports Relativity.Import.Export.Process
 
 Namespace kCura.WinEDDS
     Public Class StatusEventArgs

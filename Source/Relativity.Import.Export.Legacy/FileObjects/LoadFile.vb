@@ -1,4 +1,5 @@
 Imports System.Collections.Generic
+Imports Relativity.Import.Export
 
 Namespace kCura.WinEDDS
 	<Serializable()> Public Class LoadFile
@@ -236,7 +237,7 @@ Namespace kCura.WinEDDS
 				Try
 					Me.ForceFolderPreview = info.GetBoolean("ForceFolderPreview")
 				Catch
-					Me.ForceFolderPreview = kCura.WinEDDS.Config.ForceFolderPreview
+					Me.ForceFolderPreview = AppSettings.Instance.ForceFolderPreview
 				End Try
 
 				Try

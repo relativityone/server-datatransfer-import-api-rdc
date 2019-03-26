@@ -1,5 +1,6 @@
 Imports System.Runtime.Serialization
 Imports FileNaming.CustomFileNaming
+Imports Relativity.Import.Export
 
 Namespace kCura.WinEDDS
 	''' <summary>
@@ -520,7 +521,7 @@ Namespace kCura.WinEDDS
 				Me.ExportFullText = info.GetBoolean("ExportFullText")
 				Me.ExportFullTextAsFile = info.GetBoolean("ExportFullTextAsFile")
 				Me.ExportNative = info.GetBoolean("ExportNative")
-				With kCura.Utility.NullableTypesHelper.ToNullableInt32(info.GetString("LogFileFormat"))
+				With NullableTypesHelper.ToNullableInt32(info.GetString("LogFileFormat"))
 					Me.LogFileFormat = Nothing
 					If .HasValue Then Me.LogFileFormat = CType(.Value, kCura.WinEDDS.LoadFileType.FileFormat)
 				End With
@@ -531,7 +532,7 @@ Namespace kCura.WinEDDS
 				Me.ExportNativesToFileNamedFrom = CType(info.GetInt32("ExportNativesToFileNamedFrom"), kCura.WinEDDS.ExportNativeWithFilenameFrom)
 				Me.FilePrefix = info.GetString("FilePrefix")
 				Me.TypeOfExportedFilePath = CType(info.GetInt32("TypeOfExportedFilePath"), kCura.WinEDDS.ExportFile.ExportedFilePathType)
-				With kCura.Utility.NullableTypesHelper.ToNullableInt32(info.GetString("TypeOfImage"))
+				With NullableTypesHelper.ToNullableInt32(info.GetString("TypeOfImage"))
 					Me.TypeOfImage = Nothing
 					If .HasValue Then Me.TypeOfImage = CType(.Value, kCura.WinEDDS.ExportFile.ImageType)
 				End With

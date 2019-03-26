@@ -1,6 +1,9 @@
+Imports Relativity.Import.Export.Process
+Imports Relativity.Import.Export.Transfer
+
 Namespace kCura.WinEDDS
 	Public Class ConnectionDetailsProcess
-		Inherits kCura.Windows.Process.ProcessBase
+		Inherits ProcessBase
 
 		Private ReadOnly _credential As Net.NetworkCredential
 		Private ReadOnly _cookieContainer As Net.CookieContainer
@@ -14,20 +17,21 @@ Namespace kCura.WinEDDS
 			_caseInfo = caseInfo
 		End Sub
 
-		Protected Overrides Sub Execute()
+		Protected Overrides Sub OnExecute()
 			Me.CheckBcp()
 			Me.WriteStatus("")
 			Me.CheckDownloadHandlerURL()
 			Me.WriteStatus("")
 
-			Dim parameters As kCura.WinEDDS.TApi.TapiBridgeParameters = New kCura.WinEDDS.TApi.TapiBridgeParameters
+			Dim tapiObjectService As ITapiObjectService = New TapiObjectService
+			Dim parameters As TapiBridgeParameters = New TapiBridgeParameters
 			parameters.Credentials = _credential
-			parameters.TimeoutSeconds = Config.HttpTimeoutSeconds
+			parameters.TimeoutSeconds = Me.AppSettings.HttpTimeoutSeconds
 			parameters.WebCookieContainer = _cookieContainer
-			parameters.WebServiceUrl = Config.WebServiceURL
+			parameters.WebServiceUrl = Me.AppSettings.WebApiServiceUrl
 			parameters.WorkspaceId = _caseInfo.ArtifactID
-			Dim connectionInfo As Relativity.Transfer.RelativityConnectionInfo = kCura.WinEDDS.TApi.TapiWinEddsHelper.CreateRelativityConnectionInfo(parameters)
-			Using transferLog As New kCura.WinEDDS.TApi.RelativityTransferLog()
+			Dim connectionInfo As Relativity.Transfer.RelativityConnectionInfo = tapiObjectService.CreateRelativityConnectionInfo(parameters)
+			Using transferLog As New RelativityTransferLog()
 				Using transferHost As New Relativity.Transfer.RelativityTransferHost(connectionInfo, transferLog)
 					Dim context As New Relativity.Transfer.DiagnosticsContext()
 					Dim configuration As New Relativity.Transfer.DiagnosticsConfiguration(context, _cookieContainer)
@@ -53,7 +57,7 @@ Namespace kCura.WinEDDS
 		
 		Private Sub CheckDownloadHandlerURL()
 			Me.WriteStatus("Validate Download URL:")
-			Dim downloadUrl As String = kCura.Utility.URI.GetFullyQualifiedPath(_caseInfo.DownloadHandlerURL, New System.Uri(kCura.WinEDDS.Config.WebServiceURL))
+			Dim downloadUrl As String = Relativity.Import.Export.Io.FileSystem.Instance.Path.GetFullyQualifiedPath(New System.Uri(Me.AppSettings.WebApiServiceUrl), _caseInfo.DownloadHandlerURL)
 			Me.WriteStatus(downloadUrl)
 			Dim myReq As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(downloadUrl & "AccessDenied.aspx"), System.Net.HttpWebRequest)
 	  Try
@@ -87,7 +91,7 @@ Namespace kCura.WinEDDS
 			Catch ex As System.Exception
 				Me.WriteStatus("Error retrieving BCP folder - WebAPI error")
 				Dim ensure As String = "Ensure"
-				If WinEDDS.Config.EnableSingleModeImport Then
+				If Me.AppSettings.EnableSingleModeImport Then
 					Me.WriteStatus("Loads will happen in Single mode - this is less than optimal.  To upgrade,")
 					ensure = "ensure"
 				End If
@@ -142,7 +146,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub WriteStatus(ByVal message As String)
-			Me.ProcessObserver.RaiseStatusEvent("", message)
+			Me.Context.PublishStatusEvent("", message)
 		End Sub
 
 	End Class

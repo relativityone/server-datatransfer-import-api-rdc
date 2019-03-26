@@ -2,12 +2,12 @@ Imports System.Collections.Generic
 Imports System.Threading
 Imports System.Threading.Tasks
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
-Imports kCura.OI.FileID
-Imports kCura.Utility.Extensions
-Imports kCura.Windows.Process
 Imports kCura.WinEDDS.Api
-Imports kCura.WinEDDS.TApi
 Imports Relativity
+Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Io
+Imports Relativity.Import.Export.Process
+Imports Relativity.Import.Export.Transfer
 
 Namespace kCura.WinEDDS
 	Public Class BulkLoadFileImporter
@@ -44,7 +44,7 @@ Namespace kCura.WinEDDS
 		Private _allFields As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 		Private _fieldsForCreate As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
 		Protected ProcessedDocumentIdentifiers As Collections.Specialized.NameValueCollection
-		Protected WithEvents ProcessController As Controller
+		Protected WithEvents Context As ProcessContext
 		Protected Offset As Int32 = 0
 		Protected FirstTimeThrough As Boolean
 		Private _importBatchSize As Int32?
@@ -68,7 +68,7 @@ Namespace kCura.WinEDDS
 		Private _errorMessageFileLocation As String = String.Empty
 		Private _errorLinesFileLocation As String = String.Empty
 
-		Public MaxNumberOfErrorsInGrid As Int32 = Config.DefaultMaximumErrorCount
+		Public MaxNumberOfErrorsInGrid As Int32 = AppSettings.Instance.DefaultMaxErrorCount
 		Private _errorCount As Int32 = 0
 		Private _prePushErrorLineNumbersFileName As String = String.Empty
 		Private _processId As Guid
@@ -94,20 +94,20 @@ Namespace kCura.WinEDDS
 
 #Region "Accessors"
 
-		Public Property DisableNativeValidation As Boolean = Config.DisableNativeValidation
+		Public Property DisableNativeValidation As Boolean = AppSettings.Instance.DisableOutsideInFileIdentification
 		Public Property DisableUserSecurityCheck As Boolean
-		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = WinEDDS.Config.AuditLevel
+		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = Config.AuditLevel
 		Public ReadOnly Property BatchSizeHistoryList As System.Collections.Generic.List(Of Int32)
 
 		Protected Overridable ReadOnly Property NumberOfRetries() As Int32
 			Get
-				Return kCura.Utility.Config.IOErrorNumberOfRetries
+				Return AppSettings.Instance.IoErrorNumberOfRetries
 			End Get
 		End Property
 
 		Protected ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
 			Get
-				Return kCura.Utility.Config.IOErrorWaitTimeInSeconds
+				Return AppSettings.Instance.IoErrorWaitTimeInSeconds
 			End Get
 		End Property
 
@@ -167,7 +167,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public ReadOnly Property UploadConnection() As TApi.TapiClient
+		Public ReadOnly Property UploadConnection() As TapiClient
 			Get
 				Return Me.FileTapiClient
 			End Get
@@ -222,7 +222,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable Property MinimumBatchSize As Int32
 			Get
-				If Not _minimumBatchSize.HasValue Then _minimumBatchSize = Config.MinimumBatchSize
+				If Not _minimumBatchSize.HasValue Then _minimumBatchSize = AppSettings.Instance.MinBatchSize
 				Return _minimumBatchSize.Value
 			End Get
 			Set(ByVal value As Int32)
@@ -232,7 +232,7 @@ Namespace kCura.WinEDDS
 
 		Protected Property ImportBatchSize As Int32
 			Get
-				If Not _importBatchSize.HasValue Then _importBatchSize = Config.ImportBatchSize
+				If Not _importBatchSize.HasValue Then _importBatchSize = AppSettings.Instance.ImportBatchSize
 				Return _importBatchSize.Value
 			End Get
 			Set(ByVal value As Int32)
@@ -242,7 +242,7 @@ Namespace kCura.WinEDDS
 
 		Protected Property JobCompleteBatchSize As Int32
 			Get
-				If Not _jobCompleteBatchSize.HasValue Then _jobCompleteBatchSize = Config.JobCompleteBatchSize
+				If Not _jobCompleteBatchSize.HasValue Then _jobCompleteBatchSize = AppSettings.Instance.JobCompleteBatchSize
 				Return _jobCompleteBatchSize.Value
 			End Get
 			Set(ByVal value As Int32)
@@ -252,7 +252,7 @@ Namespace kCura.WinEDDS
 
 		Protected Property ImportBatchVolume As Int32
 			Get
-				If Not _importBatchVolume.HasValue Then _importBatchVolume = Config.ImportBatchMaxVolume
+				If Not _importBatchVolume.HasValue Then _importBatchVolume = AppSettings.Instance.ImportBatchMaxVolume
 				Return _importBatchVolume.Value
 			End Get
 			Set(ByVal value As Int32)
@@ -262,7 +262,7 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable ReadOnly Property BatchResizeEnabled As Boolean
 			Get
-				Return Config.DynamicBatchResizingOn
+				Return AppSettings.Instance.DynamicBatchResizingOn
 			End Get
 		End Property
 
@@ -274,7 +274,7 @@ Namespace kCura.WinEDDS
 		''' Constructs a new importer that will prepare a bulk load file from a provided file.
 		''' </summary>
 		''' <param name="args">Information about the file being loaded</param>
-		''' <param name="processController">The process that is running</param>
+		''' <param name="context">The process context</param>
 		''' <param name="reporter">The object that performs I/O operations and publishes messages during retry operations.</param>
 		''' <param name="logger">The Relativity logger.</param>
 		''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
@@ -288,7 +288,7 @@ Namespace kCura.WinEDDS
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
 		Public Sub New(args As LoadFile, _
-		               processController As Controller, _
+		               context As ProcessContext, _
 		               reporter As IIoReporter, _
 		               logger As Relativity.Logging.ILog, _
 		               timeZoneOffset As Int32, _
@@ -300,7 +300,7 @@ Namespace kCura.WinEDDS
 		               tokenSource As CancellationTokenSource, _
 					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
 			Me.New(args, _
-			       processController, _
+			       context, _
 			       reporter, _
 			       logger, _
 			       timeZoneOffset, _
@@ -319,7 +319,7 @@ Namespace kCura.WinEDDS
 		''' Constructs a new importer that will prepare a bulk load file from a provided file.
 		''' </summary>
 		''' <param name="args">Information about the file being loaded</param>
-		''' <param name="processController">The process that is running</param>
+		''' <param name="context">The process context</param>
 		''' <param name="reporter">The object that performs I/O operations and publishes messages during retry operations.</param>
 		''' <param name="logger">The Relativity logger.</param>
 		''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
@@ -333,7 +333,7 @@ Namespace kCura.WinEDDS
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
 		Public Sub New(args As LoadFile, _
-		               processController As Controller, _
+		               context As ProcessContext, _
 		               reporter As IIoReporter, _
 		               logger As Relativity.Logging.ILog, _
 		               timeZoneOffset As Int32, _
@@ -346,7 +346,7 @@ Namespace kCura.WinEDDS
 		               tokenSource As CancellationTokenSource, _
 		               ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
 			Me.New(args, _
-			       processController, _
+			       context, _
 			       reporter, _
 			       logger, _
 			       timeZoneOffset, _
@@ -365,7 +365,7 @@ Namespace kCura.WinEDDS
 		''' Constructs a new importer that will prepare a bulk load file from a provided file.
 		''' </summary>
 		''' <param name="args">Information about the file being loaded</param>
-		''' <param name="processController">The process that is running</param>
+		''' <param name="context">The process context</param>
 		''' <param name="reporter">The object that performs I/O operations and publishes messages during retry operations.</param>
 		''' <param name="logger">The Relativity logger.</param>
 		''' <param name="timeZoneOffset">The running context's time zone offset from UTC</param>
@@ -379,7 +379,7 @@ Namespace kCura.WinEDDS
 		''' <exception cref="ArgumentNullException">Thrown if <paramref name="bulkLoadFileFieldDelimiter"/>
 		''' is <c>null</c> or <c>String.Empty</c>.</exception>
 		Public Sub New(args As LoadFile, _
-		               processController As Controller, _
+		               context As ProcessContext, _
 		               reporter As IIoReporter, _
 		               logger As Relativity.Logging.ILog, _
 		               timeZoneOffset As Int32, _
@@ -403,9 +403,9 @@ Namespace kCura.WinEDDS
 			           executionSource:=executionSource)
 
 			' Avoid excessive concurrent dictionary hits by caching frequently used config settings.
-			_usePipeliningForNativeAndObjectImports = Config.UsePipeliningForNativeAndObjectImports
-			_createFoldersInWebApi = Config.CreateFoldersInWebAPI
-			_createErrorForEmptyNativeFile = Config.CreateErrorForEmptyNativeFile
+			_usePipeliningForNativeAndObjectImports = AppSettings.Instance.UsePipeliningForNativeAndObjectImports
+			_createFoldersInWebApi = AppSettings.Instance.CreateFoldersInWebApi
+			_createErrorForEmptyNativeFile = AppSettings.Instance.CreateErrorForEmptyNativeFile
 
 			' get an instance of the specific type of artifact reader so we can get the fieldmapped event
 			_enforceDocumentLimit = enforceDocumentLimit
@@ -438,7 +438,7 @@ Namespace kCura.WinEDDS
 				If autoDetect Then _folderManager.Read(args.CaseInfo.ArtifactID, args.CaseInfo.RootFolderID)
 			End If
 
-			Me.ProcessController = processController
+			Me.Context = context
 			FirstTimeThrough = True
 			_caseInfo = args.CaseInfo
 			_settings = args
@@ -459,47 +459,47 @@ Namespace kCura.WinEDDS
 
 		Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)
 			Dim gateway As Service.FileIO = New Service.FileIO(args.Credentials, args.CookieContainer)
-			Dim nativeParameters As TApi.UploadTapiBridgeParameters = New TApi.UploadTapiBridgeParameters
-			nativeParameters.Application = Config.ApplicationName
+			Dim nativeParameters As UploadTapiBridgeParameters = New UploadTapiBridgeParameters
+			nativeParameters.Application = AppSettings.Instance.ApplicationName
 			nativeParameters.BcpFileTransfer = False
 			nativeParameters.AsperaBcpRootFolder = String.Empty
 
 			' This will tie both native and BCP to a single unique identifier.
 			nativeParameters.ClientRequestId = Guid.NewGuid()
 			nativeParameters.Credentials = If(args.TapiCredentials, args.Credentials)
-			nativeParameters.AsperaDocRootLevels = Config.TapiAsperaNativeDocRootLevels
+			nativeParameters.AsperaDocRootLevels = AppSettings.Instance.TapiAsperaNativeDocRootLevels
 			nativeParameters.FileShare = args.CaseInfo.DocumentPath
-			nativeParameters.ForceAsperaClient = Config.TapiForceAsperaClient
-			nativeParameters.ForceClientCandidates = Config.TapiForceClientCandidates
-			nativeParameters.ForceFileShareClient = Config.TapiForceFileShareClient
-			nativeParameters.ForceHttpClient = Config.ForceWebUpload OrElse Config.TapiForceHttpClient
-			nativeParameters.LargeFileProgressEnabled = Config.TapiLargeFileProgressEnabled
-			nativeParameters.LogConfigFile = Config.LogConfigFile
+			nativeParameters.ForceAsperaClient = AppSettings.Instance.TapiForceAsperaClient
+			nativeParameters.ForceClientCandidates = AppSettings.Instance.TapiForceClientCandidates
+			nativeParameters.ForceFileShareClient = AppSettings.Instance.TapiForceFileShareClient
+			nativeParameters.ForceHttpClient = AppSettings.Instance.ForceWebUpload OrElse AppSettings.Instance.TapiForceHttpClient
+			nativeParameters.LargeFileProgressEnabled = AppSettings.Instance.TapiLargeFileProgressEnabled
+			nativeParameters.LogConfigFile = AppSettings.Instance.LogConfigXmlFileName
 			nativeParameters.MaxFilesPerFolder = gateway.RepositoryVolumeMax
-			nativeParameters.MaxJobParallelism = Config.TapiMaxJobParallelism
+			nativeParameters.MaxJobParallelism = AppSettings.Instance.TapiMaxJobParallelism
 			nativeParameters.MaxJobRetryAttempts = Me.NumberOfRetries
-			nativeParameters.MinDataRateMbps = Config.TapiMinDataRateMbps
-			nativeParameters.PreserveFileTimestamps = Config.TapiPreserveFileTimestamps
-			nativeParameters.SubmitApmMetrics = Config.TapiSubmitApmMetrics
+			nativeParameters.MinDataRateMbps = AppSettings.Instance.TapiMinDataRateMbps
+			nativeParameters.PreserveFileTimestamps = AppSettings.Instance.TapiPreserveFileTimestamps
+			nativeParameters.SubmitApmMetrics = AppSettings.Instance.TapiSubmitApmMetrics
 			nativeParameters.TargetPath = Me._defaultDestinationFolderPath
-			nativeParameters.TargetDataRateMbps = Config.TapiTargetDataRateMbps
-			nativeParameters.TimeoutSeconds = Config.HttpTimeoutSeconds
-			nativeParameters.TransferLogDirectory = Config.TapiTransferLogDirectory
+			nativeParameters.TargetDataRateMbps = AppSettings.Instance.TapiTargetDataRateMbps
+			nativeParameters.TimeoutSeconds = AppSettings.Instance.HttpTimeoutSeconds
+			nativeParameters.TransferLogDirectory = AppSettings.Instance.TapiTransferLogDirectory
 			nativeParameters.WaitTimeBetweenRetryAttempts = Me.WaitTimeBetweenRetryAttempts
 			nativeParameters.WebCookieContainer = args.CookieContainer
-			nativeParameters.WebServiceUrl = Config.WebServiceURL
+			nativeParameters.WebServiceUrl = AppSettings.Instance.WebApiServiceUrl
 			nativeParameters.WorkspaceId = args.CaseInfo.ArtifactID
-			nativeParameters.PermissionErrorsRetry = Config.PermissionErrorsRetry
-			nativeParameters.BadPathErrorsRetry = Config.BadPathErrorsRetry
+			nativeParameters.PermissionErrorsRetry = AppSettings.Instance.PermissionErrorsRetry
+			nativeParameters.BadPathErrorsRetry = AppSettings.Instance.TapiBadPathErrorsRetry
 
 			' Copying the parameters and tweaking just a few BCP specific parameters.
-			Dim bcpParameters As TApi.UploadTapiBridgeParameters = nativeParameters.ShallowCopy()
+			Dim bcpParameters As UploadTapiBridgeParameters = nativeParameters.ShallowCopy()
 			bcpParameters.BcpFileTransfer = True
-			bcpParameters.AsperaBcpRootFolder = Config.TapiAsperaBcpRootFolder
+			bcpParameters.AsperaBcpRootFolder = AppSettings.Instance.TapiAsperaBcpRootFolder
 			bcpParameters.FileShare = gateway.GetBcpSharePath(args.CaseInfo.ArtifactID)
 			bcpParameters.SupportCheckPath = bcpParameters.FileShare
 			bcpParameters.SortIntoVolumes = False
-			bcpParameters.ForceHttpClient = bcpParameters.ForceHttpClient Or Config.TapiForceBcpHttpClient
+			bcpParameters.ForceHttpClient = bcpParameters.ForceHttpClient Or AppSettings.Instance.TapiForceBcpHttpClient
 
 			' Never preserve timestamps for BCP load files.
 			bcpParameters.PreserveFileTimestamps = false
@@ -620,7 +620,7 @@ Namespace kCura.WinEDDS
 						Statistics.BatchSize = Me.ImportBatchSize
 						JobCounter = 1
 						Me.TotalTransferredFilesCount = 0
-						Using fileService As kCura.OI.FileID.FileIDService = New kCura.OI.FileID.FileIDService()
+						Using fileService As OutsideInFileIdService = New OutsideInFileIdService()
 							While ShouldImport AndAlso _artifactReader.HasMoreRecords
 								Try
 									If Me.CurrentLineNumber < _startLineNumber Then
@@ -634,7 +634,7 @@ Namespace kCura.WinEDDS
 											'The EventType.Count is used as an 'easy' way for the ImportAPI to eventually get a record count.
 											' It could be done in DataReaderClient in other ways, but those ways turned out to be pretty messy.
 											' -Phil S. 06/12/2012
-											WriteStatusLine(Windows.Process.EventType.Count, String.Empty)
+											WriteStatusLine(EventType.Count, String.Empty)
 											line = _artifactReader.ReadArtifact
 										End Using
 										Dim lineStatus As Int32 = 0
@@ -662,7 +662,7 @@ Namespace kCura.WinEDDS
 								Catch ex As System.IO.PathTooLongException
 									WriteError(Me.CurrentLineNumber, ERROR_MESSAGE_FOLDER_NAME_TOO_LONG)
 									Me.LogError(ex, "An import error has occured because of invalid document path - the path is too long.")
-								Catch ex As kCura.Utility.ImporterExceptionBase
+								Catch ex As ImporterException
 									WriteError(Me.CurrentLineNumber, ex.Message)
 									Me.LogError(ex, "An import data error has occurred managing an import document.")
 								Catch ex As FileInfoInvalidPathException
@@ -671,7 +671,7 @@ Namespace kCura.WinEDDS
 								Catch ex As System.IO.FileNotFoundException
 									WriteError(Me.CurrentLineNumber, ex.Message)
 									Me.LogError(ex, "A file not found error has occurred managing an import document.")
-								Catch ex As FileIDIdentificationException
+								Catch ex As FileIdException
 									WriteError(Me.CurrentLineNumber, ex.Message)
 									Me.LogError(ex, "An error occured identifying type of native file.")
 								Catch ex As System.UnauthorizedAccessException
@@ -686,20 +686,20 @@ Namespace kCura.WinEDDS
 							' Dump OI details.
 							' Preserving existing behavior where this can never fail.
 							Try
-								Dim fileIdInfo As FileIDInfo = fileService.GetConfigInfo()
-								If fileIdInfo.HasError Then
+								Dim FileIdConfiguration As FileIdConfiguration = fileService.Configuration
+								If FileIdConfiguration.HasError Then
 									Me.LogError("OI Configuration Info")
-									Me.LogError("OI version: {Version}", fileIdInfo.Version)
-									Me.LogError("OI idle worker timeout: {Timeout} seconds", fileIdInfo.IdleWorkerTimeout)
-									Me.LogError("OI install path: {InstallPath}", fileIdInfo.InstallLocation)
-									If Not fileIdInfo.Exception Is Nothing Then
-										Me.LogError(fileIdInfo.Exception, "OI runtime exception.", fileIdInfo.Exception)
+									Me.LogError("OI version: {Version}", FileIdConfiguration.Version)
+									Me.LogError("OI idle worker timeout: {Timeout} seconds", FileIdConfiguration.Timeout)
+									Me.LogError("OI install path: {InstallPath}", FileIdConfiguration.InstallDirectory)
+									If Not FileIdConfiguration.Exception Is Nothing Then
+										Me.LogError(FileIdConfiguration.Exception, "OI runtime exception.", FileIdConfiguration.Exception)
 									End If
 								Else
 									Me.LogInformation("OI Configuration Info")
-									Me.LogInformation("OI version: {Version}", fileIdInfo.Version)
-									Me.LogInformation("OI idle worker timeout: {Timeout}", fileIdInfo.IdleWorkerTimeout)
-									Me.LogInformation("OI install path: {InstallPath}", fileIdInfo.InstallLocation)
+									Me.LogInformation("OI version: {Version}", FileIdConfiguration.Version)
+									Me.LogInformation("OI idle worker timeout: {Timeout}", FileIdConfiguration.Timeout)
+									Me.LogInformation("OI install path: {InstallPath}", FileIdConfiguration.InstallDirectory)
 								End If
 							Catch ex As FileIDException
 								Me.LogError(ex, "Failed to retrieve OI configuration info.")
@@ -748,7 +748,7 @@ Namespace kCura.WinEDDS
 		Private Function InitializeMembers(ByVal path As String) As Boolean
 			RecordCount = _artifactReader.CountRecords
 			If RecordCount = -1 Then
-				OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.Progress, CurrentLineNumber, CurrentLineNumber, CancelEventMsg, CurrentStatisticsSnapshot, Statistics))
+				OnStatusMessage(New StatusEventArgs(EventType.Progress, CurrentLineNumber, CurrentLineNumber, CancelEventMsg, CurrentStatisticsSnapshot, Statistics))
 				Return False
 			End If
 
@@ -756,11 +756,11 @@ Namespace kCura.WinEDDS
 			Me.InitializeFieldIdList()
 			Me.DeleteTempLoadFiles()
 			Me.OpenFileWriters()
-			Me.OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.ResetStartTime, 0, RecordCount, RestartTimeEventMsg, Nothing, Statistics))
+			Me.OnStatusMessage(New StatusEventArgs(EventType.ResetStartTime, 0, RecordCount, RestartTimeEventMsg, Nothing, Statistics))
 
 			' Counting all lines increments progress to 100%.
 			' This will reset progress back to zero instead of waiting for the first transfer to complete.
-			Me.OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.ResetProgress, 0, RecordCount, "Starting import...", Nothing, Statistics))
+			Me.OnStatusMessage(New StatusEventArgs(EventType.ResetProgress, 0, RecordCount, "Starting import...", Nothing, Statistics))
 			Return True
 		End Function
 
@@ -797,7 +797,7 @@ Namespace kCura.WinEDDS
 			_fieldArtifactIds = DirectCast(fieldIdList.ToArray(GetType(Int32)), Int32())
 		End Sub
 
-		Private Function ManageDocument(ByVal fileService As kCura.OI.FileID.FileIDService, ByVal record As Api.ArtifactFieldCollection, ByVal lineStatus As Int64) As String
+		Private Function ManageDocument(ByVal fileService As OutsideInFileIdService, ByVal record As Api.ArtifactFieldCollection, ByVal lineStatus As Int64) As String
 			Dim filename As String = String.Empty
 			Dim originalFilename As String = String.Empty
 			Dim fileGuid As String = String.Empty
@@ -806,7 +806,7 @@ Namespace kCura.WinEDDS
 			Dim identityValue As String = String.Empty
 			Dim parentFolderID As Int32
 			Dim fullFilePath As String = String.Empty
-			Dim oixFileIdData As OI.FileID.FileIDData = Nothing
+			Dim oixFileIdInfo As FileIdInfo = Nothing
 			Dim destinationVolume As String = Nothing
 			Dim injectableContainer As Api.IInjectableFieldCollection = TryCast(record, Api.IInjectableFieldCollection)
 
@@ -855,25 +855,23 @@ Namespace kCura.WinEDDS
 
 						Try
 							If Me.DisableNativeValidation Then
-								oixFileIdData = Nothing
+								oixFileIdInfo = Nothing
 							Else
 								Dim idDataExtractor As Api.IHasOixFileType = Nothing
 								If (Not injectableContainerIsNothing) Then
-									idDataExtractor = injectableContainer.FileIdData
+									idDataExtractor = injectableContainer.FileIdInfo
 								End If
 
 								If (idDataExtractor Is Nothing) Then
 									' REL-165493: Added OI resiliency and properly address FileNotFoundException scenarios.
 									Dim maxRetryAttempts As Integer = Me.NumberOfRetries
 									Dim currentRetryAttempt As Integer = 0
-									Dim policy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(
-										maxRetryAttempts, _
-										Me.WaitTimeBetweenRetryAttempts)
-									oixFileIdData = policy.WaitAndRetry(
+									Dim policy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(AppSettings.Instance)
+									oixFileIdInfo = policy.WaitAndRetry(
 										Function(exception)
-											Dim outsideInException As FileIDIdentificationException = TryCast(exception, FileIDIdentificationException)
+											Dim outsideInException As FileIdException = TryCast(exception, FileIdException)
 											If (Not outsideInException Is Nothing)
-												If (outsideInException.ErrorCode = FileIDService.FilePermissionErrorCode) Then
+												If (outsideInException.Error = FileIdError.Permissions) Then
 													' Only perform a retry operation if configured to do so.
 													Return Me.RetryOptions.HasFlag(RetryOptions.Permissions)
 												End If
@@ -897,12 +895,12 @@ Namespace kCura.WinEDDS
 										Sub(exception, span)
 											Me.PublishIoRetryMessage(exception, span, currentRetryAttempt, maxRetryAttempts)
 										End Sub,
-										Function() As OI.FileID.FileIDData
+										Function() As FileIdInfo
 											Return fileService.Identify(fullFilePath)
 										End Function,
 										Me.CancellationToken)
 								Else
-									oixFileIdData = idDataExtractor.GetFileIDData()
+									oixFileIdInfo = idDataExtractor.GetFileIdInfo()
 								End If
 							End If
 
@@ -935,7 +933,7 @@ Namespace kCura.WinEDDS
 
 						' Status must be handled the pre-TAPI way whenever the copy repository option is disabled.
 						If ShouldImport AndAlso Not _copyFileToRepository Then
-							WriteStatusLine(Windows.Process.EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
+							WriteStatusLine(EventType.Status, String.Format("End upload file. ({0}ms)", DateTime.op_Subtraction(DateTime.Now, now).Milliseconds))
 						End If
 					End If
 				End If
@@ -945,7 +943,7 @@ Namespace kCura.WinEDDS
 			Using Timekeeper.CaptureTime("ManageDocument_Folder")
 				If _createFolderStructure Then
 					If _artifactTypeID = Relativity.ArtifactType.Document Then
-						Dim value As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value))
+						Dim value As String = NullableTypesHelper.ToEmptyStringOrValue(NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value))
 						If _createFoldersInWebApi Then
 							'Server side folder creation
 							Dim cleanFolderPath As String = CleanDestinationFolderPath(value)
@@ -964,7 +962,7 @@ Namespace kCura.WinEDDS
 						End If
 					Else
 						'TODO: If we are going to do this for more than documents, fix this as well...
-						Dim textIdentifier As String = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(kCura.Utility.NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value.ToString))
+						Dim textIdentifier As String = NullableTypesHelper.ToEmptyStringOrValue(NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value.ToString))
 						If textIdentifier = "" Then
 							If Overwrite = Relativity.ImportOverwriteType.Overlay OrElse Overwrite = Relativity.ImportOverwriteType.AppendOverlay Then
 								parentFolderID = -1
@@ -1014,9 +1012,9 @@ Namespace kCura.WinEDDS
 				fileSizeExtractor = injectableContainer.FileSize
 			End If
 			If fileSizeExtractor Is Nothing Then
-				doc = New MetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileIdData, lineStatus, destinationVolume, folderPath, dataGridID)
+				doc = New MetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileIdInfo, lineStatus, destinationVolume, folderPath, dataGridID)
 			Else
-				doc = New SizedMetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileIdData, lineStatus, destinationVolume, fileSizeExtractor.GetFileSize(), folderPath, dataGridID)
+				doc = New SizedMetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, oixFileIdInfo, lineStatus, destinationVolume, fileSizeExtractor.GetFileSize(), folderPath, dataGridID)
 			End If
 
 			Using Timekeeper.CaptureTime("ManageDocument_ManageDocumentMetadata")
@@ -1083,7 +1081,7 @@ Namespace kCura.WinEDDS
 						Me.TryPushNativeBatch(False, _jobCompleteNativeCount >= JobCompleteBatchSize, _jobCompleteMetadataCount >= JobCompleteBatchSize)
 					End If
 				End Using
-			Catch ex As kCura.Utility.ImporterExceptionBase
+			Catch ex As ImporterException
 				WriteError(metaDoc.LineNumber, ex.Message)
 				Me.LogError(ex, "A serious import error has occurred managing document {file} metadata.", metaDoc.FullFilePath)
 			Catch ex As FileInfoInvalidPathException
@@ -1100,12 +1098,12 @@ Namespace kCura.WinEDDS
 			' Let TAPI handle progress as long as we're transferring the native. See the TAPI progress event below.
 			If _copyFileToRepository AndAlso metaDoc.IndexFileInDB Then
 				Using Timekeeper.CaptureTime("ManageDocumentMetadata_StatusEvent")
-					WriteStatusLine(Windows.Process.EventType.Status, $"Item '{metaDoc.IdentityValue}' file '{metaDoc.FileGuid}' processed.", metaDoc.LineNumber)
+					WriteStatusLine(EventType.Status, $"Item '{metaDoc.IdentityValue}' file '{metaDoc.FileGuid}' processed.", metaDoc.LineNumber)
 				End Using
 			Else
 				Using Timekeeper.CaptureTime("ManageDocumentMetadata_ProgressEvent")
 					FileTapiProgressCount += 1
-					WriteStatusLine(Windows.Process.EventType.Progress, $"Item '{metaDoc.IdentityValue}' file '{metaDoc.FileGuid}'  processed.", metaDoc.LineNumber)
+					WriteStatusLine(EventType.Progress, $"Item '{metaDoc.IdentityValue}' file '{metaDoc.FileGuid}'  processed.", metaDoc.LineNumber)
 				End Using
 			End If
 		End Sub
@@ -1298,12 +1296,12 @@ Namespace kCura.WinEDDS
 						tries += 1
 						hasReachedEof = False
 					Else
-						kCura.Utility.File.Instance.Delete(newNativeFilePath)
+						Relativity.Import.Export.Io.FileSystem.Instance.File.Delete(newNativeFilePath)
 						Throw
 					End If
 				End Try
 			End While
-			kCura.Utility.File.Instance.Delete(newNativeFilePath)
+			Relativity.Import.Export.Io.FileSystem.Instance.File.Delete(newNativeFilePath)
 		End Sub
 
 		Private Sub AdvanceStream(ByVal sr As System.IO.StreamReader, ByVal count As Int64)
@@ -1605,10 +1603,10 @@ Namespace kCura.WinEDDS
 
 		Private Sub WriteDocumentNativeInfo(mdoc As MetaDocument)
 			If _filePathColumnIndex <> -1 AndAlso mdoc.UploadFile AndAlso mdoc.IndexFileInDB Then
-				Dim supportedByViewerProvider As IHasSupportedByViewer = TryCast(mdoc.FileIdData, IHasSupportedByViewer)
+				Dim supportedByViewerProvider As IHasSupportedByViewer = TryCast(mdoc.FileIdInfo, IHasSupportedByViewer)
 
 				If supportedByViewerProvider Is Nothing
-					WriteDocumentNativeInfo(Me.IsSupportedRelativityFileType(mdoc.FileIdData), mdoc.GetFileType(), True)
+					WriteDocumentNativeInfo(Me.IsSupportedRelativityFileType(mdoc.FileIdInfo), mdoc.GetFileType(), True)
 				Else
 					WriteDocumentNativeInfo(supportedByViewerProvider.SupportedByViewer(), mdoc.GetFileType(), True)
 				End If
@@ -1631,7 +1629,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Private Sub WriteDocumentField(ByRef chosenEncoding As System.Text.Encoding, field As Api.ArtifactField, ByVal outputWriter As kCura.WinEDDS.TApi.IStreamWriter, ByVal fileBasedfullTextColumn As Boolean, ByVal delimiter As String, ByVal artifactTypeID As Int32, ByVal extractedTextEncoding As System.Text.Encoding)
+		Private Sub WriteDocumentField(ByRef chosenEncoding As System.Text.Encoding, field As Api.ArtifactField, ByVal outputWriter As Relativity.Import.Export.Io.IStreamWriter, ByVal fileBasedfullTextColumn As Boolean, ByVal delimiter As String, ByVal artifactTypeID As Int32, ByVal extractedTextEncoding As System.Text.Encoding)
 			If field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse field.Type = Relativity.FieldTypeHelper.FieldType.Code Then
 				outputWriter.Write(field.Value)
 				outputWriter.Write(delimiter)
@@ -1671,9 +1669,7 @@ Namespace kCura.WinEDDS
 							Dim currentRetryAttempt As Integer = 0
 
 							' REL-272765: Added I/O resiliency and support document level errors.
-							Dim policy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(
-								maxRetryAttempts, _
-								Me.WaitTimeBetweenRetryAttempts)
+							Dim policy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(AppSettings.Instance)
 
 							' Note: a lambda can't modify a ref param; therefore, a policy block return value is used.
 							Dim returnEncoding As System.Text.Encoding = policy.WaitAndRetry(
@@ -1851,7 +1847,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Private Function IsSupportedRelativityFileType(ByVal fileData As OI.FileID.FileIDData) As Boolean
+		Private Function IsSupportedRelativityFileType(ByVal fileData As FileIdInfo) As Boolean
 			If fileData Is Nothing Then
 				If Me.DisableNativeValidation Then
 					Return True
@@ -1865,7 +1861,7 @@ Namespace kCura.WinEDDS
 					_oixFileLookup.Add(id, id)
 				Next
 			End If
-			Return Not _oixFileLookup.Contains(fileData.FileID)
+			Return Not _oixFileLookup.Contains(fileData.Id)
 		End Function
 
 #End Region
@@ -1892,10 +1888,10 @@ Namespace kCura.WinEDDS
 				For Each item In _fieldMap
 					If FirstTimeThrough Then
 						If item.DocumentField Is Nothing Then
-							WriteStatusLine(Windows.Process.EventType.Warning, String.Format("File column '{0}' will be unmapped", item.NativeFileColumnIndex + 1), 0)
+							WriteStatusLine(EventType.Warning, String.Format("File column '{0}' will be unmapped", item.NativeFileColumnIndex + 1), 0)
 						End If
 						If item.NativeFileColumnIndex = -1 Then
-							WriteStatusLine(Windows.Process.EventType.Warning, String.Format("Field '{0}' will be unmapped", item.DocumentField.FieldName), 0)
+							WriteStatusLine(EventType.Warning, String.Format("Field '{0}' will be unmapped", item.DocumentField.FieldName), 0)
 						End If
 					End If
 					If Not item.DocumentField Is Nothing Then
@@ -1964,7 +1960,7 @@ Namespace kCura.WinEDDS
 		Private Sub WriteStatusLine(ByVal et As EventType, ByVal line As String, ByVal lineNumber As Int32)
 			' Avoid displaying potential negative numbers.
 			Dim recordNumber As Int32 = lineNumber
-			If recordNumber <> TApi.TapiConstants.NoLineNumber Then
+			If recordNumber <> TapiConstants.NoLineNumber Then
 				recordNumber = recordNumber + Offset
 			End If
 
@@ -2054,7 +2050,7 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Protected Overrides Sub OnWriteStatusMessage(ByVal eventType As kCura.Windows.Process.EventType, ByVal message As String, ByVal progressLineNumber As Int32, ByVal physicalLineNumber As Int32)
+		Protected Overrides Sub OnWriteStatusMessage(ByVal eventType As EventType, ByVal message As String, ByVal progressLineNumber As Int32, ByVal physicalLineNumber As Int32)
 			Select Case eventType
 				Case EventType.Error
 					WriteError(progressLineNumber, message)
@@ -2092,8 +2088,8 @@ Namespace kCura.WinEDDS
 			MyBase.OnTapiClientChanged()
 		End Sub
 
-		Protected Overridable Sub _processController_HaltProcessEvent(ByVal processID As System.Guid) Handles ProcessController.HaltProcessEvent
-			If processID.ToString = _processId.ToString Then
+		Protected Overridable Sub _processContext_HaltProcessEvent(ByVal sender As Object, ByVal e As CancellationRequestEventArgs) Handles Context.CancellationRequest
+			If e.ProcessId.ToString = _processId.ToString Then
 				StopImport()
 			End If
 		End Sub
@@ -2106,7 +2102,7 @@ Namespace kCura.WinEDDS
 			WriteStatusLine(EventType.Status, "Finalizing job...", TapiConstants.NoLineNumber)
 		End Sub
 
-		Protected Overridable Sub _processController_ExportServerErrors(ByVal exportLocation As String) Handles ProcessController.ExportServerErrorsEvent
+		Protected Overridable Sub _processContext_ExportServerErrors(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportServerErrors
 			_errorLinesFileLocation = _artifactReader.ManageErrorRecords(_errorMessageFileLocation, _prePushErrorLineNumbersFileName)
 			Dim rootFileName As String = _filePath
 			Dim defaultExtension As String
@@ -2120,7 +2116,7 @@ Namespace kCura.WinEDDS
 			If rootFileName.IndexOf("\") <> -1 Then
 				rootFileName = rootFileName.Substring(rootFileName.LastIndexOf("\") + 1)
 			End If
-			Dim rootFilePath As String = exportLocation & rootFileName
+			Dim rootFilePath As String = e.Path & rootFileName
 			Dim datetimeNow As System.DateTime = System.DateTime.Now
 			Dim errorFilePath As String = rootFilePath & "_ErrorLines_" & datetimeNow.Ticks & defaultExtension
 			Dim errorReportPath As String = rootFilePath & "_ErrorReport_" & datetimeNow.Ticks & ".csv"
@@ -2133,20 +2129,20 @@ Namespace kCura.WinEDDS
 			_errorMessageFileLocation = ""
 		End Sub
 
-		Private Sub _processController_ExportErrorReportEvent(ByVal exportLocation As String) Handles ProcessController.ExportErrorReportEvent
+		Private Sub _processContext_ExportErrorReportEvent(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportErrorReport
 			If String.IsNullOrEmpty(_errorMessageFileLocation) Then
 				' write out a blank file if there is no error message file
-				Dim fileWriter As System.IO.StreamWriter = System.IO.File.CreateText(exportLocation)
+				Dim fileWriter As System.IO.StreamWriter = System.IO.File.CreateText(e.Path)
 				fileWriter.Close()
 
 				Exit Sub
 			End If
 
 			Const retry As Boolean = True
-			Me.CopyFile(_errorMessageFileLocation, exportLocation, True, retry)
+			Me.CopyFile(_errorMessageFileLocation, e.Path, True, retry)
 		End Sub
 
-		Private Sub _processController_ExportErrorFileEvent(ByVal exportLocation As String) Handles ProcessController.ExportErrorFileEvent
+		Private Sub _processContext_ExportErrorFileEvent(ByVal sender As Object, e As ExportErrorEventArgs) Handles Context.ExportErrorFile
 			Const retry As Boolean = True
 			If _errorMessageFileLocation Is Nothing OrElse _errorMessageFileLocation = "" Then Exit Sub
 			If _errorLinesFileLocation Is Nothing OrElse _errorLinesFileLocation = "" OrElse Not Me.GetFileExists(_errorLinesFileLocation, retry) Then
@@ -2156,7 +2152,7 @@ Namespace kCura.WinEDDS
 				Exit Sub
 			End If
 
-			Me.CopyFile(_errorLinesFileLocation, exportLocation, True, retry)
+			Me.CopyFile(_errorLinesFileLocation, e.Path, True, retry)
 		End Sub
 
 #End Region
@@ -2168,7 +2164,7 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		<Serializable>
 		Public Class IdentityValueNotSetException
-			Inherits kCura.Utility.ImporterExceptionBase
+			Inherits ImporterException
 
 			''' <summary>
 			''' Initializes a new instance of the <see cref="IdentityValueNotSetException"/> class.
@@ -2189,7 +2185,7 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		<Serializable>
 		Public Class ExtractedTextFileNotFoundException
-			Inherits kCura.Utility.ImporterExceptionBase
+			Inherits ImporterException
 
 			''' <summary>
 			''' Initializes a new instance of the <see cref="ExtractedTextFileNotFoundException"/> class.
@@ -2212,7 +2208,7 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		<Serializable>
 		Public Shadows Class ExtractedTextTooLargeException
-			Inherits kCura.Utility.ImporterExceptionBase
+			Inherits ImporterException
 
 			''' <summary>
 			''' Initializes a new instance of the <see cref="ExtractedTextTooLargeException"/> class.
@@ -2234,25 +2230,25 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _artifactReader_StatusMessage(ByVal message As String) Handles _artifactReader.StatusMessage
-			OnStatusMessage(New StatusEventArgs(Windows.Process.EventType.Status, _artifactReader.CurrentLineNumber, RecordCount, message, False, CurrentStatisticsSnapshot, Statistics))
+			OnStatusMessage(New StatusEventArgs(EventType.Status, _artifactReader.CurrentLineNumber, RecordCount, message, False, CurrentStatisticsSnapshot, Statistics))
 		End Sub
 
 		Private Sub _artifactReader_FieldMapped(ByVal sourceField As String, ByVal workspaceField As String) Handles _artifactReader.FieldMapped
 			OnFieldMapped(sourceField, workspaceField)
 		End Sub
 
-		Private Sub IoWarningHandler(ByVal e As kCura.Utility.RobustIoReporter.IoWarningEventArgs)
-			Dim ioWarningEventArgs As New TApi.IoWarningEventArgs(e.Message, e.CurrentLineNumber)
+		Private Sub IoWarningHandler(ByVal sender As Object, e As IoWarningEventArgs)
+			Dim ioWarningEventArgs As New IoWarningEventArgs(e.Message, e.CurrentLineNumber)
 			Me.PublishIoWarningEvent(ioWarningEventArgs)
 		End Sub
 
 		Private Sub ManageErrors(ByVal artifactTypeID As Int32)
 			If Not Me.BulkImportManager.NativeRunHasErrors(_caseInfo.ArtifactID, RunId) Then Exit Sub
-			Dim sr As kCura.Utility.GenericCsvReader = Nothing
+			Dim sr As GenericCsvReader = Nothing
 			Dim downloader As FileDownloader = Nothing
 			Try
 				With Me.BulkImportManager.GenerateNonImageErrorFiles(_caseInfo.ArtifactID, RunId, artifactTypeID, True, _keyFieldID)
-					Me.WriteStatusLine(Windows.Process.EventType.Status, "Retrieving errors from server")
+					Me.WriteStatusLine(EventType.Status, "Retrieving errors from server")
 					downloader = New FileDownloader(DirectCast(Me.BulkImportManager.Credentials, System.Net.NetworkCredential), _caseInfo.DocumentPath, _caseInfo.DownloadHandlerURL, Me.BulkImportManager.CookieContainer)
 					AddHandler downloader.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
 					Dim errorsLocation As String = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
@@ -2266,7 +2262,7 @@ Namespace kCura.WinEDDS
 
 						OnFatalError(message, New Exception(message), RunId)
 					Else
-						AddHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
+						AddHandler sr.Context.IoWarningEvent, AddressOf Me.IoWarningHandler
 						Dim line As String() = sr.ReadLine
 
 						While Not line Is Nothing
@@ -2279,7 +2275,7 @@ Namespace kCura.WinEDDS
 							OnStatusMessage(New StatusEventArgs(EventType.Error, Int32.Parse(line(0)) - 1, RecordCount, "[Line " & line(0) & "]" & line(1), CurrentStatisticsSnapshot, Statistics))
 							line = sr.ReadLine
 						End While
-						RemoveHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
+						RemoveHandler sr.Context.IoWarningEvent, AddressOf Me.IoWarningHandler
 					End If
 
 					RemoveHandler downloader.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
@@ -2288,20 +2284,20 @@ Namespace kCura.WinEDDS
 				Try
 					If downloader IsNot Nothing Then RemoveHandler downloader.UploadStatusEvent, AddressOf LegacyUploader_UploadStatusEvent
 					sr.Close()
-					RemoveHandler sr.IoWarningEvent, AddressOf Me.IoWarningHandler
+					RemoveHandler sr.Context.IoWarningEvent, AddressOf Me.IoWarningHandler
 				Catch
 				End Try
 				Throw
 			End Try
 		End Sub
 
-		Private Function AttemptErrorFileDownload(ByVal downloader As FileDownloader, ByVal errorFileOutputPath As String, ByVal logKey As String, ByVal caseInfo As CaseInfo) As kCura.Utility.GenericCsvReader
+		Private Function AttemptErrorFileDownload(ByVal downloader As FileDownloader, ByVal errorFileOutputPath As String, ByVal logKey As String, ByVal caseInfo As CaseInfo) As GenericCsvReader
 			Dim triesLeft As Integer = 3
-			Dim sr As kCura.Utility.GenericCsvReader = Nothing
+			Dim sr As GenericCsvReader = Nothing
 
 			While triesLeft > 0
 				downloader.MoveTempFileToLocal(errorFileOutputPath, logKey, caseInfo, False)
-				sr = New kCura.Utility.GenericCsvReader(errorFileOutputPath, System.Text.Encoding.UTF8, True)
+				sr = New GenericCsvReader(errorFileOutputPath, System.Text.Encoding.UTF8, True)
 				Dim firstChar As Int32 = sr.Peek()
 
 				If firstChar = -1 Then
@@ -2322,8 +2318,10 @@ Namespace kCura.WinEDDS
 			Return sr
 		End Function
 
-		Private Sub _processController_ParentFormClosingEvent(ByVal processID As Guid) Handles ProcessController.ParentFormClosingEvent
-			If processID.ToString = _processId.ToString Then CleanupTempTables()
+		Private Sub _processContext_ParentFormClosingEvent(ByVal sender As Object, e As ParentFormClosingEventArgs) Handles Context.ParentFormClosing
+			If e.ProcessId.ToString = _processId.ToString Then
+				CleanupTempTables()
+			End If
 		End Sub
 
 		Protected Sub CleanupTempTables()

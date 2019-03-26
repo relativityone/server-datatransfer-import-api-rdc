@@ -1,4 +1,5 @@
 Imports kCura.WinEDDS.Service.Export
+Imports Relativity.Import.Export
 
 Namespace kCura.WinEDDS.Service
 	Public Class SearchManager
@@ -10,7 +11,7 @@ Namespace kCura.WinEDDS.Service
 
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}SearchManager.asmx", kCura.WinEDDS.Config.WebServiceURL)
+			Me.Url = String.Format("{0}SearchManager.asmx", AppSettings.Instance.WebApiServiceUrl)
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 

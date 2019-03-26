@@ -1,11 +1,13 @@
-﻿Namespace kCura.WinEDDS.Exceptions
+﻿Imports Relativity.Import.Export.Io
+
+Namespace kCura.WinEDDS.Exceptions
 
 	''' <summary>
 	''' The exception thrown when a failure occurs attempting to set a field value during an import operation.
 	''' </summary>
 	<Serializable>
 	Public Class FieldValueImportException
-		Inherits kCura.Utility.ImporterExceptionBase
+		Inherits ImporterException
 
 		''' <summary>
 		''' Initializes a new instance of the <see cref="FieldValueImportException"/> class.
@@ -43,7 +45,7 @@
 		''' Additional information included with the error.
 		''' </param>
 		Public Sub New(ByVal innerException As System.Exception, ByVal row As Int64, ByVal fieldName As String, ByVal additionalInfo As String)
-			MyBase.New(innerException, row, fieldName, additionalInfo)
+			MyBase.New(row, fieldName, additionalInfo, innerException)
 			Me.FieldName = fieldName
 			Me.RowNumber = row
 		End Sub

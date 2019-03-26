@@ -1,6 +1,8 @@
-﻿Namespace kCura.WinEDDS.Api
+﻿Imports Relativity.Import.Export
+
+Namespace kCura.WinEDDS.Api
 	Public Interface IHasOixFileType
-		Function GetFileIDData() As FileIDData
+		Function GetFileIdInfo() As FileIdInfo
 	End Interface
 
 	Public Interface IHasFileSize
@@ -14,10 +16,10 @@
 	Public Interface IInjectableFieldCollection
 		Function HasFileSize() As Boolean
 		Function HasFileName() As Boolean
-		Function HasFileIdData() As Boolean
+		Function HasFileIdInfo() As Boolean
 
 		ReadOnly Property FileName As IHasFileName
 		ReadOnly Property FileSize As IHasFileSize
-		ReadOnly Property FileIdData As IHasOixFileType
+		ReadOnly Property FileIdInfo As IHasOixFileType
 	End Interface
 End Namespace

@@ -1,9 +1,8 @@
 ﻿Imports System.Collections.Generic
-Imports FileNaming.CustomFileNaming
-Imports kCura.Windows.Process
 Imports kCura.WinEDDS.Exporters
 Imports kCura.WinEDDS.FileNaming.CustomFileNaming
 Imports kCura.WinEDDS.Service.Export
+Imports Relativity.Import.Export.Process
 
 Namespace kCura.WinEDDS
 	Public Class ExtendedExporter
@@ -13,11 +12,11 @@ Namespace kCura.WinEDDS
 		Private ReadOnly _nativeFileNameViewFieldHelper As INativeFileNameViewFieldsHelper = New NativeFileNameViewFieldsHelper()
 
 
-		Public Sub New(exportFile As ExtendedExportFile, processController As Controller, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory)
-			MyBase.New(exportFile, processController, loadFileFormatterFactory)
+		Public Sub New(exportFile As ExtendedExportFile, context As ProcessContext, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory)
+			MyBase.New(exportFile, context, loadFileFormatterFactory)
 		End Sub
-		Public Sub New(exportFile As ExtendedExportFile, processController As Controller, serviceFactory As IServiceFactory, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
-			MyBase.New(exportFile, processController, serviceFactory, loadFileFormatterFactory, exportConfig)
+		Public Sub New(exportFile As ExtendedExportFile, context As ProcessContext, serviceFactory As IServiceFactory, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
+			MyBase.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig)
 		End Sub
 
 

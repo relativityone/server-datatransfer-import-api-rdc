@@ -1,4 +1,5 @@
 Imports System.Runtime.Caching
+Imports Relativity.Import.Export
 
 Namespace kCura.WinEDDS.Service
 
@@ -10,7 +11,7 @@ Namespace kCura.WinEDDS.Service
 
 			Me.Credentials = credentials
 			Me.CookieContainer = cookieContainer
-			Me.Url = String.Format("{0}FileIO.asmx", kCura.WinEDDS.Config.WebServiceURL)
+			Me.Url = String.Format("{0}FileIO.asmx", AppSettings.Instance.WebApiServiceUrl)
 			Me.Timeout = Settings.DefaultTimeOut
 		End Sub
 
@@ -38,12 +39,12 @@ Namespace kCura.WinEDDS.Service
 
 		Private Function ExecuteWithRetry(Of T)(f As Func(Of T)) As T
 			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
+			While tries < AppSettings.Instance.MaxReloginTries
 				tries += 1
 				Try
 					Return f()
 				Catch ex As System.Exception
-					If IsRetryableException(ex) AndAlso tries < Config.MaxReloginTries Then
+					If IsRetryableException(ex) AndAlso tries < AppSettings.Instance.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						Dim relativityException As System.Exception = ConvertExpectedSoapExceptionToRelativityException(ex)
@@ -130,7 +131,7 @@ Namespace kCura.WinEDDS.Service
 				Return cacheVal.ToString()
 			End If
 			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
+			While tries < AppSettings.Instance.MaxReloginTries
 				tries += 1
 				Try
 					Dim retVal As String = MyBase.GetBcpSharePath(appID)
@@ -141,7 +142,7 @@ Namespace kCura.WinEDDS.Service
 						Return retVal
 					End If
 				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < Config.MaxReloginTries Then
+					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < AppSettings.Instance.MaxReloginTries Then
 						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
 					Else
 						If TypeOf ex Is System.Web.Services.Protocols.SoapException Then

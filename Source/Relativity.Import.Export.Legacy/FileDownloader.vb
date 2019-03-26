@@ -1,5 +1,6 @@
 Imports System.Collections.Concurrent
 Imports kCura.WinEDDS.Service.Export
+Imports Relativity.Import.Export
 
 Namespace kCura.WinEDDS
 	Public Class FileDownloader
@@ -17,12 +18,12 @@ Namespace kCura.WinEDDS
 		Private _cookieContainer As System.Net.CookieContainer
 		Private _userManager As kCura.WinEDDS.Service.UserManager
 		Private Shared _locationAccessMatrix As New ConcurrentDictionary(Of String, Object)
-
-		Private _fileHelper As IFileHelper
-		Public Property FileHelper() As IFileHelper Implements IExportFileDownloader.FileHelper
+		
+		Private _fileHelper As Relativity.Import.Export.Io.IFile
+		Public Property FileHelper() As Relativity.Import.Export.Io.IFile Implements IExportFileDownloader.FileHelper
 			Get
 				If(_fileHelper Is Nothing) Then
-					_fileHelper = kCura.Utility.File.Instance
+					_fileHelper = Relativity.Import.Export.Io.FileSystem.Instance.File
 				End If
 				
 				Return _fileHelper
@@ -48,7 +49,7 @@ Namespace kCura.WinEDDS
 				destinationFolderPath &= "\"
 			End If
 			Me.DestinationFolderPath = destinationFolderPath
-			_downloadUrl = kCura.Utility.URI.GetFullyQualifiedPath(downloadHandlerUrl, New System.Uri(kCura.WinEDDS.Config.WebServiceURL))
+			_downloadUrl = Relativity.Import.Export.Io.FileSystem.Instance.Path.GetFullyQualifiedPath(New System.Uri(AppSettings.Instance.WebApiServiceUrl), downloadHandlerUrl)
 			_userManager = New kCura.WinEDDS.Service.UserManager(credentials, cookieContainer)
 
 			If _locationAccessMatrix Is Nothing Then _locationAccessMatrix = New ConcurrentDictionary(Of String, Object)
@@ -172,12 +173,12 @@ Namespace kCura.WinEDDS
 
 		Private Function WebDownloadFile(ByVal localFilePath As String, ByVal artifactID As Int32, ByVal remoteFileGuid As String, ByVal appID As String, ByVal remotelocationkey As String, ByVal forFullText As Boolean, ByVal longTextFieldArtifactID As Int32, ByVal fileID As Int32, ByVal fileFieldArtifactID As Int32) As Boolean
 			Dim tries As Int32 = 0
-			While tries < Config.MaxReloginTries
+			While tries < AppSettings.Instance.MaxReloginTries
 				Try
 					Return DoWebDownloadFile(localFilePath, artifactID, remoteFileGuid, appID, remotelocationkey, forFullText, longTextFieldArtifactID, fileID, fileFieldArtifactID)
 				Catch ex As DistributedReLoginException
 					tries += 1
-					RaiseEvent UploadStatusEvent(String.Format("Download Manager credentials failed.  Attempting to re-login ({0} of {1})", tries, Config.MaxReloginTries))
+					RaiseEvent UploadStatusEvent(String.Format("Download Manager credentials failed.  Attempting to re-login ({0} of {1})", tries, AppSettings.Instance.MaxReloginTries))
 					_userManager.AttemptReLogin()
 				End Try
 			End While
@@ -219,10 +220,10 @@ Namespace kCura.WinEDDS
 					Catch ex As Exception
 						localStream = FileHelper.Create(localFilePath)
 					End Try
-					Dim buffer(Config.WebBasedFileDownloadChunkSize - 1) As Byte
+					Dim buffer(AppSettings.Instance.WebBasedFileDownloadChunkSize - 1) As Byte
 					Dim bytesRead As Int32
 					While True
-						bytesRead = responseStream.Read(buffer, 0, Config.WebBasedFileDownloadChunkSize)
+						bytesRead = responseStream.Read(buffer, 0, AppSettings.Instance.WebBasedFileDownloadChunkSize)
 						If bytesRead <= 0 Then
 							Exit While
 						End If

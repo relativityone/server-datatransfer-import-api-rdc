@@ -14,7 +14,7 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 			Dim viewFieldInfo As ViewFieldInfo = GetViewField(descriptorPart, extExportObject)
 			Dim fieldValueText As String = ConvertToString(extExportObject.GetFieldValue(viewFieldInfo.AvfColumnName), viewFieldInfo, " "c)
 			Dim fieldValue As String = GetProperPartNameBasedOnFieldType(viewFieldInfo, fieldValueText)
-			Return kCura.Utility.File.Instance.ConvertIllegalCharactersInFilename(fieldValue)
+			Return Relativity.Import.Export.Io.FileSystem.Instance.Path.ConvertIllegalCharactersInFilename(fieldValue)
 		End Function
 
 		Private Function GetProperPartNameBasedOnFieldType(viewFieldInfo As ViewFieldInfo, fieldValueText As String) As String

@@ -1,4 +1,5 @@
 ﻿Imports kCura.WinEDDS.Credentials
+Imports Relativity.Import.Export
 
 Namespace kCura.WinEDDS.Api
 	Public Class LoginHelper
@@ -21,14 +22,14 @@ Namespace kCura.WinEDDS.Api
 
 			cred = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
 
-			Dim requestURIString As String = kCura.WinEDDS.Config.WebServiceURL & "RelativityManager.asmx"
+			Dim requestURIString As String = AppSettings.Instance.WebApiServiceUrl & "RelativityManager.asmx"
 			myHttpWebRequest = DirectCast(System.Net.WebRequest.Create(requestURIString), System.Net.HttpWebRequest)
 			myHttpWebRequest.Credentials = cred
 			relativityManager = New kCura.WinEDDS.Service.RelativityManager(cred, cookieContainer)
 
 			If relativityManager.ValidateSuccesfulLogin Then
 				CheckVersion(relativityManager)
-				Initialize(relativityManager, kCura.WinEDDS.Config.WebServiceURL)
+				Initialize(relativityManager, AppSettings.Instance.WebApiServiceUrl)
 				Return cred
 			End If
 			Return Nothing
@@ -40,11 +41,11 @@ Namespace kCura.WinEDDS.Api
 		End Function
 
 		Public Shared Function LoginUsernamePassword(ByVal username As String, ByVal password As String, ByVal cookieContainer As Net.CookieContainer) As System.Net.NetworkCredential
-			Return LoginUsernamePassword(username, password, cookieContainer, kCura.WinEDDS.Config.WebServiceURL)
+			Return LoginUsernamePassword(username, password, cookieContainer, AppSettings.Instance.WebApiServiceUrl)
 		End Function
 
 		Public Shared Function LoginUsernamePassword(ByVal username As String, ByVal password As String, ByVal cookieContainer As Net.CookieContainer, ByVal webServiceUrl As String) As System.Net.NetworkCredential
-			webServiceUrl = kCura.WinEDDS.Config.ValidateURIFormat(webServiceUrl)
+			webServiceUrl = AppSettings.Instance.ValidateUriFormat(webServiceUrl)
 			If cookieContainer Is Nothing Then Throw New ArgumentException("Cookie container not set")
 			Dim credential As New Net.NetworkCredential(username, password)
 			Dim userManager As New kCura.WinEDDS.Service.UserManager(credential, cookieContainer, webServiceUrl)
@@ -97,7 +98,7 @@ Namespace kCura.WinEDDS.Api
 			End If
 
 			' Favor the supplied application name
-			Dim applicationName As String = Config.ApplicationName
+			Dim applicationName As String = AppSettings.Instance.ApplicationName
 			If String.IsNullOrEmpty(applicationName) Then
 				' Just in case the App.Config setting is removed or cleared.
 				If assembly.GetName.Name.StartsWith("kCura.EDDS.WinForm", StringComparison.OrdinalIgnoreCase) Then

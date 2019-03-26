@@ -1,5 +1,4 @@
-﻿
-Imports System.Collections.Generic
+﻿Imports System.Collections.Generic
 
 Namespace kCura.WinEDDS.Exporters
 

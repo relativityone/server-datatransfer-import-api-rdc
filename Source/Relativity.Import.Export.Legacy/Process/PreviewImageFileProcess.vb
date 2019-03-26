@@ -1,4 +1,5 @@
-Imports kCura.Windows.Process
+Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Process
 
 Namespace kCura.WinEDDS
 
@@ -13,29 +14,29 @@ Namespace kCura.WinEDDS
 
 		Public Property TimeZoneOffset As Int32
 
-		Protected Overrides Sub Execute()
+		Protected Overrides Sub OnExecute()
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
-			_imageFilePreviewer = New ImageFilePreviewer(ProcessController, True, New ImageValidator.ImageValidator)
+			_imageFilePreviewer = New ImageFilePreviewer(Me.Context, True, New FreeImageIdService)
 
 			_imageFilePreviewer.ReadFile(LoadFile.FileName)
-			Me.ProcessObserver.RaiseProcessCompleteEvent()
+			Me.Context.PublishProcessCompleted()
 		End Sub
 
 		Private Sub _imageFileImporter_StatusMessage(ByVal e As StatusEventArgs) Handles _imageFilePreviewer.StatusMessage
 			Select Case e.EventType
 				Case EventType.Error
 					_errorCount += 1
-					Me.ProcessObserver.RaiseErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
+					Me.Context.PublishErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case EventType.Progress
-					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-					Me.ProcessObserver.RaiseProgressEvent(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, _startTime, DateTime.Now, 0, 0, Me.ProcessID)
+					Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
+					Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, _startTime, DateTime.Now, 0, 0, Me.ProcessID)
 				Case EventType.Status
-					Me.ProcessObserver.RaiseStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
+					Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 				Case EventType.Warning
 					_warningCount += 1
-					Me.ProcessObserver.RaiseWarningEvent(e.CurrentRecordIndex.ToString, e.Message)
+					Me.Context.PublishWarningEvent(e.CurrentRecordIndex.ToString, e.Message)
 			End Select
 		End Sub
 

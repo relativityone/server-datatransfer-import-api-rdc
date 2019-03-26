@@ -1,8 +1,9 @@
 Imports System.Threading
 Imports kCura.WinEDDS.Exporters
 Imports kCura.WinEDDS.Service.Export
-Imports kCura.WinEDDS.TApi
 Imports Relativity.DataTransfer.MessageService
+Imports Relativity.Import.Export.Process
+Imports Relativity.Import.Export.Transfer
 
 Namespace kCura.WinEDDS
 	Public Class ExportSearchProcess
@@ -42,8 +43,8 @@ Namespace kCura.WinEDDS
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
 			SendTransferJobCompletedMessage()
-			Me.ProcessObserver.RaiseStatusEvent("", "Export completed")
-			Me.ProcessObserver.RaiseProcessCompleteEvent()
+			Me.Context.PublishStatusEvent("", "Export completed")
+			Me.Context.PublishProcessCompleted()
 		End Sub
 
 		Protected Overrides Sub OnFatalError()
@@ -54,7 +55,7 @@ Namespace kCura.WinEDDS
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
 			SendTransferJobCompletedMessage()
-			Me.ProcessObserver.RaiseProcessCompleteEvent(False, _searchExporter.ErrorLogFileName, True)
+			Me.Context.PublishProcessCompleted(False, _searchExporter.ErrorLogFileName, True)
 		End Sub
 
 		Protected Overrides Function HasErrors() As Boolean
@@ -64,12 +65,12 @@ Namespace kCura.WinEDDS
 		Private Function GetExporter() As Exporter
 			If (ExportFile.UseCustomFileNaming) Then
 				Return _
-					New ExtendedExporter(TryCast(Me.ExportFile, ExtendedExportFile), Me.ProcessController,
+					New ExtendedExporter(TryCast(Me.ExportFile, ExtendedExportFile), Me.Context,
 										 New WebApiServiceFactory(Me.ExportFile),
 										 _loadFileHeaderFormatterFactory, _exportConfig) With {.InteractionManager = UserNotification}
 			Else
 				Return _
-					New Exporter(Me.ExportFile, Me.ProcessController,
+					New Exporter(Me.ExportFile, Me.Context,
 										 New WebApiServiceFactory(Me.ExportFile),
 										 _loadFileHeaderFormatterFactory, _exportConfig) With {.InteractionManager = UserNotification}
 
@@ -97,31 +98,32 @@ Namespace kCura.WinEDDS
 
 		Private Sub _searchExporter_FileTransferModeChangeEvent(ByVal mode As String) Handles _searchExporter.FileTransferModeChangeEvent
 			If _uploadModeText Is Nothing Then
-				_uploadModeText = Config.FileTransferModeExplanationText(False)
+				Dim tapiObjectService As ITapiObjectService = New TapiObjectService
+				_uploadModeText = tapiObjectService.BuildFileTransferModeDocText(False)
 			End If
 			_tapiClientName = mode
 			SendTransferJobStartedMessage()
-			Me.ProcessObserver.RaiseStatusBarEvent("File Transfer Mode: " & mode, _uploadModeText)
+			Me.Context.PublishStatusBarChanged("File Transfer Mode: " & mode, _uploadModeText)
 		End Sub
 
 		Private Sub _productionExporter_StatusMessage(ByVal e As ExportEventArgs) Handles _searchExporter.StatusMessage
 			Select Case e.EventType
-				Case kCura.Windows.Process.EventType.End
+				Case EventType.End
 					SendJobStatistics(e.Statistics)
-				Case kCura.Windows.Process.EventType.Error
+				Case EventType.Error
 					Interlocked.Increment(_errorCount)
-					Me.ProcessObserver.RaiseErrorEvent(e.DocumentsExported.ToString, e.Message)
-				Case kCura.Windows.Process.EventType.Progress
+					Me.Context.PublishErrorEvent(e.DocumentsExported.ToString, e.Message)
+				Case EventType.Progress
 					SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
-					Me.ProcessObserver.RaiseStatusEvent("", e.Message)
-				Case kCura.Windows.Process.EventType.Statistics
+					Me.Context.PublishStatusEvent("", e.Message)
+				Case EventType.Statistics
 					SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
-				Case kCura.Windows.Process.EventType.Status
-					Me.ProcessObserver.RaiseStatusEvent(e.DocumentsExported.ToString, e.Message)
-				Case kCura.Windows.Process.EventType.Warning
+				Case EventType.Status
+					Me.Context.PublishStatusEvent(e.DocumentsExported.ToString, e.Message)
+				Case EventType.Warning
 					Interlocked.Increment(_warningCount)
-					Me.ProcessObserver.RaiseWarningEvent(e.DocumentsExported.ToString, e.Message)
-				Case kCura.Windows.Process.EventType.ResetStartTime
+					Me.Context.PublishWarningEvent(e.DocumentsExported.ToString, e.Message)
+				Case EventType.ResetStartTime
 					SetStartTime()
 			End Select
 			TotalRecords = e.TotalDocuments
@@ -131,16 +133,16 @@ Namespace kCura.WinEDDS
 				statDict = DirectCast(e.AdditionalInfo, IDictionary)
 			End If
 
-			Me.ProcessObserver.RaiseProgressEvent(e.TotalDocuments, e.DocumentsExported, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statDict)
+			Me.Context.PublishProgress(e.TotalDocuments, e.DocumentsExported, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statDict)
 		End Sub
 
 		Private Sub _productionExporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Handles _searchExporter.FatalErrorEvent
-			Me.ProcessObserver.RaiseFatalExceptionEvent(ex)
+			Me.Context.PublishFatalException(ex)
 			_hasFatalErrorOccured = True
 		End Sub
 
 		Private Sub _searchExporter_ShutdownEvent() Handles _searchExporter.ShutdownEvent
-			Me.ProcessObserver.Shutdown()
+			Me.Context.PublishShutdown()
 		End Sub
 	End Class
 End Namespace

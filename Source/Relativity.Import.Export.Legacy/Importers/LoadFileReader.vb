@@ -1,13 +1,13 @@
 Imports System.Collections.Generic
-Imports System.Diagnostics.Eventing.Reader
-Imports Relativity.MassImport
 Imports kCura.WinEDDS.Api
-Imports kCura.Utility
 Imports Relativity
+Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Data
+Imports Relativity.Import.Export.Io
 
 Namespace kCura.WinEDDS
 	Public Class LoadFileReader
-		Inherits kCura.Utility.DelimitedFileImporter
+		Inherits DelimitedFileImporter
 		Implements IArtifactReader
 
 		Public Const MAXIMUM_COLUMN_NAME_LENGTH As Int32 = 500
@@ -21,8 +21,8 @@ Namespace kCura.WinEDDS
 		Protected _firstLineContainsColumnNames As Boolean
 		Protected _docFields As DocumentField()
 		Protected _multiValueSeparator As Char()
-		Protected _allCodes As kCura.Data.DataView
-		Protected _allCodeTypes As kCura.Data.DataView
+		Protected _allCodes As SqlDataView
+		Protected _allCodeTypes As SqlDataView
 		Protected _folderID As Int32
 		Protected _caseSystemID As Int32
 		Protected _caseArtifactID As Int32
@@ -128,7 +128,7 @@ Namespace kCura.WinEDDS
 					Case Relativity.FieldTypeHelper.FieldType.MultiCode, Relativity.FieldTypeHelper.FieldType.Objects
 						field.Value = LoadFileReader.GetStringArrayFromDelimitedFieldValue(value, _settings.MultiRecordDelimiter)
 					Case Relativity.FieldTypeHelper.FieldType.Varchar
-						field.Value = kCura.Utility.NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(value, column, field.TextLength, field.DisplayName))
+						field.Value = NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(value, column, field.TextLength, field.DisplayName))
 					Case Relativity.FieldTypeHelper.FieldType.Text, Relativity.FieldTypeHelper.FieldType.OffTableText
 						If _settings.FullTextColumnContainsFileLocation Then
 							field.Value = value
@@ -138,7 +138,7 @@ Namespace kCura.WinEDDS
 					Case Else
 						Throw New System.Exception("Unsupported field type '" & field.Type.ToString & "'")
 				End Select
-			Catch ex As ImporterExceptionBase
+			Catch ex As ImporterException
 				If _trackErrorsInFieldValues Then
 					field.Value = ex
 				Else
@@ -214,11 +214,11 @@ Namespace kCura.WinEDDS
 			End Select
 		End Sub
 
-		Protected Overrides Sub RaiseIoWarning(ByVal e As kCura.Utility.RobustIoReporter.IoWarningEventArgs)
+		Public Overrides Sub PublishWarningMessage(ByVal e As IoWarningEventArgs)
 			If e.Exception Is Nothing Then
-				RaiseEvent OnIoWarning(New kCura.WinEDDS.Api.IoWarningEventArgs(e.Message, e.CurrentLineNumber))
+				RaiseEvent OnIoWarning(New IoWarningEventArgs(e.Message, e.CurrentLineNumber))
 			Else
-				RaiseEvent OnIoWarning(New kCura.WinEDDS.Api.IoWarningEventArgs(e.WaitTime, e.Exception, e.CurrentLineNumber))
+				RaiseEvent OnIoWarning(New IoWarningEventArgs(e.WaitTime, e.Exception, e.CurrentLineNumber))
 			End If
 		End Sub
 
@@ -226,7 +226,7 @@ Namespace kCura.WinEDDS
 
 #Region " IArtifactReader Implementation "
 
-		Public Event OnIoWarning(ByVal e As kCura.WinEDDS.Api.IoWarningEventArgs) Implements Api.IArtifactReader.OnIoWarning
+		Public Event OnIoWarning(ByVal e As IoWarningEventArgs) Implements Api.IArtifactReader.OnIoWarning
 		Public Event StatusMessage(ByVal message As String) Implements Api.IArtifactReader.StatusMessage
 		Public Event FieldMapped(ByVal sourceField As String, ByVal workspaceField As String) Implements IArtifactReader.FieldMapped
 		Public Event DataSourcePrep(ByVal e As Api.DataSourcePrepEventArgs) Implements Api.IArtifactReader.DataSourcePrep
@@ -306,7 +306,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Sub OnFatalErrorState() Implements Api.IArtifactReader.OnFatalErrorState
-			Me.DoRetryLogic = False
+			Me.Context.RetryOptions = RetryOptions.None
 		End Sub
 
 		Public Function CountRecords() As Int64 Implements Api.IArtifactReader.CountRecords
@@ -317,7 +317,7 @@ Namespace kCura.WinEDDS
 
 		Public Function ManageErrorRecords(ByVal errorMessageFileLocation As String, ByVal prePushErrorLineNumbersFileName As String) As String Implements IArtifactReader.ManageErrorRecords
 			RaiseEvent StatusMessage("Generating error line file.")
-			Dim allErrors As New kCura.Utility.GenericCsvReader(errorMessageFileLocation, System.Text.Encoding.Default, True)
+			Dim allErrors As New GenericCsvReader(errorMessageFileLocation, System.Text.Encoding.Default, True)
 			Dim clientErrors As System.IO.StreamReader
 			'Me.Reader.BaseStream.Seek(0, IO.SeekOrigin.Begin)
 			Me.Reader = New System.IO.StreamReader(_settings.FilePath, _sourceFileEncoding, True)
@@ -446,7 +446,7 @@ Namespace kCura.WinEDDS
 #End Region
 
 		Public Shared Function GetStringArrayFromDelimitedFieldValue(value As Object, delimiter As Char) As String()
-			Dim incomingValueAsString As String = kCura.Utility.NullableTypesHelper.DBNullString(value)
+			Dim incomingValueAsString As String = NullableTypesHelper.DBNullString(value)
 			Dim retval As New List(Of String)
 			If (Not String.IsNullOrWhiteSpace(incomingValueAsString)) Then
 				retval.AddRange(From item In incomingValueAsString.Split(delimiter) Where Not item.Trim = String.Empty Select item.Trim)

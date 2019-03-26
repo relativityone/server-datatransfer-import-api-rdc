@@ -1,5 +1,4 @@
-﻿
-Imports System.Net
+﻿Imports System.Net
 Imports System.Threading.Tasks
 
 Namespace kCura.WinEDDS.Credentials
