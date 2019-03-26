@@ -21,8 +21,10 @@ namespace Relativity.Export.Client.NUnit.Integration
 
 	using kCura.Windows.Process;
 	using kCura.WinEDDS;
-	using kCura.WinEDDS.Core.Export;
-	using kCura.WinEDDS.Exporters;
+    using kCura.WinEDDS.Container;
+    using kCura.WinEDDS.Core.Export;
+    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Container;
+    using kCura.WinEDDS.Exporters;
 	using kCura.WinEDDS.Service.Export;
 
 	using Moq;
@@ -341,37 +343,51 @@ namespace Relativity.Export.Client.NUnit.Integration
 			using (var productionManager =
 				new kCura.WinEDDS.Service.ProductionManager(this.credentials, this.cookieContainer))
 			{
-				this.exportFile = new kCura.WinEDDS.ExtendedExportFile((int)ArtifactType.Document)
-				{
-					ArtifactID = this.selectedFolderId,
-					CaseInfo = caseInfo,
-					CookieContainer = this.cookieContainer,
-					Credential = this.credentials,
-					ExportNative = true,
-					ExportImages = true,
-					FolderPath = this.tempDirectory.Directory,
-					IdentifierColumnName = this.identifierColumnName,
-					LoadFileEncoding = this.encoding,
-					LoadFilesPrefix = "Documents",
-					LogFileFormat = LoadFileType.FileFormat.Opticon,
-					MultiRecordDelimiter = ';',
-					NestedValueDelimiter = '\\',
-					NewlineDelimiter = '@',
-					SelectedViewFields = new ViewFieldInfo[] { },
-					SubdirectoryDigitPadding = 3,
-					QuoteDelimiter = 'þ',
-					TextFileEncoding = this.encoding,
-					TypeOfExport = this.exportType,
-					TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Absolute,
-					TypeOfImage = ExportFile.ImageType.Pdf,
-					ViewID = 1003684,
-					VolumeDigitPadding = 2,
+                this.exportFile = new kCura.WinEDDS.ExtendedExportFile((int)ArtifactType.Document)
+                {
+                    // general settings
+                    ArtifactID = this.selectedFolderId,
+                    CaseInfo = caseInfo,
+                    CookieContainer = this.cookieContainer,
+                    Credential = this.credentials,
+                    TypeOfExport = this.exportType,
+                    FolderPath = this.tempDirectory.Directory,
+
+                    // settings for exporting natives
+                    ExportNative = true,
+                    TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Absolute,
+                    IdentifierColumnName = this.identifierColumnName,
+                    LoadFileEncoding = this.encoding,
+                    LoadFilesPrefix = "Documents",
+                    LoadFileExtension = "dat",
+                    MultiRecordDelimiter = ';',
+                    NestedValueDelimiter = '\\',
+                    NewlineDelimiter = '@',
+                    QuoteDelimiter = 'þ',
+                    ViewID = 1003684,
+                    SelectedViewFields = new ViewFieldInfo[] { },
+
+                    // settings for exporting images
+                    ExportImages = true,
+                    LogFileFormat = LoadFileType.FileFormat.Opticon,
+                    TypeOfImage = ExportFile.ImageType.Pdf,
+                    ImagePrecedence = new Pair[]
+                    {
+                        new Pair("-1", "Original"),
+                        new Pair("-1", "Original")
+                    },
+
+                    // settings for volumes and subdirectories
+                    SubdirectoryDigitPadding = 3,
+                    VolumeDigitPadding = 2,
 					VolumeInfo = new VolumeInfo
 					{
 						CopyImageFilesFromRepository = true,
 						CopyNativeFilesFromRepository = true,
-						SubdirectoryMaxSize = 500,
-						VolumeMaxSize = 650,
+                        SubdirectoryStartNumber = 1,
+                        SubdirectoryMaxSize = 500,
+                        VolumeStartNumber = 1,
+                        VolumeMaxSize = 650,
 						VolumePrefix = "VOL"
 					}
 				};
@@ -432,7 +448,8 @@ namespace Relativity.Export.Client.NUnit.Integration
 		/// </summary>
 		protected void WhenExecutingTheExportSearch()
 		{
-			var controller = new Controller();
+            ContainerFactoryProvider.ContainerFactory = new ContainerFactory();
+            var controller = new Controller();
 			var exporter = new Exporter(
 				this.exportFile,
 				controller,

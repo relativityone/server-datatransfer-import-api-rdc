@@ -108,4 +108,5 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+  <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
 </Project>

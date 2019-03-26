@@ -32,6 +32,7 @@ Namespace Relativity.Import.Client.NUnit
 
 		<SetUp>
 		Public Sub SetUp()
+			kCura.WinEDDS.Config.ProgrammaticServiceURL = "https://r1.kcura.com/RelativityWebAPI/"
 			_args = New ImageLoadFile()
 			_args.CaseInfo = New CaseInfo()
 			_args.CaseInfo.RootArtifactID = 1

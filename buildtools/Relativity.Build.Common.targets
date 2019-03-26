@@ -1,0 +1,23 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <CopyArtifacts Condition=" '$(Configuration)'=='Release' ">true</CopyArtifacts>
+  </PropertyGroup>
+  <!-- We only want to copy the artifacts during Release builds or when specified via build script. -->
+  <Target Name="CopyArtifactsAfterBuild" AfterTargets="Build" Condition=" '$(CopyArtifacts)'=='true' ">
+    <ItemGroup>
+      <SourceBinaries Include="$(TargetDir)\*.*" />
+    </ItemGroup>
+    <Message Text ="Copying @(SourceBinaries->Count()) binaries to the Artifacts folder." Importance="High"></Message>
+    <Copy
+      SourceFiles="@(SourceBinaries)" 
+      DestinationFiles="@(SourceBinaries->'$(SolutionDir)..\Artifacts\binaries\$(ProjectName)\%(RecursiveDir)%(Filename)%(Extension)')" 
+      SkipUnchangedFiles="true" 
+      OverwriteReadOnlyFiles="true" 
+      Retries="3" 
+      RetryDelayMilliseconds="300" />
+  </Target>
+  <Target Name="CopyArtifactsAfterClean" AfterTargets="Clean">
+    <Message Text ="Removing all target binaries from the Artifacts folder." Importance="High"></Message>
+    <RemoveDir Directories="$(SolutionDir)..\Artifacts\binaries\$(ProjectName)" />
+  </Target>
+</Project>

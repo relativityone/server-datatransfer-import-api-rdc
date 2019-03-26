@@ -1,6 +1,8 @@
-castle.windsor
-moq
 newtonsoft.json
 nunit
 relativity.importexport
 stylecop.analyzers
+group LegacyCastle
+	castle.core
+ 	castle.windsor
+	moq

@@ -6,78 +6,58 @@ This is the Import API and RDC build script.
 This script is responsible for all build processes.
 
 .EXAMPLE
-.\build.ps1
+.\build.ps1 Build
 Build the solution.
 
 .EXAMPLE
-.\build.ps1 -ExtendedCodeAnalysis
-Build the solution and run extended code analysis checks.
-
-.EXAMPLE
-.\build.ps1 -UnitTests
+.\build.ps1 Build,UnitTests
 Builds the solution and then executes all unit tests.
 
 .EXAMPLE
-.\build.ps1 -SkipBuild -ExtendedCodeAnalysis
-Skips building the solution and only run extended code analysis checks.
-
-.EXAMPLE
-.\build.ps1 -SkipBuild -UnitTests
+.\build.ps1 Build
 Skips building the solution and only executes all unit tests.
 
 .EXAMPLE
-.\build.ps1 -SkipBuild -UnitTests -IntegrationTests
+.\build.ps1 UnitTests,IntegrationTests
 Skips building the solution and executes all unit and integration tests.
 
 .EXAMPLE
-.\build.ps1 -SkipBuild -UnitTests -IntegrationTests -TestVM -TestVMName "P-DV-VM-SAD3ERA"
+.\build.ps1 TestVM,UnitTest,IntegrationTests -TestVMName "P-DV-VM-SAD3ERA"
 Skips building the solution, setup the integration test parameters using the specified TestVM, and executes all unit and integration tests.
 
 .EXAMPLE
-.\build.ps1 -SkipBuild -UnitTests -IntegrationTests -TestParametersFile ".\Scripts\test-settings-e2e.json"
+.\build.ps1 UnitTests,IntegrationTests -TestParametersFile ".\Scripts\test-settings-e2e.json"
 Skips building the solution, setup the integration test parameters using the specified JSON file, and executes all unit and integration tests.
 
 .PARAMETER Target
-The target to build (e.g. Build, Rebuild, or Clean).
+The target to build (e.g. Build, Rebuild).
 
 .PARAMETER Configuration
 The build configuration (e.g. Debug or Release).
 
-.PARAMETER AssemblyVersion
-Version of assemblies produced by the build.
+.PARAMETER Version
+The build version.
 
 .PARAMETER Verbosity
 The verbosity of the build log.
 
-.PARAMETER UnitTests
-An optional switch to execute all unit tests.
+.PARAMETER Branch
+An optional branch name. This is only required for the PublishBuildArtifacts task.
 
-.PARAMETER IntegrationTests
-An optional switch to execute all integration tests.
+.PARAMETER BuildPlatform
+An optional build platform. (e.g. 'Any CPU', 'x86', 'x64')
+
+.PARAMETER BuildUrl
+An optional build URL. This is only required for GitVersion task.
 
 .PARAMETER TestTimeoutInMS
 Timeout for NUnit tests (in milliseconds).
 
-.PARAMETER SkipBuild
-An optional switch to skip building the master solution.
-
-.PARAMETER ExtendedCodeAnalysis
-An optional switch to run extended code analysis checks.
-
 .PARAMETER TestParametersFile
 An optional test parameters JSON file that conforms to the standard App.Config file (e.g. Scripts\test-settings-sample.json)
 
-.PARAMETER TestVM
-An optional switch to execute all integration tests on a TestVM. If TestVMName is not specified, the first TestVM is used.
-
 .PARAMETER TestVMName
 The TestVM used to execute all integration tests.
-
-.PARAMETER ForceDeleteTools
-An optional switch to force deleting all downloadable tools when the script completes.
-
-.PARAMETER ForceDeletePackages
-An optional switch to force deleting all packages.
 #>
 
 #Requires -Version 5.0
@@ -85,41 +65,35 @@ An optional switch to force deleting all packages.
 [CmdletBinding()]
 param(
     [Parameter(Position=0)]
-    [ValidateSet("Build", "Rebuild", "Clean")]
+    [string[]]$TaskList = @(),
+    [ValidateSet("Build", "Rebuild")]
     [String]$Target = "Build",
     [Parameter()]
     [ValidateSet("Debug", "Release")]
     [String]$Configuration = "Release",
     [Parameter()]
-    [Version]$AssemblyVersion = "1.0.0.0",
+    [Version]$Version = "1.0.0.0",
+    [Parameter()]
+    [string]$PackageVersion = "1.0.0-alpha000000",
     [Parameter()]
     [ValidateSet("quiet", "minimal", "normal", "detailed", "diagnostic")]
     [String]$Verbosity = "quiet",
     [Parameter()]
-    [Switch]$UnitTests,
+    [String]$Branch,
     [Parameter()]
-    [Switch]$IntegrationTests,
+    [String]$BuildPlatform = "Any CPU",
     [Parameter()]
+    [string]$BuildUrl = "localhost",
     [int]$TestTimeoutInMS = 90000,
-    [Parameter()]
-    [Alias("skip")]
-    [Switch]$SkipBuild,
-    [Parameter()]
-    [Switch]$ExtendedCodeAnalysis,
     [Parameter()]
     [String]$TestParametersFile,
     [Parameter()]
-    [Switch]$TestVM,
-    [Parameter()]
-    [String]$TestVMName,
-    [Parameter()]
-    [Switch]$ForceDeleteTools,
-    [Parameter()]
-    [Switch]$ForceDeletePackages
+    [String]$TestVMName
 )
 
 $BaseDir = $PSScriptRoot
 $PackagesDir = Join-Path $BaseDir "packages"
+$PaketFilesDir = Join-Path $BaseDir "paket-files"
 $PaketDir = Join-Path $BaseDir ".paket"
 $PaketExe = Join-Path $PaketDir 'paket.exe'
 $PaketBootstrapperExe = Join-Path $PaketDir 'paket.bootstrapper.exe'
@@ -129,16 +103,19 @@ if (-Not (Test-Path $PaketDir -PathType Container)) {
     New-Item -ItemType directory -Path $PaketDir
 }
 
-if ($ForceDeleteTools -and (Test-Path $PaketExe -PathType Leaf)) {
-    Remove-Item $PaketExe
-}
+if ("Clean" -in $TaskList) {
 
-if ($ForceDeleteTools -and (Test-Path $PaketBootstrapperExe -PathType Leaf)) {
-    Remove-Item $PaketBootstrapperExe
-}
+    if (Test-Path $PaketExe -PathType Leaf) {
+        Remove-Item $PaketExe
+    }
 
-if ($ForceDeletePackages -and (Test-Path $PackagesDir -PathType Leaf)) {
-    Remove-Item -Recurse -Force $PackagesDir
+    if (Test-Path $PaketBootstrapperExe -PathType Leaf) {
+        Remove-Item $PaketBootstrapperExe
+    }
+
+    if (Test-Path $PaketFilesDir -PathType Container) {
+        Remove-Item -Recurse -Force $PaketFilesDir
+    }
 }
 
 if (-Not (Test-Path $PaketExe -PathType Leaf)) {
@@ -154,20 +131,8 @@ if ($LASTEXITCODE -ne 0)
 	Throw "An error occured while restoring packages."
 }
 
-$TaskList = New-Object System.Collections.ArrayList($null)
-$TaskList.Add("Build")
-if ($ExtendedCodeAnalysis) {
-    $TaskList.Add("ExtendedCodeAnalysis")
-}
-
-# This task must be added before the Test task.
-if ($TestVM) {
-    $TaskList.Add("TestVMSetup")
-}
-
-if ($UnitTests -or $IntegrationTests)
-{
-    $TaskList.Add("Test")
+if (!$Branch) {
+    $Branch = git rev-parse --abbrev-ref HEAD
 }
 
 $Params = @{
@@ -182,13 +147,13 @@ $Params = @{
     properties = @{
         Target = $Target
         Configuration = $Configuration
-        AssemblyVersion = $AssemblyVersion        
+        Version = $Version
+        PackageVersion = $PackageVersion
+        Branch = $Branch
+        BuildPlatform = $BuildPlatform
+        BuildUrl = $BuildUrl
         Verbosity = $Verbosity
         TestTimeoutInMS = $TestTimeoutInMS
-        UnitTests = $UnitTests
-        IntegrationTests = $IntegrationTests
-        SkipBuild = $SkipBuild
-        ExtendedCodeAnalysis = $ExtendedCodeAnalysis
         TestParametersFile = $TestParametersFile
         TestVMName = $TestVMName
     }
@@ -218,15 +183,6 @@ Finally
 
     Remove-Module PSBuildTools -Force -ErrorAction SilentlyContinue
     Remove-Module psake -Force -ErrorAction SilentlyContinue
-	
-	# Removing paket eliminates a VS paket extension conflict.
-	if ($ForceDeleteTools -and (Test-Path $PaketExe -PathType Leaf)) {
-        Remove-Item $PaketExe
-    }
-    
-    if ($ForceDeleteTools -and (Test-Path $PaketBootstrapperExe -PathType Leaf)) {
-        Remove-Item $PaketBootstrapperExe
-    }
 }
 
 Exit $ExitCode

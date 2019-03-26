@@ -7,6 +7,8 @@ NUGET
       Castle.Core (>= 3.3)
     CsvHelper (12.1.2)
       System.ValueTuple (>= 4.4)
+    extent (0.0.3)
+    GitVersion.CommandLine (4.0)
     iTextSharp (5.5.13)
     Microsoft.Build.Logging.StructuredLogger (1.0.89)
     Moq (4.10.1)
@@ -76,3 +78,11 @@ NUGET
     Relativity.Productions.Services.Interfaces (10.2.0)
     Relativity.Telemetry.DataContracts.Shared (2019.1.0)
     Relativity.Telemetry.Services.Interface (2019.1.0)
+
+GROUP LegacyCastle
+NUGET
+  remote: https://www.nuget.org/api/v2
+    Castle.Core (3.3.3)
+    Castle.Windsor (3.3)
+      Castle.Core (>= 3.3)
+    Moq (4.5)

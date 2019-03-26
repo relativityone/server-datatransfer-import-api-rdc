@@ -28,24 +28,42 @@ namespace Relativity.Import.Export.Io
 		public const int MaxColumnCountForLine = 10000;
 
 		/// <summary>
+		/// The unbounded character constant.
+		/// </summary>
+		/// <remarks>
+		/// This special value indicates an unspecified bound and puts the importer in the <see cref="DelimitedMode.Simple"/> mode.
+		/// </remarks>
+		private const char UnboundedChar = char.MaxValue;
+
+		/// <summary>
+		/// The unspecified newline proxy character constant.
+		/// </summary>
+		/// <remarks>
+		/// This special value indicates no newline proxy character is defined.
+		/// </remarks>
+		private const char UnspecifiedNewlineProxyChar = char.MaxValue;
+
+		/// <summary>
 		/// The end of file character value.
 		/// </summary>
 		private const int EofChar = -1;
-		private readonly char[] delimiter;
-		private readonly char[] bound;
-		private char[] metaDelimiter;
+
+		/// <summary>
+		/// The newline proxy string
+		/// </summary>
+		private string newlineProxyString;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DelimitedFileImporter"/> class.
 		/// </summary>
 		/// <param name="delimiter">
-		/// The delimiter string to use while splitting lines.
+		/// The delimiter string to use while splitting lines. This is limited to 1 character and must be specified.
 		/// </param>
 		/// <param name="bound">
-		/// The bounding string surrounding each delimiter.
+		/// The bounding string surrounding each delimiter. This is limited to 1 character and must be specified.
 		/// </param>
 		/// <param name="newlineProxy">
-		/// The string with which to replace system newline characters (ClRf). Only the first character will be used.
+		/// The string with which to replace system newline characters (ClRf). This is limited to 1 character and optional.
 		/// </param>
 		protected DelimitedFileImporter(string delimiter, string bound, string newlineProxy)
 			: this(delimiter, bound, newlineProxy, new IoReporterContext(), new NullLogger(), CancellationToken.None)
@@ -56,13 +74,13 @@ namespace Relativity.Import.Export.Io
 		/// Initializes a new instance of the <see cref="DelimitedFileImporter"/> class.
 		/// </summary>
 		/// <param name="delimiter">
-		/// The delimiter character array to use while splitting lines.
+		/// The delimiter character to use while splitting lines. This is limited to 1 character and must be specified.
 		/// </param>
 		/// <param name="bound">
-		/// The bounding string surrounding each delimiter.
+		/// The bounding string surrounding each delimiter. This is limited to 1 character and must be specified.
 		/// </param>
 		/// <param name="newlineProxy">
-		/// The string with which to replace system newline characters (ClRf). Only the first character will be used.
+		/// The string with which to replace system newline characters (ClRf). This is limited to 1 character and optional.
 		/// </param>
 		/// <param name="retry">
 		/// Specify whether retry behavior is required. This flag was added for backwards compatibility with legacy code.
@@ -82,13 +100,13 @@ namespace Relativity.Import.Export.Io
 		/// Initializes a new instance of the <see cref="DelimitedFileImporter"/> class.
 		/// </summary>
 		/// <param name="delimiter">
-		/// The delimiter string to use while splitting lines.
+		/// The delimiter string to use while splitting lines. This is limited to 1 character and must be specified.
 		/// </param>
 		/// <param name="bound">
-		/// The bounding string surrounding each delimiter.
+		/// The bounding string surrounding each delimiter. This is limited to 1 character and must be specified.
 		/// </param>
 		/// <param name="newlineProxy">
-		/// The string with which to replace system newline characters (ClRf). Only the first character will be used.
+		/// The string with which to replace system newline characters (ClRf). This is limited to 1 character and optional.
 		/// </param>
 		/// <param name="context">
 		/// The I/O reporter context.
@@ -99,6 +117,12 @@ namespace Relativity.Import.Export.Io
 		/// <param name="token">
 		/// The cancellation token used to stop the process upon request.
 		/// </param>
+		/// <exception cref="ArgumentNullException">
+		/// Thrown when <paramref name="delimiter"/> or <paramref name="bound"/> is <see langword="null" /> or empty.
+		/// </exception>
+		/// <exception cref="ArgumentOutOfRangeException">
+		/// Thrown when <paramref name="delimiter"/> or <paramref name="bound"/> is not exactly 1 character.
+		/// </exception>
 		protected DelimitedFileImporter(
 			string delimiter,
 			string bound,
@@ -113,11 +137,11 @@ namespace Relativity.Import.Export.Io
 				throw new ArgumentNullException(nameof(delimiter));
 			}
 
-			if (delimiter.Length < 1)
+			if (delimiter.Length != 1)
 			{
 				throw new ArgumentOutOfRangeException(
 					nameof(delimiter),
-					"The delimiter string parameter must define at least 1 character.");
+					"The delimiter string parameter must define 1 character.");
 			}
 
 			if (string.IsNullOrWhiteSpace(bound))
@@ -125,35 +149,34 @@ namespace Relativity.Import.Export.Io
 				throw new ArgumentNullException(nameof(bound));
 			}
 
-			if (bound.Length < 1)
+			if (bound.Length != 1)
 			{
 				throw new ArgumentOutOfRangeException(
-					nameof(delimiter),
-					"The bound string parameter must define at least 1 character.");
+					nameof(bound),
+					"The bound string parameter must define 1 character.");
 			}
 
-			this.delimiter = delimiter.ToCharArray();
-			this.bound = bound.ToCharArray();
-			if (newlineProxy != null)
-			{
-				this.NewlineProxy = newlineProxy.ToCharArray();
-			}
+			this.Delimiter = delimiter[0];
+			this.Bound = bound[0];
+
+			// Do NOT be tempted to use IsNullOrWhitespace here!
+			this.NewlineProxy = string.IsNullOrEmpty(newlineProxy) ? UnspecifiedNewlineProxyChar : newlineProxy[0];
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DelimitedFileImporter"/> class.
 		/// </summary>
 		/// <param name="delimiter">
-		/// The delimiter character array to use while splitting lines.
+		/// The delimiter character to use while splitting lines.
 		/// </param>
 		/// <param name="retry">
 		/// Specify whether retry behavior is required. This flag was added for backwards compatibility with legacy code.
 		/// </param>
-		protected DelimitedFileImporter(char[] delimiter, bool retry)
+		protected DelimitedFileImporter(char delimiter, bool retry)
 			: this(
 				delimiter,
-				null,
-				null,
+				UnboundedChar,
+				UnspecifiedNewlineProxyChar,
 				new IoReporterContext { RetryOptions = retry ? RetryOptions.Io : RetryOptions.None },
 				new NullLogger(),
 				CancellationToken.None)
@@ -164,7 +187,7 @@ namespace Relativity.Import.Export.Io
 		/// Initializes a new instance of the <see cref="DelimitedFileImporter"/> class.
 		/// </summary>
 		/// <param name="delimiter">
-		/// The delimiter character array to use while splitting lines.
+		/// The delimiter character to use while splitting lines.
 		/// </param>
 		/// <param name="context">
 		/// The I/O reporter context.
@@ -175,12 +198,8 @@ namespace Relativity.Import.Export.Io
 		/// <param name="token">
 		/// The cancellation token used to stop the process upon request.
 		/// </param>
-		protected DelimitedFileImporter(
-			char[] delimiter,
-			IoReporterContext context,
-			ILog logger,
-			CancellationToken token)
-			: this(delimiter, null, null, context, logger, token)
+		protected DelimitedFileImporter(char delimiter, IoReporterContext context, ILog logger, CancellationToken token)
+			: this(delimiter, UnboundedChar, UnspecifiedNewlineProxyChar, context, logger, token)
 		{
 		}
 
@@ -188,13 +207,13 @@ namespace Relativity.Import.Export.Io
 		/// Initializes a new instance of the <see cref="DelimitedFileImporter"/> class.
 		/// </summary>
 		/// <param name="delimiter">
-		/// The delimiter character array to use while splitting lines.
+		/// The delimiter character to use while splitting lines.
 		/// </param>
 		/// <param name="bound">
 		/// The bounding characters surrounding each delimiter.
 		/// </param>
 		/// <param name="newlineProxy">
-		/// An array of characters with which to replace system newline characters (ClRf). Only the first character will be used.
+		/// The character with which to replace system newline characters (ClRf).
 		/// </param>
 		/// <param name="context">
 		/// The I/O reporter context.
@@ -206,36 +225,16 @@ namespace Relativity.Import.Export.Io
 		/// The cancellation token used to stop the process upon request.
 		/// </param>
 		protected DelimitedFileImporter(
-			char[] delimiter,
-			char[] bound,
-			char[] newlineProxy,
+			char delimiter,
+			char bound,
+			char newlineProxy,
 			IoReporterContext context,
 			ILog logger,
 			CancellationToken token)
 			: base(context, logger, token)
 		{
-			if (delimiter == null)
-			{
-				throw new ArgumentNullException(nameof(delimiter));
-			}
-
-			if (delimiter.Length < 1)
-			{
-				throw new ArgumentOutOfRangeException(
-					nameof(delimiter),
-					"The delimiter array parameter must define at least 1 character.");
-			}
-
-			// The bound can be null.
-			if (bound != null && bound.Length < 1)
-			{
-				throw new ArgumentOutOfRangeException(
-					nameof(delimiter),
-					"The bound array parameter must define at least 1 character.");
-			}
-
-			this.delimiter = delimiter;
-			this.bound = bound;
+			this.Delimiter = delimiter;
+			this.Bound = bound;
 			this.NewlineProxy = newlineProxy;
 		}
 
@@ -252,12 +251,15 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <summary>
-		/// Gets the bound.
+		/// Gets the bound character.
 		/// </summary>
 		/// <value>
-		/// The bound.
+		/// The character.
 		/// </value>
-		protected char Bound => this.bound[0];
+		protected char Bound
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Gets the current character position.
@@ -275,9 +277,12 @@ namespace Relativity.Import.Export.Io
 		/// Gets the character delimiter.
 		/// </summary>
 		/// <value>
-		/// The delimiter.
+		/// The character.
 		/// </value>
-		protected char Delimiter => this.delimiter[0];
+		protected char Delimiter
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Gets a value indicating whether the importer has reached the end of file.
@@ -288,56 +293,12 @@ namespace Relativity.Import.Export.Io
 		protected virtual bool HasReachedEof => this.Peek() == EofChar;
 
 		/// <summary>
-		/// Gets the meta delimiter.
-		/// </summary>
-		/// <value>
-		/// The meta delimiter.
-		/// </value>
-		protected char[] MetaDelimiter
-		{
-			get
-			{
-				if (this.Mode == DelimitedMode.Simple)
-				{
-					throw new ArgumentOutOfRangeException(nameof(this.Mode), "The meta delimiter cannot be used when the mode is set to Simple.");
-				}
-
-				if (this.metaDelimiter == null)
-				{
-					char[] metaDelim = new char[(this.bound.Length * 2) + this.delimiter.Length - 1];
-					int i = 0;
-					foreach (char ch in this.bound)
-					{
-						metaDelim[i] = ch;
-						i += 1;
-					}
-
-					foreach (char ch in this.delimiter)
-					{
-						metaDelim[i] = ch;
-						i += 1;
-					}
-
-					foreach (char ch in this.bound)
-					{
-						metaDelim[i] = ch;
-						i += 1;
-					}
-
-					this.metaDelimiter = metaDelim;
-				}
-
-				return this.metaDelimiter;
-			}
-		}
-
-		/// <summary>
 		/// Gets the delimited mode.
 		/// </summary>
 		/// <value>
 		/// The <see cref="DelimitedMode"/> value.
 		/// </value>
-		protected DelimitedMode Mode => this.bound == null ? DelimitedMode.Simple : DelimitedMode.Bounded;
+		protected DelimitedMode Mode => this.Bound == UnboundedChar ? DelimitedMode.Simple : DelimitedMode.Bounded;
 
 		/// <summary>
 		/// Gets the newline proxy.
@@ -345,7 +306,10 @@ namespace Relativity.Import.Export.Io
 		/// <value>
 		/// The character array.
 		/// </value>
-		protected char[] NewlineProxy { get; }
+		protected char NewlineProxy
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Gets or sets the stream reader.
@@ -353,7 +317,11 @@ namespace Relativity.Import.Export.Io
 		/// <value>
 		/// The <see cref="StreamReader"/> instance.
 		/// </value>
-		protected StreamReader Reader { get; set; }
+		protected StreamReader Reader
+		{
+			get;
+			set;
+		}
 
 		/// <summary>
 		/// Gets a value indicating whether to use concordance style bound starts.
@@ -755,30 +723,100 @@ namespace Relativity.Import.Export.Io
 			return NullableTypesHelper.ToNullableDecimal(value);
 		}
 
+		/// <summary>
+		/// Appends the <paramref name="value"/> character to the <paramref name="sb"/> string builder and automatically updates <paramref name="hasAlertedError"/> if a validation error is published.
+		/// </summary>
+		/// <param name="sb">
+		/// The string builder to append.
+		/// </param>
+		/// <param name="value">
+		/// The character to append to the string builder.
+		/// </param>
+		/// <param name="startPosition">
+		/// The start position.
+		/// </param>
+		/// <param name="maxCharacterLength">
+		/// The maximum length of the character.
+		/// </param>
+		/// <param name="hasAlertedError">
+		/// The reference to a flag indicating whether a validation error has been published.
+		/// </param>
 		private void Append(
 			StringBuilder sb,
-			string toAppend,
+			char value,
 			long startPosition,
 			int maxCharacterLength,
 			ref bool hasAlertedError)
 		{
+			if (this.ValidateAppend(startPosition, maxCharacterLength, ref hasAlertedError))
+			{
+				sb.Append(value);
+			}
+		}
+
+		/// <summary>
+		/// Appends the <paramref name="value"/> string to the <paramref name="sb"/> string builder and automatically updates <paramref name="hasAlertedError"/> if a validation error is published.
+		/// </summary>
+		/// <param name="sb">
+		/// The string builder to append.
+		/// </param>
+		/// <param name="value">
+		/// The string to append to the string builder.
+		/// </param>
+		/// <param name="startPosition">
+		/// The start position.
+		/// </param>
+		/// <param name="maxCharacterLength">
+		/// The maximum length of the character.
+		/// </param>
+		/// <param name="hasAlertedError">
+		/// The reference to a flag indicating whether a validation error has been published.
+		/// </param>
+		private void Append(
+			StringBuilder sb,
+			string value,
+			long startPosition,
+			int maxCharacterLength,
+			ref bool hasAlertedError)
+		{
+			if (this.ValidateAppend(startPosition, maxCharacterLength, ref hasAlertedError))
+			{
+				sb.Append(value);
+			}
+		}
+
+		/// <summary>
+		/// Validates the append operation and automatically updates <paramref name="hasAlertedError"/> if a validation error is published.
+		/// </summary>
+		/// <param name="startPosition">
+		/// The start position.
+		/// </param>
+		/// <param name="maxCharacterLength">
+		/// The maximum length of the character.
+		/// </param>
+		/// <param name="hasAlertedError">
+		/// The reference to a flag indicating whether a validation error has been published.
+		/// </param>
+		/// <returns>
+		/// <see langword="true" /> if the append is validated; otherwise, <see langword="false" />.
+		/// </returns>
+		private bool ValidateAppend(long startPosition, int maxCharacterLength, ref bool hasAlertedError)
+		{
 			if (checked(this.CharacterPosition - startPosition) > (long)maxCharacterLength)
 			{
-				if (hasAlertedError)
+				if (!hasAlertedError)
 				{
-					return;
+					hasAlertedError = true;
+					string message = "Contents of cell has exceeded maximum length of "
+					                 + Conversions.ToString(maxCharacterLength) + " (character "
+					                 + Conversions.ToString(this.CharacterPosition) + ")";
+					this.PublishWarningMessage(new IoWarningEventArgs(message, this.CurrentLineNumber));
 				}
 
-				hasAlertedError = true;
-				string message = "Contents of cell has exceeded maximum length of "
-				                 + Conversions.ToString(maxCharacterLength) + " (character "
-				                 + Conversions.ToString(this.CharacterPosition) + ")";
-				this.PublishWarningMessage(new IoWarningEventArgs(message, this.CurrentLineNumber));
+				return false;
 			}
-			else
-			{
-				sb.Append(toAppend);
-			}
+
+			return true;
 		}
 
 		/// <summary>
@@ -806,12 +844,16 @@ namespace Relativity.Import.Export.Io
 		/// </returns>
 		private string ConvertNewLine(string input)
 		{
-			if (this.NewlineProxy != null)
+			if (this.NewlineProxy != UnspecifiedNewlineProxyChar)
 			{
-				string newlineProxyString = Conversions.ToString(this.NewlineProxy[0]);
-				input = input.Replace(VisualBasicConstants.VbNewLine, newlineProxyString);
-				input = input.Replace(VisualBasicConstants.VbCr, newlineProxyString);
-				input = input.Replace(VisualBasicConstants.VbLf, newlineProxyString);
+				if (string.IsNullOrEmpty(this.newlineProxyString))
+				{
+					this.newlineProxyString = Conversions.ToString(this.NewlineProxy);
+				}
+
+				input = input.Replace(VisualBasicConstants.VbNewLine, this.newlineProxyString);
+				input = input.Replace(VisualBasicConstants.VbCr, this.newlineProxyString);
+				input = input.Replace(VisualBasicConstants.VbLf, this.newlineProxyString);
 			}
 
 			switch (this.TrimOption)
@@ -853,11 +895,11 @@ namespace Relativity.Import.Export.Io
 			StringBuilder stringBuilder = new StringBuilder();
 			long initialCharacterPosition = this.CharacterPosition;
 			bool hasAlertedError = false;
-			if (this.Peek() == (int)this.bound[0])
+			if (this.Peek() == (int)this.Bound)
 			{
 				// The Read character is NOT used.
 				Microsoft.VisualBasic.Strings.ChrW(this.Read());
-				if ((int)Microsoft.VisualBasic.Strings.ChrW(this.Peek()) == (int)this.delimiter[0] ||
+				if ((int)Microsoft.VisualBasic.Strings.ChrW(this.Peek()) == (int)this.Delimiter ||
 				    this.Peek() == EofChar ||
 				    this.Peek() == 13)
 				{
@@ -874,7 +916,7 @@ namespace Relativity.Import.Export.Io
 
 						this.Append(
 							stringBuilder,
-							Conversions.ToString(this.bound[0]) + "\r",
+							Conversions.ToString(this.Bound) + "\r",
 							initialCharacterPosition,
 							maximumFieldLength,
 							ref hasAlertedError);
@@ -889,7 +931,7 @@ namespace Relativity.Import.Export.Io
 				{
 					this.Append(
 						stringBuilder,
-						Conversions.ToString(this.bound[0]),
+						this.Bound,
 						initialCharacterPosition,
 						maximumFieldLength,
 						ref hasAlertedError);
@@ -904,7 +946,7 @@ namespace Relativity.Import.Export.Io
 			while (this.Peek() != EofChar)
 			{
 				char ch1 = Microsoft.VisualBasic.Strings.ChrW(this.Read());
-				if ((int)ch1 == (int)this.bound[0])
+				if ((int)ch1 == (int)this.Bound)
 				{
 					if (this.TrimOption == TrimOption.Both ||
 					    this.TrimOption == TrimOption.Trailing)
@@ -917,7 +959,7 @@ namespace Relativity.Import.Export.Io
 					}
 
 					int num = this.Peek();
-					if (num == (int)this.delimiter[0])
+					if (num == (int)this.Delimiter)
 					{
 						this.Read();
 						return this.ConvertNewLine(stringBuilder);
@@ -939,18 +981,18 @@ namespace Relativity.Import.Export.Io
 
 							this.Append(
 								stringBuilder,
-								Conversions.ToString(ch2),
+								ch2,
 								initialCharacterPosition,
 								maximumFieldLength,
 								ref hasAlertedError);
 							break;
 
 						default:
-							if (num == (int)this.bound[0])
+							if (num == (int)this.Bound)
 							{
 								this.Append(
 									stringBuilder,
-									Conversions.ToString(this.bound[0]),
+									this.Bound,
 									initialCharacterPosition,
 									maximumFieldLength,
 									ref hasAlertedError);
@@ -964,7 +1006,7 @@ namespace Relativity.Import.Export.Io
 				{
 					this.Append(
 						stringBuilder,
-						Conversions.ToString(ch1),
+						ch1,
 						initialCharacterPosition,
 						maximumFieldLength,
 						ref hasAlertedError);
@@ -1019,12 +1061,12 @@ namespace Relativity.Import.Export.Io
 				}
 
 				char ch = Microsoft.VisualBasic.Strings.ChrW(charCode);
-				if ((int)ch == (int)this.bound[0])
+				if ((int)ch == (int)this.Bound)
 				{
 					currentArrayList.Add(
 						this.GetBoundedFieldValue(ref hasHitEndOfLine, currentArrayList.Count, maximumFieldLength));
 				}
-				else if ((int)ch == (int)this.delimiter[0])
+				else if ((int)ch == (int)this.Delimiter)
 				{
 					// Add an empty value
 					currentArrayList.Add(string.Empty);
@@ -1096,11 +1138,11 @@ namespace Relativity.Import.Export.Io
 				}
 				else if (charCode == 10)
 				{
-					builder.Append(Conversions.ToString(this.NewlineProxy[0]));
+					builder.Append(this.NewlineProxy);
 				}
 				else
 				{
-					builder.Append(Conversions.ToString(Microsoft.VisualBasic.Strings.ChrW(charCode)));
+					builder.Append(Microsoft.VisualBasic.Strings.ChrW(charCode));
 				}
 			}
 
@@ -1130,7 +1172,7 @@ namespace Relativity.Import.Export.Io
 			{
 				int charCode = this.Read();
 				int num = charCode;
-				if (num == this.delimiter[0])
+				if (num == this.Delimiter)
 				{
 					return sb.ToString();
 				}
@@ -1146,7 +1188,7 @@ namespace Relativity.Import.Export.Io
 
 					this.Append(
 						sb,
-						Conversions.ToString(Microsoft.VisualBasic.Strings.ChrW(charCode)),
+						Microsoft.VisualBasic.Strings.ChrW(charCode),
 						initialCharacterPosition,
 						maximumCharacters,
 						ref hasAlertedError);
@@ -1155,7 +1197,7 @@ namespace Relativity.Import.Export.Io
 				{
 					this.Append(
 						sb,
-						Conversions.ToString(Microsoft.VisualBasic.Strings.ChrW(charCode)),
+						Microsoft.VisualBasic.Strings.ChrW(charCode),
 						initialCharacterPosition,
 						maximumCharacters,
 						ref hasAlertedError);
