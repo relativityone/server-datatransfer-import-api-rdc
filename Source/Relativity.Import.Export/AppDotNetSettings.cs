@@ -95,7 +95,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"ApplicationName",
+			AppSettingsConstants.ApplicationNameKey,
 			"")]
 		string IAppSettings.ApplicationName
 		{
@@ -106,7 +106,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"AuditLevel",
+			AppSettingsConstants.AuditLevelKey,
 			AppSettingsConstants.AuditLevelDefaultValue)]
 		string IAppSettings.AuditLevel
 		{
@@ -116,8 +116,8 @@ namespace Relativity.Import.Export
 
 		/// <inheritdoc />
 		[AppSetting(
-			AppSettingsConstants.SectionLegacyUtility,
-			"CreateErrorForInvalidDate",
+			AppSettingsConstants.SectionLegacyWinEdds,
+			AppSettingsConstants.CreateErrorForEmptyNativeFileKey,
 			AppSettingsConstants.CreateErrorForEmptyNativeFileDefaultValue)]
 		bool IAppSettings.CreateErrorForEmptyNativeFile
 		{
@@ -128,7 +128,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"CreateErrorForInvalidDate",
+			AppSettingsConstants.CreateErrorForInvalidDateKey,
 			AppSettingsConstants.CreateErrorForInvalidDateDefaultValue)]
 		bool IAppSettings.CreateErrorForInvalidDate
 		{
@@ -139,7 +139,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"CreateFoldersInWebAPI",
+			AppSettingsConstants.CreateFoldersInWebApiKey,
 			AppSettingsConstants.CreateFoldersInWebApiDefaultValue)]
 		bool IAppSettings.CreateFoldersInWebApi
 		{
@@ -150,7 +150,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"DefaultMaxErrorCount",
+			AppSettingsConstants.DefaultMaxErrorCountKey,
 			AppSettingsConstants.DefaultMaxErrorCountDefaultValue)]
 		int IAppSettings.DefaultMaxErrorCount
 		{
@@ -161,7 +161,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"DisableImageLocationValidation",
+			AppSettingsConstants.DisableImageLocationValidationKey,
 			AppSettingsConstants.DisableImageLocationValidationDefaultValue)]
 		bool IAppSettings.DisableImageLocationValidation
 		{
@@ -172,7 +172,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"DisableImageTypeValidation",
+			AppSettingsConstants.DisableImageTypeValidationKey,
 			AppSettingsConstants.DisableImageTypeValidationDefaultValue)]
 		bool IAppSettings.DisableImageTypeValidation
 		{
@@ -183,7 +183,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"DisableNativeValidation",
+			AppSettingsConstants.DisableOutsideInFileIdentificationKey,
 			AppSettingsConstants.DisableOutsideInFileIdentificationDefaultValue)]
 		bool IAppSettings.DisableOutsideInFileIdentification
 		{
@@ -194,7 +194,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"DisableTextFileEncodingCheck",
+			AppSettingsConstants.DisableTextFileEncodingCheckKey,
 			AppSettingsConstants.DisableTextFileEncodingCheckDefaultValue)]
 		bool IAppSettings.DisableTextFileEncodingCheck
 		{
@@ -205,7 +205,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"DisableNativeLocationValidation",
+			AppSettingsConstants.DisableThrowOnIllegalCharactersKey,
 			AppSettingsConstants.DisableThrowOnIllegalCharactersDefaultValue)]
 		bool IAppSettings.DisableThrowOnIllegalCharacters
 		{
@@ -216,7 +216,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"DynamicBatchResizingOn",
+			AppSettingsConstants.DynamicBatchResizingOnKey,
 			AppSettingsConstants.DynamicBatchResizingOnDefaultValue)]
 		bool IAppSettings.DynamicBatchResizingOn
 		{
@@ -227,7 +227,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"EnableCaseSensitiveSearchOnImport",
+			AppSettingsConstants.EnableCaseSensitiveSearchOnImportKey,
 			AppSettingsConstants.EnableCaseSensitiveSearchOnImportDefaultValue)]
 		bool IAppSettings.EnableCaseSensitiveSearchOnImport
 		{
@@ -238,7 +238,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"EnableSingleModeImport",
+			AppSettingsConstants.EnableSingleModeImportKey,
 			AppSettingsConstants.EnableSingleModeImportDefaultValue)]
 		bool IAppSettings.EnableSingleModeImport
 		{
@@ -247,6 +247,9 @@ namespace Relativity.Import.Export
 		}
 
 		/// <inheritdoc />
+		/// <remarks>
+		/// This is an unmapped setting and generally reserved for testing purposes.
+		/// </remarks>
 		[AppSetting]
 		public bool EnforceMinRetryCount
 		{
@@ -255,6 +258,9 @@ namespace Relativity.Import.Export
 		}
 
 		/// <inheritdoc />
+		/// <remarks>
+		/// This is an unmapped setting and generally reserved for testing purposes.
+		/// </remarks>
 		[AppSetting]
 		public bool EnforceMinWaitTime
 		{
@@ -265,7 +271,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"ExportBatchSize",
+			AppSettingsConstants.ExportBatchSizeKey,
 			AppSettingsConstants.ExportBatchSizeDefaultValue)]
 		int IAppSettings.ExportBatchSize
 		{
@@ -276,7 +282,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyUtility,
-			"ExportErrorNumberOfRetries",
+			AppSettingsConstants.ExportErrorNumberOfRetriesKey,
 			AppSettingsConstants.ExportErrorNumberOfRetriesDefaultValue)]
 		int IAppSettings.ExportErrorNumberOfRetries
 		{
@@ -296,7 +302,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyUtility,
-			"ExportErrorWaitTimeInSeconds",
+			AppSettingsConstants.ExportErrorWaitTimeInSecondsKey,
 			AppSettingsConstants.ExportErrorWaitTimeInSecondsDefaultValue)]
 		int IAppSettings.ExportErrorWaitTimeInSeconds
 		{
@@ -316,7 +322,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"ExportThreadCount",
+			AppSettingsConstants.ExportThreadCountKey,
 			AppSettingsConstants.ExportThreadCountDefaultValue)]
 		int IAppSettings.ExportThreadCount
 		{
@@ -334,10 +340,10 @@ namespace Relativity.Import.Export
 		{
 			get
 			{
-				string value = AppSettingsReader.GetRegistryKeyValue(AppSettingsConstants.ForceFolderPreviewRegistryKey);
+				string value = AppSettingsManager.GetRegistryKeyValue(AppSettingsConstants.ForceFolderPreviewRegistryKey);
 				if (string.IsNullOrEmpty(value))
 				{
-					AppSettingsReader.SetRegistryKeyValue(
+					AppSettingsManager.SetRegistryKeyValue(
 						AppSettingsConstants.ForceFolderPreviewRegistryKey,
 						bool.TrueString.ToLowerInvariant());
 					return AppSettingsConstants.ForceFolderPreviewDefaultValue;
@@ -347,7 +353,7 @@ namespace Relativity.Import.Export
 			}
 
 			set =>
-				AppSettingsReader.SetRegistryKeyValue(
+				AppSettingsManager.SetRegistryKeyValue(
 					AppSettingsConstants.ForceFolderPreviewRegistryKey,
 					value.ToString().ToLowerInvariant());
 		}
@@ -355,7 +361,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"ForceParallelismInNewExport",
+			AppSettingsConstants.ForceParallelismInNewExportKey,
 			AppSettingsConstants.ForceParallelismInNewExportDefaultValue)]
 		bool IAppSettings.ForceParallelismInNewExport
 		{
@@ -366,7 +372,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"ForceWebUpload",
+			AppSettingsConstants.ForceWebUploadKey,
 			AppSettingsConstants.ForceWebUploadDefaultValue)]
 		bool IAppSettings.ForceWebUpload
 		{
@@ -375,20 +381,9 @@ namespace Relativity.Import.Export
 		}
 
 		/// <inheritdoc />
-		[AppSetting]
-		string IAppSettings.OpenIdConnectHomeRealmDiscoveryHint
-		{
-			get
-			{
-				string value = AppSettingsReader.GetRegistryKeyValue(AppSettingsConstants.OpenIdConnectHomeRealmDiscoveryHintKey);
-				return value;
-			}
-		}
-
-		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"HttpTimeoutSeconds",
+			AppSettingsConstants.HttpTimeoutSecondsKey,
 			AppSettingsConstants.HttpTimeoutSecondsDefaultValue)]
 		int IAppSettings.HttpTimeoutSeconds
 		{
@@ -408,7 +403,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"ImportBatchMaxVolume",
+			AppSettingsConstants.ImportBatchMaxVolumeKey,
 			AppSettingsConstants.ImportBatchMaxVolumeDefaultValue)]
 		int IAppSettings.ImportBatchMaxVolume
 		{
@@ -419,7 +414,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"ImportBatchSize",
+			AppSettingsConstants.ImportBatchSizeKey,
 			AppSettingsConstants.ImportBatchSizeDefaultValue)]
 		int IAppSettings.ImportBatchSize
 		{
@@ -430,7 +425,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyUtility,
-			"IOErrorNumberOfRetries",
+			AppSettingsConstants.IoErrorNumberOfRetriesKey,
 			AppSettingsConstants.IoErrorNumberOfRetriesDefaultValue)]
 		int IAppSettings.IoErrorNumberOfRetries
 		{
@@ -450,7 +445,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyUtility,
-			"IOErrorWaitTimeInSeconds",
+			AppSettingsConstants.IoErrorWaitTimeInSecondsKey,
 			AppSettingsConstants.IoErrorWaitTimeInSecondsDefaultValue)]
 		int IAppSettings.IoErrorWaitTimeInSeconds
 		{
@@ -470,7 +465,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"JobCompleteBatchSize",
+			AppSettingsConstants.JobCompleteBatchSizeKey,
 			AppSettingsConstants.JobCompleteBatchSizeDefaultValue)]
 		int IAppSettings.JobCompleteBatchSize
 		{
@@ -481,7 +476,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"LoadImportedFullTextFromServer",
+			AppSettingsConstants.LoadImportedFullTextFromServerKey,
 			AppSettingsConstants.LoadImportedFullTextFromServerDefaultValue)]
 		bool IAppSettings.LoadImportedFullTextFromServer
 		{
@@ -495,7 +490,7 @@ namespace Relativity.Import.Export
 		/// </remarks>
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWindowsProcess,
-			"LogAllEvents",
+			AppSettingsConstants.LogAllEventsKey,
 			AppSettingsConstants.LogAllEventsDefaultValue)]
 		bool IAppSettings.LogAllEvents
 		{
@@ -506,7 +501,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"LogConfigFile",
+			AppSettingsConstants.LogConfigXmlFileNameKey,
 			AppSettingsConstants.LogConfigXmlFileNameDefaultValue)]
 		string IAppSettings.LogConfigXmlFileName
 		{
@@ -517,7 +512,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyUtility,
-			"MaximumFilesForTapiBridge",
+			AppSettingsConstants.MaxFilesForTapiBridgeKey,
 			AppSettingsConstants.MaxFilesForTapiBridgeDefaultValue)]
 		int IAppSettings.MaxFilesForTapiBridge
 		{
@@ -537,7 +532,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"MaximumReloginTries",
+			AppSettingsConstants.MaximumReloginTriesKey,
 			AppSettingsConstants.MaximumReloginTriesDefaultValue)]
 		int IAppSettings.MaxReloginTries
 		{
@@ -557,7 +552,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyUtility,
-			"MaxNumberOfFileExportTasks",
+			AppSettingsConstants.MaxNumberOfFileExportTasksKey,
 			AppSettingsConstants.MaxNumberOfFileExportTasksDefaultValue)]
 		int IAppSettings.MaxNumberOfFileExportTasks
 		{
@@ -577,7 +572,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"MinimumBatchSize",
+			AppSettingsConstants.MinBatchSizeKey,
 			AppSettingsConstants.MinBatchSizeDefaultValue)]
 		int IAppSettings.MinBatchSize
 		{
@@ -595,10 +590,10 @@ namespace Relativity.Import.Export
 		{
 			get
 			{
-				string value = AppSettingsReader.GetRegistryKeyValue(AppSettingsConstants.ObjectFieldIdListContainsArtifactIdRegistryKey);
+				string value = AppSettingsManager.GetRegistryKeyValue(AppSettingsConstants.ObjectFieldIdListContainsArtifactIdRegistryKey);
 				if (string.IsNullOrEmpty(value))
 				{
-					AppSettingsReader.SetRegistryKeyValue(
+					AppSettingsManager.SetRegistryKeyValue(
 						AppSettingsConstants.ObjectFieldIdListContainsArtifactIdRegistryKey,
 						string.Empty);
 					return new List<int>();
@@ -611,7 +606,7 @@ namespace Relativity.Import.Export
 			{
 				if (value != null)
 				{
-					AppSettingsReader.SetRegistryKeyValue(
+					AppSettingsManager.SetRegistryKeyValue(
 						AppSettingsConstants.ObjectFieldIdListContainsArtifactIdRegistryKey,
 						string.Join(",", value.Select(x => x.ToString())));
 				}
@@ -619,9 +614,20 @@ namespace Relativity.Import.Export
 		}
 
 		/// <inheritdoc />
+		[AppSetting]
+		string IAppSettings.OpenIdConnectHomeRealmDiscoveryHint
+		{
+			get
+			{
+				string value = AppSettingsManager.GetRegistryKeyValue(AppSettingsConstants.OpenIdConnectHomeRealmDiscoveryHintKey);
+				return value;
+			}
+		}
+
+		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"PermissionErrorsRetry",
+			AppSettingsConstants.PermissionErrorsRetryKey,
 			AppSettingsConstants.PermissionErrorsRetryDefaultValue)]
 		bool IAppSettings.PermissionErrorsRetry
 		{
@@ -632,7 +638,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"PreviewThreshold",
+			AppSettingsConstants.PreviewThresholdKey,
 			AppSettingsConstants.PreviewThresholdDefaultValue)]
 		int IAppSettings.PreviewThreshold
 		{
@@ -643,7 +649,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"ProcessFormRefreshRate",
+			AppSettingsConstants.ProcessFormRefreshRateKey,
 			AppSettingsConstants.ProcessFormRefreshRateDefaultValue)]
 		int IAppSettings.ProcessFormRefreshRate
 		{
@@ -662,7 +668,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"RestUrl",
+			AppSettingsConstants.RestUrlKey,
 			AppSettingsConstants.RestUrlDefaultValue)]
 		string IAppSettings.RestUrl
 		{
@@ -694,7 +700,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"ServicesUrl",
+			AppSettingsConstants.ServicesUrlKey,
 			AppSettingsConstants.ServicesUrlDefaultValue)]
 		string IAppSettings.ServicesUrl
 		{
@@ -705,7 +711,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"SuppressCertificateCheckOnClient",
+			AppSettingsConstants.SuppressServerCertificateValidationKey,
 			AppSettingsConstants.SuppressServerCertificateValidationDefaultValue)]
 		bool IAppSettings.SuppressServerCertificateValidation
 		{
@@ -716,7 +722,8 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"TapiAsperaBcpRootFolder")]
+			AppSettingsConstants.TapiAsperaBcpRootFolderKey,
+			AppSettingsConstants.TapiAsperaBcpRootFolderDefaultValue)]
 		string IAppSettings.TapiAsperaBcpRootFolder
 		{
 			get;
@@ -726,7 +733,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"TapiAsperaNativeDocRootLevels",
+			AppSettingsConstants.TapiAsperaNativeDocRootLevelsKey,
 			AppSettingsConstants.TapiAsperaNativeDocRootLevelsDefaultValue)]
 		int IAppSettings.TapiAsperaNativeDocRootLevels
 		{
@@ -737,7 +744,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"BadPathErrorsRetry",
+			AppSettingsConstants.TapiBadPathErrorsRetryKey,
 			AppSettingsConstants.TapiBadPathErrorsRetryDefaultValue)]
 		bool IAppSettings.TapiBadPathErrorsRetry
 		{
@@ -748,7 +755,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyUtility,
-			"TapiBridgeExportTransferWaitingTimeInSeconds",
+			AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsKey,
 			AppSettingsConstants.TapiBridgeExportTransferWaitingTimeInSecondsDefaultValue)]
 		int IAppSettings.TapiBridgeExportTransferWaitingTimeInSeconds
 		{
@@ -768,7 +775,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"TapiForceAsperaClient",
+			AppSettingsConstants.TapiForceAsperaClientKey,
 			AppSettingsConstants.TapiForceAsperaClientDefaultValue)]
 		bool IAppSettings.TapiForceAsperaClient
 		{
@@ -779,7 +786,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"TapiForceBcpHttpClient",
+			AppSettingsConstants.TapiForceBcpHttpClientKey,
 			AppSettingsConstants.TapiForceBcpHttpClientDefaultValue)]
 		bool IAppSettings.TapiForceBcpHttpClient
 		{
@@ -790,7 +797,8 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"TapiForceClientCandidates")]
+			AppSettingsConstants.TapiForceClientCandidatesKey,
+			AppSettingsConstants.TapiForceClientCandidatesDefaultValue)]
 		string IAppSettings.TapiForceClientCandidates
 		{
 			get;
@@ -800,7 +808,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"TapiForceFileShareClient",
+			AppSettingsConstants.TapiForceFileShareClientKey,
 			AppSettingsConstants.TapiForceFileShareClientDefaultValue)]
 		bool IAppSettings.TapiForceFileShareClient
 		{
@@ -811,7 +819,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"TapiForceHttpClient",
+			AppSettingsConstants.TapiForceHttpClientKey,
 			AppSettingsConstants.TapiForceHttpClientDefaultValue)]
 		bool IAppSettings.TapiForceHttpClient
 		{
@@ -822,7 +830,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"TapiLargeFileProgressEnabled",
+			AppSettingsConstants.TapiLargeFileProgressEnabledKey,
 			AppSettingsConstants.TapiLargeFileProgressEnabledDefaultValue)]
 		bool IAppSettings.TapiLargeFileProgressEnabled
 		{
@@ -833,7 +841,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"TapiMaxJobParallelism",
+			AppSettingsConstants.TapiMaxJobParallelismKey,
 			AppSettingsConstants.TapiMaxJobParallelismDefaultValue)]
 		int IAppSettings.TapiMaxJobParallelism
 		{
@@ -853,7 +861,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"TapiMinDataRateMbps",
+			AppSettingsConstants.TapiMinDataRateMbpsKey,
 			AppSettingsConstants.TapiMinDataRateMbpsDefaultValue)]
 		int IAppSettings.TapiMinDataRateMbps
 		{
@@ -873,7 +881,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"TapiPreserveFileTimestamps",
+			AppSettingsConstants.TapiPreserveFileTimestampsKey,
 			AppSettingsConstants.TapiPreserveFileTimestampsDefaultValue)]
 		bool IAppSettings.TapiPreserveFileTimestamps
 		{
@@ -884,7 +892,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"TapiSubmitApmMetrics",
+			AppSettingsConstants.TapiSubmitApmMetricsKey,
 			AppSettingsConstants.TapiSubmitApmMetricsDefaultValue)]
 		bool IAppSettings.TapiSubmitApmMetrics
 		{
@@ -895,7 +903,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"TapiTargetDataRateMbps",
+			AppSettingsConstants.TapiTargetDataRateMbpsKey,
 			AppSettingsConstants.TapiTargetDataRateMbpsDefaultValue)]
 		int IAppSettings.TapiTargetDataRateMbps
 		{
@@ -915,8 +923,8 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"TapiTransferLogDirectory",
-			"")]
+			AppSettingsConstants.TapiTransferLogDirectoryKey,
+			AppSettingsConstants.TapiTransferLogDirectoryDefaultValue)]
 		string IAppSettings.TapiTransferLogDirectory
 		{
 			get;
@@ -926,8 +934,8 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"TempDirectory",
-			"")]
+			AppSettingsConstants.TempDirectoryKey,
+			AppSettingsConstants.TempDirectoryDefaultValue)]
 		string IAppSettings.TempDirectory
 		{
 			get;
@@ -937,7 +945,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"UseOldExport",
+			AppSettingsConstants.UseOldExportKey,
 			AppSettingsConstants.UseOldExportDefaultValue)]
 		bool IAppSettings.UseOldExport
 		{
@@ -948,7 +956,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"UsePipeliningForNativeAndObjectImports",
+			AppSettingsConstants.UsePipeliningForNativeAndObjectImportsKey,
 			AppSettingsConstants.UsePipeliningForNativeAndObjectImportsDefaultValue)]
 		bool IAppSettings.UsePipeliningForNativeAndObjectImports
 		{
@@ -958,7 +966,7 @@ namespace Relativity.Import.Export
 
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"WaitBeforeReconnect",
+			AppSettingsConstants.WaitBeforeReconnectKey,
 			AppSettingsConstants.WaitBeforeReconnectDefaultValue)]
 		int IAppSettings.WaitBeforeReconnect
 		{
@@ -969,7 +977,7 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"WebAPIOperationTimeout",
+			AppSettingsConstants.WebApiOperationTimeoutKey,
 			AppSettingsConstants.WebApiOperationTimeoutDefaultValue)]
 		int IAppSettings.WebApiOperationTimeout
 		{
@@ -980,7 +988,8 @@ namespace Relativity.Import.Export
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"WebServiceURL")]
+			AppSettingsConstants.WebApiServiceUrlKey,
+			AppSettingsConstants.WebApiServiceUrlDefaultValue)]
 		string IAppSettings.WebApiServiceUrl
 		{
 			get
@@ -998,7 +1007,7 @@ namespace Relativity.Import.Export
 
 				if (string.IsNullOrWhiteSpace(returnValue))
 				{
-					returnValue = AppSettingsReader.GetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrlRegistryKey);
+					returnValue = AppSettingsManager.GetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrlRegistryKey);
 				}
 
 				return dotNetSettings.ValidateUriFormat(returnValue);
@@ -1008,14 +1017,14 @@ namespace Relativity.Import.Export
 			{
 				IAppSettings dotNetSettings = this;
 				string validatedUri = dotNetSettings.ValidateUriFormat(value);
-				AppSettingsReader.SetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrlRegistryKey, validatedUri);
+				AppSettingsManager.SetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrlRegistryKey, validatedUri);
 			}
 		}
 
 		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
-			"WebBasedFileDownloadChunkSize",
+			AppSettingsConstants.WebBasedFileDownloadChunkSizeKey,
 			AppSettingsConstants.WebBasedFileDownloadChunkSizeDefaultValue)]
 		int IAppSettings.WebBasedFileDownloadChunkSize
 		{

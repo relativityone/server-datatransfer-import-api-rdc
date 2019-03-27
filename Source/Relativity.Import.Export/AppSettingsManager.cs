@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="AppSettingsReader.cs" company="Relativity ODA LLC">
+// <copyright file="AppSettingsManager.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -7,15 +7,16 @@
 namespace Relativity.Import.Export
 {
 	using System;
+	using System.Collections;
 	using System.Collections.Generic;
 	using System.Configuration;
 	using System.Linq;
 	using System.Reflection;
 
 	/// <summary>
-	/// Defines static methods to retrieve application settings.
+	/// Defines static methods to manage application settings.
 	/// </summary>
-	public static class AppSettingsReader
+	internal static class AppSettingsManager
 	{
 		/// <summary>
 		/// Gets the application setting attributes dictionary.
@@ -23,7 +24,7 @@ namespace Relativity.Import.Export
 		/// <value>
 		/// The dictionary.
 		/// </value>
-		internal static Dictionary<string, AppSettingAttribute> AppSettingAttributes { get; } = new Dictionary<string, AppSettingAttribute>();
+		public static Dictionary<string, AppSettingAttribute> AppSettingAttributes { get; } = new Dictionary<string, AppSettingAttribute>();
 
 		/// <summary>
 		/// Gets or sets the Registry sub-key name.
@@ -34,7 +35,40 @@ namespace Relativity.Import.Export
 		/// <remarks>
 		/// This is provided strictly for testing purposes.
 		/// </remarks>
-		internal static string RegistrySubKeyName { get; set; } = @"Software\kCura\Relativity";
+		public static string RegistrySubKeyName { get; set; } = @"Software\kCura\Relativity";
+
+		/// <summary>
+		/// Copies all settings from the <paramref name="source"/> settings object to the <paramref name="target"/> dictionary.
+		/// </summary>
+		/// <param name="source">
+		/// The source settings.
+		/// </param>
+		/// <param name="target">
+		/// The target dictionary.
+		/// </param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Design",
+			"CA1031:DoNotCatchGeneralExceptionTypes",
+			Justification = "This is done intentionally.")]
+		public static void Copy(IAppSettings source, IDictionary target)
+		{
+			try
+			{
+				Dictionary<string, Dictionary<string, object>> allSectionsDictionary = ReadSettingsDictionaries(source);
+				foreach (string section in allSectionsDictionary.Keys)
+				{
+					Dictionary<string, object> sectionDictionary = allSectionsDictionary[section];
+					foreach (string settingKey in sectionDictionary.Keys)
+					{
+						target[settingKey] = sectionDictionary[settingKey];
+					}
+				}
+			}
+			catch
+			{
+				// Due to legacy concerns, never allow configuration errors to throw.
+			}
+		}
 
 		/// <summary>
 		/// Creates a new application settings object and either defaults or refreshes all values.
@@ -73,7 +107,7 @@ namespace Relativity.Import.Export
 			BuildAttributeDictionary();
 			foreach (var prop in GetProperties())
 			{
-				AppSettingAttribute attribute = AppSettingAttributes[GetPropertyKey(prop)];
+				AppSettingAttribute attribute = GetAppSettingAttribute(GetPropertyKey(prop));
 				if (attribute == null || !attribute.IsMapped)
 				{
 					continue;
@@ -124,18 +158,13 @@ namespace Relativity.Import.Export
 			}
 
 			// For backwards compatibility, support all legacy sections.
-			Dictionary<string, Dictionary<string, object>> sectionDictionaries = ReadAllSectionValues();
+			Dictionary<string, Dictionary<string, object>> sectionDictionaries = ReadAllSectionDictionaries();
 			BuildAttributeDictionary();
 			foreach (var prop in GetProperties())
 			{
 				string propertyKey = GetPropertyKey(prop);
-				if (!AppSettingAttributes.ContainsKey(propertyKey))
-				{
-					continue;
-				}
-
-				AppSettingAttribute attribute = AppSettingAttributes[propertyKey];
-				if (!attribute.IsMapped)
+				AppSettingAttribute attribute = GetAppSettingAttribute(propertyKey);
+				if (attribute == null || !attribute.IsMapped)
 				{
 					continue;
 				}
@@ -155,46 +184,7 @@ namespace Relativity.Import.Export
 					value = sectionDictionary[nameValuePairKey];
 				}
 
-				if (prop.PropertyType == typeof(string))
-				{
-					AssignString(settings, prop, value);
-				}
-				else if (prop.PropertyType == typeof(bool))
-				{
-					AssignBool(settings, prop, value);
-				}
-				else if (prop.PropertyType == typeof(int))
-				{
-					AssignInt32(settings, prop, value);
-				}
-				else if (prop.PropertyType == typeof(long))
-				{
-					AssignInt64(settings, prop, value);
-				}
-				else if (prop.PropertyType == typeof(Uri))
-				{
-					AssignUri(settings, prop, value);
-				}
-				else if (prop.PropertyType.IsEnum)
-				{
-					object enumValue = null;
-					if (value != null)
-					{
-						try
-						{
-							enumValue = Enum.Parse(prop.PropertyType, value.ToString());
-						}
-						catch (ArgumentException)
-						{
-						}
-					}
-
-					AssignEnum(settings, prop, enumValue);
-				}
-				else
-				{
-					throw new InvalidOperationException($"The '{prop.Name}' property of type '{prop.PropertyType}' is not supported by the settings reader.");
-				}
+				AssignPropertyValue(settings, prop, value);
 			}
 
 			// This complexity is due to 3 possible values including the Windows Registry.
@@ -222,6 +212,38 @@ namespace Relativity.Import.Export
 		}
 
 		/// <summary>
+		/// Dynamically maps <paramref name="keyName"/> to a property contained within <paramref name="settings"/> and update the value.
+		/// </summary>
+		/// <param name="settings">
+		/// The application settings to refresh.
+		/// </param>
+		/// <param name="keyName">
+		/// The key name.
+		/// </param>
+		/// <param name="value">
+		/// The value.
+		/// </param>
+		public static void SetDynamicValue(IAppSettings settings, string keyName, string value)
+		{
+			BuildAttributeDictionary();
+			foreach (var prop in GetProperties())
+			{
+				string propertyKey = GetPropertyKey(prop);
+				AppSettingAttribute attribute = GetAppSettingAttribute(propertyKey);
+				if (attribute == null)
+				{
+					continue;
+				}
+
+				if (string.Compare(keyName, attribute.Key, StringComparison.OrdinalIgnoreCase) == 0)
+				{
+					AssignPropertyValue(settings, prop, value);
+					return;
+				}
+			}
+		}
+
+		/// <summary>
 		/// Sets the registry key value.
 		/// </summary>
 		/// <param name="keyName">
@@ -230,7 +252,7 @@ namespace Relativity.Import.Export
 		/// <param name="value">
 		/// The setting value.
 		/// </param>
-		internal static void SetRegistryKeyValue(string keyName, string value)
+		public static void SetRegistryKeyValue(string keyName, string value)
 		{
 			const bool Write = true;
 			using (Microsoft.Win32.RegistryKey key = GetRegistryKey(Write))
@@ -248,7 +270,7 @@ namespace Relativity.Import.Export
 		/// <returns>
 		/// The <see cref="Microsoft.Win32.RegistryKey"/> instance.
 		/// </returns>
-		internal static Microsoft.Win32.RegistryKey GetRegistryKey(bool write)
+		public static Microsoft.Win32.RegistryKey GetRegistryKey(bool write)
 		{
 			Microsoft.Win32.RegistryKey key =
 				Microsoft.Win32.Registry.CurrentUser.OpenSubKey(RegistrySubKeyName, write);
@@ -271,7 +293,7 @@ namespace Relativity.Import.Export
 		/// <returns>
 		/// The key value.
 		/// </returns>
-		internal static string GetRegistryKeyValue(string keyName)
+		public static string GetRegistryKeyValue(string keyName)
 		{
 			const bool Write = false;
 			using (Microsoft.Win32.RegistryKey key = GetRegistryKey(Write))
@@ -282,34 +304,9 @@ namespace Relativity.Import.Export
 		}
 
 		/// <summary>
-		/// Validates to ensure the URI format is proper.
-		/// </summary>
-		/// <param name="value">
-		/// The string representation of the URI.
-		/// </param>
-		/// <returns>
-		/// The validated URI string.
-		/// </returns>
-		internal static string ValidateUriFormat(string value)
-		{
-			if (!string.IsNullOrEmpty(value) && !value.Trim().EndsWith("/", StringComparison.OrdinalIgnoreCase))
-			{
-				value = value.Trim() + "/";
-			}
-
-			Uri result;
-			if (Uri.TryCreate(value, UriKind.Absolute, out result))
-			{
-				return value;
-			}
-
-			return string.Empty;
-		}
-
-		/// <summary>
 		/// Builds the attribute dictionary.
 		/// </summary>
-		internal static void BuildAttributeDictionary()
+		public static void BuildAttributeDictionary()
 		{
 			if (AppSettingAttributes.Count > 0)
 			{
@@ -332,7 +329,7 @@ namespace Relativity.Import.Export
 			}
 		}
 
-		internal static IEnumerable<PropertyInfo> GetProperties()
+		public static IEnumerable<PropertyInfo> GetProperties()
 		{
 			return typeof(AppDotNetSettings).GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
 		}
@@ -346,91 +343,77 @@ namespace Relativity.Import.Export
 		/// <returns>
 		/// The key name.
 		/// </returns>
-		internal static string GetPropertyKey(PropertyInfo info)
+		public static string GetPropertyKey(PropertyInfo info)
 		{
 			return info.Name.ToUpperInvariant();
 		}
 
-		internal static string GetSectionKey(AppSettingAttribute setting)
+		public static string GetSectionKey(AppSettingAttribute setting)
 		{
 			return GetSectionKey(setting.Section);
 		}
 
-		internal static string GetSectionKey(string section)
+		public static string GetSectionKey(string section)
 		{
 			return section.ToUpperInvariant();
 		}
 
-		internal static string GetSectionNameValuePairKey(AppSettingAttribute setting)
+		public static string GetSectionNameValuePairKey(AppSettingAttribute setting)
 		{
 			return setting.Key.ToUpperInvariant();
 		}
 
-		/// <summary>
-		/// Reads all app config section name/value pairs and return the dictionary.
-		/// </summary>
-		/// <returns>
-		/// The dictionary that contains all read section name/value pairs.
-		/// </returns>
-		private static Dictionary<string, Dictionary<string, object>> ReadAllSectionValues()
+		private static void AssignPropertyValue(
+			IAppSettings settings,
+			PropertyInfo prop,
+			object value)
 		{
-			Dictionary<string, Dictionary<string, object>> settings = new Dictionary<string, Dictionary<string, object>>();
-			settings.Add(
-				GetSectionKey(AppSettingsConstants.SectionLegacyWindowsProcess),
-				ReadSectionValues(AppSettingsConstants.SectionLegacyWindowsProcess));
-			settings.Add(
-				GetSectionKey(AppSettingsConstants.SectionLegacyUtility),
-				ReadSectionValues(AppSettingsConstants.SectionLegacyUtility));
-			settings.Add(
-				GetSectionKey(AppSettingsConstants.SectionLegacyWinEdds),
-				ReadSectionValues(AppSettingsConstants.SectionLegacyWinEdds));
-			settings.Add(
-				GetSectionKey(AppSettingsConstants.Section),
-				ReadSectionValues(AppSettingsConstants.Section));
-			return settings;
-		}
-
-		/// <summary>
-		/// Reads the app config section name/value pairs and add to the dictionary.
-		/// </summary>
-		/// <param name="sectionName">
-		/// Name of the section.
-		/// </param>
-		/// <returns>
-		/// The dictionary.
-		/// </returns>
-		private static Dictionary<string, object> ReadSectionValues(string sectionName)
-		{
-			Dictionary<string, object> settings = new Dictionary<string, object>();
-
-			try
+			if (prop.PropertyType == typeof(string))
 			{
-				System.Collections.Hashtable section = ConfigurationManager.GetSection(sectionName) as System.Collections.Hashtable;
-				if (section != null)
+				AssignString(settings, prop, value);
+			}
+			else if (prop.PropertyType == typeof(bool))
+			{
+				AssignBool(settings, prop, value);
+			}
+			else if (prop.PropertyType == typeof(int))
+			{
+				AssignInt32(settings, prop, value);
+			}
+			else if (prop.PropertyType == typeof(long))
+			{
+				AssignInt64(settings, prop, value);
+			}
+			else if (prop.PropertyType == typeof(Uri))
+			{
+				AssignUri(settings, prop, value);
+			}
+			else if (prop.PropertyType.IsEnum)
+			{
+				object enumValue = null;
+				if (value != null)
 				{
-					var sectionDictionary = section.Cast<System.Collections.DictionaryEntry>().ToDictionary(
-						n => n.Key.ToString().ToUpperInvariant(),
-						n => n.Value);
-					foreach (var key in sectionDictionary.Keys)
+					try
 					{
-						settings[key] = sectionDictionary[key];
+						enumValue = Enum.Parse(prop.PropertyType, value.ToString());
+					}
+					catch (ArgumentException)
+					{
 					}
 				}
 
-				return settings;
+				AssignEnum(settings, prop, enumValue);
 			}
-			catch (ConfigurationErrorsException)
+			else
 			{
-				// Due to legacy concerns, never allow configuration errors to throw.
-				return settings;
+				throw new InvalidOperationException($"The '{prop.Name}' property of type '{prop.PropertyType}' is not supported by the settings reader.");
 			}
 		}
 
 		private static void AssignString(IAppSettings settings, PropertyInfo prop, object value)
 		{
 			string stringValue = value?.ToString();
-			string key = GetPropertyKey(prop);
-			AppSettingAttribute attribute = AppSettingAttributes[key];
+			AppSettingAttribute attribute = GetAppSettingAttribute(GetPropertyKey(prop));
 			string defaultValue = null;
 			if (attribute?.DefaultValue != null)
 			{
@@ -448,7 +431,7 @@ namespace Relativity.Import.Export
 		private static void AssignBool(IAppSettings settings, PropertyInfo prop, object value)
 		{
 			bool? boolValue = null;
-			AppSettingAttribute attribute = AppSettingAttributes[GetPropertyKey(prop)];
+			AppSettingAttribute attribute = GetAppSettingAttribute(GetPropertyKey(prop));
 			if (value != null)
 			{
 				bool temp;
@@ -477,14 +460,13 @@ namespace Relativity.Import.Export
 
 		private static void AssignEnum(IAppSettings settings, PropertyInfo prop, object value)
 		{
-			string propertyKey = GetPropertyKey(prop);
-			if (!AppSettingAttributes.ContainsKey(propertyKey))
+			AppSettingAttribute attribute = GetAppSettingAttribute(GetPropertyKey(prop));
+			if (attribute == null)
 			{
 				return;
 			}
 
 			object defaultValue = null;
-			AppSettingAttribute attribute = AppSettingAttributes[GetPropertyKey(prop)];
 			if (value == null && attribute != null)
 			{
 				if (attribute.DefaultValue != null)
@@ -520,7 +502,7 @@ namespace Relativity.Import.Export
 			}
 
 			int defaultValue = 0;
-			AppSettingAttribute attribute = AppSettingAttributes[GetPropertyKey(prop)];
+			AppSettingAttribute attribute = GetAppSettingAttribute(GetPropertyKey(prop));
 			if (!intValue.HasValue && attribute != null)
 			{
 				if (attribute.DefaultValue != null)
@@ -553,7 +535,7 @@ namespace Relativity.Import.Export
 			}
 
 			long defaultValue = 0L;
-			AppSettingAttribute attribute = AppSettingAttributes[GetPropertyKey(prop)];
+			AppSettingAttribute attribute = GetAppSettingAttribute(GetPropertyKey(prop));
 			if (!longValue.HasValue && attribute != null)
 			{
 				if (attribute.DefaultValue != null)
@@ -582,7 +564,7 @@ namespace Relativity.Import.Export
 			}
 
 			Uri defaultValue = null;
-			AppSettingAttribute attribute = AppSettingAttributes[GetPropertyKey(prop)];
+			AppSettingAttribute attribute = GetAppSettingAttribute(GetPropertyKey(prop));
 			if (attribute?.DefaultValue != null)
 			{
 				if (!Uri.TryCreate(attribute.DefaultValue.ToString(), UriKind.RelativeOrAbsolute, out defaultValue))
@@ -617,6 +599,115 @@ namespace Relativity.Import.Export
 			catch (System.Reflection.TargetInvocationException)
 			{
 			}
+		}
+
+		/// <summary>
+		/// Reads all setting values from the <paramref name="settings"/> object into one or more setting dictionaries.
+		/// </summary>
+		/// <param name="settings">
+		/// The settings object used to create the section dictionaries.
+		/// </param>
+		/// <returns>
+		/// The section dictionaries.
+		/// </returns>
+		private static Dictionary<string, Dictionary<string, object>> ReadSettingsDictionaries(IAppSettings settings)
+		{
+			Dictionary<string, Dictionary<string, object>> dictionaries = new Dictionary<string, Dictionary<string, object>>();
+			BuildAttributeDictionary();
+			foreach (var prop in GetProperties())
+			{
+				string propertyKey = GetPropertyKey(prop);
+				AppSettingAttribute attribute = GetAppSettingAttribute(propertyKey);
+				if (attribute == null || string.IsNullOrEmpty(attribute.Section))
+				{
+					continue;
+				}
+
+				Dictionary<string, object> sectionDictionary;
+				if (!dictionaries.TryGetValue(attribute.Section, out sectionDictionary))
+				{
+					sectionDictionary = new Dictionary<string, object>();
+					dictionaries.Add(attribute.Section, sectionDictionary);
+				}
+
+				sectionDictionary[attribute.Key] = prop.GetValue(settings);
+			}
+
+			return dictionaries;
+		}
+
+		/// <summary>
+		/// Reads all app config section name/value pairs and returns the dictionary.
+		/// </summary>
+		/// <returns>
+		/// The section dictionaries.
+		/// </returns>
+		private static Dictionary<string, Dictionary<string, object>> ReadAllSectionDictionaries()
+		{
+			Dictionary<string, Dictionary<string, object>> dictionaries = new Dictionary<string, Dictionary<string, object>>();
+			dictionaries.Add(
+				GetSectionKey(AppSettingsConstants.SectionLegacyWindowsProcess),
+				ReadSectionDictionary(AppSettingsConstants.SectionLegacyWindowsProcess));
+			dictionaries.Add(
+				GetSectionKey(AppSettingsConstants.SectionLegacyUtility),
+				ReadSectionDictionary(AppSettingsConstants.SectionLegacyUtility));
+			dictionaries.Add(
+				GetSectionKey(AppSettingsConstants.SectionLegacyWinEdds),
+				ReadSectionDictionary(AppSettingsConstants.SectionLegacyWinEdds));
+			dictionaries.Add(
+				GetSectionKey(AppSettingsConstants.Section),
+				ReadSectionDictionary(AppSettingsConstants.Section));
+			return dictionaries;
+		}
+
+		/// <summary>
+		/// Reads the app config section name/value pairs and returns a new dictionary.
+		/// </summary>
+		/// <param name="sectionName">
+		/// Name of the section.
+		/// </param>
+		/// <returns>
+		/// The dictionary.
+		/// </returns>
+		private static Dictionary<string, object> ReadSectionDictionary(string sectionName)
+		{
+			Dictionary<string, object> settings = new Dictionary<string, object>();
+
+			try
+			{
+				System.Collections.Hashtable section = ConfigurationManager.GetSection(sectionName) as System.Collections.Hashtable;
+				if (section != null)
+				{
+					var sectionDictionary = section.Cast<System.Collections.DictionaryEntry>().ToDictionary(
+						n => n.Key.ToString().ToUpperInvariant(),
+						n => n.Value);
+					foreach (var key in sectionDictionary.Keys)
+					{
+						settings[key] = sectionDictionary[key];
+					}
+				}
+
+				return settings;
+			}
+			catch (ConfigurationErrorsException)
+			{
+				// Due to legacy concerns, never allow configuration errors to throw.
+				return settings;
+			}
+		}
+
+		/// <summary>
+		/// Gets the application setting attribute for the specified key.
+		/// </summary>
+		/// <param name="key">
+		/// The key.
+		/// </param>
+		/// <returns>
+		/// The <see cref="AppSettingAttribute"/> instance.
+		/// </returns>
+		private static AppSettingAttribute GetAppSettingAttribute(string key)
+		{
+			return !AppSettingAttributes.ContainsKey(key) ? null : AppSettingAttributes[key];
 		}
 	}
 }

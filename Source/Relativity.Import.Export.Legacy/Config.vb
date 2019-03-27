@@ -1,4 +1,3 @@
-Imports System.Configuration
 Imports System.Collections.Generic
 Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Transfer
@@ -10,19 +9,19 @@ Namespace kCura.WinEDDS
 		Private Const mainFormWindowHeightKey As String = "MainFormWindowHeight"
 		Private Const mainFormWindowWidthKey As String = "MainFormWindowWidth"
 		Private Shared ReadOnly _loadLock As New System.Object
-		Private Shared _configDictionary As IDictionary
+		Private Shared _appSettingsDictionary As AppSettingsDictionary
 
 		Public Shared ReadOnly Property ConfigSettings() As IDictionary
 			Get
-				If _configDictionary Is Nothing Then
+				If _appSettingsDictionary Is Nothing Then
 					SyncLock _LoadLock
-						If _configDictionary Is Nothing Then
-							' TODO: This is the main backwards compatibility touch point concern.
-							_configDictionary = DirectCast(ConfigurationManager.GetSection("kCura.WinEDDS"), IDictionary)
+						If _appSettingsDictionary Is Nothing Then
+							' This is a special dictionary that routes all changes to the settings singleton.
+							_appSettingsDictionary = New AppSettingsDictionary(AppSettings.Instance)
 						End If
 					End SyncLock
 				End If
-				Return _configDictionary
+				Return _appSettingsDictionary
 			End Get
 		End Property
 
@@ -46,11 +45,11 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Shared Function GetRegistryKeyValue(ByVal keyName As String) As String
-			Return Relativity.Import.Export.AppSettingsReader.GetRegistryKeyValue(keyName)
+			Return Relativity.Import.Export.AppSettingsManager.GetRegistryKeyValue(keyName)
 		End Function
 
 		Private Shared Function SetRegistryKeyValue(ByVal keyName As String, ByVal keyVal As String) As String
-			Relativity.Import.Export.AppSettingsReader.SetRegistryKeyValue(keyName, keyVal)
+			Relativity.Import.Export.AppSettingsManager.SetRegistryKeyValue(keyName, keyVal)
 			Return Nothing
 		End Function
 
@@ -192,13 +191,13 @@ Namespace kCura.WinEDDS
 
 		Public Shared ReadOnly Property UseOldExport() As Boolean
 			Get
-				Return CType(ConfigSettings("UseOldExport"), Boolean)
+				Return AppSettings.Instance.UseOldExport
 			End Get
 		End Property
 
 		Public Shared ReadOnly Property ForceParallelismInNewExport() As Boolean
 			Get
-				Return CType(ConfigSettings("ForceParallelismInNewExport"), Boolean)
+				Return AppSettings.Instance.ForceParallelismInNewExport
 			End Get
 		End Property
 
@@ -411,8 +410,6 @@ Namespace kCura.WinEDDS
             End Set
         End Property
 
-        Private Shared _programmaticServiceURL As String = Nothing
-
         Public Shared Property ProgrammaticServiceURL() As String
             Get
 	            Return AppSettings.Instance.ProgrammaticWebApiServiceUrl
@@ -444,7 +441,7 @@ Namespace kCura.WinEDDS
 		''' Gets the configurable retry options.
 		''' </summary>
 		''' <value>
-		''' The <see cref="kCura.WinEDDS.TApi.RetryOptions"/> value.
+		''' The <see cref="RetryOptions"/> value.
 		''' </value>
 		''' <remarks>
 		''' There are several other retry candidate behaviors and change should be limited to this property.
