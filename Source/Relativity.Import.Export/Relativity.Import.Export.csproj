@@ -62,8 +62,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppSettingsDictionary.cs" />
     <Compile Include="AppSettingsConstants.cs" />
-    <Compile Include="AppSettingsReader.cs" />
+    <Compile Include="AppSettingsManager.cs" />
     <Compile Include="AppDotNetSettings.cs" />
     <Compile Include="Data\SqlDataRow.cs" />
     <Compile Include="Data\SqlDataView.cs" />
