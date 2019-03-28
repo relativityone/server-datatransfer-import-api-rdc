@@ -1,0 +1,53 @@
+﻿using System.Threading;
+using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
+using kCura.WinEDDS.Exporters;
+using Relativity.Logging;
+
+namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
+{
+	public class NativeFileBatchValidator : IBatchValidator
+	{
+		private readonly IErrorFileWriter _errorFileWriter;
+		private readonly IFileHelper _fileHelper;
+		private readonly IStatus _status;
+		private readonly ILog _logger;
+
+		public NativeFileBatchValidator(IErrorFileWriter errorFileWriter, IFileHelper fileHelper, IStatus status, ILog logger)
+		{
+			_errorFileWriter = errorFileWriter;
+			_fileHelper = fileHelper;
+			_status = status;
+			_logger = logger;
+		}
+
+		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions, CancellationToken cancellationToken)
+		{
+			 for (int i = 0; i < artifacts.Length; i++)
+			 {
+			 	if (cancellationToken.IsCancellationRequested)
+			 	{
+			 		return;
+			 	}
+   
+			 	ValidateNativesForArtifact(artifacts[i], predictions[i]);
+			 }
+		}
+
+		private void ValidateNativesForArtifact(ObjectExportInfo artifact, VolumePredictions prediction)
+		{
+			if (string.IsNullOrWhiteSpace(artifact.NativeTempLocation))
+			{
+				return;
+			}
+
+			bool nativeFileExists = _fileHelper.Exists(artifact.NativeTempLocation);
+
+			if (!nativeFileExists || _fileHelper.GetFileSize(artifact.NativeTempLocation) == 0)
+			{
+				_logger.LogError("Native file {file} missing or empty for artifact {artifactId}.", artifact.NativeTempLocation, artifact.ArtifactID);
+				string errorMessage = nativeFileExists ? "Empty file." : "File missing.";
+				_errorFileWriter.Write(ErrorFileWriter.ExportFileType.Native, artifact.IdentifierValue, artifact.NativeTempLocation, errorMessage);
+			}
+		}
+	}
+}
