@@ -317,7 +317,7 @@ namespace Relativity.Import.Export.Io
 		/// </returns>
 		internal static string GetExcelStyleErrorMessage(long row, int column, string additionalInfo)
 		{
-			return GetFormattedErrorMessage(row, GetExcelStyleColumnOrdinal(column), additionalInfo);
+			return GetFormattedExcelErrorMessage(row, GetExcelStyleColumnOrdinal(column), additionalInfo);
 		}
 
 		/// <summary>
@@ -340,6 +340,31 @@ namespace Relativity.Import.Export.Io
 			return string.Format(
 				CultureInfo.CurrentCulture,
 				Strings.ImporterStandardError,
+				row,
+				column,
+				additionalInfo);
+		}
+
+		/// <summary>
+		/// Gets a formatted error Excel-based message that includes row, column, and additional information.
+		/// </summary>
+		/// <param name="row">
+		/// The index of the row causing the exception.
+		/// </param>
+		/// <param name="column">
+		/// The column ordinal or name causing the exception.
+		/// </param>
+		/// <param name="additionalInfo">
+		/// Additional information describing this failure.
+		/// </param>
+		/// <returns>
+		/// The error message.
+		/// </returns>
+		internal static string GetFormattedExcelErrorMessage(long row, string column, string additionalInfo)
+		{
+			return string.Format(
+				CultureInfo.CurrentCulture,
+				Strings.ImporterExcelError,
 				row,
 				column,
 				additionalInfo);

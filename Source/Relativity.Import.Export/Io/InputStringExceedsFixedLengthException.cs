@@ -1,5 +1,5 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="StringImporterException.cs" company="Relativity ODA LLC">
+// <copyright file="InputStringExceedsFixedLengthException.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
@@ -15,29 +15,33 @@ namespace Relativity.Import.Export.Io
 	/// <summary>
 	/// Represents an exception that occured while attempting to import a string.
 	/// </summary>
+	/// <remarks>
+	/// Be careful with parameters and which constructor is used. For backwards compatibility purposes, the original
+	/// design has been preserved and will yield different messages. These are very subtle but different.
+	/// </remarks>
 	[Serializable]
-	public sealed class StringImporterException : ImporterException
+	public sealed class InputStringExceedsFixedLengthException : ImporterException
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StringImporterException" /> class.
+		/// Initializes a new instance of the <see cref="InputStringExceedsFixedLengthException" /> class.
 		/// </summary>
-		public StringImporterException()
+		public InputStringExceedsFixedLengthException()
 	    {
 	    }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StringImporterException"/> class.
+		/// Initializes a new instance of the <see cref="InputStringExceedsFixedLengthException"/> class.
 		/// </summary>
 		/// <param name="message">
 		/// The message that describes the error.
 		/// </param>
-		public StringImporterException(string message)
+		public InputStringExceedsFixedLengthException(string message)
 			: base(message)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StringImporterException"/> class.
+		/// Initializes a new instance of the <see cref="InputStringExceedsFixedLengthException"/> class.
 		/// </summary>
 		/// <param name="message">
 		/// The error message that explains the reason for the exception.
@@ -45,13 +49,13 @@ namespace Relativity.Import.Export.Io
 		/// <param name="innerException">
 		/// The exception that is the cause of the current exception, or a null reference (Nothing in Visual Basic) if no inner exception is specified.
 		/// </param>
-		public StringImporterException(string message, Exception innerException)
+		public InputStringExceedsFixedLengthException(string message, Exception innerException)
 			: base(message, innerException)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StringImporterException"/> class.
+		/// Initializes a new instance of the <see cref="InputStringExceedsFixedLengthException"/> class.
 		/// </summary>
 		/// <param name="row">
 		/// The index of the row causing the exception.
@@ -62,13 +66,13 @@ namespace Relativity.Import.Export.Io
 		/// <param name="length">
 		/// The length of the string value causing the exception.
 		/// </param>
-		public StringImporterException(long row, int column, int length)
+		public InputStringExceedsFixedLengthException(long row, int column, int length)
 			: base(row, column, GetAdditionalInfoMessage(length))
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StringImporterException"/> class.
+		/// Initializes a new instance of the <see cref="InputStringExceedsFixedLengthException"/> class.
 		/// </summary>
 		/// <param name="row">
 		/// The index of the row causing the exception.
@@ -82,13 +86,13 @@ namespace Relativity.Import.Export.Io
 		/// <param name="fieldName">
 		/// The name of the field causing the exception.
 		/// </param>
-		public StringImporterException(long row, int column, int length, string fieldName)
+		public InputStringExceedsFixedLengthException(long row, int column, int length, string fieldName)
 			: base(row, column, fieldName, GetAdditionalInfoMessage(length, fieldName))
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StringImporterException"/> class.
+		/// Initializes a new instance of the <see cref="InputStringExceedsFixedLengthException"/> class.
 		/// </summary>
 		/// <param name="row">
 		/// The index of the row causing the exception.
@@ -105,18 +109,18 @@ namespace Relativity.Import.Export.Io
 		/// <param name="fieldName">
 		/// The name of the field causing the exception.
 		/// </param>
-		public StringImporterException(
+		public InputStringExceedsFixedLengthException(
 			long row,
 			int column,
 			int sourceLength,
 			int destinationMaxLength,
 			string fieldName)
-			: base(row, column, fieldName, GetAdditionalInfoMessage(sourceLength, destinationMaxLength, fieldName))
+			: base(row, column, GetAdditionalInfoMessage(sourceLength, destinationMaxLength, fieldName), (Exception)null)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StringImporterException"/> class.
+		/// Initializes a new instance of the <see cref="InputStringExceedsFixedLengthException"/> class.
 		/// </summary>
 		/// <param name="info">
 		/// The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.
@@ -124,7 +128,7 @@ namespace Relativity.Import.Export.Io
 		/// <param name="context">
 		/// The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.
 		/// </param>
-		private StringImporterException(SerializationInfo info, StreamingContext context)
+		private InputStringExceedsFixedLengthException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
 		}

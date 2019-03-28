@@ -82,7 +82,7 @@
     <Compile Include="Io\ImporterException.cs" />
     <Compile Include="Io\ObjectNameImporterException.cs" />
     <Compile Include="Io\IntegerImporterException.cs" />
-    <Compile Include="Io\StringImporterException.cs" />
+    <Compile Include="Io\InputStringExceedsFixedLengthException.cs" />
     <Compile Include="Io\TrimOption.cs" />
     <Compile Include="Process\FieldMappedEventArgs.cs" />
     <Compile Include="Process\CancellationRequestEventArgs.cs" />

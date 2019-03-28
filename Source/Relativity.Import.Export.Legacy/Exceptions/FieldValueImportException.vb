@@ -77,7 +77,7 @@ Namespace kCura.WinEDDS.Exceptions
 		''' <inheritdoc />
 		<System.Security.Permissions.SecurityPermissionAttribute(System.Security.Permissions.SecurityAction.Demand, SerializationFormatter:=True)>
 		Public Overrides Sub GetObjectData(info As System.Runtime.Serialization.SerializationInfo, context As System.Runtime.Serialization.StreamingContext)
-			info.AddValue("FieldName", Me.FieldName)
+			' Do NOT add FieldName because it has already been added and will throw an exception.
 			info.AddValue("RowNumber", Me.RowNumber)
 			MyBase.GetObjectData(info, context)
 		End Sub

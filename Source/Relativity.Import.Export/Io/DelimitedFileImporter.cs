@@ -344,6 +344,42 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <summary>
+		/// Validates the string for variable character.
+		/// </summary>
+		/// <param name="value">
+		/// The value to parse.
+		/// </param>
+		/// <param name="column">
+		/// The column to report, should an exception occur.
+		/// </param>
+		/// <param name="fieldLength">
+		/// The field length to report, should an exception occur.
+		/// </param>
+		/// <param name="currentLineNumber">
+		/// The current line number.
+		/// </param>
+		/// <param name="displayName">
+		/// The display name of the field to report, should an exception occur.
+		/// </param>
+		/// <returns>
+		/// The validated string.
+		/// </returns>
+		public static string ValidateStringForVarChar(
+			string value,
+			int column,
+			int fieldLength,
+			int currentLineNumber,
+			string displayName)
+		{
+			if (value != null && value.Length > fieldLength)
+			{
+				throw new InputStringExceedsFixedLengthException(currentLineNumber, column, value.Length, fieldLength, displayName);
+			}
+
+			return NullableTypesHelper.ToString(value);
+		}
+
+		/// <summary>
 		/// Closes this importer.
 		/// </summary>
 		public void Close()
@@ -537,7 +573,7 @@ namespace Relativity.Import.Export.Io
 		{
 			if (value != null && value.Length > maxLength)
 			{
-				throw new StringImporterException(this.CurrentLineNumber, column, value.Length, maxLength, displayName);
+				throw new InputStringExceedsFixedLengthException(this.CurrentLineNumber, column, value.Length, maxLength, displayName);
 			}
 
 			return NullableTypesHelper.ToString(value);
