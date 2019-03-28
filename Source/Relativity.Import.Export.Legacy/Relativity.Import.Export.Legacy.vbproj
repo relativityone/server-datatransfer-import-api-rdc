@@ -195,6 +195,22 @@
     <Compile Include="Credentials\OAuth2ImplicitCredentialsHelper.vb" />
     <Compile Include="Credentials\RelativityWebApiCredentialsProvider.vb" />
     <Compile Include="Credentials\UserCredentialsProvider.vb" />
+    <Compile Include="DataReaderClient\Enum.vb" />
+    <Compile Include="DataReaderClient\FullStatus.vb" />
+    <Compile Include="DataReaderClient\IImportBulkArtifactJob.vb" />
+    <Compile Include="DataReaderClient\IImportNotifier.vb" />
+    <Compile Include="DataReaderClient\ImageImport\ImageImportBulkArtifactJob.vb" />
+    <Compile Include="DataReaderClient\ImageImport\ImageSettings.vb" />
+    <Compile Include="DataReaderClient\ImageImport\ImageSourceIDataReader.vb" />
+    <Compile Include="DataReaderClient\ImportCredentialException.vb" />
+    <Compile Include="DataReaderClient\ImportCredentialManager.vb" />
+    <Compile Include="DataReaderClient\ImportLoadFileJob.vb" />
+    <Compile Include="DataReaderClient\ImportSettingsBase.vb" />
+    <Compile Include="DataReaderClient\ImportSettingsException.vb" />
+    <Compile Include="DataReaderClient\JobReport.vb" />
+    <Compile Include="DataReaderClient\Settings.vb" />
+    <Compile Include="DataReaderClient\SourceIDataReader.vb" />
+    <Compile Include="DataReaderClient\Status.vb" />
     <Compile Include="Event\AppEvent.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -375,6 +391,16 @@
     </Compile>
     <Compile Include="Importers\OpticonFileReader.vb" />
     <Compile Include="Importers\OutputFileWriter.vb" />
+    <Compile Include="ImportExtension\DataReaderImporter.vb" />
+    <Compile Include="ImportExtension\DataReaderImporterProcess.vb" />
+    <Compile Include="ImportExtension\DataReaderLoadFile.vb" />
+    <Compile Include="ImportExtension\DataReaderReader.vb" />
+    <Compile Include="ImportExtension\DataReaderReaderInitializationArgs.vb" />
+    <Compile Include="ImportExtension\ImageImport\DataReaderImageImporter.vb" />
+    <Compile Include="ImportExtension\ImageImport\DataReaderImageImporterProcess.vb" />
+    <Compile Include="ImportExtension\ImageImport\DataSource.vb" />
+    <Compile Include="ImportExtension\ImageImport\ImageDataTableReader.vb" />
+    <Compile Include="ImportExtension\NativeFileValidatedArtifactFieldCollection.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="TempFileConstants.vb" />
     <Compile Include="TempFileBuilder.vb" />
