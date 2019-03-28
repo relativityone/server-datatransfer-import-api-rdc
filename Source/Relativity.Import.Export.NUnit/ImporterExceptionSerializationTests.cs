@@ -75,14 +75,14 @@ namespace Relativity.Import.Export.NUnit
 				yield return new TestCaseData(
 					new ObjectNameImporterException(TestRowNumber, TestColumnNumber, TestLength, TestFieldName),
 					validateObjectNameException);
-				yield return new TestCaseData(new StringImporterException(), validateNoOp);
-				yield return new TestCaseData(new StringImporterException("a"), validateNoOp);
-				yield return new TestCaseData(new StringImporterException("a", innerException), validateNoOp);
+				yield return new TestCaseData(new InputStringExceedsFixedLengthException(), validateNoOp);
+				yield return new TestCaseData(new InputStringExceedsFixedLengthException("a"), validateNoOp);
+				yield return new TestCaseData(new InputStringExceedsFixedLengthException("a", innerException), validateNoOp);
 				yield return new TestCaseData(
-					new StringImporterException(TestRowNumber, TestColumnNumber, TestLength),
+					new InputStringExceedsFixedLengthException(TestRowNumber, TestColumnNumber, TestLength),
 					validateStringWithoutFieldInfoException);
 				yield return new TestCaseData(
-					new StringImporterException(TestRowNumber, TestColumnNumber, TestLength, TestFieldName),
+					new InputStringExceedsFixedLengthException(TestRowNumber, TestColumnNumber, TestLength, TestFieldName),
 					validateStringWithFieldInfoException);
 			}
 		}
@@ -173,29 +173,29 @@ namespace Relativity.Import.Export.NUnit
 
 		private static void ValidateStringWithoutFieldInfoException(Exception exception)
 		{
-			Assert.That(exception, Is.TypeOf<StringImporterException>());
-			string expectedAdditionalInfoMessage = StringImporterException.GetAdditionalInfoMessage(TestLength);
+			Assert.That(exception, Is.TypeOf<InputStringExceedsFixedLengthException>());
+			string expectedAdditionalInfoMessage = InputStringExceedsFixedLengthException.GetAdditionalInfoMessage(TestLength);
 			string expectedErrorMessage = ImporterException.GetExcelStyleErrorMessage(
 				TestRowNumber,
 				TestColumnNumber,
 				expectedAdditionalInfoMessage);
 			ValidateImporterException(
-				exception as StringImporterException,
+				exception as InputStringExceedsFixedLengthException,
 				expectedErrorMessage,
 				expectedAdditionalInfoMessage);
 		}
 
 		private static void ValidateStringWithFieldInfoException(Exception exception)
 		{
-			Assert.That(exception, Is.TypeOf<StringImporterException>());
+			Assert.That(exception, Is.TypeOf<InputStringExceedsFixedLengthException>());
 			string expectedAdditionalInfoMessage =
-				StringImporterException.GetAdditionalInfoMessage(TestLength, TestFieldName);
+				InputStringExceedsFixedLengthException.GetAdditionalInfoMessage(TestLength, TestFieldName);
 			string expectedErrorMessage = ImporterException.GetErrorMessage(
 				TestRowNumber,
 				TestFieldName,
 				expectedAdditionalInfoMessage);
 			ValidateImporterException(
-				exception as StringImporterException,
+				exception as InputStringExceedsFixedLengthException,
 				expectedErrorMessage,
 				expectedAdditionalInfoMessage,
 				TestRowNumber,

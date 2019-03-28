@@ -11,9 +11,8 @@ namespace Relativity.Import.Client.NUnit.Integration
 {
 	using global::NUnit.Framework;
 
-	using kCura.WinEDDS.TApi;
-
 	using Relativity.Import.Export.TestFramework;
+	using Relativity.Import.Export.Transfer;
 
 	/// <summary>
 	/// Represents file lock related import tests.

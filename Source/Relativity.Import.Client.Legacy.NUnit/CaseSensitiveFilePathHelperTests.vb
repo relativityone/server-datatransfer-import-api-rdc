@@ -10,14 +10,15 @@ Imports NSubstitute
 Imports NSubstitute.ExceptionExtensions
 
 Imports NUnit.Framework
+Imports Relativity.Import.Export.Io
 
 Namespace Relativity.Import.Client.NUnit
 
 	<TestFixture>
 	Public Class CaseSensitiveFilePathHelperTests
 		Private _filePathHelper As CaseSensitiveFilePathHelper
-		Private _fileMock As kCura.WinEDDS.TApi.IFile
-		Private _pathMock As kCura.WinEDDS.TApi.IPath
+		Private _fileMock As IFile
+		Private _pathMock As IPath
 
 		Private Const _PATH_WITH_LOWER_CASE_EXTENSION As String = "\\dir\somePath.ext"
 		Private Const _PATH_WITH_UPPER_CASE_EXTENSION As String = "\\dir\somePath.EXT"
@@ -25,11 +26,11 @@ Namespace Relativity.Import.Client.NUnit
 		Private Const _PATH_WITH_NO_EXTENSION As String = "\\dir\somePath"
 
 		<SetUp> Public Sub SetUp()
-			_fileMock = Substitute.For(Of kCura.WinEDDS.TApi.IFile)()
-			_pathMock = Substitute.For(Of kCura.WinEDDS.TApi.IPath)()
+			_fileMock = Substitute.For(Of IFile)()
+			_pathMock = Substitute.For(Of IPath)()
 			_pathMock.GetExtension(Arg.Any(Of String)).ReturnsForAnyArgs(function(info) System.IO.Path.GetExtension(info.Arg(Of String)()))
 			_pathMock.ChangeExtension(Arg.Any(Of String), Arg.Any(Of String)).ReturnsForAnyArgs(function(info) System.IO.Path.ChangeExtension(info.ArgAt(Of String)(0), info.ArgAt(Of String)(1)))
-			Dim fileSystemMock As kCura.WinEDDS.TApi.IFileSystem = Substitute.For(Of kCura.WinEDDS.TApi.IFileSystem)()
+			Dim fileSystemMock As IFileSystem = Substitute.For(Of IFileSystem)()
 			fileSystemMock.File.Returns(_fileMock)
 			fileSystemMock.Path.Returns(_pathMock)
 			_filePathHelper = New CaseSensitiveFilePathHelper(fileSystemMock)

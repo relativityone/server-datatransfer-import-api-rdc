@@ -134,7 +134,7 @@ Namespace Relativity.Import.Client.NUnit
 				Assert.AreEqual(lineNum + 1, ex.RowNumber)
 				Assert.AreEqual(displayName, ex.FieldName)
 				Assert.AreSame(inner, ex.InnerException)
-				Assert.AreEqual(String.Format("Error in row {0}, field ""{1}"".  {2}", lineNum + 1, displayName, inner.Message), ex.Message)
+				Assert.AreEqual(String.Format("Error in row {0}, field ""{1}"". {2}", lineNum + 1, displayName, inner.Message), ex.Message)
 			End Try
 		End Sub
 	End Class

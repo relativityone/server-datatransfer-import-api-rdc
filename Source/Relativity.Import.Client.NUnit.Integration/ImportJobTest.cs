@@ -22,6 +22,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 	using kCura.Relativity.DataReaderClient;
 	using kCura.Relativity.ImportAPI;
 
+	using Relativity.Import.Export;
 	using Relativity.Import.Export.TestFramework;
 	using Relativity.Transfer;
 
@@ -170,10 +171,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 			this.GivenTheImportBatchSizeSetting(10);
 			this.GivenTheForceWebUploadSetting(ForceWebUpload);
 			this.GivenTheForceTransferClientIdSetting(new Guid(clientId));
-			this.GivenTheMaxSingleFileRetryAttemptsSetting(1);
-			this.GivenTheMaxJobRetryAttemptsSetting(1);
 			this.GivenTheMaxJobParallelismSetting(1);
-			this.GivenTheLogEnabledSetting(true);
 			this.GivenTheIoErrorWaitTimeInSeconds(0);
 			this.GivenTheNumberOfRetries(0);
 			this.GivenTheDisableNativeLocationValidationSetting(true);
@@ -219,10 +217,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 			this.GivenTheImportBatchSizeSetting(10);
 			this.GivenTheForceWebUploadSetting(ForceWebUpload);
 			this.GivenTheForceTransferClientIdSetting(new Guid(clientId));
-			this.GivenTheMaxSingleFileRetryAttemptsSetting(1);
-			this.GivenTheMaxJobRetryAttemptsSetting(1);
 			this.GivenTheMaxJobParallelismSetting(1);
-			this.GivenTheLogEnabledSetting(true);
 			this.GivenTheIoErrorWaitTimeInSeconds(0);
 			this.GivenTheNumberOfRetries(0);
 
@@ -310,7 +305,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// </param>
 		private void GivenTheForceWebUploadSetting(bool value)
 		{
-			kCura.WinEDDS.Config.ConfigSettings["ForceWebUpload"] = value;
+			AppSettings.Instance.ForceWebUpload = value;
 		}
 
 		/// <summary>
@@ -321,6 +316,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// </param>
 		private void GivenTheForceTransferClientIdSetting(Guid value)
 		{
+			// TODO: This has never been supported?
 			kCura.WinEDDS.Config.ConfigSettings["TapiForceClientId"] = value.ToString();
 		}
 
@@ -332,40 +328,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// </param>
 		private void GivenTheMaxJobParallelismSetting(int value)
 		{
-			kCura.WinEDDS.Config.ConfigSettings["TapiMaxJobParallelism"] = value;
-		}
-
-		/// <summary>
-		/// Given the max single file retry attempts setting.
-		/// </summary>
-		/// <param name="value">
-		/// The setting value.
-		/// </param>
-		private void GivenTheMaxSingleFileRetryAttemptsSetting(int value)
-		{
-			kCura.WinEDDS.Config.ConfigSettings["TapiMaxSingleFileRetryAttempts"] = value;
-		}
-
-		/// <summary>
-		/// Given the log enabled setting.
-		/// </summary>
-		/// <param name="value">
-		/// The setting value.
-		/// </param>
-		private void GivenTheLogEnabledSetting(bool value)
-		{
-			kCura.WinEDDS.Config.ConfigSettings["TapiLogEnabled"] = value;
-		}
-
-		/// <summary>
-		/// Given the max job retry attempts setting.
-		/// </summary>
-		/// <param name="value">
-		/// The setting value.
-		/// </param>
-		private void GivenTheMaxJobRetryAttemptsSetting(int value)
-		{
-			kCura.WinEDDS.Config.ConfigSettings["TapiMaxJobRetryAttempts"] = value;
+			AppSettings.Instance.TapiMaxJobParallelism = value;
 		}
 
 		/// <summary>
@@ -376,7 +339,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// </param>
 		private void GivenTheDisableNativeLocationValidationSetting(bool value)
 		{
-			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = value;
+			AppSettings.Instance.DisableThrowOnIllegalCharacters = value;
 		}
 
 		/// <summary>
@@ -387,7 +350,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// </param>
 		private void GivenTheIoErrorWaitTimeInSeconds(int value)
 		{
-			kCura.Utility.Config.ConfigSettings["IOErrorWaitTimeInSeconds"] = value;
+			AppSettings.Instance.IoErrorWaitTimeInSeconds = value;
 		}
 
 		/// <summary>
@@ -398,7 +361,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// </param>
 		private void GivenTheNumberOfRetries(int value)
 		{
-			kCura.Utility.Config.ConfigSettings["IOErrorNumberOfRetries"] = value;
+			AppSettings.Instance.IoErrorNumberOfRetries = value;
 		}
 
 		/// <summary>

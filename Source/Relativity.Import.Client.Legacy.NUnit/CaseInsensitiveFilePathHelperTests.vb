@@ -10,19 +10,20 @@ Imports NSubstitute
 Imports NSubstitute.ExceptionExtensions
 
 Imports NUnit.Framework
+Imports Relativity.Import.Export.Io
 
 Namespace Relativity.Import.Client.NUnit
 
 	<TestFixture>
 	Public Class CaseInsensitiveFilePathHelperTests
 		Private _filePathHelper As CaseInsensitiveFilePathHelper
-		Private _fileMock As kCura.WinEDDS.TApi.IFile
+		Private _fileMock As IFile
 
 		Private Const _SAMPLE_PATH As String = "\\dir\somePath.ext"
 
 		<SetUp> Public Sub SetUp()
-			_fileMock = Substitute.For(Of kCura.WinEDDS.TApi.IFile)()
-			Dim fileSystemMock As kCura.WinEDDS.TApi.IFileSystem = Substitute.For(Of kCura.WinEDDS.TApi.IFileSystem)()
+			_fileMock = Substitute.For(Of IFile)()
+			Dim fileSystemMock As IFileSystem = Substitute.For(Of IFileSystem)()
 			fileSystemMock.File.Returns(_fileMock)
 			_filePathHelper = New CaseInsensitiveFilePathHelper(fileSystemMock)
 		End Sub

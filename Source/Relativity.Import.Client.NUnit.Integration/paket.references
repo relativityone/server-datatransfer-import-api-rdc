@@ -1,6 +1,10 @@
 castle.windsor
+kcura.outsidein.fi.win32
 moq
 newtonsoft.json
 nunit
-relativity.importexport
+relativity
+relativity.logging
+relativity.logging.interfaces
+relativity.transfer.client
 stylecop.analyzers
