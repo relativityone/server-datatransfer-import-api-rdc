@@ -17,10 +17,16 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Overridable Function TransformExportFileXml(ByVal input As XDocument) As String
-			Return input.ToString
+			' HACK! This is a temporary workaround to address serialization compatibility until a proper solution is in place.
+			Dim xml As String = input.ToString
+			Dim assembly As System.Reflection.AssemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName()
+			xml = xml.Replace("/kCura.WinEDDS%2C%20Version%3D",
+			                  $"/{assembly.Name}%2C%20Version%3D")
+			Return xml
 		End Function
 
 		Public Overridable Function DeserializeExportFile(ByVal currentExportFile As kCura.WinEDDS.ExportFile, ByVal xml As String) As kCura.WinEDDS.ExtendedExportFile
+   			
 			Dim deserialized As kCura.WinEDDS.ExportFile = Me.DeserializeExportFile(XDocument.Parse(xml))
 			Return PopulateDeserializedExportFile(currentExportFile, deserialized)
 		End Function
