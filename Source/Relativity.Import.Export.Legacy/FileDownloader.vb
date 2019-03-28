@@ -19,11 +19,11 @@ Namespace kCura.WinEDDS
 		Private _userManager As kCura.WinEDDS.Service.UserManager
 		Private Shared _locationAccessMatrix As New ConcurrentDictionary(Of String, Object)
 		
-		Private _fileHelper As Relativity.Import.Export.Io.IFile
-		Public Property FileHelper() As Relativity.Import.Export.Io.IFile Implements IExportFileDownloader.FileHelper
+		Private _fileHelper As Global.Relativity.Import.Export.Io.IFile
+		Public Property FileHelper() As Global.Relativity.Import.Export.Io.IFile Implements IExportFileDownloader.FileHelper
 			Get
 				If(_fileHelper Is Nothing) Then
-					_fileHelper = Relativity.Import.Export.Io.FileSystem.Instance.File
+					_fileHelper = Global.Relativity.Import.Export.Io.FileSystem.Instance.File
 				End If
 				
 				Return _fileHelper
@@ -49,7 +49,7 @@ Namespace kCura.WinEDDS
 				destinationFolderPath &= "\"
 			End If
 			Me.DestinationFolderPath = destinationFolderPath
-			_downloadUrl = Relativity.Import.Export.Io.FileSystem.Instance.Path.GetFullyQualifiedPath(New System.Uri(AppSettings.Instance.WebApiServiceUrl), downloadHandlerUrl)
+			_downloadUrl = Global.Relativity.Import.Export.Io.FileSystem.Instance.Path.GetFullyQualifiedPath(New System.Uri(AppSettings.Instance.WebApiServiceUrl), downloadHandlerUrl)
 			_userManager = New kCura.WinEDDS.Service.UserManager(credentials, cookieContainer)
 
 			If _locationAccessMatrix Is Nothing Then _locationAccessMatrix = New ConcurrentDictionary(Of String, Object)
@@ -151,11 +151,11 @@ Namespace kCura.WinEDDS
 			Return WebDownloadFile(localFilePath, -1, remoteFileGuid, appID, Nothing, False, -1, -1, -1)
 		End Function
 
-		Public Function MoveTempFileToLocal(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal caseInfo As Relativity.CaseInfo) As Boolean
+		Public Function MoveTempFileToLocal(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal caseInfo As Global.Relativity.CaseInfo) As Boolean
 			Return MoveTempFileToLocal(localFilePath, remoteFileGuid, caseInfo, True)
 		End Function
 
-		Public Function MoveTempFileToLocal(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal caseInfo As Relativity.CaseInfo, ByVal removeRemoteTempFile As Boolean) As Boolean
+		Public Function MoveTempFileToLocal(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal caseInfo As Global.Relativity.CaseInfo, ByVal removeRemoteTempFile As Boolean) As Boolean
 			Dim retval As Boolean = Me.DownloadTempFile(localFilePath, remoteFileGuid, caseInfo.ArtifactID.ToString)
 
 			If removeRemoteTempFile Then
@@ -165,7 +165,7 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Public Sub RemoveRemoteTempFile(ByVal remoteFileGuid As String, ByVal caseInfo As Relativity.CaseInfo)
+		Public Sub RemoveRemoteTempFile(ByVal remoteFileGuid As String, ByVal caseInfo As Global.Relativity.CaseInfo)
 			_gateway.RemoveTempFile(caseInfo.ArtifactID, remoteFileGuid)
 		End Sub
 

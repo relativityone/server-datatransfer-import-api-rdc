@@ -44,7 +44,7 @@ Namespace kCura.WinEDDS
 			_loadFile.CreateFolderStructure = False
 			_loadFile.Credentials = Me.Credential
 			_loadFile.ExtractedTextFileEncoding = System.Text.Encoding.Default
-			_loadFile.ExtractedTextFileEncodingName = Relativity.SqlNameHelper.GetSqlFriendlyName(_loadFile.ExtractedTextFileEncoding.EncodingName).ToLower
+			_loadFile.ExtractedTextFileEncodingName = Global.Relativity.SqlNameHelper.GetSqlFriendlyName(_loadFile.ExtractedTextFileEncoding.EncodingName).ToLower
 			_loadFile.FieldMap = New kCura.WinEDDS.LoadFileFieldMap
 			_loadFile.FirstLineContainsHeaders = True
 			_loadFile.FolderStructureContainedInColumn = Nothing
@@ -57,7 +57,7 @@ Namespace kCura.WinEDDS
 			_loadFile.MultiRecordDelimiter = ";"c
 			_loadFile.NativeFilePathColumn = Nothing
 			_loadFile.NewlineDelimiter = ChrW(174)
-			_loadFile.OverwriteDestination = Relativity.ImportOverwriteType.Append.ToString
+			_loadFile.OverwriteDestination = Global.Relativity.ImportOverwriteType.Append.ToString
 			_loadFile.QuoteDelimiter = ChrW(254)
 			_loadFile.RecordDelimiter = ChrW(20)
 			_loadFile.SourceFileEncoding = System.Text.Encoding.Default
@@ -187,11 +187,11 @@ Namespace kCura.WinEDDS
 			Set(ByVal value As OverwriteType)
 				Select Case value
 					Case SettingsFactoryBase.OverwriteType.Append
-						_loadFile.OverwriteDestination = Relativity.ImportOverwriteType.Append.ToString
+						_loadFile.OverwriteDestination = Global.Relativity.ImportOverwriteType.Append.ToString
 					Case SettingsFactoryBase.OverwriteType.AppendOverlay
-						_loadFile.OverwriteDestination = Relativity.ImportOverwriteType.AppendOverlay.ToString
+						_loadFile.OverwriteDestination = Global.Relativity.ImportOverwriteType.AppendOverlay.ToString
 					Case SettingsFactoryBase.OverwriteType.Overlay
-						_loadFile.OverwriteDestination = Relativity.ImportOverwriteType.Overlay.ToString
+						_loadFile.OverwriteDestination = Global.Relativity.ImportOverwriteType.Overlay.ToString
 				End Select
 			End Set
 		End Property

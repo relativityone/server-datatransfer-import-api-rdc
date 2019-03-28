@@ -1,10 +1,6 @@
-Imports System.Collections.Generic
 Imports kCura.WinEDDS.Api
-Imports kCura.WinEDDS
-Imports kCura.Utility
-Imports System.Xml.Linq
-Imports System.Linq
-Imports System.Xml.XPath
+Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Io
 
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderReader
@@ -194,11 +190,11 @@ Namespace kCura.WinEDDS.ImportExtension
 			Next
 
 			'NativeFilePathColumn is in the format  displayname(index).  _reader only has name.  I need to get the index, get _reader.name, and add a field with the data.
-			If _loadFileSettings.ArtifactTypeID = Relativity.ArtifactType.Document Then
+			If _loadFileSettings.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
 				If _loadFileSettings.LoadNativeFiles AndAlso Not _loadFileSettings.NativeFilePathColumn Is Nothing AndAlso Not _loadFileSettings.NativeFilePathColumn = String.Empty Then
 					Dim nativeFileIndex As Int32 = Int32.Parse(_loadFileSettings.NativeFilePathColumn.Substring(_loadFileSettings.NativeFilePathColumn.LastIndexOf("(")).Trim("()".ToCharArray))
 					Dim displayName As String = _reader.GetName(nativeFileIndex - 1)
-					Dim field As New Api.ArtifactField(New DocumentField(displayName, -1, Relativity.FieldTypeHelper.FieldType.File, Relativity.FieldCategory.FileInfo, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), True, EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, False))
+					Dim field As New Api.ArtifactField(New DocumentField(displayName, -1, Global.Relativity.FieldTypeHelper.FieldType.File, Global.Relativity.FieldCategory.FileInfo, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), True, EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, False))
 					SetFieldValueInvoker(nativeFileIndex - 1, field, displayName)
 					artifactFieldCollection.Add(field)
 				End If
@@ -220,7 +216,7 @@ Namespace kCura.WinEDDS.ImportExtension
 					' we do not do this when we are pointing to files using links.
 					' we also don't do this if kCuraMarkerFilename field is not present because we can copy from the current location 
 					For Each field As Api.ArtifactField In artifactFieldCollection
-						If field.Type = Relativity.FieldTypeHelper.FieldType.File Then
+						If field.Type = Global.Relativity.FieldTypeHelper.FieldType.File Then
 							If field.ValueAsString <> String.Empty Then
 								If System.IO.File.Exists(field.ValueAsString) Then
 
@@ -235,12 +231,12 @@ Namespace kCura.WinEDDS.ImportExtension
 									If System.IO.File.Exists(newLocation) Then
 										'Import API file access denied when importing read only files
 										Try
-											kCura.Utility.File.Instance.Delete(newLocation)
+											Global.Relativity.Import.Export.Io.FileSystem.Instance.File.Delete(newLocation)
 										Catch ex As Exception
 											'This is to make sure we don't have buggy data.  Clients that have run the line that sets attributes below will never hit this line.
 											'However, clients on old versions of ImportAPI may hit this line and we want to make sure we're accounting for our mistake.
 											System.IO.File.SetAttributes(newLocation, System.IO.FileAttributes.Normal)
-											kCura.Utility.File.Instance.Delete(newLocation)
+											Global.Relativity.Import.Export.Io.FileSystem.Instance.File.Delete(newLocation)
 										End Try
 									End If
 									System.IO.File.Copy(field.ValueAsString, newLocation)
@@ -266,7 +262,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			If _loadFileSettings.CreateFolderStructure AndAlso Not _loadFileSettings.FolderStructureContainedInColumn Is Nothing AndAlso Not _loadFileSettings.FolderStructureContainedInColumn = String.Empty Then
 				Dim parentIndex As Int32 = Int32.Parse(_loadFileSettings.FolderStructureContainedInColumn.Substring(_loadFileSettings.FolderStructureContainedInColumn.LastIndexOf("(")).Trim("()".ToCharArray))
 				Dim displayName As String = _reader.GetName(parentIndex - 1)
-				Dim field As New Api.ArtifactField(displayName, -2, Relativity.FieldTypeHelper.FieldType.Object, Relativity.FieldCategory.ParentArtifact, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(255), New Nullable(Of Int32)(Nothing), False)
+				Dim field As New Api.ArtifactField(displayName, -2, Global.Relativity.FieldTypeHelper.FieldType.Object, Global.Relativity.FieldCategory.ParentArtifact, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(255), New Nullable(Of Int32)(Nothing), False)
 				SetFieldValueInvoker(parentIndex - 1, field, displayName)
 				artifactFieldCollection.Add(field)
 			End If
@@ -280,7 +276,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Function
 
 		Private Function GetArtifactFieldCollectionWithBasicFields() As ArtifactFieldCollection
-			Dim idDataSet As FileIDData = GetFieldIdData()
+			Dim idDataSet As FileIdInfo = GetFieldIdData()
 			Dim fileSizeSet As Long? = GetFileSizeData()
 			Dim fileNameSet As String = GetFileNameData()
 
@@ -389,7 +385,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			Return Nothing
 		End Function
 
-		Private Function GetFieldIdData() As FileIDData
+		Private Function GetFieldIdData() As FileIdInfo
 
 			If Not _FileSettings.OIFileIdMapped
 				Return Nothing
@@ -435,7 +431,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			If isSupportedByViewer Is Nothing
 				Return New FileIDData(oiFileId, oiFileType)
 			Else 
-				Return New ExtendedFileIdData(oiFileType, isSupportedByViewer.Value)
+				Return New ExtendedFileIdInfo(oiFileType, isSupportedByViewer.Value)
 			End If
 		End Function
 
@@ -486,11 +482,11 @@ Namespace kCura.WinEDDS.ImportExtension
 			RaiseEvent StatusMessage(mappedFields)
 		End Sub
 
-		Private Function NonTextField(ByVal fieldType As Relativity.FieldTypeHelper.FieldType) As Boolean
+		Private Function NonTextField(ByVal fieldType As Global.Relativity.FieldTypeHelper.FieldType) As Boolean
 			Select Case fieldType
-				Case Relativity.FieldTypeHelper.FieldType.Boolean, Relativity.FieldTypeHelper.FieldType.Currency,
-				 Relativity.FieldTypeHelper.FieldType.Decimal, Relativity.FieldTypeHelper.FieldType.Date,
-				 Relativity.FieldTypeHelper.FieldType.Integer
+				Case Global.Relativity.FieldTypeHelper.FieldType.Boolean, Global.Relativity.FieldTypeHelper.FieldType.Currency,
+				 Global.Relativity.FieldTypeHelper.FieldType.Decimal, Global.Relativity.FieldTypeHelper.FieldType.Date,
+				 Global.Relativity.FieldTypeHelper.FieldType.Integer
 					Return True
 				Case Else
 					Return False
@@ -521,16 +517,16 @@ Namespace kCura.WinEDDS.ImportExtension
 				field.Value = Nothing
 			Else
 				Select Case field.Type
-					Case Relativity.FieldTypeHelper.FieldType.Boolean
-						field.Value = kCura.Utility.NullableTypesEnhanced.GetNullableBoolean(value)
+					Case Global.Relativity.FieldTypeHelper.FieldType.Boolean
+						field.Value = NullableTypesHelper.GetNullableBoolean(value)
 
-					Case Relativity.FieldTypeHelper.FieldType.Currency, Relativity.FieldTypeHelper.FieldType.Decimal
-						field.Value = kCura.Utility.NullableTypesHelper.ToNullableDecimal(value.Trim)
+					Case Global.Relativity.FieldTypeHelper.FieldType.Currency, Global.Relativity.FieldTypeHelper.FieldType.Decimal
+						field.Value = NullableTypesHelper.ToNullableDecimal(value.Trim)
 
-					Case Relativity.FieldTypeHelper.FieldType.Date
-						field.Value = kCura.Utility.NullableTypesEnhanced.GetNullableDateTime(value)
+					Case Global.Relativity.FieldTypeHelper.FieldType.Date
+						field.Value = NullableTypesHelper.GetNullableDateTime(value)
 
-					Case Relativity.FieldTypeHelper.FieldType.Integer
+					Case Global.Relativity.FieldTypeHelper.FieldType.Integer
 						field.Value = NullableTypesHelper.ToNullableInt32(value.Replace(",", ""))
 
 					Case Else
@@ -543,33 +539,33 @@ Namespace kCura.WinEDDS.ImportExtension
 
 			'RaiseEvent StatusMessage("Field ArtifactID = " & field.ArtifactID)
 			Select Case field.Type
-				Case Relativity.FieldTypeHelper.FieldType.Boolean
-					field.Value = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Boolean)(value)
-				Case Relativity.FieldTypeHelper.FieldType.Code
-					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
-				Case Relativity.FieldTypeHelper.FieldType.Text, Relativity.FieldTypeHelper.FieldType.OffTableText
+				Case Global.Relativity.FieldTypeHelper.FieldType.Boolean
+					field.Value = NullableTypesHelper.DBNullConvertToNullable(Of Boolean)(value)
+				Case Global.Relativity.FieldTypeHelper.FieldType.Code
+					field.Value = NullableTypesHelper.DBNullString(value)
+				Case Global.Relativity.FieldTypeHelper.FieldType.Text, Global.Relativity.FieldTypeHelper.FieldType.OffTableText
 					If TypeOf value Is System.IO.Stream
 						field.Value = value
 					Else
-						field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
+						field.Value = NullableTypesHelper.DBNullString(value)
 					End If
-				Case Relativity.FieldTypeHelper.FieldType.User
-					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
-				Case Relativity.FieldTypeHelper.FieldType.Varchar
-					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
-				Case Relativity.FieldTypeHelper.FieldType.Object
-					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
-				Case Relativity.FieldTypeHelper.FieldType.Currency, Relativity.FieldTypeHelper.FieldType.Decimal
-					field.Value = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Decimal)(value)
-				Case Relativity.FieldTypeHelper.FieldType.Date
-					field.Value = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of System.DateTime)(value)
-				Case Relativity.FieldTypeHelper.FieldType.File
-					field.Value = kCura.Utility.NullableTypesHelper.DBNullString(value)
+				Case Global.Relativity.FieldTypeHelper.FieldType.User
+					field.Value = NullableTypesHelper.DBNullString(value)
+				Case Global.Relativity.FieldTypeHelper.FieldType.Varchar
+					field.Value = NullableTypesHelper.DBNullString(value)
+				Case Global.Relativity.FieldTypeHelper.FieldType.Object
+					field.Value = NullableTypesHelper.DBNullString(value)
+				Case Global.Relativity.FieldTypeHelper.FieldType.Currency, Global.Relativity.FieldTypeHelper.FieldType.Decimal
+					field.Value = NullableTypesHelper.DBNullConvertToNullable(Of Decimal)(value)
+				Case Global.Relativity.FieldTypeHelper.FieldType.Date
+					field.Value = NullableTypesHelper.DBNullConvertToNullable(Of System.DateTime)(value)
+				Case Global.Relativity.FieldTypeHelper.FieldType.File
+					field.Value = NullableTypesHelper.DBNullString(value)
 					'field.Value = value.ToString
-				Case Relativity.FieldTypeHelper.FieldType.Integer
-					field.Value = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable(Of Int32)(value)
-					'field.Value = kCura.Utility.NullableTypesHelper.ToNullableInt32(value)
-				Case Relativity.FieldTypeHelper.FieldType.MultiCode, Relativity.FieldTypeHelper.FieldType.Objects
+				Case Global.Relativity.FieldTypeHelper.FieldType.Integer
+					field.Value = NullableTypesHelper.DBNullConvertToNullable(Of Int32)(value)
+					'field.Value = NullableTypesHelper.ToNullableInt32(value)
+				Case Global.Relativity.FieldTypeHelper.FieldType.MultiCode, Global.Relativity.FieldTypeHelper.FieldType.Objects
 					field.Value = LoadFileReader.GetStringArrayFromDelimitedFieldValue(value, _loadFileSettings.MultiRecordDelimiter)
 				Case Else
 					Throw New System.ArgumentException("Unsupported field type '" & field.Type.ToString & "'")
@@ -595,7 +591,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		Public Event StatusMessage(ByVal message As String) Implements kCura.WinEDDS.Api.IArtifactReader.StatusMessage
 		Public Event FieldMapped(ByVal sourceField As String, ByVal workspaceField As String) Implements IArtifactReader.FieldMapped
 		Public Event DataSourcePrep(ByVal e As kCura.WinEDDS.Api.DataSourcePrepEventArgs) Implements kCura.WinEDDS.Api.IArtifactReader.DataSourcePrep
-		Public Event OnIoWarning(ByVal e As kCura.WinEDDS.Api.IoWarningEventArgs) Implements kCura.WinEDDS.Api.IArtifactReader.OnIoWarning
+		Public Event OnIoWarning(ByVal e As IoWarningEventArgs) Implements kCura.WinEDDS.Api.IArtifactReader.OnIoWarning
 
 #End Region
 

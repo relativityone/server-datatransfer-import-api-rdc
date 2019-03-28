@@ -2,7 +2,7 @@ Imports Relativity.Import.Export
 
 Namespace kCura.WinEDDS.Service
     Public Module WebServiceExtensions
-        Private _logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.WinEDDSSubSystem)
+        Private _logger As Global.Relativity.Logging.ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.WinEDDSSubSystem)
 
         <System.Runtime.CompilerServices.Extension>
         Public Function RetryOnReLoginException(Of T)(ByVal input As System.Web.Services.Protocols.SoapHttpClientProtocol, serviceCall As Func(Of T), Optional ByVal retryOnFailure As Boolean = True) As T

@@ -1,10 +1,12 @@
 ﻿Imports kCura.WinEDDS.Api
+Imports Relativity.Import.Export
+
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class NativeFileValidated
 		Implements IHasOixFileType
 
-		Public Property OixFileID As FileIDData
-		Public Function GetFileIDData() As FileIDData Implements Api.IHasOixFileType.GetFileIDData
+		Public Property OixFileID As FileIdInfo
+		Public Function GetFileIDData() As FileIdInfo Implements Api.IHasOixFileType.GetFileIdInfo
 			Return Me.OixFileID
 		End Function
 	End Class
@@ -33,9 +35,9 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Public ReadOnly Property FileName As IHasFileName Implements IInjectableFieldCollection.FileName
 		Public ReadOnly Property FileSize As IHasFileSize Implements IInjectableFieldCollection.FileSize
-		Public ReadOnly Property FileIdData As IHasOixFileType Implements IInjectableFieldCollection.FileIdData
+		Public ReadOnly Property FileIdData As IHasOixFileType Implements IInjectableFieldCollection.FileIdInfo
 
-		Private Sub New(fileName As String, fileData As FileIDData, fileSize As Long?)
+		Private Sub New(fileName As String, fileData As FileIdInfo, fileSize As Long?)
 			If (Not String.IsNullOrEmpty(fileName)) Then
 				Me.FileName = New FileNamePopulated() With {.FileName = fileName}
 			End If
@@ -55,11 +57,11 @@ Namespace kCura.WinEDDS.ImportExtension
 			Return Not FileSize Is Nothing
 		End Function
 
-		Public Function HasFileIdData() As Boolean Implements IInjectableFieldCollection.HasFileIdData
+		Public Function HasFileIdData() As Boolean Implements IInjectableFieldCollection.HasFileIdInfo
 			Return Not FileIdData Is Nothing
 		End Function
 
-		Public Shared Function CreateFieldCollection(fileName As String, fileData As FileIDData, fileSize As Long?) As ArtifactFieldCollection
+		Public Shared Function CreateFieldCollection(fileName As String, fileData As FileIdInfo, fileSize As Long?) As ArtifactFieldCollection
 			Dim possibleRetVal As InjectableArtifactFieldCollection = New InjectableArtifactFieldCollection(fileName, fileData, fileSize)
 			If (possibleRetVal.HasFileName() Or possibleRetVal.HasFileIdData() Or possibleRetVal.HasFileSize()) Then
 				Return possibleRetVal

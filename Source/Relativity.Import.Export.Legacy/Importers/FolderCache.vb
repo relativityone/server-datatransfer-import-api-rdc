@@ -22,7 +22,7 @@ Namespace kCura.WinEDDS
 		Private ReadOnly _hierarchicArtifactManager As IHierarchicArtifactManager
 		Private ReadOnly _rootFolderId As Int32
 		Private ReadOnly _workspaceId As Int32
-		Private ReadOnly _logger As Relativity.Logging.ILog
+		Private ReadOnly _logger As Global.Relativity.Logging.ILog
 
 		''' <summary>
 		''' Initializes a new instance of the <see cref="FolderCache"/> class.
@@ -42,7 +42,7 @@ Namespace kCura.WinEDDS
 		''' <exception cref="kCura.WinEDDS.Exceptions.WebApiException">
 		''' Thrown when a failure occurs retrieving folders.
 		''' </exception>
-		Public Sub New(logger As Relativity.Logging.ILog, hierarchicArtifactManager As IHierarchicArtifactManager, rootFolderId As Int32, workspaceId As Int32)
+		Public Sub New(logger As Global.Relativity.Logging.ILog, hierarchicArtifactManager As IHierarchicArtifactManager, rootFolderId As Int32, workspaceId As Int32)
 			If (logger Is Nothing) Then
 				Throw New ArgumentNullException(NameOf(logger))
 			End If

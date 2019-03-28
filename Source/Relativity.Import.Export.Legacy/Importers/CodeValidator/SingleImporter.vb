@@ -3,7 +3,7 @@ Namespace kCura.WinEDDS.CodeValidator
 		Inherits Base
 		Private _createdCodeCount As Int32 = 0
 
-		Public Sub New(ByVal caseInfo As Relativity.CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.CodeManager)
+		Public Sub New(ByVal caseInfo As Global.Relativity.CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.CodeManager)
 			MyBase.New(caseInfo, codeManager)
 		End Sub
 
@@ -32,7 +32,7 @@ Namespace kCura.WinEDDS.CodeValidator
 				Case -200
 					Throw New CodeCreationException(True, "This choice field is not enabled as unicode.  Upload halted.")
 			End Select
-			Dim codeInfo As New Relativity.ChoiceInfo
+			Dim codeInfo As New Global.Relativity.ChoiceInfo
 			codeInfo.ArtifactID = codeArtifactID
 			codeInfo.CodeTypeID = code.CodeType
 			codeInfo.Name = code.Name

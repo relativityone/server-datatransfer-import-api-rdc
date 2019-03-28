@@ -2,9 +2,9 @@
 	Public Class CaseInsensitiveFilePathHelper
 		Implements IFilePathHelper
 
-		Private ReadOnly _fileSystem As Relativity.Import.Export.Io.IFileSystem
+		Private ReadOnly _fileSystem As Global.Relativity.Import.Export.Io.IFileSystem
 
-		Public Sub New(fileSystem As Relativity.Import.Export.Io.IFileSystem)
+		Public Sub New(fileSystem As Global.Relativity.Import.Export.Io.IFileSystem)
 			_fileSystem = fileSystem
 		End Sub
 

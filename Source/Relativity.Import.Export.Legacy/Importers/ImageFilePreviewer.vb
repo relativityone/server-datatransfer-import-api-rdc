@@ -40,7 +40,7 @@ Namespace kCura.WinEDDS
 
 		Public Overloads Overrides Function ReadFile(ByVal path As String) As Object
 			Try
-				_fileLineCount = Relativity.Import.Export.Io.FileSystem.Instance.File.CountLinesInFile(path)
+				_fileLineCount = Global.Relativity.Import.Export.Io.FileSystem.Instance.File.CountLinesInFile(path)
 				Reader = New StreamReader(path)
 				RaiseStatusEvent(EventType.Progress, "Begin Image Upload")
 

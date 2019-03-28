@@ -2,7 +2,7 @@ Namespace kCura.WinEDDS
 	<Serializable()> Public Class ImageLoadFile
 		Implements System.Runtime.Serialization.ISerializable
 
-		<NonSerialized()> Public CaseInfo As Relativity.CaseInfo
+		<NonSerialized()> Public CaseInfo As Global.Relativity.CaseInfo
 		Public DestinationFolderID As Int32
 		Public FileName As String
 		Public Overwrite As String
@@ -24,12 +24,12 @@ Namespace kCura.WinEDDS
 		<NonSerialized()> Public CopyFilesToDocumentRepository As Boolean = True
 		<NonSerialized()> Public Credential As Net.NetworkCredential
 		<NonSerialized()> Public CookieContainer As System.Net.CookieContainer
-		'<NonSerialized()> Public Identity As Relativity.Core.EDDSIdentity
+		'<NonSerialized()> Public Identity As Global.Relativity.Core.EDDSIdentity
 		
 		Public Sub New()
-			'Public Sub New(ByVal identity As Relativity.Core.EDDSIdentity)
+			'Public Sub New(ByVal identity As Global.Relativity.Core.EDDSIdentity)
 			MyBase.New()
-			Overwrite = Relativity.ImportOverwriteType.Append.ToString
+			Overwrite = Global.Relativity.ImportOverwriteType.Append.ToString
 			ProductionArtifactID = 0
 			'Me.Identity = identity
 		End Sub

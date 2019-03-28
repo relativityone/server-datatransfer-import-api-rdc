@@ -1,12 +1,12 @@
 Namespace kCura.WinEDDS
 	<Serializable()> Public Class ViewFieldInfo
-		Inherits Relativity.ViewFieldInfo
+		Inherits Global.Relativity.ViewFieldInfo
 		Implements IComparable
 
 		Public Sub New(ByVal row As System.Data.DataRow)
 			MyBase.New(row)
 		End Sub
-		Public Sub New(ByVal vfi As Relativity.ViewFieldInfo)
+		Public Sub New(ByVal vfi As Global.Relativity.ViewFieldInfo)
 			MyBase.New(vfi)
 		End Sub
 

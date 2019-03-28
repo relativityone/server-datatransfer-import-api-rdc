@@ -109,7 +109,7 @@ Namespace kCura.WinEDDS
 			Dim codeFieldColumnIndexes As New ArrayList
 			Dim currentIndex As Int32 = 0
 			For Each field As Api.ArtifactField In firstRow
-				If field.Type = Relativity.FieldTypeHelper.FieldType.Code OrElse field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode Then
+				If field.Type = Global.Relativity.FieldTypeHelper.FieldType.Code OrElse field.Type = Global.Relativity.FieldTypeHelper.FieldType.MultiCode Then
 					codeFieldColumnIndexes.Add(currentIndex)
 				End If
 				currentIndex += 1

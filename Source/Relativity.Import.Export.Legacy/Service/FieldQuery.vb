@@ -29,17 +29,17 @@ Namespace kCura.WinEDDS.Service
 			Dim unmappableFields As New System.Collections.Specialized.StringCollection
 			Dim unmappableFieldCategories As New System.Collections.ArrayList
 			If Not includeUnmappable Then
-				unmappableFieldCategories.AddRange(New Relativity.FieldCategory() {Relativity.FieldCategory.Reflected, Relativity.FieldCategory.Batch, Relativity.FieldCategory.MultiReflected, Relativity.FieldCategory.FileInfo, Relativity.FieldCategory.AutoCreate, Relativity.FieldCategory.FileSize, Relativity.FieldCategory.ProductionMarker, Relativity.FieldCategory.MarkupSetMarker})
+				unmappableFieldCategories.AddRange(New Global.Relativity.FieldCategory() {Global.Relativity.FieldCategory.Reflected, Global.Relativity.FieldCategory.Batch, Global.Relativity.FieldCategory.MultiReflected, Global.Relativity.FieldCategory.FileInfo, Global.Relativity.FieldCategory.AutoCreate, Global.Relativity.FieldCategory.FileSize, Global.Relativity.FieldCategory.ProductionMarker, Global.Relativity.FieldCategory.MarkupSetMarker})
 			End If
 			Dim i As Int32
 			For i = 0 To dv.Count - 1
 				field = New kCura.EDDS.WebAPI.DocumentManagerBase.Field
 				If Not ( _
-				 unmappableFieldCategories.Contains(CType(dv(i)("FieldCategoryID"), Relativity.FieldCategory)) _
+				 unmappableFieldCategories.Contains(CType(dv(i)("FieldCategoryID"), Global.Relativity.FieldCategory)) _
 				 OrElse _
 				 unmappableFields.Contains(dv(i)("DisplayName").ToString) _
 				) Then
-					If Not (CType(dv(i)("FieldCategoryID"), Relativity.FieldCategory) = Relativity.FieldCategory.FullText AndAlso artifactTypeID <> Relativity.ArtifactType.Document) Then
+					If Not (CType(dv(i)("FieldCategoryID"), Global.Relativity.FieldCategory) = Global.Relativity.FieldCategory.FullText AndAlso artifactTypeID <> Global.Relativity.ArtifactType.Document) Then
 						Dim guidsString As String = dv(i)("ArtifactGuids").ToString()
 						Dim guids As New List(Of Guid)
 						If (Not String.IsNullOrEmpty(guidsString)) Then
@@ -55,7 +55,7 @@ Namespace kCura.WinEDDS.Service
 							.DisplayName = CType(dv(i)("DisplayName"), String)
 							.FieldCategoryID = CType(dv(i)("FieldCategoryID"), Int32)
 							.FieldCategory = CType(dv(i)("FieldCategoryID"), kCura.EDDS.WebAPI.DocumentManagerBase.FieldCategory)
-							.FieldType = CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.FieldType), CType(dv(i)("FieldTypeID"), Relativity.FieldTypeHelper.FieldType).ToString), kCura.EDDS.WebAPI.DocumentManagerBase.FieldType)
+							.FieldType = CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.FieldType), CType(dv(i)("FieldTypeID"), Global.Relativity.FieldTypeHelper.FieldType).ToString), kCura.EDDS.WebAPI.DocumentManagerBase.FieldType)
 							.FieldTypeID = CInt(dv(i)("FieldTypeID"))
 							.IsEditable = CType(dv(i)("IsEditable"), Boolean)
 							.IsRequired = CType(dv(i)("IsRequired"), Boolean)
@@ -70,7 +70,7 @@ Namespace kCura.WinEDDS.Service
 							.Guids = guids.ToArray()
 						End With
 						If field.FieldType = EDDS.WebAPI.DocumentManagerBase.FieldType.Object OrElse field.FieldType = EDDS.WebAPI.DocumentManagerBase.FieldType.Objects OrElse field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.MultiReflected OrElse field.FieldCategory = EDDS.WebAPI.DocumentManagerBase.FieldCategory.Reflected Then
-							If field.AssociativeArtifactTypeID.HasValue AndAlso Relativity.ArtifactTypeHelper.IsDynamic(field.AssociativeArtifactTypeID.Value) Then fields.Add(field)
+							If field.AssociativeArtifactTypeID.HasValue AndAlso Global.Relativity.ArtifactTypeHelper.IsDynamic(field.AssociativeArtifactTypeID.Value) Then fields.Add(field)
 						Else
 							fields.Add(field)
 						End If
@@ -83,7 +83,7 @@ Namespace kCura.WinEDDS.Service
 
 		Private Function ConvertImportBehaviorEnum(ByVal input As Int32?) As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?
 			If Not input.HasValue Then Return Nothing
-			Dim ibc As Relativity.FieldInfo.ImportBehaviorChoice = CType(input, Relativity.FieldInfo.ImportBehaviorChoice)
+			Dim ibc As Global.Relativity.FieldInfo.ImportBehaviorChoice = CType(input, Global.Relativity.FieldInfo.ImportBehaviorChoice)
 			Return CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice), ibc.ToString), kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice)
 		End Function
 

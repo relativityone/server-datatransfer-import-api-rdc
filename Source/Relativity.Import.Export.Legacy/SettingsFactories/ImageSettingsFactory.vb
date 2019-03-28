@@ -23,7 +23,7 @@ Namespace kCura.WinEDDS
 			_loadFile.Credential = Me.Credential
 			_loadFile.ForProduction = False
 			_loadFile.FullTextEncoding = System.Text.Encoding.Default
-			_loadFile.Overwrite = Relativity.ImportOverwriteType.Append.ToString
+			_loadFile.Overwrite = Global.Relativity.ImportOverwriteType.Append.ToString
 			_loadFile.ProductionArtifactID = 0
 			_loadFile.ProductionTable = Nothing
 			_loadFile.ReplaceFullText = False
@@ -43,7 +43,7 @@ Namespace kCura.WinEDDS
 				_loadFile.CaseInfo = Me.CaseManager.Read(value)
 				_loadFile.CaseDefaultPath = _loadFile.CaseInfo.DocumentPath
 				_loadFile.DestinationFolderID = _loadFile.CaseInfo.RootFolderID
-				_docFields = Me.FieldManager.Query.RetrieveAllAsDocumentFieldCollection(value, Relativity.ArtifactType.Document)
+				_docFields = Me.FieldManager.Query.RetrieveAllAsDocumentFieldCollection(value, Global.Relativity.ArtifactType.Document)
 			End Set
 		End Property
 
@@ -109,11 +109,11 @@ Namespace kCura.WinEDDS
 			Set(ByVal value As OverwriteType)
 				Select Case value
 					Case SettingsFactoryBase.OverwriteType.Append
-						_loadFile.Overwrite = Relativity.ImportOverwriteType.Append.ToString
+						_loadFile.Overwrite = Global.Relativity.ImportOverwriteType.Append.ToString
 					Case SettingsFactoryBase.OverwriteType.AppendOverlay
-						_loadFile.Overwrite = Relativity.ImportOverwriteType.AppendOverlay.ToString
+						_loadFile.Overwrite = Global.Relativity.ImportOverwriteType.AppendOverlay.ToString
 					Case SettingsFactoryBase.OverwriteType.Overlay
-						_loadFile.Overwrite = Relativity.ImportOverwriteType.Overlay.ToString
+						_loadFile.Overwrite = Global.Relativity.ImportOverwriteType.Overlay.ToString
 				End Select
 			End Set
 		End Property

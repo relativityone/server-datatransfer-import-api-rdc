@@ -16,7 +16,7 @@ Namespace kCura.WinEDDS
 		Private _destinationFolderPath As String
 		Private _caseArtifactID As Int32
 		Private _isBulkEnabled As Boolean = True
-		Private _repositoryPathManager As Relativity.RepositoryPathManager
+		Private _repositoryPathManager As Global.Relativity.RepositoryPathManager
 		Private _sortIntoVolumes As Boolean = False
 		Private _doRetry As Boolean = True
 
@@ -58,7 +58,7 @@ Namespace kCura.WinEDDS
 			_credentials = credentials
 			_caseArtifactID = caseArtifactID
 			_destinationFolderPath = destinationFolderPath
-			_repositoryPathManager = New Relativity.RepositoryPathManager(_gateway.RepositoryVolumeMax)
+			_repositoryPathManager = New Global.Relativity.RepositoryPathManager(_gateway.RepositoryVolumeMax)
 			_sortIntoVolumes = sortIntoVolumes
 			SetType(_destinationFolderPath)
 			RaiseEvent UploadModeChangeEvent(Me.UploaderType.ToString(), _isBulkEnabled)

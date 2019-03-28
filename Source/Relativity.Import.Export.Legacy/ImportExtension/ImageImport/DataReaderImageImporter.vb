@@ -1,10 +1,7 @@
-Imports System.Collections.Generic
-Imports System.Data
-Imports System.Runtime.InteropServices
 Imports System.Threading
-Imports kCura.Windows.Process
-Imports kCura.WinEDDS.TApi
 Imports Relativity
+Imports Relativity.Import.Export.Io
+Imports Relativity.Import.Export.Process
 
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderImageImporter
@@ -12,10 +9,26 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Private _sourceTable As System.Data.DataTable
 
-		Public Sub New(ByVal folderId As Int32, ByVal imageLoadFile As kCura.WinEDDS.ImageLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal ioReporterInstance As IIoReporter, 
-					   ByVal logger As Logging.ILog, ByVal processID As System.Guid, ByVal sourceDataReader As System.Data.DataTable, ByVal enforceDocumentLimit As Boolean, ByVal tokenSource As CancellationTokenSource,
-					   Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			MyBase.New(folderId, imageLoadFile, controller, ioReporterInstance, logger, processID, False, enforceDocumentLimit, tokenSource, executionSource)
+		Public Sub New(ByVal folderId As Int32, _
+		               ByVal imageLoadFile As kCura.WinEDDS.ImageLoadFile, _
+		               ByVal context As ProcessContext, _
+		               ByVal ioReporterInstance As IIoReporter, 
+		               ByVal logger As Logging.ILog, _
+		               ByVal processID As System.Guid, _
+		               ByVal sourceDataReader As System.Data.DataTable, _
+		               ByVal enforceDocumentLimit As Boolean, _
+		               ByVal tokenSource As CancellationTokenSource,
+		               Optional executionSource As Global.Relativity.ExecutionSource = Global.Relativity.ExecutionSource.Unknown)
+			MyBase.New(folderId, _
+			           imageLoadFile, _
+			           context, _
+			           ioReporterInstance, _
+			           logger, _
+			           processID, _
+			           False, _
+			           enforceDocumentLimit, _
+			           tokenSource, _
+			           executionSource)
 			_sourceTable = sourceDataReader
 		End Sub
 
@@ -31,4 +44,3 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Property
 	End Class
 End Namespace
-

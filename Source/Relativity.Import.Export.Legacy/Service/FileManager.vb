@@ -50,70 +50,16 @@ Namespace kCura.WinEDDS.Service
 			Return files
 		End Function
 
-		'Public Shared Function DTOtoWebAPIFile(ByVal dto As Relativity.Core.DTO.File) As kCura.EDDS.WebAPI.DocumentManagerBase.File
-		'	Dim file As New kCura.EDDS.WebAPI.DocumentManagerBase.File
-
-		'	file.DocumentArtifactID = dto.DocumentArtifactID
-		'	file.Filename = dto.Filename
-		'	file.Guid = dto.Guid
-		'	file.Order = dto.Order
-		'	file.Type = dto.Type
-		'	Return file
-		'End Function
-
-		'Public Shared Function DTOstoWebAPIFiles(ByVal dtos As Relativity.Core.DTO.File()) As kCura.EDDS.WebAPI.DocumentManagerBase.File()
-		'	Dim files(dtos.Length - 1) As kCura.EDDS.WebAPI.DocumentManagerBase.File
-
-		'	Dim i As Int32
-		'	For i = 0 To files.Length - 1
-		'		files(i) = DTOtoWebAPIFile(dtos(i))
-		'	Next
-		'	Return files
-		'End Function
-
-		'Public Shared Function DocumentWebAPIFiletoDTO(ByVal file As kCura.EDDS.WebAPI.DocumentManagerBase.File) As Relativity.Core.DTO.File
-		'	Dim dto As New Relativity.Core.DTO.File
-
-		'	dto.DocumentArtifactID = file.DocumentArtifactID
-		'	dto.Filename = file.Filename
-		'	dto.Guid = file.Guid
-		'	dto.Order = file.Order
-		'	dto.Type = file.Type
-		'	Return dto
-		'End Function
-
-		'Public Shared Function FileWebAPIFiletoDTO(ByVal file As kCura.EDDS.WebAPI.FileManagerBase.File) As Relativity.Core.DTO.File
-		'	Dim dto As New Relativity.Core.DTO.File
-
-		'	dto.DocumentArtifactID = file.DocumentArtifactID
-		'	dto.Filename = file.Filename
-		'	dto.Guid = file.Guid
-		'	dto.Order = file.Order
-		'	dto.Type = file.Type
-		'	Return dto
-		'End Function
-
-		'Public Shared Function WebAPIFilestoDTOs(ByVal files As kCura.EDDS.WebAPI.DocumentManagerBase.File()) As Relativity.Core.DTO.File()
-		'	If files Is Nothing Then Return Nothing
-		'	Dim dtos(files.Length - 1) As Relativity.Core.DTO.File
-
-		'	Dim i As Int32
-		'	For i = 0 To dtos.Length - 1
-		'		dtos(i) = DocumentWebAPIFiletoDTO(files(i))
-		'	Next
-		'	Return dtos
-		'End Function
-
-		Public Shared Function WebAPIFileInfotoFileInfo(ByVal file As kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase) As Relativity.FileInfoBase
-			Dim fileInfo As New Relativity.FileInfoBase
+		Public Shared Function WebAPIFileInfotoFileInfo(ByVal file As kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase) As Global.Relativity.FileInfoBase
+			Dim fileInfo As New Global.Relativity.FileInfoBase
 
 			fileInfo.FileName = file.FileName
 			fileInfo.FileGuid = file.FileGuid
 			Return fileInfo
 		End Function
 
-		Public Shared Function WebAPIFileInfostoFileInfos(ByVal files As kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase()) As Relativity.FileInfoBase()
-			Dim fileInfos(files.Length - 1) As Relativity.FileInfoBase
+		Public Shared Function WebAPIFileInfostoFileInfos(ByVal files As kCura.EDDS.WebAPI.FileManagerBase.FileInfoBase()) As Global.Relativity.FileInfoBase()
+			Dim fileInfos(files.Length - 1) As Global.Relativity.FileInfoBase
 
 			Dim i As Int32
 			For i = 0 To fileInfos.Length - 1

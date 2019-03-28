@@ -1,6 +1,7 @@
 Imports System.Collections.Generic
 Imports System.Threading
-Imports kCura.WinEDDS.TApi
+Imports Relativity.Import.Export.Io
+Imports Relativity.Import.Export.Process
 Imports Relativity.Logging
 
 Namespace kCura.WinEDDS.ImportExtension
@@ -22,30 +23,42 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		''' <summary>
 		''' Constructs a new importer that loads the provided <paramref name="loadFile" />
-		''' and responds to events fired on the provided <paramref name="controller" />.
+		''' and responds to events fired on the provided <paramref name="context" />.
 		''' </summary>
 		''' <param name="loadFile">Information about the data to load into the
 		''' importer</param>
-		''' <param name="controller">A controller that can send events to
+		''' <param name="context">A process context that can send events to
 		''' the process that is importing</param>
 		''' <param name="bulkLoadFileFieldDelimiter">The field delimiter that
 		''' was used to create the bulk load file. Line delimiters are a field
 		''' delimiter followed by a new line.</param>
 		''' <param name="executionSource">Optional parameter that states where the import
 		''' is coming from.</param>
-		Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, ByVal controller As kCura.Windows.Process.Controller, ByVal ioReporterInstance As IIoReporter, ByVal logger As ILog,
-					   ByVal bulkLoadFileFieldDelimiter As String, ByVal tokenSource As CancellationTokenSource,
-					   Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			Me.New(loadFile, controller, ioReporterInstance, logger, bulkLoadFileFieldDelimiter, Nothing, tokenSource, initializeArtifactReader:=True, executionSource:=executionSource)
+		Public Sub New(ByVal loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, _
+		               ByVal context As ProcessContext, _
+		               ByVal ioReporterInstance As IIoReporter, _
+		               ByVal logger As ILog,
+		               ByVal bulkLoadFileFieldDelimiter As String, _
+		               ByVal tokenSource As CancellationTokenSource,
+		               Optional executionSource As Global.Relativity.ExecutionSource = Global.Relativity.ExecutionSource.Unknown)
+			Me.New(loadFile, _
+			       context, _
+			       ioReporterInstance, _
+			       logger, _
+			       bulkLoadFileFieldDelimiter, _
+			       Nothing, _
+			       tokenSource, _
+			       initializeArtifactReader:=True, _
+			       executionSource:=executionSource)
 		End Sub
 
 		''' <summary>
 		''' Constructs a new importer that loads the provided <paramref name="loadFile" />
-		''' and responds to events fired on the provided <paramref name="controller" />.
+		''' and responds to events fired on the provided <paramref name="context" />.
 		''' </summary>
 		''' <param name="loadFile">Information about the data to load into the
 		''' importer</param>
-		''' <param name="controller">A controller that can send events to
+		''' <param name="context">A process context that can send events to
 		''' the process that is importing</param>
 		''' <param name="bulkLoadFileFieldDelimiter">The field delimiter that
 		''' was used to create the bulk load file. Line delimiters are a field
@@ -56,12 +69,28 @@ Namespace kCura.WinEDDS.ImportExtension
 		''' If False, you should initialize the artifact reader later by calling Initialize().</param>
 		''' <param name="executionSource">Optional parameter that states where the import
 		''' is coming from.</param>
-		Public Sub New(loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, controller As kCura.Windows.Process.Controller, ByVal ioReporterInstance As IIoReporter, ByVal logger As ILog,
-					   bulkLoadFileFieldDelimiter As String, temporaryLocalDirectory As String, ByVal tokenSource As CancellationTokenSource,
-					   initializeArtifactReader As Boolean,
-					   Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
-			MyBase.New(loadFile, controller, ioReporterInstance, logger, 0, True, True, System.Guid.NewGuid, True, bulkLoadFileFieldDelimiter, initializeArtifactReader, tokenSource, executionSource)
-
+		Public Sub New(loadFile As kCura.WinEDDS.ImportExtension.DataReaderLoadFile, _
+		               ByVal context As ProcessContext, _
+		               ByVal ioReporterInstance As IIoReporter, _
+		               ByVal logger As ILog,
+		               bulkLoadFileFieldDelimiter As String, _
+		               temporaryLocalDirectory As String, _
+		               ByVal tokenSource As CancellationTokenSource,
+		               initializeArtifactReader As Boolean,
+		               Optional executionSource As Global.Relativity.ExecutionSource = Global.Relativity.ExecutionSource.Unknown)
+			MyBase.New(loadFile, _
+			           context, _
+			           ioReporterInstance, _
+			           logger, _
+			           0, _
+			           True, _
+			           True, _
+			           System.Guid.NewGuid, _
+			           True, _
+			           bulkLoadFileFieldDelimiter, _
+			           initializeArtifactReader, _
+			           tokenSource, _
+			           executionSource)
 			Me.OIFileIdColumnName = loadFile.OIFileIdColumnName
 			Me.OIFileIdMapped = loadFile.OIFileIdMapped
 			Me.OIFileTypeColumnName = loadFile.OIFileTypeColumnName
@@ -205,4 +234,3 @@ Namespace kCura.WinEDDS.ImportExtension
 
 	End Class
 End Namespace
-

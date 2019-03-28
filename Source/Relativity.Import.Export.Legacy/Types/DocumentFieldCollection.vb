@@ -48,7 +48,7 @@ Namespace kCura.WinEDDS
 			Return _nameIndex.ContainsKey(fieldName) AndAlso Not _nameIndex.Item(fieldName) Is Nothing
 		End Function
 
-		Private Function GetFieldByCategory(ByVal type As Relativity.FieldCategory) As DocumentField
+		Private Function GetFieldByCategory(ByVal type As Global.Relativity.FieldCategory) As DocumentField
 			Dim ind As Int32
 			Dim field As DocumentField
 			For Each ind In _idIndex.Keys
@@ -60,7 +60,7 @@ Namespace kCura.WinEDDS
 			Return Nothing
 		End Function
 
-		Public Function GetFieldsByCategory(ByVal type As Relativity.FieldCategory) As DocumentField()
+		Public Function GetFieldsByCategory(ByVal type As Global.Relativity.FieldCategory) As DocumentField()
 			Dim ind As Int32
 			Dim retval As New System.Collections.ArrayList
 			Dim field As DocumentField
@@ -82,7 +82,7 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property FullText() As DocumentField
 			Get
-				Return Me.GetFieldByCategory(Relativity.FieldCategory.FullText)
+				Return Me.GetFieldByCategory(Global.Relativity.FieldCategory.FullText)
 			End Get
 		End Property
 
@@ -90,7 +90,7 @@ Namespace kCura.WinEDDS
 			Dim df As DocumentField
 			Dim al As New ArrayList
 			For Each df In _idIndex.Values
-				If df.FieldCategoryID = Relativity.FieldCategory.Identifier Then
+				If df.FieldCategoryID = Global.Relativity.FieldCategory.Identifier Then
 					al.Add(df)
 				End If
 			Next
@@ -124,7 +124,7 @@ Namespace kCura.WinEDDS
 				If (
 				 field.FieldCategoryID <> 8 AndAlso
 				 field.FieldCategoryID <> 5 AndAlso
-				 field.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Varchar
+				 field.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.Varchar
 				) Then
 					al.Add(field.FieldName)
 				End If

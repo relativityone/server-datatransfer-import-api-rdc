@@ -16,44 +16,6 @@ Namespace kCura.WinEDDS
 		Public Sub New(ByVal folderID As Int32, ByVal args As ImageLoadFile, ByVal context As ProcessContext, ByVal processID As Guid, ByVal doRetryLogic As Boolean)
 			MyBase.New(","c, doRetryLogic)
 			_settings = args
-			'_docManager = New kCura.WinEDDS.Service.DocumentManager(args.Credential, args.CookieContainer)
-			'_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credential, args.CookieContainer)
-			'_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credential, args.CookieContainer)
-			'_auditManager = New kCura.WinEDDS.Service.AuditManager(args.Credential, args.CookieContainer)
-			'_fileManager = New kCura.WinEDDS.Service.FileManager(args.Credential, args.CookieContainer)
-			'_productionManager = New kCura.WinEDDS.Service.ProductionManager(args.Credential, args.CookieContainer)
-			'_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credential, args.CookieContainer)
-			'Dim suffix As String = "\EDDS" & args.CaseInfo.ArtifactID & "\"
-			'If args.SelectedCasePath = "" Then
-			'	_repositoryPath = args.CaseDefaultPath.TrimEnd("\"c) & suffix
-			'Else
-			'	_repositoryPath = args.SelectedCasePath.TrimEnd("\"c) & suffix
-			'End If
-			'_textRepositoryPath = args.CaseDefaultPath & "EDDS" & args.CaseInfo.ArtifactID & "\"
-			'_fileUploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer)
-			'_bcpuploader = New kCura.WinEDDS.FileUploader(args.Credential, args.CaseInfo.ArtifactID, _repositoryPath, args.CookieContainer, False)
-			'_folderID = folderID
-			'_productionArtifactID = args.ProductionArtifactID
-			'If _productionArtifactID <> 0 Then
-			'	_productionDTO = _productionManager.Read(args.CaseInfo.ArtifactID, _productionArtifactID)
-			'	_keyFieldDto = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer).Read(args.CaseInfo.ArtifactID, args.BeginBatesFieldArtifactID)
-			'ElseIf args.IdentityFieldId <> -1 Then
-			'	_keyFieldDto = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer).Read(args.CaseInfo.ArtifactID, args.IdentityFieldId)
-			'Else
-			'	Dim fieldID As Int32 = _fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, Relativity.ArtifactType.Document).IdentifierFields(0).FieldID
-			'	_keyFieldDto = New kCura.WinEDDS.Service.FieldManager(args.Credential, args.CookieContainer).Read(args.CaseInfo.ArtifactID, fieldID)
-			'End If
-			'_overwrite = args.Overwrite
-			'_replaceFullText = args.ReplaceFullText
-			'_selectedIdentifierField = args.ControlKeyField
-			'_processContext = controller
-			'_copyFilesToRepository = args.CopyFilesToDocumentRepository
-			'_continue = True
-			'_autoNumberImages = args.AutoNumberImages
-			'_caseInfo = args.CaseInfo
-			'_settings = args
-			'_processID = processID
-			'_startLineNumber = args.StartLineNumber
 		End Sub
 
 		Public Sub AdvanceRecord() Implements Api.IImageReader.AdvanceRecord
@@ -97,7 +59,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Function CountRecords() As Long Implements Api.IImageReader.CountRecords
-			Return Relativity.Import.Export.Io.FileSystem.Instance.File.CountLinesInFile(Me.Settings.FileName)
+			Return Global.Relativity.Import.Export.Io.FileSystem.Instance.File.CountLinesInFile(Me.Settings.FileName)
 		End Function
 
 		Public Sub Cancel() Implements Api.IImageReader.Cancel

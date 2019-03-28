@@ -53,8 +53,8 @@ Namespace kCura.WinEDDS.Service
 			End Try
 		End Function
 
-		Private Function GenerateErrorFileKey(f As Func(Of kCura.EDDS.WebAPI.BulkImportManagerBase.ErrorFileKey)) As Relativity.MassImport.ErrorFileKey
-			Dim retval As New Relativity.MassImport.ErrorFileKey
+		Private Function GenerateErrorFileKey(f As Func(Of kCura.EDDS.WebAPI.BulkImportManagerBase.ErrorFileKey)) As Global.Relativity.MassImport.ErrorFileKey
+			Dim retval As New Global.Relativity.MassImport.ErrorFileKey
 			With f()
 				retval.LogKey = .LogKey
 				retval.OpticonKey = .OpticonKey
@@ -80,11 +80,11 @@ Namespace kCura.WinEDDS.Service
 			Return RetryOnReLoginException(Function() ExecuteImport(Function() Me.InvokeBulkImportObjects(appID, settings, inRepository)))
 		End Function
 
-		Public Shadows Function GenerateImageErrorFiles(ByVal appID As Int32, ByVal importKey As String, ByVal writeHeader As Boolean, ByVal keyFieldId As Int32) As Relativity.MassImport.ErrorFileKey
+		Public Shadows Function GenerateImageErrorFiles(ByVal appID As Int32, ByVal importKey As String, ByVal writeHeader As Boolean, ByVal keyFieldId As Int32) As Global.Relativity.MassImport.ErrorFileKey
 			Return RetryOnReLoginException(Function() GenerateErrorFileKey(Function() MyBase.GenerateImageErrorFiles(appID, importKey, writeHeader, keyFieldId)))
 		End Function
 
-		Public Shadows Function GenerateNonImageErrorFiles(ByVal appID As Integer, ByVal runID As String, ByVal artifactTypeID As Integer, ByVal writeHeader As Boolean, ByVal keyFieldID As Integer) As Relativity.MassImport.ErrorFileKey
+		Public Shadows Function GenerateNonImageErrorFiles(ByVal appID As Integer, ByVal runID As String, ByVal artifactTypeID As Integer, ByVal writeHeader As Boolean, ByVal keyFieldID As Integer) As Global.Relativity.MassImport.ErrorFileKey
 			Return RetryOnReLoginException(Function() GenerateErrorFileKey(Function() MyBase.GenerateNonImageErrorFiles(appID, runID, artifactTypeID, writeHeader, keyFieldID)))
 		End Function
 

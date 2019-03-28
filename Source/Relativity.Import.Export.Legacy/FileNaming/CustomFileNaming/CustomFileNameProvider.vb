@@ -25,7 +25,7 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 			Else
 				name = GetNameWithNativeExtension(name, exportObjectInfo)
 			End If
-			Return Relativity.Import.Export.Io.FileSystem.Instance.Path.ConvertIllegalCharactersInFilename(name.ToString())
+			Return Global.Relativity.Import.Export.Io.FileSystem.Instance.Path.ConvertIllegalCharactersInFilename(name.ToString())
 		End Function
 
 		Public Function GetTextName(exportObjectInfo As ObjectExportInfo) As String Implements IFileNameProvider.GetTextName
@@ -38,7 +38,7 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 				nameAsString = GetNameWithTextExtension(name)
 			End If
 
-			Return Relativity.Import.Export.Io.FileSystem.Instance.Path.ConvertIllegalCharactersInFilename(nameAsString)
+			Return Global.Relativity.Import.Export.Io.FileSystem.Instance.Path.ConvertIllegalCharactersInFilename(nameAsString)
 		End Function
 
 		Private Function CreateFileName(objectExportInfo As ObjectExportInfo) As StringBuilder

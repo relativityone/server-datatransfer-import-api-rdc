@@ -14,7 +14,7 @@ Namespace kCura.WinEDDS.Credentials
 		Implements ICredentialsProvider
 
 		Private Const _REDIRECT_URI As String = "rdc://relativityimplicit/"
-		Private _tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider
+		Private _tokenProvider As Global.Relativity.OAuth2Client.Interfaces.ITokenProvider
 		Private ReadOnly _stsUri As Uri
 		Private ReadOnly _clientId As String
 		Private _loginView As ILoginView
@@ -63,8 +63,8 @@ Namespace kCura.WinEDDS.Credentials
 			Dim oAuthConfig As OAuth2ClientConfiguration = New OAuth2ClientConfiguration(_clientId) With { .TimeOut = TimeSpan.FromMinutes(15) }
 			Dim openIdLoginHint As String = AppSettings.Instance.OpenIdConnectHomeRealmDiscoveryHint
 			_loginView = New LoginView(_stsUri, New Uri(_REDIRECT_URI), oAuthConfig, Function() new LoginForm(), openIdLoginHint)
-			Dim providerFactory As Relativity.OAuth2Client.Interfaces.ITokenProviderFactory = New ImplicitTokenProviderFactory(_loginView)
-			Dim tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider = providerFactory.GetTokenProvider("WebApi", New String() {"UserInfoAccess"})
+			Dim providerFactory As Global.Relativity.OAuth2Client.Interfaces.ITokenProviderFactory = New ImplicitTokenProviderFactory(_loginView)
+			Dim tokenProvider As Global.Relativity.OAuth2Client.Interfaces.ITokenProvider = providerFactory.GetTokenProvider("WebApi", New String() {"UserInfoAccess"})
 			_tokenProvider = tokenProvider
 			Events = _tokenProvider.Events
 			AddHandler Events.TokenRetrieved, _onTokenHandler

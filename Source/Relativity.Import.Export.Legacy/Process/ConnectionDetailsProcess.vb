@@ -7,9 +7,9 @@ Namespace kCura.WinEDDS
 
 		Private ReadOnly _credential As Net.NetworkCredential
 		Private ReadOnly _cookieContainer As Net.CookieContainer
-		Private ReadOnly _caseInfo As Relativity.CaseInfo
+		Private ReadOnly _caseInfo As Global.Relativity.CaseInfo
 
-		Public Sub New(ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfo As Relativity.CaseInfo)
+		Public Sub New(ByVal credential As Net.NetworkCredential, ByVal cookieContainer As Net.CookieContainer, ByVal caseInfo As Global.Relativity.CaseInfo)
 			MyBase.New()
 
 			_credential = credential
@@ -30,11 +30,11 @@ Namespace kCura.WinEDDS
 			parameters.WebCookieContainer = _cookieContainer
 			parameters.WebServiceUrl = Me.AppSettings.WebApiServiceUrl
 			parameters.WorkspaceId = _caseInfo.ArtifactID
-			Dim connectionInfo As Relativity.Transfer.RelativityConnectionInfo = tapiObjectService.CreateRelativityConnectionInfo(parameters)
+			Dim connectionInfo As Global.Relativity.Transfer.RelativityConnectionInfo = tapiObjectService.CreateRelativityConnectionInfo(parameters)
 			Using transferLog As New RelativityTransferLog()
-				Using transferHost As New Relativity.Transfer.RelativityTransferHost(connectionInfo, transferLog)
-					Dim context As New Relativity.Transfer.DiagnosticsContext()
-					Dim configuration As New Relativity.Transfer.DiagnosticsConfiguration(context, _cookieContainer)
+				Using transferHost As New Global.Relativity.Transfer.RelativityTransferHost(connectionInfo, transferLog)
+					Dim context As New Global.Relativity.Transfer.DiagnosticsContext()
+					Dim configuration As New Global.Relativity.Transfer.DiagnosticsConfiguration(context, _cookieContainer)
 
 					' Reducing these values to more quickly publish error information to the user.
 					configuration.MaxHttpRetryAttempts = 1
@@ -51,13 +51,13 @@ Namespace kCura.WinEDDS
 			End Using
 		End Sub
 
-		Private Sub DiagnosticsContext_OnDiagnosticMessage(sender As Object, e As Relativity.Transfer.DiagnosticMessageEventArgs)
+		Private Sub DiagnosticsContext_OnDiagnosticMessage(sender As Object, e As Global.Relativity.Transfer.DiagnosticMessageEventArgs)
 			Me.WriteStatus(e.Message)
 		End Sub
 		
 		Private Sub CheckDownloadHandlerURL()
 			Me.WriteStatus("Validate Download URL:")
-			Dim downloadUrl As String = Relativity.Import.Export.Io.FileSystem.Instance.Path.GetFullyQualifiedPath(New System.Uri(Me.AppSettings.WebApiServiceUrl), _caseInfo.DownloadHandlerURL)
+			Dim downloadUrl As String = Global.Relativity.Import.Export.Io.FileSystem.Instance.Path.GetFullyQualifiedPath(New System.Uri(Me.AppSettings.WebApiServiceUrl), _caseInfo.DownloadHandlerURL)
 			Me.WriteStatus(downloadUrl)
 			Dim myReq As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(downloadUrl & "AccessDenied.aspx"), System.Net.HttpWebRequest)
 	  Try

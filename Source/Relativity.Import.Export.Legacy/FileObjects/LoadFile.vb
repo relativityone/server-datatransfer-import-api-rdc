@@ -51,10 +51,10 @@ Namespace kCura.WinEDDS
 		<NonSerialized()> Public Credentials As Net.NetworkCredential
 		<NonSerialized()> Public TapiCredentials As Net.NetworkCredential
 		<NonSerialized()> Public _cookieContainer As System.Net.CookieContainer
-		<NonSerialized()> Public CaseInfo As Relativity.CaseInfo
+		<NonSerialized()> Public CaseInfo As Global.Relativity.CaseInfo
 		<NonSerialized()> Public SelectedCasePath As String = ""
 		<NonSerialized()> Public CopyFilesToDocumentRepository As Boolean = True
-		'<NonSerialized()> Public Identity As Relativity.Core.EDDSIdentity
+		'<NonSerialized()> Public Identity As Global.Relativity.Core.EDDSIdentity
 
 		Public Enum FieldOverlayBehavior
 			UseRelativityDefaults = 0
@@ -217,7 +217,7 @@ Namespace kCura.WinEDDS
 				Try
 					Me.ArtifactTypeID = info.GetInt32("ArtifactTypeID")
 				Catch
-					Me.ArtifactTypeID = Relativity.ArtifactType.Document
+					Me.ArtifactTypeID = Global.Relativity.ArtifactType.Document
 				End Try
 				Try
 					Me.StartLineNumber = info.GetInt64("StartLineNumber")

@@ -1,9 +1,5 @@
-Imports System.Threading
-Imports kCura.WinEDDS.Helpers
-Imports kCura.WinEDDS.TApi
-Imports Microsoft.VisualBasic.Logging
-Imports Relativity.Logging
-Imports Relativity.Logging.Factory
+Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Io
 
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderImporterProcess
@@ -17,7 +13,7 @@ Namespace kCura.WinEDDS.ImportExtension
 
 			' Use the default value for the delimiter because as a public class,
 			' users of this class may not know what value to set for this
-			BulkLoadFileFieldDelimiter = Relativity.Constants.DEFAULT_FIELD_DELIMITER
+			BulkLoadFileFieldDelimiter = Global.Relativity.Constants.DEFAULT_FIELD_DELIMITER
 		End Sub
 
 		Public Property OnBehalfOfUserToken As String
@@ -40,19 +36,8 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Function
 
 		Public Overrides Function GetImporter() As kCura.WinEDDS.BulkLoadFileImporter
-			Dim tokenSource As CancellationTokenSource = New CancellationTokenSource()
-		    _ioWarningPublisher = New IoWarningPublisher()
-			
-		    Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.WinEDDSSubSystem)
-		    Dim ioReporter As IIoReporter = IoReporterFactory.CreateIoReporter(
-			    kCura.Utility.Config.IOErrorNumberOfRetries, 
-			    kCura.Utility.Config.IOErrorWaitTimeInSeconds,
-				WinEDDS.Config.DisableNativeLocationValidation,
-			    WinEDDS.Config.RetryOptions,
-			    logger,
-			    _ioWarningPublisher,
-			    tokenSource.Token)
-
+			_ioReporterContext = New IoReporterContext(Me.FileSystem, Me.AppSettings, New WaitAndRetryPolicy(Me.AppSettings))
+			Dim reporter As IIoReporter = Me.CreateIoReporter(_ioReporterContext)
             LoadFile.OIFileIdColumnName = OIFileIdColumnName
 			LoadFile.OIFileIdMapped = OIFileIdMapped
 			LoadFile.OIFileTypeColumnName = OIFileTypeColumnName
@@ -62,11 +47,20 @@ Namespace kCura.WinEDDS.ImportExtension
 			LoadFile.SupportedByViewerColumn = SupportedByViewerColumn
 			
             'Avoid initializing the Artifact Reader in the constructor because it calls back to a virtual method (GetArtifactReader).  
-			Dim importer As DataReaderImporter = New DataReaderImporter(DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile), ProcessController, ioReporter, logger, BulkLoadFileFieldDelimiter,
-			                                                            _temporaryLocalDirectory, tokenSource, initializeArtifactReader:=False, executionSource := ExecutionSource) With { 
-																			.OnBehalfOfUserToken = Me.OnBehalfOfUserToken,
-																			.Timekeeper = Me.TimeKeeperManager
-																		}
+			Dim importer As DataReaderImporter = New DataReaderImporter(
+				DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile), _
+				Me.Context, _
+				reporter, _
+				Me.Logger, _
+				BulkLoadFileFieldDelimiter, _
+				_temporaryLocalDirectory, _
+				Me.CancellationTokenSource, _
+				initializeArtifactReader:=False, _
+				executionSource := ExecutionSource) With
+				    {
+						.OnBehalfOfUserToken = Me.OnBehalfOfUserToken,
+						.Timekeeper = Me.TimeKeeperManager
+				    }
 			importer.Initialize()
 
 			Dim dr As System.Data.IDataReader = importer.SourceData
@@ -80,12 +74,11 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Dim _temporaryLocalDirectory As String = Nothing
 
-		Protected Overrides Sub Execute()
+		Protected Overrides Sub OnExecute()
 			_temporaryLocalDirectory = System.IO.Path.GetTempPath() & "FlexMigrationFiles-" & System.Guid.NewGuid().ToString() & System.IO.Path.DirectorySeparatorChar
-			MyBase.Execute()
+			MyBase.OnExecute()
 			If System.IO.Directory.Exists(_temporaryLocalDirectory) Then System.IO.Directory.Delete(_temporaryLocalDirectory, True)
 		End Sub
 
 	End Class
 End Namespace
-

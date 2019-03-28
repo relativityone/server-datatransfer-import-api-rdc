@@ -8,17 +8,17 @@ Namespace kCura.WinEDDS.Credentials
 	Public Class OAuth2ClientCredentials
 		Implements ICredentialsProvider
 
-		Private ReadOnly _tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider
+		Private ReadOnly _tokenProvider As Global.Relativity.OAuth2Client.Interfaces.ITokenProvider
 		Private ReadOnly tokenSource As CancellationTokenSource 
 
 		Public Sub New(stsUri As Uri, clientID As String, clientSecret As String)
-			Dim providerFactory As Relativity.OAuth2Client.Interfaces.IClientTokenProviderFactory = New ClientTokenProviderFactory(stsUri, clientId, clientSecret)
-			Dim tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider = providerFactory.GetTokenProvider("WebApi", New String() { "SystemUserInfo" })
+			Dim providerFactory As Global.Relativity.OAuth2Client.Interfaces.IClientTokenProviderFactory = New ClientTokenProviderFactory(stsUri, clientId, clientSecret)
+			Dim tokenProvider As Global.Relativity.OAuth2Client.Interfaces.ITokenProvider = providerFactory.GetTokenProvider("WebApi", New String() { "SystemUserInfo" })
 			_tokenProvider = tokenProvider
 			tokenSource = new CancellationTokenSource()
 		End Sub
 
-		Public Sub New(tokenProvider As Relativity.OAuth2Client.Interfaces.ITokenProvider)
+		Public Sub New(tokenProvider As Global.Relativity.OAuth2Client.Interfaces.ITokenProvider)
 			_tokenProvider = tokenProvider
 			tokenSource = new CancellationTokenSource()
 		End Sub

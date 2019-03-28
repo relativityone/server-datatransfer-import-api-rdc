@@ -22,8 +22,8 @@ Namespace kCura.WinEDDS.Service
 			Return wr
 		End Function
 
-		Public Shared Function ConvertToCaseInfo(ByVal toConvert As kCura.EDDS.WebAPI.CaseManagerBase.CaseInfo) As Relativity.CaseInfo
-			Dim c As New Relativity.CaseInfo
+		Public Shared Function ConvertToCaseInfo(ByVal toConvert As kCura.EDDS.WebAPI.CaseManagerBase.CaseInfo) As Global.Relativity.CaseInfo
+			Dim c As New Global.Relativity.CaseInfo
 			With toConvert
 				c.ArtifactID = .ArtifactID
 				c.MatterArtifactID = .MatterArtifactID
@@ -43,7 +43,7 @@ Namespace kCura.WinEDDS.Service
 			Return RetryOnReLoginException(Function() MyBase.RetrieveAllEnabled())
 		End Function
 
-		Public Shadows Function Read(ByVal caseArtifactID As Int32) As Relativity.CaseInfo Implements ICaseManager.Read
+		Public Shadows Function Read(ByVal caseArtifactID As Int32) As Global.Relativity.CaseInfo Implements ICaseManager.Read
 			Return RetryOnReLoginException(Function() ConvertToCaseInfo(MyBase.Read(caseArtifactID)))
 		End Function
 

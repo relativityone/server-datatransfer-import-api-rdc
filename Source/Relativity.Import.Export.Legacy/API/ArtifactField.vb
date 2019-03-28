@@ -2,7 +2,7 @@ Imports Relativity
 
 Namespace kCura.WinEDDS.Api
 	Public Class ArtifactField
-		Inherits Relativity.FieldInfoBase
+		Inherits Global.Relativity.FieldInfoBase
 		Private _value As Object
 		Private _associatedObjectTypeID As Int32
 		Public Property Value() As Object
@@ -47,23 +47,23 @@ Namespace kCura.WinEDDS.Api
 
 		Public Sub New(ByVal field As DocumentField)
 			Me.ArtifactID = field.FieldID
-			Me.Category = CType(field.FieldCategoryID, Relativity.FieldCategory)
+			Me.Category = CType(field.FieldCategoryID, Global.Relativity.FieldCategory)
 			If Not field.CodeTypeID Is Nothing Then Me.CodeTypeID = field.CodeTypeID.Value
 			Me.DisplayName = field.FieldName
 			If Not field.FieldLength Is Nothing Then Me.TextLength = field.FieldLength.Value
 			If Not field.AssociatedObjectTypeID Is Nothing Then Me.AssociatedObjectTypeID = field.AssociatedObjectTypeID.Value
-			Me.Type = CType(field.FieldTypeID, Relativity.FieldTypeHelper.FieldType)
+			Me.Type = CType(field.FieldTypeID, Global.Relativity.FieldTypeHelper.FieldType)
 			Me.EnableDataGrid = field.EnableDataGrid
 		End Sub
 
 		Public Sub New(ByVal field As kCura.EDDS.WebAPI.DocumentManagerBase.Field)
 			Me.ArtifactID = field.ArtifactID
-			Me.Category = CType(field.FieldCategoryID, Relativity.FieldCategory)
+			Me.Category = CType(field.FieldCategoryID, Global.Relativity.FieldCategory)
 			If Not field.CodeTypeID Is Nothing Then Me.CodeTypeID = field.CodeTypeID.Value
 			Me.DisplayName = field.DisplayName
 			If Not field.MaxLength Is Nothing Then Me.TextLength = field.MaxLength.Value
 			If Not field.AssociativeArtifactTypeID Is Nothing Then Me.AssociatedObjectTypeID = field.AssociativeArtifactTypeID.Value
-			Me.Type = CType(field.FieldTypeID, Relativity.FieldTypeHelper.FieldType)
+			Me.Type = CType(field.FieldTypeID, Global.Relativity.FieldTypeHelper.FieldType)
 			Me.EnableDataGrid = field.EnableDataGrid
 		End Sub
 	End Class

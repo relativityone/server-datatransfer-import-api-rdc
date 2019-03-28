@@ -7,7 +7,7 @@
 		End Sub
 		Public Sub DeleteFiles()
 			For Each path As String In _filepaths
-				If Not String.IsNullOrEmpty(path) Then Relativity.Import.Export.Io.FileSystem.Instance.File.Delete(path)
+				If Not String.IsNullOrEmpty(path) Then Global.Relativity.Import.Export.Io.FileSystem.Instance.File.Delete(path)
 			Next
 		End Sub
 	End Class

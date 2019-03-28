@@ -30,13 +30,13 @@ Namespace kCura.WinEDDS
 		Public Const ERROR_MESSAGE_FOLDER_NAME_TOO_LONG As String = "Error occurred when importing the document. The folder name is longer than 255 characters."
 
 		Private ReadOnly _copyFileToRepository As Boolean
-		Private ReadOnly _caseInfo As Relativity.CaseInfo
+		Private ReadOnly _caseInfo As Global.Relativity.CaseInfo
 		Private ReadOnly _usePipeliningForNativeAndObjectImports As Boolean
 		Private ReadOnly _createFoldersInWebApi As Boolean
 		Private ReadOnly _createErrorForEmptyNativeFile As Boolean
 		Private ReadOnly _enforceDocumentLimit As Boolean
 
-		Protected Overwrite As Relativity.ImportOverwriteType
+		Protected Overwrite As Global.Relativity.ImportOverwriteType
 		Protected AuditManager As Service.AuditManager
 		Protected RelativityManager As Service.RelativityManager
 
@@ -129,7 +129,7 @@ Namespace kCura.WinEDDS
 			Get
 				If _fieldsForCreate Is Nothing Then
 					Dim fieldsForCreate As New System.Collections.ArrayList
-					For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(Relativity.ArtifactType.Document)
+					For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(Global.Relativity.ArtifactType.Document)
 						If System.Array.IndexOf(_fieldArtifactIds, field.ArtifactID) <> -1 Then
 							fieldsForCreate.Add(field)
 						End If
@@ -144,7 +144,7 @@ Namespace kCura.WinEDDS
 			Get
 				Dim retVal As New kCura.EDDS.WebAPI.DocumentManagerBase.Field
 				For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(artifactTypeID)
-					If field.FieldCategoryID = Relativity.FieldCategory.FileInfo Then retVal = field
+					If field.FieldCategoryID = Global.Relativity.FieldCategory.FileInfo Then retVal = field
 				Next
 				Return retVal
 			End Get
@@ -195,7 +195,7 @@ Namespace kCura.WinEDDS
 				If _unmappedRelationalFields Is Nothing Then
 					Dim mappedRelationalFieldIds As New System.Collections.ArrayList
 					For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
-						If Not item.DocumentField Is Nothing AndAlso item.DocumentField.FieldCategory = Relativity.FieldCategory.Relational AndAlso item.DocumentField.ImportBehavior = kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
+						If Not item.DocumentField Is Nothing AndAlso item.DocumentField.FieldCategory = Global.Relativity.FieldCategory.Relational AndAlso item.DocumentField.ImportBehavior = kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
 							mappedRelationalFieldIds.Add(item.DocumentField.FieldID)
 						End If
 					Next
@@ -290,7 +290,7 @@ Namespace kCura.WinEDDS
 		Public Sub New(args As LoadFile, _
 		               context As ProcessContext, _
 		               reporter As IIoReporter, _
-		               logger As Relativity.Logging.ILog, _
+		               logger As Global.Relativity.Logging.ILog, _
 		               timeZoneOffset As Int32, _
 		               initializeUploaders As Boolean, _
 		               processID As Guid, _
@@ -298,7 +298,7 @@ Namespace kCura.WinEDDS
 		               bulkLoadFileFieldDelimiter As String, _
 		               enforceDocumentLimit As Boolean, _
 		               tokenSource As CancellationTokenSource, _
-					   ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
+					   ByVal Optional executionSource As Global.Relativity.ExecutionSource = Global.Relativity.ExecutionSource.Unknown)
 			Me.New(args, _
 			       context, _
 			       reporter, _
@@ -335,7 +335,7 @@ Namespace kCura.WinEDDS
 		Public Sub New(args As LoadFile, _
 		               context As ProcessContext, _
 		               reporter As IIoReporter, _
-		               logger As Relativity.Logging.ILog, _
+		               logger As Global.Relativity.Logging.ILog, _
 		               timeZoneOffset As Int32, _
 		               autoDetect As Boolean, _
 		               initializeUploaders As Boolean, _
@@ -344,7 +344,7 @@ Namespace kCura.WinEDDS
 		               bulkLoadFileFieldDelimiter As String, _
 		               enforceDocumentLimit As Boolean, _
 		               tokenSource As CancellationTokenSource, _
-		               ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
+		               ByVal Optional executionSource As Global.Relativity.ExecutionSource = Global.Relativity.ExecutionSource.Unknown)
 			Me.New(args, _
 			       context, _
 			       reporter, _
@@ -381,7 +381,7 @@ Namespace kCura.WinEDDS
 		Public Sub New(args As LoadFile, _
 		               context As ProcessContext, _
 		               reporter As IIoReporter, _
-		               logger As Relativity.Logging.ILog, _
+		               logger As Global.Relativity.Logging.ILog, _
 		               timeZoneOffset As Int32, _
 		               autoDetect As Boolean, _
 		               initializeUploaders As Boolean, _
@@ -391,7 +391,7 @@ Namespace kCura.WinEDDS
 		               enforceDocumentLimit As Boolean, _
 		               tokenSource As CancellationTokenSource,
 		               initializeArtifactReader As Boolean,
-		               ByVal Optional executionSource As Relativity.ExecutionSource = Relativity.ExecutionSource.Unknown)
+		               ByVal Optional executionSource As Global.Relativity.ExecutionSource = Global.Relativity.ExecutionSource.Unknown)
 			MyBase.New(args, _
 			           reporter, _
 			           logger, _
@@ -412,17 +412,17 @@ Namespace kCura.WinEDDS
 
 			ShouldImport = True
 			If (String.IsNullOrEmpty(args.OverwriteDestination)) Then
-				Overwrite = Relativity.ImportOverwriteType.Append
+				Overwrite = Global.Relativity.ImportOverwriteType.Append
 			Else
-				Overwrite = CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), args.OverwriteDestination, True), Relativity.ImportOverwriteType)
+				Overwrite = CType([Enum].Parse(GetType(Global.Relativity.ImportOverwriteType), args.OverwriteDestination, True), Global.Relativity.ImportOverwriteType)
 			End If
 			If args.CopyFilesToDocumentRepository Then
 				'DEFECT: SF#226211, repositories without trailing \ caused import to fail. Changed to use Path.Combine. -tmh
 				Dim lastHalfPath As String = "EDDS" & args.CaseInfo.ArtifactID & "\"
 				_defaultDestinationFolderPath = System.IO.Path.Combine(args.SelectedCasePath, lastHalfPath)
-				If args.ArtifactTypeID <> Relativity.ArtifactType.Document Then
+				If args.ArtifactTypeID <> Global.Relativity.ArtifactType.Document Then
 					For Each item As LoadFileFieldMap.LoadFileFieldMapItem In args.FieldMap
-						If Not item.DocumentField Is Nothing AndAlso item.NativeFileColumnIndex > -1 AndAlso item.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
+						If Not item.DocumentField Is Nothing AndAlso item.NativeFileColumnIndex > -1 AndAlso item.DocumentField.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.File Then
 							_defaultDestinationFolderPath &= "File" & item.DocumentField.FieldID & "\"
 						End If
 					Next
@@ -599,7 +599,7 @@ Namespace kCura.WinEDDS
 					End Using
 
 					If (_enforceDocumentLimit) Then
-						If (Overwrite = Relativity.ImportOverwriteType.Append And _artifactTypeID = Relativity.ArtifactType.Document) Then
+						If (Overwrite = Global.Relativity.ImportOverwriteType.Append And _artifactTypeID = Global.Relativity.ArtifactType.Document) Then
 							Dim currentDocCount As Int32 = _documentManager.RetrieveDocumentCount(_caseInfo.ArtifactID)
 							Dim docLimit As Int32 = _documentManager.RetrieveDocumentLimit(_caseInfo.ArtifactID)
 							Dim fileLineStart As Long = _startLineNumber
@@ -775,7 +775,7 @@ Namespace kCura.WinEDDS
 			If _createFolderStructure Then
 				If Not _createFoldersInWebApi Then
 					'Client side folder creation (added back for Dominus# 1127879)
-					If _artifactTypeID = Relativity.ArtifactType.Document Then
+					If _artifactTypeID = Global.Relativity.ArtifactType.Document Then
 						FolderCache = New FolderCache(Me.Logger, _folderManager, _folderID, _caseArtifactID)
 					End If
 				End If
@@ -789,7 +789,7 @@ Namespace kCura.WinEDDS
 			Dim fieldIdList As New System.Collections.ArrayList
 			For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
 				If Not item.DocumentField Is Nothing AndAlso Not item.NativeFileColumnIndex = -1 Then
-					'If item.DocumentField.FieldCategoryID <> Relativity.FieldCategory.FullText Then fieldIdList.Add(item.DocumentField.FieldID)
+					'If item.DocumentField.FieldCategoryID <> Global.Relativity.FieldCategory.FullText Then fieldIdList.Add(item.DocumentField.FieldID)
 					fieldIdList.Add(item.DocumentField.FieldID)
 				End If
 			Next
@@ -801,7 +801,7 @@ Namespace kCura.WinEDDS
 			Dim filename As String = String.Empty
 			Dim originalFilename As String = String.Empty
 			Dim fileGuid As String = String.Empty
-			Dim uploadFile As Boolean = record.FieldList(Relativity.FieldTypeHelper.FieldType.File).Length > 0 AndAlso Not record.FieldList(Relativity.FieldTypeHelper.FieldType.File)(0).Value Is Nothing
+			Dim uploadFile As Boolean = record.FieldList(Global.Relativity.FieldTypeHelper.FieldType.File).Length > 0 AndAlso Not record.FieldList(Global.Relativity.FieldTypeHelper.FieldType.File)(0).Value Is Nothing
 			Dim fileExists As Boolean
 			Dim identityValue As String = String.Empty
 			Dim parentFolderID As Int32
@@ -814,8 +814,8 @@ Namespace kCura.WinEDDS
 
 			Const retry As Boolean = True
 			Using Timekeeper.CaptureTime("ManageDocument_Filesystem")
-				If uploadFile AndAlso _artifactTypeID = Relativity.ArtifactType.Document Then
-					filename = record.FieldList(Relativity.FieldTypeHelper.FieldType.File)(0).Value.ToString
+				If uploadFile AndAlso _artifactTypeID = Global.Relativity.ArtifactType.Document Then
+					filename = record.FieldList(Global.Relativity.FieldTypeHelper.FieldType.File)(0).Value.ToString
 					If filename.Length > 1 AndAlso filename.Chars(0) = "\" AndAlso filename.Chars(1) <> "\" Then
 						filename = "." & filename
 					End If
@@ -838,12 +838,12 @@ Namespace kCura.WinEDDS
 					End If
 
 					If filename <> String.Empty AndAlso Not fileExists Then
-						lineStatus += Relativity.MassImport.ImportStatus.FileSpecifiedDne
+						lineStatus += Global.Relativity.MassImport.ImportStatus.FileSpecifiedDne
 					End If
 					If fileExists AndAlso Not Me.DisableNativeLocationValidation Then
 						If Me.GetFileLength(filename, retry) = 0 Then
 							If _createErrorForEmptyNativeFile Then
-								lineStatus += Relativity.MassImport.ImportStatus.EmptyFile
+								lineStatus += Global.Relativity.MassImport.ImportStatus.EmptyFile
 							Else
 								WriteWarning($"Note that file {filename} has been detected as empty, metadata and the native file will be loaded.")
 							End If
@@ -942,8 +942,8 @@ Namespace kCura.WinEDDS
 			Dim folderPath As String = String.Empty
 			Using Timekeeper.CaptureTime("ManageDocument_Folder")
 				If _createFolderStructure Then
-					If _artifactTypeID = Relativity.ArtifactType.Document Then
-						Dim value As String = NullableTypesHelper.ToEmptyStringOrValue(NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value))
+					If _artifactTypeID = Global.Relativity.ArtifactType.Document Then
+						Dim value As String = NullableTypesHelper.ToEmptyStringOrValue(NullableTypesHelper.DBNullString(record.FieldList(Global.Relativity.FieldCategory.ParentArtifact)(0).Value))
 						If _createFoldersInWebApi Then
 							'Server side folder creation
 							Dim cleanFolderPath As String = CleanDestinationFolderPath(value)
@@ -962,9 +962,9 @@ Namespace kCura.WinEDDS
 						End If
 					Else
 						'TODO: If we are going to do this for more than documents, fix this as well...
-						Dim textIdentifier As String = NullableTypesHelper.ToEmptyStringOrValue(NullableTypesHelper.DBNullString(record.FieldList(Relativity.FieldCategory.ParentArtifact)(0).Value.ToString))
+						Dim textIdentifier As String = NullableTypesHelper.ToEmptyStringOrValue(NullableTypesHelper.DBNullString(record.FieldList(Global.Relativity.FieldCategory.ParentArtifact)(0).Value.ToString))
 						If textIdentifier = "" Then
-							If Overwrite = Relativity.ImportOverwriteType.Overlay OrElse Overwrite = Relativity.ImportOverwriteType.AppendOverlay Then
+							If Overwrite = Global.Relativity.ImportOverwriteType.Overlay OrElse Overwrite = Global.Relativity.ImportOverwriteType.AppendOverlay Then
 								parentFolderID = -1
 							End If
 							Throw New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, DestinationFolderColumnIndex)
@@ -982,7 +982,7 @@ Namespace kCura.WinEDDS
 					End If
 				Else
 					'If we're not creating the structure, all documents go in the root folder (aka _folderId)
-					If _artifactTypeID = Relativity.ArtifactType.Document OrElse Me.ParentArtifactTypeID = Relativity.ArtifactType.Case Then
+					If _artifactTypeID = Global.Relativity.ArtifactType.Document OrElse Me.ParentArtifactTypeID = Global.Relativity.ArtifactType.Case Then
 						parentFolderID = _folderID
 					Else
 						parentFolderID = -1
@@ -1001,7 +1001,7 @@ Namespace kCura.WinEDDS
 			End If
 
 			Dim dataGridID As String = Nothing
-			Dim dataGridIDField As Api.ArtifactField = record.FieldList(Relativity.FieldTypeHelper.FieldType.Varchar).FirstOrDefault(Function(x) x.DisplayName = DATA_GRID_ID_FIELD_NAME)
+			Dim dataGridIDField As Api.ArtifactField = record.FieldList(Global.Relativity.FieldTypeHelper.FieldType.Varchar).FirstOrDefault(Function(x) x.DisplayName = DATA_GRID_ID_FIELD_NAME)
 			If (dataGridIDField IsNot Nothing) Then
 				dataGridID = dataGridIDField.ValueAsString
 			End If
@@ -1061,11 +1061,11 @@ Namespace kCura.WinEDDS
 #Region "WebService Calls"
 
 		Public Overrides Function LookupArtifactIDForName(objectName As String, associatedObjectTypeID As Integer) As Integer
-			Return If(associatedObjectTypeID = Relativity.ArtifactType.Document, MyBase.LookupArtifactIDForName(objectName, associatedObjectTypeID), -1)
+			Return If(associatedObjectTypeID = Global.Relativity.ArtifactType.Document, MyBase.LookupArtifactIDForName(objectName, associatedObjectTypeID), -1)
 		End Function
 
 		Public Overrides Function LookupNameForArtifactID(objectArtifactID As Integer, associatedObjectTypeID As Integer) As String
-			Return If(associatedObjectTypeID = Relativity.ArtifactType.Document, MyBase.LookupNameForArtifactID(objectArtifactID, associatedObjectTypeID), String.Empty)
+			Return If(associatedObjectTypeID = Global.Relativity.ArtifactType.Document, MyBase.LookupNameForArtifactID(objectArtifactID, associatedObjectTypeID), String.Empty)
 		End Function
 
 		Private Sub ManageDocumentMetaData(ByVal metaDoc As MetaDocument)
@@ -1164,7 +1164,7 @@ Namespace kCura.WinEDDS
 
 		Private Function GetSettingsObject() As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
 			Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Nothing
-			If _artifactTypeID = Relativity.ArtifactType.Document Then
+			If _artifactTypeID = Global.Relativity.ArtifactType.Document Then
 				retval = New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck, .AuditLevel = Me.AuditLevel, .OverlayArtifactID = OverlayArtifactId}
 				If _createFoldersInWebApi Then
 					'Server side folder creation
@@ -1296,12 +1296,12 @@ Namespace kCura.WinEDDS
 						tries += 1
 						hasReachedEof = False
 					Else
-						Relativity.Import.Export.Io.FileSystem.Instance.File.Delete(newNativeFilePath)
+						Global.Relativity.Import.Export.Io.FileSystem.Instance.File.Delete(newNativeFilePath)
 						Throw
 					End If
 				End Try
 			End While
-			Relativity.Import.Export.Io.FileSystem.Instance.File.Delete(newNativeFilePath)
+			Global.Relativity.Import.Export.Io.FileSystem.Instance.File.Delete(newNativeFilePath)
 		End Sub
 
 		Private Sub AdvanceStream(ByVal sr As System.IO.StreamReader, ByVal count As Int64)
@@ -1366,7 +1366,7 @@ Namespace kCura.WinEDDS
 				Return
 			End If
 
-			If _artifactTypeID = Relativity.ArtifactType.Document Then
+			If _artifactTypeID = Global.Relativity.ArtifactType.Document Then
 				settings.Repository = _defaultDestinationFolderPath
 				If settings.Repository = String.Empty Then settings.Repository = _caseInfo.DocumentPath
 			Else
@@ -1384,9 +1384,9 @@ Namespace kCura.WinEDDS
 			settings.OverlayBehavior = Me.GetMassImportOverlayBehavior(_settings.OverlayBehavior)
 			settings.MoveDocumentsInAppendOverlayMode = _settings.MoveDocumentsInAppendOverlayMode
 			Select Case Overwrite
-				Case Relativity.ImportOverwriteType.Overlay
+				Case Global.Relativity.ImportOverwriteType.Overlay
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Overlay
-				Case Relativity.ImportOverwriteType.AppendOverlay
+				Case Global.Relativity.ImportOverwriteType.AppendOverlay
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
 				Case Else
 					settings.Overlay = EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Append
@@ -1477,7 +1477,7 @@ Namespace kCura.WinEDDS
 				End If
 			Next
 			retval.Sort(New WebServiceFieldInfoNameComparer)
-			If artifactTypeId = Relativity.ArtifactType.Document Then
+			If artifactTypeId = Global.Relativity.ArtifactType.Document Then
 				retval.Add(Me.GetIsSupportedRelativityFileTypeField)
 				retval.Add(Me.GetRelativityFileTypeField)
 				retval.Add(Me.GetHasNativesField)
@@ -1568,7 +1568,7 @@ Namespace kCura.WinEDDS
 				End Try
 			Next
 
-			If _artifactTypeID = Relativity.ArtifactType.Document Then
+			If _artifactTypeID = Global.Relativity.ArtifactType.Document Then
 				WriteDocumentNativeInfo(mdoc)
 			End If
 
@@ -1588,7 +1588,7 @@ Namespace kCura.WinEDDS
 				'add it so that the number of fields set by the client equals the number of fields that the server expects to find.
 				'If we are using client-side folder creation, this folder path field will not be used by the server because of the
 				'settings object -- NativeFileInfo.RootFolderID will be 0.
-				If _artifactTypeID = Relativity.ArtifactType.Document Then
+				If _artifactTypeID = Global.Relativity.ArtifactType.Document Then
 					'Last column is the folder path (ONLY IF THIS IS A DOCUMENT LOAD... adding this to object imports will break them)
 					OutputFileWriter.OutputNativeFileWriter.Write(mdoc.FolderPath & BulkLoadFileFieldDelimiter)
 				End If
@@ -1629,11 +1629,11 @@ Namespace kCura.WinEDDS
 		End Function
 
 
-		Private Sub WriteDocumentField(ByRef chosenEncoding As System.Text.Encoding, field As Api.ArtifactField, ByVal outputWriter As Relativity.Import.Export.Io.IStreamWriter, ByVal fileBasedfullTextColumn As Boolean, ByVal delimiter As String, ByVal artifactTypeID As Int32, ByVal extractedTextEncoding As System.Text.Encoding)
-			If field.Type = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse field.Type = Relativity.FieldTypeHelper.FieldType.Code Then
+		Private Sub WriteDocumentField(ByRef chosenEncoding As System.Text.Encoding, field As Api.ArtifactField, ByVal outputWriter As Global.Relativity.Import.Export.Io.IStreamWriter, ByVal fileBasedfullTextColumn As Boolean, ByVal delimiter As String, ByVal artifactTypeID As Int32, ByVal extractedTextEncoding As System.Text.Encoding)
+			If field.Type = Global.Relativity.FieldTypeHelper.FieldType.MultiCode OrElse field.Type = Global.Relativity.FieldTypeHelper.FieldType.Code Then
 				outputWriter.Write(field.Value)
 				outputWriter.Write(delimiter)
-			ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso artifactTypeID <> Relativity.ArtifactType.Document Then
+			ElseIf field.Type = Global.Relativity.FieldTypeHelper.FieldType.File AndAlso artifactTypeID <> Global.Relativity.ArtifactType.Document Then
 				Dim fileFieldValues() As String = System.Web.HttpUtility.UrlDecode(field.ValueAsString).Split(Chr(11))
 				If fileFieldValues.Length > 1 Then
 					outputWriter.Write(fileFieldValues(0))
@@ -1650,9 +1650,9 @@ Namespace kCura.WinEDDS
 					outputWriter.Write("")
 					outputWriter.Write(delimiter)
 				End If
-			ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.File AndAlso artifactTypeID = Relativity.ArtifactType.Document Then
+			ElseIf field.Type = Global.Relativity.FieldTypeHelper.FieldType.File AndAlso artifactTypeID = Global.Relativity.ArtifactType.Document Then
 				'do nothing
-			ElseIf field.Category = Relativity.FieldCategory.ParentArtifact Then
+			ElseIf field.Category = Global.Relativity.FieldCategory.ParentArtifact Then
 				'do nothing
 			ElseIf field.ArtifactID <= 0 Then
 				' do nothing, this is a catch-all for all "virtual fields" that are added to pass information
@@ -1762,7 +1762,7 @@ Namespace kCura.WinEDDS
 						Dim message As String = $"An I/O error occurred reading the file associated with the '{field.DisplayName}' full text field."
 						Throw New kCura.WinEDDS.Exceptions.ImportIOException(message, ex)
 					End Try
-				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Boolean Then
+				ElseIf field.Type = Global.Relativity.FieldTypeHelper.FieldType.Boolean Then
 					If field.ValueAsString <> String.Empty Then
 						If Boolean.Parse(field.ValueAsString) Then
 							outputWriter.Write("1")
@@ -1770,14 +1770,14 @@ Namespace kCura.WinEDDS
 							outputWriter.Write("0")
 						End If
 					End If
-				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Decimal OrElse
-					   field.Type = Relativity.FieldTypeHelper.FieldType.Currency Then
+				ElseIf field.Type = Global.Relativity.FieldTypeHelper.FieldType.Decimal OrElse
+					   field.Type = Global.Relativity.FieldTypeHelper.FieldType.Currency Then
 					If field.ValueAsString <> String.Empty Then
 						Dim d As String = CDec(field.Value).ToString(System.Globalization.CultureInfo.InvariantCulture)
 						outputWriter.Write(d)
 					End If
-				ElseIf field.Type = Relativity.FieldTypeHelper.FieldType.Text OrElse
-					   field.Type = Relativity.FieldTypeHelper.FieldType.OffTableText Then
+				ElseIf field.Type = Global.Relativity.FieldTypeHelper.FieldType.Text OrElse
+					   field.Type = Global.Relativity.FieldTypeHelper.FieldType.OffTableText Then
 					If TypeOf field.Value Is System.IO.Stream Then
 						Dim stream As System.IO.Stream = CType(field.Value, System.IO.Stream)
 						outputWriter.Flush()
@@ -1821,7 +1821,7 @@ Namespace kCura.WinEDDS
 
 		Private Function GetObjectFileField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
 			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In AllFields(_artifactTypeID)
-				If field.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
+				If field.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.File Then
 					Return Me.FieldDtoToFieldInfo(field)
 				End If
 			Next
@@ -1842,7 +1842,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function ConvertFieldTypeEnum(ByVal fieldtypeID As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType
-			Dim ft As Relativity.FieldTypeHelper.FieldType = CType(fieldtypeID, Relativity.FieldTypeHelper.FieldType)
+			Dim ft As Global.Relativity.FieldTypeHelper.FieldType = CType(fieldtypeID, Global.Relativity.FieldTypeHelper.FieldType)
 			Return CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType), ft.ToString), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType)
 		End Function
 
@@ -1895,7 +1895,7 @@ Namespace kCura.WinEDDS
 						End If
 					End If
 					If Not item.DocumentField Is Nothing Then
-						If item.DocumentField.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
+						If item.DocumentField.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.File Then
 							Me.ManageFileField(record(item.DocumentField.FieldID))
 						Else
 

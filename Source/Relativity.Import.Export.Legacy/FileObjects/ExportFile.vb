@@ -14,7 +14,7 @@ Namespace kCura.WinEDDS
 
 #Region " Members "
 
-		Protected _caseInfo As Relativity.CaseInfo
+		Protected _caseInfo As Global.Relativity.CaseInfo
 		Protected _dataTable As System.Data.DataTable
 		Protected _typeOfExport As ExportType
 		Protected _folderPath As String
@@ -85,11 +85,11 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		<ReadFromExisting()> Public Property CaseInfo() As Relativity.CaseInfo
+		<ReadFromExisting()> Public Property CaseInfo() As Global.Relativity.CaseInfo
 			Get
 				Return _caseInfo
 			End Get
-			Set(ByVal value As Relativity.CaseInfo)
+			Set(ByVal value As Global.Relativity.CaseInfo)
 				_caseInfo = value
 			End Set
 		End Property

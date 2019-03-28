@@ -18,13 +18,13 @@ Namespace kCura.WinEDDS
 
 		Private Sub InitloadFile(ByVal caseArtifactID As Int32)
 			_loadFile = New LoadFile
-			_loadFile.ArtifactTypeID = Relativity.ArtifactType.Document
+			_loadFile.ArtifactTypeID = Global.Relativity.ArtifactType.Document
 			_loadFile.CookieContainer = Me.CookieContainer
 			_loadFile.CopyFilesToDocumentRepository = True
 			_loadFile.CreateFolderStructure = False
 			_loadFile.Credentials = Me.Credential
 			_loadFile.ExtractedTextFileEncoding = System.Text.Encoding.Default
-			_loadFile.ExtractedTextFileEncodingName = Relativity.SqlNameHelper.GetSqlFriendlyName(_loadFile.ExtractedTextFileEncoding.EncodingName).ToLower
+			_loadFile.ExtractedTextFileEncodingName = Global.Relativity.SqlNameHelper.GetSqlFriendlyName(_loadFile.ExtractedTextFileEncoding.EncodingName).ToLower
 			_loadFile.FieldMap = New kCura.WinEDDS.LoadFileFieldMap
 			_loadFile.FirstLineContainsHeaders = True
 			_loadFile.FolderStructureContainedInColumn = Nothing
@@ -36,7 +36,7 @@ Namespace kCura.WinEDDS
 			_loadFile.MultiRecordDelimiter = ";"c
 			_loadFile.NativeFilePathColumn = Nothing
 			_loadFile.NewlineDelimiter = ChrW(174)
-			_loadFile.OverwriteDestination = Relativity.ImportOverwriteType.Append.ToString
+			_loadFile.OverwriteDestination = Global.Relativity.ImportOverwriteType.Append.ToString
 			_loadFile.QuoteDelimiter = ChrW(254)
 			_loadFile.RecordDelimiter = ChrW(20)
 			_loadFile.SourceFileEncoding = System.Text.Encoding.Default
@@ -52,7 +52,7 @@ Namespace kCura.WinEDDS
 				_loadFile.CaseInfo = Me.CaseManager.Read(value)
 				_loadFile.CaseDefaultPath = _loadFile.CaseInfo.DocumentPath
 				_loadFile.DestinationFolderID = _loadFile.CaseInfo.RootFolderID
-				_docFields = Me.FieldManager.Query.RetrieveAllAsDocumentFieldCollection(value, Relativity.ArtifactType.Document)
+				_docFields = Me.FieldManager.Query.RetrieveAllAsDocumentFieldCollection(value, Global.Relativity.ArtifactType.Document)
 			End Set
 		End Property
 
@@ -89,7 +89,7 @@ Namespace kCura.WinEDDS
 		Public WriteOnly Property ExtractedTextFileEncoding() As System.Text.Encoding
 			Set(ByVal Value As System.Text.Encoding)
 				_loadFile.ExtractedTextFileEncoding = Value
-				_loadFile.ExtractedTextFileEncodingName = Relativity.SqlNameHelper.GetSqlFriendlyName(_loadFile.ExtractedTextFileEncoding.EncodingName).ToLower
+				_loadFile.ExtractedTextFileEncodingName = Global.Relativity.SqlNameHelper.GetSqlFriendlyName(_loadFile.ExtractedTextFileEncoding.EncodingName).ToLower
 			End Set
 		End Property
 
@@ -165,11 +165,11 @@ Namespace kCura.WinEDDS
 			Set(ByVal value As OverwriteType)
 				Select Case value
 					Case SettingsFactoryBase.OverwriteType.Append
-						_loadFile.OverwriteDestination = Relativity.ImportOverwriteType.Append.ToString
+						_loadFile.OverwriteDestination = Global.Relativity.ImportOverwriteType.Append.ToString
 					Case SettingsFactoryBase.OverwriteType.AppendOverlay
-						_loadFile.OverwriteDestination = Relativity.ImportOverwriteType.AppendOverlay.ToString
+						_loadFile.OverwriteDestination = Global.Relativity.ImportOverwriteType.AppendOverlay.ToString
 					Case SettingsFactoryBase.OverwriteType.Overlay
-						_loadFile.OverwriteDestination = Relativity.ImportOverwriteType.Overlay.ToString
+						_loadFile.OverwriteDestination = Global.Relativity.ImportOverwriteType.Overlay.ToString
 				End Select
 			End Set
 		End Property

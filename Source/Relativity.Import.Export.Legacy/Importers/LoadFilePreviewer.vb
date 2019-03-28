@@ -110,7 +110,7 @@ Namespace kCura.WinEDDS
 		Public Function ReadFile(ByVal path As String, ByVal formType As Int32) As Object
 			Dim earlyexit As Boolean = False
 
-			_relationalDocumentFields = _fieldQuery.RetrieveAllAsDocumentFieldCollection(_selectedCaseArtifactID, _artifactTypeID).GetFieldsByCategory(Relativity.FieldCategory.Relational)
+			_relationalDocumentFields = _fieldQuery.RetrieveAllAsDocumentFieldCollection(_selectedCaseArtifactID, _artifactTypeID).GetFieldsByCategory(Global.Relativity.FieldCategory.Relational)
 			Dim filesize As Int64 = _artifactReader.SizeInBytes
 			Dim stepsize As Int64 = CType(filesize / 100, Int64)
 			ProcessStart(0, filesize, stepsize)
@@ -181,16 +181,16 @@ Namespace kCura.WinEDDS
 			For Each mapItem In _fieldMap
 				If mapItem.NativeFileColumnIndex > -1 AndAlso Not mapItem.DocumentField Is Nothing Then
 					Dim field As Api.ArtifactField = record(mapItem.DocumentField.FieldID)
-					If Not (_artifactTypeID <> Relativity.ArtifactType.Document And field.Type = Relativity.FieldTypeHelper.FieldType.File) Then
+					If Not (_artifactTypeID <> Global.Relativity.ArtifactType.Document And field.Type = Global.Relativity.FieldTypeHelper.FieldType.File) Then
 						Select Case field.Category
-							Case Relativity.FieldCategory.Relational
+							Case Global.Relativity.FieldCategory.Relational
 								If unmappedRelationalNoBlankFields.Contains(field.ArtifactID) Then
 									unmappedRelationalNoBlankFields.Remove(field.ArtifactID)
 								End If
 								If Not mappedRelationalNoBlankFields.Contains(field.ArtifactID) Then
 									mappedRelationalNoBlankFields.Add(field.ArtifactID, field)
 								End If
-							Case Relativity.FieldCategory.Identifier
+							Case Global.Relativity.FieldCategory.Identifier
 								If Not _keyFieldID > 0 Then
 									identifierField = field
 								End If
@@ -214,8 +214,8 @@ Namespace kCura.WinEDDS
 			End If
 
 			' only do this if we are NOT in Overlay mode
-			If _settings.OverwriteDestination.ToLower <> Relativity.ImportOverwriteType.Overlay.ToString.ToLower Then
-				If Not identifierField Is Nothing And _artifactTypeID = Relativity.ArtifactType.Document Then
+			If _settings.OverwriteDestination.ToLower <> Global.Relativity.ImportOverwriteType.Overlay.ToString.ToLower Then
+				If Not identifierField Is Nothing And _artifactTypeID = Global.Relativity.ArtifactType.Document Then
 					For Each field As Api.ArtifactField In unmappedRelationalNoBlankFields.Values
 						If record.IdentifierField IsNot Nothing Then
 							field.Value = NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(record.IdentifierField.ValueAsString, -1, field.TextLength, field.DisplayName))
@@ -255,8 +255,8 @@ Namespace kCura.WinEDDS
 			End If
 
 			If _createFolderStructure Then
-				Dim field As Api.ArtifactField = record.FieldList(Relativity.FieldCategory.ParentArtifact)(0)
-				If _artifactTypeID <> Relativity.ArtifactType.Document Then
+				Dim field As Api.ArtifactField = record.FieldList(Global.Relativity.FieldCategory.ParentArtifact)(0)
+				If _artifactTypeID <> Global.Relativity.ArtifactType.Document Then
 					If field.ValueAsString = String.Empty Then
 						field.Value = New Exceptions.ErrorMessage(New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, -1).Message)
 						lineContainsErrors = True

@@ -71,7 +71,7 @@ Namespace kCura.WinEDDS
 
 		Public Property EnforceDocumentLimit As Boolean
 
-		Public Property ExecutionSource As Relativity.ExecutionSource
+		Public Property ExecutionSource As Global.Relativity.ExecutionSource
 
 		Protected Overrides Function Run() As Boolean
 			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
@@ -165,10 +165,10 @@ Namespace kCura.WinEDDS
 				retval.NumberOfWarnings = _warningCount
 				retval.OverlayIdentifierFieldArtifactID = ImageLoadFile.IdentityFieldId
 				If ImageLoadFile.ProductionArtifactID > 0 Then retval.OverlayIdentifierFieldArtifactID = ImageLoadFile.BeginBatesFieldArtifactID
-				Select Case CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), ImageLoadFile.Overwrite, True), Relativity.ImportOverwriteType)
-					Case Relativity.ImportOverwriteType.AppendOverlay
+				Select Case CType([Enum].Parse(GetType(Global.Relativity.ImportOverwriteType), ImageLoadFile.Overwrite, True), Global.Relativity.ImportOverwriteType)
+					Case Global.Relativity.ImportOverwriteType.AppendOverlay
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Both
-					Case Relativity.ImportOverwriteType.Overlay
+					Case Global.Relativity.ImportOverwriteType.Overlay
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Overlay
 					Case Else
 						retval.Overwrite = EDDS.WebAPI.AuditManagerBase.OverwriteType.Append
