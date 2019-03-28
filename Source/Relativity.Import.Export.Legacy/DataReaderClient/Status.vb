@@ -6,11 +6,7 @@ Namespace kCura.Relativity.DataReaderClient
 	Public Class Status
 
 #Region " Private Variables "
-		Private WithEvents _observer As kCura.Windows.Process.ProcessObserver
-
-		Private _Success As Boolean
 		Private _Message As String
-		Private _TotalRecordProcessed As Int32
 
 #End Region
 
@@ -49,6 +45,5 @@ Namespace kCura.Relativity.DataReaderClient
 
 #End Region
 	End Class
-
 
 End Namespace

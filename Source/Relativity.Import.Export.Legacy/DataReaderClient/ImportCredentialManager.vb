@@ -1,7 +1,7 @@
 ﻿Imports System.Net
 Imports System.Collections.Generic
 Imports kCura.WinEDDS
-Imports Relativity
+Imports Relativity.Import.Export
 
 Friend Class ImportCredentialManager
 
@@ -19,7 +19,7 @@ Friend Class ImportCredentialManager
 				value = String.Empty
 			End If
 			_WebServiceURL = value.Trim.ToLower
-			Config.ProgrammaticServiceURL = value
+			AppSettings.Instance.ProgrammaticWebApiServiceUrl = value
 		End Set
 	End Property
 

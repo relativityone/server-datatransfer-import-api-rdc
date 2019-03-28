@@ -1,5 +1,6 @@
 Imports System.Net
 Imports Relativity
+Imports Relativity.Import.Export.Process
 
 Namespace kCura.Relativity.DataReaderClient
 
@@ -84,8 +85,7 @@ Namespace kCura.Relativity.DataReaderClient
 #End Region
 
 #Region " Private variables "
-		Private WithEvents _observer As kCura.Windows.Process.ProcessObserver
-		Private _controller As kCura.Windows.Process.Controller
+		Private WithEvents _processContext As ProcessContext
 		Private _settings As ImageSettings
 		Private _sourceData As ImageSourceIDataReader
 		Private _credentials As ICredentials
@@ -140,8 +140,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData)
 				process.ExecutionSource = _executionSource
-				_observer = process.ProcessObserver
-				_controller = process.ProcessController
+				_processContext = process.Context
 
 				If Settings.DisableImageTypeValidation.HasValue Then process.DisableImageTypeValidation = Settings.DisableImageTypeValidation.Value
 				If Settings.DisableImageLocationValidation.HasValue Then process.DisableImageLocationValidation = Settings.DisableImageLocationValidation.Value
@@ -154,7 +153,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 				RaiseEvent OnMessage(New Status("Executing"))
 				Try
-					process.StartProcess()
+					process.Start()
 				Catch ex As Exception
 					RaiseEvent OnMessage(New Status(String.Format("Exception: {0}", ex.ToString)))
 					_jobReport.FatalException = ex
@@ -173,7 +172,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' </summary>
 		''' <param name="filePathAndName">Specifies a full path and a filename to contain the output.</param>
 		Public Sub ExportErrorReport(ByVal filePathAndName As String) Implements IImportBulkArtifactJob.ExportErrorReport
-			_controller.ExportErrorReport(filePathAndName)
+			_processContext.PublishExportErrorReport(filePathAndName)
 		End Sub
 
 		''' <summary>
@@ -181,7 +180,7 @@ Namespace kCura.Relativity.DataReaderClient
 		''' </summary>
 		''' <param name="filePathAndName">The folder path and file name to export the error file</param>
 		Public Sub ExportErrorFile(ByVal filePathAndName As String) Implements IImportBulkArtifactJob.ExportErrorFile
-			_controller.ExportErrorFile(filePathAndName)
+			_processContext.PublishExportErrorFile(filePathAndName)
 		End Sub
 
 #End Region
@@ -342,15 +341,15 @@ Namespace kCura.Relativity.DataReaderClient
 #End Region
 
 #Region " Event Handling "
-		Private Sub _observer_ErrorReportEvent(ByVal row As System.Collections.IDictionary) Handles _observer.ErrorReportEvent
-			RaiseEvent OnError(row)
+		Private Sub _processContext_ErrorReportEvent(ByVal sender As Object, e As ErrorReportEventArgs) Handles _processContext.ErrorReport
+			RaiseEvent OnError(e.Error)
 
 			Dim retval As New System.Text.StringBuilder
 			retval.AppendFormat("[error] ")
-			For Each key As String In row.Keys
+			For Each key As String In e.Error.Keys
 				retval.Append(key)
 				retval.Append(": ")
-				retval.Append(row(key))
+				retval.Append(e.Error(key))
 				retval.Append(vbNewLine)
 			Next
 			RaiseEvent OnMessage(New Status(retval.ToString))
@@ -358,15 +357,15 @@ Namespace kCura.Relativity.DataReaderClient
 			' slm 10/10/2011 - really?  these are called "Messages" and "Line Number"?  These are different names than for the native document import.
 			' cjh 2/28/2012 - turning Messages all to Message.  Use only "Message"
 
-			Dim msg As String = row.Item("Message").ToString
-			Dim lineNumbObj As Object = row.Item("Line Number")
+			Dim msg As String = e.Error.Item("Message").ToString
+			Dim lineNumbObj As Object = e.Error.Item("Line Number")
 			Dim lineNum As Long = 0
 			If Not lineNumbObj Is Nothing Then
 				lineNum = DirectCast(lineNumbObj, Int32)
 			End If
 
 			Dim idobj As Object
-			idobj = row.Item("DocumentID")
+			idobj = e.Error.Item("DocumentID")
 			Dim id As String = String.Empty
 			If Not idobj Is Nothing Then
 				id = idobj.ToString()
@@ -376,33 +375,33 @@ Namespace kCura.Relativity.DataReaderClient
 
 		End Sub
 
-		Private Sub _observer_OnProcessComplete(ByVal closeForm As Boolean, ByVal exportFilePath As String, ByVal exportLogs As Boolean) Handles _observer.OnProcessComplete
+		Private Sub _processContext_OnProcessComplete(ByVal sender As Object, ByVal e As ProcessCompleteEventArgs) Handles _processContext.ProcessCompleted
 			RaiseEvent OnMessage(New Status(String.Format("Completed!")))
 			RaiseComplete()
 		End Sub
 
-		Private Sub _observer_OnProcessEvent(ByVal evt As kCura.Windows.Process.ProcessEvent) Handles _observer.OnProcessEvent
-			If evt.Type = kCura.Windows.Process.ProcessEventTypeEnum.Error OrElse evt.Type = kCura.Windows.Process.ProcessEventTypeEnum.Warning OrElse evt.Type = Windows.Process.ProcessEventTypeEnum.Status Then
-				RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Record Info: {2}] {3} - {1}", evt.DateTime, evt.Message, evt.RecordInfo, evt.Type)))
+		Private Sub _processContext_OnProcessEvent(ByVal sender As Object, ByVal e As ProcessEventArgs) Handles _processContext.ProcessEvent
+			If e.EventType = ProcessEventType.Error OrElse e.EventType = ProcessEventType.Warning OrElse e.EventType = ProcessEventType.Status Then
+				RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Record Info: {2}] {3} - {1}", e.Timestamp, e.Message, e.RecordInfo, e.EventType)))
 			End If
 		End Sub
 
-		Private Sub _observer_OnProcessFatalException(ByVal ex As System.Exception) Handles _observer.OnProcessFatalException
-			RaiseEvent OnMessage(New Status(String.Format("FatalException: {0}", ex.ToString)))
-			_jobReport.FatalException = ex
+		Private Sub _processContext_OnProcessFatalException(ByVal sender As Object, ByVal e As FatalExceptionEventArgs) Handles _processContext.FatalException
+			RaiseEvent OnMessage(New Status(String.Format("FatalException: {0}", e.FatalException.ToString)))
+			_jobReport.FatalException = e.FatalException
 			RaiseEvent OnFatalException(_jobReport)
 		End Sub
 
-		Private Sub _observer_OnProcessProgressEvent(ByVal evt As kCura.Windows.Process.ProcessProgressEvent) Handles _observer.OnProcessProgressEvent
-			RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Progress Info: {1} ]", System.DateTime.Now, evt.TotalRecordsProcessedDisplay)))
-			RaiseEvent OnProcessProgress(New FullStatus(evt.TotalRecords, evt.TotalRecordsProcessed, evt.TotalRecordsProcessedWithWarnings, evt.TotalRecordsProcessedWithErrors, evt.StartTime, evt.EndTime, evt.TotalRecordsDisplay, evt.TotalRecordsProcessedDisplay, evt.MetadataThroughput, evt.FilesThroughput, evt.ProcessID, evt.StatusSuffixEntries))
+		Private Sub _processContext_OnProcessProgressEvent(ByVal sender As Object, ByVal e As ProgressEventArgs) Handles _processContext.Progress
+			RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Progress Info: {1} ]", System.DateTime.Now, e.TotalProcessedRecordsDisplay)))
+			RaiseEvent OnProcessProgress(New FullStatus(e.TotalRecords, e.TotalProcessedRecords, e.TotalProcessedWarningRecords, e.TotalProcessedErrorRecords, e.StartTime, e.Timestamp, e.TotalRecordsDisplay, e.TotalProcessedRecordsDisplay, e.MetadataThroughput, e.NativeFileThroughput, e.ProcessID, e.Metadata))
 		End Sub
 
-		Private Sub _observer_RecordProcessedEvent(ByVal recordNumber As Long) Handles _observer.RecordProcessed
-			RaiseEvent OnProgress(recordNumber)
+		Private Sub _processContext_RecordProcessedEvent(ByVal sender As Object, ByVal e As RecordNumberEventArgs) Handles _processContext.RecordProcessed
+			RaiseEvent OnProgress(e.RecordNumber)
 		End Sub
 
-		Private Sub _observer_IncrementRecordCount() Handles _observer.IncrementRecordCount
+		Private Sub _processContext_IncrementRecordCount(ByVal sender As Object, ByVal e As RecordCountEventArgs) Handles _processContext.RecordCountIncremented
 			_jobReport.TotalRows += 1
 		End Sub
 #End Region
