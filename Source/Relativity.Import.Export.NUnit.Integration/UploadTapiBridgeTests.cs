@@ -17,13 +17,13 @@ namespace Relativity.Import.Export.NUnit.Integration
 
 	using Relativity.Import.Export.TestFramework;
 	using Relativity.Import.Export.Transfer;
-    using Relativity.Testing.Identification;
+	using Relativity.Testing.Identification;
 
-    /// <summary>
-    /// Represents <see cref="UploadTapiBridge"/> tests.
-    /// </summary>
-    [TestFixture]
-    [Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	/// <summary>
+	/// Represents <see cref="UploadTapiBridge"/> tests.
+	/// </summary>
+	[TestFixture]
+	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
@@ -65,22 +65,22 @@ namespace Relativity.Import.Export.NUnit.Integration
 		protected override void CreateTapiBridge()
 		{
 			var parameters = new UploadTapiBridgeParameters
-				                 {
-					                 Credentials =
-						                 new NetworkCredential(
-							                 this.TestParameters.RelativityUserName,
-							                 this.TestParameters.RelativityPassword),
-					                 FileShare = this.TestParameters.FileShareUncPath,
+								 {
+									 Credentials =
+										 new NetworkCredential(
+											 this.TestParameters.RelativityUserName,
+											 this.TestParameters.RelativityPassword),
+									 FileShare = this.TestParameters.FileShareUncPath,
 									 MaxFilesPerFolder = this.MaxFilesPerFolder,
-					                 MaxJobParallelism = 1,
-					                 MaxJobRetryAttempts = 1,
-					                 PreserveFileTimestamps = this.PreserveFileTimestamps,
-					                 TargetPath = this.TargetPath,
-					                 WaitTimeBetweenRetryAttempts = 0,
-					                 WebCookieContainer = this.CookieContainer,
-					                 WebServiceUrl = this.TestParameters.RelativityWebApiUrl.ToString(),
-					                 WorkspaceId = this.TestParameters.WorkspaceId
-				                 };
+									 MaxJobParallelism = 1,
+									 MaxJobRetryAttempts = 1,
+									 PreserveFileTimestamps = this.PreserveFileTimestamps,
+									 TargetPath = this.TargetPath,
+									 WaitTimeBetweenRetryAttempts = 0,
+									 WebCookieContainer = this.CookieContainer,
+									 WebServiceUrl = this.TestParameters.RelativityWebApiUrl.ToString(),
+									 WorkspaceId = this.TestParameters.WorkspaceId
+								 };
 
 			this.SetupTapiBridgeParameters(parameters);
 			this.tapiBridge = new UploadTapiBridge(parameters, this.TransferLog, CancellationToken.None);

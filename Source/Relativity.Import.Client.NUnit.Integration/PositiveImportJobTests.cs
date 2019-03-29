@@ -15,14 +15,14 @@ namespace Relativity.Import.Client.NUnit.Integration
 
 	using Relativity.Import.Export.TestFramework;
 
-    using Relativity.Testing.Identification;
+	using Relativity.Testing.Identification;
 
-    /// <summary>
-    /// Represents positive import job tests.
-    /// </summary>
-    [TestFixture]
-    [Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
-    public class PositiveImportJobTests : ImportJobTestBase
+	/// <summary>
+	/// Represents positive import job tests.
+	/// </summary>
+	[TestFixture]
+	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	public class PositiveImportJobTests : ImportJobTestBase
 	{
 		/// <summary>
 		/// Should import the files.
@@ -48,7 +48,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 			bool disableNativeValidation)
 		{
 			if ((client == TapiClient.Aspera && this.TestParameters.SkipAsperaModeTests) ||
-			    (client == TapiClient.Direct && this.TestParameters.SkipDirectModeTests))
+				(client == TapiClient.Direct && this.TestParameters.SkipDirectModeTests))
 			{
 				Assert.Ignore(TestStrings.SkipTestMessage, $"{client}");
 			}
