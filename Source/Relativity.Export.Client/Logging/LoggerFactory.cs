@@ -1,4 +1,4 @@
-﻿namespace kCura.WinEDDS.Core.Logging
+﻿namespace Relativity.Export.Logging
 {
 	using System.IO;
 	using System.Reflection;

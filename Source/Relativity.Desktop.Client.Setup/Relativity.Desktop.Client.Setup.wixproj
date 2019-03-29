@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>1.00</ProductVersion>
+    <ProjectGuid>a25301be-f37c-48a4-9554-e7b12c57ff69</ProjectGuid>
+    <SchemaVersion>2.0</SchemaVersion>
+    <OutputName Condition="'$(Platform)' == 'x86'">Relativity.Desktop.Client.x86</OutputName>
+    <OutputName Condition="'$(Platform)' == 'x64'">Relativity.Desktop.Client.x64</OutputName>
+    <OutputType>Package</OutputType>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <ProductVersion>1.0.00001</ProductVersion>
+    <SignOutput>false</SignOutput>
+    <LicensesPath>$(MSBuildProjectDirectory)\..\..\Vendor\Licenses</LicensesPath>
+    <RelativityDesktopClientPath>$(MSBuildProjectDirectory)\..\Relativity.Desktop.Client.Legacy\bin</RelativityDesktopClientPath>
+    <DefineConstants>$(DefineConstants);LicensesPath=$(LicensesPath);RelativityDesktopClientPath=$(RelativityDesktopClientPath);SignOutput=$(SignOutput);AssemblyVersion=$(AssemblyVersion);ProductVersion=$(ProductVersion)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <WixToolPath>..\..\Vendor\WiX\</WixToolPath>
+    <WixTargetsPath>$(WixToolPath)Wix.targets</WixTargetsPath>
+    <WixTasksPath>wixtasks.dll</WixTasksPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <OutputPath>..\..\Artifacts\installers\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
+    <SuppressAllWarnings>False</SuppressAllWarnings>
+    <Pedantic>True</Pedantic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>..\..\Artifacts\installers\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <HarvestDirectoryGenerateGuidsNow>True</HarvestDirectoryGenerateGuidsNow>
+    <HarvestDirectoryNoLogo>True</HarvestDirectoryNoLogo>
+    <HarvestDirectoryVerboseOutput>True</HarvestDirectoryVerboseOutput>
+    <HarvestDirectoryAutogenerateGuids>False</HarvestDirectoryAutogenerateGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
+    <OutputPath>..\..\Artifacts\installers\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+    <SuppressAllWarnings>False</SuppressAllWarnings>
+    <Pedantic>True</Pedantic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <DefineConstants>$(DefineConstants)</DefineConstants>
+    <OutputPath>..\..\Artifacts\installers\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Components\EventLogEntries.wxs" />
+    <Compile Include="CustomActions.wxs" />
+    <Compile Include="Dialogs\FirewallDlg.wxs" />
+    <Compile Include="Dialogs\WixUI_MondoNoLicense.wxs" />
+    <Compile Include="Product.wxs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="README.md" />
+    <Content Include="Variables.wxi" />
+    <Content Include="Relativity.Desktop.Client.Setup.xsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <HarvestDirectory Include="$(LicensesPath)">
+      <ComponentGroupName>LicensingFor3rdPartyGroup</ComponentGroupName>
+      <SuppressRegistry>True</SuppressRegistry>
+      <SuppressRootDirectory>True</SuppressRootDirectory>
+      <DirectoryRefId>Licensing3rdPartyFolder</DirectoryRefId>
+      <PreprocessorVariable>var.LicensesPath</PreprocessorVariable>
+      <Visible>false</Visible>
+    </HarvestDirectory>
+    <HarvestDirectory Include="$(RelativityDesktopClientPath)">
+      <ComponentGroupName>PrimaryComponentGroup</ComponentGroupName>
+      <SuppressRegistry>True</SuppressRegistry>
+      <SuppressRootDirectory>True</SuppressRootDirectory>
+      <DirectoryRefId>INSTALLDIR</DirectoryRefId>
+      <PreprocessorVariable>var.RelativityDesktopClientPath</PreprocessorVariable>
+      <Visible>false</Visible>
+      <Transforms>Relativity.Desktop.Client.Setup.xsl</Transforms>
+    </HarvestDirectory>
+  </ItemGroup>
+  <ItemGroup>
+    <WixExtension Include="WixUtilExtension">
+      <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
+      <Name>WixUtilExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixFirewallExtension">
+      <HintPath>$(WixExtDir)\WixFirewallExtension.dll</HintPath>
+      <Name>WixFirewallExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixNetFxExtension">
+      <HintPath>$(WixExtDir)\WixNetFxExtension.dll</HintPath>
+      <Name>WixNetFxExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixUIExtension">
+      <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
+      <Name>WixUIExtension</Name>
+    </WixExtension>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Dialogs\FirewallDlg.en-us.wxl" />
+    <EmbeddedResource Include="Localization\Strings.en-us.wxl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Components" />
+    <Folder Include="Dialogs" />
+    <Folder Include="Localization" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Relativity.Desktop.Client.CustomActions\Relativity.Desktop.Client.CustomActions.csproj">
+      <Name>Relativity.Desktop.Client.CustomActions</Name>
+      <Project>{b57c3966-8ef3-4952-ae19-3455c0b049a8}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\Relativity.Desktop.Client.Legacy\Relativity.Desktop.Client.Legacy.vbproj">
+      <Name>Relativity.Desktop.Client.Legacy</Name>
+      <Project>{49cde7eb-9385-41d9-8cd9-687c09c46996}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(WixTargetsPath)" />
+  <Target Name="SignMsi">
+    <Exec Command="&quot;$(SignScriptPath)&quot; &quot;@(SignMsi)&quot; &quot;$(SignToolPath)&quot;" />
+  </Target>
+  <!--
+	To modify your build process, add your task inside one of the targets below and uncomment it.
+	Other similar extension points exist, see Wix.targets.
+	<Target Name="BeforeBuild">
+	</Target>
+	<Target Name="AfterBuild">
+	</Target>
+	-->
+</Project>

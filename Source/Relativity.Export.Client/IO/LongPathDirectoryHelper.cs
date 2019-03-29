@@ -1,4 +1,4 @@
-﻿namespace kCura.WinEDDS.Core.IO
+﻿namespace Relativity.Export.IO
 {
 	using global::Relativity.Import.Export.Io;
 

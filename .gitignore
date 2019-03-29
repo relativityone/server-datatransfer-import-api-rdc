@@ -292,6 +292,10 @@ build/
 /PDBs/*
 errors.xml
 
+# Allow vendor binaries
+!/Vendor/**/x86
+!/Vendor/**/x64
+
 # Outside In nuget package
 **/oi/
 

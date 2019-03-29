@@ -1,4 +1,4 @@
-﻿namespace kCura.WinEDDS.Core.IO
+﻿namespace Relativity.Export.IO
 {
 	using System.IO;
 	using System.Reflection;
