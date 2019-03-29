@@ -6,3 +6,4 @@ nunit
 relativity.logging.interfaces
 relativity.transfer.client
 stylecop.analyzers
+relativity.testing.identification

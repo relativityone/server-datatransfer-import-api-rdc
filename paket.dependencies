@@ -43,6 +43,7 @@ nuget relativity.telemetry.datacontracts.shared = 2019.1.0
 nuget relativity.telemetry.services.interface = 2019.1.0
 nuget relativity.transfer.client = 5.0.2
 
+nuget relativity.testing.identification ~> 1.5.0
 # Note: all of the dependencies below are required once kCura.WinEDDS is migrated.
 group LegacyCastle
 	source https://nuget.org/api/v2

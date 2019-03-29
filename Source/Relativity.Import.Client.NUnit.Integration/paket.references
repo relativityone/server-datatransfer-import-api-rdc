@@ -4,3 +4,4 @@ newtonsoft.json
 nunit
 relativity.importexport
 stylecop.analyzers
+relativity.testing.identification

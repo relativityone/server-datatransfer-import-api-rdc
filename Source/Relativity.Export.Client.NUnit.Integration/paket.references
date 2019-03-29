@@ -2,6 +2,7 @@ newtonsoft.json
 nunit
 relativity.importexport
 stylecop.analyzers
+relativity.testing.identification
 group LegacyCastle
 	castle.core
  	castle.windsor
