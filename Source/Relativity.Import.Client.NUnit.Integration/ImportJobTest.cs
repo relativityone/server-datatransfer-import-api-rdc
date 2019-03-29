@@ -23,13 +23,15 @@ namespace Relativity.Import.Client.NUnit.Integration
 	using kCura.Relativity.ImportAPI;
 
 	using Relativity.Import.Export.TestFramework;
-	using Relativity.Transfer;
+    using Relativity.Testing.Identification;
+    using Relativity.Transfer;
 
-	/// <summary>
-	/// Tests an import job.
-	/// </summary>
-	[TestFixture]
-	public class ImportJobTest
+    /// <summary>
+    /// Tests an import job.
+    /// </summary>
+    [TestFixture]
+    [Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+    public class ImportJobTest
 	{
 		/// <summary>
 		/// The minimum test file length [1KB]
@@ -148,14 +150,13 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// <param name="clientId">
 		/// The transfer client identifier.
 		/// </param>
-		[Test]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
-		[TestCase("00000000-0000-0000-0000-000000000000")]
-		[TestCase(TransferClientConstants.FileShareClientId)]
-		[TestCase(TransferClientConstants.HttpClientId)]
-		[TestCase(TransferClientConstants.AsperaClientId)]
+		[IdentifiedTestCase("0029b51b-11ae-427a-8e53-4528755e974b", "00000000-0000-0000-0000-000000000000")]
+		[IdentifiedTestCase("47ae1c92-8c67-4d6e-ae46-f682a580a8a1", TransferClientConstants.FileShareClientId)]
+		[IdentifiedTestCase("0802b898-7591-4758-b3db-6d15d4a8d7ea", TransferClientConstants.HttpClientId)]
+		[IdentifiedTestCase("df35f6c6-d1f8-44bd-8360-38e5cf41c6dd", TransferClientConstants.AsperaClientId)]
 		public void ShouldImportTheFiles(string clientId)
 		{
 			const bool ForceWebUpload = false;
@@ -192,16 +193,16 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// <param name="disableNativeLocationValidation">
 		/// Specify whether to disable validation for file not found.
 		/// </param>
-		[Test]
+		[IdentifiedTest("d57b85a9-2253-4fc9-95cc-bd2658f3f209")]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
-		[TestCase(TransferClientConstants.FileShareClientId, false)]
-		[TestCase(TransferClientConstants.FileShareClientId, true)]
-		[TestCase(TransferClientConstants.HttpClientId, false)]
-		[TestCase(TransferClientConstants.HttpClientId, true)]
-		[TestCase(TransferClientConstants.AsperaClientId, false)]
-		[TestCase(TransferClientConstants.AsperaClientId, true)]
+		[IdentifiedTestCase("64395709-7afb-42e5-b1b3-836f9aab85da", TransferClientConstants.FileShareClientId, false)]
+		[IdentifiedTestCase("b1099cea-daa2-4265-869b-0e8808837721", TransferClientConstants.FileShareClientId, true)]
+		[IdentifiedTestCase("2b1c7fcb-9c91-4d6a-8e33-13d79c9a2f5e", TransferClientConstants.HttpClientId, false)]
+		[IdentifiedTestCase("301239b3-37cb-4fae-a4fb-d8db26a38319", TransferClientConstants.HttpClientId, true)]
+		[IdentifiedTestCase("50556c44-cd3a-4a9d-b849-70e686215ebd", TransferClientConstants.AsperaClientId, false)]
+		[IdentifiedTestCase("613a03f9-49e2-45fd-b274-13c715e14ae0", TransferClientConstants.AsperaClientId, true)]
 		public void ShouldNotImportTheFiles(string clientId, bool disableNativeLocationValidation)
 		{
 			const bool ForceWebUpload = false;

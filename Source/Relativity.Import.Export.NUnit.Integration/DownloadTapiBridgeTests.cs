@@ -17,12 +17,14 @@ namespace Relativity.Import.Export.NUnit.Integration
 
 	using Relativity.Import.Export.TestFramework;
 	using Relativity.Import.Export.Transfer;
-	using Relativity.Transfer;
+    using Relativity.Testing.Identification;
+    using Relativity.Transfer;
 
 	/// <summary>
 	/// Represents <see cref="DownloadTapiBridge"/> tests.
 	/// </summary>
 	[TestFixture]
+    [Feature.DataTransfer.TransferApi]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
@@ -33,12 +35,11 @@ namespace Relativity.Import.Export.NUnit.Integration
 
 		protected override TapiBridgeBase TapiBridge => this.tapiBridge;
 
-		[Test]
-		[TestCase(TapiClient.None, false)]
-		[TestCase(TapiClient.Aspera, true)]
-		[TestCase(TapiClient.Aspera, false)]
-		[TestCase(TapiClient.Direct, true)]
-		[TestCase(TapiClient.Direct, false)]
+		[IdentifiedTestCase("b892be9b-c0cb-4e0b-aea8-9c1c9a601834", TapiClient.None, false)]
+		[IdentifiedTestCase("8c7a5c0c-77eb-40c5-beb7-0a3f009a2472", TapiClient.Aspera, true)]
+		[IdentifiedTestCase("74777b4f-24dc-4772-9ae9-4ef4b442da89", TapiClient.Aspera, false)]
+		[IdentifiedTestCase("1616a14a-f239-42d4-b90d-c7c25d67d149", TapiClient.Direct, true)]
+		[IdentifiedTestCase("87d185f9-15c6-4146-b306-0549774a2e0d", TapiClient.Direct, false)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
 		public void ShouldDownloadTheFiles(TapiClient client, bool preserveTimestamps)

@@ -13,11 +13,13 @@ namespace Relativity.Import.Client.NUnit.Integration
 
 	using Relativity.Import.Export;
 	using Relativity.Import.Export.TestFramework;
+	using Relativity.Testing.Identification;
 
 	/// <summary>
 	/// Represents <see cref="OutsideInFileIdService"/> tests.
 	/// </summary>
 	[TestFixture]
+	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
@@ -56,7 +58,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("04cba75c-0b5e-4c71-9b8f-cee069567be9")]
 		[Category(TestCategories.OutsideIn)]
 		[Category(TestCategories.Integration)]
 		public void ItShouldIdentifyTheFile()
@@ -74,7 +76,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 			this.ValidateConfigInfo();
 		}
 
-		[Test]
+		[IdentifiedTest("9ee06912-e5e8-4377-8122-67ba8e086d59")]
 		[Category(TestCategories.OutsideIn)]
 		[Category(TestCategories.Integration)]
 		public void ItShouldThrowWhenTheFileDoesNotExist()
@@ -86,7 +88,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 			this.ValidateConfigInfo();
 		}
 
-		[Test]
+		[IdentifiedTest("eb958881-5ba6-429a-b2b9-eba632cf5d50")]
 		[Category(TestCategories.OutsideIn)]
 		[Category(TestCategories.Integration)]
 		public void ItShouldThrowWhenTheFileIsLocked()
@@ -103,7 +105,7 @@ namespace Relativity.Import.Client.NUnit.Integration
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("01923012-4e9e-422a-a59c-fd3cbf38c373")]
 		[Category(TestCategories.OutsideIn)]
 		[Category(TestCategories.Integration)]
 		public void ItShouldGetTheConfigInfo()
