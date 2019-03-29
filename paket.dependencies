@@ -1,9 +1,10 @@
 framework: net462
 source https://nuget.org/api/v2
-
-# TODO: Once the export source is migrated, upgrade Castle to avoid unnecessary conflict with Moq.
-nuget castle.windsor = 3.3.0
+nuget castle.core = 4.3.1
+nuget castle.windsor = 5.0.0
 nuget csvhelper = 12.1.2
+
+# This is used strictly for producing unit test results.
 nuget extent = 0.0.3
 nuget gitversion.commandline = 4.0.0
 nuget itextsharp = 5.5.13
@@ -25,34 +26,28 @@ nuget polly = 5.7.0.0
 nuget psake = 4.7.4
 nuget rhinomocks  = 3.6.0
 nuget stylecop.analyzers = 1.0.2
+nuget zetalongpaths = 1.0.0.27
 
 # Proget packages are below.
 source https://proget.kcura.corp/NuGet/NuGet
-
-# Both kCura and Relativity are explicitly listed to address a bug with Relativity and NuGet packages (IE 10.2.0.0 only)
-nuget kcura = 10.2.32.58-DEV
 nuget kcura.outsidein.fi.win32 = 2018.9.1
 nuget kcura.relativity.client = 10.2.32.58-DEV
+
+# TODO: Remove Relativity as soon as it has been replaced.
 nuget relativity = 10.2.32.58-DEV
 nuget relativity.dataTransfer.messageService = 10.2.0
 nuget relativity.logging = 2018.11.5
 nuget relativity.logging.interfaces = 2018.11.5
-nuget relativity.importexport = 10.2.32.58-DEV
 nuget relativity.kepler = 1.0.1.609
 nuget relativity.kepler.client = 1.0.1.609
 nuget relativity.oauth2client = 1.0.27
 nuget relativity.oauth2client.implicit = 1.0.27
 nuget relativity.oauth2client.interfaces = 1.0.27
 nuget relativity.objectmanager = 10.2.32.58-DEV
+
+# Productions API is used strictly for testing.
 nuget relativity.productions.services.interfaces = 10.2.0
 nuget relativity.telemetry.apm = 2019.1.0
 nuget relativity.telemetry.datacontracts.shared = 2019.1.0
 nuget relativity.telemetry.services.interface = 2019.1.0
 nuget relativity.transfer.client = 5.0.2
-
-# TODO: Upgrade all castle packages to the latest.
-group LegacyCastle
-	source https://nuget.org/api/v2
- 	nuget castle.core = 3.3.3
- 	nuget castle.windsor = 3.3.0
-	nuget moq = 4.5.0

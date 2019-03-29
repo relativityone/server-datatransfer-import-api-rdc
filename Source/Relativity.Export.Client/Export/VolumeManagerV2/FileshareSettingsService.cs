@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using kCura.WinEDDS.TApi;
+using Relativity.Import.Export.Transfer;
 using Relativity.Logging;
 using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 {
+	using global::Relativity.Import.Export;
+
 	public partial class FileShareSettingsService : IFileShareSettingsService
 	{
 		private List<RelativityFileShareSettings> _cachedSettings;
@@ -30,7 +32,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 			}
 
 			_logger = logger;
-            _webServiceUrl = Config.WebServiceURL;
+            _webServiceUrl = AppSettings.Instance.WebApiServiceUrl;
 			_workspaceId = exportSettings.CaseInfo.ArtifactID;
 			_currentUserCredential = exportSettings.Credential;
 			_cookieContainer = exportSettings.CookieContainer;
@@ -40,7 +42,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 		{
 			if (_cachedSettings == null)
 			{
-				GetFileShareSettingsForWorkspace(Config.WebServiceURL, _workspaceId, _currentUserCredential.UserName, _currentUserCredential.Password);
+				GetFileShareSettingsForWorkspace(AppSettings.Instance.WebApiServiceUrl, _workspaceId, _currentUserCredential.UserName, _currentUserCredential.Password);
 			}
 
 			// settings will be null here if the fileUrl belongs to no known file share, e.g. if the path in the database was somehow modified,
@@ -61,7 +63,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
 					WorkspaceId = _workspaceId
 				};
 
-				RelativityConnectionInfo connectionInfo = TapiWinEddsHelper.CreateRelativityConnectionInfo(parameters);
+				ITapiObjectService tapiObjectService = new TapiObjectService();
+				RelativityConnectionInfo connectionInfo = tapiObjectService.CreateRelativityConnectionInfo(parameters);
 				using (ITransferLog transferLog = new RelativityTransferLog(_logger, false))
 				using (var transferHost = new RelativityTransferHost(connectionInfo, transferLog))
 				{

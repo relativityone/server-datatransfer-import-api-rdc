@@ -1,12 +1,12 @@
-﻿using kCura.Utility;
+﻿using Relativity.Import.Export;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 {
 	public class ImageWrapper : IImage
 	{
-		private readonly Image _imageConverter;
+		private readonly IImageConversionService _imageConverter;
 
-		public ImageWrapper(Image imageConverter)
+		public ImageWrapper(IImageConversionService imageConverter)
 		{
 			_imageConverter = imageConverter;
 		}
@@ -19,7 +19,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 
 		public void ConvertTIFFsToMultiPage(string[] inputFiles, string outputFile)
 		{
-			_imageConverter.ConvertTIFFsToMultiPage(inputFiles, outputFile);
+			_imageConverter.ConvertTiffsToMultiPageTiff(inputFiles, outputFile);
 		}
 	}
 }

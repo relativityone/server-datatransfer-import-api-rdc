@@ -1,4 +1,4 @@
-﻿using kCura.Windows.Process;
+﻿using Relativity.Import.Export.Process;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics

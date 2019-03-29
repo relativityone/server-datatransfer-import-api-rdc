@@ -15,12 +15,14 @@ namespace Relativity.Export.Client.NUnit
 
     using Moq;
 
+    using Relativity.Import.Export.Io;
+
     [TestFixture]
 	public abstract class FilePathProviderTests
 	{
 		private readonly string _volumeLabel = "volume_label";
 		private readonly string _folderPath = "folder_path";
-		private Mock<IDirectoryHelper> _directoryHelper;
+		private Mock<IDirectory> _directoryHelper;
 		private Mock<ILabelManagerForArtifact> _labelManager;
 		private ExportFile _exportSettings;
 		private FilePathProvider _instance;
@@ -30,7 +32,7 @@ namespace Relativity.Export.Client.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			_directoryHelper = new Mock<IDirectoryHelper>();
+			_directoryHelper = new Mock<IDirectory>();
 
 			_labelManager = new Mock<ILabelManagerForArtifact>();
 			_labelManager.Setup(x => x.GetVolumeLabel(It.IsAny<int>())).Returns(_volumeLabel);
@@ -46,7 +48,7 @@ namespace Relativity.Export.Client.NUnit
 			_instance = CreateInstance(_directoryHelper.Object, _labelManager.Object, _exportSettings);
 		}
 
-		protected abstract FilePathProvider CreateInstance(IDirectoryHelper directoryHelper, ILabelManagerForArtifact labelManager, ExportFile exportSettings);
+		protected abstract FilePathProvider CreateInstance(IDirectory directoryHelper, ILabelManagerForArtifact labelManager, ExportFile exportSettings);
 
 		[Test]
 		public void ItShouldCreateDirectoryIfNotExists()

@@ -20,6 +20,7 @@ namespace Relativity.Export.Client.NUnit
 
     using Moq;
 
+    using Relativity.Import.Export.Io;
     using Relativity.Logging;
     using RelativityConstants = Relativity.Constants;
 
@@ -49,7 +50,7 @@ namespace Relativity.Export.Client.NUnit
 			_fullTextLineWriter = new Mock<IFullTextLineWriter>();
 			_writer = new Mock<IRetryableStreamWriter>();
 
-			LongTextRepository = new LongTextRepository(new Mock<IFileHelper>().Object, new NullLogger());
+			LongTextRepository = new LongTextRepository(new Mock<IFile>().Object, new NullLogger());
 
 			LongTextHelper longTextHelper = new LongTextHelper(exportSettings, FieldService.Object, LongTextRepository);
 

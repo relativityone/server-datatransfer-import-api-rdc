@@ -20,6 +20,8 @@ using System.Runtime.InteropServices;
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(false)]
+[assembly: InternalsVisibleTo("Relativity.Import.Client")]
 [assembly: InternalsVisibleTo("Relativity.Import.Export.NUnit")]
 [assembly: InternalsVisibleTo("Relativity.Import.Export.NUnit.Integration")]
 [assembly: InternalsVisibleTo("Relativity.Import.Export.Legacy")]
+[assembly: InternalsVisibleTo("Relativity.Export.Client")]

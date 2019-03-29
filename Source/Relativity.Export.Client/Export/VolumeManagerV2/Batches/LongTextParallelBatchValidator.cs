@@ -4,6 +4,7 @@ using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
 using kCura.WinEDDS.Exporters;
+using Relativity.Import.Export.Io;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
@@ -12,14 +13,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 	{
 		private readonly ILongTextRepository _longTextRepository;
 
-		private readonly IFileHelper _fileHelper;
+		private readonly IFile _fileWrapper;
 		private readonly IStatus _status;
 		private readonly ILog _logger;
 
-		public LongTextParallelBatchValidator(ILongTextRepository longTextRepository, IFileHelper fileHelper, IStatus status, ILog logger)
+		public LongTextParallelBatchValidator(ILongTextRepository longTextRepository, IFile fileWrapper, IStatus status, ILog logger)
 		{
 			_longTextRepository = longTextRepository;
-			_fileHelper = fileHelper;
+			_fileWrapper = fileWrapper;
 			_status = status;
 			_logger = logger;
 		}
@@ -50,7 +51,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 				return null;
 			}
 
-			if (!_fileHelper.Exists(longText.Location))
+			if (!_fileWrapper.Exists(longText.Location))
 			{
 				return () =>
 				{
@@ -58,7 +59,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 					_status.WriteError($"File {longText.Location} for LongText {longText.FieldArtifactId} for artifact {longText.ArtifactId} missing.");
 				};
 			}
-			else if (_fileHelper.GetFileSize(longText.Location) == 0)
+			else if (_fileWrapper.GetFileSize(longText.Location) == 0)
 			{
 				return () =>
 				{

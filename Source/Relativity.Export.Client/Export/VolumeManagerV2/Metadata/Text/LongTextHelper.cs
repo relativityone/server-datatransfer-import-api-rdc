@@ -4,6 +4,7 @@ using System.Text;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
 using kCura.WinEDDS.Exporters;
 using Relativity;
+using ExportConstants = Relativity.Export.Constants;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 {
@@ -98,7 +99,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 		{
 			if (_exportSettings.SelectedTextFields != null)
 			{
-				int fieldArtifactId = (int) artifact.Metadata[_fieldService.GetOrdinalIndex(Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)];
+				int fieldArtifactId = (int) artifact.Metadata[_fieldService.GetOrdinalIndex(ExportConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)];
 				return _exportSettings.SelectedTextFields.FirstOrDefault(x => x.FieldArtifactId == fieldArtifactId);
 			}
 
@@ -107,7 +108,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 
 		public ViewFieldInfo GetTextPrecedenceTrueField(ObjectExportInfo artifact, ViewFieldInfo field)
 		{
-			if (field == null || field.AvfColumnName == Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)
+			if (field == null || field.AvfColumnName == ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)
 			{
 				return GetTextPrecedenceField(artifact);
 			}

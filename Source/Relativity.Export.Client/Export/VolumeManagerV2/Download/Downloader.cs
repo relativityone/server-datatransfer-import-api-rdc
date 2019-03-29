@@ -9,6 +9,8 @@ using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 {
+	using global::Relativity.Import.Export;
+
 	public class Downloader : IDownloader
 	{
 		private List<ExportRequest> _fileExportRequests;
@@ -30,7 +32,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 			_exportRequestRetriever = exportRequestRetriever;
 			_errorFileWriter = errorFileWriter;
 
-			if (Config.SuppressCertificateCheckOnClient)
+			if (AppSettings.Instance.SuppressServerCertificateValidation)
 			{
 				ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, errors) => true;
 			}

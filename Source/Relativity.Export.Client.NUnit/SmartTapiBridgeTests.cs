@@ -14,10 +14,11 @@ namespace Relativity.Export.Client.NUnit
 
 	using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-    using kCura.WinEDDS.TApi;
 
     using Moq;
 
+    using Relativity.Import.Export.Transfer;
+    using Relativity.Logging;
     using Relativity.Transfer;
 
     [TestFixture]
@@ -28,6 +29,7 @@ namespace Relativity.Export.Client.NUnit
 		private Mock<IExportConfig> _config;
 		private Mock<ITapiBridgeWrapperFactory> _wrapperFactory;
 		private Mock<ITapiBridgeWrapper> _innerTapiBridge;
+		private Mock<ILog> _log;
 		private SmartTapiBridge _bridge;
 
 		[SetUp]
@@ -37,7 +39,8 @@ namespace Relativity.Export.Client.NUnit
 			_innerTapiBridge = new Mock<ITapiBridgeWrapper>();
 			_wrapperFactory = new Mock<ITapiBridgeWrapperFactory>();
 			_wrapperFactory.Setup(factory => factory.Create()).Returns(_innerTapiBridge.Object);
-			_bridge = new SmartTapiBridge(_config.Object, _wrapperFactory.Object, CancellationToken.None);
+			_log = new Mock<ILog>();
+			_bridge = new SmartTapiBridge(_config.Object, _wrapperFactory.Object, _log.Object, CancellationToken.None);
 		}
 
 		[Test]
@@ -188,7 +191,7 @@ namespace Relativity.Export.Client.NUnit
 			_config.SetupGet(conf => conf.MaximumFilesForTapiBridge).Returns(3);
 			_config.SetupGet(conf => conf.TapiBridgeExportTransferWaitingTimeInSeconds).Returns(1);
 
-			_bridge = new SmartTapiBridge(_config.Object, _wrapperFactory.Object, CancellationToken.None);
+			_bridge = new SmartTapiBridge(_config.Object, _wrapperFactory.Object, _log.Object, CancellationToken.None);
 
 			_bridge.AddPath(new TransferPath("File 1"));
 			_bridge.AddPath(new TransferPath("File 2"));
@@ -213,7 +216,7 @@ namespace Relativity.Export.Client.NUnit
 			_config.SetupGet(conf => conf.MaximumFilesForTapiBridge).Returns(3);
 			_config.SetupGet(conf => conf.TapiBridgeExportTransferWaitingTimeInSeconds).Returns(0);
 
-			_bridge = new SmartTapiBridge(_config.Object, _wrapperFactory.Object, CancellationToken.None);
+			_bridge = new SmartTapiBridge(_config.Object, _wrapperFactory.Object, _log.Object, CancellationToken.None);
 
 			_bridge.AddPath(new TransferPath("File 1"));
 			_bridge.AddPath(new TransferPath("File 2"));
@@ -238,7 +241,7 @@ namespace Relativity.Export.Client.NUnit
 			_config.SetupGet(conf => conf.MaximumFilesForTapiBridge).Returns(2);
 			_config.SetupGet(conf => conf.TapiBridgeExportTransferWaitingTimeInSeconds).Returns(1);
 
-			_bridge = new SmartTapiBridge(_config.Object, _wrapperFactory.Object, CancellationToken.None);
+			_bridge = new SmartTapiBridge(_config.Object, _wrapperFactory.Object, _log.Object, CancellationToken.None);
 
 			_bridge.AddPath(new TransferPath("File 1"));
 			_bridge.AddPath(new TransferPath("File 2"));

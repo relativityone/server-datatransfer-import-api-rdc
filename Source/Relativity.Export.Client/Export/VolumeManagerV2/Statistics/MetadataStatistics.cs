@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-using kCura.WinEDDS.TApi;
+using Relativity.Import.Export.Io;
+using Relativity.Import.Export.Transfer;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
@@ -16,20 +16,20 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		private Dictionary<string, long> _savedFilesSize;
 
 		private readonly WinEDDS.Statistics _statistics;
-		private readonly IFileHelper _fileHelper;
+		private readonly IFile _fileWrapper;
 		private readonly ILog _logger;
 
 		private readonly object _lock = new object();
 
 		private readonly Dictionary<string, long> _filesSize;
 
-		public MetadataStatistics(WinEDDS.Statistics statistics, IFileHelper fileHelper, ILog logger)
+		public MetadataStatistics(WinEDDS.Statistics statistics, IFile fileWrapper, ILog logger)
 		{
 			_filesSize = new Dictionary<string, long>();
 			_savedFilesSize = new Dictionary<string, long>();
 
 			_statistics = statistics;
-			_fileHelper = fileHelper;
+			_fileWrapper = fileWrapper;
 			_logger = logger;
 		}
 
@@ -71,7 +71,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		{
 			lock (_lock)
 			{
-				if (_fileHelper.Exists(path))
+				if (_fileWrapper.Exists(path))
 				{
 					long oldSize = 0;
 					if (_filesSize.ContainsKey(path))
@@ -79,7 +79,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 						oldSize = _filesSize[path];
 					}
 
-					long newSize = _fileHelper.GetFileSize(path);
+					long newSize = _fileWrapper.GetFileSize(path);
 					_statistics.MetadataBytes += newSize - oldSize;
 					_filesSize[path] = newSize;
 				}

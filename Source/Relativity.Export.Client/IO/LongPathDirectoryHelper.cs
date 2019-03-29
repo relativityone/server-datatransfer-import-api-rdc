@@ -1,8 +1,9 @@
 ﻿using ZetaLongPaths;
+using Relativity.Import.Export.Io;
 
 namespace kCura.WinEDDS.Core.IO
 {
-    public class LongPathDirectoryHelper : IDirectoryHelper
+	public class LongPathDirectoryHelper : IDirectory
     {
         private object _lockObject = new object();
 
@@ -33,12 +34,24 @@ namespace kCura.WinEDDS.Core.IO
             }
         }
 
-        public bool Exists(string path)
+		public void Delete(string path)
+		{
+			// Required by interface but not used by this API.
+			throw new System.NotImplementedException();
+		}
+
+		public bool Exists(string path)
         {
             return ZlpIOHelper.DirectoryExists(path);
         }
 
-        public string GetTempPath()
+		public IDirectoryInfo GetParent(string path)
+		{
+			// Required by interface but not used by this API.
+			throw new System.NotImplementedException();
+		}
+
+		public string GetTempPath()
         {
             return ZlpPathHelper.GetTempDirectoryPath();
         }

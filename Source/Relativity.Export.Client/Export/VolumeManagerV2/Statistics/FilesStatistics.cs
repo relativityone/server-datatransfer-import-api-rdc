@@ -1,7 +1,7 @@
-﻿using System;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-using kCura.WinEDDS.TApi;
+﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
+using Relativity.Import.Export.Io;
 using Relativity.Logging;
+using Relativity.Import.Export.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 {
@@ -14,15 +14,15 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		private long _savedFileTime;
 
 		private readonly WinEDDS.Statistics _statistics;
-		private readonly IFileHelper _fileHelper;
+		private readonly IFile _fileWrapper;
 		private readonly ILog _logger;
 
 		private readonly object _lock = new object();
 
-		public FilesStatistics(WinEDDS.Statistics statistics, IFileHelper fileHelper, ILog logger)
+		public FilesStatistics(WinEDDS.Statistics statistics, IFile fileWrapper, ILog logger)
 		{
 			_statistics = statistics;
-			_fileHelper = fileHelper;
+			_fileWrapper = fileWrapper;
 			_logger = logger;
 		}
 
@@ -64,9 +64,9 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		{
 			lock (_lock)
 			{
-				if (_fileHelper.Exists(path))
+				if (_fileWrapper.Exists(path))
 				{
-					_statistics.FileBytes += _fileHelper.GetFileSize(path);
+					_statistics.FileBytes += _fileWrapper.GetFileSize(path);
 				}
 				else
 				{

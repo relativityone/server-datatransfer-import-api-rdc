@@ -1,10 +1,9 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using kCura.Windows.Process;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
+using Relativity.Import.Export.Io;
+using Relativity.Import.Export.Process;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
@@ -18,18 +17,18 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		private readonly NativeRepository _nativeRepository;
 		private readonly ImageRepository _imageRepository;
 		private readonly LongTextRepository _longTextRepository;
-		private readonly IFileHelper _fileHelper;
+		private readonly IFile _fileWrapper;
 
 		private readonly IStatus _status;
 		private readonly ILog _logger;
 
 		public DownloadProgressManager(NativeRepository nativeRepository, ImageRepository imageRepository,
-			LongTextRepository longTextRepository, IFileHelper fileHelper, IStatus status, ILog logger)
+			LongTextRepository longTextRepository, IFile fileWrapper, IStatus status, ILog logger)
 		{
 			_nativeRepository = nativeRepository;
 			_imageRepository = imageRepository;
 			_longTextRepository = longTextRepository;
-			_fileHelper = fileHelper;
+			_fileWrapper = fileWrapper;
 			_status = status;
 			_logger = logger;
 
@@ -102,7 +101,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 
 			foreach (Native duplicatedNative in duplicatedNatives)
 			{
-				if (_fileHelper.Exists(duplicatedNative.ExportRequest.DestinationLocation))
+				if (_fileWrapper.Exists(duplicatedNative.ExportRequest.DestinationLocation))
 				{
 					duplicatedNative.HasBeenDownloaded = true;
 					UpdateDownloadedCountAndNotify(duplicatedNative.Artifact.ArtifactID, duplicatedNative.ExportRequest.Order);
@@ -128,7 +127,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 
 			foreach (Image duplicatedImage in duplicatedImages)
 			{
-				if (_fileHelper.Exists(duplicatedImage.ExportRequest.DestinationLocation))
+				if (_fileWrapper.Exists(duplicatedImage.ExportRequest.DestinationLocation))
 				{
 					duplicatedImage.HasBeenDownloaded = true;
 					UpdateDownloadedCountAndNotify(duplicatedImage.Artifact.ArtifactID, duplicatedImage.ExportRequest.Order);

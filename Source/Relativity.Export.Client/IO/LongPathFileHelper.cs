@@ -1,11 +1,12 @@
 ﻿using System.IO;
 using System.Reflection;
+using Relativity.Import.Export.Io;
 using ZetaLongPaths;
 using ZetaLongPaths.Native;
 
 namespace kCura.WinEDDS.Core.IO
 {
-	public class LongPathFileHelper : IFileHelper
+	public class LongPathFileHelper : IFile
 	{
 		public FileStream Create(string filePath)
 		{
@@ -93,6 +94,24 @@ namespace kCura.WinEDDS.Core.IO
 		public string ReadFileAsString(string path)
 		{
 			return ZlpIOHelper.ReadAllText(path);
+		}
+
+		public int CountLinesInFile(string path)
+		{
+			// Required by interface but not used by this API.
+			throw new System.NotImplementedException();
+		}
+
+		public FileStream Create(string path, FileMode mode, System.IO.FileAccess access, System.IO.FileShare share)
+		{
+			// Required by interface but not used by this API.
+			throw new System.NotImplementedException();
+		}
+
+		public StreamWriter CreateText(string path)
+		{
+			// Required by interface but not used by this API.
+			throw new System.NotImplementedException();
 		}
 	}
 }

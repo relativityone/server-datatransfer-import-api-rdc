@@ -16,6 +16,7 @@ namespace Relativity.Export.Client.NUnit
 
     using Moq;
 
+    using Relativity.Import.Export.Io;
     using Relativity.Logging;
 
     [TestFixture]
@@ -24,13 +25,13 @@ namespace Relativity.Export.Client.NUnit
 		private FileEncodingConverter _instance;
 
 		private Mock<IFileEncodingRewrite> _encodingRewrite;
-		private Mock<IFileHelper> _fileHelper;
+		private Mock<IFile> _fileHelper;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_encodingRewrite = new Mock<IFileEncodingRewrite>();
-			_fileHelper = new Mock<IFileHelper>();
+			_fileHelper = new Mock<IFile>();
 			_instance = new FileEncodingConverter(_encodingRewrite.Object, _fileHelper.Object, new NullLogger());
 		}
 

@@ -12,7 +12,6 @@ namespace Relativity.Export.Client.NUnit
 
     using global::NUnit.Framework;
 
-	using kCura.Vendor.Castle.Core.Internal;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
 
 	using Moq;
@@ -23,7 +22,7 @@ namespace Relativity.Export.Client.NUnit
 	public class BatchStateTests
 	{
 		private BatchState _instance;
-		private IList<Mock<IStateful>> _statefulComponentMocks;
+		private List<Mock<IStateful>> _statefulComponentMocks;
 
 		[SetUp]
 		public void SetUp()

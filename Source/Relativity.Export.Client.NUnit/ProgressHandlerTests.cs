@@ -12,10 +12,10 @@ namespace Relativity.Export.Client.NUnit
 
 	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-    using kCura.WinEDDS.TApi;
 
     using Moq;
 
+    using Relativity.Import.Export.Transfer;
     using Relativity.Transfer;
 
     [TestFixture]

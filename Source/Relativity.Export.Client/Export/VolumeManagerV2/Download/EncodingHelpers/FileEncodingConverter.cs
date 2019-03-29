@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Threading;
+using Relativity.Import.Export.Io;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers
@@ -7,13 +8,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers
 	public class FileEncodingConverter : IFileEncodingConverter
 	{
 		private readonly IFileEncodingRewrite _encodingRewrite;
-		private readonly IFileHelper _fileHelper;
+		private readonly IFile _fileWrapper;
 		private readonly ILog _logger;
 
-		public FileEncodingConverter(IFileEncodingRewrite encodingRewrite, IFileHelper fileHelper, ILog logger)
+		public FileEncodingConverter(IFileEncodingRewrite encodingRewrite, IFile fileWrapper, ILog logger)
 		{
 			_encodingRewrite = encodingRewrite;
-			_fileHelper = fileHelper;
+			_fileWrapper = fileWrapper;
 			_logger = logger;
 		}
 
@@ -26,16 +27,16 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers
 				_encodingRewrite.RewriteFile(filePath, tmpFilePath, sourceEncoding, destinationEncoding, cancellationToken);
 
 				_logger.LogVerbose("Removing source file {filePath}.", filePath);
-				_fileHelper.Delete(filePath);
+				_fileWrapper.Delete(filePath);
 				_logger.LogVerbose("Moving temporary file from {tmpFile} to {dstFile}.", tmpFilePath, filePath);
-				_fileHelper.Move(tmpFilePath, filePath);
+				_fileWrapper.Move(tmpFilePath, filePath);
 			}
 			finally
 			{
-				if (_fileHelper.Exists(tmpFilePath))
+				if (_fileWrapper.Exists(tmpFilePath))
 				{
 					_logger.LogError("Error occurred during encoding conversion. Removing temporary file {tmpFile}.", tmpFilePath);
-					_fileHelper.Delete(tmpFilePath);
+					_fileWrapper.Delete(tmpFilePath);
 				}
 			}
 		}

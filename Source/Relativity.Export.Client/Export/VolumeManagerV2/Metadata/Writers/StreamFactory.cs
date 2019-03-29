@@ -2,18 +2,19 @@
 using System.IO;
 using System.Text;
 using kCura.WinEDDS.Exceptions;
+using Relativity.Import.Export.Io;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 {
 	public class StreamFactory : IStreamFactory
 	{
-		private readonly IFileHelper _fileHelper;
+		private readonly IFile _fileWrapper;
 		private readonly ILog _logger;
 
-		public StreamFactory(IFileHelper fileHelper, ILog logger)
+		public StreamFactory(IFile fileWrapper, ILog logger)
 		{
-			_fileHelper = fileHelper;
+			_fileWrapper = fileWrapper;
 			_logger = logger;
 		}
 
@@ -38,11 +39,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 				if (append)
 				{
 					_logger.LogVerbose("Opening file in append mode with given position, so truncating file.");
-					fileStream = _fileHelper.ReopenAndTruncate(path, lastStreamWriterPosition);
+					fileStream = _fileWrapper.ReopenAndTruncate(path, lastStreamWriterPosition);
 				}
 				else
 				{
-					fileStream = _fileHelper.Create(path, false);
+					fileStream = _fileWrapper.Create(path, false);
 				}
 
 				StreamWriter newWriter = new StreamWriter(fileStream, encoding);

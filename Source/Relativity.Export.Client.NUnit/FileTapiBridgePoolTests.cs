@@ -17,6 +17,7 @@ namespace Relativity.Export.Client.NUnit
 
     using Moq;
 
+    using Relativity.Import.Export.Io;
     using Relativity.Logging;
 
     [TestFixture]
@@ -39,7 +40,7 @@ namespace Relativity.Export.Client.NUnit
 		private NativeRepository _nativeRepository;
 		private ImageRepository _imageRepository;
 		private LongTextRepository _longTextRepository;
-		private Mock<IFileHelper> _fileHelper;
+		private Mock<IFile> _fileHelper;
 		private Mock<IStatus> _status;
 		private kCura.WinEDDS.Statistics _statistics;
 
@@ -53,7 +54,7 @@ namespace Relativity.Export.Client.NUnit
 
 			_nativeRepository = new NativeRepository();
 			_imageRepository = new ImageRepository();
-			_fileHelper = new Mock<IFileHelper>();
+			_fileHelper = new Mock<IFile>();
 			_logger = new Mock<ILog>();
 			_longTextRepository = new LongTextRepository(_fileHelper.Object, _logger.Object);
 			_status = new Mock<IStatus>();

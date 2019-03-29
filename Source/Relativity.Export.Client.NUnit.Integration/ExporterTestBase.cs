@@ -19,7 +19,6 @@ namespace Relativity.Export.Client.NUnit.Integration
 
 	using global::NUnit.Framework;
 
-	using kCura.Windows.Process;
 	using kCura.WinEDDS;
     using kCura.WinEDDS.Container;
     using kCura.WinEDDS.Core.Export;
@@ -29,6 +28,8 @@ namespace Relativity.Export.Client.NUnit.Integration
 
 	using Moq;
 
+	using Relativity.Import.Export;
+	using Relativity.Import.Export.Process;
 	using Relativity.Import.Export.TestFramework;
 	using Relativity.Logging;
 	using Relativity.Transfer;
@@ -120,7 +121,7 @@ namespace Relativity.Export.Client.NUnit.Integration
 					this.alertWarningSkippables.Add(msg);
 					Console.WriteLine($"Alert warning skipped: {msg}");
 				}).Returns(true);
-			kCura.WinEDDS.Config.WebServiceURL = this.TestParameters.RelativityWebApiUrl.ToString();
+			AppSettings.Instance.WebApiServiceUrl = this.TestParameters.RelativityWebApiUrl.ToString();
 		}
 
 		/// <summary>
@@ -449,10 +450,18 @@ namespace Relativity.Export.Client.NUnit.Integration
 		protected void WhenExecutingTheExportSearch()
 		{
             ContainerFactoryProvider.ContainerFactory = new ContainerFactory();
-            var controller = new Controller();
+            var mockProcessEventWriter = new Mock<IProcessEventWriter>();
+            var mockProcessErrorWriter = new Mock<IProcessErrorWriter>();
+            var mockAppSettings = new Mock<IAppSettings>();
+            var mockLog = new Mock<ILog>();
+            var processContext = new ProcessContext(
+	            mockProcessEventWriter.Object,
+	            mockProcessErrorWriter.Object,
+	            mockAppSettings.Object,
+	            mockLog.Object);
 			var exporter = new Exporter(
 				this.exportFile,
-				controller,
+				processContext,
 				new WebApiServiceFactory(this.exportFile),
 				new ExportFileFormatterFactory(),
 				new ExportConfig());

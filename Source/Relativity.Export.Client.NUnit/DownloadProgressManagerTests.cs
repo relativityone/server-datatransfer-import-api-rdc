@@ -8,7 +8,6 @@ namespace Relativity.Export.Client.NUnit
 {
 	using global::NUnit.Framework;
 
-	using kCura.Windows.Process;
     using kCura.WinEDDS;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
@@ -16,7 +15,9 @@ namespace Relativity.Export.Client.NUnit
 
 	using Moq;
 
-    using Relativity.Logging;
+	using Relativity.Import.Export.Io;
+	using Relativity.Import.Export.Process;
+	using Relativity.Logging;
 
     [TestFixture]
 	public class DownloadProgressManagerTests
@@ -27,7 +28,7 @@ namespace Relativity.Export.Client.NUnit
 		private ImageRepository _imageRepository;
 		private LongTextRepository _longTextRepository;
 
-	    private Mock<IFileHelper> _fileHelper;
+	    private Mock<IFile> _fileHelper;
 		private Mock<IStatus> _status;
 
 		[SetUp]
@@ -37,7 +38,7 @@ namespace Relativity.Export.Client.NUnit
 			_imageRepository = new ImageRepository();
 			_longTextRepository = new LongTextRepository(null, new NullLogger());
 
-            _fileHelper = new Mock<IFileHelper>();
+            _fileHelper = new Mock<IFile>();
 			_status = new Mock<IStatus>();
 
 			_instance = new DownloadProgressManager(_nativeRepository, _imageRepository, _longTextRepository, _fileHelper.Object, _status.Object, new NullLogger());

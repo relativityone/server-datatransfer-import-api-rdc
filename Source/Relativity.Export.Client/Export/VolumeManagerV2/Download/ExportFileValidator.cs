@@ -1,6 +1,6 @@
-﻿using System.Linq;
-using kCura.Windows.Process;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
+﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
+using Relativity.Import.Export.Io;
+using Relativity.Import.Export.Process;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
@@ -9,27 +9,27 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
 	{
 		private readonly ExportFile _exportSettings;
 		private readonly IStatus _status;
-		private readonly IFileHelper _fileHelper;
+		private readonly IFile _fileWrapper;
 		private readonly ILog _logger;
 		private readonly IExportRequestRepository _exportRequestRepository;
 
-		public ExportFileValidator(ExportFile exportSettings, IExportRequestRepository exportRequestRepository, IStatus status, IFileHelper fileHelper, ILog logger)
+		public ExportFileValidator(ExportFile exportSettings, IExportRequestRepository exportRequestRepository, IStatus status, IFile fileWrapper, ILog logger)
 		{
 			_exportSettings = exportSettings;
 			_exportRequestRepository = exportRequestRepository;
 			_status = status;
-			_fileHelper = fileHelper;
+			_fileWrapper = fileWrapper;
 			_logger = logger;
 		}
 
 		public bool CanExport(string destinationLocation, string warningUserMessage)
 		{
-			if (_fileHelper.Exists(destinationLocation))
+			if (_fileWrapper.Exists(destinationLocation))
 			{
 				if (_exportSettings.Overwrite)
 				{
 					_logger.LogVerbose($"Overwriting document {destinationLocation}. Removing already existing file.");
-					_fileHelper.Delete(destinationLocation);
+					_fileWrapper.Delete(destinationLocation);
 					_status.WriteStatusLine(EventType.Status, warningUserMessage, false);
 					return true;
 				}

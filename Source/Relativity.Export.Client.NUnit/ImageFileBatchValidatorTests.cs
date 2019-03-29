@@ -19,6 +19,7 @@ namespace Relativity.Export.Client.NUnit
 
     using Moq;
 
+    using Relativity.Import.Export.Io;
     using Relativity.Logging;
 
     [TestFixture]
@@ -29,13 +30,13 @@ namespace Relativity.Export.Client.NUnit
 
 		protected Mock<IErrorFileWriter> ErrorFileWriter { get; set; }
 
-		protected Mock<IFileHelper> FileHelper { get; set; }
+		protected Mock<IFile> FileHelper { get; set; }
 
 		[SetUp]
 		public void SetUp()
 		{
 			ErrorFileWriter = new Mock<IErrorFileWriter>();
-			FileHelper = new Mock<IFileHelper>();
+			FileHelper = new Mock<IFile>();
 			_status = new Mock<IStatus>();
 
 			_instance = CreateSut();

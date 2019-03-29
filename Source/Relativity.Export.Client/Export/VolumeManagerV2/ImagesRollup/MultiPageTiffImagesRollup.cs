@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Relativity.Import.Export.Io;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
 {
 	public class MultiPageTiffImagesRollup : MultiPageImagesRollup
 	{
-		public MultiPageTiffImagesRollup(ExportFile exportSettings, IFileHelper fileHelper, IStatus status, ILog logger, IImage imageConverter) : base(exportSettings, fileHelper, status,
+		public MultiPageTiffImagesRollup(ExportFile exportSettings, IFile fileWrapper, IStatus status, ILog logger, IImage imageConverter) : base(exportSettings, fileWrapper, status,
 			logger, imageConverter)
 		{
 		}

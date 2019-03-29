@@ -12,7 +12,6 @@ namespace Relativity.Export.Client.NUnit
 
     using global::NUnit.Framework;
 
-	using kCura.Vendor.Castle.Core.Internal;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
@@ -64,7 +63,7 @@ namespace Relativity.Export.Client.NUnit
 			Instance.PrepareBatch(Artifacts, VolumePredictions, CancellationToken.None);
 
 			// ASSERT
-			VolumePredictions.ForEach(x => DirectoryManager.Verify(dm => dm.MoveNext(x), Times.Once));
+			VolumePredictions.ToList().ForEach(x => DirectoryManager.Verify(dm => dm.MoveNext(x), Times.Once));
 		}
 
 		[Test]

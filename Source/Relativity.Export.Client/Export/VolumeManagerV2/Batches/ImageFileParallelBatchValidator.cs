@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
 using kCura.WinEDDS.Exporters;
+using Relativity.Import.Export.Io;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
@@ -11,13 +12,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 	public class ImageFileParallelBatchValidator : IBatchValidator
 	{
 		private readonly IErrorFileWriter _errorFileWriter;
-		private readonly IFileHelper _fileHelper;
+		private readonly IFile _fileWrapper;
 		private readonly ILog _logger;
 
-		public ImageFileParallelBatchValidator(IErrorFileWriter errorFileWriter, IFileHelper fileHelper, ILog logger)
+		public ImageFileParallelBatchValidator(IErrorFileWriter errorFileWriter, IFile fileWrapper, ILog logger)
 		{
 			_errorFileWriter = errorFileWriter;
-			_fileHelper = fileHelper;
+			_fileWrapper = fileWrapper;
 			_logger = logger;
 		}
 
@@ -67,8 +68,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 				return null;
 			}
 
-			bool imageFileExists = _fileHelper.Exists(image.TempLocation);
-			if (!imageFileExists || _fileHelper.GetFileSize(image.TempLocation) == 0)
+			bool imageFileExists = _fileWrapper.Exists(image.TempLocation);
+			if (!imageFileExists || _fileWrapper.GetFileSize(image.TempLocation) == 0)
 			{
 				return GetFileMissingAction(artifact, image, imageFileExists);
 			}

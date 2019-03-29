@@ -8,11 +8,11 @@ namespace Relativity.Export.Client.NUnit
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
 
     using global::NUnit.Framework;
 
-	using kCura.Vendor.Castle.Core.Internal;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
     using kCura.WinEDDS.Exporters;
 
@@ -73,7 +73,7 @@ namespace Relativity.Export.Client.NUnit
 		{
 			_instance.InitializeFor(_artifacts, _volumePredictions, CancellationToken.None);
 
-			_volumePredictions.ForEach(x => _directoryManager.Verify(dm => dm.MoveNext(x), Times.Once));
+			_volumePredictions.ToList().ForEach(x => _directoryManager.Verify(dm => dm.MoveNext(x), Times.Once));
 		}
 
 		[Test]

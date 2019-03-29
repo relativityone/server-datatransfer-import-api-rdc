@@ -1,5 +1,5 @@
 ﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using kCura.WinEDDS.TApi;
+using Relativity.Import.Export.Transfer;
 using Relativity.Transfer;
 using ITransferStatistics = kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics.ITransferStatistics;
 

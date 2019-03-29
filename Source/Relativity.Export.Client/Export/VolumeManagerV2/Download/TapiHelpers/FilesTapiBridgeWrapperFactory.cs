@@ -1,8 +1,6 @@
-﻿using System;
-using System.Threading;
-using kCura.WinEDDS.TApi;
+﻿using System.Threading;
+using Relativity.Import.Export.Transfer;
 using Relativity.Logging;
-using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 {

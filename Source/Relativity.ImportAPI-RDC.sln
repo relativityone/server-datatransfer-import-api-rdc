@@ -45,11 +45,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Client", 
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Relativity.Import.Export.Legacy", "Relativity.Import.Export.Legacy\Relativity.Import.Export.Legacy.vbproj", "{2022E24B-46A1-46DA-A715-36D137436B3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Export.Client.NUnit.Integration", "..\..\..\DataTransfer\import-api-rdc\Source\Relativity.Export.Client.NUnit.Integration\Relativity.Export.Client.NUnit.Integration.csproj", "{5AEF327E-1D3A-4231-B4C6-041769248B33}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Export.Client.NUnit", "..\..\..\DataTransfer\import-api-rdc\Source\Relativity.Export.Client.NUnit\Relativity.Export.Client.NUnit.csproj", "{7E26A5AA-2082-4D83-9E29-CE7F5E5D67F4}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Export.Client", "Relativity.Export.Client\Relativity.Export.Client.csproj", "{410BA79B-DF60-4EDA-86B3-608F3DEE38F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Export.Client.NUnit", "Relativity.Export.Client.NUnit\Relativity.Export.Client.NUnit.csproj", "{7E26A5AA-2082-4D83-9E29-CE7F5E5D67F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Export.Client.NUnit.Integration", "Relativity.Export.Client.NUnit.Integration\Relativity.Export.Client.NUnit.Integration.csproj", "{5AEF327E-1D3A-4231-B4C6-041769248B33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -113,18 +113,18 @@ Global
 		{2022E24B-46A1-46DA-A715-36D137436B3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2022E24B-46A1-46DA-A715-36D137436B3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2022E24B-46A1-46DA-A715-36D137436B3A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5AEF327E-1D3A-4231-B4C6-041769248B33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5AEF327E-1D3A-4231-B4C6-041769248B33}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5AEF327E-1D3A-4231-B4C6-041769248B33}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5AEF327E-1D3A-4231-B4C6-041769248B33}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7E26A5AA-2082-4D83-9E29-CE7F5E5D67F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7E26A5AA-2082-4D83-9E29-CE7F5E5D67F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7E26A5AA-2082-4D83-9E29-CE7F5E5D67F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7E26A5AA-2082-4D83-9E29-CE7F5E5D67F4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{410BA79B-DF60-4EDA-86B3-608F3DEE38F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{410BA79B-DF60-4EDA-86B3-608F3DEE38F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{410BA79B-DF60-4EDA-86B3-608F3DEE38F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{410BA79B-DF60-4EDA-86B3-608F3DEE38F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E26A5AA-2082-4D83-9E29-CE7F5E5D67F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E26A5AA-2082-4D83-9E29-CE7F5E5D67F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E26A5AA-2082-4D83-9E29-CE7F5E5D67F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E26A5AA-2082-4D83-9E29-CE7F5E5D67F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AEF327E-1D3A-4231-B4C6-041769248B33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AEF327E-1D3A-4231-B4C6-041769248B33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AEF327E-1D3A-4231-B4C6-041769248B33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AEF327E-1D3A-4231-B4C6-041769248B33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -144,9 +144,9 @@ Global
 		{49CDE7EB-9385-41D9-8CD9-687C09C46996} = {272C7D84-8FCE-4F14-8D39-E0422E0FF922}
 		{AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D} = {D46C8AE9-2431-43EC-9AC6-3CB06EE99453}
 		{2022E24B-46A1-46DA-A715-36D137436B3A} = {5F3863F0-E6C9-439F-A371-6B95DB928BDE}
-		{5AEF327E-1D3A-4231-B4C6-041769248B33} = {1114F579-C126-48A5-8182-50AB87366325}
-		{7E26A5AA-2082-4D83-9E29-CE7F5E5D67F4} = {1114F579-C126-48A5-8182-50AB87366325}
 		{410BA79B-DF60-4EDA-86B3-608F3DEE38F5} = {1114F579-C126-48A5-8182-50AB87366325}
+		{7E26A5AA-2082-4D83-9E29-CE7F5E5D67F4} = {1114F579-C126-48A5-8182-50AB87366325}
+		{5AEF327E-1D3A-4231-B4C6-041769248B33} = {1114F579-C126-48A5-8182-50AB87366325}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B030F56A-9600-4DC6-B33D-A81BE2C63205}

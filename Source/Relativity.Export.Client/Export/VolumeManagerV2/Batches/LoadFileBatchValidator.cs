@@ -2,6 +2,7 @@
 using Castle.Core;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
 using kCura.WinEDDS.Exporters;
+using Relativity.Import.Export.Io;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
@@ -10,11 +11,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 	{
 		private readonly IDestinationPath _destinationPath;
 
-		private readonly IFileHelper _fileHelper;
+		private readonly IFile _fileWrapper;
 		private readonly IStatus _status;
 		private readonly ILog _logger;
 
-		public LoadFileBatchValidator(LoadFileDestinationPath destinationPath, IFileHelper fileHelper, IStatus status, ILog logger) : this((IDestinationPath) destinationPath, fileHelper,
+		public LoadFileBatchValidator(LoadFileDestinationPath destinationPath, IFile fileWrapper, IStatus status, ILog logger) : this((IDestinationPath) destinationPath, fileWrapper,
 			status, logger)
 		{
 		}
@@ -23,26 +24,26 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
 		///     For testing
 		/// </summary>
 		/// <param name="destinationPath"></param>
-		/// <param name="fileHelper"></param>
+		/// <param name="fileWrapper"></param>
 		/// <param name="status"></param>
 		/// <param name="logger"></param>
 		[DoNotSelect]
-		public LoadFileBatchValidator(IDestinationPath destinationPath, IFileHelper fileHelper, IStatus status, ILog logger)
+		public LoadFileBatchValidator(IDestinationPath destinationPath, IFile fileWrapper, IStatus status, ILog logger)
 		{
 			_destinationPath = destinationPath;
-			_fileHelper = fileHelper;
+			_fileWrapper = fileWrapper;
 			_status = status;
 			_logger = logger;
 		}
 
 		public void ValidateExportedBatch(ObjectExportInfo[] artifacts, VolumePredictions[] predictions, CancellationToken cancellationToken)
 		{
-			if (!_fileHelper.Exists(_destinationPath.Path))
+			if (!_fileWrapper.Exists(_destinationPath.Path))
 			{
 				_logger.LogError("Load file {file} is missing.", _destinationPath.Path);
 				_status.WriteError($"Load file {_destinationPath.Path} is missing.");
 			}
-			else if (_fileHelper.GetFileSize(_destinationPath.Path) == 0)
+			else if (_fileWrapper.GetFileSize(_destinationPath.Path) == 0)
 			{
 				_logger.LogError("Load file {file} is empty.", _destinationPath.Path);
 				_status.WriteError($"Load file {_destinationPath.Path} is empty.");

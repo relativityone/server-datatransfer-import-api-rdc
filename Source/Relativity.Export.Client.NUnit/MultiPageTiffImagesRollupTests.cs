@@ -14,11 +14,12 @@ namespace Relativity.Export.Client.NUnit
 
     using Moq;
 
+    using Relativity.Import.Export.Io;
     using Relativity.Logging;
 
     public class MultiPageTiffImagesRollupTests : MultiPageImagesRollupTests
 	{
-		protected override MultiPageImagesRollup CreateInstance(ExportFile exportSettings, IFileHelper fileHelper, IStatus status, IImage imageConverter)
+		protected override MultiPageImagesRollup CreateInstance(ExportFile exportSettings, IFile fileHelper, IStatus status, IImage imageConverter)
 		{
 			return new MultiPageTiffImagesRollup(exportSettings, fileHelper, status, new NullLogger(), imageConverter);
 		}

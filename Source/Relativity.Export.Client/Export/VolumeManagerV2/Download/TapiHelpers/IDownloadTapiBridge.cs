@@ -1,5 +1,5 @@
 ﻿using System;
-using kCura.WinEDDS.TApi;
+using Relativity.Import.Export.Transfer;
 using Relativity.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers

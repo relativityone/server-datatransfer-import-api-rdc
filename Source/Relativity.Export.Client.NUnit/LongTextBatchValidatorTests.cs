@@ -21,6 +21,7 @@ namespace Relativity.Export.Client.NUnit
 
     using Moq;
 
+    using Relativity.Import.Export.Io;
     using Relativity.Logging;
 
     [TestFixture]
@@ -30,7 +31,7 @@ namespace Relativity.Export.Client.NUnit
 
 		protected Mock<ILongTextRepository> LongTextRepository { get; set; }
 
-		protected Mock<IFileHelper> FileHelper { get; set; }
+		protected Mock<IFile> FileHelper { get; set; }
 
 		protected Mock<IStatus> Status { get; set; }
 
@@ -38,7 +39,7 @@ namespace Relativity.Export.Client.NUnit
 		public void SetUp()
 		{
 			LongTextRepository = new Mock<ILongTextRepository>();
-			FileHelper = new Mock<IFileHelper>();
+			FileHelper = new Mock<IFile>();
 			Status = new Mock<IStatus>();
 
 			Instance = CreateValidator();

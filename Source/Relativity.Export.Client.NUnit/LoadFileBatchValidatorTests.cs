@@ -16,6 +16,7 @@ namespace Relativity.Export.Client.NUnit
 
     using Moq;
 
+    using Relativity.Import.Export.Io;
     using Relativity.Logging;
 
     [TestFixture]
@@ -23,7 +24,7 @@ namespace Relativity.Export.Client.NUnit
 	{
 		private LoadFileBatchValidator _instance;
 		private Mock<IDestinationPath> _destinationPath;
-		private Mock<IFileHelper> _fileHelper;
+		private Mock<IFile> _fileHelper;
 		private Mock<IStatus> _status;
 
 		[SetUp]
@@ -32,7 +33,7 @@ namespace Relativity.Export.Client.NUnit
 			_destinationPath = new Mock<IDestinationPath>();
 			_destinationPath.Setup(x => x.Path).Returns("file_path");
 
-			_fileHelper = new Mock<IFileHelper>();
+			_fileHelper = new Mock<IFile>();
 			_status = new Mock<IStatus>();
 
 			_instance = new LoadFileBatchValidator(_destinationPath.Object, _fileHelper.Object, _status.Object, new NullLogger());

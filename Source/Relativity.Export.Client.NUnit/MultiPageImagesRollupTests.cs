@@ -18,6 +18,8 @@ namespace Relativity.Export.Client.NUnit
 
     using Moq;
 
+    using Relativity.Import.Export.Io;
+
     [TestFixture]
 	public abstract class MultiPageImagesRollupTests
 	{
@@ -25,13 +27,13 @@ namespace Relativity.Export.Client.NUnit
 
 		private Mock<IImage> _imageConverter;
 		private Mock<IStatus> _status;
-		private Mock<IFileHelper> _fileHelper;
+		private Mock<IFile> _fileHelper;
 		private ExportFile _exportSettings;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_fileHelper = new Mock<IFileHelper>();
+			_fileHelper = new Mock<IFile>();
 			_status = new Mock<IStatus>();
 			_imageConverter = new Mock<IImage>();
 
@@ -42,7 +44,7 @@ namespace Relativity.Export.Client.NUnit
 			_instance = CreateInstance(_exportSettings, _fileHelper.Object, _status.Object, _imageConverter.Object);
 		}
 
-		protected abstract MultiPageImagesRollup CreateInstance(ExportFile exportSettings, IFileHelper fileHelper, IStatus status, IImage imageConverter);
+		protected abstract MultiPageImagesRollup CreateInstance(ExportFile exportSettings, IFile fileHelper, IStatus status, IImage imageConverter);
 
 		protected abstract void AssertImageConverterCall(Mock<IImage> imageConverter, ObjectExportInfo artifact);
 

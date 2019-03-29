@@ -15,14 +15,15 @@ namespace Relativity.Export.Client.NUnit
 
     using Moq;
 
-    using Relativity.Logging;
+	using Relativity.Import.Export.Io;
+	using Relativity.Logging;
 
     [TestFixture]
 	public class FilesOverwriteValidatorTests
 	{
 		private FilesOverwriteValidator _instance;
 
-		private Mock<IFileHelper> _fileHelperMock;
+		private Mock<IFile> _fileHelperMock;
 		private LoadFileDestinationPath _loadFileDestinationPath;
 		private ImageLoadFileDestinationPath _imageLoadFileDestinationPath;
 
@@ -30,7 +31,7 @@ namespace Relativity.Export.Client.NUnit
 		public void SetUp()
 		{
 			Mock<IUserNotification> userNotificationMock = new Mock<IUserNotification>();
-			_fileHelperMock = new Mock<IFileHelper>();
+			_fileHelperMock = new Mock<IFile>();
 
 			var exportSettings = new ExportFile(1)
 			{

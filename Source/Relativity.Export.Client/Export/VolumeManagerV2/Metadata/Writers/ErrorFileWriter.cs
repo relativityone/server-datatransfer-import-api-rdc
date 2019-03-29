@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using Castle.Core;
-using kCura.Utility;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
 using kCura.WinEDDS.Exceptions;
+using Relativity.Import.Export;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
@@ -73,7 +73,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
 
 		private void WriteLine(ExportFileType type, string recordIdentifier, string fileLocation, string errorText)
 		{
-			string line = FormatErrorLine(type.ToString(), recordIdentifier, fileLocation, Strings.ToCsvCellContents(errorText));
+			string line = FormatErrorLine(type.ToString(), recordIdentifier, fileLocation, errorText.ToCsvCellContents());
 			_logger.LogError(line);
 			_streamWriter.WriteLine(line);
 		}

@@ -1,8 +1,10 @@
 ﻿using System;
-using kCura.WinEDDS.TApi;
+using Relativity.Import.Export.Transfer;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 {
+	using global::Relativity.Import.Export;
+
 	public class TapiBridgeParametersFactory
 	{
 		private readonly IExportConfig _exportConfig;
@@ -18,32 +20,32 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
 		{
 			TapiBridgeParameters parameters = new TapiBridgeParameters
 			{
-				Application = Config.ApplicationName,
-				AsperaBcpRootFolder = Config.TapiAsperaBcpRootFolder,
-				AsperaDocRootLevels = Config.TapiAsperaNativeDocRootLevels,
-				BadPathErrorsRetry = Config.BadPathErrorsRetry,
+				Application = AppSettings.Instance.ApplicationName,
+				AsperaBcpRootFolder = AppSettings.Instance.TapiAsperaBcpRootFolder,
+				AsperaDocRootLevels = AppSettings.Instance.TapiAsperaNativeDocRootLevels,
+				BadPathErrorsRetry = AppSettings.Instance.TapiBadPathErrorsRetry,
 				ClientRequestId = Guid.NewGuid(),
 				Credentials = _exportSettings.Credential,
 				FileShare = _exportSettings.CaseInfo.DocumentPath,
-				ForceAsperaClient = Config.TapiForceAsperaClient,
-				ForceClientCandidates = Config.TapiForceClientCandidates,
-				ForceFileShareClient = Config.TapiForceFileShareClient,
-				ForceHttpClient = Config.TapiForceHttpClient,
-				LargeFileProgressEnabled = Config.TapiLargeFileProgressEnabled,
-				LogConfigFile = Config.LogConfigFile,
-				MaxJobParallelism = Config.TapiMaxJobParallelism,
+				ForceAsperaClient = AppSettings.Instance.TapiForceAsperaClient,
+				ForceClientCandidates = AppSettings.Instance.TapiForceClientCandidates,
+				ForceFileShareClient = AppSettings.Instance.TapiForceFileShareClient,
+				ForceHttpClient = AppSettings.Instance.TapiForceHttpClient,
+				LargeFileProgressEnabled = AppSettings.Instance.TapiLargeFileProgressEnabled,
+				LogConfigFile = AppSettings.Instance.LogConfigXmlFileName,
+				MaxJobParallelism = AppSettings.Instance.TapiMaxJobParallelism,
 				MaxJobRetryAttempts = _exportConfig.ExportIOErrorNumberOfRetries,
-				MinDataRateMbps = Config.TapiMinDataRateMbps,
-				PermissionErrorsRetry = Config.PermissionErrorsRetry,
-				PreserveFileTimestamps = Config.TapiPreserveFileTimestamps,
-				SubmitApmMetrics = Config.TapiSubmitApmMetrics,
+				MinDataRateMbps = AppSettings.Instance.TapiMinDataRateMbps,
+				PermissionErrorsRetry = AppSettings.Instance.PermissionErrorsRetry,
+				PreserveFileTimestamps = AppSettings.Instance.TapiPreserveFileTimestamps,
+				SubmitApmMetrics = AppSettings.Instance.TapiSubmitApmMetrics,
 				TargetPath = string.Empty,
-				TargetDataRateMbps = Config.TapiTargetDataRateMbps,
-				TimeoutSeconds = Config.HttpTimeoutSeconds,
-				TransferLogDirectory = Config.TapiTransferLogDirectory,
+				TargetDataRateMbps = AppSettings.Instance.TapiTargetDataRateMbps,
+				TimeoutSeconds = AppSettings.Instance.HttpTimeoutSeconds,
+				TransferLogDirectory = AppSettings.Instance.TapiTransferLogDirectory,
 				WaitTimeBetweenRetryAttempts = _exportConfig.ExportIOErrorWaitTime,
 				WebCookieContainer = _exportSettings.CookieContainer,
-				WebServiceUrl = Config.WebServiceURL,
+				WebServiceUrl = AppSettings.Instance.WebApiServiceUrl,
 				WorkspaceId = _exportSettings.CaseInfo.ArtifactID,
 			};
 

@@ -18,7 +18,8 @@ using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.Exporters.Validator;
 using kCura.WinEDDS.Service.Export;
 using Relativity.Logging;
-using Image = kCura.Utility.Image;
+using Relativity.Import.Export;
+using Relativity.Import.Export.Io;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 {
@@ -52,7 +53,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 		private void InstallFromWinEdds(IWindsorContainer container)
 		{
 			container.Register(Component.For<PaddingWarningValidator>().ImplementedBy<PaddingWarningValidator>());
-			container.Register(Component.For<Image>().ImplementedBy<Image>());
+			container.Register(Component.For<IImageConversionService>().ImplementedBy<ImageConversionService>());
 			container.Register(Component.For<ILoadFileHeaderFormatterFactory>().Instance(_loadFileHeaderFormatterFactory));
 			container.Register(Component.For<ITransferClientHandler, IExportFileDownloaderStatus, ExportFileDownloaderStatus>().ImplementedBy<ExportFileDownloaderStatus>());
 			container.Register(Component.For<ILoadFileCellFormatter>().UsingFactoryMethod(k => k.Resolve<LoadFileCellFormatterFactory>().Create(ExportSettings, k.Resolve<FilePathTransformerFactory>().Create(ExportSettings, container))));
@@ -66,8 +67,8 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			container.Register(Component.For<IStatus>().Instance(_exporter));
 			container.Register(Component.For<IFileNameProvider>().Instance(_exporter.FileNameProvider));
 			container.Register(Component.For<IUserNotification>().Instance(_exporter.InteractionManager));
-			container.Register(Component.For<IFileHelper>().Instance(_exporter.FileHelper));
-			container.Register(Component.For<IDirectoryHelper>().Instance(_exporter.DirectoryHelper));
+			container.Register(Component.For<IFile>().Instance(_exporter.FileHelper));
+			container.Register(Component.For<IDirectory>().Instance(_exporter.DirectoryHelper));
 			container.Register(Component.For<IExportConfig>().Instance(_exporter.ExportConfig));
 		}
 

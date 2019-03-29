@@ -1,8 +1,10 @@
 ﻿namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings
 {
+	using global::Relativity.Import.Export;
+
 	public class Config
 	{
-		public int NumberOfIORetries => kCura.Utility.Config.IOErrorNumberOfRetries;
-		public int WaitTimeBetweenIORetryAttempts => kCura.Utility.Config.IOErrorWaitTimeInSeconds;
+		public int NumberOfIORetries => AppSettings.Instance.IoErrorNumberOfRetries;
+		public int WaitTimeBetweenIORetryAttempts => AppSettings.Instance.IoErrorWaitTimeInSeconds;
 	}
 }

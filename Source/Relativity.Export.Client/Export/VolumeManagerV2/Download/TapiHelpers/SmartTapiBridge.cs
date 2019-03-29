@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading;
-using kCura.WinEDDS.TApi;
+using Relativity.Import.Export.Transfer;
 using Relativity.Logging;
 using Relativity.Transfer;
 

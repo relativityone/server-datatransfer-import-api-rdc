@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
+using Relativity.Import.Export.Io;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
@@ -13,14 +14,14 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 		private Dictionary<int, List<LongText>> _longTextsByArtifactIdDictionary;
 		private List<LongTextExportRequest> _exportRequests;
 
-		private readonly IFileHelper _fileHelper;
+		private readonly IFile _fileWrapper;
 		private readonly ILog _logger;	
 
 		private readonly object _syncLock = new object();
 
-		public LongTextRepository(IFileHelper fileHelper, ILog logger)
+		public LongTextRepository(IFile fileWrapper, ILog logger)
 		{
-			_fileHelper = fileHelper;
+			_fileWrapper = fileWrapper;
 			_logger = logger;
 
 			InitializeCollections();
@@ -104,7 +105,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 						_logger.LogInformation("Removing long text temp file {file}.", longText.Location);
 						try
 						{
-							_fileHelper.Delete(longText.Location);
+							_fileWrapper.Delete(longText.Location);
 						}
 						catch (Exception)
 						{

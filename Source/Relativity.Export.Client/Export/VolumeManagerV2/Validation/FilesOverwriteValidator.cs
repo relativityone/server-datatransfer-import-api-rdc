@@ -1,5 +1,6 @@
 ﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
 using kCura.WinEDDS.Exporters;
+using Relativity.Import.Export.Io;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation
@@ -7,13 +8,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation
 	public class FilesOverwriteValidator
 	{
 		private readonly IUserNotification _interactionManager;
-		private readonly IFileHelper _fileHelper;
+		private readonly IFile _fileWrapper;
 		private readonly ILog _logger;
 
-		public FilesOverwriteValidator(IUserNotification interactionManager, IFileHelper fileHelper, ILog logger)
+		public FilesOverwriteValidator(IUserNotification interactionManager, IFile fileWrapper, ILog logger)
 		{
 			_interactionManager = interactionManager;
-			_fileHelper = fileHelper;
+			_fileWrapper = fileWrapper;
 			_logger = logger;
 		}
 
@@ -25,7 +26,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation
 
 		private bool ValidateLoadFileOverwriting(bool overwrite, LoadFileDestinationPath loadFileDestinationPath)
 		{
-			if (!overwrite && _fileHelper.Exists(loadFileDestinationPath.Path))
+			if (!overwrite && _fileWrapper.Exists(loadFileDestinationPath.Path))
 			{
 				_interactionManager.Alert(CreateErrorMessage(loadFileDestinationPath.Path));
 				_logger.LogError("Load file exists. Canceling the export.");
@@ -38,7 +39,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation
 
 		private bool ValidateImageLoadFileOverwriting(bool overwrite, bool exportImages, ImageLoadFileDestinationPath imageLoadFileDestinationPath)
 		{
-			if (!overwrite && exportImages && _fileHelper.Exists(imageLoadFileDestinationPath.Path))
+			if (!overwrite && exportImages && _fileWrapper.Exists(imageLoadFileDestinationPath.Path))
 			{
 				_interactionManager.Alert(CreateErrorMessage(imageLoadFileDestinationPath.Path));
 				_logger.LogError("Image load file exists. Canceling the export.");

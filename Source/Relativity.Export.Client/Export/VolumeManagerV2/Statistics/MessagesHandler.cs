@@ -1,6 +1,6 @@
-﻿using kCura.Windows.Process;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-using kCura.WinEDDS.TApi;
+﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
+using Relativity.Import.Export.Process;
+using Relativity.Import.Export.Transfer;
 using Relativity.Logging;
 
 namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics

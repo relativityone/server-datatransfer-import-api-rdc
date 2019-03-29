@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using kCura.WinEDDS.Exporters;
+using ArtifactType = Relativity.ArtifactType;
 
 namespace kCura.WinEDDS.Core.Export
 {
@@ -29,7 +30,7 @@ namespace kCura.WinEDDS.Core.Export
 				string headerColName = GetHeaderColName(field);
 				retString.AppendFormat("{0}{1}{2}", "<th>", System.Web.HttpUtility.HtmlEncode(headerColName), "</th>");
 			}
-			if (ExportSettings.ExportImages && ExportSettings.ArtifactTypeID == (int)Relativity.ArtifactType.Document)
+			if (ExportSettings.ExportImages && ExportSettings.ArtifactTypeID == (int)ArtifactType.Document)
 			{
 				retString.Append("<th>Image Files</th>");
 			}

@@ -13,7 +13,6 @@ namespace Relativity.Export.Client.NUnit
 
     using global::NUnit.Framework;
 
-	using kCura.Vendor.Castle.Core.Internal;
     using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
     using kCura.WinEDDS.Exporters;
 
@@ -25,7 +24,7 @@ namespace Relativity.Export.Client.NUnit
 	public class BatchValidatorTests
 	{
 		private BatchValidator _instance;
-		private IList<Mock<IBatchValidator>> _validatorMocks;
+		private List<Mock<IBatchValidator>> _validatorMocks;
 
 		[SetUp]
 		public void SetUp()

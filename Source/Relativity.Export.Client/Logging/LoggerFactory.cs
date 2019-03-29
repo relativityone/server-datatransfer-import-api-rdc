@@ -6,6 +6,8 @@ using Relativity.Logging.Factory;
 
 namespace kCura.WinEDDS.Core.Logging
 {
+	using global::Relativity.Import.Export;
+
 	public class LoggerFactory
 	{
 		public static ILog Create(ExecutionSource executionSource)
@@ -15,12 +17,13 @@ namespace kCura.WinEDDS.Core.Logging
 				System = executionSource.ToString(),
 				ConfigurationFileLocation = GetLoggerConfigFilePath()
 			};
+
 			return LogFactory.GetLogger(loggerOptions);
 		}
 
 		private static string GetLoggerConfigFilePath()
 		{
-			var path = Config.LogConfigFile;
+			var path = AppSettings.Instance.LogConfigXmlFileName;
 			if (Path.IsPathRooted(path))
 			{
 				return path;
