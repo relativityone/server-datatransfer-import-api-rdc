@@ -1,6 +1,10 @@
+kcura.outsidein.fi.win32
 moq
 nbuilder
 newtonsoft.json
 nunit
-relativity.importexport
+relativity
+relativity.logging
+relativity.logging.interfaces
+relativity.transfer.client
 stylecop.analyzers

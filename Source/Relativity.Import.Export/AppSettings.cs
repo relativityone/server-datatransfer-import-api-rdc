@@ -41,7 +41,7 @@ namespace Relativity.Import.Export
 						if (instance == null)
 						{
 							const bool Refresh = true;
-							instance = AppSettingsReader.Create(Refresh);
+							instance = AppSettingsManager.Create(Refresh);
 						}
 					}
 				}

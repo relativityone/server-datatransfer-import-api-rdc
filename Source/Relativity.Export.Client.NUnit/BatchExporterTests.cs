@@ -4,21 +4,22 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Threading;
 
     using global::NUnit.Framework;
 
-	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
     using kCura.WinEDDS.Exporters;
 
-	using Moq;
+    using Moq;
+
+	using Relativity.Export.VolumeManagerV2.Batches;
+    using Relativity.Export.VolumeManagerV2.Download;
+    using Relativity.Export.VolumeManagerV2.ImagesRollup;
+    using Relativity.Export.VolumeManagerV2.Metadata.Images;
+    using Relativity.Export.VolumeManagerV2.Metadata.Natives;
+    using Relativity.Export.VolumeManagerV2.Statistics;
 
     [TestFixture]
 	public class BatchExporterTests

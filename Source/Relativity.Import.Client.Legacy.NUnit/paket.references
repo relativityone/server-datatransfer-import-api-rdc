@@ -1,10 +1,12 @@
-kcura
+kcura.outsidein.fi.win32
 moq
 nbuilder
 newtonsoft.json
 nsubstitute
 nunit
-relativity.importexport
+relativity
+relativity.logging
+relativity.logging.interfaces
 relativity.telemetry.datacontracts.shared
 relativity.telemetry.services.interface
 rhinomocks

@@ -15,8 +15,7 @@ namespace Relativity.Import.Export.TestFramework
 	using System.Net;
 	using System.Reflection;
 
-	using kCura.WinEDDS.TApi;
-
+	using Relativity.Import.Export.Transfer;
 	using Relativity.Transfer;
 
 	/// <summary>

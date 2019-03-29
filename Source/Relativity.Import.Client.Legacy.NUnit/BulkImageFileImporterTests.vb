@@ -7,11 +7,13 @@
 Imports System.Threading
 
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
-Imports kCura.Windows.Process
 Imports kCura.WinEDDS
-Imports kCura.WinEDDS.TApi
+Imports Moq
 
 Imports NUnit.Framework
+Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Io
+Imports Relativity.Import.Export.Process
 
 Imports Relativity.Logging
 
@@ -22,7 +24,7 @@ Namespace Relativity.Import.Client.NUnit
 
 		Dim _args As ImageLoadFile
 		Dim _guid As System.Guid
-		Dim _controller As Controller
+		Dim _context As ProcessContext
 		Dim _overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType
 		Dim _keyPathExistsAlready As Boolean
 		Dim _keyValExistsAlready As Boolean
@@ -37,20 +39,17 @@ Namespace Relativity.Import.Client.NUnit
 			_args.CaseInfo = New CaseInfo()
 			_args.CaseInfo.RootArtifactID = 1
 			_guid = New Guid("E09E18F3-D0C8-4CFC-96D1-FBB350FAB3E1")
-			_controller = New Controller()
+			Dim mockProcessEventWriter = New Mock(Of IProcessEventWriter)()
+			Dim mockProcessErrorWriter = New Mock(Of IProcessErrorWriter)()
+			Dim mockAppSettings = New Mock(Of IAppSettings)()
+			Dim mockLogger = New Mock(Of ILog)()
+			_context = New ProcessContext(mockProcessEventWriter.Object, mockProcessErrorWriter.Object, mockAppSettings.Object, mockLogger.Object)
 			_overwrite = OverwriteType.Both
 			
 		    _logger = New NullLogger()
 			tokenSource = New CancellationTokenSource()
-            Dim ioWarningPublisher As New IoWarningPublisher()
-		    _ioReporter = IoReporterFactory.CreateIoReporter(
-			    kCura.Utility.Config.IOErrorNumberOfRetries, _
-			    kCura.Utility.Config.IOErrorWaitTimeInSeconds, _
-			    kCura.WinEDDS.Config.DisableNativeLocationValidation, _
-			    kCura.WinEDDS.Config.RetryOptions, _
-			    _logger, _
-			    ioWarningPublisher, _
-			    tokenSource.Token)            
+            Dim ioReporterContext As New IoReporterContext()
+		    _ioReporter = New IoReporter(ioReporterContext, _logger, tokenSource.Token)
 			_keyPathExistsAlready = RegKeyHelper.SubKeyPathExists(RegKeyHelper.RelativityKeyPath)
 			_keyValExistsAlready = False
 			If _keyPathExistsAlready = True Then
@@ -71,7 +70,7 @@ Namespace Relativity.Import.Client.NUnit
 
 		<Test>
 		Public Sub BulkImportImageFile_NoException_NoRetries_CallsLowerBatchSize_False()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(False), tokenSource)
+			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _context, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(False), tokenSource)
 			bulkImporter.TryBulkImport(_overwrite)
 			Assert.AreEqual(500, bulkImporter.BatchSize)
 			Assert.AreEqual(0, bulkImporter.PauseCalled)
@@ -79,14 +78,14 @@ Namespace Relativity.Import.Client.NUnit
 
 		<Test>
 		Public Sub BulkImportImageFile_Lower_500BatchSize_to300()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), tokenSource)
+			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _context, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), tokenSource)
 			bulkImporter.BatchSize = 300
 			Assert.AreEqual(300, bulkImporter.BatchSize)
 		End Sub
 
 		<Test>
 		Public Sub BulkImportImageFile_Lower_500BatchSize_ToMinimum300()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), tokenSource)
+			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _context, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), tokenSource)
 			bulkImporter.MinimumBatch = 300
 			bulkImporter.BatchSize = 300
 			Assert.AreEqual(300, bulkImporter.BatchSize)
@@ -94,7 +93,7 @@ Namespace Relativity.Import.Client.NUnit
 
 		<Test>
 		Public Sub BulkImportImageFile_Lower_500BatchSize_To200_PastMinimum300()
-			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), tokenSource)
+			Dim bulkImporter As MockBulkImageFileImporter = New MockBulkImageFileImporter(_args, _context, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), tokenSource)
 			bulkImporter.MinimumBatch = 300
 			bulkImporter.BatchSize = 200
 			Assert.AreEqual(300, bulkImporter.BatchSize)
@@ -288,7 +287,7 @@ Namespace Relativity.Import.Client.NUnit
 			originalBatchSizeWith100Images = originalBatchSizeWith100Images.Replace(Chr(10), vbCrLf)
 			expectedReducedFileWith80Rows = expectedReducedFileWith80Rows.Replace(Chr(10), vbCrLf)
 
-			Dim bulkImporter As MockForLoweBatchSizeBulkImageFileImporter = New MockForLoweBatchSizeBulkImageFileImporter(78, originalBatchSizeWith100Images, _args, _controller, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), tokenSource)
+			Dim bulkImporter As MockForLoweBatchSizeBulkImageFileImporter = New MockForLoweBatchSizeBulkImageFileImporter(78, originalBatchSizeWith100Images, _args, _context, _ioReporter, _logger, _guid, False, False, New MockBulkImportManagerWebExceptions(True), tokenSource)
 			bulkImporter.MockLowerBatchSizeAndRetry(100)
 			Assert.AreEqual(expectedReducedFileWith80Rows, bulkImporter._outPutFromStringWriter.ToString())
 		End Sub

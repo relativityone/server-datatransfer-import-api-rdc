@@ -4,25 +4,26 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
 
-    using Relativity.Logging;
+	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.Export.VolumeManagerV2.Validation;
+	using Relativity.Import.Export.Io;
+	using Relativity.Logging;
 
     [TestFixture]
 	public class FilesOverwriteValidatorTests
 	{
 		private FilesOverwriteValidator _instance;
 
-		private Mock<IFileHelper> _fileHelperMock;
+		private Mock<IFile> _fileHelperMock;
 		private LoadFileDestinationPath _loadFileDestinationPath;
 		private ImageLoadFileDestinationPath _imageLoadFileDestinationPath;
 
@@ -30,7 +31,7 @@ namespace Relativity.Export.Client.NUnit
 		public void SetUp()
 		{
 			Mock<IUserNotification> userNotificationMock = new Mock<IUserNotification>();
-			_fileHelperMock = new Mock<IFileHelper>();
+			_fileHelperMock = new Mock<IFile>();
 
 			var exportSettings = new ExportFile(1)
 			{

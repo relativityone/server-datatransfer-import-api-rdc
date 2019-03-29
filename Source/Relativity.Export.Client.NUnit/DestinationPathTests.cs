@@ -4,15 +4,16 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Text;
 
     using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
-    using kCura.WinEDDS.Exceptions;
+	using kCura.WinEDDS.Exceptions;
+
+	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
 
     [TestFixture]
 	public class DestinationPathTests

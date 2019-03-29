@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.IO;
     using System.Threading;
@@ -12,14 +12,15 @@ namespace Relativity.Export.Client.NUnit
     using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
 
+	using Relativity.Export.VolumeManagerV2.Metadata.Images.Lines;
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.Import.Export.Io;
     using Relativity.Logging;
     using RelativityConstants = Relativity.Constants;
 
@@ -49,7 +50,7 @@ namespace Relativity.Export.Client.NUnit
 			_fullTextLineWriter = new Mock<IFullTextLineWriter>();
 			_writer = new Mock<IRetryableStreamWriter>();
 
-			LongTextRepository = new LongTextRepository(new Mock<IFileHelper>().Object, new NullLogger());
+			LongTextRepository = new LongTextRepository(new Mock<IFile>().Object, new NullLogger());
 
 			LongTextHelper longTextHelper = new LongTextHelper(exportSettings, FieldService.Object, LongTextRepository);
 

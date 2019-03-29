@@ -4,19 +4,20 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Threading;
 
     using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
 
+	using Relativity.Export.VolumeManagerV2.Batches;
+	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.Import.Export.Io;
     using Relativity.Logging;
 
     [TestFixture]
@@ -28,7 +29,7 @@ namespace Relativity.Export.Client.NUnit
 
 		protected Mock<IErrorFileWriter> ErrorFileWriter { get; private set; }
 
-		protected Mock<IFileHelper> FileHelper { get; private set; }
+		protected Mock<IFile> FileHelper { get; private set; }
 
 		protected Mock<IStatus> Status { get; private set; }
 
@@ -36,7 +37,7 @@ namespace Relativity.Export.Client.NUnit
 		public void SetUp()
 		{
 			ErrorFileWriter = new Mock<IErrorFileWriter>();
-			FileHelper = new Mock<IFileHelper>();
+			FileHelper = new Mock<IFile>();
 			Status = new Mock<IStatus>();
 
 			Instance = CreateValidator();
@@ -149,7 +150,7 @@ namespace Relativity.Export.Client.NUnit
 			Instance.ValidateExportedBatch(artifacts, new VolumePredictions[1], CancellationToken.None);
 
 			// ASSERT
-			ErrorFileWriter.Verify(x => x.Write(kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType.Native, artifact.IdentifierValue, artifact.NativeTempLocation, It.IsAny<string>()), Times.Once);
+			ErrorFileWriter.Verify(x => x.Write(Relativity.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType.Native, artifact.IdentifierValue, artifact.NativeTempLocation, It.IsAny<string>()), Times.Once);
 			Status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 	}

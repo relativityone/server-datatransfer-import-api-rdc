@@ -4,14 +4,14 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Data;
     using System.Globalization;
 
     using global::NUnit.Framework;
 
-	using kCura.Windows.Forms.Specialized;
+    using Relativity.Desktop.Client.Legacy.Controls;
 
     internal class SearchListSelectorTest : SearchListSelector
 	{

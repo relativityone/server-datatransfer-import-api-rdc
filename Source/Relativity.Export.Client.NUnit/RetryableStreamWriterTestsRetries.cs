@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System;
     using System.IO;
@@ -14,19 +14,19 @@ namespace Relativity.Export.Client.NUnit
     using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-    using kCura.WinEDDS.Exceptions;
+	using kCura.WinEDDS.Exceptions;
 
-    using Moq;
+	using Moq;
 
     using Polly;
 
-    using Relativity.Logging;
+	using Relativity.Export.VolumeManagerV2.Metadata;
+	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.Logging;
 
-    [TestFixture]
+	[TestFixture]
 	public class RetryableStreamWriterTestsRetries
 	{
 		private const string _FILE_PATH = "file_path";

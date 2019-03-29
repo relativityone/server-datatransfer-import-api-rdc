@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Collections.Generic;
     using System.IO;
@@ -14,16 +14,16 @@ namespace Relativity.Export.Client.NUnit
     using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
 
-    using Relativity.Import.Export.TestFramework;
+	using Relativity.Export.VolumeManagerV2.Directories;
+	using Relativity.Export.VolumeManagerV2.Download;
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.Import.Export.TestFramework;
     using Relativity.Logging;
 
     using ExportConstants = Relativity.Export.Constants;

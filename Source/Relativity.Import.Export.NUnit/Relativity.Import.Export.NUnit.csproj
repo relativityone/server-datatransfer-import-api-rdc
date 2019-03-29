@@ -156,6 +156,10 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Relativity.Import.Export.Legacy\Relativity.Import.Export.Legacy.vbproj">
+      <Project>{2022e24b-46a1-46da-a715-36d137436b3a}</Project>
+      <Name>Relativity.Import.Export.Legacy</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Relativity.Import.Export\Relativity.Import.Export.csproj">
       <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
       <Name>Relativity.Import.Export</Name>
@@ -257,7 +261,8 @@
     </Content>
   </ItemGroup>
   <PropertyGroup>
-    <PostBuildEvent>copy "$(SolutionDir)..\Vendor\FreeImage\3.18.0\x64\FreeImage.dll" $(TargetDir)</PostBuildEvent>
+    <PostBuildEvent>copy "$(SolutionDir)..\Vendor\FreeImage\3.18.0\x64\FreeImage.dll" $(TargetDir)
+copy "$(SolutionDir)..\Vendor\iTextSharp\5.1.2\x64\itextsharp.dll" $(TargetDir)</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
   <Choose>

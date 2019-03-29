@@ -4,17 +4,18 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Collections.Generic;
 
     using global::NUnit.Framework;
 
-	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
     using kCura.WinEDDS.Exporters;
 
-    [TestFixture]
+	using Relativity.Export.VolumeManagerV2.Download;
+	using Relativity.Export.VolumeManagerV2.Repository;
+
+	[TestFixture]
 	public class NativeRepositoryTests
 	{
 		private NativeRepository _instance;

@@ -33,58 +33,6 @@ Namespace Relativity.Import.Client.NUnit
 			Assert.AreEqual(expected, actual, "Wrong result was returned!")
 		End Sub
 
-
-#Region " XML Builder - for further test creation "
-
-		'<Test()>
-		Public Sub not_a_test()
-			Dim x As New kCura.WinEDDS.ExportFile(10)
-			x.ArtifactID = 100
-			x.AppendOriginalFileName = True
-			x.LoadFilesPrefix = "Wah"
-			x.NestedValueDelimiter = "\"c
-			x.TypeOfExport = ExportFile.ExportType.ArtifactSearch
-			x.FolderPath = "\\This\Is\A\Folder Path"
-			x.ViewID = 666
-			x.Overwrite = True
-			x.RecordDelimiter = "þ"c
-			x.QuoteDelimiter = "•"c
-			x.NewlineDelimiter = ChrW(10)
-			x.MultiRecordDelimiter = "ÿ"c
-			x.ExportFullText = True
-			x.ExportFullTextAsFile = True
-			x.ExportNative = True
-			x.LogFileFormat = kCura.WinEDDS.LoadFileType.FileFormat.IPRO_FullText
-			x.RenameFilesToIdentifier = True
-			x.IdentifierColumnName = "Control Number"
-			x.LoadFileExtension = ".LFE"
-			x.ExportImages = True
-			x.ExportNativesToFileNamedFrom = kCura.WinEDDS.ExportNativeWithFilenameFrom.Production
-			x.FilePrefix = "WANG_"
-			x.TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Prefix
-			x.TypeOfImage = ExportFile.ImageType.Pdf
-			x.AppendOriginalFileName = True
-			x.LoadFileIsHtml = True
-			x.MulticodesAsNested = True
-			x.LoadFileEncoding = Nothing
-			x.TextFileEncoding = System.Text.Encoding.UTF8
-			x.VolumeDigitPadding = 656
-			x.SubdirectoryDigitPadding = 657
-			x.StartAtDocumentNumber = 658
-			x.VolumeInfo = New kCura.WinEDDS.Exporters.VolumeInfo With {.CopyNativeFilesFromRepository = True, .CopyImageFilesFromRepository = True, .SubdirectoryFullTextPrefix = "TXT", .SubdirectoryImagePrefix = "IMG", .SubdirectoryNativePrefix = "NAT", .SubdirectoryMaxSize = 10, .SubdirectoryStartNumber = 1, .VolumeMaxSize = 100, .VolumeStartNumber = 1000}
-			x.SelectedTextFields = {QueryFieldFactory.GetExtractedTextField}
-			x.ImagePrecedence = New Pair() {New Pair("1", "A1"), New Pair("2", "B2")}
-			x.SelectedViewFields = New kCura.WinEDDS.ViewFieldInfo() {}
-			Dim sw As New System.IO.StreamWriter("C:\TempExportFiles\" & System.Guid.NewGuid.ToString("N") & ".kwe")
-			Dim serializer As New System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-			serializer.Serialize(sw.BaseStream, x)
-			sw.Close()
-		End Sub
-
-#End Region
-
-		'enums are being serialized as their underlying ints; ensure that existing enum ids aren't being changed
-		'TODO: Move this to a separate test assembly
 #Region "Export type serialization"
 		<Test()> Public Sub ExportType_AncestorSearch()
 			Assert.AreEqual(CInt(kCura.WinEDDS.ExportFile.ExportType.AncestorSearch), 3)

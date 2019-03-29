@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System;
     using System.Collections;
@@ -13,12 +13,13 @@ namespace Relativity.Export.Client.NUnit
     using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
 
+	using Relativity.Export.VolumeManagerV2.Batches;
+	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.Import.Export.Io;
     using Relativity.Logging;
 
     [TestFixture]
@@ -29,13 +30,13 @@ namespace Relativity.Export.Client.NUnit
 
 		protected Mock<IErrorFileWriter> ErrorFileWriter { get; set; }
 
-		protected Mock<IFileHelper> FileHelper { get; set; }
+		protected Mock<IFile> FileHelper { get; set; }
 
 		[SetUp]
 		public void SetUp()
 		{
 			ErrorFileWriter = new Mock<IErrorFileWriter>();
-			FileHelper = new Mock<IFileHelper>();
+			FileHelper = new Mock<IFile>();
 			_status = new Mock<IStatus>();
 
 			_instance = CreateSut();
@@ -91,7 +92,7 @@ namespace Relativity.Export.Client.NUnit
 			_instance.ValidateExportedBatch(artifacts, new VolumePredictions[1], CancellationToken.None);
 
 			// ASSERT
-			ErrorFileWriter.Verify(x => x.Write(kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType.Image, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+			ErrorFileWriter.Verify(x => x.Write(Relativity.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType.Image, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 			_status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
@@ -167,7 +168,7 @@ namespace Relativity.Export.Client.NUnit
 			_instance.ValidateExportedBatch(artifacts, new VolumePredictions[1], CancellationToken.None);
 
 			// ASSERT
-			ErrorFileWriter.Verify(x => x.Write(kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType.Image, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+			ErrorFileWriter.Verify(x => x.Write(Relativity.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType.Image, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 			_status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 

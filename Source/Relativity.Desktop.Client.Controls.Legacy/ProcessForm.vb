@@ -387,7 +387,7 @@ End Sub
 			End Set
 		End Property
 
-		Public Property ProcessObserver() As ProcessContext
+		Public Property ProcessContext() As ProcessContext
 			Get
 				Return _processContext
 			End Get

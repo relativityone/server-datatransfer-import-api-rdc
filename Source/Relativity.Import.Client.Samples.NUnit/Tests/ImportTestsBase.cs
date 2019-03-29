@@ -15,6 +15,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
+	using Relativity.Import.Export;
 	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>
@@ -341,7 +342,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
             this.ArtifactTypeId = this.QueryArtifactTypeId(WellKnownArtifactTypes.DocumentArtifactTypeName);
             this.IdentifierFieldId = this.QueryIdentifierFieldId(WellKnownArtifactTypes.DocumentArtifactTypeName);
             this.IdentifierFieldName = this.QueryIdentifierFieldName(WellKnownArtifactTypes.DocumentArtifactTypeName);
-            SetWinEddsConfigValue(false, "CreateFoldersInWebAPI", true);
+            AppSettings.Instance.CreateFoldersInWebApi = true;
 			this.OnSetup();
 		}
 
@@ -349,7 +350,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		public void Teardown()
 		{
 			this.DataSource?.Dispose();
-			SetWinEddsConfigValue(false, "CreateFoldersInWebAPI", true);
+			AppSettings.Instance.CreateFoldersInWebApi = true;
 			this.OnTearDown();
 		}
 
@@ -581,36 +582,6 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		protected static string GenerateControlNumber()
 		{
 			return $"REL-{Guid.NewGuid()}";
-		}
-
-		/// <summary>
-		/// Sets a WinEDDS-based configuration value.
-		/// </summary>
-		/// <param name="log">
-		/// Specify whether to log the configuration assignment.
-		/// </param>
-		/// <param name="key">
-		/// The configuration key name.
-		/// </param>
-		/// <param name="value">
-		/// The configuration value name.
-		/// </param>
-		protected static void SetWinEddsConfigValue(bool log, string key, object value)
-		{
-			System.Collections.IDictionary configDictionary = kCura.WinEDDS.Config.ConfigSettings;
-			if (configDictionary.Contains(key))
-			{
-				configDictionary[key] = value;
-			}
-			else
-			{
-				configDictionary.Add(key, value);
-			}
-
-			if (log)
-			{
-				System.Console.WriteLine($"{key}={value}");
-			}
 		}
 
 		/// <summary>

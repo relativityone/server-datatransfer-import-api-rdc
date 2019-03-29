@@ -79,6 +79,18 @@ namespace Relativity.Import.Export
 		}
 
 		/// <summary>
+		/// Gets or sets the default maximum error count.
+		/// </summary>
+		/// <value>
+		/// The error count.
+		/// </value>
+		int DefaultMaxErrorCount
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether to disable image location validation.
 		/// </summary>
 		/// <value>
@@ -97,6 +109,30 @@ namespace Relativity.Import.Export
 		/// <see langword="true" /> to disable image type validation; otherwise, <see langword="false" />.
 		/// </value>
 		bool DisableImageTypeValidation
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to disable file identification using Outside In technology.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to disable disable file identification; otherwise, <see langword="false" />.
+		/// </value>
+		bool DisableOutsideInFileIdentification
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to disable the text file encoding check.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to disable the text file encoding check; otherwise, <see langword="false" />.
+		/// </value>
+		bool DisableTextFileEncodingCheck
 		{
 			get;
 			set;
@@ -133,6 +169,18 @@ namespace Relativity.Import.Export
 		/// <see langword="true" /> to use case-sensitive file matching; otherwise, <see langword="false" />.
 		/// </value>
 		bool EnableCaseSensitiveSearchOnImport
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to enable single-mode import.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to enable single-mode import; otherwise, <see langword="false" />.
+		/// </value>
+		bool EnableSingleModeImport
 		{
 			get;
 			set;
@@ -264,7 +312,7 @@ namespace Relativity.Import.Export
 		/// <value>
 		/// The total number of bytes.
 		/// </value>
-		long ImportBatchMaxVolume
+		int ImportBatchMaxVolume
 		{
 			get;
 			set;
@@ -419,12 +467,35 @@ namespace Relativity.Import.Export
 		}
 
 		/// <summary>
+		/// Gets the Open ID Connect HRD or home realm discovery login hint.
+		/// </summary>
+		/// <value>
+		/// The login hint.
+		/// </value>
+		string OpenIdConnectHomeRealmDiscoveryHint
+		{
+			get;
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether permission specific errors are retried.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to retry permissions specific errors; otherwise, <see langword="false" />.
 		/// </value>
 		bool PermissionErrorsRetry
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the preview threshold.
+		/// </summary>
+		/// <value>
+		/// The threshold value.
+		/// </value>
+		int PreviewThreshold
 		{
 			get;
 			set;
@@ -448,7 +519,7 @@ namespace Relativity.Import.Export
 		/// <value>
 		/// The <see cref="Uri"/> instance.
 		/// </value>
-		Uri ProgrammaticWebApiServiceUrl
+		string ProgrammaticWebApiServiceUrl
 		{
 			get;
 			set;
@@ -730,6 +801,18 @@ namespace Relativity.Import.Export
 		}
 
 		/// <summary>
+		/// Gets or sets the time, in milliseconds, to wait before reconnecting.
+		/// </summary>
+		/// <value>
+		/// The total number of milliseconds.
+		/// </value>
+		int WaitBeforeReconnect
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets the timeout, in seconds, before a WebAPI service call throws a timeout exception.
 		/// </summary>
 		/// <value>
@@ -745,21 +828,21 @@ namespace Relativity.Import.Export
 		/// Gets or sets the Relativity Web API service URL. This will always return <see cref="ProgrammaticWebApiServiceUrl"/> and then this value. If none are defined, a final check is made with the Windows Registry to determine if it has been set of the RDC.
 		/// </summary>
 		/// <value>
-		/// The <see cref="Uri"/> instance.
+		/// The URL string.
 		/// </value>
-		Uri WebApiServiceUrl
+		string WebApiServiceUrl
 		{
 			get;
 			set;
 		}
 
 		/// <summary>
-		/// Gets or sets the string representation of <see cref="WebApiServiceUrl"/>.
+		/// Gets or sets the number of bytes used when downloading chunks using web mode.
 		/// </summary>
 		/// <value>
-		/// The URL string.
+		/// The total number of bytes.
 		/// </value>
-		string WebApiServiceUrlString
+		int WebBasedFileDownloadChunkSize
 		{
 			get;
 			set;
@@ -772,5 +855,16 @@ namespace Relativity.Import.Export
 		/// The <see cref="IAppSettings"/> instance.
 		/// </returns>
 		IAppSettings DeepCopy();
+
+		/// <summary>
+		/// Validates that the URI is valid and returns a properly formatted URI string.
+		/// </summary>
+		/// <param name="value">
+		/// The URI value.
+		/// </param>
+		/// <returns>
+		/// The properly formatted URI string.
+		/// </returns>
+		string ValidateUriFormat(string value);
 	}
 }

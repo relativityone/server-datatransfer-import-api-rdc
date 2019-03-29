@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Collections.Generic;
     using System.Threading;
@@ -12,13 +12,13 @@ namespace Relativity.Export.Client.NUnit
     using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
 
-    using Relativity.Logging;
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.Logging;
     using RelativityConstants = Relativity.Constants;
 
     [TestFixture]

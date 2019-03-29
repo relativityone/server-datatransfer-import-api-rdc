@@ -1,0 +1,519 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{410BA79B-DF60-4EDA-86B3-608F3DEE38F5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Relativity.Export</RootNamespace>
+    <AssemblyName>Relativity.Export.Client</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINDOWS64</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591;0649;0067</NoWarn>
+    <DocumentationFile>bin\Relativity.Export.Client.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;WINDOWS64</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>3</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591;0649;0067</NoWarn>
+    <DocumentationFile>bin\Relativity.Export.Client.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FreeImageNET">
+      <HintPath>..\..\Vendor\FreeImage\3.18.0\x64\FreeImageNET.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Version\AssemblySharedInfo.cs">
+      <Link>Properties\AssemblySharedInfo.cs</Link>
+    </Compile>
+    <Compile Include="Export\ExportFileFormatter.cs" />
+    <Compile Include="Export\ExportFileFormatterBase.cs" />
+    <Compile Include="Export\ExportFileFormatterFactory.cs" />
+    <Compile Include="Export\FieldNameProvider.cs" />
+    <Compile Include="Export\HtmlCellFormatter.cs" />
+    <Compile Include="Export\HtmlExportFileFormatter.cs" />
+    <Compile Include="Export\Natives\Name\Factories\FileNameProviderContainerFactory.cs" />
+    <Compile Include="Export\Natives\Name\Factories\IFileNameProviderContainerFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batch.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\BatchCleanUp.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\BatchExporter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\BatchInitialization.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\BatchInitializationFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\BatchState.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\BatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\BatchValidatorFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\IBatchCleanUp.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\IBatchExporter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\IBatchInitialization.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\IBatchState.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\IBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\ImageFileBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\ImageFileParallelBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\ImageLoadFileBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\IStateful.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\LoadFileBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\LongTextBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\LongTextParallelBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\NativeFileBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\NativeFileParallelBatchValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Batches\ParallelBatchInitialization.cs" />
+    <Compile Include="Export\VolumeManagerV2\Container\ContainerFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Container\ExportInstaller.cs" />
+    <Compile Include="Export\VolumeManagerV2\DataSize\EncodingFileSize.cs" />
+    <Compile Include="Export\VolumeManagerV2\DataSize\ImageExportableSize.cs" />
+    <Compile Include="Export\VolumeManagerV2\DataSize\NativeExportableSize.cs" />
+    <Compile Include="Export\VolumeManagerV2\DataSize\ObjectExportableSize.cs" />
+    <Compile Include="Export\VolumeManagerV2\DataSize\TextExportableSize.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\AbsoluteFilePathTransformer.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\CachedLabelManagerForArtifact.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\DirectoryManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\FilePathHelper.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\FilePathProvider.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\FilePathTransformerFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\IDirectoryManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\IFilePathProvider.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\IFilePathTransformer.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\ILabelManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\ILabelManagerForArtifact.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\ImageFilePathProvider.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\ISubdirectory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\ISubdirectoryManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\IVolume.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\LabelManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\LabelManagerForArtifact.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\LongTextFilePathProvider.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\NativeFilePathProvider.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\PrefixFilePathTransformer.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\RelativeFilePathTransformer.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\SubdirectoryManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\Directories\VolumeManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\DownloadCancellationTokenSource.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\Downloader.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\EmptyExportRequestBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\FileEncodingConverter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\FileEncodingRewrite.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\IFileEncodingConverter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\IFileEncodingRewrite.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\ILongTextEncodingConverter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\LongTextEncodingConverter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\EncodingHelpers\LongTextEncodingConverterFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\ExportFileValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\ExportRequest.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\ExportRequestRetriever.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\FieldFileExportRequest.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\FieldFileExportRequestBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\FieldFileExportRequestFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\FileExportRequestBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\IDownloader.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\IExportFileValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\IExportRequestBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\IExportRequestRetriever.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\ILongTextDownloader.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\ImageExportRequestBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\IPhysicalFilesDownloader.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\LongTextDownloader.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\LongTextExportRequest.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\NativeFileExportRequestBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\PhysicalFileExportRequest.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\PhysicalFilesDownloader.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeAdapter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeForFiles.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\DownloadTapiBridgeWithEncodingConversion.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\EmptyTapiBridge.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ErrorReportingTapiBridge.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ExportRequestsWithFileshareSettings.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\FilesTapiBridgeWrapperFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\FileTapiBridgePool.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\IDownloadTapiBridge.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\IFileTapiBridgePool.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ILongTextTapiBridgeFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ILongTextTapiBridgePool.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ITapiBridge.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ITapiBridgeWrapper.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\ITapiBridgeWrapperFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\LongTextTapiBridgeFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\LongTextTapiBridgePool.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\LongTextTapiBridgeWrapperFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\PoolEntry.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\SafeIncrement.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\SmartTapiBridge.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\TapiBridgeParametersFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\TapiBridgeWrapper.cs" />
+    <Compile Include="Export\VolumeManagerV2\Download\TapiHelpers\WaitHandleExtensions.cs" />
+    <Compile Include="Export\VolumeManagerV2\FileshareSettingsService.cs" />
+    <Compile Include="Export\VolumeManagerV2\FileShareSettingsServiceException.cs" />
+    <Compile Include="Export\VolumeManagerV2\IFileshareSettingsService.cs" />
+    <Compile Include="Export\VolumeManagerV2\ImagesRollup\EmptyImagesRollup.cs" />
+    <Compile Include="Export\VolumeManagerV2\ImagesRollup\IImage.cs" />
+    <Compile Include="Export\VolumeManagerV2\ImagesRollup\IImagesRollup.cs" />
+    <Compile Include="Export\VolumeManagerV2\ImagesRollup\IImagesRollupManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\ImagesRollup\ImagesRollupFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\ImagesRollup\ImagesRollupManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\ImagesRollup\ImageWrapper.cs" />
+    <Compile Include="Export\VolumeManagerV2\ImagesRollup\MultiPageImagesRollup.cs" />
+    <Compile Include="Export\VolumeManagerV2\ImagesRollup\MultiPageTiffImagesRollup.cs" />
+    <Compile Include="Export\VolumeManagerV2\ImagesRollup\PdfImagesRollup.cs" />
+    <Compile Include="Export\VolumeManagerV2\ImagesRollup\SinglePageImagesRollup.cs" />
+    <Compile Include="Export\VolumeManagerV2\IRelativityFileShareSettings.cs" />
+    <Compile Include="Export\VolumeManagerV2\ListHelper.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\EmptyImageLoadFile.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\IImageLoadFile.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\IImageLoadFileMetadataBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\IImageLoadFileMetadataForArtifactBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFile.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFileFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFileMetadataBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFileMetadataBuilderFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFileMetadataForArtifactBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\ImageLoadFileMetadataForArtifactBuilderFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\FullTextLineWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\FullTextLoadFileEntryFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\IFullTextLineWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\IFullTextLoadFileEntry.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\IImageLoadFileEntry.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\ImageLoadFileEntryFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\IproFullTextLoadFileEntry.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\IproFullTextWithoutPrecedenceLoadFileEntry.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\IproFullTextWithPrecedenceLoadFileEntry.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\IproLoadFileEntry.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\NoFullTextLoadFileEntry.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\Lines\OpticonLoadFileEntry.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\MultiPageNotOpticonMetadataForArtifactBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\MultiPageOpticonMetadataForArtifactBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Images\SinglePageMetadataForArtifactBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\IWritersRetryPolicy.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Natives\ILineFieldsValue.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Natives\ILineNativeFilePath.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Natives\ILoadFile.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Natives\ILoadFileLine.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LineFieldsValue.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LineImageField.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LineNativeFilePath.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LineNewLine.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LinePrefix.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LineSuffix.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LoadFile.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LoadFileCellFormatterFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LoadFileHeader.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LoadFileLine.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Natives\LoadFileMetadataBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Natives\NonTextFieldHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Paths\DestinationPath.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Paths\ErrorFileDestinationPath.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Paths\IDestinationPath.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Paths\ImageLoadFileDestinationPath.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Paths\LoadFileDestinationPath.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\DelimitedFileLongTextStreamFormatterFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\Delimiter\ConfigurableDelimiter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\Delimiter\DelimiterFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\Delimiter\HtmlDelimiter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\Delimiter\IDelimiter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\HtmlFileLongTextStreamFormatterFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\ILongTextHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\ILongTextStreamFormatterFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongText.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextHandlerFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextHelper.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextInFile.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextInMemory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextStreamFormatterFactoryFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextToFile.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\LongTextToLoadFile.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\NotTooLongTextToLoadFile.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Text\TooLongTextToLoadFile.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\WritersRetryPolicy.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ArtifactEnumerator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ErrorFileWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\FromFieldToLoadFileWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\FromFileToLoadFileWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\IErrorFileWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\IImageLoadFileWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ILoadFileWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ImageLoadFileRetryableStreamWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\IRetryableStreamWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\IStreamFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\LoadFileWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\LoadFileWriterRetryable.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\RetryableStreamWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\StreamFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\ToLoadFileWriter.cs" />
+    <Compile Include="Export\VolumeManagerV2\Metadata\Writers\WriterRetryable.cs" />
+    <Compile Include="Export\VolumeManagerV2\RelativityFileShareSettings.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\EmptyLongTextBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\ExportRequestRepository.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\IClearable.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\IExportRequestRepository.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\ILongTextBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\ILongTextRepository.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\Image.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\ImageRepository.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\ImageRepositoryBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\ImageRepositoryBuilderFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\IRepositoryBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\LongTextFromFieldBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\LongTextIproFullTextBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\LongTextPrecedenceBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\LongTextRepository.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\LongTextRepositoryBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\LongTextRepositoryBuilderFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\Native.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\NativeRepository.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\NativeRepositoryBuilder.cs" />
+    <Compile Include="Export\VolumeManagerV2\Repository\NativeRepositoryBuilderFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Settings\ColumnsFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Settings\ColumnsOrdinalLookupFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Settings\Config.cs" />
+    <Compile Include="Export\VolumeManagerV2\Settings\FieldLookupService.cs" />
+    <Compile Include="Export\VolumeManagerV2\Settings\FieldService.cs" />
+    <Compile Include="Export\VolumeManagerV2\Settings\FieldServiceFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Settings\IColumnsFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Settings\IColumnsOrdinalLookupFactory.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\DownloadProgressManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\ExportFileDownloaderStatus.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\FileDownloadProgressHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\FilesStatistics.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\IDownloadProgress.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\IDownloadProgressManager.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\IFileProcessingStatistics.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\IMessagesHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\IMessenger.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\IMetadataProcessingStatistics.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\IProcessingStatistics.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\IProgressHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\ITransferClientHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\ITransferStatistics.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\LongTextProgressHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\MessagesHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\Messenger.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\MetadataStatistics.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\ProgressHandler.cs" />
+    <Compile Include="Export\VolumeManagerV2\Statistics\ThreadSafeAddOnlyHashSet.cs" />
+    <Compile Include="Export\VolumeManagerV2\Validation\ExportPermissionCheck.cs" />
+    <Compile Include="Export\VolumeManagerV2\Validation\ExportValidation.cs" />
+    <Compile Include="Export\VolumeManagerV2\Validation\FilesOverwriteValidator.cs" />
+    <Compile Include="Export\VolumeManagerV2\Validation\VolumeAndSubdirectoryValidator.cs" />
+    <Compile Include="IO\LongPathDirectoryHelper.cs" />
+    <Compile Include="IO\LongPathFileHelper.cs" />
+    <Compile Include="Logging\LoggerFactory.cs" />
+    <Compile Include="Logging\LoggerProvider.cs" />
+    <Compile Include="LogMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LogMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="LogMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>LogMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDictionary Include="..\..\buildtools\CustomDictionary.xml">
+      <Link>CustomDictionary.xml</Link>
+    </CodeAnalysisDictionary>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="paket.references" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Relativity.Import.Export.Legacy\Relativity.Import.Export.Legacy.vbproj">
+      <Project>{2022e24b-46a1-46da-a715-36d137436b3a}</Project>
+      <Name>Relativity.Import.Export.Legacy</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Relativity.Import.Export\Relativity.Import.Export.csproj">
+      <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
+      <Name>Relativity.Import.Export</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(SolutionDir)..\Vendor\FreeImage\3.18.0\x64\FreeImage.dll" $(TargetDir)
+copy "$(SolutionDir)..\Vendor\iTextSharp\5.1.2\x64\itextsharp.dll" $(TargetDir)</PostBuildEvent>
+  </PropertyGroup>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Configuration">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Castle.Core">
+          <HintPath>..\..\packages\Castle.Core\lib\net45\Castle.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Runtime.Remoting">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Castle.Windsor">
+          <HintPath>..\..\packages\Castle.Windsor\lib\net45\Castle.Windsor.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Newtonsoft.Json">
+          <HintPath>..\..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Polly">
+          <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity">
+          <HintPath>..\..\packages\Relativity\lib\net462\Relativity.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Logging">
+          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Logging.Interfaces">
+          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Logging.Interfaces">
+          <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="FaspManager">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\FaspManager.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Transfer.Client">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Transfer.Client.Aspera">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Transfer.Client.AzureBlob">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.AzureBlob.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Transfer.Client.AzureFiles">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.AzureFiles.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Transfer.Client.Core">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Transfer.Client.FileShare">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Transfer.Client.Http">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Renci.SshNet">
+          <HintPath>..\..\packages\SSH.NET\lib\net40\Renci.SshNet.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="ZetaLongPaths">
+          <HintPath>..\..\packages\ZetaLongPaths\lib\net452-full\ZetaLongPaths.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+</Project>

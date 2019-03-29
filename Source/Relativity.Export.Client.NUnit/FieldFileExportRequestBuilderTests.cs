@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Collections.Generic;
     using System.Threading;
@@ -12,12 +12,12 @@ namespace Relativity.Export.Client.NUnit
     using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
     using kCura.WinEDDS.Exporters;
 
-    using Relativity.Logging;
+	using Relativity.Export.VolumeManagerV2.Directories;
+	using Relativity.Export.VolumeManagerV2.Download;
+	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.Logging;
 
     public class FieldFileExportRequestBuilderTests : ExportRequestBuilderTests
 	{

@@ -4,18 +4,17 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
 	using global::NUnit.Framework;
 
-	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-
 	using Moq;
 
-    using Relativity.Transfer;
+	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.Transfer;
 
-    using ITransferStatistics = kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics.ITransferStatistics;
+    using ITransferStatistics = Relativity.Export.VolumeManagerV2.Statistics.ITransferStatistics;
 
     [TestFixture]
 	public abstract class DownloadTapiBridgeAdapterTests

@@ -4,19 +4,19 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Collections.Generic;
 
     using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
 
-    using Relativity.Import.Export.TestFramework;
+	using Relativity.Export.VolumeManagerV2.Settings;
+	using Relativity.Import.Export.TestFramework;
     using Relativity.Logging;
 
     [TestFixture]

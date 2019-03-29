@@ -4,27 +4,27 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
-    using System.Collections.Generic;
-    using System.Text;
+	using System.Collections.Generic;
+	using System.Text;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
-    using Moq;
+	using Moq;
 
-    using Relativity;
-    using Relativity.Import.Export.TestFramework;
+	using Relativity;
+	using Relativity.Export.VolumeManagerV2.DataSize;
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Import.Export.TestFramework;
 
-    using ExportConstants = Relativity.Export.Constants;
-    using RelativityConstants = Relativity.Constants;
+	using ExportConstants = Relativity.Export.Constants;
+	using RelativityConstants = Relativity.Constants;
 
-    [TestFixture]
+	[TestFixture]
 	public class TextExportableSizeTests
 	{
 		private const long _TEXT_FILE_COUNT = 660488;

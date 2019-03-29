@@ -4,18 +4,19 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
     using kCura.WinEDDS.Exporters;
 
-    using Moq;
+	using Moq;
+
+	using Relativity.Export.VolumeManagerV2.Directories;
+	using Relativity.Export.VolumeManagerV2.Metadata.Images;
+	using Relativity.Export.VolumeManagerV2.Metadata.Images.Lines;
+	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
 
     [TestFixture]
 	public abstract class ImageLoadFileMetadataForArtifactBuilderTests

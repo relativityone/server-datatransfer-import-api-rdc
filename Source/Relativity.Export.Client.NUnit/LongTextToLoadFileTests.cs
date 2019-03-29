@@ -4,18 +4,18 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
     using kCura.WinEDDS.Exporters;
     using kCura.WinEDDS.LoadFileEntry;
 
     using Moq;
 
-    using Relativity.Import.Export.TestFramework;
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Import.Export.TestFramework;
     using Relativity.Logging;
 
     using RelativityConstants = Relativity.Constants;

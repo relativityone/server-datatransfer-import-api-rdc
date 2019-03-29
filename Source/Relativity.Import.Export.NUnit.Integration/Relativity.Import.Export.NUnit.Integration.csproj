@@ -155,7 +155,8 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>copy "$(SolutionDir)..\Vendor\FreeImage\3.18.0\x64\FreeImage.dll" $(TargetDir)</PostBuildEvent>
+    <PostBuildEvent>copy "$(SolutionDir)..\Vendor\FreeImage\3.18.0\x64\FreeImage.dll" $(TargetDir)
+copy "$(SolutionDir)..\Vendor\iTextSharp\5.1.2\x64\itextsharp.dll" $(TargetDir)</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
   <Choose>
@@ -232,6 +233,28 @@
       <ItemGroup>
         <Reference Include="Polly">
           <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Kepler">
+          <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.ServiceProxy">
+          <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
