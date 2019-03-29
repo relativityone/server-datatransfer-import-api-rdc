@@ -4,11 +4,11 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 
+    using Relativity.Export.VolumeManagerV2.Directories;
     using Relativity.Import.Export.Io;
     using Relativity.Logging;
 

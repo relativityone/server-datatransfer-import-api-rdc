@@ -1,11 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using kCura.WinEDDS.Exporters;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
+﻿namespace Relativity.Export.VolumeManagerV2.Batches
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Threading;
+
+	using kCura.WinEDDS.Exporters;
+
+	using Relativity.Logging;
+
 	public class BatchValidator : IBatchValidator
 	{
 		private readonly IList<IBatchValidator> _validators;

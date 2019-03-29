@@ -1,10 +1,12 @@
-﻿using System;
-using kCura.WinEDDS.Exporters;
-using Relativity.Transfer;
-using Relativity.Transfer.Http;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
+﻿namespace Relativity.Export.VolumeManagerV2.Download
 {
+	using System;
+
+	using kCura.WinEDDS.Exporters;
+
+	using Relativity.Transfer;
+	using Relativity.Transfer.Http;
+
 	public class LongTextExportRequest : ExportRequest
 	{
 		/// <summary>

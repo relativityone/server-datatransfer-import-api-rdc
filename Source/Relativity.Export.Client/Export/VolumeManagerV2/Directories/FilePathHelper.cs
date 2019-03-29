@@ -1,9 +1,10 @@
-﻿using System;
-using System.IO;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
+﻿namespace Relativity.Export.VolumeManagerV2.Directories
 {
+	using System;
+	using System.IO;
+
+	using Relativity.Logging;
+
 	public class FilePathHelper
 	{
 		private readonly ILog _logger;

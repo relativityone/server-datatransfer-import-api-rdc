@@ -1,12 +1,14 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using kCura.WinEDDS.Exceptions;
-using Relativity.Import.Export.Io;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Writers
 {
+	using System;
+	using System.IO;
+	using System.Text;
+
+	using kCura.WinEDDS.Exceptions;
+
+	using Relativity.Import.Export.Io;
+	using Relativity.Logging;
+
 	public class StreamFactory : IStreamFactory
 	{
 		private readonly IFile _fileWrapper;

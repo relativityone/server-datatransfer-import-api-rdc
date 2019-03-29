@@ -1,8 +1,8 @@
-﻿using System;
-using System.Threading;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
+﻿namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
 {
+	using System;
+	using System.Threading;
+
 	public interface ILongTextTapiBridgePool : IDisposable
 	{
 		IDownloadTapiBridge Request(CancellationToken token);

@@ -1,9 +1,11 @@
-﻿using System;
-using Relativity.Import.Export.Transfer;
-using Relativity.Transfer;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
+﻿namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
 {
+	using System;
+
+	using global::Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
+	using global::Relativity.Import.Export.Transfer;
+	using global::Relativity.Transfer;
+
 	public class TapiBridgeWrapper : ITapiBridgeWrapper
 	{
 		private readonly TapiBridgeBase _tapiBridge;

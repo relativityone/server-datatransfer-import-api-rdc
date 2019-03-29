@@ -1,7 +1,7 @@
-﻿using Relativity.Transfer;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
+﻿namespace Relativity.Export.VolumeManagerV2.Download
 {
+	using Relativity.Transfer;
+
 	public abstract class ExportRequest
 	{
 		public string SourceLocation { get; }

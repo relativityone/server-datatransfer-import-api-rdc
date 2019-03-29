@@ -1,9 +1,12 @@
-﻿using Castle.Windsor;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Images
 {
+	using Castle.Windsor;
+
+	using kCura.WinEDDS;
+
+	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.Logging;
+
 	public class ImageLoadFileMetadataBuilderFactory
 	{
 		private readonly ILog _logger;

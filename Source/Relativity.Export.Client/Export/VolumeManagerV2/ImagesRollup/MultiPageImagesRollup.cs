@@ -1,14 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using kCura.WinEDDS.Exceptions;
-using kCura.WinEDDS.Exporters;
-using Relativity.Import.Export.Io;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
+﻿namespace Relativity.Export.VolumeManagerV2.ImagesRollup
 {
+	using System;
+	using System.Collections.Generic;
+	using System.IO;
+	using System.Linq;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exceptions;
+	using kCura.WinEDDS.Exporters;
+
+	using Relativity.Import.Export.Io;
+	using Relativity.Logging;
+
 	using global::Relativity.Import.Export;
 
 	public abstract class MultiPageImagesRollup : IImagesRollup

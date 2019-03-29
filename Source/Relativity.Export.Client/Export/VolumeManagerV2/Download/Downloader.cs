@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
-using Relativity.Logging;
-using Relativity.Transfer;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
+﻿namespace Relativity.Export.VolumeManagerV2.Download
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Net;
+	using System.Threading;
+	using System.Threading.Tasks;
+
+	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.Logging;
+	using Relativity.Transfer;
 	using global::Relativity.Import.Export;
 
 	public class Downloader : IDownloader

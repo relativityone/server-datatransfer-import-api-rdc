@@ -1,7 +1,7 @@
-﻿using System.Threading;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
+﻿namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
 {
+	using System.Threading;
+
 	public class SafeIncrement
 	{
 		private int _current;

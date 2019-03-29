@@ -1,4 +1,4 @@
-﻿namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
+﻿namespace Relativity.Export.VolumeManagerV2.Batches
 {
 	public interface IStateful
 	{

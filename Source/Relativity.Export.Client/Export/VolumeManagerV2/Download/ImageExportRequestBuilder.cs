@@ -1,14 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using Castle.Core;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using kCura.WinEDDS.Exporters;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
+﻿namespace Relativity.Export.VolumeManagerV2.Download
 {
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Threading;
+
+	using Castle.Core;
+
+	using kCura.WinEDDS.Exporters;
+
+	using Relativity.Export.VolumeManagerV2.Directories;
+	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.Logging;
+
 	public class ImageExportRequestBuilder : IExportRequestBuilder
 	{
 		private readonly IFilePathProvider _filePathProvider;

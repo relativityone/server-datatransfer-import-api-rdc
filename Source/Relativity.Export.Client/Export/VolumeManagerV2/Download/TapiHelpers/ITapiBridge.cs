@@ -1,9 +1,10 @@
-﻿using System;
-using Relativity.Transfer;
-using Relativity.Import.Export.Transfer;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
+﻿namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
 {
+	using System;
+
+	using Relativity.Transfer;
+	using Relativity.Import.Export.Transfer;
+
 	public interface ITapiBridge : IDisposable
 	{
 		event EventHandler<TapiMessageEventArgs> TapiStatusMessage;

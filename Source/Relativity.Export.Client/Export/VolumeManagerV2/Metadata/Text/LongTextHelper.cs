@@ -1,13 +1,18 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using kCura.WinEDDS.Exporters;
-using Relativity;
-using ExportConstants = Relativity.Export.Constants;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Text
 {
+	using System;
+	using System.Linq;
+	using System.Text;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+
+	using Relativity.Export.VolumeManagerV2.Repository;
+	
+	using ExportConstants = Relativity.Export.Constants;
+	using RelativityConstants = Relativity.Constants;
+
+
 	public class LongTextHelper
 	{
 		private const int _MISSING_EXTRACTED_TEXT_FIELD_ID = -1;
@@ -54,7 +59,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 
 		public bool IsTextTooLong(string text)
 		{
-			return text == Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
+			return text == RelativityConstants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 		}
 
 		public bool IsTextTooLong(ObjectExportInfo artifact, string fieldName)

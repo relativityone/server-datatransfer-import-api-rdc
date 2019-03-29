@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
+﻿namespace Relativity.Export.VolumeManagerV2.Download
 {
-    public interface IExportRequestRetriever
+	using System.Collections.Generic;
+
+	public interface IExportRequestRetriever
     {
         List<LongTextExportRequest> RetrieveLongTextExportRequests();
         List<ExportRequest> RetrieveFileExportRequests();

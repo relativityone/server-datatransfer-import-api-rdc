@@ -1,13 +1,17 @@
-﻿using System;
-using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using kCura.WinEDDS.Exporters;
-using Relativity.Logging;
-using Relativity.Transfer;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
+﻿namespace Relativity.Export.VolumeManagerV2
 {
+	using System;
+	using System.Threading;
+
+	using Relativity.Export.VolumeManagerV2.Batches;
+	using Relativity.Export.VolumeManagerV2.Statistics;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+
+	using Relativity.Logging;
+	using Relativity.Transfer;
+
 	public class Batch : IBatch
 	{
 		private readonly IBatchExporter _batchExporter;

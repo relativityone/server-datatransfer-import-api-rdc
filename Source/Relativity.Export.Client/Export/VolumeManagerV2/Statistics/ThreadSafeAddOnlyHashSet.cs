@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
+﻿namespace Relativity.Export.VolumeManagerV2.Statistics
 {
+	using System.Collections.Generic;
+
 	public class ThreadSafeAddOnlyHashSet<T>
 	{
 		private readonly ICollection<T> _internalHashSet = new HashSet<T>();

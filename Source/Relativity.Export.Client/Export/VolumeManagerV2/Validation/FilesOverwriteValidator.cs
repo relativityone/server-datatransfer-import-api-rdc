@@ -1,10 +1,11 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
-using kCura.WinEDDS.Exporters;
-using Relativity.Import.Export.Io;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation
+﻿namespace Relativity.Export.VolumeManagerV2.Validation
 {
+	using kCura.WinEDDS.Exporters;
+
+	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.Import.Export.Io;
+	using Relativity.Logging;
+
 	public class FilesOverwriteValidator
 	{
 		private readonly IUserNotification _interactionManager;

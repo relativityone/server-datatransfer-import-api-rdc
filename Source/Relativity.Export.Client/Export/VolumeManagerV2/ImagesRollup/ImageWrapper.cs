@@ -1,7 +1,7 @@
-﻿using Relativity.Import.Export;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
+﻿namespace Relativity.Export.VolumeManagerV2.ImagesRollup
 {
+	using Relativity.Import.Export;
+
 	public class ImageWrapper : IImage
 	{
 		private readonly IImageConversionService _imageConverter;

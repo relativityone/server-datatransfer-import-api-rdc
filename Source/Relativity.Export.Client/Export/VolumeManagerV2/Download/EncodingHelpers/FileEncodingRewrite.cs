@@ -1,9 +1,9 @@
-﻿using System.IO;
-using System.Text;
-using System.Threading;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers
+﻿namespace Relativity.Export.VolumeManagerV2.Download.EncodingHelpers
 {
+	using System.IO;
+	using System.Text;
+	using System.Threading;
+
 	public class FileEncodingRewrite : IFileEncodingRewrite
 	{
 		private const int _BUFFER_SIZE = 4096;

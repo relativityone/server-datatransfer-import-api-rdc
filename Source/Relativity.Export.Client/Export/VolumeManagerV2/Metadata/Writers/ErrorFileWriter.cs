@@ -1,13 +1,17 @@
-﻿using System;
-using System.IO;
-using Castle.Core;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
-using kCura.WinEDDS.Exceptions;
-using Relativity.Import.Export;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Writers
 {
+	using System;
+	using System.IO;
+
+	using Castle.Core;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exceptions;
+
+	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.Import.Export;
+	using Relativity.Logging;
+
 	public class ErrorFileWriter : IErrorFileWriter
 	{
 		private StreamWriter _streamWriter;

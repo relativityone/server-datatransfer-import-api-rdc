@@ -1,4 +1,4 @@
-﻿namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
+﻿namespace Relativity.Export.VolumeManagerV2.Statistics
 {
 	public interface IDownloadProgressManager
 	{

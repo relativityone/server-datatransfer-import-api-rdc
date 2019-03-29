@@ -1,9 +1,10 @@
-﻿using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.LoadFileEntry;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Natives
 {
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.LoadFileEntry;
+
+	using Relativity.Logging;
+
 	public class LineImageField
 	{
 		private readonly ILoadFileCellFormatter _loadFileCellFormatter;

@@ -1,10 +1,10 @@
-﻿using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.LoadFileEntry;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Text
 {
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.LoadFileEntry;
+
 	public interface ILongTextHandler
 	{
-		void HandleLongText(ObjectExportInfo artifact, ViewFieldInfo field, DeferredEntry lineEntry);
+		void HandleLongText(ObjectExportInfo artifact, kCura.WinEDDS.ViewFieldInfo field, DeferredEntry lineEntry);
 	}
 }

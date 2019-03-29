@@ -1,14 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using kCura.WinEDDS.Exporters;
-using Relativity.Import.Export.Io;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
+﻿namespace Relativity.Export.VolumeManagerV2.Batches
 {
+	using System;
+	using System.Linq;
+	using System.Threading;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.Import.Export.Io;
+	using Relativity.Logging;
+
 	public class LongTextParallelBatchValidator : IBatchValidator
 	{
 		private readonly ILongTextRepository _longTextRepository;

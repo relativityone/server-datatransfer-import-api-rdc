@@ -1,5 +1,7 @@
-﻿namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
+﻿namespace Relativity.Export.VolumeManagerV2.Directories
 {
+	using kCura.WinEDDS;
+
 	public class LabelManager : ILabelManager
 	{
 		private readonly string _volumePrefix;

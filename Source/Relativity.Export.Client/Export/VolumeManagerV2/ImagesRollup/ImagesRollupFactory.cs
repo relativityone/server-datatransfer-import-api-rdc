@@ -1,10 +1,13 @@
-﻿using System;
-using Castle.Windsor;
-using Relativity;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
+﻿namespace Relativity.Export.VolumeManagerV2.ImagesRollup
 {
+	using System;
+
+	using Castle.Windsor;
+
+	using kCura.WinEDDS;
+
+	using Relativity.Logging;
+
 	public class ImagesRollupFactory
 	{
 		private readonly ILog _logger;

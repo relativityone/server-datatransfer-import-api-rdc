@@ -1,14 +1,17 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
+﻿namespace Relativity.Export.VolumeManagerV2.Download
 {
+	using System;
+	using System.Collections.Concurrent;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Threading;
+	using System.Threading.Tasks;
+
+	using kCura.WinEDDS;
+
+	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.Logging;
+
 	public class PhysicalFilesDownloader : IPhysicalFilesDownloader
 	{
 		private readonly IFileShareSettingsService _settingsService;

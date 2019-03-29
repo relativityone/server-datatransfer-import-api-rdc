@@ -4,15 +4,16 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize;
     using kCura.WinEDDS.Exporters;
 
-    [TestFixture]
+	using Relativity.Export.VolumeManagerV2.DataSize;
+
+	[TestFixture]
 	public class NativeExportableSizeTests
 	{
 		private const long _NATIVE_FILE_SIZE = 647109;

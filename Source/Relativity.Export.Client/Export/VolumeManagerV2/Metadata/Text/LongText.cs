@@ -1,9 +1,10 @@
-﻿using System.IO;
-using System.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Text
 {
+	using System.IO;
+	using System.Text;
+
+	using Relativity.Export.VolumeManagerV2.Download;
+
 	public abstract class LongText
 	{
 		protected string LongTextValue { get; private set; }

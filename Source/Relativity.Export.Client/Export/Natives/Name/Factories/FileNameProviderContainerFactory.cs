@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
-
-namespace kCura.WinEDDS.Core.Export.Natives.Name.Factories
+﻿namespace Relativity.Export.Natives.Name.Factories
 {
+	using System.Collections.Generic;
+
+	using kCura.WinEDDS;
+
 	public class FileNameProviderContainerFactory : IFileNameProviderContainerFactory
 	{
 		private readonly IDictionary<ExportNativeWithFilenameFrom, IFileNameProvider> _fileNameProviders;

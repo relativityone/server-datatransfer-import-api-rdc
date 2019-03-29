@@ -1,13 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.LoadFileEntry;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Writers
 {
+	using System.Collections.Generic;
+	using System.Threading;
+
+	using kCura.WinEDDS;
+
+	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.Logging;
+
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.LoadFileEntry;
+
 	public class LoadFileWriterRetryable : WriterRetryable, ILoadFileWriter
 	{
 		private readonly LoadFileWriter _loadFileWriter;

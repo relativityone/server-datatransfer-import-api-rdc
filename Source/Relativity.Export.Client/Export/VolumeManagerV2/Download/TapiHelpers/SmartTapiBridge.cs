@@ -1,11 +1,14 @@
-﻿using System;
-using System.Threading;
-using Relativity.Import.Export.Transfer;
-using Relativity.Logging;
-using Relativity.Transfer;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
+﻿namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
 {
+	using System;
+	using System.Threading;
+
+	using global::Relativity.Import.Export.Transfer;
+	using global::Relativity.Logging;
+	using global::Relativity.Transfer;
+
+	using kCura.WinEDDS;
+
 	public class SmartTapiBridge : ITapiBridge
 	{
 		private int _downloadedFilesCounter;

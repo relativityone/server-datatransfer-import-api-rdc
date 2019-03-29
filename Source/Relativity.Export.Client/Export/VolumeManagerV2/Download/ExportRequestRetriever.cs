@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
+﻿namespace Relativity.Export.VolumeManagerV2.Download
 {
-    public class ExportRequestRetriever : IExportRequestRetriever
+	using System.Collections.Generic;
+
+	using Relativity.Export.VolumeManagerV2.Repository;
+
+	public class ExportRequestRetriever : IExportRequestRetriever
     {
         private readonly NativeRepository _nativeRepository;
         private readonly ImageRepository _imageRepository;

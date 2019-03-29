@@ -1,11 +1,14 @@
-﻿using System;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-using kCura.WinEDDS.Service.Export;
-using Relativity.Import.Export.Transfer;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
+﻿namespace Relativity.Export.VolumeManagerV2.Statistics
 {
+	using System;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Service.Export;
+
+	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.Import.Export.Transfer;
+	using Relativity.Logging;
+
 	public class ExportFileDownloaderStatus : IExportFileDownloaderStatus, ITransferClientHandler
 	{
 		private ITapiBridge _tapiBridge;

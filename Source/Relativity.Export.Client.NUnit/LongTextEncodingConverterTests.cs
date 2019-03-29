@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System;
     using System.Text;
@@ -12,14 +12,13 @@ namespace Relativity.Export.Client.NUnit
 
     using global::NUnit.Framework;
 
-	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-
     using Moq;
 
-    using Relativity.Import.Export.Transfer;
+	using Relativity.Export.VolumeManagerV2.Download.EncodingHelpers;
+	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.Import.Export.Transfer;
     using Relativity.Logging;
     using Relativity.Transfer;
 

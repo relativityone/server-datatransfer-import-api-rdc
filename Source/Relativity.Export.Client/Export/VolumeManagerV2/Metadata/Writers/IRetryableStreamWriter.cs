@@ -1,9 +1,10 @@
-﻿using System;
-using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Writers
 {
+	using System;
+	using System.Threading;
+
+	using Relativity.Export.VolumeManagerV2.Batches;
+
 	public interface IRetryableStreamWriter : IDisposable, IStateful
 	{
 		void WriteEntry(string loadFileEntry, CancellationToken token);

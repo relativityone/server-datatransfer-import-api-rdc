@@ -1,12 +1,15 @@
-﻿using System.IO;
-using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
-using kCura.WinEDDS.Exporters;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Images.Lines
 {
+	using System.IO;
+	using System.Threading;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.Logging;
+
 	public abstract class IproFullTextLoadFileEntry : IFullTextLoadFileEntry
 	{
 		private TextReader _textReader;

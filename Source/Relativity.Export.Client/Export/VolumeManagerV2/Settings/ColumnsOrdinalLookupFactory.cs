@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
-using Relativity.Logging;
-using Constants = Relativity.Export.Constants;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings
+﻿namespace Relativity.Export.VolumeManagerV2.Settings
 {
+	using System.Collections.Generic;
+
+	using kCura.WinEDDS;
+
+	using Relativity.Logging;
+
+	using ExportConstants = Relativity.Export.Constants;
+
 	public class ColumnsOrdinalLookupFactory : IColumnsOrdinalLookupFactory
 	{
 		private readonly ILog _logger;
@@ -24,10 +28,10 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings
 			if (exportSettings.SelectedTextFields != null && exportSettings.SelectedTextFields.Length > 0)
 			{
 				_logger.LogVerbose("Text Precedence is set. Adding TextPrecedence column {textPrecedenceColumn} and TextPrecedence source column {textPrecedenceSourceColumn}.",
-					Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME, Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME);
+					ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME, ExportConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME);
 				int newIndex = ordinalLookup.Count;
-				ordinalLookup.Add(Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME, newIndex);
-				ordinalLookup.Add(Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME, newIndex + 1);
+				ordinalLookup.Add(ExportConstants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME, newIndex);
+				ordinalLookup.Add(ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME, newIndex + 1);
 			}
 
 			return ordinalLookup;

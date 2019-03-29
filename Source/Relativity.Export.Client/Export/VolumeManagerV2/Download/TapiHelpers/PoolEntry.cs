@@ -1,4 +1,4 @@
-﻿namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
+﻿namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
 {
 	public class PoolEntry
 	{

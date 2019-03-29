@@ -1,9 +1,11 @@
-﻿using System.IO;
-using Relativity.Import.Export.Io;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
+﻿namespace Relativity.Export.VolumeManagerV2.Directories
 {
+	using System.IO;
+
+	using kCura.WinEDDS;
+	using Relativity.Import.Export.Io;
+	using Relativity.Logging;
+
 	public abstract class FilePathProvider : IFilePathProvider
 	{
 		private readonly ExportFile _exportSettings;

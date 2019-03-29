@@ -1,9 +1,13 @@
-﻿using System;
-using Castle.Windsor;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
+﻿namespace Relativity.Export.VolumeManagerV2.Directories
 {
+	using System;
+
+	using Castle.Windsor;
+
+	using kCura.WinEDDS;
+
+	using Relativity.Logging;
+
 	public class FilePathTransformerFactory
 	{
 		private readonly ILog _logger;

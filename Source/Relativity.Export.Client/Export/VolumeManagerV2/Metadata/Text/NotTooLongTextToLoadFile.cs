@@ -1,12 +1,17 @@
-﻿using System.IO;
-using System.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
-using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.LoadFileEntry;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Text
 {
+	using System.IO;
+	using System.Text;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.LoadFileEntry;
+
+	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.Logging;
+
+	using ViewFieldInfo = Relativity.ViewFieldInfo;
+
 	public class NotTooLongTextToLoadFile : ILongTextHandler
 	{
 		private readonly ExportFile _exportSettings;
@@ -22,7 +27,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 			_exportSettings = exportSettings;
 		}
 
-		public void HandleLongText(ObjectExportInfo artifact, ViewFieldInfo field, DeferredEntry lineEntry)
+		public void HandleLongText(ObjectExportInfo artifact, kCura.WinEDDS.ViewFieldInfo field, DeferredEntry lineEntry)
 		{
 			_logger.LogVerbose("Writing text from memory to memory stream for formatting. Passing value to line entry. Field {fieldName}.", field.AvfColumnName);
 			using (var memoryStream = new MemoryStream())

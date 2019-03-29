@@ -1,9 +1,12 @@
-﻿using System.Threading;
-using Relativity.Import.Export.Transfer;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
+﻿namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
 {
+	using System.Threading;
+
+	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
+
+	using Relativity.Import.Export.Transfer;
+	using Relativity.Logging;
+
 	public class FilesTapiBridgeWrapperFactory : ITapiBridgeWrapperFactory
 	{
 		private readonly IRelativityFileShareSettings _fileshareSettings;

@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings
+﻿namespace Relativity.Export.VolumeManagerV2.Settings
 {
+	using System.Collections.Generic;
+
+	using kCura.WinEDDS;
+
 	public class FieldService : FieldLookupService, IFieldService
 	{
 		private readonly ViewFieldInfo[] _columns;

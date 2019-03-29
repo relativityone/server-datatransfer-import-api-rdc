@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-using Relativity.Import.Export.Io;
-using Relativity.Import.Export.Transfer;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
+﻿namespace Relativity.Export.VolumeManagerV2.Statistics
 {
+	using System.Collections.Generic;
+
+	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.Import.Export.Io;
+	using Relativity.Import.Export.Transfer;
+	using Relativity.Logging;
+
 	public class MetadataStatistics : ITransferStatistics, IMetadataProcessingStatistics
 	{
 		private ITapiBridge _tapiBridge;
@@ -15,7 +16,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		private long _savedMetadataTime;
 		private Dictionary<string, long> _savedFilesSize;
 
-		private readonly WinEDDS.Statistics _statistics;
+		private readonly kCura.WinEDDS.Statistics _statistics;
 		private readonly IFile _fileWrapper;
 		private readonly ILog _logger;
 
@@ -23,7 +24,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 
 		private readonly Dictionary<string, long> _filesSize;
 
-		public MetadataStatistics(WinEDDS.Statistics statistics, IFile fileWrapper, ILog logger)
+		public MetadataStatistics(kCura.WinEDDS.Statistics statistics, IFile fileWrapper, ILog logger)
 		{
 			_filesSize = new Dictionary<string, long>();
 			_savedFilesSize = new Dictionary<string, long>();

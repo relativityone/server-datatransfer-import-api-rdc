@@ -1,4 +1,4 @@
-﻿namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings
+﻿namespace Relativity.Export.VolumeManagerV2.Settings
 {
 	using global::Relativity.Import.Export;
 

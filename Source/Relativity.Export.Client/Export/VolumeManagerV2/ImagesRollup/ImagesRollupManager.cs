@@ -1,9 +1,11 @@
-﻿using System.Threading;
-using kCura.WinEDDS.Exporters;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup
+﻿namespace Relativity.Export.VolumeManagerV2.ImagesRollup
 {
+	using System.Threading;
+
+	using kCura.WinEDDS.Exporters;
+
+	using Relativity.Logging;
+
 	public class ImagesRollupManager : IImagesRollupManager
 	{
 		private readonly IImagesRollup _imagesRollup;

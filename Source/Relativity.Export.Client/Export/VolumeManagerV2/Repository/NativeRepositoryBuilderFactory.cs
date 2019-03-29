@@ -1,11 +1,13 @@
-﻿using Castle.Windsor;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-using Relativity;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
+﻿namespace Relativity.Export.VolumeManagerV2.Repository
 {
+	using Castle.Windsor;
+
+	using kCura.WinEDDS;
+
+	using Relativity.Export.VolumeManagerV2.Directories;
+	using Relativity.Export.VolumeManagerV2.Download;
+	using Relativity.Logging;
+
 	public class NativeRepositoryBuilderFactory
 	{
 		private readonly ILog _logger;

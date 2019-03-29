@@ -1,14 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using Relativity.Import.Export.Transfer;
-using Relativity.Logging;
-using Relativity.Transfer;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
+namespace Relativity.Export.VolumeManagerV2
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Net;
+
+	using Relativity.Import.Export.Transfer;
+	using Relativity.Logging;
+	using Relativity.Transfer;
+
 	using global::Relativity.Import.Export;
+
+	using kCura.WinEDDS;
 
 	public partial class FileShareSettingsService : IFileShareSettingsService
 	{

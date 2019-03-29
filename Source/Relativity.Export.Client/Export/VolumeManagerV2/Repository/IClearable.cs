@@ -1,4 +1,4 @@
-﻿namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
+﻿namespace Relativity.Export.VolumeManagerV2.Repository
 {
 	public interface IClearable
 	{

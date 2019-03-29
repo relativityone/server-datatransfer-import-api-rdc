@@ -1,7 +1,7 @@
-﻿using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
+﻿namespace Relativity.Export.VolumeManagerV2.Statistics
 {
+	using Relativity.Logging;
+
 	public class LongTextProgressHandler : ProgressHandler
 	{
 		public LongTextProgressHandler(IDownloadProgressManager downloadProgressManager, ILog logger) : base(downloadProgressManager, logger)

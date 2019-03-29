@@ -1,16 +1,18 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using Relativity.Import.Export.Transfer;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers
+﻿namespace Relativity.Export.VolumeManagerV2.Download.EncodingHelpers
 {
+	using System;
+	using System.Collections.Concurrent;
+	using System.Linq;
+	using System.Threading;
+	using System.Threading.Tasks;
+
+	using Relativity.Export.VolumeManagerV2.Repository;
+
+	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Import.Export.Transfer;
+	using Relativity.Logging;
+
 	public class LongTextEncodingConverter : IDisposable, ILongTextEncodingConverter
 	{
 		private Task _conversionTask;

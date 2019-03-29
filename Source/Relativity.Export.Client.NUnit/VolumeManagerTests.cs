@@ -4,23 +4,24 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System;
 
     using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
 
-    [TestFixture]
+	using Relativity.Export.VolumeManagerV2.Directories;
+
+	[TestFixture]
 	public class VolumeManagerTests
 	{
 		private const int _MBS_TO_BYTES = 1024 * 1024;
-		private kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories.VolumeManager _instance;
+		private Relativity.Export.VolumeManagerV2.Directories.VolumeManager _instance;
 		private Mock<ISubdirectoryManager> _subdirectoryManager;
 
 		[SetUp]
@@ -39,7 +40,7 @@ namespace Relativity.Export.Client.NUnit
 					VolumeMaxSize = maxSizeInMBs
 				}
 			};
-			_instance = new kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories.VolumeManager(exportSettings, _subdirectoryManager.Object);
+			_instance = new Relativity.Export.VolumeManagerV2.Directories.VolumeManager(exportSettings, _subdirectoryManager.Object);
 		}
 
 		[Test]

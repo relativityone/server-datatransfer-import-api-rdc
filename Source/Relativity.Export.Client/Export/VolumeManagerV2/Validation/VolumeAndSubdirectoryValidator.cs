@@ -1,10 +1,13 @@
-﻿using System;
-using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.Exporters.Validator;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation
+﻿namespace Relativity.Export.VolumeManagerV2.Validation
 {
+	using System;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters.Validator;
+
+	using Relativity.Logging;
+
 	public class VolumeAndSubdirectoryValidator
 	{
 		private readonly PaddingWarningValidator _validator;

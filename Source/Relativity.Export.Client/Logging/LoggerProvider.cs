@@ -1,8 +1,8 @@
-﻿using Relativity;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Logging
+﻿namespace kCura.WinEDDS.Core.Logging
 {
+	using global::Relativity;
+	using global::Relativity.Logging;
+
 	public class LoggerProvider
 	{
 		private static ILog _log;

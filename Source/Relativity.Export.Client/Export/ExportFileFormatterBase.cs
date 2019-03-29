@@ -1,12 +1,12 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using kCura.WinEDDS.Exporters;
-
-namespace kCura.WinEDDS.Core.Export
+﻿namespace Relativity.Export
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+
 	public abstract class ExportFileFormatterBase : ILoadFileHeaderFormatter
 	{
 		private readonly IFieldNameProvider _fieldNameProvider;

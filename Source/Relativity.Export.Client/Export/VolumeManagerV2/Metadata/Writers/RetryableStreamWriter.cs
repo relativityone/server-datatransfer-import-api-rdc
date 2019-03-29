@@ -1,14 +1,18 @@
-﻿using System;
-using System.IO;
-using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using kCura.WinEDDS.Exceptions;
-using Polly;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Writers
 {
+	using System;
+	using System.IO;
+	using System.Threading;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exceptions;
+
+	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.Logging;
+
+	using Polly;
+
 	public class RetryableStreamWriter : IRetryableStreamWriter
 	{
 		private StreamWriter _streamWriter;

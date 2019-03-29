@@ -1,7 +1,7 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers
+﻿namespace Relativity.Export.VolumeManagerV2.Download.EncodingHelpers
 {
+	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
+
 	public interface ILongTextEncodingConverter
 	{
 		void StartListening(ITapiBridge tapiBridge);

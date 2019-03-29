@@ -1,8 +1,9 @@
-﻿using Castle.Windsor;
-using Relativity;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Images
 {
+	using Castle.Windsor;
+
+	using kCura.WinEDDS;
+
 	public class ImageLoadFileFactory
 	{
 		public IImageLoadFile Create(ExportFile exportSettings, IWindsorContainer container)

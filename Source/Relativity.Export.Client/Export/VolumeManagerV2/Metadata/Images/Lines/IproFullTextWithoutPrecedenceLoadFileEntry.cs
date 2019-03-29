@@ -1,9 +1,12 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Exporters;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Images.Lines
 {
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS;
+
+	using Relativity.Logging;
+
 	public class IproFullTextWithoutPrecedenceLoadFileEntry : IproFullTextLoadFileEntry
 	{
 		public IproFullTextWithoutPrecedenceLoadFileEntry(IFieldService fieldService, LongTextHelper longTextHelper, ILog logger, IFullTextLineWriter fullTextLineWriter)

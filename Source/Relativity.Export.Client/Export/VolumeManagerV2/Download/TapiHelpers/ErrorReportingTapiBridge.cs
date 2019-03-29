@@ -1,9 +1,10 @@
-﻿using System;
-using Relativity.Import.Export.Transfer;
-using Relativity.Transfer;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
+﻿namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
 {
+	using System;
+
+	using Relativity.Import.Export.Transfer;
+	using Relativity.Transfer;
+
 	/// <summary>
 	/// Reports an error to the progress stream for each attempted transfer.
 	/// Used as a default <see cref="ITapiBridge"/> implementation when one

@@ -1,9 +1,11 @@
-﻿using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers
+﻿namespace Relativity.Export.VolumeManagerV2.Download.EncodingHelpers
 {
+	using System.Threading;
+
+	using Relativity.Export.VolumeManagerV2.Repository;
+
+	using Relativity.Logging;
+
 	public class LongTextEncodingConverterFactory
 	{
 		private readonly LongTextRepository _longTextRepository;

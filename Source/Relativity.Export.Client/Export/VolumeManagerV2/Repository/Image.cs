@@ -1,8 +1,9 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-using kCura.WinEDDS.Exporters;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
+﻿namespace Relativity.Export.VolumeManagerV2.Repository
 {
+	using kCura.WinEDDS.Exporters;
+
+	using Relativity.Export.VolumeManagerV2.Download;
+
 	public class Image
 	{
 		public ImageExportInfo Artifact { get; }

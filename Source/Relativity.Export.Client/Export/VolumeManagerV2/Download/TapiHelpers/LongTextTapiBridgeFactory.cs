@@ -1,10 +1,13 @@
-﻿using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
+﻿namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
 {
+	using System.Threading;
+
+	using kCura.WinEDDS;
+	using Relativity.Export.VolumeManagerV2.Statistics;
+
+	using Relativity.Export.VolumeManagerV2.Download.EncodingHelpers;
+	using Relativity.Logging;
+
 	public class LongTextTapiBridgeFactory : ILongTextTapiBridgeFactory
 	{
 		private readonly IExportConfig _exportConfig;

@@ -1,8 +1,9 @@
-using System;
-using Relativity.Transfer;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
+namespace Relativity.Export.VolumeManagerV2
 {
+	using System;
+
+	using Relativity.Transfer;
+
 	public class RelativityFileShareSettings : IRelativityFileShareSettings
 	{
 

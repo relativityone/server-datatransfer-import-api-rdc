@@ -4,22 +4,22 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
 
-    using global::NUnit.Framework;
+	using global::NUnit.Framework;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-    using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters;
 
 	using Moq;
 
-    using Relativity.Logging;
+	using Relativity.Export.VolumeManagerV2.Batches;
+    using Relativity.Export.VolumeManagerV2.Directories;
+    using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.Logging;
 
     [TestFixture]
 	public class BatchInitializationTests

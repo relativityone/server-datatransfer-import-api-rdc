@@ -4,18 +4,18 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.IO;
 
     using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
 
     using Moq;
 
-    using Relativity.Import.Export.Io;
+	using Relativity.Export.VolumeManagerV2.Directories;
+	using Relativity.Import.Export.Io;
 
     [TestFixture]
 	public abstract class FilePathProviderTests

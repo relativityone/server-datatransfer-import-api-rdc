@@ -1,4 +1,4 @@
-﻿namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Delimiter
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Text.Delimiter
 {
 	public class ConfigurableDelimiter : IDelimiter
 	{

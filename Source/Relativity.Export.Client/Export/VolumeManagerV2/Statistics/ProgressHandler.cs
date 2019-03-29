@@ -1,10 +1,11 @@
-﻿using System;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-using Relativity.Import.Export.Transfer;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
+﻿namespace Relativity.Export.VolumeManagerV2.Statistics
 {
+	using System;
+
+	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.Import.Export.Transfer;
+	using Relativity.Logging;
+
 	public abstract class ProgressHandler : IProgressHandler
 	{
 		private ITapiBridge _tapiBridge;

@@ -1,11 +1,14 @@
-﻿using System;
-using Castle.Windsor;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using Relativity;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Images.Lines
 {
+	using System;
+
+	using Castle.Windsor;
+
+	using kCura.WinEDDS;
+
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Logging;
+
 	public class FullTextLoadFileEntryFactory
 	{
 		private readonly LongTextHelper _longTextHelper;

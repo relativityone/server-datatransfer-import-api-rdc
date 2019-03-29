@@ -1,8 +1,9 @@
-﻿using System.Text;
-using kCura.WinEDDS.Exceptions;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Paths
 {
+	using System.Text;
+
+	using kCura.WinEDDS.Exceptions;
+
 	public interface IDestinationPath
 	{
 		string Path { get; }

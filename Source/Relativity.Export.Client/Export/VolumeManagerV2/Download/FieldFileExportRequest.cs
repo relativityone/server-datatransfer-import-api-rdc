@@ -1,9 +1,10 @@
-﻿using kCura.WinEDDS.Exporters;
-using Relativity.Transfer;
-using Relativity.Transfer.Http;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
+﻿namespace Relativity.Export.VolumeManagerV2.Download
 {
+	using kCura.WinEDDS.Exporters;
+
+	using Relativity.Transfer;
+	using Relativity.Transfer.Http;
+
 	public class FieldFileExportRequest : ExportRequest
 	{
 		/// <summary>

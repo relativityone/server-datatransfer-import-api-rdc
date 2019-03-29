@@ -1,7 +1,9 @@
-﻿using kCura.WinEDDS.Exporters;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
+﻿namespace Relativity.Export.VolumeManagerV2.Download
 {
+	using kCura.WinEDDS;
+
+	using kCura.WinEDDS.Exporters;
+
 	public class FieldFileExportRequestFactory
 	{
 		private readonly ExportFile _exportSettings;

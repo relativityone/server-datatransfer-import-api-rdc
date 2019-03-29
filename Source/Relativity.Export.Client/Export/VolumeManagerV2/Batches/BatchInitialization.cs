@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using kCura.WinEDDS.Exporters;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
+﻿namespace Relativity.Export.VolumeManagerV2.Batches
 {
+	using System.Collections.Generic;
+	using System.Threading;
+
+	using Relativity.Export.VolumeManagerV2.Directories;
+	using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.Logging;
+
+	using kCura.WinEDDS.Exporters;
+
 	public class BatchInitialization : IBatchInitialization
 	{
 		private readonly IList<IRepositoryBuilder> _repositoryBuilders;

@@ -4,17 +4,17 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
 
+	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.Export.VolumeManagerV2.Validation;
 	using Relativity.Import.Export.Io;
 	using Relativity.Logging;
 

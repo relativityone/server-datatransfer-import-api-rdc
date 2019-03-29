@@ -1,8 +1,9 @@
-﻿using ZetaLongPaths;
-using Relativity.Import.Export.Io;
-
-namespace kCura.WinEDDS.Core.IO
+﻿namespace kCura.WinEDDS.Core.IO
 {
+	using global::Relativity.Import.Export.Io;
+
+	using ZetaLongPaths;
+
 	public class LongPathDirectoryHelper : IDirectory
     {
         private object _lockObject = new object();

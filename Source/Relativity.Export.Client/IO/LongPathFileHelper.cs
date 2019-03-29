@@ -1,11 +1,13 @@
-﻿using System.IO;
-using System.Reflection;
-using Relativity.Import.Export.Io;
-using ZetaLongPaths;
-using ZetaLongPaths.Native;
-
-namespace kCura.WinEDDS.Core.IO
+﻿namespace kCura.WinEDDS.Core.IO
 {
+	using System.IO;
+	using System.Reflection;
+
+	using global::Relativity.Import.Export.Io;
+
+	using ZetaLongPaths;
+	using ZetaLongPaths.Native;
+
 	public class LongPathFileHelper : IFile
 	{
 		public FileStream Create(string filePath)

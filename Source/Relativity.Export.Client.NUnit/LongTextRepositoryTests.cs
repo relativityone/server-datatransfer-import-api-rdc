@@ -4,22 +4,22 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Collections.Generic;
     using System.Text;
 
     using global::NUnit.Framework;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
 
-    using Relativity.Import.Export;
+	using Relativity.Export.VolumeManagerV2;
+	using Relativity.Export.VolumeManagerV2.Download;
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.Import.Export;
     using Relativity.Import.Export.Io;
     using Relativity.Logging;
 

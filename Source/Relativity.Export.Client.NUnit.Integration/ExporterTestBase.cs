@@ -21,13 +21,12 @@ namespace Relativity.Export.Client.NUnit.Integration
 
 	using kCura.WinEDDS;
     using kCura.WinEDDS.Container;
-    using kCura.WinEDDS.Core.Export;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Container;
     using kCura.WinEDDS.Exporters;
 	using kCura.WinEDDS.Service.Export;
 
 	using Moq;
 
+	using Relativity.Export.VolumeManagerV2.Container;
 	using Relativity.Import.Export;
 	using Relativity.Import.Export.Process;
 	using Relativity.Import.Export.TestFramework;

@@ -1,8 +1,9 @@
-﻿using System.IO;
-using kCura.WinEDDS.Exporters;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Text
 {
+	using System.IO;
+
+	using kCura.WinEDDS.Exporters;
+
 	public interface ILongTextStreamFormatterFactory
 	{
 		ILongTextStreamFormatter Create(TextReader source);

@@ -1,9 +1,10 @@
-﻿using kCura.WinEDDS.Service;
-using kCura.WinEDDS.Service.Export;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation
+﻿namespace Relativity.Export.VolumeManagerV2.Validation
 {
+	using kCura.WinEDDS.Service;
+	using kCura.WinEDDS.Service.Export;
+
+	using Relativity.Logging;
+
 	public class ExportPermissionCheck
 	{
 		private readonly IExportManager _exportManager;

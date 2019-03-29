@@ -1,11 +1,14 @@
-﻿using Castle.Core;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using kCura.WinEDDS.Exporters;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
+﻿namespace Relativity.Export.VolumeManagerV2.Download
 {
+	using Castle.Core;
+
+	using Relativity.Export.VolumeManagerV2.Directories;
+	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.Logging;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+
 	public class FieldFileExportRequestBuilder : ExportRequestBuilder
 	{
 		private readonly FieldFileExportRequestFactory _requestFactory;

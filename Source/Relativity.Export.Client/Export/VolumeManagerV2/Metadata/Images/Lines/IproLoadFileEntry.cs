@@ -1,10 +1,13 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
-using kCura.WinEDDS.Exporters.LineFactory;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Images.Lines
 {
+	using System.Collections.Concurrent;
+	using System.Collections.Generic;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters.LineFactory;
+
+	using Relativity.Logging;
+
 	public class IproLoadFileEntry : IImageLoadFileEntry
 	{
 		private readonly ExportFile _exportSettings;

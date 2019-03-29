@@ -1,5 +1,7 @@
-﻿namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Delimiter
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Text.Delimiter
 {
+	using kCura.WinEDDS;
+
 	public class DelimiterFactory
 	{
 		public IDelimiter Create(ExportFile exportSettings)

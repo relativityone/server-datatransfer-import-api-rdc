@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System;
     using System.Collections.Generic;
@@ -13,12 +13,13 @@ namespace Relativity.Export.Client.NUnit
 
     using global::NUnit.Framework;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
 
-    [TestFixture]
+	using Relativity.Export.VolumeManagerV2.Directories;
+
+	[TestFixture]
 	public class CachedLabelManagerForArtifactTests
 	{
 		private static readonly Dictionary<string, string> MethodNameToReturnedPrefix =

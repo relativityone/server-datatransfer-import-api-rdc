@@ -1,10 +1,11 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using Relativity.Import.Export.Transfer;
-using Relativity.Transfer;
-using ITransferStatistics = kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics.ITransferStatistics;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
+﻿namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
 {
+	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.Import.Export.Transfer;
+	using Relativity.Transfer;
+
+	using ITransferStatistics = Relativity.Export.VolumeManagerV2.Statistics.ITransferStatistics;
+
 	public abstract class DownloadTapiBridgeAdapter : IDownloadTapiBridge
 	{
 		private readonly IProgressHandler _progressHandler;

@@ -1,7 +1,7 @@
-﻿using kCura.WinEDDS.Exporters;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize
+﻿namespace Relativity.Export.VolumeManagerV2.DataSize
 {
+	using kCura.WinEDDS.Exporters;
+
 	public class ObjectExportableSize : IObjectExportableSize
 	{
 		private readonly NativeExportableSize _nativeExportableSize;

@@ -1,10 +1,10 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-using Relativity.Import.Export.Io;
-using Relativity.Logging;
-using Relativity.Import.Export.Transfer;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
+﻿namespace Relativity.Export.VolumeManagerV2.Statistics
 {
+	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.Import.Export.Io;
+	using Relativity.Import.Export.Transfer;
+	using Relativity.Logging;
+
 	public class FilesStatistics : ITransferStatistics, IFileProcessingStatistics
 	{
 		private ITapiBridge _tapiBridge;
@@ -13,13 +13,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
 		private long _savedFileBytes;
 		private long _savedFileTime;
 
-		private readonly WinEDDS.Statistics _statistics;
+		private readonly kCura.WinEDDS.Statistics _statistics;
 		private readonly IFile _fileWrapper;
 		private readonly ILog _logger;
 
 		private readonly object _lock = new object();
 
-		public FilesStatistics(WinEDDS.Statistics statistics, IFile fileWrapper, ILog logger)
+		public FilesStatistics(kCura.WinEDDS.Statistics statistics, IFile fileWrapper, ILog logger)
 		{
 			_statistics = statistics;
 			_fileWrapper = fileWrapper;

@@ -1,12 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
-using kCura.WinEDDS.Exporters;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Images
 {
+	using System.Collections.Generic;
+	using System.Linq;
+
+	using Relativity.Logging;
+	using Relativity.Export.VolumeManagerV2.Directories;
+	using Relativity.Export.VolumeManagerV2.Metadata.Images.Lines;
+
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS;
+
 	public class MultiPageNotOpticonMetadataForArtifactBuilder : ImageLoadFileMetadataForArtifactBuilder
 	{
 		public MultiPageNotOpticonMetadataForArtifactBuilder(ExportFile exportSettings, IFilePathTransformer filePathTransformer, IImageLoadFileEntry imageLoadFileEntry,

@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
+﻿namespace Relativity.Export.VolumeManagerV2.Batches
 {
+	using System;
+	using System.Collections.Generic;
+
+	using Relativity.Logging;
+
 	public class BatchState : IBatchState
 	{
 		private readonly IList<IStateful> _statefulComponents;

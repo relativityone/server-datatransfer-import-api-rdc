@@ -1,13 +1,14 @@
-﻿using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using kCura.WinEDDS.Exporters;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
+﻿namespace Relativity.Export.VolumeManagerV2.Batches
 {
+	using System.Threading;
+
+	using Relativity.Export.VolumeManagerV2.Download;
+	using Relativity.Export.VolumeManagerV2.ImagesRollup;
+	using Relativity.Export.VolumeManagerV2.Metadata.Images;
+	using Relativity.Export.VolumeManagerV2.Metadata.Natives;
+	using Relativity.Export.VolumeManagerV2.Statistics;
+	using kCura.WinEDDS.Exporters;
+
 	public class BatchExporter : IBatchExporter
 	{
 		private readonly IDownloader _downloader;

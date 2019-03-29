@@ -1,7 +1,8 @@
-﻿using kCura.WinEDDS.Exporters;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
+﻿namespace Relativity.Export.VolumeManagerV2.Directories
 {
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+
 	public class SubdirectoryManager : ISubdirectoryManager, ISubdirectory
 	{
 		private long _currentNativeSubdirectoryFileCount;

@@ -1,13 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using Relativity.Import.Export.Transfer;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
+﻿namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Threading;
+
+	using kCura.WinEDDS;
+
+	using Relativity.Export.VolumeManagerV2.Statistics;	
+	using Relativity.Import.Export.Transfer;
+	using Relativity.Logging;
+
 	public class FileTapiBridgePool : IFileTapiBridgePool
 	{
 		private readonly object _sync = new object();

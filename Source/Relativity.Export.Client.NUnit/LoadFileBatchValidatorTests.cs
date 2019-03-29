@@ -4,19 +4,19 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Threading;
 
     using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
 
     using Moq;
 
-    using Relativity.Import.Export.Io;
+	using Relativity.Export.VolumeManagerV2.Batches;
+	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.Import.Export.Io;
     using Relativity.Logging;
 
     [TestFixture]

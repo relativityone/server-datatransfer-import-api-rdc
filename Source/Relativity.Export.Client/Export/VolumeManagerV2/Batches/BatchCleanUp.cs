@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
+﻿namespace Relativity.Export.VolumeManagerV2.Batches
 {
+	using System;
+	using System.Collections.Generic;
+
+	using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.Logging;
+
 	public class BatchCleanUp : IBatchCleanUp
 	{
 		private readonly IList<IClearable> _repositories;

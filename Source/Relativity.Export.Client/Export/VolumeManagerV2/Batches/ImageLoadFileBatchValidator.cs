@@ -1,13 +1,17 @@
-﻿using System.Linq;
-using System.Threading;
-using Castle.Core;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
-using kCura.WinEDDS.Exporters;
-using Relativity.Import.Export.Io;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches
+﻿namespace Relativity.Export.VolumeManagerV2.Batches
 {
+	using System.Linq;
+	using System.Threading;
+
+	using Castle.Core;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+
+	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.Import.Export.Io;
+	using Relativity.Logging;
+
 	public class ImageLoadFileBatchValidator : IBatchValidator
 	{
 		private readonly IDestinationPath _destinationPath;

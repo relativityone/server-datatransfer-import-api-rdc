@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using kCura.WinEDDS.Exporters;
-using ArtifactType = Relativity.ArtifactType;
-
-namespace kCura.WinEDDS.Core.Export
+﻿namespace Relativity.Export
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Text;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+
 	public class HtmlExportFileFormatter  : ExportFileFormatterBase
 	{
 		public HtmlExportFileFormatter(ExportFile exportSettings, IFieldNameProvider fieldNameProvider) : base(exportSettings, fieldNameProvider)

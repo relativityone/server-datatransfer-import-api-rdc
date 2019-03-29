@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
+﻿namespace Relativity.Export.VolumeManagerV2.Repository
 {
+	using System.Collections.Generic;
+
+	using Relativity.Export.VolumeManagerV2.Download;
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+
 	public interface ILongTextRepository
 	{
 		void Add(IList<LongText> longTexts);

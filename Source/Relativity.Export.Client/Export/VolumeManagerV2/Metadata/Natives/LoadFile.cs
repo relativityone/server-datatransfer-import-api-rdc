@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
-using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.LoadFileEntry;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Natives
 {
+	using System.Collections.Generic;
+	using System.Threading;
+
+	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
+
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.LoadFileEntry;
+
 	public class LoadFile : ILoadFile
 	{
 		private readonly LoadFileMetadataBuilder _loadFileMetadataBuilder;

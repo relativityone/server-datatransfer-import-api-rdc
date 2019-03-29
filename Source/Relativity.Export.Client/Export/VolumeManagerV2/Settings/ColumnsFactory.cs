@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Relativity;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings
+﻿namespace Relativity.Export.VolumeManagerV2.Settings
 {
+	using System.Collections.Generic;
+	using System.Linq;
+
+	using kCura.WinEDDS;
+
+	using Relativity.Logging;
+
+	using ViewFieldInfo = Relativity.ViewFieldInfo;
+
 	public class ColumnsFactory : IColumnsFactory
 	{
 		private readonly ILog _logger;
@@ -14,11 +18,11 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings
 			_logger = logger;
 		}
 
-		public ViewFieldInfo[] CreateColumns(ExportFile exportSettings)
+		public kCura.WinEDDS.ViewFieldInfo[] CreateColumns(ExportFile exportSettings)
 		{
 			_logger.LogVerbose("Creating column list for export.");
-			ViewFieldInfo[] viewFields = exportSettings.SelectedViewFields;
-			ViewFieldInfo[] textFields = exportSettings.SelectedTextFields;
+			kCura.WinEDDS.ViewFieldInfo[] viewFields = exportSettings.SelectedViewFields;
+			kCura.WinEDDS.ViewFieldInfo[] textFields = exportSettings.SelectedTextFields;
 
 			if (textFields == null || textFields.Length == 0)
 			{
@@ -26,13 +30,13 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings
 				return viewFields.ToArray();
 			}
 
-			List<ViewFieldInfo> columns = viewFields.ToList();
+			List<kCura.WinEDDS.ViewFieldInfo> columns = viewFields.ToList();
 
-			ViewFieldInfo[] longTextViewFields = viewFields.Where(x => x.FieldType == FieldTypeHelper.FieldType.Text || x.FieldType == FieldTypeHelper.FieldType.OffTableText).ToArray();
+			kCura.WinEDDS.ViewFieldInfo[] longTextViewFields = viewFields.Where(x => x.FieldType == FieldTypeHelper.FieldType.Text || x.FieldType == FieldTypeHelper.FieldType.OffTableText).ToArray();
 
 			if (textFields.Length == 1 && longTextViewFields.Any(x => x.Equals(textFields.First())))
 			{
-				ViewFieldInfo fieldToRemove = longTextViewFields.FirstOrDefault(x => x.Equals(textFields.First()));
+				kCura.WinEDDS.ViewFieldInfo fieldToRemove = longTextViewFields.FirstOrDefault(x => x.Equals(textFields.First()));
 				if (fieldToRemove != null)
 				{
 					int index = columns.IndexOf(fieldToRemove);

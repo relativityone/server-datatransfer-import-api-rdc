@@ -1,9 +1,11 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Writers
 {
+	using kCura.WinEDDS;
+
+	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.Logging;
+
 	public class ImageLoadFileRetryableStreamWriter : RetryableStreamWriter
 	{
 		public ImageLoadFileRetryableStreamWriter(WritersRetryPolicy writersRetryPolicy, StreamFactory streamFactory, ImageLoadFileDestinationPath destinationPath,

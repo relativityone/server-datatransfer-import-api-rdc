@@ -1,9 +1,10 @@
-﻿using System;
-using System.Text;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Images.Lines
 {
+	using System;
+	using System.Text;
+
+	using Relativity.Logging;
+
 	public class OpticonLoadFileEntry : IImageLoadFileEntry
 	{
 		private readonly ILog _logger;

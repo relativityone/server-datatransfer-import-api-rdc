@@ -1,11 +1,10 @@
-﻿
-using kCura.WinEDDS.Exporters;
-
-namespace kCura.WinEDDS.Core.Export
+﻿namespace Relativity.Export
 {
+	using kCura.WinEDDS.Exporters;
+
 	public class FieldNameProvider : IFieldNameProvider
 	{
-		public virtual string GetDisplayName(ViewFieldInfo fieldInfo)
+		public virtual string GetDisplayName(kCura.WinEDDS.ViewFieldInfo fieldInfo)
 		{
 			return fieldInfo.DisplayName;
 		}

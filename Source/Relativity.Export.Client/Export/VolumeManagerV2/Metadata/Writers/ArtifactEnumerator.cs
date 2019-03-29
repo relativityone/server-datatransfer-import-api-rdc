@@ -1,11 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using kCura.WinEDDS.Exporters;
-using Polly;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Writers
 {
+	using System.Collections;
+	using System.Collections.Generic;
+	using System.Linq;
+
+	using kCura.WinEDDS.Exporters;
+
+	using Polly;
+
 	public class ArtifactEnumerator : IEnumerator<ObjectExportInfo>
 	{
 		private readonly Context _context;

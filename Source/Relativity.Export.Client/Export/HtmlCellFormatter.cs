@@ -1,11 +1,13 @@
-﻿using System.Text;
-using System.Web;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Exporters;
-using Relativity;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
+﻿namespace Relativity.Export.VolumeManagerV2
 {
+	using System.Text;
+	using System.Web;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+
+	using Relativity.Export.VolumeManagerV2.Directories;
+
 	public class HtmlCellFormatter : ILoadFileCellFormatter
 	{
 		private const string ROW_PREFIX = "<tr>";

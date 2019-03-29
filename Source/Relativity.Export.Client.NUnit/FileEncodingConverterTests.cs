@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System;
     using System.Text;
@@ -12,11 +12,10 @@ namespace Relativity.Export.Client.NUnit
 
     using global::NUnit.Framework;
 
-	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.EncodingHelpers;
-
     using Moq;
 
-    using Relativity.Import.Export.Io;
+	using Relativity.Export.VolumeManagerV2.Download.EncodingHelpers;
+	using Relativity.Import.Export.Io;
     using Relativity.Logging;
 
     [TestFixture]

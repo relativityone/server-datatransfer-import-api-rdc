@@ -1,8 +1,10 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
-using kCura.WinEDDS.Exporters.Validator;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Validation
+﻿namespace Relativity.Export.VolumeManagerV2.Validation
 {
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters.Validator;
+
+	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
+
 	public class ExportValidation : IExportValidation
 	{
 		private readonly ExportPermissionCheck _permissionCheck;

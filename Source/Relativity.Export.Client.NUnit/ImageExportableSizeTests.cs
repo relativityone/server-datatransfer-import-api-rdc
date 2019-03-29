@@ -4,17 +4,18 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System;
 
     using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize;
     using kCura.WinEDDS.Exporters;
 
-    [TestFixture]
+	using Relativity.Export.VolumeManagerV2.DataSize;
+
+	[TestFixture]
 	public class ImageExportableSizeTests
 	{
 		private const long _IMAGE_FILE_SIZE = 505718;

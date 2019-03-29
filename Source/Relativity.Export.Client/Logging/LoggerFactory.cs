@@ -1,12 +1,12 @@
-﻿using System.IO;
-using System.Reflection;
-using Relativity;
-using Relativity.Logging;
-using Relativity.Logging.Factory;
-
-namespace kCura.WinEDDS.Core.Logging
+﻿namespace kCura.WinEDDS.Core.Logging
 {
+	using System.IO;
+	using System.Reflection;
+
+	using global::Relativity;
 	using global::Relativity.Import.Export;
+	using global::Relativity.Logging;
+	using global::Relativity.Logging.Factory;
 
 	public class LoggerFactory
 	{

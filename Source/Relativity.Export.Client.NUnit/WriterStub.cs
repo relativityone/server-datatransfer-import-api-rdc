@@ -4,12 +4,12 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Text;
     using System.Threading;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
+    using Relativity.Export.VolumeManagerV2.Metadata.Writers;
 
     public class WriterStub : IRetryableStreamWriter
 	{

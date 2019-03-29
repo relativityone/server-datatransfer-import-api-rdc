@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using kCura.WinEDDS.Exporters;
-
-namespace kCura.WinEDDS.Core.Export
+﻿namespace Relativity.Export
 {
+	using System.Collections.Generic;
+	using System.Text;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+
 	public class ExportFileFormatter : ExportFileFormatterBase
 	{
 		private const string _FILE_PATH_COL_NAME = "FILE_PATH";

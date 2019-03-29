@@ -1,11 +1,13 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.LoadFileEntry;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Text
 {
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.LoadFileEntry;
+
+	using Relativity.Export.VolumeManagerV2.Directories;
+	using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.Logging;
+
 	public class LongTextToFile : ILongTextHandler
 	{
 		private readonly ExportFile _exportSettings;
@@ -23,7 +25,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 			_logger = logger;
 		}
 
-		public void HandleLongText(ObjectExportInfo artifact, ViewFieldInfo field, DeferredEntry lineEntry)
+		public void HandleLongText(ObjectExportInfo artifact, kCura.WinEDDS.ViewFieldInfo field, DeferredEntry lineEntry)
 		{
 			_logger.LogVerbose("Handling long text to file.");
 			ViewFieldInfo fieldForPrecedence = _longTextHelper.GetTextPrecedenceTrueField(artifact, field);

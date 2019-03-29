@@ -1,7 +1,11 @@
-﻿namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings
+﻿namespace Relativity.Export.VolumeManagerV2.Settings
 {
+	using kCura.WinEDDS;
+
+	using ViewFieldInfo = Relativity.ViewFieldInfo;
+
 	public interface IColumnsFactory
 	{
-		ViewFieldInfo[] CreateColumns(ExportFile exportSettings);
+		kCura.WinEDDS.ViewFieldInfo[] CreateColumns(ExportFile exportSettings);
 	}
 }

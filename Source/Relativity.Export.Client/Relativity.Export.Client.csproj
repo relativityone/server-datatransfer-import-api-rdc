@@ -7,7 +7,7 @@
     <ProjectGuid>{410BA79B-DF60-4EDA-86B3-608F3DEE38F5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Relativity.Export.Client</RootNamespace>
+    <RootNamespace>Relativity.Export</RootNamespace>
     <AssemblyName>Relativity.Export.Client</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

@@ -1,10 +1,12 @@
-﻿using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
-using kCura.WinEDDS.Exporters;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Images
 {
+	using System.Threading;
+
+	using kCura.WinEDDS.Exporters;
+
+	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.Logging;
+
 	public class ImageLoadFileMetadataBuilder : IImageLoadFileMetadataBuilder
 	{
 		private readonly IImageLoadFileMetadataForArtifactBuilder _forArtifactBuilder;

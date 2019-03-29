@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System;
     using System.Collections.Generic;
@@ -12,11 +12,10 @@ namespace Relativity.Export.Client.NUnit
 
     using global::NUnit.Framework;
 
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
-
 	using Moq;
 
-    using Relativity.Logging;
+	using Relativity.Export.VolumeManagerV2.Batches;
+	using Relativity.Logging;
 
     [TestFixture]
 	public class BatchStateTests

@@ -1,28 +1,34 @@
-﻿using Castle.MicroKernel.Registration;
-using Castle.MicroKernel.SubSystems.Configuration;
-using Castle.Windsor;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Delimiter;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.Exporters.Validator;
-using kCura.WinEDDS.Service.Export;
-using Relativity.Logging;
-using Relativity.Import.Export;
-using Relativity.Import.Export.Io;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
+﻿namespace Relativity.Export.VolumeManagerV2.Container
 {
+	using Castle.MicroKernel.Registration;
+	using Castle.MicroKernel.SubSystems.Configuration;
+	using Castle.Windsor;
+
+	using kCura.WinEDDS;
+
+	using Relativity.Export.VolumeManagerV2.Batches;
+	using Relativity.Export.VolumeManagerV2.Directories;
+	using Relativity.Export.VolumeManagerV2.ImagesRollup;
+	using Relativity.Export.VolumeManagerV2.Metadata.Images;
+	using Relativity.Export.VolumeManagerV2.Metadata.Images.Lines;
+	using Relativity.Export.VolumeManagerV2.Metadata.Natives;
+	using Relativity.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Export.VolumeManagerV2.Metadata.Text.Delimiter;
+	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.Export.VolumeManagerV2.Settings;
+	using Relativity.Export.VolumeManagerV2.Statistics;
+
+	using Relativity.Logging;
+
+	using Relativity.Import.Export;
+	using Relativity.Import.Export.Io;
+
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.Exporters.Validator;
+	using kCura.WinEDDS.Service.Export;
+
 	public class ExportInstaller : IWindsorInstaller
 	{
 		private const string _EXPORT_SUB_SYSTEM_NAME = "Export";
@@ -47,7 +53,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			InstallConnectionToWinEdds(container);
 			InstallCustom(container);
 
-			container.Register(Classes.FromThisAssembly().InNamespace("kCura.WinEDDS.Core.Export", true).WithService.DefaultInterfaces().WithService.Self());
+			container.Register(Classes.FromThisAssembly().InNamespace("Relativity.Export", true).WithService.DefaultInterfaces().WithService.Self());
 		}
 
 		private void InstallFromWinEdds(IWindsorContainer container)
@@ -57,7 +63,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
 			container.Register(Component.For<ILoadFileHeaderFormatterFactory>().Instance(_loadFileHeaderFormatterFactory));
 			container.Register(Component.For<ITransferClientHandler, IExportFileDownloaderStatus, ExportFileDownloaderStatus>().ImplementedBy<ExportFileDownloaderStatus>());
 			container.Register(Component.For<ILoadFileCellFormatter>().UsingFactoryMethod(k => k.Resolve<LoadFileCellFormatterFactory>().Create(ExportSettings, k.Resolve<FilePathTransformerFactory>().Create(ExportSettings, container))));
-			container.Register(Component.For<ExportStatistics, WinEDDS.Statistics>().Instance(_exporter.Statistics));
+			container.Register(Component.For<ExportStatistics, kCura.WinEDDS.Statistics>().Instance(_exporter.Statistics));
 		}
 
 		private void InstallConnectionToWinEdds(IWindsorContainer container)

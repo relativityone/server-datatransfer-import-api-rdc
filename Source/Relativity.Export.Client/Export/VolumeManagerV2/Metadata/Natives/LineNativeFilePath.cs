@@ -1,10 +1,12 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.LoadFileEntry;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Natives
 {
+	using Relativity.Export.VolumeManagerV2.Directories;
+	using Relativity.Logging;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.LoadFileEntry;	
+
 	public class LineNativeFilePath : ILineNativeFilePath
 	{
 		private readonly ILoadFileCellFormatter _loadFileCellFormatter;

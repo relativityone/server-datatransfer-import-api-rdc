@@ -1,9 +1,13 @@
-﻿using System;
-using Castle.Windsor;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Images.Lines
 {
+	using System;
+
+	using Castle.Windsor;
+
+	using kCura.WinEDDS;
+
+	using Relativity.Logging;
+
 	public class ImageLoadFileEntryFactory
 	{
 		private readonly ILog _logger;

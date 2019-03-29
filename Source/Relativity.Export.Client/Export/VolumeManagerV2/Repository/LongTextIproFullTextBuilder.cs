@@ -1,15 +1,17 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Exporters;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
+﻿namespace Relativity.Export.VolumeManagerV2.Repository
 {
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Text;
+	using System.Threading;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+
+	using Relativity.Export.VolumeManagerV2.Download;
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Logging;
+
 	public class LongTextIproFullTextBuilder : ILongTextBuilder
 	{
 		private readonly LongTextHelper _longTextHelper;

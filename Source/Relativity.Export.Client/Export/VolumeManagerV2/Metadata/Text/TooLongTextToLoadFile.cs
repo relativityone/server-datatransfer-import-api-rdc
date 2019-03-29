@@ -1,12 +1,19 @@
-﻿using Castle.Core;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.LoadFileEntry;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Text
 {
+	using Castle.Core;
+
+	using kCura.WinEDDS;
+
+	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.Export.VolumeManagerV2.Repository;
+
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.LoadFileEntry;
+
+	using Relativity.Logging;
+
+	using ViewFieldInfo = Relativity.ViewFieldInfo;
+
 	public class TooLongTextToLoadFile : ILongTextHandler
 	{
 		private readonly LongTextHelper _longTextHelper;
@@ -35,7 +42,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 			_logger = logger;
 		}
 
-		public void HandleLongText(ObjectExportInfo artifact, ViewFieldInfo field, DeferredEntry lineEntry)
+		public void HandleLongText(ObjectExportInfo artifact, kCura.WinEDDS.ViewFieldInfo field, DeferredEntry lineEntry)
 		{
 			ViewFieldInfo fieldToGetValueFrom;
 			if (field is CoalescedTextViewField)

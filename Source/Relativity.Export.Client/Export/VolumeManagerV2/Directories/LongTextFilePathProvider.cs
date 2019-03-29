@@ -1,8 +1,10 @@
-﻿using Relativity.Import.Export.Io;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
+﻿namespace Relativity.Export.VolumeManagerV2.Directories
 {
+	using Relativity.Import.Export.Io;
+	using Relativity.Logging;
+
+	using kCura.WinEDDS;
+
 	public class LongTextFilePathProvider : FilePathProvider
 	{
 		public LongTextFilePathProvider(ILabelManagerForArtifact labelManagerForArtifact,

@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
+﻿namespace Relativity.Export.VolumeManagerV2
 {
+	using System.Collections.Generic;
+
 	public static class ListHelper
 	{
 		public static IList<T> InList<T>(this T item)

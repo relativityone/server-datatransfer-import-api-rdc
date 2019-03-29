@@ -1,11 +1,16 @@
-﻿using Castle.Core;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text.Delimiter;
-using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.LoadFileEntry;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Text
 {
+	using Castle.Core;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS.LoadFileEntry;
+
+	using Relativity.Export.VolumeManagerV2.Metadata.Text.Delimiter;
+	using Relativity.Logging;
+
+	using ViewFieldInfo = Relativity.ViewFieldInfo;
+
 	public class LongTextHandler : ILongTextHandler
 	{
 		private readonly ILongTextHandler _textPrecedenceHandler;
@@ -34,7 +39,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
 			_logger = logger;
 		}
 
-		public void HandleLongText(ObjectExportInfo artifact, ViewFieldInfo field, DeferredEntry lineEntry)
+		public void HandleLongText(ObjectExportInfo artifact, kCura.WinEDDS.ViewFieldInfo field, DeferredEntry lineEntry)
 		{
 			lineEntry.AddStringEntry(_delimiter.Start);
 

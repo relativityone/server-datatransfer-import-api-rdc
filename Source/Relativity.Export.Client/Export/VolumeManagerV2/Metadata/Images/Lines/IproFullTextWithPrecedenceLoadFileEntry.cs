@@ -1,10 +1,13 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Exporters;
-using Relativity.Logging;
-using Constants = Relativity.Export.Constants;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Images.Lines
 {
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Logging;
+
+	using Constants = Relativity.Export.Constants;
+
 	public class IproFullTextWithPrecedenceLoadFileEntry : IproFullTextLoadFileEntry
 	{
 		public IproFullTextWithPrecedenceLoadFileEntry(IFieldService fieldService, LongTextHelper longTextHelper, ILog logger, IFullTextLineWriter fullTextLineWriter) :

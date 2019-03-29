@@ -1,7 +1,9 @@
-﻿using System.IO;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
+﻿namespace Relativity.Export.VolumeManagerV2.Directories
 {
+	using System.IO;
+
+	using kCura.WinEDDS;
+
 	public class RelativeFilePathTransformer : IFilePathTransformer
 	{
 		private readonly ExportFile _exportSettings;

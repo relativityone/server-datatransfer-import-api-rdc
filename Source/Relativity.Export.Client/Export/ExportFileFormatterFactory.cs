@@ -1,7 +1,8 @@
-﻿using kCura.WinEDDS.Exporters;
-
-namespace kCura.WinEDDS.Core.Export
+﻿namespace Relativity.Export
 {
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+
 	public class ExportFileFormatterFactory : ILoadFileHeaderFormatterFactory
 	{
 		private readonly IFieldNameProvider _fieldNameProvider;

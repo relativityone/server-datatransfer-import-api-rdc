@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2
+﻿namespace Relativity.Export.VolumeManagerV2
 {
+	using System;
+
 	public partial class FileShareSettingsService
 	{
 		[Serializable]

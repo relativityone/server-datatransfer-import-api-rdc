@@ -4,15 +4,13 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System;
     using System.Linq;
     using System.Text;
 
     using global::NUnit.Framework;
-
-	using kCura.WinEDDS.Core.Export;
 
     using Relativity;
 

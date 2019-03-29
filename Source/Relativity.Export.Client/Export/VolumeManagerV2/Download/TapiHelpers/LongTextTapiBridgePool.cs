@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
+﻿namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Threading;
+
+	using Relativity.Logging;
+
 	public class LongTextTapiBridgePool : ILongTextTapiBridgePool
 	{
 		private readonly List<IDownloadTapiBridge> _longTextTapiBridges;

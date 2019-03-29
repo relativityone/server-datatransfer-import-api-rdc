@@ -1,10 +1,12 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using Relativity.Import.Export.Io;
-using Relativity.Import.Export.Process;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download
+﻿namespace Relativity.Export.VolumeManagerV2.Download
 {
+	using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.Import.Export.Io;
+	using Relativity.Import.Export.Process;
+	using Relativity.Logging;
+
+	using kCura.WinEDDS;
+
 	public class ExportFileValidator : IExportFileValidator
 	{
 		private readonly ExportFile _exportSettings;

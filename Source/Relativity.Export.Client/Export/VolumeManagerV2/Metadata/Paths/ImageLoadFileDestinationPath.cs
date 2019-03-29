@@ -1,8 +1,10 @@
-﻿using System.Text;
-using kCura.WinEDDS.Exceptions;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Paths
 {
+	using System.Text;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exceptions;
+
 	public class ImageLoadFileDestinationPath : DestinationPath
 	{
 		public ImageLoadFileDestinationPath(ExportFile exportSettings) : base(exportSettings)

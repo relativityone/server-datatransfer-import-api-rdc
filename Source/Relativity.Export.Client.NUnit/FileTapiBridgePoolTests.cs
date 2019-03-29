@@ -4,20 +4,20 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Threading;
 
     using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 
     using Moq;
 
-    using Relativity.Import.Export.Io;
+	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.Import.Export.Io;
     using Relativity.Logging;
 
     [TestFixture]

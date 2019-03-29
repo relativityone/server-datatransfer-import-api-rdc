@@ -1,11 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using kCura.WinEDDS.Exporters;
-using Relativity;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings
+﻿namespace Relativity.Export.VolumeManagerV2.Settings
 {
+	using System.Collections.Generic;
+	using System.Linq;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+
+	using Relativity.Logging;
+
+	using ViewFieldInfo = Relativity.ViewFieldInfo;
+
 	public class FieldServiceFactory
 	{
 		private readonly ILoadFileHeaderFormatter _formatter;
@@ -25,7 +29,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Settings
 		{
 			DecideIfExportingFullText(exportSettings);
 
-			ViewFieldInfo[] columns = _columnsFactory.CreateColumns(exportSettings);
+			kCura.WinEDDS.ViewFieldInfo[] columns = _columnsFactory.CreateColumns(exportSettings);
 
 			string columnsHeader = _formatter.GetHeader(columns.ToList());
 

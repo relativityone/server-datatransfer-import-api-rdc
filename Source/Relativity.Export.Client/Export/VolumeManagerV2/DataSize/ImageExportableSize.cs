@@ -1,8 +1,10 @@
-﻿using System;
-using kCura.WinEDDS.Exporters;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize
+﻿namespace Relativity.Export.VolumeManagerV2.DataSize
 {
+	using System;
+
+	using kCura.WinEDDS.Exporters;
+	using kCura.WinEDDS;
+
 	public class ImageExportableSize
 	{
 		private const double _PDF_MERGE_SIZE_ERROR_THRESHOLD = 1.03;

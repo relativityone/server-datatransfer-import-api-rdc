@@ -1,9 +1,12 @@
-﻿using System;
-using kCura.WinEDDS.Exceptions;
-using Polly;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata
 {
+	using System;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exceptions;
+
+	using Polly;
+
 	public class WritersRetryPolicy : IWritersRetryPolicy
 	{
 		private readonly int _numberOfRetries;

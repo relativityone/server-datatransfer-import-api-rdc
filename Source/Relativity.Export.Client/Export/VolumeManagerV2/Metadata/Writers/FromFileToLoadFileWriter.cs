@@ -1,11 +1,13 @@
-﻿using System.IO;
-using System.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Exporters;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Writers
 {
+	using System.IO;
+	using System.Text;
+
+	using kCura.WinEDDS.Exporters;
+
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Logging;
+
 	public class FromFileToLoadFileWriter : ToLoadFileWriter
 	{
 		private readonly ILongTextStreamFormatterFactory _formatterFactory;

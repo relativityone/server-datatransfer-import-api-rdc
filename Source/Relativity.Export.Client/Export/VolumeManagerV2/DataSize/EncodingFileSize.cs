@@ -1,7 +1,7 @@
-﻿using System.Text;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize
+﻿namespace Relativity.Export.VolumeManagerV2.DataSize
 {
+	using System.Text;
+
 	public class EncodingFileSize
 	{
 		/// <summary>

@@ -1,8 +1,9 @@
-﻿using System.Threading;
-using kCura.WinEDDS.Exporters;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories
+﻿namespace Relativity.Export.VolumeManagerV2.Directories
 {
+	using System.Threading;
+
+	using kCura.WinEDDS.Exporters;
+
 	public interface ILabelManagerForArtifact
 	{
 		string GetImageSubdirectoryLabel(int objectExportInfoArtifactId);

@@ -1,9 +1,12 @@
-﻿using System.Text;
-using kCura.WinEDDS.Exceptions;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Paths
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Paths
 {
+	using System.Text;
+
+	using Relativity.Logging;
+
+	using kCura.WinEDDS.Exceptions;
+	using kCura.WinEDDS;
+
 	public class ErrorFileDestinationPath : IDestinationPath, IErrorFile
 	{
 		private string _errorFilePath;

@@ -1,13 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Exporters;
-using Relativity;
-using ExportConstants = Relativity.Export.Constants;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize
+﻿namespace Relativity.Export.VolumeManagerV2.DataSize
 {
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Text;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+
+	using Relativity;
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+
+	using ExportConstants = Relativity.Export.Constants;
+
 	public class TextExportableSize
 	{
 		private const long _EXTRACTED_TEXT_SIZE_NAIVE = 2097152;
@@ -28,7 +32,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize
 			bool isTextBeingExportedToFile = _exportSettings.ExportFullText && _exportSettings.ExportFullTextAsFile && _exportSettings.SelectedTextFields != null;
 			if (isTextBeingExportedToFile)
 			{
-				List<ViewFieldInfo> fields = _fieldService.GetColumns().Where(IsTextPrecedenceField).ToList();
+				List<kCura.WinEDDS.ViewFieldInfo> fields = _fieldService.GetColumns().Where(IsTextPrecedenceField).ToList();
 
 				foreach (var field in fields)
 				{
@@ -72,7 +76,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.DataSize
 			}
 		}
 
-		private bool IsTextPrecedenceField(ViewFieldInfo field)
+		private bool IsTextPrecedenceField(kCura.WinEDDS.ViewFieldInfo field)
 		{
 			return (field.FieldType == FieldTypeHelper.FieldType.Text || field.FieldType == FieldTypeHelper.FieldType.OffTableText) && field is CoalescedTextViewField;
 		}

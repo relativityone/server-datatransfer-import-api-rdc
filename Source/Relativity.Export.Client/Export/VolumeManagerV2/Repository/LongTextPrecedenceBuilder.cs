@@ -1,20 +1,26 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using Castle.Core;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-using kCura.WinEDDS.Exporters;
-using Relativity;
-using Relativity.Logging;
-using Constants = Relativity.Export.Constants;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
+﻿namespace Relativity.Export.VolumeManagerV2.Repository
 {
+	using System.Collections.Generic;
+	using System.IO;
+	using System.Linq;
+	using System.Text;
+	using System.Threading;
+
+	using Castle.Core;
+
+	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
+
+	using Relativity;
+	using Relativity.Export.VolumeManagerV2.Directories;
+	using Relativity.Export.VolumeManagerV2.Download;
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.Logging;
+
+	using Constants = Relativity.Export.Constants;
+	using ViewFieldInfo = Relativity.ViewFieldInfo;
+
 	public class LongTextPrecedenceBuilder : ILongTextBuilder
 	{
 		private readonly ExportFile _exportSettings;
@@ -66,7 +72,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 				return Enumerable.Empty<LongText>().ToList();
 			}
 
-			ViewFieldInfo field = GetFieldForLongTextPrecedenceDownload(artifact);
+			kCura.WinEDDS.ViewFieldInfo field = GetFieldForLongTextPrecedenceDownload(artifact);
 
 			_logger.LogVerbose("Text Precedence is stored in field {fieldName}:{fieldId}.", field.AvfColumnName, field.FieldArtifactId);
 
@@ -78,7 +84,7 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 			return CreateForLongText(artifact, field).InList();
 		}
 
-		private LongText CreateForTooLongText(ObjectExportInfo artifact, ViewFieldInfo field)
+		private LongText CreateForTooLongText(ObjectExportInfo artifact, kCura.WinEDDS.ViewFieldInfo field)
 		{
 			string destinationLocation = GetDestinationLocation(artifact);
 			LongTextExportRequest longTextExportRequest = CreateExportRequest(artifact, field, destinationLocation);
@@ -132,24 +138,24 @@ namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
 			return LongText.CreateFromExistingValue(artifact.ArtifactID, field.FieldArtifactId, longTextValue);
 		}
 
-		private LongTextExportRequest CreateExportRequest(ObjectExportInfo artifact, ViewFieldInfo field, string destinationLocation)
+		private LongTextExportRequest CreateExportRequest(ObjectExportInfo artifact, kCura.WinEDDS.ViewFieldInfo field, string destinationLocation)
 		{
 			if (_exportSettings.ArtifactTypeID == (int) ArtifactType.Document && field.Category == FieldCategory.FullText && !(field is CoalescedTextViewField))
 			{
 				return LongTextExportRequest.CreateRequestForFullText(artifact, field.FieldArtifactId, destinationLocation);
 			}
 
-			ViewFieldInfo fieldToExport = GetFieldForLongTextPrecedenceDownload(artifact, field);
+			kCura.WinEDDS.ViewFieldInfo fieldToExport = GetFieldForLongTextPrecedenceDownload(artifact, field);
 			return LongTextExportRequest.CreateRequestForLongText(artifact, fieldToExport.FieldArtifactId, destinationLocation);
 		}
 
-		private ViewFieldInfo GetFieldForLongTextPrecedenceDownload(ObjectExportInfo artifact)
+		private kCura.WinEDDS.ViewFieldInfo GetFieldForLongTextPrecedenceDownload(ObjectExportInfo artifact)
 		{
 			int fieldArtifactId = (int) artifact.Metadata[_fieldService.GetOrdinalIndex(Constants.TEXT_PRECEDENCE_AWARE_ORIGINALSOURCE_AVF_COLUMN_NAME)];
 			return _exportSettings.SelectedTextFields.First(x => x.FieldArtifactId == fieldArtifactId);
 		}
 
-		private ViewFieldInfo GetFieldForLongTextPrecedenceDownload(ObjectExportInfo artifact, ViewFieldInfo field)
+		private kCura.WinEDDS.ViewFieldInfo GetFieldForLongTextPrecedenceDownload(ObjectExportInfo artifact, kCura.WinEDDS.ViewFieldInfo field)
 		{
 			if (field == null || field.AvfColumnName == Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)
 			{

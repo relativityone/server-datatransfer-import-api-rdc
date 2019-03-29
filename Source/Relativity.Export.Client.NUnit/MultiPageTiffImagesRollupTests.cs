@@ -4,17 +4,17 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Linq;
 
     using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
 
-    using Relativity.Import.Export.Io;
+	using Relativity.Export.VolumeManagerV2.ImagesRollup;
+	using Relativity.Import.Export.Io;
     using Relativity.Logging;
 
     public class MultiPageTiffImagesRollupTests : MultiPageImagesRollupTests

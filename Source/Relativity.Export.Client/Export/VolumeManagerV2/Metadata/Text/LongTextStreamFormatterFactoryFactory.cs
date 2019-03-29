@@ -1,5 +1,7 @@
-﻿namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Text
 {
+	using kCura.WinEDDS;
+
 	public class LongTextStreamFormatterFactoryFactory
 	{
 		public ILongTextStreamFormatterFactory Create(ExportFile exportSettings)

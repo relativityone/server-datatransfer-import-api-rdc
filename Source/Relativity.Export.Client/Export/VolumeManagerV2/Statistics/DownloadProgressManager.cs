@@ -1,13 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-using Relativity.Import.Export.Io;
-using Relativity.Import.Export.Process;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
+﻿namespace Relativity.Export.VolumeManagerV2.Statistics
 {
+	using System.Collections.Generic;
+	using System.Linq;
+
+	using kCura.WinEDDS;
+
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.Import.Export.Io;
+	using Relativity.Import.Export.Process;
+	using Relativity.Logging;
+
 	public class DownloadProgressManager : IDownloadProgress, IDownloadProgressManager
 	{
 		private int _savedDocumentsDownloadedCount;

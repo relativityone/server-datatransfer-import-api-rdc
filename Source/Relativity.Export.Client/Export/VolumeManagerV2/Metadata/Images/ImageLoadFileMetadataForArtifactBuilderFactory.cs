@@ -1,10 +1,13 @@
-﻿using System;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
-using Relativity.Logging;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Images
 {
+	using System;
+
+	using kCura.WinEDDS;
+
+	using Relativity.Export.VolumeManagerV2.Directories;
+	using Relativity.Export.VolumeManagerV2.Metadata.Images.Lines;
+	using Relativity.Logging;
+
 	public class ImageLoadFileMetadataForArtifactBuilderFactory
 	{
 		private readonly IFilePathTransformer _filePathTransformer;

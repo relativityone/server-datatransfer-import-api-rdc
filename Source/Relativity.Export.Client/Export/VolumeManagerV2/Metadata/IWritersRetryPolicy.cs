@@ -1,8 +1,9 @@
-﻿using System;
-using Polly;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata
 {
+	using System;
+
+	using Polly;
+
 	public interface IWritersRetryPolicy
 	{
 		Policy CreateRetryPolicy(Action<Exception, TimeSpan, int, Context> onRetry);

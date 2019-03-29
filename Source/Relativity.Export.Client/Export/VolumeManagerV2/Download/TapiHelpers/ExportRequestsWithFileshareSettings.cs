@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Relativity.Transfer;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers
+﻿namespace Relativity.Export.VolumeManagerV2.Download.TapiHelpers
 {
+	using System;
+	using System.Collections.Generic;
+
 	public class ExportRequestsWithFileshareSettings
 	{
 		public IRelativityFileShareSettings FileshareSettings { get; }

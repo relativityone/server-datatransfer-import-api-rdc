@@ -1,8 +1,9 @@
-﻿using System.Threading;
-using kCura.WinEDDS.Exporters;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images
+﻿namespace Relativity.Export.VolumeManagerV2.Metadata.Images
 {
+	using System.Threading;
+
+	using kCura.WinEDDS.Exporters;
+
 	public class EmptyImageLoadFile : IImageLoadFile
 	{
 		public void Create(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)

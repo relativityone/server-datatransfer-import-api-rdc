@@ -1,6 +1,6 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
+﻿using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
 
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
+namespace Relativity.Export.VolumeManagerV2.Statistics
 {
 	public interface ITransferClientHandler
 	{

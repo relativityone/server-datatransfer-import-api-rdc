@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository
+﻿namespace Relativity.Export.VolumeManagerV2.Repository
 {
+	using Relativity.Export.VolumeManagerV2.Download;
+
+	using System.Collections.Generic;
+	using System.Linq;
+
 	public class NativeRepository : IClearable
 	{
 		private List<Native> _natives;

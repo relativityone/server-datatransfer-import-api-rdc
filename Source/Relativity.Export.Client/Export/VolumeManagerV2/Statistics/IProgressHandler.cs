@@ -1,7 +1,7 @@
-﻿using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-
-namespace kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics
+﻿namespace Relativity.Export.VolumeManagerV2.Statistics
 {
+	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
+
 	public interface IProgressHandler
 	{
 		void Attach(ITapiBridge tapiBridge);
