@@ -4,21 +4,22 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Linq;
 
     using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
 
+	using Relativity.Export.VolumeManagerV2.ImagesRollup;
+	using Relativity.Import.Export.Io;
     using Relativity.Logging;
 
     public class PdfImagesRollupTests : MultiPageImagesRollupTests
 	{
-		protected override MultiPageImagesRollup CreateInstance(ExportFile exportSettings, IFileHelper fileHelper, IStatus status, IImage imageConverter)
+		protected override MultiPageImagesRollup CreateInstance(ExportFile exportSettings, IFile fileHelper, IStatus status, IImage imageConverter)
 		{
 			return new PdfImagesRollup(exportSettings, fileHelper, status, new NullLogger(), imageConverter);
 		}

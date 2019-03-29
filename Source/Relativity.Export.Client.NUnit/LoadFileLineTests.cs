@@ -4,19 +4,19 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System;
 
     using global::NUnit.Framework;
 
-	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
     using kCura.WinEDDS.Exporters;
     using kCura.WinEDDS.LoadFileEntry;
 
     using Moq;
 
-    using Relativity.Logging;
+	using Relativity.Export.VolumeManagerV2.Metadata.Natives;
+	using Relativity.Logging;
 
     [TestFixture]
 	public class LoadFileLineTests

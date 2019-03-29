@@ -4,19 +4,19 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
 	using Castle.Windsor;
 
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-	using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
 	using kCura.WinEDDS.Exporters;
 
 	using Moq;
 
 	using Relativity;
+	using Relativity.Export.VolumeManagerV2.ImagesRollup;
 	using Relativity.Logging;
 
     [TestFixture]

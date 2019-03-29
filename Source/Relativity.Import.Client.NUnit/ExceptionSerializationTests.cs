@@ -16,6 +16,8 @@ namespace Relativity.Import.Client.NUnit
 
 	using kCura.WinEDDS.Exceptions;
 
+	using Relativity.Import.Export;
+
 	[TestFixture]
 	public static class ExceptionSerializationTests
 	{
@@ -46,12 +48,6 @@ namespace Relativity.Import.Client.NUnit
 					validateNoOp);
 				yield return new TestCaseData(
 					new kCura.WinEDDS.Exceptions.InvalidLoginException("Message", new InvalidOperationException()),
-					validateNoOp);
-				yield return new TestCaseData(
-					new kCura.WinEDDS.Exceptions.InvalidPackageException("Message"),
-					validateNoOp);
-				yield return new TestCaseData(
-					new kCura.WinEDDS.Exceptions.InvalidPackageException("Message", new InvalidOperationException()),
 					validateNoOp);
 				yield return new TestCaseData(
 					new kCura.WinEDDS.RelativityVersionMismatchException(
@@ -182,15 +178,15 @@ namespace Relativity.Import.Client.NUnit
 						"Message",
 						new InvalidOperationException()),
 					validateNoOp);
-				yield return new TestCaseData(new kCura.OI.FileID.FileIDIdentificationException(), validateNoOp);
+				yield return new TestCaseData(new FileIdException(), validateNoOp);
 				yield return new TestCaseData(
-					new kCura.OI.FileID.FileIDIdentificationException("Message"),
+					new FileIdException("Message"),
 					validateNoOp);
 				yield return new TestCaseData(
-					new kCura.OI.FileID.FileIDIdentificationException("Message", new InvalidOperationException()),
+					new FileIdException("Message", new InvalidOperationException()),
 					validateNoOp);
 				yield return new TestCaseData(
-					new kCura.OI.FileID.FileIDIdentificationException("Message", new InvalidOperationException(), 999),
+					new FileIdException("Message", new InvalidOperationException(), FileIdError.Io),
 					validateNoOp);
 				yield return new TestCaseData(
 					new ImportCredentialException("Message", "username", "url"),

@@ -1,8 +1,12 @@
 itextsharp
+kcura.outsidein.fi.win32
 kCura.relativity.client
 newtonsoft.json
 nunit
-relativity.importexport
+relativity
+relativity.logging
+relativity.logging.interfaces
 relativity.objectmanager
 relativity.productions.services.interfaces
+relativity.transfer.client
 stylecop.analyzers

@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Collections.Generic;
     using System.IO;
@@ -13,14 +13,14 @@ namespace Relativity.Export.Client.NUnit
 
     using global::NUnit.Framework;
 
-	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Natives;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
     using kCura.WinEDDS.Exporters;
     using kCura.WinEDDS.LoadFileEntry;
 
     using Polly;
 
-    using Relativity.Logging;
+	using Relativity.Export.VolumeManagerV2.Metadata.Natives;
+	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.Logging;
 
     [TestFixture]
 	public class LoadFileWriterTests

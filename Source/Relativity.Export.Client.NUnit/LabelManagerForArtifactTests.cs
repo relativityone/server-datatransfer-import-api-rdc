@@ -4,15 +4,15 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
 	using global::NUnit.Framework;
 
-	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-
     using Moq;
 
-    [TestFixture]
+	using Relativity.Export.VolumeManagerV2.Directories;
+
+	[TestFixture]
 	public class LabelManagerForArtifactTests
 	{
 		private LabelManagerForArtifact _instance;

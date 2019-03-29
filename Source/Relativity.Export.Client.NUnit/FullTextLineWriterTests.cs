@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System;
     using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace Relativity.Export.Client.NUnit
 
     using global::NUnit.Framework;
 
-	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
+	using Relativity.Export.VolumeManagerV2.Metadata.Images.Lines;
 
     [TestFixture]
 	public class FullTextLineWriterTests

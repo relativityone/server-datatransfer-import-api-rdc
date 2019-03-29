@@ -35,27 +35,25 @@ namespace Relativity.Import.Export.Transfer
 		}
 
 		/// <inheritdoc />
-		public string BuildDocText()
+		public string BuildFileTransferModeDocText(bool includeBulk)
 		{
-			using (var transferLog = new RelativityTransferLog())
+			System.Text.StringBuilder sb = new System.Text.StringBuilder();
+			sb.AppendLine("FILE TRANSFER MODES:");
+			sb.Append(BuildDocText());
+			sb.AppendLine();
+			sb.AppendLine();
+			if (includeBulk)
 			{
-				var sb = new StringBuilder();
-				foreach (var clientMetadata in TransferClientHelper.SearchAvailableClients(transferLog)
-					.OrderBy(x => x.DisplayName))
-				{
-					if (sb.Length > 0)
-					{
-						sb.AppendLine();
-						sb.AppendLine();
-					}
-
-					sb.AppendFormat(" • {0} • ", clientMetadata.DisplayName);
-					sb.AppendLine();
-					sb.Append(clientMetadata.Description);
-				}
-
-				return sb.ToString();
+				sb.AppendLine("SQL INSERT MODES:");
+				sb.AppendLine(" • Bulk • ");
+				sb.Append("The upload process has access to the SQL share on the appropriate case database.  This ensures the fastest transfer of information between the desktop client and the relativity servers.");
+				sb.AppendLine();
+				sb.AppendLine();
+				sb.AppendLine(" • Single •");
+				sb.Append("The upload process has NO access to the SQL share on the appropriate case database.  This is a slower method of import. If the process is using single mode, contact your Relativity Database Administrator to see if a SQL share can be opened for the desired case.");
 			}
+
+			return sb.ToString();
 		}
 
 		/// <summary>
@@ -230,6 +228,35 @@ namespace Relativity.Import.Export.Transfer
 				case TapiClient.Web:
 					parameters.ForceHttpClient = true;
 					break;
+			}
+		}
+
+		/// <summary>
+		/// Searches for all available clients and builds the documentation text from the discovered metadata.
+		/// </summary>
+		/// <returns>
+		/// The documentation text.
+		/// </returns>
+		private static string BuildDocText()
+		{
+			using (var transferLog = new RelativityTransferLog())
+			{
+				var sb = new StringBuilder();
+				foreach (var clientMetadata in TransferClientHelper.SearchAvailableClients(transferLog)
+					.OrderBy(x => x.DisplayName))
+				{
+					if (sb.Length > 0)
+					{
+						sb.AppendLine();
+						sb.AppendLine();
+					}
+
+					sb.AppendFormat(" • {0} • ", clientMetadata.DisplayName);
+					sb.AppendLine();
+					sb.Append(clientMetadata.Description);
+				}
+
+				return sb.ToString();
 			}
 		}
 

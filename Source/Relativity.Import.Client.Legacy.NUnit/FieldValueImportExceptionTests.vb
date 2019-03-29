@@ -5,6 +5,7 @@
 ' -----------------------------------------------------------------------------------------------------
 
 Imports NUnit.Framework
+Imports Relativity.Import.Export.Io
 
 Namespace Relativity.Import.Client.NUnit
 
@@ -20,12 +21,12 @@ Namespace Relativity.Import.Client.NUnit
 
 		<Test>
 		Public Sub TestFieldValueImportExceptionBase()
-			Assert.IsTrue(TypeOf New kCura.WinEDDS.Exceptions.FieldValueImportException() Is kCura.Utility.ImporterExceptionBase)
+			Assert.IsTrue(TypeOf New kCura.WinEDDS.Exceptions.FieldValueImportException() Is ImporterException)
 		End Sub
 
 		<Test>
 		Public Sub MessageContainsFieldNameIfProvidedInConstructor()
-			Assert.AreEqual("Error in row 5, field ""TestField"".  More Stuff", _ex.Message)
+			Assert.AreEqual("Error in row 5, field ""TestField"". More Stuff", _ex.Message)
 		End Sub
 
 		<Test>

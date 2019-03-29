@@ -4,19 +4,19 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Text;
 
     using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Images.Lines;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
     using kCura.WinEDDS.Exporters;
 
-    using Relativity.Logging;
+	using Relativity.Export.VolumeManagerV2;
+	using Relativity.Export.VolumeManagerV2.Metadata.Images.Lines;
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Logging;
 
     [TestFixture]
 	public class IproFullTextWithoutPrecedenceLoadFileEntryTests : IproFullTextLoadFileEntryTests

@@ -10,7 +10,6 @@ namespace Relativity.Import.Export.Process
 	using System.Threading;
 
 	using Relativity.Import.Export.Io;
-	using Relativity.Logging;
 
 	/// <summary>
 	/// Defines an abstract object that performs a runnable process.
@@ -39,8 +38,8 @@ namespace Relativity.Import.Export.Process
 			: this(
 				Relativity.Import.Export.Io.FileSystem.Instance,
 				Relativity.Import.Export.AppSettings.Instance,
-				new NullLogger(),
-				CancellationToken.None)
+				RelativityLogFactory.CreateLog(),
+				null)
 		{
 		}
 
@@ -56,10 +55,10 @@ namespace Relativity.Import.Export.Process
 		/// <param name="logger">
 		/// The logger instance.
 		/// </param>
-		/// <param name="token">
-		/// The cancellation token.
+		/// <param name="tokenSource">
+		/// The cancellation token source.
 		/// </param>
-		protected ProcessBase(IFileSystem fileSystem, IAppSettings settings, Relativity.Logging.ILog logger, CancellationToken token)
+		protected ProcessBase(IFileSystem fileSystem, IAppSettings settings, Relativity.Logging.ILog logger, CancellationTokenSource tokenSource)
 		{
 			if (fileSystem == null)
 			{
@@ -77,7 +76,7 @@ namespace Relativity.Import.Export.Process
 			}
 
 			this.AppSettings = settings;
-			this.CancellationToken = token;
+			this.CancellationTokenSource = tokenSource ?? new CancellationTokenSource();
 			this.FileSystem = fileSystem;
 			this.Logger = logger;
 			this.processErrorWriter = new ProcessErrorWriter(fileSystem, logger);
@@ -126,7 +125,7 @@ namespace Relativity.Import.Export.Process
 		/// <value>
 		/// The <see cref="CancellationToken"/> value.
 		/// </value>
-		protected CancellationToken CancellationToken
+		protected CancellationTokenSource CancellationTokenSource
 		{
 			get;
 		}
@@ -195,15 +194,15 @@ namespace Relativity.Import.Export.Process
 		/// <summary>
 		/// Creates the I/O reporter instance.
 		/// </summary>
+		/// <param name="context">
+		/// The reporter context.
+		/// </param>
 		/// <returns>
 		/// The <see cref="IIoReporter"/> instance.
 		/// </returns>
-		protected IIoReporter CreateIoReporter()
+		protected IIoReporter CreateIoReporter(IoReporterContext context)
 		{
-			return new IoReporter(
-				new IoReporterContext(this.FileSystem, this.AppSettings, new WaitAndRetryPolicy(this.AppSettings)),
-				this.Logger,
-				this.CancellationToken);
+			return new IoReporter(context, this.Logger, this.CancellationTokenSource.Token);
 		}
 
 		/// <summary>

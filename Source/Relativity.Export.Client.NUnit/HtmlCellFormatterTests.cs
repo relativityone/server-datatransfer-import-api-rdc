@@ -4,21 +4,21 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Collections;
 
     using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
 
     using Relativity;
+	using Relativity.Export.VolumeManagerV2.Directories;
 
-    using HtmlCellFormatter = kCura.WinEDDS.Core.Export.VolumeManagerV2.HtmlCellFormatter;
+	using HtmlCellFormatter = Relativity.Export.VolumeManagerV2.HtmlCellFormatter;
 
     [TestFixture]
 	public class HtmlCellFormatterTests

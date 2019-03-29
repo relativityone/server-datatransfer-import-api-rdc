@@ -1,7 +1,10 @@
 kCura.relativity.client
 nbuilder
 newtonsoft.json
-relativity.importexport
+relativity
+relativity.logging
+relativity.logging.interfaces
 relativity.objectmanager
 relativity.productions.services.interfaces
+relativity.transfer.client
 stylecop.analyzers

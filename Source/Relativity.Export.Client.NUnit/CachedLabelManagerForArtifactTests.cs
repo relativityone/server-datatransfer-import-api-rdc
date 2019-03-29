@@ -4,21 +4,22 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
 
     using global::NUnit.Framework;
 
-	using kCura.Vendor.Castle.Core.Internal;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
 
-    [TestFixture]
+	using Relativity.Export.VolumeManagerV2.Directories;
+
+	[TestFixture]
 	public class CachedLabelManagerForArtifactTests
 	{
 		private static readonly Dictionary<string, string> MethodNameToReturnedPrefix =
@@ -73,7 +74,7 @@ namespace Relativity.Export.Client.NUnit
 		{
 			_instance.InitializeFor(_artifacts, _volumePredictions, CancellationToken.None);
 
-			_volumePredictions.ForEach(x => _directoryManager.Verify(dm => dm.MoveNext(x), Times.Once));
+			_volumePredictions.ToList().ForEach(x => _directoryManager.Verify(dm => dm.MoveNext(x), Times.Once));
 		}
 
 		[Test]

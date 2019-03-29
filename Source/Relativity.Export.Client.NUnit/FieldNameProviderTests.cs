@@ -4,15 +4,13 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
 
     using global::NUnit.Framework;
-
-	using kCura.WinEDDS.Core.Export;
 
     public class FieldNameProviderTests
 	{

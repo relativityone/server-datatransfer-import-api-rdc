@@ -207,6 +207,15 @@ namespace Relativity.Import.Export.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Error in line {0}, column &quot;{1}&quot;. {2}.
         /// </summary>
+        internal static string ImporterExcelError {
+            get {
+                return ResourceManager.GetString("ImporterExcelError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error in row {0}, column &quot;{1}&quot;. {2}.
+        /// </summary>
         internal static string ImporterStandardError {
             get {
                 return ResourceManager.GetString("ImporterStandardError", resourceCulture);
@@ -214,7 +223,7 @@ namespace Relativity.Import.Export.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error in row {0}, field &quot;{1}&quot;. {2}&quot;.
+        ///   Looks up a localized string similar to Error in row {0}, field &quot;{1}&quot;. {2}.
         /// </summary>
         internal static string ImporterStandardFieldError {
             get {

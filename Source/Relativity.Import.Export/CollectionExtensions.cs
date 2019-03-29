@@ -167,5 +167,35 @@ namespace Relativity.Import.Export
 		{
 			return collection.Contains(source);
 		}
+
+		/// <summary>
+		/// Gets a subset of values from the provided enumerable.
+		/// </summary>
+		/// <typeparam name="T">
+		/// The type of values contained within the enumerable.
+		/// </typeparam>
+		/// <param name="items">
+		/// The enumerable from which to draw values.
+		/// </param>
+		/// <param name="beginIndex">
+		/// The index from which to start taking values.
+		/// </param>
+		/// <param name="length">
+		/// The number of values to take.
+		/// </param>
+		/// <returns>
+		/// A subset of values from the provided enumerable.
+		/// </returns>
+		public static IEnumerable<T> GetRange<T>(this IEnumerable<T> items, int beginIndex, int length)
+		{
+			T[] returnItems = new T[length];
+			List<T> itemsList = items.ToList();
+			for (int i = beginIndex; i <= beginIndex + length - 1; i++)
+			{
+				returnItems[i] = itemsList[i];
+			}
+
+			return returnItems;
+		}
 	}
 }

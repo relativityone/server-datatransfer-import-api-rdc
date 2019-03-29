@@ -39,15 +39,15 @@ namespace Relativity.Import.Export.NUnit
 		[SetUp]
 		public void Setup()
 		{
-			AppSettingsReader.RegistrySubKeyName = TestRegistrySubKey;
+			AppSettingsManager.RegistrySubKeyName = TestRegistrySubKey;
 			DeleteTestSubKey();
-			this.settings = AppSettingsReader.Create(false);
+			this.settings = AppSettingsManager.Create(false);
 		}
 
 		[TearDown]
 		public void Teardown()
 		{
-			AppSettingsReader.RegistrySubKeyName = TestRegistrySubKey;
+			AppSettingsManager.RegistrySubKeyName = TestRegistrySubKey;
 			DeleteTestSubKey();
 			this.settings = null;
 		}
@@ -56,8 +56,8 @@ namespace Relativity.Import.Export.NUnit
 		public void ShouldDumpTheMappingInfo()
 		{
 			this.settings = null;
-			AppSettingsReader.BuildAttributeDictionary();
-			var groups = AppSettingsReader.AppSettingAttributes.GroupBy(x => x.Value.Section).ToList();
+			AppSettingsManager.BuildAttributeDictionary();
+			var groups = AppSettingsManager.AppSettingAttributes.GroupBy(x => x.Value.Section).ToList();
 			var appSettingsType = typeof(IAppSettings);
 			foreach (var group in groups)
 			{
@@ -131,6 +131,17 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		public void ShouldGetAndSetTheDefaultMaxErrorCountSetting()
+		{
+			Assert.That(
+				this.settings.DefaultMaxErrorCount,
+				Is.EqualTo(AppSettingsConstants.DefaultMaxErrorCountDefaultValue));
+			int expectedValue = RandomHelper.NextInt32(1, 1000);
+			this.settings.DefaultMaxErrorCount = expectedValue;
+			Assert.That(this.settings.DefaultMaxErrorCount, Is.EqualTo(expectedValue));
+		}
+
+		[Test]
 		public void ShouldGetAndSetTheDisableImageLocationValidationSetting()
 		{
 			Assert.That(
@@ -154,6 +165,19 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(this.settings.DisableImageTypeValidation, Is.EqualTo(expectedValue));
 			this.settings.DisableImageTypeValidation = !expectedValue;
 			Assert.That(this.settings.DisableImageTypeValidation, Is.EqualTo(!expectedValue));
+		}
+
+		[Test]
+		public void ShouldGetAndSetTheDisableTextFileEncodingCheckSetting()
+		{
+			Assert.That(
+				this.settings.DisableTextFileEncodingCheck,
+				Is.EqualTo(AppSettingsConstants.DisableTextFileEncodingCheckDefaultValue));
+			bool expectedValue = RandomHelper.NextBoolean();
+			this.settings.DisableTextFileEncodingCheck = expectedValue;
+			Assert.That(this.settings.DisableTextFileEncodingCheck, Is.EqualTo(expectedValue));
+			this.settings.DisableTextFileEncodingCheck = !expectedValue;
+			Assert.That(this.settings.DisableTextFileEncodingCheck, Is.EqualTo(!expectedValue));
 		}
 
 		[Test]
@@ -193,6 +217,19 @@ namespace Relativity.Import.Export.NUnit
 			Assert.That(this.settings.EnableCaseSensitiveSearchOnImport, Is.EqualTo(expectedValue));
 			this.settings.EnableCaseSensitiveSearchOnImport = !expectedValue;
 			Assert.That(this.settings.EnableCaseSensitiveSearchOnImport, Is.EqualTo(!expectedValue));
+		}
+
+		[Test]
+		public void ShouldGetAndSetTheEnableSingleModeImportSetting()
+		{
+			Assert.That(
+				this.settings.EnableSingleModeImport,
+				Is.EqualTo(AppSettingsConstants.EnableSingleModeImportDefaultValue));
+			bool expectedValue = RandomHelper.NextBoolean();
+			this.settings.EnableSingleModeImport = expectedValue;
+			Assert.That(this.settings.EnableSingleModeImport, Is.EqualTo(expectedValue));
+			this.settings.EnableSingleModeImport = !expectedValue;
+			Assert.That(this.settings.EnableSingleModeImport, Is.EqualTo(!expectedValue));
 		}
 
 		[Test]
@@ -438,6 +475,20 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		public void ShouldGetTheOpenIdConnectHomeRealmDiscoveryHintSetting()
+		{
+			Assert.That(this.settings.OpenIdConnectHomeRealmDiscoveryHint, Is.Empty);
+			AppSettingsManager.SetRegistryKeyValue(AppSettingsConstants.OpenIdConnectHomeRealmDiscoveryHintKey, string.Empty);
+			Assert.That(this.settings.OpenIdConnectHomeRealmDiscoveryHint, Is.Empty);
+			AppSettingsManager.SetRegistryKeyValue(AppSettingsConstants.OpenIdConnectHomeRealmDiscoveryHintKey, "HRD-HINT-VALUE");
+			Assert.That(this.settings.OpenIdConnectHomeRealmDiscoveryHint, Is.EqualTo("HRD-HINT-VALUE"));
+
+			// Ensure that we don't fail when the key/value doesn't exist.
+			DeleteTestSubKey();
+			Assert.That(this.settings.OpenIdConnectHomeRealmDiscoveryHint, Is.Empty);
+		}
+
+		[Test]
 		public void ShouldGetAndSetThePermissionErrorsRetrySetting()
 		{
 			// Note: This value also enables and disables the RetryOptions.Permissions value.
@@ -449,6 +500,17 @@ namespace Relativity.Import.Export.NUnit
 			this.settings.PermissionErrorsRetry = !expectedValue;
 			Assert.That(this.settings.PermissionErrorsRetry, Is.EqualTo(!expectedValue));
 			Assert.That(this.settings.RetryOptions.HasFlag(RetryOptions.Permissions), Is.EqualTo(!expectedValue));
+		}
+
+		[Test]
+		public void ShouldGetAndSetThePreviewThresholdSetting()
+		{
+			Assert.That(
+				this.settings.PreviewThreshold,
+				Is.EqualTo(AppSettingsConstants.PreviewThresholdDefaultValue));
+			int expectedValue = RandomHelper.NextInt32(1, 1000);
+			this.settings.PreviewThreshold = expectedValue;
+			Assert.That(this.settings.PreviewThreshold, Is.EqualTo(expectedValue));
 		}
 
 		[Test]
@@ -466,8 +528,8 @@ namespace Relativity.Import.Export.NUnit
 		public void ShouldGetAndSetTheProgrammaticWebApiServiceUrlSetting()
 		{
 			Assert.That(this.settings.ProgrammaticWebApiServiceUrl, Is.Null);
-			this.settings.ProgrammaticWebApiServiceUrl = new Uri("http://www.cnn.com");
-			Assert.That(this.settings.ProgrammaticWebApiServiceUrl, Is.EqualTo(new Uri("http://www.cnn.com")));
+			this.settings.ProgrammaticWebApiServiceUrl = "http://www.cnn.com";
+			Assert.That(this.settings.ProgrammaticWebApiServiceUrl, Is.EqualTo("http://www.cnn.com"));
 			this.settings.ProgrammaticWebApiServiceUrl = null;
 			Assert.That(this.settings.ProgrammaticWebApiServiceUrl, Is.Null);
 		}
@@ -712,6 +774,30 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		public void ShouldGetAndSetTheUsePipeliningForNativeAndObjectImportsSetting()
+		{
+			Assert.That(
+				this.settings.UsePipeliningForNativeAndObjectImports,
+				Is.EqualTo(AppSettingsConstants.UsePipeliningForNativeAndObjectImportsDefaultValue));
+			bool expectedValue = RandomHelper.NextBoolean();
+			this.settings.UsePipeliningForNativeAndObjectImports = expectedValue;
+			Assert.That(this.settings.UsePipeliningForNativeAndObjectImports, Is.EqualTo(expectedValue));
+			this.settings.UsePipeliningForNativeAndObjectImports = !expectedValue;
+			Assert.That(this.settings.UsePipeliningForNativeAndObjectImports, Is.EqualTo(!expectedValue));
+		}
+
+		[Test]
+		public void ShouldGetAndSetTheWaitBeforeReconnectSetting()
+		{
+			Assert.That(
+				this.settings.WaitBeforeReconnect,
+				Is.EqualTo(AppSettingsConstants.WaitBeforeReconnectDefaultValue));
+			int expectedValue = RandomHelper.NextInt32(1, 1000);
+			this.settings.WaitBeforeReconnect = expectedValue;
+			Assert.That(this.settings.WaitBeforeReconnect, Is.EqualTo(expectedValue));
+		}
+
+		[Test]
 		public void ShouldGetAndSetTheWebApiOperationTimeoutSetting()
 		{
 			Assert.That(
@@ -726,36 +812,32 @@ namespace Relativity.Import.Export.NUnit
 		public void ShouldGetAndSetTheWebApiServiceUrlSetting()
 		{
 			this.settings.WebApiServiceUrl = null;
-			Assert.That(this.settings.WebApiServiceUrl, Is.Null);
-			this.settings.ProgrammaticWebApiServiceUrl = new Uri("http://www.cnn.com");
-			Assert.That(this.settings.WebApiServiceUrl, Is.EqualTo(new Uri("http://www.cnn.com")));
-			this.settings.ProgrammaticWebApiServiceUrl = null;
-			Assert.That(this.settings.WebApiServiceUrl, Is.Null);
+			Assert.That(this.settings.WebApiServiceUrl, Is.Empty);
+			this.settings.WebApiServiceUrl = "http://www.cnn.com";
+
+			// The trailing slash is automatically added.
+			Assert.That(this.settings.WebApiServiceUrl, Is.EqualTo("http://www.cnn.com/"));
+			this.settings.WebApiServiceUrl = null;
+			Assert.That(this.settings.WebApiServiceUrl, Is.Empty);
 
 			// This simulates the scenario where the URL comes from the RDC/Registry.
-			AppSettingsReader.SetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrlRegistryKey, "http://www.espn.com");
-			Assert.That(this.settings.WebApiServiceUrl, Is.EqualTo(new Uri("http://www.espn.com")));
+			AppSettingsManager.SetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrlRegistryKey, "http://www.espn.com");
+			Assert.That(this.settings.WebApiServiceUrl, Is.EqualTo("http://www.espn.com/"));
 			DeleteTestSubKey();
-			Assert.That(this.settings.WebApiServiceUrl, Is.Null);
+			Assert.That(this.settings.WebApiServiceUrl, Is.Empty);
 		}
 
 		[Test]
-		public void ShouldGetAndSetTheWebApiServiceUrlStringSetting()
+		public void ShouldGetAndSetTheWebBasedFileDownloadChunkSizeSetting()
 		{
-			this.settings.WebApiServiceUrl = null;
-			Assert.That(this.settings.WebApiServiceUrlString, Is.Empty);
-			this.settings.WebApiServiceUrlString = "http://www.cnn.com";
-
-			// The trailing slash is automatically added.
-			Assert.That(this.settings.WebApiServiceUrlString, Is.EqualTo("http://www.cnn.com/"));
-			this.settings.WebApiServiceUrlString = null;
-			Assert.That(this.settings.WebApiServiceUrlString, Is.Empty);
-
-			// This simulates the scenario where the URL comes from the RDC/Registry.
-			AppSettingsReader.SetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrlRegistryKey, "http://www.espn.com");
-			Assert.That(this.settings.WebApiServiceUrlString, Is.EqualTo("http://www.espn.com/"));
-			DeleteTestSubKey();
-			Assert.That(this.settings.WebApiServiceUrlString, Is.Empty);
+			Assert.That(
+				this.settings.WebBasedFileDownloadChunkSize,
+				Is.EqualTo(AppSettingsConstants.WebBasedFileDownloadChunkSizeDefaultValue));
+			int expectedValue = RandomHelper.NextInt32(
+				AppSettingsConstants.WebBasedFileDownloadChunkSizeMinValue,
+				AppSettingsConstants.WebBasedFileDownloadChunkSizeMinValue + 100000);
+			this.settings.WebBasedFileDownloadChunkSize = expectedValue;
+			Assert.That(this.settings.WebBasedFileDownloadChunkSize, Is.EqualTo(expectedValue));
 		}
 
 		[Test]
@@ -785,10 +867,11 @@ namespace Relativity.Import.Export.NUnit
 		public void ShouldGetTheActualAppConfigSettings()
 		{
 			// Make sure the entire design works against a real App.config file that was ripped from the RDC but with different values.
-			this.settings = AppSettingsReader.Create(false);
+			const bool Refresh = false;
+			this.settings = AppSettingsManager.Create(Refresh);
 			for (int i = 0; i < 3; i++)
 			{
-				AppSettingsReader.Refresh(this.settings);
+				AppSettingsManager.Refresh(this.settings);
 
 				// The kCura.Utility section asserts go here.
 				Assert.That(this.settings.CreateErrorForInvalidDate, Is.True);
@@ -802,16 +885,25 @@ namespace Relativity.Import.Export.NUnit
 				Assert.That(this.settings.ApplicationName, Is.EqualTo("Custom App"));
 				Assert.That(this.settings.TapiBadPathErrorsRetry, Is.False);
 				Assert.That(this.settings.CreateErrorForEmptyNativeFile, Is.True);
+				Assert.That(this.settings.DefaultMaxErrorCount, Is.EqualTo(555));
+				Assert.That(this.settings.DisableImageLocationValidation, Is.True);
+				Assert.That(this.settings.DisableImageTypeValidation, Is.True);
+				Assert.That(this.settings.DisableTextFileEncodingCheck, Is.True);
+				Assert.That(this.settings.DisableThrowOnIllegalCharacters, Is.True);
 				Assert.That(this.settings.DynamicBatchResizingOn, Is.False);
 				Assert.That(this.settings.ExportBatchSize, Is.EqualTo(255));
 				Assert.That(this.settings.ExportThreadCount, Is.EqualTo(3));
 				Assert.That(this.settings.ForceParallelismInNewExport, Is.False);
+				Assert.That(this.settings.ForceWebUpload, Is.True);
 				Assert.That(this.settings.ImportBatchMaxVolume, Is.EqualTo(12345));
 				Assert.That(this.settings.ImportBatchSize, Is.EqualTo(102));
 				Assert.That(this.settings.JobCompleteBatchSize, Is.EqualTo(999));
 				Assert.That(this.settings.LogConfigXmlFileName, Is.EqualTo("CustomLog.xml"));
+				Assert.That(this.settings.MaxFilesForTapiBridge, Is.EqualTo(333));
+				Assert.That(this.settings.MaxReloginTries, Is.EqualTo(42));
 				Assert.That(this.settings.MinBatchSize, Is.EqualTo(29));
 				Assert.That(this.settings.PermissionErrorsRetry, Is.False);
+				Assert.That(this.settings.PreviewThreshold, Is.EqualTo(49));
 				Assert.That(this.settings.SuppressServerCertificateValidation, Is.True);
 				Assert.That(this.settings.TapiAsperaBcpRootFolder, Is.EqualTo("Root"));
 				Assert.That(this.settings.TapiForceAsperaClient, Is.True);
@@ -827,25 +919,228 @@ namespace Relativity.Import.Export.NUnit
 				Assert.That(this.settings.TapiTransferLogDirectory, Is.EqualTo(@"%temp%\IAPI_log\"));
 				Assert.That(this.settings.TempDirectory, Is.EqualTo(@"C:\"));
 				Assert.That(this.settings.UseOldExport, Is.True);
+				Assert.That(this.settings.UsePipeliningForNativeAndObjectImports, Is.True);
+				Assert.That(this.settings.WebApiServiceUrl, Is.EqualTo("https://relativity.one.com/"));
 				Assert.That(this.settings.WebApiOperationTimeout, Is.EqualTo(333));
+				Assert.That(this.settings.WebBasedFileDownloadChunkSize, Is.EqualTo(11111));
 
 				// The kCura.Windows.Process section asserts go here.
 				Assert.That(this.settings.LogAllEvents, Is.True);
 			}
 		}
 
+		[Test]
+		public void ShouldGetTheAppDictionaryDirectly()
+		{
+			const bool Refresh = true;
+			this.settings = AppSettingsManager.Create(Refresh);
+			AppSettingsDictionary dictionary = new AppSettingsDictionary(this.settings);
+			for (int i = 0; i < 3; i++)
+			{
+				// The kCura.Utility section asserts go here.
+				Assert.That(dictionary[AppSettingsConstants.CreateErrorForInvalidDateKey], Is.True);
+				Assert.That(dictionary[AppSettingsConstants.ExportErrorNumberOfRetriesKey], Is.EqualTo(5));
+				Assert.That(dictionary[AppSettingsConstants.ExportErrorWaitTimeInSecondsKey], Is.EqualTo(15));
+				Assert.That(dictionary[AppSettingsConstants.IoErrorNumberOfRetriesKey], Is.EqualTo(8));
+				Assert.That(dictionary[AppSettingsConstants.IoErrorWaitTimeInSecondsKey], Is.EqualTo(16));
+				Assert.That(dictionary[AppSettingsConstants.MaxNumberOfFileExportTasksKey], Is.EqualTo(4));
+
+				// The kCura.WinEDDS section asserts go here.
+				Assert.That(dictionary[AppSettingsConstants.ApplicationNameKey], Is.EqualTo("Custom App"));
+				Assert.That(dictionary[AppSettingsConstants.CreateErrorForEmptyNativeFileKey], Is.True);
+				Assert.That(dictionary[AppSettingsConstants.DefaultMaxErrorCountKey], Is.EqualTo(555));
+				Assert.That(dictionary[AppSettingsConstants.DisableImageLocationValidationKey], Is.True);
+				Assert.That(dictionary[AppSettingsConstants.DisableImageTypeValidationKey], Is.True);
+				Assert.That(dictionary[AppSettingsConstants.DisableTextFileEncodingCheckKey], Is.True);
+				Assert.That(dictionary[AppSettingsConstants.DisableThrowOnIllegalCharactersKey], Is.True);
+				Assert.That(dictionary[AppSettingsConstants.DynamicBatchResizingOnKey], Is.False);
+				Assert.That(dictionary[AppSettingsConstants.ExportBatchSizeKey], Is.EqualTo(255));
+				Assert.That(dictionary[AppSettingsConstants.ExportThreadCountKey], Is.EqualTo(3));
+				Assert.That(dictionary[AppSettingsConstants.ForceParallelismInNewExportKey], Is.False);
+				Assert.That(dictionary[AppSettingsConstants.ForceWebUploadKey], Is.True);
+				Assert.That(dictionary[AppSettingsConstants.ImportBatchMaxVolumeKey], Is.EqualTo(12345));
+				Assert.That(dictionary[AppSettingsConstants.ImportBatchSizeKey], Is.EqualTo(102));
+				Assert.That(dictionary[AppSettingsConstants.LogConfigXmlFileNameKey], Is.EqualTo("CustomLog.xml"));
+				Assert.That(dictionary[AppSettingsConstants.MaxFilesForTapiBridgeKey], Is.EqualTo(333));
+				Assert.That(dictionary[AppSettingsConstants.MaximumReloginTriesKey], Is.EqualTo(42));
+				Assert.That(dictionary[AppSettingsConstants.MinBatchSizeKey], Is.EqualTo(29));
+				Assert.That(dictionary[AppSettingsConstants.PermissionErrorsRetryKey], Is.False);
+				Assert.That(dictionary[AppSettingsConstants.PreviewThresholdKey], Is.EqualTo(49));
+				Assert.That(dictionary[AppSettingsConstants.RestUrlKey], Is.EqualTo("/Relativity.One.REST/api/"));
+				Assert.That(dictionary[AppSettingsConstants.ServicesUrlKey], Is.EqualTo("/Relativity.One.Services/"));
+				Assert.That(dictionary[AppSettingsConstants.SuppressServerCertificateValidationKey], Is.True);
+				Assert.That(dictionary[AppSettingsConstants.TapiAsperaBcpRootFolderKey], Is.EqualTo("Root"));
+				Assert.That(dictionary[AppSettingsConstants.TapiBadPathErrorsRetryKey], Is.False);
+				Assert.That(dictionary[AppSettingsConstants.TapiForceAsperaClientKey], Is.True);
+				Assert.That(dictionary[AppSettingsConstants.TapiForceBcpHttpClientKey], Is.True);
+				Assert.That(dictionary[AppSettingsConstants.TapiForceFileShareClientKey], Is.True);
+				Assert.That(dictionary[AppSettingsConstants.TapiForceHttpClientKey], Is.True);
+				Assert.That(dictionary[AppSettingsConstants.TapiForceClientCandidatesKey], Is.EqualTo("FileShare;Aspera;Http"));
+				Assert.That(dictionary[AppSettingsConstants.TapiLargeFileProgressEnabledKey], Is.True);
+				Assert.That(dictionary[AppSettingsConstants.TapiMaxJobParallelismKey], Is.EqualTo(5));
+				Assert.That(dictionary[AppSettingsConstants.TapiMinDataRateMbpsKey], Is.EqualTo(30));
+				Assert.That(dictionary[AppSettingsConstants.TapiSubmitApmMetricsKey], Is.False);
+				Assert.That(dictionary[AppSettingsConstants.TapiTargetDataRateMbpsKey], Is.EqualTo(50));
+				Assert.That(dictionary[AppSettingsConstants.TapiTransferLogDirectoryKey], Is.EqualTo(@"%temp%\IAPI_log\"));
+				Assert.That(dictionary[AppSettingsConstants.TempDirectoryKey], Is.EqualTo(@"C:\"));
+				Assert.That(dictionary[AppSettingsConstants.UseOldExportKey], Is.True);
+				Assert.That(dictionary[AppSettingsConstants.UsePipeliningForNativeAndObjectImportsKey], Is.True);
+				Assert.That(dictionary[AppSettingsConstants.WaitBeforeReconnectKey], Is.EqualTo(64));
+				Assert.That(dictionary[AppSettingsConstants.WebApiOperationTimeoutKey], Is.EqualTo(333));
+				Assert.That(dictionary[AppSettingsConstants.WebApiServiceUrlKey], Is.EqualTo("https://relativity.one.com/"));
+				Assert.That(dictionary[AppSettingsConstants.WebBasedFileDownloadChunkSizeKey], Is.EqualTo(11111));
+
+				// The kCura.Windows.Process section asserts go here.
+				Assert.That(dictionary[AppSettingsConstants.LogAllEventsKey], Is.True);
+			}
+		}
+
+		[Test]
+		public void ShouldSetTheAppDictionaryDirectly()
+		{
+			const bool Refresh = false;
+			this.settings = AppSettingsManager.Create(Refresh);
+			AppSettingsDictionary dictionary = new AppSettingsDictionary(this.settings);
+			for (int i = 0; i < 3; i++)
+			{
+				// The kCura.Utility section asserts go here.
+				dictionary[AppSettingsConstants.CreateErrorForInvalidDateKey] = true;
+				Assert.That(this.settings.CreateErrorForInvalidDate, Is.True);
+				dictionary[AppSettingsConstants.ExportErrorNumberOfRetriesKey] = 3;
+				Assert.That(this.settings.ExportErrorNumberOfRetries, Is.EqualTo(3));
+				dictionary[AppSettingsConstants.ExportErrorWaitTimeInSecondsKey] = 4;
+				Assert.That(this.settings.ExportErrorWaitTimeInSeconds, Is.EqualTo(4));
+				dictionary[AppSettingsConstants.IoErrorNumberOfRetriesKey] = 5;
+				Assert.That(this.settings.IoErrorNumberOfRetries, Is.EqualTo(5));
+				dictionary[AppSettingsConstants.IoErrorWaitTimeInSecondsKey] = 6;
+				Assert.That(this.settings.IoErrorWaitTimeInSeconds, Is.EqualTo(6));
+				dictionary[AppSettingsConstants.MaxNumberOfFileExportTasksKey] = 7;
+				Assert.That(this.settings.MaxNumberOfFileExportTasks, Is.EqualTo(7));
+
+				// The kCura.WinEDDS section asserts go here.
+				dictionary[AppSettingsConstants.ApplicationNameKey] = "The App";
+				Assert.That(this.settings.ApplicationName, Is.EqualTo("The App"));
+				dictionary[AppSettingsConstants.CreateErrorForEmptyNativeFileKey] = true;
+				Assert.That(this.settings.CreateErrorForEmptyNativeFile, Is.True);
+				dictionary[AppSettingsConstants.DefaultMaxErrorCountKey] = 8;
+				Assert.That(this.settings.DefaultMaxErrorCount, Is.EqualTo(8));
+				dictionary[AppSettingsConstants.DisableImageLocationValidationKey] = true;
+				Assert.That(this.settings.DisableImageLocationValidation, Is.True);
+				dictionary[AppSettingsConstants.DisableImageTypeValidationKey] = true;
+				Assert.That(this.settings.DisableImageTypeValidation, Is.True);
+				dictionary[AppSettingsConstants.DisableTextFileEncodingCheckKey] = true;
+				Assert.That(this.settings.DisableTextFileEncodingCheck, Is.True);
+				dictionary[AppSettingsConstants.DisableThrowOnIllegalCharactersKey] = true;
+				Assert.That(this.settings.DisableThrowOnIllegalCharacters, Is.True);
+				dictionary[AppSettingsConstants.DynamicBatchResizingOnKey] = true;
+				Assert.That(this.settings.DynamicBatchResizingOn, Is.True);
+				dictionary[AppSettingsConstants.ExportBatchSizeKey] = 9;
+				Assert.That(this.settings.ExportBatchSize, Is.EqualTo(9));
+				dictionary[AppSettingsConstants.ExportThreadCountKey] = 10;
+				Assert.That(this.settings.ExportThreadCount, Is.EqualTo(10));
+				dictionary[AppSettingsConstants.ForceParallelismInNewExportKey] = true;
+				Assert.That(this.settings.ForceParallelismInNewExport, Is.True);
+				dictionary[AppSettingsConstants.ForceWebUploadKey] = true;
+				Assert.That(this.settings.ForceWebUpload, Is.True);
+				dictionary[AppSettingsConstants.ImportBatchMaxVolumeKey] = 11;
+				Assert.That(this.settings.ImportBatchMaxVolume, Is.EqualTo(11));
+				dictionary[AppSettingsConstants.ImportBatchSizeKey] = 12;
+				Assert.That(this.settings.ImportBatchSize, Is.EqualTo(12));
+				dictionary[AppSettingsConstants.LogConfigXmlFileNameKey] = "abc";
+				Assert.That(this.settings.LogConfigXmlFileName, Is.EqualTo("abc"));
+				dictionary[AppSettingsConstants.MaxFilesForTapiBridgeKey] = 13;
+				Assert.That(this.settings.MaxFilesForTapiBridge, Is.EqualTo(13));
+				dictionary[AppSettingsConstants.MaximumReloginTriesKey] = 14;
+				Assert.That(this.settings.MaxReloginTries, Is.EqualTo(14));
+				dictionary[AppSettingsConstants.MinBatchSizeKey] = 15;
+				Assert.That(this.settings.MinBatchSize, Is.EqualTo(15));
+				dictionary[AppSettingsConstants.PermissionErrorsRetryKey] = true;
+				Assert.That(this.settings.PermissionErrorsRetry, Is.True);
+				dictionary[AppSettingsConstants.PreviewThresholdKey] = 16;
+				Assert.That(this.settings.PreviewThreshold, Is.EqualTo(16));
+				dictionary[AppSettingsConstants.RestUrlKey] = "/Relativity.One.Two.REST/api/";
+				Assert.That(this.settings.RestUrl, Is.EqualTo("/Relativity.One.Two.REST/api/"));
+				dictionary[AppSettingsConstants.ServicesUrlKey] = "/Relativity.One.Two.Services/";
+				Assert.That(this.settings.ServicesUrl, Is.EqualTo("/Relativity.One.Two.Services/"));
+				dictionary[AppSettingsConstants.SuppressServerCertificateValidationKey] = true;
+				Assert.That(this.settings.SuppressServerCertificateValidation, Is.True);
+				dictionary[AppSettingsConstants.TapiAsperaBcpRootFolderKey] = "def";
+				Assert.That(this.settings.TapiAsperaBcpRootFolder, Is.EqualTo("def"));
+				dictionary[AppSettingsConstants.TapiBadPathErrorsRetryKey] = true;
+				Assert.That(this.settings.TapiBadPathErrorsRetry, Is.True);
+				dictionary[AppSettingsConstants.TapiForceAsperaClientKey] = true;
+				Assert.That(this.settings.TapiForceAsperaClient, Is.True);
+				dictionary[AppSettingsConstants.TapiForceBcpHttpClientKey] = true;
+				Assert.That(this.settings.TapiForceBcpHttpClient, Is.True);
+				dictionary[AppSettingsConstants.TapiForceFileShareClientKey] = true;
+				Assert.That(this.settings.TapiForceFileShareClient, Is.True);
+				dictionary[AppSettingsConstants.TapiForceHttpClientKey] = true;
+				Assert.That(this.settings.TapiForceHttpClient, Is.True);
+				dictionary[AppSettingsConstants.TapiForceClientCandidatesKey] = "ghi";
+				Assert.That(this.settings.TapiForceClientCandidates, Is.EqualTo("ghi"));
+				dictionary[AppSettingsConstants.TapiLargeFileProgressEnabledKey] = true;
+				Assert.That(this.settings.TapiLargeFileProgressEnabled, Is.True);
+				dictionary[AppSettingsConstants.TapiMaxJobParallelismKey] = 17;
+				Assert.That(this.settings.TapiMaxJobParallelism, Is.EqualTo(17));
+				dictionary[AppSettingsConstants.TapiMinDataRateMbpsKey] = 18;
+				Assert.That(this.settings.TapiMinDataRateMbps, Is.EqualTo(18));
+				dictionary[AppSettingsConstants.TapiSubmitApmMetricsKey] = true;
+				Assert.That(this.settings.TapiSubmitApmMetrics, Is.True);
+				dictionary[AppSettingsConstants.TapiTargetDataRateMbpsKey] = 19;
+				Assert.That(this.settings.TapiTargetDataRateMbps, Is.EqualTo(19));
+				dictionary[AppSettingsConstants.TapiTransferLogDirectoryKey] = "jkl";
+				Assert.That(this.settings.TapiTransferLogDirectory, Is.EqualTo("jkl"));
+				dictionary[AppSettingsConstants.TempDirectoryKey] = "mno";
+				Assert.That(this.settings.TempDirectory, Is.EqualTo("mno"));
+				dictionary[AppSettingsConstants.UseOldExportKey] = true;
+				Assert.That(this.settings.UseOldExport, Is.True);
+				dictionary[AppSettingsConstants.UsePipeliningForNativeAndObjectImportsKey] = true;
+				Assert.That(this.settings.UsePipeliningForNativeAndObjectImports, Is.True);
+				dictionary[AppSettingsConstants.WaitBeforeReconnectKey] = 20;
+				Assert.That(this.settings.WaitBeforeReconnect, Is.EqualTo(20));
+				dictionary[AppSettingsConstants.WebApiOperationTimeoutKey] = 21;
+				Assert.That(this.settings.WebApiOperationTimeout, Is.EqualTo(21));
+				dictionary[AppSettingsConstants.WebApiServiceUrlKey] = "https://relativity.one.com";
+				Assert.That(this.settings.WebApiServiceUrl, Is.EqualTo("https://relativity.one.com/"));
+				dictionary[AppSettingsConstants.WebBasedFileDownloadChunkSizeKey] = 3000;
+				Assert.That(this.settings.WebBasedFileDownloadChunkSize, Is.EqualTo(3000));
+
+				// The kCura.Windows.Process section asserts go here.
+				dictionary[AppSettingsConstants.LogAllEventsKey] = true;
+				Assert.That(this.settings.LogAllEvents, Is.True);
+			}
+		}
+
+		[Test]
+		[TestCase(null, "")]
+		[TestCase("", "")]
+		[TestCase("/sample.txt", "")]
+		[TestCase("/sample.txt/", "")]
+		[TestCase("/relativity.one.com", "")]
+		[TestCase("/relativity.one.com/", "")]
+		[TestCase("//relativity.one.com", "//relativity.one.com/")]
+		[TestCase("//relativity.one.com/", "//relativity.one.com/")]
+		[TestCase("https://relativity.one.com", "https://relativity.one.com/")]
+		[TestCase("https://relativity.one.com/", "https://relativity.one.com/")]
+		public void ShouldValidateTheUriFormat(string value, string expected)
+		{
+			// Note: 2 leading forward slashes are considered file-based URI's.
+			string actual = this.settings.ValidateUriFormat(value);
+			Assert.That(actual, Is.EqualTo(expected));
+		}
+
 		private static void AssignRandomValues(IAppSettings settings)
 		{
-			AppSettingsReader.BuildAttributeDictionary();
-			foreach (PropertyInfo prop in AppSettingsReader.GetProperties())
+			AppSettingsManager.BuildAttributeDictionary();
+			foreach (PropertyInfo prop in AppSettingsManager.GetProperties())
 			{
-				string key = AppSettingsReader.GetPropertyKey(prop);
-				if (!AppSettingsReader.AppSettingAttributes.ContainsKey(key) || prop.SetMethod == null)
+				string key = AppSettingsManager.GetPropertyKey(prop);
+				if (!AppSettingsManager.AppSettingAttributes.ContainsKey(key) || prop.SetMethod == null)
 				{
 					continue;
 				}
 
-				AppSettingAttribute attribute = AppSettingsReader.AppSettingAttributes[key];
+				AppSettingAttribute attribute = AppSettingsManager.AppSettingAttributes[key];
 				if (!attribute.IsMapped)
 				{
 					continue;
@@ -886,8 +1181,8 @@ namespace Relativity.Import.Export.NUnit
 
 		private static void CompareAllSettingValues(IAppSettings settings1, IAppSettings settings2)
 		{
-			AppSettingsReader.BuildAttributeDictionary();
-			foreach (PropertyInfo prop in AppSettingsReader.GetProperties())
+			AppSettingsManager.BuildAttributeDictionary();
+			foreach (PropertyInfo prop in AppSettingsManager.GetProperties())
 			{
 				if (prop.PropertyType == typeof(string))
 				{

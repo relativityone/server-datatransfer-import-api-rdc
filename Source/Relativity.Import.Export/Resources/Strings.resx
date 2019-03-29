@@ -262,6 +262,9 @@
     <value>Invalid decimal.</value>
   </data>
   <data name="ImporterStandardError" xml:space="preserve">
+    <value>Error in row {0}, column "{1}". {2}</value>
+  </data>
+  <data name="ImporterExcelError" xml:space="preserve">
     <value>Error in line {0}, column "{1}". {2}</value>
   </data>
   <data name="ObjectNameImporterMaxLengthErrorAdditionalInfo" xml:space="preserve">
@@ -277,7 +280,7 @@
     <value>The input value from the {0} source field has a length of {1} character(s). This exceeds the limit for the {0} destination field, which is currently set to {2} character(s).</value>
   </data>
   <data name="ImporterStandardFieldError" xml:space="preserve">
-    <value>Error in row {0}, field "{1}". {2}"</value>
+    <value>Error in row {0}, field "{1}". {2}</value>
   </data>
   <data name="ConvertToMultiPageTiffOrPdfError" xml:space="preserve">
     <value>An error has occurred processing file [{0}] (page {1} of {2})</value>
