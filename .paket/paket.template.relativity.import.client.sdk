@@ -32,6 +32,10 @@ files
 	../Artifacts/binaries/Relativity.Import.Client/Relativity.Import.Client.dll ==> lib/net462
 	../Artifacts/binaries/Relativity.Import.Client/Relativity.Import.Client.xml ==> lib/net462
 	../Artifacts/binaries/Relativity.Import.Client/Relativity.Import.Export.dll ==> lib/net462
+	../Artifacts/binaries/Relativity.Import.Client/Relativity.Import.Export.Legacy.dll ==> lib/net462
+	../Artifacts/binaries/Relativity.Import.Client/FreeImageNET.dll ==> lib/net462
+	../Artifacts/binaries/Relativity.Import.Client/FreeImage.dll ==> lib/native
+    ./Relativity.Import.Client.SDK.targets ==> build
 dependencies
   framework: net462
 	Newtonsoft.Json >= 6.0.8

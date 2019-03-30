@@ -44,6 +44,31 @@ task Build -Description "Builds the source code" -Depends UpdateAssemblyInfo, Co
 task BuildInstallers -Description "Builds all installers" -Depends CompileInstallerSolution {
 }
 
+task BuildPackages -Description "Builds all NuGet packages" {
+    Assert ($Branch -ne "") "Branch is a required argument for publishing packages"
+    Assert ($PackageVersion -ne "") "PackageVersion is a required argument for publishing packages"
+
+    Initialize-Folder $LogsDir -Safe
+    Initialize-Folder $PackagesArtifactsDir -Safe
+    $preReleaseLabel = & $GitVersionExe /output json /showvariable PreReleaseLabel
+    Write-Host "Branch name: $Branch"
+    Write-Host "Pre-release label: $preReleaseLabel"
+    Write-Host "Working directory: $PSScriptRoot"
+    $packageLogFile = Join-Path $LogsDir "package-build.log"
+    Write-Host "Creating packages for all package templates contained within '$PaketDir' matching '$templateRegex' with version '$PackageVersion' and outputting to '$PackagesArtifactsDir'."
+    foreach ($file in Get-ChildItem $PaketDir)
+    {
+        if (!($file.Name -match [regex]"paket.template.*$"))
+        {
+            continue
+        }
+
+        $templateFile = $file.FullName
+        Write-Host "Creating package for template '$templateFile' and outputting to '$PackagesArtifactsDir'."
+        exec { & $PaketExe pack --template `"$templateFile`" --version $PackageVersion --symbols `"$PackagesArtifactsDir`" --log-file `"$packageLogFile`" } -errorMessage "There was an error creating the package."
+    }
+}
+
 task BuildVersion -Description "Retrieves the build version from GitVersion" {
     Assert ($BuildUrl -ne $null -and $BuildUrl -ne "") "BuildUrl must be provided"
     Write-Output "Importing GitVersion properties.."
@@ -260,38 +285,16 @@ task PublishBuildArtifacts -Description "Publish build artifacts"  {
     Copy-Folder -SourceDir $TestResultsDir -TargetDir "$targetDir\test-results"
 }
 
-task PublishPackages -Depends PublishPackagesInternal
-
-task PublishPackagesInternal -Description "Pushes package to NuGet feed" {
+task PublishPackages -Depends BuildPackages -Description "Pushes package to NuGet feed" {
     Assert ($Branch -ne "") "Branch is a required argument for publishing packages"
     Assert ($PackageVersion -ne "") "PackageVersion is a required argument for publishing packages"
-
-    Initialize-Folder $LogsDir -Safe
-    Initialize-Folder $PackagesArtifactsDir -Safe
-    $preReleaseLabel = & $GitVersionExe /output json /showvariable PreReleaseLabel
-    Write-Host "Branch name: $Branch"
-    Write-Host "Pre-release label: $preReleaseLabel"
-    Write-Host "Working directory: $PSScriptRoot"
     if (($Branch -ne "master" -and (-not $Branch -like "hotfix-*")) -and [string]::IsNullOrWhiteSpace($preReleaseLabel))
     {
         Write-Warning "PPP: Current branch '$Branch' has version that appears to be a release version and is not master. Packing and publishing will not occur. Exiting..."
         exit 0
     }
 
-    $packageLogFile = Join-Path $LogsDir "package-build.log"
-    Write-Host "Creating packages for all package templates contained within '$PaketDir' matching '$templateRegex' with version '$PackageVersion' and outputting to '$PackagesArtifactsDir'."
-    foreach ($file in Get-ChildItem $PaketDir)
-    {
-        if (!($file.Name -match [regex]"paket.template.*$"))
-        {
-            continue
-        }
-
-        $templateFile = $file.FullName
-        Write-Host "Creating package for template '$templateFile' and outputting to '$PackagesArtifactsDir'."
-        exec { & $PaketExe pack --template `"$templateFile`" --version $PackageVersion --symbols `"$PackagesArtifactsDir`" --log-file `"$packageLogFile`" } -errorMessage "There was an error creating the package."
-    }
-
+    $packageLogFile = Join-Path $LogsDir "package-publish.log"
     Write-Host "Pushing all .nupkg files contained within '$PaketDir' to '$ProgetUrl'."
     foreach($file in Get-ChildItem $PackagesArtifactsDir)
     {
