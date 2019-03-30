@@ -15,7 +15,7 @@ namespace Relativity.Import.Export
 		public const string SectionLegacyWindowsProcess = "kCura.Windows.Process";
 		public const string SectionLegacyUtility = "kCura.Utility";
 		public const string SectionLegacyWinEdds = "kCura.WinEDDS";
-		public const string Section = "Relativity.Import.Export";
+		public const string SectionImportExport = "Relativity.Import.Export";
 
 		// All Registry keys go here.
 		public const string ForceFolderPreviewRegistryKey = "ForceFolderPreview";

@@ -528,10 +528,10 @@ namespace Relativity.Import.Export.NUnit
 		public void ShouldGetAndSetTheProgrammaticWebApiServiceUrlSetting()
 		{
 			Assert.That(this.settings.ProgrammaticWebApiServiceUrl, Is.Null);
-			this.settings.ProgrammaticWebApiServiceUrl = "http://www.cnn.com";
-			Assert.That(this.settings.ProgrammaticWebApiServiceUrl, Is.EqualTo("http://www.cnn.com"));
+			this.settings.ProgrammaticWebApiServiceUrl = "https://relativity.one.com";
+			Assert.That(this.settings.ProgrammaticWebApiServiceUrl, Is.EqualTo("https://relativity.one.com/"));
 			this.settings.ProgrammaticWebApiServiceUrl = null;
-			Assert.That(this.settings.ProgrammaticWebApiServiceUrl, Is.Null);
+			Assert.That(this.settings.ProgrammaticWebApiServiceUrl, Is.Empty);
 		}
 
 		[Test]
@@ -811,20 +811,32 @@ namespace Relativity.Import.Export.NUnit
 		[Test]
 		public void ShouldGetAndSetTheWebApiServiceUrlSetting()
 		{
+			DeleteTestSubKey();
+			this.settings.ProgrammaticWebApiServiceUrl = null;
 			this.settings.WebApiServiceUrl = null;
+			Assert.That(this.settings.ProgrammaticWebApiServiceUrl, Is.Empty);
 			Assert.That(this.settings.WebApiServiceUrl, Is.Empty);
-			this.settings.WebApiServiceUrl = "http://www.cnn.com";
+			this.settings.WebApiServiceUrl = "https://relativity.one.com";
 
 			// The trailing slash is automatically added.
-			Assert.That(this.settings.WebApiServiceUrl, Is.EqualTo("http://www.cnn.com/"));
+			Assert.That(this.settings.WebApiServiceUrl, Is.EqualTo("https://relativity.one.com/"));
 			this.settings.WebApiServiceUrl = null;
+			Assert.That(this.settings.ProgrammaticWebApiServiceUrl, Is.Empty);
 			Assert.That(this.settings.WebApiServiceUrl, Is.Empty);
 
 			// This simulates the scenario where the URL comes from the RDC/Registry.
-			AppSettingsManager.SetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrlRegistryKey, "http://www.espn.com");
-			Assert.That(this.settings.WebApiServiceUrl, Is.EqualTo("http://www.espn.com/"));
+			AppSettingsManager.SetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrlRegistryKey, "https://relativity-2.one.com");
+			Assert.That(this.settings.ProgrammaticWebApiServiceUrl, Is.Empty);
+			Assert.That(this.settings.WebApiServiceUrl, Is.EqualTo("https://relativity-2.one.com/"));
 			DeleteTestSubKey();
+			Assert.That(this.settings.ProgrammaticWebApiServiceUrl, Is.Empty);
 			Assert.That(this.settings.WebApiServiceUrl, Is.Empty);
+
+			// This simulates the scenario where the URL comes from programmatic means.
+			AppSettingsManager.SetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrlRegistryKey, "https://relativity-3.one.com");
+			this.settings.ProgrammaticWebApiServiceUrl = "https://relativity-3.one.com";
+			Assert.That(this.settings.ProgrammaticWebApiServiceUrl, Is.EqualTo("https://relativity-3.one.com/"));
+			Assert.That(this.settings.WebApiServiceUrl, Is.EqualTo("https://relativity-3.one.com/"));
 		}
 
 		[Test]
@@ -1177,6 +1189,9 @@ namespace Relativity.Import.Export.NUnit
 					throw new InvalidOperationException($"The '{prop.Name}' property of type '{prop.PropertyType}' is not supported by the random generator.");
 				}
 			}
+
+			settings.ProgrammaticWebApiServiceUrl = RandomHelper.NextUri().ToString();
+			settings.WebApiServiceUrl = RandomHelper.NextUri().ToString();
 		}
 
 		private static void CompareAllSettingValues(IAppSettings settings1, IAppSettings settings2)
@@ -1188,7 +1203,7 @@ namespace Relativity.Import.Export.NUnit
 				{
 					string value1 = (string)prop.GetValue(settings1);
 					string value2 = (string)prop.GetValue(settings2);
-					Assert.That(value1, Is.EqualTo(value2));
+					Assert.That(value1, Is.EqualTo(value2), () => $"The property {prop.Name} is misconfigured.");
 				}
 				else if (prop.PropertyType == typeof(bool))
 				{

@@ -35,7 +35,8 @@ namespace Relativity.Import.Export
 		private int tapiMaxJobParallelism;
 		private int tapiTargetDataRateMbps;
 		private int webBasedFileDownloadChunkSize;
-		private string webApiServiceUrl;
+		private string webApiServiceMappedUrl;
+		private string programmaticWebApiServiceUrl;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AppDotNetSettings"/> class.
@@ -77,19 +78,6 @@ namespace Relativity.Import.Export
 			{
 				thisSettings.ObjectFieldIdListContainsArtifactId = new List<int>(settings.ObjectFieldIdListContainsArtifactId);
 			}
-
-			if (settings.ProgrammaticWebApiServiceUrl != null)
-			{
-				thisSettings.ProgrammaticWebApiServiceUrl = settings.ProgrammaticWebApiServiceUrl;
-			}
-
-			if (settings.WebApiServiceUrl != null)
-			{
-				this.webApiServiceUrl = settings.WebApiServiceUrl.ToString();
-			}
-
-			this.EnforceMinRetryCount = settings.EnforceMinRetryCount;
-			this.EnforceMinWaitTime = settings.EnforceMinWaitTime;
 		}
 
 		/// <inheritdoc />
@@ -661,8 +649,8 @@ namespace Relativity.Import.Export
 		[AppSetting]
 		string IAppSettings.ProgrammaticWebApiServiceUrl
 		{
-			get;
-			set;
+			get => this.programmaticWebApiServiceUrl;
+			set => this.programmaticWebApiServiceUrl = ValidateUriFormat(value);
 		}
 
 		/// <inheritdoc />
@@ -985,24 +973,40 @@ namespace Relativity.Import.Export
 			set;
 		}
 
-		/// <inheritdoc />
+		/// <summary>
+		/// Gets or sets the Web API service URL.
+		/// </summary>
+		/// <value>
+		/// The URL.
+		/// </value>
+		/// <remarks>
+		/// This property is used to store a configuration driven URL.
+		/// </remarks>
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
 			AppSettingsConstants.WebApiServiceUrlKey,
 			AppSettingsConstants.WebApiServiceUrlDefaultValue)]
+		public string WebApiServiceMappedUrl
+		{
+			get => this.webApiServiceMappedUrl;
+			set => this.webApiServiceMappedUrl = ValidateUriFormat(value);
+		}
+
+		/// <inheritdoc />
+		[AppSetting]
 		string IAppSettings.WebApiServiceUrl
 		{
 			get
 			{
+				// The Web API URL is driven in this order:
+				// 1. The code assigns ProgrammaticWebApiServiceUrl.
+				// 2. The user configures by application setting.
+				// 3. The Registry.
 				IAppSettings dotNetSettings = this;
-				string returnValue = null;
-				if (!string.IsNullOrWhiteSpace(dotNetSettings.ProgrammaticWebApiServiceUrl))
+				string returnValue = dotNetSettings.ProgrammaticWebApiServiceUrl;
+				if (string.IsNullOrWhiteSpace(returnValue) && !string.IsNullOrWhiteSpace(this.WebApiServiceMappedUrl))
 				{
-					returnValue = dotNetSettings.ProgrammaticWebApiServiceUrl;
-				}
-				else if (!string.IsNullOrWhiteSpace(this.webApiServiceUrl))
-				{
-					returnValue = this.webApiServiceUrl;
+					returnValue = this.WebApiServiceMappedUrl;
 				}
 
 				if (string.IsNullOrWhiteSpace(returnValue))
@@ -1010,15 +1014,9 @@ namespace Relativity.Import.Export
 					returnValue = AppSettingsManager.GetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrlRegistryKey);
 				}
 
-				return dotNetSettings.ValidateUriFormat(returnValue);
+				return ValidateUriFormat(returnValue);
 			}
-
-			set
-			{
-				IAppSettings dotNetSettings = this;
-				string validatedUri = dotNetSettings.ValidateUriFormat(value);
-				AppSettingsManager.SetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrlRegistryKey, validatedUri);
-			}
+			set => AppSettingsManager.SetRegistryKeyValue(AppSettingsConstants.WebApiServiceUrlRegistryKey, ValidateUriFormat(value));
 		}
 
 		/// <inheritdoc />
@@ -1032,26 +1030,16 @@ namespace Relativity.Import.Export
 			set => this.webBasedFileDownloadChunkSize = value;
 		}
 
-		/// <inheritdoc />
-		IAppSettings IAppSettings.DeepCopy()
-		{
-			return new AppDotNetSettings(this);
-		}
-
 		/// <summary>
-		/// Refreshes the web API service URL.
+		/// Validates that the URI is valid and returns a properly formatted URI string.
 		/// </summary>
 		/// <param name="value">
-		/// The value.
+		/// The URI value.
 		/// </param>
-		public void RefreshWebApiServiceUrl(string value)
-		{
-			// This method avoids setting WebApiServiceUrl during a refresh.
-			this.webApiServiceUrl = value;
-		}
-
-		/// <inheritdoc />
-		string IAppSettings.ValidateUriFormat(string value)
+		/// <returns>
+		/// The properly formatted URI string.
+		/// </returns>
+		public static string ValidateUriFormat(string value)
 		{
 			if (!string.IsNullOrEmpty(value) && !value.Trim().EndsWith("/", StringComparison.OrdinalIgnoreCase))
 			{
@@ -1073,6 +1061,18 @@ namespace Relativity.Import.Export
 			{
 				return string.Empty;
 			}
+		}
+
+		/// <inheritdoc />
+		IAppSettings IAppSettings.DeepCopy()
+		{
+			return new AppDotNetSettings(this);
+		}
+
+		/// <inheritdoc />
+		string IAppSettings.ValidateUriFormat(string value)
+		{
+			return ValidateUriFormat(value);
 		}
 	}
 }

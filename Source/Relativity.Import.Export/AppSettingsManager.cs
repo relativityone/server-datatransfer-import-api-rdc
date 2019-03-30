@@ -173,7 +173,7 @@ namespace Relativity.Import.Export
 				if (!sectionDictionaries.ContainsKey(sectionKey))
 				{
 					// This is guaranteed.
-					sectionKey = AppSettingsConstants.Section;
+					sectionKey = AppSettingsConstants.SectionImportExport;
 				}
 
 				var sectionDictionary = sectionDictionaries[sectionKey];
@@ -185,29 +185,6 @@ namespace Relativity.Import.Export
 				}
 
 				AssignPropertyValue(settings, prop, value);
-			}
-
-			// This complexity is due to 3 possible values including the Windows Registry.
-			AppDotNetSettings dotNetSettings = settings as AppDotNetSettings;
-			string webApiServiceUrl = null;
-			if (sectionDictionaries.ContainsKey(AppSettingsConstants.SectionLegacyWinEdds))
-			{
-				var sectionDictionary = sectionDictionaries[AppSettingsConstants.SectionLegacyWinEdds];
-				webApiServiceUrl = sectionDictionary.GetStringValue(AppSettingsConstants.WebApiServiceUrlRegistryKey, null);
-			}
-			else if (sectionDictionaries.ContainsKey(AppSettingsConstants.Section))
-			{
-				var sectionDictionary = sectionDictionaries[AppSettingsConstants.Section];
-				webApiServiceUrl = sectionDictionary.GetStringValue(AppSettingsConstants.WebApiServiceUrlRegistryKey, null);
-			}
-
-			if (dotNetSettings != null)
-			{
-				dotNetSettings.RefreshWebApiServiceUrl(webApiServiceUrl);
-			}
-			else
-			{
-				settings.WebApiServiceUrl = webApiServiceUrl;
 			}
 		}
 
@@ -655,8 +632,8 @@ namespace Relativity.Import.Export
 				GetSectionKey(AppSettingsConstants.SectionLegacyWinEdds),
 				ReadSectionDictionary(AppSettingsConstants.SectionLegacyWinEdds));
 			dictionaries.Add(
-				GetSectionKey(AppSettingsConstants.Section),
-				ReadSectionDictionary(AppSettingsConstants.Section));
+				GetSectionKey(AppSettingsConstants.SectionImportExport),
+				ReadSectionDictionary(AppSettingsConstants.SectionImportExport));
 			return dictionaries;
 		}
 
