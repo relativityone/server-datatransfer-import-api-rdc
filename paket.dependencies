@@ -49,4 +49,4 @@ nuget relativity.productions.services.interfaces = 10.2.0
 nuget relativity.telemetry.apm = 2019.1.0
 nuget relativity.telemetry.datacontracts.shared = 2019.1.0
 nuget relativity.telemetry.services.interface = 2019.1.0
-nuget relativity.transfer.client = 5.0.2
+nuget relativity.transfer.client = 6.0.3

@@ -487,7 +487,6 @@ namespace Relativity.Import.Export.Transfer
 			                            MaxHttpRetryAttempts = MaxHttpRetryAttempts,
 			                            MinDataRateMbps = this.parameters.MinDataRateMbps,
 			                            PermissionErrorsRetry = this.parameters.PermissionErrorsRetry,
-			                            PreCalculateJobSize = false,
 
 			                            // REL-298418: preserving file timestamps are now driven by a configurable setting.
 			                            PreserveDates = this.parameters.PreserveFileTimestamps,

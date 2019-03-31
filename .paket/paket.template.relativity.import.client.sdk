@@ -42,7 +42,7 @@ dependencies
 	Polly >= 5.3.1
 	ZetaLongPaths >= 1.0.0.16
 	kCura.OutsideIn.FI.Win32 >= 2018.9.0
-	relativity.transfer.client >= 5.0.2
+	relativity.transfer.client >= 6.0.3
 	Relativity.DataTransfer.MessageService >= 10.0.2
 	Relativity.Kepler.Client >= 1.0.1.557
 	Relativity.Logging >= 2018.9.0
