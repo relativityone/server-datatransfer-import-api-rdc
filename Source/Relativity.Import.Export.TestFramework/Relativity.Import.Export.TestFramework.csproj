@@ -104,6 +104,10 @@
   -->
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
   <ItemGroup>
+    <ProjectReference Include="..\Relativity.Import.Client\Relativity.Import.Client.csproj">
+      <Project>{ab2cba4c-f2eb-41d7-8cdc-ae6d9e1d885d}</Project>
+      <Name>Relativity.Import.Client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Relativity.Import.Export.Legacy\Relativity.Import.Export.Legacy.vbproj">
       <Project>{2022e24b-46a1-46da-a715-36d137436b3a}</Project>
       <Name>Relativity.Import.Export.Legacy</Name>
