@@ -14,8 +14,29 @@ and this project does *not* yet adhere to [Semantic Versioning](https://semver.o
 **Fixed**
 
 - Improved text exceed field size error messages [REL-277165]
+- SQL locks weren't always released and can cause deadlocks [REL-293445]
+- Import failures may continue to update closed load file streams and throw ObjectDisposedException [REL-277572]
 
-## Bluestem update 3 preview release - v9.7.209.7 (01-14-2019)
+## Blazingstar update 1 release - v10.1.169.1 (03-25-2019)
+
+- Reviewed and fixed all exception classes that didn't implement serialization properly [REL-266229]
+- Enabled APM by default for all RelativityOne import jobs [REL-270750]
+- The compatibility check exception thrown uses the ApplicationName configuration setting to format the error message instead of a hard-coded RDC string [REL-268853]
+- Temp load files use a unique filename to avoid exceeding the max number of temp files [REL-135101]
+- Native file identification throws a NullReferenceException in some import workflows [REL-273473]
+- Thread locks weren't getting released due to imbalanced Monitor Enter/Exit [REL-244186]
+- An explicit check is made to prevent integrated security from being used in non-interactive processes (e.g. Agent). API users should use CreateByRsaBearerToken instead [REL-269088]
+
+## Larkspur update 2 release - v10.0.233.5 (03-15-2019)
+
+**Fixed**
+
+- WebAPI/REST Service URL can cause failures  [REL-281370]
+- Updated the app.config file and public documentation [REL-285349]
+- Added support to preserve file timestamps for both import and production export workflows [REL-298418]
+- Production export can fail when there are more than 1000 files [REL-292896]
+
+## Bluestem release - v9.7.229.5 (02-04-2019)
 
 **Added**
 
