@@ -3,7 +3,9 @@ moq
 nbuilder
 newtonsoft.json
 nunit
+relativity.kepler.client
 relativity.logging.interfaces
+relativity.testing.identification
 relativity.transfer.client
 stylecop.analyzers
 relativity.testing.identification

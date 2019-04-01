@@ -20,12 +20,15 @@ namespace Relativity.Import.Export.Transfer
 	public interface ITapiObjectService
 	{
 		/// <summary>
-		/// Searches for all available clients and builds the documentation text from the discovered metadata.
+		/// Dynamically builds the file transfer mode documentation text.
 		/// </summary>
+		/// <param name="includeBulk">
+		/// Specify whether to include bulk load details.
+		/// </param>
 		/// <returns>
-		/// The documentation text.
+		/// The help text.
 		/// </returns>
-		string BuildDocText();
+		string BuildFileTransferModeDocText(bool includeBulk);
 
 		/// <summary>
 		/// Creates the file system service.

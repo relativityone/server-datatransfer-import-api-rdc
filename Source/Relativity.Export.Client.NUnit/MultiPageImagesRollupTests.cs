@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System;
     using System.Collections;
@@ -13,10 +13,12 @@ namespace Relativity.Export.Client.NUnit
     using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.ImagesRollup;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
+
+	using Relativity.Export.VolumeManagerV2.ImagesRollup;
+	using Relativity.Import.Export.Io;
 
     [TestFixture]
 	public abstract class MultiPageImagesRollupTests
@@ -25,13 +27,13 @@ namespace Relativity.Export.Client.NUnit
 
 		private Mock<IImage> _imageConverter;
 		private Mock<IStatus> _status;
-		private Mock<IFileHelper> _fileHelper;
+		private Mock<IFile> _fileHelper;
 		private ExportFile _exportSettings;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_fileHelper = new Mock<IFileHelper>();
+			_fileHelper = new Mock<IFile>();
 			_status = new Mock<IStatus>();
 			_imageConverter = new Mock<IImage>();
 
@@ -42,7 +44,7 @@ namespace Relativity.Export.Client.NUnit
 			_instance = CreateInstance(_exportSettings, _fileHelper.Object, _status.Object, _imageConverter.Object);
 		}
 
-		protected abstract MultiPageImagesRollup CreateInstance(ExportFile exportSettings, IFileHelper fileHelper, IStatus status, IImage imageConverter);
+		protected abstract MultiPageImagesRollup CreateInstance(ExportFile exportSettings, IFile fileHelper, IStatus status, IImage imageConverter);
 
 		protected abstract void AssertImageConverterCall(Mock<IImage> imageConverter, ObjectExportInfo artifact);
 

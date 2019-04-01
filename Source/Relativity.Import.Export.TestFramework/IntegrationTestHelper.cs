@@ -7,16 +7,17 @@
 namespace Relativity.Import.Export.TestFramework
 {
 	using System;
+	using System.Collections;
 	using System.Collections.Generic;
 	using System.Configuration;
 	using System.Data;
 	using System.Data.SqlClient;
 	using System.IO;
+	using System.Linq;
 	using System.Net;
 	using System.Reflection;
 
-	using kCura.WinEDDS.TApi;
-
+	using Relativity.Import.Export.Transfer;
 	using Relativity.Transfer;
 
 	/// <summary>
@@ -64,20 +65,22 @@ namespace Relativity.Import.Export.TestFramework
 
 			Console.WriteLine("Creating a test workspace...");
 			WorkspaceHelper.CreateTestWorkspace(parameters, Logger);
-			using (ITransferLog transferLog = new RelativityTransferLog(Logger, false))
+			kCura.Relativity.ImportAPI.ImportAPI iapi = new kCura.Relativity.ImportAPI.ImportAPI(
+				parameters.RelativityUserName,
+				parameters.RelativityPassword,
+				parameters.RelativityWebApiUrl.ToString());
+			IEnumerable<kCura.Relativity.ImportAPI.Data.Workspace> workspaces = iapi.Workspaces();
+			kCura.Relativity.ImportAPI.Data.Workspace workspace =
+				workspaces.FirstOrDefault(x => x.ArtifactID == parameters.WorkspaceId);
+			if (workspace == null)
 			{
-				IHttpCredential credential =
-					new BasicAuthenticationCredential(parameters.RelativityUserName, parameters.RelativityPassword);
-				RelativityConnectionInfo connectionInfo = new RelativityConnectionInfo(
-					parameters.RelativityUrl,
-					credential,
-					parameters.WorkspaceId);
-				WorkspaceService workspaceService = new WorkspaceService(connectionInfo, transferLog);
-				Workspace workspace = workspaceService.GetWorkspaceAsync().GetAwaiter().GetResult();
-				parameters.FileShareUncPath = workspace.DefaultFileShareUncPath;
-				Console.WriteLine($"Created {parameters.WorkspaceId} test workspace.");
-				return parameters;
+				throw new InvalidOperationException(
+					$"This operation cannot be performed because the workspace {parameters.WorkspaceId} that was just created doesn't exist.");
 			}
+
+			parameters.FileShareUncPath = workspace.DocumentPath;
+			Console.WriteLine($"Created {parameters.WorkspaceId} test workspace.");
+			return parameters;
 		}
 
 		/// <summary>

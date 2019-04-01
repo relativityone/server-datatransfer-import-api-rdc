@@ -4,18 +4,18 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System;
 
     using global::NUnit.Framework;
 
-	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-    using kCura.WinEDDS.TApi;
-
     using Moq;
 
+	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.Import.Export.Io;
+    using Relativity.Import.Export.Transfer;
     using Relativity.Logging;
     using Relativity.Transfer;
 
@@ -25,14 +25,14 @@ namespace Relativity.Export.Client.NUnit
 		private FilesStatistics _instance;
 
 		private kCura.WinEDDS.Statistics _statistics;
-		private Mock<IFileHelper> _fileHelper;
+		private Mock<IFile> _fileHelper;
 		private Mock<ITapiBridge> _tapiBridge;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_statistics = new kCura.WinEDDS.Statistics();
-			_fileHelper = new Mock<IFileHelper>();
+			_fileHelper = new Mock<IFile>();
 			_tapiBridge = new Mock<ITapiBridge>();
 
 			_instance = new FilesStatistics(_statistics, _fileHelper.Object, new NullLogger());

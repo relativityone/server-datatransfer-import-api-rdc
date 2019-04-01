@@ -17,9 +17,9 @@ namespace Relativity.Import.Client.NUnit.Integration
 
 	using global::NUnit.Framework;
 
-	using kCura.WinEDDS.TApi;
-
+	using Relativity.Import.Export;
 	using Relativity.Import.Export.TestFramework;
+	using Relativity.Import.Export.Transfer;
 	using Relativity.Transfer;
 
 	/// <summary>
@@ -395,10 +395,10 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// </param>
 		protected static void GivenTheIoErrorWaitTimeInSeconds(int value)
 		{
-			kCura.Utility.Config.ConfigSettings["IOErrorWaitTimeInSeconds"] = value;
+			AppSettings.Instance.IoErrorWaitTimeInSeconds = value;
 			if (value == 0)
 			{
-				kCura.Utility.Config.ConfigSettings["IOErrorNumberOfRetries"] = 0;
+				AppSettings.Instance.IoErrorNumberOfRetries = 0;
 			}
 		}
 

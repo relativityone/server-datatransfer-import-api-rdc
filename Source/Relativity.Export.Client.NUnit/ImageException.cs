@@ -4,11 +4,11 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
-    using kCura.Utility;
+    using Relativity.Import.Export;
 
-    public class ImageException : Image.ImageRollupException
+    public class ImageException : ImageRollupException
 	{
 		public ImageException()
 			: base(string.Empty, null)

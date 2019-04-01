@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Collections.Generic;
     using System.Text;
@@ -13,14 +13,15 @@ namespace Relativity.Export.Client.NUnit
     using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Batches;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
 
+	using Relativity.Export.VolumeManagerV2.Batches;
+	using Relativity.Export.VolumeManagerV2.Download;
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.Import.Export.Io;
     using Relativity.Logging;
 
     [TestFixture]
@@ -30,7 +31,7 @@ namespace Relativity.Export.Client.NUnit
 
 		protected Mock<ILongTextRepository> LongTextRepository { get; set; }
 
-		protected Mock<IFileHelper> FileHelper { get; set; }
+		protected Mock<IFile> FileHelper { get; set; }
 
 		protected Mock<IStatus> Status { get; set; }
 
@@ -38,7 +39,7 @@ namespace Relativity.Export.Client.NUnit
 		public void SetUp()
 		{
 			LongTextRepository = new Mock<ILongTextRepository>();
-			FileHelper = new Mock<IFileHelper>();
+			FileHelper = new Mock<IFile>();
 			Status = new Mock<IStatus>();
 
 			Instance = CreateValidator();

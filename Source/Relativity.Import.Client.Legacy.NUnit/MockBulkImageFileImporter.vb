@@ -8,7 +8,8 @@ Imports System.Threading
 
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.WinEDDS
-Imports kCura.WinEDDS.TApi
+Imports Relativity.Import.Export.Io
+Imports Relativity.Import.Export.Process
 
 Imports Relativity.Logging
 
@@ -38,8 +39,8 @@ Namespace Relativity.Import.Client.NUnit
 
 		Public PauseCalled As Int32 = 0
 
-		Public Sub New(ByVal args As ImageLoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal ioReporterInstance As IIoReporter, ByVal logger As ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager, ByVal tokenSource As CancellationTokenSource)
-			MyBase.new(0, args, processController, ioReporterInstance, logger, processID, doRetryLogic, False, tokenSource)
+		Public Sub New(ByVal args As ImageLoadFile, ByVal processController As ProcessContext, ByVal ioReporterInstance As IIoReporter, ByVal logger As ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager, ByVal tokenSource As CancellationTokenSource)
+			MyBase.New(0, args, processController, ioReporterInstance, logger, processID, doRetryLogic, False, tokenSource)
 			Me.WillThrowException = throwsException
 			_bulkImportManager = bulkManager
 			Me.ImportBatchSize = 500
@@ -79,4 +80,4 @@ Namespace Relativity.Import.Client.NUnit
 		End Property
 
 	End Class
-End NameSpace
+End Namespace

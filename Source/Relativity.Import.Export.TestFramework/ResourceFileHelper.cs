@@ -21,7 +21,12 @@ namespace Relativity.Import.Export.TestFramework
             return basePath;
         }
 
-        public static string GetDocsResourceFilePath(string fileName)
+        public static string GetBaseFilePath(string fileName)
+        {
+	        return System.IO.Path.Combine(GetBasePath(), fileName);
+        }
+
+		public static string GetDocsResourceFilePath(string fileName)
         {
             return GetResourceFilePath("Docs", fileName);
         }

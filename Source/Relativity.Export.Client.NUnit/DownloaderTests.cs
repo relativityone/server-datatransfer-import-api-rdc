@@ -4,23 +4,22 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Collections.Generic;
     using System.Threading;
 
     using global::NUnit.Framework;
 
-	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Writers;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
-
     using Moq;
 
-    using Relativity.Logging;
-    using Relativity.Transfer;
+	using Relativity.Export.VolumeManagerV2.Download;
+	using Relativity.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.Logging;
+	using Relativity.Transfer;
 
-    [TestFixture]
+	[TestFixture]
 	public class DownloaderTests
 	{
 		private Downloader _instance;

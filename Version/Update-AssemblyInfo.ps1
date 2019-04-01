@@ -18,7 +18,6 @@ $assemblyInfoCs = @"
 using System.Reflection;
 using System.Resources;
 
-[assembly: AssemblyProduct("Relativity Import Client")]
 [assembly: AssemblyCopyright("Relativity")]
 [assembly: AssemblyTrademark("Relativity")]
 [assembly: AssemblyCulture("")]
@@ -44,7 +43,6 @@ $assemblyInfoVb = @"
 Imports System.Reflection
 Imports System.Resources
 
-<assembly: AssemblyProduct("Relativity Import Client")>
 <assembly: AssemblyCopyright("Relativity")>
 <assembly: AssemblyTrademark("Relativity")>
 <assembly: AssemblyCulture("")>

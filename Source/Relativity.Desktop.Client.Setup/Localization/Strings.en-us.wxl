@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="en-us" xmlns="http://schemas.microsoft.com/wix/2006/localization">
+	<String Id="en_us">1033</String>
+	<String Id="AdminPrivilegesRequired" Localizable="yes" Overridable="yes">You need to be an Administrator to install [ProductName].</String>
+  <String Id="DowngradeErrorMessage" Localizable="yes" Overridable="yes">A newer version of [ProductName] is already installed. If you wish to install this version, please uninstall the newer version first. Click OK to exit the wizard.</String>
+</WixLocalization>

@@ -4,19 +4,19 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
 	using global::NUnit.Framework;
 
-	using kCura.Windows.Process;
     using kCura.WinEDDS;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download.TapiHelpers;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
-    using kCura.WinEDDS.TApi;
 
     using Moq;
 
-    using Relativity.Logging;
+	using Relativity.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.Import.Export.Process;
+	using Relativity.Import.Export.Transfer;
+	using Relativity.Logging;
 
     [TestFixture]
 	public class MessagesHandlerTests

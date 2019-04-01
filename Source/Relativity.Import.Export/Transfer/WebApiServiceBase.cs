@@ -242,11 +242,32 @@ namespace Relativity.Import.Export.Transfer
 			this.initialized = true;
 		}
 
+		/// <summary>
+		/// Logs an informational log entry.
+		/// </summary>
+		/// <param name="messageTemplate">
+		/// The message template.
+		/// </param>
+		/// <param name="propertyValues">
+		/// The optional property values.
+		/// </param>
 		protected void LogInformation(string messageTemplate, params object[] propertyValues)
 		{
 			this.logger.LogInformation(messageTemplate, propertyValues);
 		}
 
+		/// <summary>
+		/// Logs an error log entry.
+		/// </summary>
+		/// <param name="exception">
+		/// The exception to log.
+		/// </param>
+		/// <param name="messageTemplate">
+		/// The message template.
+		/// </param>
+		/// <param name="propertyValues">
+		/// The optional property values.
+		/// </param>
 		protected void LogError(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
 			this.logger.LogError(exception, messageTemplate, propertyValues);

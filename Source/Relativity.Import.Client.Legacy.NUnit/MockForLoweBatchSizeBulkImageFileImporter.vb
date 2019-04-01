@@ -10,7 +10,8 @@ Imports System.Threading
 
 Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.WinEDDS
-Imports kCura.WinEDDS.TApi
+Imports Relativity.Import.Export.Io
+Imports Relativity.Import.Export.Process
 
 Imports Relativity.Logging
 
@@ -32,17 +33,17 @@ Namespace Relativity.Import.Client.NUnit
 		Private _inputForStringReader As String
 		Private _importBatchSize As Int32
 
-		Public Sub New(ByVal args As ImageLoadFile, ByVal processController As kCura.Windows.Process.Controller, ByVal ioReporterInstance As IIoReporter, ByVal logger As ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager, ByVal tokenSource As CancellationTokenSource)
-			MyBase.new(0, args, processController, ioReporterInstance, logger, processID, doRetryLogic, False, tokenSource)
+		Public Sub New(ByVal args As ImageLoadFile, ByVal processContext As ProcessContext, ByVal ioReporterInstance As IIoReporter, ByVal logger As ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager, ByVal tokenSource As CancellationTokenSource)
+			MyBase.new(0, args, processContext, ioReporterInstance, logger, processID, doRetryLogic, False, tokenSource)
 			Me.WillThrowException = throwsException
 			_bulkImportManager = bulkManager
 			Me.ImportBatchSize = 500
 			Me.ImportBatchVolume = 1000000
 		End Sub
 
-		Public Sub New(ByVal importBatchSize As Int32, ByVal inputForStringReader As String, ByVal args As ImageLoadFile, ByVal processController As kCura.Windows.Process.Controller, 
+		Public Sub New(ByVal importBatchSize As Int32, ByVal inputForStringReader As String, ByVal args As ImageLoadFile, ByVal processContext As ProcessContext, 
                        ByVal ioReporter As IIoReporter, ByVal logger As ILog, ByVal processID As Guid, ByVal doRetryLogic As Boolean, ByVal throwsException As Boolean, ByVal bulkManager As kCura.WinEDDS.Service.BulkImportManager,  ByVal tokenSource As CancellationTokenSource)
-			Me.New(args, processController, ioReporter, logger, processID, doRetryLogic, throwsException, bulkManager, tokenSource)
+			Me.New(args, processContext, ioReporter, logger, processID, doRetryLogic, throwsException, bulkManager, tokenSource)
 			_inputForStringReader = inputForStringReader
 			_importBatchSize = importBatchSize
 		End Sub

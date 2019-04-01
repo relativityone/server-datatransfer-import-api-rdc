@@ -4,22 +4,23 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
     using System.Collections.Generic;
     using System.Text;
 
     using global::NUnit.Framework;
 
-	using kCura.Utility.Extensions;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Metadata.Text;
-    using kCura.WinEDDS.Core.Export.VolumeManagerV2.Repository;
     using kCura.WinEDDS.Exporters;
 
     using Moq;
 
+	using Relativity.Export.VolumeManagerV2;
+	using Relativity.Export.VolumeManagerV2.Download;
+	using Relativity.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.Export.VolumeManagerV2.Repository;
+	using Relativity.Import.Export;
+    using Relativity.Import.Export.Io;
     using Relativity.Logging;
 
     [TestFixture]
@@ -29,14 +30,14 @@ namespace Relativity.Export.Client.NUnit
 
 		private IList<LongText> _longTexts;
 
-		private Mock<IFileHelper> _fileHelper;
+		private Mock<IFile> _fileHelper;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_longTexts = CreateDataSet();
 
-			_fileHelper = new Mock<IFileHelper>();
+			_fileHelper = new Mock<IFile>();
 
 			_instance = new LongTextRepository(_fileHelper.Object, new NullLogger());
 			_instance.Add(_longTexts);

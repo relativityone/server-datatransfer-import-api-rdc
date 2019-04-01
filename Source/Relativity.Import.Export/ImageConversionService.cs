@@ -299,10 +299,16 @@ namespace Relativity.Import.Export
 			}
 
 			file = this.fileSystem.Path.GetFullPath(file);
-			using (iTextSharp.text.pdf.PdfReader pdfReader = new iTextSharp.text.pdf.PdfReader(file))
+			iTextSharp.text.pdf.PdfReader pdfReader = null;
+			try
 			{
+				pdfReader = new iTextSharp.text.pdf.PdfReader(file);
 				int count = pdfReader.NumberOfPages;
 				return count;
+			}
+			finally
+			{
+				pdfReader?.Close();
 			}
 		}
 

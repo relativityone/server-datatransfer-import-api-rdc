@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Export.Client.NUnit
+namespace Relativity.Export.NUnit
 {
 	using System;
 	using System.Collections.Generic;
@@ -13,14 +13,15 @@ namespace Relativity.Export.Client.NUnit
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
-	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Directories;
-	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Download;
-	using kCura.WinEDDS.Core.Export.VolumeManagerV2.Statistics;
 	using kCura.WinEDDS.Exporters;
 
 	using Moq;
 
-    [TestFixture]
+	using Relativity.Export.VolumeManagerV2.Directories;
+	using Relativity.Export.VolumeManagerV2.Download;
+	using Relativity.Export.VolumeManagerV2.Statistics;
+
+	[TestFixture]
 	public abstract class ExportRequestBuilderTests
 	{
 		private Mock<IFilePathProvider> _filePathProvider;

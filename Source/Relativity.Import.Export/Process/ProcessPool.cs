@@ -28,6 +28,12 @@ namespace Relativity.Import.Export.Process
 			this.threadDictionary = new ConcurrentDictionary<Guid, Thread>();
 		}
 
+		/// <summary>
+		/// Aborts the process that contains the specified process identifier.
+		/// </summary>
+		/// <param name="processId">
+		/// The process identifier.
+		/// </param>
 		public void Abort(Guid processId)
 		{
 			Thread value;

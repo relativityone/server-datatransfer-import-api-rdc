@@ -123,7 +123,7 @@ namespace Relativity.Import.Export
 				// OI fixed the lock file/file not found error code defect.
 				System.IO.FileInfo fileInfo = new System.IO.FileInfo(file);
 				FileFormat fileFormat = this.exporter.Identify(fileInfo);
-				return new FileIdInfo(file, fileFormat.GetId(), fileFormat.GetDescription());
+				return new FileIdInfo(fileFormat.GetId(), fileFormat.GetDescription());
 			}
 			catch (System.IO.FileNotFoundException)
 			{
