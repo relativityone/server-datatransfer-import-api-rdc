@@ -1,8 +1,10 @@
+Imports System.Net
 Imports Relativity.Import.Export
 
 Namespace kCura.WinEDDS.Service
 	Public Class BulkImportManager
 		Inherits kCura.EDDS.WebAPI.BulkImportManagerBase.BulkImportManager
+		Implements IBulkImportManager
 
 #Region "Constructors"
 
@@ -64,19 +66,19 @@ Namespace kCura.WinEDDS.Service
 
 #Region " Shadow Methods "
 
-		Public Shadows Function BulkImportImage(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+		Public Shadows Function BulkImportImage(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults Implements IBulkImportManager.BulkImportImage
 			Return RetryOnReLoginException(Function() ExecuteImport(Function() Me.InvokeBulkImportImage(appID, settings, inRepository)))
 		End Function
 
-		Public Shadows Function BulkImportProductionImage(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo, ByVal productionKeyFieldArtifactID As Int32, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+		Public Shadows Function BulkImportProductionImage(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo, ByVal productionKeyFieldArtifactID As Int32, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults Implements IBulkImportManager.BulkImportProductionImage
 			Return RetryOnReLoginException(Function() ExecuteImport(Function() Me.InvokeBulkImportProductionImage(appID, settings, productionKeyFieldArtifactID, inRepository)))
 		End Function
 
-		Public Shadows Function BulkImportNative(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal inRepository As Boolean, ByVal includeExtractedTextEncoding As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+		Public Shadows Function BulkImportNative(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal inRepository As Boolean, ByVal includeExtractedTextEncoding As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults Implements IBulkImportManager.BulkImportNative
 			Return RetryOnReLoginException(Function() ExecuteImport(Function() Me.InvokeBulkImportNative(appID, settings, inRepository, includeExtractedTextEncoding)))
 		End Function
 
-		Public Shadows Function BulkImportObjects(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+		Public Shadows Function BulkImportObjects(ByVal appID As Int32, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults Implements IBulkImportManager.BulkImportObjects
 			Return RetryOnReLoginException(Function() ExecuteImport(Function() Me.InvokeBulkImportObjects(appID, settings, inRepository)))
 		End Function
 
@@ -84,11 +86,11 @@ Namespace kCura.WinEDDS.Service
 			Return RetryOnReLoginException(Function() GenerateErrorFileKey(Function() MyBase.GenerateImageErrorFiles(appID, importKey, writeHeader, keyFieldId)))
 		End Function
 
-		Public Shadows Function GenerateNonImageErrorFiles(ByVal appID As Integer, ByVal runID As String, ByVal artifactTypeID As Integer, ByVal writeHeader As Boolean, ByVal keyFieldID As Integer) As Global.Relativity.MassImport.ErrorFileKey
+		Public Shadows Function GenerateNonImageErrorFiles(ByVal appID As Integer, ByVal runID As String, ByVal artifactTypeID As Integer, ByVal writeHeader As Boolean, ByVal keyFieldID As Integer) As Global.Relativity.MassImport.ErrorFileKey Implements IBulkImportManager.GenerateNonImageErrorFiles
 			Return RetryOnReLoginException(Function() GenerateErrorFileKey(Function() MyBase.GenerateNonImageErrorFiles(appID, runID, artifactTypeID, writeHeader, keyFieldID)))
 		End Function
 
-		Public Shadows Function NativeRunHasErrors(ByVal appID As Integer, ByVal runId As String) As Boolean
+		Public Shadows Function NativeRunHasErrors(ByVal appID As Integer, ByVal runId As String) As Boolean Implements IBulkImportManager.NativeRunHasErrors
 			Return RetryOnReLoginException(Function() MyBase.NativeRunHasErrors(appID, runId))
 		End Function
 
@@ -96,7 +98,7 @@ Namespace kCura.WinEDDS.Service
 			Return RetryOnReLoginException(Function() MyBase.ImageRunHasErrors(appID, runId))
 		End Function
 
-		Public Shadows Function DisposeTempTables(ByVal appID As Int32, ByVal runId As String) As Object
+		Public Shadows Function DisposeTempTables(ByVal appID As Int32, ByVal runId As String) As Object Implements IBulkImportManager.DisposeTempTables
 			Return RetryOnReLoginException(Function() MyBase.DisposeTempTables(appID, runId))
 		End Function
 
@@ -125,6 +127,26 @@ Namespace kCura.WinEDDS.Service
 		End Function
 
 #End Region
+
+		Public Shadows Property CookieContainer As CookieContainer Implements IBulkImportManager.CookieContainer
+			Get
+				Return MyBase.CookieContainer
+			End Get
+
+			Set(value As CookieContainer)
+				MyBase.CookieContainer = value
+			End Set
+		End Property
+
+		Public Shadows Property Credentials As ICredentials Implements IBulkImportManager.Credentials
+			Get
+				Return MyBase.Credentials
+			End Get
+
+			Set(value As ICredentials)
+				MyBase.Credentials = value
+			End Set
+		End Property
 
 #Region " Exceptions "
 

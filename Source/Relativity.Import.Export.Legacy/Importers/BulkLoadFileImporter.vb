@@ -99,13 +99,13 @@ Namespace kCura.WinEDDS
 		Public Property AuditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = Config.AuditLevel
 		Public ReadOnly Property BatchSizeHistoryList As System.Collections.Generic.List(Of Int32)
 
-		Protected Overridable ReadOnly Property NumberOfRetries() As Int32
+		Protected Overridable ReadOnly Property NumberOfRetries As Int32
 			Get
 				Return AppSettings.Instance.IoErrorNumberOfRetries
 			End Get
 		End Property
 
-		Protected ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
+		Protected Overridable ReadOnly Property WaitTimeBetweenRetryAttempts As Int32
 			Get
 				Return AppSettings.Instance.IoErrorWaitTimeInSeconds
 			End Get

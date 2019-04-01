@@ -107,6 +107,8 @@
     <Content Include="oi\unmanaged\wvcore-R1.dll">
       <Paket>True</Paket>
     </Content>
+    <Compile Include="MockBulkLoadFileImporter.cs" />
+    <Compile Include="BulkLoadFileImporterTests.cs" />
     <Compile Include="DataReaderReaderTests.cs" />
     <Compile Include="ExceptionSerializationTests.cs" />
     <Compile Include="FolderCacheTests.cs" />
