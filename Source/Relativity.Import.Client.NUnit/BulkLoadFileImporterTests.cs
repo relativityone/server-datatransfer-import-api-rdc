@@ -93,6 +93,7 @@ namespace Relativity.Import.Client.NUnit
 				this.tokenSource,
 				Relativity.ExecutionSource.Unknown);
 			AppSettings.Instance.IoErrorWaitTimeInSeconds = 0;
+			AppSettings.Instance.ProgrammaticWebApiServiceUrl = "https://r1.kcura.com/RelativityWebAPI/";
 		}
 
 		[Test]
