@@ -51,6 +51,8 @@ namespace Relativity.Import.Export
 		public const bool EnableCaseSensitiveSearchOnImportDefaultValue = true;
 		public const string EnableSingleModeImportKey = "EnableSingleModeImport";
 		public const bool EnableSingleModeImportDefaultValue = false;
+		public const string EnforceVersionCompatibilityCheckKey = "EnforceVersionCompatibilityCheck";
+		public const bool EnforceVersionCompatibilityCheckDefaultValue = false;
 		public const string ExportBatchSizeKey = "ExportBatchSize";
 		public const int ExportBatchSizeDefaultValue = 1000;
 		public const string ExportErrorNumberOfRetriesKey = "ExportErrorNumberOfRetries";

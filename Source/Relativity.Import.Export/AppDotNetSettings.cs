@@ -258,6 +258,17 @@ namespace Relativity.Import.Export
 
 		/// <inheritdoc />
 		[AppSetting(
+			AppSettingsConstants.SectionImportExport,
+			AppSettingsConstants.EnforceVersionCompatibilityCheckKey,
+			AppSettingsConstants.EnforceVersionCompatibilityCheckDefaultValue)]
+		bool IAppSettings.EnforceVersionCompatibilityCheck
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
 			AppSettingsConstants.ExportBatchSizeKey,
 			AppSettingsConstants.ExportBatchSizeDefaultValue)]

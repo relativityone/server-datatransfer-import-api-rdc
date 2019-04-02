@@ -128,6 +128,10 @@ Namespace kCura.WinEDDS.Api
 		End Sub
 
 		Private Shared Sub CheckVersion(relativityManager As Service.RelativityManager)
+			If (Not AppSettings.Instance.EnforceVersionCompatibilityCheck) Then
+				Return
+			End If
+
 			Dim winVersionString As String = System.Reflection.Assembly.GetExecutingAssembly.FullName.Split(","c)(1).Split("="c)(1)
 			Dim winRelativityVersion As String() = winVersionString.Split("."c)
 			Dim relVersionString As String = relativityManager.RetrieveRelativityVersion

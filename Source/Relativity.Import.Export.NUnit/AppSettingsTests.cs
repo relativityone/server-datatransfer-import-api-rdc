@@ -233,6 +233,19 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		public void ShouldGetAndSetTheEnforceVersionCompatibilityCheckSetting()
+		{
+			Assert.That(
+				this.settings.EnforceVersionCompatibilityCheck,
+				Is.EqualTo(AppSettingsConstants.EnforceVersionCompatibilityCheckDefaultValue));
+			bool expectedValue = RandomHelper.NextBoolean();
+			this.settings.EnforceVersionCompatibilityCheck = expectedValue;
+			Assert.That(this.settings.EnforceVersionCompatibilityCheck, Is.EqualTo(expectedValue));
+			this.settings.EnforceVersionCompatibilityCheck = !expectedValue;
+			Assert.That(this.settings.EnforceVersionCompatibilityCheck, Is.EqualTo(!expectedValue));
+		}
+
+		[Test]
 		public void ShouldGetAndSetTheExportBatchSizeSetting()
 		{
 			Assert.That(
