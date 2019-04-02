@@ -3,6 +3,7 @@ Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Io
 Imports Relativity.Import.Export.Process
 Imports Relativity.Import.Export.Transfer
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS
 	Public Class ImportImageFileProcess
@@ -71,7 +72,7 @@ Namespace kCura.WinEDDS
 
 		Public Property EnforceDocumentLimit As Boolean
 
-		Public Property ExecutionSource As Global.Relativity.ExecutionSource
+		Public Property ExecutionSource As ExecutionSource
 
 		Protected Overrides Function Run() As Boolean
 			_imageFileImporter.ReadFile(ImageLoadFile.FileName)

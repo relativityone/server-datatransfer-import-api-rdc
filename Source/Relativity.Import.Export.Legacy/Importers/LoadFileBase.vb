@@ -1,9 +1,10 @@
 Imports System.Threading
-Imports Relativity
 Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Data
 Imports Relativity.Import.Export.Io
 Imports Relativity.Logging
+Imports Relativity.Import.Export.Services
+
 
 Namespace kCura.WinEDDS
 	Public MustInherit Class LoadFileBase
@@ -54,7 +55,7 @@ Namespace kCura.WinEDDS
 		Protected _settings As kCura.WinEDDS.LoadFile
 		Private _codeValidator As CodeValidator.Base
 		Protected WithEvents _artifactReader As Api.IArtifactReader
-		Protected _executionSource As Global.Relativity.ExecutionSource
+		Protected _executionSource As ExecutionSource
 		Public Property SkipExtractedTextEncodingCheck As Boolean
 		Public Property LoadImportedFullTextFromServer As Boolean
 		Public Property DisableExtractedTextFileLocationValidation As Boolean
@@ -206,7 +207,7 @@ Namespace kCura.WinEDDS
 			_codeValidator = Me.GetSingleCodeValidator()
 
 			MulticodeMatrix = New System.Collections.Hashtable
-			If _keyFieldID > 0 AndAlso args.OverwriteDestination.ToLower <> Global.Relativity.ImportOverwriteType.Overlay.ToString.ToLower AndAlso args.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
+			If _keyFieldID > 0 AndAlso args.OverwriteDestination.ToLower <> Global.Relativity.ImportOverwriteType.Overlay.ToString.ToLower AndAlso args.ArtifactTypeID = ArtifactType.Document Then
 				_keyFieldID = -1
 			End If
 			If _keyFieldID = -1 Then

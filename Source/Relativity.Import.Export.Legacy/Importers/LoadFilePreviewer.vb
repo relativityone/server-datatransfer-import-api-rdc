@@ -3,6 +3,7 @@ Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Io
 Imports Relativity.Import.Export.Process
 Imports Relativity.Logging
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS
 	Public Class LoadFilePreviewer
@@ -181,7 +182,7 @@ Namespace kCura.WinEDDS
 			For Each mapItem In _fieldMap
 				If mapItem.NativeFileColumnIndex > -1 AndAlso Not mapItem.DocumentField Is Nothing Then
 					Dim field As Api.ArtifactField = record(mapItem.DocumentField.FieldID)
-					If Not (_artifactTypeID <> Global.Relativity.ArtifactType.Document And field.Type = Global.Relativity.FieldTypeHelper.FieldType.File) Then
+					If Not (_artifactTypeID <> ArtifactType.Document And field.Type = Global.Relativity.FieldTypeHelper.FieldType.File) Then
 						Select Case field.Category
 							Case Global.Relativity.FieldCategory.Relational
 								If unmappedRelationalNoBlankFields.Contains(field.ArtifactID) Then
@@ -215,7 +216,7 @@ Namespace kCura.WinEDDS
 
 			' only do this if we are NOT in Overlay mode
 			If _settings.OverwriteDestination.ToLower <> Global.Relativity.ImportOverwriteType.Overlay.ToString.ToLower Then
-				If Not identifierField Is Nothing And _artifactTypeID = Global.Relativity.ArtifactType.Document Then
+				If Not identifierField Is Nothing And _artifactTypeID = ArtifactType.Document Then
 					For Each field As Api.ArtifactField In unmappedRelationalNoBlankFields.Values
 						If record.IdentifierField IsNot Nothing Then
 							field.Value = NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(record.IdentifierField.ValueAsString, -1, field.TextLength, field.DisplayName))
@@ -256,7 +257,7 @@ Namespace kCura.WinEDDS
 
 			If _createFolderStructure Then
 				Dim field As Api.ArtifactField = record.FieldList(Global.Relativity.FieldCategory.ParentArtifact)(0)
-				If _artifactTypeID <> Global.Relativity.ArtifactType.Document Then
+				If _artifactTypeID <> ArtifactType.Document Then
 					If field.ValueAsString = String.Empty Then
 						field.Value = New Exceptions.ErrorMessage(New ParentObjectReferenceRequiredException(Me.CurrentLineNumber, -1).Message)
 						lineContainsErrors = True

@@ -1,8 +1,10 @@
+Imports Relativity.Import.Export.Services
+
 Namespace kCura.WinEDDS.CodeValidator
 	Public Class SinglePreviewer
 		Inherits Base
 
-		Public Sub New(ByVal caseInfo As Global.Relativity.CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.CodeManager)
+		Public Sub New(ByVal caseInfo As CaseInfo, ByVal codeManager As kCura.WinEDDS.Service.CodeManager)
 			MyBase.New(caseInfo, codeManager)
 		End Sub
 

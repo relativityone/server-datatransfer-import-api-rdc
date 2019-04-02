@@ -1,4 +1,4 @@
-﻿Imports Relativity
+﻿Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS.Service.Export
     Public Interface ICaseManager

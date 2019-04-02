@@ -1,13 +1,13 @@
 Imports System.Collections.Generic
 Imports System.Threading
-Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.WinEDDS.Service
 Imports kCura.WinEDDS.Helpers
-Imports Relativity
 Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Io
 Imports Relativity.Import.Export.Process
 Imports Relativity.Import.Export.Transfer
+Imports Relativity.Import.Export.Services
+Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
 	Public Class BulkImageFileImporter
@@ -34,9 +34,9 @@ Namespace kCura.WinEDDS
 		Private _autoNumberImages As Boolean
 		Private _copyFilesToRepository As Boolean
 		Private _defaultDestinationFolderPath As String
-		Private _caseInfo As Global.Relativity.CaseInfo
+		Private _caseInfo As CaseInfo
 		Private _overlayArtifactID As Int32
-		Private _executionSource As Global.Relativity.ExecutionSource
+		Private _executionSource As ExecutionSource
 		Private _lastRunMetadataImport As Int64 = 0
 
 		Private WithEvents _processContext As ProcessContext
@@ -189,12 +189,12 @@ Namespace kCura.WinEDDS
 		               args As ImageLoadFile, _
 		               context As ProcessContext, _
 		               reporter As IIoReporter, _
-		               logger As Logging.ILog, _
+		               logger As ILog, _
 		               processID As Guid, _
 		               doRetryLogic As Boolean, _
 		               enforceDocumentLimit As Boolean, _
 		               tokenSource As CancellationTokenSource, _
-		               Optional ByVal executionSource As Global.Relativity.ExecutionSource = Global.Relativity.ExecutionSource.Unknown)
+		               Optional ByVal executionSource As ExecutionSource = ExecutionSource.Unknown)
 			MyBase.New(reporter, logger, tokenSource)
 
 			_executionSource = executionSource
@@ -231,7 +231,7 @@ Namespace kCura.WinEDDS
 			_batchSizeHistoryList = New System.Collections.Generic.List(Of Int32)
 
 			If args.ReplaceFullText Then
-				_fullTextStorageIsInSql = (_fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, Global.Relativity.ArtifactType.Document).FullText.EnableDataGrid = False)
+				_fullTextStorageIsInSql = (_fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, ArtifactType.Document).FullText.EnableDataGrid = False)
 			End If
 		End Sub
 
@@ -292,7 +292,7 @@ Namespace kCura.WinEDDS
 			ElseIf args.IdentityFieldId > 0 Then
 				_keyFieldDto = fieldManager.Read(args.CaseInfo.ArtifactID, args.IdentityFieldId)
 			Else
-				Dim fieldID As Int32 = _fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, Global.Relativity.ArtifactType.Document).IdentifierFields(0).FieldID
+				Dim fieldID As Int32 = _fieldQuery.RetrieveAllAsDocumentFieldCollection(args.CaseInfo.ArtifactID, ArtifactType.Document).IdentifierFields(0).FieldID
 				_keyFieldDto = fieldManager.Read(args.CaseInfo.ArtifactID, fieldID)
 			End If
 		End Sub
@@ -358,8 +358,8 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Private Function BulkImport(ByVal overwrite As OverwriteType, ByVal useBulk As Boolean) As MassImportResults
-			Dim retval As MassImportResults
+		Private Function BulkImport(ByVal overwrite As kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType, ByVal useBulk As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+			Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
 			Dim settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo = Me.GetSettingsObject
 			settings.UseBulkDataImport = useBulk
 			settings.Overlay = overwrite

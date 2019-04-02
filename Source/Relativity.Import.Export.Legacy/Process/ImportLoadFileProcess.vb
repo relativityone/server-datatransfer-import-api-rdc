@@ -3,6 +3,7 @@ Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Io
 Imports Relativity.Import.Export.Process
 Imports Relativity.Import.Export.Transfer
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS
 
@@ -93,7 +94,7 @@ Namespace kCura.WinEDDS
 
 		Public Property EnforceDocumentLimit() As Boolean
 
-		Public Property ExecutionSource() As Global.Relativity.ExecutionSource
+		Public Property ExecutionSource() As ExecutionSource
 
 		Public Property TimeZoneOffset() As Int32
 			Get
@@ -197,7 +198,7 @@ Namespace kCura.WinEDDS
 				retval.Delimiter = LoadFile.RecordDelimiter
 				retval.NestedValueDelimiter = LoadFile.HierarchicalValueDelimiter
 				retval.DestinationFolderArtifactID = LoadFile.DestinationFolderID
-				If LoadFile.ArtifactTypeID <> Global.Relativity.ArtifactType.Document Then retval.DestinationFolderArtifactID = -1
+				If LoadFile.ArtifactTypeID <> ArtifactType.Document Then retval.DestinationFolderArtifactID = -1
 				Dim fieldMap As New System.Collections.ArrayList
 				Dim mappedExtractedText As Boolean = False
 				For Each item As WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In LoadFile.FieldMap

@@ -10,6 +10,7 @@ Imports kCura.WinEDDS.IO
 Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Process
 Imports Relativity.Logging
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS
 	Public Class VolumeManager
@@ -711,7 +712,7 @@ Namespace kCura.WinEDDS
 				tries += 1
 				Try
 					webServiceRequestTime = Stopwatch.StartNew()
-					If Me.Settings.ArtifactTypeID = Global.Relativity.ArtifactType.Document AndAlso field.Category = Global.Relativity.FieldCategory.FullText AndAlso Not TypeOf field Is CoalescedTextViewField Then
+					If Me.Settings.ArtifactTypeID = ArtifactType.Document AndAlso field.Category = Global.Relativity.FieldCategory.FullText AndAlso Not TypeOf field Is CoalescedTextViewField Then
 						_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, artifact.ArtifactID, _settings.CaseInfo.ArtifactID.ToString)
 					Else
 						Dim fieldToActuallyExportFrom As ViewFieldInfo = Me.GetFieldForLongTextPrecedenceDownload(field, artifact)
@@ -1031,8 +1032,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function DownloadNative(ByVal artifact As Exporters.ObjectExportInfo, ByVal currentVolumeNumber As Integer, ByVal currentSubDirectoryNumber As Integer) As Int64
-			If Me.Settings.ArtifactTypeID = Global.Relativity.ArtifactType.Document AndAlso artifact.NativeFileGuid = "" Then Return 0
-			If Not Me.Settings.ArtifactTypeID = Global.Relativity.ArtifactType.Document AndAlso (Not artifact.FileID > 0 OrElse artifact.NativeSourceLocation.Trim = String.Empty) Then Return 0
+			If Me.Settings.ArtifactTypeID = ArtifactType.Document AndAlso artifact.NativeFileGuid = "" Then Return 0
+			If Not Me.Settings.ArtifactTypeID = ArtifactType.Document AndAlso (Not artifact.FileID > 0 OrElse artifact.NativeSourceLocation.Trim = String.Empty) Then Return 0
 			Dim nativeFileName As String = Me.GetNativeFileName(artifact)
 			Dim tempFile As String = Me.GetLocalNativeFilePath(artifact, nativeFileName, currentVolumeNumber, currentSubDirectoryNumber)
 			
@@ -1053,7 +1054,7 @@ Namespace kCura.WinEDDS
 				tries += 1
 				Try
 					artifact.NativeTempLocation = tempFile
-					If Me.Settings.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
+					If Me.Settings.ArtifactTypeID = ArtifactType.Document Then
 						_downloadManager.DownloadFileForDocument(tempFile, artifact.NativeFileGuid, artifact.NativeSourceLocation, artifact.ArtifactID, _settings.CaseArtifactID.ToString)
 					Else
 						_downloadManager.DownloadFileForDynamicObject(tempFile, artifact.NativeSourceLocation, artifact.ArtifactID, _settings.CaseArtifactID.ToString, artifact.FileID, Me.Settings.FileField.FieldID)

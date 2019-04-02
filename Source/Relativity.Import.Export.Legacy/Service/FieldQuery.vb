@@ -1,6 +1,7 @@
 Imports System.Collections.Generic
 Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Data
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS.Service
 	Public Class FieldQuery
@@ -39,7 +40,7 @@ Namespace kCura.WinEDDS.Service
 				 OrElse _
 				 unmappableFields.Contains(dv(i)("DisplayName").ToString) _
 				) Then
-					If Not (CType(dv(i)("FieldCategoryID"), Global.Relativity.FieldCategory) = Global.Relativity.FieldCategory.FullText AndAlso artifactTypeID <> Global.Relativity.ArtifactType.Document) Then
+					If Not (CType(dv(i)("FieldCategoryID"), Global.Relativity.FieldCategory) = Global.Relativity.FieldCategory.FullText AndAlso artifactTypeID <> ArtifactType.Document) Then
 						Dim guidsString As String = dv(i)("ArtifactGuids").ToString()
 						Dim guids As New List(Of Guid)
 						If (Not String.IsNullOrEmpty(guidsString)) Then

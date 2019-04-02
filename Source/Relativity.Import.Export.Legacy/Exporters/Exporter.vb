@@ -12,6 +12,7 @@ Imports kCura.WinEDDS.LoadFileEntry
 Imports kCura.WinEDDS.Service.Export
 Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Process
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS
 	Public Class Exporter
@@ -585,7 +586,7 @@ Namespace kCura.WinEDDS
 							start = System.DateTime.Now.Ticks
 							If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
 								natives.Table = CallServerWithRetry(Function() _searchManager.RetrieveNativesForProduction(Me.Settings.CaseArtifactID, productionArtifactID, documentArtifactIDs.ToCsv()).Tables(0), maxTries)
-							ElseIf Me.Settings.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
+							ElseIf Me.Settings.ArtifactTypeID = ArtifactType.Document Then
 								natives.Table = CallServerWithRetry(Function() _searchManager.RetrieveNativesForSearch(Me.Settings.CaseArtifactID, documentArtifactIDs.ToCsv()).Tables(0), maxTries)
 							Else
 								Dim dt As System.Data.DataTable = CallServerWithRetry(Function() _searchManager.RetrieveFilesForDynamicObjects(Me.Settings.CaseArtifactID, Me.Settings.FileField.FieldID, documentArtifactIDs).Tables(0), maxTries)
@@ -678,7 +679,7 @@ Namespace kCura.WinEDDS
 			Else
 				artifact.OriginalFileName = _originalFileNameProvider.GetOriginalFileName(record, nativeRow)
 				artifact.NativeSourceLocation = nativeRow("Location").ToString
-				If Me.Settings.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
+				If Me.Settings.ArtifactTypeID = ArtifactType.Document Then
 					artifact.NativeFileGuid = nativeRow("Guid").ToString
 				Else
 					artifact.FileID = CType(nativeRow("FileID"), Int32)

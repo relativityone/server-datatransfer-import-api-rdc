@@ -1,9 +1,9 @@
 Imports System.Collections.Generic
 Imports kCura.WinEDDS.Api
-Imports Relativity
 Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Data
 Imports Relativity.Import.Export.Io
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS
 	Public Class LoadFileReader
@@ -52,7 +52,7 @@ Namespace kCura.WinEDDS
 		Private _recordCount As Int64 = -1
 		Private _genericTimestamp As System.DateTime
 		Private _trackErrorsInFieldValues As Boolean
-		Protected _executionSource As Global.Relativity.ExecutionSource
+		Protected _executionSource As ExecutionSource
 #End Region
 
 #Region " Constructors "

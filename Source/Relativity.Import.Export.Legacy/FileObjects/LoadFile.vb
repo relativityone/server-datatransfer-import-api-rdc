@@ -1,5 +1,6 @@
 Imports System.Collections.Generic
 Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS
 	<Serializable()> Public Class LoadFile
@@ -51,7 +52,7 @@ Namespace kCura.WinEDDS
 		<NonSerialized()> Public Credentials As Net.NetworkCredential
 		<NonSerialized()> Public TapiCredentials As Net.NetworkCredential
 		<NonSerialized()> Public _cookieContainer As System.Net.CookieContainer
-		<NonSerialized()> Public CaseInfo As Global.Relativity.CaseInfo
+		<NonSerialized()> Public CaseInfo As CaseInfo
 		<NonSerialized()> Public SelectedCasePath As String = ""
 		<NonSerialized()> Public CopyFilesToDocumentRepository As Boolean = True
 		'<NonSerialized()> Public Identity As Global.Relativity.Core.EDDSIdentity
@@ -217,7 +218,7 @@ Namespace kCura.WinEDDS
 				Try
 					Me.ArtifactTypeID = info.GetInt32("ArtifactTypeID")
 				Catch
-					Me.ArtifactTypeID = Global.Relativity.ArtifactType.Document
+					Me.ArtifactTypeID = ArtifactType.Document
 				End Try
 				Try
 					Me.StartLineNumber = info.GetInt64("StartLineNumber")

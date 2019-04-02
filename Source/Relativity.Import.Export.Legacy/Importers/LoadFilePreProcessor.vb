@@ -1,5 +1,6 @@
 ﻿Imports System.Collections.Generic
 Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS
 	Public Class LoadFilePreProcessor
@@ -103,7 +104,7 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Function NeedToCheckFolders() As Boolean
-			Return (_settings.ForceFolderPreview AndAlso _settings.CreateFolderStructure AndAlso Not _settings.FolderStructureContainedInColumn Is Nothing AndAlso _artifactTypeID = Global.Relativity.ArtifactType.Document AndAlso _settings.OverwriteDestination.ToLower = Global.Relativity.ImportOverwriteType.Append.ToString.ToLower)
+			Return (_settings.ForceFolderPreview AndAlso _settings.CreateFolderStructure AndAlso Not _settings.FolderStructureContainedInColumn Is Nothing AndAlso _artifactTypeID = ArtifactType.Document AndAlso _settings.OverwriteDestination.ToLower = Global.Relativity.ImportOverwriteType.Append.ToString.ToLower)
 		End Function
 
 		Private Function NeedToCheckChoices() As Boolean

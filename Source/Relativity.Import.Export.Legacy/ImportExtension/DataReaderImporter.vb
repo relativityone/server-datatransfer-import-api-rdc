@@ -3,6 +3,7 @@ Imports System.Threading
 Imports Relativity.Import.Export.Io
 Imports Relativity.Import.Export.Process
 Imports Relativity.Logging
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderImporter
@@ -40,7 +41,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		               ByVal logger As ILog,
 		               ByVal bulkLoadFileFieldDelimiter As String, _
 		               ByVal tokenSource As CancellationTokenSource,
-		               Optional executionSource As Global.Relativity.ExecutionSource = Global.Relativity.ExecutionSource.Unknown)
+		               Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
 			Me.New(loadFile, _
 			       context, _
 			       ioReporterInstance, _
@@ -77,7 +78,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		               temporaryLocalDirectory As String, _
 		               ByVal tokenSource As CancellationTokenSource,
 		               initializeArtifactReader As Boolean,
-		               Optional executionSource As Global.Relativity.ExecutionSource = Global.Relativity.ExecutionSource.Unknown)
+		               Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
 			MyBase.New(loadFile, _
 			           context, _
 			           ioReporterInstance, _

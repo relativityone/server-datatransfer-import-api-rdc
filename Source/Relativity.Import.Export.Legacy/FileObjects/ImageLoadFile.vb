@@ -1,8 +1,10 @@
+Imports Relativity.Import.Export.Services
+
 Namespace kCura.WinEDDS
 	<Serializable()> Public Class ImageLoadFile
 		Implements System.Runtime.Serialization.ISerializable
 
-		<NonSerialized()> Public CaseInfo As Global.Relativity.CaseInfo
+		<NonSerialized()> Public CaseInfo As CaseInfo
 		Public DestinationFolderID As Int32
 		Public FileName As String
 		Public Overwrite As String

@@ -1,6 +1,7 @@
 Imports System.Collections.Concurrent
 Imports kCura.WinEDDS.Service.Export
 Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS
 	Public Class FileDownloader
@@ -151,11 +152,11 @@ Namespace kCura.WinEDDS
 			Return WebDownloadFile(localFilePath, -1, remoteFileGuid, appID, Nothing, False, -1, -1, -1)
 		End Function
 
-		Public Function MoveTempFileToLocal(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal caseInfo As Global.Relativity.CaseInfo) As Boolean
+		Public Function MoveTempFileToLocal(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal caseInfo As CaseInfo) As Boolean
 			Return MoveTempFileToLocal(localFilePath, remoteFileGuid, caseInfo, True)
 		End Function
 
-		Public Function MoveTempFileToLocal(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal caseInfo As Global.Relativity.CaseInfo, ByVal removeRemoteTempFile As Boolean) As Boolean
+		Public Function MoveTempFileToLocal(ByVal localFilePath As String, ByVal remoteFileGuid As String, ByVal caseInfo As CaseInfo, ByVal removeRemoteTempFile As Boolean) As Boolean
 			Dim retval As Boolean = Me.DownloadTempFile(localFilePath, remoteFileGuid, caseInfo.ArtifactID.ToString)
 
 			If removeRemoteTempFile Then
@@ -165,7 +166,7 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Public Sub RemoveRemoteTempFile(ByVal remoteFileGuid As String, ByVal caseInfo As Global.Relativity.CaseInfo)
+		Public Sub RemoveRemoteTempFile(ByVal remoteFileGuid As String, ByVal caseInfo As CaseInfo)
 			_gateway.RemoveTempFile(caseInfo.ArtifactID, remoteFileGuid)
 		End Sub
 

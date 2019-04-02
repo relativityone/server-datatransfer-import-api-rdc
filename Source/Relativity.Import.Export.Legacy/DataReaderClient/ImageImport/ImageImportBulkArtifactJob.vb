@@ -1,6 +1,6 @@
 Imports System.Net
-Imports Relativity
 Imports Relativity.Import.Export.Process
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.Relativity.DataReaderClient
 
