@@ -26,3 +26,4 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("Relativity.Import.Export.NUnit.Integration")]
 [assembly: InternalsVisibleTo("Relativity.Import.Export.Legacy")]
 [assembly: InternalsVisibleTo("Relativity.Export.Client")]
+[assembly: InternalsVisibleTo("Relativity.Import.Client.NUnit")]

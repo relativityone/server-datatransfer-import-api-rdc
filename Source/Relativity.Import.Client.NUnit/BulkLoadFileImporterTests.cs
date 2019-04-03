@@ -9,20 +9,13 @@ namespace Relativity.Import.Client.NUnit
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
-	using System.Threading;
 
 	using global::NUnit.Framework;
 
 	using kCura.EDDS.WebAPI.BulkImportManagerBase;
 	using kCura.WinEDDS;
-	using kCura.WinEDDS.Service;
 
 	using Moq;
-
-	using Relativity.Import.Export;
-	using Relativity.Import.Export.Io;
-	using Relativity.Import.Export.Process;
-	using Relativity.Logging;
 
 	/// <summary>
 	/// Represents <see cref="BulkLoadFileImporter"/> tests.
@@ -32,19 +25,10 @@ namespace Relativity.Import.Client.NUnit
 		"Microsoft.Design",
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
 		Justification = "The test class handles the disposal.")]
-	public class BulkLoadFileImporterTests
+	public class BulkLoadFileImporterTests : BulkFileImporterTestsBase
 	{
-		private Mock<IProcessEventWriter> mockProcessEventWriter;
-		private Mock<IProcessErrorWriter> mockProcesErrorWriter;
-		private Mock<IAppSettings> mockAppSettings;
-		private Mock<IBulkImportManager> mockBulkImportManager;
-		private Mock<ILog> mockLogger;
 		private LoadFile args;
-		private Guid guid;
-		private ProcessContext context;
-		private IIoReporter ioReporter;
 		private MockBulkLoadFileImporter importer;
-		private CancellationTokenSource tokenSource;
 
 		public static IEnumerable OverlayTypeSource
 		{
@@ -57,56 +41,20 @@ namespace Relativity.Import.Client.NUnit
 			}
 		}
 
-		[SetUp]
-		public void Setup()
-		{
-			this.mockBulkImportManager = new Mock<IBulkImportManager>();
-			this.args = new LoadFile();
-			this.args.CaseInfo = new CaseInfo();
-			this.args.CaseInfo.RootArtifactID = -1;
-			this.guid = new Guid("E09E18F3-D0C8-4CFC-96D1-FBB350FAB3E1");
-			this.mockAppSettings = new Mock<IAppSettings>();
-			this.mockAppSettings.SetupGet(x => x.IoErrorWaitTimeInSeconds).Returns(0);
-			this.mockBulkImportManager = new Mock<IBulkImportManager>();
-			this.mockProcesErrorWriter = new Mock<IProcessErrorWriter>();
-			this.mockProcessEventWriter = new Mock<IProcessEventWriter>();
-			this.mockLogger = new Mock<ILog>();
-			this.context = new ProcessContext(
-				this.mockProcessEventWriter.Object,
-				this.mockProcesErrorWriter.Object,
-				this.mockAppSettings.Object,
-				this.mockLogger.Object);
-			this.tokenSource = new CancellationTokenSource();
-			this.ioReporter = new IoReporter(new IoReporterContext(), this.mockLogger.Object, this.tokenSource.Token);
-			this.importer = new MockBulkLoadFileImporter(
-				this.args,
-				this.context,
-				this.ioReporter,
-				this.mockLogger.Object,
-				0,
-				false,
-				false,
-				this.guid,
-				true,
-				"S",
-				this.mockBulkImportManager.Object,
-				this.tokenSource,
-				Relativity.ExecutionSource.Unknown);
-			AppSettings.Instance.IoErrorWaitTimeInSeconds = 0;
-			AppSettings.Instance.ProgrammaticWebApiServiceUrl = "https://r1.kcura.com/RelativityWebAPI/";
-		}
-
 		[Test]
 		public void ShouldBulkImport()
 		{
-			this.importer.TryBulkImport(new kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo());
+			MassImportResults results =
+				this.importer.TryBulkImport(new kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo());
+			Assert.That(results, Is.Not.Null);
 			Assert.That(this.importer.BatchSize, Is.EqualTo(500));
+			Assert.That(this.importer.PauseCalled, Is.EqualTo(0));
 		}
 
 		[Test]
 		public void ShouldRetrySystemExceptions()
 		{
-			this.mockBulkImportManager
+			this.MockBulkImportManager
 				.Setup(
 					x => x.BulkImportObjects(
 						It.IsAny<int>(),
@@ -294,6 +242,27 @@ namespace Relativity.Import.Client.NUnit
 				retryMax,
 				0);
 			Assert.That(succeedCount, Is.EqualTo(attemptCount));
+		}
+
+		protected override void OnSetup()
+		{
+			this.args = new LoadFile();
+			this.args.CaseInfo = new CaseInfo();
+			this.args.CaseInfo.RootArtifactID = -1;
+			this.importer = new MockBulkLoadFileImporter(
+				this.args,
+				this.Context,
+				this.IoReporter,
+				this.MockLogger.Object,
+				0,
+				false,
+				false,
+				this.Guid,
+				true,
+				"S",
+				this.MockBulkImportManager.Object,
+				this.TokenSource,
+				Relativity.ExecutionSource.Unknown);
 		}
 	}
 }

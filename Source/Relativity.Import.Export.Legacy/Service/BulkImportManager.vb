@@ -82,7 +82,8 @@ Namespace kCura.WinEDDS.Service
 			Return RetryOnReLoginException(Function() ExecuteImport(Function() Me.InvokeBulkImportObjects(appID, settings, inRepository)))
 		End Function
 
-		Public Shadows Function GenerateImageErrorFiles(ByVal appID As Int32, ByVal importKey As String, ByVal writeHeader As Boolean, ByVal keyFieldId As Int32) As Global.Relativity.MassImport.ErrorFileKey
+		Public Shadows Function GenerateImageErrorFiles(ByVal appID As Int32, ByVal importKey As String, ByVal writeHeader As Boolean, ByVal keyFieldId As Int32) As Global.Relativity.MassImport.ErrorFileKey  Implements IBulkImportManager.GenerateImageErrorFiles
+
 			Return RetryOnReLoginException(Function() GenerateErrorFileKey(Function() MyBase.GenerateImageErrorFiles(appID, importKey, writeHeader, keyFieldId)))
 		End Function
 
@@ -94,7 +95,7 @@ Namespace kCura.WinEDDS.Service
 			Return RetryOnReLoginException(Function() MyBase.NativeRunHasErrors(appID, runId))
 		End Function
 
-		Public Shadows Function ImageRunHasErrors(ByVal appID As Int32, ByVal runId As String) As Boolean
+		Public Shadows Function ImageRunHasErrors(ByVal appID As Int32, ByVal runId As String) As Boolean Implements IBulkImportManager.ImageRunHasErrors
 			Return RetryOnReLoginException(Function() MyBase.ImageRunHasErrors(appID, runId))
 		End Function
 
