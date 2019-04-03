@@ -195,7 +195,7 @@ Namespace kCura.WinEDDS.ImportExtension
 				If _loadFileSettings.LoadNativeFiles AndAlso Not _loadFileSettings.NativeFilePathColumn Is Nothing AndAlso Not _loadFileSettings.NativeFilePathColumn = String.Empty Then
 					Dim nativeFileIndex As Int32 = Int32.Parse(_loadFileSettings.NativeFilePathColumn.Substring(_loadFileSettings.NativeFilePathColumn.LastIndexOf("(")).Trim("()".ToCharArray))
 					Dim displayName As String = _reader.GetName(nativeFileIndex - 1)
-					Dim field As New Api.ArtifactField(New DocumentField(displayName, -1, Global.Relativity.FieldTypeHelper.FieldType.File, Global.Relativity.FieldCategory.FileInfo, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), True, EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, False))
+					Dim field As New Api.ArtifactField(New DocumentField(displayName, -1, FieldType.File, FieldCategory.FileInfo, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(Nothing), True, EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, False))
 					SetFieldValueInvoker(nativeFileIndex - 1, field, displayName)
 					artifactFieldCollection.Add(field)
 				End If
@@ -217,7 +217,7 @@ Namespace kCura.WinEDDS.ImportExtension
 					' we do not do this when we are pointing to files using links.
 					' we also don't do this if kCuraMarkerFilename field is not present because we can copy from the current location 
 					For Each field As Api.ArtifactField In artifactFieldCollection
-						If field.Type = Global.Relativity.FieldTypeHelper.FieldType.File Then
+						If field.Type = FieldType.File Then
 							If field.ValueAsString <> String.Empty Then
 								If System.IO.File.Exists(field.ValueAsString) Then
 
@@ -263,7 +263,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			If _loadFileSettings.CreateFolderStructure AndAlso Not _loadFileSettings.FolderStructureContainedInColumn Is Nothing AndAlso Not _loadFileSettings.FolderStructureContainedInColumn = String.Empty Then
 				Dim parentIndex As Int32 = Int32.Parse(_loadFileSettings.FolderStructureContainedInColumn.Substring(_loadFileSettings.FolderStructureContainedInColumn.LastIndexOf("(")).Trim("()".ToCharArray))
 				Dim displayName As String = _reader.GetName(parentIndex - 1)
-				Dim field As New Api.ArtifactField(displayName, -2, Global.Relativity.FieldTypeHelper.FieldType.Object, Global.Relativity.FieldCategory.ParentArtifact, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(255), New Nullable(Of Int32)(Nothing), False)
+				Dim field As New Api.ArtifactField(displayName, -2, FieldType.Object, FieldCategory.ParentArtifact, New Nullable(Of Int32)(Nothing), New Nullable(Of Int32)(255), New Nullable(Of Int32)(Nothing), False)
 				SetFieldValueInvoker(parentIndex - 1, field, displayName)
 				artifactFieldCollection.Add(field)
 			End If
@@ -483,11 +483,11 @@ Namespace kCura.WinEDDS.ImportExtension
 			RaiseEvent StatusMessage(mappedFields)
 		End Sub
 
-		Private Function NonTextField(ByVal fieldType As Global.Relativity.FieldTypeHelper.FieldType) As Boolean
+		Private Function NonTextField(ByVal fieldType As FieldType) As Boolean
 			Select Case fieldType
-				Case Global.Relativity.FieldTypeHelper.FieldType.Boolean, Global.Relativity.FieldTypeHelper.FieldType.Currency,
-				 Global.Relativity.FieldTypeHelper.FieldType.Decimal, Global.Relativity.FieldTypeHelper.FieldType.Date,
-				 Global.Relativity.FieldTypeHelper.FieldType.Integer
+				Case FieldType.Boolean, FieldType.Currency,
+				 FieldType.Decimal, FieldType.Date,
+				 FieldType.Integer
 					Return True
 				Case Else
 					Return False
@@ -518,16 +518,16 @@ Namespace kCura.WinEDDS.ImportExtension
 				field.Value = Nothing
 			Else
 				Select Case field.Type
-					Case Global.Relativity.FieldTypeHelper.FieldType.Boolean
+					Case FieldType.Boolean
 						field.Value = NullableTypesHelper.GetNullableBoolean(value)
 
-					Case Global.Relativity.FieldTypeHelper.FieldType.Currency, Global.Relativity.FieldTypeHelper.FieldType.Decimal
+					Case FieldType.Currency, FieldType.Decimal
 						field.Value = NullableTypesHelper.ToNullableDecimal(value.Trim)
 
-					Case Global.Relativity.FieldTypeHelper.FieldType.Date
+					Case FieldType.Date
 						field.Value = NullableTypesHelper.GetNullableDateTime(value)
 
-					Case Global.Relativity.FieldTypeHelper.FieldType.Integer
+					Case FieldType.Integer
 						field.Value = NullableTypesHelper.ToNullableInt32(value.Replace(",", ""))
 
 					Case Else
@@ -540,33 +540,33 @@ Namespace kCura.WinEDDS.ImportExtension
 
 			'RaiseEvent StatusMessage("Field ArtifactID = " & field.ArtifactID)
 			Select Case field.Type
-				Case Global.Relativity.FieldTypeHelper.FieldType.Boolean
+				Case FieldType.Boolean
 					field.Value = NullableTypesHelper.DBNullConvertToNullable(Of Boolean)(value)
-				Case Global.Relativity.FieldTypeHelper.FieldType.Code
+				Case FieldType.Code
 					field.Value = NullableTypesHelper.DBNullString(value)
-				Case Global.Relativity.FieldTypeHelper.FieldType.Text, Global.Relativity.FieldTypeHelper.FieldType.OffTableText
+				Case FieldType.Text, FieldType.OffTableText
 					If TypeOf value Is System.IO.Stream
 						field.Value = value
 					Else
 						field.Value = NullableTypesHelper.DBNullString(value)
 					End If
-				Case Global.Relativity.FieldTypeHelper.FieldType.User
+				Case FieldType.User
 					field.Value = NullableTypesHelper.DBNullString(value)
-				Case Global.Relativity.FieldTypeHelper.FieldType.Varchar
+				Case FieldType.Varchar
 					field.Value = NullableTypesHelper.DBNullString(value)
-				Case Global.Relativity.FieldTypeHelper.FieldType.Object
+				Case FieldType.Object
 					field.Value = NullableTypesHelper.DBNullString(value)
-				Case Global.Relativity.FieldTypeHelper.FieldType.Currency, Global.Relativity.FieldTypeHelper.FieldType.Decimal
+				Case FieldType.Currency, FieldType.Decimal
 					field.Value = NullableTypesHelper.DBNullConvertToNullable(Of Decimal)(value)
-				Case Global.Relativity.FieldTypeHelper.FieldType.Date
+				Case FieldType.Date
 					field.Value = NullableTypesHelper.DBNullConvertToNullable(Of System.DateTime)(value)
-				Case Global.Relativity.FieldTypeHelper.FieldType.File
+				Case FieldType.File
 					field.Value = NullableTypesHelper.DBNullString(value)
 					'field.Value = value.ToString
-				Case Global.Relativity.FieldTypeHelper.FieldType.Integer
+				Case FieldType.Integer
 					field.Value = NullableTypesHelper.DBNullConvertToNullable(Of Int32)(value)
 					'field.Value = NullableTypesHelper.ToNullableInt32(value)
-				Case Global.Relativity.FieldTypeHelper.FieldType.MultiCode, Global.Relativity.FieldTypeHelper.FieldType.Objects
+				Case FieldType.MultiCode, FieldType.Objects
 					field.Value = LoadFileReader.GetStringArrayFromDelimitedFieldValue(value, _loadFileSettings.MultiRecordDelimiter)
 				Case Else
 					Throw New System.ArgumentException("Unsupported field type '" & field.Type.ToString & "'")

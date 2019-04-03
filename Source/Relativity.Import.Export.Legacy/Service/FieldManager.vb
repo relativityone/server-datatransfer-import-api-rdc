@@ -1,4 +1,5 @@
 Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS.Service
 	Public Class FieldManager
@@ -33,9 +34,9 @@ Namespace kCura.WinEDDS.Service
 #Region " Translations "
 		Public Shared Function DTOtoDocumentField(ByVal dto As kCura.EDDS.WebAPI.DocumentManagerBase.Field) As DocumentField
 			Dim retval As New DocumentField(dto.DisplayName, dto.ArtifactID, dto.FieldTypeID, dto.FieldCategoryID, dto.CodeTypeID, dto.MaxLength, dto.AssociativeArtifactTypeID, dto.UseUnicodeEncoding, dto.ImportBehavior, dto.EnableDataGrid)
-			If retval.FieldCategoryID = Global.Relativity.FieldCategory.FullText Then
+			If retval.FieldCategoryID = FieldCategory.FullText Then
 				retval.Value = System.Text.ASCIIEncoding.ASCII.GetString(DirectCast(dto.Value, Byte()))
-			ElseIf retval.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.Code OrElse retval.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.MultiCode Then
+			ElseIf retval.FieldTypeID = FieldType.Code OrElse retval.FieldTypeID = FieldType.MultiCode Then
 				retval.Value = (DirectCast(dto.Value, Int32())).ToCsv().Replace(",", ";")
 			Else
 				retval.Value = dto.Value.ToString

@@ -219,14 +219,14 @@ Namespace kCura.WinEDDS
 
 		Private Function IsExtractedTextSelected() As Boolean
 			For Each vfi As ViewFieldInfo In Me.Settings.SelectedViewFields
-				If vfi.Category = Global.Relativity.FieldCategory.FullText Then Return True
+				If vfi.Category = FieldCategory.FullText Then Return True
 			Next
 			Return False
 		End Function
 
 		Private Function ExtractedTextField() As ViewFieldInfo
 			For Each v As ViewFieldInfo In Me.Settings.AllExportableFields
-				If v.Category = Global.Relativity.FieldCategory.FullText Then Return v
+				If v.Category = FieldCategory.FullText Then Return v
 			Next
 			Throw New System.Exception("Full text field somehow not in all fields")
 		End Function
@@ -917,12 +917,12 @@ Namespace kCura.WinEDDS
 		''' <remarks></remarks>
 		Private Function LoadColumns() As String
 			For Each field As WinEDDS.ViewFieldInfo In Me.Settings.SelectedViewFields
-				Me.Settings.ExportFullText = Me.Settings.ExportFullText OrElse field.Category = Global.Relativity.FieldCategory.FullText
+				Me.Settings.ExportFullText = Me.Settings.ExportFullText OrElse field.Category = FieldCategory.FullText
 			Next
 			_columns = New System.Collections.ArrayList(Me.Settings.SelectedViewFields)
 			If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then
 				Dim longTextSelectedViewFields As New List(Of ViewFieldInfo)()
-				longTextSelectedViewFields.AddRange(Me.Settings.SelectedViewFields.Where(Function(f As ViewFieldInfo) f.FieldType = Global.Relativity.FieldTypeHelper.FieldType.Text OrElse f.FieldType = Global.Relativity.FieldTypeHelper.FieldType.OffTableText))
+				longTextSelectedViewFields.AddRange(Me.Settings.SelectedViewFields.Where(Function(f As ViewFieldInfo) f.FieldType = FieldType.Text OrElse f.FieldType = FieldType.OffTableText))
 				If (Me.Settings.SelectedTextFields.Count = 1) AndAlso longTextSelectedViewFields.Exists(Function(f As ViewFieldInfo) f.Equals(Me.Settings.SelectedTextFields.First)) Then
 					Dim selectedViewFieldToRemove As ViewFieldInfo = longTextSelectedViewFields.Find(Function(f As ViewFieldInfo) f.Equals(Me.Settings.SelectedTextFields.First))
 					If selectedViewFieldToRemove IsNot Nothing Then
@@ -1097,7 +1097,7 @@ Namespace kCura.WinEDDS
 			'args.TextAndNativeFilesNamedAfterFieldID = Me.ExportNativesToFileNamedFrom
 			If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier Then
 				For Each field As ViewFieldInfo In Me.Settings.AllExportableFields
-					If field.Category = Global.Relativity.FieldCategory.Identifier Then
+					If field.Category = FieldCategory.Identifier Then
 						args.TextAndNativeFilesNamedAfterFieldID = field.FieldArtifactId
 						Exit For
 					End If

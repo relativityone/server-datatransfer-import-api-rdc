@@ -1,3 +1,5 @@
+Imports Relativity.Import.Export.Services
+
 Namespace kCura.WinEDDS.Api
 	Public Class ArtifactFieldCollection
 		Implements System.Collections.Generic.ICollection(Of ArtifactField)
@@ -124,14 +126,14 @@ Namespace kCura.WinEDDS.Api
 			End Get
 		End Property
 
-		Public ReadOnly Property FieldList(ByVal type As Global.Relativity.FieldTypeHelper.FieldType) As ArtifactField()
+		Public ReadOnly Property FieldList(ByVal type As FieldType) As ArtifactField()
 			Get
 				If Not _typeLookup.Contains(type) Then Return New ArtifactField() {}
 				Return DirectCast(DirectCast(_typeLookup(type), ArrayList).ToArray(GetType(ArtifactField)), ArtifactField())
 			End Get
 		End Property
 
-		Public ReadOnly Property FieldList(ByVal category As Global.Relativity.FieldCategory) As ArtifactField()
+		Public ReadOnly Property FieldList(ByVal category As FieldCategory) As ArtifactField()
 			Get
 				If Not _categoryLookup.Contains(category) Then Return New ArtifactField() {}
 				Return DirectCast(DirectCast(_categoryLookup(category), ArrayList).ToArray(GetType(ArtifactField)), ArtifactField())
@@ -147,8 +149,8 @@ Namespace kCura.WinEDDS.Api
 			_outOfOrder = True
 			_idLookup.Add(field.ArtifactID, field)
 			_nameLookup.Add(field.DisplayName, field)
-			If field.Category = Global.Relativity.FieldCategory.Identifier Then _identifierField = field
-			If field.Type = Global.Relativity.FieldTypeHelper.FieldType.File Then _fileField = field
+			If field.Category = FieldCategory.Identifier Then _identifierField = field
+			If field.Type = FieldType.File Then _fileField = field
 			If Not _categoryLookup.ContainsKey(field.Category) Then _categoryLookup.Add(field.Category, New System.Collections.ArrayList)
 			DirectCast(_categoryLookup(field.Category), System.Collections.ArrayList).Add(field)
 			If Not _typeLookup.ContainsKey(field.Type) Then _typeLookup.Add(field.Type, New System.Collections.ArrayList)

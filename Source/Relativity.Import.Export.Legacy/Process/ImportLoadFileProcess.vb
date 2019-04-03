@@ -204,7 +204,7 @@ Namespace kCura.WinEDDS
 				For Each item As WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In LoadFile.FieldMap
 					If Not item.DocumentField Is Nothing AndAlso item.NativeFileColumnIndex > -1 Then
 						fieldMap.Add(New Int32() {item.NativeFileColumnIndex, item.DocumentField.FieldID})
-						If item.DocumentField.FieldCategory = Global.Relativity.FieldCategory.FullText Then mappedExtractedText = True
+						If item.DocumentField.FieldCategory = FieldCategory.FullText Then mappedExtractedText = True
 					End If
 				Next
 				retval.ExtractedTextPointsToFile = LoadFile.FullTextColumnContainsFileLocation AndAlso mappedExtractedText

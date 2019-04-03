@@ -65,8 +65,9 @@
     <Compile Include="ErrorFileKey.cs" />
     <Compile Include="ExecutionSource.cs" />
     <Compile Include="FieldCategory.cs" />
+    <Compile Include="FieldInfoBase.cs" />
     <Compile Include="FieldInfoImportBehaviorChoice.cs" />
-    <Compile Include="FieldTypeHelperFieldType.cs" />
+    <Compile Include="FieldType.cs" />
     <Compile Include="FileInfoBase.cs" />
     <Compile Include="FolderInfo.cs" />
     <Compile Include="ImportOverwriteType.cs" />

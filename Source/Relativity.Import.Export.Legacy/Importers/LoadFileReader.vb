@@ -88,7 +88,7 @@ Namespace kCura.WinEDDS
 			End If
 			If _keyFieldID = -1 Then
 				For Each field As DocumentField In _docFields
-					If field.FieldCategory = Global.Relativity.FieldCategory.Identifier Then
+					If field.FieldCategory = FieldCategory.Identifier Then
 						_keyFieldID = field.FieldID
 						Exit For
 					End If
@@ -114,22 +114,22 @@ Namespace kCura.WinEDDS
 		Private Sub SetFieldValue(ByVal field As ArtifactField, ByVal value As String, ByVal column As Int32)
 			Try
 				Select Case field.Type
-					Case Global.Relativity.FieldTypeHelper.FieldType.Boolean
+					Case FieldType.Boolean
 						field.Value = Me.GetNullableBoolean(value.Trim, column)
-					Case Global.Relativity.FieldTypeHelper.FieldType.Integer
+					Case FieldType.Integer
 						field.Value = Me.GetNullableInteger(value.Trim, column)
-					Case Global.Relativity.FieldTypeHelper.FieldType.Currency, Global.Relativity.FieldTypeHelper.FieldType.Decimal
+					Case FieldType.Currency, FieldType.Decimal
 						field.Value = Me.GetNullableDecimal(value.Trim, column)
-					Case Global.Relativity.FieldTypeHelper.FieldType.Date
+					Case FieldType.Date
 						field.Value = Me.GetNullableDateTime(value.Trim, column)
-					Case Global.Relativity.FieldTypeHelper.FieldType.Code, Global.Relativity.FieldTypeHelper.FieldType.Object, Global.Relativity.FieldTypeHelper.FieldType.User, Global.Relativity.FieldTypeHelper.FieldType.File
+					Case FieldType.Code, FieldType.Object, FieldType.User, FieldType.File
 						field.Value = value.Trim
 						If field.Value.ToString = String.Empty Then field.Value = Nothing
-					Case Global.Relativity.FieldTypeHelper.FieldType.MultiCode, Global.Relativity.FieldTypeHelper.FieldType.Objects
+					Case FieldType.MultiCode, FieldType.Objects
 						field.Value = LoadFileReader.GetStringArrayFromDelimitedFieldValue(value, _settings.MultiRecordDelimiter)
-					Case Global.Relativity.FieldTypeHelper.FieldType.Varchar
+					Case FieldType.Varchar
 						field.Value = NullableTypesHelper.ToEmptyStringOrValue(Me.GetNullableFixedString(value, column, field.TextLength, field.DisplayName))
-					Case Global.Relativity.FieldTypeHelper.FieldType.Text, Global.Relativity.FieldTypeHelper.FieldType.OffTableText
+					Case FieldType.Text, FieldType.OffTableText
 						If _settings.FullTextColumnContainsFileLocation Then
 							field.Value = value
 						Else
@@ -418,13 +418,13 @@ Namespace kCura.WinEDDS
 			Next
 			If _settings.LoadNativeFiles AndAlso Not _settings.NativeFilePathColumn Is Nothing AndAlso Not _settings.NativeFilePathColumn = String.Empty AndAlso collection.FileField Is Nothing Then
 				Dim nativeFileIndex As Int32 = Int32.Parse(_settings.NativeFilePathColumn.Substring(_settings.NativeFilePathColumn.LastIndexOf("(")).Trim("()".ToCharArray))
-				Dim field As New Api.ArtifactField(New DocumentField("File", -1, Global.Relativity.FieldTypeHelper.FieldType.File, Global.Relativity.FieldCategory.FileInfo, Nothing, Nothing, Nothing, True, EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, False))
+				Dim field As New Api.ArtifactField(New DocumentField("File", -1, FieldType.File, FieldCategory.FileInfo, Nothing, Nothing, Nothing, True, EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, False))
 				field.Value = line(nativeFileIndex - 1)
 				collection.Add(field)
 			End If
 			If _settings.CreateFolderStructure AndAlso Not _settings.FolderStructureContainedInColumn Is Nothing AndAlso Not _settings.FolderStructureContainedInColumn = String.Empty Then
 				Dim parentIndex As Int32 = Int32.Parse(_settings.FolderStructureContainedInColumn.Substring(_settings.FolderStructureContainedInColumn.LastIndexOf("(")).Trim("()".ToCharArray))
-				Dim field As New Api.ArtifactField(New DocumentField("Parent", -2, Global.Relativity.FieldTypeHelper.FieldType.Object, Global.Relativity.FieldCategory.ParentArtifact, Nothing, Nothing, Nothing, True, EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, False))
+				Dim field As New Api.ArtifactField(New DocumentField("Parent", -2, FieldType.Object, FieldCategory.ParentArtifact, Nothing, Nothing, Nothing, True, EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, False))
 				field.Value = line(parentIndex - 1)
 				collection.Add(field)
 			End If

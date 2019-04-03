@@ -27,6 +27,8 @@ Namespace kCura.WinEDDS
 			Return 45 * Me.AvfId
 		End Function
 
+		Public Shadows Property FieldType() As Global.Relativity.Import.Export.Services.FieldType
+
 	End Class
 
 End Namespace

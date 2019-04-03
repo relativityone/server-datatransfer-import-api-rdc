@@ -264,7 +264,7 @@ Namespace kCura.WinEDDS
 					Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
 					columnName = field.AvfColumnName
 					Dim fieldValue As Object = artifact.Metadata(_ordinalLookup(columnName))
-					If field.FieldType = Global.Relativity.FieldTypeHelper.FieldType.Text OrElse field.FieldType = Global.Relativity.FieldTypeHelper.FieldType.OffTableText Then
+					If field.FieldType = FieldType.Text OrElse field.FieldType = FieldType.OffTableText Then
 						If Me.Settings.SelectedTextFields IsNot Nothing AndAlso TypeOf field Is CoalescedTextViewField Then
 							prediction.TextFileCount += 1
 							If TypeOf fieldValue Is Byte() Then
@@ -712,7 +712,7 @@ Namespace kCura.WinEDDS
 				tries += 1
 				Try
 					webServiceRequestTime = Stopwatch.StartNew()
-					If Me.Settings.ArtifactTypeID = ArtifactType.Document AndAlso field.Category = Global.Relativity.FieldCategory.FullText AndAlso Not TypeOf field Is CoalescedTextViewField Then
+					If Me.Settings.ArtifactTypeID = ArtifactType.Document AndAlso field.Category = FieldCategory.FullText AndAlso Not TypeOf field Is CoalescedTextViewField Then
 						_downloadManager.DownloadFullTextFile(tempLocalFullTextFilePath, artifact.ArtifactID, _settings.CaseInfo.ArtifactID.ToString)
 					Else
 						Dim fieldToActuallyExportFrom As ViewFieldInfo = Me.GetFieldForLongTextPrecedenceDownload(field, artifact)
@@ -1227,7 +1227,7 @@ Namespace kCura.WinEDDS
 				Dim field As WinEDDS.ViewFieldInfo = DirectCast(_parent.Columns(count), WinEDDS.ViewFieldInfo)
 				columnName = field.AvfColumnName
 				Dim val As Object = record(_ordinalLookup(columnName))
-				If field.FieldType = Global.Relativity.FieldTypeHelper.FieldType.Text OrElse field.FieldType = Global.Relativity.FieldTypeHelper.FieldType.OffTableText Then
+				If field.FieldType = FieldType.Text OrElse field.FieldType = FieldType.OffTableText Then
                     Dim downloadedTextTempFile As String = Nothing
                     If TypeOf field Is CoalescedTextViewField Then
                         downloadedTextTempFile = fullTextTempFile

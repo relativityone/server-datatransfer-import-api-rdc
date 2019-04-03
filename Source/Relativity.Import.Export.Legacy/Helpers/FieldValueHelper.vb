@@ -1,4 +1,5 @@
 ﻿Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Services
 
 Namespace kCura.WinEDDS.Helpers
 
@@ -7,7 +8,7 @@ Public Module FieldValueHelper
 	Public Function ConvertToString(val As Object, field As ViewFieldInfo, multiRecordDelimiter As Char) As String
 		
 		If TypeOf val Is Byte() Then val = System.Text.Encoding.Unicode.GetString(DirectCast(val, Byte()))
-		If field.FieldType = Global.Relativity.FieldTypeHelper.FieldType.Date AndAlso field.Category <> Global.Relativity.FieldCategory.MultiReflected Then
+		If field.FieldType = FieldType.Date AndAlso field.Category <> FieldCategory.MultiReflected Then
 			If val Is System.DBNull.Value Then
 				val = String.Empty
 			ElseIf TypeOf val Is System.DateTime Then
@@ -40,9 +41,9 @@ Public Module FieldValueHelper
 						End If
 						Dim cleanval As String = xr.Value.Trim
 						Select Case field.FieldType
-							Case Global.Relativity.FieldTypeHelper.FieldType.Code, Global.Relativity.FieldTypeHelper.FieldType.MultiCode
+							Case FieldType.Code, FieldType.MultiCode
 								cleanval = GetCodeValueString(cleanval, multiRecordDelimiter)
-							Case Global.Relativity.FieldTypeHelper.FieldType.Date
+							Case FieldType.Date
 								cleanval = ToExportableDateString(cleanval, field.FormatString)
 						End Select
 						'If isCodeOrMulticodeField Then cleanval = Me.GetCodeValueString(cleanval)

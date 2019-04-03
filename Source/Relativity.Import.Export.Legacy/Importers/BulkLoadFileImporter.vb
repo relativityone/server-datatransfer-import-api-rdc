@@ -143,7 +143,7 @@ Namespace kCura.WinEDDS
 			Get
 				Dim retVal As New kCura.EDDS.WebAPI.DocumentManagerBase.Field
 				For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.AllFields(artifactTypeID)
-					If field.FieldCategoryID = Global.Relativity.FieldCategory.FileInfo Then retVal = field
+					If field.FieldCategoryID = FieldCategory.FileInfo Then retVal = field
 				Next
 				Return retVal
 			End Get
@@ -194,7 +194,7 @@ Namespace kCura.WinEDDS
 				If _unmappedRelationalFields Is Nothing Then
 					Dim mappedRelationalFieldIds As New System.Collections.ArrayList
 					For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
-						If Not item.DocumentField Is Nothing AndAlso item.DocumentField.FieldCategory = Global.Relativity.FieldCategory.Relational AndAlso item.DocumentField.ImportBehavior = kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
+						If Not item.DocumentField Is Nothing AndAlso item.DocumentField.FieldCategory = FieldCategory.Relational AndAlso item.DocumentField.ImportBehavior = kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
 							mappedRelationalFieldIds.Add(item.DocumentField.FieldID)
 						End If
 					Next
@@ -421,7 +421,7 @@ Namespace kCura.WinEDDS
 				_defaultDestinationFolderPath = System.IO.Path.Combine(args.SelectedCasePath, lastHalfPath)
 				If args.ArtifactTypeID <> ArtifactType.Document Then
 					For Each item As LoadFileFieldMap.LoadFileFieldMapItem In args.FieldMap
-						If Not item.DocumentField Is Nothing AndAlso item.NativeFileColumnIndex > -1 AndAlso item.DocumentField.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.File Then
+						If Not item.DocumentField Is Nothing AndAlso item.NativeFileColumnIndex > -1 AndAlso item.DocumentField.FieldTypeID = FieldType.File Then
 							_defaultDestinationFolderPath &= "File" & item.DocumentField.FieldID & "\"
 						End If
 					Next
@@ -788,7 +788,7 @@ Namespace kCura.WinEDDS
 			Dim fieldIdList As New System.Collections.ArrayList
 			For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
 				If Not item.DocumentField Is Nothing AndAlso Not item.NativeFileColumnIndex = -1 Then
-					'If item.DocumentField.FieldCategoryID <> Global.Relativity.FieldCategory.FullText Then fieldIdList.Add(item.DocumentField.FieldID)
+					'If item.DocumentField.FieldCategoryID <> FieldCategory.FullText Then fieldIdList.Add(item.DocumentField.FieldID)
 					fieldIdList.Add(item.DocumentField.FieldID)
 				End If
 			Next
@@ -800,7 +800,7 @@ Namespace kCura.WinEDDS
 			Dim filename As String = String.Empty
 			Dim originalFilename As String = String.Empty
 			Dim fileGuid As String = String.Empty
-			Dim uploadFile As Boolean = record.FieldList(Global.Relativity.FieldTypeHelper.FieldType.File).Length > 0 AndAlso Not record.FieldList(Global.Relativity.FieldTypeHelper.FieldType.File)(0).Value Is Nothing
+			Dim uploadFile As Boolean = record.FieldList(FieldType.File).Length > 0 AndAlso Not record.FieldList(FieldType.File)(0).Value Is Nothing
 			Dim fileExists As Boolean
 			Dim identityValue As String = String.Empty
 			Dim parentFolderID As Int32
@@ -814,7 +814,7 @@ Namespace kCura.WinEDDS
 			Const retry As Boolean = True
 			Using Timekeeper.CaptureTime("ManageDocument_Filesystem")
 				If uploadFile AndAlso _artifactTypeID = ArtifactType.Document Then
-					filename = record.FieldList(Global.Relativity.FieldTypeHelper.FieldType.File)(0).Value.ToString
+					filename = record.FieldList(FieldType.File)(0).Value.ToString
 					If filename.Length > 1 AndAlso filename.Chars(0) = "\" AndAlso filename.Chars(1) <> "\" Then
 						filename = "." & filename
 					End If
@@ -942,7 +942,7 @@ Namespace kCura.WinEDDS
 			Using Timekeeper.CaptureTime("ManageDocument_Folder")
 				If _createFolderStructure Then
 					If _artifactTypeID = ArtifactType.Document Then
-						Dim value As String = NullableTypesHelper.ToEmptyStringOrValue(NullableTypesHelper.DBNullString(record.FieldList(Global.Relativity.FieldCategory.ParentArtifact)(0).Value))
+						Dim value As String = NullableTypesHelper.ToEmptyStringOrValue(NullableTypesHelper.DBNullString(record.FieldList(FieldCategory.ParentArtifact)(0).Value))
 						If _createFoldersInWebApi Then
 							'Server side folder creation
 							Dim cleanFolderPath As String = CleanDestinationFolderPath(value)
@@ -961,7 +961,7 @@ Namespace kCura.WinEDDS
 						End If
 					Else
 						'TODO: If we are going to do this for more than documents, fix this as well...
-						Dim textIdentifier As String = NullableTypesHelper.ToEmptyStringOrValue(NullableTypesHelper.DBNullString(record.FieldList(Global.Relativity.FieldCategory.ParentArtifact)(0).Value.ToString))
+						Dim textIdentifier As String = NullableTypesHelper.ToEmptyStringOrValue(NullableTypesHelper.DBNullString(record.FieldList(FieldCategory.ParentArtifact)(0).Value.ToString))
 						If textIdentifier = "" Then
 							If Overwrite = Global.Relativity.ImportOverwriteType.Overlay OrElse Overwrite = Global.Relativity.ImportOverwriteType.AppendOverlay Then
 								parentFolderID = -1
@@ -1000,7 +1000,7 @@ Namespace kCura.WinEDDS
 			End If
 
 			Dim dataGridID As String = Nothing
-			Dim dataGridIDField As Api.ArtifactField = record.FieldList(Global.Relativity.FieldTypeHelper.FieldType.Varchar).FirstOrDefault(Function(x) x.DisplayName = DATA_GRID_ID_FIELD_NAME)
+			Dim dataGridIDField As Api.ArtifactField = record.FieldList(FieldType.Varchar).FirstOrDefault(Function(x) x.DisplayName = DATA_GRID_ID_FIELD_NAME)
 			If (dataGridIDField IsNot Nothing) Then
 				dataGridID = dataGridIDField.ValueAsString
 			End If
@@ -1629,10 +1629,10 @@ Namespace kCura.WinEDDS
 
 
 		Private Sub WriteDocumentField(ByRef chosenEncoding As System.Text.Encoding, field As Api.ArtifactField, ByVal outputWriter As Global.Relativity.Import.Export.Io.IStreamWriter, ByVal fileBasedfullTextColumn As Boolean, ByVal delimiter As String, ByVal artifactTypeID As Int32, ByVal extractedTextEncoding As System.Text.Encoding)
-			If field.Type = Global.Relativity.FieldTypeHelper.FieldType.MultiCode OrElse field.Type = Global.Relativity.FieldTypeHelper.FieldType.Code Then
+			If field.Type = FieldType.MultiCode OrElse field.Type = FieldType.Code Then
 				outputWriter.Write(field.Value)
 				outputWriter.Write(delimiter)
-			ElseIf field.Type = Global.Relativity.FieldTypeHelper.FieldType.File AndAlso artifactTypeID <> ArtifactType.Document Then
+			ElseIf field.Type = FieldType.File AndAlso artifactTypeID <> ArtifactType.Document Then
 				Dim fileFieldValues() As String = System.Web.HttpUtility.UrlDecode(field.ValueAsString).Split(Chr(11))
 				If fileFieldValues.Length > 1 Then
 					outputWriter.Write(fileFieldValues(0))
@@ -1649,9 +1649,9 @@ Namespace kCura.WinEDDS
 					outputWriter.Write("")
 					outputWriter.Write(delimiter)
 				End If
-			ElseIf field.Type = Global.Relativity.FieldTypeHelper.FieldType.File AndAlso artifactTypeID = ArtifactType.Document Then
+			ElseIf field.Type = FieldType.File AndAlso artifactTypeID = ArtifactType.Document Then
 				'do nothing
-			ElseIf field.Category = Global.Relativity.FieldCategory.ParentArtifact Then
+			ElseIf field.Category = FieldCategory.ParentArtifact Then
 				'do nothing
 			ElseIf field.ArtifactID <= 0 Then
 				' do nothing, this is a catch-all for all "virtual fields" that are added to pass information
@@ -1761,7 +1761,7 @@ Namespace kCura.WinEDDS
 						Dim message As String = $"An I/O error occurred reading the file associated with the '{field.DisplayName}' full text field."
 						Throw New kCura.WinEDDS.Exceptions.ImportIOException(message, ex)
 					End Try
-				ElseIf field.Type = Global.Relativity.FieldTypeHelper.FieldType.Boolean Then
+				ElseIf field.Type = FieldType.Boolean Then
 					If field.ValueAsString <> String.Empty Then
 						If Boolean.Parse(field.ValueAsString) Then
 							outputWriter.Write("1")
@@ -1769,14 +1769,14 @@ Namespace kCura.WinEDDS
 							outputWriter.Write("0")
 						End If
 					End If
-				ElseIf field.Type = Global.Relativity.FieldTypeHelper.FieldType.Decimal OrElse
-					   field.Type = Global.Relativity.FieldTypeHelper.FieldType.Currency Then
+				ElseIf field.Type = FieldType.Decimal OrElse
+					   field.Type = FieldType.Currency Then
 					If field.ValueAsString <> String.Empty Then
 						Dim d As String = CDec(field.Value).ToString(System.Globalization.CultureInfo.InvariantCulture)
 						outputWriter.Write(d)
 					End If
-				ElseIf field.Type = Global.Relativity.FieldTypeHelper.FieldType.Text OrElse
-					   field.Type = Global.Relativity.FieldTypeHelper.FieldType.OffTableText Then
+				ElseIf field.Type = FieldType.Text OrElse
+					   field.Type = FieldType.OffTableText Then
 					If TypeOf field.Value Is System.IO.Stream Then
 						Dim stream As System.IO.Stream = CType(field.Value, System.IO.Stream)
 						outputWriter.Flush()
@@ -1820,7 +1820,7 @@ Namespace kCura.WinEDDS
 
 		Private Function GetObjectFileField() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo
 			For Each field As kCura.EDDS.WebAPI.DocumentManagerBase.Field In AllFields(_artifactTypeID)
-				If field.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.File Then
+				If field.FieldTypeID = FieldType.File Then
 					Return Me.FieldDtoToFieldInfo(field)
 				End If
 			Next
@@ -1841,7 +1841,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Private Function ConvertFieldTypeEnum(ByVal fieldtypeID As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType
-			Dim ft As Global.Relativity.FieldTypeHelper.FieldType = CType(fieldtypeID, Global.Relativity.FieldTypeHelper.FieldType)
+			Dim ft As FieldType = CType(fieldtypeID, FieldType)
 			Return CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType), ft.ToString), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType)
 		End Function
 
@@ -1894,7 +1894,7 @@ Namespace kCura.WinEDDS
 						End If
 					End If
 					If Not item.DocumentField Is Nothing Then
-						If item.DocumentField.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.File Then
+						If item.DocumentField.FieldTypeID = FieldType.File Then
 							Me.ManageFileField(record(item.DocumentField.FieldID))
 						Else
 

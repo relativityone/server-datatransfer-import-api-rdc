@@ -44,7 +44,7 @@ namespace Relativity.Import.Export.Services
 
 		public bool FieldIsArtifactBaseField { get; set; }
 
-		public Relativity.Import.Export.Services.FieldTypeHelperFieldType FieldType { get; set; }
+		public Relativity.Import.Export.Services.FieldType FieldType { get; set; }
 
 		public string FormatString { get; set; }
 

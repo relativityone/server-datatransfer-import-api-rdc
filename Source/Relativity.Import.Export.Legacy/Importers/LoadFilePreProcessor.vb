@@ -111,7 +111,7 @@ Namespace kCura.WinEDDS
 			Dim hasChoicesInFieldMap As Boolean = False
 			If (_fieldMap.Count > 0) Then
 				'Look for any choice fields in the _fieldMap
-				hasChoicesInFieldMap = _fieldMap.ToArray().Where(Function(item) item.DocumentField IsNot Nothing AndAlso (item.NativeFileColumnIndex <> -1 AndAlso item.DocumentField.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.Code Or item.DocumentField.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.MultiCode)).Any()
+				hasChoicesInFieldMap = _fieldMap.ToArray().Where(Function(item) item.DocumentField IsNot Nothing AndAlso (item.NativeFileColumnIndex <> -1 AndAlso item.DocumentField.FieldTypeID = FieldType.Code Or item.DocumentField.FieldTypeID = FieldType.MultiCode)).Any()
 			End If
 
 			Return hasChoicesInFieldMap
@@ -170,7 +170,7 @@ Namespace kCura.WinEDDS
 			'Prepare the choice count columns
 			_choicesTable.Clear()
 			For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap.ToArray() _
-			 .Where(Function(mitem) mitem.DocumentField.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.Code Or mitem.DocumentField.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.MultiCode) _
+			 .Where(Function(mitem) mitem.DocumentField.FieldTypeID = FieldType.Code Or mitem.DocumentField.FieldTypeID = FieldType.MultiCode) _
 				.Where(Function(mitem) mitem.NativeFileColumnIndex <> -1)
 				_choicesTable(item.NativeFileColumnIndex) = New Dictionary(Of String, Boolean)
 			Next

@@ -30,17 +30,17 @@ Namespace kCura.WinEDDS.Service
 			Dim unmappableFields As New System.Collections.Specialized.StringCollection
 			Dim unmappableFieldCategories As New System.Collections.ArrayList
 			If Not includeUnmappable Then
-				unmappableFieldCategories.AddRange(New Global.Relativity.FieldCategory() {Global.Relativity.FieldCategory.Reflected, Global.Relativity.FieldCategory.Batch, Global.Relativity.FieldCategory.MultiReflected, Global.Relativity.FieldCategory.FileInfo, Global.Relativity.FieldCategory.AutoCreate, Global.Relativity.FieldCategory.FileSize, Global.Relativity.FieldCategory.ProductionMarker, Global.Relativity.FieldCategory.MarkupSetMarker})
+				unmappableFieldCategories.AddRange(New FieldCategory() {FieldCategory.Reflected, FieldCategory.Batch, FieldCategory.MultiReflected, FieldCategory.FileInfo, FieldCategory.AutoCreate, FieldCategory.FileSize, FieldCategory.ProductionMarker, FieldCategory.MarkupSetMarker})
 			End If
 			Dim i As Int32
 			For i = 0 To dv.Count - 1
 				field = New kCura.EDDS.WebAPI.DocumentManagerBase.Field
 				If Not ( _
-				 unmappableFieldCategories.Contains(CType(dv(i)("FieldCategoryID"), Global.Relativity.FieldCategory)) _
+				 unmappableFieldCategories.Contains(CType(dv(i)("FieldCategoryID"), FieldCategory)) _
 				 OrElse _
 				 unmappableFields.Contains(dv(i)("DisplayName").ToString) _
 				) Then
-					If Not (CType(dv(i)("FieldCategoryID"), Global.Relativity.FieldCategory) = Global.Relativity.FieldCategory.FullText AndAlso artifactTypeID <> ArtifactType.Document) Then
+					If Not (CType(dv(i)("FieldCategoryID"), FieldCategory) = FieldCategory.FullText AndAlso artifactTypeID <> ArtifactType.Document) Then
 						Dim guidsString As String = dv(i)("ArtifactGuids").ToString()
 						Dim guids As New List(Of Guid)
 						If (Not String.IsNullOrEmpty(guidsString)) Then
@@ -56,7 +56,7 @@ Namespace kCura.WinEDDS.Service
 							.DisplayName = CType(dv(i)("DisplayName"), String)
 							.FieldCategoryID = CType(dv(i)("FieldCategoryID"), Int32)
 							.FieldCategory = CType(dv(i)("FieldCategoryID"), kCura.EDDS.WebAPI.DocumentManagerBase.FieldCategory)
-							.FieldType = CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.FieldType), CType(dv(i)("FieldTypeID"), Global.Relativity.FieldTypeHelper.FieldType).ToString), kCura.EDDS.WebAPI.DocumentManagerBase.FieldType)
+							.FieldType = CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.FieldType), CType(dv(i)("FieldTypeID"), FieldType).ToString), kCura.EDDS.WebAPI.DocumentManagerBase.FieldType)
 							.FieldTypeID = CInt(dv(i)("FieldTypeID"))
 							.IsEditable = CType(dv(i)("IsEditable"), Boolean)
 							.IsRequired = CType(dv(i)("IsRequired"), Boolean)

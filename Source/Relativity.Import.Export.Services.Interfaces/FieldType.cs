@@ -4,7 +4,7 @@
 //------------------------------------------------------------------------------
 namespace Relativity.Import.Export.Services
 {
-	public enum FieldTypeHelperFieldType
+	public enum FieldType
 	{
 
 		Empty = -1,
