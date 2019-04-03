@@ -19,6 +19,8 @@ and this project does *not* yet adhere to [Semantic Versioning](https://semver.o
 
 ## Blazingstar update 1 release - v10.1.169.1 (03-25-2019)
 
+**Fixed**
+
 - Reviewed and fixed all exception classes that didn't implement serialization properly [REL-266229]
 - Enabled APM by default for all RelativityOne import jobs [REL-270750]
 - The compatibility check exception thrown uses the ApplicationName configuration setting to format the error message instead of a hard-coded RDC string [REL-268853]
