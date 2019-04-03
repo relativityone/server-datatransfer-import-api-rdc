@@ -9,8 +9,8 @@
 
 namespace Relativity.Export.Client.NUnit.Integration
 {
-    using System.Collections.Generic;
-    using System.Text;
+	using System.Collections.Generic;
+	using System.Text;
 	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
@@ -19,28 +19,31 @@ namespace Relativity.Export.Client.NUnit.Integration
 
 	using Relativity.Import.Export.TestFramework;
 
+	using Relativity.Testing.Identification;
+
 	/// <summary>
 	/// Represents <see cref="Exporter"/> tests.
 	/// </summary>
 	[TestFixture]
+	[Feature.DataTransfer.RelativityDesktopClient.Export]
 	public class ExporterTests : ExporterTestBase
 	{
-        /// <summary>
-        /// The sample PDF file name that's available for testing within the output directory.
-        /// </summary>
-        protected const string SampleDocPdfFileName = "EDRM-Sample1.pdf";
+		/// <summary>
+		/// The sample PDF file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleDocPdfFileName = "EDRM-Sample1.pdf";
 
-        [Test]
+		[IdentifiedTest("5b20c6f1-1196-41ea-9326-0e875e2cabe9")]
 		[Category(TestCategories.Export)]
 		[Category(TestCategories.Integration)]
 		public async Task ShouldExportAsync()
 		{
-            IReadOnlyList<string> sampleDocFileNames =
-                new List<string> { ResourceFileHelper.GetDocsResourceFilePath(SampleDocPdfFileName) };
+			IReadOnlyList<string> sampleDocFileNames =
+				new List<string> { ResourceFileHelper.GetDocsResourceFilePath(SampleDocPdfFileName) };
 
-            this.GivenTheExportType(ExportFile.ExportType.ParentSearch);
+			this.GivenTheExportType(ExportFile.ExportType.ParentSearch);
 			Relativity.CaseInfo caseInfo = await this.WhenGettingTheWorkspaceInfoAsync().ConfigureAwait(false);
-            this.GivenTheFilesAreImported(sampleDocFileNames);
+			this.GivenTheFilesAreImported(sampleDocFileNames);
 			this.GivenTheSelectedFolderId(caseInfo.RootFolderID);
 			this.GivenTheIdentifierColumnName(WellKnownFields.ControlNumber);
 			this.GivenTheEncoding(Encoding.Unicode);

@@ -14,10 +14,13 @@ namespace Relativity.Import.Client.NUnit.Integration
 	using Relativity.Import.Export.TestFramework;
 	using Relativity.Import.Export.Transfer;
 
+	using Relativity.Testing.Identification;
+
 	/// <summary>
 	/// Represents positive import job tests.
 	/// </summary>
 	[TestFixture]
+	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
 	public class PositiveImportJobTests : ImportJobTestBase
 	{
 		/// <summary>
@@ -32,20 +35,19 @@ namespace Relativity.Import.Client.NUnit.Integration
 		/// <param name="disableNativeValidation">
 		/// Specify whether to disable native validation.
 		/// </param>
-		[Test]
 		[Category(TestCategories.ImportDoc)]
 		[Category(TestCategories.Integration)]
 		[Category(TestCategories.TransferApi)]
-		[TestCase(TapiClient.Direct, true, true)]
-		[TestCase(TapiClient.Web, true, true)]
-		[TestCase(TapiClient.Aspera, true, true)]
+		[IdentifiedTestCase("99aa6c4b-029c-41f2-840b-1ef14a295047", TapiClient.Direct, true, true)]
+		[IdentifiedTestCase("77030f47-ff53-4445-a112-0a45fa80fc6e", TapiClient.Web, true, true)]
+		[IdentifiedTestCase("2c8adb7d-c787-4364-a930-ae8fff045e52", TapiClient.Aspera, true, true)]
 		public void ShouldImportTheFiles(
 			TapiClient client,
 			bool disableNativeLocationValidation,
 			bool disableNativeValidation)
 		{
 			if ((client == TapiClient.Aspera && this.TestParameters.SkipAsperaModeTests) ||
-			    (client == TapiClient.Direct && this.TestParameters.SkipDirectModeTests))
+				(client == TapiClient.Direct && this.TestParameters.SkipDirectModeTests))
 			{
 				Assert.Ignore(TestStrings.SkipTestMessage, $"{client}");
 			}
