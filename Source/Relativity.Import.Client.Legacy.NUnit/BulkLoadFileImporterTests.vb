@@ -36,7 +36,7 @@ Namespace Relativity.Import.Client.NUnit
 		Public Sub SetUp()
 			kCura.WinEDDS.Config.ProgrammaticServiceURL = "https://r1.kcura.com/RelativityWebAPI/"
 			_args = New LoadFile()
-			_args.CaseInfo = New CaseInfo()
+			_args.CaseInfo = New Relativity.Import.Export.Services.CaseInfo()
 			_args.CaseInfo.RootArtifactID = 1
 			_guid = New Guid("E09E18F3-D0C8-4CFC-96D1-FBB350FAB3E1")
 			Dim mockProcessEventWriter = New Mock(Of IProcessEventWriter)()

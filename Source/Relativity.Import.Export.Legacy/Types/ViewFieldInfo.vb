@@ -1,12 +1,12 @@
 Namespace kCura.WinEDDS
 	<Serializable()> Public Class ViewFieldInfo
-		Inherits Global.Relativity.ViewFieldInfo
+		Inherits Global.Relativity.Import.Export.Services.ViewFieldInfo
 		Implements IComparable
 
 		Public Sub New(ByVal row As System.Data.DataRow)
 			MyBase.New(row)
 		End Sub
-		Public Sub New(ByVal vfi As Global.Relativity.ViewFieldInfo)
+		Public Sub New(ByVal vfi As ViewFieldInfo)
 			MyBase.New(vfi)
 		End Sub
 
@@ -26,8 +26,6 @@ Namespace kCura.WinEDDS
 		Public Overrides Function GetHashCode() As Integer
 			Return 45 * Me.AvfId
 		End Function
-
-		Public Shadows Property FieldType() As Global.Relativity.Import.Export.Services.FieldType
 
 	End Class
 

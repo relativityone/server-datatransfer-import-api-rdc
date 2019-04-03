@@ -29,6 +29,7 @@ namespace Relativity.Export.Client.NUnit.Integration
 	using Relativity.Export.VolumeManagerV2.Container;
 	using Relativity.Import.Export;
 	using Relativity.Import.Export.Process;
+	using Relativity.Import.Export.Services;
 	using Relativity.Import.Export.TestFramework;
 	using Relativity.Logging;
 	using Relativity.Transfer;
@@ -292,7 +293,7 @@ namespace Relativity.Export.Client.NUnit.Integration
 		/// <returns>
 		/// The <see cref="Relativity.CaseInfo"/> instance.
 		/// </returns>
-		protected Task<Relativity.CaseInfo> WhenGettingTheWorkspaceInfoAsync()
+		protected Task<CaseInfo> WhenGettingTheWorkspaceInfoAsync()
 		{
 			using (var caseManager = new kCura.WinEDDS.Service.CaseManager(this.credentials, this.cookieContainer))
 			{
@@ -337,7 +338,7 @@ namespace Relativity.Export.Client.NUnit.Integration
 		/// <returns>
 		/// The <see cref="Task"/> instance.
 		/// </returns>
-		protected async Task WhenCreatingTheExportFileAsync(Relativity.CaseInfo caseInfo)
+		protected async Task WhenCreatingTheExportFileAsync(CaseInfo caseInfo)
 		{
 			using (var searchManager = new kCura.WinEDDS.Service.SearchManager(this.credentials, this.cookieContainer))
 			using (var productionManager =
@@ -365,7 +366,7 @@ namespace Relativity.Export.Client.NUnit.Integration
                     NewlineDelimiter = '@',
                     QuoteDelimiter = 'þ',
                     ViewID = 1003684,
-                    SelectedViewFields = new ViewFieldInfo[] { },
+                    SelectedViewFields = new kCura.WinEDDS.ViewFieldInfo[] { },
 
                     // settings for exporting images
                     ExportImages = true,

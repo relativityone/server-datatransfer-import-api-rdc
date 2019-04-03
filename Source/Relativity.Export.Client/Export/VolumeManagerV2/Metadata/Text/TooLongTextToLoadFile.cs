@@ -44,7 +44,7 @@
 
 		public void HandleLongText(ObjectExportInfo artifact, kCura.WinEDDS.ViewFieldInfo field, DeferredEntry lineEntry)
 		{
-			ViewFieldInfo fieldToGetValueFrom;
+			kCura.WinEDDS.ViewFieldInfo fieldToGetValueFrom;
 			if (field is CoalescedTextViewField)
 			{
 				fieldToGetValueFrom = _longTextHelper.GetTextPrecedenceTrueField(artifact, field);

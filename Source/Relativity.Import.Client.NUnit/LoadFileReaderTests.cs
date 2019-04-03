@@ -12,7 +12,9 @@ namespace Relativity.Import.Client.NUnit
 
 	using kCura.WinEDDS;
 
-    [TestFixture]
+    using Relativity.Import.Export.Services;
+
+	[TestFixture]
 	public class LoadFileReaderTests
 	{
 		private const decimal ExpectedDecimal = 10.05m;

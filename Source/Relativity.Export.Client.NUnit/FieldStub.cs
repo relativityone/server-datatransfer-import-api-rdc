@@ -8,19 +8,21 @@ namespace Relativity.Export.NUnit
 {
     using System.Data;
 
-    public class FieldStub : kCura.WinEDDS.ViewFieldInfo
+    using Relativity.Import.Export.Services;
+
+	public class FieldStub : kCura.WinEDDS.ViewFieldInfo
 	{
 		public FieldStub(DataRow row)
 			: base(row)
 		{
 		}
 
-		public FieldStub(Relativity.ViewFieldInfo vfi)
+		public FieldStub(kCura.WinEDDS.ViewFieldInfo vfi)
 			: base(vfi)
 		{
 		}
 
-		public void SetType(FieldTypeHelper.FieldType fieldType)
+		public void SetType(FieldType fieldType)
 		{
 			FieldType = fieldType;
 		}

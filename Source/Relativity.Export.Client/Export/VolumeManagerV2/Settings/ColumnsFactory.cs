@@ -6,8 +6,7 @@
 	using kCura.WinEDDS;
 
 	using Relativity.Logging;
-
-	using ViewFieldInfo = Relativity.ViewFieldInfo;
+	using Relativity.Import.Export.Services;
 
 	public class ColumnsFactory : IColumnsFactory
 	{
@@ -32,7 +31,7 @@
 
 			List<kCura.WinEDDS.ViewFieldInfo> columns = viewFields.ToList();
 
-			kCura.WinEDDS.ViewFieldInfo[] longTextViewFields = viewFields.Where(x => x.FieldType == FieldTypeHelper.FieldType.Text || x.FieldType == FieldTypeHelper.FieldType.OffTableText).ToArray();
+			kCura.WinEDDS.ViewFieldInfo[] longTextViewFields = viewFields.Where(x => x.FieldType == FieldType.Text || x.FieldType == FieldType.OffTableText).ToArray();
 
 			if (textFields.Length == 1 && longTextViewFields.Any(x => x.Equals(textFields.First())))
 			{

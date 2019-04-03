@@ -17,9 +17,9 @@ namespace Relativity.Export.NUnit
 
     using Moq;
 
-    using Relativity;
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.Export.VolumeManagerV2.Repository;
+    using Relativity.Import.Export.Services;
 	using Relativity.Import.Export.TestFramework;
     using Relativity.Logging;
 
@@ -51,7 +51,7 @@ namespace Relativity.Export.NUnit
 		public void ItShouldTakeOnlyLongTextFields()
         {
             kCura.WinEDDS.ViewFieldInfo[] fields = _queryFieldFactory.GetAllDocumentFields().ToArray();
-            kCura.WinEDDS.ViewFieldInfo longTextField = fields.First(x => x.FieldType == FieldTypeHelper.FieldType.Text);
+            kCura.WinEDDS.ViewFieldInfo longTextField = fields.First(x => x.FieldType == FieldType.Text);
 			_fieldService.Setup(x => x.GetColumns()).Returns(fields);
 			_fieldService.Setup(x => x.GetOrdinalIndex(longTextField.AvfColumnName)).Returns(0);
 

@@ -6,7 +6,6 @@
 
 Imports System.Threading
 
-Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports kCura.WinEDDS
 Imports Moq
 
@@ -14,6 +13,7 @@ Imports NUnit.Framework
 Imports Relativity.Import.Export
 Imports Relativity.Import.Export.Io
 Imports Relativity.Import.Export.Process
+Imports Relativity.Import.Export.Services
 
 Imports Relativity.Logging
 
@@ -36,7 +36,7 @@ Namespace Relativity.Import.Client.NUnit
 		Public Sub SetUp()
 			kCura.WinEDDS.Config.ProgrammaticServiceURL = "https://r1.kcura.com/RelativityWebAPI/"
 			_args = New ImageLoadFile()
-			_args.CaseInfo = New CaseInfo()
+			_args.CaseInfo = New Relativity.Import.Export.Services.CaseInfo()
 			_args.CaseInfo.RootArtifactID = 1
 			_guid = New Guid("E09E18F3-D0C8-4CFC-96D1-FBB350FAB3E1")
 			Dim mockProcessEventWriter = New Mock(Of IProcessEventWriter)()
@@ -44,7 +44,7 @@ Namespace Relativity.Import.Client.NUnit
 			Dim mockAppSettings = New Mock(Of IAppSettings)()
 			Dim mockLogger = New Mock(Of ILog)()
 			_context = New ProcessContext(mockProcessEventWriter.Object, mockProcessErrorWriter.Object, mockAppSettings.Object, mockLogger.Object)
-			_overwrite = OverwriteType.Both
+			_overwrite = kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both
 			
 		    _logger = New NullLogger()
 			tokenSource = New CancellationTokenSource()

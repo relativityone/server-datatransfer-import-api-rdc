@@ -175,6 +175,10 @@
       <Project>{2022e24b-46a1-46da-a715-36d137436b3a}</Project>
       <Name>Relativity.Import.Export.Legacy</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Relativity.Import.Export.Services.Interfaces\Relativity.Import.Export.Services.Interfaces.csproj">
+      <Project>{b2a59009-0da3-42d4-ae60-d2e964d8d165}</Project>
+      <Name>Relativity.Import.Export.Services.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Relativity.Import.Export.TestFramework\Relativity.Import.Export.TestFramework.csproj">
       <Project>{fed61746-80ec-40cb-998e-9299b804ce7d}</Project>
       <Name>Relativity.Import.Export.TestFramework</Name>

@@ -8,7 +8,8 @@
 	using kCura.WinEDDS.Exporters;
 
 	using Relativity.Export.VolumeManagerV2.Repository;
-	
+	using Relativity.Import.Export.Services;
+
 	using ExportConstants = Relativity.Export.Constants;
 	using RelativityConstants = Relativity.Constants;
 
@@ -30,14 +31,14 @@
 			_exportSettings = exportSettings;
 		}
 
-		public bool IsLongTextField(ViewFieldInfo fieldInfo)
+		public bool IsLongTextField(kCura.WinEDDS.ViewFieldInfo fieldInfo)
 		{
 			return IsLongTextField(fieldInfo.FieldType);
 		}
 
-		public bool IsLongTextField(FieldTypeHelper.FieldType fieldType)
+		public bool IsLongTextField(FieldType fieldType)
 		{
-			return fieldType == FieldTypeHelper.FieldType.Text || fieldType == FieldTypeHelper.FieldType.OffTableText;
+			return fieldType == FieldType.Text || fieldType == FieldType.OffTableText;
 		}
 
 		public string GetTextFromField(ObjectExportInfo artifact, string fieldName)
@@ -100,7 +101,7 @@
 			return _exportSettings.SelectedTextFields.Any(x => x != null);
 		}
 
-		public ViewFieldInfo GetTextPrecedenceField(ObjectExportInfo artifact)
+		public kCura.WinEDDS.ViewFieldInfo GetTextPrecedenceField(ObjectExportInfo artifact)
 		{
 			if (_exportSettings.SelectedTextFields != null)
 			{
@@ -111,7 +112,7 @@
 			return null;
 		}
 
-		public ViewFieldInfo GetTextPrecedenceTrueField(ObjectExportInfo artifact, ViewFieldInfo field)
+		public kCura.WinEDDS.ViewFieldInfo GetTextPrecedenceTrueField(ObjectExportInfo artifact, kCura.WinEDDS.ViewFieldInfo field)
 		{
 			if (field == null || field.AvfColumnName == ExportConstants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME)
 			{
@@ -126,7 +127,7 @@
 			return _longTextRepository.GetTextFileLocation(artifact.ArtifactID, fieldArtifactId);
 		}
 
-		public Encoding GetLongTextFieldFileEncoding(ViewFieldInfo field)
+		public Encoding GetLongTextFieldFileEncoding(kCura.WinEDDS.ViewFieldInfo field)
 		{
 			if (field.IsUnicodeEnabled)
 			{

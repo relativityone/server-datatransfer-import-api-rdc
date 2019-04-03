@@ -11,11 +11,11 @@
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;
 
-	using Relativity;
 	using Relativity.Export.VolumeManagerV2.Directories;
 	using Relativity.Export.VolumeManagerV2.Download;
 	using Relativity.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.Export.VolumeManagerV2.Statistics;
+	using Relativity.Import.Export.Services;
 	using Relativity.Logging;
 
 	using Constants = Relativity.Export.Constants;
@@ -109,7 +109,7 @@
 			return LongText.CreateFromMissingValue(artifact.ArtifactID, longTextExportRequest.FieldArtifactId, longTextExportRequest, sourceEncoding);
 		}
 
-		private LongText CreateForLongText(ObjectExportInfo artifact, ViewFieldInfo field)
+		private LongText CreateForLongText(ObjectExportInfo artifact, kCura.WinEDDS.ViewFieldInfo field)
 		{
 			string longTextValue = _longTextHelper.GetTextFromField(artifact, Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME);
 
