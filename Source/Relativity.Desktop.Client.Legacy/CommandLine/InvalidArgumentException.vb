@@ -1,4 +1,4 @@
-Namespace kCura.CommandLine.Exception
+Namespace Relativity.Desktop.Client.CommandLine
 	Public Class InvalidArgumentException
 		Inherits System.Exception
 

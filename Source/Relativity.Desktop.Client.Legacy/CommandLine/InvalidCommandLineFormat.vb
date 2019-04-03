@@ -1,4 +1,4 @@
-Namespace kCura.CommandLine.Exception
+Namespace Relativity.Desktop.Client.CommandLine
 	Public Class InvalidCommandLineFormat
 		Inherits System.ApplicationException
 
@@ -19,4 +19,3 @@ Namespace kCura.CommandLine.Exception
 		End Sub
 	End Class
 End Namespace
-

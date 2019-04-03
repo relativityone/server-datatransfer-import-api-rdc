@@ -137,6 +137,11 @@
     <Compile Include="..\..\Version\AssemblySharedInfo.vb">
       <Link>My Project\AssemblySharedInfo.vb</Link>
     </Compile>
+    <Compile Include="CommandLine\Command.vb" />
+    <Compile Include="CommandLine\CommandLineParser.vb" />
+    <Compile Include="CommandLine\CommandList.vb" />
+    <Compile Include="CommandLine\InvalidArgumentException.vb" />
+    <Compile Include="CommandLine\InvalidCommandLineFormat.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Resources.Designer.vb">
       <AutoGen>True</AutoGen>
