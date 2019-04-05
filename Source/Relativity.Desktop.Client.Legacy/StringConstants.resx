@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="HelpPage" xml:space="preserve">
+    <value>Relativity Desktop Client Command-Line Arguments:
+-------------------------------------------------
+
+-h or /h
+	Display this help page
+
+	:encoding
+	Display a list of supported text encoding types on the this machine
+
+The following arguments must be set and in the form specified;
+	[flag]:[value]
+	e.g. 
+	-f:"\Documents and Settings\relativityuser\Desktop\load file.dat"
+	-f:C:\loadthis.opt
+	-u:EDDSServiceAccount
+
+
+[-f or /f]:[file path]
+	Sets the import metadata file path - either native or opticon
+
+[-c or /c]:[case artifact id]
+	Points the client towards the case to be imported to
+
+[-u or /u]:[relativity username]
+	Sets the relativity user account that the import will be performed under
+
+[-p or /p]:[relativity password]
+	Validation for the user account
+	
+[-clientID or /clientID]:[Relativity OAuth2 Client ID]
+	Sets the Relativity OAuth2 Client that performs the import
+
+[-clientSecret or /clientSecret]:[Relativity OAuth2 Client Secret]
+	Validation for the OAuth2 Client
+
+[-k or /k]:[saved settings kwe, kwi, or kwx file path]
+	Saved settings for the run to be performed
+
+[-m or /m]:[image or native or object or export or i or n or e]
+	Sets the type of job to be run
+
+[-e or /e]:[code page id]
+	Sets the encoding of the load file.  This defaults to windows' default encoding.  For a list of active encodings use -h:encoding.
+
+[-x or /x]:[code page id]
+	Sets the encoding of any full text files.  This defaults to windows' default encoding.  For a list of active encoding code page ids use -h:encoding.
+
+[-r or /r]:[repository path]
+	Sets the destination repository for loaded files.  This defaults the case default.
+
+[-l or /l]:[boolean value]
+	Determines if files are actually copied to a relativity repository.  Defaults to true.
+
+[-d or /d]:[folder artifact id]
+	Sets the destination folder for the upload.  Defaults to the case root folder.
+
+[-s or /s]:[start line number]
+	Sets the starting line number of the load file for the upload.  Defaults to 0.
+
+[-ef or /ef]:[Error line file path]
+	Specifies the file path to dump the error line file from the import.  If no path is specified, then an error line file is created in the run directory, with an extension matching that of the load file.  If this option is not selected then no error line file is created.
+
+[-er or /er]:[Error report file path]
+	Specifies the file path to dump the error report file from the import.  If no path is specified, then an error report file is created in the run directory, with a CSV extension.  If this option is not selected then no error report file is created.</value>
+  </data>
+</root>
