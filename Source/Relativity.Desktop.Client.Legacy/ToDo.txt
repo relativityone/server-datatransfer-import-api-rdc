@@ -1,2 +1,0 @@
-- rename all instances of Repository to Case IN THE CODE, leave GUI as repository.
-- add the ability to save the importstatus
