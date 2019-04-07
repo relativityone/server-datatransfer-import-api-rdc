@@ -1,33 +1,31 @@
-
-Imports System.IO
 Imports System.Web.Services.Protocols
 Imports System.Security.Cryptography.X509Certificates
 Imports System.Net
 Imports System.Net.Security
-Imports System.Linq
-Imports System.Reflection
-Imports System.Threading.Tasks
-Imports kCura.EDDS.WinForm.Forms
-Imports kCura.Windows.Forms
-Imports kCura.WinEDDS.Core.Export
+Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Credentials
 Imports kCura.WinEDDS.Monitoring
-Imports Relativity
 Imports Relativity.DataTransfer.MessageService
 Imports Relativity.DataTransfer.MessageService.Tools
+Imports Relativity.Desktop.Client
+Imports Relativity.Desktop.Client.Legacy.Controls
+Imports Relativity.Export
+Imports Relativity.Import.Export
+Imports Relativity.Import.Export.Process
+Imports Relativity.Import.Export.Transfer
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.OAuth2Client.Interfaces
 Imports Relativity.OAuth2Client.Interfaces.Events
 Imports Relativity.Transfer
 
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
     Public Class Application
 
 #Region "Singleton Methods"
         Private Shared _instance As Application
 
         Protected Sub New()
-            _processPool = New kCura.Windows.Process.ProcessPool
+            _processPool = New ProcessPool
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 Or SecurityProtocolType.Tls11 Or SecurityProtocolType.Tls Or SecurityProtocolType.Ssl3
             _CookieContainer = New System.Net.CookieContainer
         End Sub
@@ -54,15 +52,15 @@ Namespace kCura.EDDS.WinForm
         Public Const RDC_TITLE As String = "Relativity Desktop Client"
 
         Private _caseSelected As Boolean = True
-        Private _processPool As kCura.Windows.Process.ProcessPool
-        Private _selectedCaseInfo As Relativity.CaseInfo
+        Private _processPool As ProcessPool
+        Private _selectedCaseInfo As Global.Relativity.CaseInfo
         Private _selectedCaseFolderID As Int32
         Private _fieldProviderCache As IFieldProviderCache
         Private _selectedCaseFolderPath As String
         Private _timeZoneOffset As Int32
         Private WithEvents _certificatePromptForm As CertificatePromptForm
         Private WithEvents _optionsForm As OptionsForm
-        Private _messageService As IMessageService
+        Private _messageService As IMessageService  
         Private _documentRepositoryList As String()
         Private ReadOnly oAuth2ImplicitCredentialsHelper As Lazy(Of OAuth2ImplicitCredentialsHelper) = New Lazy(Of OAuth2ImplicitCredentialsHelper)(AddressOf CreateOAuth2ImplicitCredentialsHelper)
 #End Region
@@ -98,13 +96,13 @@ Namespace kCura.EDDS.WinForm
             End Set
         End Property
 
-        Public ReadOnly Property SelectedCaseInfo() As Relativity.CaseInfo
+        Public ReadOnly Property SelectedCaseInfo() As Global.Relativity.CaseInfo
             Get
                 Return _selectedCaseInfo
             End Get
         End Property
 
-        Public Async Function RefreshSelectedCaseInfoAsync(Optional ByVal caseInfo As Relativity.CaseInfo = Nothing) As Task
+        Public Async Function RefreshSelectedCaseInfoAsync(Optional ByVal caseInfo As Global.Relativity.CaseInfo = Nothing) As Task
             Dim caseManager As New kCura.WinEDDS.Service.CaseManager(Await Me.GetCredentialsAsync(), _CookieContainer)
             If caseInfo Is Nothing Then
                 _selectedCaseInfo = caseManager.Read(_selectedCaseInfo.ArtifactID)
@@ -193,12 +191,12 @@ Namespace kCura.EDDS.WinForm
         End Sub
 
         Public Sub UpdateForceFolderPreview()
-            kCura.WinEDDS.Config.ForceFolderPreview = Me.TemporaryForceFolderPreview
+            AppSettings.Instance.ForceFolderPreview = Me.TemporaryForceFolderPreview
         End Sub
 
         Public Sub UpdateWebServiceURL(ByVal relogin As Boolean)
-            If Not Me.TemporaryWebServiceURL Is Nothing AndAlso Not Me.TemporaryWebServiceURL = String.Empty AndAlso Not Me.TemporaryWebServiceURL.Equals(kCura.WinEDDS.Config.WebServiceURL) Then
-                kCura.WinEDDS.Config.WebServiceURL = Me.TemporaryWebServiceURL
+            If Not Me.TemporaryWebServiceURL Is Nothing AndAlso Not Me.TemporaryWebServiceURL = String.Empty AndAlso Not Me.TemporaryWebServiceURL.Equals(AppSettings.Instance.WebApiServiceUrl) Then
+                AppSettings.Instance.WebApiServiceUrl = Me.TemporaryWebServiceURL
                 _caseSelected = False
                 '' Turn off our trust of bad certificates! This needs to happen here (references need to be added to add it to MainForm - bad practice).
                 ServicePointManager.ServerCertificateValidationCallback = Function(sender As Object, certificate As X509Certificate, chain As X509Chain, sslPolicyErrors As SslPolicyErrors) sslPolicyErrors.Equals(SslPolicyErrors.None)
@@ -297,7 +295,7 @@ Namespace kCura.EDDS.WinForm
             End If
         End Function
 
-        Friend Async Function ReadyToLoad(ByVal loadFile As WinEDDS.LoadFile, ByVal forPreview As Boolean) As Task(Of Boolean)
+        Friend Async Function ReadyToLoad(ByVal loadFile As kCura.WinEDDS.LoadFile, ByVal forPreview As Boolean) As Task(Of Boolean)
             Dim isIdentifierMapped As Boolean = False
             For Each fieldMapItem As LoadFileFieldMap.LoadFileFieldMapItem In loadFile.FieldMap
                 If Not fieldMapItem.DocumentField Is Nothing AndAlso fieldMapItem.DocumentField.FieldID = loadFile.IdentityFieldId AndAlso fieldMapItem.NativeFileColumnIndex <> -1 Then
@@ -320,10 +318,10 @@ Namespace kCura.EDDS.WinForm
             End If
         End Function
 
-        Private Function IdentifierFieldIsMappedButNotKey(ByVal fieldMap As WinEDDS.LoadFileFieldMap, ByVal keyFieldID As Int32) As Boolean
+        Private Function IdentifierFieldIsMappedButNotKey(ByVal fieldMap As kCura.WinEDDS.LoadFileFieldMap, ByVal keyFieldID As Int32) As Boolean
             Dim idField As DocumentField = Nothing
             For Each item As LoadFileFieldMap.LoadFileFieldMapItem In fieldMap
-                If Not item.DocumentField Is Nothing AndAlso Not item.NativeFileColumnIndex = -1 And item.DocumentField.FieldCategory = Relativity.FieldCategory.Identifier Then
+                If Not item.DocumentField Is Nothing AndAlso Not item.NativeFileColumnIndex = -1 And item.DocumentField.FieldCategory = Global.Relativity.FieldCategory.Identifier Then
                     idField = item.DocumentField
                     Exit For
                 End If
@@ -335,7 +333,7 @@ Namespace kCura.EDDS.WinForm
             End If
         End Function
 
-        Friend Async Function ReadyToLoad(ByVal imageArgs As WinEDDS.ImageLoadFile, ByVal forPreview As Boolean) As Task(Of Boolean)
+        Friend Async Function ReadyToLoad(ByVal imageArgs As kCura.WinEDDS.ImageLoadFile, ByVal forPreview As Boolean) As Task(Of Boolean)
             Dim id As Int32
             If imageArgs.ProductionArtifactID > 0 Then
                 id = imageArgs.BeginBatesFieldArtifactID
@@ -450,7 +448,7 @@ Namespace kCura.EDDS.WinForm
             Return Nothing
         End Function
 
-        Public Sub SelectCaseFolder(ByVal folderInfo As WinEDDS.FolderInfo)
+        Public Sub SelectCaseFolder(ByVal folderInfo As kCura.WinEDDS.FolderInfo)
             _selectedCaseFolderID = folderInfo.ArtifactID
             _selectedCaseFolderPath = folderInfo.Path
             _caseSelected = True
@@ -489,7 +487,7 @@ Namespace kCura.EDDS.WinForm
             End Try
         End Function
 
-        Public Function GetCase() As Relativity.CaseInfo
+        Public Function GetCase() As Global.Relativity.CaseInfo
             Dim frm As New CaseSelectForm
             frm.MultiSelect = False
             frm.ShowDialog()
@@ -501,14 +499,16 @@ Namespace kCura.EDDS.WinForm
         End Function
 
         Public Async Function GetConnectionStatus() As Task(Of String)
+            Dim tapiObjectService As ITapiObjectService = New TapiObjectService()
             Dim parameters = CreateTapiParametersAsync()
-            Dim clientName = Await TApi.TapiWinEddsHelper.GetWorkspaceClientDisplayNameAsync(Await parameters)
+            Dim clientName = Await tapiObjectService.GetWorkspaceClientDisplayNameAsync(Await parameters)
             Return clientName
         End Function
 
         Public Async Function GetConnectionMode() As Task(Of Guid)
+            Dim tapiObjectService As ITapiObjectService = New TapiObjectService()
             Dim parameters = CreateTapiParametersAsync()
-            Dim clientName = Await TApi.TapiWinEddsHelper.GetWorkspaceClientIdAsync(Await parameters)
+            Dim clientName = Await tapiObjectService.GetWorkspaceClientIdAsync(Await parameters)
             Return clientName
         End Function
 
@@ -516,19 +516,19 @@ Namespace kCura.EDDS.WinForm
             Return (Await GetConnectionMode().ConfigureAwait(False)) = Guid.Parse(TransferClientConstants.AsperaClientId)
         End Function
 
-        Private Async Function CreateTapiParametersAsync() As Task(Of TApi.TapiBridgeParameters)
+        Private Async Function CreateTapiParametersAsync() As Task(Of TapiBridgeParameters)
             Dim credentials = Await Me.GetCredentialsAsync()
-            Dim parameters = New TApi.TapiBridgeParameters
+            Dim parameters = New TapiBridgeParameters
             parameters.Credentials = credentials
-            parameters.AsperaDocRootLevels = WinEDDS.Config.TapiAsperaNativeDocRootLevels
+            parameters.AsperaDocRootLevels = AppSettings.Instance.TapiAsperaNativeDocRootLevels
             parameters.FileShare = Me.SelectedCaseInfo.DocumentPath
-            parameters.ForceAsperaClient = WinEDDS.Config.TapiForceAsperaClient
-            parameters.ForceClientCandidates = WinEDDS.Config.TapiForceClientCandidates
-            parameters.ForceFileShareClient = WinEDDS.Config.TapiForceFileShareClient
-            parameters.ForceHttpClient = WinEDDS.Config.ForceWebUpload OrElse WinEDDS.Config.TapiForceHttpClient
-            parameters.TimeoutSeconds = WinEDDS.Config.HttpTimeoutSeconds
+            parameters.ForceAsperaClient = AppSettings.Instance.TapiForceAsperaClient
+            parameters.ForceClientCandidates = AppSettings.Instance.TapiForceClientCandidates
+            parameters.ForceFileShareClient = AppSettings.Instance.TapiForceFileShareClient
+            parameters.ForceHttpClient = AppSettings.Instance.ForceWebUpload OrElse AppSettings.Instance.TapiForceHttpClient
+            parameters.TimeoutSeconds = AppSettings.Instance.HttpTimeoutSeconds
             parameters.WebCookieContainer = Me.CookieContainer
-            parameters.WebServiceUrl = WinEDDS.Config.WebServiceURL
+            parameters.WebServiceUrl = AppSettings.Instance.WebApiServiceUrl
             parameters.WorkspaceId = Me.SelectedCaseInfo.ArtifactID
 
             Return parameters
@@ -582,7 +582,7 @@ Namespace kCura.EDDS.WinForm
             Dim docFieldCollection As DocumentFieldCollection = Await CurrentFields(artifactTypeID, refresh)
             Dim allFields As ICollection = docFieldCollection.AllFields
             For Each field As DocumentField In allFields
-                If field.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
+                If field.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.File Then
                     retval = True
                 End If
             Next
@@ -602,7 +602,7 @@ Namespace kCura.EDDS.WinForm
 
         Public Function GetColumnHeadersFromLoadFile(ByVal loadfile As kCura.WinEDDS.LoadFile, ByVal firstLineContainsColumnHeaders As Boolean) As String()
             loadfile.CookieContainer = Me.CookieContainer
-            Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.WinEDDSSubSystem)
+            Dim logger As Global.Relativity.Logging.ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.WinEDDSSubSystem)
             Dim importer As kCura.WinEDDS.BulkLoadFileImporter = Nothing
 
             Try
@@ -625,7 +625,7 @@ Namespace kCura.EDDS.WinForm
             Dim errorRow As System.Data.DataRow = dt.NewRow
             rowcount += 1
             For Each column As System.Data.DataColumn In dt.Columns
-                Dim errorMessage As LoadFilePreviewColumnItem = New LoadFilePreviewColumnItem(New WinEDDS.Exceptions.ErrorMessage(If((column.ColumnName = "Record Number"), rowcount.ToString, "Row-wide error: " & err.Message)))
+                Dim errorMessage As LoadFilePreviewColumnItem = New LoadFilePreviewColumnItem(New kCura.WinEDDS.Exceptions.ErrorMessage(If((column.ColumnName = "Record Number"), rowcount.ToString, "Row-wide error: " & err.Message)))
                 errorRow(column.ColumnName) = errorMessage
             Next
             dt.Rows.Add(errorRow)
@@ -685,7 +685,7 @@ Namespace kCura.EDDS.WinForm
                 End If
                 Return dt
             Catch ex As System.Exception
-                kCura.EDDS.WinForm.Utility.ThrowExceptionToGUI(ex)
+                Utility.ThrowExceptionToGUI(ex)
             End Try
             Return Nothing
         End Function
@@ -713,7 +713,7 @@ Namespace kCura.EDDS.WinForm
                 Dim previewChoices As New PreviewChoicesHelper
                 Return previewChoices.BuildFoldersAndCodesDataSource(al, previewCodeCount)
             Catch ex As Exception
-                kCura.EDDS.WinForm.Utility.ThrowExceptionToGUI(ex)
+                Utility.ThrowExceptionToGUI(ex)
             End Try
             Return Nothing
         End Function
@@ -794,7 +794,7 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Form Initializers"
-        Public Async Function NewLoadFile(ByVal destinationArtifactID As Int32, ByVal caseInfo As Relativity.CaseInfo) As Task
+        Public Async Function NewLoadFile(ByVal destinationArtifactID As Int32, ByVal caseInfo As Global.Relativity.CaseInfo) As Task
             If Not Await Me.IsConnected() Then
                 CursorDefault()
                 Return
@@ -803,7 +803,7 @@ Namespace kCura.EDDS.WinForm
             Dim loadFile As New LoadFile
             frm._application = Me
             loadFile.SelectedCasePath = caseInfo.DocumentPath
-            If Me.ArtifactTypeID = Relativity.ArtifactType.Document Then
+            If Me.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
                 loadFile.DestinationFolderID = destinationArtifactID
             Else
                 loadFile.DestinationFolderID = caseInfo.RootArtifactID
@@ -813,20 +813,20 @@ Namespace kCura.EDDS.WinForm
             loadFile.CaseInfo = caseInfo
             loadFile.Credentials = Await Me.GetCredentialsAsync()
             loadFile.CookieContainer = Me.CookieContainer
-            loadFile.OverwriteDestination = Relativity.ImportOverwriteType.Append.ToString
+            loadFile.OverwriteDestination = Global.Relativity.ImportOverwriteType.Append.ToString
             loadFile.ArtifactTypeID = Me.ArtifactTypeID
             frm.LoadFile = loadFile
             Await frm.LoadFormControls(False)
             frm.Show()
         End Function
 
-        Public Async Function NewProductionExport(ByVal caseInfo As Relativity.CaseInfo) As Task
+        Public Async Function NewProductionExport(ByVal caseInfo As Global.Relativity.CaseInfo) As Task
             Await Me.NewSearchExport(caseInfo.RootFolderID, caseInfo, ExportFile.ExportType.Production)
         End Function
 
-        Public Async Function NewSearchExport(ByVal selectedFolderId As Int32, ByVal caseInfo As Relativity.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType) As Task
+        Public Async Function NewSearchExport(ByVal selectedFolderId As Int32, ByVal caseInfo As Global.Relativity.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType) As Task
             Dim frm As ExportForm = New ExportForm()
-            Dim exportFile As WinEDDS.ExportFile
+            Dim exportFile As kCura.WinEDDS.ExportFile
             Try
                 exportFile = Await Me.GetNewExportFileSettingsObject(selectedFolderId, caseInfo, typeOfExport, Me.ArtifactTypeID)
                 If exportFile.DataTable.Rows.Count = 0 Then
@@ -857,14 +857,14 @@ Namespace kCura.EDDS.WinForm
             End Try
         End Function
 
-        Public Async Function GetListOfProductionsForCase(ByVal caseInfo As Relativity.CaseInfo) As Task(Of System.Data.DataTable)
+        Public Async Function GetListOfProductionsForCase(ByVal caseInfo As Global.Relativity.CaseInfo) As Task(Of System.Data.DataTable)
             Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Await Me.GetCredentialsAsync(), _CookieContainer)
             Return productionManager.RetrieveProducedByContextArtifactID(caseInfo.ArtifactID).Tables(0)
         End Function
 
 
-        Public Async Function GetNewExportFileSettingsObject(ByVal selectedFolderId As Int32, ByVal caseInfo As Relativity.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType, ByVal artifactTypeID As Int32) As Task(Of WinEDDS.ExportFile)
-			Dim exportFile As New WinEDDS.ExtendedExportFile(artifactTypeID)
+        Public Async Function GetNewExportFileSettingsObject(ByVal selectedFolderId As Int32, ByVal caseInfo As Global.Relativity.CaseInfo, ByVal typeOfExport As kCura.WinEDDS.ExportFile.ExportType, ByVal artifactTypeID As Int32) As Task(Of kCura.WinEDDS.ExportFile)
+			Dim exportFile As New kCura.WinEDDS.ExtendedExportFile(artifactTypeID)
 			Dim searchManager As New kCura.WinEDDS.Service.SearchManager(Await Me.GetCredentialsAsync(), _CookieContainer)
             Dim productionManager As New kCura.WinEDDS.Service.ProductionManager(Await Me.GetCredentialsAsync(), _CookieContainer)
             exportFile.ArtifactID = selectedFolderId
@@ -883,14 +883,14 @@ Namespace kCura.EDDS.WinForm
                 ids.Add(row("ArtifactID"))
             Next
             For Each field As DocumentField In Await Me.CurrentFields(exportFile.ArtifactTypeID, True)
-                If field.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
+                If field.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.File Then
                     exportFile.FileField = field
                     Exit For
                 End If
             Next
             If ids.Count = 0 Then
                 exportFile.ArtifactAvfLookup = New System.Collections.Specialized.HybridDictionary
-                exportFile.AllExportableFields = New WinEDDS.ViewFieldInfo() {}
+                exportFile.AllExportableFields = New kCura.WinEDDS.ViewFieldInfo() {}
             Else
 				exportFile.ArtifactAvfLookup = searchManager.RetrieveDefaultViewFieldsForIdList(caseInfo.ArtifactID, exportFile.ArtifactTypeID, DirectCast(ids.ToArray(GetType(Int32)), Int32()), typeOfExport = kCura.WinEDDS.ExportFile.ExportType.Production)
 				exportFile.AllExportableFields = searchManager.RetrieveAllExportableViewFields(caseInfo.ArtifactID, exportFile.ArtifactTypeID)
@@ -908,7 +908,7 @@ Namespace kCura.EDDS.WinForm
             Return searchExportDataSet.Tables(0)
         End Function
 
-        Public Async Function NewImageFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As Relativity.CaseInfo) As Task
+        Public Async Function NewImageFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As Global.Relativity.CaseInfo) As Task
             CursorWait()
             If Not Await Me.IsConnected() Then
                 CursorDefault()
@@ -936,7 +936,7 @@ Namespace kCura.EDDS.WinForm
             CursorDefault()
         End Function
 
-        Public Async Function NewProductionFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As Relativity.CaseInfo) As Task
+        Public Async Function NewProductionFile(ByVal destinationArtifactID As Int32, ByVal caseinfo As Global.Relativity.CaseInfo) As Task
             CursorWait()
             If Not Await Me.IsConnected() Then
                 CursorDefault()
@@ -998,7 +998,7 @@ Namespace kCura.EDDS.WinForm
 
         Public Sub ChangeWebServiceURL()
             CursorWait()
-            Dim frm As New Forms.SetWebServiceURL
+            Dim frm As New SetWebServiceURL
             frm.Show()
             CursorDefault()
         End Sub
@@ -1037,8 +1037,8 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region "Process Management"
-        Private Function CreateProgressForm() As kCura.Windows.Process.ProgressForm
-            Return New kCura.Windows.Process.ProgressForm() With {.StatusRefreshRate = WinEDDS.Config.ProcessFormRefreshRate}
+        Private Function CreateProcessForm() As ProcessForm
+            Return New ProcessForm() With {.StatusRefreshRate = AppSettings.Instance.ProcessFormRefreshRate}
         End Function
 
         Public Async Function QueryConnectivity() As Task
@@ -1049,10 +1049,10 @@ Namespace kCura.EDDS.WinForm
             End If
             Dim proc As New kCura.WinEDDS.ConnectionDetailsProcess(Await Me.GetCredentialsAsync(), Me.CookieContainer, Me.SelectedCaseInfo)
             Dim form As New TextDisplayForm
-            form.ProcessObserver = proc.ProcessObserver
+            form.Context = proc.Context
             form.Text = "Relativity Desktop Client | Connectivity Tests"
             form.Show()
-            _processPool.StartProcess(proc)
+            _processPool.Start(proc)
             CursorDefault()
         End Function
 
@@ -1066,7 +1066,7 @@ Namespace kCura.EDDS.WinForm
                 CursorDefault()
                 Return
             End If
-            Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
+            Dim frm As ProcessForm = CreateProcessForm()
             Dim previewer As New kCura.WinEDDS.PreviewLoadFileProcess(formType)
             loadFileToPreview.PreviewCodeCount.Clear()
             Dim previewform As New LoadFilePreviewForm(formType, loadFileToPreview.MultiRecordDelimiter, loadFileToPreview.PreviewCodeCount)
@@ -1077,8 +1077,7 @@ Namespace kCura.EDDS.WinForm
             previewform.Thrower = previewer.Thrower
             previewer.LoadFile = loadFileToPreview
             SetWorkingDirectory(loadFileToPreview.FilePath)
-            frm.ProcessObserver = previewer.ProcessObserver
-            frm.ProcessController = previewer.ProcessController
+            frm.Context = previewer.Context
             If errorsOnly Then
                 frm.Text = "Preview Load File Errors Progress ..."
             Else
@@ -1086,12 +1085,12 @@ Namespace kCura.EDDS.WinForm
             End If
             previewform.Show()
             frm.Show()
-            _processPool.StartProcess(previewer)
+            _processPool.Start(previewer)
             CursorDefault()
         End Function
 
-        Public Function StartProcess(ByVal process As Windows.Process.IRunable) As System.Guid
-            Return _processPool.StartProcess(process)
+        Public Function StartProcess(ByVal process As IRunnable) As System.Guid
+            Return _processPool.Start(process)
         End Function
 
         Public Async Function ImportLoadFile(ByVal loadFile As LoadFile) As Task
@@ -1104,7 +1103,7 @@ Namespace kCura.EDDS.WinForm
             Dim folderManager As New kCura.WinEDDS.Service.FolderManager(Await GetCredentialsAsync(), _CookieContainer)
             If folderManager.Exists(SelectedCaseInfo.ArtifactID, SelectedCaseInfo.RootFolderID) Then
                 If CheckFieldMap(loadFile) Then
-                    Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
+                    Dim frm As ProcessForm = CreateProcessForm()
                     Dim importer As New kCura.WinEDDS.ImportLoadFileProcess(Await SetupMessageService())
                     importer.CaseInfo = SelectedCaseInfo
                     importer.LoadFile = loadFile
@@ -1112,17 +1111,16 @@ Namespace kCura.EDDS.WinForm
                     importer.BulkLoadFileFieldDelimiter = Config.BulkLoadFileFieldDelimiter
                     importer.CloudInstance = Config.CloudInstance
                     importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
-                    importer.ExecutionSource = Relativity.ExecutionSource.Rdc
+                    importer.ExecutionSource = Global.Relativity.ExecutionSource.Rdc
                     SetWorkingDirectory(loadFile.FilePath)
-                    frm.ProcessObserver = importer.ProcessObserver
-                    frm.ProcessController = importer.ProcessController
+                    frm.Context = importer.Context
                     frm.StopImportButtonText = "Stop"
                     frm.Text = "Import Load File Progress ..."
                     frm.ErrorFileExtension = System.IO.Path.GetExtension(loadFile.FilePath).TrimStart("."c).ToUpper
                     If frm.ErrorFileExtension Is Nothing Then frm.ErrorFileExtension = "TXT"
                     If frm.ErrorFileExtension = String.Empty Then frm.ErrorFileExtension = "TXT"
                     frm.Show()
-                    frm.ProcessID = _processPool.StartProcess(importer)
+                    frm.ProcessID = _processPool.Start(importer)
                     CursorDefault()
                 End If
             Else
@@ -1138,16 +1136,15 @@ Namespace kCura.EDDS.WinForm
                 CursorDefault()
                 Return
             End If
-            Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
+            Dim frm As ProcessForm = CreateProcessForm()
             Dim previewer As New kCura.WinEDDS.PreviewImageFileProcess
             previewer.TimeZoneOffset = _timeZoneOffset
             previewer.LoadFile = loadfile
             SetWorkingDirectory(loadfile.FileName)
-            frm.ProcessObserver = previewer.ProcessObserver
-            frm.ProcessController = previewer.ProcessController
+            frm.Context = previewer.Context
             frm.Text = "Preview Image File Progress ..."
             frm.Show()
-            _processPool.StartProcess(previewer)
+            _processPool.Start(previewer)
             CursorDefault()
         End Function
 
@@ -1157,21 +1154,20 @@ Namespace kCura.EDDS.WinForm
                 CursorDefault()
                 Return
             End If
-            Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
+            Dim frm As ProcessForm = CreateProcessForm()
             Dim importer As New kCura.WinEDDS.ImportImageFileProcess(Await SetupMessageService())
             ImageLoadFile.CookieContainer = Me.CookieContainer
             importer.CaseInfo = SelectedCaseInfo
             importer.ImageLoadFile = ImageLoadFile
             importer.CloudInstance = Config.CloudInstance
             importer.EnforceDocumentLimit = Config.EnforceDocumentLimit
-            importer.ExecutionSource = Relativity.ExecutionSource.Rdc
+            importer.ExecutionSource = Global.Relativity.ExecutionSource.Rdc
             SetWorkingDirectory(ImageLoadFile.FileName)
-            frm.ProcessObserver = importer.ProcessObserver
-            frm.ProcessController = importer.ProcessController
+            frm.Context = importer.Context
             frm.Text = "Import Image File Progress ..."
             frm.ErrorFileExtension = "OPT"
             frm.Show()
-            frm.ProcessID = _processPool.StartProcess(importer)
+            frm.ProcessID = _processPool.Start(importer)
             CursorDefault()
         End Function
 
@@ -1181,14 +1177,13 @@ Namespace kCura.EDDS.WinForm
                 CursorDefault()
                 Return
             End If
-            Dim frm As kCura.Windows.Process.ProgressForm = CreateProgressForm()
+            Dim frm As ProcessForm = CreateProcessForm()
             frm.StatusRefreshRate = 0
             Dim exporter As New kCura.WinEDDS.ExportSearchProcess(New ExportFileFormatterFactory(), New ExportConfig, Await SetupMessageService())
             exporter.UserNotification = New FormsUserNotification()
             exporter.CaseInfo = SelectedCaseInfo
             exporter.ExportFile = exportFile
-            frm.ProcessObserver = exporter.ProcessObserver
-            frm.ProcessController = exporter.ProcessController
+            frm.Context = exporter.Context
             frm.Text = "Export Progress..."
             Select Case exportFile.TypeOfExport
                 Case exportFile.ExportType.AncestorSearch
@@ -1202,18 +1197,18 @@ Namespace kCura.EDDS.WinForm
             End Select
             frm.Show()
             CursorDefault()
-            _processPool.StartProcess(exporter)
+            _processPool.Start(exporter)
         End Function
 
         Public Sub CancelImport(ByVal importProcessId As Guid)
             CursorWait()
-            _processPool.AbortProcess(importProcessId)
+            _processPool.Abort(importProcessId)
             CursorDefault()
         End Sub
 
         Public Sub DeleteThread(ByVal processID As Guid)
             CursorWait()
-            _processPool.RemoveProcess(processID)
+            _processPool.Remove(processID)
             CursorDefault()
         End Sub
 #End Region
@@ -1275,11 +1270,11 @@ Namespace kCura.EDDS.WinForm
 
             sr = New System.IO.StreamReader(path)
             Dim stringr As New System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(Me.CleanLoadFile(xmlDoc)))
-            Dim tempLoadFile As WinEDDS.LoadFile
+            Dim tempLoadFile As kCura.WinEDDS.LoadFile
             Dim deserializer As New System.Runtime.Serialization.Formatters.Soap.SoapFormatter
 
             Try
-                tempLoadFile = DirectCast(deserializer.Deserialize(stringr), WinEDDS.LoadFile)
+                tempLoadFile = DirectCast(deserializer.Deserialize(stringr), kCura.WinEDDS.LoadFile)
                 sr.Close()
             Catch ex As System.Exception
                 If Not isSilent Then MsgBox("Load Failed", MsgBoxStyle.Critical, "Relativity Desktop Client")
@@ -1412,7 +1407,7 @@ Namespace kCura.EDDS.WinForm
             Dim relativityManager As kCura.WinEDDS.Service.RelativityManager
 
             cred = DirectCast(System.Net.CredentialCache.DefaultCredentials, System.Net.NetworkCredential)
-            myHttpWebRequest = DirectCast(System.Net.WebRequest.Create(kCura.WinEDDS.Config.WebServiceURL & "\RelativityManager.asmx"), System.Net.HttpWebRequest)
+            myHttpWebRequest = DirectCast(System.Net.WebRequest.Create(AppSettings.Instance.WebApiServiceUrl & "\RelativityManager.asmx"), System.Net.HttpWebRequest)
             myHttpWebRequest.Credentials = System.Net.CredentialCache.DefaultCredentials
             Try
                 relativityManager = New kCura.WinEDDS.Service.RelativityManager(cred, _CookieContainer)
@@ -1604,9 +1599,9 @@ Namespace kCura.EDDS.WinForm
 
         Public Sub ChangeWebServiceUrl(ByVal message As String)
             If MsgBox(message, MsgBoxStyle.YesNo, "Relativity Desktop Client") = MsgBoxResult.Yes Then
-                Dim url As String = InputBox("Enter New URL:", Title:="Set Relativity URL", DefaultResponse:=kCura.WinEDDS.Config.WebServiceURL)
+                Dim url As String = InputBox("Enter New URL:", Title:="Set Relativity URL", DefaultResponse:=AppSettings.Instance.WebApiServiceUrl)
                 If url <> String.Empty Then
-                    kCura.WinEDDS.Config.WebServiceURL = url
+                    AppSettings.Instance.WebApiServiceUrl = url
                     OpenCaseSelector = True
                     RaiseEvent OnEvent(New AppEvent(AppEvent.AppEventType.LogOnRequested))
                 Else
@@ -1664,7 +1659,7 @@ Namespace kCura.EDDS.WinForm
         End Function
 #End Region
 
-        Public Overridable Async Function GetProductionPrecendenceList(ByVal caseInfo As Relativity.CaseInfo) As Task(Of System.Data.DataTable)
+        Public Overridable Async Function GetProductionPrecendenceList(ByVal caseInfo As Global.Relativity.CaseInfo) As Task(Of System.Data.DataTable)
             Dim productionManager As kCura.WinEDDS.Service.ProductionManager
             Dim dt As System.Data.DataTable
             Try
@@ -1703,11 +1698,11 @@ Namespace kCura.EDDS.WinForm
 
             'Go to appropriate documentation site
             If cloudIsEnabled Then
-                Process.Start(urlPrefix & "RelativityOne/Content/Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
+                System.Diagnostics.Process.Start(urlPrefix & "RelativityOne/Content/Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
             Else
                 Dim v As System.Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
                 Dim majMin As String = $"{v.Major}.{v.Minor}"
-                Process.Start(urlPrefix & majMin & "/#Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
+	            System.Diagnostics.Process.Start(urlPrefix & majMin & "/#Relativity/Relativity_Desktop_Client/Relativity_Desktop_Client.htm")
             End If
 
         End Function
@@ -1776,4 +1771,3 @@ Namespace kCura.EDDS.WinForm
 
     End Class
 End Namespace
-
