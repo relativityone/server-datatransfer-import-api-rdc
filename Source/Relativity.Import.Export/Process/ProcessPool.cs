@@ -45,6 +45,24 @@ namespace Relativity.Import.Export.Process
 		}
 
 		/// <summary>
+		/// Aborts the process that contains the specified process identifier.
+		/// </summary>
+		/// <param name="processId">
+		/// The process identifier.
+		/// </param>
+		public void Remove(Guid processId)
+		{
+			Thread value;
+			if (this.threadDictionary.TryRemove(processId, out value))
+			{
+				if (value.ThreadState != ThreadState.Stopped)
+				{
+					value.Abort();
+				}
+			}
+		}
+
+		/// <summary>
 		/// Creates a new <see cref="Thread"/> with an <see cref="ApartmentState.STA"/> configuration for the runnable object and returns the unique identifier.
 		/// </summary>
 		/// <param name="runnable">

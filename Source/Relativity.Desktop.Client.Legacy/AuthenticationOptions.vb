@@ -36,15 +36,15 @@ Public Class AuthenticationOptions
 		Dim clientSecretExists As Boolean = Not String.IsNullOrEmpty(ClientSecret)
 
 		If (usernameExists Or passwordExists) AndAlso (clientIDExists Or clientSecretExists) Then
-			Throw New Exceptions.MultipleCredentialException
+			Throw New MultipleCredentialException
 		End If
 
 		If Not clientIDExists AndAlso Not clientSecretExists Then
-			If Not usernameExists Then Throw New Exceptions.UsernameException
-			If Not passwordExists Then Throw New Exceptions.PasswordException
+			If Not usernameExists Then Throw New UsernameException
+			If Not passwordExists Then Throw New PasswordException
 		Else
-			If Not clientIDExists Then Throw New Exceptions.ClientIDException
-			If Not clientSecretExists Then Throw New Exceptions.ClientSecretException
+			If Not clientIDExists Then Throw New ClientIDException
+			If Not clientSecretExists Then Throw New ClientSecretException
 		End If
 	End Sub
 

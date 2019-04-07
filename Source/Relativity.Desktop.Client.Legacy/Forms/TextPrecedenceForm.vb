@@ -1,18 +1,15 @@
-﻿Imports System.Collections.Generic
-Imports System.Linq
-Imports kCura.Windows.Forms
-Imports kCura.Windows.Forms.Specialized
+﻿Imports Relativity.Desktop.Client.Legacy.Controls
 
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
 	Public Class TextPrecedenceForm
-		Friend WithEvents _longTextFieldsTwoListBox As kCura.Windows.Forms.TwoListBox
+		Friend WithEvents _longTextFieldsTwoListBox As TwoListBox
 		Friend WithEvents _availableLongTextFieldsLabel As System.Windows.Forms.Label
 		Friend WithEvents _selectedLongTextFieldsLabel As System.Windows.Forms.Label
 
-		Private _listOfAllLongTextFields As New List(Of ViewFieldInfo)
-		Private _selectedTextFields As New List(Of ViewFieldInfo)
+		Private _listOfAllLongTextFields As New List(Of kCura.WinEDDS.ViewFieldInfo)
+		Private _selectedTextFields As New List(Of kCura.WinEDDS.ViewFieldInfo)
 
-		Public Sub New(ByVal listOfLongTextFields As List(Of ViewFieldInfo), ByVal selectedTextFields As List(Of ViewFieldInfo))
+		Public Sub New(ByVal listOfLongTextFields As List(Of kCura.WinEDDS.ViewFieldInfo), ByVal selectedTextFields As List(Of kCura.WinEDDS.ViewFieldInfo))
 
 			' This call is required by the designer.
 			InitializeComponent()
@@ -27,11 +24,11 @@ Namespace kCura.EDDS.WinForm
 
 		Private Sub TextPrecedenceForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
 
-			For Each field As ViewFieldInfo In _listOfAllLongTextFields
+			For Each field As kCura.WinEDDS.ViewFieldInfo In _listOfAllLongTextFields
 				_longTextFieldsTwoListBox.LeftSearchableList.AddField(field)
 			Next
 
-			For Each item As ViewFieldInfo In _selectedTextFields
+			For Each item As kCura.WinEDDS.ViewFieldInfo In _selectedTextFields
 				Dim itemExistsInAllAvailable As Boolean = GetItemExistsInAllAvailable(item)
 				If itemExistsInAllAvailable Then
 					_longTextFieldsTwoListBox.RightSearchableList.AddField(item)
@@ -40,9 +37,9 @@ Namespace kCura.EDDS.WinForm
 			Next
 		End Sub
 
-		Private Sub RemoveItemByName(searchableList As SearchableList, item As ViewFieldInfo)
-			Dim fieldToRemove As ViewFieldInfo = Nothing
-			For Each field As ViewFieldInfo In searchableList.DataSource
+		Private Sub RemoveItemByName(searchableList As SearchableList, item As kCura.WinEDDS.ViewFieldInfo)
+			Dim fieldToRemove As kCura.WinEDDS.ViewFieldInfo = Nothing
+			For Each field As kCura.WinEDDS.ViewFieldInfo In searchableList.DataSource
 				If field.DisplayName.Equals(item.DisplayName, StringComparison.InvariantCulture) Then
 					fieldToRemove = field
 					Exit For
@@ -51,9 +48,9 @@ Namespace kCura.EDDS.WinForm
 			If fieldToRemove IsNot Nothing Then searchableList.RemoveField(fieldToRemove)
 		End Sub
 
-		Private Function GetItemExistsInAllAvailable(ByVal item As ViewFieldInfo) As Boolean
+		Private Function GetItemExistsInAllAvailable(ByVal item As kCura.WinEDDS.ViewFieldInfo) As Boolean
 			Dim itemExistsInSelected As Boolean = False
-			For Each selectedItem As ViewFieldInfo In _listOfAllLongTextFields
+			For Each selectedItem As kCura.WinEDDS.ViewFieldInfo In _listOfAllLongTextFields
 				If selectedItem.DisplayName.Equals(item.DisplayName, StringComparison.InvariantCulture) Then
 					itemExistsInSelected = True
 					Exit For

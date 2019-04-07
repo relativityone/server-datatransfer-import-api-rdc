@@ -1,5 +1,6 @@
+Imports Relativity.Import.Export
 
-Namespace kCura.EDDS.WinForm.Forms
+Namespace Relativity.Desktop.Client
     Public Class SetWebServiceURL
         Inherits System.Windows.Forms.Form
 
@@ -115,7 +116,7 @@ Namespace kCura.EDDS.WinForm.Forms
 
         Private _required As Boolean
         Private _validInput As Boolean
-        Friend WithEvents _application As kCura.EDDS.WinForm.Application
+        Friend WithEvents _application As Global.Relativity.Desktop.Client.Application
 
         Public Event ExitApplication()
 
@@ -129,7 +130,7 @@ Namespace kCura.EDDS.WinForm.Forms
         End Property
 
         Protected Overrides Sub OnLoad(ByVal e As System.EventArgs)
-            _WebServiceUrl.Text = kCura.WinEDDS.Config.WebServiceURL
+            _WebServiceUrl.Text = AppSettings.Instance.WebApiServiceUrl
         End Sub
 
         Private Sub _okButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _okButton.Click
@@ -137,7 +138,7 @@ Namespace kCura.EDDS.WinForm.Forms
                 If Not _WebServiceUrl.Text.Chars(_WebServiceUrl.Text.Length - 1) = "/" Then
                     _WebServiceUrl.Text &= "/"
                 End If
-                kCura.WinEDDS.Config.WebServiceURL = _WebServiceUrl.Text
+	            AppSettings.Instance.WebApiServiceUrl = _WebServiceUrl.Text
                 _validInput = True
                 Me.Close()
             End If

@@ -1,9 +1,10 @@
 Imports System.Net
-Imports System.Threading.Tasks
-Imports Microsoft.Win32
+Imports kCura.WinEDDS
+Imports Relativity.Desktop.Client.Legacy.Controls
+Imports Relativity.Import.Export
 Imports Relativity.OAuth2Client.Exceptions
 
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
     Public Class MainForm
         Inherits System.Windows.Forms.Form
 
@@ -16,7 +17,7 @@ Namespace kCura.EDDS.WinForm
             InitializeComponent()
 
             'Add any initialization after the InitializeComponent() call
-            _application = kCura.EDDS.WinForm.Application.Instance
+            _application = Global.Relativity.Desktop.Client.Application.Instance
         End Sub
 
         'Form overrides dispose to clean up the component list.
@@ -44,9 +45,9 @@ Namespace kCura.EDDS.WinForm
         Friend WithEvents AppStatusPanel As System.Windows.Forms.StatusBarPanel
         Friend WithEvents LoggedInUserPanel As System.Windows.Forms.StatusBarPanel
         Friend WithEvents MainMenu As System.Windows.Forms.MainMenu
-        Friend WithEvents _caseFolderExplorer As kCura.EDDS.WinForm.CaseFolderExplorer
+        Friend WithEvents _caseFolderExplorer As CaseFolderExplorer
         Friend WithEvents ExitMenu As System.Windows.Forms.MenuItem
-        Friend WithEvents EnhancedMenuProvider As kCura.Windows.Forms.EnhancedMenuProvider
+        Friend WithEvents EnhancedMenuProvider As EnhancedMenuProvider
         Friend WithEvents ImportMenu As System.Windows.Forms.MenuItem
         Friend WithEvents ToolsImportLoadFileMenu As System.Windows.Forms.MenuItem
         Friend WithEvents ExportMenu As System.Windows.Forms.MenuItem
@@ -94,8 +95,8 @@ Namespace kCura.EDDS.WinForm
 		Me.AppStatusPanel = New System.Windows.Forms.StatusBarPanel()
 		Me.LoggedInUserPanel = New System.Windows.Forms.StatusBarPanel()
 		Me._objectTypeDropDown = New System.Windows.Forms.ComboBox()
-		Me.EnhancedMenuProvider = New kCura.Windows.Forms.EnhancedMenuProvider(Me.components)
-		Me._caseFolderExplorer = New kCura.EDDS.WinForm.CaseFolderExplorer()
+		Me.EnhancedMenuProvider = New EnhancedMenuProvider(Me.components)
+		Me._caseFolderExplorer = New CaseFolderExplorer()
 		CType(Me.AppStatusPanel,System.ComponentModel.ISupportInitialize).BeginInit
 		CType(Me.LoggedInUserPanel,System.ComponentModel.ISupportInitialize).BeginInit
 		Me.SuspendLayout
@@ -338,7 +339,7 @@ End Sub
 #End Region
 
         '' Private WithEvents _optionsForm As OptionsForm = Nothing
-        Friend WithEvents _application As kCura.EDDS.WinForm.Application
+        Friend WithEvents _application As Global.Relativity.Desktop.Client.Application
         Public Const MAX_LENGTH_OF_OBJECT_NAME_BEFORE_TRUNCATION As Int32 = 25
 
         Private _isConnecting As Boolean = False
@@ -358,7 +359,7 @@ End Sub
                         Await _application.GetCredentialsAsync()
                         _application.LogOn()
                         Await _application.OpenCaseAsync().ConfigureAwait(False)
-                        kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
+                        EnhancedMenuProvider.Hook(Me)
                     End If
                 Else
                     _application.OpenCaseSelector = False
@@ -447,8 +448,8 @@ End Sub
             LoadWindowSize()
             Me.CenterToScreen()
             Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-            _application.TemporaryForceFolderPreview = kCura.WinEDDS.Config.ForceFolderPreview
-            If kCura.WinEDDS.Config.WebServiceURL = String.Empty Then
+            _application.TemporaryForceFolderPreview = AppSettings.Instance.ForceFolderPreview
+            If AppSettings.Instance.WebApiServiceUrl = String.Empty Then
                 _application.SetWebServiceURL()
             End If
 
@@ -484,7 +485,7 @@ End Sub
             _application.UpdateForceFolderPreview()
             _application.UpdateWebServiceURL(False)
             Await _application.Logout()
-            kCura.Windows.Forms.EnhancedMenuProvider.Unhook()
+            EnhancedMenuProvider.Unhook()
         End Sub
 
         Private Async Sub ToolsImportImageFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportImageFileMenu.Click
@@ -560,7 +561,7 @@ End Sub
         Private Async Function PopulateObjectTypeDropDown() As Task
             Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(Await _application.GetCredentialsAsync().ConfigureAwait(True), _application.CookieContainer)
             Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
-            Dim selectedObjectTypeID As Int32 = Relativity.ArtifactType.Document
+            Dim selectedObjectTypeID As Int32 = Global.Relativity.ArtifactType.Document
             If _objectTypeDropDown.Items.Count > 0 Then
                 selectedObjectTypeID = DirectCast(_objectTypeDropDown.SelectedItem, kCura.WinEDDS.ObjectTypeListItem).Value
             End If
@@ -589,7 +590,7 @@ End Sub
             ImportMenu.Visible = selectedObjectType.UserCanAdd
             ToolsImportLoadFileMenu.Visible = selectedObjectType.UserCanAdd
             ExportMenu.Visible = True
-            If selectedItemValue = Relativity.ArtifactType.Document Then
+            If selectedItemValue = Global.Relativity.ArtifactType.Document Then
                 _caseFolderExplorer.Visible = True
                 ToolsImportImageFileMenu.Visible = selectedObjectType.UserCanAdd
                 ToolsImportProductionFileMenu.Visible = selectedObjectType.UserCanAdd
@@ -619,18 +620,18 @@ End Sub
         End Sub
 
         Private Sub LoadWindowSize()
-            If WinEDDS.Config.MainFormWindowWidth <> Nothing AndAlso WinEDDS.Config.MainFormWindowHeight <> Nothing Then
-                Me.Size = New Size(WinEDDS.Config.MainFormWindowWidth, WinEDDS.Config.MainFormWindowHeight)
+            If kCura.WinEDDS.Config.MainFormWindowWidth <> Nothing AndAlso kCura.WinEDDS.Config.MainFormWindowHeight <> Nothing Then
+                Me.Size = New Size(kCura.WinEDDS.Config.MainFormWindowWidth, kCura.WinEDDS.Config.MainFormWindowHeight)
             End If
         End Sub
 
         Private Sub SaveWindowSize()
             If Me.WindowState = FormWindowState.Normal Then
-                WinEDDS.Config.MainFormWindowWidth = Me.Size.Width
-                WinEDDS.Config.MainFormWindowHeight = Me.Size.Height
+	            kCura.WinEDDS.Config.MainFormWindowWidth = Me.Size.Width
+	            kCura.WinEDDS.Config.MainFormWindowHeight = Me.Size.Height
             Else
-                WinEDDS.Config.MainFormWindowWidth = Me.RestoreBounds.Size.Width
-                WinEDDS.Config.MainFormWindowHeight = Me.RestoreBounds.Size.Height
+	            kCura.WinEDDS.Config.MainFormWindowWidth = Me.RestoreBounds.Size.Width
+	            kCura.WinEDDS.Config.MainFormWindowHeight = Me.RestoreBounds.Size.Height
             End If
 	End Sub
 
