@@ -21,9 +21,9 @@ namespace Relativity.Import.Export
     internal class WaitAndRetryPolicy : IWaitAndRetryPolicy
     {
 		/// <summary>
-		/// The cached application settings.
+		/// The application settings.
 		/// </summary>
-		private readonly IAppSettings cachedAppSettings;
+		private readonly IAppSettings appSettings;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WaitAndRetryPolicy"/> class.
@@ -46,7 +46,7 @@ namespace Relativity.Import.Export
 				throw new ArgumentNullException(nameof(settings));
 	        }
 
-	        this.cachedAppSettings = settings.DeepCopy();
+	        this.appSettings = settings;
         }
 
         /// <inheritdoc />
@@ -58,7 +58,7 @@ namespace Relativity.Import.Export
 	        where TException : Exception
         {
 	        this.WaitAndRetry<TException>(
-		        this.cachedAppSettings.IoErrorNumberOfRetries,
+		        this.appSettings.IoErrorNumberOfRetries,
 		        retryDuration,
 		        retryAction,
 		        execFunc,
@@ -87,7 +87,7 @@ namespace Relativity.Import.Export
 	        CancellationToken token)
         {
 	        return Policy.Handle(exceptionPredicate).WaitAndRetry(
-		        this.cachedAppSettings.IoErrorNumberOfRetries,
+		        this.appSettings.IoErrorNumberOfRetries,
 		        retryDuration,
 		        retryAction).Execute(execFunc, token);
         }
@@ -101,7 +101,7 @@ namespace Relativity.Import.Export
 	        where TException : Exception
         {
 	        return Policy.Handle<TException>()
-		        .WaitAndRetry(this.cachedAppSettings.IoErrorNumberOfRetries, retryDuration, retryAction)
+		        .WaitAndRetry(this.appSettings.IoErrorNumberOfRetries, retryDuration, retryAction)
 		        .Execute(execFunc, token);
         }
 

@@ -866,7 +866,7 @@ Namespace kCura.WinEDDS
 									' REL-165493: Added OI resiliency and properly address FileNotFoundException scenarios.
 									Dim maxRetryAttempts As Integer = Me.NumberOfRetries
 									Dim currentRetryAttempt As Integer = 0
-									Dim policy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(AppSettings.Instance)
+									Dim policy As IWaitAndRetryPolicy = Me.CreateWaitAndRetryPolicy()
 									oixFileIdInfo = policy.WaitAndRetry(
 										Function(exception)
 											Dim outsideInException As FileIdException = TryCast(exception, FileIdException)
@@ -1669,8 +1669,7 @@ Namespace kCura.WinEDDS
 							Dim currentRetryAttempt As Integer = 0
 
 							' REL-272765: Added I/O resiliency and support document level errors.
-							Dim policy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(AppSettings.Instance)
-
+							Dim policy As IWaitAndRetryPolicy = Me.CreateWaitAndRetryPolicy()
 							' Note: a lambda can't modify a ref param; therefore, a policy block return value is used.
 							Dim returnEncoding As System.Text.Encoding = policy.WaitAndRetry(
 								RetryExceptionHelper.CreateRetryPredicate(Me.RetryOptions),

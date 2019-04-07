@@ -39,6 +39,7 @@ Namespace kCura.WinEDDS
 		Private _batchMetadataTapiProgressCount As Int32 = 0
 		Private ReadOnly _logger As ILog
 		Private ReadOnly _filePathHelper As IFilePathHelper = New ConfigurableFilePathHelper()
+		Private _waitAndRetryPolicy As IWaitAndRetryPolicy
 #End Region
 
 		Public Event UploadModeChangeEvent(ByVal statusBarText As String, ByVal tapiClientName As String, ByVal isBulkEnabled As Boolean)
@@ -209,6 +210,19 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		''' <summary>
+		''' Creates a policy object capable of performing resiliency operations.
+		''' </summary>
+		''' <returns>
+		''' The <see cref="IWaitAndRetryPolicy"/> instance.
+		''' </returns>
+		Protected Function CreateWaitAndRetryPolicy() As IWaitAndRetryPolicy
+			If _waitAndRetryPolicy Is Nothing
+				_waitAndRetryPolicy = New WaitAndRetryPolicy(AppSettings.Instance)
+			End If
+			Return _waitAndRetryPolicy
+		End Function
+
+		''' <summary>
 		''' Copies an existing file to a new file. Overwriting a file of the same name is allowed.
 		''' </summary>
 		''' <param name="sourceFileName">
@@ -250,7 +264,7 @@ Namespace kCura.WinEDDS
 				' REL-272765: Added I/O resiliency and support document level errors.
 				Dim maxRetryAttempts As Integer = AppSettings.Instance.IoErrorNumberOfRetries
 				Dim currentRetryAttempt As Integer = 0
-				Dim policy As IWaitAndRetryPolicy = New WaitAndRetryPolicy(AppSettings.Instance)
+				Dim policy As IWaitAndRetryPolicy = Me.CreateWaitAndRetryPolicy()
 				Dim returnExistingPath As String = policy.WaitAndRetry(
 					RetryExceptionHelper.CreateRetryPredicate(Me.RetryOptions),
 					Function(count)
