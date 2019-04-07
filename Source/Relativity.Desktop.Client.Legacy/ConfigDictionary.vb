@@ -1,19 +1,24 @@
-Imports System.Threading.Tasks
+Imports Relativity.Import.Export
 
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
 	Friend Class ConfigDictionary
-		Inherits kCura.Config.DictionaryBase
-		Private _application As kCura.EDDS.WinForm.Application
+		Inherits DictionaryBase
+		Private ReadOnly _application As Application
 		Private _hasInitialized As Boolean = False
-		Friend Sub New(ByVal sectionName As String, ByVal valuesCollection As kCura.Config.Collection)
+		Friend Sub New(ByVal sectionName As String, ByVal valuesCollection As Collection)
 			MyBase.New(sectionName, valuesCollection)
-			_application = kCura.EDDS.WinForm.Application.Instance
+			_application = Application.Instance
 		End Sub
 
 		Protected Overrides Sub UpdateValues()
+			' This is a good opportunity to refresh all settings.
+			' Intentionally NOT refreshing within the task below to eliminate possible race conditions and relate issues.
+			AppSettingsManager.Refresh(AppSettings.Instance)
 			Dim configTable As System.Data.DataTable
 			Try
-				configTable = Task.Run(Async Function() Await _application.GetSystemConfiguration().ConfigureAwait(false)).Result
+				configTable = Task.Run(Async Function()
+					Return Await _application.GetSystemConfiguration().ConfigureAwait(false)
+				End Function).Result
 				_hasInitialized = True
 			Catch
 				If Not _hasInitialized Then
@@ -35,4 +40,3 @@ Namespace kCura.EDDS.WinForm
 
 	End Class
 End Namespace
-

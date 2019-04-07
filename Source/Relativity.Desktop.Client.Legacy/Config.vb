@@ -1,4 +1,4 @@
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
 	Public Class Config
 
 		Private Shared _configDictionary As System.Collections.IDictionary
@@ -8,7 +8,8 @@ Namespace kCura.EDDS.WinForm
 		Public Shared ReadOnly Property ConfigSettings() As System.Collections.IDictionary
 			Get
 				If _configDictionary Is Nothing Then
-					_configDictionary = kCura.Config.Manager.GetConfig("kCura.EDDS.WinForm", New ConfigDictionaryFactory)
+					' Continue using the old section until the instance settings have been changed.
+					_configDictionary = Manager.GetConfig("kCura.EDDS.WinForm", New ConfigDictionaryFactory)
 				End If
 				Return _configDictionary
 			End Get
@@ -21,7 +22,7 @@ Namespace kCura.EDDS.WinForm
 		Public Shared ReadOnly Property DataConfigSettings() As System.Collections.IDictionary
 			Get
 				If _dataConfigDictionary Is Nothing Then
-					_dataConfigDictionary = kCura.Config.Manager.GetConfig("Relativity.Data", New ConfigDictionaryFactory)
+					_dataConfigDictionary = Manager.GetConfig("Relativity.Data", New ConfigDictionaryFactory)
 				End If
 				Return _dataConfigDictionary
 			End Get
@@ -34,21 +35,21 @@ Namespace kCura.EDDS.WinForm
 		Public Shared ReadOnly Property EddsConfigSettings() As System.Collections.IDictionary
 			Get
 				If _eddsConfigDictionary Is Nothing Then
-					_eddsConfigDictionary = kCura.Config.Manager.GetConfig("Relativity.Core", New ConfigDictionaryFactory)
+					_eddsConfigDictionary = Manager.GetConfig("Relativity.Core", New ConfigDictionaryFactory)
 				End If
 				Return _eddsConfigDictionary
 			End Get
 		End Property
 
 		Public Shared Sub FlushEddsConfigSettings()
-			_eddsConfigDictionary = kCura.Config.Manager.GetConfig("Relativity.Core", New ConfigDictionaryFactory)
+			_eddsConfigDictionary = Manager.GetConfig("Relativity.Core", New ConfigDictionaryFactory)
 		End Sub
 
 #Region " ConfigDictionaryFactory "
 
 		Public Class ConfigDictionaryFactory
-			Implements kCura.Config.IConfigDictionaryFactory
-			Public Function GetDictionary(ByVal sectionName As String, ByVal collection As kCura.Config.Collection) As kCura.Config.DictionaryBase Implements kCura.Config.IConfigDictionaryFactory.GetDictionary
+			Implements IConfigDictionaryFactory
+			Public Function GetDictionary(ByVal sectionName As String, ByVal collection As Collection) As DictionaryBase Implements IConfigDictionaryFactory.GetDictionary
 				Return New ConfigDictionary(sectionName, collection)
 			End Function
 		End Class
@@ -67,7 +68,7 @@ Namespace kCura.EDDS.WinForm
 				Dim delimiter As String = CType(DataConfigSettings("BulkLoadFileFieldDelimiter"), String)
 
 				If (String.IsNullOrEmpty(delimiter)) Then
-					Throw New kCura.Config.ConfigurationException("BulkLoadFileFieldDelimiter is not set")
+					Throw New ConfigurationException("BulkLoadFileFieldDelimiter is not set")
 				Else
 					Return delimiter
 				End If
