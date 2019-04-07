@@ -800,6 +800,17 @@ namespace Relativity.Import.Export.NUnit
 		}
 
 		[Test]
+		public void ShouldGetAndSetTheValueRefreshThresholdSetting()
+		{
+			Assert.That(
+				this.settings.ValueRefreshThreshold,
+				Is.EqualTo(AppSettingsConstants.ValueRefreshThresholdDefaultValue));
+			int expectedValue = RandomHelper.NextInt32(100, 1000);
+			this.settings.ValueRefreshThreshold = expectedValue;
+			Assert.That(this.settings.ValueRefreshThreshold, Is.EqualTo(expectedValue));
+		}
+
+		[Test]
 		public void ShouldGetAndSetTheWaitBeforeReconnectSetting()
 		{
 			Assert.That(
@@ -962,6 +973,9 @@ namespace Relativity.Import.Export.NUnit
 			AppSettingsDictionary dictionary = new AppSettingsDictionary(this.settings);
 			for (int i = 0; i < 3; i++)
 			{
+				// The kCure.Config section asserts go here.
+				Assert.That(dictionary[AppSettingsConstants.ValueRefreshThresholdKey], Is.EqualTo(123456789));
+
 				// The kCura.Utility section asserts go here.
 				Assert.That(dictionary[AppSettingsConstants.CreateErrorForInvalidDateKey], Is.True);
 				Assert.That(dictionary[AppSettingsConstants.ExportErrorNumberOfRetriesKey], Is.EqualTo(5));
@@ -1028,6 +1042,10 @@ namespace Relativity.Import.Export.NUnit
 			AppSettingsDictionary dictionary = new AppSettingsDictionary(this.settings);
 			for (int i = 0; i < 3; i++)
 			{
+				// The kCure.Config section asserts go here.
+				dictionary[AppSettingsConstants.ValueRefreshThresholdKey] = 876543210;
+				Assert.That(this.settings.ValueRefreshThreshold, Is.EqualTo(876543210));
+
 				// The kCura.Utility section asserts go here.
 				dictionary[AppSettingsConstants.CreateErrorForInvalidDateKey] = true;
 				Assert.That(this.settings.CreateErrorForInvalidDate, Is.True);

@@ -963,6 +963,17 @@ namespace Relativity.Import.Export
 			set;
 		}
 
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionLegacykCuraConfig,
+			AppSettingsConstants.ValueRefreshThresholdKey,
+			AppSettingsConstants.ValueRefreshThresholdDefaultValue)]
+		int IAppSettings.ValueRefreshThreshold
+		{
+			get;
+			set;
+		}
+
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
 			AppSettingsConstants.WaitBeforeReconnectKey,

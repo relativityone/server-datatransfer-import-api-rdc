@@ -813,6 +813,18 @@ namespace Relativity.Import.Export
 		}
 
 		/// <summary>
+		/// Gets or sets the the refresh frequency, in milliseconds, to be used for updating configuration settings.
+		/// </summary>
+		/// <value>
+		/// The total number of milliseconds.
+		/// </value>
+		int ValueRefreshThreshold
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets the time, in milliseconds, to wait before reconnecting.
 		/// </summary>
 		/// <value>

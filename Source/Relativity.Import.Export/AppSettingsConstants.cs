@@ -12,6 +12,7 @@ namespace Relativity.Import.Export
 	public static class AppSettingsConstants
 	{
 		// All configuration sections go here.
+		public const string SectionLegacykCuraConfig = "kCura.Config";
 		public const string SectionLegacyWindowsProcess = "kCura.Windows.Process";
 		public const string SectionLegacyUtility = "kCura.Utility";
 		public const string SectionLegacyWinEdds = "kCura.WinEDDS";
@@ -143,6 +144,8 @@ namespace Relativity.Import.Export
 		public const bool UseOldExportDefaultValue = false;
 		public const string UsePipeliningForNativeAndObjectImportsKey = "UsePipeliningForNativeAndObjectImports";
 		public const bool UsePipeliningForNativeAndObjectImportsDefaultValue = true;
+		public const string ValueRefreshThresholdKey = "ValueRefreshThreshold";
+		public const int ValueRefreshThresholdDefaultValue = 10000;
 		public const string WaitBeforeReconnectKey = "WaitBeforeReconnect";
 		public const int WaitBeforeReconnectDefaultValue = 2000;
 		public const string WebApiOperationTimeoutKey = "WebAPIOperationTimeout";
