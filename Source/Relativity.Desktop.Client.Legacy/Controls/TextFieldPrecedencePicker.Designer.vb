@@ -1,4 +1,4 @@
-﻿Namespace kCura.EDDS.WinForm
+﻿Namespace Relativity.Desktop.Client
 	<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 	Partial Class TextFieldPrecedencePicker
 		Inherits System.Windows.Forms.UserControl

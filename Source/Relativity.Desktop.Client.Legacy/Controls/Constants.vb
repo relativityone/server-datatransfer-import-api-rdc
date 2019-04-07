@@ -1,4 +1,4 @@
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
 	Public Class Constants
 		Private Shared _defaultEncodingIDs As Int32()
 		Public Shared ReadOnly Property DefaultEncodings() As EncodingItem()
@@ -167,4 +167,3 @@ Namespace kCura.EDDS.WinForm
 
 	End Class
 End Namespace
-

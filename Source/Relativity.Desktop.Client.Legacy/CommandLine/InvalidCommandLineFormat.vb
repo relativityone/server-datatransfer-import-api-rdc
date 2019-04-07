@@ -1,4 +1,4 @@
-Namespace Relativity.Desktop.Client.CommandLine
+Namespace Relativity.Desktop.Client
 	Public Class InvalidCommandLineFormat
 		Inherits System.ApplicationException
 

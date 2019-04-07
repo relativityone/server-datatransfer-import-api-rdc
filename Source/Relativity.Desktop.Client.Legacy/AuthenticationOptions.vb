@@ -1,5 +1,4 @@
-Imports kCura.CommandLine
-Imports kCura.EDDS.WinForm
+Imports Relativity.Desktop.Client
 
 Public Class AuthenticationOptions
 	Private _userName As String

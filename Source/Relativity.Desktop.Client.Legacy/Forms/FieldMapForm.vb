@@ -1,5 +1,5 @@
-﻿Imports System.Linq
-Imports kCura.Utility.Extensions
+﻿Imports Relativity.Import.Export
+
 Public Class FieldMapForm
 
 	Private Sub Button1_Click(sender As Object, e As EventArgs) Handles _exportButton.Click

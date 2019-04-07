@@ -1,6 +1,6 @@
 ﻿Imports kCura.WinEDDS.Monitoring
 
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
 	Public Class MetricsSinkConfig
 		Implements IMetricsSinkConfig
 		Public Property ThrottleTimeout As TimeSpan Implements IMetricsSinkConfig.ThrottleTimeout

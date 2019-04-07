@@ -1,7 +1,4 @@
-Imports System.Collections.Generic
-Imports kCura.Windows.Forms
-
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
 	Public Class EncodingForm
 		Inherits System.Windows.Forms.Form
 
@@ -151,7 +148,7 @@ Namespace kCura.EDDS.WinForm
 		'		' updated.
 		'		Private _layoutReferenceDistance As Int32 = 0
 
-		'		Private _layoutDifferenceList As List(Of kCura.Windows.Forms.RelativeLayoutData)
+		'		Private _layoutDifferenceList As List(Of Relativity.Desktop.Client.Legacy.Controls.RelativeLayoutData)
 
 		'		Private Function CalcReferenceDistance() As Int32
 		'			Return Me.AutoScaleBaseSize.Width * Me.AutoScaleBaseSize.Height
@@ -241,5 +238,3 @@ Namespace kCura.EDDS.WinForm
 		End Class
 	End Class
 End Namespace
-
-

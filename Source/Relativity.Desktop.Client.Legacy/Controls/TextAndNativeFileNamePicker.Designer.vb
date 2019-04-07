@@ -1,4 +1,4 @@
-﻿Namespace kCura.EDDS.WinForm.Controls
+﻿Namespace Relativity.Desktop.Client
 	<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 	Partial Class TextAndNativeFileNamePicker
 		Inherits System.Windows.Forms.UserControl

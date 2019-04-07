@@ -1,4 +1,4 @@
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
 	Public MustInherit Class SelectFormBase
 		Inherits System.Windows.Forms.Form
 
@@ -11,7 +11,7 @@ Namespace kCura.EDDS.WinForm
 			InitializeComponent()
 
 			'Add any initialization after the InitializeComponent() call
-			Application = kCura.EDDS.WinForm.Application.Instance
+			Application = Global.Relativity.Desktop.Client.Application.Instance
 		End Sub
 
 		'Form overrides dispose to clean up the component list.
@@ -116,7 +116,7 @@ End Sub
 #End Region
 
 #Region " Declarations & Properties "
-		Protected WithEvents Application As kCura.EDDS.WinForm.Application
+		Protected WithEvents Application As Global.Relativity.Desktop.Client.Application
 
 		Protected ReadOnly Property ConfirmButton As Button
 			Get

@@ -44,5 +44,4 @@ Public Class AboutForm
         DividerCtrl.Visible = True
         CopyrightTextBox.SelectionLength = 0
     End Sub
-
 End Class

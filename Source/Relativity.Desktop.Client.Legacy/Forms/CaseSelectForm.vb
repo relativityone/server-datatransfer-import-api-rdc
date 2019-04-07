@@ -1,15 +1,11 @@
-Imports System.Linq
-Imports System.Collections.Generic
-Imports System.Threading.Tasks
-
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
 	Public Class CaseSelectForm
-		Inherits kCura.EDDS.WinForm.SelectFormBase
+		Inherits SelectFormBase
 
 #Region " Declarations & Properties "
-		Private _selectedCaseInfo As Generic.List(Of Relativity.CaseInfo)
+		Private _selectedCaseInfo As Generic.List(Of Global.Relativity.CaseInfo)
 
-		Public ReadOnly Property SelectedCaseInfo() As Generic.List(Of Relativity.CaseInfo)
+		Public ReadOnly Property SelectedCaseInfo() As Generic.List(Of Global.Relativity.CaseInfo)
 			Get
 				Return _selectedCaseInfo
 			End Get
@@ -30,10 +26,10 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Protected Overrides Sub ItemListView_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ItemListView.SelectedIndexChanged
-			Dim list As New Generic.List(Of Relativity.CaseInfo)
+			Dim list As New Generic.List(Of Global.Relativity.CaseInfo)
 			If ItemListView.SelectedItems.Count <> 0 Then
 				For Each si As ListViewItem In ItemListView.SelectedItems
-					list.Add(DirectCast(si.Tag, Relativity.CaseInfo))
+					list.Add(DirectCast(si.Tag, Global.Relativity.CaseInfo))
 				Next
 				_selectedCaseInfo = list
 				ConfirmButton.Enabled = True
@@ -54,7 +50,7 @@ Namespace kCura.EDDS.WinForm
 			Dim listItem As New System.Windows.Forms.ListViewItem With
 			{
 				.Text = CType(caseTableRow.Item("Name"), String),
-				.Tag = New Relativity.CaseInfo(caseTableRow)
+				.Tag = New Global.Relativity.CaseInfo(caseTableRow)
 			}
 			Return listItem
 		End Function

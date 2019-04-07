@@ -1,7 +1,7 @@
-Imports System.Threading.Tasks
-Imports kCura.Windows.Forms
+Imports kCura.WinEDDS
+Imports Relativity.Desktop.Client.Legacy.Controls
 
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
 	Public Class CaseFolderExplorer
 		Inherits System.Windows.Forms.UserControl
 
@@ -14,7 +14,7 @@ Namespace kCura.EDDS.WinForm
 			InitializeComponent()
 
 			'Add any initialization after the InitializeComponent() call
-			_application = kCura.EDDS.WinForm.Application.Instance
+			_application = Global.Relativity.Desktop.Client.Application.Instance
 		End Sub
 
 		'UserControl overrides dispose to clean up the component list.
@@ -142,7 +142,7 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
-		Protected WithEvents _application As kCura.EDDS.WinForm.Application
+		Protected WithEvents _application As Global.Relativity.Desktop.Client.Application
 
 		Public Property ImportContextMenuEnabled() As Boolean
 			Get
@@ -164,7 +164,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private _contextMenuTreeNode As System.Windows.Forms.TreeNode
 
-		Private Async Function LoadCase(ByVal caseInfo As Relativity.CaseInfo) As Task
+		Private Async Function LoadCase(ByVal caseInfo As Global.Relativity.CaseInfo) As Task
 			'check import/export permissions for the case
 			Await _application.LoadWorkspacePermissions()
 
@@ -197,7 +197,7 @@ Namespace kCura.EDDS.WinForm
 
 			For Each folderRow In foldersDataSet.Tables(0).Rows
 				If folderRow("ParentArtifactID") Is System.DBNull.Value Then
-					Dim tag As New FolderInfo(CType(folderRow("ArtifactID"), Int32), "Folder")
+					Dim tag As New kCura.WinEDDS.FolderInfo(CType(folderRow("ArtifactID"), Int32), "Folder")
 					tag.Path = "\"
 					rootFolderNode.Tag = tag
 					rootFolderNode.Text = CType(folderRow("Name"), String)
@@ -218,7 +218,7 @@ Namespace kCura.EDDS.WinForm
 			Dim childRows As System.Data.DataRow() = dataRow.GetChildRows("NodeRelation")
 			System.Array.Sort(childRows, New FolderRowComparer)
 			For Each childDataRow In childRows
-				Dim tag As New FolderInfo(CType(childDataRow("ArtifactID"), Int32), "Folder")
+				Dim tag As New kCura.WinEDDS.FolderInfo(CType(childDataRow("ArtifactID"), Int32), "Folder")
 				childNode = New System.Windows.Forms.TreeNode
 				tag.Path = currentPath & CType(childDataRow("Name"), String) & "\"
 				childNode.Tag = tag
@@ -246,8 +246,8 @@ Namespace kCura.EDDS.WinForm
 			Dim parentNode As System.Windows.Forms.TreeNode
 			parentNode = FindNode(folderDetails.ParentFolderID)
 			Dim newFolderNode As New System.Windows.Forms.TreeNode
-			Dim tag As New FolderInfo(folderDetails.FolderID, "Folder")
-			tag.Path = DirectCast(parentNode.Tag, FolderInfo).Path & folderDetails.ExportFriendlyName & "\"
+			Dim tag As New kCura.WinEDDS.FolderInfo(folderDetails.FolderID, "Folder")
+			tag.Path = DirectCast(parentNode.Tag, kCura.WinEDDS.FolderInfo).Path & folderDetails.ExportFriendlyName & "\"
 			newFolderNode.Tag = tag
 			newFolderNode.Text = folderDetails.ExportFriendlyName
 			newFolderNode.ImageIndex = 1
@@ -267,7 +267,7 @@ Namespace kCura.EDDS.WinForm
 
 			Dim node As System.Windows.Forms.TreeNode
 			For Each node In nodes
-				If CType(node.Tag, FolderInfo).ArtifactID = nodeArtifactID Then
+				If CType(node.Tag, kCura.WinEDDS.FolderInfo).ArtifactID = nodeArtifactID Then
 					Return node
 				End If
 				Dim subnode As System.Windows.Forms.TreeNode = FindNode(node.Nodes, nodeArtifactID)
@@ -283,37 +283,37 @@ Namespace kCura.EDDS.WinForm
 		Private Sub _treeView_MouseDown(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles _treeView.MouseDown
 			_contextMenuTreeNode = _treeView.GetNodeAt(New System.Drawing.Point(e.X, e.Y))
 			_treeView.SelectedNode = _contextMenuTreeNode
-			If e.Button = MouseButtons.Right AndAlso Not _contextMenuTreeNode Is Nothing AndAlso CType(_contextMenuTreeNode.Tag, FolderInfo).Type = "Folder" Then
+			If e.Button = MouseButtons.Right AndAlso Not _contextMenuTreeNode Is Nothing AndAlso CType(_contextMenuTreeNode.Tag, kCura.WinEDDS.FolderInfo).Type = "Folder" Then
 				_folderContextMenu.Show(_treeView, New Point(e.X, e.Y))
 			End If
 		End Sub
 
 		Private Async Sub ImportImageFile_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportImageFile.Click
-			Await _application.NewImageFile(CType(_contextMenuTreeNode.Tag, FolderInfo).ArtifactID, _application.SelectedCaseInfo)
+			Await _application.NewImageFile(CType(_contextMenuTreeNode.Tag, kCura.WinEDDS.FolderInfo).ArtifactID, _application.SelectedCaseInfo)
 		End Sub
 
 		Private Async Sub ImportLoadFIle_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportLoadFIle.Click
-			Await _application.NewLoadFile(CType(_contextMenuTreeNode.Tag, FolderInfo).ArtifactID, _application.SelectedCaseInfo)
+			Await _application.NewLoadFile(CType(_contextMenuTreeNode.Tag, kCura.WinEDDS.FolderInfo).ArtifactID, _application.SelectedCaseInfo)
 		End Sub
 
 		Private Sub _treeView_AfterSelect(ByVal sender As Object, ByVal e As System.Windows.Forms.TreeViewEventArgs) Handles _treeView.AfterSelect
-			_application.SelectCaseFolder(CType(_treeView.SelectedNode.Tag, FolderInfo))
+			_application.SelectCaseFolder(CType(_treeView.SelectedNode.Tag, kCura.WinEDDS.FolderInfo))
 		End Sub
 
 		Private Async Sub NewFolderMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles NewFolderMenu.Click
-			Await _application.CreateNewFolder(CType(_treeView.SelectedNode.Tag, FolderInfo).ArtifactID)
+			Await _application.CreateNewFolder(CType(_treeView.SelectedNode.Tag, kCura.WinEDDS.FolderInfo).ArtifactID)
 		End Sub
 
 		Private Async Sub ExportFolder_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ExportFolder.Click
-			Await _application.NewSearchExport(CType(_contextMenuTreeNode.Tag, FolderInfo).ArtifactID, _application.SelectedCaseInfo, ExportFile.ExportType.ParentSearch)
+			Await _application.NewSearchExport(CType(_contextMenuTreeNode.Tag, kCura.WinEDDS.FolderInfo).ArtifactID, _application.SelectedCaseInfo, ExportFile.ExportType.ParentSearch)
 		End Sub
 
 		Private Async Sub ExportFolderAndSubfolders_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ExportFolderAndSubfolders.Click
-			Await _application.NewSearchExport(CType(_contextMenuTreeNode.Tag, FolderInfo).ArtifactID, _application.SelectedCaseInfo, ExportFile.ExportType.AncestorSearch)
+			Await _application.NewSearchExport(CType(_contextMenuTreeNode.Tag, kCura.WinEDDS.FolderInfo).ArtifactID, _application.SelectedCaseInfo, ExportFile.ExportType.AncestorSearch)
 		End Sub
 
 		Private Async Sub ImportProduction_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportProduction.Click
-			Await _application.NewProductionFile(CType(_contextMenuTreeNode.Tag, FolderInfo).ArtifactID, _application.SelectedCaseInfo)
+			Await _application.NewProductionFile(CType(_contextMenuTreeNode.Tag, kCura.WinEDDS.FolderInfo).ArtifactID, _application.SelectedCaseInfo)
 		End Sub
 
 		Private Class FolderRowComparer

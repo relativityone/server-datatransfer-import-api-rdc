@@ -1,4 +1,4 @@
-﻿Namespace kCura.EDDS.WinForm
+﻿Namespace Relativity.Desktop.Client
 	Public Class Exceptions
 #Region " Exception "
 

@@ -1,9 +1,4 @@
-Imports System.ComponentModel
-Imports System.Net
-Imports System.Threading.Tasks
-Imports Relativity.Transfer
-
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
 	Public Class AdvancedFileLocation
 		Inherits System.Windows.Forms.Form
 
@@ -17,9 +12,9 @@ Namespace kCura.EDDS.WinForm
 
 			'Add any initialization after the InitializeComponent() call
 			_repositories.Items.Clear()
-			If Not kCura.EDDS.WinForm.Application.Instance.DocumentRepositoryList Is Nothing AndAlso kCura.EDDS.WinForm.Application.Instance.DocumentRepositoryList.Length > 0 Then
-				Dim paths(kCura.EDDS.WinForm.Application.Instance.DocumentRepositoryList.Length - 1) As String
-				System.Array.Copy(kCura.EDDS.WinForm.Application.Instance.DocumentRepositoryList, paths, kCura.EDDS.WinForm.Application.Instance.DocumentRepositoryList.Length)
+			If Not Global.Relativity.Desktop.Client.Application.Instance.DocumentRepositoryList Is Nothing AndAlso Global.Relativity.Desktop.Client.Application.Instance.DocumentRepositoryList.Length > 0 Then
+				Dim paths(Global.Relativity.Desktop.Client.Application.Instance.DocumentRepositoryList.Length - 1) As String
+				System.Array.Copy(Global.Relativity.Desktop.Client.Application.Instance.DocumentRepositoryList, paths, Global.Relativity.Desktop.Client.Application.Instance.DocumentRepositoryList.Length)
 				System.Array.Sort(paths)
 				_repositories.Items.AddRange(paths)
 			End If
@@ -176,7 +171,7 @@ End Sub
 			SetRepositoriesComboBoxAccessibility()
 			_asperaModeWarningLinkLabel.Visible = IsUsingAsperaConnectionMode()
 			If Me.SelectDefaultPath Then
-		        Me.SelectPath(Application.Instance.SelectedCaseInfo.DocumentPath)
+		        Me.SelectPath(Global.Relativity.Desktop.Client.Application.Instance.SelectedCaseInfo.DocumentPath)
 		    End If
 
 		    Config.FlushEddsConfigSettings()
@@ -208,8 +203,8 @@ End Sub
 						Exit For
 					End If
 				Next			'
-				If Not foundIt AndAlso path.ToLower <> kCura.EDDS.WinForm.Application.Instance.SelectedCaseInfo.DocumentPath.ToLower Then
-					Me.SelectPath(kCura.EDDS.WinForm.Application.Instance.SelectedCaseInfo.DocumentPath)
+				If Not foundIt AndAlso path.ToLower <> Global.Relativity.Desktop.Client.Application.Instance.SelectedCaseInfo.DocumentPath.ToLower Then
+					Me.SelectPath(Global.Relativity.Desktop.Client.Application.Instance.SelectedCaseInfo.DocumentPath)
 				End If
 			End If
 		End Sub
@@ -223,7 +218,7 @@ End Sub
         End Sub
 
 		Private Sub _defaultButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _defaultButton.Click
-			Me.SelectPath(kCura.EDDS.WinForm.Application.Instance.SelectedCaseInfo.DocumentPath)
+			Me.SelectPath(Global.Relativity.Desktop.Client.Application.Instance.SelectedCaseInfo.DocumentPath)
 		End Sub
 
 		Private Sub _keepNativeFiles_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _keepNativeFiles.CheckedChanged, _copyNativeFiles.CheckedChanged
@@ -237,5 +232,4 @@ End Sub
                 "Please note that Web transfer is considerably slower than Aspera", "Relativity Desktop Client", MessageBoxButtons.OK, MessageBoxIcon.Information)
         End Sub
     End Class
-
 End Namespace

@@ -1,10 +1,7 @@
-﻿Imports System.Collections.Generic
-Imports System.Linq
-Imports Relativity
-Imports System.IO
+﻿Imports System.IO
 Imports System.Text
 
-Namespace kCura.EDDS.WinForm.Forms
+Namespace Relativity.Desktop.Client
 	Public Class TextAndNativeFileNameForm
 
 		Private Const CustomTextOption As String = "Custom Text..."

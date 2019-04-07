@@ -1,9 +1,11 @@
-Namespace kCura.EDDS.WinForm
+Imports kCura.WinEDDS
+
+Namespace Relativity.Desktop.Client
 	Public Class LoadFilePreviewForm
 		Inherits System.Windows.Forms.Form
 
 #Region " Windows Form Designer generated code "
-		Private _application As Application
+		Private _application As Global.Relativity.Desktop.Client.Application
 		Private _formType As Int32
 		Private _multiRecordDelimiter As Char
 		Private _previewCodeCount As System.Collections.Specialized.HybridDictionary
@@ -15,13 +17,13 @@ Namespace kCura.EDDS.WinForm
 			InitializeComponent()
 
 			'Add any initialization after the InitializeComponent() call
-			_application = Application.Instance
+			_application = Global.Relativity.Desktop.Client.Application.Instance
 			_formType = formType
 			_multiRecordDelimiter = mutliRecordDelimiter
 			_previewCodeCount = previewCodeCount
 
 			Me.Text = "Relativity Desktop Client | Preview Load File"
-			If _formType = kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.Codes Then
+			If _formType = LoadFilePreviewForm.FormType.Codes Then
 				Me.Text = "Relativity Desktop Client | Preview Choices and Folders"
 			End If
 		End Sub
@@ -183,5 +185,4 @@ Namespace kCura.EDDS.WinForm
 			g.DrawString(cellcontents.ToString, Me.DataGridTableStyle.DataGrid.Font, myForeBrush, RectangleF.FromLTRB(rect.X, rect.Y, rect.Right, rect.Bottom))
 		End Sub
 	End Class
-
 End Namespace

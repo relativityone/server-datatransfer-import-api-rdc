@@ -1,6 +1,6 @@
-Namespace Relativity.Desktop.Client.CommandLine
+Namespace Relativity.Desktop.Client
 	Public Class CommandList
-		Inherits System.Collections.Generic.List(Of Relativity.Desktop.Client.CommandLine.Command)
+		Inherits System.Collections.Generic.List(Of Command)
 		Public Sub New()
 			MyBase.New()
 		End Sub
