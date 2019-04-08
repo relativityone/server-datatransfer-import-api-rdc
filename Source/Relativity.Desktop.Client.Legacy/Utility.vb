@@ -103,7 +103,8 @@ Namespace Relativity.Desktop.Client
 
 		Public Shared Function ConvertLegacyOverwriteDestinationValueToEnum(ByVal overWriteDestination As String) As String
 			Dim retval As String = overWriteDestination
-			If Not String.IsNullOrEmpty(overWriteDestination)
+			If Not String.IsNullOrEmpty(overWriteDestination) Then
+
 				Select Case overWriteDestination.ToLower
 					Case "strict"
 						retval = Global.Relativity.ImportOverwriteType.Overlay.ToString

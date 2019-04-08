@@ -7,7 +7,7 @@ Namespace Relativity.Desktop.Client
 			Try
 				If TypeOf e.Exception Is System.Web.Services.Protocols.SoapException AndAlso e.Exception.ToString.IndexOf("NeedToReLoginException") <> -1 Then
 					Await Global.Relativity.Desktop.Client.Application.Instance.NewLoginAsync()
-				Else If TypeOf e.Exception Is LoginCanceledException
+				ElseIf TypeOf e.Exception Is LoginCanceledException Then
 					'Login canceled, ignore
 				Else
 					ShowErrorDialog(e.Exception)

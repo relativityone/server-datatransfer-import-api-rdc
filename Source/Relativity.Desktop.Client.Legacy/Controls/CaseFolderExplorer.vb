@@ -232,11 +232,11 @@ Namespace Relativity.Desktop.Client
 
 		Private Sub _application_OnEvent(ByVal appEvent As AppEvent) Handles _application.OnEvent
 			Select Case appEvent.EventType
-				Case appEvent.AppEventType.LoadCase
+				Case AppEvent.AppEventType.LoadCase
 					_treeView.Invoke(Async Function() As Task
 										 Await Me.LoadCase(CType(appEvent, LoadCaseEvent).Case)
 									 End Function)
-				Case appEvent.AppEventType.NewFolder
+				Case AppEvent.AppEventType.NewFolder
 					_treeView.Invoke(Sub() Me.AddNewFolder(CType(appEvent, NewFolderEvent)))
 			End Select
 		End Sub

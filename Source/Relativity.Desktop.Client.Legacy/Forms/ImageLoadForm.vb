@@ -253,7 +253,7 @@ Namespace Relativity.Desktop.Client
 			Me.ExtractedTextGroupBox.Name = "ExtractedTextGroupBox"
 			Me.ExtractedTextGroupBox.Size = New System.Drawing.Size(556, 78)
 			Me.ExtractedTextGroupBox.TabIndex = 9
-			Me.ExtractedTextGroupBox.TabStop = False			
+			Me.ExtractedTextGroupBox.TabStop = False
 			Me.ExtractedTextGroupBox.Text = "ExtractedText"
 			'
 			'_encodingPicker
@@ -469,7 +469,7 @@ Namespace Relativity.Desktop.Client
 				Me.ImageLoadFile.BeginBatesFieldArtifactID = CType(_beginBatesDropdown.SelectedValue, Int32)
 			Else
 				'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
-				If Me.GetOverwrite = Global.Relativity.ImportOverwriteType.Overlay
+				If Me.GetOverwrite = Global.Relativity.ImportOverwriteType.Overlay Then
 					Me.ImageLoadFile.IdentityFieldId = CType(_beginBatesDropdown.SelectedValue, Int32)
 				Else
 					Me.ImageLoadFile.IdentityFieldId = -1

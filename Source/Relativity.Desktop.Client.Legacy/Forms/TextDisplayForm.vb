@@ -4,7 +4,7 @@ Namespace Relativity.Desktop.Client
 	Public Class TextDisplayForm
 		Inherits System.Windows.Forms.Form
 
-	#Region " Windows Form Designer generated code "
+#Region " Windows Form Designer generated code "
 		Private _application As Global.Relativity.Desktop.Client.Application
 
 		Public Sub New()
@@ -65,11 +65,11 @@ Namespace Relativity.Desktop.Client
 
 		End Sub
 
-	#End Region
+#End Region
 
 		Public WithEvents Context As ProcessContext
 
-		Private Sub ProcessObserver_OnProcessEvent(ByVal sender As Object,  ByVal e As ProcessEventArgs) Handles Context.ProcessEvent
+		Private Sub ProcessObserver_OnProcessEvent(ByVal sender As Object, ByVal e As ProcessEventArgs) Handles Context.ProcessEvent
 			_application.CursorWait()
 			If Not e.Message.Contains(vbLf) Then
 				Me.AppendText(e.Message & vbNewLine)

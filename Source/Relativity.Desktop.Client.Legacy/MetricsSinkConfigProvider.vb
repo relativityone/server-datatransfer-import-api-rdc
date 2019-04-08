@@ -20,7 +20,7 @@ Namespace Relativity.Desktop.Client
 		End Property
 
 		Private Sub ToggleRefresh()
-			If _configRefreshTask Is Nothing OrElse _configRefreshTask.IsCanceled OrElse _configRefreshTask.IsCompleted OrElse _configRefreshTask.IsFaulted 
+			If _configRefreshTask Is Nothing OrElse _configRefreshTask.IsCanceled OrElse _configRefreshTask.IsCompleted OrElse _configRefreshTask.IsFaulted Then
 				_configRefreshTask = Task.Run(New Action(AddressOf RefreshConfiguration))
 			End If
 		End Sub
@@ -28,7 +28,7 @@ Namespace Relativity.Desktop.Client
 		Private Sub RefreshConfiguration()
 			Dim config = New MetricsSinkConfig With {
 				.ThrottleTimeout = TimeSpan.FromSeconds(Relativity.Desktop.Client.Config.RdcMetricsThrottlingSeconds),
-				.SendLiveApmMetrics = Relativity.Desktop.Client.Config.SendLiveApmMetrics,
+				.SendLiveAPMMetrics = Relativity.Desktop.Client.Config.SendLiveApmMetrics,
 				.SendSumMetrics = Relativity.Desktop.Client.Config.SendSumMetrics,
 				.SendSummaryApmMetrics = Relativity.Desktop.Client.Config.SendSummaryApmMetrics
 			}

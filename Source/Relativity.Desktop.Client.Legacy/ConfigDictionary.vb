@@ -17,8 +17,8 @@ Namespace Relativity.Desktop.Client
 			Dim configTable As System.Data.DataTable
 			Try
 				configTable = Task.Run(Async Function()
-					Return Await _application.GetSystemConfiguration().ConfigureAwait(false)
-				End Function).Result
+										   Return Await _application.GetSystemConfiguration().ConfigureAwait(False)
+									   End Function).Result
 				_hasInitialized = True
 			Catch
 				If Not _hasInitialized Then

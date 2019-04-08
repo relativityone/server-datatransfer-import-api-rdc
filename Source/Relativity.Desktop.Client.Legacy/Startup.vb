@@ -19,7 +19,7 @@ Namespace Relativity.Desktop.Client
 		Friend HasSetUsername As Boolean = False
 		Friend HasSetPassword As Boolean = False
 		Private _importOptions As ImportOptions = New ImportOptions()
-		Private _authOptions As AuthenticationOptions = new AuthenticationOptions()
+		Private _authOptions As AuthenticationOptions = New AuthenticationOptions()
 #End Region
 
 #Region " Enumerations "
@@ -35,25 +35,25 @@ Namespace Relativity.Desktop.Client
 #End Region
 
 		Public Sub Main()
-			ContainerFactoryProvider.ContainerFactory = new ContainerFactory()
+			ContainerFactoryProvider.ContainerFactory = New ContainerFactory()
 			Dim handler As ThreadExceptionHandler = New ThreadExceptionHandler()
 			AddHandler System.Windows.Forms.Application.ThreadException, AddressOf handler.Application_ThreadException
 
 			Dim args As String() = System.Environment.GetCommandLineArgs
 
-            If args.Length = 1 Then
-                CloseConsole()
-                Dim mainForm As New MainForm()
+			If args.Length = 1 Then
+				CloseConsole()
+				Dim mainForm As New MainForm()
 
-                mainForm.Show()
-                mainForm.Refresh()
-                System.Windows.Forms.Application.Run()
-            Else
-                Task.Run(Async Function() As Task
-                             Await RunInConsoleMode().ConfigureAwait(False)
-                         End Function).Wait()
-            End If
-        End Sub
+				mainForm.Show()
+				mainForm.Refresh()
+				System.Windows.Forms.Application.Run()
+			Else
+				Task.Run(Async Function() As Task
+							 Await RunInConsoleMode().ConfigureAwait(False)
+						 End Function).Wait()
+			End If
+		End Sub
 
 		Private Function GetValueFromCommandListByFlag(ByVal commandList As CommandList, ByVal flag As String) As String
 			For Each command As Command In commandList
@@ -80,9 +80,9 @@ Namespace Relativity.Desktop.Client
 		Private Async Function RunInConsoleMode() As Task
 			Try
 				_application = Global.Relativity.Desktop.Client.Application.Instance
-                Dim _import As ImportManager = New ImportManager()
+				Dim _import As ImportManager = New ImportManager()
 
-                Dim commandList As CommandList = CommandLineParser.Parse
+				Dim commandList As CommandList = CommandLineParser.Parse
 				For Each command As Command In commandList
 					If command.Directive.ToLower.Replace("-", "").Replace("/", "") = "h" Then
 						If command.Value Is Nothing OrElse command.Value = "" Then
@@ -147,12 +147,12 @@ Namespace Relativity.Desktop.Client
 						_import.RunDynamicObjectImport(_importOptions)
 					Case LoadMode.Application
 						Throw New InvalidOperationException("Load file is not supported for application imports")
-                    Case LoadMode.Export
-                        Await _import.RunExport(_importOptions.SelectedExportSettings)
-                End Select
+					Case LoadMode.Export
+						Await _import.RunExport(_importOptions.SelectedExportSettings)
+				End Select
 
-                Await _application.Logout()
-            Catch ex As RdcBaseException
+				Await _application.Logout()
+			Catch ex As RdcBaseException
 				Console.WriteLine("--------------------------")
 				Console.WriteLine("ERROR: " & ex.Message)
 				Console.WriteLine("")

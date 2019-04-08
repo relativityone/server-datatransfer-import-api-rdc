@@ -8,4 +8,4 @@ Namespace Relativity.Desktop.Client
 		Public Property SendSumMetrics As Boolean Implements IMetricsSinkConfig.SendSumMetrics
 		Public Property SendSummaryApmMetrics As Boolean Implements IMetricsSinkConfig.SendSummaryApmMetrics
 	End Class
-End NameSpace
+End Namespace

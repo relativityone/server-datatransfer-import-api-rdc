@@ -9,7 +9,7 @@ Public Class AuthenticationOptions
 
 	Public Property UserName As String
 		Get
-			return _userName
+			Return _userName
 		End Get
 		Private Set(value As String)
 			_userName = value
@@ -18,7 +18,7 @@ Public Class AuthenticationOptions
 
 	Public Property Password As String
 		Get
-			return _password
+			Return _password
 		End Get
 		Private Set(value As String)
 			_password = value
@@ -30,7 +30,7 @@ Public Class AuthenticationOptions
 
 	Public Sub CredentialsAreSet()
 
-		Dim usernameExists As Boolean = Not String.IsNullOrEmpty(Username)
+		Dim usernameExists As Boolean = Not String.IsNullOrEmpty(UserName)
 		Dim passwordExists As Boolean = Not String.IsNullOrEmpty(Password)
 		Dim clientIDExists As Boolean = Not String.IsNullOrEmpty(ClientId)
 		Dim clientSecretExists As Boolean = Not String.IsNullOrEmpty(ClientSecret)

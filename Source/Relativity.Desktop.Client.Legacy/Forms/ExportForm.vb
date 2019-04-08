@@ -1347,7 +1347,7 @@ Public Class ExportForm
 		If _textAndNativeFileNamePicker.SelectedItem = TextAndNativeFileNamePicker.SelectOption Then
 			AppendErrorMessage(msg, "No file naming method selected")
 		End If
-		If _textAndNativeFileNamePicker.SelectedItem = TextAndNativeFileNamePicker.CustomOption
+		If _textAndNativeFileNamePicker.SelectedItem = TextAndNativeFileNamePicker.CustomOption Then
 			ValidateCustomFileNamingOptions(msg)
 		End If
 
@@ -1386,7 +1386,7 @@ Public Class ExportForm
 		ValidateCustomFileNamingFieldsAreSelected(msg)
 		ValidateCustomFileNamingProductionPrecedenceIsSelected(msg)
 	End Sub
-	
+
 	Private Sub ValidateCustomFileNamingFieldsAreSelected(msg As Text.StringBuilder)
 		If _textAndNativeFileNamePicker.Selection Is Nothing Then
 			AppendErrorMessage(msg, "No custom file naming fields selected")
@@ -1395,7 +1395,7 @@ Public Class ExportForm
 
 	Private Sub ValidateCustomFileNamingProductionPrecedenceIsSelected(msg As Text.StringBuilder)
 		Dim isProductionBegBatesSelected As Boolean? = _textAndNativeFileNamePicker.Selection?.FirstOrDefault()?.IsProductionBegBates
-		If Not isProductionBegBatesSelected
+		If Not isProductionBegBatesSelected Then
 			Return
 		End If
 
@@ -1403,12 +1403,12 @@ Public Class ExportForm
 			Return
 		End If
 
-		If _productionPrecedenceList.Items.Count <> 1
+		If _productionPrecedenceList.Items.Count <> 1 Then
 			Return
 		End If
 
 		Dim precedence = DirectCast(_productionPrecedenceList.Items(0), Pair)
-		If precedence.Value.Equals("-1")
+		If precedence.Value.Equals("-1") Then
 			AppendErrorMessage(msg, "No production precedence selected for custom file naming")
 		End If
 	End Sub

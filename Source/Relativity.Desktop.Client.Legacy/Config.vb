@@ -115,10 +115,10 @@ Namespace Relativity.Desktop.Client
 
 		Public Shared ReadOnly Property RdcMetricsThrottlingSeconds() As Int32
 			Get
-				Return GetConfigWithDefault(_RdcMetricsThrottlingSeconds, 30)
+				Return GetConfigWithDefault(_rdcMetricsThrottlingSeconds, 30)
 			End Get
 		End Property
-		
+
 		Private Shared _rdcMetricsConfiguration As String = "MetricsConfiguration"
 
 		Public Shared ReadOnly Property SendLiveApmMetrics As Boolean

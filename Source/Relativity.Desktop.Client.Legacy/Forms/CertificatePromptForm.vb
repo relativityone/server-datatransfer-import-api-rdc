@@ -12,9 +12,9 @@
 		Me.Focus()
 		MyBase.OnLoad(e)
 	End Sub
-	
+
 	Protected Overrides Sub OnClosing(ByVal e As System.ComponentModel.CancelEventArgs)
-		If(Not CertsAllowed.HasValue)
+		If (Not CertsAllowed.HasValue) Then
 			CertsAllowed = False
 			RaiseEvent DenyUntrustedCertificates()
 		End If

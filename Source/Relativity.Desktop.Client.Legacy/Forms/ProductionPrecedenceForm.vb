@@ -174,7 +174,8 @@ Namespace Relativity.Desktop.Client
 					If item.Value = "-1" Then
 						hasOriginals = True
 						If firstTimeThrough Then
-							Exit For						 'do nothing
+							'do nothing
+							Exit For
 						Else
 							_producedImages.Checked = True
 							_originalImages.Checked = False
@@ -279,9 +280,10 @@ Namespace Relativity.Desktop.Client
 				_layoutDifferenceList.Add(New RelativeLayoutData(_productions, LayoutBasePropertyTypeForDifference.Right, LabelSelectedProductions, LayoutRelativePropertyTypeForDifference.Left))
 			End If
 
-			_layoutDifferenceList.ForEach(Sub(x)
-																			x.InitializeDifference()
-																		End Sub)
+			_layoutDifferenceList.ForEach(
+			Sub(x)
+				x.InitializeDifference()
+			End Sub)
 
 			_layoutReferenceDistance = CalcReferenceDistance()
 

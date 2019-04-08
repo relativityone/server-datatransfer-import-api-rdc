@@ -117,8 +117,8 @@ Namespace Relativity.Desktop.Client
 			End If
 
 			_layoutDifferenceList.ForEach(Sub(x)
-																			x.InitializeDifference()
-																		End Sub)
+											  x.InitializeDifference()
+										  End Sub)
 
 			_layoutReferenceDistance = CalcReferenceDistance()
 
