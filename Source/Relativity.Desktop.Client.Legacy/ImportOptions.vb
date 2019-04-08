@@ -7,7 +7,6 @@ Public Class ImportOptions
 	Private _exportErrorReportFile As Boolean = False
 	Private _exportErrorLoadFile As Boolean = False
 	Private _hasSetLoadFileLocation As Boolean = False
-	Private _exportSettings As ExportFile
 
 #Region "Properties"
 
