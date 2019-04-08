@@ -1268,14 +1268,11 @@ Namespace Relativity.Desktop.Client
             Dim xmlDoc As New System.Xml.XmlDocument
             xmlDoc.LoadXml(doc)
 
-            sr = New System.IO.StreamReader(path)
-            Dim stringr As New System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(Me.CleanLoadFile(xmlDoc)))
             Dim tempLoadFile As kCura.WinEDDS.LoadFile
-            Dim deserializer As New System.Runtime.Serialization.Formatters.Soap.SoapFormatter
 
             Try
-                tempLoadFile = DirectCast(deserializer.Deserialize(stringr), kCura.WinEDDS.LoadFile)
-                sr.Close()
+                Dim scrubbed As String = Me.CleanLoadFile(xmlDoc)
+                tempLoadFile = Global.Relativity.Import.Export.SerializationHelper.DeserializeFromSoap(Of kCura.WinEDDS.LoadFile)(scrubbed)
             Catch ex As System.Exception
                 If Not isSilent Then MsgBox("Load Failed", MsgBoxStyle.Critical, "Relativity Desktop Client")
                 'TODO: Log Exception
