@@ -159,6 +159,8 @@ namespace Relativity.Import.Export
 
 			// For backwards compatibility, support all legacy sections.
 			Dictionary<string, Dictionary<string, object>> sectionDictionaries = ReadAllSectionDictionaries();
+			Dictionary<string, object> defaultSection =
+				sectionDictionaries[GetSectionKey(AppSettingsConstants.SectionImportExport)];
 			BuildAttributeDictionary();
 			foreach (var prop in GetProperties())
 			{
@@ -182,6 +184,10 @@ namespace Relativity.Import.Export
 				if (sectionDictionary.ContainsKey(nameValuePairKey))
 				{
 					value = sectionDictionary[nameValuePairKey];
+				}
+				else if (defaultSection.ContainsKey(nameValuePairKey))
+				{
+					value = defaultSection[nameValuePairKey];
 				}
 
 				AssignPropertyValue(settings, prop, value);
