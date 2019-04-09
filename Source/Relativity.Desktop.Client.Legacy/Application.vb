@@ -602,7 +602,7 @@ Namespace Relativity.Desktop.Client
 
 		Public Function GetColumnHeadersFromLoadFile(ByVal loadfile As kCura.WinEDDS.LoadFile, ByVal firstLineContainsColumnHeaders As Boolean) As String()
 			loadfile.CookieContainer = Me.CookieContainer
-			Dim logger As Global.Relativity.Logging.ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.WinEDDSSubSystem)
+			Dim logger As Global.Relativity.Logging.ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.DefaultSubSystem)
 			Dim importer As kCura.WinEDDS.BulkLoadFileImporter = Nothing
 
 			Try
