@@ -159,6 +159,8 @@ namespace Relativity.Import.Export
 
 			// For backwards compatibility, support all legacy sections.
 			Dictionary<string, Dictionary<string, object>> sectionDictionaries = ReadAllSectionDictionaries();
+			Dictionary<string, object> defaultSection =
+				sectionDictionaries[GetSectionKey(AppSettingsConstants.SectionImportExport)];
 			BuildAttributeDictionary();
 			foreach (var prop in GetProperties())
 			{
@@ -182,6 +184,10 @@ namespace Relativity.Import.Export
 				if (sectionDictionary.ContainsKey(nameValuePairKey))
 				{
 					value = sectionDictionary[nameValuePairKey];
+				}
+				else if (defaultSection.ContainsKey(nameValuePairKey))
+				{
+					value = defaultSection[nameValuePairKey];
 				}
 
 				AssignPropertyValue(settings, prop, value);
@@ -622,18 +628,19 @@ namespace Relativity.Import.Export
 		private static Dictionary<string, Dictionary<string, object>> ReadAllSectionDictionaries()
 		{
 			Dictionary<string, Dictionary<string, object>> dictionaries = new Dictionary<string, Dictionary<string, object>>();
-			dictionaries.Add(
-				GetSectionKey(AppSettingsConstants.SectionLegacyWindowsProcess),
-				ReadSectionDictionary(AppSettingsConstants.SectionLegacyWindowsProcess));
-			dictionaries.Add(
-				GetSectionKey(AppSettingsConstants.SectionLegacyUtility),
-				ReadSectionDictionary(AppSettingsConstants.SectionLegacyUtility));
-			dictionaries.Add(
-				GetSectionKey(AppSettingsConstants.SectionLegacyWinEdds),
-				ReadSectionDictionary(AppSettingsConstants.SectionLegacyWinEdds));
-			dictionaries.Add(
-				GetSectionKey(AppSettingsConstants.SectionImportExport),
-				ReadSectionDictionary(AppSettingsConstants.SectionImportExport));
+			List<string> sectionNames = new List<string>
+				                        {
+					                        AppSettingsConstants.SectionLegacykCuraConfig,
+					                        AppSettingsConstants.SectionLegacyWindowsProcess,
+					                        AppSettingsConstants.SectionLegacyUtility,
+					                        AppSettingsConstants.SectionLegacyWinEdds,
+					                        AppSettingsConstants.SectionImportExport
+				                        };
+			foreach (var sectionName in sectionNames)
+			{
+				dictionaries.Add(GetSectionKey(sectionName), ReadSectionDictionary(sectionName));
+			}
+
 			return dictionaries;
 		}
 

@@ -1,7 +1,6 @@
-Imports System.Collections.Generic
-Imports kCura.Windows.Forms
+Imports Relativity.Desktop.Client.Legacy.Controls
 
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
 	Public Class ProductionPrecedenceForm
 		Inherits System.Windows.Forms.Form
 
@@ -13,7 +12,7 @@ Namespace kCura.EDDS.WinForm
 			InitializeComponent()
 
 			'Add any initialization after the InitializeComponent() call
-			_application = kCura.EDDS.WinForm.Application.Instance
+			_application = Global.Relativity.Desktop.Client.Application.Instance
 
 		End Sub
 
@@ -35,7 +34,7 @@ Namespace kCura.EDDS.WinForm
 		'Do not modify it using the code editor.
 		Friend WithEvents LabelAvailableProductions As System.Windows.Forms.Label
 		Friend WithEvents LabelSelectedProductions As System.Windows.Forms.Label
-		Friend WithEvents _productions As kCura.Windows.Forms.TwoListBox
+		Friend WithEvents _productions As TwoListBox
 		Friend WithEvents _okButton As System.Windows.Forms.Button
 		Friend WithEvents _cancelButton As System.Windows.Forms.Button
 		Friend WithEvents _originalImages As System.Windows.Forms.RadioButton
@@ -46,7 +45,7 @@ Namespace kCura.EDDS.WinForm
 			Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(ProductionPrecedenceForm))
 			Me._okButton = New System.Windows.Forms.Button
 			Me._cancelButton = New System.Windows.Forms.Button
-			Me._productions = New kCura.Windows.Forms.TwoListBox
+			Me._productions = New TwoListBox
 			Me.LabelAvailableProductions = New System.Windows.Forms.Label
 			Me.LabelSelectedProductions = New System.Windows.Forms.Label
 			Me._originalImages = New System.Windows.Forms.RadioButton
@@ -150,24 +149,24 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
-		Friend WithEvents _application As kCura.EDDS.WinForm.Application
-		Private _precedenceList As Pair()
+		Friend WithEvents _application As Global.Relativity.Desktop.Client.Application
+		Private _precedenceList As kCura.WinEDDS.Pair()
 		Public PrecedenceTable As System.Data.DataTable
-		Friend Property PrecedenceList() As Pair()
+		Friend Property PrecedenceList() As kCura.WinEDDS.Pair()
 			Get
 				Return _precedenceList
 			End Get
-			Set(ByVal value As Pair())
+			Set(ByVal value As kCura.WinEDDS.Pair())
 				_precedenceList = value
 			End Set
 		End Property
 
-		Public ExportFile As WinEDDS.ExportFile
+		Public ExportFile As kCura.WinEDDS.ExportFile
 
 		Private Sub ProductionPrecedenceForm_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
 			Dim row As System.Data.DataRow
 			Dim activeValues As New System.Collections.ArrayList
-			Dim item As Pair
+			Dim item As kCura.WinEDDS.Pair
 			Dim firstTimeThrough As Boolean = True
 			Dim hasOriginals As Boolean = False
 			If Not _precedenceList Is Nothing Then
@@ -175,7 +174,8 @@ Namespace kCura.EDDS.WinForm
 					If item.Value = "-1" Then
 						hasOriginals = True
 						If firstTimeThrough Then
-							Exit For						 'do nothing
+							'do nothing
+							Exit For
 						Else
 							_producedImages.Checked = True
 							_originalImages.Checked = False
@@ -196,7 +196,7 @@ Namespace kCura.EDDS.WinForm
 			End If
 			For Each row In PrecedenceTable.Rows
 				If Not activeValues.Contains(row("Value").ToString) Then
-					_productions.LeftSearchableList.AddField(New Pair(row("Value").ToString, row("Display").ToString))
+					_productions.LeftSearchableList.AddField(New kCura.WinEDDS.Pair(row("Value").ToString, row("Display").ToString))
 				End If
 			Next
 		End Sub
@@ -205,24 +205,24 @@ Namespace kCura.EDDS.WinForm
 			Dim al As New ArrayList
 			Dim isProductionPrecedenceSelected As Boolean = _productions.RightSearchableListItems.Count > 0
 			If (Not isProductionPrecedenceSelected) OrElse _originalImages.Checked Then
-				al.Add(New Pair("-1", "Original"))
+				al.Add(New kCura.WinEDDS.Pair("-1", "Original"))
 			Else
-				For Each item As Pair In _productions.RightSearchableListItems
+				For Each item As kCura.WinEDDS.Pair In _productions.RightSearchableListItems
 					al.Add(item)
 				Next
 				If _includeOriginals.Checked Then
-					al.Add(New Pair("-1", "Original"))
+					al.Add(New kCura.WinEDDS.Pair("-1", "Original"))
 				End If
 			End If
 			Me.Close()
-			RaiseEvent PrecedenceOK(DirectCast(al.ToArray(GetType(Pair)), Pair()))
+			RaiseEvent PrecedenceOK(DirectCast(al.ToArray(GetType(kCura.WinEDDS.Pair)), kCura.WinEDDS.Pair()))
 		End Sub
 
 		Private Sub _cancelButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _cancelButton.Click
 			Me.Close()
 		End Sub
 
-		Public Event PrecedenceOK(ByVal precedenceList As Pair())
+		Public Event PrecedenceOK(ByVal precedenceList As kCura.WinEDDS.Pair())
 
 		Private Sub _originalImages_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _originalImages.CheckedChanged
 			If _originalImages.Checked Then
@@ -280,9 +280,10 @@ Namespace kCura.EDDS.WinForm
 				_layoutDifferenceList.Add(New RelativeLayoutData(_productions, LayoutBasePropertyTypeForDifference.Right, LabelSelectedProductions, LayoutRelativePropertyTypeForDifference.Left))
 			End If
 
-			_layoutDifferenceList.ForEach(Sub(x)
-																			x.InitializeDifference()
-																		End Sub)
+			_layoutDifferenceList.ForEach(
+			Sub(x)
+				x.InitializeDifference()
+			End Sub)
 
 			_layoutReferenceDistance = CalcReferenceDistance()
 

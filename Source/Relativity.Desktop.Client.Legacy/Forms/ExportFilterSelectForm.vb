@@ -1,6 +1,6 @@
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
 	Public Class ExportFilterSelectForm
-		Inherits kCura.EDDS.WinForm.SelectFormBase
+		Inherits SelectFormBase
 
 #Region " Declarations & Properties "
 		Private _selectedItemArtifactIDs As Generic.List(Of Int32)

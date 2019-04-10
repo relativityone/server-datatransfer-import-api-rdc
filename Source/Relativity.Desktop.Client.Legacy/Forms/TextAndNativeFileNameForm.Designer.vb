@@ -1,4 +1,4 @@
-﻿Namespace kCura.EDDS.WinForm.Forms
+﻿Namespace Relativity.Desktop.Client
 	<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 	Partial Class TextAndNativeFileNameForm
 		Inherits System.Windows.Forms.Form

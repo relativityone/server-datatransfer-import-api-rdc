@@ -17,12 +17,7 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Overridable Function TransformExportFileXml(ByVal input As XDocument) As String
-			' HACK! This is a temporary workaround to address serialization compatibility until a proper solution is in place.
-			Dim xml As String = input.ToString
-			Dim assembly As System.Reflection.AssemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName()
-			xml = xml.Replace("/kCura.WinEDDS%2C%20Version%3D",
-			                  $"/{assembly.Name}%2C%20Version%3D")
-			Return xml
+			Return input.ToString
 		End Function
 
 		Public Overridable Function DeserializeExportFile(ByVal currentExportFile As kCura.WinEDDS.ExportFile, ByVal xml As String) As kCura.WinEDDS.ExtendedExportFile
@@ -67,17 +62,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Overridable Function DeserializeExportFile(ByVal xml As XDocument) As ExportFile
-			Dim deserializer As New System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-			Dim cleansedInput As String = Me.TransformExportFileXml(xml)
-			Dim sr As New System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(cleansedInput))
-			Dim deserialized As kCura.WinEDDS.ExportFile = Nothing
-			Try
-				deserialized = DirectCast(deserializer.Deserialize(sr), WinEDDS.ExportFile)
-			Catch
-				Throw
-			Finally
-				sr.Close()
-			End Try
+			Dim scrubbed As String = Me.TransformExportFileXml(xml)
+			Dim deserialized As kCura.WinEDDS.ExportFile = Global.Relativity.Import.Export.SerializationHelper.DeserializeFromSoap(Of kCura.WinEDDS.ExportFile)(scrubbed)
 			Return deserialized
 		End Function
 

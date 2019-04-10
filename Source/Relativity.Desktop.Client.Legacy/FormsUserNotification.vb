@@ -1,6 +1,6 @@
 ﻿Imports kCura.WinEDDS.Exporters
 
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
 	Public Class FormsUserNotification
 		Implements IUserNotification
 		Public Function AlertWarningSkippable(message As String) As Boolean Implements IUserNotification.AlertWarningSkippable
@@ -20,5 +20,4 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 	End Class
-
 End Namespace

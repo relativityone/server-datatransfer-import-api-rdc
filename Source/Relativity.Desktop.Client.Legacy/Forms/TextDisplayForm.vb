@@ -1,9 +1,11 @@
-Namespace kCura.EDDS.WinForm.Forms
+Imports Relativity.Import.Export.Process
+
+Namespace Relativity.Desktop.Client
 	Public Class TextDisplayForm
 		Inherits System.Windows.Forms.Form
 
-	#Region " Windows Form Designer generated code "
-		Private _application As kCura.EDDS.WinForm.Application
+#Region " Windows Form Designer generated code "
+		Private _application As Global.Relativity.Desktop.Client.Application
 
 		Public Sub New()
 			MyBase.New()
@@ -11,7 +13,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			'This call is required by the Windows Form Designer.
 			InitializeComponent()
 			'Add any initialization after the InitializeComponent() call
-			_application = kCura.EDDS.WinForm.Application.Instance
+			_application = Global.Relativity.Desktop.Client.Application.Instance
 		End Sub
 
 		'Form overrides dispose to clean up the component list.
@@ -63,16 +65,16 @@ Namespace kCura.EDDS.WinForm.Forms
 
 		End Sub
 
-	#End Region
+#End Region
 
-		Public WithEvents ProcessObserver As kCura.Windows.Process.ProcessObserver
+		Public WithEvents Context As ProcessContext
 
-		Private Sub ProcessObserver_OnProcessEvent(ByVal evt As kCura.Windows.Process.ProcessEvent) Handles ProcessObserver.OnProcessEvent
+		Private Sub ProcessObserver_OnProcessEvent(ByVal sender As Object, ByVal e As ProcessEventArgs) Handles Context.ProcessEvent
 			_application.CursorWait()
-			If Not evt.Message.Contains(vbLf) Then
-				Me.AppendText(evt.Message & vbNewLine)
+			If Not e.Message.Contains(vbLf) Then
+				Me.AppendText(e.Message & vbNewLine)
 			Else
-				For Each s As String In evt.Message.Split(New String() {vbLf}, StringSplitOptions.None)
+				For Each s As String In e.Message.Split(New String() {vbLf}, StringSplitOptions.None)
 					Me.AppendText(s & vbNewLine)
 				Next
 			End If

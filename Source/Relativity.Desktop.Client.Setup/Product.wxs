@@ -8,8 +8,8 @@
            Codepage="1252"
            Language="1033"
            Version="!(bind.FileVersion.Relativity.Desktop.Client.exe)"
-           Manufacturer="Relativity ODA LLC"
-           UpgradeCode="$(var.UpgradeCode)">
+           UpgradeCode="$(var.UpgradeCode)"
+           Manufacturer="Relativity ODA LLC">
     <Package Description="$(var.ProductName) Installer package"
              Comments="$(var.ProductName) Windows Installer database"
              Manufacturer="Relativity ODA LLC"
@@ -19,8 +19,11 @@
 		         InstallScope="perMachine"  />
     <Condition Message="!(loc.AdminPrivilegesRequired)">Privileged</Condition>
 
-    <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeErrorMessage)" AllowSameVersionUpgrades="no"
-                  Schedule="afterInstallInitialize" AllowDowngrades="no"/>
+    <!-- Set AllowSameVersionUpgrades to 'yes' to support PATCH upgrades (e.g. for SEMVER support) -->
+    <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeErrorMessage)"
+                  AllowSameVersionUpgrades="yes"
+                  Schedule="afterInstallInitialize"
+                  AllowDowngrades="no"/>
 
     <!-- UI Extensions -->
     <UIRef Id="WixUI_MondoNoLicense" />
@@ -186,29 +189,19 @@
       <MergeRef Id="VCRedistCRT.x86"/>
     </Feature>
 
-    <!-- Prevent downgrading -->
-    <CustomAction Id="PreventDowngrading" Error="Unable to install because a newer version of this product is already installed." />
-
-    <!-- Set properties for all common workflows -->
-    <SetProperty After="FindRelatedProducts" Id="FirstInstall" Value="true">NOT Installed AND NOT WIX_UPGRADE_DETECTED AND NOT WIX_DOWNGRADE_DETECTED</SetProperty>
-    <SetProperty After="SetFirstInstall" Id="Upgrading" Value="true">WIX_UPGRADE_DETECTED AND NOT (REMOVE="ALL")</SetProperty>
-    <SetProperty After="RemoveExistingProducts" Id="RemovingForUpgrade" Sequence="execute" Value="true">(REMOVE="ALL") AND UPGRADINGPRODUCTCODE</SetProperty>
-    <SetProperty After="SetUpgrading" Id="Uninstalling" Value="true">Installed AND (REMOVE="ALL") AND NOT (WIX_UPGRADE_DETECTED OR UPGRADINGPRODUCTCODE)</SetProperty>
-    <SetProperty After="SetUninstalling" Id="Maintenance" Value="true">Installed AND NOT Upgrading AND NOT Uninstalling AND NOT UPGRADINGPRODUCTCODE</SetProperty>
-
     <!-- Don't overwrite the existing app.config during the upgrade! -->
     <SetProperty Id="BackupConfiguration"
                  Value="SOURCEAPPCONFIGFILE=[SOURCEAPPCONFIGFILE]"
                  Before="BackupConfiguration"
-                 Sequence="execute"><![CDATA[Upgrading= "true"]]></SetProperty>
+                 Sequence="execute">WIX_UPGRADE_DETECTED</SetProperty>
     <SetProperty Id="RestoreConfiguration" 
                  Value="SOURCEAPPCONFIGFILE=[SOURCEAPPCONFIGFILE];TARGETAPPCONFIGFILE=[#Relativity.Desktop.Client.Config];UILevel=[UILevel];ProductName=[ProductName]"
                  Before="RestoreConfiguration"
-                 Sequence="execute"><![CDATA[Upgrading= "true"]]></SetProperty>
+                 Sequence="execute">WIX_UPGRADE_DETECTED</SetProperty>
     <SetProperty Id="Cleanup"
                  Value="SOURCEAPPCONFIGFILE=[SOURCEAPPCONFIGFILE]"
                  Before="Cleanup"
-                 Sequence="execute"><![CDATA[Upgrading= "true"]]></SetProperty>
+                 Sequence="execute">WIX_UPGRADE_DETECTED</SetProperty>
     <SetProperty Id="CloseRunningApplications"
                  Value="APP_PROCESS_NAME=[APP_PROCESS_NAME];UILevel=[UILevel];ProductName=[ProductName]"
                  Before="CloseRunningApplications"
@@ -217,9 +210,9 @@
     <!-- Sequences -->
     <InstallExecuteSequence>     
       <Custom Action="CloseRunningApplications" After="InstallInitialize">1</Custom>
-      <Custom Action="BackupConfiguration" After="CloseRunningApplications"><![CDATA[Upgrading = "true"]]></Custom>
-      <Custom Action="RestoreConfiguration" After="WriteRegistryValues"><![CDATA[Upgrading = "true"]]></Custom>
-      <Custom Action="Cleanup" After="RestoreConfiguration"><![CDATA[Upgrading = "true"]]></Custom>
+      <Custom Action="BackupConfiguration" After="CloseRunningApplications">WIX_UPGRADE_DETECTED</Custom>
+      <Custom Action="RestoreConfiguration" After="WriteRegistryValues">WIX_UPGRADE_DETECTED</Custom>
+      <Custom Action="Cleanup" After="RestoreConfiguration">WIX_UPGRADE_DETECTED</Custom>
     </InstallExecuteSequence>
   </Product>
 </Wix>

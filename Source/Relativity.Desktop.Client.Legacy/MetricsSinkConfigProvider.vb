@@ -1,7 +1,7 @@
 ﻿Imports System.Threading.Tasks
 Imports kCura.WinEDDS.Monitoring
 
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
 
 	Public Class MetricsSinkConfigProvider
 		Private Shared ReadOnly _CONFIG_REFRESH_TIME As TimeSpan = TimeSpan.FromMinutes(1)
@@ -20,17 +20,17 @@ Namespace kCura.EDDS.WinForm
 		End Property
 
 		Private Sub ToggleRefresh()
-			If _configRefreshTask Is Nothing OrElse _configRefreshTask.IsCanceled OrElse _configRefreshTask.IsCompleted OrElse _configRefreshTask.IsFaulted 
+			If _configRefreshTask Is Nothing OrElse _configRefreshTask.IsCanceled OrElse _configRefreshTask.IsCompleted OrElse _configRefreshTask.IsFaulted Then
 				_configRefreshTask = Task.Run(New Action(AddressOf RefreshConfiguration))
 			End If
 		End Sub
 
 		Private Sub RefreshConfiguration()
 			Dim config = New MetricsSinkConfig With {
-				.ThrottleTimeout = TimeSpan.FromSeconds(EDDS.WinForm.Config.RdcMetricsThrottlingSeconds),
-				.SendLiveApmMetrics = EDDS.WinForm.Config.SendLiveApmMetrics,
-				.SendSumMetrics = EDDS.WinForm.Config.SendSumMetrics,
-				.SendSummaryApmMetrics = EDDS.WinForm.Config.SendSummaryApmMetrics
+				.ThrottleTimeout = TimeSpan.FromSeconds(Relativity.Desktop.Client.Config.RdcMetricsThrottlingSeconds),
+				.SendLiveAPMMetrics = Relativity.Desktop.Client.Config.SendLiveApmMetrics,
+				.SendSumMetrics = Relativity.Desktop.Client.Config.SendSumMetrics,
+				.SendSummaryApmMetrics = Relativity.Desktop.Client.Config.SendSummaryApmMetrics
 			}
 			_currentConfig = config
 		End Sub

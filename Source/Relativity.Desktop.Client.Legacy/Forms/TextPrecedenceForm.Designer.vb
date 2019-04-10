@@ -1,4 +1,6 @@
-﻿Namespace kCura.EDDS.WinForm
+﻿Imports Relativity.Desktop.Client.Legacy.Controls
+
+Namespace Relativity.Desktop.Client
 	<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 	Partial Class TextPrecedenceForm
 		Inherits System.Windows.Forms.Form
@@ -49,7 +51,7 @@
 			'
 			'_longTextFields - must be defined in InitializeComponent, otherwise medium & high DPI don't work
 			'
-			Me._longTextFieldsTwoListBox = New kCura.Windows.Forms.TwoListBox()
+			Me._longTextFieldsTwoListBox = New TwoListBox()
 			Me._longTextFieldsTwoListBox.Name = "_longTextFields"
 			Me._longTextFieldsTwoListBox.Location = New System.Drawing.Point(8, 24)
 			Me._longTextFieldsTwoListBox.Size = New System.Drawing.Size(356, 276)

@@ -1,5 +1,4 @@
-Imports kCura.CommandLine
-Imports kCura.EDDS.WinForm
+Imports Relativity.Desktop.Client
 
 Public Class AuthenticationOptions
 	Private _userName As String
@@ -10,7 +9,7 @@ Public Class AuthenticationOptions
 
 	Public Property UserName As String
 		Get
-			return _userName
+			Return _userName
 		End Get
 		Private Set(value As String)
 			_userName = value
@@ -19,7 +18,7 @@ Public Class AuthenticationOptions
 
 	Public Property Password As String
 		Get
-			return _password
+			Return _password
 		End Get
 		Private Set(value As String)
 			_password = value
@@ -31,21 +30,21 @@ Public Class AuthenticationOptions
 
 	Public Sub CredentialsAreSet()
 
-		Dim usernameExists As Boolean = Not String.IsNullOrEmpty(Username)
+		Dim usernameExists As Boolean = Not String.IsNullOrEmpty(UserName)
 		Dim passwordExists As Boolean = Not String.IsNullOrEmpty(Password)
 		Dim clientIDExists As Boolean = Not String.IsNullOrEmpty(ClientId)
 		Dim clientSecretExists As Boolean = Not String.IsNullOrEmpty(ClientSecret)
 
 		If (usernameExists Or passwordExists) AndAlso (clientIDExists Or clientSecretExists) Then
-			Throw New Exceptions.MultipleCredentialException
+			Throw New MultipleCredentialException
 		End If
 
 		If Not clientIDExists AndAlso Not clientSecretExists Then
-			If Not usernameExists Then Throw New Exceptions.UsernameException
-			If Not passwordExists Then Throw New Exceptions.PasswordException
+			If Not usernameExists Then Throw New UsernameException
+			If Not passwordExists Then Throw New PasswordException
 		Else
-			If Not clientIDExists Then Throw New Exceptions.ClientIDException
-			If Not clientSecretExists Then Throw New Exceptions.ClientSecretException
+			If Not clientIDExists Then Throw New ClientIDException
+			If Not clientSecretExists Then Throw New ClientSecretException
 		End If
 	End Sub
 

@@ -1,10 +1,7 @@
-﻿Imports System.Collections.Generic
-Imports System.Linq
-Imports Relativity
-Imports System.IO
+﻿Imports System.IO
 Imports System.Text
 
-Namespace kCura.EDDS.WinForm.Forms
+Namespace Relativity.Desktop.Client
 	Public Class TextAndNativeFileNameForm
 
 		Private Const CustomTextOption As String = "Custom Text..."
@@ -28,7 +25,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			New SeparatorSelection("  (space)", " "),
 			New SeparatorSelection(" (none)", "")
 		}
-		
+
 		Private _firstFields As List(Of FieldSelection)
 		Private _availableFields As List(Of FieldSelection)
 		Private _fieldControls As List(Of SingleFieldControls)
@@ -313,7 +310,7 @@ Namespace kCura.EDDS.WinForm.Forms
 
 		Private Function IsFirstFieldSelected() As Boolean
 			Dim selectedItem = TryCast(_firstFieldComboBox.SelectedItem, FieldSelection)
-			If selectedItem.DisplayName = SelectFirstFieldText AndAlso selectedItem.ID = FirstFieldIds.SelectField
+			If selectedItem.DisplayName = SelectFirstFieldText AndAlso selectedItem.ID = FirstFieldIds.SelectField Then
 				Dim firstFieldHasToBeSelectedErrorMessage As String = "- No first field selected!"
 				validationErrors.Add(firstFieldHasToBeSelectedErrorMessage)
 				Return False
@@ -322,7 +319,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			Return True
 		End Function
 
-		Private Function IsCustomTextFieldValid As Boolean
+		Private Function IsCustomTextFieldValid() As Boolean
 			For Each control As SingleFieldControls In _fieldControls
 				If control IsNot Nothing AndAlso Not IsCustomTextValid(control) Then
 					Dim illegalCharsErrorMessage As String = "- Illegal characters in custom text box field!"
@@ -336,7 +333,7 @@ Namespace kCura.EDDS.WinForm.Forms
 			Dim strIllegalChars As String = Path.GetInvalidFileNameChars() & Path.GetInvalidPathChars() & "',þ"
 			If control.CustomTextBox IsNot Nothing AndAlso control.CustomTextBox.Visible Then
 				For Each c As Char In control.CustomTextBox.Text
-					If strIllegalChars.Contains(c)
+					If strIllegalChars.Contains(c) Then
 						Return False
 					End If
 				Next
@@ -349,7 +346,7 @@ Namespace kCura.EDDS.WinForm.Forms
 		Protected Class FieldSelection
 			Implements ISelection
 			Public Sub New(displayName As String, id As Integer)
-				Me.New(displayName, id, false)
+				Me.New(displayName, id, False)
 			End Sub
 			Public Sub New(displayName As String, id As Integer, isProduction As Boolean)
 				Me.DisplayName = displayName

@@ -218,6 +218,13 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <inheritdoc />
+		public string ReadAllText(string path)
+		{
+			path = this.instance.NormalizePath(path);
+			return System.IO.File.ReadAllText(path);
+		}
+
+		/// <inheritdoc />
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
 			"Microsoft.Reliability",
 			"CA2000:Dispose objects before losing scope",

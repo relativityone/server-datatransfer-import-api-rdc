@@ -1,10 +1,8 @@
-
-Imports System.Threading.Tasks
-Imports kCura.EDDS.WinForm.Exceptions
 Imports kCura.WinEDDS.Container
-Imports kCura.WinEDDS.Core.Export.VolumeManagerV2.Container
+Imports Relativity.Export.VolumeManagerV2.Container
+Imports Relativity.Import.Export
 
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
 
 	Public Module Startup
 
@@ -17,11 +15,11 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 #Region " Members "
-		Friend _application As kCura.EDDS.WinForm.Application
+		Friend _application As Global.Relativity.Desktop.Client.Application
 		Friend HasSetUsername As Boolean = False
 		Friend HasSetPassword As Boolean = False
 		Private _importOptions As ImportOptions = New ImportOptions()
-		Private _authOptions As AuthenticationOptions = new AuthenticationOptions()
+		Private _authOptions As AuthenticationOptions = New AuthenticationOptions()
 #End Region
 
 #Region " Enumerations "
@@ -37,28 +35,28 @@ Namespace kCura.EDDS.WinForm
 #End Region
 
 		Public Sub Main()
-			ContainerFactoryProvider.ContainerFactory = new ContainerFactory()
+			ContainerFactoryProvider.ContainerFactory = New ContainerFactory()
 			Dim handler As ThreadExceptionHandler = New ThreadExceptionHandler()
 			AddHandler System.Windows.Forms.Application.ThreadException, AddressOf handler.Application_ThreadException
 
 			Dim args As String() = System.Environment.GetCommandLineArgs
 
-            If args.Length = 1 Then
-                CloseConsole()
-                Dim mainForm As New kCura.EDDS.WinForm.MainForm()
+			If args.Length = 1 Then
+				CloseConsole()
+				Dim mainForm As New MainForm()
 
-                mainForm.Show()
-                mainForm.Refresh()
-                System.Windows.Forms.Application.Run()
-            Else
-                Task.Run(Async Function() As Task
-                             Await RunInConsoleMode().ConfigureAwait(False)
-                         End Function).Wait()
-            End If
-        End Sub
+				mainForm.Show()
+				mainForm.Refresh()
+				System.Windows.Forms.Application.Run()
+			Else
+				Task.Run(Async Function() As Task
+							 Await RunInConsoleMode().ConfigureAwait(False)
+						 End Function).Wait()
+			End If
+		End Sub
 
-		Private Function GetValueFromCommandListByFlag(ByVal commandList As kCura.CommandLine.CommandList, ByVal flag As String) As String
-			For Each command As kCura.CommandLine.Command In commandList
+		Private Function GetValueFromCommandListByFlag(ByVal commandList As CommandList, ByVal flag As String) As String
+			For Each command As Command In commandList
 				If command.Directive.ToLower.Replace("-", "").Replace("/", "") = flag.ToLower Then
 					If command.Value Is Nothing Then Return ""
 					Return command.Value
@@ -81,11 +79,11 @@ Namespace kCura.EDDS.WinForm
 
 		Private Async Function RunInConsoleMode() As Task
 			Try
-				_application = kCura.EDDS.WinForm.Application.Instance
-                Dim _import As ImportManager = New ImportManager()
+				_application = Global.Relativity.Desktop.Client.Application.Instance
+				Dim _import As ImportManager = New ImportManager()
 
-                Dim commandList As kCura.CommandLine.CommandList = kCura.CommandLine.CommandLineParser.Parse
-				For Each command As kCura.CommandLine.Command In commandList
+				Dim commandList As CommandList = CommandLineParser.Parse
+				For Each command As Command In commandList
 					If command.Directive.ToLower.Replace("-", "").Replace("/", "") = "h" Then
 						If command.Value Is Nothing OrElse command.Value = "" Then
 							GetHelpPage()
@@ -102,37 +100,37 @@ Namespace kCura.EDDS.WinForm
 
 				_authOptions.SetCredentials(commandList)
 
-				If kCura.WinEDDS.Config.WebServiceURL = "" OrElse Not UrlIsValid(kCura.WinEDDS.Config.WebServiceURL) Then
+				If AppSettings.Instance.WebApiServiceUrl = "" OrElse Not UrlIsValid(AppSettings.Instance.WebApiServiceUrl) Then
 					Console.WriteLine("Web Service URL not set or not accessible.  Please enter:")
 					Dim webserviceurl As String = Console.ReadLine
 					While Not UrlIsValid(webserviceurl)
 						Console.WriteLine("Invalid Web Service URL set.  Retry:")
 						webserviceurl = Console.ReadLine.Trim
 					End While
-					kCura.WinEDDS.Config.WebServiceURL = webserviceurl
+					AppSettings.Instance.WebApiServiceUrl = webserviceurl
 				End If
-				Dim defaultCredentialResult As Application.CredentialCheckResult = _application.AttemptWindowsAuthentication()
-				If defaultCredentialResult = Application.CredentialCheckResult.AccessDisabled Then
-					Console.WriteLine(Application.ACCESS_DISABLED_MESSAGE)
+				Dim defaultCredentialResult As Global.Relativity.Desktop.Client.Application.CredentialCheckResult = _application.AttemptWindowsAuthentication()
+				If defaultCredentialResult = Global.Relativity.Desktop.Client.Application.CredentialCheckResult.AccessDisabled Then
+					Console.WriteLine(Global.Relativity.Desktop.Client.Application.ACCESS_DISABLED_MESSAGE)
 					Return
-				ElseIf Not defaultCredentialResult = Application.CredentialCheckResult.Success Then
+				ElseIf Not defaultCredentialResult = Global.Relativity.Desktop.Client.Application.CredentialCheckResult.Success Then
 
 					_authOptions.CredentialsAreSet()
 
-					Dim loginResult As Application.CredentialCheckResult = Application.CredentialCheckResult.NotSet
+					Dim loginResult As Global.Relativity.Desktop.Client.Application.CredentialCheckResult = Global.Relativity.Desktop.Client.Application.CredentialCheckResult.NotSet
 					Try
 						loginResult = _application.Login(_authOptions)
 					Catch ex As Exception
-						loginResult = Application.CredentialCheckResult.Fail
+						loginResult = Global.Relativity.Desktop.Client.Application.CredentialCheckResult.Fail
 					End Try
-					If loginResult = Application.CredentialCheckResult.AccessDisabled Then
-						Console.WriteLine(Application.ACCESS_DISABLED_MESSAGE)
+					If loginResult = Global.Relativity.Desktop.Client.Application.CredentialCheckResult.AccessDisabled Then
+						Console.WriteLine(Global.Relativity.Desktop.Client.Application.ACCESS_DISABLED_MESSAGE)
 						Return
-					ElseIf loginResult = Application.CredentialCheckResult.InvalidClientCredentials Then
+					ElseIf loginResult = Global.Relativity.Desktop.Client.Application.CredentialCheckResult.InvalidClientCredentials Then
 						Throw New ClientCrendentialsException
-					ElseIf loginResult = Application.CredentialCheckResult.FailToConnectToIdentityServer Then
+					ElseIf loginResult = Global.Relativity.Desktop.Client.Application.CredentialCheckResult.FailToConnectToIdentityServer Then
 						Throw New ConnectToIdentityServerException
-					ElseIf Not loginResult = Application.CredentialCheckResult.Success Then
+					ElseIf Not loginResult = Global.Relativity.Desktop.Client.Application.CredentialCheckResult.Success Then
 						Throw New CredentialsException
 					End If
 
@@ -149,16 +147,16 @@ Namespace kCura.EDDS.WinForm
 						_import.RunDynamicObjectImport(_importOptions)
 					Case LoadMode.Application
 						Throw New InvalidOperationException("Load file is not supported for application imports")
-                    Case LoadMode.Export
-                        Await _import.RunExport(_importOptions.SelectedExportSettings)
-                End Select
+					Case LoadMode.Export
+						Await _import.RunExport(_importOptions.SelectedExportSettings)
+				End Select
 
-                Await _application.Logout()
-            Catch ex As RdcBaseException
+				Await _application.Logout()
+			Catch ex As RdcBaseException
 				Console.WriteLine("--------------------------")
 				Console.WriteLine("ERROR: " & ex.Message)
 				Console.WriteLine("")
-				Console.WriteLine("Use kCura.EDDS.WinForm.exe -h for help")
+				Console.WriteLine("Use Relativity.Desktop.Client.Application.exe -h for help")
 				Console.WriteLine("--------------------------")
 			Catch ex As Exception
 				Console.WriteLine("--------------------------")
@@ -178,11 +176,14 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub GetHelpPage()
-			Console.WriteLine(kCura.Utility.Resources.Helper.RetrieveDataFromResource("StringConstants", "HelpPage"))
+			Dim assembly As System.Reflection.Assembly = System.Reflection.Assembly.GetExecutingAssembly()
+			Dim resourceManager As System.Resources.ResourceManager = New System.Resources.ResourceManager("StringConstants", assembly)
+			Dim contents = resourceManager.GetString("HelpPage")
+			Console.WriteLine(contents)
 		End Sub
 
 		Private Sub GetEncodingList()
-			For Each encodingItem As kCura.EDDS.WinForm.EncodingItem In kCura.EDDS.WinForm.Constants.AllEncodings
+			For Each encodingItem As EncodingItem In Constants.AllEncodings
 				Console.WriteLine(encodingItem.CodePageId.ToString.PadLeft(6, " "c) & "  " & encodingItem.ToString)
 			Next
 		End Sub

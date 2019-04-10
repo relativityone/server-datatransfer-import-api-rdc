@@ -1,101 +1,100 @@
 Imports Aspera.Transfer
-Namespace kCura.EDDS.WinForm
-    Public Class CommandLineProcessRunner
-        Private WithEvents _observer As kCura.Windows.Process.ProcessObserver
-        Private WithEvents _controller As kCura.Windows.Process.Controller
-        Private _lastUpdated As Long = 0
-        Private _hasReceivedFatalError As Boolean = False
-        Private _hasReceivedLineError As Boolean = False
-        Private _hasReceivedLineWarning As Boolean = False
-        Private _exportErrorReportLocation As String = ""
-        Private _exportErrorFileLocation As String = ""
+Imports Relativity.Import.Export.Process
 
-        Public Enum ParsableLineType
-            Status
-            Warning
-            LineError
-            FatalError
-        End Enum
+Namespace Relativity.Desktop.Client
+	Public Class CommandLineProcessRunner
+		Private WithEvents _context As ProcessContext
+		Private _lastUpdated As Long = 0
+		Private _hasReceivedFatalError As Boolean = False
+		Private _hasReceivedLineError As Boolean = False
+		Private _hasReceivedLineWarning As Boolean = False
+		Private _exportErrorReportLocation As String = ""
+		Private _exportErrorFileLocation As String = ""
 
-        Public Sub New(ByVal observer As kCura.Windows.Process.ProcessObserver, ByVal controller As kCura.Windows.Process.Controller, ByVal exportErrorFileLocation As String, ByVal exportErrorReportLocation As String)
-            If observer Is Nothing Then
-                Throw New ArgumentNullException("observer")
-            End If
+		Public Enum ParsableLineType
+			Status
+			Warning
+			LineError
+			FatalError
+		End Enum
 
-            If controller Is Nothing Then
-                Throw New ArgumentNullException("controller")
-            End If
+		Public Sub New(ByVal context As ProcessContext, ByVal exportErrorFileLocation As String, ByVal exportErrorReportLocation As String)
+			If context Is Nothing Then
+				Throw New ArgumentNullException("context")
+			End If
 
-            _observer = observer
-            AddHandler _observer.OnProcessEvent, AddressOf _observer_OnProcessEvent
+			_context = context
 
-            _controller = controller
+			If Not exportErrorFileLocation Is Nothing Then
+				_exportErrorFileLocation = exportErrorFileLocation
+			End If
 
-            If Not exportErrorFileLocation Is Nothing Then _exportErrorFileLocation = exportErrorFileLocation
-            If Not exportErrorReportLocation Is Nothing Then _exportErrorReportLocation = exportErrorReportLocation
-        End Sub
+			If Not exportErrorReportLocation Is Nothing Then
+				_exportErrorReportLocation = exportErrorReportLocation
+			End If
+		End Sub
 
-        Private Sub _observer_OnProcessEvent(ByVal evt As kCura.Windows.Process.ProcessEvent)
-            Select Case evt.Type
-                Case kCura.Windows.Process.ProcessEventTypeEnum.Status
-                    WriteLine(evt.Message + " " + evt.RecordInfo, ParsableLineType.Status)
-                Case kCura.Windows.Process.ProcessEventTypeEnum.Error
-                    WriteLine(evt.Message, ParsableLineType.LineError)
-                    _hasReceivedLineError = True
-                Case kCura.Windows.Process.ProcessEventTypeEnum.Warning
-                    WriteLine(evt.Message, ParsableLineType.Warning)
-                    _hasReceivedLineWarning = True
-            End Select
-        End Sub
+		Private Sub _context_OnProcessEvent(ByVal sender As Object, ByVal e As ProcessEventArgs) Handles _context.ProcessEvent
+			Select Case e.EventType
+				Case ProcessEventType.Status
+					WriteLine(e.Message + " " + e.RecordInfo, ParsableLineType.Status)
+				Case ProcessEventType.Error
+					WriteLine(e.Message, ParsableLineType.LineError)
+					_hasReceivedLineError = True
+				Case ProcessEventType.Warning
+					WriteLine(e.Message, ParsableLineType.Warning)
+					_hasReceivedLineWarning = True
+			End Select
+		End Sub
 
-        Private Sub _observer_OnProcessProgressEvent(ByVal evt As kCura.Windows.Process.ProcessProgressEvent) Handles _observer.OnProcessProgressEvent
-            Dim now As Long = System.DateTime.Now.Ticks
-            If now - _lastUpdated > 10000000 Then
-                _lastUpdated = now
-                WriteLine(vbTab & evt.TotalRecordsProcessedDisplay + " of " + evt.TotalRecordsDisplay + " processed", ParsableLineType.Status)
-            End If
-        End Sub
+		Private Sub _context_OnProcessProgressEvent(ByVal sender As Object, ByVal e As ProgressEventArgs) Handles _context.Progress
+			Dim now As Long = System.DateTime.Now.Ticks
+			If now - _lastUpdated > 10000000 Then
+				_lastUpdated = now
+				WriteLine(vbTab & e.TotalProcessedRecordsDisplay + " of " + e.TotalRecordsDisplay + " processed", ParsableLineType.Status)
+			End If
+		End Sub
 
-        Private Sub _observer_OnProcessComplete(ByVal closeForm As Boolean, ByVal exportFilePath As String, ByVal exportLog As Boolean) Handles _observer.OnProcessComplete
-            If _hasReceivedFatalError Then
-                WriteLine("Fatal Exception Encountered", ParsableLineType.Status)
-            ElseIf Not _hasReceivedLineError AndAlso Not _hasReceivedLineWarning Then
-                WriteLine("All records have been successfully processed", ParsableLineType.Status)
-            Else
-                Dim x As String = ""
-                If _hasReceivedLineWarning Then
-                    x &= "Some records were processed with warnings"
-                End If
-                If _hasReceivedLineError Then
-                    x &= "Some records were not processed due to errors"
-                End If
-                WriteLine(x, ParsableLineType.Status)
-            End If
-            If _hasReceivedLineError Then
-                If _exportErrorFileLocation <> "" Then _controller.ExportErrorFile(_exportErrorFileLocation)
-                If _exportErrorReportLocation <> "" Then _controller.ExportErrorReport(_exportErrorReportLocation)
-            End If
-            Try
-                FaspManager.destroy()
-            Catch e As NullReferenceException
-                ' catch NullReferenceException which occurs when FaspManager is was not created by TAPI
-                ' this is a case when transfer mode is not "Aspera"
-                ' this is needed in CLI flow to enable the process to exit, becaue FaspManager thread is blocking the process from ending
-            End Try
-        End Sub
+		Private Sub _context_OnProcessComplete(ByVal sender As Object, ByVal e As ProcessCompleteEventArgs) Handles _context.ProcessCompleted
+			If _hasReceivedFatalError Then
+				WriteLine("Fatal Exception Encountered", ParsableLineType.Status)
+			ElseIf Not _hasReceivedLineError AndAlso Not _hasReceivedLineWarning Then
+				WriteLine("All records have been successfully processed", ParsableLineType.Status)
+			Else
+				Dim x As String = ""
+				If _hasReceivedLineWarning Then
+					x &= "Some records were processed with warnings"
+				End If
+				If _hasReceivedLineError Then
+					x &= "Some records were not processed due to errors"
+				End If
+				WriteLine(x, ParsableLineType.Status)
+			End If
+			If _hasReceivedLineError Then
+				If _exportErrorFileLocation <> "" Then _context.PublishExportErrorFile(_exportErrorFileLocation)
+				If _exportErrorReportLocation <> "" Then _context.PublishExportErrorReport(_exportErrorReportLocation)
+			End If
+			Try
+				FaspManager.destroy()
+			Catch ex As NullReferenceException
+				' catch NullReferenceException which occurs when FaspManager is was not created by TAPI
+				' this is a case when transfer mode is not "Aspera"
+				' this is needed in CLI flow to enable the process to exit, becaue FaspManager thread is blocking the process from ending
+			End Try
+		End Sub
 
-		Private Sub _observer_OnProcessFatalException(ByVal ex As System.Exception) Handles _observer.OnProcessFatalException
+		Private Sub _context_OnProcessFatalException(ByVal sender As Object, ByVal e As FatalExceptionEventArgs) Handles _context.FatalException
 			WriteLine("Fatal Exception Encountered", ParsableLineType.FatalError)
-			WriteLine(ex.ToString, ParsableLineType.FatalError)
+			WriteLine(e.ToString, ParsableLineType.FatalError)
 			_hasReceivedFatalError = True
 		End Sub
 
-		Private Sub _observer_ErrorReportEvent(ByVal row As System.Collections.IDictionary) Handles _observer.ErrorReportEvent
+		Private Sub _context_ErrorReportEvent(ByVal sender As Object, ByVal e As ErrorReportEventArgs) Handles _context.ErrorReport
 			'Forms only
 		End Sub
 
-		Private Sub _processObserver_StatusBarEvent(ByVal message As String, ByVal popupText As String) Handles _observer.StatusBarEvent
-			WriteLine(message, ParsableLineType.Status)
+		Private Sub _processObserver_StatusBarEvent(ByVal sender As Object, ByVal e As StatusBarEventArgs) Handles _context.StatusBarChanged
+			WriteLine(e.Message, ParsableLineType.Status)
 		End Sub
 
 		Private Sub WriteLine(ByVal line As String, ByVal lineType As ParsableLineType)

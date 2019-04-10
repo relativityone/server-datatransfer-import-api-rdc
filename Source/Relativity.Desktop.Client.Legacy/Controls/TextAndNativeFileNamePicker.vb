@@ -1,8 +1,6 @@
-﻿Imports System.Collections.Generic
-Imports System.Text
-Imports kCura.EDDS.WinForm.Forms
+﻿Imports kCura.WinEDDS
 
-Namespace kCura.EDDS.WinForm.Controls
+Namespace Relativity.Desktop.Client
 	Public Class TextAndNativeFileNamePicker
 
 		Public Const SelectOption = "Select..."
@@ -11,9 +9,9 @@ Namespace kCura.EDDS.WinForm.Controls
 		Public Const CustomOption = "Custom"
 
 		Private WithEvents _form As TextAndNativeFileNameForm
-		Private _fields As ViewFieldInfo()
+		Private _fields As kCura.WinEDDS.ViewFieldInfo()
 
-		Public Sub Initialize(exportType As ExportFile.ExportType, fields As ViewFieldInfo())
+		Public Sub Initialize(exportType As ExportFile.ExportType, fields As kCura.WinEDDS.ViewFieldInfo())
 			_fields = fields
 			_comboBox.Items.Clear()
 			AddDropdownItems(exportType)

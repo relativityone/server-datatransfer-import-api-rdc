@@ -1,4 +1,6 @@
-Namespace kCura.EDDS.WinForm
+Imports Relativity.Import.Export
+
+Namespace Relativity.Desktop.Client
 	Public Class OptionsForm
 		Inherits System.Windows.Forms.Form
 
@@ -11,7 +13,7 @@ Namespace kCura.EDDS.WinForm
 			InitializeComponent()
 
 			'Add any initialization after the InitializeComponent() call
-			_application = kCura.EDDS.WinForm.Application.Instance
+			_application = Global.Relativity.Desktop.Client.Application.Instance
 
 		End Sub
 
@@ -155,7 +157,7 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
-		Friend WithEvents _application As kCura.EDDS.WinForm.Application
+		Friend WithEvents _application As Global.Relativity.Desktop.Client.Application
 
 		Private Enum Indices
 			Enabled = 0
@@ -164,13 +166,13 @@ Namespace kCura.EDDS.WinForm
 
 
 		Protected Overrides Sub OnLoad(ByVal e As System.EventArgs)
-			If kCura.WinEDDS.Config.ForceFolderPreview Then
+			If AppSettings.Instance.ForceFolderPreview Then
 				_ForceFolderPreviewBox.SelectedIndex = Indices.Enabled
 			Else
 				_ForceFolderPreviewBox.SelectedIndex = Indices.Disabled
 			End If
-			_application.TemporaryForceFolderPreview = kCura.WinEDDS.Config.ForceFolderPreview
-			_WebServiceUrl.Text = kCura.WinEDDS.Config.WebServiceURL
+			_application.TemporaryForceFolderPreview = AppSettings.Instance.ForceFolderPreview
+			_WebServiceUrl.Text = AppSettings.Instance.WebApiServiceUrl
 			InitializeTimeZoneDropDown()
 			If Not Me.TimeZoneGroupBox.Visible Then
 				Me.Height -= Me.TimeZoneGroupBox.Height

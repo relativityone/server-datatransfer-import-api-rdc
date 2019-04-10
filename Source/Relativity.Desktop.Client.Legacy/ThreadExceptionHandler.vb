@@ -1,16 +1,13 @@
-﻿Imports System.Threading.Tasks
-Imports System.Xml.Serialization
-Imports System.Xml
-Imports kCura.Windows.Forms
+﻿Imports Relativity.Desktop.Client.Legacy.Controls
 Imports Relativity.OAuth2Client.Exceptions
 
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
 	Public Class ThreadExceptionHandler
 		Public Async Sub Application_ThreadException(ByVal sender As System.Object, ByVal e As Threading.ThreadExceptionEventArgs)
 			Try
 				If TypeOf e.Exception Is System.Web.Services.Protocols.SoapException AndAlso e.Exception.ToString.IndexOf("NeedToReLoginException") <> -1 Then
-					Await kCura.EDDS.WinForm.Application.Instance.NewLoginAsync()
-				Else If TypeOf e.Exception Is LoginCanceledException
+					Await Global.Relativity.Desktop.Client.Application.Instance.NewLoginAsync()
+				ElseIf TypeOf e.Exception Is LoginCanceledException Then
 					'Login canceled, ignore
 				Else
 					ShowErrorDialog(e.Exception)

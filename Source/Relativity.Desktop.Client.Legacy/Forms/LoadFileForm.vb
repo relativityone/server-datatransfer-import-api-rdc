@@ -1,11 +1,7 @@
-Imports System.Collections.Generic
-Imports kCura.Windows.Forms
-Imports System.Linq
-Imports System.Threading.Tasks
-Imports Relativity.Transfer
-Imports kCura.Windows.Forms.Specialized
+Imports kCura.WinEDDS
+Imports Relativity.Desktop.Client.Legacy.Controls
 
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
 	Public Class LoadFileForm
 		Inherits System.Windows.Forms.Form
 
@@ -13,7 +9,7 @@ Namespace kCura.EDDS.WinForm
 		Public Sub New()
 			MyBase.New()
 
-			_application = kCura.EDDS.WinForm.Application.Instance
+			_application = Global.Relativity.Desktop.Client.Application.Instance
 
 			'This call is required by the Windows Form Designer.
 			InitializeComponent()
@@ -40,7 +36,7 @@ Namespace kCura.EDDS.WinForm
 				Dim container As DocumentFieldCollection = Await _application.CurrentNonFileFields(_application.ArtifactTypeID, False)
 				_multiObjectMultiChoiceCache = New DocumentFieldCollection()
 				For Each docInfo As DocumentField In container
-					If docInfo.FieldTypeID = Relativity.FieldTypeHelper.FieldType.MultiCode OrElse docInfo.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Objects Then
+					If docInfo.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.MultiCode OrElse docInfo.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.Objects Then
 						_multiObjectMultiChoiceCache.Add(docInfo)
 					End If
 				Next
@@ -56,7 +52,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Async Function InitializeDocumentSpecificComponents() As Task
 			If Me.LoadFile.ArtifactTypeID = 0 Then Me.LoadFile.ArtifactTypeID = _application.ArtifactTypeID
-			If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
+			If Me.LoadFile.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
 				Me.GroupBoxNativeFileBehavior.Enabled = True
 				Me.GroupBoxExtractedText.Enabled = True
 				Me.GroupBoxFolderInfo.Text = "Folder Info"
@@ -147,13 +143,13 @@ Namespace kCura.EDDS.WinForm
 		Public WithEvents LabelFileEncoding As System.Windows.Forms.Label
 		Public WithEvents _advancedButton As System.Windows.Forms.Button
 		Public WithEvents Label9 As System.Windows.Forms.Label
-		Public WithEvents _loadFileEncodingPicker As kCura.EDDS.WinForm.EncodingPicker
-		Public WithEvents _fullTextFileEncodingPicker As kCura.EDDS.WinForm.EncodingPicker
+		Public WithEvents _loadFileEncodingPicker As EncodingPicker
+		Public WithEvents _fullTextFileEncodingPicker As EncodingPicker
 		Public WithEvents _hierarchicalValueDelimiter As System.Windows.Forms.ComboBox
 		Public WithEvents LabelNestedValue As System.Windows.Forms.Label
 		Public WithEvents _startLineNumberLabel As System.Windows.Forms.Label
 		Public WithEvents _startLineNumber As System.Windows.Forms.NumericUpDown
-		Public WithEvents _fieldMap As kCura.WinEDDS.UIControls.FieldMap
+		Public WithEvents _fieldMap As FieldMap
 		Public WithEvents GroupBoxOverlayIdentifier As System.Windows.Forms.GroupBox
 		Public WithEvents _overlayIdentifier As System.Windows.Forms.ComboBox
 		Public WithEvents MenuItem5 As System.Windows.Forms.MenuItem
@@ -214,7 +210,7 @@ Namespace kCura.EDDS.WinForm
 			Me._overlayIdentifier = New System.Windows.Forms.ComboBox()
 			Me.GroupBoxOverlayBehavior = New System.Windows.Forms.GroupBox()
 			Me._overlayBehavior = New System.Windows.Forms.ComboBox()
-			Me._fieldMap = New kCura.WinEDDS.UIControls.FieldMap()
+			Me._fieldMap = New FieldMap()
 			Me.GroupBoxExtractedText = New System.Windows.Forms.GroupBox()
 			Me._overlayExtractedText = New System.Windows.Forms.ComboBox()
 			Me.Label9 = New System.Windows.Forms.Label()
@@ -232,8 +228,8 @@ Namespace kCura.EDDS.WinForm
 			Me.HelpProvider1 = New System.Windows.Forms.HelpProvider()
 			Me.ViewFieldMapButton = New System.Windows.Forms.Button()
 			Me.AutoFieldMapButton = New System.Windows.Forms.Button()
-			Me._loadFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker()
-			Me._fullTextFileEncodingPicker = New kCura.EDDS.WinForm.EncodingPicker()
+			Me._loadFileEncodingPicker = New EncodingPicker()
+			Me._fullTextFileEncodingPicker = New EncodingPicker()
 			Me.GroupBoxImportDestination.SuspendLayout()
 			Me.TabControl1.SuspendLayout()
 			Me._loadFileTab.SuspendLayout()
@@ -863,7 +859,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 #End Region
 
-		Friend WithEvents _application As kCura.EDDS.WinForm.Application
+		Friend WithEvents _application As Global.Relativity.Desktop.Client.Application
 		Private WithEvents _advancedFileForm As AdvancedFileLocation
 		Private _loadFile As kCura.WinEDDS.LoadFile
 
@@ -873,27 +869,27 @@ Namespace kCura.EDDS.WinForm
 			End Get
 		End Property
 
-		Private Function GetOverwrite() As Relativity.ImportOverwriteType
-			If _overwriteDropdown.SelectedItem Is Nothing Then Return Relativity.ImportOverwriteType.Append
+		Private Function GetOverwrite() As Global.Relativity.ImportOverwriteType
+			If _overwriteDropdown.SelectedItem Is Nothing Then Return Global.Relativity.ImportOverwriteType.Append
 			Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
 				Case "append only"
-					Return Relativity.ImportOverwriteType.Append
+					Return Global.Relativity.ImportOverwriteType.Append
 				Case "overlay only"
-					Return Relativity.ImportOverwriteType.Overlay
+					Return Global.Relativity.ImportOverwriteType.Overlay
 				Case "append/overlay"
-					Return Relativity.ImportOverwriteType.AppendOverlay
+					Return Global.Relativity.ImportOverwriteType.AppendOverlay
 				Case Else
 					Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
 			End Select
 		End Function
 
 		Private Function GetOverwriteDropdownItem(ByVal input As String) As String
-			Select Case CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), input, True), Relativity.ImportOverwriteType)
-				Case Relativity.ImportOverwriteType.Append
+			Select Case CType([Enum].Parse(GetType(Global.Relativity.ImportOverwriteType), input, True), Global.Relativity.ImportOverwriteType)
+				Case Global.Relativity.ImportOverwriteType.Append
 					Return "Append Only"
-				Case Relativity.ImportOverwriteType.Overlay
+				Case Global.Relativity.ImportOverwriteType.Overlay
 					Return "Overlay Only"
-				Case Relativity.ImportOverwriteType.AppendOverlay
+				Case Global.Relativity.ImportOverwriteType.AppendOverlay
 					Return "Append/Overlay"
 				Case Else
 					Throw New IndexOutOfRangeException("'" & input.ToLower & "' isn't a valid option.")
@@ -930,11 +926,11 @@ Namespace kCura.EDDS.WinForm
 			End Select
 		End Function
 
-		Private Async Function GetSuitableKeyFields() As Task(Of DocumentField())
+		Private Async Function GetSuitableKeyFields() As Task(Of kCura.WinEDDS.DocumentField())
 			Dim retval As New System.Collections.ArrayList
-			For Each field As DocumentField In Await _application.CurrentFields(Me.LoadFile.ArtifactTypeID, True)
-				If (field.FieldCategory = Relativity.FieldCategory.Generic OrElse field.FieldCategory = Relativity.FieldCategory.Identifier) AndAlso field.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Varchar Then
-					If field.FieldCategory = Relativity.FieldCategory.Identifier Then field.FieldName &= " [Identifier]"
+			For Each field As kCura.WinEDDS.DocumentField In Await _application.CurrentFields(Me.LoadFile.ArtifactTypeID, True)
+				If (field.FieldCategory = Global.Relativity.FieldCategory.Generic OrElse field.FieldCategory = Global.Relativity.FieldCategory.Identifier) AndAlso field.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.Varchar Then
+					If field.FieldCategory = Global.Relativity.FieldCategory.Identifier Then field.FieldName &= " [Identifier]"
 					retval.Add(field)
 				End If
 			Next
@@ -946,7 +942,7 @@ Namespace kCura.EDDS.WinForm
 			Dim container As DocumentFieldCollection = Await _application.CurrentNonFileFields(_application.ArtifactTypeID, False)
 			Dim longTextFields = New DocumentFieldCollection()
 			For Each docInfo As DocumentField In container
-				If docInfo.FieldTypeID = Relativity.FieldTypeHelper.FieldType.Text Then
+				If docInfo.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.Text Then
 					longTextFields.Add(docInfo)
 				End If
 			Next
@@ -977,7 +973,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Async Function IsOverlayBehaviorEnabled() As Task(Of Boolean)
-			If GetOverwrite() = Relativity.ImportOverwriteType.Append Then
+			If GetOverwrite() = Global.Relativity.ImportOverwriteType.Append Then
 				Return False
 			End If
 			For Each fieldName As String In Me._fieldMap.FieldColumns.RightSearchableListItems
@@ -995,7 +991,7 @@ Namespace kCura.EDDS.WinForm
 
 				If Not Await Me.EnsureConnection() Then Return False
 				If _loadNativeFiles.Checked AndAlso _nativeFilePathField.SelectedIndex = -1 Then Me.AppendErrorMessage(msg, "Native file field unselected")
-				If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
+				If Me.LoadFile.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
 					If _buildFolderStructure.Checked AndAlso _destinationFolderPath.SelectedIndex = -1 Then Me.AppendErrorMessage(msg, "Folder information unselected")
 				Else
 					If Me.IsChildObject Then
@@ -1048,12 +1044,12 @@ Namespace kCura.EDDS.WinForm
 			End If
 			Me.PopulateLoadFileDelimiters()
 			If Not Await Me.EnsureConnection() Then Return Nothing
-			Dim currentFields As WinEDDS.DocumentFieldCollection = Await _application.CurrentFields(Me.LoadFile.ArtifactTypeID, True)
+			Dim currentFields As kCura.WinEDDS.DocumentFieldCollection = Await _application.CurrentFields(Me.LoadFile.ArtifactTypeID, True)
 			If currentFields Is Nothing Then
 				Me.Cursor = System.Windows.Forms.Cursors.Default
 				Return False
 			End If
-			Me.LoadFile.FieldMap = kCura.EDDS.WinForm.Utility.ExtractFieldMap(_fieldMap.FieldColumns, _fieldMap.LoadFileColumns, currentFields, Me.LoadFile.ArtifactTypeID, Me.LoadFile.ObjectFieldIdListContainsArtifactId)
+			Me.LoadFile.FieldMap = Utility.ExtractFieldMap(_fieldMap.FieldColumns, _fieldMap.LoadFileColumns, currentFields, Me.LoadFile.ArtifactTypeID, Me.LoadFile.ObjectFieldIdListContainsArtifactId)
 			'Dim groupIdentifier As DocumentField = _application.CurrentGroupIdentifierField
 			'If _identifiersDropDown.SelectedIndex > 0 Then
 			'	Dim columnname As String = CType(_identifiersDropDown.SelectedItem, String)
@@ -1079,16 +1075,16 @@ Namespace kCura.EDDS.WinForm
 
 			LoadFile.ExtractedTextFileEncoding = _fullTextFileEncodingPicker.SelectedEncoding
 			If CheckIfExtractedTextValueContainsFileLocationFieldIsEnabledAndChecked() AndAlso _fullTextFileEncodingPicker.SelectedEncoding IsNot Nothing Then
-				LoadFile.ExtractedTextFileEncodingName = Relativity.SqlNameHelper.GetSqlFriendlyName(_fullTextFileEncodingPicker.SelectedEncoding.EncodingName).ToLower
+				LoadFile.ExtractedTextFileEncodingName = Global.Relativity.SqlNameHelper.GetSqlFriendlyName(_fullTextFileEncodingPicker.SelectedEncoding.EncodingName).ToLower
 			End If
 			LoadFile.LoadNativeFiles = _loadNativeFiles.Checked
 			If _overwriteDropdown.SelectedItem Is Nothing Then
-				LoadFile.OverwriteDestination = Relativity.ImportOverwriteType.Append.ToString
+				LoadFile.OverwriteDestination = Global.Relativity.ImportOverwriteType.Append.ToString
 			Else
 				LoadFile.OverwriteDestination = Me.GetOverwrite.ToString
 			End If
 			'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
-			If LoadFile.OverwriteDestination = Relativity.ImportOverwriteType.Overlay.ToString Then
+			If LoadFile.OverwriteDestination = Global.Relativity.ImportOverwriteType.Overlay.ToString Then
 				LoadFile.IdentityFieldId = DirectCast(_overlayIdentifier.SelectedItem, DocumentField).FieldID
 			Else
 				LoadFile.IdentityFieldId = -1
@@ -1112,9 +1108,9 @@ Namespace kCura.EDDS.WinForm
 					LoadFile.NativeFilePathColumn = Nothing
 				End If
 				'Add the file field as a mapped field for non document object types
-				If Me.LoadFile.ArtifactTypeID <> Relativity.ArtifactType.Document Then
+				If Me.LoadFile.ArtifactTypeID <> Global.Relativity.ArtifactType.Document Then
 					For Each field As DocumentField In currentFields.AllFields
-						If field.FieldTypeID = Relativity.FieldTypeHelper.FieldType.File Then
+						If field.FieldTypeID = Global.Relativity.FieldTypeHelper.FieldType.File Then
 							Dim openParenIndex As Int32 = LoadFile.NativeFilePathColumn.LastIndexOf("("c) + 1
 							Dim closeParenIndex As Int32 = LoadFile.NativeFilePathColumn.LastIndexOf(")"c)
 							Dim nativePathColumn As Int32 = Int32.Parse(LoadFile.NativeFilePathColumn.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
@@ -1125,7 +1121,7 @@ Namespace kCura.EDDS.WinForm
 			End If
 			LoadFile.CreateFolderStructure = _buildFolderStructure.Checked
 			'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
-			If LoadFile.OverwriteDestination.ToLower <> Relativity.ImportOverwriteType.Overlay.ToString.ToLower Then
+			If LoadFile.OverwriteDestination.ToLower <> Global.Relativity.ImportOverwriteType.Overlay.ToString.ToLower Then
 				If LoadFile.CreateFolderStructure Then
 					If Not _destinationFolderPath.SelectedItem Is Nothing Then
 						LoadFile.FolderStructureContainedInColumn = _destinationFolderPath.SelectedItem.ToString
@@ -1156,7 +1152,7 @@ Namespace kCura.EDDS.WinForm
 			Me.LoadFile.SendEmailOnLoadCompletion = _importMenuSendEmailNotificationItem.Checked
 			Me.LoadFile.ForceFolderPreview = _importMenuForceFolderPreviewItem.Checked
 
-			Me.LoadFile.MoveDocumentsInAppendOverlayMode = String.Equals(Me.LoadFile.OverwriteDestination, Relativity.ImportOverwriteType.AppendOverlay.ToString()) AndAlso Not String.IsNullOrEmpty(Me.LoadFile.FolderStructureContainedInColumn)
+			Me.LoadFile.MoveDocumentsInAppendOverlayMode = String.Equals(Me.LoadFile.OverwriteDestination, Global.Relativity.ImportOverwriteType.AppendOverlay.ToString()) AndAlso Not String.IsNullOrEmpty(Me.LoadFile.FolderStructureContainedInColumn)
 
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 			Return True
@@ -1177,11 +1173,11 @@ Namespace kCura.EDDS.WinForm
 			If Me.LoadFile.ArtifactTypeID = 0 Then Me.LoadFile.ArtifactTypeID = _application.ArtifactTypeID
 			Me.Text = String.Format("Relativity Desktop Client | Import {0} Load File", Await _application.GetObjectTypeName(Me.LoadFile.ArtifactTypeID))
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_recordDelimiter, _loadFile.RecordDelimiter)
-			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_quoteDelimiter, _loadFile.QuoteDelimiter)
-			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_newLineDelimiter, _loadFile.NewlineDelimiter)
-			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_multiRecordDelimiter, _loadFile.MultiRecordDelimiter)
-			kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_hierarchicalValueDelimiter, _loadFile.HierarchicalValueDelimiter)
+			Utility.InitializeCharacterDropDown(_recordDelimiter, _loadFile.RecordDelimiter)
+			Utility.InitializeCharacterDropDown(_quoteDelimiter, _loadFile.QuoteDelimiter)
+			Utility.InitializeCharacterDropDown(_newLineDelimiter, _loadFile.NewlineDelimiter)
+			Utility.InitializeCharacterDropDown(_multiRecordDelimiter, _loadFile.MultiRecordDelimiter)
+			Utility.InitializeCharacterDropDown(_hierarchicalValueDelimiter, _loadFile.HierarchicalValueDelimiter)
 			_importMenuSendEmailNotificationItem.Visible = Await _application.GetSendLoadNotificationEmailEnabledAsync
 			If Not String.IsNullOrEmpty(LoadFile.FilePath) Then
 				_filePath.Text = LoadFile.FilePath
@@ -1237,7 +1233,7 @@ Namespace kCura.EDDS.WinForm
 			_importMenuForceFolderPreviewItem.Checked = Me.LoadFile.ForceFolderPreview
 			If Not loadFileObjectUpdatedFromFile Then
 				For Each item As DocumentField In _overlayIdentifier.Items
-					If item.FieldCategory = Relativity.FieldCategory.Identifier Then
+					If item.FieldCategory = Global.Relativity.FieldCategory.Identifier Then
 						_overlayIdentifier.SelectedItem = item
 						Exit For
 					End If
@@ -1251,7 +1247,7 @@ Namespace kCura.EDDS.WinForm
 				Next
 			End If
 
-			If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
+			If Me.LoadFile.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
 				If _overwriteDropdown.SelectedItem Is Nothing Then
 					_destinationFolderPath.Enabled = _buildFolderStructure.Checked
 				Else
@@ -1294,7 +1290,7 @@ Namespace kCura.EDDS.WinForm
 			'	'_identifiersDropDown.SelectedItem = LoadFile.GroupIdentifierColumn
 			'End If
 
-			If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
+			If Me.LoadFile.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
 				_extractedTextValueContainsFileLocation.Enabled = Await Me.AnyLongTextIsMapped
 			End If
 
@@ -1327,10 +1323,10 @@ Namespace kCura.EDDS.WinForm
 					_loadFile = New kCura.WinEDDS.LoadFile
 				End If
 				If _loadFile.CookieContainer Is Nothing Then
-					_loadFile.CookieContainer = kCura.EDDS.WinForm.Application.Instance.CookieContainer
+					_loadFile.CookieContainer = Global.Relativity.Desktop.Client.Application.Instance.CookieContainer
 				End If
 				'If _loadFile.Identity Is Nothing Then
-				'	_loadFile.Identity = kCura.EDDS.WinForm.Application.Instance.Identity
+				'	_loadFile.Identity = Global.Relativity.Desktop.Client.Application.Instance.Identity
 				'End If
 				Return _loadFile
 			End Get
@@ -1615,18 +1611,18 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub LoadFileForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-			'kCura.Windows.Forms.EnhancedMenuProvider.Hook(Me)
+			'Relativity.Desktop.Client.Legacy.Controls.EnhancedMenuProvider.Hook(Me)
 			_loadFileEncodingPicker.InitializeDropdown()
 			_fullTextFileEncodingPicker.InitializeDropdown()
 			_importMenuForceFolderPreviewItem.Checked = _application.TemporaryForceFolderPreview
-			If LoadFile.ArtifactTypeID <> Relativity.ArtifactType.Document Then
+			If LoadFile.ArtifactTypeID <> Global.Relativity.ArtifactType.Document Then
 				_importMenuForceFolderPreviewItem.Checked = False
 				_importMenuForceFolderPreviewItem.Enabled = False
 			End If
 		End Sub
 
 		Private Sub LoadFileForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
-			'kCura.Windows.Forms.EnhancedMenuProvider.Unhook()
+			'Relativity.Desktop.Client.Legacy.Controls.EnhancedMenuProvider.Unhook()
 		End Sub
 
 		Private Sub _loadNativeFiles_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _loadNativeFiles.CheckedChanged
@@ -1642,22 +1638,22 @@ Namespace kCura.EDDS.WinForm
 
 		Private Async Sub _overwriteDestination_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overwriteDropdown.SelectedIndexChanged
 			LoadFile.OverwriteDestination = Me.GetOverwrite.ToString
-			If LoadFile.OverwriteDestination.ToLower <> Relativity.ImportOverwriteType.Overlay.ToString.ToLower Then
+			If LoadFile.OverwriteDestination.ToLower <> Global.Relativity.ImportOverwriteType.Overlay.ToString.ToLower Then
 				For Each field As DocumentField In _overlayIdentifier.Items
-					If field.FieldCategory = Relativity.FieldCategory.Identifier Then
+					If field.FieldCategory = Global.Relativity.FieldCategory.Identifier Then
 						_overlayIdentifier.SelectedItem = field
 						Exit For
 					End If
 				Next
 			End If
-			Dim overwriteDestination As Relativity.ImportOverwriteType = CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), LoadFile.OverwriteDestination, True), Relativity.ImportOverwriteType)
-			If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
+			Dim overwriteDestination As Global.Relativity.ImportOverwriteType = CType([Enum].Parse(GetType(Global.Relativity.ImportOverwriteType), LoadFile.OverwriteDestination, True), Global.Relativity.ImportOverwriteType)
+			If Me.LoadFile.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
 				Select Case overwriteDestination
-					Case Relativity.ImportOverwriteType.Append
+					Case Global.Relativity.ImportOverwriteType.Append
 						_buildFolderStructure.Enabled = True
 						_destinationFolderPath.Enabled = _buildFolderStructure.Checked
 						_overlayIdentifier.Enabled = False
-					Case Relativity.ImportOverwriteType.Overlay
+					Case Global.Relativity.ImportOverwriteType.Overlay
 						_destinationFolderPath.Enabled = False
 						_buildFolderStructure.Checked = False
 						_buildFolderStructure.Enabled = False
@@ -1674,12 +1670,12 @@ Namespace kCura.EDDS.WinForm
 				End Select
 			ElseIf Me.IsChildObject Then
 				Select Case overwriteDestination
-					Case Relativity.ImportOverwriteType.Append
+					Case Global.Relativity.ImportOverwriteType.Append
 						_destinationFolderPath.Enabled = True
 						_buildFolderStructure.Checked = True
 						_buildFolderStructure.Enabled = False
 						_overlayIdentifier.Enabled = False
-					Case Relativity.ImportOverwriteType.Overlay
+					Case Global.Relativity.ImportOverwriteType.Overlay
 						_destinationFolderPath.Enabled = False
 						_buildFolderStructure.Checked = False
 						_buildFolderStructure.Enabled = True
@@ -1697,7 +1693,7 @@ Namespace kCura.EDDS.WinForm
 				_destinationFolderPath.SelectedItem = Nothing
 				_destinationFolderPath.Text = "Select ..."
 				Select Case overwriteDestination
-					Case Relativity.ImportOverwriteType.Overlay
+					Case Global.Relativity.ImportOverwriteType.Overlay
 						_overlayIdentifier.Enabled = True
 					Case Else
 						_overlayIdentifier.Enabled = False
@@ -1711,7 +1707,7 @@ Namespace kCura.EDDS.WinForm
 
 		Private Async Sub PreviewMenuFile_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PreviewMenuFile.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			If (Await PopulateLoadFileObject(True)) AndAlso Await _application.ReadyToLoad(Me.LoadFile, True) Then Await _application.PreviewLoadFile(_loadFile, False, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.LoadFile)
+			If (Await PopulateLoadFileObject(True)) AndAlso Await _application.ReadyToLoad(Me.LoadFile, True) Then Await _application.PreviewLoadFile(_loadFile, False, LoadFilePreviewForm.FormType.LoadFile)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
@@ -1739,7 +1735,7 @@ Namespace kCura.EDDS.WinForm
 		Private Async Sub _loadFieldMapDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _loadFieldMapDialog.FileOk
 			Dim newLoadFile As LoadFile = Await _application.ReadLoadFile(Me.LoadFile, _loadFieldMapDialog.FileName, False)
 			If Not newLoadFile Is Nothing Then
-				If newLoadFile.ArtifactTypeID <> Relativity.ArtifactType.Document Then
+				If newLoadFile.ArtifactTypeID <> Global.Relativity.ArtifactType.Document Then
 					newLoadFile.ForceFolderPreview = False
 				End If
 				_loadFile = newLoadFile
@@ -1813,13 +1809,13 @@ Namespace kCura.EDDS.WinForm
 				Return ImportFileMenu.Enabled AndAlso
 				PreviewMenuFile.Enabled AndAlso
 				_importMenuPreviewErrorsItem.Enabled AndAlso
-				((_importMenuPreviewFoldersAndCodesItem.Enabled AndAlso Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document) OrElse Me.LoadFile.ArtifactTypeID <> Relativity.ArtifactType.Document)
+				((_importMenuPreviewFoldersAndCodesItem.Enabled AndAlso Me.LoadFile.ArtifactTypeID = Global.Relativity.ArtifactType.Document) OrElse Me.LoadFile.ArtifactTypeID <> Global.Relativity.ArtifactType.Document)
 			End Get
 			Set(ByVal value As Boolean)
 				ImportFileMenu.Enabled = value
 				PreviewMenuFile.Enabled = value
 				_importMenuPreviewErrorsItem.Enabled = value
-				If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
+				If Me.LoadFile.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
 					_importMenuPreviewFoldersAndCodesItem.Enabled = value
 				Else
 					_importMenuPreviewFoldersAndCodesItem.Enabled = False
@@ -1838,13 +1834,13 @@ Namespace kCura.EDDS.WinForm
 
 		Private Async Sub _importMenuPreviewErrorsItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuPreviewErrorsItem.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			If (Await PopulateLoadFileObject(True)) AndAlso Await _application.ReadyToLoad(Me.LoadFile, True) Then Await _application.PreviewLoadFile(_loadFile, True, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.LoadFile)
+			If (Await PopulateLoadFileObject(True)) AndAlso Await _application.ReadyToLoad(Me.LoadFile, True) Then Await _application.PreviewLoadFile(_loadFile, True, LoadFilePreviewForm.FormType.LoadFile)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
 		Private Async Sub _importMenuPreviewFoldersAndCodesItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuPreviewFoldersAndCodesItem.Click
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			If (Await PopulateLoadFileObject(True)) AndAlso Await _application.ReadyToLoad(Me.LoadFile, True) Then Await _application.PreviewLoadFile(_loadFile, False, kCura.EDDS.WinForm.LoadFilePreviewForm.FormType.Codes)
+			If (Await PopulateLoadFileObject(True)) AndAlso Await _application.ReadyToLoad(Me.LoadFile, True) Then Await _application.PreviewLoadFile(_loadFile, False, LoadFilePreviewForm.FormType.Codes)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
 
@@ -1885,7 +1881,7 @@ Namespace kCura.EDDS.WinForm
 				 item.NativeFileColumnIndex < columnHeaders.Length Then
 					Dim documentField As DocumentField = caseFieldsCollection.FirstOrDefault(Function(x) x.FieldID = item.DocumentField.FieldID)
 					If Not documentField Is Nothing Then
-						If documentField.FieldCategoryID = Relativity.FieldCategory.Identifier Then
+						If documentField.FieldCategoryID = Global.Relativity.FieldCategory.Identifier Then
 							selectedFieldNameList.Add(documentField.FieldName & " [Identifier]")
 						Else
 							selectedFieldNameList.Add(documentField.FieldName)
@@ -1900,7 +1896,7 @@ Namespace kCura.EDDS.WinForm
 					columnHeaders.Length = 0 Then
 					Dim documentField As DocumentField = caseFieldsCollection.FirstOrDefault(Function(x) x.FieldID = item.DocumentField.FieldID)
 					If Not documentField Is Nothing Then
-						If documentField.FieldCategoryID = Relativity.FieldCategory.Identifier Then
+						If documentField.FieldCategoryID = Global.Relativity.FieldCategory.Identifier Then
 							selectedFieldNameList.Add(documentField.FieldName & " [Identifier]")
 						Else
 							selectedFieldNameList.Add(documentField.FieldName)
@@ -1917,7 +1913,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Sub _buildFolderStructure_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles _buildFolderStructure.CheckedChanged
-			If Me.LoadFile.ArtifactTypeID = Relativity.ArtifactType.Document Then
+			If Me.LoadFile.ArtifactTypeID = Global.Relativity.ArtifactType.Document Then
 				If _buildFolderStructure.Checked Then
 					_destinationFolderPath.Enabled = True
 				Else
@@ -1927,11 +1923,11 @@ Namespace kCura.EDDS.WinForm
 				End If
 			ElseIf Me.IsChildObject Then
 				Select Case Me.GetOverwrite
-					Case Relativity.ImportOverwriteType.Append, Relativity.ImportOverwriteType.AppendOverlay
+					Case Global.Relativity.ImportOverwriteType.Append, Global.Relativity.ImportOverwriteType.AppendOverlay
 						_destinationFolderPath.Enabled = True
 						_destinationFolderPath.SelectedItem = Nothing
 						_destinationFolderPath.Text = "Select ..."
-					Case Relativity.ImportOverwriteType.Overlay
+					Case Global.Relativity.ImportOverwriteType.Overlay
 						If _buildFolderStructure.Checked Then
 							_destinationFolderPath.Enabled = True
 						Else
@@ -1993,7 +1989,7 @@ Namespace kCura.EDDS.WinForm
 			Next
 			If _overlayIdentifier.SelectedItem Is Nothing Then
 				For Each field As DocumentField In _overlayIdentifier.Items
-					If field.FieldCategory = Relativity.FieldCategory.Identifier Then
+					If field.FieldCategory = Global.Relativity.FieldCategory.Identifier Then
 						_overlayIdentifier.SelectedItem = field
 						Exit For
 					End If
@@ -2051,7 +2047,7 @@ Namespace kCura.EDDS.WinForm
 		Private Sub SetExtractedTextAsDefault()
 			For Each field As DocumentField In _overlayExtractedText.Items
 				'Is Extracted Text field
-				If field.FieldCategory = Relativity.FieldCategory.FullText Then
+				If field.FieldCategory = Global.Relativity.FieldCategory.FullText Then
 					_overlayExtractedText.SelectedItem = field
 				End If
 			Next

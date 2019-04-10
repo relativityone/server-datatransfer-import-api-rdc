@@ -1,6 +1,6 @@
 Imports System.Threading.Tasks
 
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
 	Public Class ImageLoad
 		Inherits System.Windows.Forms.Form
 
@@ -13,8 +13,8 @@ Namespace kCura.EDDS.WinForm
 			InitializeComponent()
 
 			'Add any initialization after the InitializeComponent() call
-			_application = kCura.EDDS.WinForm.Application.Instance
-			'_imageLoadFile = New kCura.WinEDDS.ImageLoadFile(kCura.EDDS.WinForm.Application.Instance.Identity)
+			_application = Global.Relativity.Desktop.Client.Application.Instance
+			'_imageLoadFile = New kCura.WinEDDS.ImageLoadFile(Global.Relativity.Desktop.Client.Application.Instance.Identity)
 			_imageLoadFile = New kCura.WinEDDS.ImageLoadFile
 		End Sub
 
@@ -56,7 +56,7 @@ Namespace kCura.EDDS.WinForm
 		Friend WithEvents _startLineNumber As System.Windows.Forms.NumericUpDown
 		Friend WithEvents I As System.Windows.Forms.MenuItem
 		Friend WithEvents MenuItem3 As System.Windows.Forms.MenuItem
-		Friend WithEvents _encodingPicker As kCura.EDDS.WinForm.EncodingPicker
+		Friend WithEvents _encodingPicker As EncodingPicker
 		Friend WithEvents GroupBox5 As System.Windows.Forms.GroupBox
 		Friend WithEvents _autoNumberingOn As System.Windows.Forms.RadioButton
 		Friend WithEvents _autoNumberingOff As System.Windows.Forms.RadioButton
@@ -89,7 +89,7 @@ Namespace kCura.EDDS.WinForm
 			Me._saveImageLoadFileDialog = New System.Windows.Forms.SaveFileDialog
 			Me._loadImageLoadFileDialog = New System.Windows.Forms.OpenFileDialog
 			Me.ExtractedTextGroupBox = New System.Windows.Forms.GroupBox
-			Me._encodingPicker = New kCura.EDDS.WinForm.EncodingPicker
+			Me._encodingPicker = New EncodingPicker
 			Me._productionDropdown = New System.Windows.Forms.ComboBox
 			Me._advancedButton = New System.Windows.Forms.Button
 			Me._beginBatesDropdown = New System.Windows.Forms.ComboBox
@@ -253,7 +253,7 @@ Namespace kCura.EDDS.WinForm
 			Me.ExtractedTextGroupBox.Name = "ExtractedTextGroupBox"
 			Me.ExtractedTextGroupBox.Size = New System.Drawing.Size(556, 78)
 			Me.ExtractedTextGroupBox.TabIndex = 9
-			Me.ExtractedTextGroupBox.TabStop = False			
+			Me.ExtractedTextGroupBox.TabStop = False
 			Me.ExtractedTextGroupBox.Text = "ExtractedText"
 			'
 			'_encodingPicker
@@ -411,7 +411,7 @@ Namespace kCura.EDDS.WinForm
 
 #End Region
 
-		Private WithEvents _application As kCura.EDDS.WinForm.Application
+		Private WithEvents _application As Global.Relativity.Desktop.Client.Application
 		Private WithEvents _advancedFileForm As AdvancedFileLocation
 
 		Private _imageLoadFile As kCura.WinEDDS.ImageLoadFile
@@ -461,7 +461,7 @@ Namespace kCura.EDDS.WinForm
 			ImageLoadFile.FullTextEncoding = _encodingPicker.SelectedEncoding
 			ImageLoadFile.Overwrite = Me.GetOverwrite.ToString
 			ImageLoadFile.DestinationFolderID = _imageLoadFile.DestinationFolderID
-			ImageLoadFile.ControlKeyField = (Await _application.GetCaseIdentifierFields(Relativity.ArtifactType.Document))(0)
+			ImageLoadFile.ControlKeyField = (Await _application.GetCaseIdentifierFields(Global.Relativity.ArtifactType.Document))(0)
 			ImageLoadFile.AutoNumberImages = _autoNumberingOn.Checked
 			If ImageLoadFile.ForProduction Then
 				ImageLoadFile.ProductionArtifactID = CType(_productionDropdown.SelectedValue, Int32)
@@ -469,14 +469,14 @@ Namespace kCura.EDDS.WinForm
 				Me.ImageLoadFile.BeginBatesFieldArtifactID = CType(_beginBatesDropdown.SelectedValue, Int32)
 			Else
 				'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
-				If Me.GetOverwrite = Relativity.ImportOverwriteType.Overlay
+				If Me.GetOverwrite = Global.Relativity.ImportOverwriteType.Overlay Then
 					Me.ImageLoadFile.IdentityFieldId = CType(_beginBatesDropdown.SelectedValue, Int32)
 				Else
 					Me.ImageLoadFile.IdentityFieldId = -1
 				End If
 				Me.ImageLoadFile.ReplaceFullText = _replaceFullText.Checked
 			End If
-			If Me.ImageLoadFile.IdentityFieldId = -1 Then Me.ImageLoadFile.IdentityFieldId = (Await _application.CurrentFields(Relativity.ArtifactType.Document)).IdentifierFields(0).FieldID
+			If Me.ImageLoadFile.IdentityFieldId = -1 Then Me.ImageLoadFile.IdentityFieldId = (Await _application.CurrentFields(Global.Relativity.ArtifactType.Document)).IdentifierFields(0).FieldID
 			Me.ImageLoadFile.CaseDefaultPath = _application.SelectedCaseInfo.DocumentPath
 			Me.ImageLoadFile.SendEmailOnLoadCompletion = _importMenuSendEmailNotificationItem.Checked
 			ImageLoadFile.StartLineNumber = CType(_startLineNumber.Value, Int64)
@@ -484,26 +484,26 @@ Namespace kCura.EDDS.WinForm
 			Return True
 		End Function
 
-		Private Function GetOverwrite() As Relativity.ImportOverwriteType
+		Private Function GetOverwrite() As Global.Relativity.ImportOverwriteType
 			Select Case _overwriteDropdown.SelectedItem.ToString.ToLower
 				Case "append only"
-					Return Relativity.ImportOverwriteType.Append
+					Return Global.Relativity.ImportOverwriteType.Append
 				Case "overlay only"
-					Return Relativity.ImportOverwriteType.Overlay
+					Return Global.Relativity.ImportOverwriteType.Overlay
 				Case "append/overlay"
-					Return Relativity.ImportOverwriteType.AppendOverlay
+					Return Global.Relativity.ImportOverwriteType.AppendOverlay
 				Case Else
 					Throw New IndexOutOfRangeException("'" & _overwriteDropdown.SelectedItem.ToString.ToLower & "' isn't a valid option.")
 			End Select
 		End Function
 
 		Private Function GetOverwriteDropdownItem(ByVal input As String) As String
-			Select Case CType([Enum].Parse(GetType(Relativity.ImportOverwriteType), input, True), Relativity.ImportOverwriteType)
-				Case Relativity.ImportOverwriteType.Append
+			Select Case CType([Enum].Parse(GetType(Global.Relativity.ImportOverwriteType), input, True), Global.Relativity.ImportOverwriteType)
+				Case Global.Relativity.ImportOverwriteType.Append
 					Return "Append Only"
-				Case Relativity.ImportOverwriteType.Overlay
+				Case Global.Relativity.ImportOverwriteType.Overlay
 					Return "Overlay Only"
-				Case Relativity.ImportOverwriteType.AppendOverlay
+				Case Global.Relativity.ImportOverwriteType.AppendOverlay
 					Return "Append/Overlay"
 				Case Else
 					Throw New IndexOutOfRangeException("'" & input.ToLower & "' isn't a valid option.")
@@ -518,7 +518,7 @@ Namespace kCura.EDDS.WinForm
 			End If
 			Dim dt As System.Data.DataTable = New kCura.WinEDDS.Service.FieldQuery(Await _application.GetCredentialsAsync(), _application.CookieContainer).RetrievePotentialBeginBatesFields(ImageLoadFile.CaseInfo.ArtifactID).Tables(0)
 			For Each identifierRow As System.Data.DataRow In dt.Rows
-				If CType(identifierRow("FieldCategoryID"), Relativity.FieldCategory) = Relativity.FieldCategory.Identifier Then
+				If CType(identifierRow("FieldCategoryID"), Global.Relativity.FieldCategory) = Global.Relativity.FieldCategory.Identifier Then
 					_identifierFieldArtifactID = CType(identifierRow("ArtifactID"), Int32)
 				End If
 			Next
@@ -653,7 +653,7 @@ Namespace kCura.EDDS.WinForm
 		End Sub
 
 		Private Async Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
-			Dim isUsingAsperaConnectionMode As Boolean = Await Task.Run(Async Function() Await Application.Instance.IsUsingAsperaConnectionMode().ConfigureAwait(False)).ConfigureAwait(True)
+			Dim isUsingAsperaConnectionMode As Boolean = Await Task.Run(Async Function() Await Global.Relativity.Desktop.Client.Application.Instance.IsUsingAsperaConnectionMode().ConfigureAwait(False)).ConfigureAwait(True)
 			_advancedFileForm = New AdvancedFileLocation
 			_advancedFileForm.IsUsingAsperaConnectionMode = isUsingAsperaConnectionMode
 			_advancedFileForm._copyNativeFiles.Checked = Me.ImageLoadFile.CopyFilesToDocumentRepository

@@ -387,7 +387,7 @@ End Sub
 			End Set
 		End Property
 
-		Public Property ProcessContext() As ProcessContext
+		Public Property Context As ProcessContext
 			Get
 				Return _processContext
 			End Get

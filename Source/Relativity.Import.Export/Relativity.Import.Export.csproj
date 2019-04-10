@@ -62,6 +62,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -101,6 +102,7 @@
     <Compile Include="Process\EventType.cs" />
     <Compile Include="Process\RecordNumberEventArgs.cs" />
     <Compile Include="Process\ShowReportEventArgs.cs" />
+    <Compile Include="SerializationHelper.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="TimekeeperEntry.cs" />
     <Compile Include="Timekeeper.cs" />

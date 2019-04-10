@@ -33,6 +33,11 @@
 			return fileStream;
 		}
 
+		public string ReadAllText(string path)
+		{
+			return ZetaLongPaths.ZlpIOHelper.ReadAllText(path);
+		}
+
 		public FileStream ReopenAndTruncate(string filePath, long position)
 		{
 			CreationDisposition disposition = CreationDisposition.OpenExisting;

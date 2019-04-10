@@ -1,5 +1,4 @@
-Imports System.Collections.Generic
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
 	Public Class EncodingPicker
 		Inherits System.Windows.Forms.UserControl
 
@@ -165,7 +164,4 @@ Namespace kCura.EDDS.WinForm
 			System.Diagnostics.Process.Start("http://www.unicode.org/faq/")
 		End Sub
 	End Class
-
-
-
 End Namespace

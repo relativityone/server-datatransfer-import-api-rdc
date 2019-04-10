@@ -1,4 +1,4 @@
-﻿Namespace kCura.EDDS.WinForm
+﻿Namespace Relativity.Desktop.Client
 	Public Class CustomFileNameSelectionPart
 		Public Sub New(separator As String, fieldID As Integer)
 			Me.New(

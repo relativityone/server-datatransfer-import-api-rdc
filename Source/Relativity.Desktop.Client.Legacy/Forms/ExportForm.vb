@@ -1,17 +1,11 @@
-Imports System.Linq
-Imports System.Collections.Generic
-Imports System.Threading.Tasks
 Imports kCura.Vendor.Castle.Core.Internal
 Imports FileNaming.CustomFileNaming
-Imports kCura.EDDS.WinForm
-Imports kCura.EDDS.WinForm.Controls
-Imports kCura.Windows.Forms
-Imports kCura.Windows.Forms.Specialized
+Imports kCura.WinEDDS
+Imports Relativity.Desktop.Client
+Imports Relativity.Desktop.Client.Legacy.Controls
 
 Public Class ExportForm
 	Inherits System.Windows.Forms.Form
-	'Implements kCura.EDDS.WinForm.IExportForm
-
 
 #Region " Windows Form Designer generated code "
 
@@ -22,7 +16,7 @@ Public Class ExportForm
 		InitializeComponent()
 
 		'Add any initialization after the InitializeComponent() call
-
+		Me._textFieldPrecedencePicker.SelectedFields = New List(Of kCura.WinEDDS.ViewFieldInfo)
 	End Sub
 
 	'Form overrides dispose to clean up the component list.
@@ -106,16 +100,16 @@ Public Class ExportForm
 	Public WithEvents _nestedValueDelimiter As System.Windows.Forms.ComboBox
 	Public WithEvents LabelSelectedColumns As System.Windows.Forms.Label
 	Public WithEvents _filters As System.Windows.Forms.ComboBox
-	Public WithEvents _columnSelector As kCura.Windows.Forms.TwoListBox
+	Public WithEvents _columnSelector As TwoListBox
 	Public WithEvents _filtersBox As System.Windows.Forms.GroupBox
 	Public WithEvents _metadataGroupBox As System.Windows.Forms.GroupBox
 	Public WithEvents LabelMetadataDataFileFormat As System.Windows.Forms.Label
 	Public WithEvents _nativeFileFormat As System.Windows.Forms.ComboBox
-	Public WithEvents _dataFileEncoding As kCura.EDDS.WinForm.EncodingPicker
+	Public WithEvents _dataFileEncoding As EncodingPicker
 	Public WithEvents LabelDataFileEncoding As System.Windows.Forms.Label
 	Public WithEvents LabelTextFileEncoding As System.Windows.Forms.Label
-	Public WithEvents _textFileEncoding As kCura.EDDS.WinForm.EncodingPicker
-	Public WithEvents _textFieldPrecedencePicker As kCura.EDDS.WinForm.TextFieldPrecedencePicker
+	Public WithEvents _textFileEncoding As EncodingPicker
+	Public WithEvents _textFieldPrecedencePicker As TextFieldPrecedencePicker
 	Public WithEvents LabelTextPrecedence As System.Windows.Forms.Label
 	Public WithEvents RefreshMenu As System.Windows.Forms.MenuItem
 	Public WithEvents MenuItem3 As System.Windows.Forms.MenuItem
@@ -160,17 +154,17 @@ Public Class ExportForm
 		Me.LabelStartAtRecordNumber = New System.Windows.Forms.Label()
 		Me.LabelSelectedColumns = New System.Windows.Forms.Label()
 		Me._filters = New System.Windows.Forms.ComboBox()
-		Me._columnSelector = New kCura.Windows.Forms.TwoListBox()
+		Me._columnSelector = New TwoListBox()
 		Me._destinationFileTabPage = New System.Windows.Forms.TabPage()
 		Me.GroupBoxTextAndNativeFileNames = New System.Windows.Forms.GroupBox()
-		Me._textAndNativeFileNamePicker = New kCura.EDDS.WinForm.Controls.TextAndNativeFileNamePicker()
+		Me._textAndNativeFileNamePicker = New TextAndNativeFileNamePicker()
 		Me._metadataGroupBox = New System.Windows.Forms.GroupBox()
 		Me.LabelTextPrecedence = New System.Windows.Forms.Label()
-		Me._textFieldPrecedencePicker = New kCura.EDDS.WinForm.TextFieldPrecedencePicker()
-		Me._textFileEncoding = New kCura.EDDS.WinForm.EncodingPicker()
+		Me._textFieldPrecedencePicker = New TextFieldPrecedencePicker()
+		Me._textFileEncoding = New EncodingPicker()
 		Me.LabelTextFileEncoding = New System.Windows.Forms.Label()
 		Me.LabelDataFileEncoding = New System.Windows.Forms.Label()
-		Me._dataFileEncoding = New kCura.EDDS.WinForm.EncodingPicker()
+		Me._dataFileEncoding = New EncodingPicker()
 		Me.LabelMetadataDataFileFormat = New System.Windows.Forms.Label()
 		Me._nativeFileFormat = New System.Windows.Forms.ComboBox()
 		Me._exportMulticodeFieldsAsNested = New System.Windows.Forms.CheckBox()
@@ -225,7 +219,7 @@ Public Class ExportForm
 		Me._recordDelimiter = New System.Windows.Forms.ComboBox()
 		Me._saveExportSettingsDialog = New System.Windows.Forms.SaveFileDialog()
 		Me._loadExportSettingsDialog = New System.Windows.Forms.OpenFileDialog()
-		Me._textAndNativeFileNamePicker = New kCura.EDDS.WinForm.Controls.TextAndNativeFileNamePicker()
+		Me._textAndNativeFileNamePicker = New TextAndNativeFileNamePicker()
 		Me._productionPrecedenceBox.SuspendLayout()
 		Me.GroupBoxExportLocation.SuspendLayout()
 		Me.TabControl1.SuspendLayout()
@@ -462,7 +456,7 @@ Public Class ExportForm
 		Me._columnSelector.LeftOrderControlsVisible = False
 		Me._columnSelector.Location = New System.Drawing.Point(12, 64)
 		Me._columnSelector.Name = "_columnSelector"
-		Me._columnSelector.OuterBox = kCura.Windows.Forms.ListBoxLocation.Left
+		Me._columnSelector.OuterBox = ListBoxLocation.Left
 		Me._columnSelector.RightOrderControlVisible = False
 		Me._columnSelector.Size = New System.Drawing.Size(366, 343)
 		Me._columnSelector.TabIndex = 17
@@ -1264,10 +1258,10 @@ Public Class ExportForm
 	End Sub
 #End Region
 
-	Private WithEvents _application As kCura.EDDS.WinForm.Application
+	Private WithEvents _application As Application
 	Protected _exportFile As kCura.WinEDDS.ExportFile
-	Protected WithEvents _precedenceForm As kCura.EDDS.WinForm.ProductionPrecedenceForm
-	Protected WithEvents _textFieldPrecedenceForm As kCura.EDDS.WinForm.TextPrecedenceForm
+	Protected WithEvents _precedenceForm As ProductionPrecedenceForm
+	Protected WithEvents _textFieldPrecedenceForm As TextPrecedenceForm
 	Private _allExportableFields As Relativity.ViewFieldInfo
 	Private _dataSourceIsSet As Boolean = False
 	Private _objectTypeName As String = ""
@@ -1275,11 +1269,11 @@ Public Class ExportForm
 	Private _masterDT As DataTable
 
 
-	Public Property Application() As kCura.EDDS.WinForm.Application
+	Public Property Application() As Application
 		Get
 			Return _application
 		End Get
-		Set(ByVal value As kCura.EDDS.WinForm.Application)
+		Set(ByVal value As Application)
 			_application = value
 		End Set
 	End Property
@@ -1353,7 +1347,7 @@ Public Class ExportForm
 		If _textAndNativeFileNamePicker.SelectedItem = TextAndNativeFileNamePicker.SelectOption Then
 			AppendErrorMessage(msg, "No file naming method selected")
 		End If
-		If _textAndNativeFileNamePicker.SelectedItem = TextAndNativeFileNamePicker.CustomOption
+		If _textAndNativeFileNamePicker.SelectedItem = TextAndNativeFileNamePicker.CustomOption Then
 			ValidateCustomFileNamingOptions(msg)
 		End If
 
@@ -1392,7 +1386,7 @@ Public Class ExportForm
 		ValidateCustomFileNamingFieldsAreSelected(msg)
 		ValidateCustomFileNamingProductionPrecedenceIsSelected(msg)
 	End Sub
-	
+
 	Private Sub ValidateCustomFileNamingFieldsAreSelected(msg As Text.StringBuilder)
 		If _textAndNativeFileNamePicker.Selection Is Nothing Then
 			AppendErrorMessage(msg, "No custom file naming fields selected")
@@ -1401,7 +1395,7 @@ Public Class ExportForm
 
 	Private Sub ValidateCustomFileNamingProductionPrecedenceIsSelected(msg As Text.StringBuilder)
 		Dim isProductionBegBatesSelected As Boolean? = _textAndNativeFileNamePicker.Selection?.FirstOrDefault()?.IsProductionBegBates
-		If Not isProductionBegBatesSelected
+		If Not isProductionBegBatesSelected Then
 			Return
 		End If
 
@@ -1409,12 +1403,12 @@ Public Class ExportForm
 			Return
 		End If
 
-		If _productionPrecedenceList.Items.Count <> 1
+		If _productionPrecedenceList.Items.Count <> 1 Then
 			Return
 		End If
 
 		Dim precedence = DirectCast(_productionPrecedenceList.Items(0), Pair)
-		If precedence.Value.Equals("-1")
+		If precedence.Value.Equals("-1") Then
 			AppendErrorMessage(msg, "No production precedence selected for custom file naming")
 		End If
 	End Sub
@@ -1539,12 +1533,12 @@ Public Class ExportForm
 
 	Private Async Sub LoadExportSettings_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles LoadExportSettings.Click
 		If _loadExportSettingsDialog.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
-			Dim settings As String = kCura.Utility.File.Instance.ReadFileAsString(_loadExportSettingsDialog.FileName)
+			Dim settings As String = Relativity.Import.Export.Io.FileSystem.Instance.File.ReadAllText(_loadExportSettingsDialog.FileName)
 			Dim newFile As ExtendedExportFile = New kCura.WinEDDS.ExportFileSerializer().DeserializeExportFile(_exportFile, settings)
 			If TypeOf newFile Is kCura.WinEDDS.ErrorExportFile Then
 				MsgBox(DirectCast(newFile, kCura.WinEDDS.ErrorExportFile).ErrorMessage, MsgBoxStyle.Exclamation)
 			Else
-				Dim exportFilterSelectionForm As New kCura.EDDS.WinForm.ExportFilterSelectForm(newFile.ViewID, ExportTypeStringName, DirectCast(_filters.DataSource, DataTable))
+				Dim exportFilterSelectionForm As New ExportFilterSelectForm(newFile.ViewID, ExportTypeStringName, DirectCast(_filters.DataSource, DataTable))
 				exportFilterSelectionForm.ShowDialog()
 				If exportFilterSelectionForm.DialogResult = DialogResult.OK Then
 					If exportFilterSelectionForm.SelectedItemArtifactIDs IsNot Nothing Then
@@ -1657,18 +1651,18 @@ Public Class ExportForm
 		_exportMulticodeFieldsAsNested.Checked = ef.MulticodesAsNested
 
 		If ef.AllExportableFields IsNot Nothing Then
-			_columnSelector.ClearSelection(kCura.Windows.Forms.ListBoxLocation.Left)
+			_columnSelector.ClearSelection(ListBoxLocation.Left)
 			_columnSelector.LeftSearchableList.ClearListBox()
 			Array.Sort(ef.AllExportableFields)
 			_columnSelector.LeftSearchableList.AddFields(ef.AllExportableFields)
 		End If
 
 		If ef.SelectedViewFields IsNot Nothing Then
-			_columnSelector.ClearSelection(kCura.Windows.Forms.ListBoxLocation.Right)
+			_columnSelector.ClearSelection(ListBoxLocation.Right)
 			_columnSelector.RightSearchableList.ClearListBox()
 
 			ef.SelectedViewFields _
-				.SelectMany(Function(x) kCura.EDDS.WinForm.Utility.FindCounterpartField(_columnSelector.LeftSearchableListItems, x)) _
+				.SelectMany(Function(x) Relativity.Desktop.Client.Utility.FindCounterpartField(_columnSelector.LeftSearchableListItems, x)) _
 				.ForEach(AddressOf SelectField)
 
 			If ef.AllExportableFields IsNot Nothing Then
@@ -1857,7 +1851,7 @@ Public Class ExportForm
 	End Function
 
 	Private Sub ExportProduction_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
-		HandleLoad(sender, e, kCura.EDDS.WinForm.Config.ExportVolumeDigitPadding, kCura.EDDS.WinForm.Config.ExportSubdirectoryDigitPadding)
+		HandleLoad(sender, e, Relativity.Desktop.Client.Config.ExportVolumeDigitPadding, Relativity.Desktop.Client.Config.ExportSubdirectoryDigitPadding)
 		_columnSelector.EnsureHorizontalScrollbars()
 		_columnSelector.LeftOrderControlsVisible = False
 		_columnSelector.RightOrderControlVisible = True
@@ -1872,11 +1866,11 @@ Public Class ExportForm
 		_filters.ValueMember = "ArtifactID"
 		_dataSourceIsSet = True
 
-		kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_recordDelimiter, _exportFile.RecordDelimiter)
-		kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_quoteDelimiter, _exportFile.QuoteDelimiter)
-		kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_newLineDelimiter, _exportFile.NewlineDelimiter)
-		kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_multiRecordDelimiter, _exportFile.MultiRecordDelimiter)
-		kCura.EDDS.WinForm.Utility.InitializeCharacterDropDown(_nestedValueDelimiter, _exportFile.NestedValueDelimiter)
+		Relativity.Desktop.Client.Utility.InitializeCharacterDropDown(_recordDelimiter, _exportFile.RecordDelimiter)
+		Relativity.Desktop.Client.Utility.InitializeCharacterDropDown(_quoteDelimiter, _exportFile.QuoteDelimiter)
+		Relativity.Desktop.Client.Utility.InitializeCharacterDropDown(_newLineDelimiter, _exportFile.NewlineDelimiter)
+		Relativity.Desktop.Client.Utility.InitializeCharacterDropDown(_multiRecordDelimiter, _exportFile.MultiRecordDelimiter)
+		Relativity.Desktop.Client.Utility.InitializeCharacterDropDown(_nestedValueDelimiter, _exportFile.NestedValueDelimiter)
 		_volumeDigitPadding.Value = volumeDigitPadding
 		_subdirectoryDigitPadding.Value = exportSubdirectoryDigitPadding
 		_imageFileFormat.DataSource = kCura.WinEDDS.LoadFileType.GetLoadFileTypes
@@ -2041,7 +2035,7 @@ Public Class ExportForm
 	Private Async Sub _pickPrecedenceButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _pickPrecedenceButton.Click
 		Dim dt As System.Data.DataTable = Await _application.GetProductionPrecendenceList(ExportFile.CaseInfo)
 		If dt Is Nothing Then Exit Sub
-		_precedenceForm = New kCura.EDDS.WinForm.ProductionPrecedenceForm
+		_precedenceForm = New ProductionPrecedenceForm
 		_precedenceForm.ExportFile = Me.ExportFile
 		_precedenceForm.PrecedenceTable = dt
 		If _productionPrecedenceList.Items.Count > 0 Then

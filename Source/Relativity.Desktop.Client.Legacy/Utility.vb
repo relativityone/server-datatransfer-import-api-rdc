@@ -1,10 +1,11 @@
-Imports System.Collections.Generic
+Imports kCura.WinEDDS
+Imports Relativity.Desktop.Client.Legacy.Controls
 
-Namespace kCura.EDDS.WinForm
+Namespace Relativity.Desktop.Client
 	Public Class Utility
 		Public Shared Sub InitializeCharacterDropDown(ByVal ddown As System.Windows.Forms.ListControl, ByVal selectedValue As Char)
 			ddown.Tag = False
-			ddown.DataSource = WinEDDS.Utility.BuildProxyCharacterDatatable()
+			ddown.DataSource = kCura.WinEDDS.Utility.BuildProxyCharacterDatatable()
 			ddown.ValueMember = "CharValue"
 			ddown.DisplayMember = "Display"
 			ddown.SelectedValue = selectedValue
@@ -20,7 +21,7 @@ Namespace kCura.EDDS.WinForm
 			End Try
 		End Sub
 
-		Public Shared Function ExtractFieldMap(ByVal tLSelect As kCura.Windows.Forms.TwoListBox, ByVal docFieldList As DocumentFieldCollection) As DocumentField()
+		Public Shared Function ExtractFieldMap(ByVal tLSelect As TwoListBox, ByVal docFieldList As DocumentFieldCollection) As DocumentField()
 			Dim i As Int32
 			Dim docfields(tLSelect.RightSearchableListItems.Count - 1) As DocumentField
 			Dim docfield As DocumentField
@@ -31,7 +32,7 @@ Namespace kCura.EDDS.WinForm
 			Return docfields
 		End Function
 
-		Public Shared Function ExtractFieldMap(ByVal caseFields As kCura.Windows.Forms.TwoListBox, ByVal fileColumns As kCura.Windows.Forms.TwoListBox, ByVal docFieldList As DocumentFieldCollection, ByVal artifactTypeID As Int32, ObjectFieldIdList As IList(Of Int32)) As LoadFileFieldMap
+		Public Shared Function ExtractFieldMap(ByVal caseFields As Global.Relativity.Desktop.Client.Legacy.Controls.TwoListBox, ByVal fileColumns As TwoListBox, ByVal docFieldList As DocumentFieldCollection, ByVal artifactTypeID As Int32, ObjectFieldIdList As IList(Of Int32)) As LoadFileFieldMap
 			Dim selectedFields As List(Of Object) = caseFields.RightSearchableListItems
 			Dim selectedColumns As List(Of Object) = fileColumns.LeftSearchableListItems
 			Dim fieldMap As New kCura.WinEDDS.LoadFileFieldMap
@@ -55,7 +56,7 @@ Namespace kCura.EDDS.WinForm
 				End If
 
 				If (Not ObjectFieldIdList Is Nothing AndAlso ObjectFieldIdList.Contains(docfield.FieldID)) Then
-					docfield.ImportBehavior = EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ObjectFieldContainsArtifactId
+					docfield.ImportBehavior = kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ObjectFieldContainsArtifactId
 				End If
 				fieldMap.Add(New LoadFileFieldMap.LoadFileFieldMapItem(docfield, columnIndex))
 			Next
@@ -72,85 +73,86 @@ Namespace kCura.EDDS.WinForm
 		End Function
 
 		Public Shared Sub ThrowExceptionToGUI(ByVal ex As System.Exception)
-			Dim frm As New kCura.EDDS.WinForm.ErrorForm(ex)
+			Dim frm As New ErrorForm(ex)
 			frm.Show()
 		End Sub
 
 		Public Shared Sub InitializeEncodingDropdown(ByVal ddown As System.Windows.Forms.ComboBox)
 			ddown.Items.Clear()
-			ddown.Items.Add(New WinEDDS.EncodingListItem(System.Text.Encoding.Default, "Default"))
-			ddown.Items.Add(New WinEDDS.EncodingListItem(System.Text.Encoding.Unicode, "Unicode"))
-			ddown.Items.Add(New WinEDDS.EncodingListItem(System.Text.Encoding.ASCII, "ASCII"))
-			ddown.Items.Add(New WinEDDS.EncodingListItem(System.Text.Encoding.BigEndianUnicode, "Big-Endian Unicode"))
-			ddown.Items.Add(New WinEDDS.EncodingListItem(System.Text.Encoding.UTF7, "UTF-7"))
-			ddown.Items.Add(New WinEDDS.EncodingListItem(System.Text.Encoding.UTF8, "UTF-8"))
+			ddown.Items.Add(New kCura.WinEDDS.EncodingListItem(System.Text.Encoding.Default, "Default"))
+			ddown.Items.Add(New kCura.WinEDDS.EncodingListItem(System.Text.Encoding.Unicode, "Unicode"))
+			ddown.Items.Add(New kCura.WinEDDS.EncodingListItem(System.Text.Encoding.ASCII, "ASCII"))
+			ddown.Items.Add(New kCura.WinEDDS.EncodingListItem(System.Text.Encoding.BigEndianUnicode, "Big-Endian Unicode"))
+			ddown.Items.Add(New kCura.WinEDDS.EncodingListItem(System.Text.Encoding.UTF7, "UTF-7"))
+			ddown.Items.Add(New kCura.WinEDDS.EncodingListItem(System.Text.Encoding.UTF8, "UTF-8"))
 			ddown.SelectedIndex = 0
 		End Sub
 
 		Public Shared Function ConvertOverwriteDestinationToLegacyValues(ByVal loadfile As LoadFile) As LoadFile
-			Dim overwriteDestination = loadFile.OverwriteDestination
+			Dim overwriteDestination = loadfile.OverwriteDestination
 			Select Case overwriteDestination.ToLower()
-				Case Relativity.ImportOverwriteType.Overlay.ToString.ToLower
-					loadFile.OverwriteDestination = "Strict"
-				Case Relativity.ImportOverwriteType.AppendOverlay.ToString.ToLower
-					loadFile.OverwriteDestination = "Append"
-				Case Relativity.ImportOverwriteType.Append.ToString.ToLower
-					loadFile.OverwriteDestination = "None"
+				Case Global.Relativity.ImportOverwriteType.Overlay.ToString.ToLower
+					loadfile.OverwriteDestination = "Strict"
+				Case Global.Relativity.ImportOverwriteType.AppendOverlay.ToString.ToLower
+					loadfile.OverwriteDestination = "Append"
+				Case Global.Relativity.ImportOverwriteType.Append.ToString.ToLower
+					loadfile.OverwriteDestination = "None"
 			End Select
 			Return loadfile
 		End Function
 
 		Public Shared Function ConvertLegacyOverwriteDestinationValueToEnum(ByVal overWriteDestination As String) As String
 			Dim retval As String = overWriteDestination
-			If Not String.IsNullOrEmpty(overWriteDestination)
-				Select Case overwriteDestination.ToLower
+			If Not String.IsNullOrEmpty(overWriteDestination) Then
+
+				Select Case overWriteDestination.ToLower
 					Case "strict"
-						retval = Relativity.ImportOverwriteType.Overlay.ToString
+						retval = Global.Relativity.ImportOverwriteType.Overlay.ToString
 					Case "append"
-						retval = Relativity.ImportOverwriteType.AppendOverlay.ToString
+						retval = Global.Relativity.ImportOverwriteType.AppendOverlay.ToString
 					Case "none"
-						retval = Relativity.ImportOverwriteType.Append.ToString
+						retval = Global.Relativity.ImportOverwriteType.Append.ToString
 				End Select
-			End if
-			return retval
+			End If
+			Return retval
 		End Function
 
-	Public Shared Function FindFieldByName(listboxItems As ICollection(Of Object), field As ViewFieldInfo) As ViewFieldInfo
-		Return FindFieldBy(Function(x As ViewFieldInfo) x.DisplayName.Equals(field.DisplayName, StringComparison.InvariantCulture), listboxItems)
-	End Function
+		Public Shared Function FindFieldByName(listboxItems As ICollection(Of Object), field As ViewFieldInfo) As ViewFieldInfo
+			Return FindFieldBy(Function(x As ViewFieldInfo) x.DisplayName.Equals(field.DisplayName, StringComparison.InvariantCulture), listboxItems)
+		End Function
 
-	Public Shared Function FindFieldByArtifactId(listboxItems As ICollection(Of Object), field As ViewFieldInfo) As ViewFieldInfo
-		Return FindFieldBy(Function(x As ViewFieldInfo) x.FieldArtifactId = field.FieldArtifactId, listboxItems)
-	End Function
+		Public Shared Function FindFieldByArtifactId(listboxItems As ICollection(Of Object), field As ViewFieldInfo) As ViewFieldInfo
+			Return FindFieldBy(Function(x As ViewFieldInfo) x.FieldArtifactId = field.FieldArtifactId, listboxItems)
+		End Function
 
-	Public Shared Function FindFieldBy(predicate As Func(Of ViewFieldInfo, Boolean), listboxItems As ICollection(Of Object)) As ViewFieldInfo
-		For Each item As ViewFieldInfo In listboxItems
-			If predicate(item) Then
-				Return item
+		Public Shared Function FindFieldBy(predicate As Func(Of ViewFieldInfo, Boolean), listboxItems As ICollection(Of Object)) As ViewFieldInfo
+			For Each item As ViewFieldInfo In listboxItems
+				If predicate(item) Then
+					Return item
+				End If
+			Next
+			Return Nothing
+		End Function
+
+		''' <summary>
+		''' Find field in listboxItems collection which is a counterpart for fields found in kwx settings file.
+		''' First compare by name, then by artifactId
+		''' Wrap the result in a List or return empty List if a field is not found
+		''' </summary>
+		''' <param name="listboxItems">collections of all view fields from the workspace</param>
+		''' <param name="field">field from mappings from kwx file</param>
+		''' <returns></returns>
+		Public Shared Function FindCounterpartField(ByRef listboxItems As ICollection(Of Object), ByVal field As ViewFieldInfo) As ICollection(Of Object)
+			Dim fieldByName As ViewFieldInfo = FindFieldByName(listboxItems, field)
+			If fieldByName IsNot Nothing Then
+				Return New List(Of Object) From {fieldByName}
 			End If
-		Next
-		Return Nothing
-	End Function
-
-	''' <summary>
-	''' Find field in listboxItems collection which is a counterpart for fields found in kwx settings file.
-	''' First compare by name, then by artifactId
-	''' Wrap the result in a List or return empty List if a field is not found
-	''' </summary>
-	''' <param name="listboxItems">collections of all view fields from the workspace</param>
-	''' <param name="field">field from mappings from kwx file</param>
-	''' <returns></returns>
-	Public Shared Function FindCounterpartField(ByRef listboxItems As ICollection(Of Object), ByVal field As ViewFieldInfo) As ICollection(Of Object)
-		Dim fieldByName As ViewFieldInfo = FindFieldByName(listboxItems, field)
-		If  fieldByName IsNot Nothing Then
-			Return New List(Of Object) From { fieldByName }
-		End If
-		Dim fieldByArtifactId As ViewFieldInfo = FindFieldByArtifactId(listboxItems, field)
-		If fieldByArtifactId IsNot Nothing Then
-			Return New List(Of Object) From { fieldByArtifactId }
-		End If
-		Return New List(Of Object)
-	End Function
+			Dim fieldByArtifactId As ViewFieldInfo = FindFieldByArtifactId(listboxItems, field)
+			If fieldByArtifactId IsNot Nothing Then
+				Return New List(Of Object) From {fieldByArtifactId}
+			End If
+			Return New List(Of Object)
+		End Function
 
 
 	End Class
