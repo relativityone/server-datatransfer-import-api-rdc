@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.168
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Import.Client.NUnit", "Relativity.Import.Client.NUnit\Relativity.Import.Client.NUnit.csproj", "{10DF5B1F-2D12-4201-BA36-D074574F2510}"
 EndProject
@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{44D529
 	ProjectSection(SolutionItems) = preProject
 		..\paket.dependencies = ..\paket.dependencies
 		..\.paket\paket.template.relativity.import.client.sdk = ..\.paket\paket.template.relativity.import.client.sdk
-		..\.paket\Relativity.Import.Client.SDK.target = ..\.paket\Relativity.Import.Client.SDK.target
+		..\.paket\Relativity.Import.Client.SDK.targets = ..\.paket\Relativity.Import.Client.SDK.targets
 	EndProjectSection
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Relativity.Import.Client.Legacy.NUnit", "Relativity.Import.Client.Legacy.NUnit\Relativity.Import.Client.Legacy.NUnit.vbproj", "{6B2E3939-E33B-4672-B420-F3B6021DDA78}"
