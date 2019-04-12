@@ -10,12 +10,17 @@ and this project does *not* yet adhere to [Semantic Versioning](https://semver.o
 
 - Improved I/O resiliency for extracted text and System.IO.* API calls
 - New "TempDirectory" config setting to override the directory where all import temp load files are stored
+- New "TapiPreserveFileTimestamps" configuration setting that enables/disables preserving file timestamps in Aspera and Direct mode
+- Performance and resiliency improvement in Folder creation process
+
 
 **Fixed**
 
 - Improved text exceed field size error messages [REL-277165]
 - SQL locks weren't always released and can cause deadlocks [REL-293445]
 - Import failures may continue to update closed load file streams and throw ObjectDisposedException [REL-277572]
+- Fixing thread unsafe file stream closing [REL-277572]
+- Fixing issue with deep folder structure creation [REL-268845]
 
 ## Blazingstar update 1 release - v10.1.169.1 (03-25-2019)
 
