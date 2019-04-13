@@ -121,22 +121,26 @@ task CompileMasterSolution -Description "Compile the master solution" {
     Write-Output "Solution: $MasterSolution"
     Write-Output "Configuration: $Configuration"
     Write-Output "Build platform: $BuildPlatform"
+    Write-Output "Target: $Target"
     Write-Output "Verbosity: $Verbosity"
     Initialize-Folder $LogsDir -Safe
     $LogFilePath = Join-Path $LogsDir "master-buildsummary.log"
     $ErrorFilePath = Join-Path $LogsDir "master-builderrors.log"
-    exec { msbuild $MasterSolution `
-            "/t:$Target" `
-            "/verbosity:$Verbosity" `
-            "/p:Platform=$BuildPlatform" `
-            "/p:Configuration=$Configuration" `
-            "/p:CopyArtifacts=true" `
-            "/clp:Summary"`
-            "/nodeReuse:false" `
-            "/nologo" `
-            "/maxcpucount" `
-            "/flp1:LogFile=`"$LogFilePath`";Verbosity=$Verbosity" `
-            "/flp2:errorsonly;LogFile=`"$ErrorFilePath`""
+    exec {
+        
+        msbuild @(($MasterSolution),
+                  ("-t:$Target"),
+                  ("-v:$Verbosity"),
+                  ("-p:Platform=$BuildPlatform"),
+                  ("-p:Configuration=$Configuration"),
+                  ("-p:BuildProjectReferences=true"),
+                  ("-p:CopyArtifacts=true"),
+                  ("-clp:Summary"),
+                  ("-nodeReuse:false"),
+                  ("-nologo"),
+                  ("-maxcpucount"),
+                  ("-flp1:LogFile=`"$LogFilePath`";Verbosity=$Verbosity"),
+                  ("-flp2:errorsonly;LogFile=`"$ErrorFilePath`""))
     } -errorMessage "There was an error building the master solution."
 
     Remove-EmptyLogFile $ErrorFilePath
@@ -149,21 +153,25 @@ task CompileInstallerSolution -Description "Compile the installer solution" {
         Write-Output "Solution: $InstallersSolution"
         Write-Output "Configuration: $Configuration"
         Write-Output "Build platform: $platform"
+        Write-Output "Target: $Target"
         Write-Output "Verbosity: $Verbosity"
         $LogFilePath = Join-Path $LogsDir "installers-buildsummary-$platform.log"
         $ErrorFilePath = Join-Path $LogsDir "installers-builderrors-$platform.log"
-        exec { msbuild $InstallersSolution `
-                "/t:$Target" `
-                "/verbosity:$Verbosity" `
-                "/p:Platform=$platform" `
-                "/p:Configuration=$Configuration" `
-                "/p:CopyArtifacts=true" `
-                "/clp:Summary"`
-                "/nodeReuse:false" `
-                "/nologo" `
-                "/maxcpucount" `
-                "/flp1:LogFile=`"$LogFilePath`";Verbosity=$Verbosity" `
-                "/flp2:errorsonly;LogFile=`"$ErrorFilePath`""
+        exec { 
+            # Note: BuildProjectReferences must be disabled to prevent overwriting digitally signed binaries!
+            msbuild @(($InstallersSolution),
+                      ("-t:$Target"),
+                      ("-v:$Verbosity"),
+                      ("-p:Platform=$platform"),
+                      ("-p:Configuration=$Configuration"),
+                      ("-p:BuildProjectReferences=false"),
+                      ("-p:CopyArtifacts=true"),
+                      ("-clp:Summary"),
+                      ("-nodeReuse:false"),
+                      ("-nologo"),
+                      ("-maxcpucount"),
+                      ("-flp1:LogFile=`"$LogFilePath`";Verbosity=$Verbosity"),
+                      ("-flp2:errorsonly;LogFile=`"$ErrorFilePath`""))
         } -errorMessage "There was an error building the installer solution."
 
         Remove-EmptyLogFile $ErrorFilePath
