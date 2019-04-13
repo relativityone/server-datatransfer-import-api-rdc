@@ -39,7 +39,7 @@ properties {
     $TestVMName = $Null
 }
 
-task Build -Description "Builds the source code" -Depends UpdateAssemblyInfo, CompileMasterSolution {
+task Build -Description "Builds the source code" -Depends CompileMasterSolution {
 }
 
 task BuildInstallers -Description "Builds all installers" -Depends CompileInstallerSolution {
@@ -324,10 +324,8 @@ task UnitTestResults -Description "Retrieve the unit test results from the Xml f
     Write-TestResultsOutput $UnitTestResultsXmlFile
 }
 
-task UpdateAssemblyInfo -Precondition { $Version -ne "1.0.0.0" } -Description "Update the AssemblyInfo files in \Version\" {
-    $VersionPath = Join-Path $Root "Version"
-    $ScriptPath = Join-Path $VersionPath "Update-AssemblyInfo.ps1"
-    exec { & $ScriptPath -Version $Version -VersionFolderPath $VersionPath }
+task UpdateAssemblyInfo -Description "Update the AssemblySharedInfo files in \Version\" {
+    exec { & $GitVersionExe /updateassemblyinfo .\Version\AssemblySharedInfo.cs .\Version\AssemblySharedInfo.vb }
 }
 
 Function Copy-Folder {

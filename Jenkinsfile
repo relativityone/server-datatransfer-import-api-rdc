@@ -68,7 +68,7 @@ timestamps
                     stage('Build binaries')
                     {
                         echo "Building the binaries for version $buildVersion"
-                        output = powershell ".\\build.ps1 Build -Configuration '${params.buildConfig}' -Version '$buildVersion' -Verbosity '${params.buildVerbosity}'"
+                        output = powershell ".\\build.ps1 UpdateAssemblyInfo,Build -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}'"
                         echo output
                     }
 
