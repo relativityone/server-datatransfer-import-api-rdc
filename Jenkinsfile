@@ -106,23 +106,23 @@ timestamps
                         {
                             // Wrapped in a try/finally to ensure the test results are generated.
                             echo "Running the integration tests"
-                            output = bat """
-                                |SET IAPI_INTEGRATION_RELATIVITYURL=https://il1ddtapirap001.kcura.corp/Relativity
-                                |SET IAPI_INTEGRATION_RELATIVITYRESTURL=https://il1ddtapirap001.kcura.corp/relativity.rest/api
-                                |SET IAPI_INTEGRATION_RELATIVITYSERVICEURL=https://il1ddtapirap001.kcura.corp/relativity.services
-                                |SET IAPI_INTEGRATION_RELATIVITYWEBAPIURL=https://il1ddtapirap001.kcura.corp/relativitywebapi
-                                |SET IAPI_INTEGRATION_RELATIVITYUSERNAME=serviceaccount@relativity.com
-                                |SET IAPI_INTEGRATION_RELATIVITYPASSWORD=Test1234!
-                                |SET IAPI_INTEGRATION_SERVERCERTIFICATEVALIDATION=False
-                                |SET IAPI_INTEGRATION_SKIPASPERAMODETESTS=True
-                                |SET IAPI_INTEGRATION_SKIPDIRECTMODETESTS=False
-                                |SET IAPI_INTEGRATION_SQLDROPWORKSPACEDATABASE=True
-                                |SET IAPI_INTEGRATION_SQLINSTANCENAME=il1ddtapirap001.kcura.corp
-                                |SET IAPI_INTEGRATION_SQLADMINUSERNAME=sa
-                                |SET IAPI_INTEGRATION_SQLADMINPASSWORD=P@ssw0rd@1
-                                |SET IAPI_INTEGRATION_WORKSPACETEMPLATE=Relativity Starter Template
-                                |@powershell -Command \". ./build.ps1 IntegrationTests;exit \$LASTEXITCODE\"
-                                |"""
+							def script = """
+                                SET IAPI_INTEGRATION_RELATIVITYURL=https://il1ddtapirap001.kcura.corp/Relativity
+                                SET IAPI_INTEGRATION_RELATIVITYRESTURL=https://il1ddtapirap001.kcura.corp/relativity.rest/api
+                                SET IAPI_INTEGRATION_RELATIVITYSERVICEURL=https://il1ddtapirap001.kcura.corp/relativity.services
+                                SET IAPI_INTEGRATION_RELATIVITYWEBAPIURL=https://il1ddtapirap001.kcura.corp/relativitywebapi
+                                SET IAPI_INTEGRATION_RELATIVITYUSERNAME=serviceaccount@relativity.com
+                                SET IAPI_INTEGRATION_RELATIVITYPASSWORD=Test1234!
+                                SET IAPI_INTEGRATION_SERVERCERTIFICATEVALIDATION=False
+                                SET IAPI_INTEGRATION_SKIPASPERAMODETESTS=True
+                                SET IAPI_INTEGRATION_SKIPDIRECTMODETESTS=False
+                                SET IAPI_INTEGRATION_SQLDROPWORKSPACEDATABASE=True
+                                SET IAPI_INTEGRATION_SQLINSTANCENAME=il1ddtapirap001.kcura.corp
+                                SET IAPI_INTEGRATION_SQLADMINUSERNAME=sa
+                                SET IAPI_INTEGRATION_SQLADMINPASSWORD=P@ssw0rd@1
+                                SET IAPI_INTEGRATION_WORKSPACETEMPLATE=Relativity Starter Template
+                                @powershell -Command \". ./build.ps1 IntegrationTests;exit \$LASTEXITCODE\""""
+                            output = bat script.stripIndent()
                             echo output
                         }
                         finally
