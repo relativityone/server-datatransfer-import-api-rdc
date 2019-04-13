@@ -118,15 +118,17 @@ timestamps
 
                     stage('Retrieve test results')
                     {
-                        ['UnitTestResults', 'IntegrationTestResults'].eachWithIndex { testType, index ->                            
+                        // Modify the array if parameterizing tests.
+                        def taskCandidates = ['UnitTestResults', 'IntegrationTestResults']
+                        taskCandidates.eachWithIndex { testType, index ->                            
                             def testDescription = ""
                             switch (index)
                             {
-                                case 1:
+                                case 0:
                                     testDescription = "unit"
                                     break
 
-                                case 2:
+                                case 1:
                                     testDescription = "integration"
                                     break
 
