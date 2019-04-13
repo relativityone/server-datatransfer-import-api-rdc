@@ -100,6 +100,45 @@ timestamps
                         }
                     }
 
+                    stage('Integration Tests')
+                    {
+                        def directory = new File(".\\TempParameters")
+                        directory.mkdir()
+                        def testParametersFile = ".\\TempParameters\\test-parameters.json"
+
+                        try
+                        {
+                            writeFile file: testParametersFile, text: """{
+                                "RelativityUrl" : "https://il1ddtapirap001.kcura.corp/Relativity",
+                                "RelativityRestUrl" : "https://il1ddtapirap001.kcura.corp/relativity.rest/api",
+                                "RelativityServicesUrl" : "https://il1ddtapirap001.kcura.corp/relativity.services",
+                                "RelativityWebApiUrl" : "https://il1ddtapirap001.kcura.corp/relativitywebapi",
+                                "RelativityUserName" : "serviceaccount@relativity.com",
+                                "RelativityPassword" : "Test1234!",
+                                "ServerCertificateValidation" : "False",
+                                "SkipAsperaModeTests" : "True",
+                                "SkipDirectModeTests" : "False",
+                                "SkipIntegrationTests" : "False",
+                                "SqlDropWorkspaceDatabase" : "True",
+                                "SqlInstanceName" : "il1ddtapirap001.kcura.corp",
+                                "SqlAdminUserName" : "sa",
+                                "SqlAdminPassword" : "P@ssw0rd@1",
+                                "WorkspaceTemplate" : "Relativity Starter Template"
+                            }"""
+
+                            // Wrapped in a try/finally to ensure the test results are generated.
+                            echo "Running the integration tests"
+                            output = powershell ".\\build.ps1 IntegrationTests -TestParametersFile '$testParametersFile'"
+                            echo output
+                        }
+                        finally
+                        {
+                            directory.deleteDir()
+                            echo "Generating integration test results"
+                            powershell ".\\build.ps1 GenerateTestReport"
+                        }
+                    }
+
                     stage('Retrieve unit test results')
                     {
                         // Let the build script retrieve the values.
