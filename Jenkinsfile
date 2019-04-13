@@ -13,6 +13,7 @@ properties([
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
         string(defaultValue: '#import-api-rdc-build', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
+        booleanParam(defaultValue: true, description: "Enable or disable running unit tests", name: 'runUnitTests'),
         booleanParam(defaultValue: true, description: "Enable or disable running integration tests", name: 'runIntegrationTests')
     ])
 ])
@@ -85,19 +86,13 @@ timestamps
                         echo output
                     }
 
-                    stage('Run unit tests')
+                    if (params.runUnitTests)
                     {
-                        try
+                        stage('Run unit tests')
                         {
-                            // Wrapped in a try/finally to ensure the test results are generated.
                             echo "Running the unit tests"
                             output = powershell ".\\build.ps1 UnitTests"
                             echo output
-                        }
-                        finally
-                        {
-                            echo "Generating unit test results"
-                            powershell ".\\build.ps1 GenerateTestReport"
                         }
                     }
 
@@ -105,73 +100,80 @@ timestamps
                     {
                         stage('Run integration tests')
                         {
-                            try
-                            {
-                                // Wrapped in a try/finally to ensure the test results are generated.
-                                echo "Running the integration tests"
-                                output = powershell ".\\build.ps1 IntegrationTests -TestEnvironment hyperv"
-                                echo output
-                            }
-                            finally
-                            {
-                                echo "Generating integration test results"
-                                powershell ".\\build.ps1 GenerateTestReport"
-                            }
+                            echo "Running the integration tests"
+                            output = powershell ".\\build.ps1 IntegrationTests -TestEnvironment hyperv"
+                            echo output
                         }
                     }
 
-                    stage('Retrieve test results')
+                    if (params.runUnitTests || params.runIntegrationTests)
                     {
-                        // Modify the array if parameterizing tests.
-                        def taskCandidates = ["UnitTestResults"]
-                        if (params.runIntegrationTests)
+                        stage('Generate test report')
                         {
-                            taskCandidates.add("IntegrationTestResults")
+                            echo "Generating test report"
+                            powershell ".\\build.ps1 GenerateTestReport"
                         }
+                    }
 
-                        taskCandidates.eachWithIndex { task, index ->
-                            def testDescription = ""
-                            switch (index)
+                    if (params.runUnitTests || params.runIntegrationTests)
+                    {
+                        stage('Retrieve test results')
+                        {
+                            def taskCandidates = []
+                            if (params.runUnitTests)
                             {
-                                case 0:
-                                    testDescription = "unit"
-                                    break
-
-                                case 1:
-                                    testDescription = "integration"
-                                    break
-
-                                default:
-                                    throw new Exception("The test result type $index is not mapped.")
+                                taskCandidates.add("UnitTestResults")
                             }
 
-                            // Let the build script retrieve the unit test result values.
-                            echo "Retrieving the $testDescription-test results"
-                            def testResultOutputString = runCommandWithOutput(".\\build.ps1 ${task} -Verbosity '${params.buildVerbosity}'")
-                            echo "Retrieved the $testDescription-test results"
+                            if (params.runIntegrationTests)
+                            {
+                                taskCandidates.add("IntegrationTestResults")
+                            }
 
-                            // Search for specific tokens within the response.
-                            echo "Extracting the $testDescription-test result parameters"
-                            def int passed = extractValue("testResultsPassed", testResultOutputString)
-                            def int failed = extractValue("testResultsFailed", testResultOutputString)
-                            def int skipped = extractValue("testResultsSkipped", testResultOutputString)
-                            echo "Extracted the $testDescription-test result parameters"
+                            taskCandidates.eachWithIndex { task, index ->
+                                def testDescription = ""
+                                switch (index)
+                                {
+                                    case 0:
+                                        testDescription = "unit"
+                                        break
 
-                            // Dump the individual test results
-                            echo "$testDescription-test passed: $passed"
-                            echo "$testDescription-test failed: $failed"
-                            echo "$testDescription-test skipped: $skipped"
-                            
-                            // Now add to the final test results
-                            testResultsPassed += passed
-                            testResultsFailed += failed
-                            testResultsSkipped += skipped
+                                    case 1:
+                                        testDescription = "integration"
+                                        break
+
+                                    default:
+                                        throw new Exception("The test result type $index is not mapped.")
+                                }
+
+                                // Let the build script retrieve the unit test result values.
+                                echo "Retrieving the $testDescription-test results"
+                                def testResultOutputString = runCommandWithOutput(".\\build.ps1 ${task} -Verbosity '${params.buildVerbosity}'")
+                                echo "Retrieved the $testDescription-test results"
+
+                                // Search for specific tokens within the response.
+                                echo "Extracting the $testDescription-test result parameters"
+                                def int passed = extractValue("testResultsPassed", testResultOutputString)
+                                def int failed = extractValue("testResultsFailed", testResultOutputString)
+                                def int skipped = extractValue("testResultsSkipped", testResultOutputString)
+                                echo "Extracted the $testDescription-test result parameters"
+
+                                // Dump the individual test results
+                                echo "$testDescription-test passed: $passed"
+                                echo "$testDescription-test failed: $failed"
+                                echo "$testDescription-test skipped: $skipped"
+                                
+                                // Now add to the final test results
+                                testResultsPassed += passed
+                                testResultsFailed += failed
+                                testResultsSkipped += skipped
+                            }
+
+                            // Dump the final test results
+                            echo "Total passed: $testResultsPassed"
+                            echo "Total failed: $testResultsFailed"
+                            echo "Total skipped: $testResultsSkipped"
                         }
-
-                        // Dump the final test results
-                        echo "Total passed: $testResultsPassed"
-                        echo "Total failed: $testResultsFailed"
-                        echo "Total skipped: $testResultsSkipped"
                     }
 
                     stage('Digitally sign binaries')
@@ -196,9 +198,6 @@ timestamps
                 finally
                 {
                     echo "Gathering unit test results"
-
-                    // TODO: Figure out wy this keeps failing.
-                    // nunit testResultsPattern: "test-results-unit.xml"
                     archiveArtifacts artifacts: 'Logs/**/*.*'
                     archiveArtifacts artifacts: 'TestResults/**/*.*'
                 }                    
