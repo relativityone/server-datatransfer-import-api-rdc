@@ -12,7 +12,8 @@ properties([
         choice(choices: buildTypeCoicesStr, description: 'The type of build to execute', name: 'buildType'),
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
-        string(defaultValue: '#import-api-rdc-build', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel')
+        string(defaultValue: '#import-api-rdc-build', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
+        booleanParam(defaultValue: true, description: "Enable or disable running integration tests", name: 'runIntegrationTests')
     ])
 ])
 
@@ -23,9 +24,9 @@ def sessionID = System.currentTimeMillis().toString()
 def eventHash = java.security.MessageDigest.getInstance("MD5").digest(env.JOB_NAME.bytes).encodeHex().toString()
 def buildVersion = ""
 def packageVersion = ""
-def testResultsPassed = 0
-def testResultsFailed = 0
-def testResultsSkipped = 0
+def int testResultsPassed = 0
+def int testResultsFailed = 0
+def int testResultsSkipped = 0
 build = params.build
 
 timestamps
@@ -100,27 +101,35 @@ timestamps
                         }
                     }
 
-                    stage('Run integration tests')
+                    if (params.runIntegrationTests)
                     {
-                        try
+                        stage('Run integration tests')
                         {
-                            // Wrapped in a try/finally to ensure the test results are generated.
-                            echo "Running the integration tests"
-                            output = powershell ".\\build.ps1 IntegrationTests -TestEnvironment hyperv"
-                            echo output
-                        }
-                        finally
-                        {
-                            echo "Generating integration test results"
-                            powershell ".\\build.ps1 GenerateTestReport"
+                            try
+                            {
+                                // Wrapped in a try/finally to ensure the test results are generated.
+                                echo "Running the integration tests"
+                                output = powershell ".\\build.ps1 IntegrationTests -TestEnvironment hyperv"
+                                echo output
+                            }
+                            finally
+                            {
+                                echo "Generating integration test results"
+                                powershell ".\\build.ps1 GenerateTestReport"
+                            }
                         }
                     }
 
                     stage('Retrieve test results')
                     {
                         // Modify the array if parameterizing tests.
-                        def taskCandidates = ['UnitTestResults', 'IntegrationTestResults']
-                        taskCandidates.eachWithIndex { testType, index ->                            
+                        def taskCandidates = ["UnitTestResults"]
+                        if (params.runIntegrationTests)
+                        {
+                            taskCandidates.add("IntegrationTestResults")
+                        }
+
+                        taskCandidates.eachWithIndex { task, index ->
                             def testDescription = ""
                             switch (index)
                             {
@@ -138,14 +147,14 @@ timestamps
 
                             // Let the build script retrieve the unit test result values.
                             echo "Retrieving the $testDescription-test results"
-                            def testResultOutputString = runCommandWithOutput(".\\build.ps1 ${testType} -Verbosity '${params.buildVerbosity}'")
+                            def testResultOutputString = runCommandWithOutput(".\\build.ps1 ${task} -Verbosity '${params.buildVerbosity}'")
                             echo "Retrieved the $testDescription-test results"
 
                             // Search for specific tokens within the response.
                             echo "Extracting the $testDescription-test result parameters"
-                            def passed = extractValue("testResultsPassed", testResultOutputString)
-                            def failed = extractValue("testResultsFailed", testResultOutputString)
-                            def skipped = extractValue("testResultsSkipped", testResultOutputString)
+                            def int passed = extractValue("testResultsPassed", testResultOutputString)
+                            def int failed = extractValue("testResultsFailed", testResultOutputString)
+                            def int skipped = extractValue("testResultsSkipped", testResultOutputString)
                             echo "Extracted the $testDescription-test result parameters"
 
                             // Dump the individual test results
