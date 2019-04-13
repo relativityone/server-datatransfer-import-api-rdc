@@ -89,22 +89,22 @@ namespace Relativity.Import.Export.Transfer
 		/// </value>
 		public string TargetFolderName => this.pathManager.CurrentTargetFolderName;
 
-        /// <summary>
-        /// Gets a value indicating whether there are transfers pending.
-        /// </summary>
-        /// <remarks>
-        /// The RequestTransferPathCount property was added to avoid costly hits to the repository.
-        /// </remarks>
-        public bool TransfersPending => this.TransferJob != null
-	                                    && this.TransferJob.JobService.RequestTransferPathCount > 0;
+		/// <summary>
+		/// Gets a value indicating whether there are transfers pending.
+		/// </summary>
+		/// <remarks>
+		/// The RequestTransferPathCount property was added to avoid costly hits to the repository.
+		/// </remarks>
+		public bool TransfersPending => this.TransferJob != null
+										&& this.TransferJob.JobService.RequestTransferPathCount > 0;
 
-        /// <summary>
-        /// Gets the workspace artifact unique identifier.
-        /// </summary>
-        /// <value>
-        /// The unique identifier.
-        /// </value>
-        public int WorkspaceId => this.parameters.WorkspaceId;
+		/// <summary>
+		/// Gets the workspace artifact unique identifier.
+		/// </summary>
+		/// <value>
+		/// The unique identifier.
+		/// </value>
+		public int WorkspaceId => this.parameters.WorkspaceId;
 
 		/// <summary>
 		/// Adds the path to a transfer job.
@@ -139,7 +139,7 @@ namespace Relativity.Import.Export.Transfer
 						? this.pathManager.GetNextTargetPath(this.TargetPath)
 						: this.TargetPath,
 				TargetFileName = targetFileName,
-				Order = order
+				Order = order,
 			};
 
 			return this.AddPath(transferPath);
@@ -158,7 +158,7 @@ namespace Relativity.Import.Export.Transfer
 		}
 
 		/// <summary>
-		/// Fatal error message for uploading files
+		/// Fatal error message for uploading files.
 		/// </summary>
 		/// <returns>
 		/// The error message.
@@ -169,7 +169,7 @@ namespace Relativity.Import.Export.Transfer
 		}
 
 		/// <summary>
-		/// Creates transfer request for upload job
+		/// Creates transfer request for upload job.
 		/// </summary>
 		/// <param name="context">
 		/// The transfer context.

@@ -35,6 +35,6 @@ namespace Relativity.Import.Export.Transfer
         /// <summary>
         /// The Aspera client.
         /// </summary>
-        Aspera
+        Aspera,
     }
 }

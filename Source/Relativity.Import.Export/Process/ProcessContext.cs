@@ -336,7 +336,7 @@ namespace Relativity.Import.Export.Process
 		}
 
 		/// <summary>
-		/// Publishes an event indicating the runnable process associated with a parent form is closing
+		/// Publishes an event indicating the runnable process associated with a parent form is closing.
 		/// </summary>
 		/// <param name="processId">
 		/// The process unique identifier.
@@ -349,9 +349,9 @@ namespace Relativity.Import.Export.Process
 
 		/// <summary>
 		/// Publishes an event indicating the runnable process has completed. By default,
-		/// <code>closeForm</code> is <see langword="false" />,
-		/// <code>exportFilePath</code> is <see cref="string.Empty"/>,
-		/// and <code>exportLog</code> is <see langword="false" />.
+		/// <c>closeForm</c> is <see langword="false" />,
+		/// <c>exportFilePath</c> is <see cref="string.Empty"/>,
+		/// and <c>exportLog</c> is <see langword="false" />.
 		/// </summary>
 		public void PublishProcessCompleted()
 		{
@@ -360,8 +360,8 @@ namespace Relativity.Import.Export.Process
 
 		/// <summary>
 		/// Publishes an event indicating the runnable process has completed. By default,
-		/// <code>exportFilePath</code> is <see cref="string.Empty"/>
-		/// and <code>exportLog</code> is <see langword="false" />.
+		/// <c>exportFilePath</c> is <see cref="string.Empty"/>
+		/// and <c>exportLog</c> is <see langword="false" />.
 		/// </summary>
 		/// <param name="closeForm">
 		/// Specify whether to close any form that started the runnable process.
@@ -373,7 +373,7 @@ namespace Relativity.Import.Export.Process
 
 		/// <summary>
 		/// Publishes an event indicating the runnable process has completed. By default,
-		/// <code>exportLog</code> is <see langword="false" />.
+		/// <c>exportLog</c> is <see langword="false" />.
 		/// </summary>
 		/// <param name="closeForm">
 		/// Specify whether to close any form that started the runnable process.
@@ -538,7 +538,7 @@ namespace Relativity.Import.Export.Process
 		/// Publishes a status bar change event.
 		/// </summary>
 		/// <param name="message">
-		/// The status bar message
+		/// The status bar message.
 		/// </param>
 		/// <param name="popupText">
 		/// The status bar popup text.

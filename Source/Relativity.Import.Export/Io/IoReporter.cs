@@ -126,7 +126,7 @@ namespace Relativity.Import.Export.Io
 		}
 
 		/// <summary>
-		/// Creates warning message out of passed exception
+		/// Creates warning message out of passed exception.
 		/// </summary>
 		/// <param name="exception">
 		/// The handled exception to report.
@@ -231,28 +231,28 @@ namespace Relativity.Import.Export.Io
 
 		/// <inheritdoc />
 		public virtual long GetFileLength(string fileName, int lineNumber)
-        {
-            if (string.IsNullOrEmpty(fileName))
-            {
-                throw new ArgumentNullException(nameof(fileName));
-            }
+		{
+			if (string.IsNullOrEmpty(fileName))
+			{
+				throw new ArgumentNullException(nameof(fileName));
+			}
 
-            if (lineNumber < 0)
-            {
-	            throw new ArgumentOutOfRangeException(
-		            nameof(lineNumber),
-		            string.Format(Resources.Strings.LineNumberOutOfRangeExceptionMessage, nameof(lineNumber)));
-            }
+			if (lineNumber < 0)
+			{
+				throw new ArgumentOutOfRangeException(
+					nameof(lineNumber),
+					string.Format(Resources.Strings.LineNumberOutOfRangeExceptionMessage, nameof(lineNumber)));
+			}
 
-            return this.Exec(lineNumber, fileName, "File Length", () =>
-            {
-	            IFileInfo fileInfo = this.Context.FileSystem.CreateFileInfo(fileName);
+			return this.Exec(lineNumber, fileName, "File Length", () =>
+			{
+				IFileInfo fileInfo = this.Context.FileSystem.CreateFileInfo(fileName);
 
 				// We want any exceptions that occur when accessing properties to get thrown.
-	            long fileLength = fileInfo.Length;
-	            return fileLength;
-            });
-        }
+				long fileLength = fileInfo.Length;
+				return fileLength;
+			});
+		}
 
 		/// <inheritdoc />
 		public virtual void PublishRetryMessage(Exception exception, TimeSpan timeSpan, int retryCount, int totalRetryCount, long lineNumber)
@@ -277,17 +277,17 @@ namespace Relativity.Import.Export.Io
 		private bool ThrowFileInfoInvalidPathException(Exception exception)
 		{
 			return this.CachedAppSettings.DisableThrowOnIllegalCharacters
-			       && RetryExceptionHelper.IsIllegalCharactersInPathException(exception);
+				   && RetryExceptionHelper.IsIllegalCharactersInPathException(exception);
 		}
 
-        private FileInfoInvalidPathException CreateFileInfoInvalidPathException(Exception exception, string fileName)
-        {
-	        var message = string.Format(
-		        CultureInfo.CurrentCulture,
-		        Strings.ImportInvalidPathCharactersExceptionMessage,
-		        fileName);
-	        this.Logger.LogError(exception, message);
-	        return new FileInfoInvalidPathException(message);
+		private FileInfoInvalidPathException CreateFileInfoInvalidPathException(Exception exception, string fileName)
+		{
+			var message = string.Format(
+				CultureInfo.CurrentCulture,
+				Strings.ImportInvalidPathCharactersExceptionMessage,
+				fileName);
+			this.Logger.LogError(exception, message);
+			return new FileInfoInvalidPathException(message);
 		}
 
 		private T Exec<T>(

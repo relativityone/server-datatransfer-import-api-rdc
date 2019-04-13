@@ -30,52 +30,52 @@ namespace Relativity.Import.Export.NUnit
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
 		Justification = "The test class handles the disposal.")]
 	public class FileSystemWrapTests
-    {
+	{
 		private TempDirectory tempDirectory;
 		private IFileSystem fileSystem;
 
 		[SetUp]
-	    public void Setup()
-        {
+		public void Setup()
+		{
 			this.tempDirectory = new TempDirectory();
 			this.tempDirectory.Create();
 			this.fileSystem = FileSystem.Instance.DeepCopy();
 		}
 
 		[TearDown]
-	    public void Teardown()
-	    {
+		public void Teardown()
+		{
 			this.tempDirectory.Dispose();
-	    }
+		}
 
-	    [Test]
-	    [Category(TestCategories.FileSystem)]
+		[Test]
+		[Category(TestCategories.FileSystem)]
 		public void ShouldGetTheNonNullDirectoryInstance()
-	    {
-		    Assert.That(this.fileSystem.Directory, Is.Not.Null);
-	    }
+		{
+			Assert.That(this.fileSystem.Directory, Is.Not.Null);
+		}
 
-	    [Test]
-	    [Category(TestCategories.FileSystem)]
+		[Test]
+		[Category(TestCategories.FileSystem)]
 		public void ShouldGetTheNonNullFileInstance()
-	    {
-		    Assert.That(this.fileSystem.File, Is.Not.Null);
-	    }
+		{
+			Assert.That(this.fileSystem.File, Is.Not.Null);
+		}
 
-	    [Test]
-	    [Category(TestCategories.FileSystem)]
+		[Test]
+		[Category(TestCategories.FileSystem)]
 		public void ShouldGetTheNonNullPathInstance()
-	    {
+		{
 			Assert.That(this.fileSystem.Path, Is.Not.Null);
-	    }
+		}
 
-	    [Test]
-	    [Category(TestCategories.FileSystem)]
+		[Test]
+		[Category(TestCategories.FileSystem)]
 		public void ShouldCreateTheFileInfo()
 		{
 			string fileName = GenerateUniqueTextFileName();
 			string file = this.GenerateUniqueFilePath(fileName);
-		    IFileInfo info = this.fileSystem.CreateFileInfo(file);
+			IFileInfo info = this.fileSystem.CreateFileInfo(file);
 			Assert.That(info, Is.Not.Null);
 			Assert.That(info.Exists, Is.False);
 			Assert.Throws<System.IO.FileNotFoundException>(() => Console.WriteLine(info.Length));

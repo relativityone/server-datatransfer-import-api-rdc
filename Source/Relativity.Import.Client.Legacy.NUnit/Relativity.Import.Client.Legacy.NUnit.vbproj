@@ -326,7 +326,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Rhino.Mocks">
-          <HintPath>..\..\packages\RhinoMocks\lib\Rhino.Mocks.dll</HintPath>
+          <HintPath>..\..\packages\RhinoMocks\lib\net\Rhino.Mocks.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

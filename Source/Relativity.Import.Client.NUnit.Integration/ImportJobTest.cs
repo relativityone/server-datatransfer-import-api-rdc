@@ -35,12 +35,12 @@ namespace Relativity.Import.Client.NUnit.Integration
 	public class ImportJobTest
 	{
 		/// <summary>
-		/// The minimum test file length [1KB]
+		/// The minimum test file length [1KB].
 		/// </summary>
 		private const int MinTestFileLength = 1024;
 
 		/// <summary>
-		/// The maximum test file length [10KB]
+		/// The maximum test file length [10KB].
 		/// </summary>
 		private const int MaxTestFileLength = 10 * MinTestFileLength;
 

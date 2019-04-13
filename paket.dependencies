@@ -13,18 +13,18 @@ nuget nbuilder = 6.0.0
 
 # Be even more careful with this library. This resolves a package conflict with the Azure Data Movement library.
 nuget newtonsoft.json = 6.0.8
-nuget nsubstitute = 3.1.0
+nuget nsubstitute = 4.0.0
 
 # Note: periodically update NUnit to the latest version.
 nuget nunit = 3.11.0
-nuget nunit.consolerunner = 3.9.0
+nuget nunit.consolerunner = 3.10.0
 nuget nunit.extension.vsprojectloader = 3.8.0
 
 # Polly is explicitly listed to avoid conflicts between TAPI and Relatativity.
 nuget polly = 5.7.0.0
 nuget psake = 4.7.4
-nuget rhinomocks  = 3.6.0
-nuget stylecop.analyzers = 1.0.2
+nuget rhinomocks  = 3.6.1
+nuget stylecop.analyzers = 1.1.1-rc.114
 nuget zetalongpaths = 1.0.0.27
 
 # Proget packages are below.

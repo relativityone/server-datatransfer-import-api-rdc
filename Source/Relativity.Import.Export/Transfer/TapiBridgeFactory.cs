@@ -9,22 +9,22 @@
 
 namespace Relativity.Import.Export.Transfer
 {
-    using System;
-    using System.Threading;
+	using System;
+	using System.Threading;
 
-    using Relativity.Logging;
-    using Relativity.Transfer;
+	using Relativity.Logging;
+	using Relativity.Transfer;
 
-    /// <summary>
-    /// Represents a class to create <see cref="TapiBridgeBase"/> instances.
-    /// </summary>
-    internal static class TapiBridgeFactory
-    {
+	/// <summary>
+	/// Represents a class to create <see cref="TapiBridgeBase"/> instances.
+	/// </summary>
+	internal static class TapiBridgeFactory
+	{
 		/// <summary>
 		/// Creates a <see cref="UploadTapiBridge"/> instance that supports native file upload transfers.
 		/// </summary>
 		/// <param name="parameters">
-		/// The native file transfer parameters
+		/// The native file transfer parameters.
 		/// </param>
 		/// <param name="log">
 		/// The Relativity logging instance.
@@ -36,16 +36,16 @@ namespace Relativity.Import.Export.Transfer
 		/// The <see cref="UploadTapiBridge"/> instance.
 		/// </returns>
 		public static UploadTapiBridge CreateUploadBridge(UploadTapiBridgeParameters parameters, ILog log, CancellationToken token)
-        {
-            var transferLog = GetTransferLog(log);
-            return new UploadTapiBridge(parameters, transferLog, token);
-        }
+		{
+			var transferLog = GetTransferLog(log);
+			return new UploadTapiBridge(parameters, transferLog, token);
+		}
 
 		/// <summary>
 		/// Creates a <see cref="DownloadTapiBridge"/> instance that supports download transfers.
 		/// </summary>
 		/// <param name="parameters">
-		/// The native file transfer parameters
+		/// The native file transfer parameters.
 		/// </param>
 		/// <param name="log">
 		/// The Relativity logging instance.
@@ -72,28 +72,28 @@ namespace Relativity.Import.Export.Transfer
 		/// The <see cref="ITransferLog"/> instance.
 		/// </returns>
 		private static ITransferLog GetTransferLog(ILog log)
-        {
-            try
-            {
-                // For legacy code and performance considerations, disable automated statistics logging.
-                GlobalSettings.Instance.StatisticsLogEnabled = false;
-                return new RelativityTransferLog(log, false);
-            }
-            catch (Exception e)
-            {
-                try
-                {
-                    Relativity.Logging.Tools.InternalLogger.WriteFromExternal(
+		{
+			try
+			{
+				// For legacy code and performance considerations, disable automated statistics logging.
+				GlobalSettings.Instance.StatisticsLogEnabled = false;
+				return new RelativityTransferLog(log, false);
+			}
+			catch (Exception e)
+			{
+				try
+				{
+					Relativity.Logging.Tools.InternalLogger.WriteFromExternal(
 						"Failed to setup Transfer API logging. Exception: " + e,
-                        new LoggerOptions() { System = "WinEDDS" });
-                }
-                catch (Exception)
-                {
-                    // Being overly cautious to ensure no fatal errors occur due to logging.
-                }
+						new LoggerOptions() { System = "WinEDDS" });
+				}
+				catch (Exception)
+				{
+					// Being overly cautious to ensure no fatal errors occur due to logging.
+				}
 
-                return new NullTransferLog();
-            }
-        }
-    }
+				return new NullTransferLog();
+			}
+		}
+	}
 }

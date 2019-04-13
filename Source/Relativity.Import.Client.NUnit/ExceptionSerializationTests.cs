@@ -124,14 +124,14 @@ namespace Relativity.Import.Client.NUnit
 					new kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlException(
 						new kCura.EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail
 							{
-								ExceptionMessage = "Message"
+								ExceptionMessage = "Message",
 							}),
 					validateNoOp);
 				yield return new TestCaseData(
 					new kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlException(
 						new kCura.EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail
 							{
-								ExceptionMessage = string.Empty
+								ExceptionMessage = string.Empty,
 							}),
 					validateNoOp);
 				yield return new TestCaseData(

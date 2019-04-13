@@ -114,7 +114,7 @@ namespace Relativity.Import.Export.TestFramework
 						IntegratedSecurity = false,
 						UserID = parameters.SqlAdminUserName,
 						Password = parameters.SqlAdminPassword,
-						InitialCatalog = string.Empty
+						InitialCatalog = string.Empty,
 					};
 
 					SqlConnection.ClearAllPools();
@@ -201,11 +201,11 @@ END";
 			{
 				// Note: these targets are intentionally ordered to favor process vars!
 				IEnumerable<EnvironmentVariableTarget> targets = new[]
-					                                                 {
-						                                                 EnvironmentVariableTarget.Process,
-						                                                 EnvironmentVariableTarget.User,
-						                                                 EnvironmentVariableTarget.Machine
-					                                                 };
+																	 {
+																		 EnvironmentVariableTarget.Process,
+																		 EnvironmentVariableTarget.User,
+																		 EnvironmentVariableTarget.Machine,
+																	 };
 				foreach (EnvironmentVariableTarget target in targets)
 				{
 					string envValue = Environment.GetEnvironmentVariable(envVariable, target);
@@ -241,7 +241,7 @@ END";
 				Application = "8A1A6418-29B3-4067-8C9E-51E296F959DE",
 				ConfigurationFileLocation = Path.Combine(ResourceFileHelper.GetBasePath(), "LogConfig.xml"),
 				System = "Import-API",
-				SubSystem = "Samples"
+				SubSystem = "Samples",
 			};
 
 			// Configure the optional SEQ sink to periodically send logs to the local SEQ server for improved debugging.

@@ -21,7 +21,7 @@ namespace Relativity.Import.Export.NUnit
 	/// Represents <see cref="DateTimeExtensions"/> tests.
 	/// </summary>
 	[TestFixture]
-    public static class DateTimeExtensionsTests
+	public static class DateTimeExtensionsTests
 	{
 		/// <summary>
 		/// Gets the test case data source.
@@ -50,8 +50,8 @@ namespace Relativity.Import.Export.NUnit
 		[TestCaseSource(nameof(DateTimeTestCaseSource))]
 		[Category(TestCategories.ExtensionMethods)]
 		public static void ShouldConvertToSqlCultureNeutralString(DateTime input, string expected)
-        {
-	        string value = input.ToSqlCultureNeutralString();
+		{
+			string value = input.ToSqlCultureNeutralString();
 			Assert.That(value, Is.EqualTo(expected));
 		}
 	}

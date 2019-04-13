@@ -974,6 +974,7 @@ namespace Relativity.Import.Export
 			set;
 		}
 
+		/// <inheritdoc />
 		[AppSetting(
 			AppSettingsConstants.SectionLegacyWinEdds,
 			AppSettingsConstants.WaitBeforeReconnectKey,

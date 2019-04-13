@@ -14,13 +14,13 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 	using Relativity.Import.Export;
 	using Relativity.Import.Export.TestFramework;
 
-    /// <summary>
-    /// Represents a test that imports native documents with folders and validates the results.
-    /// </summary>
-    /// <remarks>
-    /// Due to poor performance, disabling client-side implementation by default.
-    /// </remarks>
-    [TestFixture(false)]
+	/// <summary>
+	/// Represents a test that imports native documents with folders and validates the results.
+	/// </summary>
+	/// <remarks>
+	/// Due to poor performance, disabling client-side implementation by default.
+	/// </remarks>
+	[TestFixture(false)]
 	[TestFixture(true)]
 	public class DocImportFolderTests : DocImportTestsBase
 	{
@@ -123,7 +123,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			{
 				ControlNumber = GenerateControlNumber(),
 				File = ResourceFileHelper.GetDocsResourceFilePath(fileName),
-				Folder = folderPath
+				Folder = folderPath,
 			}).ToList();
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = this.ArrangeImportJob(records);
 

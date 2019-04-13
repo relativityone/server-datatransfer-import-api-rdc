@@ -18,7 +18,7 @@ namespace Relativity.Import.Export.Process
 		/// Initializes a new instance of the <see cref="StatusBarEventArgs"/> class.
 		/// </summary>
 		/// <param name="message">
-		/// The status bar message
+		/// The status bar message.
 		/// </param>
 		/// <param name="popupText">
 		/// The status bar popup text.

@@ -29,6 +29,6 @@ namespace Relativity.Import.Export
 		/// <summary>
 		/// The file cannot be identified because of an I/O error.
 		/// </summary>
-		Io
+		Io,
 	}
 }

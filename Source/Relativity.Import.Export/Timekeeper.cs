@@ -189,7 +189,7 @@ namespace Relativity.Import.Export
 			{
 				this.dictionary[key] = new ConcurrentDictionary<int, TimekeeperEntry>()
 					                       {
-						                       [thread] = new TimekeeperEntry()
+						                       [thread] = new TimekeeperEntry(),
 					                       };
 			}
 		}

@@ -31,7 +31,7 @@ namespace Relativity.Import.Export.Data
 		/// The table containing the view data.
 		/// </param>
 		/// <exception cref="ArgumentNullException">
-		/// Thrown when <paramref name="table"/> is <see langword="null" />
+		/// Thrown when <paramref name="table"/> is <see langword="null" />.
 		/// </exception>
 		public SqlDataView(DataTable table)
 		{
@@ -50,7 +50,7 @@ namespace Relativity.Import.Export.Data
 		/// The data set containing the view data.
 		/// </param>
 		/// <exception cref="ArgumentNullException">
-		/// Thrown when <paramref name="dataset"/> is <see langword="null" />
+		/// Thrown when <paramref name="dataset"/> is <see langword="null" />.
 		/// </exception>
 		public SqlDataView(DataSet dataset)
 		{

@@ -22,6 +22,6 @@ namespace Relativity.Import.Export.Io
 		/// <summary>
 		/// The delimited line contains maximum cell and line lengths.
 		/// </summary>
-		Bounded
+		Bounded,
 	}
 }
