@@ -5,8 +5,9 @@ properties {
     $LogsDir = Join-Path $Root "Logs"
     $PackagesDir = Join-Path $Root "packages"
     $PaketDir = Join-Path $Root ".paket"
-    $InstallersSolution = Join-Path $Root "Source/Installers.sln"
-    $MasterSolution = Join-Path $Root "Source/Relativity.ImportAPI-RDC.sln"
+    $SourceDir = Join-Path $Root "Source"
+    $InstallersSolution = Join-Path $SourceDir "Installers.sln"
+    $MasterSolution = Join-Path $SourceDir "Relativity.ImportAPI-RDC.sln"
     $NumberOfProcessors = (Get-ChildItem env:"NUMBER_OF_PROCESSORS").Value
     $BuildArtifactsDir = Join-Path $Root "Artifacts"
     $BinariesArtifactsDir = Join-Path $BuildArtifactsDir "binaries"
@@ -171,7 +172,14 @@ task CompileInstallerSolution -Description "Compile the installer solution" {
 
 task DigitallySignBinaries -Description "Digitally sign all binaries" {
     # To reduce spending a significant amount of time signing unnecessary files, limit the candidate folders.
-    Invoke-DigitallSignFiles -DirectoryCandidates @((Join-Path $BinariesArtifactsDir "Relativity.Desktop.Client.Legacy"), (Join-Path $BinariesArtifactsDir "Relativity.Import.Client"))
+    $directoryCandidates =  @(
+        # The RDC binaries contained within the project must be signed to ensure harvesting includes digitally signed binaries.
+        (Join-Path (Join-Path $SourceDir "Relativity.Desktop.Client.Legacy") "bin"),
+        (Join-Path $BinariesArtifactsDir "Relativity.Desktop.Client.Legacy"),
+        (Join-Path $BinariesArtifactsDir "Relativity.Import.Client")
+    )
+
+    Invoke-DigitallSignFiles -DirectoryCandidates $directoryCandidates
 }
 
 task DigitallySignInstallers -Description "Digitally sign all installers" {
