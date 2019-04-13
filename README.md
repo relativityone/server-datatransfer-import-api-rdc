@@ -4,7 +4,8 @@ You can use the Import API (IAPI) to build application components that import do
 ## System requirements
 * .NET 4.6.2
 * Visual C++ 2010 x86 Runtime (Aspera transfers)
-* Visual C++ 2015 x64 Runtime (Outside In and FreeImage)
+* Visual C++ 2015 x64 Runtime (Outside In)
+* Visual C++ 2017 x86 and x64 Runtime (FreeImage)
 * Intel 2Ghz (2-4 cores is recommended)
 * 8GB RAM (32GB of RAM is recommended)
 
@@ -25,24 +26,26 @@ Generally speaking, PowerShell is used to perform initial and pre-commit builds 
 2. Navigate to the root of the repository
 3. Use any of the build commands below
 
+***Note:** The first parameter specifies the task to execute and defaults to the Build task. The examples below explicitly include Build for clarity.*
+
 ```bash
 # Cleans the solution
-.\build.ps1 -Target "Clean"
+.\build.ps1 Clean
 ```
 
 ```bash
 # Builds the solution using a Release configuration, run the standard + extended CA checks, and then StyleCop analyzer.
-.\build.ps1 -ExtendedCodeAnalysis
+.\build.ps1 Build,ExtendedCodeAnalysis
 ```
 
 ```bash
 # Rebuilds the solution using a Release configuration, runs standard + extended CA checks, and then StyleCop analyzer.
-.\build.ps1 -Target "Rebuild" -ExtendedCodeAnalysis 
+.\build.ps1 Build,ExtendedCodeAnalysis -Target Rebuild
 ```
 
 ```bash
 # Rebuilds the solution using a Debug configuration, runs standard + extended CA checks, and then StyleCop analyzer.
-.\build.ps1 -Target "Rebuild" -Configuration "Debug" -ExtendedCodeAnalysis 
+.\build.ps1 Build,ExtendedCodeAnalysis -Target Rebuild -Configuration Debug
 ```
 
 ### Visual Studio
@@ -56,20 +59,22 @@ Generally speaking, PowerShell is used to perform initial and pre-commit builds 
 ## Unit and integration tests
 Unit and integration tests can be executed via the Test Explorer window or the `PowerShell` build script. The following sections focus on `PowerShell` test execution, which relies on the NUnit 3 Console Runner.
 
+***Note:** All test results are stored within the .\TestResults sub-folder.*
+
 ### Unit tests
 The unit tests are very straight-forward to execute and complete quickly.
 
 ```bash
 # Skips building the solution and only executes the unit tests
-.\build.ps1 -SkipBuild -UnitTests
+.\build.ps1 UnitTests
 ```
 
 ### Integration tests
-The integration tests, by their very nature, perform "deeper" operations and take several minutes to complete.
+The integration tests, by their very nature, perform "deeper" operations and take several minutes to complete. See [Test Parameters](#test-parameters) for details on how to target different test instances.
 
 ```bash
 # Skips building the solution and only executes the integration tests
-.\build.ps1 -SkipBuild -IntegrationTests
+.\build.ps1 IntegrationTests
 ```
 
 ### TestVM support
@@ -77,12 +82,12 @@ The build scripts make it very easy to run *all* integration tests with a TestVM
 
 ```bash
 # Skips building the solution and only executes the integration tests using the first discovered TestVM
-.\build.ps1 -SkipBuild -IntegrationTests -TestVM
+.\build.ps1 IntegrationTests -TestVM
 ```
 
 ```bash
 # Skips building the solution and only executes the integration tests using the specified TestVM
-.\build.ps1 -SkipBuild -IntegrationTests -TestVM -TestVMName "P-DV-VM-NUN5BEE"
+.\build.ps1 IntegrationTests -TestVM -TestVMName "P-DV-VM-NUN5BEE"
 ```
 
 ***Note:** When running integration tests on a `TestVM`, the test parameters are temporarily set via **process** environment variables only.*
@@ -101,9 +106,9 @@ public void ShouldPerformIntegrationTest()
 ### Test parameters
 The majority of integration tests require a Relativity instance to work properly. The combination of test framework code and build scripts provide a number of flexible options to assign test parameters including:
 
-* App.Config
-* Environment variables
-* JSON File
+* [App.Config and Environment Variables](#appconfig-and-environment-variables)
+* [JSON File](#json-file)
+* [Test Environment Build Parameter](#test-environment-build-parameter)
 
 #### App.Config and environment variables
 The following table outlines all available `App.Config` and environment variable test parameters.
@@ -126,7 +131,7 @@ The following table outlines all available `App.Config` and environment variable
 |SqlAdminPassword            | IAPI_INTEGRATION_SQLADMINPASSWORD            | The SQL system administrator password.                            | SomePassword!                                       |
 |WorkspaceTemplate           | IAPI_INTEGRATION_WORKSPACETEMPLATE           | The workspace template used to create the test workspace.         |	Relativity Starter Template                       |
 
-#### JSON
+#### JSON File
 The same test parameters described above can also be used in JSON.
 
 ```json
@@ -153,7 +158,17 @@ The `PowerShell` build scripts can support JSON-based test parameters as well.
 
 ```bash
 # Skips building the solution and only executes the integration tests using the JSON test parameters file
-.\build.ps1 -SkipBuild -IntegrationTests -TestParametersFile "C:\Temp\test-parameters.json"
+.\build.ps1 IntegrationTests -TestParametersFile "C:\Temp\test-parameters.json"
+```
+
+#### Test Environment Build Parameter
+Given the ability to use a JSON-based test parameters file, the repo includes test parameter files for *well-known* test environments. This simplifies running all integration tests against production-like Relativity instances without specifying the file path.
+
+***Note:** The JSON test parameter files are located within the .\Scripts folder.*
+
+```bash
+# Skips building the solution and only executes the integration tests using the Hyper-V test environment
+.\build.ps1 IntegrationTests -TestEnvironment hyperv
 ```
 
 ### AssemblySetup
@@ -183,11 +198,22 @@ The project structure is similar to other repos. Important folders and files are
 │   │   stylecop.json
 ├───Scripts
 │   │
+│   │   Find-ChangedMigratedFiles.ps1
 │   │   Invoke-ExtendedCodeAnalysis.ps1
+│   │   Local.runsettings
+│   │   Local_x64.runsettings
+│   │   Test-PackageUpgrade.ps1
+│   │   test-parameters-hyperv.json
+│   │   test-parameters-sample.json
+│   │   TestParameters-Template.reg
 ├───Source
+│   ├───Relativity.Desktop.Client.Controls.Legacy
+│   ├───Relativity.Desktop.Client.CustomActions
+│   ├───Relativity.Desktop.Client.CustomActions.NUnit
 │   ├───Relativity.Desktop.Client.Legacy
 │   ├───Relativity.Desktop.Client.Legacy.NUnit
 │   ├───Relativity.Desktop.Client.NUnit.Integration
+│   ├───Relativity.Desktop.Client.Setup
 │   ├───Relativity.Export.Client
 │   ├───Relativity.Export.Client.NUnit
 │   ├───Relativity.Export.Client.NUnit.Integration
@@ -196,12 +222,23 @@ The project structure is similar to other repos. Important folders and files are
 │   ├───Relativity.Import.Client.NUnit
 │   ├───Relativity.Import.Client.NUnit.Integration
 │   ├───Relativity.Import.Client.Samples.NUnit
-│   ├───Relativity.Import.Export.Core
-│   ├───Relativity.Import.Export.Core.Legacy
+│   ├───Relativity.Import.Export
+│   ├───Relativity.Import.Export.Legacy
+│   ├───Relativity.Import.Export.NUnit
+│   ├───Relativity.Import.Export.NUnit.Integration
+│   ├───Relativity.Import.Export.Services.Interfaces
 │   ├───Relativity.Import.Export.TestFramework
 │   │
+│   │   Installers.sln
 │   │   Relativity.ImportAPI-RDC.sln
 │   │   Relativity.ImportAPI-RDC.sln.DotSettings
+├───Vendor
+│   │
+│   │   iTextSharp
+│   │   Licenses
+│   │   Microsoft
+│   │   WIX
+│   │   FreeImage
 ├───Version
 │   │
 │   │   AssemblySharedInfo.cs
@@ -217,9 +254,13 @@ The project structure is similar to other repos. Important folders and files are
 ### Projects
 |Name                                           |Project Type|Published|Description                                                                                                                 |
 |:----------------------------------------------|:----------:|:-------:|:---------------------------------------------------------------------------------------------------------------------------|
+|Relativity.Desktop.Client.Controls.Legacy      |   `VB.NET` |         |The RDC user controls project.                                                                                              |
+|Relativity.Desktop.Client.CustomActions        |     C#     |         |The RDC WIX custom actions project.                                                                                         |
+|Relativity.Desktop.Client.CustomActions.NUnit  |     C#     |         |The RDC WIX custom actions test project.                                                                                    |
 |Relativity.Desktop.Client.Legacy               |   `VB.NET` |    X    |The RDC application/EXE project.                                                                                            |
 |Relativity.Desktop.Client.Legacy.NUnit         |   `VB.NET` |         |The RDC unit test project.                                                                                                  |
 |Relativity.Desktop.Client.NUnit.Integration    |     C#     |         |The RDC integration test project.                                                                                           |
+|Relativity.Desktop.Client.Setup                |     C#     |    x    |The RDC WIX setup/MSI project.                                                                                              |
 |Relativity.Export.Client                       |     C#     |         |The export API project.                                                                                                     |
 |Relativity.Export.Client.NUnit                 |     C#     |         |The export API unit test project.                                                                                           |
 |Relativity.Export.Client.NUnit.Integration     |     C#     |         |The export API integration test project.                                                                                    |
@@ -227,10 +268,12 @@ The project structure is similar to other repos. Important folders and files are
 |Relativity.Import.Client.Legacy.NUnit          |   `VB.NET` |         |The import API unit test project.                                                                                           |
 |Relativity.Import.Client.NUnit                 |     C#     |         |The import API unit test project.                                                                                           |
 |Relativity.Import.Client.NUnit.Integration     |     C#     |         |The C# import API integration test project.                                                                                 |
-|Relativity.Import.Client.Samples.NUnit         |     C#     |    X    |The C# import API Github samples test project.                                                                              |
-|Relativity.Import.Export.Core                  |     C#     |         |The C# import/export class library project.                                                                                 |
-|Relativity.Import.Export.Core.Legacy           |   `VB.NET` |         |The import/export shared class library project.                                                                             |
-|Relativity.Import.Export.Services.Interfaces   |     C#     |    X    |The import/export web-service contract project. e.g.<ul><li>enum</li><li>dto</li><li>constants</li><li>interfaces</li></ul> |
+|Relativity.Import.Client.Samples.NUnit         |     C#     |    x    |The C# import API Github samples test project.                                                                              |
+|Relativity.Import.Export                       |     C#     |         |The C# import/export class library project.                                                                                 |
+|Relativity.Import.Export.Legacy                |   `VB.NET` |         |The import/export shared class library project.                                                                             |
+|Relativity.Import.Export.NUnit                 |     C#     |         |The C# import/export unit test project.                                                                                     |
+|Relativity.Import.Export.NUnit.Integration     |     C#     |         |The C# import/export integration test project.                                                                              |
+|Relativity.Import.Export.Services.Interfaces   |     C#     |         |The import/export web-service contract project. e.g.<ul><li>enum</li><li>dto</li><li>constants</li><li>interfaces</li></ul> |
 |Relativity.Import.Export.TestFramework         |     C#     |         |The import/export test framework projecty.                                                                                  |
 
 ### Resharper Team Shared Layer
@@ -251,7 +294,9 @@ All `C#` and `VB.NET` projects contained within the master solution link in one 
 * `AssemblySharedInfo.cs`
 * `AssemblySharedInfo.vb`
 
-The main build script supports an optional "-AssemblyVersion" parameter which, when assigned, passes the value to the `.\Version\Update-AssemblyInfo.ps1` script where the value is "stamped" within the source file.
+The main build script supports an optional `UpdateAssemblyInfo` task which, when specified, uses `GitVersion` to automatically apply semantic versioning info to both of these shared source files.
+
+***Note:** Only Jenkins pipeline builds execute this task to avoid modifying source-controlled files during DEV builds.*
 
 ### Code Analysis
 Roslyn represents the future for .NET based code analysis tools. Although Microsoft.CodeAnalysis.FxCopAnalyzers is a solid replacement for FxCop, additional work is required to migrate.
@@ -262,7 +307,9 @@ Roslyn represents the future for .NET based code analysis tools. Although Micros
 All of the projects within the solution are configured to support *standard* Microsoft code analysis (FxCop) for both `Debug` and `Release` builds. Because some projects are better designed than others, it makes more sense to define two separate CA rulesets:
 
 * `.\booltools\AllErrors.ruleset`: 99.99% of the available rules are enabled.
+* `.\booltools\Autogen.ruleset`: relaxes a significant number of rules due to the nature of auto-generated code.
 * `.\booltools\Legacy.ruleset`: retains most design rules but relaxes globalization, naming, and usage rules.
+* `.\booltools\Tests.ruleset`: retains a smaller number of design rules to ensure test code is well maintained.
 
 #### StyleCop.Analyzers
 The `StyleCop.Analyzers` Roslyn-based analyzer is the de-facto replacement for the original `StyleCop` extension, works flawlessly, and is integrated within *all* projects.
