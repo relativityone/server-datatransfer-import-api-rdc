@@ -56,6 +56,9 @@ Timeout for NUnit tests (in milliseconds).
 .PARAMETER TestParametersFile
 An optional test parameters JSON file that conforms to the standard App.Config file (e.g. Scripts\test-settings-sample.json)
 
+.PARAMETER TestEnvironment
+An optional test environment that maps to a test parameters JSON file.
+
 .PARAMETER TestVMName
 The optional TestVM used to execute all integration tests. This is only relevant for the IntegrationTests task.
 #>
@@ -87,6 +90,9 @@ param(
     [int]$TestTimeoutInMS = 90000,
     [Parameter()]
     [String]$TestParametersFile,
+    [Parameter()]
+    [ValidateSet("hyperv")]
+    [String]$TestEnvironment,
     [Parameter()]
     [String]$TestVMName
 )
@@ -155,6 +161,7 @@ $Params = @{
         Verbosity = $Verbosity
         TestTimeoutInMS = $TestTimeoutInMS
         TestParametersFile = $TestParametersFile
+        TestEnvironment = $TestEnvironment
         TestVMName = $TestVMName
     }
 

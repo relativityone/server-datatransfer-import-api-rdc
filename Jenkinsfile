@@ -106,39 +106,8 @@ timestamps
                         {
                             // Wrapped in a try/finally to ensure the test results are generated.
                             echo "Running the integration tests"
-                            def script = "powershell -Command \"./build.ps1 IntegrationTests;exit \$LASTEXITCODE\""
-                            def processBuilder = new ProcessBuilder(script)
-                            Map<String, String> env = processBuilder.environment()
-                            env.put("IAPI_INTEGRATION_RELATIVITYURL", "https://il1ddtapirap001.kcura.corp/Relativity")
-                            env.put("IAPI_INTEGRATION_RELATIVITYRESTURL", "https://il1ddtapirap001.kcura.corp/relativity.rest/api")
-                            env.put("IAPI_INTEGRATION_RELATIVITYSERVICEURL", "https://il1ddtapirap001.kcura.corp/relativity.services")
-                            env.put("IAPI_INTEGRATION_RELATIVITYWEBAPIURL", "https://il1ddtapirap001.kcura.corp/relativitywebapi")
-                            env.put("IAPI_INTEGRATION_RELATIVITYUSERNAME", "serviceaccount@relativity.com")
-                            env.put("IAPI_INTEGRATION_RELATIVITYPASSWORD", "Test1234!")
-                            env.put("IAPI_INTEGRATION_SERVERCERTIFICATEVALIDATION", "False")
-                            env.put("IAPI_INTEGRATION_SKIPASPERAMODETESTS", "True")
-                            env.put("IAPI_INTEGRATION_SKIPDIRECTMODETESTS", "False")
-                            env.put("IAPI_INTEGRATION_SQLDROPWORKSPACEDATABASE", "True")
-                            env.put("IAPI_INTEGRATION_SQLINSTANCENAME", "il1ddtapirap001.kcura.corp")
-                            env.put("IAPI_INTEGRATION_SQLADMINUSERNAME", "sa")
-                            env.put("IAPI_INTEGRATION_SQLADMINPASSWORD", "P@ssw0rd@1")
-                            env.put("IAPI_INTEGRATION_WORKSPACETEMPLATE", "Relativity Starter Template")
-                            Process p = processBuilder.start()
-                            def output = new StringBuffer()
-                            def error = new StringBuffer()
-                            p.consumeProcessOutput(output, error)
-                            def exitCode = p.waitFor()
-                            if (output.size() > 0)
-                            {
-                                echo output
-                            }
-
-                            if (error.size() > 0)
-                            {
-                                echo error
-                            }
-
-                            echo "The integration tests completed. Exit code: $exitCode"
+                            output = powershell ".\\build.ps1 IntegrationTests -TestEnvironment hyperv"
+                            echo output
                         }
                         finally
                         {

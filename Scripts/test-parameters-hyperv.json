@@ -1,0 +1,17 @@
+{
+  "RelativityUrl": "https://il1ddtapirap001.kcura.corp",
+  "RelativityRestUrl": "https://il1ddtapirap001.kcura.corp/relativity.rest/api",
+  "RelativityServicesUrl": "https://il1ddtapirap001.kcura.corp/relativity.services",
+  "RelativityWebApiUrl": "https://il1ddtapirap001.kcura.corp/relativitywebapi",
+  "RelativityUserName": "serviceaccount@relativity.com",
+  "RelativityPassword": "Test1234!",
+  "ServerCertificateValidation": "False",
+  "SkipAsperaModeTests": "True",
+  "SkipDirectModeTests": "False",
+  "SkipIntegrationTests": "False",
+  "SqlDropWorkspaceDatabase": "True",
+  "SqlInstanceName": "il1ddtapirap001.kcura.corp",
+  "SqlAdminUserName": "sa",
+  "SqlAdminPassword": "P@ssw0rd@1",
+  "WorkspaceTemplate": "Relativity Starter Template"
+}

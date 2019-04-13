@@ -35,6 +35,7 @@ properties {
     $Verbosity = $Null
     $TestTimeoutInMS = $Null
     $TestParametersFile = $Null
+    $TestEnvironment = $Null
     $TestVMName = $Null
 }
 
@@ -248,7 +249,7 @@ task IntegrationTests -Description "Run all integration tests" {
     $OutputFile = Join-Path $TestResultsDir "integration-test-output.txt"
     $testCategoryFilter = "--where=`"cat==Integration`""
     [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPINTEGRATIONTESTS", "false", "Process")
-    Invoke-SetTestParametersByFile $TestParametersFile
+    Invoke-SetTestParametersByFile -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
     exec { & $NunitExe $MasterSolution `
         "--labels=All" `
         "--domain=Multiple" `
@@ -362,7 +363,7 @@ task UnitTests -Description "Run all unit tests" {
     $OutputFile = Join-Path $TestResultsDir "unit-test-output.txt"
     $testCategoryFilter = "--where=`"cat!=Integration`""
     [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPINTEGRATIONTESTS", "true", "Process")
-    Invoke-SetTestParametersByFile $TestParametersFile
+    Invoke-SetTestParametersByFile -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
     exec { & $NunitExe $MasterSolution `
         "--labels=All" `
         "--domain=Multiple" `
@@ -440,15 +441,28 @@ Function Remove-EmptyLogFile {
 
 Function Invoke-SetTestParametersByFile {
     param(
-        [String] $TestParametersFile
+        [String] $TestParametersFile,
+        [String] $TestEnvironment
     )
 
-    if ($TestParametersFile) {
-        if (-Not (Test-Path $TestParametersFile -PathType Leaf)) {
-            Throw "The test parameters file '$TestParametersFile' was specified but doesn't exist."
+    $jsonFile = $TestParametersFile
+    switch ($TestEnvironment) {
+        "hyperv" {
+            $jsonFile = Join-Path $ScriptsDir "test-parameters-hyperv.json"
+            break
         }
 
-        $json = Get-Content -Raw -Path $TestParametersFile | ConvertFrom-Json
+        default { 
+            Throw "The test environment '$TestEnvironment' isn't mapped to a JSON test file. Ensure a JSON file exists for this test environment."
+        }
+    }
+
+    if ($jsonFile) {
+        if (-Not (Test-Path $jsonFile -PathType Leaf)) {
+            Throw "The test parameters file '$jsonFile' was specified but doesn't exist."
+        }
+
+        $json = Get-Content -Raw -Path $jsonFile | ConvertFrom-Json
         foreach ($property in $json.PSObject.Properties) {
             $name = $property.Name
             $value = $property.Value
