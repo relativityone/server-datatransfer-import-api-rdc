@@ -17,7 +17,7 @@ properties {
     $TestResultsDir = Join-Path $Root "TestResults"
     $UnitTestResultsXmlFile = Join-Path $TestResultsDir "test-results-unit.xml"
     $IntegrationTestResultsXmlFile = Join-Path $TestResultsDir "test-results-integration.xml"
-    $ExtentCliExe  = Join-Path $PackagesDir "extent\tools\extent.exe"
+    $ExtentCliExe = Join-Path $PackagesDir "extent\tools\extent.exe"
     $GitVersionExe = Join-Path $PackagesDir "GitVersion.CommandLine\tools\GitVersion.exe"
     $NunitExe = Join-Path $PackagesDir "NUnit.ConsoleRunner\tools\nunit3-console.exe"
     $PaketExe = Join-Path $PaketDir "paket.exe"
@@ -57,10 +57,8 @@ task BuildPackages -Description "Builds all NuGet packages" {
     Write-Host "Working directory: $PSScriptRoot"
     $packageLogFile = Join-Path $LogsDir "package-build.log"
     Write-Host "Creating packages for all package templates contained within '$PaketDir' matching '$templateRegex' with version '$PackageVersion' and outputting to '$PackagesArtifactsDir'."
-    foreach ($file in Get-ChildItem $PaketDir)
-    {
-        if (!($file.Name -match [regex]"paket.template.*$"))
-        {
+    foreach ($file in Get-ChildItem $PaketDir) {
+        if (!($file.Name -match [regex]"paket.template.*$")) {
             continue
         }
 
@@ -99,17 +97,17 @@ task Clean -Description "Clean solution" {
     Initialize-Folder $TestResultsDir
     Write-Output "Running Clean target on $MasterSolution"
     exec { msbuild $MasterSolution `
-        "/t:Clean" `
-        "/verbosity:$Verbosity" `
-        "/p:Configuration=$Configuration" `
-        "/nologo" `
+            "/t:Clean" `
+            "/verbosity:$Verbosity" `
+            "/p:Configuration=$Configuration" `
+            "/nologo" `
     }
 
     exec { msbuild $InstallersSolution `
-        "/t:Clean" `
-        "/verbosity:$Verbosity" `
-        "/p:Configuration=$Configuration" `
-        "/nologo" `
+            "/t:Clean" `
+            "/verbosity:$Verbosity" `
+            "/p:Configuration=$Configuration" `
+            "/nologo" `
     }
 }
 
@@ -127,37 +125,9 @@ task CompileMasterSolution -Description "Compile the master solution" {
     $LogFilePath = Join-Path $LogsDir "master-buildsummary.log"
     $ErrorFilePath = Join-Path $LogsDir "master-builderrors.log"
     exec { msbuild $MasterSolution `
-        "/t:$Target" `
-        "/verbosity:$Verbosity" `
-        "/p:Platform=$BuildPlatform" `
-        "/p:Configuration=$Configuration" `
-        "/p:CopyArtifacts=true" `
-        "/clp:Summary"`
-        "/nodeReuse:false" `
-        "/nologo" `
-        "/maxcpucount" `
-        "/flp1:LogFile=`"$LogFilePath`";Verbosity=$Verbosity" `
-        "/flp2:errorsonly;LogFile=`"$ErrorFilePath`""
-    } -errorMessage "There was an error building the master solution."
-
-    Remove-EmptyLogFile $ErrorFilePath
-}
-
-task CompileInstallerSolution -Description "Compile the installer solution" {
-    Initialize-Folder $LogsDir -Safe
-    $BuildPlatforms = @("x86", "x64")
-    foreach($platform in $BuildPlatforms)
-    {
-        Write-Output "Solution: $InstallersSolution"
-        Write-Output "Configuration: $Configuration"
-        Write-Output "Build platform: $platform"
-        Write-Output "Verbosity: $Verbosity"
-        $LogFilePath = Join-Path $LogsDir "installers-buildsummary-$platform.log"
-        $ErrorFilePath = Join-Path $LogsDir "installers-builderrors-$platform.log"
-        exec { msbuild $InstallersSolution `
             "/t:$Target" `
             "/verbosity:$Verbosity" `
-            "/p:Platform=$platform" `
+            "/p:Platform=$BuildPlatform" `
             "/p:Configuration=$Configuration" `
             "/p:CopyArtifacts=true" `
             "/clp:Summary"`
@@ -166,46 +136,70 @@ task CompileInstallerSolution -Description "Compile the installer solution" {
             "/maxcpucount" `
             "/flp1:LogFile=`"$LogFilePath`";Verbosity=$Verbosity" `
             "/flp2:errorsonly;LogFile=`"$ErrorFilePath`""
+    } -errorMessage "There was an error building the master solution."
+
+    Remove-EmptyLogFile $ErrorFilePath
+}
+
+task CompileInstallerSolution -Description "Compile the installer solution" {
+    Initialize-Folder $LogsDir -Safe
+    $BuildPlatforms = @("x86", "x64")
+    foreach ($platform in $BuildPlatforms) {
+        Write-Output "Solution: $InstallersSolution"
+        Write-Output "Configuration: $Configuration"
+        Write-Output "Build platform: $platform"
+        Write-Output "Verbosity: $Verbosity"
+        $LogFilePath = Join-Path $LogsDir "installers-buildsummary-$platform.log"
+        $ErrorFilePath = Join-Path $LogsDir "installers-builderrors-$platform.log"
+        exec { msbuild $InstallersSolution `
+                "/t:$Target" `
+                "/verbosity:$Verbosity" `
+                "/p:Platform=$platform" `
+                "/p:Configuration=$Configuration" `
+                "/p:CopyArtifacts=true" `
+                "/clp:Summary"`
+                "/nodeReuse:false" `
+                "/nologo" `
+                "/maxcpucount" `
+                "/flp1:LogFile=`"$LogFilePath`";Verbosity=$Verbosity" `
+                "/flp2:errorsonly;LogFile=`"$ErrorFilePath`""
         } -errorMessage "There was an error building the installer solution."
 
         Remove-EmptyLogFile $ErrorFilePath
     }
 }
 
-task DigitallySign -Description "Digitally sign all binaries"   {
+task DigitallySign -Description "Digitally sign all binaries" {
     $retryAttempts = 3
     $sites = @("http://timestamp.comodoca.com/authenticode",
-               "http://timestamp.verisign.com/scripts/timstamp.dll",
-               "http://tsa.starfieldtech.com")
+        "http://timestamp.verisign.com/scripts/timstamp.dll",
+        "http://tsa.starfieldtech.com")
     $signtool = [System.IO.Path]::Combine(${env:ProgramFiles(x86)}, "Microsoft SDKs", "Windows", "v7.1A", "Bin", "signtool.exe")
-    
+	
     # To reduce spending 5 minutes blindly signing unnecessary files, limit to just the RDC/IAPI and use directory/file counts to verify.
     $folderNameCandidates = @("Relativity.Desktop.Client.Legacy", "Relativity.Import.Client")
-    foreach($folder in $folderNameCandidates)
-    {
+    foreach ($folder in $folderNameCandidates) {
         $directory = Join-Path $BinariesArtifactsDir $folder
         if (-Not (Test-Path $directory -PathType Container)) {
             Throw "The '$directory' can't be digitally signed because the directory doesn't exist. Verify the build script and project files are in agreement."
         }
 
-        $filesToSign = Get-ChildItem -Path $directory -Recurse -Include *.dll,*.exe,*.msi | Where-Object { $_.Name -Match ".*Relativity.*|.*kCura.*" }
+        $filesToSign = Get-ChildItem -Path $directory -Recurse -Include *.dll, *.exe, *.msi | Where-Object { $_.Name -Match ".*Relativity.*|.*kCura.*" }
         $totalFilesToSign = $filesToSign.Length
-        if ($totalFilesToSign -eq 0)
-        {
+        if ($totalFilesToSign -eq 0) {
             Throw "The '$directory' can't be digitally signed because there aren't any candidate files within the directory. Verify the build script and project files are in agreement."
         }
 
         Write-Output "Signing $totalFilesToSign total assemblies in $directory"
-        foreach($fileToSign in $filesToSign)
-        {
+        foreach ($fileToSign in $filesToSign) {
             $file = $fileToSign.FullName
             & $signtool verify /pa /q $file
             $signed = $?
 
             if (-not $signed) {
 
-                For ($i =0; $i -lt $retryAttempts; $i++) {
-                    ForEach ($site in $sites){
+                For ($i = 0; $i -lt $retryAttempts; $i++) {
+                    ForEach ($site in $sites) {
                         Write-Host "Attempting to sign" $file "using" $site "..."
                         & $signtool sign /a /t $site /d "Relativity" /du "http://www.kcura.com" $file
                         $signed = $?                    
@@ -214,12 +208,12 @@ task DigitallySign -Description "Digitally sign all binaries"   {
                             break
                         }
                     }  
-                    
+					
                     if ($signed) {
                         break
                     }
                 }
-        
+		
                 if (-not $signed) {
                     Throw "Failed to sign the dlls. See the error above."
                 }
@@ -251,15 +245,15 @@ task IntegrationTests -Description "Run all integration tests" {
     [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPINTEGRATIONTESTS", "false", "Process")
     Invoke-SetTestParametersByFile -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
     exec { & $NunitExe $MasterSolution `
-        "--labels=All" `
-        "--domain=Multiple" `
-        "--process=Multiple" `
-        "--agents=$NumberOfProcessors" `
-        "--skipnontestassemblies" `
-        "--timeout=$TestTimeoutInMS" `
-        "--result=$IntegrationTestResultsXmlFile" `
-        "--out=$OutputFile" `
-        $testCategoryFilter `
+            "--labels=All" `
+            "--domain=Multiple" `
+            "--process=Multiple" `
+            "--agents=$NumberOfProcessors" `
+            "--skipnontestassemblies" `
+            "--timeout=$TestTimeoutInMS" `
+            "--result=$IntegrationTestResultsXmlFile" `
+            "--out=$OutputFile" `
+            $testCategoryFilter `
     } -errorMessage "There was an error running the integration tests."
 }
 
@@ -275,7 +269,7 @@ task PackageVersion -Description "Retrieves the package version from GitVersion"
     Write-Output "packageVersion=$version"
 }
 
-task PublishBuildArtifacts -Description "Publish build artifacts"  {
+task PublishBuildArtifacts -Description "Publish build artifacts" {
     Assert ($Branch -ne "") "Branch is a required argument for saving build artifacts."
     Assert ($Version -ne "") "Version is a required argument for saving build artifacts."    
     $targetDir = "$BuildPackagesDir\$Branch\$Version"
@@ -289,18 +283,15 @@ task PublishBuildArtifacts -Description "Publish build artifacts"  {
 task PublishPackages -Depends BuildPackages -Description "Pushes package to NuGet feed" {
     Assert ($Branch -ne "") "Branch is a required argument for publishing packages"
     Assert ($PackageVersion -ne "") "PackageVersion is a required argument for publishing packages"
-    if (($Branch -ne "master" -and (-not $Branch -like "hotfix-*")) -and [string]::IsNullOrWhiteSpace($preReleaseLabel))
-    {
+    if (($Branch -ne "master" -and (-not $Branch -like "hotfix-*")) -and [string]::IsNullOrWhiteSpace($preReleaseLabel)) {
         Write-Warning "PPP: Current branch '$Branch' has version that appears to be a release version and is not master. Packing and publishing will not occur. Exiting..."
         exit 0
     }
 
     $packageLogFile = Join-Path $LogsDir "package-publish.log"
     Write-Host "Pushing all .nupkg files contained within '$PaketDir' to '$ProgetUrl'."
-    foreach($file in Get-ChildItem $PackagesArtifactsDir)
-    {
-        if ($file.Extension -ne '.nupkg')
-        {
+    foreach ($file in Get-ChildItem $PackagesArtifactsDir) {
+        if ($file.Extension -ne '.nupkg') {
             continue
         }
 
@@ -313,26 +304,25 @@ task SemanticVersions -Depends BuildVersion, PackageVersion -Description "Calcul
 }
 
 task TestVMSetup -Description "Setup the test parameters for TestVM" {
-    try
-    {
+    try {
         $testVM = $null
         if ($TestVMName) {
-            $testVM = (Get-Testvm) | Where-Object { $_.BoxName -eq $TestVMName } | Select-Object
+            $testVM = (Get-TestVm) | Where-Object { $_.BoxName -eq $TestVMName } | Select-Object
             if (-Not $testVM) {
                 Throw "This operation cannot be performed because the TestVM $TestVMName doesn't exist."
             }
         }
         else {
-            $testVM = (Get-Testvm) | Select-Object -First 1
+            $testVM = (Get-TestVm) | Select-Object -First 1
             if (-Not $testVM) {
                 Throw "This operation cannot be performed because there must be at least 1 TestVM available."
             }
         }
 
-	    $hostname = $testVM.BoxName 
-	    If ((Get-Content (Join-Path $testVM.Directory box.json) | ConvertFrom-Json).parameters.joinDomain.value -eq 0) { 
-		    $hostname = "$($testVM.BoxName).kcura.corp"
-	    } 
+        $hostname = $testVM.BoxName 
+        If ((Get-Content (Join-Path $testVM.Directory box.json) | ConvertFrom-Json).parameters.joinDomain.value -eq 0) { 
+            $hostname = "$($testVM.BoxName).kcura.corp"
+        } 
 
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_RELATIVITYURL", "https://$hostname", "Process")
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_RELATIVITYRESTURL", "https://$hostname/relativity.rest/api", "Process")
@@ -350,8 +340,7 @@ task TestVMSetup -Description "Setup the test parameters for TestVM" {
         [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_WORKSPACETEMPLATE", "Relativity Starter Template", "Process")
         Write-Host "The test environment is setup with the $hostname TestVM."
     }
-    catch
-    {
+    catch {
         $errorMessage = $_.Exception.Message
         Write-Error "Failed to setup the TestVM for integration tests. Error: $errorMessage"
         throw
@@ -365,15 +354,15 @@ task UnitTests -Description "Run all unit tests" {
     [Environment]::SetEnvironmentVariable("IAPI_INTEGRATION_SKIPINTEGRATIONTESTS", "true", "Process")
     Invoke-SetTestParametersByFile -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
     exec { & $NunitExe $MasterSolution `
-        "--labels=All" `
-        "--domain=Multiple" `
-        "--process=Multiple" `
-        "--agents=$NumberOfProcessors" `
-        "--skipnontestassemblies" `
-        "--timeout=$TestTimeoutInMS" `
-        "--result=$UnitTestResultsXmlFile" `
-        "--out=$OutputFile" `
-        $testCategoryFilter `
+            "--labels=All" `
+            "--domain=Multiple" `
+            "--process=Multiple" `
+            "--agents=$NumberOfProcessors" `
+            "--skipnontestassemblies" `
+            "--timeout=$TestTimeoutInMS" `
+            "--result=$UnitTestResultsXmlFile" `
+            "--out=$OutputFile" `
+            $testCategoryFilter `
     }
 }
 
@@ -389,20 +378,18 @@ task UpdateAssemblyInfo -Precondition { $Version -ne "1.0.0.0" } -Description "U
 
 Function Initialize-Folder {
     param(
-        [Parameter(Mandatory=$true, Position=0)]
+        [Parameter(Mandatory = $true, Position = 0)]
         [String] $Path,
         [Parameter()]
         [switch] $Safe
     )
 
-    if ((Test-Path $Path) -and $Safe)
-    {
+    if ((Test-Path $Path) -and $Safe) {
         Write-Host "The directory '$Path' already exists."
         Return
     }
 
-    if (Test-Path $Path)
-    {
+    if (Test-Path $Path) {
         Remove-Item -Recurse -Force $Path -ErrorAction Stop
         Write-Host "Deleted the '$Path' directory."
     }
@@ -420,9 +407,8 @@ Function Copy-Folder {
     $robocopy = "robocopy.exe"
     Write-Output "Copying the build artifacts from $SourceDir to $TargetDir"
     & $robocopy "$SourceDir" "$TargetDir" /MIR /is
-    if ($LASTEXITCODE -ne 1) 
-    {
-	    Throw "An error occured while copying the build artifacts from $SourceDir to $TargetDir"
+    if ($LASTEXITCODE -ne 1) {
+        Throw "An error occured while copying the build artifacts from $SourceDir to $TargetDir"
     }
 }
 
@@ -446,14 +432,16 @@ Function Invoke-SetTestParametersByFile {
     )
 
     $jsonFile = $TestParametersFile
-    switch ($TestEnvironment) {
-        "hyperv" {
-            $jsonFile = Join-Path $ScriptsDir "test-parameters-hyperv.json"
-            break
-        }
+    if ($TestEnvironment) {
+        switch ($TestEnvironment) {
+            "hyperv" {
+                $jsonFile = Join-Path $ScriptsDir "test-parameters-hyperv.json"
+                break
+            }
 
-        default { 
-            Throw "The test environment '$TestEnvironment' isn't mapped to a JSON test file. Ensure a JSON file exists for this test environment."
+            default {
+                Throw "The test environment '$TestEnvironment' isn't mapped to a JSON test file. Ensure a JSON file exists for this test environment."
+            }
         }
     }
 
