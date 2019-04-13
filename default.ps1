@@ -169,60 +169,14 @@ task CompileInstallerSolution -Description "Compile the installer solution" {
     }
 }
 
-task DigitallySign -Description "Digitally sign all binaries" {
-    $retryAttempts = 3
-    $sites = @("http://timestamp.comodoca.com/authenticode",
-        "http://timestamp.verisign.com/scripts/timstamp.dll",
-        "http://tsa.starfieldtech.com")
-    $signtool = [System.IO.Path]::Combine(${env:ProgramFiles(x86)}, "Microsoft SDKs", "Windows", "v7.1A", "Bin", "signtool.exe")
-	
-    # To reduce spending 5 minutes blindly signing unnecessary files, limit to just the RDC/IAPI and use directory/file counts to verify.
-    $folderNameCandidates = @("Relativity.Desktop.Client.Legacy", "Relativity.Import.Client")
-    foreach ($folder in $folderNameCandidates) {
-        $directory = Join-Path $BinariesArtifactsDir $folder
-        if (-Not (Test-Path $directory -PathType Container)) {
-            Throw "The '$directory' can't be digitally signed because the directory doesn't exist. Verify the build script and project files are in agreement."
-        }
+task DigitallySignBinaries -Description "Digitally sign all binaries" {
+    # To reduce spending a significant amount of time signing unnecessary files, limit the candidate folders.
+    Invoke-DigitallSignFiles -DirectoryCandidates @((Join-Path $BinariesArtifactsDir "Relativity.Desktop.Client.Legacy"), (Join-Path $BinariesArtifactsDir "Relativity.Import.Client"))
+}
 
-        $filesToSign = Get-ChildItem -Path $directory -Recurse -Include *.dll, *.exe, *.msi | Where-Object { $_.Name -Match ".*Relativity.*|.*kCura.*" }
-        $totalFilesToSign = $filesToSign.Length
-        if ($totalFilesToSign -eq 0) {
-            Throw "The '$directory' can't be digitally signed because there aren't any candidate files within the directory. Verify the build script and project files are in agreement."
-        }
-
-        Write-Output "Signing $totalFilesToSign total assemblies in $directory"
-        foreach ($fileToSign in $filesToSign) {
-            $file = $fileToSign.FullName
-            & $signtool verify /pa /q $file
-            $signed = $?
-
-            if (-not $signed) {
-
-                For ($i = 0; $i -lt $retryAttempts; $i++) {
-                    ForEach ($site in $sites) {
-                        Write-Host "Attempting to sign" $file "using" $site "..."
-                        & $signtool sign /a /t $site /d "Relativity" /du "http://www.kcura.com" $file
-                        $signed = $?                    
-                        if ($signed) {
-                            Write-Host "Signed" $file "Successfully!"
-                            break
-                        }
-                    }  
-					
-                    if ($signed) {
-                        break
-                    }
-                }
-		
-                if (-not $signed) {
-                    Throw "Failed to sign the dlls. See the error above."
-                }
-            }
-            else {
-                Write-Host $file "is already signed!"
-            }
-        }
-    }
+task DigitallySignInstallers -Description "Digitally sign all installers" {
+    # All MSI's are contained underneath 1 folder.
+    Invoke-DigitallSignFiles -DirectoryCandidates @($InstallersArtifactsDir)
 }
 
 task ExtendedCodeAnalysis -Description "Perform extended code analysis checks." {
@@ -376,6 +330,20 @@ task UpdateAssemblyInfo -Precondition { $Version -ne "1.0.0.0" } -Description "U
     exec { & $ScriptPath -Version $Version -VersionFolderPath $VersionPath }
 }
 
+Function Copy-Folder {
+    param(
+        [String] $SourceDir,
+        [String] $TargetDir
+    )
+
+    $robocopy = "robocopy.exe"
+    Write-Output "Copying the build artifacts from $SourceDir to $TargetDir"
+    & $robocopy "$SourceDir" "$TargetDir" /MIR /is
+    if ($LASTEXITCODE -ne 1) {
+        Throw "An error occured while copying the build artifacts from $SourceDir to $TargetDir"
+    }
+}
+
 Function Initialize-Folder {
     param(
         [Parameter(Mandatory = $true, Position = 0)]
@@ -398,29 +366,60 @@ Function Initialize-Folder {
     Write-Host "Created the '$Path' directory."
 }
 
-Function Copy-Folder {
+Function Invoke-DigitallSignFiles {
     param(
-        [String] $SourceDir,
-        [String] $TargetDir
+        [String[]] $DirectoryCandidates
     )
 
-    $robocopy = "robocopy.exe"
-    Write-Output "Copying the build artifacts from $SourceDir to $TargetDir"
-    & $robocopy "$SourceDir" "$TargetDir" /MIR /is
-    if ($LASTEXITCODE -ne 1) {
-        Throw "An error occured while copying the build artifacts from $SourceDir to $TargetDir"
-    }
-}
-
-Function Remove-EmptyLogFile {
-    param(
-        [String] $LogFile
+    $signtool = [System.IO.Path]::Combine(${env:ProgramFiles(x86)}, "Microsoft SDKs", "Windows", "v7.1A", "Bin", "signtool.exe")
+    $retryAttempts = 3
+    $sites = @(
+        "http://timestamp.comodoca.com/authenticode",
+        "http://timestamp.verisign.com/scripts/timstamp.dll",
+        "http://tsa.starfieldtech.com"
     )
+    
+    foreach ($directory in $DirectoryCandidates) {
+        if (-Not (Test-Path $directory -PathType Container)) {
+            Throw "The '$directory' can't be digitally signed because the directory doesn't exist. Verify the build script and project files are in agreement."
+        }
 
-    # Remove the error log when none exist.
-    if (Test-Path $LogFile -PathType Leaf) {
-        if ((Get-Item $LogFile).length -eq 0) {
-            Remove-Item $LogFile
+        $filesToSign = Get-ChildItem -Path $directory -Recurse -Include *.dll, *.exe, *.msi | Where-Object { $_.Name -Match ".*Relativity.*|.*kCura.*" }
+        $totalFilesToSign = $filesToSign.Length
+        if ($totalFilesToSign -eq 0) {
+            Throw "The '$directory' can't be digitally signed because there aren't any candidate files within the directory. Verify the build script and project files are in agreement."
+        }
+
+        Write-Output "Signing $totalFilesToSign total files in $directory"
+        foreach ($fileToSign in $filesToSign) {
+            $file = $fileToSign.FullName
+            & $signtool verify /pa /q $file
+            $signed = $?
+
+            if (-not $signed) {
+                For ($i = 0; $i -lt $retryAttempts; $i++) {
+                    ForEach ($site in $sites) {
+                        Write-Host "Attempting to sign" $file "using" $site "..."
+                        & $signtool sign /a /t $site /d "Relativity" /du "http://www.kcura.com" $file
+                        $signed = $?                    
+                        if ($signed) {
+                            Write-Host "Signed" $file "Successfully!"
+                            break
+                        }
+                    }  
+					
+                    if ($signed) {
+                        break
+                    }
+                }
+		
+                if (-not $signed) {
+                    Throw "Failed to sign the dlls. See the error above."
+                }
+            }
+            else {
+                Write-Host $file "is already signed!"
+            }
         }
     }
 }
@@ -461,6 +460,19 @@ Function Invoke-SetTestParametersByFile {
             }
 
             [Environment]::SetEnvironmentVariable($name, $value , "Process")
+        }
+    }
+}
+
+Function Remove-EmptyLogFile {
+    param(
+        [String] $LogFile
+    )
+
+    # Remove the error log when none exist.
+    if (Test-Path $LogFile -PathType Leaf) {
+        if ((Get-Item $LogFile).length -eq 0) {
+            Remove-Item $LogFile
         }
     }
 }

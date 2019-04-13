@@ -72,10 +72,24 @@ timestamps
                         echo output
                     }
 
+                    stage('Digitally sign binaries')
+                    {
+                        echo "Digitally signing all binaries"
+                        output = powershell ".\\build.ps1 DigitallySignBinaries -Verbosity '${params.buildVerbosity}'"
+                        echo output
+                    }
+
                     stage('Build installers')
                     {
                         echo "Building the installers for version $buildVersion"
                         output = powershell ".\\build.ps1 BuildInstallers -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}'"
+                        echo output
+                    }
+
+                    stage('Digitally sign installers')
+                    {
+                        echo "Digitally signing all installers"
+                        output = powershell ".\\build.ps1 DigitallySignInstallers -Verbosity '${params.buildVerbosity}'"
                         echo output
                     }
 
@@ -174,12 +188,6 @@ timestamps
                             echo "Total failed: $testResultsFailed"
                             echo "Total skipped: $testResultsSkipped"
                         }
-                    }
-
-                    stage('Digitally sign binaries')
-                    {
-                        output = powershell ".\\build.ps1 DigitallySign -Verbosity '${params.buildVerbosity}'"
-                        echo output
                     }
 
                     stage ('Publish packages to proget')
