@@ -231,7 +231,7 @@ task ExtendedCodeAnalysis -Description "Perform extended code analysis checks." 
 
 task GenerateTestReport -Description "Generate a merged test report" {
     # This will generate index.html within the test results directory.
-    exec { & $ExtentCliExe -d $TestResultsDir -o $TestResultsDir -r v3html --merge } -errorMessage "There was an error generating the test report."
+    exec { & $ExtentCliExe -d "$TestResultsDir/" -o "$TestResultsDir/" -r v3html --merge } -errorMessage "There was an error generating the test report."
 }
 
 task Help -Alias ? -Description "Display task information" {
