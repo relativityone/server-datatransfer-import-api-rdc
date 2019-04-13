@@ -100,60 +100,80 @@ timestamps
                         }
                     }
 
-                    stage('Integration Tests')
+                    stage('Run integration tests')
                     {
-                        def directory = new File(".\\TempParameters")
-                        directory.mkdir()
-                        def testParametersFile = ".\\TempParameters\\test-parameters.json"
-
                         try
                         {
-                            writeFile file: testParametersFile, text: """{
-                                "RelativityUrl" : "https://il1ddtapirap001.kcura.corp/Relativity",
-                                "RelativityRestUrl" : "https://il1ddtapirap001.kcura.corp/relativity.rest/api",
-                                "RelativityServicesUrl" : "https://il1ddtapirap001.kcura.corp/relativity.services",
-                                "RelativityWebApiUrl" : "https://il1ddtapirap001.kcura.corp/relativitywebapi",
-                                "RelativityUserName" : "serviceaccount@relativity.com",
-                                "RelativityPassword" : "Test1234!",
-                                "ServerCertificateValidation" : "False",
-                                "SkipAsperaModeTests" : "True",
-                                "SkipDirectModeTests" : "False",
-                                "SkipIntegrationTests" : "False",
-                                "SqlDropWorkspaceDatabase" : "True",
-                                "SqlInstanceName" : "il1ddtapirap001.kcura.corp",
-                                "SqlAdminUserName" : "sa",
-                                "SqlAdminPassword" : "P@ssw0rd@1",
-                                "WorkspaceTemplate" : "Relativity Starter Template"
-                            }"""
-
                             // Wrapped in a try/finally to ensure the test results are generated.
                             echo "Running the integration tests"
-                            output = powershell ".\\build.ps1 IntegrationTests -TestParametersFile '$testParametersFile'"
+                            output = bat """
+                                |SET IAPI_INTEGRATION_RELATIVITYURL=https://il1ddtapirap001.kcura.corp/Relativity
+                                |SET IAPI_INTEGRATION_RELATIVITYRESTURL=https://il1ddtapirap001.kcura.corp/relativity.rest/api
+                                |SET IAPI_INTEGRATION_RELATIVITYSERVICEURL=https://il1ddtapirap001.kcura.corp/relativity.services
+                                |SET IAPI_INTEGRATION_RELATIVITYWEBAPIURL=https://il1ddtapirap001.kcura.corp/relativitywebapi
+                                |SET IAPI_INTEGRATION_RELATIVITYUSERNAME=serviceaccount@relativity.com
+                                |SET IAPI_INTEGRATION_RELATIVITYPASSWORD=Test1234!
+                                |SET IAPI_INTEGRATION_SERVERCERTIFICATEVALIDATION=False
+                                |SET IAPI_INTEGRATION_SKIPASPERAMODETESTS=True
+                                |SET IAPI_INTEGRATION_SKIPDIRECTMODETESTS=False
+                                |SET IAPI_INTEGRATION_SQLDROPWORKSPACEDATABASE=True
+                                |SET IAPI_INTEGRATION_SQLINSTANCENAME=il1ddtapirap001.kcura.corp
+                                |SET IAPI_INTEGRATION_SQLADMINUSERNAME=sa
+                                |SET IAPI_INTEGRATION_SQLADMINPASSWORD=P@ssw0rd@1
+                                |SET IAPI_INTEGRATION_WORKSPACETEMPLATE=Relativity Starter Template
+                                |@powershell -Command \". ./build.ps1 IntegrationTests;exit \$LASTEXITCODE\"
+                                |"""
                             echo output
                         }
                         finally
                         {
-                            directory.deleteDir()
                             echo "Generating integration test results"
                             powershell ".\\build.ps1 GenerateTestReport"
                         }
                     }
 
-                    stage('Retrieve unit test results')
+                    stage('Retrieve test results')
                     {
-                        // Let the build script retrieve the values.
-                        echo "Retrieving the unit test results"
-                        def outputString = runCommandWithOutput(".\\build.ps1 UnitTestResults -Verbosity '${params.buildVerbosity}'")
-                        echo "Retrieved the unit test results"
+                        ['UnitTestResults', 'IntegrationTestResults'].eachWithIndex { testType, index ->                            
+                            def testDescription = ""
+                            switch (index)
+                            {
+                                case 1:
+                                    testDescription = "unit"
+                                    break
 
-                        // Search for specific tokens within the response.
-                        echo "Extracting the unit test result parameters"
-                        testResultsPassed = extractValue("testResultsPassed", outputString)
-                        testResultsFailed = extractValue("testResultsFailed", outputString)
-                        testResultsSkipped = extractValue("testResultsSkipped", outputString)
-                        echo "Extracted the unit test result parameters"
+                                case 2:
+                                    testDescription = "integration"
+                                    break
 
-                        // Dump the test results
+                                default:
+                                    throw new Exception("The test result type $index is not mapped.")
+                            }
+
+                            // Let the build script retrieve the unit test result values.
+                            echo "Retrieving the $testDescription-test results"
+                            def testResultOutputString = runCommandWithOutput(".\\build.ps1 ${testType} -Verbosity '${params.buildVerbosity}'")
+                            echo "Retrieved the $testDescription-test results"
+
+                            // Search for specific tokens within the response.
+                            echo "Extracting the $testDescription-test result parameters"
+                            def passed = extractValue("testResultsPassed", testResultOutputString)
+                            def failed = extractValue("testResultsFailed", testResultOutputString)
+                            def skipped = extractValue("testResultsSkipped", testResultOutputString)
+                            echo "Extracted the $testDescription-test result parameters"
+
+                            // Dump the individual test results
+                            echo "$testDescription-test passed: $passed"
+                            echo "$testDescription-test failed: $failed"
+                            echo "$testDescription-test skipped: $skipped"
+                            
+                            // Now add to the final test results
+                            testResultsPassed += passed
+                            testResultsFailed += failed
+                            testResultsSkipped += skipped
+                        }
+
+                        // Dump the final test results
                         echo "Total passed: $testResultsPassed"
                         echo "Total failed: $testResultsFailed"
                         echo "Total skipped: $testResultsSkipped"

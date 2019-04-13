@@ -262,7 +262,7 @@ task IntegrationTests -Description "Run all integration tests" {
     } -errorMessage "There was an error running the integration tests."
 }
 
-task IntegrationTestsResults -Description "Retrieve the integration test results from the Xml file" {
+task IntegrationTestResults -Description "Retrieve the integration test results from the Xml file" {
     Write-TestResultsOutput $IntegrationTestResultsXmlFile
 }
 
