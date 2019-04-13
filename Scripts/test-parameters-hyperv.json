@@ -6,7 +6,7 @@
   "RelativityUserName": "serviceaccount@relativity.com",
   "RelativityPassword": "Test1234!",
   "ServerCertificateValidation": "False",
-  "SkipAsperaModeTests": "True",
+  "SkipAsperaModeTests": "False",
   "SkipDirectModeTests": "False",
   "SkipIntegrationTests": "False",
   "SqlDropWorkspaceDatabase": "True",
