@@ -1069,21 +1069,9 @@ namespace Relativity.Import.Export
 				value = value.Trim() + "/";
 			}
 
-			try
-			{
-				// NOTE: This is here for validation; an improper URI will cause this to throw an
-				// exception. We set it then to 'Nothing' to avoid a warning-turned-error about
-				// having an unused variable. -Phil S. 12/05/2011
-				// fixed 1/24/2012 - slm - return an empty string if invalid uri format.  this will cause the
-				// rdc to pop up its dialog prompting the user to enter a valid address
-				Uri uriObj = new Uri(value);
-				uriObj = null;
-				return value;
-			}
-			catch
-			{
-				return string.Empty;
-			}
+			// Replaced the original implementation that used a try/catch and full object construction with one that's more debugger friendly and isn't quite so ominous.
+			Uri uri = null;
+			return Uri.TryCreate(value, UriKind.Absolute, out uri) ? value : string.Empty;
 		}
 
 		/// <inheritdoc />
