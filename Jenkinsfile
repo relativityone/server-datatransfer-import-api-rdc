@@ -15,7 +15,8 @@ properties([
         string(defaultValue: '#import-api-rdc-build', description: 'Slack Channel title where to report the pipeline results', name: 'slackChannel'),
         booleanParam(defaultValue: true, description: "Enable or disable running unit tests", name: 'runUnitTests'),
         booleanParam(defaultValue: true, description: "Enable or disable running integration tests", name: 'runIntegrationTests'),
-        booleanParam(defaultValue: true, description: "Enable or disable creating a code coverage report", name: 'createCodeCoverageReport')
+        booleanParam(defaultValue: true, description: "Enable or disable creating a code coverage report", name: 'createCodeCoverageReport'),
+        choice(defaultValue: 'hyperv', choices: ["hyperv"], description: 'The test environment used for integration tests and code coverage', name: 'testEnvironment'),
     ])
 ])
 
@@ -116,7 +117,7 @@ timestamps
                         stage('Run integration tests')
                         {
                             echo "Running the integration tests"
-                            output = powershell ".\\build.ps1 IntegrationTests -TestEnvironment hyperv"
+                            output = powershell ".\\build.ps1 IntegrationTests -TestEnvironment $params.testEnvironment"
                             echo output
                         }
                     }
@@ -196,7 +197,7 @@ timestamps
                         stage('Code coverage report')
                         {
                             echo "Creating a code coverage report"
-                            output = powershell ".\\build.ps1 CodeCoverageReport"
+                            output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment $params.testEnvironment"
                             echo output
                         }
                     }
@@ -218,10 +219,20 @@ timestamps
                 }
                 finally
                 {
-                    echo "Gathering unit test results"
+                    echo "Publishing the build logs"
                     archiveArtifacts artifacts: 'Logs/**/*.*'
-                    archiveArtifacts artifacts: 'TestResults/**/*.*'
-                }                    
+                    if (params.runUnitTests || params.runIntegrationTests)
+                    {
+                        echo "Publishing the tests report"
+                        archiveArtifacts artifacts: 'Reports/tests/**/*.*'
+                    }
+
+                    if (params.createCodeCoverageReport)
+                    {
+                        echo "Publishing the code coverage report"
+                        archiveArtifacts artifacts: 'Reports/code-coverage/**/*.*'
+                    }
+                } 
             }
             catch(err)
             {

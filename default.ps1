@@ -15,9 +15,12 @@ properties {
     $PackagesArtifactsDir = Join-Path $BuildArtifactsDir "packages"
     $ScriptsDir = Join-Path $Root "Scripts"
     $BuildPackagesDir = "\\bld-pkgs\Packages\Import-Api-RDC\"
+    $ReportsDir = Join-Path $Root "Reports"
+    $CodeCoverageReportDir = Join-Path $ReportsDir "code-coverage"
+    $TestsReportDir = Join-Path $ReportsDir "tests"
     $TestResultsDir = Join-Path $Root "TestResults"
     $DotCoverConfigFile = Join-Path $ScriptsDir "code-coverage-report.xml"
-    $DotCoverReportXmlFile = Join-Path $TestResultsDir "code-coverage-report.xml"
+    $DotCoverReportXmlFile = Join-Path $CodeCoverageReportDir "code-coverage-report.xml"
     $IntegrationTestResultsXmlFile = Join-Path $TestResultsDir "test-results-integration.xml"
     $UnitTestResultsXmlFile = Join-Path $TestResultsDir "test-results-unit.xml"    
     $ExtentCliExe = Join-Path $PackagesDir "extent\tools\extent.exe"
@@ -69,7 +72,9 @@ task BuildPackages -Description "Builds all NuGet packages" {
 
         $templateFile = $file.FullName
         Write-Host "Creating package for template '$templateFile' and outputting to '$PackagesArtifactsDir'."
-        exec { & $PaketExe pack --template `"$templateFile`" --version $PackageVersion --symbols `"$PackagesArtifactsDir`" --log-file `"$packageLogFile`" } -errorMessage "There was an error creating the package."
+        exec {
+             & $PaketExe pack --template `"$templateFile`" --version $PackageVersion --symbols `"$PackagesArtifactsDir`" --log-file `"$packageLogFile`" 
+        } -errorMessage "There was an error creating the package."
     }
 }
 
@@ -107,7 +112,7 @@ task Clean -Description "Clean solution" {
             "-verbosity:$Verbosity" `
             "-p:Configuration=$Configuration" `
             "-nologo" `
-    }
+    } -errorMessage "There was an error cleaning the master solution."
 
     exec { 
         msbuild $InstallersSolution `
@@ -115,12 +120,13 @@ task Clean -Description "Clean solution" {
             "-verbosity:$Verbosity" `
             "-p:Configuration=$Configuration" `
             "-nologo" `
-    }
+    } -errorMessage "There was an error cleaning the installer solution."
 }
 
 task CodeCoverageReport -Description "Create a code coverage report" {
-    exec{
-        Initialize-Folder $TestResultsDir
+    exec {
+        Initialize-Folder $ReportsDir -Safe
+        Initialize-Folder $CodeCoverageReportDir
         $targetArgument = $Null
         Write-Output "Searching for code coverage test assemblies..."
 
@@ -151,9 +157,9 @@ task CodeCoverageReport -Description "Create a code coverage report" {
         Write-Output "Generating a code coverage report..."
         & $ReportGeneratorExe @(
             ("-reports:""$DotCoverReportXmlFile"""),
-            ("-targetdir:""$TestResultsDir"""),
+            ("-targetdir:""$CodeCoverageReportDir"""),
             ("-reporttypes:Html"))
-    }
+    } -errorMessage "There was an error creating a code coverage report."
 }
 
 task CompileMasterSolution -Description "Compile the master solution" {
@@ -303,7 +309,9 @@ task PublishPackages -Depends BuildPackages -Description "Pushes package to NuGe
         }
 
         $packageFile = $file.FullName
-        exec { & $PaketExe push `"$packageFile`" --url `"$ProgetUrl`" --api-key `"$ProgetApiKey`" --verbose --log-file `"$packageLogFile`" } -errorMessage "There was an error pushing the packages."
+        exec { 
+            & $PaketExe push `"$packageFile`" --url `"$ProgetUrl`" --api-key `"$ProgetApiKey`" --verbose --log-file `"$packageLogFile`" 
+        } -errorMessage "There was an error pushing the packages."
     }
 }
 
@@ -311,8 +319,13 @@ task SemanticVersions -Depends BuildVersion, PackageVersion -Description "Calcul
 }
 
 task TestResultsReport -Description "Create a merged test results report" {
-    # This will generate index.html within the test results directory.
-    exec { & $ExtentCliExe -d "$TestResultsDir/" -o "$TestResultsDir/" -r v3html --merge } -errorMessage "There was an error generating the test report."
+    Initialize-Folder $ReportsDir -Safe
+    Initialize-Folder $TestsReportDir
+
+    exec {
+        # This will generate index.html within the test results directory.
+         & $ExtentCliExe -d "$TestResultsDir/" -o "$TestsReportDir/" -r v3html --merge 
+    } -errorMessage "There was an error generating the test report."
 }
 
 task TestVMSetup -Description "Setup the test parameters for TestVM" {
@@ -373,7 +386,7 @@ task UnitTests -Description "Run all unit tests" {
             "--result=$UnitTestResultsXmlFile" `
             "--out=$OutputFile" `
             $testCategoryFilter `
-    }
+    } -errorMessage "There was an error running the unit tests."
 }
 
 task UnitTestResults -Description "Retrieve the unit test results from the Xml file" {
@@ -381,7 +394,9 @@ task UnitTestResults -Description "Retrieve the unit test results from the Xml f
 }
 
 task UpdateAssemblyInfo -Description "Update the AssemblySharedInfo files in \Version\" {
-    exec { & $GitVersionExe /updateassemblyinfo .\Version\AssemblySharedInfo.cs .\Version\AssemblySharedInfo.vb }
+    exec { 
+         & $GitVersionExe /updateassemblyinfo .\Version\AssemblySharedInfo.cs .\Version\AssemblySharedInfo.vb 
+    } -errorMessage "There was an error updating the assembly info."
 }
 
 Function Copy-Folder {
