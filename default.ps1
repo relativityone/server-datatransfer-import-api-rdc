@@ -255,8 +255,6 @@ task IntegrationTests -Description "Run all integration tests" {
     Invoke-SetTestParametersByFile -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
     exec { & $NunitExe $MasterSolution `
             "--labels=All" `
-            "--domain=Multiple" `
-            "--process=Multiple" `
             "--agents=$NumberOfProcessors" `
             "--skipnontestassemblies" `
             "--timeout=$TestTimeoutInMS" `
@@ -369,8 +367,6 @@ task UnitTests -Description "Run all unit tests" {
     Invoke-SetTestParametersByFile -TestParametersFile $TestParametersFile -TestEnvironment $TestEnvironment
     exec { & $NunitExe $MasterSolution `
             "--labels=All" `
-            "--domain=Multiple" `
-            "--process=Multiple" `
             "--agents=$NumberOfProcessors" `
             "--skipnontestassemblies" `
             "--timeout=$TestTimeoutInMS" `
