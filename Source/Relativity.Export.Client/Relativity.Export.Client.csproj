@@ -22,7 +22,7 @@
     <DefineConstants>TRACE;DEBUG;WINDOWS64</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1591;0649;0067</NoWarn>
     <DocumentationFile>bin\Relativity.Export.Client.xml</DocumentationFile>
@@ -34,7 +34,7 @@
     <DefineConstants>TRACE;WINDOWS64</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1591;0649;0067</NoWarn>
     <DocumentationFile>bin\Relativity.Export.Client.xml</DocumentationFile>
